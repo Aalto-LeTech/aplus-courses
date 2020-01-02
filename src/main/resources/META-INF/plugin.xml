@@ -1,7 +1,7 @@
 <idea-plugin>
-    <id>org.example.intellij-plugin</id>
-    <name>Plugin display name here</name>
-    <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
+    <id>fi.aalto.cs.intellij-plugin</id>
+    <name>Intellij IDEA plugin for A+</name>
+    <vendor email="support@yourcompany.com" url="https://research.cs.aalto.fi/LeTech/">Learning + Technology Research Group</vendor>
 
     <description><![CDATA[
     Enter short description for your plugin here.<br>
@@ -11,9 +11,8 @@
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
     <depends>com.intellij.modules.platform</depends>
-    <!-- despite the Intellij can't recognize dependancy on scala plugin here,
-        it is still required (this works). just google for a FQN of the required plugin
-        https://github.com/JetBrains/gradle-intellij-plugin#configuration -->
+    <!-- despite the Intellij can't recognize dependency on scala plugin here,
+        it is still required (this works) -->
     <depends>org.intellij.scala</depends>
 
     <extensions defaultExtensionNs="com.intellij">
