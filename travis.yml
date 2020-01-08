@@ -9,7 +9,9 @@ addons:
     token: $SONARCLOUD_TOKEN
 script:
   - sonar-scanner
+  
 branches:
+  only:
   - /.*/
   
 notifications:
