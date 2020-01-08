@@ -1,0 +1,9 @@
+addons:
+  sonarcloud:
+    projectKey: $SONARCLOUD_PROJECT_KEY
+    organization: "aalto-letech-intellij-plugin"
+    token: $SONARCLOUD_TOKEN
+script:
+  - ./gradlew sonarqube
+
+
