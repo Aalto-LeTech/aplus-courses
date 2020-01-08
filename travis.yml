@@ -11,3 +11,6 @@ script:
   - sonar-scanner
 branches:
   - /.*/
+  
+notifications:
+  slack: letech:6iQNboxAjhcmAx2B0CW7LpJq
