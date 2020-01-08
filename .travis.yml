@@ -1,0 +1,14 @@
+language: java
+dist: trusty
+jdk:
+  - oraclejdk11
+
+addons:
+  sonarcloud:
+    organization: "aalto-letech-intellij-plugin"
+    token: $SONARCLOUD_TOKEN
+script:
+  - sonar-scanner
+  
+notifications:
+  slack: letech:6iQNboxAjhcmAx2B0CW7LpJq
