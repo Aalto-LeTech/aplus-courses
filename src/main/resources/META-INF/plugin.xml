@@ -1,19 +1,15 @@
 <idea-plugin>
     <id>fi.aalto.cs.intellij-plugin</id>
-    <name>Intellij IDEA plugin for A+</name>
-    <vendor email="support@yourcompany.com" url="https://research.cs.aalto.fi/LeTech/">Learning + Technology Research Group</vendor>
+    <name>IntelliJ IDEA Plugin for A+</name>
+    <vendor email="" url="https://research.cs.aalto.fi/LeTech/">Learning + Technology Research Group @ Aalto University</vendor>
 
     <description><![CDATA[
-    Enter short description for your plugin here.<br>
-    <em>most HTML tags may be used</em>
+    This plugin supports the educational use of IntelliJ (and its Scala plugin) in programming courses that rely on the
+    A+ course platform, which has been developed at Aalto University. The plugin accesses programming assignments and
+    automated grading services provided by A+ and otherwise enhances the student experience.
     ]]></description>
 
-    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
-         on how to target different products -->
     <depends>com.intellij.modules.platform</depends>
-    <!-- despite the Intellij can't recognize dependency on scala plugin here,
-        it is still required (this works) -->
-    <depends>org.intellij.scala</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
