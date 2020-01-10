@@ -9,6 +9,11 @@
     automated grading services provided by A+ and otherwise enhances the student experience.
     ]]></description>
 
+    <change-notes><![CDATA[
+      Adding the initial skeleton of the plugin.<br>
+    ]]>
+    </change-notes>
+
     <depends>com.intellij.modules.platform</depends>
 
     <extensions defaultExtensionNs="com.intellij">
