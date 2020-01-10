@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>fi.aalto.cs.intellij-plugin</id>
     <name>A+ Plugin for IntelliJ</name>
-    <vendor email="" url="https://research.cs.aalto.fi/LeTech/">LeTech Group at Aalto University</vendor>
+    <vendor email="intellij-plugin-letech@aalto.fi" url="https://research.cs.aalto.fi/LeTech/">LeTech Group at Aalto University</vendor>
 
     <description><![CDATA[
     This plugin supports the educational use of IntelliJ (and its Scala plugin) in programming courses that rely on the
