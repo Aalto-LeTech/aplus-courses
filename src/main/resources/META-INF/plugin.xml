@@ -21,6 +21,12 @@
     </extensions>
 
     <actions>
-        <!-- Add your actions here -->
+        <group id="A+.Menu" text="A+" description="A+ Menu">
+            <add-to-group group-id="MainMenu" anchor="last" />
+            <action id="About A+ Plugin"
+                    class="fi.aalto.cs.intellij.actions.AboutAction"
+                    text="About A+ Plugin"
+                    description="Information about the A+ plugin for IntelliJ" />
+        </group>
     </actions>
 </idea-plugin>
