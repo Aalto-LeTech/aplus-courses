@@ -3,34 +3,24 @@ dist: trusty
 jdk:
   - oraclejdk11
 
-stages:
-  - test
-  - name: deploy
-    if: branch IN (master, test)
+addons:
+  sonarcloud:
+    organization: "aalto-letech-intellij-plugin"
+    token: $SONARCLOUD_TOKEN
 
-jobs:
-  include:
-  - name: "Check"
-    stage: test
-    script: ./gradlew check
-  - name: "SonarCloud Scan"
-    addons:
-      sonarcloud:
-        organization: "aalto-letech-intellij-plugin"
-        token: $SONARCLOUD_TOKEN
-    script: sonar-scanner
-  - stage: deploy
-    name: "Deploy to JetBrains Marketplace"
-    script: skip
-    deploy:
-      - provider: script
-        script: ./gradlew publishPlugin
-        on:
-          branch: master
-      - provider: script
-        script: env INTELLIJ_PUBLISH_CHANNEL=test ./gradlew publishPlugin
-        on:
-          branch: test
+script:
+  - ./gradlew check
+  - sonar-scanner
+
+deploy:
+  - provider: script
+    script: ./gradlew publishPlugin
+    on:
+      branch: master
+  - provider: script
+    script: env INTELLIJ_PUBLISH_CHANNEL=test ./gradlew publishPlugin
+    on:
+      branch: test
 
 notifications:
   slack: $SLACK
