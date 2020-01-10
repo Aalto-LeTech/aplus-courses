@@ -6,7 +6,7 @@ plugins {
 }
 
 group 'fi.aalto.cs'
-version '0.1+' + System.getenv('TRAVIS_BUILD_NUMBER')
+version '0.1.' + System.getenv('TRAVIS_BUILD_NUMBER')
 
 sourceCompatibility = 1.8
 
