@@ -7,9 +7,31 @@ addons:
   sonarcloud:
     organization: "aalto-letech-intellij-plugin"
     token: $SONARCLOUD_TOKEN
-script:
-  - sonar-scanner
-  - ./gradlew check
-  
+
+stages:
+  - test
+  - name: deploy
+    if: branch IN (master, test)
+
+jobs:
+  include:
+  - stage: test
+    script: ./gradlew check
+    name: "Check"
+  - script: sonar-scanner
+    name: "SonarCloud Scan"
+  - stage: deploy
+    script: skip
+    deploy:
+      - provider: script
+        script: env INTELLIJ_PLUGIN_CHANNEL=default ./gradlew publishPlugin
+        on:
+          branch: master
+      - provider: script
+        script: env INTELLIJ_PLUGIN_CHANNEL=test ./gradlew publishPlugin
+        on:
+          branch: test
+    name: "Deploy to JetBrains Marketplace"
+
 notifications:
   slack: $SLACK

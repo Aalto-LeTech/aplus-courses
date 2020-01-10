@@ -6,7 +6,7 @@ plugins {
 }
 
 group 'fi.aalto.cs'
-version '0.1'
+version '0.1+' + System.getenv('TRAVIS_BUILD_NUMBER')
 
 sourceCompatibility = 1.8
 
@@ -21,10 +21,10 @@ dependencies {
 intellij {
     version '2019.3.1'
 }
-patchPluginXml {
-    changeNotes """
-      Add change notes here.<br>
-      <em>most HTML tags may be used</em>"""
+
+publishPlugin {
+    token = System.getenv('INTELLIJ_PUBLISH_TOKEN')
+    channels = [System.getenv('INTELLIJ_PUBLISH_CHANNEL')]
 }
 
 checkstyle {
