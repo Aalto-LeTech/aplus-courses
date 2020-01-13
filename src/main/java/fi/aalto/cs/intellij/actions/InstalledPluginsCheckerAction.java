@@ -1,6 +1,5 @@
 package fi.aalto.cs.intellij.actions;
 
-import com.intellij.ide.plugins.PluginManager;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
@@ -10,6 +9,8 @@ import com.intellij.openapi.startup.StartupActivity;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
+
+import static com.intellij.ide.plugins.PluginManager.*;
 
 public class InstalledPluginsCheckerAction implements StartupActivity {
 
@@ -21,11 +22,14 @@ public class InstalledPluginsCheckerAction implements StartupActivity {
         Arrays.stream(requiredPluginNames).forEach(
                 requiredPluginName -> {
                     PluginId requiredPluginId = PluginId.getId(requiredPluginName);
-                    if (!PluginManager.isPluginInstalled(requiredPluginId)) {
+                    boolean isPluginOK = !isPluginInstalled(requiredPluginId)
+                            || isDisabled(requiredPluginId.getIdString());
+                    if (isPluginOK) {
                         Notifications.Bus.notify(new Notification(
                                 "A+",
                                 "A+",
-                                "Plugin " + requiredPluginName + " is required for the A+ plugin to work properly.",
+                                "Plugin " + requiredPluginName +
+                                        " must be installed and enabled for the A+ plugin to work properly.",
                                 NotificationType.WARNING));
                     }
                 }
