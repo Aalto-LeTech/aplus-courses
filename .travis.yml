@@ -7,9 +7,20 @@ addons:
   sonarcloud:
     organization: "aalto-letech-intellij-plugin"
     token: $SONARCLOUD_TOKEN
+
 script:
-  - sonar-scanner
   - ./gradlew check
-  
+  - sonar-scanner
+
+deploy:
+  - provider: script
+    script: ./gradlew publishPlugin
+    on:
+      branch: master
+  - provider: script
+    script: env INTELLIJ_PUBLISH_CHANNEL=test ./gradlew publishPlugin
+    on:
+      branch: test
+
 notifications:
   slack: $SLACK
