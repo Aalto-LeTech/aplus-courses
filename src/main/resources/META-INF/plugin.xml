@@ -17,7 +17,9 @@
     <depends>com.intellij.modules.platform</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <!-- Add your extensions here -->
+        <toolWindow id="Exercises"
+                    anchor="right"
+                    factoryClass="fi.aalto.cs.intellij.actions.ToolWindowAction" />
     </extensions>
 
     <actions>
