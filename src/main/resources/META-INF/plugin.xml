@@ -1,6 +1,6 @@
 <idea-plugin>
     <id>fi.aalto.cs.intellij-plugin</id>
-    <name>A+ Plugin for IntelliJ</name>
+    <name>A+ for IntelliJ</name>
     <vendor email="intellij-plugin-letech@aalto.fi" url="https://research.cs.aalto.fi/LeTech/">LeTech Group at Aalto University</vendor>
 
     <description><![CDATA[
