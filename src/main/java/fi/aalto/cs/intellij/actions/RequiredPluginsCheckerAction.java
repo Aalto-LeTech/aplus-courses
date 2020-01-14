@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class RequiredPluginsCheckerAction implements StartupActivity {
 
-  final static private Map<String, String> requiredPluginNames = new HashMap<>();
+  private static final Map<String, String> requiredPluginNames = new HashMap<>();
 
   @Override
   public void runActivity(@NotNull Project project) {
