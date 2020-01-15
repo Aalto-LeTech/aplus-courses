@@ -1,7 +1,6 @@
 package fi.aalto.cs.intellij.actions;
 
-import static com.intellij.ide.plugins.PluginManager.isDisabled;
-import static com.intellij.ide.plugins.PluginManager.isPluginInstalled;
+import static java.util.stream.Collectors.toMap;
 
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManager;
@@ -18,52 +17,119 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.startup.StartupActivity;
 import com.intellij.openapi.updateSettings.impl.PluginDownloader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.StringJoiner;
+import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-//TODO REFACTOR THIS MESS
+//TODO THINK HOW TO TEST & REFACTOR THIS
 public class RequiredPluginsCheckerAction implements StartupActivity {
 
+  private static final Logger logger = LoggerFactory.getLogger(RequiredPluginsCheckerAction.class);
+
   private static final Map<String, String> requiredPluginNames = new HashMap<>();
-  private IdeaPluginDescriptor descriptor;
+  private Map<String, String> missingOrDisabledPluginNames = new HashMap<>();
+  private List<IdeaPluginDescriptor> missingOrDisabledIdeaPluginDescriptors;
+  private List<IdeaPluginDescriptor> availableIdeaPluginDescriptors;
 
   @Override
   public void runActivity(@NotNull Project project) {
-
-    try {
-      descriptor = getIdeaPluginDescriptor(PluginId.getId("org.intellij.scala"));
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
     requiredPluginNames.put("Scala", "org.intellij.scala");
-    requiredPluginNames.forEach(this::checkPluginStatus);
+
+    filterMissingOrDisabledPluginNames();
+    createListOfMissingOrDisabledPluginDescriptors();
+    checkPluginsStatusAndNotify();
   }
 
-  private void checkPluginStatus(String key, String value) {
-    PluginId requiredPluginId = PluginId.getId(value);
-    if (!isPluginInstalled(requiredPluginId)) {
-      notifyAndOpenPluginSettingsWindow(key, value);
-    } else if (isDisabled(requiredPluginId.getIdString())) {
-      notifyAndSuggestPluginEnabling(key, value, requiredPluginId);
+  /**
+   * Filters out the plugin names that are missing from the current installation.
+   */
+  private void filterMissingOrDisabledPluginNames() {
+    missingOrDisabledPluginNames = requiredPluginNames
+        .entrySet()
+        .stream()
+        .filter(entry -> isPluginMissingOrDisabled(entry.getValue()))
+        .collect(toMap(Entry::getKey, Entry::getValue));
+  }
+
+  private static boolean isPluginMissingOrDisabled(String id) {
+    PluginId pluginId = PluginId.getId(id);
+    return !PluginManager.isPluginInstalled(pluginId) || PluginManager
+        .isDisabled(pluginId.getIdString());
+  }
+
+  /**
+   * If there any plugins missing, creates a list of the plugin descriptors for it based on the
+   * publicly available ones in the JetBrains main plugin repository.
+   */
+  private void createListOfMissingOrDisabledPluginDescriptors() {
+    if (missingOrDisabledPluginNames.size() > 0) {
+      getAvailablePluginsFromMainRepo();
+      missingOrDisabledIdeaPluginDescriptors = new ArrayList<>();
+      missingOrDisabledPluginNames.forEach((name, id) -> {
+        PluginId missingPluginId = PluginId.getId(id);
+        availableIdeaPluginDescriptors
+            .stream()
+            .filter(
+                availableDescriptor -> availableDescriptor.getPluginId().equals(missingPluginId)
+            )
+            .findFirst()
+            .ifPresent(missingOrDisabledIdeaPluginDescriptors::add);
+      });
     }
   }
 
-  private void notifyAndSuggestPluginEnabling(String key, String value, PluginId requiredPluginId) {
+  private void getAvailablePluginsFromMainRepo() {
+    try {
+      availableIdeaPluginDescriptors = RepositoryHelper.loadPlugins(new BgProgressIndicator());
+    } catch (IOException ex) {
+      logger.error("Could not retrieve plugins data from main repository.", ex);
+    }
+  }
+
+  /**
+   * Sorts required plugins into missing and disabled and shows respective notifications.
+   */
+  private void checkPluginsStatusAndNotify() {
+    List<IdeaPluginDescriptor> missingPluginDescriptors = missingOrDisabledIdeaPluginDescriptors
+        .stream()
+        .filter(descriptor -> !PluginManager.isPluginInstalled(descriptor.getPluginId()))
+        .collect(Collectors.toList());
+
+    List<IdeaPluginDescriptor> disabledPluginDescriptors = missingPluginDescriptors
+        .stream()
+        .filter(IdeaPluginDescriptor::isEnabled)
+        .collect(Collectors.toList());
+
+    if (missingPluginDescriptors.size() > 0) {
+      notifyAndSuggestPluginsInstallation(missingPluginDescriptors);
+    } else if (disabledPluginDescriptors.size() > 0) {
+      notifyAndSuggestPluginsEnabling(disabledPluginDescriptors);
+    }
+  }
+
+  private void notifyAndSuggestPluginsEnabling(List<IdeaPluginDescriptor> descriptors) {
     Notification notification = new Notification(
         "A+",
         "A+",
-        "Plugin " + value
-            + " must be and enabled for the A+ plugin to work properly.",
+        "Some plugins must be and enabled for the A+ plugin to work properly "
+            + getPluginsNamesString(descriptors) + ".",
         NotificationType.WARNING);
-    notification.addAction(new NotificationAction("Enable the " + key + " plugin.") {
+
+    notification.addAction(new NotificationAction(
+        "Enable the required plugin(s)" + getPluginsNamesString(descriptors) + ".") {
 
       @Override
       public void actionPerformed(@NotNull AnActionEvent e, @NotNull Notification notification) {
-        Objects.requireNonNull(PluginManager.getPlugin(requiredPluginId)).setEnabled(true);
+        descriptors.forEach(descriptor -> Objects
+            .requireNonNull(PluginManager.getPlugin(descriptor.getPluginId())).setEnabled(true));
         notification.expire();
       }
     });
@@ -71,42 +137,41 @@ public class RequiredPluginsCheckerAction implements StartupActivity {
     Notifications.Bus.notify(notification);
   }
 
-  private void notifyAndOpenPluginSettingsWindow(String key, String value) {
+  private void notifyAndSuggestPluginsInstallation(List<IdeaPluginDescriptor> descriptors) {
     Notification notification = new Notification(
         "A+",
         "A+",
-        "Plugin " + value
-            + " must be installed and enabled for the A+ plugin to work properly.",
+        "Additional plugin(s) must be installed and enabled for the A+ plugin to work "
+            + "properly (" + getPluginsNamesString(descriptors) + ").",
         NotificationType.WARNING);
 
-    notification.addAction(new NotificationAction("Search for the " + key + " plugin.") {
+    notification.addAction(new NotificationAction(
+        "Install missing (" + getPluginsNamesString(descriptors) + ") plugin(s).") {
 
       @Override
       public void actionPerformed(@NotNull AnActionEvent e, @NotNull Notification notification) {
-        try {
-          PluginDownloader pluginDownloader = PluginDownloader.createDownloader(descriptor);
-          pluginDownloader.prepareToInstall(new BgProgressIndicator());
-          pluginDownloader.install();
-          PluginManagerConfigurable.showRestartDialog("Plugins required for A+ course have been now installed");
-        } catch (IOException ex) {
-          ex.printStackTrace();
-        }
+        descriptors.forEach(descriptor -> {
+          try {
+            PluginDownloader pluginDownloader = PluginDownloader.createDownloader(descriptor);
+            pluginDownloader.prepareToInstall(new BgProgressIndicator());
+            pluginDownloader.install();
+          } catch (IOException ex) {
+            logger.error("Could not install plugin" + descriptor.getName() + ".", ex);
+          }
+        });
+        PluginManagerConfigurable
+            .showRestartDialog("Plugins required for A+ course have been now installed");
+        notification.expire();
       }
     });
 
     Notifications.Bus.notify(notification);
   }
 
-  @Nullable
-  private IdeaPluginDescriptor getIdeaPluginDescriptor(PluginId requiredPluginId)
-      throws IOException {
-    IdeaPluginDescriptor ideaPluginDescriptor;
-    List<IdeaPluginDescriptor> ideaPluginDescriptors = RepositoryHelper.loadPlugins(null);
-    ideaPluginDescriptor = ideaPluginDescriptors
-        .stream()
-        .filter(desc -> desc.getPluginId().equals(requiredPluginId))
-        .findFirst()
-        .orElse(null);
-    return ideaPluginDescriptor;
+  @NotNull
+  private StringJoiner getPluginsNamesString(List<IdeaPluginDescriptor> descriptors) {
+    StringJoiner stringJoiner = new StringJoiner(", ");
+    descriptors.forEach(descriptor -> stringJoiner.add(descriptor.getName()));
+    return stringJoiner;
   }
 }
