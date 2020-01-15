@@ -30,6 +30,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 //TODO THINK HOW TO TEST & REFACTOR THIS
+//TODO does not restart the IDE on demand
+//TODO check the enable functionality
 public class RequiredPluginsCheckerAction implements StartupActivity {
 
   private static final Logger logger = LoggerFactory.getLogger(RequiredPluginsCheckerAction.class);
@@ -39,13 +41,23 @@ public class RequiredPluginsCheckerAction implements StartupActivity {
   private List<IdeaPluginDescriptor> missingOrDisabledIdeaPluginDescriptors;
   private List<IdeaPluginDescriptor> availableIdeaPluginDescriptors;
 
+  /**
+   * The plugin startup activity.
+   */
   @Override
   public void runActivity(@NotNull Project project) {
-    requiredPluginNames.put("Scala", "org.intellij.scala");
-
+    populateRequiredPluginNamesMap();
     filterMissingOrDisabledPluginNames();
     createListOfMissingOrDisabledPluginDescriptors();
     checkPluginsStatusAndNotify();
+  }
+
+  /**
+   * Fills the list of required plugin names.
+   * Later, reading from the from configuration file might occur here.
+   */
+  private void populateRequiredPluginNamesMap() {
+    requiredPluginNames.put("Scala", "org.intellij.scala");
   }
 
   /**
@@ -59,6 +71,9 @@ public class RequiredPluginsCheckerAction implements StartupActivity {
         .collect(toMap(Entry::getKey, Entry::getValue));
   }
 
+  /**
+   * Predicate for checking the plugin status.
+   */
   private static boolean isPluginMissingOrDisabled(String id) {
     PluginId pluginId = PluginId.getId(id);
     return !PluginManager.isPluginInstalled(pluginId) || PluginManager
@@ -66,8 +81,8 @@ public class RequiredPluginsCheckerAction implements StartupActivity {
   }
 
   /**
-   * If there any plugins missing, creates a list of the plugin descriptors for it based on the
-   * publicly available ones in the JetBrains main plugin repository.
+   * If there any plugins missing, creates a list of the plugin descriptors for them based on the
+   * publicly available ones.
    */
   private void createListOfMissingOrDisabledPluginDescriptors() {
     if (missingOrDisabledPluginNames.size() > 0) {
@@ -86,6 +101,9 @@ public class RequiredPluginsCheckerAction implements StartupActivity {
     }
   }
 
+  /**
+   * Get the list of all the available in the main JetBrains plugin repository.
+   */
   private void getAvailablePluginsFromMainRepo() {
     try {
       availableIdeaPluginDescriptors = RepositoryHelper.loadPlugins(new BgProgressIndicator());
@@ -105,7 +123,7 @@ public class RequiredPluginsCheckerAction implements StartupActivity {
 
     List<IdeaPluginDescriptor> disabledPluginDescriptors = missingPluginDescriptors
         .stream()
-        .filter(IdeaPluginDescriptor::isEnabled)
+        .filter(descriptor -> PluginManager.isDisabled(descriptor.getPluginId().getIdString()))
         .collect(Collectors.toList());
 
     if (missingPluginDescriptors.size() > 0) {
@@ -115,6 +133,9 @@ public class RequiredPluginsCheckerAction implements StartupActivity {
     }
   }
 
+  /**
+   * Notify with with an option to enable all the required plugins.
+   */
   private void notifyAndSuggestPluginsEnabling(List<IdeaPluginDescriptor> descriptors) {
     Notification notification = new Notification(
         "A+",
@@ -126,6 +147,9 @@ public class RequiredPluginsCheckerAction implements StartupActivity {
     notification.addAction(new NotificationAction(
         "Enable the required plugin(s)" + getPluginsNamesString(descriptors) + ".") {
 
+      /**
+       * Activate all the required plugins.
+       */
       @Override
       public void actionPerformed(@NotNull AnActionEvent e, @NotNull Notification notification) {
         descriptors.forEach(descriptor -> Objects
@@ -137,6 +161,9 @@ public class RequiredPluginsCheckerAction implements StartupActivity {
     Notifications.Bus.notify(notification);
   }
 
+  /**
+   * Notify with with an option to install all the required plugins and suggest restart.
+   */
   private void notifyAndSuggestPluginsInstallation(List<IdeaPluginDescriptor> descriptors) {
     Notification notification = new Notification(
         "A+",
@@ -148,6 +175,9 @@ public class RequiredPluginsCheckerAction implements StartupActivity {
     notification.addAction(new NotificationAction(
         "Install missing (" + getPluginsNamesString(descriptors) + ") plugin(s).") {
 
+      /**
+       * Install the missing plugins and propose a restart.
+       */
       @Override
       public void actionPerformed(@NotNull AnActionEvent e, @NotNull Notification notification) {
         descriptors.forEach(descriptor -> {
@@ -168,6 +198,9 @@ public class RequiredPluginsCheckerAction implements StartupActivity {
     Notifications.Bus.notify(notification);
   }
 
+  /**
+   * Join plugin descriptor names with a comma.
+   */
   @NotNull
   private StringJoiner getPluginsNamesString(List<IdeaPluginDescriptor> descriptors) {
     StringJoiner stringJoiner = new StringJoiner(", ");
