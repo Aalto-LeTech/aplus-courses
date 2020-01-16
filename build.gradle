@@ -31,3 +31,13 @@ checkstyle {
     configFile = file('/google_checks.xml')
     maxWarnings = 0
 }
+
+task createBuildInfoFile(dependsOn: processResources) {
+    doLast {
+        new File("$buildDir/resources/main/build-info.properties").withWriter { writer ->
+            Properties props = new Properties()
+            props['version'] = "$version";
+            props.store(writer, null);
+        }
+    }
+}
