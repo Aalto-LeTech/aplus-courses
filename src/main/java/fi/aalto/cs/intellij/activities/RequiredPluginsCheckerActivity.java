@@ -1,4 +1,4 @@
-package fi.aalto.cs.intellij.actions;
+package fi.aalto.cs.intellij.activities;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -29,9 +29,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 //TODO THINK HOW TO TEST & REFACTOR THIS
-public class RequiredPluginsCheckerAction implements StartupActivity {
+public class RequiredPluginsCheckerActivity implements StartupActivity {
 
-  private static final Logger logger = LoggerFactory.getLogger(RequiredPluginsCheckerAction.class);
+  private static final Logger logger = LoggerFactory
+      .getLogger(RequiredPluginsCheckerActivity.class);
 
   private static final Map<String, String> requiredPluginNames = new HashMap<>();
   private static Map<String, String> missingOrDisabledPluginNames = new HashMap<>();
@@ -52,7 +53,7 @@ public class RequiredPluginsCheckerAction implements StartupActivity {
   /**
    * Fills the list of required plugin names.
    *
-   * Later, reading from the from configuration file might occur here.
+   * <p>Later, reading from the from configuration file might occur here.
    */
   private void populateRequiredPluginNamesMap() {
     requiredPluginNames.put("Scala", "org.intellij.scala");
@@ -101,8 +102,8 @@ public class RequiredPluginsCheckerAction implements StartupActivity {
 
   /**
    * Get the list of all the available in the main JetBrains plugin repository.
-   * <p>
-   * Note! The descriptors for the not installed plugins do not exist in IJ until now.
+   *
+   * <p>Note! The descriptors for the not installed plugins do not exist in IJ until now.
    */
   private void getAvailablePluginsFromMainRepo() {
     try {
