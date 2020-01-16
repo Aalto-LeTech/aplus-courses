@@ -24,22 +24,19 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.StringJoiner;
-import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 //TODO THINK HOW TO TEST & REFACTOR THIS
-//TODO does not restart the IDE on demand
-//TODO check the enable functionality
 public class RequiredPluginsCheckerAction implements StartupActivity {
 
   private static final Logger logger = LoggerFactory.getLogger(RequiredPluginsCheckerAction.class);
 
   private static final Map<String, String> requiredPluginNames = new HashMap<>();
-  private Map<String, String> missingOrDisabledPluginNames = new HashMap<>();
-  private List<IdeaPluginDescriptor> missingOrDisabledIdeaPluginDescriptors;
-  private List<IdeaPluginDescriptor> availableIdeaPluginDescriptors;
+  private static Map<String, String> missingOrDisabledPluginNames = new HashMap<>();
+  private static List<IdeaPluginDescriptor> missingOrDisabledIdeaPluginDescriptors;
+  private static List<IdeaPluginDescriptor> availableIdeaPluginDescriptors;
 
   /**
    * The plugin startup activity.
@@ -54,6 +51,7 @@ public class RequiredPluginsCheckerAction implements StartupActivity {
 
   /**
    * Fills the list of required plugin names.
+   *
    * Later, reading from the from configuration file might occur here.
    */
   private void populateRequiredPluginNamesMap() {
@@ -103,6 +101,8 @@ public class RequiredPluginsCheckerAction implements StartupActivity {
 
   /**
    * Get the list of all the available in the main JetBrains plugin repository.
+   * <p>
+   * Note! The descriptors for the not installed plugins do not exist in IJ until now.
    */
   private void getAvailablePluginsFromMainRepo() {
     try {
@@ -116,15 +116,16 @@ public class RequiredPluginsCheckerAction implements StartupActivity {
    * Sorts required plugins into missing and disabled and shows respective notifications.
    */
   private void checkPluginsStatusAndNotify() {
-    List<IdeaPluginDescriptor> missingPluginDescriptors = missingOrDisabledIdeaPluginDescriptors
-        .stream()
-        .filter(descriptor -> !PluginManager.isPluginInstalled(descriptor.getPluginId()))
-        .collect(Collectors.toList());
+    List<IdeaPluginDescriptor> missingPluginDescriptors = new ArrayList<>();
+    List<IdeaPluginDescriptor> disabledPluginDescriptors = new ArrayList<>();
 
-    List<IdeaPluginDescriptor> disabledPluginDescriptors = missingPluginDescriptors
-        .stream()
-        .filter(descriptor -> PluginManager.isDisabled(descriptor.getPluginId().getIdString()))
-        .collect(Collectors.toList());
+    for (IdeaPluginDescriptor descriptor : missingOrDisabledIdeaPluginDescriptors) {
+      if (!PluginManager.isPluginInstalled(descriptor.getPluginId())) {
+        missingPluginDescriptors.add(descriptor);
+      } else if (PluginManager.isDisabled(descriptor.getPluginId().getIdString())) {
+        disabledPluginDescriptors.add(descriptor);
+      }
+    }
 
     if (missingPluginDescriptors.size() > 0) {
       notifyAndSuggestPluginsInstallation(missingPluginDescriptors);
@@ -145,7 +146,7 @@ public class RequiredPluginsCheckerAction implements StartupActivity {
         NotificationType.WARNING);
 
     notification.addAction(new NotificationAction(
-        "Enable the required plugin(s)" + getPluginsNamesString(descriptors) + ".") {
+        "Enable the required plugin(s) (" + getPluginsNamesString(descriptors) + ").") {
 
       /**
        * Activate all the required plugins.
@@ -189,9 +190,9 @@ public class RequiredPluginsCheckerAction implements StartupActivity {
             logger.error("Could not install plugin" + descriptor.getName() + ".", ex);
           }
         });
-        PluginManagerConfigurable
-            .showRestartDialog("Plugins required for A+ course have been now installed");
         notification.expire();
+        PluginManagerConfigurable
+            .shutdownOrRestartApp("Plugins required for A+ course are now installed");
       }
     });
 
