@@ -28,19 +28,21 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-//TODO THINK HOW TO TEST & REFACTOR THIS
+/**
+ * A startup activity for the plugin.
+ */
 public class RequiredPluginsCheckerActivity implements StartupActivity {
 
   private static final Logger logger = LoggerFactory
       .getLogger(RequiredPluginsCheckerActivity.class);
 
-  private static final Map<String, String> requiredPluginNames = new HashMap<>();
-  private static Map<String, String> missingOrDisabledPluginNames = new HashMap<>();
-  private static List<IdeaPluginDescriptor> missingOrDisabledIdeaPluginDescriptors;
-  private static List<IdeaPluginDescriptor> availableIdeaPluginDescriptors;
+  private final Map<String, String> requiredPluginNames = new HashMap<>();
+  private Map<String, String> missingOrDisabledPluginNames = new HashMap<>();
+  private List<IdeaPluginDescriptor> missingOrDisabledIdeaPluginDescriptors;
+  private List<IdeaPluginDescriptor> availableIdeaPluginDescriptors;
 
   /**
-   * The plugin startup activity.
+   * Actual startup work gets done here.
    */
   @Override
   public void runActivity(@NotNull Project project) {
