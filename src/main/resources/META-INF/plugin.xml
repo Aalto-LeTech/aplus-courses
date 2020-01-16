@@ -1,6 +1,6 @@
 <idea-plugin>
     <id>fi.aalto.cs.intellij-plugin</id>
-    <name>A+ Plugin for IntelliJ</name>
+    <name>A+ Courses</name>
     <vendor email="intellij-plugin-letech@aalto.fi" url="https://research.cs.aalto.fi/LeTech/">LeTech Group at Aalto University</vendor>
 
     <description><![CDATA[
@@ -18,9 +18,18 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <backgroundPostStartupActivity implementation="fi.aalto.cs.intellij.activities.RequiredPluginsCheckerActivity"/>
+        <toolWindow id="Exercises"
+                    anchor="right"
+                    factoryClass="fi.aalto.cs.intellij.actions.ToolWindowAction" />
     </extensions>
 
     <actions>
-        <!-- Add your actions here -->
+        <group id="A+.Menu" text="A+" description="A+ Menu">
+            <add-to-group group-id="MainMenu" anchor="last" />
+            <action id="About A+ Plugin"
+                    class="fi.aalto.cs.intellij.actions.AboutAction"
+                    text="About A+ Plugin"
+                    description="Information about the A+ plugin for IntelliJ" />
+        </group>
     </actions>
 </idea-plugin>
