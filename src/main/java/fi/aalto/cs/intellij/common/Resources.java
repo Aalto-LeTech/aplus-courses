@@ -5,12 +5,8 @@ import java.io.InputStream;
 import java.util.Properties;
 
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class Resources {
-
-  private static final Logger logger = LoggerFactory.getLogger(Resources.class);
   private static Resources INSTANCE;
 
   private ResourceProvider resourceProvider;
@@ -55,7 +51,7 @@ class Resources {
     /**
      * Opens an input stream to the resource indicated by {@code name}.
      * @param name Name of the resource.
-     * @return An open
+     * @return An open {@link InputStream} which corresponds to {@code name}.
      */
     InputStream getResourceAsStream(@NotNull String name);
   }
