@@ -45,7 +45,6 @@ class Resources {
     return props;
   }
 
-
   static class ResourceException extends RuntimeException {
     public ResourceException(String resourceName, Throwable cause) {
       super("Could not access resource: " + resourceName, cause);

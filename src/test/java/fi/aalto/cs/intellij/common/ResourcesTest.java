@@ -1,10 +1,8 @@
 package fi.aalto.cs.intellij.common;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Properties;
 
 import org.jetbrains.annotations.NotNull;
@@ -28,15 +26,10 @@ public class ResourcesTest {
 
   @Test
   public void testGetPropertiesFromResource() {
-    Resources.ResourceProvider resourceProvider = new Resources.ResourceProvider() {
-      @Override
-      public InputStream getResourceAsStream(@NotNull String name) {
-        Assert.assertEquals("correct-properties", name);
-        return new ByteArrayInputStream("a=x\nb=y\n".getBytes());
-      }
-    };
-
-    Resources res = new Resources(resourceProvider);
+    Resources res = new Resources(name -> {
+      Assert.assertEquals("correct-properties", name);
+      return new ByteArrayInputStream("a=x\nb=y\n".getBytes());
+    });
 
     Properties props = res.getPropertiesFromResource("correct-properties");
     Assert.assertNotNull(props);
