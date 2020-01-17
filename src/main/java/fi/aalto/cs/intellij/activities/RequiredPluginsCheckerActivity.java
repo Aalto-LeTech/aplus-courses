@@ -205,7 +205,7 @@ public class RequiredPluginsCheckerActivity implements StartupActivity {
    * Join plugin descriptor names with a comma.
    */
   @NotNull
-  private StringJoiner getPluginsNamesString(List<IdeaPluginDescriptor> descriptors) {
+  private static StringJoiner getPluginsNamesString(List<IdeaPluginDescriptor> descriptors) {
     StringJoiner stringJoiner = new StringJoiner(", ");
     descriptors.forEach(descriptor -> stringJoiner.add(descriptor.getName()));
     return stringJoiner;
