@@ -90,11 +90,10 @@ public class RequiredPluginsCheckerActivity implements StartupActivity {
       getAvailablePluginsFromMainRepo();
       missingOrDisabledIdeaPluginDescriptors = new ArrayList<>();
       missingOrDisabledPluginNames.forEach((name, id) -> {
-        PluginId missingPluginId = PluginId.getId(id);
         availableIdeaPluginDescriptors
             .stream()
             .filter(
-                availableDescriptor -> availableDescriptor.getPluginId().equals(missingPluginId)
+                availableDescriptor -> availableDescriptor.getPluginId().equals(PluginId.getId(id))
             )
             .findFirst()
             .ifPresent(missingOrDisabledIdeaPluginDescriptors::add);
