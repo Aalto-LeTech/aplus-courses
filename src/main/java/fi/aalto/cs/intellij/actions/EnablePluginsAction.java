@@ -1,10 +1,12 @@
 package fi.aalto.cs.intellij.actions;
 
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
+import com.intellij.ide.plugins.PluginManager;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import java.util.List;
+import java.util.Objects;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -25,7 +27,8 @@ public class EnablePluginsAction extends NotificationAction {
    */
   @Override
   public void actionPerformed(@NotNull AnActionEvent e, @NotNull Notification notification) {
-    descriptors.forEach(descriptor -> descriptor.setEnabled(true));
+    descriptors.forEach(descriptor -> Objects
+        .requireNonNull(PluginManager.getPlugin(descriptor.getPluginId())).setEnabled(true));
     notification.expire();
   }
 }
