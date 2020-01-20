@@ -1,4 +1,4 @@
-git <idea-plugin>
+<idea-plugin>
   <version>0.1.101</version>
   <idea-version since-build="193.5662" until-build="193.*"/>
   <id>fi.aalto.cs.intellij-plugin</id>
