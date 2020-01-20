@@ -91,7 +91,7 @@ public class BuildInfoTest {
   @Test
   public void test_BuildInfo_fromResources() {
     Resources res = new Resources(name -> {
-      Assert.assertEquals("build-info", name);
+      Assert.assertEquals("build-info.properties", name);
       return new ByteArrayInputStream("version=1.5.18\n".getBytes());
     });
 
