@@ -19,7 +19,7 @@ import org.mockito.Mockito;
 public class EnablePluginsActionTest {
 
   @Test
-  public void test_actionPerformed() throws IOException, JDOMException {
+  public void testActionPerformed() throws IOException, JDOMException {
     IdeaPluginDescriptorImpl ideaPluginDescriptor = getIdeaPluginDescriptor();
     ideaPluginDescriptor.setEnabled(false);
     List<IdeaPluginDescriptor> descriptors = new ArrayList<>();

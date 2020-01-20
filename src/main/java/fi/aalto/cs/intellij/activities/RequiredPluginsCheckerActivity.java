@@ -83,8 +83,8 @@ public class RequiredPluginsCheckerActivity implements StartupActivity {
   }
 
   /**
-   * If there are any plugins missing, creates a list of the plugin descriptors for them based on the
-   * publicly available ones.
+   * If there are any plugins missing, creates a list of the plugin descriptors for them based on
+   * the publicly available ones.
    */
   private void createListOfMissingOrDisabledPluginDescriptors() {
     if (missingOrDisabledPluginNames.size() > 0) {
@@ -149,7 +149,8 @@ public class RequiredPluginsCheckerActivity implements StartupActivity {
         NotificationType.WARNING);
 
     notification.addAction(new EnablePluginsAction(
-        "Enable the required plugin(s) (" + getPluginsNamesString(descriptors) + ").", descriptors) {
+        "Enable the required plugin(s) (" + getPluginsNamesString(descriptors) + ").",
+        descriptors) {
     });
 
     Notifications.Bus.notify(notification);
