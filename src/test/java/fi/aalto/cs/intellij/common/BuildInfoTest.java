@@ -9,30 +9,31 @@ public class BuildInfoTest {
 
   @Test
   public void testCreateVersion() {
+    String versionString = "3.5.24";
     BuildInfo.Version version = new BuildInfo.Version(3,5,24);
 
     Assert.assertEquals(3, version.major);
     Assert.assertEquals(5, version.minor);
     Assert.assertEquals(24, version.build);
-    Assert.assertEquals("3.5.24", version.toString());
-    Assert.assertEquals("3.5.24".hashCode(), version.hashCode());
+    Assert.assertEquals(versionString, version.toString());
+    Assert.assertEquals(versionString.hashCode(), version.hashCode());
 
     BuildInfo.Version sameVersion = new BuildInfo.Version(3, 5, 24);
     BuildInfo.Version differentVersion = new BuildInfo.Version(4, 6, 78);
 
     Assert.assertEquals(version, sameVersion);
     Assert.assertNotEquals(version, differentVersion);
-    Assert.assertNotEquals(version, "3.5.24");
+    Assert.assertNotEquals(version, versionString);
   }
 
   @Test
   public void testCreateVersionFromValidString() {
-    BuildInfo.Version version = BuildInfo.Version.fromString("3.5.24");
+    BuildInfo.Version version = BuildInfo.Version.fromString("14.2.100");
 
     Assert.assertNotNull(version);
-    Assert.assertEquals(3, version.major);
-    Assert.assertEquals(5, version.minor);
-    Assert.assertEquals(24, version.build);
+    Assert.assertEquals(14, version.major);
+    Assert.assertEquals(2, version.minor);
+    Assert.assertEquals(100, version.build);
   }
 
   @Test
@@ -47,7 +48,7 @@ public class BuildInfoTest {
 
   @Test
   public void testCreateVersionFromInvalidString() {
-    BuildInfo.Version version = BuildInfo.Version.fromString("mickey");
+    BuildInfo.Version version = BuildInfo.Version.fromString("1.2.");
 
     Assert.assertNull(version);
   }
@@ -61,21 +62,15 @@ public class BuildInfoTest {
   }
 
   @Test
-  public void testCreateVersionFromStringWithPartMissing() {
-    BuildInfo.Version version = BuildInfo.Version.fromString("1.2.");
-
-    Assert.assertNull(version);
-  }
-
-  @Test
   public void testCreateVersionFromValidProperties() {
+    String versionString = "7.2.1342";
     Properties props = new Properties();
-    props.setProperty("version", "7.2.1342");
+    props.setProperty("version", versionString);
 
     BuildInfo.Version version = BuildInfo.Version.fromProperties(props);
 
     Assert.assertNotNull(version);
-    Assert.assertEquals("7.2.1342", version.toString());
+    Assert.assertEquals(versionString, version.toString());
   }
 
   @Test

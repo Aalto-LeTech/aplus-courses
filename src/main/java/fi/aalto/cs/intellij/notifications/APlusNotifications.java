@@ -10,6 +10,8 @@ import org.jetbrains.annotations.NotNull;
  */
 public class APlusNotifications {
 
+  private APlusNotifications() { }
+
   public static class BetaVersionWarning extends Notification {
     private final BuildInfo.Version version;
 

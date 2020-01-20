@@ -35,9 +35,7 @@ public class VersionCheckerActivityTest {
   public void testRunActivityWithPostReleaseVersion() {
     StartupActivity activity = new VersionCheckerActivity(
         new BuildInfo.Version(1, 24, 228),
-        (notification, project) -> {
-          Assert.fail();
-        });
+        (notification, project) -> Assert.fail());
 
     activity.runActivity(Mockito.mock(Project.class));
   }

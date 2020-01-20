@@ -20,12 +20,12 @@ public class BuildInfo {
   public final Version version;
 
   BuildInfo(@Nullable Properties props) {
-    Version version = Version.fromProperties(props);
-    if (version == null) {
-      version = new Version(0,0,0);
-      LOGGER.error("Version information is invalid.  '{}' is used instead.", version);
+    Version ver = Version.fromProperties(props);
+    if (ver == null) {
+      ver = new Version(0,0,0);
+      LOGGER.error("Version information is invalid.  '{}' is used instead.", ver);
     }
-    this.version = version;
+    this.version = ver;
   }
 
   BuildInfo(@NotNull Resources resources) {
