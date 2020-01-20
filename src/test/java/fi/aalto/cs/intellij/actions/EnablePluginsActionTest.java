@@ -20,9 +20,6 @@ public class EnablePluginsActionTest {
 
   @Test
   public void test_actionPerformed() throws IOException, JDOMException {
-    AnActionEvent anActionEvent = Mockito.mock(AnActionEvent.class);
-    Notification notification = Mockito.mock(Notification.class);
-
     IdeaPluginDescriptorImpl ideaPluginDescriptor = getIdeaPluginDescriptor();
     ideaPluginDescriptor.setEnabled(false);
     List<IdeaPluginDescriptor> descriptors = new ArrayList<>();
@@ -32,6 +29,8 @@ public class EnablePluginsActionTest {
 
     EnablePluginsAction enableMissingPluginsAction = new EnablePluginsAction("",
         descriptors);
+    AnActionEvent anActionEvent = Mockito.mock(AnActionEvent.class);
+    Notification notification = Mockito.mock(Notification.class);
     enableMissingPluginsAction.actionPerformed(anActionEvent, notification);
 
     assertTrue(ideaPluginDescriptor.isEnabled());
