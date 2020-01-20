@@ -43,7 +43,7 @@ public class RequiredPluginsCheckerActivity implements StartupActivity {
   private List<IdeaPluginDescriptor> availableIdeaPluginDescriptors;
 
   /**
-   * Actual startup work gets done here.
+   * An actual startup work gets done here.
    */
   @Override
   public void runActivity(@NotNull Project project) {
@@ -83,7 +83,7 @@ public class RequiredPluginsCheckerActivity implements StartupActivity {
   }
 
   /**
-   * If there any plugins missing, creates a list of the plugin descriptors for them based on the
+   * If there are any plugins missing, creates a list of the plugin descriptors for them based on the
    * publicly available ones.
    */
   private void createListOfMissingOrDisabledPluginDescriptors() {
@@ -138,7 +138,7 @@ public class RequiredPluginsCheckerActivity implements StartupActivity {
   }
 
   /**
-   * Notify with with an option to enable all the required plugins.
+   * Notify with an option to enable all the required plugins.
    */
   private void notifyAndSuggestPluginsEnabling(List<IdeaPluginDescriptor> descriptors) {
     Notification notification = new Notification(
@@ -156,7 +156,7 @@ public class RequiredPluginsCheckerActivity implements StartupActivity {
   }
 
   /**
-   * Notify with with an option to install all the required plugins and suggest restart.
+   * Notify with an option to install all the required plugins and suggest restart.
    */
   private void notifyAndSuggestPluginsInstallation(List<IdeaPluginDescriptor> descriptors) {
     Notification notification = new Notification(
@@ -177,7 +177,7 @@ public class RequiredPluginsCheckerActivity implements StartupActivity {
         descriptors.forEach(descriptor -> {
           try {
             PluginDownloader pluginDownloader = PluginDownloader.createDownloader(descriptor);
-//            pluginDownloader.prepareToInstall(new BgProgressIndicator());
+            pluginDownloader.prepareToInstall(new BgProgressIndicator());
             pluginDownloader.install();
           } catch (IOException ex) {
             logger.error("Could not install plugin" + descriptor.getName() + ".", ex);
