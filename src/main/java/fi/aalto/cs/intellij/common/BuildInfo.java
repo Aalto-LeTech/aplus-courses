@@ -8,6 +8,10 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Holds information that was gathered during the build of the program (such as version).
+ * Normally, this class should be accessed via {@code BuildInfo.SingletonUtility.INSTANCE}.
+ */
 public class BuildInfo {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(BuildInfo.class);
@@ -49,7 +53,7 @@ public class BuildInfo {
       if (props == null) {
         return null;
       }
-      String version = props.getProperty("version");
+      String version = props.getProperty(PROPERTY_KEY);
       return Version.fromString(version);
     }
 
@@ -86,8 +90,19 @@ public class BuildInfo {
     }
 
     @Override
+    @NotNull
     public String toString() {
-      return String.format("%d.%d.%d", major, minor, build);
+      return major + "." + minor + "." + build;
+    }
+
+    @Override
+    public int hashCode() {
+      return toString().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      return obj instanceof BuildInfo.Version && toString().equals(obj.toString());
     }
   }
 

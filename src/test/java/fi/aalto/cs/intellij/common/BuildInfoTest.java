@@ -8,17 +8,25 @@ import org.junit.Test;
 public class BuildInfoTest {
 
   @Test
-  public void test_Version() {
+  public void testCreateVersion() {
     BuildInfo.Version version = new BuildInfo.Version(3,5,24);
 
     Assert.assertEquals(3, version.major);
     Assert.assertEquals(5, version.minor);
     Assert.assertEquals(24, version.build);
     Assert.assertEquals("3.5.24", version.toString());
+    Assert.assertEquals("3.5.24".hashCode(), version.hashCode());
+
+    BuildInfo.Version sameVersion = new BuildInfo.Version(3, 5, 24);
+    BuildInfo.Version differentVersion = new BuildInfo.Version(4, 6, 78);
+
+    Assert.assertEquals(version, sameVersion);
+    Assert.assertNotEquals(version, differentVersion);
+    Assert.assertNotEquals(version, "3.5.24");
   }
 
   @Test
-  public void test_Version_fromString_valid() {
+  public void testCreateVersionFromValidString() {
     BuildInfo.Version version = BuildInfo.Version.fromString("3.5.24");
 
     Assert.assertNotNull(version);
@@ -28,7 +36,7 @@ public class BuildInfoTest {
   }
 
   @Test
-  public void test_Version_fromString_validZeros() {
+  public void testCreateVersionFromAllZeroString() {
     BuildInfo.Version version = BuildInfo.Version.fromString("0.0.0");
 
     Assert.assertNotNull(version);
@@ -38,7 +46,7 @@ public class BuildInfoTest {
   }
 
   @Test
-  public void test_Version_fromString_invalid() {
+  public void testCreateVersionFromInvalidString() {
     BuildInfo.Version version = BuildInfo.Version.fromString("mickey");
 
     Assert.assertNull(version);
@@ -46,21 +54,21 @@ public class BuildInfoTest {
 
   @Test
   @SuppressWarnings("ConstantConditions")
-  public void test_Version_fromString_invalidNull() {
+  public void testCreateVersionFromNullString() {
     BuildInfo.Version version = BuildInfo.Version.fromString(null);
 
     Assert.assertNull(version);
   }
 
   @Test
-  public void test_Version_fromString_invalidPartMissing() {
+  public void testCreateVersionFromStringWithPartMissing() {
     BuildInfo.Version version = BuildInfo.Version.fromString("1.2.");
 
     Assert.assertNull(version);
   }
 
   @Test
-  public void test_Version_fromProperties_valid() {
+  public void testCreateVersionFromValidProperties() {
     Properties props = new Properties();
     props.setProperty("version", "7.2.1342");
 
@@ -71,7 +79,7 @@ public class BuildInfoTest {
   }
 
   @Test
-  public void test_Version_fromProperties_invalidMissing() {
+  public void testCreateVersionFromPropertiesWithoutKey() {
     Properties props = new Properties();
     props.setProperty("not-version", "1.0.0");
 
@@ -82,14 +90,14 @@ public class BuildInfoTest {
 
   @Test
   @SuppressWarnings("ConstantConditions")
-  public void test_Version_fromProperties_invalidNull() {
+  public void testCreateVersionFromNullProperties() {
     BuildInfo.Version version = BuildInfo.Version.fromProperties(null);
 
     Assert.assertNull(version);
   }
 
   @Test
-  public void test_BuildInfo_fromResources() {
+  public void testCreateBuildInfoFromResources() {
     Resources res = new Resources(name -> {
       Assert.assertEquals("build-info.properties", name);
       return new ByteArrayInputStream("version=1.5.18\n".getBytes());
@@ -101,7 +109,7 @@ public class BuildInfoTest {
   }
 
   @Test
-  public void test_BuildInfo_fromResourcesButMissing() {
+  public void testCreateBuildInfoFromResourcesMissing() {
     Resources res = new Resources(name -> null);
 
     BuildInfo buildInfo = new BuildInfo(res);

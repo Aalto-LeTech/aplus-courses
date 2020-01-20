@@ -1,4 +1,4 @@
-package fi.aalto.cs.intellij.common;
+package fi.aalto.cs.intellij.notifications;
 
 import com.intellij.notification.Notification;
 import com.intellij.openapi.project.Project;

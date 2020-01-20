@@ -1,6 +1,5 @@
 package fi.aalto.cs.intellij.common;
 
-import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -9,6 +8,10 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * A class that provides methods to read the resource files of the plugin application.
+ * Normally, this class should be accessed via {@code Resources.SingletonUtility.INSTANCE}.
+ */
 class Resources {
 
   public static final Logger LOGGER = LoggerFactory.getLogger(Resources.class);
@@ -23,6 +26,11 @@ class Resources {
     this.resourceProvider = resourceProvider;
   }
 
+  /**
+   * Returns properties from a properties resource file.
+   * @param resourceName Name of a resource.
+   * @return Contents of the resource in a {@link Properties} object.
+   */
   @Nullable
   public Properties getProperties(@NotNull String resourceName) {
     try (InputStream stream = resourceProvider.getResourceAsStream(resourceName)) {

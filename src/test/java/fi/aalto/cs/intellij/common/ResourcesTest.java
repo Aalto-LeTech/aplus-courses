@@ -4,14 +4,13 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-
 import org.junit.Assert;
 import org.junit.Test;
 
 public class ResourcesTest {
 
   @Test
-  public void test_getProperties() {
+  public void testGetProperties() {
     final MockInputStream stream = new MockInputStream("a=x\nb=y\n");
 
     Resources res = new Resources(name -> {
@@ -25,12 +24,13 @@ public class ResourcesTest {
 
     Assert.assertTrue(stream.hasCloseMethodBeenCalled);
 
+    Assert.assertNotNull(props);
     Assert.assertEquals("x", props.getProperty("a"));
     Assert.assertEquals("y", props.getProperty("b"));
   }
 
   @Test
-  public void test_getProperties_withError() {
+  public void testGetPropertiesWithError() {
     Resources res = new Resources(name -> new InputStream() {
       @Override
       public int read() throws IOException {
@@ -43,7 +43,7 @@ public class ResourcesTest {
   }
 
   @Test
-  public void test_getProperties_withNullStream() {
+  public void testGetPropertiesWithNullStream() {
     Resources res = new Resources(name -> null);
 
     Properties props = res.getProperties("null-stream-resource");
