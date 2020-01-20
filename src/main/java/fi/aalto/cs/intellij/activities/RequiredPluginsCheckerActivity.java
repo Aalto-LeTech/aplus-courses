@@ -16,14 +16,15 @@ import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.startup.StartupActivity;
 import com.intellij.openapi.updateSettings.impl.PluginDownloader;
+import fi.aalto.cs.intellij.actions.EnablePluginsAction;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.StringJoiner;
+
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +37,7 @@ public class RequiredPluginsCheckerActivity implements StartupActivity {
   private static final Logger logger = LoggerFactory
       .getLogger(RequiredPluginsCheckerActivity.class);
 
-  private final Map<String, String> requiredPluginNames = new HashMap<>();
+  public final Map<String, String> requiredPluginNames = new HashMap<>();
   private Map<String, String> missingOrDisabledPluginNames = new HashMap<>();
   private List<IdeaPluginDescriptor> missingOrDisabledIdeaPluginDescriptors;
   private List<IdeaPluginDescriptor> availableIdeaPluginDescriptors;
@@ -147,18 +148,8 @@ public class RequiredPluginsCheckerActivity implements StartupActivity {
             + getPluginsNamesString(descriptors) + ".",
         NotificationType.WARNING);
 
-    notification.addAction(new NotificationAction(
-        "Enable the required plugin(s) (" + getPluginsNamesString(descriptors) + ").") {
-
-      /**
-       * Activate all the required plugins.
-       */
-      @Override
-      public void actionPerformed(@NotNull AnActionEvent e, @NotNull Notification notification) {
-        descriptors.forEach(descriptor -> Objects
-            .requireNonNull(PluginManager.getPlugin(descriptor.getPluginId())).setEnabled(true));
-        notification.expire();
-      }
+    notification.addAction(new EnablePluginsAction(
+        "Enable the required plugin(s) (" + getPluginsNamesString(descriptors) + ").", descriptors) {
     });
 
     Notifications.Bus.notify(notification);
@@ -186,7 +177,7 @@ public class RequiredPluginsCheckerActivity implements StartupActivity {
         descriptors.forEach(descriptor -> {
           try {
             PluginDownloader pluginDownloader = PluginDownloader.createDownloader(descriptor);
-            pluginDownloader.prepareToInstall(new BgProgressIndicator());
+//            pluginDownloader.prepareToInstall(new BgProgressIndicator());
             pluginDownloader.install();
           } catch (IOException ex) {
             logger.error("Could not install plugin" + descriptor.getName() + ".", ex);
