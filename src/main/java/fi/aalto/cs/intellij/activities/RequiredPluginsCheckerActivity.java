@@ -42,7 +42,7 @@ public class RequiredPluginsCheckerActivity implements StartupActivity {
   private List<IdeaPluginDescriptor> availableIdeaPluginDescriptors;
 
   /**
-   * Actual startup work gets done here.
+   * An actual startup work gets done here.
    */
   @Override
   public void runActivity(@NotNull Project project) {
@@ -53,7 +53,7 @@ public class RequiredPluginsCheckerActivity implements StartupActivity {
   }
 
   /**
-   * Fills the list of required plugin names.
+   * Fills in the list of required plugin names.
    *
    * <p>Later, reading from the from configuration file might occur here.
    */
@@ -82,7 +82,7 @@ public class RequiredPluginsCheckerActivity implements StartupActivity {
   }
 
   /**
-   * If there any plugins missing, creates a list of the plugin descriptors for them based on the
+   * If there are any plugins missing, creates a list of the plugin descriptors for them based on the
    * publicly available ones.
    */
   private void createListOfMissingOrDisabledPluginDescriptors() {
@@ -137,7 +137,7 @@ public class RequiredPluginsCheckerActivity implements StartupActivity {
   }
 
   /**
-   * Notify with with an option to enable all the required plugins.
+   * Notify with an option to enable all the required plugins.
    */
   private void notifyAndSuggestPluginsEnabling(List<IdeaPluginDescriptor> descriptors) {
     Notification notification = new Notification(
@@ -165,7 +165,7 @@ public class RequiredPluginsCheckerActivity implements StartupActivity {
   }
 
   /**
-   * Notify with with an option to install all the required plugins and suggest restart.
+   * Notify with an option to install all the required plugins and suggest restart.
    */
   private void notifyAndSuggestPluginsInstallation(List<IdeaPluginDescriptor> descriptors) {
     Notification notification = new Notification(
