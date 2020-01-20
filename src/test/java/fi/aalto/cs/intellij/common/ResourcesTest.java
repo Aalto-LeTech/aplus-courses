@@ -11,7 +11,7 @@ import org.junit.Test;
 public class ResourcesTest {
 
   @Test
-  public void testGetProperties() {
+  public void test_getProperties() {
     final MockInputStream stream = new MockInputStream("a=x\nb=y\n");
 
     Resources res = new Resources(name -> {
@@ -25,13 +25,12 @@ public class ResourcesTest {
 
     Assert.assertTrue(stream.hasCloseMethodBeenCalled);
 
-    Assert.assertNotNull(props);
     Assert.assertEquals("x", props.getProperty("a"));
     Assert.assertEquals("y", props.getProperty("b"));
   }
 
   @Test
-  public void testGetPropertiesWithError() {
+  public void test_getProperties_withError() {
     Resources res = new Resources(name -> new InputStream() {
       @Override
       public int read() throws IOException {
@@ -44,14 +43,13 @@ public class ResourcesTest {
   }
 
   @Test
-  public void testGetPropertiesWithNullStream() {
+  public void test_getProperties_withNullStream() {
     Resources res = new Resources(name -> null);
 
     Properties props = res.getProperties("null-stream-resource");
     Assert.assertNull(props);
   }
 
-  // TODO: Make use of some mocking framework
   private static class MockInputStream extends ByteArrayInputStream {
     boolean hasCloseMethodBeenCalled = false;
 

@@ -1,18 +1,17 @@
 package fi.aalto.cs.intellij.common;
 
+import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-
-import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 class Resources {
 
   public static final Logger LOGGER = LoggerFactory.getLogger(Resources.class);
-  public static final Resources INSTANCE = new Resources(Resources.class.getClassLoader());
 
   private ResourceProvider resourceProvider;
 
@@ -24,30 +23,41 @@ class Resources {
     this.resourceProvider = resourceProvider;
   }
 
+  @Nullable
   public Properties getProperties(@NotNull String resourceName) {
-    Properties props = new Properties();
     try (InputStream stream = resourceProvider.getResourceAsStream(resourceName)) {
-      if (stream == null) {
-        throw new IOException("Could not open a stream.");
-      }
-      props.load(stream);
-    } catch (IOException ex) {
-      LOGGER.error("Could not read a resource.", ex);
+      return getProperties(stream);
+    } catch (Exception ex) {
+      LOGGER.error("Could not read a resource: " + resourceName, ex);
       return null;
     }
-    return props;
   }
 
-  public IdeaPluginDescriptor getPluginDescriptor() {
-    return null;
+  @Nullable
+  private Properties getProperties(@Nullable InputStream stream) throws IOException {
+    if (stream == null) {
+      LOGGER.error("Stream is null.");
+      return null;
+    }
+    Properties props = new Properties();
+    props.load(stream);
+    return props;
   }
 
   interface ResourceProvider {
     /**
      * Opens an input stream to the resource indicated by {@code name}.
      * @param name Name of the resource.
-     * @return An open {@link InputStream} which corresponds to {@code name}.
+     * @return An open {@link InputStream} which corresponds to {@code name} or {@code null} if
+     *         the stream could not be opened.
      */
+    @Nullable
     InputStream getResourceAsStream(@NotNull String name);
+  }
+
+  public static class SingletonUtility {
+    public static final Resources INSTANCE = new Resources(Resources.class.getClassLoader());
+
+    private SingletonUtility() { }
   }
 }
