@@ -19,7 +19,7 @@
     <extensions defaultExtensionNs="com.intellij">
         <toolWindow id="Exercises"
                     anchor="right"
-                    factoryClass="fi.aalto.cs.intellij.actions.ToolWindowAction" />
+                    factoryClass="fi.aalto.cs.intellij.actions.ExercisesToolWindow" />
     </extensions>
 
     <actions>
