@@ -48,3 +48,7 @@ task gatherBuildInfo(dependsOn: processResources) {
 classes.dependsOn gatherBuildInfo
 
 check.dependsOn jacocoTestReport
+
+jacocoTestReport {
+    reports.xml.enabled true
+}

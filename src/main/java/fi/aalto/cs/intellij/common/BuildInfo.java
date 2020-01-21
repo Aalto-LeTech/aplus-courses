@@ -1,8 +1,7 @@
 package fi.aalto.cs.intellij.common;
 
+import fi.aalto.cs.intellij.util.StringSplitter;
 import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -34,7 +33,6 @@ public class BuildInfo {
 
   public static class Version {
     private static final String PROPERTY_KEY = "version";
-    private static final Pattern PATTERN = Pattern.compile("(\\d{1,9})\\.(\\d{1,9})\\.(\\d{1,9})");
 
     public final int major;
     public final int minor;
@@ -67,14 +65,25 @@ public class BuildInfo {
       if (version == null) {
         return null;
       }
-      Matcher m = PATTERN.matcher(version);
-      if (m.matches()) {
-        return new Version(
-            Integer.parseInt(m.group(1)),
-            Integer.parseInt(m.group(2)),
-            Integer.parseInt(m.group(3)));
+
+      int major;
+      int minor;
+      int build;
+
+      StringSplitter splitter = new StringSplitter(version, '.');
+      try {
+        major = splitter.readNextInt();
+        minor = splitter.readNextInt();
+        build = splitter.readNextInt();
+      } catch (Exception ex) {
+        return null;
       }
-      return null;
+
+      if (!splitter.finished()) {
+        return null;
+      }
+
+      return new Version(major, minor, build);
     }
 
     /**
