@@ -1,13 +1,17 @@
 package fi.aalto.cs.intellij.activities;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.startup.StartupActivity;
 import fi.aalto.cs.intellij.common.Version;
 import fi.aalto.cs.intellij.notifications.BetaVersionWarning;
-import org.hamcrest.CoreMatchers;
-import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 public class VersionCheckerActivityTest {
 
@@ -19,23 +23,23 @@ public class VersionCheckerActivityTest {
         new Version(0, 22, 315),
         (notification, project) -> {
           numberOfCalls[0]++;
-          Assert.assertNull(project);
-          Assert.assertThat(notification, CoreMatchers.instanceOf(BetaVersionWarning.class));
-          Assert.assertEquals("0.22.315",
+          assertNull(project);
+          assertThat(notification, instanceOf(BetaVersionWarning.class));
+          assertEquals("0.22.315",
               ((BetaVersionWarning) notification).getVersion().toString());
         });
 
-    activity.runActivity(Mockito.mock(Project.class));
+    activity.runActivity(mock(Project.class));
 
-    Assert.assertEquals(1, numberOfCalls[0]);
+    assertEquals(1, numberOfCalls[0]);
   }
 
   @Test
   public void testRunActivityWithPostReleaseVersion() {
     StartupActivity activity = new VersionCheckerActivity(
         new Version(1, 24, 228),
-        (notification, project) -> Assert.fail());
+        (notification, project) -> fail());
 
-    activity.runActivity(Mockito.mock(Project.class));
+    activity.runActivity(mock(Project.class));
   }
 }

@@ -1,63 +1,61 @@
 package fi.aalto.cs.intellij.common;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import java.util.Properties;
-import org.junit.Assert;
 import org.junit.Test;
 
 public class VersionTest {
 
   @Test
   public void testCreateVersion() {
-    String versionString = "3.5.24";
     Version version = new Version(3,5,24);
 
-    Assert.assertEquals(3, version.major);
-    Assert.assertEquals(5, version.minor);
-    Assert.assertEquals(24, version.build);
-    Assert.assertEquals(versionString, version.toString());
-    Assert.assertEquals(versionString.hashCode(), version.hashCode());
+    assertEquals(3, version.major);
+    assertEquals(5, version.minor);
+    assertEquals(24, version.build);
+
+    String versionString = "3.5.24";
+    assertEquals(versionString, version.toString());
+    assertEquals(versionString.hashCode(), version.hashCode());
 
     Version sameVersion = new Version(3, 5, 24);
     Version differentVersion = new Version(4, 6, 78);
 
-    Assert.assertEquals(version, sameVersion);
-    Assert.assertNotEquals(version, differentVersion);
-    Assert.assertNotEquals(version, versionString);
+    assertEquals(version, sameVersion);
+    assertNotEquals(version, differentVersion);
+    assertNotEquals(version, versionString);
   }
 
   @Test
   public void testCreateVersionFromValidString() {
     Version version = Version.fromString("14.2.100");
 
-    Assert.assertNotNull(version);
-    Assert.assertEquals(14, version.major);
-    Assert.assertEquals(2, version.minor);
-    Assert.assertEquals(100, version.build);
+    assertNotNull(version);
+    assertEquals(14, version.major);
+    assertEquals(2, version.minor);
+    assertEquals(100, version.build);
   }
 
   @Test
   public void testCreateVersionFromAllZeroString() {
     Version version = Version.fromString("0.0.0");
 
-    Assert.assertNotNull(version);
-    Assert.assertEquals(0, version.major);
-    Assert.assertEquals(0, version.minor);
-    Assert.assertEquals(0, version.build);
+    assertNotNull(version);
+    assertEquals(0, version.major);
+    assertEquals(0, version.minor);
+    assertEquals(0, version.build);
   }
 
   @Test
   public void testCreateVersionFromInvalidString() {
-    Version version = Version.fromString("1.2.");
-
-    Assert.assertNull(version);
-  }
-
-  @Test
-  @SuppressWarnings("ConstantConditions")
-  public void testCreateVersionFromNullString() {
-    Version version = Version.fromString(null);
-
-    Assert.assertNull(version);
+    assertNull(Version.fromString("1.2"));
+    assertNull(Version.fromString("1.2."));
+    assertNull(Version.fromString("1.2.A"));
+    assertNull(Version.fromString(""));
   }
 
   @Test
@@ -68,25 +66,17 @@ public class VersionTest {
 
     Version version = Version.fromProperties(props);
 
-    Assert.assertNotNull(version);
-    Assert.assertEquals(versionString, version.toString());
+    assertNotNull(version);
+    assertEquals(versionString, version.toString());
   }
 
   @Test
-  public void testCreateVersionFromPropertiesWithoutKey() {
+  public void testCreateVersionFromInvalidProperties() {
     Properties props = new Properties();
     props.setProperty("not-version", "1.0.0");
 
-    Version version = Version.fromProperties(props);
+    assertNull(Version.fromProperties(props));
+    assertNull(Version.fromProperties(null));
 
-    Assert.assertNull(version);
-  }
-
-  @Test
-  @SuppressWarnings("ConstantConditions")
-  public void testCreateVersionFromNullProperties() {
-    Version version = Version.fromProperties(null);
-
-    Assert.assertNull(version);
   }
 }

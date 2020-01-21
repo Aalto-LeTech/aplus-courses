@@ -1,10 +1,15 @@
 package fi.aalto.cs.intellij.common;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-import org.junit.Assert;
 import org.junit.Test;
 
 public class ResourcesTest {
@@ -14,19 +19,19 @@ public class ResourcesTest {
     final MockInputStream stream = new MockInputStream("a=x\nb=y\n");
 
     Resources res = new Resources(name -> {
-      Assert.assertEquals("correct-properties", name);
+      assertEquals("correct-properties", name);
       return stream;
     });
 
-    Assert.assertFalse(stream.hasCloseMethodBeenCalled);
+    assertFalse(stream.hasCloseMethodBeenCalled);
 
     Properties props = res.getProperties("correct-properties");
 
-    Assert.assertTrue(stream.hasCloseMethodBeenCalled);
+    assertTrue(stream.hasCloseMethodBeenCalled);
 
-    Assert.assertNotNull(props);
-    Assert.assertEquals("x", props.getProperty("a"));
-    Assert.assertEquals("y", props.getProperty("b"));
+    assertNotNull(props);
+    assertEquals("x", props.getProperty("a"));
+    assertEquals("y", props.getProperty("b"));
   }
 
   @Test
@@ -39,7 +44,7 @@ public class ResourcesTest {
     });
 
     Properties props = res.getProperties("inaccessible-resource");
-    Assert.assertNull(props);
+    assertNull(props);
   }
 
   @Test
@@ -47,7 +52,7 @@ public class ResourcesTest {
     Resources res = new Resources(name -> null);
 
     Properties props = res.getProperties("null-stream-resource");
-    Assert.assertNull(props);
+    assertNull(props);
   }
 
   private static class MockInputStream extends ByteArrayInputStream {
