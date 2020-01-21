@@ -1,0 +1,13 @@
+{
+  "name": "O1",
+  "modules": {
+    "O1Library": {
+      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/O1Library/O1Library.zip",
+      "last_modified": "timestamp"
+    },
+    "GoodStuff": {
+      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/GoodStuff/GoodStuff.zip",
+      "last_modified": "timestamp"
+    }
+  }
+}
