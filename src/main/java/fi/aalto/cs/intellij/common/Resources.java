@@ -52,6 +52,7 @@ class Resources {
     return props;
   }
 
+  @FunctionalInterface
   interface ResourceProvider {
     /**
      * Opens an input stream to the resource indicated by {@code name}.

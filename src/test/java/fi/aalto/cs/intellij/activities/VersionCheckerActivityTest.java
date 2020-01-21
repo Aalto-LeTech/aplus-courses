@@ -2,8 +2,8 @@ package fi.aalto.cs.intellij.activities;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.startup.StartupActivity;
-import fi.aalto.cs.intellij.common.BuildInfo;
-import fi.aalto.cs.intellij.notifications.APlusNotifications;
+import fi.aalto.cs.intellij.common.Version;
+import fi.aalto.cs.intellij.notifications.BetaVersionWarning;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -16,14 +16,13 @@ public class VersionCheckerActivityTest {
     int[] numberOfCalls = { 0 };
 
     StartupActivity activity = new VersionCheckerActivity(
-        new BuildInfo.Version(0, 22, 315),
+        new Version(0, 22, 315),
         (notification, project) -> {
           numberOfCalls[0]++;
           Assert.assertNull(project);
-          Assert.assertThat(notification,
-              CoreMatchers.instanceOf(APlusNotifications.BetaVersionWarning.class));
+          Assert.assertThat(notification, CoreMatchers.instanceOf(BetaVersionWarning.class));
           Assert.assertEquals("0.22.315",
-              ((APlusNotifications.BetaVersionWarning) notification).getVersion().toString());
+              ((BetaVersionWarning) notification).getVersion().toString());
         });
 
     activity.runActivity(Mockito.mock(Project.class));
@@ -34,7 +33,7 @@ public class VersionCheckerActivityTest {
   @Test
   public void testRunActivityWithPostReleaseVersion() {
     StartupActivity activity = new VersionCheckerActivity(
-        new BuildInfo.Version(1, 24, 228),
+        new Version(1, 24, 228),
         (notification, project) -> Assert.fail());
 
     activity.runActivity(Mockito.mock(Project.class));

@@ -5,21 +5,21 @@ import com.intellij.notification.Notifications;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.startup.StartupActivity;
 import fi.aalto.cs.intellij.common.BuildInfo;
-import fi.aalto.cs.intellij.notifications.APlusNotifications;
+import fi.aalto.cs.intellij.common.Version;
+import fi.aalto.cs.intellij.notifications.BetaVersionWarning;
 import fi.aalto.cs.intellij.notifications.Notifier;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * An activity that checks, on startup, if the version of the plugin is a pre-release, and, if that
- * is the case, shows a {@link APlusNotifications.BetaVersionWarning}.
+ * is the case, shows a {@link BetaVersionWarning}.
  */
 public class VersionCheckerActivity implements StartupActivity {
 
   private final Notifier notifier;
-  private final BuildInfo.Version version;
+  private final Version version;
 
-  VersionCheckerActivity(@NotNull BuildInfo.Version version,
-                         @NotNull Notifier notifier) {
+  VersionCheckerActivity(@NotNull Version version, @NotNull Notifier notifier) {
     this.version = version;
     this.notifier = notifier;
   }
@@ -34,7 +34,7 @@ public class VersionCheckerActivity implements StartupActivity {
       return;
     }
 
-    Notification notification = new APlusNotifications.BetaVersionWarning(version);
+    Notification notification = new BetaVersionWarning(version);
 
     notifier.notify(notification, null);
   }
