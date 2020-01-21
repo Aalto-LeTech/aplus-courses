@@ -38,7 +38,7 @@ public class StringSplitter {
    * @throws IllegalStateException Thrown if the end of the string is already reached.
    */
   @NotNull
-  public String readNext() throws IllegalStateException {
+  public String readNext() {
     if (finished()) {
       throw new IllegalStateException();
     }
@@ -57,7 +57,7 @@ public class StringSplitter {
    * @throws IllegalStateException Thrown if the end of the string is already reached.
    * @throws NumberFormatException Thrown if the part cannot be parsed to an integer.
    */
-  public int readNextInt() throws IllegalStateException, NumberFormatException {
+  public int readNextInt() {
     return Integer.parseInt(readNext());
   }
 
