@@ -24,10 +24,18 @@ public class VersionCheckerActivity implements StartupActivity {
     this.notifier = notifier;
   }
 
+  /**
+   * Instantiates a new {@link VersionCheckerActivity}.
+   * This constructor is called by the IntelliJ framework.
+   */
   public VersionCheckerActivity() {
-    this(BuildInfo.SingletonUtility.INSTANCE.version, Notifications.Bus::notify);
+    this(BuildInfo.INSTANCE.version, Notifications.Bus::notify);
   }
 
+  /**
+   * This method is called by the IntelliJ framework.
+   * @param project The current project.
+   */
   @Override
   public void runActivity(@NotNull Project project) {
     if (version.major >= 1) {

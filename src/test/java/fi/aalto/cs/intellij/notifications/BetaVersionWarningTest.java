@@ -7,7 +7,7 @@ import static org.junit.Assert.assertThat;
 import fi.aalto.cs.intellij.common.Version;
 import org.junit.Test;
 
-public class NotificationsUtilityTest {
+public class BetaVersionWarningTest {
 
   @Test
   public void testBetaVersionWarning() {

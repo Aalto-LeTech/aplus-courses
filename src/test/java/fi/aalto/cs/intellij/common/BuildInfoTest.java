@@ -1,30 +1,52 @@
 package fi.aalto.cs.intellij.common;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
-import java.io.ByteArrayInputStream;
+import java.util.Properties;
 import org.junit.Test;
 
 public class BuildInfoTest {
 
   @Test
-  public void testCreateBuildInfoFromResources() {
-    Resources res = new Resources(name -> {
-      assertEquals("build-info.properties", name);
-      return new ByteArrayInputStream("version=1.5.18\n".getBytes());
-    });
+  public void testCreateBuildInfoFromProperties() throws BuildInfo.BuildInfoException {
+    String versionString = "1.5.18";
 
-    BuildInfo buildInfo = new BuildInfo(res);
+    Properties props = new Properties();
+    props.setProperty(BuildInfo.PropertyKeys.VERSION, versionString);
 
-    assertEquals("1.5.18", buildInfo.version.toString());
+    BuildInfo buildInfo = new BuildInfo(props);
+
+    assertEquals(versionString, buildInfo.version.toString());
   }
 
   @Test
-  public void testCreateBuildInfoFromResourcesMissing() {
-    Resources res = new Resources(name -> null);
+  public void testCreateBuildInfoFromIncompleteProperties() {
+    Properties props = new Properties();
+    props.setProperty("not-version-info", "1.2.3");
 
-    BuildInfo buildInfo = new BuildInfo(res);
+    try {
+      new BuildInfo(props);
+    } catch (BuildInfo.BuildInfoException ex) {
+      assertThat(ex.getCause(), instanceOf(PropertiesReader.PropertyException.class));
+      return;
+    }
+    fail();
+  }
 
-    assertEquals("0.0.0", buildInfo.version.toString());
+  @Test
+  public void testCreateBuildInfoFromInvalidProperties() {
+    Properties props = new Properties();
+    props.setProperty(BuildInfo.PropertyKeys.VERSION, "invalid.version.string");
+
+    try {
+      new BuildInfo(props);
+    } catch (BuildInfo.BuildInfoException ex) {
+      assertThat(ex.getCause(), instanceOf(RuntimeException.class));
+      return;
+    }
+    fail();
   }
 }

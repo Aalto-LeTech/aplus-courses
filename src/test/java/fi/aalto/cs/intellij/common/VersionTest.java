@@ -1,11 +1,11 @@
 package fi.aalto.cs.intellij.common;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
-import java.util.Properties;
 import org.junit.Test;
 
 public class VersionTest {
@@ -18,16 +18,39 @@ public class VersionTest {
     assertEquals(5, version.minor);
     assertEquals(24, version.build);
 
-    String versionString = "3.5.24";
-    assertEquals(versionString, version.toString());
-    assertEquals(versionString.hashCode(), version.hashCode());
+    assertEquals("3.5.24", version.toString());
 
     Version sameVersion = new Version(3, 5, 24);
     Version differentVersion = new Version(4, 6, 78);
 
     assertEquals(version, sameVersion);
+    assertEquals(version.hashCode(), sameVersion.hashCode());
     assertNotEquals(version, differentVersion);
-    assertNotEquals(version, versionString);
+  }
+
+  @Test
+  public void testCreateVersionWithNegativeNumbers() {
+    int failureCount = 0;
+
+    try {
+      new Version(7, 0, -5);
+    } catch (IllegalArgumentException ex) {
+      failureCount++;
+    }
+
+    try {
+      new Version(3, -13, 1);
+    } catch (IllegalArgumentException ex) {
+      failureCount++;
+    }
+
+    try {
+      new Version(-1, 4, 5);
+    } catch (IllegalArgumentException ex) {
+      failureCount++;
+    }
+
+    assertEquals(3, failureCount);
   }
 
   @Test
@@ -52,31 +75,43 @@ public class VersionTest {
 
   @Test
   public void testCreateVersionFromInvalidString() {
-    assertNull(Version.fromString("1.2"));
-    assertNull(Version.fromString("1.2."));
-    assertNull(Version.fromString("1.2.A"));
-    assertNull(Version.fromString(""));
+    String versionString = "invalid_version";
+
+    try {
+      Version.fromString(versionString);
+    } catch (IllegalArgumentException ex) {
+      assertThat(ex.getMessage(), containsString(versionString));
+    }
   }
 
   @Test
-  public void testCreateVersionFromValidProperties() {
-    String versionString = "7.2.1342";
-    Properties props = new Properties();
-    props.setProperty("version", versionString);
+  public void testCreateVersionFromDifferentInvalidStrings() {
+    int failureCount = 0;
 
-    Version version = Version.fromProperties(props);
+    try {
+      Version.fromString("1.2");
+    } catch (IllegalArgumentException ex) {
+      failureCount++;
+    }
 
-    assertNotNull(version);
-    assertEquals(versionString, version.toString());
-  }
+    try {
+      Version.fromString("1.2.");
+    } catch (IllegalArgumentException ex) {
+      failureCount++;
+    }
 
-  @Test
-  public void testCreateVersionFromInvalidProperties() {
-    Properties props = new Properties();
-    props.setProperty("not-version", "1.0.0");
+    try {
+      Version.fromString("1.2.A");
+    } catch (IllegalArgumentException ex) {
+      failureCount++;
+    }
 
-    assertNull(Version.fromProperties(props));
-    assertNull(Version.fromProperties(null));
+    try {
+      Version.fromString("");
+    } catch (IllegalArgumentException ex) {
+      failureCount++;
+    }
 
+    assertEquals(4, failureCount);
   }
 }

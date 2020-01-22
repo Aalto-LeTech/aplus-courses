@@ -1,62 +1,40 @@
 package fi.aalto.cs.intellij.common;
 
-import java.util.Properties;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class Version {
-  private static final String PROPERTY_KEY = "version";
+  public static final Version EMPTY = new Version(0, 0, 0);
 
   public final int major;
   public final int minor;
   public final int build;
 
   /**
-   * Returns a {@link Version} object based on the value of {@value PROPERTY_KEY} in the given
-   * properties.
-   * @param props A {@link Properties} object, or {@code null} in which case {@code null} is also
-   *              returned.
-   * @return A {@link Version} object, or {@code null} if the version information could not be
-   *         read.
-   */
-  @Nullable
-  public static Version fromProperties(@Nullable Properties props) {
-    if (props == null) {
-      return null;
-    }
-    String version = props.getProperty(PROPERTY_KEY);
-    return Version.fromString(version);
-  }
-
-  /**
    * Returns a {@link Version} object based on the value of the given string.
    * @param version A version string of format "{major}.{minor}.{build}".
-   * @return A {@link Version} object, or {@code null} if {@code version} is invalid or null.
+   * @return A {@link Version} object.
+   * @throws IllegalArgumentException If the given string is invalid.
    */
-  @Nullable
-  public static Version fromString(@Nullable String version) {
-    if (version == null) {
-      return null;
-    }
-
+  @NotNull
+  public static Version fromString(@NotNull String version) {
     int major;
     int minor;
     int build;
 
     String[] parts = version.split("\\.");
     if (parts.length != 3) {
-      return null;
+      throw new IllegalArgumentException("'" + version + "' does not match the pattern.");
     }
 
     try {
       major = Integer.parseInt(parts[0]);
       minor = Integer.parseInt(parts[1]);
       build = Integer.parseInt(parts[2]);
-    } catch (Exception ex) {
-      return null;
-    }
+      return new Version(major, minor, build);
 
-    return new Version(major, minor, build);
+    } catch (NumberFormatException ex) {
+      throw new IllegalArgumentException(ex);
+    }
   }
 
   /**
@@ -64,8 +42,12 @@ public class Version {
    * @param major Major version number.
    * @param minor Minor version number.
    * @param build Number of the build.
+   * @throws IllegalArgumentException If any of the arguments are negative.
    */
   public Version(int major, int minor, int build) {
+    if (major < 0 || minor < 0 || build < 0) {
+      throw new IllegalArgumentException("All the arguments must be non-negative.");
+    }
     this.major = major;
     this.minor = minor;
     this.build = build;
