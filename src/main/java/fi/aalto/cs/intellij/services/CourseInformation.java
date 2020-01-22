@@ -96,4 +96,11 @@ public class CourseInformation {
     return moduleNames;
   }
 
+  /**
+   * Returns the URL where the code module is located.
+   */
+  public URL getModuleUrl(String moduleName) {
+    return moduleUrls.get(moduleName);
+  }
+
 }
