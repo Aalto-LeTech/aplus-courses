@@ -1,6 +1,5 @@
 package fi.aalto.cs.intellij.activities;
 
-import com.intellij.notification.Notification;
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.startup.StartupActivity;

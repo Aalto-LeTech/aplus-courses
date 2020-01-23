@@ -12,15 +12,11 @@ public class ResourceExceptionTest {
 
   @Test
   public void testCreateResourceException() {
-    Resources resources = new Resources(name -> {
-      throw new UnsupportedOperationException();
-    });
     String resourceName = "some-resource";
     String message = "This is a nice message.";
     Throwable cause = new Throwable();
 
-    ResourceException exception = new ResourceException(resources, resourceName, message, cause);
-    assertSame(resources, exception.getResources());
+    ResourceException exception = new ResourceException(resourceName, message, cause);
     assertEquals(resourceName, exception.getResourceName());
     assertEquals(cause, exception.getCause());
     assertThat(exception.getMessage(), containsString("Resource"));

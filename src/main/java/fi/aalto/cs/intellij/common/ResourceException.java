@@ -9,8 +9,6 @@ import org.jetbrains.annotations.Nullable;
 public class ResourceException extends Exception {
 
   @NotNull
-  private final Resources resources;
-  @NotNull
   private final String resourceName;
 
   /**
@@ -20,18 +18,11 @@ public class ResourceException extends Exception {
    * @param cause An {@link Exception} (or other {@link Throwable}) which caused this exception
    *              or, null if there is no such a cause.
    */
-  public ResourceException(@NotNull Resources resources,
-                           @NotNull String resourceName,
+  public ResourceException(@NotNull String resourceName,
                            @NotNull String message,
                            @Nullable Throwable cause) {
     super("Resource '" + resourceName + "': " + message, cause);
-    this.resources = resources;
     this.resourceName = resourceName;
-  }
-
-  @NotNull
-  public Resources getResources() {
-    return resources;
   }
 
   @NotNull

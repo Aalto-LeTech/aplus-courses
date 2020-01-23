@@ -55,7 +55,6 @@ public class ResourcesTest {
       res.getProperties(resourceName);
     } catch (ResourceException ex) {
       assertEquals(resourceName, ex.getResourceName());
-      assertSame(res, ex.getResources());
       assertSame(exception, ex.getCause());
       return;
     }
@@ -71,7 +70,6 @@ public class ResourcesTest {
       res.getProperties(resourceName);
     } catch (ResourceException ex) {
       assertEquals(resourceName, ex.getResourceName());
-      assertSame(res, ex.getResources());
       return;
     }
     fail();

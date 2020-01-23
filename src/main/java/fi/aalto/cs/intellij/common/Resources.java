@@ -50,8 +50,7 @@ public class Resources {
     try (InputStream stream = getStream(resourceName)) {
       props.load(stream);
     } catch (IOException ex) {
-      throw new ResourceException(this, resourceName,
-          "Resource could not be parsed to properties.", ex);
+      throw new ResourceException(resourceName, "Resource could not be parsed to properties.", ex);
     }
     return props;
   }
@@ -60,7 +59,7 @@ public class Resources {
   private InputStream getStream(@NotNull String resourceName) throws ResourceException {
     InputStream stream = resourceProvider.getResourceAsStream(resourceName);
     if (stream == null) {
-      throw new ResourceException(this, resourceName, "The resource could not be found.", null);
+      throw new ResourceException(resourceName, "The resource could not be found.", null);
     }
     return stream;
   }
