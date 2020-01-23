@@ -1,8 +1,10 @@
 package fi.aalto.cs.intellij.common;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class Version {
+
   public static final Version EMPTY = new Version(0, 0, 0);
 
   public final int major;
@@ -11,19 +13,19 @@ public class Version {
 
   /**
    * Returns a {@link Version} object based on the value of the given string.
-   * @param version A version string of format "{major}.{minor}.{build}".
+   * @param versionString A version string of format "{major}.{minor}.{build}".
    * @return A {@link Version} object.
-   * @throws IllegalArgumentException If the given string is invalid.
+   * @throws InvalidVersionStringException If the given string is invalid.
    */
   @NotNull
-  public static Version fromString(@NotNull String version) {
+  public static Version fromString(@NotNull String versionString) {
     int major;
     int minor;
     int build;
 
-    String[] parts = version.split("\\.");
+    String[] parts = versionString.split("\\.");
     if (parts.length != 3) {
-      throw new IllegalArgumentException("'" + version + "' does not match the pattern.");
+      throw new InvalidVersionStringException(versionString, null);
     }
 
     try {
@@ -31,9 +33,24 @@ public class Version {
       minor = Integer.parseInt(parts[1]);
       build = Integer.parseInt(parts[2]);
       return new Version(major, minor, build);
-
     } catch (NumberFormatException ex) {
-      throw new IllegalArgumentException(ex);
+      throw new InvalidVersionStringException(versionString, ex);
+    }
+  }
+
+  public static class InvalidVersionStringException extends RuntimeException {
+
+    @NotNull
+    private final String versionString;
+
+    public InvalidVersionStringException(@NotNull String versionString, @Nullable Throwable cause) {
+      super("Version string '" + versionString + "' does not match the expected pattern.", cause);
+      this.versionString = versionString;
+    }
+
+    @NotNull
+    public String getVersionString() {
+      return versionString;
     }
   }
 
@@ -46,7 +63,7 @@ public class Version {
    */
   public Version(int major, int minor, int build) {
     if (major < 0 || minor < 0 || build < 0) {
-      throw new IllegalArgumentException("All the arguments must be non-negative.");
+      throw new IllegalArgumentException("All the parts of version number must be non-negative.");
     }
     this.major = major;
     this.minor = minor;

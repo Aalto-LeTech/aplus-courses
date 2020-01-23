@@ -2,7 +2,6 @@ package fi.aalto.cs.intellij.common;
 
 import java.util.Properties;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,18 +15,19 @@ public class BuildInfo {
   private static final String RESOURCE_NAME = "build-info.properties";
   public static final BuildInfo INSTANCE;
 
+  @NotNull
   public final Version version;
 
   static {
-    BuildInfo buildInfo;
+    BuildInfo buildInfo = null;
     try {
-      Resources resources = new Resources(BuildInfo.class.getClassLoader());
-      buildInfo = new  BuildInfo(resources.getProperties(RESOURCE_NAME));
-    } catch (Exception ex) {
-      LOGGER.error("Could not read build info.");
-      buildInfo = new BuildInfo();
+      buildInfo = new BuildInfo(Resources.DEFAULT.getProperties(RESOURCE_NAME));
+    } catch (ResourceException ex) {
+      LOGGER.error("Could not read build info from resources.", ex);
+    } catch (PropertyException ex) {
+      LOGGER.error("Build info is badly formatted.", ex);
     }
-    INSTANCE = buildInfo;
+    INSTANCE = buildInfo == null ? new BuildInfo() : buildInfo;
   }
 
   /**
@@ -41,25 +41,16 @@ public class BuildInfo {
   /**
    * Construct a {@link BuildInfo} from given properties.
    * @param properties Properties containing the build information.
-   * @throws BuildInfoException If the properties do not contain necessary information.
+   * @throws PropertyException If the properties are not valid.
    */
-  BuildInfo(@NotNull Properties properties) throws BuildInfoException {
-    PropertiesReader reader = new PropertiesReader(properties);
-    try {
-      version = Version.fromString(reader.getProperty(PropertyKeys.VERSION));
-    } catch (Exception ex) {
-      throw new BuildInfoException("Properties do not contain necessary information.", ex);
-    }
-  }
-
-  public static class BuildInfoException extends Exception {
-
-    public BuildInfoException(@NotNull String s, @Nullable Throwable throwable) {
-      super(s, throwable);
-    }
+  BuildInfo(@NotNull Properties properties) throws PropertyException {
+    PropertyReader reader = new PropertyReader(properties);
+    version = reader.getPropertyAsObject(PropertyKeys.VERSION, Version::fromString);
   }
 
   static class PropertyKeys {
     public static final String VERSION = "version";
+
+    private PropertyKeys() { }
   }
 }

@@ -1,10 +1,7 @@
 package fi.aalto.cs.intellij.common;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
@@ -17,7 +14,7 @@ import org.junit.Test;
 public class ResourcesTest {
 
   @Test
-  public void testGetProperties() throws Resources.ResourceException {
+  public void testGetProperties() throws ResourceException {
     AtomicInteger closeCallCounter = new AtomicInteger(0);
 
     Resources res = new Resources(name -> {
@@ -44,20 +41,22 @@ public class ResourcesTest {
 
   @Test
   public void testGetPropertiesWithError() {
+    IOException exception = new IOException();
+
     Resources res = new Resources(name -> new InputStream() {
       @Override
       public int read() throws IOException {
-        throw new IOException();
+        throw exception;
       }
     });
     String resourceName = "inaccessible-resource";
 
     try {
       res.getProperties(resourceName);
-    } catch (Resources.ResourceException ex) {
-      assertThat(ex.getCause(), instanceOf(IOException.class));
-      assertThat(ex.getMessage(), containsString(resourceName));
+    } catch (ResourceException ex) {
+      assertEquals(resourceName, ex.getResourceName());
       assertSame(res, ex.getResources());
+      assertSame(exception, ex.getCause());
       return;
     }
     fail();
@@ -70,8 +69,8 @@ public class ResourcesTest {
 
     try {
       res.getProperties(resourceName);
-    } catch (Resources.ResourceException ex) {
-      assertThat(ex.getMessage(), containsString(resourceName));
+    } catch (ResourceException ex) {
+      assertEquals(resourceName, ex.getResourceName());
       assertSame(res, ex.getResources());
       return;
     }

@@ -6,6 +6,7 @@ import fi.aalto.cs.intellij.common.Version;
 import org.jetbrains.annotations.NotNull;
 
 public class BetaVersionWarning extends Notification {
+  @NotNull
   private final Version version;
 
   /**

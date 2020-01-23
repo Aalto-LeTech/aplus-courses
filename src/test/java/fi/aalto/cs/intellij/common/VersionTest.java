@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
@@ -29,28 +30,33 @@ public class VersionTest {
   }
 
   @Test
-  public void testCreateVersionWithNegativeNumbers() {
-    int failureCount = 0;
-
-    try {
-      new Version(7, 0, -5);
-    } catch (IllegalArgumentException ex) {
-      failureCount++;
-    }
-
-    try {
-      new Version(3, -13, 1);
-    } catch (IllegalArgumentException ex) {
-      failureCount++;
-    }
-
+  public void testCreateVersionWithNegativeMajorVersion() {
     try {
       new Version(-1, 4, 5);
     } catch (IllegalArgumentException ex) {
-      failureCount++;
+      return;
     }
+    fail();
+  }
 
-    assertEquals(3, failureCount);
+  @Test
+  public void testCreateVersionWithNegativeMinorVersion() {
+    try {
+      new Version(3, -13, 1);
+    } catch (IllegalArgumentException ex) {
+      return;
+    }
+    fail();
+  }
+
+  @Test
+  public void testCreateVersionWithNegativeBuildNumber() {
+    try {
+      new Version(7, 0, -5);
+    } catch (IllegalArgumentException ex) {
+      return;
+    }
+    fail();
   }
 
   @Test
@@ -79,39 +85,50 @@ public class VersionTest {
 
     try {
       Version.fromString(versionString);
-    } catch (IllegalArgumentException ex) {
-      assertThat(ex.getMessage(), containsString(versionString));
+    } catch (Version.InvalidVersionStringException ex) {
+      assertEquals(versionString, ex.getVersionString());
+      return;
     }
+    fail();
   }
 
   @Test
-  public void testCreateVersionFromDifferentInvalidStrings() {
-    int failureCount = 0;
-
+  public void testCreateVersionFromStringMissingPart() {
     try {
       Version.fromString("1.2");
-    } catch (IllegalArgumentException ex) {
-      failureCount++;
+    } catch (Version.InvalidVersionStringException ex) {
+      return;
     }
+    fail();
+  }
 
+  @Test
+  public void testCreateVersionFromStringMissingNumber() {
     try {
-      Version.fromString("1.2.");
-    } catch (IllegalArgumentException ex) {
-      failureCount++;
+      Version.fromString("9.5.");
+    } catch (Version.InvalidVersionStringException ex) {
+      return;
     }
+    fail();
+  }
 
+  @Test
+  public void testCreateVersionFromStringWithNonNumericPart() {
     try {
-      Version.fromString("1.2.A");
-    } catch (IllegalArgumentException ex) {
-      failureCount++;
+      Version.fromString("6.XVII.188");
+    } catch (Version.InvalidVersionStringException ex) {
+      return;
     }
+    fail();
+  }
 
+  @Test
+  public void testCreateVersionFromEmptyString() {
     try {
       Version.fromString("");
-    } catch (IllegalArgumentException ex) {
-      failureCount++;
+    } catch (Version.InvalidVersionStringException ex) {
+      return;
     }
-
-    assertEquals(4, failureCount);
+    fail();
   }
 }

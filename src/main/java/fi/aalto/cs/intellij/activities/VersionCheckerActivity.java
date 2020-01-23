@@ -16,7 +16,9 @@ import org.jetbrains.annotations.NotNull;
  */
 public class VersionCheckerActivity implements StartupActivity {
 
+  @NotNull
   private final Notifier notifier;
+  @NotNull
   private final Version version;
 
   VersionCheckerActivity(@NotNull Version version, @NotNull Notifier notifier) {
@@ -38,12 +40,8 @@ public class VersionCheckerActivity implements StartupActivity {
    */
   @Override
   public void runActivity(@NotNull Project project) {
-    if (version.major >= 1) {
-      return;
+    if (version.major < 1) {
+      notifier.notify(new BetaVersionWarning(version), project);
     }
-
-    Notification notification = new BetaVersionWarning(version);
-
-    notifier.notify(notification, null);
   }
 }

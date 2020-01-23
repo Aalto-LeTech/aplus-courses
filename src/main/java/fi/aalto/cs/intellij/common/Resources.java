@@ -1,5 +1,6 @@
 package fi.aalto.cs.intellij.common;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 import org.jetbrains.annotations.NotNull;
@@ -8,9 +9,15 @@ import org.jetbrains.annotations.Nullable;
 /**
  * A class that provides methods to read the resources.
  */
-class Resources {
+public class Resources {
 
-  private ResourceProvider resourceProvider;
+  /**
+   * Instance of {@link Resources} that uses the class loader of its own class.
+   */
+  public static final Resources DEFAULT = new Resources(Resources.class.getClassLoader());
+
+  @NotNull
+  private final ResourceProvider resourceProvider;
 
   /**
    * Constructs a new {@link Resources} object that provides an access to resources from a given
@@ -31,45 +38,31 @@ class Resources {
   }
 
   /**
-   * Returns properties from a properties resource file.
-   * @param resourceName Name of a resource.
-   * @return Contents of the resource in a {@link Properties} object.
-   * @throws ResourceException If properties could not be read.
+   * Returns properties from a resource.
+   * @param resourceName Name of the resource.
+   * @return Contents of the resource as a {@link Properties} object.
+   * @throws ResourceException If properties could not be read either because the resource was not
+   *                           found or it was badly formatted.
    */
   @NotNull
   public Properties getProperties(@NotNull String resourceName) throws ResourceException {
-    try (InputStream stream = resourceProvider.getResourceAsStream(resourceName)) {
-      if (stream == null) {
-        throw new Exception("Resource could not be found.");
-      }
-      Properties props = new Properties();
+    Properties props = new Properties();
+    try (InputStream stream = getStream(resourceName)) {
       props.load(stream);
-      return props;
-    } catch (Exception ex) {
-      throw new ResourceException("Could not read a resource: " + resourceName, ex);
+    } catch (IOException ex) {
+      throw new ResourceException(this, resourceName,
+          "Resource could not be parsed to properties.", ex);
     }
+    return props;
   }
 
-  public class ResourceException extends Exception {
-
-    /**
-     * Constructs a {@link ResourceException} object representing an error that occurred while
-     * trying to read resources.
-     * @param message A description of what went wrong.
-     * @param cause An {@link Exception} (or other {@link Throwable}) which caused this exception
-     *              or, null if there is no such a cause.
-     */
-    public ResourceException(@NotNull String message, @Nullable Throwable cause) {
-      super(message, cause);
+  @NotNull
+  private InputStream getStream(@NotNull String resourceName) throws ResourceException {
+    InputStream stream = resourceProvider.getResourceAsStream(resourceName);
+    if (stream == null) {
+      throw new ResourceException(this, resourceName, "The resource could not be found.", null);
     }
-
-    /**
-     * Returns the parent object of this exception.
-     * @return A {@link Resources} object within which this exception occurred.
-     */
-    public Resources getResources() {
-      return Resources.this;
-    }
+    return stream;
   }
 
   /**
@@ -77,7 +70,8 @@ class Resources {
    * The most useful realization of this interface is {@code ClassLoader::getResourceAsStream}.
    */
   @FunctionalInterface
-  interface ResourceProvider {
+  public interface ResourceProvider {
+
     /**
      * Opens an input stream to the resource indicated by {@code name}.
      * @param name Name of the resource.
