@@ -1,213 +1,98 @@
 package fi.aalto.cs.intellij.activities;
 
-import static java.util.stream.Collectors.toMap;
+import static fi.aalto.cs.intellij.utils.RequiredPluginsCheckerUtil.createListOfMissingOrDisabledPluginDescriptors;
+import static fi.aalto.cs.intellij.utils.RequiredPluginsCheckerUtil.filterDisabledPluginDescriptors;
+import static fi.aalto.cs.intellij.utils.RequiredPluginsCheckerUtil.filterMissingOrDisabledPluginNames;
+import static fi.aalto.cs.intellij.utils.RequiredPluginsCheckerUtil.filterMissingPluginDescriptors;
+import static fi.aalto.cs.intellij.utils.RequiredPluginsCheckerUtil.getRequiredPluginNamesMap;
 
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
-import com.intellij.ide.plugins.PluginManager;
-import com.intellij.ide.plugins.PluginManagerConfigurable;
-import com.intellij.ide.plugins.RepositoryHelper;
-import com.intellij.ide.plugins.newui.BgProgressIndicator;
 import com.intellij.notification.Notification;
-import com.intellij.notification.NotificationAction;
-import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.startup.StartupActivity;
-import com.intellij.openapi.updateSettings.impl.PluginDownloader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
+import fi.aalto.cs.intellij.actions.EnablePluginsNotificationAction;
+import fi.aalto.cs.intellij.actions.InstallPluginsNotificationAction;
+import fi.aalto.cs.intellij.notifications.EnablePluginsNotification;
+import fi.aalto.cs.intellij.notifications.InstallPluginsNotification;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.StringJoiner;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * A startup activity for the plugin.
+ * A startup activity that checks and hints on missing or disabled required for the course plugins.
  */
 public class RequiredPluginsCheckerActivity implements StartupActivity {
 
-  private static final Logger logger = LoggerFactory
-      .getLogger(RequiredPluginsCheckerActivity.class);
-
-  private final Map<String, String> requiredPluginNames = new HashMap<>();
-  private Map<String, String> missingOrDisabledPluginNames = new HashMap<>();
-  private List<IdeaPluginDescriptor> missingOrDisabledIdeaPluginDescriptors;
-  private List<IdeaPluginDescriptor> availableIdeaPluginDescriptors;
-
   /**
-   * An actual startup work gets done here.
+   * An actual startup work to filter out invalid (missing or disabled) plugins and notify gets done
+   * here.
    */
   @Override
   public void runActivity(@NotNull Project project) {
-    populateRequiredPluginNamesMap();
-    filterMissingOrDisabledPluginNames();
-    createListOfMissingOrDisabledPluginDescriptors();
-    checkPluginsStatusAndNotify();
-  }
-
-  /**
-   * Fills in the list of required plugin names.
-   *
-   * <p>Later, reading from the from configuration file might occur here.
-   */
-  private void populateRequiredPluginNamesMap() {
-    requiredPluginNames.put("Scala", "org.intellij.scala");
-  }
-
-  /**
-   * Filters out the plugin names that are missing from the current installation.
-   */
-  private void filterMissingOrDisabledPluginNames() {
-    missingOrDisabledPluginNames = requiredPluginNames
-        .entrySet()
-        .stream()
-        .filter(entry -> isPluginMissingOrDisabled(entry.getValue()))
-        .collect(toMap(Entry::getKey, Entry::getValue));
-  }
-
-  /**
-   * Predicate for checking the plugin status.
-   */
-  private static boolean isPluginMissingOrDisabled(String id) {
-    PluginId pluginId = PluginId.getId(id);
-    return !PluginManager.isPluginInstalled(pluginId) || PluginManager
-        .isDisabled(pluginId.getIdString());
-  }
-
-  /**
-   * If there are any plugins missing, creates a list of the plugin descriptors for them based on the
-   * publicly available ones.
-   */
-  private void createListOfMissingOrDisabledPluginDescriptors() {
-    if (missingOrDisabledPluginNames.size() > 0) {
-      getAvailablePluginsFromMainRepo();
-      missingOrDisabledIdeaPluginDescriptors = new ArrayList<>();
-      missingOrDisabledPluginNames.forEach((name, id) -> {
-        availableIdeaPluginDescriptors
-            .stream()
-            .filter(
-                availableDescriptor -> availableDescriptor.getPluginId().equals(PluginId.getId(id))
-            )
-            .findFirst()
-            .ifPresent(missingOrDisabledIdeaPluginDescriptors::add);
-      });
+    List<IdeaPluginDescriptor> missingOrDisabledIdeaPluginDescriptors =
+        getActualListOfMissingOrDisabledIdeaPluginDescriptors();
+    if (!missingOrDisabledIdeaPluginDescriptors.isEmpty()) {
+      checkPluginsStatusAndNotify(missingOrDisabledIdeaPluginDescriptors);
     }
   }
 
   /**
-   * Get the list of all the available in the main JetBrains plugin repository.
+   * A method to fetch data for required plugins and check their validity.
    *
-   * <p>Note! The descriptors for the not installed plugins do not exist in IJ until now.
+   * @return a {@link List} of {@link IdeaPluginDescriptor} that are missing or disabled.
    */
-  private void getAvailablePluginsFromMainRepo() {
-    try {
-      availableIdeaPluginDescriptors = RepositoryHelper.loadPlugins(new BgProgressIndicator());
-    } catch (IOException ex) {
-      logger.error("Could not retrieve plugins data from main repository.", ex);
-    }
+  @NotNull
+  private List<IdeaPluginDescriptor> getActualListOfMissingOrDisabledIdeaPluginDescriptors() {
+    Map<String, String> requiredPluginNames = getRequiredPluginNamesMap();
+    Map<String, String> missingOrDisabledPluginNames = filterMissingOrDisabledPluginNames(
+        requiredPluginNames);
+    return createListOfMissingOrDisabledPluginDescriptors(missingOrDisabledPluginNames);
   }
 
   /**
    * Sorts required plugins into missing and disabled and shows respective notifications.
+   *
+   * @param missingOrDisabledIdeaPluginDescriptors a {@link List} of {@link IdeaPluginDescriptor}
+   *                                               that are invalid.
    */
-  private void checkPluginsStatusAndNotify() {
-    List<IdeaPluginDescriptor> missingPluginDescriptors = new ArrayList<>();
-    List<IdeaPluginDescriptor> disabledPluginDescriptors = new ArrayList<>();
+  private void checkPluginsStatusAndNotify(
+      List<IdeaPluginDescriptor> missingOrDisabledIdeaPluginDescriptors) {
+    List<IdeaPluginDescriptor> missingPluginDescriptors = filterMissingPluginDescriptors(
+        missingOrDisabledIdeaPluginDescriptors);
+    List<IdeaPluginDescriptor> disabledPluginDescriptors = filterDisabledPluginDescriptors(
+        missingOrDisabledIdeaPluginDescriptors);
 
-    for (IdeaPluginDescriptor descriptor : missingOrDisabledIdeaPluginDescriptors) {
-      if (!PluginManager.isPluginInstalled(descriptor.getPluginId())) {
-        missingPluginDescriptors.add(descriptor);
-      } else if (PluginManager.isDisabled(descriptor.getPluginId().getIdString())) {
-        disabledPluginDescriptors.add(descriptor);
-      }
-    }
-
-    if (missingPluginDescriptors.size() > 0) {
+    if (!missingPluginDescriptors.isEmpty()) {
       notifyAndSuggestPluginsInstallation(missingPluginDescriptors);
-    } else if (disabledPluginDescriptors.size() > 0) {
+    } else if (!disabledPluginDescriptors.isEmpty()) {
       notifyAndSuggestPluginsEnabling(disabledPluginDescriptors);
     }
   }
 
   /**
    * Notify with an option to enable all the required plugins.
+   *
+   * @param disabledPluginDescriptors a {@link List} of disabled {@link IdeaPluginDescriptor} to
+   *                                  enable.
    */
-  private void notifyAndSuggestPluginsEnabling(List<IdeaPluginDescriptor> descriptors) {
-    Notification notification = new Notification(
-        "A+",
-        "A+",
-        "Some plugins must be and enabled for the A+ plugin to work properly "
-            + getPluginsNamesString(descriptors) + ".",
-        NotificationType.WARNING);
-
-    notification.addAction(new NotificationAction(
-        "Enable the required plugin(s) (" + getPluginsNamesString(descriptors) + ").") {
-
-      /**
-       * Activate all the required plugins.
-       */
-      @Override
-      public void actionPerformed(@NotNull AnActionEvent e, @NotNull Notification notification) {
-        descriptors.forEach(descriptor -> Objects
-            .requireNonNull(PluginManager.getPlugin(descriptor.getPluginId())).setEnabled(true));
-        notification.expire();
-      }
-    });
-
+  private void notifyAndSuggestPluginsEnabling(
+      List<IdeaPluginDescriptor> disabledPluginDescriptors) {
+    Notification notification = new EnablePluginsNotification(disabledPluginDescriptors);
+    notification.addAction(new EnablePluginsNotificationAction(disabledPluginDescriptors));
     Notifications.Bus.notify(notification);
   }
 
   /**
    * Notify with an option to install all the required plugins and suggest restart.
+   *
+   * @param missingPluginDescriptors a {@link List} of missing {@link IdeaPluginDescriptor} to
+   *                                 download and install.
    */
-  private void notifyAndSuggestPluginsInstallation(List<IdeaPluginDescriptor> descriptors) {
-    Notification notification = new Notification(
-        "A+",
-        "A+",
-        "Additional plugin(s) must be installed and enabled for the A+ plugin to work "
-            + "properly (" + getPluginsNamesString(descriptors) + ").",
-        NotificationType.WARNING);
-
-    notification.addAction(new NotificationAction(
-        "Install missing (" + getPluginsNamesString(descriptors) + ") plugin(s).") {
-
-      /**
-       * Install the missing plugins and propose a restart.
-       */
-      @Override
-      public void actionPerformed(@NotNull AnActionEvent e, @NotNull Notification notification) {
-        descriptors.forEach(descriptor -> {
-          try {
-            PluginDownloader pluginDownloader = PluginDownloader.createDownloader(descriptor);
-            pluginDownloader.prepareToInstall(new BgProgressIndicator());
-            pluginDownloader.install();
-          } catch (IOException ex) {
-            logger.error("Could not install plugin" + descriptor.getName() + ".", ex);
-          }
-        });
-        notification.expire();
-        PluginManagerConfigurable
-            .shutdownOrRestartApp("Plugins required for A+ course are now installed");
-      }
-    });
-
+  private void notifyAndSuggestPluginsInstallation(
+      List<IdeaPluginDescriptor> missingPluginDescriptors) {
+    Notification notification = new InstallPluginsNotification(missingPluginDescriptors);
+    notification.addAction(new InstallPluginsNotificationAction(missingPluginDescriptors));
     Notifications.Bus.notify(notification);
-  }
-
-  /**
-   * Join plugin descriptor names with a comma.
-   */
-  @NotNull
-  private static StringJoiner getPluginsNamesString(List<IdeaPluginDescriptor> descriptors) {
-    StringJoiner stringJoiner = new StringJoiner(", ");
-    descriptors.forEach(descriptor -> stringJoiner.add(descriptor.getName()));
-    return stringJoiner;
   }
 }
