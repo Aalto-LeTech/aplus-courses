@@ -9,21 +9,22 @@ import fi.aalto.cs.intellij.PluginsTestHelper;
 import java.util.List;
 import org.junit.Test;
 
-public class EnablePluginsTest extends PluginsTestHelper {
+public class InstallPluginsNotificationTest extends PluginsTestHelper {
 
   @Test
   public void testEnablePluginsNotification() {
 
     List<IdeaPluginDescriptor> ideaPluginDescriptorListWithTwoValidValues =
         getDummyPluginsListOfTwo();
-    Notification notification = new EnablePluginsNotification(
+    Notification notification = new InstallPluginsNotification(
         ideaPluginDescriptorListWithTwoValidValues);
 
-    assertEquals("A+", notification.getGroupId());
+    assertEquals("the notification group is right", "A+", notification.getGroupId());
     assertEquals("A+", notification.getTitle());
     assertEquals(
-        "Some plugins must be and enabled for the A+ plugin to work properly "
-            + "(A+ Courses, Scala).", notification.getContent());
+        "The additional plugin(s) must be installed and enabled for the A+ plugin to work "
+            + "properly (A+ Courses, Scala).",
+        notification.getContent());
     assertEquals(notification.getType(), NotificationType.WARNING);
   }
 }

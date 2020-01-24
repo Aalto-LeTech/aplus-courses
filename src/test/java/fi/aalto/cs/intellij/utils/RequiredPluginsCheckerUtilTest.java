@@ -1,52 +1,27 @@
 package fi.aalto.cs.intellij.utils;
 
+import static fi.aalto.cs.intellij.PluginsTestHelper.getDummyPluginsListOfTwo;
+
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
-import fi.aalto.cs.intellij.PluginsTestHelper;
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.Assert;
 import org.junit.Test;
 
-public class RequiredPluginsCheckerUtilTest extends PluginsTestHelper {
-
-  @Test
-  public void testIsPluginMissingOrDisabledWithActivePluginIdReturnsFalse(){
-    String scalaId = "com.intellij";
-
-    boolean result = RequiredPluginsCheckerUtil.isPluginMissingOrDisabled(scalaId);
-
-    assertFalse(result);
-  }
-
-  @Test
-  public void testIsPluginMissingOrDisabledWithDisabledPluginIdReturnsTrue(){
-    String scalaId = "org.jetbrains.android";
-
-    boolean result = RequiredPluginsCheckerUtil.isPluginMissingOrDisabled(scalaId);
-
-    assertTrue(result);
-  }
-
-  @Test
-  public void testIsPluginMissingOrDisabledWithMissingPluginIdReturnsTrue(){
-    String scalaId = "org.intellij.scala";
-
-    boolean result = RequiredPluginsCheckerUtil.isPluginMissingOrDisabled(scalaId);
-
-    assertTrue(result);
-  }
+public class RequiredPluginsCheckerUtilTest {
 
   @Test
   public void testGetPluginsNamesStringWithEmptyInputReturnsEmpty() {
     List<IdeaPluginDescriptor> validList = new ArrayList<>();
     String result = RequiredPluginsCheckerUtil.getPluginsNamesString(validList);
 
-    assertEquals("", result);
+    Assert.assertEquals("", result);
   }
 
-//  @Test(expected = IllegalArgumentException.class)
-//  public void testGetPluginsNamesStringWithNullInput() {
-//    RequiredPluginsCheckerUtil.getPluginsNamesString(null);
-//  }
+  @Test(expected = IllegalArgumentException.class)
+  public void testGetPluginsNamesStringWithNullInput() {
+    RequiredPluginsCheckerUtil.getPluginsNamesString(null);
+  }
 
   @Test
   public void testGetPluginsNamesStringWithFaultyPluginInputReturnsRightResult() {
@@ -55,7 +30,7 @@ public class RequiredPluginsCheckerUtilTest extends PluginsTestHelper {
     validList.addAll(getDummyPluginsListOfTwo());
     String result = RequiredPluginsCheckerUtil.getPluginsNamesString(validList);
 
-    assertEquals("A+ Courses, Scala", result);
+    Assert.assertEquals("A+ Courses, Scala", result);
   }
 
   @Test
@@ -63,6 +38,6 @@ public class RequiredPluginsCheckerUtilTest extends PluginsTestHelper {
     List<IdeaPluginDescriptor> validList = getDummyPluginsListOfTwo();
     String result = RequiredPluginsCheckerUtil.getPluginsNamesString(validList);
 
-    assertEquals("A+ Courses, Scala", result);
+    Assert.assertEquals("A+ Courses, Scala", result);
   }
 }
