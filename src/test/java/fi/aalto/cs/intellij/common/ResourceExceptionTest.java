@@ -17,10 +17,13 @@ public class ResourceExceptionTest {
     Throwable cause = new Throwable();
 
     ResourceException exception = new ResourceException(resourceName, message, cause);
-    assertEquals(resourceName, exception.getResourceName());
-    assertEquals(cause, exception.getCause());
-    assertThat(exception.getMessage(), containsString("Resource"));
-    assertThat(exception.getMessage(), containsString(resourceName));
-    assertThat(exception.getMessage(), containsString(message));
+    assertEquals("Resource name should be the same as that given to the constructor.",
+        resourceName, exception.getResourceName());
+    assertSame("Cause of the exception should be the one given to the constructor.",
+        cause, exception.getCause());
+    assertThat("Message should contain the resource name.",
+        exception.getMessage(), containsString(resourceName));
+    assertThat("Message should contain the message given to the constructor",
+        exception.getMessage(), containsString(message));
   }
 }

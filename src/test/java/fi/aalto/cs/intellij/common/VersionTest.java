@@ -1,10 +1,7 @@
 package fi.aalto.cs.intellij.common;
 
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
@@ -15,68 +12,69 @@ public class VersionTest {
   public void testCreateVersion() {
     Version version = new Version(3,5,24);
 
-    assertEquals(3, version.major);
-    assertEquals(5, version.minor);
-    assertEquals(24, version.build);
+    assertEquals("The major version should be the same as that given to the constructor",
+        3, version.major);
+    assertEquals("The minor version should be the same as that given to the constructor",
+        5, version.minor);
+    assertEquals("The build number should be the same as that given to the constructor",
+        24, version.build);
 
-    assertEquals("3.5.24", version.toString());
+    assertEquals("toString() should return the version in format '{major}.{minor}.{build}'.",
+        "3.5.24", version.toString());
 
     Version sameVersion = new Version(3, 5, 24);
-    Version differentVersion = new Version(4, 6, 78);
+    assertEquals("Version should equal to another version created with the same arguments.",
+        version, sameVersion);
+    assertEquals("Two equal versions should give the same hash code.",
+        version.hashCode(), sameVersion.hashCode());
 
-    assertEquals(version, sameVersion);
-    assertEquals(version.hashCode(), sameVersion.hashCode());
-    assertNotEquals(version, differentVersion);
+    Version differentMajor = new Version(3, 6, 24);
+    assertNotEquals("Versions with different majors versions should not be equal",
+        version, differentMajor);
+
+    Version differentMinor = new Version(4, 5, 24);
+    assertNotEquals("Versions with different minor versions should not be equal",
+        version, differentMinor);
+
+    Version differentBuild = new Version(3, 5, 78);
+    assertNotEquals("Versions with different build numbers should not be equal",
+        version, differentBuild);
   }
 
-  @Test
+  @Test(expected = IllegalArgumentException.class)
   public void testCreateVersionWithNegativeMajorVersion() {
-    try {
-      new Version(-1, 4, 5);
-    } catch (IllegalArgumentException ex) {
-      return;
-    }
-    fail();
+    new Version(-1, 4, 5);
   }
 
-  @Test
+  @Test(expected = IllegalArgumentException.class)
   public void testCreateVersionWithNegativeMinorVersion() {
-    try {
-      new Version(3, -13, 1);
-    } catch (IllegalArgumentException ex) {
-      return;
-    }
-    fail();
+    new Version(3, -13, 1);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testCreateVersionWithNegativeBuildNumber() {
+    new Version(7, 0, -5);
   }
 
   @Test
-  public void testCreateVersionWithNegativeBuildNumber() {
-    try {
-      new Version(7, 0, -5);
-    } catch (IllegalArgumentException ex) {
-      return;
-    }
-    fail();
+  public void testEmptyVersion() {
+    Version version = Version.EMPTY;
+
+    assertEquals(0, version.major);
+    assertEquals(0, version.minor);
+    assertEquals(0, version.build);
   }
 
   @Test
   public void testCreateVersionFromValidString() {
     Version version = Version.fromString("14.2.100");
 
-    assertNotNull(version);
-    assertEquals(14, version.major);
-    assertEquals(2, version.minor);
-    assertEquals(100, version.build);
-  }
-
-  @Test
-  public void testCreateVersionFromAllZeroString() {
-    Version version = Version.fromString("0.0.0");
-
-    assertNotNull(version);
-    assertEquals(0, version.major);
-    assertEquals(0, version.minor);
-    assertEquals(0, version.build);
+    assertEquals("Version created by fromString(\"14.2.100\") should have major version 4.",
+        14, version.major);
+    assertEquals("Version created by fromString(\"14.2.100\") should have minor version 2.",
+        2, version.minor);
+    assertEquals("Version created by fromString(\"14.2.100\") should have build number 100.",
+        100, version.build);
   }
 
   @Test
@@ -86,49 +84,30 @@ public class VersionTest {
     try {
       Version.fromString(versionString);
     } catch (Version.InvalidVersionStringException ex) {
-      assertEquals(versionString, ex.getVersionString());
+      assertEquals("Exception should have version string that was tried to parse.",
+          versionString, ex.getVersionString());
       return;
     }
-    fail();
+    fail("fromString() should throw an InvalidVersionStringException if the string is invalid.");
   }
 
-  @Test
+  @Test(expected = Version.InvalidVersionStringException.class)
   public void testCreateVersionFromStringMissingPart() {
-    try {
-      Version.fromString("1.2");
-    } catch (Version.InvalidVersionStringException ex) {
-      return;
-    }
-    fail();
+    Version.fromString("1.2");
   }
 
-  @Test
+  @Test(expected = Version.InvalidVersionStringException.class)
   public void testCreateVersionFromStringMissingNumber() {
-    try {
-      Version.fromString("9.5.");
-    } catch (Version.InvalidVersionStringException ex) {
-      return;
-    }
-    fail();
+    Version.fromString("9.5.");
   }
 
-  @Test
+  @Test(expected = Version.InvalidVersionStringException.class)
   public void testCreateVersionFromStringWithNonNumericPart() {
-    try {
-      Version.fromString("6.XVII.188");
-    } catch (Version.InvalidVersionStringException ex) {
-      return;
-    }
-    fail();
+    Version.fromString("6.XVII.188");
   }
 
-  @Test
+  @Test(expected = Version.InvalidVersionStringException.class)
   public void testCreateVersionFromEmptyString() {
-    try {
-      Version.fromString("");
-    } catch (Version.InvalidVersionStringException ex) {
-      return;
-    }
-    fail();
+    Version.fromString("");
   }
 }

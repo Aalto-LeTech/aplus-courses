@@ -30,13 +30,17 @@ public class ResourcesTest {
       };
     });
 
-    assertEquals(0, closeCallCounter.get());
+    assertEquals("Stream should not be closed by the constructor.",
+        0, closeCallCounter.get());
 
     Properties props = res.getProperties("correct-properties");
 
-    assertEquals(1, closeCallCounter.get());
-    assertEquals("x", props.getProperty("a"));
-    assertEquals("y", props.getProperty("b"));
+    assertEquals("Stream should be closed by the getProperties().",
+        1, closeCallCounter.get());
+    assertEquals("getProperty(\"a\") should return the value set for 'a'",
+        "x", props.getProperty("a"));
+    assertEquals("getProperty(\"b\") should return the value set for 'b'",
+        "y", props.getProperty("b"));
   }
 
   @Test
@@ -54,11 +58,13 @@ public class ResourcesTest {
     try {
       res.getProperties(resourceName);
     } catch (ResourceException ex) {
-      assertEquals(resourceName, ex.getResourceName());
-      assertSame(exception, ex.getCause());
+      assertEquals("Exception should have the requested resource name.",
+          resourceName, ex.getResourceName());
+      assertSame("The cause of the expression should come from the stream.",
+          exception, ex.getCause());
       return;
     }
-    fail();
+    fail("getProperties() should throw an exception if the stream cannot be read.");
   }
 
   @Test
@@ -69,9 +75,10 @@ public class ResourcesTest {
     try {
       res.getProperties(resourceName);
     } catch (ResourceException ex) {
-      assertEquals(resourceName, ex.getResourceName());
+      assertEquals("Exception should have the requested resource name.",
+          resourceName, ex.getResourceName());
       return;
     }
-    fail();
+    fail("getProperties() should throw an exception if the stream is null");
   }
 }

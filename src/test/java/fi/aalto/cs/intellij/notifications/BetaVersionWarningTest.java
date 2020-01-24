@@ -11,11 +11,16 @@ public class BetaVersionWarningTest {
 
   @Test
   public void testBetaVersionWarning() {
-    BetaVersionWarning notification = new BetaVersionWarning(new Version(0, 22, 315));
+    Version version = new Version(0, 22, 315);
+    BetaVersionWarning notification = new BetaVersionWarning(version);
 
-    assertEquals("0.22.315", notification.getVersion().toString());
-    assertEquals("A+", notification.getGroupId());
-    assertEquals("A+ Courses plugin is under development", notification.getTitle());
-    assertThat(notification.getContent(), containsString("0.22.315"));
+    assertEquals("The version should be equal to the one given to the constructor.",
+        version, notification.getVersion());
+    assertEquals("Group ID should be 'A+'",
+        "A+", notification.getGroupId());
+    assertEquals("Title should be 'A+ Courses plugin is under development'.",
+        "A+ Courses plugin is under development", notification.getTitle());
+    assertThat("Content should contain the version given to the constructor.",
+        notification.getContent(), containsString(version.toString()));
   }
 }

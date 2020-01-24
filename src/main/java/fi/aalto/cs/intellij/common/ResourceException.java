@@ -22,6 +22,7 @@ public class ResourceException extends Exception {
                            @NotNull String message,
                            @Nullable Throwable cause) {
     super("Resource '" + resourceName + "': " + message, cause);
+    
     this.resourceName = resourceName;
   }
 

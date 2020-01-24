@@ -11,8 +11,10 @@ import org.slf4j.LoggerFactory;
  */
 public class BuildInfo {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(BuildInfo.class);
+  private static final Logger logger = LoggerFactory.getLogger(BuildInfo.class);
+
   private static final String RESOURCE_NAME = "build-info.properties";
+
   public static final BuildInfo INSTANCE;
 
   @NotNull
@@ -23,9 +25,9 @@ public class BuildInfo {
     try {
       buildInfo = new BuildInfo(Resources.DEFAULT.getProperties(RESOURCE_NAME));
     } catch (ResourceException ex) {
-      LOGGER.error("Could not read build info from resources.", ex);
+      logger.error("Could not read build info from resources.", ex);
     } catch (PropertyException ex) {
-      LOGGER.error("Build info is badly formatted.", ex);
+      logger.error("Build info is badly formatted.", ex);
     }
     INSTANCE = buildInfo == null ? new BuildInfo() : buildInfo;
   }
@@ -51,6 +53,8 @@ public class BuildInfo {
   static class PropertyKeys {
     public static final String VERSION = "version";
 
-    private PropertyKeys() { }
+    private PropertyKeys() {
+
+    }
   }
 }

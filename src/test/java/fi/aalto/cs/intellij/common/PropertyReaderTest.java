@@ -16,8 +16,10 @@ public class PropertyReaderTest {
     properties.setProperty("b", "y");
 
     PropertyReader reader = new PropertyReader(properties);
-    assertEquals("x", reader.getProperty("a"));
-    assertEquals("y", reader.getProperty("b"));
+    assertEquals("getProperty(\"x\") should return the value set for 'x'",
+        "x", reader.getProperty("a"));
+    assertEquals("getProperty(\"y\") should return the value set for 'y'",
+        "y", reader.getProperty("b"));
   }
 
   @Test
@@ -28,10 +30,11 @@ public class PropertyReaderTest {
     try {
       reader.getProperty(propertyKey);
     } catch (PropertyException ex) {
-      assertEquals(propertyKey, ex.getPropertyKey());
+      assertEquals("Exception should have the property key that was requested.",
+          propertyKey, ex.getPropertyKey());
       return;
     }
-    fail();
+    fail("getProperty() should throw a PropertyException if the key is not there.");
   }
 
   @Test
@@ -45,11 +48,13 @@ public class PropertyReaderTest {
 
     PropertyReader reader = new PropertyReader(properties);
     Object result = reader.getPropertyAsObject(propertyKey, value -> {
-      assertEquals(propertyValue, value);
+      assertEquals("Parser should be provided with the value corresponding the requested key.",
+          propertyValue, value);
       return obj;
     });
 
-    assertSame(obj, result);
+    assertSame("getPropertyAsObject() should return the object provided by the parser",
+        obj, result);
   }
 
   @Test
@@ -67,10 +72,12 @@ public class PropertyReaderTest {
     try {
       reader.getPropertyAsObject(propertyKey, parser);
     } catch (PropertyException ex) {
-      assertEquals(propertyKey, ex.getPropertyKey());
-      assertSame(exception, ex.getCause());
+      assertEquals("Exception should have the requested key.",
+          propertyKey, ex.getPropertyKey());
+      assertSame("The cause of the exception should come from the parser.",
+          exception, ex.getCause());
       return;
     }
-    fail();
+    fail("getPropertyAsObject() should throw a PropertyException if the key is not there.");
   }
 }

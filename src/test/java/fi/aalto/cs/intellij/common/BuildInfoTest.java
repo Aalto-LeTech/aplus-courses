@@ -20,7 +20,8 @@ public class BuildInfoTest {
 
     BuildInfo buildInfo = new BuildInfo(props);
 
-    assertEquals(versionString, buildInfo.version.toString());
+    assertEquals("Build info should have version given in properties.",
+        versionString, buildInfo.version.toString());
   }
 
   @Test
@@ -30,10 +31,11 @@ public class BuildInfoTest {
     try {
       new BuildInfo(props);
     } catch (PropertyException ex) {
-      assertEquals(BuildInfo.PropertyKeys.VERSION, ex.getPropertyKey());
+      assertEquals("The property key of exception should be one that is missing.",
+          BuildInfo.PropertyKeys.VERSION, ex.getPropertyKey());
       return;
     }
-    fail();
+    fail("Constructor should throw exception if properties do not contain necessary data.");
   }
 
   @Test
@@ -51,6 +53,6 @@ public class BuildInfoTest {
       assertThat(ex.getMessage(), containsString(invalidVersionString));
       return;
     }
-    fail();
+    fail("Constructor should throw a PropertyException if the data is invalid.");
   }
 }

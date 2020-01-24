@@ -25,22 +25,25 @@ public class VersionCheckerActivityTest {
         new Version(0, 22, 315),
         (notification, project) -> {
           numberOfCalls.getAndIncrement();
-          assertSame(someProject, project);
-          assertThat(notification, instanceOf(BetaVersionWarning.class));
-          assertEquals("0.22.315",
-              ((BetaVersionWarning) notification).getVersion().toString());
+          assertSame("Notification should be provided with the project given to runActivity.",
+              someProject, project);
+          assertThat("Notification should be an instance of BetaVersionWarning",
+              notification, instanceOf(BetaVersionWarning.class));
+          assertEquals("Notification should be equipped with the version given to the activity.",
+              "0.22.315", ((BetaVersionWarning) notification).getVersion().toString());
         });
 
     activity.runActivity(someProject);
 
-    assertEquals(1, numberOfCalls.get());
+    assertEquals("Notification should be shown exactly once.",
+        1, numberOfCalls.get());
   }
 
   @Test
   public void testRunActivityWithPostReleaseVersion() {
     StartupActivity activity = new VersionCheckerActivity(
         new Version(1, 24, 228),
-        (notification, project) -> fail());
+        (notification, project) -> fail("Notification should not be shown."));
 
     activity.runActivity(mock(Project.class));
   }

@@ -18,11 +18,15 @@ public class PropertyExceptionTest {
     Throwable cause = new Throwable();
 
     PropertyException exception = new PropertyException(properties, propertyKey, message, cause);
-    assertSame(properties, exception.getProperties());
-    assertEquals(propertyKey, exception.getPropertyKey());
-    assertEquals(cause, exception.getCause());
-    assertThat(exception.getMessage(), containsString("Property"));
-    assertThat(exception.getMessage(), containsString(propertyKey));
-    assertThat(exception.getMessage(), containsString(message));
+    assertSame("Properties should be those given in the constructor.",
+        properties, exception.getProperties());
+    assertEquals("Property key should be the same that is given to the constructor.",
+        propertyKey, exception.getPropertyKey());
+    assertSame("Cause of exception should be the one given to the constructor.",
+        cause, exception.getCause());
+    assertThat("Message should contain the property key",
+        exception.getMessage(), containsString(propertyKey));
+    assertThat("Message should contain the message given to the constructor.",
+        exception.getMessage(), containsString(message));
   }
 }
