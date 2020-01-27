@@ -15,12 +15,15 @@ public class EnablePluginsNotification extends Notification {
 
   /**
    * Builds the notification.
+   *
+   * @param disabledPluginDescriptors is a {@link List} of {@link IdeaPluginDescriptor} that are
+   *                                  disabled.
    */
-  public EnablePluginsNotification(List<IdeaPluginDescriptor> disabledPlugins) {
+  public EnablePluginsNotification(List<IdeaPluginDescriptor> disabledPluginDescriptors) {
     super("A+",
         "A+",
         "Some plugins must be and enabled for the A+ plugin to work properly ("
-            + getPluginsNamesString(disabledPlugins) + ").",
+            + getPluginsNamesString(disabledPluginDescriptors) + ").",
         NotificationType.WARNING);
   }
 }

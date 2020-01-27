@@ -8,5 +8,6 @@ public class EnablePluginsNotificationActionTest extends PluginsTestHelper {
   @Test
   public void testActionPerformed() {
 
+
   }
 }

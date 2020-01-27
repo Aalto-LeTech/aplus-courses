@@ -27,6 +27,8 @@ public class RequiredPluginsCheckerActivity implements StartupActivity {
   /**
    * An actual startup work to filter out invalid (missing or disabled) plugins and notify gets done
    * here.
+   *
+   * @param project is a {@link Project} object for the current project.
    */
   @Override
   public void runActivity(@NotNull Project project) {

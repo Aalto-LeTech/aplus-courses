@@ -28,6 +28,9 @@ public class InstallPluginsNotificationAction extends NotificationAction {
 
   /**
    * Builds the action.
+   *
+   * @param missingIdeaPluginDescriptors is a {@link List} of {@link IdeaPluginDescriptor} that can
+   *                                     be installed.
    */
   public InstallPluginsNotificationAction(List<IdeaPluginDescriptor> missingIdeaPluginDescriptors) {
     super("Install missing ("

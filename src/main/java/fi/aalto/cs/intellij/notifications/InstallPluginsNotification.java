@@ -15,6 +15,9 @@ public class InstallPluginsNotification extends Notification {
 
   /**
    * Builds the notification.
+   *
+   * @param missingPluginDescriptors is a {@link List} of {@link IdeaPluginDescriptor} that are
+   *                                 missing.
    */
   public InstallPluginsNotification(List<IdeaPluginDescriptor> missingPluginDescriptors) {
     super("A+",

@@ -20,6 +20,9 @@ public class EnablePluginsNotificationAction extends NotificationAction {
 
   /**
    * Builds the action.
+   *
+   * @param disabledPluginDescriptors is a {@link List} of {@link IdeaPluginDescriptor} that can be
+   *                                  enabled.
    */
   public EnablePluginsNotificationAction(List<IdeaPluginDescriptor> disabledPluginDescriptors) {
     super("Enable the required plugin(s) ("
