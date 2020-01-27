@@ -1,18 +1,15 @@
 package fi.aalto.cs.intellij.services;
 
+import com.intellij.notification.Notifications;
 import com.intellij.openapi.components.ServiceManager;
 
 import fi.aalto.cs.intellij.common.Course;
 import fi.aalto.cs.intellij.common.MalformedCourseConfigurationFileException;
+import fi.aalto.cs.intellij.notifications.CourseConfigurationError;
 
 import java.io.FileNotFoundException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class PluginSettings {
-  private static final Logger logger = LoggerFactory.getLogger(PluginSettings.class);
-
   private Course currentlyLoadedCourse;
 
   /**
@@ -22,11 +19,8 @@ public class PluginSettings {
     try {
       // Replace this with the correct path when testing with a local course configuration file.
       currentlyLoadedCourse = Course.fromConfigurationFile("o1.json");
-      // TODO: error handling, perhaps a notification to the user
-    } catch (FileNotFoundException e) {
-      logger.info("Failed to find course configuration file", e);
-    } catch (MalformedCourseConfigurationFileException e) {
-      logger.info("Malformed course configuration file", e);
+    } catch (FileNotFoundException | MalformedCourseConfigurationFileException e) {
+      Notifications.Bus.notify(new CourseConfigurationError(e.getMessage()));
     }
   }
 
