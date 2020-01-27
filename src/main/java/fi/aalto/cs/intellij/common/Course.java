@@ -57,10 +57,7 @@ public class Course {
    */
   public static Course fromConfigurationFile(@NotNull String pathToCourseConfig)
       throws FileNotFoundException, MalformedCourseConfigurationFileException {
-    FileReader file = new FileReader(pathToCourseConfig);
-    JSONTokener tokenizer = new JSONTokener(file);
-    JSONObject jsonObject = new JSONObject(tokenizer);
-
+    JSONObject jsonObject = getCourseJsonObject(pathToCourseConfig);
     String courseName = getCourseName(jsonObject, pathToCourseConfig);
     List<Module> courseModules = getCourseModules(jsonObject, pathToCourseConfig);
     Map<String, String> requiredPlugins = getCourseRequiredPlugins(jsonObject, pathToCourseConfig);
@@ -120,6 +117,19 @@ public class Course {
   @NotNull
   public Map<String, String> getRequiredPlugins() {
     return requiredPlugins;
+  }
+
+  @NotNull
+  private static JSONObject getCourseJsonObject(@NotNull String path)
+      throws FileNotFoundException, MalformedCourseConfigurationFileException {
+    FileReader file = new FileReader(path);
+    JSONTokener tokenizer = new JSONTokener(file);
+    try {
+      return new JSONObject(tokenizer);
+    } catch (JSONException ex) {
+      throw new MalformedCourseConfigurationFileException(path,
+          "Course configuration file should consist of a valid JSON object", ex);
+    }
   }
 
   @NotNull
