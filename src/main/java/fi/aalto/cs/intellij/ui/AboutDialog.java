@@ -4,7 +4,9 @@ import javax.swing.JOptionPane;
 
 public class AboutDialog {
 
-  private AboutDialog() { }
+  private AboutDialog() {
+
+  }
 
   private static String description = "This plugin supports the educational use of IntelliJ (and "
       + "its Scala plugin) in\nprogramming courses that rely on the A+ course platform, which has "
