@@ -17,7 +17,7 @@
     <depends>com.intellij.modules.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <applicationService serviceImplementation="fi.aalto.cs.intellij.services.CourseInformation" />
+        <applicationService serviceImplementation="fi.aalto.cs.intellij.services.PluginSettings" />
         <toolWindow id="Modules"
                     anchor="right"
                     factoryClass="fi.aalto.cs.intellij.actions.ModulesToolWindow" />

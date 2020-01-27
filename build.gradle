@@ -16,7 +16,7 @@ repositories {
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
-    implementation 'org.json:json:20190722'
+    implementation group: 'org.json', name: 'json', version: '20190722'
 }
 
 intellij {
