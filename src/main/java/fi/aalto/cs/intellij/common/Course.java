@@ -6,7 +6,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -20,14 +19,14 @@ import org.json.JSONTokener;
 
 public class Course {
   @NotNull
-  private String name;
+  private final String name;
 
   @NotNull
-  private List<Module> modules;
+  private final List<Module> modules;
 
   // Maps ids of required plugins to the names of required plugins.
   @NotNull
-  private Map<String, String> requiredPlugins;
+  private final Map<String, String> requiredPlugins;
 
   /**
    * Constructs a course with the given parameters. Course objects are usually created using
@@ -43,6 +42,14 @@ public class Course {
     this.name = name;
     this.modules = modules;
     this.requiredPlugins = requiredPlugins;
+  }
+
+  /**
+   * Returns an "empty" course, that is, a course with no name, no modules, and no required plugins.
+   * @return An empty course.
+   */
+  public static Course createEmptyCourse() {
+    return new Course("", new ArrayList<>(), new HashMap<>());
   }
 
   /**
@@ -195,9 +202,8 @@ public class Course {
       throw new MalformedCourseConfigurationFileException(path,
           "Missing or malformed \"requiredPlugins\" key", ex);
     }
-    Iterator<String> iterator = requiredPluginsJson.keys();
-    while (iterator.hasNext()) {
-      String pluginId = iterator.next();
+    Iterable<String> keys = requiredPluginsJson::keys;
+    for (String pluginId : keys) {
       try {
         String pluginName = requiredPluginsJson.getString(pluginId);
         requiredPlugins.put(pluginId, pluginName);

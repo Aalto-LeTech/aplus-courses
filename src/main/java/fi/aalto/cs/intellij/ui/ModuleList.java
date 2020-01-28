@@ -37,7 +37,7 @@ public class ModuleList {
   public ModuleList() {
     basePanel = new JPanel();
     basePanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-    modules = new JBList<String>();
+    modules = new JBList<>();
 
     Course currentlyLoadedCourse = PluginSettings.getInstance().getCurrentlyLoadedCourse();
 
