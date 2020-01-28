@@ -35,7 +35,7 @@ public class EnablePluginsNotificationAction extends NotificationAction {
    *
    * @param disabledPluginDescriptors is a {@link List} of {@link IdeaPluginDescriptor} that can be
    *                                  enabled.
-   * @param pluginProvider is a {@link PluginProvider} exposed for testing purposes.
+   * @param pluginProvider            is a {@link PluginProvider} exposed for testing purposes.
    */
   public EnablePluginsNotificationAction(
       @NotNull List<IdeaPluginDescriptor> disabledPluginDescriptors,
@@ -59,8 +59,21 @@ public class EnablePluginsNotificationAction extends NotificationAction {
     notification.expire();
   }
 
+  /**
+   * An abstract interface for an object that provides {@link IdeaPluginDescriptor} based on
+   * supplied {@link PluginId}s. The most useful realization of this interface is {@code
+   * PluginManager::getPlugin}.
+   */
+  @FunctionalInterface
   public interface PluginProvider {
 
+    /**
+     * Searches for an {@link IdeaPluginDescriptor} with the {@code pluginId}.
+     *
+     * @param pluginId is the id of the desired plugin.
+     * @return an {@link IdeaPluginDescriptor} which corresponds to {@code pluginId} or {@code
+     * null} if the plugin could not be found.
+     */
     IdeaPluginDescriptor getPlugin(PluginId pluginId);
   }
 }

@@ -46,8 +46,8 @@ public class PluginsTestHelper extends BasePlatformTestCase {
     return Arrays.stream(paths).map(path -> {
       try {
         return getIdeaPluginDescriptor(path);
-      } catch (IOException | JDOMException e) {
-        e.printStackTrace();
+      } catch (IOException | JDOMException ex) {
+        ex.printStackTrace();
         return null;
       }
     }).collect(Collectors.toList());
@@ -70,6 +70,11 @@ public class PluginsTestHelper extends BasePlatformTestCase {
     return ideaPluginDescriptor;
   }
 
+  /**
+   * A helper method that creates a sample {@link IdeaPluginDescriptor} for "IDEA CORE" plugin.
+   *
+   * @return a valid {@link IdeaPluginDescriptor} for "IDEA CORE" plugin.
+   */
   @NotNull
   public static IdeaPluginDescriptor getIdeaCorePluginDescriptor() {
     return Objects.requireNonNull(PluginManager.getPlugin(PluginId.getId("com.intellij")));

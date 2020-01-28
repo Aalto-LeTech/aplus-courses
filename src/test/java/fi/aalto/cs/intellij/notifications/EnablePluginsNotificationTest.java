@@ -1,7 +1,5 @@
 package fi.aalto.cs.intellij.notifications;
 
-import static org.junit.Assert.assertEquals;
-
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
@@ -19,11 +17,12 @@ public class EnablePluginsNotificationTest extends PluginsTestHelper {
     Notification notification = new EnablePluginsNotification(
         ideaPluginDescriptorListWithTwoValidValues);
 
-    assertEquals("A+", notification.getGroupId());
-    assertEquals("A+", notification.getTitle());
-    assertEquals(
+    assertEquals("Group ID should be 'A+'.", "A+", notification.getGroupId());
+    assertEquals("Title should be 'A+'.", "A+", notification.getTitle());
+    assertEquals("Content should contain the names of the plugins to enable.",
         "Some plugins must be and enabled for the A+ plugin to work properly "
             + "(A+ Courses, Scala).", notification.getContent());
-    assertEquals(notification.getType(), NotificationType.WARNING);
+    assertEquals("The type of the notification should be 'WARNING'.", notification.getType(),
+        NotificationType.WARNING);
   }
 }

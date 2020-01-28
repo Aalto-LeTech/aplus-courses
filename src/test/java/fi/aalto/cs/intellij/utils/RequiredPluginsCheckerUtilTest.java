@@ -1,11 +1,11 @@
 package fi.aalto.cs.intellij.utils;
 
 import static fi.aalto.cs.intellij.PluginsTestHelper.getDummyPluginsListOfTwo;
+import static org.junit.Assert.assertEquals;
 
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.Assert;
 import org.junit.Test;
 
 public class RequiredPluginsCheckerUtilTest {
@@ -15,7 +15,8 @@ public class RequiredPluginsCheckerUtilTest {
     List<IdeaPluginDescriptor> validList = new ArrayList<>();
     String result = RequiredPluginsCheckerUtil.getPluginsNamesString(validList);
 
-    Assert.assertEquals("", result);
+    assertEquals("The result of provision of an empty list should be empty. ",
+        "", result);
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -30,7 +31,9 @@ public class RequiredPluginsCheckerUtilTest {
     validList.addAll(getDummyPluginsListOfTwo());
     String result = RequiredPluginsCheckerUtil.getPluginsNamesString(validList);
 
-    Assert.assertEquals("A+ Courses, Scala", result);
+    assertEquals(
+        "The result of provision of a dummy list containing 'null' should contain names of"
+            + " the dummy plugins and not the 'null'.", "A+ Courses, Scala", result);
   }
 
   @Test
@@ -38,6 +41,7 @@ public class RequiredPluginsCheckerUtilTest {
     List<IdeaPluginDescriptor> validList = getDummyPluginsListOfTwo();
     String result = RequiredPluginsCheckerUtil.getPluginsNamesString(validList);
 
-    Assert.assertEquals("A+ Courses, Scala", result);
+    assertEquals("The result of provision of a dummy list should contain names the "
+        + "dummy plugins.", "A+ Courses, Scala", result);
   }
 }

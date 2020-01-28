@@ -73,8 +73,8 @@ public class RequiredPluginsCheckerUtil {
    */
   public static boolean isPluginMissingOrDisabled(@NotNull String id) {
     PluginId pluginId = PluginId.getId(id);
-    return !PluginManager.isPluginInstalled(pluginId) || PluginManager
-        .isDisabled(pluginId.getIdString());
+    return !PluginManager.isPluginInstalled(pluginId)
+        || !PluginManager.getPlugin(pluginId).isEnabled();
   }
 
   /**
