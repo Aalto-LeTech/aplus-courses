@@ -37,5 +37,7 @@
                     text="About A+ Plugin"
                     description="Information about the A+ plugin for IntelliJ" />
         </group>
+        <action id="fi.aalto.cs.intellij.actions.ImportModuleAction"
+                class="fi.aalto.cs.intellij.actions.ImportModuleAction" text="Import A+ Module"/>
     </actions>
 </idea-plugin>
