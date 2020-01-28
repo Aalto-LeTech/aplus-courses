@@ -20,9 +20,13 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <backgroundPostStartupActivity implementation="fi.aalto.cs.intellij.activities.VersionCheckerActivity"/>
+        <applicationService serviceImplementation="fi.aalto.cs.intellij.services.PluginSettings" />
+        <toolWindow id="Modules"
+                    anchor="right"
+                    factoryClass="fi.aalto.cs.intellij.actions.ModulesToolWindow" />
         <toolWindow id="Exercises"
                     anchor="right"
-                    factoryClass="fi.aalto.cs.intellij.actions.ToolWindowAction" />
+                    factoryClass="fi.aalto.cs.intellij.actions.ExercisesToolWindow" />
     </extensions>
 
     <actions>
