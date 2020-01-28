@@ -2,11 +2,14 @@ package fi.aalto.cs.intellij;
 
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.IdeaPluginDescriptorImpl;
+import com.intellij.ide.plugins.PluginManager;
+import com.intellij.openapi.extensions.PluginId;
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import org.jdom.JDOMException;
 import org.jetbrains.annotations.NotNull;
@@ -67,4 +70,8 @@ public class PluginsTestHelper extends BasePlatformTestCase {
     return ideaPluginDescriptor;
   }
 
+  @NotNull
+  public static IdeaPluginDescriptor getIdeaCorePluginDescriptor() {
+    return Objects.requireNonNull(PluginManager.getPlugin(PluginId.getId("com.intellij")));
+  }
 }

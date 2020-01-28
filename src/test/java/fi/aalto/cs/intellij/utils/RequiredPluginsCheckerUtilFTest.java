@@ -7,27 +7,27 @@ public class RequiredPluginsCheckerUtilFTest extends PluginsTestHelper {
 
   @Test
   public void testIsPluginMissingOrDisabledWithActivePluginIdReturnsFalse() {
-    String scalaId = "com.intellij";
+    String corePluginId = "com.intellij";
 
-    boolean result = RequiredPluginsCheckerUtil.isPluginMissingOrDisabled(scalaId);
+    boolean result = RequiredPluginsCheckerUtil.isPluginMissingOrDisabled(corePluginId);
 
     assertFalse(result);
   }
 
   @Test
   public void testIsPluginMissingOrDisabledWithDisabledPluginIdReturnsTrue() {
-    String scalaId = "org.jetbrains.android";
+    String androidPluginId = "org.jetbrains.android";
 
-    boolean result = RequiredPluginsCheckerUtil.isPluginMissingOrDisabled(scalaId);
+    boolean result = RequiredPluginsCheckerUtil.isPluginMissingOrDisabled(androidPluginId);
 
     assertTrue(result);
   }
 
   @Test
   public void testIsPluginMissingOrDisabledWithMissingPluginIdReturnsTrue() {
-    String scalaId = "org.intellij.scala";
+    String scalaPluginId = "org.intellij.scala";
 
-    boolean result = RequiredPluginsCheckerUtil.isPluginMissingOrDisabled(scalaId);
+    boolean result = RequiredPluginsCheckerUtil.isPluginMissingOrDisabled(scalaPluginId);
 
     assertTrue(result);
   }

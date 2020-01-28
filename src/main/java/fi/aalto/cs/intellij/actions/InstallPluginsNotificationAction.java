@@ -9,7 +9,6 @@ import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.updateSettings.impl.PluginDownloader;
-import fi.aalto.cs.intellij.activities.RequiredPluginsCheckerActivity;
 import java.io.IOException;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
@@ -22,7 +21,7 @@ import org.slf4j.LoggerFactory;
 public class InstallPluginsNotificationAction extends NotificationAction {
 
   private final Logger logger = LoggerFactory
-      .getLogger(RequiredPluginsCheckerActivity.class);
+      .getLogger(InstallPluginsNotificationAction.class);
 
   private List<IdeaPluginDescriptor> missingIdeaPluginDescriptors;
 
@@ -46,8 +45,9 @@ public class InstallPluginsNotificationAction extends NotificationAction {
    */
   @Override
   public void actionPerformed(@NotNull AnActionEvent e, @NotNull Notification notification) {
+    //todo what if all the plugins are dynamic? (no way, I know)
+    // what if the plugins are not installed at all?
     missingIdeaPluginDescriptors.forEach(descriptor -> {
-      //todo what if all the plugins are dynamic? (no way, I know)
       try {
         PluginDownloader pluginDownloader = PluginDownloader.createDownloader(descriptor);
         pluginDownloader.prepareToInstall(new BgProgressIndicator());
