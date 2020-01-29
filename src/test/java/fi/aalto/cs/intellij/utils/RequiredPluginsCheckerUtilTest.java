@@ -50,11 +50,6 @@ public class RequiredPluginsCheckerUtilTest {
         "", result);
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void testGetPluginsNamesStringWithNullInput() {
-    RequiredPluginsCheckerUtil.getPluginsNamesString(null);
-  }
-
   @Test
   public void testGetPluginsNamesStringWithFaultyPluginInputReturnsRightResult() {
     List<IdeaPluginDescriptor> validList = new ArrayList<>();

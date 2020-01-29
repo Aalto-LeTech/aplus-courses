@@ -38,7 +38,7 @@ public class RequiredPluginsCheckerUtilFTest extends PluginsTestHelper {
 
     Map<String, String> result =
         RequiredPluginsCheckerUtil.filterMissingOrDisabledPluginNames(requiredPluginNames);
-    assertEquals("The resulting data structure is of a proper length.",
+    assertEquals(THE_RESULTING_DATA_STRUCTURE_IS_OF_A_PROPER_LENGTH,
         1, result.size());
   }
 
@@ -63,7 +63,6 @@ public class RequiredPluginsCheckerUtilFTest extends PluginsTestHelper {
 
   @Test
   public void testIsPluginMissingOrDisabledWithDisabledPluginIdReturnsTrue() {
-    Arrays.stream(PluginManager.getPlugins()).forEach(e -> System.out.println(e.getPluginId()));
     String corePluginId = "com.intellij";
     PluginManager.getPlugin(PluginId.getId(corePluginId)).setEnabled(false);
 
