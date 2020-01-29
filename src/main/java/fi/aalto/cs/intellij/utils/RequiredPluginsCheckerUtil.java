@@ -60,9 +60,19 @@ public class RequiredPluginsCheckerUtil {
     return requiredPluginNames
         .entrySet()
         .stream()
-        .filter(Objects::nonNull)
+        .filter(RequiredPluginsCheckerUtil::isEntryContentsNonNull)
         .filter(entry -> isPluginMissingOrDisabled(entry.getValue()))
         .collect(toMap(Entry::getKey, Entry::getValue));
+  }
+
+  /**
+   * A simple method to check if the Map entry is valid.
+   *
+   * @param entry to perform overall null checks on.
+   * @return boolean that represents entry status, false if either key or value is 'null'.
+   */
+  public static boolean isEntryContentsNonNull(@NotNull Entry entry){
+    return entry.getKey() != null && entry.getValue() != null;
   }
 
   /**

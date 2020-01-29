@@ -2,13 +2,44 @@ package fi.aalto.cs.intellij.utils;
 
 import static fi.aalto.cs.intellij.PluginsTestHelper.getDummyPluginsListOfTwo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.junit.Test;
 
 public class RequiredPluginsCheckerUtilTest {
+
+  @Test
+  public void testIsEntryContentsNonNullWithNullInputValueReturnsFalse() {
+    Map<String, String> input = new HashMap<>();
+    input.put("validKey", null);
+
+    assertFalse("Ensure the 'false' result for 'null'-key containing Map.",
+        RequiredPluginsCheckerUtil.isEntryContentsNonNull(input.entrySet().iterator().next()));
+  }
+
+  @Test
+  public void testIsEntryContentsNonNullWithNullKeyInputReturnsFalse() {
+    Map<String, String> input = new HashMap<>();
+    input.put(null, "validValue");
+
+    assertFalse("Ensure the 'false' result for 'null'-value containing Map.",
+        RequiredPluginsCheckerUtil.isEntryContentsNonNull(input.entrySet().iterator().next()));
+  }
+
+  @Test
+  public void testIsEntryContentsNonNullWithValiEntryReturnsFalse() {
+    Map<String, String> input = new HashMap<>();
+    input.put("validKey", "validValue");
+
+    assertTrue("Ensure the 'true' result for a valid entry.",
+        RequiredPluginsCheckerUtil.isEntryContentsNonNull(input.entrySet().iterator().next()));
+  }
 
   @Test
   public void testGetPluginsNamesStringWithEmptyInputReturnsEmpty() {

@@ -4,13 +4,48 @@ import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.extensions.PluginId;
 import fi.aalto.cs.intellij.PluginsTestHelper;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.Test;
 
 public class RequiredPluginsCheckerUtilFTest extends PluginsTestHelper {
 
   @Test
-  public void testFilterMissingOrDisabledPluginNames(){}
+  public void testFilterMissingOrDisabledPluginNamesWithCorrectInputWorks() {
+    Map<String, String> requiredPluginNames = new HashMap<>();
+    getDummyPluginsListOfTwo().forEach(descriptor -> {
+      requiredPluginNames.put(descriptor.getName(), descriptor.getPluginId().getIdString());
+    });
 
+    Map<String, String> result =
+        RequiredPluginsCheckerUtil.filterMissingOrDisabledPluginNames(requiredPluginNames);
+    assertEquals("The resulting data structure is of a proper length.",
+        1, result.size());
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testFilterMissingOrDisabledPluginNamesWorksWithCorrectInputWithNullWorks() {
+    Map<String, String> requiredPluginNames = new HashMap<>();
+    getDummyPluginsListOfTwo().forEach(descriptor -> {
+      requiredPluginNames.put(descriptor.getName(), descriptor.getPluginId().getIdString());
+    });
+    requiredPluginNames.put(null, null);
+
+    Map<String, String> result =
+        RequiredPluginsCheckerUtil.filterMissingOrDisabledPluginNames(requiredPluginNames);
+    assertEquals("The resulting data structure is of a proper length.",
+        1, result.size());
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testFilterMissingOrDisabledPluginNamesWorksWithEmptyInputWorks() {
+    Map<String, String> requiredPluginNames = new HashMap<>();
+
+    Map<String, String> result =
+        RequiredPluginsCheckerUtil.filterMissingOrDisabledPluginNames(requiredPluginNames);
+    assertEquals("The resulting data structure is of a proper length.",
+        0, result.size());
+  }
 
   @Test
   public void testIsPluginMissingOrDisabledWithActivePluginIdReturnsFalse() {
@@ -30,7 +65,7 @@ public class RequiredPluginsCheckerUtilFTest extends PluginsTestHelper {
     boolean result = RequiredPluginsCheckerUtil.isPluginMissingOrDisabled(corePluginId);
     assertTrue("The predicate is 'true' for installed but disabled plugin.", result);
 
-    /** Consider this as a side effects removal action. Lightweight tests use the same virtual
+    /** Consider this as a side effects removal action. Lightweight tests reuse the same virtual
      * project, so this line is reactivating the core plugin.
      * @see <a href="https://www.jetbrains.org/intellij/sdk/docs/basics/testing_plugins
      * /light_and_heavy_tests.html">Light and Heavy Tests</a>

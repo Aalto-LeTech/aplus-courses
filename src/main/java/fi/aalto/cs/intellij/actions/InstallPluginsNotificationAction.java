@@ -24,6 +24,8 @@ public class InstallPluginsNotificationAction extends NotificationAction {
       .getLogger(InstallPluginsNotificationAction.class);
 
   private List<IdeaPluginDescriptor> missingIdeaPluginDescriptors;
+  private PluginInstaller pluginInstaller;
+  private RestartProposer restartProposer;
 
   /**
    * Builds the action.
@@ -35,6 +37,25 @@ public class InstallPluginsNotificationAction extends NotificationAction {
     super("Install missing ("
         + getPluginsNamesString(missingIdeaPluginDescriptors) + ") plugin(s).");
     this.missingIdeaPluginDescriptors = missingIdeaPluginDescriptors;
+    this.pluginInstaller = InstallPluginsNotificationAction::install;
+    this.restartProposer = InstallPluginsNotificationAction::proposeRestart;
+  }
+
+  /**
+   * Builds the action.
+   *
+   * @param missingIdeaPluginDescriptors is a {@link List} of {@link IdeaPluginDescriptor} that can
+   *                                     be installed.
+   */
+  public InstallPluginsNotificationAction(
+      List<IdeaPluginDescriptor> missingIdeaPluginDescriptors,
+      PluginInstaller pluginInstaller,
+      RestartProposer restartProposer) {
+    super("Install missing ("
+        + getPluginsNamesString(missingIdeaPluginDescriptors) + ") plugin(s).");
+    this.missingIdeaPluginDescriptors = missingIdeaPluginDescriptors;
+    this.pluginInstaller = pluginInstaller;
+    this.restartProposer = restartProposer;
   }
 
   /**
@@ -49,15 +70,36 @@ public class InstallPluginsNotificationAction extends NotificationAction {
     // what if the plugins are not installed at all?
     missingIdeaPluginDescriptors.forEach(descriptor -> {
       try {
-        PluginDownloader pluginDownloader = PluginDownloader.createDownloader(descriptor);
-        pluginDownloader.prepareToInstall(new BgProgressIndicator());
-        pluginDownloader.install();
+        pluginInstaller.install(descriptor);
       } catch (IOException ex) {
         logger.error("Could not install plugin" + descriptor.getName() + ".", ex);
       }
     });
     notification.expire();
+    restartProposer.proposeRestart();
+  }
+
+  public static void install(IdeaPluginDescriptor descriptor) throws IOException {
+    PluginDownloader pluginDownloader = PluginDownloader.createDownloader(descriptor);
+    pluginDownloader.prepareToInstall(new BgProgressIndicator());
+    pluginDownloader.install();
+  }
+
+  public static void proposeRestart() {
     PluginManagerConfigurable
         .shutdownOrRestartApp("Plugins required for A+ course are now installed.");
+  }
+
+
+  @FunctionalInterface
+  public interface PluginInstaller {
+
+    void install(IdeaPluginDescriptor descriptor) throws IOException;
+  }
+
+  @FunctionalInterface
+  public interface RestartProposer {
+
+    void proposeRestart();
   }
 }
