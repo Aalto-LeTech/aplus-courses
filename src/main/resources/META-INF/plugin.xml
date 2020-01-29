@@ -4,6 +4,8 @@
     <vendor email="intellij-plugin-letech@aalto.fi" url="https://research.cs.aalto.fi/LeTech/">LeTech Group at Aalto University</vendor>
 
     <description><![CDATA[
+    NOTE: This plugin is still under development. Use with caution!
+
     This plugin supports the educational use of IntelliJ (and its Scala plugin) in programming courses that rely on the
     A+ course platform, which has been developed at Aalto University. The plugin accesses programming assignments and
     automated grading services provided by A+ and otherwise enhances the student experience.
@@ -14,10 +16,12 @@
     ]]>
     </change-notes>
 
-    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
+
         <backgroundPostStartupActivity implementation="fi.aalto.cs.intellij.activities.RequiredPluginsCheckerActivity"/>
+        <backgroundPostStartupActivity implementation="fi.aalto.cs.intellij.activities.VersionCheckerActivity"/>
         <toolWindow id="Exercises"
                     anchor="right"
                     factoryClass="fi.aalto.cs.intellij.actions.ToolWindowAction" />
