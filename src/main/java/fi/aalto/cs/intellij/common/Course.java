@@ -83,16 +83,15 @@ public class Course {
   }
 
   /**
-   * Returns the names of all the modules in the course. If the course object is created with
-   * {@link Course#fromConfigurationFile}, then the module names are returned in the order
-   * in which they are listed in the course configuration file.
+   * Returns the list of all modules in this course. If the course object is created with
+   * {@link Course#fromConfigurationFile}, then the modules are returned in the order in which they
+   * are listed in the course configuration file.
+   *
+   * @return All modules of this course.
    */
   @NotNull
-  public List<String> getModuleNames() {
-    return modules
-        .stream()
-        .map(Module::getName)
-        .collect(Collectors.toList());
+  public List<Module> getModules() {
+    return modules;
   }
 
   /**

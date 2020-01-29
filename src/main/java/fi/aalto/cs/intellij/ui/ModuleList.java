@@ -3,7 +3,9 @@ package fi.aalto.cs.intellij.ui;
 import com.intellij.ui.components.JBList;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
+
 import fi.aalto.cs.intellij.common.Course;
+import fi.aalto.cs.intellij.common.Module;
 import fi.aalto.cs.intellij.common.NoSuchModuleException;
 import fi.aalto.cs.intellij.services.PluginSettings;
 
@@ -15,6 +17,7 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.stream.Stream;
 import javax.swing.DefaultListModel;
 import javax.swing.JPanel;
 
@@ -52,8 +55,8 @@ public class ModuleList {
 
   private void addModulesListModel(@NotNull Course course) {
     DefaultListModel<String> listModel = new DefaultListModel<>();
-    List<String> moduleNames = course.getModuleNames();
-    moduleNames.forEach(listModel::addElement);
+    List<Module> courseModules = course.getModules();
+    courseModules.forEach(module -> listModel.addElement(module.getName()));
     modules.setModel(listModel);
   }
 
