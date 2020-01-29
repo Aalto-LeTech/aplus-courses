@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -163,30 +162,18 @@ public class Course {
     List<Module> modules = new ArrayList<>();
     // Indexing loop used to simplify checking that each entry is a JSON object.
     for (int i = 0; i < modulesJsonArray.length(); ++i) {
-      JSONObject moduleObject = modulesJsonArray.optJSONObject(i);
-      if (moduleObject == null) {
+      try {
+        JSONObject moduleObject = modulesJsonArray.getJSONObject(i);
+        modules.add(Module.fromJsonObject(moduleObject));
+      } catch (JSONException ex) {
         throw new MalformedCourseConfigurationFileException(path,
-            "\"modules\" value should be an array of objects", null);
+            "\"modules\" value should be an array of objects containing module information", ex);
+      } catch (MalformedURLException ex) {
+        throw new MalformedCourseConfigurationFileException(path,
+            "Malformed URL in module object", ex);
       }
-      modules.add(getIndividualModule(moduleObject, path));
     }
     return modules;
-  }
-
-  @NotNull
-  private static Module getIndividualModule(@NotNull JSONObject moduleObject, @NotNull String path)
-      throws MalformedCourseConfigurationFileException {
-    try {
-      String moduleName = moduleObject.getString("name");
-      URL moduleUrl = new URL(moduleObject.getString("url"));
-      return new Module(moduleName, moduleUrl);
-    } catch (JSONException ex) {
-      throw new MalformedCourseConfigurationFileException(path,
-          "Module objects should contain \"name\" and \"url\" keys with string values", ex);
-    } catch (MalformedURLException ex) {
-      throw new MalformedCourseConfigurationFileException(path,
-          "Malformed URL in module object", ex);
-    }
   }
 
   @NotNull

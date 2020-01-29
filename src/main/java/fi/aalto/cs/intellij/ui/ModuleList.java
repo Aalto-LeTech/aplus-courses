@@ -17,7 +17,6 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
-import java.util.stream.Stream;
 import javax.swing.DefaultListModel;
 import javax.swing.JPanel;
 
