@@ -101,18 +101,17 @@ public class RequiredPluginsCheckerUtil {
   public static List<IdeaPluginDescriptor> createListOfMissingOrDisabledPluginDescriptors(@NotNull
       Map<String, String> missingOrDisabledPluginNames) {
     List<IdeaPluginDescriptor> missingOrDisabledIdeaPluginDescriptors = new ArrayList<>();
-    if (missingOrDisabledPluginNames.size() > 0) {
+    if (!missingOrDisabledPluginNames.isEmpty()) {
       List<IdeaPluginDescriptor> availableIdeaPluginDescriptors = getAvailablePluginsFromMainRepo();
-      missingOrDisabledPluginNames.forEach((name, id) -> {
-        availableIdeaPluginDescriptors
-            .stream()
-            .filter(Objects::nonNull)
-            .filter(
-                availableDescriptor -> availableDescriptor.getPluginId().equals(PluginId.getId(id))
-            )
-            .findFirst()
-            .ifPresent(missingOrDisabledIdeaPluginDescriptors::add);
-      });
+      missingOrDisabledPluginNames.forEach((name, id) ->
+          availableIdeaPluginDescriptors
+          .stream()
+          .filter(Objects::nonNull)
+          .filter(
+              availableDescriptor -> availableDescriptor.getPluginId().equals(PluginId.getId(id))
+          )
+          .findFirst()
+          .ifPresent(missingOrDisabledIdeaPluginDescriptors::add));
     }
     return missingOrDisabledIdeaPluginDescriptors;
   }

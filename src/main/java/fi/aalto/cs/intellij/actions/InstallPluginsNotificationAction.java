@@ -8,7 +8,6 @@ import com.intellij.ide.plugins.newui.BgProgressIndicator;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.updateSettings.impl.PluginDownloader;
 import java.io.IOException;
 import java.util.List;

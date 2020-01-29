@@ -28,9 +28,7 @@ public class InstallPluginsNotificationActionTest extends PluginsTestHelper {
     InstallPluginsNotificationAction installPluginsNotificationAction =
         new InstallPluginsNotificationAction(
             descriptorList,
-            (descriptor) -> {
-              numberOfCallsOfInstall.getAndIncrement();
-            },
+            descriptor -> numberOfCallsOfInstall.getAndIncrement(),
             numberOfCallsOfRestartProposal::getAndIncrement);
     installPluginsNotificationAction.actionPerformed(anActionEvent, notification);
 

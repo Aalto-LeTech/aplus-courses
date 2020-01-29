@@ -5,7 +5,6 @@ import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.extensions.PluginId;
 import fi.aalto.cs.intellij.PluginsTestHelper;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,12 +12,15 @@ import org.junit.Test;
 
 public class RequiredPluginsCheckerUtilFTest extends PluginsTestHelper {
 
+  public static final String THE_RESULTING_DATA_STRUCTURE_IS_OF_A_PROPER_LENGTH =
+      "The resulting data structure is of a proper length.";
+
   @Test
   public void testFilterMissingOrDisabledPluginNamesWithCorrectInputWorks() {
     Map<String, String> requiredPluginNames = new HashMap<>();
-    getDummyPluginsListOfTwo().forEach(descriptor -> {
-      requiredPluginNames.put(descriptor.getName(), descriptor.getPluginId().getIdString());
-    });
+    getDummyPluginsListOfTwo().forEach(descriptor ->
+        requiredPluginNames.put(descriptor.getName(),
+        descriptor.getPluginId().getIdString()));
 
     Map<String, String> result =
         RequiredPluginsCheckerUtil.filterMissingOrDisabledPluginNames(requiredPluginNames);
@@ -29,9 +31,9 @@ public class RequiredPluginsCheckerUtilFTest extends PluginsTestHelper {
   @Test(expected = IllegalArgumentException.class)
   public void testFilterMissingOrDisabledPluginNamesWorksWithCorrectInputWithNullWorks() {
     Map<String, String> requiredPluginNames = new HashMap<>();
-    getDummyPluginsListOfTwo().forEach(descriptor -> {
-      requiredPluginNames.put(descriptor.getName(), descriptor.getPluginId().getIdString());
-    });
+    getDummyPluginsListOfTwo().forEach(descriptor ->
+        requiredPluginNames.put(descriptor.getName(),
+        descriptor.getPluginId().getIdString()));
     requiredPluginNames.put(null, null);
 
     Map<String, String> result =
@@ -46,7 +48,7 @@ public class RequiredPluginsCheckerUtilFTest extends PluginsTestHelper {
 
     Map<String, String> result =
         RequiredPluginsCheckerUtil.filterMissingOrDisabledPluginNames(requiredPluginNames);
-    assertEquals("The resulting data structure is of a proper length.",
+    assertEquals(THE_RESULTING_DATA_STRUCTURE_IS_OF_A_PROPER_LENGTH,
         0, result.size());
   }
 
