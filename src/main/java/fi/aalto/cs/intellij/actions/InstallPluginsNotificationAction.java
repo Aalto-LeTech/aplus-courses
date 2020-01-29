@@ -8,6 +8,7 @@ import com.intellij.ide.plugins.newui.BgProgressIndicator;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.updateSettings.impl.PluginDownloader;
 import java.io.IOException;
 import java.util.List;
@@ -79,27 +80,49 @@ public class InstallPluginsNotificationAction extends NotificationAction {
     restartProposer.proposeRestart();
   }
 
+  /**
+   * A method responsible for plugin installation.
+   */
   public static void install(IdeaPluginDescriptor descriptor) throws IOException {
     PluginDownloader pluginDownloader = PluginDownloader.createDownloader(descriptor);
     pluginDownloader.prepareToInstall(new BgProgressIndicator());
     pluginDownloader.install();
   }
 
+  /**
+   * A method to propose a restart when the plugins have been installed.
+   */
   public static void proposeRestart() {
     PluginManagerConfigurable
         .shutdownOrRestartApp("Plugins required for A+ course are now installed.");
   }
 
-
+  /**
+   * An abstract interface for an object that installs plugins based on the {@link
+   * IdeaPluginDescriptor} provided. The most useful realization of this interface is {@code
+   * InstallPluginsNotificationAction::install}.
+   */
   @FunctionalInterface
   public interface PluginInstaller {
 
+    /**
+     * Installs a given {@link IdeaPluginDescriptor}.
+     *
+     * @param descriptor is the {@link IdeaPluginDescriptor} of the desired plugin.
+     */
     void install(IdeaPluginDescriptor descriptor) throws IOException;
   }
 
+  /**
+   * An abstract interface for an object that proposes the IDE restart. The most useful realization
+   * of this interface is {@code InstallPluginsNotificationAction::proposeRestart}.
+   */
   @FunctionalInterface
   public interface RestartProposer {
 
+    /**
+     * Calls for an IJ framework to trigger a restart of the IDE.
+     */
     void proposeRestart();
   }
 }

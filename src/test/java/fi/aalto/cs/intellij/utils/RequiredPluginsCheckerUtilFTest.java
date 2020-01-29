@@ -1,10 +1,13 @@
 package fi.aalto.cs.intellij.utils;
 
+import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.extensions.PluginId;
 import fi.aalto.cs.intellij.PluginsTestHelper;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.junit.Test;
 
@@ -80,5 +83,15 @@ public class RequiredPluginsCheckerUtilFTest extends PluginsTestHelper {
     boolean result = RequiredPluginsCheckerUtil.isPluginMissingOrDisabled(scalaPluginId);
 
     assertTrue("The predicate is 'true' for not installed plugin.", result);
+  }
+
+  @Test
+  public void testGetAvailablePluginsFromMainRepoIsNotEmpty() {
+    List<IdeaPluginDescriptor> availablePlugins = RequiredPluginsCheckerUtil
+        .getAvailablePluginsFromMainRepo();
+
+    assertNotEmpty(availablePlugins);
+    assertTrue("Amount of available plugins should be substantial.",
+        3000 < availablePlugins.size());
   }
 }

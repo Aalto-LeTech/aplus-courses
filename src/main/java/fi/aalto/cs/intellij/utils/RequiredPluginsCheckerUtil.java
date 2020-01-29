@@ -71,7 +71,7 @@ public class RequiredPluginsCheckerUtil {
    * @param entry to perform overall null checks on.
    * @return boolean that represents entry status, false if either key or value is 'null'.
    */
-  public static boolean isEntryContentsNonNull(@NotNull Entry entry){
+  public static boolean isEntryContentsNonNull(@NotNull Entry entry) {
     return entry.getKey() != null && entry.getValue() != null;
   }
 
@@ -125,7 +125,7 @@ public class RequiredPluginsCheckerUtil {
    * @return a {@link List} of available {@link IdeaPluginDescriptor}s representing plugins.
    */
   @NotNull
-  private static List<IdeaPluginDescriptor> getAvailablePluginsFromMainRepo() {
+  public static List<IdeaPluginDescriptor> getAvailablePluginsFromMainRepo() {
     List<IdeaPluginDescriptor> availableIdeaPluginDescriptors = new ArrayList<>();
     try {
       availableIdeaPluginDescriptors = RepositoryHelper.loadPlugins(new BgProgressIndicator());
