@@ -4,7 +4,6 @@ import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.extensions.PluginId;
 import fi.aalto.cs.intellij.PluginsTestHelper;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +23,7 @@ public class RequiredPluginsCheckerUtilFTest extends PluginsTestHelper {
 
     Map<String, String> result =
         RequiredPluginsCheckerUtil.filterMissingOrDisabledPluginNames(requiredPluginNames);
-    assertEquals("The resulting data structure is of a proper length.",
+    assertEquals(THE_RESULTING_DATA_STRUCTURE_IS_OF_A_PROPER_LENGTH,
         1, result.size());
   }
 
