@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class PluginSettings {
   @NotNull
-  private Course currentlyLoadedCourse;
+  private final Course currentlyLoadedCourse;
   @NotNull
   private final Notifier notifier;
 
@@ -23,7 +23,8 @@ public class PluginSettings {
    * Constructs a plugin settings instance with the default course configuration file.
    */
   public PluginSettings() {
-    this(Notifications.Bus::notify);
+    // Replace this with the correct path when testing with a local course configuration file.
+    this("o1.json", Notifications.Bus::notify);
   }
 
   /**
@@ -32,15 +33,16 @@ public class PluginSettings {
    * @param notifier The notifier used to notify the user of various events.
    */
   @NonInjectable
-  public PluginSettings(@NotNull Notifier notifier) {
+  public PluginSettings(@NotNull String courseConfigurationFilePath, @NotNull Notifier notifier) {
     this.notifier = notifier;
+    Course course;
     try {
-      // Replace this with the correct path when testing with a local course configuration file.
-      currentlyLoadedCourse = Course.fromConfigurationFile("o1.json");
+      course = Course.fromConfigurationFile(courseConfigurationFilePath);
     } catch (FileNotFoundException | MalformedCourseConfigurationFileException e) {
-      currentlyLoadedCourse = Course.createEmptyCourse();
+      course = Course.createEmptyCourse();
       notifier.notify(new CourseConfigurationError(e.getMessage()), null);
     }
+    currentlyLoadedCourse = course;
   }
 
   @NotNull
