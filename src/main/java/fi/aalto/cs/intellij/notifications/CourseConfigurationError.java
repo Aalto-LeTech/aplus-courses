@@ -12,7 +12,7 @@ public class CourseConfigurationError extends Notification {
    *                     course staff and plugin developers.
    */
   public CourseConfigurationError(@NotNull String errorMessage) {
-    super("A+", "A+ Courses plugin failed to the parse course configuration file",
+    super("A+", "A+ Courses plugin failed to parse the course configuration file",
         "Many features of the plugin won't work as expected. Please contact the course staff "
             + "about the issue. Error message: " + errorMessage,
         NotificationType.ERROR);

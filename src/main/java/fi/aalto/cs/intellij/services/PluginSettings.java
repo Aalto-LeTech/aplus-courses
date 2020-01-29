@@ -12,8 +12,13 @@ import fi.aalto.cs.intellij.notifications.Notifier;
 import java.io.FileNotFoundException;
 
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PluginSettings {
+  private static final Logger logger = LoggerFactory
+      .getLogger(PluginSettings.class);
+
   @NotNull
   private final Course currentlyLoadedCourse;
   @NotNull
@@ -40,6 +45,7 @@ public class PluginSettings {
       course = Course.fromConfigurationFile(courseConfigurationFilePath);
     } catch (FileNotFoundException | MalformedCourseConfigurationFileException e) {
       course = Course.createEmptyCourse();
+      logger.info("Error occurred while trying to parse a course configuration file", e);
       notifier.notify(new CourseConfigurationError(e.getMessage()), null);
     }
     currentlyLoadedCourse = course;
