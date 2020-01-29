@@ -1,14 +1,21 @@
 package fi.aalto.cs.intellij.ui;
 
-import com.intellij.ui.components.JBList;
+import com.intellij.util.NotNullFunction;
 import fi.aalto.cs.intellij.presentation.ModuleListPM;
 import fi.aalto.cs.intellij.presentation.ModulePM;
+import javax.swing.JComponent;
+import org.jetbrains.annotations.NotNull;
 
-public class ModuleListView {
-  private JBList<ModulePM> moduleViewList;
+public class ModuleListView extends SelectableListView<ModulePM> {
 
-  public ModuleListView(ModuleListPM moduleListPM) {
-    moduleViewList = new JBList<>(moduleListPM);
-    moduleViewList.setSelectionModel(moduleListPM.getSelectionModel());
+  public ModuleListView(@NotNull ModuleListPM moduleListPM) {
+    super(moduleListPM);
+    super.installCellRenderer(ModuleView::new);
+  }
+
+  @Override
+  public <T> void installCellRenderer(
+      @NotNull NotNullFunction<? super T, ? extends JComponent> fun) {
+    throw new UnsupportedOperationException("installCellRenderer should not be called.");
   }
 }
