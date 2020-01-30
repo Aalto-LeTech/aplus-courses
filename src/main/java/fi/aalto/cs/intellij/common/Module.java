@@ -38,6 +38,7 @@ public class Module {
    * @throws org.json.JSONException If the jsonObject doesn't contain "name" and "url" keys with
    *                                string values.
    */
+  @NotNull
   public static Module fromJsonObject(@NotNull JSONObject jsonObject) throws MalformedURLException {
     String name = jsonObject.getString("name");
     URL url = new URL(jsonObject.getString("url"));
