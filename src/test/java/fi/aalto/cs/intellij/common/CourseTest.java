@@ -36,7 +36,7 @@ public class CourseTest {
   @Test
   public void testCreateEmptyCourse() {
     Course course = Course.createEmptyCourse();
-    assertEquals("The name of an empty course should be empty", course.getName(), "");
+    assertTrue("The name of an empty course should be empty", course.getName().isEmpty());
     assertTrue("An empty course should have no modules", course.getModules().isEmpty());
     assertTrue("An empty course should have no required plugins",
         course.getRequiredPlugins().isEmpty());

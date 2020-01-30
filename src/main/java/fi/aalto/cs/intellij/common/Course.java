@@ -77,7 +77,7 @@ public class Course {
    * @return The name of the course.
    */
   @NotNull
-  String getName() {
+  public String getName() {
     return name;
   }
 
