@@ -29,15 +29,15 @@ a manual testing manual. Marked with a github issue label "manual testing".
     <p>
     <p><b>Part 2. Checking disabled plugins</b></p>
     <ol>
-      <li>
-        <img src="images/%239_enable_plugins_notification.png" alt="Ensure 'Scala' plugin is installed and disabled">
+      <li>Ensure 'Scala' plugin is installed and disabled
+        <img src="images/%239_disable_plugin.png" alt="Ensure 'Scala' plugin is installed and disabled">
       </li>
       <li>Restart an IDE</li>
-      <li>
+      <li>Observe a notification
         <img src="images/%239_enable_plugins_notification.png" alt="Observe a notification">
       </li>
       <li>Click on the highlighted part of the notification</li>
-      <li>
+      <li>Check the notification became inactive
         <img src="images/%239_notification_inactive.png" alt="Check the notification became inactive">
       </li>
       <li>After the restart is done, ensure there is no notification anymore</li>
