@@ -13,9 +13,9 @@ public class MalformedCourseConfigurationFileExceptionTest {
     MalformedCourseConfigurationFileException exception =
         new MalformedCourseConfigurationFileException(path, "Awesome message", cause);
     assertEquals("The cause of the exception should be the one given to the constructor",
-        exception.getCause(), cause);
+        cause, exception.getCause());
     assertEquals("The configuration file path should be the one given to the constructor",
-        exception.getPathToConfigurationFile(), path);
+        path, exception.getPathToConfigurationFile());
   }
 
 }

@@ -22,9 +22,9 @@ public class CourseTest {
     List<Module> modules = Arrays.asList(module1, module2);
     Map<String, String> requiredPlugins = new HashMap<>();
     requiredPlugins.put("org.intellij.awesome_plugin", "Awesome Plugin");
-    Course course = new Course("Awesome Course", modules, requiredPlugins);
+    Course course = new Course("Tester Course", modules, requiredPlugins);
     assertEquals("The name of the course should be the same as that given to the constructor",
-        course.getName(), "Awesome Course");
+        "Tester Course", course.getName());
     assertEquals("The modules of the course should be the same as those given to the constructor",
         "Module1", course.getModules().get(0).getName());
     assertEquals("The modules of the course should be the same as those given to the constructor",
@@ -68,7 +68,7 @@ public class CourseTest {
   public void testFromConfigurationFile() throws MalformedCourseConfigurationFileException {
     StringReader stringReader
         = new StringReader("{" + nameJson + "," + requiredPluginsJson + "," + modulesJson + "}");
-    Course course = Course.fromConfigurationFile(stringReader, "./path/to/file");
+    Course course = Course.fromConfigurationData(stringReader, "./path/to/file");
     assertEquals("Course should have the same name as that in the configuration JSON",
         "Awesome Course", course.getName());
     assertEquals("The course should have the required plugins of the configuration JSON",
@@ -86,7 +86,7 @@ public class CourseTest {
       throws MalformedCourseConfigurationFileException {
     StringReader stringReader =
         new StringReader("{" + requiredPluginsJson + "," + modulesJson + "}");
-    Course.fromConfigurationFile(stringReader);
+    Course.fromConfigurationData(stringReader);
   }
 
   @Test(expected = MalformedCourseConfigurationFileException.class)
@@ -94,7 +94,7 @@ public class CourseTest {
       throws MalformedCourseConfigurationFileException {
     StringReader stringReader =
         new StringReader("{" + nameJson + "," + modulesJson + "}");
-    Course.fromConfigurationFile(stringReader);
+    Course.fromConfigurationData(stringReader);
   }
 
   @Test(expected = MalformedCourseConfigurationFileException.class)
@@ -102,14 +102,14 @@ public class CourseTest {
       throws MalformedCourseConfigurationFileException {
     StringReader stringReader =
         new StringReader("{" + nameJson + "," + requiredPluginsJson + "}");
-    Course.fromConfigurationFile(stringReader);
+    Course.fromConfigurationData(stringReader);
   }
 
   @Test(expected = MalformedCourseConfigurationFileException.class)
   public void testFromConfigurationFileWithoutJson()
       throws MalformedCourseConfigurationFileException {
     StringReader stringReader = new StringReader("random text");
-    Course.fromConfigurationFile(stringReader);
+    Course.fromConfigurationData(stringReader);
   }
 
   @Test(expected = MalformedCourseConfigurationFileException.class)
@@ -118,7 +118,7 @@ public class CourseTest {
     String requiredPlugins = "\"requiredPlugins\":[1,2,3,4]";
     StringReader stringReader
         = new StringReader("{" + nameJson + "," + requiredPlugins + "," + modulesJson + "}");
-    Course.fromConfigurationFile(stringReader);
+    Course.fromConfigurationData(stringReader);
   }
 
   @Test(expected = MalformedCourseConfigurationFileException.class)
@@ -127,6 +127,6 @@ public class CourseTest {
     String modules = "\"modules\":[1,2,3,4]";
     StringReader stringReader
         = new StringReader("{" + nameJson + "," + requiredPluginsJson + "," + modules + "}");
-    Course.fromConfigurationFile(stringReader);
+    Course.fromConfigurationData(stringReader);
   }
 }

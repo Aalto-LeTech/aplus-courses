@@ -14,9 +14,9 @@ public class NoSuchModuleExceptionTest {
     Course course = new Course("Course Name", Collections.emptyList(), Collections.emptyMap());
     NoSuchModuleException exception = new NoSuchModuleException(course, "Awesome message", cause);
     assertEquals("The cause of the exception should be the one given to the constructor",
-        exception.getCause(), cause);
-    assertEquals("The course should be the one given to the constructor", exception.getCourse(),
-        course);
+        cause, exception.getCause());
+    assertEquals("The course should be the one given to the constructor", course,
+        exception.getCourse());
   }
 
 }

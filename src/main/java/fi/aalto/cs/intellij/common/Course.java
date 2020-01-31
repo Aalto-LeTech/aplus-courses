@@ -66,7 +66,7 @@ public class Course {
   public static Course fromConfigurationFile(@NotNull String pathToCourseConfig)
       throws FileNotFoundException, MalformedCourseConfigurationFileException {
     FileReader fileReader = new FileReader(pathToCourseConfig);
-    return fromConfigurationFile(fileReader, pathToCourseConfig);
+    return fromConfigurationData(fileReader, pathToCourseConfig);
   }
 
   /**
@@ -78,9 +78,9 @@ public class Course {
    *                                                   any way
    */
   @NotNull
-  public static Course fromConfigurationFile(@NotNull Reader reader)
+  public static Course fromConfigurationData(@NotNull Reader reader)
       throws MalformedCourseConfigurationFileException {
-    return fromConfigurationFile(reader, "");
+    return fromConfigurationData(reader, "");
   }
 
   /**
@@ -94,7 +94,7 @@ public class Course {
    *                                                   any way
    */
   @NotNull
-  public static Course fromConfigurationFile(@NotNull Reader reader,
+  public static Course fromConfigurationData(@NotNull Reader reader,
                                              @NotNull String sourcePath)
       throws MalformedCourseConfigurationFileException {
     JSONObject jsonObject = getCourseJsonObject(reader, sourcePath);
