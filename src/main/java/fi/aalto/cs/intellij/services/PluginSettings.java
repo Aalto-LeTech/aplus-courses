@@ -46,7 +46,7 @@ public class PluginSettings {
     } catch (FileNotFoundException | MalformedCourseConfigurationFileException e) {
       course = Course.createEmptyCourse();
       logger.info("Error occurred while trying to parse a course configuration file", e);
-      notifier.notify(new CourseConfigurationError(e.getMessage()), null);
+      notifier.notify(new CourseConfigurationError(e), null);
     }
     currentlyLoadedCourse = course;
   }
