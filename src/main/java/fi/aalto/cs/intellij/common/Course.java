@@ -2,6 +2,7 @@ package fi.aalto.cs.intellij.common;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -10,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -63,15 +63,48 @@ public class Course {
    * @throws MalformedCourseConfigurationFileException If the configuration file is malformed in
    *                                                   any way.
    */
+  @NotNull
   public static Course fromConfigurationFile(@NotNull String pathToCourseConfig)
       throws FileNotFoundException, MalformedCourseConfigurationFileException {
-    JSONObject jsonObject = getCourseJsonObject(pathToCourseConfig);
-    String courseName = getCourseName(jsonObject, pathToCourseConfig);
-    List<Module> courseModules = getCourseModules(jsonObject, pathToCourseConfig);
-    Map<String, String> requiredPlugins = getCourseRequiredPlugins(jsonObject, pathToCourseConfig);
-    return new Course(courseName, courseModules, requiredPlugins);
+    FileReader fileReader = new FileReader(pathToCourseConfig);
+    return fromConfigurationData(fileReader, pathToCourseConfig);
   }
 
+  /**
+   * Creates a course instance from the course configuration data in the given reader.
+   *
+   * @param reader A reader providing a character stream with the course configuration data.
+   * @return A course instance containing the information parsed from the configuration data.
+   * @throws MalformedCourseConfigurationFileException If the configuration data is malformed in
+   *                                                   any way
+   */
+  @NotNull
+  public static Course fromConfigurationData(@NotNull Reader reader)
+      throws MalformedCourseConfigurationFileException {
+    return fromConfigurationData(reader, "");
+  }
+
+  /**
+   * Creates a course instance from the course configuration data in the given reader.
+   *
+   * @param reader     A reader providing a character stream with the course configuration data.
+   * @param sourcePath The path to the source of the reader, which is stored in exceptions thrown
+   *                   from this method.
+   * @return A course instance containing the information parsed from the configuration data.
+   * @throws MalformedCourseConfigurationFileException If the configuration data is malformed in
+   *                                                   any way
+   */
+  @NotNull
+  public static Course fromConfigurationData(@NotNull Reader reader,
+                                             @NotNull String sourcePath)
+      throws MalformedCourseConfigurationFileException {
+    JSONObject jsonObject = getCourseJsonObject(reader, sourcePath);
+    String courseName = getCourseName(jsonObject, sourcePath);
+    List<Module> courseModules = getCourseModules(jsonObject, sourcePath);
+    Map<String, String> requiredPlugins
+        = getCourseRequiredPlugins(jsonObject, sourcePath);
+    return new Course(courseName, courseModules, requiredPlugins);
+  }
 
   /**
    * Returns the name of the course.
@@ -79,21 +112,20 @@ public class Course {
    * @return The name of the course.
    */
   @NotNull
-  String getName() {
+  public String getName() {
     return name;
   }
 
   /**
-   * Returns the names of all the modules in the course. If the course object is created with
-   * {@link Course#fromConfigurationFile}, then the module names are returned in the order
-   * in which they are listed in the course configuration file.
+   * Returns the list of all modules in this course. If the course object is created with
+   * {@link Course#fromConfigurationFile}, then the modules are returned in the order in which they
+   * are listed in the course configuration file.
+   *
+   * @return All modules of this course.
    */
   @NotNull
-  public List<String> getModuleNames() {
-    return modules
-        .stream()
-        .map(Module::getName)
-        .collect(Collectors.toList());
+  public List<Module> getModules() {
+    return modules;
   }
 
   public List<Module> getModules() {
@@ -132,10 +164,9 @@ public class Course {
   }
 
   @NotNull
-  private static JSONObject getCourseJsonObject(@NotNull String path)
-      throws FileNotFoundException, MalformedCourseConfigurationFileException {
-    FileReader file = new FileReader(path);
-    JSONTokener tokenizer = new JSONTokener(file);
+  private static JSONObject getCourseJsonObject(@NotNull Reader reader, @NotNull String path)
+      throws MalformedCourseConfigurationFileException {
+    JSONTokener tokenizer = new JSONTokener(reader);
     try {
       return new JSONObject(tokenizer);
     } catch (JSONException ex) {
@@ -169,30 +200,18 @@ public class Course {
     List<Module> modules = new ArrayList<>();
     // Indexing loop used to simplify checking that each entry is a JSON object.
     for (int i = 0; i < modulesJsonArray.length(); ++i) {
-      JSONObject moduleObject = modulesJsonArray.optJSONObject(i);
-      if (moduleObject == null) {
+      try {
+        JSONObject moduleObject = modulesJsonArray.getJSONObject(i);
+        modules.add(Module.fromJsonObject(moduleObject));
+      } catch (JSONException ex) {
         throw new MalformedCourseConfigurationFileException(path,
-            "\"modules\" value should be an array of objects", null);
+            "\"modules\" value should be an array of objects containing module information", ex);
+      } catch (MalformedURLException ex) {
+        throw new MalformedCourseConfigurationFileException(path,
+            "Malformed URL in module object", ex);
       }
-      modules.add(getIndividualModule(moduleObject, path));
     }
     return modules;
-  }
-
-  @NotNull
-  private static Module getIndividualModule(@NotNull JSONObject moduleObject, @NotNull String path)
-      throws MalformedCourseConfigurationFileException {
-    try {
-      String moduleName = moduleObject.getString("name");
-      URL moduleUrl = new URL(moduleObject.getString("url"));
-      return new Module(moduleName, moduleUrl);
-    } catch (JSONException ex) {
-      throw new MalformedCourseConfigurationFileException(path,
-          "Module objects should contain \"name\" and \"url\" keys with string values", ex);
-    } catch (MalformedURLException ex) {
-      throw new MalformedCourseConfigurationFileException(path,
-          "Malformed URL in module object", ex);
-    }
   }
 
   @NotNull

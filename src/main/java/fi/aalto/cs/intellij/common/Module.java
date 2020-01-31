@@ -1,8 +1,10 @@
 package fi.aalto.cs.intellij.common;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONObject;
 
 public class Module {
   @NotNull
@@ -18,6 +20,29 @@ public class Module {
   public Module(@NotNull String name, @NotNull URL url) {
     this.name = name;
     this.url = url;
+  }
+
+  /**
+   * Returns a module constructed from the given JSON object. The object should contain the name of
+   * the module and the URL from which the module can be downloaded. Additional members in the
+   * object don't cause any errors. Example of a valid JSON object:
+   * <pre>
+   * {
+   *   "name": "My Module",
+   *   "url": "https://example.com"
+   * }
+   * </pre>
+   * @param jsonObject The JSON object containing information about a single module.
+   * @return A module constructed from the given JSON object.
+   * @throws MalformedURLException  If the URL of the module is malformed.
+   * @throws org.json.JSONException If the jsonObject doesn't contain "name" and "url" keys with
+   *                                string values.
+   */
+  @NotNull
+  public static Module fromJsonObject(@NotNull JSONObject jsonObject) throws MalformedURLException {
+    String name = jsonObject.getString("name");
+    URL url = new URL(jsonObject.getString("url"));
+    return new Module(name, url);
   }
 
   @NotNull

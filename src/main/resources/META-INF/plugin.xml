@@ -19,6 +19,8 @@
     <depends>com.intellij.modules.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
+
+        <backgroundPostStartupActivity implementation="fi.aalto.cs.intellij.activities.RequiredPluginsCheckerActivity"/>
         <backgroundPostStartupActivity implementation="fi.aalto.cs.intellij.activities.VersionCheckerActivity"/>
         <applicationService serviceImplementation="fi.aalto.cs.intellij.services.PluginSettings" />
         <toolWindow id="Modules"
