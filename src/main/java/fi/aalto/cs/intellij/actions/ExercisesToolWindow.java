@@ -8,7 +8,7 @@ import com.intellij.ui.content.ContentFactory;
 import fi.aalto.cs.intellij.ui.ExerciseList;
 import org.jetbrains.annotations.NotNull;
 
-public class ToolWindowAction implements ToolWindowFactory {
+public class ExercisesToolWindow implements ToolWindowFactory {
 
   @Override
   public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
