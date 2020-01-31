@@ -2,6 +2,7 @@ package fi.aalto.cs.intellij.common;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -61,15 +62,48 @@ public class Course {
    * @throws MalformedCourseConfigurationFileException If the configuration file is malformed in
    *                                                   any way.
    */
+  @NotNull
   public static Course fromConfigurationFile(@NotNull String pathToCourseConfig)
       throws FileNotFoundException, MalformedCourseConfigurationFileException {
-    JSONObject jsonObject = getCourseJsonObject(pathToCourseConfig);
-    String courseName = getCourseName(jsonObject, pathToCourseConfig);
-    List<Module> courseModules = getCourseModules(jsonObject, pathToCourseConfig);
-    Map<String, String> requiredPlugins = getCourseRequiredPlugins(jsonObject, pathToCourseConfig);
-    return new Course(courseName, courseModules, requiredPlugins);
+    FileReader fileReader = new FileReader(pathToCourseConfig);
+    return fromConfigurationFile(fileReader, pathToCourseConfig);
   }
 
+  /**
+   * Creates a course instance from the course configuration data in the given reader.
+   *
+   * @param reader A reader providing a character stream with the course configuration data.
+   * @return A course instance containing the information parsed from the configuration data.
+   * @throws MalformedCourseConfigurationFileException If the configuration data is malformed in
+   *                                                   any way
+   */
+  @NotNull
+  public static Course fromConfigurationFile(@NotNull Reader reader)
+      throws MalformedCourseConfigurationFileException {
+    return fromConfigurationFile(reader, "");
+  }
+
+  /**
+   * Creates a course instance from the course configuration data in the given reader.
+   *
+   * @param reader     A reader providing a character stream with the course configuration data.
+   * @param sourcePath The path to the source of the reader, which is stored in exceptions thrown
+   *                   from this method.
+   * @return A course instance containing the information parsed from the configuration data.
+   * @throws MalformedCourseConfigurationFileException If the configuration data is malformed in
+   *                                                   any way
+   */
+  @NotNull
+  public static Course fromConfigurationFile(@NotNull Reader reader,
+                                             @NotNull String sourcePath)
+      throws MalformedCourseConfigurationFileException {
+    JSONObject jsonObject = getCourseJsonObject(reader, sourcePath);
+    String courseName = getCourseName(jsonObject, sourcePath);
+    List<Module> courseModules = getCourseModules(jsonObject, sourcePath);
+    Map<String, String> requiredPlugins
+        = getCourseRequiredPlugins(jsonObject, sourcePath);
+    return new Course(courseName, courseModules, requiredPlugins);
+  }
 
   /**
    * Returns the name of the course.
@@ -125,10 +159,9 @@ public class Course {
   }
 
   @NotNull
-  private static JSONObject getCourseJsonObject(@NotNull String path)
-      throws FileNotFoundException, MalformedCourseConfigurationFileException {
-    FileReader file = new FileReader(path);
-    JSONTokener tokenizer = new JSONTokener(file);
+  private static JSONObject getCourseJsonObject(@NotNull Reader reader, @NotNull String path)
+      throws MalformedCourseConfigurationFileException {
+    JSONTokener tokenizer = new JSONTokener(reader);
     try {
       return new JSONObject(tokenizer);
     } catch (JSONException ex) {
