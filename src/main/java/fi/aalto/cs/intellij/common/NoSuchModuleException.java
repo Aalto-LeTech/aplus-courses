@@ -5,7 +5,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class NoSuchModuleException extends Exception {
   @NotNull
-  private final Course course;
+  private final transient Course course;
 
   public NoSuchModuleException(@NotNull Course course, @NotNull String message,
                                @Nullable Throwable cause) {
