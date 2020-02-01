@@ -3,23 +3,14 @@ package fi.aalto.cs.intellij.ui;
 import com.intellij.ui.components.JBList;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
-
 import fi.aalto.cs.intellij.common.Course;
-import fi.aalto.cs.intellij.common.Module;
-import fi.aalto.cs.intellij.common.NoSuchModuleException;
+import fi.aalto.cs.intellij.presentation.CourseModel;
+import fi.aalto.cs.intellij.presentation.ModuleListElementModel;
 import fi.aalto.cs.intellij.services.PluginSettings;
-
-import java.awt.Desktop;
+import fi.aalto.cs.intellij.ui.module.ModuleListView;
 import java.awt.Dimension;
 import java.awt.Insets;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.List;
-import javax.swing.DefaultListModel;
 import javax.swing.JPanel;
-
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +20,7 @@ public class ModuleList {
       .getLogger(ModuleList.class);
 
   @NotNull
-  private JBList<String> modules;
+  private JBList<ModuleListElementModel> modules;
   @NotNull
   private JPanel basePanel;
 
@@ -39,48 +30,20 @@ public class ModuleList {
   public ModuleList() {
     basePanel = new JPanel();
     basePanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-    modules = new JBList<>();
 
     Course currentlyLoadedCourse = PluginSettings.getInstance().getCurrentlyLoadedCourse();
 
-    addModulesListModel(currentlyLoadedCourse);
-    addModulesListMouseListener(currentlyLoadedCourse);
+    CourseModel courseModel = new CourseModel(currentlyLoadedCourse);
+
+    modules = new ModuleListView(courseModel.getModuleListPM());
+
+
     addModulesListToBasePanel();
   }
 
+  @NotNull
   public JPanel getBasePanel() {
     return basePanel;
-  }
-
-  private void addModulesListModel(@NotNull Course course) {
-    DefaultListModel<String> listModel = new DefaultListModel<>();
-    List<Module> courseModules = course.getModules();
-    courseModules.forEach(module -> listModel.addElement(module.getName()));
-    modules.setModel(listModel);
-  }
-
-  private void addModulesListMouseListener(@NotNull Course course) {
-    modules.addMouseListener(new MouseAdapter() {
-      @Override
-      public void mouseClicked(MouseEvent e) {
-        JBList list = (JBList) e.getSource();
-        if (e.getClickCount() == 2) {
-          int index = list.getSelectedIndex();
-          String moduleName = (String) list.getModel().getElementAt(index);
-          try {
-            Desktop.getDesktop().browse(course.getModuleUrl(moduleName).toURI());
-          } catch (URISyntaxException | IOException ex) {
-            // The click functionality is a placeholder for later functionality (such as importing
-            // modules), so more specific error handling is not needed for now.
-            logger.error("Failed to open module url in browser", ex);
-          } catch (NoSuchModuleException ex) {
-            // Since we're trying to get the url of a module that is in the module list, it would
-            // be a bug if the module is not in the course object.
-            logger.error("Failed to get URL of module listed in modules tool window", ex);
-          }
-        }
-      }
-    });
   }
 
   private void addModulesListToBasePanel() {

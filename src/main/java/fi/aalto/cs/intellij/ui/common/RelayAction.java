@@ -1,4 +1,4 @@
-package fi.aalto.cs.intellij.ui;
+package fi.aalto.cs.intellij.ui.common;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

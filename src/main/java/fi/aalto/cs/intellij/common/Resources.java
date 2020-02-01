@@ -56,7 +56,7 @@ public class Resources {
   }
 
   @NotNull
-  private InputStream getStream(@NotNull String resourceName) throws ResourceException {
+  public InputStream getStream(@NotNull String resourceName) throws ResourceException {
     InputStream stream = resourceProvider.getResourceAsStream(resourceName);
     if (stream == null) {
       throw new ResourceException(resourceName, "The resource could not be found.", null);

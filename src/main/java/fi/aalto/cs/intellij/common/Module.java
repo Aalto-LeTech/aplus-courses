@@ -2,7 +2,6 @@ package fi.aalto.cs.intellij.common;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 

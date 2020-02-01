@@ -3,14 +3,11 @@ package fi.aalto.cs.intellij.services;
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.serviceContainer.NonInjectable;
-
 import fi.aalto.cs.intellij.common.Course;
 import fi.aalto.cs.intellij.common.MalformedCourseConfigurationFileException;
+import fi.aalto.cs.intellij.common.ResourceException;
 import fi.aalto.cs.intellij.notifications.CourseConfigurationError;
 import fi.aalto.cs.intellij.notifications.Notifier;
-
-import java.io.FileNotFoundException;
-
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,8 +39,8 @@ public class PluginSettings {
     this.notifier = notifier;
     Course course;
     try {
-      course = Course.fromConfigurationFile(courseConfigurationFilePath);
-    } catch (FileNotFoundException | MalformedCourseConfigurationFileException e) {
+      course = Course.fromResource(courseConfigurationFilePath);
+    } catch (ResourceException | MalformedCourseConfigurationFileException e) {
       course = Course.createEmptyCourse();
       logger.info("Error occurred while trying to parse a course configuration file", e);
       notifier.notify(new CourseConfigurationError(e), null);

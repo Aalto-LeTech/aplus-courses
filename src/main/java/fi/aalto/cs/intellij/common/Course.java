@@ -2,6 +2,7 @@ package fi.aalto.cs.intellij.common;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -11,7 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -51,6 +51,12 @@ public class Course {
    */
   public static Course createEmptyCourse() {
     return new Course("", new ArrayList<>(), new HashMap<>());
+  }
+
+  public static Course fromResource(@NotNull String resourceName)
+      throws ResourceException, MalformedCourseConfigurationFileException {
+    Reader reader = new InputStreamReader(Resources.DEFAULT.getStream(resourceName));
+    return fromConfigurationData(reader, resourceName);
   }
 
   /**
@@ -124,10 +130,6 @@ public class Course {
    * @return All modules of this course.
    */
   @NotNull
-  public List<Module> getModules() {
-    return modules;
-  }
-
   public List<Module> getModules() {
     return Collections.unmodifiableList(modules);
   }
