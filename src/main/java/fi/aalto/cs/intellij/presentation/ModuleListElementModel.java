@@ -25,7 +25,8 @@ public class ModuleListElementModel extends ListElementModel {
     return status;
   }
 
-  public void install() {
+  @Override
+  public void listActionPerformed() {
     status = "Installed";
     changed();
   }

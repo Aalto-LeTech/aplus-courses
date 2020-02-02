@@ -1,12 +1,15 @@
 package fi.aalto.cs.intellij.ui.list;
 
 import com.intellij.ui.components.JBList;
+import fi.aalto.cs.intellij.presentation.common.BaseListModel;
+import fi.aalto.cs.intellij.presentation.common.ListElementModel;
 import fi.aalto.cs.intellij.ui.common.AbstractMouseListener;
-import fi.aalto.cs.intellij.ui.common.RelayAction;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import javax.swing.AbstractAction;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 
@@ -18,8 +21,12 @@ public class ListUtil {
   public static <E> void addListActionListener(JBList<E> list, ListActionListener<E> listener) {
     list.addMouseListener(new ListMouseListener<>(list, listener));
     list.getInputMap(JComponent.WHEN_FOCUSED).put(ENTER_KEY_STROKE, LIST_ACTION);
-    list.getActionMap().put(LIST_ACTION, new RelayAction(event ->
-        listener.listActionPerformed(new ListActionEvent<>(list, list.getSelectedIndices()))));
+    list.getActionMap().put(LIST_ACTION, new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent actionEvent) {
+        listener.listActionPerformed(new ListActionEvent<>(list, list.getSelectedIndices()));
+      }
+    });
   }
 
   private ListUtil() {

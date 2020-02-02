@@ -33,4 +33,7 @@ public class ListElementModel extends BaseModel {
   public void setIndex(int index) {
     this.index = index;
   }
+
+  public void listActionPerformed() {
+  }
 }

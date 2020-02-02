@@ -6,6 +6,7 @@ import fi.aalto.cs.intellij.presentation.common.ListElementModel;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import javax.swing.JComponent;
+import javax.swing.ListModel;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class BaseListView<E extends ListElementModel, V>
@@ -13,10 +14,18 @@ public abstract class BaseListView<E extends ListElementModel, V>
 
   private final ConcurrentMap<E, V> views = new ConcurrentHashMap<>();
 
-  public BaseListView(BaseListModel<E> listModel) {
-    super(listModel);
-    setSelectionModel(listModel.getSelectionModel());
+  public BaseListView() {
+    ListUtil.addListActionListener(this,
+        new ElementWiseListActionListener<>(ListElementModel::listActionPerformed));
     installCellRenderer(this::getRendererForElement);
+  }
+
+  @Override
+  public void setModel(ListModel<E> model) {
+    super.setModel(model);
+    if (model instanceof BaseListModel) {
+      setSelectionModel(((BaseListModel<E>) model).getSelectionModel());
+    }
   }
 
   @NotNull
@@ -24,6 +33,7 @@ public abstract class BaseListView<E extends ListElementModel, V>
 
   protected abstract void updateElementView(V view, E element);
 
+  @NotNull
   protected abstract JComponent renderElementView(V view);
 
   @NotNull

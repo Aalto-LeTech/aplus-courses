@@ -1,5 +1,8 @@
 package fi.aalto.cs.intellij.presentation.common;
 
+import fi.aalto.cs.intellij.presentation.ModuleListElementModel;
+import fi.aalto.cs.intellij.ui.list.ElementWiseListActionListener;
+import fi.aalto.cs.intellij.ui.list.ListUtil;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.swing.AbstractListModel;
@@ -8,14 +11,16 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class BaseListModel<E extends ListElementModel> extends AbstractListModel<E> {
 
   @NotNull
   private final ListSelectionModel selectionModel;
+  @NotNull
   private final List<E> elements;
 
-  public BaseListModel(List<E> elements) {
+  public BaseListModel(@NotNull List<E> elements) {
     this.selectionModel = new SelectionModel();
     this.elements = elements;
     for (E element : elements) {
@@ -53,8 +58,13 @@ public class BaseListModel<E extends ListElementModel> extends AbstractListModel
   }
 
   @Override
+  @Nullable
   public E getElementAt(int i) {
-    return elements.get(i);
+    try {
+      return elements.get(i);
+    } catch (IndexOutOfBoundsException e) {
+      return null;
+    }
   }
 
   private class SelectionModel extends DefaultListSelectionModel implements ListSelectionListener {
@@ -69,8 +79,10 @@ public class BaseListModel<E extends ListElementModel> extends AbstractListModel
       int lastIndex = selectionEvent.getLastIndex();
       for (int index = firstIndex; index <= lastIndex; index++) {
         ListElementModel element = BaseListModel.this.getElementAt(index);
-        boolean selected = isSelectedIndex(index);
-        element.setSelected(selected);
+        if (element != null) {
+          boolean selected = isSelectedIndex(index);
+          element.setSelected(selected);
+        }
       }
     }
   }

@@ -25,10 +25,10 @@
         <applicationService serviceImplementation="fi.aalto.cs.intellij.services.PluginSettings" />
         <toolWindow id="Modules"
                     anchor="right"
-                    factoryClass="fi.aalto.cs.intellij.actions.ModulesToolWindow" />
+                    factoryClass="fi.aalto.cs.intellij.toolwindows.ModulesToolWindowFactory" />
         <toolWindow id="Exercises"
                     anchor="right"
-                    factoryClass="fi.aalto.cs.intellij.actions.ExercisesToolWindow" />
+                    factoryClass="fi.aalto.cs.intellij.toolwindows.ExercisesToolWindowFactory" />
     </extensions>
 
     <actions>

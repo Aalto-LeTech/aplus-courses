@@ -1,22 +1,13 @@
 package fi.aalto.cs.intellij.ui.module;
 
 import fi.aalto.cs.intellij.presentation.ModuleListElementModel;
-import fi.aalto.cs.intellij.presentation.ModuleListModel;
-import fi.aalto.cs.intellij.ui.list.BaseListView;
 import fi.aalto.cs.intellij.ui.common.ComponentUtil;
-import fi.aalto.cs.intellij.ui.list.ListUtil;
-import fi.aalto.cs.intellij.ui.list.ElementWiseListActionListener;
+import fi.aalto.cs.intellij.ui.list.BaseListView;
 import java.awt.font.TextAttribute;
 import javax.swing.JComponent;
 import org.jetbrains.annotations.NotNull;
 
 public class ModuleListView extends BaseListView<ModuleListElementModel, ModuleListElementView> {
-
-  public ModuleListView(@NotNull ModuleListModel listModel) {
-    super(listModel);
-    ListUtil.addListActionListener(this,
-        new ElementWiseListActionListener<>(ModuleListElementModel::install));
-  }
 
   @NotNull
   @Override
@@ -32,6 +23,7 @@ public class ModuleListView extends BaseListView<ModuleListElementModel, ModuleL
     view.basePanel.setToolTipText(element.getUrl());
   }
 
+  @NotNull
   @Override
   protected JComponent renderElementView(ModuleListElementView view) {
     return view.basePanel;
