@@ -8,6 +8,7 @@ import fi.aalto.cs.intellij.common.MalformedCourseConfigurationFileException;
 import fi.aalto.cs.intellij.common.ResourceException;
 import fi.aalto.cs.intellij.notifications.CourseConfigurationError;
 import fi.aalto.cs.intellij.notifications.Notifier;
+import fi.aalto.cs.intellij.presentation.MainModel;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,8 @@ public class PluginSettings {
   private final Course currentlyLoadedCourse;
   @NotNull
   private final Notifier notifier;
+  @NotNull
+  private final MainModel mainModel = new MainModel();
 
   /**
    * Constructs a plugin settings instance with the default course configuration file.
@@ -46,6 +49,7 @@ public class PluginSettings {
       notifier.notify(new CourseConfigurationError(e), null);
     }
     currentlyLoadedCourse = course;
+    mainModel.setCourse(course);
   }
 
   @NotNull
@@ -56,5 +60,10 @@ public class PluginSettings {
   @NotNull
   public Course getCurrentlyLoadedCourse() {
     return currentlyLoadedCourse;
+  }
+
+  @NotNull
+  public MainModel getMainModel() {
+    return mainModel;
   }
 }

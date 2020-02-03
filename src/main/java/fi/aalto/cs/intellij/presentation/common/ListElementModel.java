@@ -1,5 +1,7 @@
 package fi.aalto.cs.intellij.presentation.common;
 
+import java.awt.Component;
+
 public class ListElementModel extends BaseModel {
 
   private volatile boolean selected;
@@ -34,6 +36,7 @@ public class ListElementModel extends BaseModel {
     this.index = index;
   }
 
-  public void listActionPerformed() {
+  public void listActionPerformed(Component source) {
+
   }
 }

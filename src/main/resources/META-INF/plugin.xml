@@ -39,7 +39,12 @@
                     text="About A+ Plugin"
                     description="Information about the A+ plugin for IntelliJ" />
         </group>
-        <action id="fi.aalto.cs.intellij.actions.ImportModuleAction"
-                class="fi.aalto.cs.intellij.actions.ImportModuleAction" text="Import A+ Module"/>
+        <group id="fi.aalto.cs.intellij.actions.ActionGroups.MODULE_ACTIONS"
+               text="A+ Module"
+               description="Actions for A+ modules">
+            <action id="fi.aalto.cs.intellij.actions.ImportModuleAction"
+                    class="fi.aalto.cs.intellij.actions.ImportModuleAction"
+                    text="Import A+ Module" icon="AllIcons.Actions.Download"/>
+        </group>
     </actions>
 </idea-plugin>

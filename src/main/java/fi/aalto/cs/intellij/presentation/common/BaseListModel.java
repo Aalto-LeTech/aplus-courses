@@ -1,8 +1,5 @@
 package fi.aalto.cs.intellij.presentation.common;
 
-import fi.aalto.cs.intellij.presentation.ModuleListElementModel;
-import fi.aalto.cs.intellij.ui.list.ElementWiseListActionListener;
-import fi.aalto.cs.intellij.ui.list.ListUtil;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.swing.AbstractListModel;
