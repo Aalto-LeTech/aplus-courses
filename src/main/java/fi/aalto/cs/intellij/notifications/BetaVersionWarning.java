@@ -18,7 +18,7 @@ public class BetaVersionWarning extends Notification {
     super("A+",
         "A+ Courses plugin is under development",
         "You are using version " + version + " of A+ Courses plugin, "
-            + "which is a pre-release version of the plugin and still under development. "
+            + "which is a pre-release version of the plugin and still under development. \n "
             + "Some features of this plugin are still probably missing, "
             + "and the plugin is not yet tested thoroughly. "
             + "Use this plugin with caution and on your own risk!",
