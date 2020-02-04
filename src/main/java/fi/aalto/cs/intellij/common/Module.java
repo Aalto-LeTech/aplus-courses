@@ -1,11 +1,30 @@
 package fi.aalto.cs.intellij.common;
 
+import com.intellij.openapi.application.WriteAction;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
 public class Module {
+
+  public static final int ERROR = StateMonitor.ERROR;
+  public static final int NOT_INSTALLED = StateMonitor.INITIAL;
+  public static final int FETCHING = NOT_INSTALLED + 1;
+  public static final int FETCHED = FETCHING + 1;
+  public static final int LOADING = FETCHED + 1;
+  public static final int LOADED = LOADING + 1;
+  public static final int INSTALLED = LOADED + 1;
+
+  private final StateMonitor stateMonitor = new StateMonitor(this::onStateChanged);
+
+  public final ObservableProperty<Integer> state = new ObservableProperty<>(NOT_INSTALLED);
+
   @NotNull
   private final String name;
   @NotNull
@@ -38,10 +57,11 @@ public class Module {
    *                                string values.
    */
   @NotNull
-  public static Module fromJsonObject(@NotNull JSONObject jsonObject) throws MalformedURLException {
+  public static Module fromJsonObject(@NotNull JSONObject jsonObject, CourseFactory factory)
+      throws MalformedURLException {
     String name = jsonObject.getString("name");
     URL url = new URL(jsonObject.getString("url"));
-    return new Module(name, url);
+    return factory.createModule(name, url);
   }
 
   @NotNull
@@ -52,5 +72,103 @@ public class Module {
   @NotNull
   public URL getUrl() {
     return url;
+  }
+
+  public CompletableFuture<Void> installAsync(ModuleSource moduleSource) {
+    return CompletableFuture.runAsync(() -> installInternal(moduleSource));
+  }
+
+  private void installInternal(ModuleSource moduleSource) throws InstallationFailedException {
+    try {
+      fetch();
+      load(moduleSource);
+    } catch (Exception e) {
+      stateMonitor.set(ERROR);
+      throw new InstallationFailedException(e);
+    }
+  }
+
+  private void fetch() throws Exception {
+    if (stateMonitor.setConditionally(NOT_INSTALLED, FETCHING)) {
+      fetchInternal();
+      stateMonitor.set(FETCHED);
+    } else {
+      stateMonitor.waitFor(FETCHED);
+    }
+  }
+
+  private void load(ModuleSource moduleSource) throws Exception {
+    if (stateMonitor.setConditionally(FETCHED, LOADING)) {
+      CompletableFuture<Void> installDependencies = installDependenciesAsync(moduleSource);
+      new Loader().load();
+      stateMonitor.set(LOADED);
+      installDependencies.join();
+      stateMonitor.set(INSTALLED);
+    } else {
+      stateMonitor.waitFor(LOADED);
+    }
+  }
+
+  private CompletableFuture<Void> installDependenciesAsync(ModuleSource moduleSource)
+      throws Exception {
+    return CompletableFuture.allOf(getDependencies()
+        .stream()
+        .map(moduleSource::getModule)
+        .filter(Objects::nonNull)
+        .map(module -> module.installAsync(moduleSource))
+        .toArray(CompletableFuture[]::new)
+    );
+  }
+
+  @NotNull
+  protected List<String> getDependencies() throws Exception {
+    return new ArrayList<>();
+  }
+
+  protected void fetchInternal() throws Exception {
+
+  }
+
+  public String getPath() {
+    return "";
+  }
+
+  protected void loadInternal() throws Exception {
+
+  }
+
+  private void onStateChanged() {
+    state.set(stateMonitor.get());
+  }
+
+  protected static class InstallationFailedException extends RuntimeException {
+    public InstallationFailedException(@Nullable Throwable throwable) {
+      super(throwable);
+    }
+  }
+
+  public interface ModuleSource {
+    @Nullable
+    Module getModule(String moduleName);
+  }
+
+  private class Loader {
+    private volatile Exception exception = null;
+
+    private void load() throws Exception {
+      WriteAction.runAndWait(this::loadInEventThread);
+      Exception e = exception;
+      if (e != null) {
+        throw e;
+      }
+    }
+
+    private void loadInEventThread() {
+      try {
+        loadInternal();
+      } catch (Exception e) {
+        exception = e;
+      }
+    }
   }
 }

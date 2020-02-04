@@ -1,15 +1,11 @@
 package fi.aalto.cs.intellij.actions;
 
-import com.intellij.ide.DataManager;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionPlaces;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DataContext;
-import fi.aalto.cs.intellij.presentation.ModuleListModel;
+import fi.aalto.cs.intellij.common.Module;
+import fi.aalto.cs.intellij.presentation.CourseModel;
+import fi.aalto.cs.intellij.presentation.common.BaseModel;
 import fi.aalto.cs.intellij.services.PluginSettings;
-import java.awt.Component;
-import jdk.internal.vm.compiler.collections.EconomicMap;
 import org.jetbrains.annotations.NotNull;
 
 public class ImportModuleAction extends AnAction {
@@ -18,21 +14,20 @@ public class ImportModuleAction extends AnAction {
 
   @Override
   public void update(@NotNull AnActionEvent e) {
-    ModuleListModel modules = PluginSettings.getInstance().getMainModel().getModules();
-    boolean isModuleSelected = modules != null && !modules.getSelectionModel().isSelectionEmpty();
+    CourseModel course = PluginSettings.getInstance().getMainModel().course.get();
+    boolean isModuleSelected = course != null
+        && !course.getModules().getSelectionModel().isSelectionEmpty();
     e.getPresentation().setEnabled(isModuleSelected);
   }
 
   @Override
   public void actionPerformed(@NotNull AnActionEvent e) {
-
-  }
-
-  public static void trigger(Component source) {
-    // https://intellij-support.jetbrains.com/hc/en-us/community/posts/206130119/comments/206169635
-    AnAction action = ActionManager.getInstance().getAction(ImportModuleAction.ACTION_ID);
-    AnActionEvent event = AnActionEvent.createFromAnAction(action, null, ActionPlaces.UNKNOWN,
-        DataManager.getInstance().getDataContext(source));
-    action.actionPerformed(event);
+    CourseModel course = PluginSettings.getInstance().getMainModel().course.get();
+    if (course != null) {
+      course.getModules().getSelectedElements()
+          .stream()
+          .map(BaseModel::getModel)
+          .forEach(module -> module.installAsync(course.getModel()));
+    }
   }
 }

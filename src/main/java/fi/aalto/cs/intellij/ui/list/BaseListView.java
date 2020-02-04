@@ -1,15 +1,16 @@
 package fi.aalto.cs.intellij.ui.list;
 
-import com.intellij.ui.PopupMenuListenerAdapter;
 import com.intellij.ui.components.JBList;
 import fi.aalto.cs.intellij.presentation.common.BaseListModel;
 import fi.aalto.cs.intellij.presentation.common.ListElementModel;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import javax.swing.AbstractAction;
@@ -17,16 +18,16 @@ import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
 import javax.swing.KeyStroke;
 import javax.swing.ListModel;
-import javax.swing.event.PopupMenuEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class BaseListView<E extends ListElementModel, V>
+public abstract class BaseListView<E extends ListElementModel<?>, V>
     extends JBList<E> {
 
   private static final Object LIST_ACTION = new Object();
   private static final KeyStroke ENTER_KEY_STROKE = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
 
+  private final Set<ActionListener> listActionListeners = ConcurrentHashMap.newKeySet();
   private final ConcurrentMap<E, V> views = new ConcurrentHashMap<>();
   private final Object popupMenuLock = new Object();
   private JPopupMenu popupMenu;
@@ -37,7 +38,7 @@ public abstract class BaseListView<E extends ListElementModel, V>
     getActionMap().put(LIST_ACTION, new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent actionEvent) {
-        listActionPerformed();
+        onListActionPerformed();
       }
     });
     installCellRenderer(this::getRendererForElement);
@@ -74,6 +75,15 @@ public abstract class BaseListView<E extends ListElementModel, V>
     return renderElementView(view);
   }
 
+  public void addListActionListener(ActionListener listener) {
+    listActionListeners.add(listener);
+  }
+
+  private void onListActionPerformed() {
+    ActionEvent event = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null);
+    listActionListeners.forEach(listener -> listener.actionPerformed(event));
+  }
+
   private void showPopupMenu(int index, @Nullable Point location) {
     if (location == null) {
       location = indexToLocation(index);
@@ -86,10 +96,6 @@ public abstract class BaseListView<E extends ListElementModel, V>
         popupMenu.show(this, location.x, location.y);
       }
     }
-  }
-
-  private void listActionPerformed() {
-    getSelectedValuesList().forEach(element -> element.listActionPerformed(this));
   }
 
   private class ListMouseListener extends MouseAdapter {
@@ -124,7 +130,7 @@ public abstract class BaseListView<E extends ListElementModel, V>
     @Override
     public void mouseClicked(MouseEvent mouseEvent) {
       if (mouseEvent.getClickCount() == 2 && getIndex(mouseEvent) >= 0) {
-        listActionPerformed();
+        onListActionPerformed();
       }
     }
   }

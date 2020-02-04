@@ -1,12 +1,16 @@
 package fi.aalto.cs.intellij.presentation.common;
 
-import java.awt.Component;
+import org.jetbrains.annotations.NotNull;
 
-public class ListElementModel extends BaseModel {
+public class ListElementModel<T> extends BaseModel<T> {
 
   private volatile boolean selected;
   private volatile BaseListModel<? extends ListElementModel> listModel;
   private volatile int index;
+
+  public ListElementModel(@NotNull T model) {
+    super(model);
+  }
 
   public void setSelected(boolean selected) {
     this.selected = selected;
@@ -34,9 +38,5 @@ public class ListElementModel extends BaseModel {
 
   public void setIndex(int index) {
     this.index = index;
-  }
-
-  public void listActionPerformed(Component source) {
-
   }
 }

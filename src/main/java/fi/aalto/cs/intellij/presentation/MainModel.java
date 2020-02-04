@@ -1,18 +1,9 @@
 package fi.aalto.cs.intellij.presentation;
 
-import fi.aalto.cs.intellij.common.Course;
-import jdk.internal.jline.internal.Nullable;
+import fi.aalto.cs.intellij.common.ObservableProperty;
+import org.jetbrains.annotations.NotNull;
 
 public class MainModel {
-
-  private volatile ModuleListModel modules;
-
-  public void setCourse(Course course) {
-    modules = new ModuleListModel(course.getModules());
-  }
-
-  @Nullable
-  public ModuleListModel getModules() {
-    return modules;
-  }
+  @NotNull
+  public final ObservableProperty<CourseModel> course = new ObservableProperty<>(null);
 }

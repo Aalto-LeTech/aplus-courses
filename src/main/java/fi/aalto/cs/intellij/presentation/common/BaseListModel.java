@@ -10,7 +10,7 @@ import javax.swing.event.ListSelectionListener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class BaseListModel<E extends ListElementModel> extends AbstractListModel<E> {
+public class BaseListModel<E extends ListElementModel<?>> extends AbstractListModel<E> {
 
   @NotNull
   private final ListSelectionModel selectionModel;

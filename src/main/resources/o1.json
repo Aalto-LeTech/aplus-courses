@@ -5,14 +5,176 @@
   },
   "modules": [
     {
-      "name": "O1Library",
-      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/O1Library/O1Library.zip",
-      "last_modified": "timestamp"
+      "name": "Adventure",
+      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/Adventure/Adventure.zip"
+    },
+    {
+      "name": "AdventureDraft",
+      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/AdventureDraft/AdventureDraft.zip"
+    },
+    {
+      "name": "Aliohjelmia",
+      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/Aliohjelmia/Aliohjelmia.zip"
+    },
+    {
+      "name": "AuctionHouse1",
+      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/AuctionHouse1/AuctionHouse1.zip"
+    },
+    {
+      "name": "AuctionHouse2",
+      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/AuctionHouse2/AuctionHouse2.zip"
+    },
+    {
+      "name": "Ave",
+      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/Ave/Ave.zip"
+    },
+    {
+      "name": "AveFI",
+      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/AveFI/AveFI.zip"
+    },
+    {
+      "name": "CarSim",
+      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/CarSim/CarSim.zip"
+    },
+    {
+      "name": "CitySim",
+      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/CitySim/CitySim.zip"
+    },
+    {
+      "name": "DoWhile",
+      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/DoWhile/DoWhile.zip"
+    },
+    {
+      "name": "Election",
+      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/Election/Election.zip"
+    },
+    {
+      "name": "Files",
+      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/Files/Files.zip"
+    },
+    {
+      "name": "FlappyBug",
+      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/FlappyBug/FlappyBug.zip"
+    },
+    {
+      "name": "Football1",
+      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/Football1/Football1.zip"
+    },
+    {
+      "name": "Football2",
+      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/Football2/Football2.zip"
+    },
+    {
+      "name": "Football3",
+      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/Football3/Football3.zip"
+    },
+    {
+      "name": "Football4",
+      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/Football4/Football4.zip"
+    },
+    {
+      "name": "ForLoops",
+      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/ForLoops/ForLoops.zip"
     },
     {
       "name": "GoodStuff",
-      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/GoodStuff/GoodStuff.zip",
-      "last_modified": "timestamp"
+      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/GoodStuff/GoodStuff.zip"
+    },
+    {
+      "name": "HigherOrder",
+      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/HigherOrder/HigherOrder.zip"
+    },
+    {
+      "name": "IntroApps",
+      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/IntroApps/IntroApps.zip"
+    },
+    {
+      "name": "IntroOOP",
+      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/IntroOOP/IntroOOP.zip"
+    },
+    {
+      "name": "Miscellaneous",
+      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/Miscellaneous/Miscellaneous.zip"
+    },
+    {
+      "name": "MoreApps",
+      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/MoreApps/MoreApps.zip"
+    },
+    {
+      "name": "MovieStats",
+      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/MovieStats/MovieStats.zip"
+    },
+    {
+      "name": "O1Library",
+      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/O1Library/O1Library.zip"
+    },
+    {
+      "name": "Odds",
+      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/Odds/Odds.zip"
+    },
+    {
+      "name": "Oliointro",
+      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/Oliointro/Oliointro.zip"
+    },
+    {
+      "name": "Peeveli",
+      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/Peeveli/Peeveli.zip"
+    },
+    {
+      "name": "Pikkusovelluksia",
+      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/Pikkusovelluksia/Pikkusovelluksia.zip"
+    },
+    {
+      "name": "Pong",
+      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/Pong/Pong.zip"
+    },
+    {
+      "name": "Recursion",
+      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/Recursion/Recursion.zip"
+    },
+    {
+      "name": "RobotTribes",
+      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/RobotTribes/RobotTribes.zip"
+    },
+    {
+      "name": "Robots",
+      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/Robots/Robots.zip"
+    },
+    {
+      "name": "Sananmuunnos",
+      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/Sananmuunnos/Sananmuunnos.zip"
+    },
+    {
+      "name": "Sentiments",
+      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/Sentiments/Sentiments.zip"
+    },
+    {
+      "name": "Snake",
+      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/Snake/Snake.zip"
+    },
+    {
+      "name": "Stars",
+      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/Stars/Stars.zip"
+    },
+    {
+      "name": "Subprograms",
+      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/Subprograms/Subprograms.zip"
+    },
+    {
+      "name": "Subtypes",
+      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/Subtypes/Subtypes.zip"
+    },
+    {
+      "name": "SwingExamples",
+      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/SwingExamples/SwingExamples.zip"
+    },
+    {
+      "name": "Train",
+      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/Train/Train.zip"
+    },
+    {
+      "name": "Viinaharava",
+      "url": "https://grader.cs.hut.fi/static/O1_2019/projects/given/Viinaharava/Viinaharava.zip"
     }
   ]
 }

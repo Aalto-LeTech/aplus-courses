@@ -22,6 +22,8 @@
 
         <backgroundPostStartupActivity implementation="fi.aalto.cs.intellij.activities.RequiredPluginsCheckerActivity"/>
         <backgroundPostStartupActivity implementation="fi.aalto.cs.intellij.activities.VersionCheckerActivity"/>
+        <backgroundPostStartupActivity implementation="fi.aalto.cs.intellij.activities.InitializationActivity"/>
+
         <applicationService serviceImplementation="fi.aalto.cs.intellij.services.PluginSettings" />
         <toolWindow id="Modules"
                     anchor="right"

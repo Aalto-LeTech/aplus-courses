@@ -13,12 +13,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-public class Course {
+public class Course implements Module.ModuleSource {
   @NotNull
   private final String name;
 
@@ -53,10 +54,10 @@ public class Course {
     return new Course("", new ArrayList<>(), new HashMap<>());
   }
 
-  public static Course fromResource(@NotNull String resourceName)
+  public static Course fromResource(@NotNull String resourceName, @NotNull CourseFactory factory)
       throws ResourceException, MalformedCourseConfigurationFileException {
     Reader reader = new InputStreamReader(Resources.DEFAULT.getStream(resourceName));
-    return fromConfigurationData(reader, resourceName);
+    return fromConfigurationData(reader, resourceName, factory);
   }
 
   /**
@@ -70,10 +71,11 @@ public class Course {
    *                                                   any way.
    */
   @NotNull
-  public static Course fromConfigurationFile(@NotNull String pathToCourseConfig)
+  public static Course fromConfigurationFile(@NotNull String pathToCourseConfig,
+                                             @NotNull CourseFactory factory)
       throws FileNotFoundException, MalformedCourseConfigurationFileException {
     FileReader fileReader = new FileReader(pathToCourseConfig);
-    return fromConfigurationData(fileReader, pathToCourseConfig);
+    return fromConfigurationData(fileReader, pathToCourseConfig, factory);
   }
 
   /**
@@ -85,9 +87,9 @@ public class Course {
    *                                                   any way
    */
   @NotNull
-  public static Course fromConfigurationData(@NotNull Reader reader)
+  public static Course fromConfigurationData(@NotNull Reader reader, @NotNull CourseFactory factory)
       throws MalformedCourseConfigurationFileException {
-    return fromConfigurationData(reader, "");
+    return fromConfigurationData(reader, "", factory);
   }
 
   /**
@@ -102,14 +104,15 @@ public class Course {
    */
   @NotNull
   public static Course fromConfigurationData(@NotNull Reader reader,
-                                             @NotNull String sourcePath)
+                                             @NotNull String sourcePath,
+                                             @NotNull CourseFactory factory)
       throws MalformedCourseConfigurationFileException {
     JSONObject jsonObject = getCourseJsonObject(reader, sourcePath);
     String courseName = getCourseName(jsonObject, sourcePath);
-    List<Module> courseModules = getCourseModules(jsonObject, sourcePath);
+    List<Module> courseModules = getCourseModules(jsonObject, sourcePath, factory);
     Map<String, String> requiredPlugins
         = getCourseRequiredPlugins(jsonObject, sourcePath);
-    return new Course(courseName, courseModules, requiredPlugins);
+    return factory.createCourse(courseName, courseModules, requiredPlugins);
   }
 
   /**
@@ -148,8 +151,7 @@ public class Course {
         .filter(module -> module.getName().equals(moduleName))
         .findFirst();
     return matchingModule
-        .orElseThrow(() -> new NoSuchModuleException(this,
-            "Course '" + name + "' has no module '" + moduleName + "'.", null))
+        .orElseThrow(() -> new NoSuchModuleException(this, moduleName, null))
         .getUrl();
   }
 
@@ -189,7 +191,9 @@ public class Course {
   }
 
   @NotNull
-  private static List<Module> getCourseModules(JSONObject jsonObject, String path)
+  private static List<Module> getCourseModules(JSONObject jsonObject,
+                                               String path,
+                                               @NotNull CourseFactory factory)
       throws MalformedCourseConfigurationFileException {
     JSONArray modulesJsonArray;
     try {
@@ -204,7 +208,7 @@ public class Course {
     for (int i = 0; i < modulesJsonArray.length(); ++i) {
       try {
         JSONObject moduleObject = modulesJsonArray.getJSONObject(i);
-        modules.add(Module.fromJsonObject(moduleObject));
+        modules.add(Module.fromJsonObject(moduleObject, factory));
       } catch (JSONException ex) {
         throw new MalformedCourseConfigurationFileException(path,
             "\"modules\" value should be an array of objects containing module information", ex);
@@ -242,4 +246,13 @@ public class Course {
   }
 
 
+  @Override
+  @Nullable
+  public Module getModule(String moduleName) {
+    return modules
+        .stream()
+        .filter(module -> module.getName().equals(moduleName))
+        .findFirst()
+        .orElse(null);
+  }
 }

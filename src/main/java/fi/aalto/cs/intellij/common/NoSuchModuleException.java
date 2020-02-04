@@ -7,9 +7,9 @@ public class NoSuchModuleException extends Exception {
   @NotNull
   private final transient Course course;
 
-  public NoSuchModuleException(@NotNull Course course, @NotNull String message,
+  public NoSuchModuleException(@NotNull Course course, @NotNull String moduleName,
                                @Nullable Throwable cause) {
-    super(message, cause);
+    super("Course '" + course.getName() + "' has no module '" + moduleName + "'.", cause);
     this.course = course;
   }
 
