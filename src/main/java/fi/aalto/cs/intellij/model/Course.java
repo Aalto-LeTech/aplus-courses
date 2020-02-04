@@ -21,7 +21,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-public class Course implements Module.ModuleSource {
+public class Course implements ModuleSource {
   @NotNull
   private final String name;
 

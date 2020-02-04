@@ -1,16 +1,12 @@
 package fi.aalto.cs.intellij.model;
 
-import com.intellij.openapi.application.WriteAction;
 import fi.aalto.cs.intellij.utils.ObservableProperty;
 import fi.aalto.cs.intellij.utils.StateMonitor;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
 public class Module {
@@ -23,9 +19,8 @@ public class Module {
   public static final int LOADED = LOADING + 1;
   public static final int INSTALLED = LOADED + 1;
 
-  private final StateMonitor stateMonitor = new StateMonitor(this::onStateChanged);
-
   public final ObservableProperty<Integer> state = new ObservableProperty<>(NOT_INSTALLED);
+  public final StateMonitor stateMonitor = new StateMonitor(this::onStateChanged);
 
   @NotNull
   private final String name;
@@ -76,100 +71,20 @@ public class Module {
     return url;
   }
 
-  public CompletableFuture<Void> installAsync(ModuleSource moduleSource) {
-    return CompletableFuture.runAsync(() -> installInternal(moduleSource));
-  }
-
-  private void installInternal(ModuleSource moduleSource) {
-    try {
-      fetch();
-      load(moduleSource);
-    } catch (Exception e) {
-      stateMonitor.set(ERROR);
-    }
-  }
-
-  private void fetch()
-      throws InstallationFailedException, InterruptedException {
-    if (stateMonitor.setConditionally(NOT_INSTALLED, FETCHING)) {
-      fetchInternal();
-      stateMonitor.set(FETCHED);
-    } else {
-      stateMonitor.waitFor(FETCHED);
-    }
-  }
-
-  private void load(ModuleSource moduleSource)
-      throws InstallationFailedException, InterruptedException {
-    if (stateMonitor.setConditionally(FETCHED, LOADING)) {
-      CompletableFuture<Void> installDependencies = installDependenciesAsync(moduleSource);
-      new Loader().load();
-      stateMonitor.set(LOADED);
-      installDependencies.join();
-      stateMonitor.set(INSTALLED);
-    } else {
-      stateMonitor.waitFor(LOADED);
-    }
-  }
-
-  private CompletableFuture<Void> installDependenciesAsync(ModuleSource moduleSource)
-    throws InstallationFailedException{
-    return CompletableFuture.allOf(getDependencies()
-        .stream()
-        .map(moduleSource::getModule)
-        .filter(Objects::nonNull)
-        .map(module -> module.installAsync(moduleSource))
-        .toArray(CompletableFuture[]::new)
-    );
-  }
-
   @NotNull
-  protected List<String> getDependencies() throws InstallationFailedException {
-    return new ArrayList<>();
-  }
-
-  protected void fetchInternal() throws InstallationFailedException {
+  public List<String> getDependencies() throws IOException {
     throw new UnsupportedOperationException();
   }
 
-  protected void loadInternal() throws InstallationFailedException {
+  public void fetch() throws IOException {
     throw new UnsupportedOperationException();
   }
 
-  private void onStateChanged() {
+  public void load() throws IOException {
+    throw new UnsupportedOperationException();
+  }
+
+  public void onStateChanged() {
     state.set(stateMonitor.get());
-  }
-
-  protected static class InstallationFailedException extends Exception {
-    public InstallationFailedException(@Nullable Throwable throwable) {
-      super(throwable);
-    }
-  }
-
-  public interface ModuleSource {
-    @Nullable
-    Module getModule(String moduleName);
-  }
-
-  private class Loader {
-    // Sonar does not like non-primitive-type volatile fields because apparently people easily
-    // misunderstand their semantics, but we know what we are doing here.
-    private volatile Exception exception = null; //NOSONAR
-
-    private void load() throws InstallationFailedException {
-      WriteAction.runAndWait(this::loadInEventThread);
-      Exception e = exception;
-      if (e != null) {
-        throw new InstallationFailedException(e);
-      }
-    }
-
-    private void loadInEventThread() {
-      try {
-        loadInternal();
-      } catch (Exception e) {
-        exception = e;
-      }
-    }
   }
 }

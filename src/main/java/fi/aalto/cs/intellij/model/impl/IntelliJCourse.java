@@ -19,4 +19,9 @@ public class IntelliJCourse extends Course {
 
     this.project = project;
   }
+
+  @NotNull
+  public Project getProject() {
+    return project;
+  }
 }

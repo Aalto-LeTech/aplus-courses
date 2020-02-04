@@ -31,7 +31,7 @@ public class ModuleListElementModel extends ListElementModel<Module> {
       case Module.FETCHING:
         return "Downloading...";
       case Module.LOADING:
-        return "Installed...";
+        return "Installing...";
       case Module.LOADED:
       case Module.INSTALLED:
         return "Installed";

@@ -2,12 +2,10 @@ package fi.aalto.cs.intellij.utils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import javax.xml.XMLConstants;
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathConstants;
@@ -36,52 +34,56 @@ public class DomUtil {
     xPathFactory = XPathFactory.newInstance();
 
     documentBuilderFactory = DocumentBuilderFactory.newInstance();
-    documentBuilderFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-    documentBuilderFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
-
-  }
-
-  private static XPathExpression getCachedXPathExpression(String xPath) {
-    return xPathCache.computeIfAbsent(xPath, DomUtil::compileXPath);
-  }
-
-  @NotNull
-  private static XPathExpression compileXPath(String xPath) {
     try {
-      return xPathFactory.newXPath().compile(xPath);
-    } catch (XPathExpressionException e) {
-      return die("Bad XPath", e);
+      documentBuilderFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+      documentBuilderFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+    } catch (IllegalArgumentException e) {
+      logger.warn("Could not set XXE restrictions for DOM tools.");
     }
   }
 
-  private static <T> T die(String message, Exception e) {
-    logger.error(message, e);
-    throw new Error(message, e);
+  private static XPathExpression getCachedXPathExpression(@NotNull String xpath) {
+    return xPathCache.computeIfAbsent(xpath, DomUtil::compileXPath);
+  }
+
+  @NotNull
+  private static XPathExpression compileXPath(@NotNull String xpath) {
+    try {
+      return xPathFactory.newXPath().compile(xpath);
+    } catch (XPathExpressionException e) {
+      throw new IllegalArgumentException(e);
+    }
   }
 
   private DomUtil() {
 
   }
 
-  public static List<Node> getNodeListFromXPath(String xPath, Node node) {
+  @NotNull
+  public static List<Node> getNodesFromXPath(@NotNull String xpath, @NotNull Node node) {
+    NodeList nodeList;
     try {
-      NodeList nodeList = (NodeList) getCachedXPathExpression(xPath).evaluate(node,
-          XPathConstants.NODESET);
-      List<Node> result = new ArrayList<>();
-      for (int i = 0, length = nodeList.getLength(); i < length; i++) {
-        result.add(nodeList.item(i));
-      }
-      return result;
+      nodeList = (NodeList) getCachedXPathExpression(xpath).evaluate(node, XPathConstants.NODESET);
     } catch (XPathExpressionException e) {
-      return die("XPathExpression failed", e);
+      throw new IllegalArgumentException(e);
     }
+    return CommonUtil.createList(nodeList.getLength(), nodeList::item);
   }
 
-  public static Document parse(File file) throws DomException {
+  @NotNull
+  public static List<Node> getNodesFromXPath(@NotNull String xpath, @NotNull File file)
+      throws IOException {
+    return getNodesFromXPath(xpath, parse(file));
+  }
+
+  @NotNull
+  public static Document parse(@NotNull File file) throws IOException {
     try {
       return documentBuilderFactory.newDocumentBuilder().parse(file);
-    } catch (SAXException | ParserConfigurationException | IOException e) {
-      throw new DomException(e);
+    } catch (SAXException e) {
+      throw new IllegalArgumentException();
+    } catch (ParserConfigurationException e) {
+      throw new IllegalStateException();
     }
   }
 }

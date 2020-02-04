@@ -10,7 +10,7 @@ public class ObservableProperty<T> {
   @Nullable
   private volatile T value;
 
-  public ObservableProperty(T initialValue) {
+  public ObservableProperty(@Nullable T initialValue) {
     value = initialValue;
   }
 

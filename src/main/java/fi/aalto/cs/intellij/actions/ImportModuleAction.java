@@ -2,6 +2,7 @@ package fi.aalto.cs.intellij.actions;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import fi.aalto.cs.intellij.model.ModuleInstallation;
 import fi.aalto.cs.intellij.presentation.CourseModel;
 import fi.aalto.cs.intellij.presentation.base.BaseModel;
 import fi.aalto.cs.intellij.services.PluginSettings;
@@ -26,7 +27,7 @@ public class ImportModuleAction extends AnAction {
       course.getModules().getSelectedElements()
           .stream()
           .map(BaseModel::getModel)
-          .forEach(module -> module.installAsync(course.getModel()));
+          .forEach(module -> new ModuleInstallation(module, course.getModel()).installAsync());
     }
   }
 }
