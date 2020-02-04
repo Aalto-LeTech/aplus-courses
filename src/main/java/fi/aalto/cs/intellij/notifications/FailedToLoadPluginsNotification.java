@@ -14,9 +14,10 @@ public class FailedToLoadPluginsNotification extends Notification {
    */
   public FailedToLoadPluginsNotification() {
     super("A+",
-        "A+",
+        "A+ Courses plugin internal error",
         "A+ Course failed to download a list of available plugins from JetBrains' plugin "
-            + "repository, please ensure Internet connectivity and restart the IDE.",
+            + "repository, please ensure Internet connectivity and restart the IDE. If problem "
+            + "persist, please contact the course administration.",
         NotificationType.ERROR);
   }
 }
