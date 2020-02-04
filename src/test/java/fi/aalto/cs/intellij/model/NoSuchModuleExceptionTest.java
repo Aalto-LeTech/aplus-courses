@@ -1,9 +1,11 @@
-package fi.aalto.cs.intellij.common;
+package fi.aalto.cs.intellij.model;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
+import fi.aalto.cs.intellij.model.Course;
+import fi.aalto.cs.intellij.model.NoSuchModuleException;
 import java.util.Collections;
 
 import org.junit.Test;

@@ -1,8 +1,8 @@
-package fi.aalto.cs.intellij.ui.list;
+package fi.aalto.cs.intellij.ui.base;
 
 import com.intellij.ui.components.JBList;
-import fi.aalto.cs.intellij.presentation.common.BaseListModel;
-import fi.aalto.cs.intellij.presentation.common.ListElementModel;
+import fi.aalto.cs.intellij.presentation.base.BaseListModel;
+import fi.aalto.cs.intellij.presentation.base.ListElementModel;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;

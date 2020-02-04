@@ -1,8 +1,8 @@
-package fi.aalto.cs.intellij.common;
+package fi.aalto.cs.intellij.utils;
 
 import org.jetbrains.annotations.NotNull;
 
-class StateMonitor {
+public class StateMonitor {
   private int state = INITIAL;
   private final Object stateLock = new Object();
   private final StateListener listener;

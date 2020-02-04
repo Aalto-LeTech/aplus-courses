@@ -1,4 +1,4 @@
-package fi.aalto.cs.intellij.presentation.common;
+package fi.aalto.cs.intellij.presentation.base;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.jetbrains.annotations.NotNull;

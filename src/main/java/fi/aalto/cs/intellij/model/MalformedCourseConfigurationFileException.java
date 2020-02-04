@@ -1,4 +1,4 @@
-package fi.aalto.cs.intellij.common;
+package fi.aalto.cs.intellij.model;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

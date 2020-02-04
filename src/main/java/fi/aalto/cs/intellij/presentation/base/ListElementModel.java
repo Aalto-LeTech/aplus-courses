@@ -1,4 +1,4 @@
-package fi.aalto.cs.intellij.presentation.common;
+package fi.aalto.cs.intellij.presentation.base;
 
 import org.jetbrains.annotations.NotNull;
 

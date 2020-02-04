@@ -1,10 +1,9 @@
-package fi.aalto.cs.intellij.common;
+package fi.aalto.cs.intellij.model.impl;
 
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtilRt;
-import com.sun.jna.platform.win32.NTSecApi;
+import fi.aalto.cs.intellij.model.Module;
 import java.io.File;
 import java.net.URL;
 import java.nio.file.Files;

@@ -1,8 +1,8 @@
 package fi.aalto.cs.intellij.ui.module;
 
 import fi.aalto.cs.intellij.annotations.Binding;
-import fi.aalto.cs.intellij.common.ObservableProperty;
 import fi.aalto.cs.intellij.presentation.CourseModel;
+import fi.aalto.cs.intellij.utils.ObservableProperty;
 import javax.swing.DefaultListModel;
 import javax.swing.JPanel;
 

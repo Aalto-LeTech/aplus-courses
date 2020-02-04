@@ -2,9 +2,8 @@ package fi.aalto.cs.intellij.actions;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import fi.aalto.cs.intellij.common.Module;
 import fi.aalto.cs.intellij.presentation.CourseModel;
-import fi.aalto.cs.intellij.presentation.common.BaseModel;
+import fi.aalto.cs.intellij.presentation.base.BaseModel;
 import fi.aalto.cs.intellij.services.PluginSettings;
 import org.jetbrains.annotations.NotNull;
 

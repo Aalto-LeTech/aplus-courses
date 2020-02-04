@@ -1,8 +1,8 @@
 package fi.aalto.cs.intellij.ui.module;
 
-import fi.aalto.cs.intellij.presentation.ModuleListElementModel;
-import fi.aalto.cs.intellij.ui.common.ComponentUtil;
-import fi.aalto.cs.intellij.ui.list.BaseListView;
+import fi.aalto.cs.intellij.presentation.module.ModuleListElementModel;
+import fi.aalto.cs.intellij.ui.base.BaseListView;
+import fi.aalto.cs.intellij.ui.base.ComponentUtil;
 import java.awt.font.TextAttribute;
 import javax.swing.JComponent;
 import org.jetbrains.annotations.NotNull;

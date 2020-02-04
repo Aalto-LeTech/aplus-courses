@@ -1,6 +1,6 @@
 package fi.aalto.cs.intellij.presentation;
 
-import fi.aalto.cs.intellij.common.ObservableProperty;
+import fi.aalto.cs.intellij.utils.ObservableProperty;
 import org.jetbrains.annotations.NotNull;
 
 public class MainModel {

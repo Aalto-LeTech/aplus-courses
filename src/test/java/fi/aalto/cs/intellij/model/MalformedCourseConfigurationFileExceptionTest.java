@@ -1,7 +1,8 @@
-package fi.aalto.cs.intellij.common;
+package fi.aalto.cs.intellij.model;
 
 import static org.junit.Assert.assertEquals;
 
+import fi.aalto.cs.intellij.model.MalformedCourseConfigurationFileException;
 import org.junit.Test;
 
 public class MalformedCourseConfigurationFileExceptionTest {

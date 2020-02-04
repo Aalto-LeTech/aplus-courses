@@ -1,5 +1,6 @@
-package fi.aalto.cs.intellij.common;
+package fi.aalto.cs.intellij.model;
 
+import fi.aalto.cs.intellij.model.Course;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

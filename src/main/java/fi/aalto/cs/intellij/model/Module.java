@@ -1,6 +1,8 @@
-package fi.aalto.cs.intellij.common;
+package fi.aalto.cs.intellij.model;
 
 import com.intellij.openapi.application.WriteAction;
+import fi.aalto.cs.intellij.utils.ObservableProperty;
+import fi.aalto.cs.intellij.utils.StateMonitor;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;

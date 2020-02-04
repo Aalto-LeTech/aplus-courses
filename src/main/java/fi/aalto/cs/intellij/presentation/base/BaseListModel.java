@@ -1,4 +1,4 @@
-package fi.aalto.cs.intellij.presentation.common;
+package fi.aalto.cs.intellij.presentation.base;
 
 import java.util.List;
 import java.util.stream.Collectors;

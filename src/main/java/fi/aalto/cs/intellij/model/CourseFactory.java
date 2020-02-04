@@ -1,4 +1,4 @@
-package fi.aalto.cs.intellij.common;
+package fi.aalto.cs.intellij.model;
 
 import java.net.URL;
 import java.util.List;
@@ -11,7 +11,9 @@ public interface CourseFactory {
    */
   CourseFactory DEFAULT = new CourseFactory() {
     @Override
-    public Course createCourse(@NotNull String name, @NotNull List<Module> modules, @NotNull Map<String, String> requiredPlugins) {
+    public Course createCourse(@NotNull String name,
+                               @NotNull List<Module> modules,
+                               @NotNull Map<String, String> requiredPlugins) {
       return new Course(name, modules, requiredPlugins);
     }
 

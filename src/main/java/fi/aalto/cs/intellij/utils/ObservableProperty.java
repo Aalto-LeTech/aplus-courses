@@ -1,4 +1,4 @@
-package fi.aalto.cs.intellij.common;
+package fi.aalto.cs.intellij.utils;
 
 import java.util.Collections;
 import java.util.Set;

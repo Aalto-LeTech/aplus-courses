@@ -1,7 +1,7 @@
-package fi.aalto.cs.intellij.presentation;
+package fi.aalto.cs.intellij.presentation.module;
 
-import fi.aalto.cs.intellij.common.Module;
-import fi.aalto.cs.intellij.presentation.common.BaseListModel;
+import fi.aalto.cs.intellij.model.Module;
+import fi.aalto.cs.intellij.presentation.base.BaseListModel;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;

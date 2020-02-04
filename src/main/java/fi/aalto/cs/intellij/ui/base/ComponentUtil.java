@@ -1,4 +1,4 @@
-package fi.aalto.cs.intellij.ui.common;
+package fi.aalto.cs.intellij.ui.base;
 
 import java.awt.Font;
 import java.awt.font.TextAttribute;

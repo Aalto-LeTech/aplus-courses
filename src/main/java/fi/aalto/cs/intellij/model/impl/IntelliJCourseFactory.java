@@ -1,6 +1,9 @@
-package fi.aalto.cs.intellij.common;
+package fi.aalto.cs.intellij.model.impl;
 
 import com.intellij.openapi.project.Project;
+import fi.aalto.cs.intellij.model.Course;
+import fi.aalto.cs.intellij.model.CourseFactory;
+import fi.aalto.cs.intellij.model.Module;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
