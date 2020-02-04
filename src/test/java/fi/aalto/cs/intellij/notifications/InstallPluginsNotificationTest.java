@@ -18,7 +18,8 @@ public class InstallPluginsNotificationTest extends PluginsTestHelper {
         ideaPluginDescriptorListWithTwoValidValues);
 
     assertEquals("Group ID should be 'A+'.", "A+", notification.getGroupId());
-    assertEquals("Title should be 'A+'.", "A+", notification.getTitle());
+    assertEquals("Title should be 'A+ Courses plugin required plugins missing warning'.",
+        "A+ Courses plugin required plugins missing warning", notification.getTitle());
     assertEquals("Content should contain the names of the plugins to install.",
         "The additional plugin(s) must be installed and enabled for the A+ plugin to work "
             + "properly (A+ Courses, Scala).",

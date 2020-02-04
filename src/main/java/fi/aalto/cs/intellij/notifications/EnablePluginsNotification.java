@@ -21,7 +21,7 @@ public class EnablePluginsNotification extends Notification {
    */
   public EnablePluginsNotification(List<IdeaPluginDescriptor> disabledPluginDescriptors) {
     super("A+",
-        "A+",
+        "A+ Courses plugin required plugins disabled warning",
         "Some plugins must be and enabled for the A+ plugin to work properly ("
             + getPluginsNamesString(disabledPluginDescriptors) + ").",
         NotificationType.WARNING);

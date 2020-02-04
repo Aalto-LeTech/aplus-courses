@@ -21,7 +21,7 @@ public class InstallPluginsNotification extends Notification {
    */
   public InstallPluginsNotification(List<IdeaPluginDescriptor> missingPluginDescriptors) {
     super("A+",
-        "A+",
+        "A+ Courses plugin required plugins missing warning",
         "The additional plugin(s) must be installed and enabled for the A+ plugin to work "
             + "properly (" + getPluginsNamesString(missingPluginDescriptors) + ").",
         NotificationType.WARNING);
