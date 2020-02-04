@@ -3,7 +3,7 @@ package fi.aalto.cs.intellij.utils;
 import java.util.Collections;
 import java.util.Set;
 import java.util.WeakHashMap;
-import jdk.internal.jline.internal.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class ObservableProperty<T> {
 
