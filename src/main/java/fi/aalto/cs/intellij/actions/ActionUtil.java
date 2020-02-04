@@ -20,4 +20,8 @@ public class ActionUtil {
   public static ActionListener triggerer(String actionId, Component source) {
     return actionEvent -> trigger(actionId, source);
   }
+
+  private ActionUtil() {
+
+  }
 }

@@ -35,16 +35,11 @@ public class StateMonitor {
     return result;
   }
 
-  public void waitFor(int expectedState) {
-    Exception exception = null;
+  public void waitFor(int expectedState) throws InterruptedException {
+    InterruptedException exception = null;
     boolean changed = false;
-    boolean error = false;
     synchronized (stateLock) {
-      while (state < expectedState) {
-        if (isError()) {
-          error = true;
-          break;
-        }
+      while (ERROR < state && state < expectedState) {
         try {
           stateLock.wait();
         } catch (InterruptedException e) {
@@ -56,8 +51,8 @@ public class StateMonitor {
     if (changed) {
       onChanged();
     }
-    if (error) {
-      throw new StateException(exception);
+    if (exception != null) {
+      throw exception;
     }
   }
 
@@ -67,12 +62,6 @@ public class StateMonitor {
       state = newState;
       stateLock.notifyAll();
       return changed;
-    }
-  }
-
-  public boolean isError() {
-    synchronized (stateLock) {
-      return state <= ERROR;
     }
   }
 
@@ -91,9 +80,7 @@ public class StateMonitor {
     void onStateChanged();
   }
 
-  public static class StateException extends RuntimeException {
-    public StateException(Throwable cause) {
-      super(cause);
-    }
+  public static class ErrorStateException extends Exception {
+
   }
 }

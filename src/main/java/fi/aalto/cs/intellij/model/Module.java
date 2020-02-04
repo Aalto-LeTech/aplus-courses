@@ -80,17 +80,17 @@ public class Module {
     return CompletableFuture.runAsync(() -> installInternal(moduleSource));
   }
 
-  private void installInternal(ModuleSource moduleSource) throws InstallationFailedException {
+  private void installInternal(ModuleSource moduleSource) {
     try {
       fetch();
       load(moduleSource);
     } catch (Exception e) {
       stateMonitor.set(ERROR);
-      throw new InstallationFailedException(e);
     }
   }
 
-  private void fetch() throws Exception {
+  private void fetch()
+      throws InstallationFailedException, InterruptedException {
     if (stateMonitor.setConditionally(NOT_INSTALLED, FETCHING)) {
       fetchInternal();
       stateMonitor.set(FETCHED);
@@ -99,7 +99,8 @@ public class Module {
     }
   }
 
-  private void load(ModuleSource moduleSource) throws Exception {
+  private void load(ModuleSource moduleSource)
+      throws InstallationFailedException, InterruptedException {
     if (stateMonitor.setConditionally(FETCHED, LOADING)) {
       CompletableFuture<Void> installDependencies = installDependenciesAsync(moduleSource);
       new Loader().load();
@@ -112,7 +113,7 @@ public class Module {
   }
 
   private CompletableFuture<Void> installDependenciesAsync(ModuleSource moduleSource)
-      throws Exception {
+    throws InstallationFailedException{
     return CompletableFuture.allOf(getDependencies()
         .stream()
         .map(moduleSource::getModule)
@@ -123,27 +124,23 @@ public class Module {
   }
 
   @NotNull
-  protected List<String> getDependencies() throws Exception {
+  protected List<String> getDependencies() throws InstallationFailedException {
     return new ArrayList<>();
   }
 
-  protected void fetchInternal() throws Exception {
-
+  protected void fetchInternal() throws InstallationFailedException {
+    throw new UnsupportedOperationException();
   }
 
-  public String getPath() {
-    return "";
-  }
-
-  protected void loadInternal() throws Exception {
-
+  protected void loadInternal() throws InstallationFailedException {
+    throw new UnsupportedOperationException();
   }
 
   private void onStateChanged() {
     state.set(stateMonitor.get());
   }
 
-  protected static class InstallationFailedException extends RuntimeException {
+  protected static class InstallationFailedException extends Exception {
     public InstallationFailedException(@Nullable Throwable throwable) {
       super(throwable);
     }
@@ -155,13 +152,15 @@ public class Module {
   }
 
   private class Loader {
-    private volatile Exception exception = null;
+    // Sonar does not like non-primitive-type volatile fields because apparently people easily
+    // misunderstand their semantics, but we know what we are doing here.
+    private volatile Exception exception = null; //NOSONAR
 
-    private void load() throws Exception {
+    private void load() throws InstallationFailedException {
       WriteAction.runAndWait(this::loadInEventThread);
       Exception e = exception;
       if (e != null) {
-        throw e;
+        throw new InstallationFailedException(e);
       }
     }
 
