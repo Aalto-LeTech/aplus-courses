@@ -33,7 +33,6 @@ public class InstallPluginsNotificationActionTest extends PluginsTestHelper {
     installPluginsNotificationAction.actionPerformed(anActionEvent, notification);
 
     //then
-
     verify(notification, times(1)).expire();
     assertEquals("Installation method should be called required amount of times.", 2,
         numberOfCallsOfInstall.get());
