@@ -6,6 +6,7 @@ import fi.aalto.cs.intellij.model.ModuleInstallation;
 import fi.aalto.cs.intellij.presentation.CourseModel;
 import fi.aalto.cs.intellij.presentation.base.BaseModel;
 import fi.aalto.cs.intellij.services.PluginSettings;
+import fi.aalto.cs.intellij.utils.SimpleAsyncTaskManager;
 import org.jetbrains.annotations.NotNull;
 
 public class ImportModuleAction extends AnAction {
@@ -27,7 +28,8 @@ public class ImportModuleAction extends AnAction {
       course.getModules().getSelectedElements()
           .stream()
           .map(BaseModel::getModel)
-          .forEach(module -> new ModuleInstallation(module, course.getModel()).installAsync());
+          .forEach(module -> new ModuleInstallation<>(module, course.getModel(),
+              new SimpleAsyncTaskManager()).installAsync());
     }
   }
 }
