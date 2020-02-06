@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import javax.swing.AbstractAction;
+import javax.swing.DefaultListModel;
 import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
 import javax.swing.KeyStroke;
@@ -21,6 +22,12 @@ import javax.swing.ListModel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * An abstract base class that co-operates with {@link BaseListModel} and provides some useful
+ * functionality for inheriting classes.
+ * @param <E>
+ * @param <V>
+ */
 public abstract class BaseListView<E extends ListElementModel<?>, V>
     extends JBList<E> {
 
@@ -32,6 +39,9 @@ public abstract class BaseListView<E extends ListElementModel<?>, V>
   private final Object popupMenuLock = new Object();
   private JPopupMenu popupMenu;
 
+  /**
+   * A constructor.
+   */
   public BaseListView() {
     addMouseListener(new ListMouseListener());
     getInputMap(JComponent.WHEN_FOCUSED).put(ENTER_KEY_STROKE, LIST_ACTION);
@@ -51,7 +61,10 @@ public abstract class BaseListView<E extends ListElementModel<?>, V>
   }
 
   @Override
-  public void setModel(ListModel<E> model) {
+  public void setModel(@Nullable ListModel<E> model) {
+    if (model == null) {
+      model = new DefaultListModel<>();
+    }
     super.setModel(model);
     if (model instanceof BaseListModel) {
       setSelectionModel(((BaseListModel<E>) model).getSelectionModel());
