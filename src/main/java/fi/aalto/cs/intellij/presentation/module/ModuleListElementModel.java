@@ -3,7 +3,6 @@ package fi.aalto.cs.intellij.presentation.module;
 import fi.aalto.cs.intellij.model.Module;
 import fi.aalto.cs.intellij.presentation.base.BaseModel;
 import fi.aalto.cs.intellij.presentation.base.ListElementModel;
-import fi.aalto.cs.intellij.utils.ObservableProperty;
 import java.awt.font.TextAttribute;
 import org.jetbrains.annotations.NotNull;
 

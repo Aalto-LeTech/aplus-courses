@@ -2,11 +2,8 @@ package fi.aalto.cs.intellij.model;
 
 import static org.junit.Assert.assertEquals;
 
-import fi.aalto.cs.intellij.model.CourseFactory;
-import fi.aalto.cs.intellij.model.Module;
 import java.net.MalformedURLException;
 import java.net.URL;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;

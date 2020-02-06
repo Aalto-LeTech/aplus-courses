@@ -3,11 +3,6 @@ package fi.aalto.cs.intellij.model;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import fi.aalto.cs.intellij.model.Course;
-import fi.aalto.cs.intellij.model.CourseFactory;
-import fi.aalto.cs.intellij.model.MalformedCourseConfigurationFileException;
-import fi.aalto.cs.intellij.model.Module;
-import fi.aalto.cs.intellij.model.NoSuchModuleException;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -15,8 +10,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 public class CourseTest {

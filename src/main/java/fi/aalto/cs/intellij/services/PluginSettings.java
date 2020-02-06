@@ -2,9 +2,6 @@ package fi.aalto.cs.intellij.services;
 
 import com.intellij.openapi.components.ServiceManager;
 import fi.aalto.cs.intellij.presentation.MainModel;
-import fi.aalto.cs.intellij.utils.DomUtil;
-import javax.xml.XMLConstants;
-import javax.xml.parsers.DocumentBuilderFactory;
 import org.jetbrains.annotations.NotNull;
 
 public class PluginSettings {

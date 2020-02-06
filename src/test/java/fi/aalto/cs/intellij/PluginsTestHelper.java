@@ -13,7 +13,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import org.jdom.JDOMException;
 import org.jetbrains.annotations.NotNull;
-import org.junit.Ignore;
 
 /**
  * A helper class to simplify testing plugin manipulation logics.
