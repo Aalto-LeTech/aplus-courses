@@ -11,6 +11,7 @@ import com.intellij.notification.Notifications;
 import com.intellij.openapi.extensions.PluginId;
 import fi.aalto.cs.intellij.activities.RequiredPluginsCheckerActivity;
 import fi.aalto.cs.intellij.notifications.FailedToLoadPluginsNotification;
+import fi.aalto.cs.intellij.services.PluginSettings;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +31,19 @@ public class RequiredPluginsCheckerUtil {
 
   private static final Logger logger = LoggerFactory
       .getLogger(RequiredPluginsCheckerUtil.class);
+
+  /**
+   * Returns a map containing the required plugins.
+   * @return a {@link Map} of {@link String}s for required plugins, with plugin id as key and
+   *         plugin name as value.
+   */
+  @NotNull
+  public static Map<String, String> getRequiredPlugins() {
+    return PluginSettings
+        .getInstance()
+        .getCurrentlyLoadedCourse()
+        .getRequiredPlugins();
+  }
 
   /**
    * Filters out the plugin names that are missing from the current installation.
