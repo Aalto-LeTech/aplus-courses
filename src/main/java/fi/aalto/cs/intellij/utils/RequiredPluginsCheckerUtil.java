@@ -11,14 +11,15 @@ import com.intellij.notification.Notifications;
 import com.intellij.openapi.extensions.PluginId;
 import fi.aalto.cs.intellij.activities.RequiredPluginsCheckerActivity;
 import fi.aalto.cs.intellij.notifications.FailedToLoadPluginsNotification;
+import fi.aalto.cs.intellij.services.PluginSettings;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,36 +33,34 @@ public class RequiredPluginsCheckerUtil {
       .getLogger(RequiredPluginsCheckerUtil.class);
 
   /**
-   * Fills in the list of required plugin names.
-   *
-   * <p>Later, reading from the from configuration file might occur here.
-   *
-   * @return a {@link Map} of {@link String}s for required plugins, with plugin name as key and
-   *                            plugin id as value.
+   * Returns a map containing the required plugins.
+   * @return a {@link Map} of {@link String}s for required plugins, with plugin id as key and
+   *         plugin name as value.
    */
   @NotNull
-  public static Map<String, String> getRequiredPluginNamesMap() {
-    Map<String, String> requiredPluginNames = new HashMap<>();
-    requiredPluginNames.put("Scala", "org.intellij.scala");
-    return requiredPluginNames;
+  public static Map<String, String> getRequiredPlugins() {
+    return PluginSettings
+        .getInstance()
+        .getCurrentlyLoadedCourse()
+        .getRequiredPlugins();
   }
 
   /**
    * Filters out the plugin names that are missing from the current installation.
    *
-   * @param requiredPluginNames is a {@link Map} of {@link String}s for required plugins, with
-   *                            plugin name as key and plugin id as value.
+   * @param requiredPlugins is a {@link Map} of {@link String}s for required plugins, with
+   *                        plugin id as key and plugin name as value.
    * @return a {@link Map} of {@link String}s for missing plugins, where key is a plugin's name and
    *                            value is plugin's id.
    */
   @NotNull
-  public static Map<String, String> filterMissingOrDisabledPluginNames(@NotNull
-      Map<String, String> requiredPluginNames) {
-    return requiredPluginNames
+  public static Map<String, String> filterMissingOrDisabledPluginNames(
+      @NotNull Map<String, String> requiredPlugins) {
+    return requiredPlugins
         .entrySet()
         .stream()
         .filter(RequiredPluginsCheckerUtil::isEntryContentsNonNull)
-        .filter(entry -> isPluginMissingOrDisabled(entry.getValue()))
+        .filter(entry -> isPluginMissingOrDisabled(entry.getKey()))
         .collect(toMap(Entry::getKey, Entry::getValue));
   }
 
@@ -93,17 +92,17 @@ public class RequiredPluginsCheckerUtil {
    *
    * <p>Note! This won't work if the required plugins aren't published in JB's main plugin repo.
    *
-   * @param missingOrDisabledPluginNames is a {@link Map} of {@link String}s for missing plugins,
-   *                                     where key is a plugin's name and value is plugin's id.
+   * @param missingOrDisabledPlugins is a {@link Map} of {@link String}s for missing plugins,
+   *                                 where key is a plugin's id and value is plugin's name.
    * @return a {@link List} of {@link IdeaPluginDescriptor} corresponding to the input.
    */
   @NotNull
-  public static List<IdeaPluginDescriptor> createListOfMissingOrDisabledPluginDescriptors(@NotNull
-      Map<String, String> missingOrDisabledPluginNames) {
+  public static List<IdeaPluginDescriptor> createListOfMissingOrDisabledPluginDescriptors(
+      @NotNull Map<String, String> missingOrDisabledPlugins) {
     List<IdeaPluginDescriptor> missingOrDisabledIdeaPluginDescriptors = new ArrayList<>();
-    if (!missingOrDisabledPluginNames.isEmpty()) {
+    if (!missingOrDisabledPlugins.isEmpty()) {
       List<IdeaPluginDescriptor> availableIdeaPluginDescriptors = getAvailablePluginsFromMainRepo();
-      missingOrDisabledPluginNames.forEach((name, id) ->
+      missingOrDisabledPlugins.forEach((id, name) ->
           availableIdeaPluginDescriptors
           .stream()
           .filter(Objects::nonNull)

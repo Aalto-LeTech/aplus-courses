@@ -4,7 +4,7 @@ import static fi.aalto.cs.intellij.utils.RequiredPluginsCheckerUtil.createListOf
 import static fi.aalto.cs.intellij.utils.RequiredPluginsCheckerUtil.filterDisabledPluginDescriptors;
 import static fi.aalto.cs.intellij.utils.RequiredPluginsCheckerUtil.filterMissingOrDisabledPluginNames;
 import static fi.aalto.cs.intellij.utils.RequiredPluginsCheckerUtil.filterMissingPluginDescriptors;
-import static fi.aalto.cs.intellij.utils.RequiredPluginsCheckerUtil.getRequiredPluginNamesMap;
+import static fi.aalto.cs.intellij.utils.RequiredPluginsCheckerUtil.getRequiredPlugins;
 
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.notification.Notification;
@@ -17,6 +17,7 @@ import fi.aalto.cs.intellij.notifications.EnablePluginsNotification;
 import fi.aalto.cs.intellij.notifications.InstallPluginsNotification;
 import java.util.List;
 import java.util.Map;
+
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -46,10 +47,10 @@ public class RequiredPluginsCheckerActivity implements StartupActivity {
    */
   @NotNull
   private List<IdeaPluginDescriptor> getActualListOfMissingOrDisabledIdeaPluginDescriptors() {
-    Map<String, String> requiredPluginNames = getRequiredPluginNamesMap();
-    Map<String, String> missingOrDisabledPluginNames = filterMissingOrDisabledPluginNames(
-        requiredPluginNames);
-    return createListOfMissingOrDisabledPluginDescriptors(missingOrDisabledPluginNames);
+    Map<String, String> requiredPlugins = getRequiredPlugins();
+    Map<String, String> missingOrDisabledPlugins
+        = filterMissingOrDisabledPluginNames(requiredPlugins);
+    return createListOfMissingOrDisabledPluginDescriptors(missingOrDisabledPlugins);
   }
 
   /**
