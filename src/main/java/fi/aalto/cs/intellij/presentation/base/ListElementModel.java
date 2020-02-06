@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 public class ListElementModel<T> extends BaseModel<T> {
 
   private volatile boolean selected;
-  private volatile BaseListModel<? extends ListElementModel> listModel;
+  private volatile BaseListModel<?> listModel;
   private volatile int index;
 
   public ListElementModel(@NotNull T model) {
@@ -18,7 +18,7 @@ public class ListElementModel<T> extends BaseModel<T> {
 
   @Override
   protected void onChanged() {
-    BaseListModel<? extends ListElementModel> localListModel = listModel;
+    BaseListModel<?> localListModel = listModel;
     if (localListModel != null) {
       localListModel.onElementChanged(getIndex());
     }
@@ -28,7 +28,7 @@ public class ListElementModel<T> extends BaseModel<T> {
     return selected;
   }
 
-  public void setListModel(BaseListModel<? extends ListElementModel> listModel) {
+  public void setListModel(BaseListModel<?> listModel) {
     this.listModel = listModel;
   }
 

@@ -7,9 +7,11 @@ public interface TaskManager<T> {
 
   void join(T task);
 
-  default void joinAll(List<T> tasks) {
-    for (T task : tasks) {
-      join(task);
-    }
+  default T all(List<T> tasks) {
+    return fork(() -> {
+      for (T task: tasks) {
+        join(task);
+      }
+    });
   }
 }

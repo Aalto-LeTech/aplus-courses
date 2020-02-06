@@ -18,8 +18,7 @@ import org.junit.Ignore;
 /**
  * A helper class to simplify testing plugin manipulation logics.
  */
-@Ignore
-public class PluginsTestHelper extends BasePlatformTestCase {
+public abstract class PluginsTestHelper extends BasePlatformTestCase {
 
   /**
    * A helper method that creates a sample {@link List} of {@link IdeaPluginDescriptor} based on the

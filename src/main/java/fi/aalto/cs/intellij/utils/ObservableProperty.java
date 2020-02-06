@@ -14,10 +14,10 @@ public class ObservableProperty<T> {
     value = initialValue;
   }
 
-  private final Set<ValueChangedObserver<T>> observers =
+  private final Set<ValueObserver<T>> observers =
       Collections.newSetFromMap(new WeakHashMap<>());
 
-  public void addValueChangedObserver(ValueChangedObserver<T> observer) {
+  public void addValueChangedObserver(ValueObserver<T> observer) {
     T currentValue = value;
     synchronized (observers) {
       observer.valueChanged(currentValue);
@@ -32,13 +32,13 @@ public class ObservableProperty<T> {
 
   private void onValueChanged(@Nullable T value) {
     synchronized (observers) {
-      for (ValueChangedObserver<T> observer : observers) {
+      for (ValueObserver<T> observer : observers) {
         observer.valueChanged(value);
       }
     }
   }
 
-  public interface ValueChangedObserver<T> {
+  public interface ValueObserver<T> {
     void valueChanged(@Nullable T value);
   }
 

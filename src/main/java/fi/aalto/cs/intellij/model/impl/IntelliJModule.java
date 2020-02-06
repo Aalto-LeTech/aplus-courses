@@ -1,10 +1,12 @@
 package fi.aalto.cs.intellij.model.impl;
 
+import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.module.ModuleWithNameAlreadyExists;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtilRt;
 import fi.aalto.cs.intellij.model.Module;
+import fi.aalto.cs.intellij.model.ModuleLoadException;
 import fi.aalto.cs.intellij.utils.DomUtil;
 import java.io.File;
 import java.io.IOException;
@@ -17,9 +19,13 @@ import net.lingala.zip4j.ZipFile;
 import org.apache.commons.io.FileUtils;
 import org.jdom.JDOMException;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 
 public class IntelliJModule extends Module {
+  private static final Logger logger = LoggerFactory.getLogger(IntelliJModule.class);
+
   @NotNull
   private final Project project;
 
@@ -55,14 +61,16 @@ public class IntelliJModule extends Module {
   }
 
   @Override
-  public void load() throws IOException {
-    try {
-      ModuleManager.getInstance(getProject()).loadModule(getImlFile().toString());
-    } catch (JDOMException e) {
-      throw new IOException(e);
-    } catch (ModuleWithNameAlreadyExists ignored) {
-      // We think about this later.  Until then, we just consider this case fine.
-    }
+  public void load() throws ModuleLoadException {
+    ModuleManager moduleManager = ModuleManager.getInstance(getProject());
+    String imlFileName = getImlFile().toString();
+    WriteAction.runAndWait(() -> {
+      try {
+        moduleManager.loadModule(imlFileName);
+      } catch (IOException | JDOMException | ModuleWithNameAlreadyExists e) {
+        throw new ModuleLoadException(e);
+      }
+    });
   }
 
   @NotNull

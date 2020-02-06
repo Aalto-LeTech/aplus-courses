@@ -1,6 +1,7 @@
 package fi.aalto.cs.intellij.presentation.module;
 
 import fi.aalto.cs.intellij.model.Module;
+import fi.aalto.cs.intellij.presentation.base.BaseModel;
 import fi.aalto.cs.intellij.presentation.base.ListElementModel;
 import fi.aalto.cs.intellij.utils.ObservableProperty;
 import java.awt.font.TextAttribute;
@@ -8,11 +9,9 @@ import org.jetbrains.annotations.NotNull;
 
 public class ModuleListElementModel extends ListElementModel<Module> {
 
-  protected final StateObserver stateObserver = new StateObserver();
-
   public ModuleListElementModel(@NotNull Module module) {
     super(module);
-    module.state.addValueChangedObserver(stateObserver);
+    module.stateChanged.addListener(this, BaseModel::changed);
   }
 
   public String getName() {
@@ -24,7 +23,7 @@ public class ModuleListElementModel extends ListElementModel<Module> {
   }
 
   public String getStatus() {
-    switch (getModel().state.get()) {
+    switch (getModel().getState()) {
       case Module.NOT_INSTALLED:
       case Module.FETCHED:
         return "Not installed";
@@ -33,6 +32,9 @@ public class ModuleListElementModel extends ListElementModel<Module> {
       case Module.LOADING:
         return "Installing...";
       case Module.LOADED:
+        return "Loaded";
+      case Module.WAITING_FOR_DEPS:
+        return "Waiting for dependencies...";
       case Module.INSTALLED:
         return "Installed";
       default:
@@ -41,16 +43,8 @@ public class ModuleListElementModel extends ListElementModel<Module> {
   }
 
   public float getFontWeight() {
-    return getModel().state.get() >= Module.LOADED
+    return getModel().getState() == Module.INSTALLED
         ? TextAttribute.WEIGHT_BOLD
         : TextAttribute.WEIGHT_REGULAR;
-  }
-
-  private class StateObserver implements ObservableProperty.ValueChangedObserver<Integer> {
-
-    @Override
-    public void valueChanged(Integer value) {
-      changed();
-    }
   }
 }

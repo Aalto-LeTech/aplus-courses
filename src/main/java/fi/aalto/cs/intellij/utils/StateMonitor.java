@@ -35,7 +35,7 @@ public class StateMonitor {
     return result;
   }
 
-  public void waitFor(int expectedState) throws InterruptedException {
+  public void waitUntil(int expectedState) throws InterruptedException {
     InterruptedException exception = null;
     boolean changed = false;
     synchronized (stateLock) {

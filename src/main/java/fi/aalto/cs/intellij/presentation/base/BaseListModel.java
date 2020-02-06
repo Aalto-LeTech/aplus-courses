@@ -75,7 +75,7 @@ public class BaseListModel<E extends ListElementModel<?>> extends AbstractListMo
       int firstIndex = selectionEvent.getFirstIndex();
       int lastIndex = selectionEvent.getLastIndex();
       for (int index = firstIndex; index <= lastIndex; index++) {
-        ListElementModel element = BaseListModel.this.getElementAt(index);
+        E element = BaseListModel.this.getElementAt(index);
         if (element != null) {
           boolean selected = isSelectedIndex(index);
           element.setSelected(selected);

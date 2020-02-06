@@ -9,7 +9,7 @@ import java.awt.Component;
 import java.awt.event.ActionListener;
 
 public class ActionUtil {
-  public static void trigger(String actionId, Component source) {
+  public static void launch(String actionId, Component source) {
     // https://intellij-support.jetbrains.com/hc/en-us/community/posts/206130119/comments/206169635
     AnAction action = ActionManager.getInstance().getAction(actionId);
     AnActionEvent event = AnActionEvent.createFromAnAction(action, null, ActionPlaces.UNKNOWN,
@@ -17,8 +17,8 @@ public class ActionUtil {
     action.actionPerformed(event);
   }
 
-  public static ActionListener triggerer(String actionId, Component source) {
-    return actionEvent -> trigger(actionId, source);
+  public static ActionListener onEventLauncher(String actionId, Component source) {
+    return actionEvent -> launch(actionId, source);
   }
 
   private ActionUtil() {

@@ -2,11 +2,14 @@ package fi.aalto.cs.intellij.actions;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import fi.aalto.cs.intellij.model.ModuleInstallation;
+import fi.aalto.cs.intellij.model.Module;
+import fi.aalto.cs.intellij.model.ModuleInstaller;
 import fi.aalto.cs.intellij.presentation.CourseModel;
 import fi.aalto.cs.intellij.presentation.base.BaseModel;
 import fi.aalto.cs.intellij.services.PluginSettings;
 import fi.aalto.cs.intellij.utils.SimpleAsyncTaskManager;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
 public class ImportModuleAction extends AnAction {
@@ -25,11 +28,12 @@ public class ImportModuleAction extends AnAction {
   public void actionPerformed(@NotNull AnActionEvent e) {
     CourseModel course = PluginSettings.getInstance().getMainModel().course.get();
     if (course != null) {
-      course.getModules().getSelectedElements()
+      List<Module> modules = course.getModules().getSelectedElements()
           .stream()
           .map(BaseModel::getModel)
-          .forEach(module -> new ModuleInstallation<>(module, course.getModel(),
-              new SimpleAsyncTaskManager()).installAsync());
+          .collect(Collectors.toList());
+      new ModuleInstaller<>(course.getModel(), new SimpleAsyncTaskManager())
+          .installAsync(modules);
     }
   }
 }

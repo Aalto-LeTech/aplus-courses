@@ -6,7 +6,7 @@ import fi.aalto.cs.intellij.utils.ObservableProperty;
 import javax.swing.DefaultListModel;
 import javax.swing.JPanel;
 
-public class ModulesView implements ObservableProperty.ValueChangedObserver<CourseModel> {
+public class ModulesView implements ObservableProperty.ValueObserver<CourseModel> {
   @Binding
   public ModuleListView moduleListView;
   @Binding

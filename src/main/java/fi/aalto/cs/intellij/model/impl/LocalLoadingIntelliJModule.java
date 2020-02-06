@@ -17,9 +17,11 @@ public class LocalLoadingIntelliJModule extends IntelliJModule {
    *
    * @param name    The name of the module.
    * @param url     The URL from which the module can be downloaded.
-   * @param project
+   * @param project A project to which this module is loaded.
    */
-  public LocalLoadingIntelliJModule(@NotNull String name, @NotNull URL url, @NotNull Project project) {
+  public LocalLoadingIntelliJModule(@NotNull String name,
+                                    @NotNull URL url,
+                                    @NotNull Project project) {
     super(name, url, project);
   }
 

@@ -21,17 +21,7 @@ import org.junit.Test;
 
 public class CourseTest {
 
-  private final static CourseFactory COURSE_FACTORY = new CourseFactory() {
-    @Override
-    public Course createCourse(@NotNull String name, @NotNull List<Module> modules, @NotNull Map<String, String> requiredPlugins) {
-      return new Course(name, modules, requiredPlugins);
-    }
-
-    @Override
-    public Module createModule(@NotNull String name, @NotNull URL url) {
-      return new Module(name, url);
-    }
-  };
+  private static final CourseFactory COURSE_FACTORY = new CourseFactory() {};
 
   @Test
   public void testCreateCourse() throws MalformedURLException {

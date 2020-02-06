@@ -1,6 +1,6 @@
 package fi.aalto.cs.intellij.model;
 
-import fi.aalto.cs.intellij.utils.ObservableProperty;
+import fi.aalto.cs.intellij.utils.Event;
 import fi.aalto.cs.intellij.utils.StateMonitor;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -17,9 +17,10 @@ public class Module {
   public static final int FETCHED = FETCHING + 1;
   public static final int LOADING = FETCHED + 1;
   public static final int LOADED = LOADING + 1;
-  public static final int INSTALLED = LOADED + 1;
+  public static final int WAITING_FOR_DEPS = LOADED + 1;
+  public static final int INSTALLED = WAITING_FOR_DEPS + 1;
 
-  public final ObservableProperty<Integer> state = new ObservableProperty<>(NOT_INSTALLED);
+  public final Event stateChanged = new Event();
   public final StateMonitor stateMonitor = new StateMonitor(this::onStateChanged);
 
   @NotNull
@@ -80,11 +81,15 @@ public class Module {
     throw new UnsupportedOperationException();
   }
 
-  public void load() throws IOException {
+  public void load() throws ModuleLoadException {
     throw new UnsupportedOperationException();
   }
 
+  public int getState() {
+    return stateMonitor.get();
+  }
+
   public void onStateChanged() {
-    state.set(stateMonitor.get());
+    stateChanged.trigger();
   }
 }

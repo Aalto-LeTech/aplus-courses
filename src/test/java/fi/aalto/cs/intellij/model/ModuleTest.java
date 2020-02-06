@@ -13,6 +13,8 @@ import org.junit.Test;
 
 public class ModuleTest {
 
+  private static final CourseFactory COURSE_FACTORY = new CourseFactory() {};
+
   @Test
   public void testCreateModule() throws MalformedURLException {
     URL url = new URL("https://example.com");
@@ -26,7 +28,7 @@ public class ModuleTest {
   @Test
   public void testCreateModuleFromJsonObject() throws MalformedURLException {
     JSONObject jsonObject = new JSONObject("{\"name\":\"Name\",\"url\":\"https://aalto.fi\"}");
-    Module module = Module.fromJsonObject(jsonObject, CourseFactory.DEFAULT);
+    Module module = Module.fromJsonObject(jsonObject, COURSE_FACTORY);
     assertEquals("The name of the module should be the same as that in the JSON object",
         "Name", module.getName());
     assertEquals("The URL of the module should be the same as that in the JSON object",
@@ -36,19 +38,18 @@ public class ModuleTest {
   @Test(expected = JSONException.class)
   public void testCreateModuleFromJsonObjectMissingName() throws MalformedURLException {
     JSONObject jsonObject = new JSONObject("{\"url\":\"https://example.org\"}");
-    Module.fromJsonObject(jsonObject, CourseFactory.DEFAULT);
+    Module.fromJsonObject(jsonObject, COURSE_FACTORY);
   }
 
   @Test(expected = JSONException.class)
   public void testCreateModuleFromJsonObjectMissingUrl() throws MalformedURLException {
     JSONObject jsonObject = new JSONObject("{\"name\":\"Name\"}");
-    Module.fromJsonObject(jsonObject, CourseFactory.DEFAULT);
+    Module.fromJsonObject(jsonObject, COURSE_FACTORY);
   }
 
   @Test(expected = MalformedURLException.class)
   public void testCreateModuleFromJsonObjectWithMalformedUrl() throws MalformedURLException {
     JSONObject jsonObject = new JSONObject("{\"name\":\"Name\",\"url\":\"\"}");
-    Module.fromJsonObject(jsonObject, CourseFactory.DEFAULT);
+    Module.fromJsonObject(jsonObject, COURSE_FACTORY);
   }
-
 }

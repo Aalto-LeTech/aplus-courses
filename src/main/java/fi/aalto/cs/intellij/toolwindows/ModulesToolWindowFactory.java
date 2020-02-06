@@ -34,7 +34,7 @@ public class ModulesToolWindowFactory extends BaseToolWindowFactory implements D
     popupMenu.setTargetComponent(modulesView.moduleListView);
     modulesView.moduleListView.setPopupMenu(popupMenu.getComponent());
 
-    modulesView.moduleListView.addListActionListener(ActionUtil.triggerer(
+    modulesView.moduleListView.addListActionListener(ActionUtil.onEventLauncher(
         ImportModuleAction.ACTION_ID, modulesView.moduleListView));
 
     return modulesView.basePanel;
