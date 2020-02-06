@@ -21,7 +21,12 @@ public class ModuleInstaller<T> {
     new ModuleInstallation(module).doIt();
   }
 
-  @SuppressWarnings("unchecked")
+  /**
+   * Installs multiple modules using possibly asynchronous execution.  See
+   * {@code installAsync(Module)} for further info.
+   * @param modules A {@link List} of {@link Module}s.
+   * @return A future given by {@code TaskManager.fork()}.
+   */
   public T installAsync(@NotNull List<Module> modules) {
     return taskManager.all(modules
         .stream()
@@ -94,7 +99,7 @@ public class ModuleInstaller<T> {
       }
     }
 
-    List<Module> getDependencies() throws IOException {
+    List<Module> getDependencies() throws IOException, ModuleLoadException {
       return module.getDependencies()
           .stream()
           .map(moduleSource::getModule)

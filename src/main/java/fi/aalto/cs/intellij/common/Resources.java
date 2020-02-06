@@ -55,6 +55,12 @@ public class Resources {
     return props;
   }
 
+  /**
+   * Returns a resource as a stream.
+   * @param resourceName Name of the resource.
+   * @return An {@link InputStream} to the given resource.
+   * @throws ResourceException If the resource could not be found.
+   */
   @NotNull
   public InputStream getStream(@NotNull String resourceName) throws ResourceException {
     InputStream stream = resourceProvider.getResourceAsStream(resourceName);

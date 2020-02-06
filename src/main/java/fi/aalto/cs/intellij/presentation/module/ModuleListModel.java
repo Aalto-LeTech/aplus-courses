@@ -8,6 +8,10 @@ import org.jetbrains.annotations.NotNull;
 
 public class ModuleListModel extends BaseListModel<ModuleListElementModel> {
 
+  /**
+   * Presentation model for a list of modules shown in the UI.
+   * @param modules A list of modules (domain model objects).
+   */
   public ModuleListModel(@NotNull List<Module> modules) {
     super(modules
         .stream()

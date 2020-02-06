@@ -22,6 +22,10 @@ public class ModuleListElementModel extends ListElementModel<Module> {
     return getModel().getUrl().toString();
   }
 
+  /**
+   * Returns a textual representation of the status of the module.
+   * @return A {@link String} describing the status.
+   */
   public String getStatus() {
     switch (getModel().getState()) {
       case Module.NOT_INSTALLED:
@@ -42,6 +46,10 @@ public class ModuleListElementModel extends ListElementModel<Module> {
     }
   }
 
+  /**
+   * Returns a font weight in which the module is shown on a list.
+   * @return A {@link Float} that can be set to font weight.
+   */
   public float getFontWeight() {
     return getModel().getState() == Module.INSTALLED
         ? TextAttribute.WEIGHT_BOLD

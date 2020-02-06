@@ -22,8 +22,9 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
-public class IntelliJModule extends Module {
+class IntelliJModule extends Module {
   private static final Logger logger = LoggerFactory.getLogger(IntelliJModule.class);
 
   @NotNull
@@ -32,13 +33,7 @@ public class IntelliJModule extends Module {
   private static final String DEPENDENCY_NAMES =
       "/module/component/orderEntry[@type='module']/@module-name";
 
-  /**
-   * Constructs a module with the given name and URL.
-   *
-   * @param name The name of the module.
-   * @param url  The URL from which the module can be downloaded.
-   */
-  public IntelliJModule(@NotNull String name, @NotNull URL url, @NotNull Project project) {
+  IntelliJModule(@NotNull String name, @NotNull URL url, @NotNull Project project) {
     super(name, url);
 
     this.project = project;
@@ -46,11 +41,15 @@ public class IntelliJModule extends Module {
 
   @Override
   @NotNull
-  public List<String> getDependencies() throws IOException {
-    return DomUtil.getNodesFromXPath(DEPENDENCY_NAMES, getImlFile())
-        .stream()
-        .map(Node::getTextContent)
-        .collect(Collectors.toList());
+  public List<String> getDependencies() throws IOException, ModuleLoadException {
+    try {
+      return DomUtil.getNodesFromXPath(DEPENDENCY_NAMES, getImlFile())
+          .stream()
+          .map(Node::getTextContent)
+          .collect(Collectors.toList());
+    } catch (SAXException e) {
+      throw new ModuleLoadException(e);
+    }
   }
 
   @Override

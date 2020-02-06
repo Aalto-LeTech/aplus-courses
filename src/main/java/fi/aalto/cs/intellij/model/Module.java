@@ -73,7 +73,7 @@ public class Module {
   }
 
   @NotNull
-  public List<String> getDependencies() throws IOException {
+  public List<String> getDependencies() throws IOException, ModuleLoadException {
     throw new UnsupportedOperationException();
   }
 

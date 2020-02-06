@@ -14,6 +14,9 @@ public class ModulesView implements ObservableProperty.ValueObserver<CourseModel
   @Binding
   public JPanel basePanel;
 
+  /**
+   * A view that holds the content of the Modules tool window.
+   */
   public ModulesView() {
     // Avoid this instance getting GC'ed before its UI components.
     //

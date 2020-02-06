@@ -11,15 +11,10 @@ import java.nio.file.StandardCopyOption;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
-public class LocalLoadingIntelliJModule extends IntelliJModule {
-  /**
-   * Constructs a module with the given name and URL.
-   *
-   * @param name    The name of the module.
-   * @param url     The URL from which the module can be downloaded.
-   * @param project A project to which this module is loaded.
-   */
-  public LocalLoadingIntelliJModule(@NotNull String name,
+// Remove this class when modules are no longer loaded from a local dir.
+class LocalLoadingIntelliJModule extends IntelliJModule {
+
+  LocalLoadingIntelliJModule(@NotNull String name,
                                     @NotNull URL url,
                                     @NotNull Project project) {
     super(name, url, project);

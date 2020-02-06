@@ -38,12 +38,7 @@ public class InitializationActivity implements StartupActivity, DumbAware {
     Course course;
     try {
       course = Course.fromResource(PluginSettings.COURSE_CONFIGURATION_FILE_PATH,
-          new IntelliJCourseFactory(project) {
-            @Override
-            public Module createModule(@NotNull String name, @NotNull URL url) {
-              return new LocalLoadingIntelliJModule(name, url, project);
-            }
-          });
+          new IntelliJCourseFactory(project));
     } catch (ResourceException | MalformedCourseConfigurationFileException e) {
       course = null;
       logger.info("Error occurred while trying to parse a course configuration file", e);

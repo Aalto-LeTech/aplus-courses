@@ -38,10 +38,12 @@ public class DomUtil {
       documentBuilderFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
       documentBuilderFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
     } catch (IllegalArgumentException e) {
-      logger.warn("Could not set XXE restrictions for DOM tools.");
+      logger.warn("Could not set XXE restrictions for DOM tools because the platform does not "
+          + "support them.");
     }
   }
 
+  @NotNull
   private static XPathExpression getCachedXPathExpression(@NotNull String xpath) {
     return xPathCache.computeIfAbsent(xpath, DomUtil::compileXPath);
   }
@@ -59,6 +61,13 @@ public class DomUtil {
 
   }
 
+  /**
+   * Get a list of nodes that matches the given XPath when applied to the given node.
+   * @param xpath A {@link String} that contains an XPath expression.
+   * @param node  A {@link Node} that is used as a root for XPath.
+   * @return A {@link List} containing all the {@link Node}s that match the XPath.
+   * @throws IllegalArgumentException If the given string is not a valid XPath.
+   */
   @NotNull
   public static List<Node> getNodesFromXPath(@NotNull String xpath, @NotNull Node node) {
     NodeList nodeList;
@@ -69,19 +78,24 @@ public class DomUtil {
     }
     return CommonUtil.createList(nodeList.getLength(), nodeList::item);
   }
-
+  
   @NotNull
   public static List<Node> getNodesFromXPath(@NotNull String xpath, @NotNull File file)
-      throws IOException {
+      throws IOException, SAXException {
     return getNodesFromXPath(xpath, parse(file));
   }
 
+  /**
+   * Parses the given file to a DOM document.
+   * @param file A {@link File}.
+   * @return A DOM {@link Document}.
+   * @throws IOException  If the file cannot be accessed.
+   * @throws SAXException If the content of the file is not properly structured.
+   */
   @NotNull
-  public static Document parse(@NotNull File file) throws IOException {
+  public static Document parse(@NotNull File file) throws IOException, SAXException {
     try {
       return documentBuilderFactory.newDocumentBuilder().parse(file);
-    } catch (SAXException e) {
-      throw new IllegalArgumentException();
     } catch (ParserConfigurationException e) {
       throw new IllegalStateException();
     }
