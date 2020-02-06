@@ -18,8 +18,7 @@ public class RequiredPluginsCheckerUtilFTest extends PluginsTestHelper {
   public void testFilterMissingOrDisabledPluginNamesWithCorrectInputWorks() {
     Map<String, String> requiredPluginNames = new HashMap<>();
     getDummyPluginsListOfTwo().forEach(descriptor ->
-        requiredPluginNames.put(descriptor.getName(),
-        descriptor.getPluginId().getIdString()));
+        requiredPluginNames.put(descriptor.getPluginId().getIdString(), descriptor.getName()));
 
     Map<String, String> result =
         RequiredPluginsCheckerUtil.filterMissingOrDisabledPluginNames(requiredPluginNames);
@@ -31,8 +30,7 @@ public class RequiredPluginsCheckerUtilFTest extends PluginsTestHelper {
   public void testFilterMissingOrDisabledPluginNamesWorksWithCorrectInputWithNullWorks() {
     Map<String, String> requiredPluginNames = new HashMap<>();
     getDummyPluginsListOfTwo().forEach(descriptor ->
-        requiredPluginNames.put(descriptor.getName(),
-        descriptor.getPluginId().getIdString()));
+        requiredPluginNames.put(descriptor.getPluginId().getIdString(), descriptor.getName()));
     requiredPluginNames.put(null, null);
 
     Map<String, String> result =
