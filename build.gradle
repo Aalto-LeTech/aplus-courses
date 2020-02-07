@@ -32,7 +32,7 @@ publishPlugin {
 }
 
 checkstyle {
-    configFile = file('/google_checks.xml')
+    configFile = file('checkstyle/google_checks.xml')
     maxWarnings = 0
 }
 
