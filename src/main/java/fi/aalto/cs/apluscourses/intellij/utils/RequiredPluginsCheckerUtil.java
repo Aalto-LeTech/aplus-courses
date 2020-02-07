@@ -33,6 +33,10 @@ public class RequiredPluginsCheckerUtil {
   private static final Logger logger = LoggerFactory
       .getLogger(RequiredPluginsCheckerUtil.class);
 
+  private RequiredPluginsCheckerUtil() {
+
+  }
+
   /**
    * Returns a map containing the required plugins.
    * @return a {@link Map} of {@link String}s for required plugins, with plugin id as key and

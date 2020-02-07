@@ -70,23 +70,21 @@ public class StateMonitor {
    * @param expectedState A state.
    */
   public void waitUntil(int expectedState) {
-    boolean interrupted = false;
-    boolean changed = false;
     synchronized (stateLock) {
       while (!isError(state) && state < expectedState) {
         try {
           stateLock.wait();
         } catch (InterruptedException e) {
-          interrupted = true;
-          changed = setInternal(ERROR);
+          // No time to call onChanged()?
+          // It would be cool to release sync lock before calling onChanged().
+          // However, Sonar wants (maybe reasonably) that Thread.interrupt() is called inside the
+          // catch block.
+          // Perhaps, onChanged should be called in a different thread.  Not only here but always.
+          // That's something that could be considered in the future.
+          setInternal(ERROR);
+          Thread.currentThread().interrupt();
         }
       }
-    }
-    if (changed) {
-      onChanged();
-    }
-    if (interrupted) {
-      Thread.currentThread().interrupt();
     }
   }
 

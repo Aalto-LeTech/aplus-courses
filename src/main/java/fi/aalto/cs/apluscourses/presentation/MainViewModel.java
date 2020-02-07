@@ -5,10 +5,6 @@ import org.jetbrains.annotations.NotNull;
 
 public class MainViewModel {
 
-  public MainViewModel() {
-    System.out.println("MainViewModel constructed.");
-  }
-
   @NotNull
   public final ObservableProperty<CourseViewModel> courseViewModel = new ObservableProperty<>(null);
 }
