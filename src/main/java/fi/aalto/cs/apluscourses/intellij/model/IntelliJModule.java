@@ -45,7 +45,7 @@ class IntelliJModule extends Module {
           .map(Node::getTextContent)
           .collect(Collectors.toList());
     } catch (SAXException e) {
-      throw new ModuleLoadException(e);
+      throw new ModuleLoadException(this, e);
     }
   }
 
@@ -58,7 +58,11 @@ class IntelliJModule extends Module {
 
   @Override
   public void load() throws ModuleLoadException {
-    WriteAction.runAndWait(new Loader(getProject(), getImlFile())::load);
+    try {
+      WriteAction.runAndWait(new Loader(getProject(), getImlFile())::load);
+    } catch (Exception e) {
+      throw new ModuleLoadException(this, e);
+    }
   }
 
   @NotNull
@@ -101,12 +105,8 @@ class IntelliJModule extends Module {
     }
 
     @CalledWithWriteLock
-    public void load() throws ModuleLoadException {
-      try {
-        moduleManager.loadModule(imlFileName);
-      } catch (IOException | JDOMException | ModuleWithNameAlreadyExists e) {
-        throw new ModuleLoadException(e);
-      }
+    public void load() throws JDOMException, ModuleWithNameAlreadyExists, IOException {
+      moduleManager.loadModule(imlFileName);
     }
   }
 }

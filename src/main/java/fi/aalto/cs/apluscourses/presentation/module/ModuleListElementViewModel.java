@@ -26,7 +26,7 @@ public class ModuleListElementViewModel extends ListElementViewModel<Module> {
    * @return A {@link String} describing the status.
    */
   public String getStatus() {
-    switch (getModel().getState()) {
+    switch (getModel().stateMonitor.get()) {
       case Module.NOT_INSTALLED:
       case Module.FETCHED:
         return "Not installed";
@@ -50,7 +50,7 @@ public class ModuleListElementViewModel extends ListElementViewModel<Module> {
    * @return A {@link Float} that can be set to font weight.
    */
   public float getFontWeight() {
-    return getModel().getState() == Module.INSTALLED
+    return getModel().stateMonitor.get() == Module.INSTALLED
         ? TextAttribute.WEIGHT_BOLD
         : TextAttribute.WEIGHT_REGULAR;
   }

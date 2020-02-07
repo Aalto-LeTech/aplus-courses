@@ -1,6 +1,8 @@
 package fi.aalto.cs.apluscourses.utils;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * An abstract interface for asynchronous execution following the fork-join model of task
@@ -14,6 +16,7 @@ import java.util.List;
 public interface TaskManager<T> {
   /**
    * Runs a given {@link Runnable} as a new task and returns an identifier object for that task.
+   *
    * @param runnable Subprogram to be run as a new task.
    * @return A task identifier whose type is implementation-specific.
    */
@@ -25,11 +28,13 @@ public interface TaskManager<T> {
    * <p>Basically, it means that {@code run()} method of the {@link Runnable} object given to
    * {@code fork()} returns before (in the sense of happens-before relationship of Java's memory
    * model) this method returns (when called with the task identifier returned by the said call to
-   * {@code fork}).
+   * {@code fork}).</p>
    *
-   * @param task A task identifier returned by an antecedent call to {@code fork}.
+   * <p>If {@code task} is null, this method is expected just return.</p>
+   *
+   * @param task A task identifier returned by an antecedent call to {@code fork}, or null.
    */
-  void join(T task);
+  void join(@Nullable T task);
 
   /**
    * Merge multiple tasks into one.
@@ -44,5 +49,23 @@ public interface TaskManager<T> {
         join(task);
       }
     });
+  }
+
+  /**
+   * Forks multiple {@link Runnable} objects.
+   *
+   * @param runnableList {@link List} of {@link Runnable} objects.
+   * @return A task identifier that, when passed to {@code join}, ensures that all the runnable
+   *         objects have returned.
+   */
+  default T forkAll(List<Runnable> runnableList) {
+    return all(runnableList
+        .stream()
+        .map(this::fork)
+        .collect(Collectors.toList()));
+  }
+
+  default void forkAllAndJoin(List<Runnable> runnableList) {
+    join(forkAll(runnableList));
   }
 }

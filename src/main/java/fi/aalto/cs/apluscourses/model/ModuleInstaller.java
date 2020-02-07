@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class ModuleInstaller<T> {
 
@@ -17,37 +18,42 @@ public class ModuleInstaller<T> {
     this.taskManager = taskManager;
   }
 
-  private void install(Module module) {
-    new ModuleInstallation(module).doIt();
-  }
-
-  /**
-   * Installs multiple modules using possibly asynchronous execution.  See
-   * {@code installAsync(Module)} for further info.
-   * @param modules A {@link List} of {@link Module}s.
-   * @return A future given by {@code TaskManager.fork()}.
-   */
-  public T installAsync(@NotNull List<Module> modules) {
-    return taskManager.all(modules
+  private T installInternal(List<Module> modules) {
+    return taskManager.forkAll(modules
         .stream()
-        .map(this::installAsync)
+        .map(module -> (Runnable) () -> installInternal(module))
         .collect(Collectors.toList()));
   }
 
-  /** Installs a module and its dependencies using possibly asynchronous execution provided by the
-   * {@link TaskManager} of this installer and returns a future object with which
-   * {@code TaskManager.join()} can be called.
-   *
-   * <p>Note that it is guaranteed that when {@code TaskManager.join()} is called with the object
-   * returned by this method, the state of the module is at least LOADED (or error) but not
-   * necessarily INSTALLED.  However, it is guaranteed that the state will eventually be changed to
-   * INSTALLED (or error).</p>
-   *
-   * @param module A module to be installed.
-   * @return A future given by {@code TaskManager.fork()}.
+  /*
+   * When this method returns, the state is guaranteed to be at least LOADED (or error).
+   * When {@code TaskManager.join()} has returned from call with the object returned by this method,
+   * the state of the module is guaranteed to be INSTALLED (or error).
    */
-  public T installAsync(Module module) {
-    return taskManager.fork(() -> install(module));
+  private T installInternal(Module module) {
+    ModuleInstallation moduleInstallation = new ModuleInstallation(module);
+    return moduleInstallation.doIt();
+  }
+
+  /**
+   * Installs multiple modules and their dependencies.
+   *
+   * @param modules A {@link List} of {@link Module}s to be installed.
+   *
+   */
+  public void install(@NotNull List<Module> modules) {
+    taskManager.forkAllAndJoin(modules
+        .stream()
+        .map(module -> (Runnable) () -> install(module))
+        .collect(Collectors.toList()));
+  }
+
+  /** Installs a module and its dependencies.
+   *
+   * @param module A {@link Module} to be installed.
+   */
+  public void install(Module module) {
+    taskManager.join(installInternal(module));
   }
 
   class ModuleInstallation {
@@ -58,17 +64,21 @@ public class ModuleInstaller<T> {
       this.module = module;
     }
     
-    private void doIt() {
+    private T doIt() {
       T installDependenciesTask;
+      List<Module> dependencies;
       try {
         fetch();
-        installDependenciesTask = installAsync(getDependencies());
-        load();
+        dependencies = getDependencies();
+        installDependenciesTask = load(dependencies);
       } catch (IOException | ModuleLoadException e) {
         module.stateMonitor.set(Module.ERROR);
-        return;
+        return null;
       }
-      end(installDependenciesTask);
+      if (installDependenciesTask == null) {
+        return null;
+      }
+      return taskManager.fork(() -> end(installDependenciesTask, dependencies));
     }
     
     void fetch() throws IOException {
@@ -80,28 +90,36 @@ public class ModuleInstaller<T> {
       }
     }
 
-    void load() throws ModuleLoadException {
+    T load(List<Module> dependencies) throws ModuleLoadException {
       if (module.stateMonitor.setConditionally(Module.FETCHED, Module.LOADING)) {
+        T installDependenciesTask = installInternal(dependencies);
         module.load();
         module.stateMonitor.set(Module.LOADED);
+        return installDependenciesTask;
       } else {
         module.stateMonitor.waitUntil(Module.LOADED);
+        return null;
       }
     }
 
-    void end(T installDependenciesTask) {
-      if (module.stateMonitor.setConditionally(Module.LOADED, Module.WAITING_FOR_DEPS)) {
-        taskManager.join(installDependenciesTask);
-        module.stateMonitor.set(Module.INSTALLED);
-      }
+    void end(T installDependenciesTask, List<Module> dependencies) {
+      module.stateMonitor.set(Module.WAITING_FOR_DEPS);
+      taskManager.join(installDependenciesTask);
+      module.stateMonitor.set(dependencies.stream().anyMatch(Module::hasError)
+          ? Module.ERROR
+          : Module.INSTALLED);
     }
 
     List<Module> getDependencies() throws IOException, ModuleLoadException {
-      return module.getDependencies()
-          .stream()
-          .map(moduleSource::getModule)
-          .filter(Objects::nonNull)
-          .collect(Collectors.toList());
+      try {
+        return module.getDependencies()
+            .stream()
+            .map(moduleSource::getModule)
+            .map(Objects::requireNonNull)
+            .collect(Collectors.toList());
+      } catch (NullPointerException e) {
+        throw new ModuleLoadException(module, e);
+      }
     }
   }
 }

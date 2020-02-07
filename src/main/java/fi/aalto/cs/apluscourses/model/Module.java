@@ -5,6 +5,7 @@ import fi.aalto.cs.apluscourses.utils.StateMonitor;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collections;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
@@ -74,22 +75,22 @@ public class Module {
 
   @NotNull
   public List<String> getDependencies() throws IOException, ModuleLoadException {
-    throw new UnsupportedOperationException();
+    return Collections.emptyList();
   }
 
   public void fetch() throws IOException {
-    throw new UnsupportedOperationException();
+    // Default implementation: do nothing
   }
 
   public void load() throws ModuleLoadException {
-    throw new UnsupportedOperationException();
+    // Default implementation: do nothing
   }
 
-  public int getState() {
-    return stateMonitor.get();
-  }
-
-  public void onStateChanged() {
+  protected void onStateChanged() {
     stateChanged.trigger();
+  }
+
+  public boolean hasError() {
+    return stateMonitor.get() <= ERROR;
   }
 }

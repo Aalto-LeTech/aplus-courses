@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.utils;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import org.jetbrains.annotations.Nullable;
 
 public class SimpleAsyncTaskManager implements TaskManager<CompletableFuture<Void>> {
 
@@ -11,8 +12,10 @@ public class SimpleAsyncTaskManager implements TaskManager<CompletableFuture<Voi
   }
 
   @Override
-  public void join(CompletableFuture<Void> task) {
-    task.join();
+  public void join(@Nullable CompletableFuture<Void> task) {
+    if (task != null) {
+      task.join();
+    }
   }
 
   @Override

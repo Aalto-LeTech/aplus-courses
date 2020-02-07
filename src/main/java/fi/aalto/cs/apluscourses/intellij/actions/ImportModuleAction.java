@@ -3,6 +3,7 @@ package fi.aalto.cs.apluscourses.intellij.actions;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
+import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.model.ModuleInstaller;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
@@ -28,15 +29,16 @@ public class ImportModuleAction extends AnAction {
 
   @Override
   public void actionPerformed(@NotNull AnActionEvent e) {
-    CourseViewModel course = PluginSettings.getInstance()
+    CourseViewModel courseViewModel = PluginSettings.getInstance()
         .getMainViewModel(e.getProject()).courseViewModel.get();
-    if (course != null) {
-      List<Module> modules = course.getModules().getSelectedElements()
+    if (courseViewModel != null) {
+      List<Module> modules = courseViewModel.getModules().getSelectedElements()
           .stream()
           .map(BaseViewModel::getModel)
           .collect(Collectors.toList());
-      new ModuleInstaller<>(course.getModel(), new SimpleAsyncTaskManager())
-          .installAsync(modules);
+      Course course = courseViewModel.getModel();
+      SimpleAsyncTaskManager taskManager = new SimpleAsyncTaskManager();
+      taskManager.fork(() -> new ModuleInstaller<>(course, taskManager).install(modules));
     }
   }
 }
