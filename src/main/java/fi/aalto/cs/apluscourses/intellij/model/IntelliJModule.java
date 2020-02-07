@@ -21,7 +21,6 @@ import org.jetbrains.annotations.CalledWithWriteLock;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 class IntelliJModule extends Module {
 
@@ -73,7 +72,7 @@ class IntelliJModule extends Module {
 
   protected void fetchZipTo(File file) throws IOException {
     // Call HTTP client
-    throw new NotImplementedException();
+    throw new UnsupportedOperationException();
   }
 
   @NotNull

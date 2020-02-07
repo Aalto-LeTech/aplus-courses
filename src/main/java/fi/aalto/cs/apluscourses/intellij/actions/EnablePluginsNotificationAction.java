@@ -1,6 +1,6 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
-import static fi.aalto.cs.apluscourses.utils.RequiredPluginsCheckerUtil.getPluginsNamesString;
+import static fi.aalto.cs.apluscourses.intellij.utils.RequiredPluginsCheckerUtil.getPluginsNamesString;
 
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManager;
@@ -9,7 +9,6 @@ import com.intellij.notification.NotificationAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.extensions.PluginId;
 import java.util.List;
-import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -18,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 public class EnablePluginsNotificationAction extends NotificationAction {
 
   private List<IdeaPluginDescriptor> disabledPluginDescriptors;
-  private final PluginProvider pluginProvider;
+  private final PluginEnabler pluginEnabler;
 
   /**
    * Builds the action.
@@ -27,7 +26,7 @@ public class EnablePluginsNotificationAction extends NotificationAction {
    *                                  enabled.
    */
   public EnablePluginsNotificationAction(List<IdeaPluginDescriptor> disabledPluginDescriptors) {
-    this(disabledPluginDescriptors, PluginManager::getPlugin);
+    this(disabledPluginDescriptors, PluginManager::enablePlugin);
   }
 
   /**
@@ -35,15 +34,15 @@ public class EnablePluginsNotificationAction extends NotificationAction {
    *
    * @param disabledPluginDescriptors is a {@link List} of {@link IdeaPluginDescriptor} that can be
    *                                  enabled.
-   * @param pluginProvider            is a {@link PluginProvider} exposed for testing purposes.
+   * @param pluginEnabler             is a {@link PluginEnabler} exposed for testing purposes.
    */
   public EnablePluginsNotificationAction(
       @NotNull List<IdeaPluginDescriptor> disabledPluginDescriptors,
-      PluginProvider pluginProvider) {
+      PluginEnabler pluginEnabler) {
     super("Enable the required plugin(s) ("
         + getPluginsNamesString(disabledPluginDescriptors) + ").");
     this.disabledPluginDescriptors = disabledPluginDescriptors;
-    this.pluginProvider = pluginProvider;
+    this.pluginEnabler = pluginEnabler;
   }
 
   /**
@@ -54,26 +53,25 @@ public class EnablePluginsNotificationAction extends NotificationAction {
    */
   @Override
   public void actionPerformed(@NotNull AnActionEvent e, @NotNull Notification notification) {
-    disabledPluginDescriptors.forEach(descriptor -> Objects
-        .requireNonNull(pluginProvider.getPlugin(descriptor.getPluginId())).setEnabled(true));
+    disabledPluginDescriptors
+        .forEach(descriptor -> pluginEnabler.enable(descriptor.getPluginId().getIdString()));
     notification.expire();
   }
 
   /**
-   * An abstract interface for an object that provides {@link IdeaPluginDescriptor} based on
-   * supplied {@link PluginId}s. The most useful realization of this interface is {@code
-   * PluginManager::getPlugin}.
+   * An abstract interface for an object that enables plugins based on supplied {@link String} that
+   * represent {@link PluginId}s. The most useful realization of this interface is {@code
+   * PluginManager::enablePlugin}.
    */
   @FunctionalInterface
-  public interface PluginProvider {
+  public interface PluginEnabler {
 
     /**
-     * Searches for an {@link IdeaPluginDescriptor} with the {@code pluginId}.
+     * Enables a plugin based on the given PluginId represented as {@link String}.
      *
-     * @param pluginId is the id of the desired plugin.
-     * @return an {@link IdeaPluginDescriptor} which corresponds to {@code pluginId} or {@code
-     * null} if the plugin could not be found.
+     * @param pluginId is the {@link String} id of the desired plugin.
+     * @return is true for the case of successful enablement and false if it did not work.
      */
-    IdeaPluginDescriptor getPlugin(PluginId pluginId);
+    boolean enable(String pluginId);
   }
 }

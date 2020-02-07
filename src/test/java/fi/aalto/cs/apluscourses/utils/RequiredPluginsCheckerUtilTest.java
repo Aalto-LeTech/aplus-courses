@@ -6,6 +6,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
+import fi.aalto.cs.apluscourses.intellij.utils.RequiredPluginsCheckerUtil;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

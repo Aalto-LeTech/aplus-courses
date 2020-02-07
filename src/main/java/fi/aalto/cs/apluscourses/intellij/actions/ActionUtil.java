@@ -14,14 +14,14 @@ public class ActionUtil {
   /**
    * Launches {@link AnAction}.
    *
-   * @param actionId Id of the action.
-   * @param source A {@link Component} that gives the {@link DataContext} for the action.
+   * @param actionId    Id of the action.
+   * @param dataContext A {@link DataContext} for the action.
    */
-  public static void launch(String actionId, Component source) {
+  public static void launch(String actionId, DataContext dataContext) {
     // https://intellij-support.jetbrains.com/hc/en-us/community/posts/206130119/comments/206169635
     AnAction action = ActionManager.getInstance().getAction(actionId);
     AnActionEvent event = AnActionEvent.createFromAnAction(action, null, ActionPlaces.UNKNOWN,
-        DataManager.getInstance().getDataContext(source));
+        dataContext);
     action.actionPerformed(event);
   }
 
@@ -34,7 +34,7 @@ public class ActionUtil {
    * @return An {@link ActionListener}
    */
   public static ActionListener onEventLauncher(String actionId, Component source) {
-    return actionEvent -> launch(actionId, source);
+    return actionEvent -> launch(actionId, DataManager.getInstance().getDataContext(source));
   }
 
   private ActionUtil() {

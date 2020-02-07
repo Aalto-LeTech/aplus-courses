@@ -1,6 +1,6 @@
 package fi.aalto.cs.apluscourses.intellij.notifications;
 
-import static fi.aalto.cs.apluscourses.utils.RequiredPluginsCheckerUtil.getPluginsNamesString;
+import static fi.aalto.cs.apluscourses.intellij.utils.RequiredPluginsCheckerUtil.getPluginsNamesString;
 
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.notification.Notification;
@@ -21,7 +21,7 @@ public class InstallPluginsNotification extends Notification {
    */
   public InstallPluginsNotification(List<IdeaPluginDescriptor> missingPluginDescriptors) {
     super("A+",
-        "A+",
+        "A+ Courses plugin required plugins missing warning",
         "The additional plugin(s) must be installed and enabled for the A+ plugin to work "
             + "properly (" + getPluginsNamesString(missingPluginDescriptors) + ").",
         NotificationType.WARNING);

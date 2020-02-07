@@ -4,6 +4,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
+import com.intellij.ide.plugins.PluginManager;
 import com.intellij.notification.Notification;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import fi.aalto.cs.apluscourses.PluginsTestHelper;
@@ -20,8 +21,9 @@ public class EnablePluginsNotificationActionFTest extends PluginsTestHelper {
     List<IdeaPluginDescriptor> descriptorList = new ArrayList<>();
     IdeaPluginDescriptor ideaPluginDescriptor = getIdeaCorePluginDescriptor();
     descriptorList.add(ideaPluginDescriptor);
-    ideaPluginDescriptor.setEnabled(false);
-    assertFalse(ideaPluginDescriptor.isEnabled());
+    boolean disabled = PluginManager
+        .disablePlugin(ideaPluginDescriptor.getPluginId().getIdString());
+    assertTrue("The core plugin is disabled.", disabled);
 
     //when
     EnablePluginsNotificationAction enableMissingPluginsAction =

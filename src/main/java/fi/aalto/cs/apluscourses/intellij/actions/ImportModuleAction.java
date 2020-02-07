@@ -19,7 +19,8 @@ public class ImportModuleAction extends AnAction {
 
   @Override
   public void update(@NotNull AnActionEvent e) {
-    CourseViewModel course = PluginSettings.getInstance().getMainViewModel().course.get();
+    CourseViewModel course = PluginSettings.getInstance()
+        .getMainViewModel(e.getProject()).courseViewModel.get();
     boolean isModuleSelected = course != null
         && !course.getModules().getSelectionModel().isSelectionEmpty();
     e.getPresentation().setEnabled(isModuleSelected);
@@ -27,7 +28,8 @@ public class ImportModuleAction extends AnAction {
 
   @Override
   public void actionPerformed(@NotNull AnActionEvent e) {
-    CourseViewModel course = PluginSettings.getInstance().getMainViewModel().course.get();
+    CourseViewModel course = PluginSettings.getInstance()
+        .getMainViewModel(e.getProject()).courseViewModel.get();
     if (course != null) {
       List<Module> modules = course.getModules().getSelectedElements()
           .stream()

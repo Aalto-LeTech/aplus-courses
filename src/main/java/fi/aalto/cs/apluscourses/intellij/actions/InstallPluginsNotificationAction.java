@@ -1,6 +1,6 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
-import static fi.aalto.cs.apluscourses.utils.RequiredPluginsCheckerUtil.getPluginsNamesString;
+import static fi.aalto.cs.apluscourses.intellij.utils.RequiredPluginsCheckerUtil.getPluginsNamesString;
 
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManagerConfigurable;

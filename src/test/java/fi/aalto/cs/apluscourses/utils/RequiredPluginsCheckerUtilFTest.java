@@ -4,6 +4,7 @@ import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.extensions.PluginId;
 import fi.aalto.cs.apluscourses.PluginsTestHelper;
+import fi.aalto.cs.apluscourses.intellij.utils.RequiredPluginsCheckerUtil;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,8 +19,7 @@ public class RequiredPluginsCheckerUtilFTest extends PluginsTestHelper {
   public void testFilterMissingOrDisabledPluginNamesWithCorrectInputWorks() {
     Map<String, String> requiredPluginNames = new HashMap<>();
     getDummyPluginsListOfTwo().forEach(descriptor ->
-        requiredPluginNames.put(descriptor.getName(),
-        descriptor.getPluginId().getIdString()));
+        requiredPluginNames.put(descriptor.getPluginId().getIdString(), descriptor.getName()));
 
     Map<String, String> result =
         RequiredPluginsCheckerUtil.filterMissingOrDisabledPluginNames(requiredPluginNames);
@@ -31,8 +31,7 @@ public class RequiredPluginsCheckerUtilFTest extends PluginsTestHelper {
   public void testFilterMissingOrDisabledPluginNamesWorksWithCorrectInputWithNullWorks() {
     Map<String, String> requiredPluginNames = new HashMap<>();
     getDummyPluginsListOfTwo().forEach(descriptor ->
-        requiredPluginNames.put(descriptor.getName(),
-        descriptor.getPluginId().getIdString()));
+        requiredPluginNames.put(descriptor.getPluginId().getIdString(), descriptor.getName()));
     requiredPluginNames.put(null, null);
 
     Map<String, String> result =

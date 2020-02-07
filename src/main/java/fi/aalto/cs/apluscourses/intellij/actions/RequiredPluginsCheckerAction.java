@@ -1,18 +1,17 @@
-package fi.aalto.cs.apluscourses.intellij.activities;
+package fi.aalto.cs.apluscourses.intellij.actions;
 
-import static fi.aalto.cs.apluscourses.utils.RequiredPluginsCheckerUtil.createListOfMissingOrDisabledPluginDescriptors;
-import static fi.aalto.cs.apluscourses.utils.RequiredPluginsCheckerUtil.filterDisabledPluginDescriptors;
-import static fi.aalto.cs.apluscourses.utils.RequiredPluginsCheckerUtil.filterMissingOrDisabledPluginNames;
-import static fi.aalto.cs.apluscourses.utils.RequiredPluginsCheckerUtil.filterMissingPluginDescriptors;
-import static fi.aalto.cs.apluscourses.utils.RequiredPluginsCheckerUtil.getRequiredPluginNamesMap;
+import static fi.aalto.cs.apluscourses.intellij.utils.RequiredPluginsCheckerUtil.createListOfMissingOrDisabledPluginDescriptors;
+import static fi.aalto.cs.apluscourses.intellij.utils.RequiredPluginsCheckerUtil.filterDisabledPluginDescriptors;
+import static fi.aalto.cs.apluscourses.intellij.utils.RequiredPluginsCheckerUtil.filterMissingOrDisabledPluginNames;
+import static fi.aalto.cs.apluscourses.intellij.utils.RequiredPluginsCheckerUtil.filterMissingPluginDescriptors;
+import static fi.aalto.cs.apluscourses.intellij.utils.RequiredPluginsCheckerUtil.getRequiredPlugins;
 
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.notification.Notification;
 import com.intellij.notification.Notifications;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.startup.StartupActivity;
-import fi.aalto.cs.apluscourses.intellij.actions.EnablePluginsNotificationAction;
-import fi.aalto.cs.apluscourses.intellij.actions.InstallPluginsNotificationAction;
 import fi.aalto.cs.apluscourses.intellij.notifications.EnablePluginsNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.InstallPluginsNotification;
 import java.util.List;
@@ -20,20 +19,22 @@ import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * A startup activity that checks and hints on missing or disabled required for the course plugins.
+ * An action that checks and hints on missing or disabled required for the course plugins.
  */
-public class RequiredPluginsCheckerActivity implements StartupActivity {
+public class RequiredPluginsCheckerAction extends AnAction {
+
+  public static final String ACTION_ID =
+      "fi.aalto.cs.apluscourses.intellij.actions.RequiredPluginsCheckerAction";
 
   /**
-   * An actual startup work to filter out invalid (missing or disabled) plugins and notify gets done
-   * here.
+   * An actual work to filter out invalid (missing or disabled) plugins and notify gets done here.
    *
-   * @param project is a {@link Project} object for the current project.
+   * @param e {@link AnActionEvent}
    */
   @Override
-  public void runActivity(@NotNull Project project) {
+  public void actionPerformed(@NotNull AnActionEvent e) {
     List<IdeaPluginDescriptor> missingOrDisabledIdeaPluginDescriptors =
-        getActualListOfMissingOrDisabledIdeaPluginDescriptors();
+        getActualListOfMissingOrDisabledIdeaPluginDescriptors(e.getProject());
     if (!missingOrDisabledIdeaPluginDescriptors.isEmpty()) {
       checkPluginsStatusAndNotify(missingOrDisabledIdeaPluginDescriptors);
     }
@@ -45,11 +46,12 @@ public class RequiredPluginsCheckerActivity implements StartupActivity {
    * @return a {@link List} of {@link IdeaPluginDescriptor} that are missing or disabled.
    */
   @NotNull
-  private List<IdeaPluginDescriptor> getActualListOfMissingOrDisabledIdeaPluginDescriptors() {
-    Map<String, String> requiredPluginNames = getRequiredPluginNamesMap();
-    Map<String, String> missingOrDisabledPluginNames = filterMissingOrDisabledPluginNames(
-        requiredPluginNames);
-    return createListOfMissingOrDisabledPluginDescriptors(missingOrDisabledPluginNames);
+  private List<IdeaPluginDescriptor> getActualListOfMissingOrDisabledIdeaPluginDescriptors(
+      Project project) {
+    Map<String, String> requiredPlugins = getRequiredPlugins(project);
+    Map<String, String> missingOrDisabledPlugins
+        = filterMissingOrDisabledPluginNames(requiredPlugins);
+    return createListOfMissingOrDisabledPluginDescriptors(missingOrDisabledPlugins);
   }
 
   /**

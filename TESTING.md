@@ -44,3 +44,22 @@ a manual testing manual. Marked with a github issue label "manual testing".
     </ol>  
   </p>
 </details>
+<details>
+  <summary>
+    <a href="https://github.com/Aalto-LeTech/intellij-plugin/issues/44">add new startup notification saying the plugin is in beta/dev #44</a>
+  </summary>
+  <p>
+    <p><b>Checking the notification regard the current A+ Course plugin version</b></p>
+    <ol>
+      <li>Ensure "A+ Course" plugin is installed <b>(File | Settings | Plugins | Installed)</b> and check the plugin version from the plugin window or <a href="https://plugins.jetbrains.com/plugin/13634-a-plugin-for-intellij/versions">online.</a></li>
+      <li>Restart an IDE</li>
+      <li>Observe a notification saying and ensure the version matches the one shown for the plugin.
+        <br/>
+        <i>
+          "A+ Courses plugin is under development: You are using version <b>0.1.0</b> of A+ Courses plugin, which is a pre-release version of the plugin and still under development. Some features of this plugin are still probably missing, and the plugin is not yet tested thoroughly. Use this plugin with caution and on your own risk!
+       </i>
+      </li>
+      <li>The notification should reamin after the restart is done.</li>
+    </ol>  
+  </p>
+</details>
