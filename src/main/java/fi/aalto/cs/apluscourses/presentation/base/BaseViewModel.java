@@ -12,7 +12,7 @@ public class BaseViewModel<T> {
   }
 
   protected void onChanged() {
-
+    // Default implementation: do nothing.
   }
 
   public boolean checkIfChanged() {

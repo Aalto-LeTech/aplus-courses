@@ -27,7 +27,7 @@ public class IntelliJCourseFactory implements CourseFactory {
 
   @Override
   public Module createModule(@NotNull String name, @NotNull URL url) {
-    // Change this when modules are no longer loaded from a local dir.
-    return new LocalLoadingIntelliJModule(name, url, project);
+    // Change this when modules are no longer fetched from a local dir.
+    return new LocalFetchingIntelliJModule(name, url, project);
   }
 }

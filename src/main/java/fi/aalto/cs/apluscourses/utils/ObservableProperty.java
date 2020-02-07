@@ -13,14 +13,17 @@ import org.jetbrains.annotations.Nullable;
 public class ObservableProperty<T> {
 
   @Nullable
-  private volatile T value;
+  private T value;
 
+  /**
+   * Construct a new observable property.
+   * @param initialValue Initial value of this {@link ObservableProperty}
+   */
   public ObservableProperty(@Nullable T initialValue) {
     value = initialValue;
   }
 
-  private final Set<ValueObserver<T>> observers =
-      Collections.newSetFromMap(new WeakHashMap<>());
+  private final Set<ValueObserver<T>> observers = Collections.newSetFromMap(new WeakHashMap<>());
 
   /**
    * Add a new {@link ValueObserver} and calls its {@code valueChanged} method.
@@ -33,19 +36,17 @@ public class ObservableProperty<T> {
    * <p>After the given observer has been added to the set of observers, {@code valueChanged} of
    * that observer is immediately called with the current value of the property.  Therefore, there
    * should not be any reason to call {@code get()} method when using an observer.  In other words,
-   * {@code addValueChangedObserver()} and {@code get()} are two separate interfaces to the
+   * {@code addValueObserver()} and {@code get()} are two separate interfaces to the
    * property, only one of which should be used at once.</p>
    *
    * <p>If observer already was in the set of the observers, this method does nothing.</p>
    *
    * @param observer A {@link ValueObserver}.  Observer's method {@code valueChanged} should never
-   *                 call {@code addValueChangedObserver()}.
+   *                 call {@code addValueObserver()}.
    */
-  public void addValueChangedObserver(@NotNull ValueObserver<T> observer) {
-    synchronized (observers) {
-      if (observers.add(observer)) {
-        observer.valueChanged(value);
-      }
+  public synchronized void addValueObserver(@NotNull ValueObserver<T> observer) {
+    if (observers.add(observer)) {
+      observer.valueChanged(value);
     }
   }
 
@@ -55,14 +56,17 @@ public class ObservableProperty<T> {
    *
    * @param newValue The new value to be set.
    */
-  public void set(T newValue) {
-    synchronized (observers) {
-      value = newValue;
-      onValueChanged(newValue);
-    }
+  public synchronized void set(T newValue) {
+    value = newValue;
+    onValueChanged(newValue);
   }
 
-  private void onValueChanged(@Nullable T value) {
+  @Nullable
+  public synchronized T get() {
+    return value;
+  }
+
+  private synchronized void onValueChanged(@Nullable T value) {
     for (ValueObserver<T> observer : observers) {
       observer.valueChanged(value);
     }
@@ -70,10 +74,5 @@ public class ObservableProperty<T> {
 
   public interface ValueObserver<T> {
     void valueChanged(@Nullable T value);
-  }
-
-  @Nullable
-  public T get() {
-    return value;
   }
 }

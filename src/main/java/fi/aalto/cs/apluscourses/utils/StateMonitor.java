@@ -68,17 +68,16 @@ public class StateMonitor {
    * Waits until the state is either greater than or equal to the {@code expectedState} or error.
    *
    * @param expectedState A state.
-   * @throws InterruptedException If the thread is interrupted.
    */
-  public void waitUntil(int expectedState) throws InterruptedException {
-    InterruptedException exception = null;
+  public void waitUntil(int expectedState) {
+    boolean interrupted = false;
     boolean changed = false;
     synchronized (stateLock) {
       while (!isError(state) && state < expectedState) {
         try {
           stateLock.wait();
         } catch (InterruptedException e) {
-          exception = e;
+          interrupted = true;
           changed = setInternal(ERROR);
         }
       }
@@ -86,8 +85,8 @@ public class StateMonitor {
     if (changed) {
       onChanged();
     }
-    if (exception != null) {
-      throw exception;
+    if (interrupted) {
+      Thread.currentThread().interrupt();
     }
   }
 

@@ -151,6 +151,14 @@ public abstract class BaseListView<E extends ListElementViewModel<?>, V>
   @NotNull
   protected abstract JComponent renderElementView(@NotNull V view);
 
+  protected void showPopupMenu(@NotNull Point location) {
+    synchronized (popupMenuLock) {
+      if (popupMenu != null) {
+        popupMenu.show(this, location.x, location.y);
+      }
+    }
+  }
+
   @NotNull
   private JComponent getRendererForElement(@Nullable E element) {
     V view = views.computeIfAbsent(element, this::createElementView);
@@ -163,20 +171,6 @@ public abstract class BaseListView<E extends ListElementViewModel<?>, V>
   private void onListActionPerformed() {
     ActionEvent event = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null);
     listActionListeners.forEach(listener -> listener.actionPerformed(event));
-  }
-
-  private void showPopupMenu(int index, @Nullable Point location) {
-    if (location == null) {
-      location = indexToLocation(index);
-      if (location == null) {
-        return;
-      }
-    }
-    synchronized (popupMenuLock) {
-      if (popupMenu != null) {
-        popupMenu.show(this, location.x, location.y);
-      }
-    }
   }
 
   private class ListMouseListener extends MouseAdapter {
@@ -196,7 +190,7 @@ public abstract class BaseListView<E extends ListElementViewModel<?>, V>
         int index = getIndex(mouseEvent);
         if (index >= 0) {
           setSelectedIndex(index);
-          showPopupMenu(index, mouseEvent.getPoint());
+          showPopupMenu(mouseEvent.getPoint());
         }
       }
     }

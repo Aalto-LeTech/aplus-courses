@@ -64,9 +64,6 @@ public class ModuleInstaller<T> {
         fetch();
         installDependenciesTask = installAsync(getDependencies());
         load();
-      } catch (InterruptedException e) {
-        Thread.currentThread().interrupt();
-        return;
       } catch (IOException | ModuleLoadException e) {
         module.stateMonitor.set(Module.ERROR);
         return;
@@ -74,7 +71,7 @@ public class ModuleInstaller<T> {
       end(installDependenciesTask);
     }
     
-    void fetch() throws IOException, InterruptedException {
+    void fetch() throws IOException {
       if (module.stateMonitor.setConditionally(Module.NOT_INSTALLED, Module.FETCHING)) {
         module.fetch();
         module.stateMonitor.set(Module.FETCHED);
@@ -83,7 +80,7 @@ public class ModuleInstaller<T> {
       }
     }
 
-    void load() throws ModuleLoadException, InterruptedException {
+    void load() throws ModuleLoadException {
       if (module.stateMonitor.setConditionally(Module.FETCHED, Module.LOADING)) {
         module.load();
         module.stateMonitor.set(Module.LOADED);

@@ -5,7 +5,9 @@ import org.jetbrains.annotations.NotNull;
 public class ListElementViewModel<T> extends BaseViewModel<T> {
 
   private volatile boolean selected;
-  private volatile BaseListViewModel<?> listModel;
+  // Sonar does not like non-primitive volatile fields because the semantics of "volatile" are
+  // easily misunderstood by programmers but we now what we are doing here.
+  private volatile BaseListViewModel<?> listModel; //NOSONAR
   private volatile int index;
 
   public ListElementViewModel(@NotNull T model) {

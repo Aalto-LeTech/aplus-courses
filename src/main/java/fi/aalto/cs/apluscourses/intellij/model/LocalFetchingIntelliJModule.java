@@ -11,12 +11,12 @@ import java.nio.file.StandardCopyOption;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
-// Remove this class when modules are no longer loaded from a local dir.
-class LocalLoadingIntelliJModule extends IntelliJModule {
+// Remove this class when modules are no longer fetched from a local dir.
+class LocalFetchingIntelliJModule extends IntelliJModule {
 
-  LocalLoadingIntelliJModule(@NotNull String name,
-                                    @NotNull URL url,
-                                    @NotNull Project project) {
+  LocalFetchingIntelliJModule(@NotNull String name,
+                              @NotNull URL url,
+                              @NotNull Project project) {
     super(name, url, project);
   }
 

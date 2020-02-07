@@ -16,16 +16,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import net.lingala.zip4j.ZipFile;
-import org.apache.commons.io.FileUtils;
 import org.jdom.JDOMException;
+import org.jetbrains.annotations.CalledWithWriteLock;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 class IntelliJModule extends Module {
-  private static final Logger logger = LoggerFactory.getLogger(IntelliJModule.class);
 
   @NotNull
   private final Project project;
@@ -61,15 +59,7 @@ class IntelliJModule extends Module {
 
   @Override
   public void load() throws ModuleLoadException {
-    ModuleManager moduleManager = ModuleManager.getInstance(getProject());
-    String imlFileName = getImlFile().toString();
-    WriteAction.runAndWait(() -> {
-      try {
-        moduleManager.loadModule(imlFileName);
-      } catch (IOException | JDOMException | ModuleWithNameAlreadyExists e) {
-        throw new ModuleLoadException(e);
-      }
-    });
+    WriteAction.runAndWait(new Loader(getProject(), getImlFile())::load);
   }
 
   @NotNull
@@ -82,13 +72,16 @@ class IntelliJModule extends Module {
   }
 
   protected void fetchZipTo(File file) throws IOException {
-    FileUtils.copyURLToFile(getUrl(), file);
+    // Call HTTP client
+    throw new NotImplementedException();
   }
 
+  @NotNull
   protected String getBasePath() {
     return Objects.requireNonNull(getProject().getBasePath());
   }
 
+  @NotNull
   protected File getImlFile() {
     String name = getName();
     return Paths.get(getBasePath(), name, name + ".iml").toFile();
@@ -97,5 +90,24 @@ class IntelliJModule extends Module {
   @NotNull
   public Project getProject() {
     return project;
+  }
+
+  private static class Loader {
+    private final ModuleManager moduleManager;
+    private final String imlFileName;
+
+    public Loader(Project project, File imlFile) {
+      moduleManager = ModuleManager.getInstance(project);
+      imlFileName = imlFile.toString();
+    }
+
+    @CalledWithWriteLock
+    public void load() throws ModuleLoadException {
+      try {
+        moduleManager.loadModule(imlFileName);
+      } catch (IOException | JDOMException | ModuleWithNameAlreadyExists e) {
+        throw new ModuleLoadException(e);
+      }
+    }
   }
 }
