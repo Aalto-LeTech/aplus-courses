@@ -73,11 +73,18 @@ public class Module {
     return url;
   }
 
+  /**
+   * Returns the names of the modules on which this module is dependent.  This method should not be
+   * called unless the module is in FETCHED state or further.
+   *
+   * @return Names of the dependencies, as a {@link List}.
+   * @throws ModuleLoadException If dependencies could not be read.
+   */
   @NotNull
-  public List<String> getDependencies() throws IOException, ModuleLoadException {
+  public List<String> getDependencies() throws ModuleLoadException {
     return Collections.emptyList();
   }
-
+  
   public void fetch() throws IOException {
     // Default implementation: do nothing
   }

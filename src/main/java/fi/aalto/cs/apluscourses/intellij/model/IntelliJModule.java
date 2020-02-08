@@ -38,13 +38,13 @@ class IntelliJModule extends Module {
 
   @Override
   @NotNull
-  public List<String> getDependencies() throws IOException, ModuleLoadException {
+  public List<String> getDependencies() throws ModuleLoadException {
     try {
       return DomUtil.getNodesFromXPath(DEPENDENCY_NAMES, getImlFile())
           .stream()
           .map(Node::getTextContent)
           .collect(Collectors.toList());
-    } catch (SAXException e) {
+    } catch (IOException | SAXException e) {
       throw new ModuleLoadException(this, e);
     }
   }

@@ -10,7 +10,7 @@ public class ModuleListElementViewModel extends ListElementViewModel<Module> {
 
   public ModuleListElementViewModel(@NotNull Module module) {
     super(module);
-    module.stateChanged.addListener(this, BaseViewModel::changed);
+    module.stateChanged.addListener(this, BaseViewModel::onChanged);
   }
 
   public String getName() {

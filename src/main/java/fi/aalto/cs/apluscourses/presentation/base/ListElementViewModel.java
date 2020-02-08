@@ -19,7 +19,7 @@ public class ListElementViewModel<T> extends BaseViewModel<T> {
   }
 
   @Override
-  protected void onChanged() {
+  public void onChanged() {
     BaseListViewModel<?> localListModel = listModel;
     if (localListModel != null) {
       localListModel.onElementChanged(getIndex());

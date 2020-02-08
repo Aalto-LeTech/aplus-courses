@@ -11,24 +11,16 @@ import org.jetbrains.annotations.Nullable;
 public class ModuleListView
     extends BaseListView<ModuleListElementViewModel, ModuleListElementView> {
 
-  @NotNull
-  @Override
-  protected ModuleListElementView createElementView(@Nullable ModuleListElementViewModel element) {
-    return new ModuleListElementView();
+  public ModuleListView() {
+    super(new ModuleListElementView());
   }
 
   @Override
-  protected void updateElementView(@NotNull ModuleListElementView view,
+  protected void updateElementView(@NotNull ModuleListElementView elementView,
                                    @NotNull ModuleListElementViewModel element) {
-    view.nameLabel.setText(element.getName());
-    ComponentUtil.setFont(view.nameLabel, TextAttribute.WEIGHT, element.getFontWeight());
-    view.statusLabel.setText("[" + element.getStatus() + "]");
-    view.basePanel.setToolTipText(element.getUrl());
-  }
-
-  @NotNull
-  @Override
-  protected JComponent renderElementView(@NotNull ModuleListElementView view) {
-    return view.basePanel;
+    elementView.nameLabel.setText(element.getName());
+    ComponentUtil.setFont(elementView.nameLabel, TextAttribute.WEIGHT, element.getFontWeight());
+    elementView.statusLabel.setText("[" + element.getStatus() + "]");
+    elementView.basePanel.setToolTipText(element.getUrl());
   }
 }

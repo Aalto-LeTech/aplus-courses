@@ -12,7 +12,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import javax.swing.AbstractAction;
 import javax.swing.DefaultListModel;
 import javax.swing.JComponent;
@@ -31,29 +30,29 @@ import org.jetbrains.annotations.Nullable;
  *   <li>Possibility for client objects to register as {@link ActionListener}s for so called "list
  *   actions".  This action is triggered when an element of the list is double clicked or enter key
  *   is pressed with focus on the list.</li>
- *   <li>Storing separate renderer views for each list element and updating their content based on
- *   the presentation model's "changed" status.</li>
  * </ul>
  *
  * @param <E> Type of the presentation model of the list elements, a subtype of
  *            {@link ListElementViewModel}.
- * @param <V> Type of the views that render the elements.
+ * @param <V> Type of the view of an list element, a subtype of {@link ListElementView}.
  */
-public abstract class BaseListView<E extends ListElementViewModel<?>, V>
+public abstract class BaseListView<E extends ListElementViewModel<?>, V extends ListElementView>
     extends JBList<E> {
 
   private static final Object LIST_ACTION = new Object();
   private static final KeyStroke ENTER_KEY_STROKE = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
 
   private final Set<ActionListener> listActionListeners = ConcurrentHashMap.newKeySet();
-  private final ConcurrentMap<E, V> views = new ConcurrentHashMap<>();
   private final Object popupMenuLock = new Object();
+  private final V elementView;
   private JPopupMenu popupMenu;
 
   /**
    * A constructor.
+   * @param elementView A list element view object.
    */
-  public BaseListView() {
+  public BaseListView(V elementView) {
+    this.elementView = elementView;
     addMouseListener(new ListMouseListener());
     getInputMap(JComponent.WHEN_FOCUSED).put(ENTER_KEY_STROKE, LIST_ACTION);
     getActionMap().put(LIST_ACTION, new AbstractAction() {
@@ -69,6 +68,7 @@ public abstract class BaseListView<E extends ListElementViewModel<?>, V>
    * Sets the {@link JPopupMenu} that is shown for elements.  This class currently does not support
    * different popup menus for different elements.  Should that be needed, this could be changed to
    * take a factory object instead and changing functionality accordingly.
+   *
    * @param popupMenu {@link JPopupMenu}, possibly achieved by {@code ActionToolbar.getComponent()}.
    */
   public void setPopupMenu(JPopupMenu popupMenu) {
@@ -81,6 +81,7 @@ public abstract class BaseListView<E extends ListElementViewModel<?>, V>
    * Sets the list model.  For full functionality, the list model should be an instance of a class
    * implementing {@link SelectableListModel}.  Unlike the superclass' method, this method allows
    * {@code null} to be passed for convenience.
+   *
    * @param model A {@link ListModel} object or null, in which case the list model is set to an
    *              empty {@link DefaultListModel}.
    */
@@ -91,7 +92,7 @@ public abstract class BaseListView<E extends ListElementViewModel<?>, V>
     }
     super.setModel(model);
     if (model instanceof SelectableListModel) {
-      setSelectionModel(((SelectableListModel) model).getSelectionModel());
+      setSelectionModel(((SelectableListModel<E>) model).getSelectionModel());
     }
   }
 
@@ -118,38 +119,21 @@ public abstract class BaseListView<E extends ListElementViewModel<?>, V>
   }
 
   /**
-   * When implemented in a subclass, this method should return a new view object for the given
-   * element.  Note, that a subclass should not cache or reuse these objects as that is already
-   * implemented in this class.  This method is called exactly once for each element.
+   * When implemented in a subclass, this method should update the element view to represent the
+   * state of the given element.  Please note that this method is called repeatedly by the UI so it
+   * should be fast.
    *
-   * @param element A presentation model of an element.  Be aware that, due to the implementation of
-   *                the superclass, it is possible that this method is in some cases called with
-   *                {@code null} as the argument.
-   * @return A view object.
-   */
-  @NotNull
-  protected abstract V createElementView(@Nullable E element);
-
-  /**
-   * When implemented in a subclass, this method should update the state of the given view to
-   * represent the current state of the given element.  This method is called if the
-   * {@code ListElementModel.checkIfChanged()} returned true.  Please note that a subclass should
-   * not call that method in any case.
-   * @param view    The view object that was returned by {@code createElementView}.
    * @param element A presentation model of an element.
    */
-  protected abstract void updateElementView(@NotNull V view, @NotNull E element);
+  protected abstract void updateElementView(@NotNull V elementView, @NotNull E element);
 
-  /**
-   * When implemented in a subclass, this method should return a {@link JComponent} that represents
-   * the view.  If the view is a {@link JComponent} itself this method should just return its
-   * argument.  Please note that this method is called repeatedly by the UI so it should be fast.
-   * An ideal implementation of this method is just a simple return clause.
-   * @param view The view to be rendered.
-   * @return A {@JComponent} that renders the given view (may be the view itself).
-   */
   @NotNull
-  protected abstract JComponent renderElementView(@NotNull V view);
+  private JComponent getRendererForElement(@Nullable E element) {
+    if (element != null) {
+      updateElementView(elementView, element);
+    }
+    return elementView.getRenderer();
+  }
 
   protected void showPopupMenu(@NotNull Point location) {
     synchronized (popupMenuLock) {
@@ -159,14 +143,6 @@ public abstract class BaseListView<E extends ListElementViewModel<?>, V>
     }
   }
 
-  @NotNull
-  private JComponent getRendererForElement(@Nullable E element) {
-    V view = views.computeIfAbsent(element, this::createElementView);
-    if (element != null && element.checkIfChanged()) {
-      updateElementView(view, element);
-    }
-    return renderElementView(view);
-  }
 
   private void onListActionPerformed() {
     ActionEvent event = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null);
