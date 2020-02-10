@@ -5,7 +5,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class ModuleLoadException extends Exception {
   @NotNull
-  private final Module module;
+  private final transient Module module;
 
   public ModuleLoadException(@NotNull Module module, @Nullable Throwable cause) {
     super("Could not load module '" + module.getName() + "'.", cause);

@@ -13,9 +13,6 @@ public class ModuleListViewModel extends BaseListViewModel<ModuleListElementView
    * @param modules A list of modules (domain model objects).
    */
   public ModuleListViewModel(@NotNull List<Module> modules) {
-    super(modules
-        .stream()
-        .map(ModuleListElementViewModel::new)
-        .collect(Collectors.toList()));
+    super(modules, ModuleListElementViewModel::new);
   }
 }

@@ -1,6 +1,8 @@
 package fi.aalto.cs.apluscourses.presentation.base;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultListSelectionModel;
@@ -34,22 +36,20 @@ public class BaseListViewModel<E extends ListElementViewModel<?>> extends Abstra
 
   /**
    * A constructor.
-   * @param elements List of elements.  Note that the list should not be changed after this
-   *                 constructor call.
+   * @param models                      A List of model elements.
+   * @param listElementViewModelFactory A function that creates a list element view model object of
+   *                                    a model object.
    */
-  public BaseListViewModel(@NotNull List<E> elements) {
+  public <M> BaseListViewModel(@NotNull List<M> models,
+                               @NotNull Function<M, E> listElementViewModelFactory) {
     this.selectionModel = new SelectionModel();
-    this.elements = elements;
-    for (E element : elements) {
-      element.setListModel(this);
-    }
-    index();
-  }
-
-  private void index() {
+    this.elements = new ArrayList<>(models.size());
     int index = 0;
-    for (E element : elements) {
+    for (M model : models) {
+      E element = listElementViewModelFactory.apply(model);
+      element.setListModel(this);
       element.setIndex(index++);
+      elements.add(element);
     }
   }
 
