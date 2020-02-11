@@ -56,7 +56,7 @@ public class ModuleInstaller<T> {
     taskManager.join(installInternal(module));
   }
 
-  class ModuleInstallation {
+  private class ModuleInstallation {
 
     private final Module module;
 
@@ -64,7 +64,7 @@ public class ModuleInstaller<T> {
       this.module = module;
     }
     
-    private T doIt() {
+    public T doIt() {
       T installDependenciesTask;
       List<Module> dependencies;
       try {
@@ -81,7 +81,7 @@ public class ModuleInstaller<T> {
       return taskManager.fork(() -> end(installDependenciesTask, dependencies));
     }
     
-    void fetch() throws IOException {
+    private void fetch() throws IOException {
       if (module.stateMonitor.setConditionally(Module.NOT_INSTALLED, Module.FETCHING)) {
         module.fetch();
         module.stateMonitor.set(Module.FETCHED);
@@ -90,7 +90,7 @@ public class ModuleInstaller<T> {
       }
     }
 
-    T load(List<Module> dependencies) throws ModuleLoadException {
+    private T load(List<Module> dependencies) throws ModuleLoadException {
       if (module.stateMonitor.setConditionally(Module.FETCHED, Module.LOADING)) {
         T installDependenciesTask = installInternal(dependencies);
         module.load();
@@ -102,7 +102,7 @@ public class ModuleInstaller<T> {
       }
     }
 
-    void end(T installDependenciesTask, List<Module> dependencies) {
+    private void end(T installDependenciesTask, List<Module> dependencies) {
       module.stateMonitor.set(Module.WAITING_FOR_DEPS);
       taskManager.join(installDependenciesTask);
       module.stateMonitor.set(dependencies.stream().anyMatch(Module::hasError)
@@ -110,7 +110,7 @@ public class ModuleInstaller<T> {
           : Module.INSTALLED);
     }
 
-    List<Module> getDependencies() throws IOException, ModuleLoadException {
+    private List<Module> getDependencies() throws ModuleLoadException {
       try {
         return module.getDependencies()
             .stream()

@@ -291,5 +291,4 @@ public class ModuleInstallerTest {
     assertEquals("Module B should be in INSTALLED state, after the installation has ended.",
         Module.INSTALLED, moduleB.stateMonitor.get());
   }
-
 }
