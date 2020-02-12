@@ -7,5 +7,6 @@ services:
   - docker
 
 script:
+  - chmod +x start_local_a+_env.sh
   - ./start_local_a+_env.sh
 
