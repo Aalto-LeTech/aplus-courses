@@ -11,6 +11,7 @@ ls -al &&
 docker ps &&
 netstat -tulpn &&
 ./docker-up-custom.sh &&
+sleep 2m &&
 docker ps &&
 netstat -tulpn &&
 curl --user root:root http://localhost:8000/api/v2/courses/
