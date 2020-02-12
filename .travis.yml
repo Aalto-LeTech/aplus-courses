@@ -3,10 +3,25 @@ dist: trusty
 jdk:
   - oraclejdk11
 
-services:
-  - docker
+addons:
+  sonarcloud:
+    organization: "aalto-letech-intellij-plugin"
+    token: $SONARCLOUD_TOKEN
 
 script:
-  - chmod +x start_local_a+_env.sh
-  - ./start_local_a+_env.sh
+  - ./gradlew check
+  - chmod +x start_local_a+_env.sh && ./start_local_a+_env.sh
+  - sonar-scanner
 
+deploy:
+  - provider: script
+    script: ./gradlew publishPlugin
+    on:
+      branch: master
+  - provider: script
+    script: env INTELLIJ_PUBLISH_CHANNEL=test ./gradlew publishPlugin
+    on:
+      branch: test
+
+notifications:
+  slack: $SLACK
