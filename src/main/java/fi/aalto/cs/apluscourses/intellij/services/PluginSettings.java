@@ -6,8 +6,9 @@ import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class PluginSettings {
+public class PluginSettings implements MainViewModelProvider {
 
   public static final String COURSE_CONFIGURATION_FILE_PATH = "o1.json";
 
@@ -20,7 +21,7 @@ public class PluginSettings {
   }
 
   @NotNull
-  public MainViewModel getMainViewModel(Project project) {
+  public MainViewModel getMainViewModel(@Nullable Project project) {
     return mainViewModels.computeIfAbsent(project, p -> new MainViewModel());
   }
 }

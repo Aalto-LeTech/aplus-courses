@@ -1,4 +1,4 @@
-package fi.aalto.cs.apluscourses.utils;
+package fi.aalto.cs.apluscourses.utils.async;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,7 +11,8 @@ import org.jetbrains.annotations.Nullable;
  * <p>Note that it is not, however, required that the implementing classes actually use any
  * concurrent computation.</p>
  *
- * @param <T> Type of the task objects (or futures) that are used as identifiers for
+ * @param <T> Type of the task objects (or futures) that are used as identifiers for asynchronous
+ *            tasks
  */
 public interface TaskManager<T> {
   /**

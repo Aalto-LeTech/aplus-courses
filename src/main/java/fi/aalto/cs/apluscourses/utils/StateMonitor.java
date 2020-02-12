@@ -42,9 +42,11 @@ public class StateMonitor {
   /**
    * If the current state equals {@code expectedState}, sets it to {@code newState} and returns
    * true.  Otherwise, returns false.
+   *
    * @param expectedState Expected state.
    * @param newState      New state.
    * @return Whether or not the current state in the beginning was equal to {@code expectedState}.
+   * @throws IllegalArgumentException If {@code newState} is less than {@code expectedState}.
    */
   public boolean setConditionally(int expectedState, int newState) {
     if (newState < expectedState) {
@@ -75,13 +77,6 @@ public class StateMonitor {
         try {
           stateLock.wait();
         } catch (InterruptedException e) {
-          // No time to call onChanged()?
-          // It would be cool to release sync lock before calling onChanged().
-          // However, Sonar wants (maybe reasonably) that Thread.interrupt() is called inside the
-          // catch block.
-          // Perhaps, onChanged should be called in a different thread.  Not only here but always.
-          // That's something that could be considered in the future.
-          setInternal(ERROR);
           Thread.currentThread().interrupt();
         }
       }
@@ -91,7 +86,7 @@ public class StateMonitor {
   private boolean setInternal(int newState) {
     synchronized (stateLock) {
       if (newState < state && !isError(state) && !isError(newState)) {
-        throw new IllegalArgumentException();
+        throw new IllegalStateException();
       }
       boolean changed = state != newState;
       state = newState;

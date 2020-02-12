@@ -4,9 +4,7 @@ import fi.aalto.cs.apluscourses.presentation.module.ModuleListElementViewModel;
 import fi.aalto.cs.apluscourses.ui.base.BaseListView;
 import fi.aalto.cs.apluscourses.ui.base.ComponentUtil;
 import java.awt.font.TextAttribute;
-import javax.swing.JComponent;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class ModuleListView
     extends BaseListView<ModuleListElementViewModel, ModuleListElementView> {

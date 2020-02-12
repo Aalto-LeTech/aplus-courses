@@ -52,13 +52,6 @@ public class BaseListViewModelTest {
         1, listElementViewModel2.getIndex());
     assertEquals("The third element should have index 2.",
         2, listElementViewModel3.getIndex());
-
-    assertSame("The list model of the first element should be set.",
-        listViewModel, listElementViewModel1.getListModel());
-    assertSame("The list model of the second element should be set.",
-        listViewModel, listElementViewModel1.getListModel());
-    assertSame("The list model of the third element should be set.",
-        listViewModel, listElementViewModel1.getListModel());
   }
 
   @Test

@@ -1,4 +1,4 @@
-package fi.aalto.cs.apluscourses.utils;
+package fi.aalto.cs.apluscourses.utils.async;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;

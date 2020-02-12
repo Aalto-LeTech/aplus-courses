@@ -1,9 +1,9 @@
-package fi.aalto.cs.apluscourses.utils;
+package fi.aalto.cs.apluscourses.utils.async;
 
 import org.jetbrains.annotations.Nullable;
 
 // For testing/debugging purposes
-public class DelayTaskManager implements TaskManager<Runnable> {
+class DelayTaskManager implements TaskManager<Runnable> {
 
   @Override
   public Runnable fork(Runnable runnable) {

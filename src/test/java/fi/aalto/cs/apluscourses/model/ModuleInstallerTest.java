@@ -10,7 +10,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import fi.aalto.cs.apluscourses.utils.SimpleAsyncTaskManager;
+import fi.aalto.cs.apluscourses.utils.async.SimpleAsyncTaskManager;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -42,8 +42,8 @@ public class ModuleInstallerTest {
       }
     });
 
-    ModuleInstaller<CompletableFuture<Void>> installer =
-        new ModuleInstaller<>(moduleName -> null, new SimpleAsyncTaskManager());
+    ModuleInstallerImpl<CompletableFuture<Void>> installer =
+        new ModuleInstallerImpl<>(moduleName -> null, new SimpleAsyncTaskManager());
 
     installer.install(module);
 
@@ -77,8 +77,8 @@ public class ModuleInstallerTest {
     moduleMap.put("firstDep", firstDep);
     moduleMap.put("secondDep", secondDep);
 
-    ModuleInstaller<CompletableFuture<Void>> installer =
-        new ModuleInstaller<>(moduleMap::get, new SimpleAsyncTaskManager());
+    ModuleInstallerImpl<CompletableFuture<Void>> installer =
+        new ModuleInstallerImpl<>(moduleMap::get, new SimpleAsyncTaskManager());
 
     installer.install(module1);
 
@@ -113,8 +113,8 @@ public class ModuleInstallerTest {
     moduleMap.put("module1", module1);
     moduleMap.put("module2", module2);
 
-    ModuleInstaller<CompletableFuture<Void>> installer =
-        new ModuleInstaller<>(moduleMap::get, new SimpleAsyncTaskManager());
+    ModuleInstallerImpl<CompletableFuture<Void>> installer =
+        new ModuleInstallerImpl<>(moduleMap::get, new SimpleAsyncTaskManager());
 
     List<Module> modules = new ArrayList<>();
     modules.add(module1);
@@ -145,8 +145,8 @@ public class ModuleInstallerTest {
       }
     });
 
-    ModuleInstaller<CompletableFuture<Void>> installer =
-        new ModuleInstaller<>(moduleName -> null, new SimpleAsyncTaskManager());
+    ModuleInstallerImpl<CompletableFuture<Void>> installer =
+        new ModuleInstallerImpl<>(moduleName -> null, new SimpleAsyncTaskManager());
 
     installer.install(module);
 
@@ -166,8 +166,8 @@ public class ModuleInstallerTest {
       }
     });
 
-    ModuleInstaller<CompletableFuture<Void>> installer =
-        new ModuleInstaller<>(moduleName -> null, new SimpleAsyncTaskManager());
+    ModuleInstallerImpl<CompletableFuture<Void>> installer =
+        new ModuleInstallerImpl<>(moduleName -> null, new SimpleAsyncTaskManager());
 
     installer.install(module);
 
@@ -185,8 +185,8 @@ public class ModuleInstallerTest {
       }
     });
 
-    ModuleInstaller<CompletableFuture<Void>> installer =
-        new ModuleInstaller<>(moduleName -> null, new SimpleAsyncTaskManager());
+    ModuleInstallerImpl<CompletableFuture<Void>> installer =
+        new ModuleInstallerImpl<>(moduleName -> null, new SimpleAsyncTaskManager());
 
     installer.install(module);
 
@@ -206,8 +206,8 @@ public class ModuleInstallerTest {
       }
     });
 
-    ModuleInstaller<CompletableFuture<Void>> installer =
-        new ModuleInstaller<>(moduleName -> null, new SimpleAsyncTaskManager());
+    ModuleInstallerImpl<CompletableFuture<Void>> installer =
+        new ModuleInstallerImpl<>(moduleName -> null, new SimpleAsyncTaskManager());
 
     installer.install(module);
 
@@ -239,8 +239,8 @@ public class ModuleInstallerTest {
     moduleMap.put("otherModule", otherModule);
     moduleMap.put("failingDependency", failingDependency);
 
-    ModuleInstaller<CompletableFuture<Void>> installer =
-        new ModuleInstaller<>(moduleMap::get, new SimpleAsyncTaskManager());
+    ModuleInstallerImpl<CompletableFuture<Void>> installer =
+        new ModuleInstallerImpl<>(moduleMap::get, new SimpleAsyncTaskManager());
 
     List<Module> modules = new ArrayList<>();
     modules.add(dependentModule);
@@ -277,8 +277,8 @@ public class ModuleInstallerTest {
     moduleMap.put("moduleA", moduleA);
     moduleMap.put("moduleB", moduleB);
 
-    ModuleInstaller<CompletableFuture<Void>> installer =
-        new ModuleInstaller<>(moduleMap::get, new SimpleAsyncTaskManager());
+    ModuleInstallerImpl<CompletableFuture<Void>> installer =
+        new ModuleInstallerImpl<>(moduleMap::get, new SimpleAsyncTaskManager());
 
     List<Module> modules = new ArrayList<>();
     modules.add(moduleA);

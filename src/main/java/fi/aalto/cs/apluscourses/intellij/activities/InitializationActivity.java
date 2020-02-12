@@ -10,7 +10,7 @@ import fi.aalto.cs.apluscourses.intellij.model.IntelliJCourseFactory;
 import fi.aalto.cs.apluscourses.intellij.notifications.CourseConfigurationError;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
-import fi.aalto.cs.apluscourses.intellij.utils.DataUtil;
+import fi.aalto.cs.apluscourses.intellij.utils.ExtendedDataContext;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationFileException;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
@@ -48,7 +48,7 @@ public class InitializationActivity implements StartupActivity, DumbAware {
       PluginSettings.getInstance()
           .getMainViewModel(project).courseViewModel.set(new CourseViewModel(course));
       ActionUtil.launch(RequiredPluginsCheckerAction.ACTION_ID,
-          DataUtil.extendDataContext(project, null));
+          new ExtendedDataContext().withProject(project));
     }
   }
 }
