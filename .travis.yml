@@ -7,4 +7,5 @@ services:
   - docker
 
 script:
-  - ./omytest.sh
+  - ./start_local_a+_env.sh
+
