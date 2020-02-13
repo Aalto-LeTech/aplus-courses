@@ -17,7 +17,6 @@ import fi.aalto.cs.intellij.notifications.EnablePluginsNotification;
 import fi.aalto.cs.intellij.notifications.InstallPluginsNotification;
 import java.util.List;
 import java.util.Map;
-
 import org.jetbrains.annotations.NotNull;
 
 /**

@@ -4,6 +4,7 @@ import static fi.aalto.cs.intellij.utils.RequiredPluginsCheckerUtil.getPluginsNa
 
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManager;
+import com.intellij.ide.plugins.PluginManagerConfigurable;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -18,6 +19,7 @@ public class EnablePluginsNotificationAction extends NotificationAction {
 
   private List<IdeaPluginDescriptor> disabledPluginDescriptors;
   private final PluginEnabler pluginEnabler;
+  private RestartProposer restartProposer;
 
   /**
    * Builds the action.
@@ -26,7 +28,9 @@ public class EnablePluginsNotificationAction extends NotificationAction {
    *                                  enabled.
    */
   public EnablePluginsNotificationAction(List<IdeaPluginDescriptor> disabledPluginDescriptors) {
-    this(disabledPluginDescriptors, PluginManager::enablePlugin);
+    this(disabledPluginDescriptors,
+        PluginManager::enablePlugin,
+        EnablePluginsNotificationAction::proposeRestart);
   }
 
   /**
@@ -38,11 +42,13 @@ public class EnablePluginsNotificationAction extends NotificationAction {
    */
   public EnablePluginsNotificationAction(
       @NotNull List<IdeaPluginDescriptor> disabledPluginDescriptors,
-      PluginEnabler pluginEnabler) {
+      PluginEnabler pluginEnabler,
+      RestartProposer restartProposer) {
     super("Enable the required plugin(s) ("
         + getPluginsNamesString(disabledPluginDescriptors) + ").");
     this.disabledPluginDescriptors = disabledPluginDescriptors;
     this.pluginEnabler = pluginEnabler;
+    this.restartProposer = restartProposer;
   }
 
   /**
@@ -56,6 +62,15 @@ public class EnablePluginsNotificationAction extends NotificationAction {
     disabledPluginDescriptors
         .forEach(descriptor -> pluginEnabler.enable(descriptor.getPluginId().getIdString()));
     notification.expire();
+    restartProposer.proposeRestart();
+  }
+
+  /**
+   * A method to propose a restart when the plugins have been enabled.
+   */
+  public static void proposeRestart() {
+    PluginManagerConfigurable
+        .shutdownOrRestartApp("Plugins required for A+ course are now enabled.");
   }
 
   /**
