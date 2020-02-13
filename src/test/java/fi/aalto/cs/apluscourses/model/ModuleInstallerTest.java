@@ -28,7 +28,7 @@ public class ModuleInstallerTest {
 
   @Test
   public void testInstall() throws IOException, ModuleLoadException {
-    Module module = spy(new Module("someModule", new URL("https://example.com")) {
+    Module module = spy(new Module("someModule", new URL("https://example.com/0")) {
       @Override
       public void fetch() {
         assertEquals("When fetch() is called, module should be in FETCHING state.",
@@ -73,9 +73,9 @@ public class ModuleInstallerTest {
     Module secondDep = spy(new Module("secondDep", new URL("https://example.com/3")));
 
     Map<String, Module> moduleMap = new HashMap<>();
-    moduleMap.put("dependentModule", module1);
-    moduleMap.put("firstDep", firstDep);
-    moduleMap.put("secondDep", secondDep);
+    moduleMap.put(module1.getName(), module1);
+    moduleMap.put(firstDep.getName(), firstDep);
+    moduleMap.put(secondDep.getName(), secondDep);
 
     ModuleInstallerImpl<CompletableFuture<Void>> installer =
         new ModuleInstallerImpl<>(moduleMap::get, new SimpleAsyncTaskManager());
@@ -138,7 +138,7 @@ public class ModuleInstallerTest {
 
   @Test
   public void testInstallFetchFails() throws MalformedURLException, ModuleLoadException {
-    Module module = spy(new Module("fetchFailModule", new URL("https://example.com")) {
+    Module module = spy(new Module("fetchFailModule", new URL("https://example.com/fail")) {
       @Override
       public void fetch() throws IOException {
         throw new IOException();
@@ -159,7 +159,7 @@ public class ModuleInstallerTest {
 
   @Test
   public void testInstallLoadFails() throws MalformedURLException {
-    Module module = spy(new Module("loadFailModule", new URL("https://example.com")) {
+    Module module = spy(new Module("loadFailModule", new URL("https://example.com/loadfail")) {
       @Override
       public void load() throws ModuleLoadException {
         throw new ModuleLoadException(this, null);
@@ -177,7 +177,7 @@ public class ModuleInstallerTest {
 
   @Test
   public void testInstallUnknownDependency() throws MalformedURLException, ModuleLoadException {
-    Module module = spy(new Module("unknownDepModule", new URL("https://example.com")) {
+    Module module = spy(new Module("unknownDepModule", new URL("https://example.com/unknownd")) {
       @NotNull
       @Override
       public List<String> getDependencies() {
@@ -198,7 +198,7 @@ public class ModuleInstallerTest {
 
   @Test
   public void testInstallGetDependenciesFail() throws MalformedURLException, ModuleLoadException {
-    Module module = spy(new Module("failingDepModule", new URL("https://example.com")) {
+    Module module = spy(new Module("failingDepModule", new URL("https://example.com/faildep")) {
       @NotNull
       @Override
       public List<String> getDependencies() throws ModuleLoadException {
@@ -219,15 +219,15 @@ public class ModuleInstallerTest {
 
   @Test
   public void testInstallDependencyFails() throws MalformedURLException {
-    Module dependentModule = spy(new Module("dependentModule", new URL("https://example.com/1")) {
+    Module dependentModule = spy(new Module("dependentModule", new URL("https://example.com/d1")) {
       @NotNull
       @Override
       public List<String> getDependencies() {
-        return Collections.singletonList("failingDependency");
+        return Collections.singletonList("failingDep");
       }
     });
-    Module otherModule = spy(new Module("otherModule", new URL("https://example.com/2")));
-    Module failingDependency = spy(new Module("failingDependency", new URL("https://example.com/3")) {
+    Module otherModule = spy(new Module("otherModule", new URL("https://example.com/d2")));
+    Module failingDep = spy(new Module("failingDep", new URL("https://example.com/d3")) {
       @Override
       public void fetch() throws IOException {
         throw new IOException();
@@ -235,9 +235,9 @@ public class ModuleInstallerTest {
     });
 
     Map<String, Module> moduleMap = new HashMap<>();
-    moduleMap.put("dependentModule", dependentModule);
-    moduleMap.put("otherModule", otherModule);
-    moduleMap.put("failingDependency", failingDependency);
+    moduleMap.put(dependentModule.getName(), dependentModule);
+    moduleMap.put(otherModule.getName(), otherModule);
+    moduleMap.put(failingDep.getName(), failingDep);
 
     ModuleInstallerImpl<CompletableFuture<Void>> installer =
         new ModuleInstallerImpl<>(moduleMap::get, new SimpleAsyncTaskManager());
@@ -253,19 +253,19 @@ public class ModuleInstallerTest {
     assertEquals("Other module should be in INSTALLED state, after the installation has ended.",
         Module.INSTALLED, otherModule.stateMonitor.get());
     assertTrue("Failing dependency should be in an error state, after the installation has ended.",
-        failingDependency.hasError());
+        failingDep.hasError());
   }
 
   @Test
   public void testInstallCircularDependency() throws MalformedURLException {
-    Module moduleA = spy(new Module("moduleA", new URL("https://example.com/1")) {
+    Module moduleA = spy(new Module("moduleA", new URL("https://example.com/c1")) {
       @NotNull
       @Override
       public List<String> getDependencies() {
         return Collections.singletonList("moduleB");
       }
     });
-    Module moduleB = spy(new Module("moduleB", new URL("https://example.com/2")) {
+    Module moduleB = spy(new Module("moduleB", new URL("https://example.com/c2")) {
       @NotNull
       @Override
       public List<String> getDependencies() {
@@ -274,8 +274,8 @@ public class ModuleInstallerTest {
     });
 
     Map<String, Module> moduleMap = new HashMap<>();
-    moduleMap.put("moduleA", moduleA);
-    moduleMap.put("moduleB", moduleB);
+    moduleMap.put(moduleA.getName(), moduleA);
+    moduleMap.put(moduleB.getName(), moduleB);
 
     ModuleInstallerImpl<CompletableFuture<Void>> installer =
         new ModuleInstallerImpl<>(moduleMap::get, new SimpleAsyncTaskManager());

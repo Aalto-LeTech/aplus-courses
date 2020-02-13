@@ -38,7 +38,7 @@ public class ImportModuleAction extends AnAction {
 
   public ImportModuleAction() {
     this(PluginSettings.getInstance(),
-        new ModuleInstallerImpl.Factory<>(new SimpleAsyncTaskManager()));
+        new ModuleInstallerImpl.FactoryImpl<>(new SimpleAsyncTaskManager()));
   }
 
   @Override

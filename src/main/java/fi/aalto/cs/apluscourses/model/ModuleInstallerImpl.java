@@ -17,7 +17,7 @@ public class ModuleInstallerImpl<T> implements ModuleInstaller {
     this.taskManager = taskManager;
   }
 
-  private T installInternal(List<Module> modules) {
+  protected T installInternal(List<Module> modules) {
     return taskManager.forkAll(modules
         .stream()
         .map(module -> (Runnable) () -> installInternal(module))
@@ -29,7 +29,7 @@ public class ModuleInstallerImpl<T> implements ModuleInstaller {
    * When {@code TaskManager.join()} has returned from call with the object returned by this method,
    * the state of the module is guaranteed to be INSTALLED (or error).
    */
-  private T installInternal(Module module) {
+  protected T installInternal(Module module) {
     ModuleInstallation moduleInstallation = new ModuleInstallation(module);
     return moduleInstallation.doIt();
   }
@@ -127,11 +127,11 @@ public class ModuleInstallerImpl<T> implements ModuleInstaller {
     }
   }
 
-  public static class Factory<T> implements ModuleInstaller.Factory {
+  public static class FactoryImpl<T> implements ModuleInstaller.Factory {
 
     private final TaskManager<T> taskManager;
 
-    public Factory(TaskManager<T> taskManager) {
+    public FactoryImpl(TaskManager<T> taskManager) {
       this.taskManager = taskManager;
     }
 

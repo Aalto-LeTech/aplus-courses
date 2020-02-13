@@ -20,10 +20,11 @@ public class ModuleTest {
 
   @Test
   public void testCreateModule() throws MalformedURLException {
+    String name = "Awesome module";
     URL url = new URL("https://example.com");
-    Module module = new Module("Awesome module", url);
+    Module module = new Module(name, url);
     assertEquals("The name of the module should be the same as that given to the constructor",
-        "Awesome module", module.getName());
+        name, module.getName());
     assertEquals("The URL of the module should be the same as that given to the constructor",
         url, module.getUrl());
   }
@@ -62,7 +63,7 @@ public class ModuleTest {
     URL url = new URL("https://example.com");
     Object listener = new Object();
     Event.Callback<Object> callback = mock(Event.Callback.class);
-    Module module = new Module("Awesome module", url);
+    Module module = new Module("Changing module", url);
     module.stateChanged.addListener(listener, callback);
     verifyNoInteractions(callback);
     assertEquals(Module.NOT_INSTALLED, module.stateMonitor.get());

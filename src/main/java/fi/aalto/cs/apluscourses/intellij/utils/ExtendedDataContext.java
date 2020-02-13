@@ -56,7 +56,7 @@ public class ExtendedDataContext implements DataContext {
     return with(dataId.getName(), value);
   }
 
-  public <T> ExtendedDataContext withProject(@NotNull Project project) {
+  public ExtendedDataContext withProject(@NotNull Project project) {
     return with(CommonDataKeys.PROJECT, project);
   }
 }
