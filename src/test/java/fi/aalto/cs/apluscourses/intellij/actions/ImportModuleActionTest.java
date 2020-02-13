@@ -29,7 +29,7 @@ import org.mockito.ArgumentCaptor;
 
 public class ImportModuleActionTest {
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"unchecked", "ConstantConditions"})
   @Test
   public void testImportModule() throws MalformedURLException {
     Project project = mock(Project.class);
@@ -50,7 +50,8 @@ public class ImportModuleActionTest {
     ModuleInstaller moduleInstaller = mock(ModuleInstaller.class);
     doReturn(moduleInstaller).when(moduleInstallerFactory).getInstallerFor(course);
 
-    ImportModuleAction action = new ImportModuleAction(mainViewModelProvider, moduleInstallerFactory);
+    ImportModuleAction action = new ImportModuleAction(mainViewModelProvider,
+        moduleInstallerFactory);
 
     Presentation presentation = new Presentation();
     AnActionEvent e = mock(AnActionEvent.class);

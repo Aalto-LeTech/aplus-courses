@@ -1,7 +1,9 @@
 package fi.aalto.cs.apluscourses.utils;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -78,24 +80,40 @@ public class DomUtil {
     }
     return CommonUtil.createList(nodeList.getLength(), nodeList::item);
   }
-  
+
   @NotNull
-  public static List<Node> getNodesFromXPath(@NotNull String xpath, @NotNull File file)
+  public static List<Node> getNodesFromXPath(@NotNull String xpath, @NotNull InputStream stream)
       throws IOException, SAXException {
-    return getNodesFromXPath(xpath, parse(file));
+    return getNodesFromXPath(xpath, parse(stream));
   }
 
   /**
-   * Parses the given file to a DOM document.
-   * @param file A {@link File}.
-   * @return A DOM {@link Document}.
-   * @throws IOException  If the file cannot be accessed.
-   * @throws SAXException If the content of the file is not properly structured.
+   * Get a list of nodes that matches the given XPath when applied to the root of the document.
+   * @param xpath A {@link String} that contains an XPath expression.
+   * @param file  A {@link File} that contains the document.
+   * @return A {@link List} containing all the {@link Node}s that match the XPath.
+   * @throws IllegalArgumentException If the given string is not a valid XPath.
    */
   @NotNull
-  public static Document parse(@NotNull File file) throws IOException, SAXException {
+  public static List<Node> getNodesFromXPath(@NotNull String xpath, @NotNull File file)
+      throws IOException, SAXException {
+    try (InputStream stream = new FileInputStream(file)) {
+      return getNodesFromXPath(xpath, stream);
+    }
+  }
+
+  /**
+   * Parses the content of given input stream to a DOM document.
+   * @param stream An {@link InputStream}.
+   * @return A DOM {@link Document}.
+   * @throws IOException  If the stream cannot be read.
+   * @throws SAXException If the content of the stream is not properly structured.
+   */
+  @NotNull
+  public static Document parse(@NotNull InputStream stream) throws IOException, SAXException {
     try {
-      return documentBuilderFactory.newDocumentBuilder().parse(file);
+      return documentBuilderFactory.newDocumentBuilder().parse(stream);
+
     } catch (ParserConfigurationException e) {
       throw new IllegalStateException();
     }

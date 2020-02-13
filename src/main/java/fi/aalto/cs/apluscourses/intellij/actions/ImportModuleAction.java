@@ -24,6 +24,11 @@ public class ImportModuleAction extends AnAction {
   @NotNull
   private final ModuleInstaller.Factory moduleInstallerFactory;
 
+  /**
+   * Constructs an action using given main view model provider and module installer factory.
+   * @param mainViewModelProvider A main view model provider.
+   * @param moduleInstallerFactory A module installer factory.
+   */
   public ImportModuleAction(@NotNull MainViewModelProvider mainViewModelProvider,
                             @NotNull ModuleInstaller.Factory moduleInstallerFactory) {
 

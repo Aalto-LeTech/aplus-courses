@@ -50,7 +50,7 @@ public class ModuleListElementViewModel extends ListElementViewModel<Module> {
    * @return A {@link Float} that can be set to font weight.
    */
   public float getFontWeight() {
-    return getModel().stateMonitor.get() == Module.INSTALLED
+    return getModel().stateMonitor.get() >= Module.LOADED
         ? TextAttribute.WEIGHT_BOLD
         : TextAttribute.WEIGHT_REGULAR;
   }

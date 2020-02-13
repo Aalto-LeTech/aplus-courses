@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<root>
+    <outer>
+        <inner>foo</inner>
+    </outer>
+    <outer>
+        <inner>bar</inner>
+        <inner>baz</inner>
+    </outer>
+</root>

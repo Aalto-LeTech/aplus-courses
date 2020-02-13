@@ -15,12 +15,19 @@ public class ExtendedDataContext implements DataContext {
   @Nullable
   private final Object value;
 
+  /**
+   * Constructs an {@link ExtendedDataContext} based on an empty context.
+   */
   public ExtendedDataContext() {
     this.dataId = null;
     this.value = null;
     this.baseDataContext = DataContext.EMPTY_CONTEXT;
   }
 
+  /**
+   * Constructs an {@link ExtendedDataContext} based on the given {@link DataContext}.
+   * @param baseDataContext A {@link DataContext} on which the {@link ExtendedDataContext} is based.
+   */
   public ExtendedDataContext(@NotNull DataContext baseDataContext) {
     this.dataId = null;
     this.value = null;
