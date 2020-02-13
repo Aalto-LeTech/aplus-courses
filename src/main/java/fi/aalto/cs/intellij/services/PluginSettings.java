@@ -29,7 +29,7 @@ public class PluginSettings {
    */
   public PluginSettings() {
     // Replace this with the correct path when testing with a local course configuration file.
-    this("o1.json", Notifications.Bus::notify);
+    this("o1_course_config.json", Notifications.Bus::notify);
   }
 
   /**
