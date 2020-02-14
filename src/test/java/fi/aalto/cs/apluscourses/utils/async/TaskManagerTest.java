@@ -67,46 +67,18 @@ public class TaskManagerTest {
   }
 
   @Test
-  public void testDefaultImplementationOfForkAll() {
-    List<Runnable> runnableList = new ArrayList<>();
-    Runnable runnable1 = mock(Runnable.class);
-    runnableList.add(runnable1);
-    Runnable runnable2 = mock(Runnable.class);
-    runnableList.add(runnable2);
-    Runnable runnable3 = mock(Runnable.class);
-    runnableList.add(runnable3);
-
+  public void testDefaultImplementationOfJoinAll() {
     DelayTaskManager taskManager = new DelayTaskManager();
-    Runnable task = taskManager.forkAll(runnableList);
-    assertNotNull(task);
 
-    verifyNoInteractions(runnable1);
-    verifyNoInteractions(runnable2);
-    verifyNoInteractions(runnable3);
-
-    taskManager.join(task);
-
-    verify(runnable1).run();
-    verify(runnable2).run();
-    verify(runnable3).run();
-
-    verifyNoMoreInteractions(runnable1);
-    verifyNoMoreInteractions(runnable2);
-    verifyNoMoreInteractions(runnable3);
-  }
-
-  @Test
-  public void testDefaultImplementationOfForkAllAndJoin() {
-    List<Runnable> runnableList = new ArrayList<>();
+    List<Runnable> taskList = new ArrayList<>();
     Runnable runnable1 = mock(Runnable.class);
-    runnableList.add(runnable1);
+    taskList.add(taskManager.fork(runnable1));
     Runnable runnable2 = mock(Runnable.class);
-    runnableList.add(runnable2);
+    taskList.add(taskManager.fork(runnable2));
     Runnable runnable3 = mock(Runnable.class);
-    runnableList.add(runnable3);
+    taskList.add(taskManager.fork(runnable3));
 
-    ImmediateTaskManager taskManager = new ImmediateTaskManager();
-    taskManager.forkAllAndJoin(runnableList);
+    taskManager.joinAll(taskList);
 
     verify(runnable1).run();
     verify(runnable2).run();

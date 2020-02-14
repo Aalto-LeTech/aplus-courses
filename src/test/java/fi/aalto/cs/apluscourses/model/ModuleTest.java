@@ -16,7 +16,7 @@ import org.junit.Test;
 
 public class ModuleTest {
 
-  private static final CourseFactory COURSE_FACTORY = new CourseFactory() {};
+  private static final ModelFactory COURSE_FACTORY = new ModelFactory() {};
 
   @Test
   public void testCreateModule() throws MalformedURLException {

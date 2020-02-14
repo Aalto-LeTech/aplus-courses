@@ -12,9 +12,9 @@ class IntelliJCourse extends Course {
   private final Project project;
 
   IntelliJCourse(@NotNull String name,
-                        @NotNull List<Module> modules,
-                        @NotNull Map<String, String> requiredPlugins,
-                        @NotNull Project project) {
+                 @NotNull List<Module> modules,
+                 @NotNull Map<String, String> requiredPlugins,
+                 @NotNull Project project) {
     super(name, modules, requiredPlugins);
 
     this.project = project;

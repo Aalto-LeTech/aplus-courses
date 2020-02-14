@@ -56,7 +56,7 @@ public class Module {
    *                                string values.
    */
   @NotNull
-  public static Module fromJsonObject(@NotNull JSONObject jsonObject, CourseFactory factory)
+  public static Module fromJsonObject(@NotNull JSONObject jsonObject, ModelFactory factory)
       throws MalformedURLException {
     String name = jsonObject.getString("name");
     URL url = new URL(jsonObject.getString("url"));

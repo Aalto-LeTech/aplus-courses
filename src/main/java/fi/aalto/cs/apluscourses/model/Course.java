@@ -56,7 +56,7 @@ public class Course implements ModuleSource {
     return new Course("", new ArrayList<>(), new HashMap<>());
   }
 
-  public static Course fromResource(@NotNull String resourceName, @NotNull CourseFactory factory)
+  public static Course fromResource(@NotNull String resourceName, @NotNull ModelFactory factory)
       throws ResourceException, MalformedCourseConfigurationFileException {
     Reader reader = new InputStreamReader(Resources.DEFAULT.getStream(resourceName));
     return fromConfigurationData(reader, resourceName, factory);
@@ -74,7 +74,7 @@ public class Course implements ModuleSource {
    */
   @NotNull
   public static Course fromConfigurationFile(@NotNull String pathToCourseConfig,
-                                             @NotNull CourseFactory factory)
+                                             @NotNull ModelFactory factory)
       throws FileNotFoundException, MalformedCourseConfigurationFileException {
     FileReader fileReader = new FileReader(pathToCourseConfig);
     return fromConfigurationData(fileReader, pathToCourseConfig, factory);
@@ -89,7 +89,7 @@ public class Course implements ModuleSource {
    *                                                   any way
    */
   @NotNull
-  public static Course fromConfigurationData(@NotNull Reader reader, @NotNull CourseFactory factory)
+  public static Course fromConfigurationData(@NotNull Reader reader, @NotNull ModelFactory factory)
       throws MalformedCourseConfigurationFileException {
     return fromConfigurationData(reader, "", factory);
   }
@@ -107,7 +107,7 @@ public class Course implements ModuleSource {
   @NotNull
   public static Course fromConfigurationData(@NotNull Reader reader,
                                              @NotNull String sourcePath,
-                                             @NotNull CourseFactory factory)
+                                             @NotNull ModelFactory factory)
       throws MalformedCourseConfigurationFileException {
     JSONObject jsonObject = getCourseJsonObject(reader, sourcePath);
     String courseName = getCourseName(jsonObject, sourcePath);
@@ -195,7 +195,7 @@ public class Course implements ModuleSource {
   @NotNull
   private static List<Module> getCourseModules(JSONObject jsonObject,
                                                String path,
-                                               @NotNull CourseFactory factory)
+                                               @NotNull ModelFactory factory)
       throws MalformedCourseConfigurationFileException {
     JSONArray modulesJsonArray;
     try {

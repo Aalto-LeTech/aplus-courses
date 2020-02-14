@@ -18,32 +18,26 @@ public class ModuleInstallerImpl<T> implements ModuleInstaller {
   }
 
   protected T installInternal(List<Module> modules) {
-    return taskManager.forkAll(modules
+    return taskManager.all(modules
         .stream()
-        .map(module -> (Runnable) () -> installInternal(module))
+        .map(this::installInternal)
         .collect(Collectors.toList()));
   }
 
-  /*
-   * When this method returns, the state is guaranteed to be at least LOADED (or error).
-   * When {@code TaskManager.join()} has returned from call with the object returned by this method,
-   * the state of the module is guaranteed to be INSTALLED (or error).
-   */
   protected T installInternal(Module module) {
     ModuleInstallation moduleInstallation = new ModuleInstallation(module);
-    return moduleInstallation.doIt();
+    return taskManager.fork(moduleInstallation::doIt);
   }
 
   /**
    * Installs multiple modules and their dependencies.
    *
    * @param modules A {@link List} of {@link Module}s to be installed.
-   *
    */
   public void install(@NotNull List<Module> modules) {
-    taskManager.forkAllAndJoin(modules
+    taskManager.joinAll(modules
         .stream()
-        .map(module -> (Runnable) () -> install(module))
+        .map(this::installInternal)
         .collect(Collectors.toList()));
   }
 
@@ -68,7 +62,7 @@ public class ModuleInstallerImpl<T> implements ModuleInstaller {
       this.module = module;
     }
     
-    public T doIt() {
+    public void doIt() {
       T installDependenciesTask;
       List<Module> dependencies;
       try {
@@ -77,12 +71,12 @@ public class ModuleInstallerImpl<T> implements ModuleInstaller {
         installDependenciesTask = load(dependencies);
       } catch (IOException | ModuleLoadException e) {
         module.stateMonitor.set(Module.ERROR);
-        return null;
+        return;
       }
       if (installDependenciesTask == null) {
-        return null;
+        return;
       }
-      return taskManager.fork(() -> end(installDependenciesTask, dependencies));
+      end(installDependenciesTask, dependencies);
     }
     
     private void fetch() throws IOException {

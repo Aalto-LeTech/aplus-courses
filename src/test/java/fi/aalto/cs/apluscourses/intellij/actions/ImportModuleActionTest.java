@@ -1,11 +1,8 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
-import static org.hamcrest.CoreMatchers.hasItems;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -24,17 +21,26 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.swing.ListSelectionModel;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
 public class ImportModuleActionTest {
 
-  @SuppressWarnings({"unchecked", "ConstantConditions"})
-  @Test
-  public void testImportModule() throws MalformedURLException {
-    Project project = mock(Project.class);
+  private Project project;
+  private MainViewModel mainViewModel;
+  private ModuleInstaller moduleInstaller;
 
-    MainViewModel mainViewModel = new MainViewModel();
+  /**
+   * Called before each test method call.  Initializes private fields.
+   * @throws MalformedURLException Shouldn't happen.
+   */
+  @Before
+  public void createMockObjects() throws MalformedURLException  {
+    project = mock(Project.class);
+
+    mainViewModel = new MainViewModel();
     MainViewModelProvider mainViewModelProvider = mock(MainViewModelProvider.class);
     doReturn(mainViewModel).when(mainViewModelProvider).getMainViewModel(project);
 
@@ -46,12 +52,14 @@ public class ImportModuleActionTest {
     Course course = new Course("course", modules, Collections.emptyMap());
     mainViewModel.courseViewModel.set(new CourseViewModel(course));
 
-    ModuleInstaller.Factory moduleInstallerFactory = mock(ModuleInstaller.Factory.class);
-    ModuleInstaller moduleInstaller = mock(ModuleInstaller.class);
-    doReturn(moduleInstaller).when(moduleInstallerFactory).getInstallerFor(course);
+    moduleInstaller = mock(ModuleInstaller.class);
+  }
 
-    ImportModuleAction action = new ImportModuleAction(mainViewModelProvider,
-        moduleInstallerFactory);
+  @SuppressWarnings({"ConstantConditions"})
+  @Test
+  public void testUpdate() {
+    ImportModuleAction action =
+        new ImportModuleAction(project -> mainViewModel, course -> moduleInstaller);
 
     Presentation presentation = new Presentation();
     AnActionEvent e = mock(AnActionEvent.class);
@@ -59,20 +67,42 @@ public class ImportModuleActionTest {
     doReturn(project).when(e).getProject();
 
     action.update(e);
-
     assertFalse(presentation.isEnabledAndVisible());
 
-    mainViewModel.courseViewModel.get().getModules().getSelectionModel().addSelectionInterval(1,2);
+    ListSelectionModel selectionModel = mainViewModel.courseViewModel.get()
+        .getModules()
+        .getSelectionModel();
 
+    selectionModel.addSelectionInterval(1, 2);
     action.update(e);
-
     assertTrue(presentation.isEnabledAndVisible());
+
+    selectionModel.clearSelection();
+    action.update(e);
+    assertFalse(presentation.isEnabledAndVisible());
+  }
+
+  @SuppressWarnings({"unchecked", "ConstantConditions"})
+  @Test
+  public void testActionPerformed() {
+    ImportModuleAction action =
+        new ImportModuleAction(project -> mainViewModel, course -> moduleInstaller);
+
+    AnActionEvent e = mock(AnActionEvent.class);
+
+    ListSelectionModel selectionModel = mainViewModel.courseViewModel.get()
+        .getModules()
+        .getSelectionModel();
+
+    selectionModel.addSelectionInterval(1, 2);
 
     action.actionPerformed(e);
 
     ArgumentCaptor<List<Module>> captor = ArgumentCaptor.forClass(List.class);
 
     verify(moduleInstaller).installAsync(captor.capture());
+
+    List<Module> modules = mainViewModel.courseViewModel.get().getModel().getModules();
 
     assertEquals("installAsync() should be called with list of size 2.",
         2, captor.getValue().size());

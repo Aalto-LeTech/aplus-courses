@@ -1,4 +1,4 @@
-package fi.aalto.cs.apluscourses.ui.base;
+package fi.aalto.cs.apluscourses.ui;
 
 import java.awt.Font;
 import java.awt.font.TextAttribute;

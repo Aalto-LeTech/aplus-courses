@@ -52,21 +52,7 @@ public interface TaskManager<T> {
     });
   }
 
-  /**
-   * Forks multiple {@link Runnable} objects.
-   *
-   * @param runnableList {@link List} of {@link Runnable} objects.
-   * @return A task identifier that, when passed to {@code join}, ensures that all the runnable
-   *         objects have returned.
-   */
-  default T forkAll(List<Runnable> runnableList) {
-    return all(runnableList
-        .stream()
-        .map(this::fork)
-        .collect(Collectors.toList()));
-  }
-
-  default void forkAllAndJoin(List<Runnable> runnableList) {
-    join(forkAll(runnableList));
+  default void joinAll(List<T> tasks) {
+    join(all(tasks));
   }
 }

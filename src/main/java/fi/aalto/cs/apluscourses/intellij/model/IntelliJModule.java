@@ -27,7 +27,11 @@ class IntelliJModule extends Module {
   @NotNull
   private final Project project;
 
-  private static final String DEPENDENCY_NAMES =
+  // XPath to the names of dependency modules in an *.ilm file.
+  // <module> is the root node, <component> is its child.  Dependency modules are those <orderEntry>
+  // children of <component> for which type="module".  The name of the dependency modules are
+  // module-name attributes of these <orderEntry> nodes.
+  private static final String DEPENDENCY_NAMES_XPATH =
       "/module/component/orderEntry[@type='module']/@module-name";
 
   IntelliJModule(@NotNull String name, @NotNull URL url, @NotNull Project project) {
@@ -40,7 +44,7 @@ class IntelliJModule extends Module {
   @NotNull
   public List<String> getDependencies() throws ModuleLoadException {
     try {
-      return DomUtil.getNodesFromXPath(DEPENDENCY_NAMES, getImlFile())
+      return DomUtil.getNodesFromXPath(DEPENDENCY_NAMES_XPATH, getImlFile())
           .stream()
           .map(Node::getTextContent)
           .collect(Collectors.toList());
@@ -51,9 +55,9 @@ class IntelliJModule extends Module {
 
   @Override
   public void fetch() throws IOException {
-    File file = createTempFile();
-    fetchZipTo(file);
-    extractZip(file);
+    File tempZipFile = createTempFile();
+    fetchZipTo(tempZipFile);
+    extractZip(tempZipFile);
   }
 
   @Override

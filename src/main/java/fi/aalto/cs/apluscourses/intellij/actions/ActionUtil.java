@@ -8,6 +8,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
 import java.awt.Component;
 import java.awt.event.ActionListener;
+import org.jetbrains.annotations.NotNull;
 
 public class ActionUtil {
 
@@ -17,7 +18,7 @@ public class ActionUtil {
    * @param actionId    Id of the action.
    * @param dataContext A {@link DataContext} for the action.
    */
-  public static void launch(String actionId, DataContext dataContext) {
+  public static void launch(@NotNull String actionId, @NotNull DataContext dataContext) {
     // https://intellij-support.jetbrains.com/hc/en-us/community/posts/206130119/comments/206169635
     AnAction action = ActionManager.getInstance().getAction(actionId);
     AnActionEvent event = AnActionEvent.createFromAnAction(action, null, ActionPlaces.UNKNOWN,
@@ -33,7 +34,8 @@ public class ActionUtil {
    * @param source A {@link Component} that gives the {@link DataContext} for the action.
    * @return An {@link ActionListener}
    */
-  public static ActionListener onEventLauncher(String actionId, Component source) {
+  public static ActionListener onEventLauncher(@NotNull String actionId,
+                                               @NotNull Component source) {
     return actionEvent -> launch(actionId, DataManager.getInstance().getDataContext(source));
   }
 

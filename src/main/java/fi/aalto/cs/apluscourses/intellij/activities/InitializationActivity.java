@@ -6,7 +6,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.startup.StartupActivity;
 import fi.aalto.cs.apluscourses.intellij.actions.ActionUtil;
 import fi.aalto.cs.apluscourses.intellij.actions.RequiredPluginsCheckerAction;
-import fi.aalto.cs.apluscourses.intellij.model.IntelliJCourseFactory;
+import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory;
 import fi.aalto.cs.apluscourses.intellij.notifications.CourseConfigurationError;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
@@ -38,17 +38,15 @@ public class InitializationActivity implements StartupActivity, DumbAware {
     Course course;
     try {
       course = Course.fromResource(PluginSettings.COURSE_CONFIGURATION_FILE_PATH,
-          new IntelliJCourseFactory(project));
+          new IntelliJModelFactory(project));
     } catch (ResourceException | MalformedCourseConfigurationFileException e) {
-      course = null;
-      logger.info("Error occurred while trying to parse a course configuration file", e);
+      logger.error("Error occurred while trying to parse a course configuration file", e);
       notifier.notify(new CourseConfigurationError(e), null);
+      return;
     }
-    if (course != null) {
-      PluginSettings.getInstance()
-          .getMainViewModel(project).courseViewModel.set(new CourseViewModel(course));
-      ActionUtil.launch(RequiredPluginsCheckerAction.ACTION_ID,
-          new ExtendedDataContext().withProject(project));
-    }
+    PluginSettings.getInstance()
+        .getMainViewModel(project).courseViewModel.set(new CourseViewModel(course));
+    ActionUtil.launch(RequiredPluginsCheckerAction.ACTION_ID,
+        new ExtendedDataContext().withProject(project));
   }
 }

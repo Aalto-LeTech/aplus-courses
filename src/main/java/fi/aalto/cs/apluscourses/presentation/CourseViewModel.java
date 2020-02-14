@@ -10,7 +10,7 @@ public class CourseViewModel extends BaseViewModel<Course> {
   @NotNull
   private final ModuleListViewModel modules;
 
-  public CourseViewModel(Course course) {
+  public CourseViewModel(@NotNull Course course) {
     super(course);
     modules = new ModuleListViewModel(course.getModules());
   }

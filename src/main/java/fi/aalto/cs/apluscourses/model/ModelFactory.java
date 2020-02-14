@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 
-public interface CourseFactory {
+public interface ModelFactory {
   default Course createCourse(@NotNull String name, @NotNull List<Module> modules,
                       @NotNull Map<String, String> requiredPlugins) {
     return new Course(name, modules, requiredPlugins);
