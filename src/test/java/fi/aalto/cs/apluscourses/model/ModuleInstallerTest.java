@@ -248,8 +248,8 @@ public class ModuleInstallerTest {
 
     installer.install(modules);
 
-    assertTrue("Dependent module should be in an error state, after the installation has ended.",
-        dependentModule.hasError());
+    assertEquals("Dependent module should be in INSTALLED state, after the installation has ended.",
+        Module.INSTALLED, dependentModule.stateMonitor.get());
     assertEquals("Other module should be in INSTALLED state, after the installation has ended.",
         Module.INSTALLED, otherModule.stateMonitor.get());
     assertTrue("Failing dependency should be in an error state, after the installation has ended.",

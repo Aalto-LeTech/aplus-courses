@@ -31,8 +31,10 @@ class IntelliJModule extends Module {
   // <module> is the root node, <component> is its child.  Dependency modules are those <orderEntry>
   // children of <component> for which type="module".  The name of the dependency modules are
   // module-name attributes of these <orderEntry> nodes.
+  //
+  // Sonar suppression because Sonar thinks this is a filepath URI, which should not be hardcoded.
   private static final String DEPENDENCY_NAMES_XPATH =
-      "/module/component/orderEntry[@type='module']/@module-name";
+      "/module/component/orderEntry[@type='module']/@module-name"; // NOSONAR
 
   IntelliJModule(@NotNull String name, @NotNull URL url, @NotNull Project project) {
     super(name, url);

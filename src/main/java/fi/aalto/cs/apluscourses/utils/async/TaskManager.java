@@ -1,7 +1,6 @@
 package fi.aalto.cs.apluscourses.utils.async;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import org.jetbrains.annotations.Nullable;
 
 /**

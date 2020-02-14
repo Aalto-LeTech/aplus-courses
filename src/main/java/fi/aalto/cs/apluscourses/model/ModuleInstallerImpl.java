@@ -17,14 +17,11 @@ public class ModuleInstallerImpl<T> implements ModuleInstaller {
     this.taskManager = taskManager;
   }
 
-  protected T installInternal(List<Module> modules) {
-    return taskManager.all(modules
-        .stream()
-        .map(this::installInternal)
-        .collect(Collectors.toList()));
+  protected T waitUntilLoadedAsync(Module module) {
+    return taskManager.fork(() -> module.stateMonitor.waitUntil(Module.LOADED));
   }
 
-  protected T installInternal(Module module) {
+  protected T installInternalAsync(Module module) {
     ModuleInstallation moduleInstallation = new ModuleInstallation(module);
     return taskManager.fork(moduleInstallation::doIt);
   }
@@ -37,7 +34,7 @@ public class ModuleInstallerImpl<T> implements ModuleInstaller {
   public void install(@NotNull List<Module> modules) {
     taskManager.joinAll(modules
         .stream()
-        .map(this::installInternal)
+        .map(this::installInternalAsync)
         .collect(Collectors.toList()));
   }
 
@@ -46,7 +43,7 @@ public class ModuleInstallerImpl<T> implements ModuleInstaller {
    * @param module A {@link Module} to be installed.
    */
   public void install(Module module) {
-    taskManager.join(installInternal(module));
+    taskManager.join(installInternalAsync(module));
   }
 
   @Override
@@ -63,20 +60,16 @@ public class ModuleInstallerImpl<T> implements ModuleInstaller {
     }
     
     public void doIt() {
-      T installDependenciesTask;
       List<Module> dependencies;
       try {
         fetch();
         dependencies = getDependencies();
-        installDependenciesTask = load(dependencies);
+        load(dependencies);
       } catch (IOException | ModuleLoadException e) {
         module.stateMonitor.set(Module.ERROR);
         return;
       }
-      if (installDependenciesTask == null) {
-        return;
-      }
-      end(installDependenciesTask, dependencies);
+      waitForDependencies(dependencies);
     }
     
     private void fetch() throws IOException {
@@ -88,24 +81,26 @@ public class ModuleInstallerImpl<T> implements ModuleInstaller {
       }
     }
 
-    private T load(List<Module> dependencies) throws ModuleLoadException {
+    private void load(List<Module> dependencies) throws ModuleLoadException {
       if (module.stateMonitor.setConditionally(Module.FETCHED, Module.LOADING)) {
-        T installDependenciesTask = installInternal(dependencies);
+        installAsync(dependencies);
         module.load();
         module.stateMonitor.set(Module.LOADED);
-        return installDependenciesTask;
       } else {
         module.stateMonitor.waitUntil(Module.LOADED);
-        return null;
       }
     }
 
-    private void end(T installDependenciesTask, List<Module> dependencies) {
-      module.stateMonitor.set(Module.WAITING_FOR_DEPS);
-      taskManager.join(installDependenciesTask);
-      module.stateMonitor.set(dependencies.stream().anyMatch(Module::hasError)
-          ? Module.ERROR
-          : Module.INSTALLED);
+    private void waitForDependencies(List<Module> dependencies) {
+      boolean didIChangedState =
+          module.stateMonitor.setConditionally(Module.LOADED, Module.WAITING_FOR_DEPS);
+      taskManager.joinAll(dependencies
+          .stream()
+          .map(ModuleInstallerImpl.this::waitUntilLoadedAsync)
+          .collect(Collectors.toList()));
+      if (didIChangedState) {
+        module.stateMonitor.set(Module.INSTALLED);
+      }
     }
 
     private List<Module> getDependencies() throws ModuleLoadException {

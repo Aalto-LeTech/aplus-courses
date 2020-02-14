@@ -58,8 +58,7 @@ public class ImportModuleActionTest {
   @SuppressWarnings({"ConstantConditions"})
   @Test
   public void testUpdate() {
-    ImportModuleAction action =
-        new ImportModuleAction(project -> mainViewModel, course -> moduleInstaller);
+    ImportModuleAction action = new ImportModuleAction(p -> mainViewModel, c -> moduleInstaller);
 
     Presentation presentation = new Presentation();
     AnActionEvent e = mock(AnActionEvent.class);
@@ -85,8 +84,7 @@ public class ImportModuleActionTest {
   @SuppressWarnings({"unchecked", "ConstantConditions"})
   @Test
   public void testActionPerformed() {
-    ImportModuleAction action =
-        new ImportModuleAction(project -> mainViewModel, course -> moduleInstaller);
+    ImportModuleAction action = new ImportModuleAction(p -> mainViewModel, c -> moduleInstaller);
 
     AnActionEvent e = mock(AnActionEvent.class);
 
