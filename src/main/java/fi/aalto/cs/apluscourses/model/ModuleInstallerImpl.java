@@ -92,15 +92,12 @@ public class ModuleInstallerImpl<T> implements ModuleInstaller {
     }
 
     private void waitForDependencies(List<Module> dependencies) {
-      boolean didIChangedState =
-          module.stateMonitor.setConditionally(Module.LOADED, Module.WAITING_FOR_DEPS);
+      module.stateMonitor.setConditionally(Module.LOADED, Module.WAITING_FOR_DEPS);
       taskManager.joinAll(dependencies
           .stream()
           .map(ModuleInstallerImpl.this::waitUntilLoadedAsync)
           .collect(Collectors.toList()));
-      if (didIChangedState) {
-        module.stateMonitor.set(Module.INSTALLED);
-      }
+      module.stateMonitor.set(Module.INSTALLED);
     }
 
     private List<Module> getDependencies() throws ModuleLoadException {
