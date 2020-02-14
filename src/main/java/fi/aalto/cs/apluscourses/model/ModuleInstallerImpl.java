@@ -54,22 +54,20 @@ public class ModuleInstallerImpl<T> implements ModuleInstaller {
   private class ModuleInstallation {
 
     private final Module module;
+    List<Module> dependencies;
 
     public ModuleInstallation(Module module) {
       this.module = module;
     }
     
     public void doIt() {
-      List<Module> dependencies;
       try {
         fetch();
-        dependencies = getDependencies();
-        load(dependencies);
+        load();
+        waitForDependencies();
       } catch (IOException | ModuleLoadException e) {
         module.stateMonitor.set(Module.ERROR);
-        return;
       }
-      waitForDependencies(dependencies);
     }
     
     private void fetch() throws IOException {
@@ -81,9 +79,9 @@ public class ModuleInstallerImpl<T> implements ModuleInstaller {
       }
     }
 
-    private void load(List<Module> dependencies) throws ModuleLoadException {
+    private void load() throws ModuleLoadException {
       if (module.stateMonitor.setConditionally(Module.FETCHED, Module.LOADING)) {
-        installAsync(dependencies);
+        installAsync(getDependencies());
         module.load();
         module.stateMonitor.set(Module.LOADED);
       } else {
@@ -91,22 +89,28 @@ public class ModuleInstallerImpl<T> implements ModuleInstaller {
       }
     }
 
-    private void waitForDependencies(List<Module> dependencies) {
-      module.stateMonitor.setConditionally(Module.LOADED, Module.WAITING_FOR_DEPS);
-      taskManager.joinAll(dependencies
-          .stream()
-          .map(ModuleInstallerImpl.this::waitUntilLoadedAsync)
-          .collect(Collectors.toList()));
-      module.stateMonitor.set(Module.INSTALLED);
+    private void waitForDependencies() throws ModuleLoadException {
+      if (module.stateMonitor.setConditionally(Module.LOADED, Module.WAITING_FOR_DEPS)) {
+        taskManager.joinAll(getDependencies()
+            .stream()
+            .map(ModuleInstallerImpl.this::waitUntilLoadedAsync)
+            .collect(Collectors.toList()));
+        module.stateMonitor.set(Module.INSTALLED);
+      } else {
+        module.stateMonitor.waitUntil(Module.INSTALLED);
+      }
     }
 
     private List<Module> getDependencies() throws ModuleLoadException {
       try {
-        return module.getDependencies()
-            .stream()
-            .map(moduleSource::getModule)
-            .map(Objects::requireNonNull)
-            .collect(Collectors.toList());
+        if (dependencies == null) {
+          dependencies = module.getDependencies()
+              .stream()
+              .map(moduleSource::getModule)
+              .map(Objects::requireNonNull)
+              .collect(Collectors.toList());
+        }
+        return dependencies;
       } catch (NullPointerException e) {
         throw new ModuleLoadException(module, e);
       }
