@@ -118,8 +118,4 @@ public class StateMonitor {
   public interface StateListener {
     void onStateChanged();
   }
-
-  public static class ErrorStateException extends Exception {
-
-  }
 }

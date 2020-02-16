@@ -17,8 +17,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class ImportModuleAction extends AnAction {
 
-  public static final String ACTION_ID =
-      "fi.aalto.cs.apluscourses.intellij.actions.ImportModuleAction";
+  public static final String ACTION_ID = ImportModuleAction.class.getCanonicalName();
   @NotNull
   private final MainViewModelProvider mainViewModelProvider;
   @NotNull

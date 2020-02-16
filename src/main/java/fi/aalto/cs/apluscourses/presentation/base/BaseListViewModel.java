@@ -29,10 +29,8 @@ public class BaseListViewModel<E extends ListElementViewModel<?>> extends Abstra
   @NotNull
   private final transient ListSelectionModel selectionModel;
 
-  // Not actually something that should be transient but we are not doing serialization and Sonar
-  // requires fields be marked transient if they are not serializable.
   @NotNull
-  private final transient List<E> elements;
+  private final List<E> elements;
 
   /**
    * A constructor.

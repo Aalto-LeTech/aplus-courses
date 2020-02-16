@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -78,7 +80,10 @@ public class DomUtil {
     } catch (XPathExpressionException e) {
       throw new IllegalArgumentException(e);
     }
-    return CommonUtil.createList(nodeList.getLength(), nodeList::item);
+    return IntStream
+        .range(0, nodeList.getLength())
+        .mapToObj(nodeList::item)
+        .collect(Collectors.toList());
   }
 
   @NotNull

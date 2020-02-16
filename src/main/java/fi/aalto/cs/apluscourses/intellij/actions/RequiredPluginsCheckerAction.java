@@ -23,8 +23,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class RequiredPluginsCheckerAction extends AnAction {
 
-  public static final String ACTION_ID =
-      "fi.aalto.cs.apluscourses.intellij.actions.RequiredPluginsCheckerAction";
+  public static final String ACTION_ID = RequiredPluginsCheckerAction.class.getCanonicalName();
 
   /**
    * An actual work to filter out invalid (missing or disabled) plugins and notify gets done here.
