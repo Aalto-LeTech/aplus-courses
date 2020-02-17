@@ -61,8 +61,8 @@ publishing {
             name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/Aalto-LeTech/intellij-plugin")
             credentials {
-                username = project.findProperty("gpr.user") ?: System.getenv("GRP_USER")
-                password = project.findProperty("gpr.key") ?: System.getenv("GRP_KEY")
+                username = System.getenv("GRP_USER")
+                password = System.getenv("GRP_KEY")
             }
         }
     }
