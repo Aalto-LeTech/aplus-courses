@@ -42,4 +42,13 @@ public class EnablePluginsNotificationActionTest extends PluginsTestHelper {
     assertEquals("Restart proposing functionality should have been called once.", 1,
         numberOfCallsOfRestartProposal.get());
   }
+
+  @Test
+  public void testProposeRestart() {
+    assertThrows(
+        RuntimeException.class,
+        "Restart IntelliJ IDEA to apply changes in plugins?",
+        EnablePluginsNotificationAction::proposeRestart
+    );
+  }
 }
