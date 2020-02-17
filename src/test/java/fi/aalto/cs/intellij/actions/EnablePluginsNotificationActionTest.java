@@ -18,6 +18,7 @@ public class EnablePluginsNotificationActionTest extends PluginsTestHelper {
   public void testActionPerformed() {
     //given
     AtomicInteger numberOfCallsOfInstall = new AtomicInteger(0);
+    AtomicInteger numberOfCallsOfRestartProposal = new AtomicInteger(0);
     List<IdeaPluginDescriptor> descriptorList = getDummyPluginsListOfTwo();
 
     AnActionEvent anActionEvent = mock(AnActionEvent.class);
@@ -30,12 +31,24 @@ public class EnablePluginsNotificationActionTest extends PluginsTestHelper {
             descriptor -> {
               numberOfCallsOfInstall.getAndIncrement();
               return true;
-            });
+            },
+            numberOfCallsOfRestartProposal::getAndIncrement);
     enablePluginsNotificationAction.actionPerformed(anActionEvent, notification);
 
     //then
     verify(notification, times(1)).expire();
     assertEquals("Enable method should be called required amount of times.", 2,
         numberOfCallsOfInstall.get());
+    assertEquals("Restart proposing functionality should have been called once.", 1,
+        numberOfCallsOfRestartProposal.get());
+  }
+
+  @Test
+  public void testProposeRestart() {
+    assertThrows(
+        RuntimeException.class,
+        "Restart IntelliJ IDEA to apply changes in plugins?",
+        EnablePluginsNotificationAction::proposeRestart
+    );
   }
 }
