@@ -8,7 +8,7 @@ a manual testing manual. Marked with a github issue label "manual testing".
   <summary>
     <a href="https://github.com/Aalto-LeTech/intellij-plugin/issues/9">making hints on missing plugins #9</a>
   </summary>
-  <section>
+  <div>
     <h5>Part 1. Checking missing plugins</h5>
     <ol>
       <li>Ensure "Scala" plugin is not installer <b>(File | Settings | Plugins | Marketplace)</b></li>
@@ -25,8 +25,8 @@ a manual testing manual. Marked with a github issue label "manual testing".
       <li>Click on the highlighted part of the notification, approve restart of the IDE</li>
       <li>After the restart is done, ensure there is no notification anymore</li>
     </ol>  
-  </section>
-  <section>
+  </div>
+  <div>
     <h5>Part 2. Checking disabled plugins</h5>
     <ol>
       <li>Ensure 'Scala' plugin is installed and disabled
@@ -42,13 +42,13 @@ a manual testing manual. Marked with a github issue label "manual testing".
       </li>
       <li>After the restart is done, ensure there is no notification anymore</li>
     </ol>  
-  </section>
+  </div>
 </details>
 <details>
   <summary>
     <a href="https://github.com/Aalto-LeTech/intellij-plugin/issues/44">add new startup notification saying the plugin is in beta/dev #44</a>
   </summary>
-  <section>
+  <div>
     <h5>Checking the notification regard the current A+ Course plugin version</h5>
     <ol>
       <li>Ensure "A+ Course" plugin is installed <b>(File | Settings | Plugins | Installed)</b> and check the plugin version from the plugin window or <a href="https://plugins.jetbrains.com/plugin/13634-a-plugin-for-intellij/versions">online.</a></li>
@@ -61,78 +61,78 @@ a manual testing manual. Marked with a github issue label "manual testing".
       </li>
       <li>The notification should reamin after the restart is done.</li>
     </ol>  
-  </section>
+  </div>
 </details>
 <details>
   <summary>
     <a href="https://github.com/Aalto-LeTech/intellij-plugin/issues/30">install required
     dependancies for the project from LOCAL #30</a>
   </summary>
-  <section>
+  <div>
     <h5>Part 1.  Importing a module by double-clicking it</h5>
     <ol>
       <li>Create a new project.</li>
       <li>
-        Open the <em>Modules</em> tool window (if it is not open).  <small>You may have to wait a
+        Open the <em>Modules</em> tool window (if it is not open).  <sub>You may have to wait a
         few seconds for the list of modules to be initialized.  If the initialization takes more
-        than 10&nbsp;seconds, consider it an error.</small>
+        than 10&nbsp;seconds, consider it an error.</sub>
       </li>
       <li>Select <em>GoodStuff</em> from the list and double click it.</li>
       <li>
         Ensure that <em>GoodStuff</em> and <em>O1Library</em> appear as loaded modules in the
         project tree, and their contents match the image below:<br/>
         <img src="images/30_module_loaded.png" alt="GoodStuff and O1Library contents" /><br/>
-        <small>It shouldn't take longer than 5 seconds for modules to be imported.</small>
+        <sub>It shouldn't take longer than 5 seconds for modules to be imported.</sub>
       </li>
       <li>
         Ensure that <em>GoodStuff</em> and <em>O1Library</em> are marked <em>Installed</em> in the
         <em>Modules</em> tool window.
       </li>
     </ol>
-  </section>
-  <section>
+  </div>
+  <div>
     <h5>Part 2.  Importing a module using context menu.</h5>
     <ol>
       <li>
         Continuing from <strong>Part 1</strong>, right-click a non-installed module of your choice
-        in the <em>Modules</em> tool window.  <small>On Mac with only one mouse button, you may need
+        in the <em>Modules</em> tool window.  <sub>On Mac with only one mouse button, you may need
         to use some other gesture to open a context menu, like holding <em>Ctrl</em> key while
-        clicking.  Use the way that is standard to the system.</small>
+        clicking.  Use the way that is standard to the system.</sub>
       </li>
       <li>Ensure that a pop-up menu appears next to the mouse pointer.</li>
       <li>Click <em>Import A+ Module</em> menu item.</li>
       <li>
-        Ensure that the module appears in the project tree.  <small>If module has dependencies,
-        those are imported too.  If other modules appear in the project tree in this step, you can
-        assume they are dependencies of the module you chose and ignore them.</small>
+        Ensure that the module appears in the project tree.  <sub>If module has dependencies, those
+        are imported too.  If other modules appear in the project tree in this step, you can assume
+        they are dependencies of the module you chose and ignore them.</sub>
       </li>
       <li>
         Ensure that the module is marked <em>Installed</em> in the <em>Modules</em> tool window.
       </li>
     </ol>
-  </section>
-  <section>
+  </div>
+  <div>
     <h5>Part 3.  Importing multiple modules using toolbar button.</h5>
     <ol>
       <li>
         Continuing from <strong>Part 2</strong>, select multiple non-installed modules in the
         <em>Modules</em> tool window by clicking them while holding <em>Ctrl</em> key.
-        <small>Again, Mac may do things differently, so use the way to select multiple items that is
-        standard to the system.</small>
+        <sub>Again, Mac may do things differently, so use the way to select multiple items that is
+        standard to the system.</sub>
       </li>
       <li>
         Click <em>Import A+ Module</em> toolbar button on the top of the <em>Modules</em> tool
-        window.  <small>The button is denoted with a "download" icon.</small>
+        window.  <sub>The button is denoted with a "download" icon.</sub>
       </li>
       <li>
-        Ensure that the selected modules appear in the project tree.  <small>Again, in case other
+        Ensure that the selected modules appear in the project tree.  <sub>Again, in case other
         modules appear there as well, assume they are appropriate dependencies and ignore them.
-        </small>
+        </sub>
       </li>
       <li>
         Ensure that the modules you selected are marked <em>Installed</em> in the <em>Modules</em>
         tool window.
       </li>
     </ol>
-  </section>
+  </div>
 </details>
