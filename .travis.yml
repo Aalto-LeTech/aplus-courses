@@ -10,6 +10,7 @@ addons:
 
 script:
   - ./gradlew check
+  - ./gradlew publish
   - sonar-scanner
 
 deploy:
