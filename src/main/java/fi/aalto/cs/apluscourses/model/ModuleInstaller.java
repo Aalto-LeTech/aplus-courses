@@ -6,6 +6,10 @@ import org.jetbrains.annotations.NotNull;
 public interface ModuleInstaller {
   void installAsync(@NotNull List<Module> modules);
 
+  void install(@NotNull List<Module> modules);
+
+  void install(Module modules);
+
   interface Factory {
     ModuleInstaller getInstallerFor(Course course);
   }

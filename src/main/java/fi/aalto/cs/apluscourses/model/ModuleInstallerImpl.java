@@ -31,6 +31,7 @@ public class ModuleInstallerImpl<T> implements ModuleInstaller {
    *
    * @param modules A {@link List} of {@link Module}s to be installed.
    */
+  @Override
   public void install(@NotNull List<Module> modules) {
     taskManager.joinAll(modules
         .stream()
@@ -42,6 +43,7 @@ public class ModuleInstallerImpl<T> implements ModuleInstaller {
    *
    * @param module A {@link Module} to be installed.
    */
+  @Override
   public void install(Module module) {
     taskManager.join(installInternalAsync(module));
   }

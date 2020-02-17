@@ -19,7 +19,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -42,7 +41,7 @@ public class ModuleInstallerTest {
       }
     });
 
-    ModuleInstallerImpl<CompletableFuture<Void>> installer =
+    ModuleInstaller installer =
         new ModuleInstallerImpl<>(moduleName -> null, new SimpleAsyncTaskManager());
 
     installer.install(module);
@@ -77,7 +76,7 @@ public class ModuleInstallerTest {
     moduleMap.put(firstDep.getName(), firstDep);
     moduleMap.put(secondDep.getName(), secondDep);
 
-    ModuleInstallerImpl<CompletableFuture<Void>> installer =
+    ModuleInstaller installer =
         new ModuleInstallerImpl<>(moduleMap::get, new SimpleAsyncTaskManager());
 
     installer.install(module1);
@@ -113,7 +112,7 @@ public class ModuleInstallerTest {
     moduleMap.put("module1", module1);
     moduleMap.put("module2", module2);
 
-    ModuleInstallerImpl<CompletableFuture<Void>> installer =
+    ModuleInstaller installer =
         new ModuleInstallerImpl<>(moduleMap::get, new SimpleAsyncTaskManager());
 
     List<Module> modules = new ArrayList<>();
@@ -145,7 +144,7 @@ public class ModuleInstallerTest {
       }
     });
 
-    ModuleInstallerImpl<CompletableFuture<Void>> installer =
+    ModuleInstaller installer =
         new ModuleInstallerImpl<>(moduleName -> null, new SimpleAsyncTaskManager());
 
     installer.install(module);
@@ -166,7 +165,7 @@ public class ModuleInstallerTest {
       }
     });
 
-    ModuleInstallerImpl<CompletableFuture<Void>> installer =
+    ModuleInstaller installer =
         new ModuleInstallerImpl<>(moduleName -> null, new SimpleAsyncTaskManager());
 
     installer.install(module);
@@ -185,7 +184,7 @@ public class ModuleInstallerTest {
       }
     });
 
-    ModuleInstallerImpl<CompletableFuture<Void>> installer =
+    ModuleInstaller installer =
         new ModuleInstallerImpl<>(moduleName -> null, new SimpleAsyncTaskManager());
 
     installer.install(module);
@@ -206,7 +205,7 @@ public class ModuleInstallerTest {
       }
     });
 
-    ModuleInstallerImpl<CompletableFuture<Void>> installer =
+    ModuleInstaller installer =
         new ModuleInstallerImpl<>(moduleName -> null, new SimpleAsyncTaskManager());
 
     installer.install(module);
@@ -239,7 +238,7 @@ public class ModuleInstallerTest {
     moduleMap.put(otherModule.getName(), otherModule);
     moduleMap.put(failingDep.getName(), failingDep);
 
-    ModuleInstallerImpl<CompletableFuture<Void>> installer =
+    ModuleInstaller installer =
         new ModuleInstallerImpl<>(moduleMap::get, new SimpleAsyncTaskManager());
 
     List<Module> modules = new ArrayList<>();
@@ -277,7 +276,7 @@ public class ModuleInstallerTest {
     moduleMap.put(moduleA.getName(), moduleA);
     moduleMap.put(moduleB.getName(), moduleB);
 
-    ModuleInstallerImpl<CompletableFuture<Void>> installer =
+    ModuleInstaller installer =
         new ModuleInstallerImpl<>(moduleMap::get, new SimpleAsyncTaskManager());
 
     List<Module> modules = new ArrayList<>();

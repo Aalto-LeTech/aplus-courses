@@ -1,25 +1,26 @@
 package fi.aalto.cs.apluscourses.utils.async;
 
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import org.jetbrains.annotations.Nullable;
 
-public class SimpleAsyncTaskManager implements TaskManager<CompletableFuture<Void>> {
+public class SimpleAsyncTaskManager implements TaskManager<Thread> {
+
 
   @Override
-  public CompletableFuture<Void> fork(Runnable runnable) {
-    return CompletableFuture.runAsync(runnable);
+  public Thread fork(Runnable runnable) {
+    Thread thread = new Thread(runnable);
+    thread.start();
+    return thread;
   }
 
   @Override
-  public void join(@Nullable CompletableFuture<Void> task) {
-    if (task != null) {
-      task.join();
+  public void join(@Nullable Thread task) {
+    if (task == null) {
+      return;
     }
-  }
-
-  @Override
-  public CompletableFuture<Void> all(List<CompletableFuture<Void>> tasks) {
-    return CompletableFuture.allOf(tasks.toArray(new CompletableFuture[0]));
+    try {
+      task.join();
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+    }
   }
 }
