@@ -2,8 +2,8 @@ package fi.aalto.cs.apluscourses.model;
 
 import fi.aalto.cs.apluscourses.utils.async.TaskManager;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
@@ -65,9 +65,10 @@ public class ModuleInstallerImpl<T> implements ModuleInstaller {
     public void doIt() {
       try {
         fetch();
+        initDependencies();
         load();
         waitForDependencies();
-      } catch (IOException | ModuleLoadException e) {
+      } catch (IOException | ModuleLoadException | NoSuchModuleException e) {
         module.stateMonitor.set(Module.ERROR);
       }
     }
@@ -83,7 +84,7 @@ public class ModuleInstallerImpl<T> implements ModuleInstaller {
 
     private void load() throws ModuleLoadException {
       if (module.stateMonitor.setConditionally(Module.FETCHED, Module.LOADING)) {
-        installAsync(getDependencies());
+        installAsync(dependencies);
         module.load();
         module.stateMonitor.set(Module.LOADED);
       } else {
@@ -91,9 +92,9 @@ public class ModuleInstallerImpl<T> implements ModuleInstaller {
       }
     }
 
-    private void waitForDependencies() throws ModuleLoadException {
+    private void waitForDependencies() {
       if (module.stateMonitor.setConditionally(Module.LOADED, Module.WAITING_FOR_DEPS)) {
-        taskManager.joinAll(getDependencies()
+        taskManager.joinAll(dependencies
             .stream()
             .map(ModuleInstallerImpl.this::waitUntilLoadedAsync)
             .collect(Collectors.toList()));
@@ -103,18 +104,14 @@ public class ModuleInstallerImpl<T> implements ModuleInstaller {
       }
     }
 
-    private List<Module> getDependencies() throws ModuleLoadException {
-      try {
-        if (dependencies == null) {
-          dependencies = module.getDependencies()
-              .stream()
-              .map(moduleSource::getModule)
-              .map(Objects::requireNonNull)
-              .collect(Collectors.toList());
-        }
-        return dependencies;
-      } catch (NullPointerException e) {
-        throw new ModuleLoadException(module, e);
+    private void initDependencies() throws ModuleLoadException, NoSuchModuleException {
+      if (dependencies != null) {
+        return;
+      }
+      List<String> dependencyNames = module.getDependencies();
+      dependencies = new ArrayList<>(dependencyNames.size());
+      for (String dependencyName : dependencyNames) {
+        dependencies.add(moduleSource.getModule(dependencyName));
       }
     }
   }

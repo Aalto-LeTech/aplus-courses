@@ -15,7 +15,7 @@ public class PropertyReader {
    * Constructs a reader for {@code properties}.
    * @param properties A {@link Properties} object to be read.
    */
-  public PropertyReader(Properties properties) {
+  public PropertyReader(@NotNull Properties properties) {
     this.properties = properties;
   }
 

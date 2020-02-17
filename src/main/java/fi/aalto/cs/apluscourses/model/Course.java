@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,14 +45,6 @@ public class Course implements ModuleSource {
     this.name = name;
     this.modules = modules;
     this.requiredPlugins = requiredPlugins;
-  }
-
-  /**
-   * Returns an "empty" course, that is, a course with no name, no modules, and no required plugins.
-   * @return An empty course.
-   */
-  public static Course createEmptyCourse() {
-    return new Course("", new ArrayList<>(), new HashMap<>());
   }
 
   public static Course fromResource(@NotNull String resourceName, @NotNull ModelFactory factory)
@@ -153,7 +144,7 @@ public class Course implements ModuleSource {
         .filter(module -> module.getName().equals(moduleName))
         .findFirst();
     return matchingModule
-        .orElseThrow(() -> new NoSuchModuleException(this, moduleName, null))
+        .orElseThrow(() -> new NoSuchModuleException(moduleName, null))
         .getUrl();
   }
 
@@ -193,8 +184,8 @@ public class Course implements ModuleSource {
   }
 
   @NotNull
-  private static List<Module> getCourseModules(JSONObject jsonObject,
-                                               String path,
+  private static List<Module> getCourseModules(@NotNull JSONObject jsonObject,
+                                               @NotNull String path,
                                                @NotNull ModelFactory factory)
       throws MalformedCourseConfigurationFileException {
     JSONArray modulesJsonArray;
@@ -248,13 +239,13 @@ public class Course implements ModuleSource {
   }
 
 
+  @NotNull
   @Override
-  @Nullable
-  public Module getModule(String moduleName) {
+  public Module getModule(@NotNull String moduleName) throws NoSuchModuleException {
     return modules
         .stream()
         .filter(module -> module.getName().equals(moduleName))
         .findFirst()
-        .orElse(null);
+        .orElseThrow(() -> new NoSuchModuleException(moduleName, null));
   }
 }

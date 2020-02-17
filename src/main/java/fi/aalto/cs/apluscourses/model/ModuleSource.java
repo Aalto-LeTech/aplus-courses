@@ -1,8 +1,8 @@
 package fi.aalto.cs.apluscourses.model;
 
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 public interface ModuleSource {
-  @Nullable
-  Module getModule(String moduleName);
+  @NotNull
+  Module getModule(String moduleName) throws NoSuchModuleException;
 }

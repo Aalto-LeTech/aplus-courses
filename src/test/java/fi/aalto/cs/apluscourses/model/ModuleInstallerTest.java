@@ -5,20 +5,18 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import fi.aalto.cs.apluscourses.utils.async.SimpleAsyncTaskManager;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -27,7 +25,7 @@ public class ModuleInstallerTest {
 
   @Test
   public void testInstall() throws IOException, ModuleLoadException {
-    Module module = spy(new Module("someModule", new URL("https://example.com/0")) {
+    Module module = spy(new ModelExtensions.TestModule("someModule") {
       @Override
       public void fetch() {
         assertEquals("When fetch() is called, module should be in FETCHING state.",
@@ -42,7 +40,7 @@ public class ModuleInstallerTest {
     });
 
     ModuleInstaller installer =
-        new ModuleInstallerImpl<>(moduleName -> null, new SimpleAsyncTaskManager());
+        new ModuleInstallerImpl<>(mock(ModuleSource.class), new SimpleAsyncTaskManager());
 
     installer.install(module);
 
@@ -55,8 +53,9 @@ public class ModuleInstallerTest {
   }
 
   @Test
-  public void testInstallDependencies() throws IOException, ModuleLoadException {
-    Module module1 = spy(new Module("dependentModule", new URL("https://example.com/1")) {
+  public void testInstallDependencies()
+      throws IOException, ModuleLoadException, NoSuchModuleException {
+    Module module1 = spy(new ModelExtensions.TestModule("dependentModule") {
       @NotNull
       @Override
       public List<String> getDependencies() {
@@ -68,16 +67,16 @@ public class ModuleInstallerTest {
         return dependencies;
       }
     });
-    Module firstDep = spy(new Module("firstDep", new URL("https://example.com/2")));
-    Module secondDep = spy(new Module("secondDep", new URL("https://example.com/3")));
+    Module firstDep = spy(new ModelExtensions.TestModule("firstDep"));
+    Module secondDep = spy(new ModelExtensions.TestModule("secondDep"));
 
-    Map<String, Module> moduleMap = new HashMap<>();
-    moduleMap.put(module1.getName(), module1);
-    moduleMap.put(firstDep.getName(), firstDep);
-    moduleMap.put(secondDep.getName(), secondDep);
+    ModuleSource moduleSource = mock(ModuleSource.class);
+    when(moduleSource.getModule(module1.getName())).thenReturn(module1);
+    when(moduleSource.getModule(firstDep.getName())).thenReturn(firstDep);
+    when(moduleSource.getModule(secondDep.getName())).thenReturn(secondDep);
 
     ModuleInstaller installer =
-        new ModuleInstallerImpl<>(moduleMap::get, new SimpleAsyncTaskManager());
+        new ModuleInstallerImpl<>(moduleSource, new SimpleAsyncTaskManager());
 
     installer.install(module1);
 
@@ -104,16 +103,16 @@ public class ModuleInstallerTest {
   }
 
   @Test
-  public void testInstallMany() throws IOException, ModuleLoadException {
-    Module module1 = spy(new Module("module1", new URL("https://example.com/module1")));
-    Module module2 = spy(new Module("module2", new URL("https://example.com/module2")));
+  public void testInstallMany() throws IOException, ModuleLoadException, NoSuchModuleException {
+    Module module1 = spy(new ModelExtensions.TestModule("module1"));
+    Module module2 = spy(new ModelExtensions.TestModule("module2"));
 
-    Map<String, Module> moduleMap = new HashMap<>();
-    moduleMap.put("module1", module1);
-    moduleMap.put("module2", module2);
+    ModuleSource moduleSource = mock(ModuleSource.class);
+    when(moduleSource.getModule(module1.getName())).thenReturn(module1);
+    when(moduleSource.getModule(module2.getName())).thenReturn(module2);
 
     ModuleInstaller installer =
-        new ModuleInstallerImpl<>(moduleMap::get, new SimpleAsyncTaskManager());
+        new ModuleInstallerImpl<>(moduleSource, new SimpleAsyncTaskManager());
 
     List<Module> modules = new ArrayList<>();
     modules.add(module1);
@@ -136,8 +135,8 @@ public class ModuleInstallerTest {
   }
 
   @Test
-  public void testInstallFetchFails() throws MalformedURLException, ModuleLoadException {
-    Module module = spy(new Module("fetchFailModule", new URL("https://example.com/fail")) {
+  public void testInstallFetchFails() throws ModuleLoadException {
+    Module module = spy(new ModelExtensions.TestModule("fetchFailModule") {
       @Override
       public void fetch() throws IOException {
         throw new IOException();
@@ -145,7 +144,7 @@ public class ModuleInstallerTest {
     });
 
     ModuleInstaller installer =
-        new ModuleInstallerImpl<>(moduleName -> null, new SimpleAsyncTaskManager());
+        new ModuleInstallerImpl<>(mock(ModuleSource.class), new SimpleAsyncTaskManager());
 
     installer.install(module);
 
@@ -157,8 +156,8 @@ public class ModuleInstallerTest {
   }
 
   @Test
-  public void testInstallLoadFails() throws MalformedURLException {
-    Module module = spy(new Module("loadFailModule", new URL("https://example.com/loadfail")) {
+  public void testInstallLoadFails() {
+    Module module = spy(new ModelExtensions.TestModule("loadFailModule") {
       @Override
       public void load() throws ModuleLoadException {
         throw new ModuleLoadException(this, null);
@@ -166,7 +165,7 @@ public class ModuleInstallerTest {
     });
 
     ModuleInstaller installer =
-        new ModuleInstallerImpl<>(moduleName -> null, new SimpleAsyncTaskManager());
+        new ModuleInstallerImpl<>(mock(ModuleSource.class), new SimpleAsyncTaskManager());
 
     installer.install(module);
 
@@ -175,8 +174,8 @@ public class ModuleInstallerTest {
   }
 
   @Test
-  public void testInstallUnknownDependency() throws MalformedURLException, ModuleLoadException {
-    Module module = spy(new Module("unknownDepModule", new URL("https://example.com/unknownd")) {
+  public void testInstallUnknownDependency() throws ModuleLoadException {
+    Module module = spy(new ModelExtensions.TestModule("unknownDepModule") {
       @NotNull
       @Override
       public List<String> getDependencies() {
@@ -184,8 +183,12 @@ public class ModuleInstallerTest {
       }
     });
 
+    ModuleSource moduleSource = moduleName -> {
+      throw new NoSuchModuleException(moduleName, null);
+    };
+
     ModuleInstaller installer =
-        new ModuleInstallerImpl<>(moduleName -> null, new SimpleAsyncTaskManager());
+        new ModuleInstallerImpl<>(moduleSource, new SimpleAsyncTaskManager());
 
     installer.install(module);
 
@@ -196,8 +199,8 @@ public class ModuleInstallerTest {
   }
 
   @Test
-  public void testInstallGetDependenciesFail() throws MalformedURLException, ModuleLoadException {
-    Module module = spy(new Module("failingDepModule", new URL("https://example.com/faildep")) {
+  public void testInstallGetDependenciesFail() throws ModuleLoadException {
+    Module module = spy(new ModelExtensions.TestModule("failingDepModule") {
       @NotNull
       @Override
       public List<String> getDependencies() throws ModuleLoadException {
@@ -206,7 +209,7 @@ public class ModuleInstallerTest {
     });
 
     ModuleInstaller installer =
-        new ModuleInstallerImpl<>(moduleName -> null, new SimpleAsyncTaskManager());
+        new ModuleInstallerImpl<>(mock(ModuleSource.class), new SimpleAsyncTaskManager());
 
     installer.install(module);
 
@@ -217,29 +220,29 @@ public class ModuleInstallerTest {
   }
 
   @Test
-  public void testInstallDependencyFails() throws MalformedURLException {
-    Module dependentModule = spy(new Module("dependentModule", new URL("https://example.com/d1")) {
+  public void testInstallDependencyFails() throws NoSuchModuleException {
+    Module dependentModule = spy(new ModelExtensions.TestModule("dependentModule") {
       @NotNull
       @Override
       public List<String> getDependencies() {
         return Collections.singletonList("failingDep");
       }
     });
-    Module otherModule = spy(new Module("otherModule", new URL("https://example.com/d2")));
-    Module failingDep = spy(new Module("failingDep", new URL("https://example.com/d3")) {
+    Module otherModule = spy(new ModelExtensions.TestModule("otherModule"));
+    Module failingDep = spy(new ModelExtensions.TestModule("failingDep") {
       @Override
       public void fetch() throws IOException {
         throw new IOException();
       }
     });
 
-    Map<String, Module> moduleMap = new HashMap<>();
-    moduleMap.put(dependentModule.getName(), dependentModule);
-    moduleMap.put(otherModule.getName(), otherModule);
-    moduleMap.put(failingDep.getName(), failingDep);
+    ModuleSource moduleSource = mock(ModuleSource.class);
+    when(moduleSource.getModule(dependentModule.getName())).thenReturn(dependentModule);
+    when(moduleSource.getModule(otherModule.getName())).thenReturn(otherModule);
+    when(moduleSource.getModule(failingDep.getName())).thenReturn(failingDep);
 
     ModuleInstaller installer =
-        new ModuleInstallerImpl<>(moduleMap::get, new SimpleAsyncTaskManager());
+        new ModuleInstallerImpl<>(moduleSource, new SimpleAsyncTaskManager());
 
     List<Module> modules = new ArrayList<>();
     modules.add(dependentModule);
@@ -256,15 +259,15 @@ public class ModuleInstallerTest {
   }
 
   @Test
-  public void testInstallCircularDependency() throws MalformedURLException {
-    Module moduleA = spy(new Module("moduleA", new URL("https://example.com/c1")) {
+  public void testInstallCircularDependency() throws NoSuchModuleException {
+    Module moduleA = spy(new ModelExtensions.TestModule("moduleA") {
       @NotNull
       @Override
       public List<String> getDependencies() {
         return Collections.singletonList("moduleB");
       }
     });
-    Module moduleB = spy(new Module("moduleB", new URL("https://example.com/c2")) {
+    Module moduleB = spy(new ModelExtensions.TestModule("moduleB") {
       @NotNull
       @Override
       public List<String> getDependencies() {
@@ -272,12 +275,12 @@ public class ModuleInstallerTest {
       }
     });
 
-    Map<String, Module> moduleMap = new HashMap<>();
-    moduleMap.put(moduleA.getName(), moduleA);
-    moduleMap.put(moduleB.getName(), moduleB);
+    ModuleSource moduleSource = mock(ModuleSource.class);
+    when(moduleSource.getModule(moduleA.getName())).thenReturn(moduleA);
+    when(moduleSource.getModule(moduleB.getName())).thenReturn(moduleB);
 
     ModuleInstaller installer =
-        new ModuleInstallerImpl<>(moduleMap::get, new SimpleAsyncTaskManager());
+        new ModuleInstallerImpl<>(moduleSource, new SimpleAsyncTaskManager());
 
     List<Module> modules = new ArrayList<>();
     modules.add(moduleA);

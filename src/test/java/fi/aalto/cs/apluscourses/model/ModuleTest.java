@@ -16,13 +16,13 @@ import org.junit.Test;
 
 public class ModuleTest {
 
-  private static final ModelFactory COURSE_FACTORY = new ModelFactory() {};
+  private static final ModelFactory MODEL_FACTORY = new ModelExtensions.TestModelFactory() {};
 
   @Test
   public void testCreateModule() throws MalformedURLException {
     String name = "Awesome module";
     URL url = new URL("https://example.com");
-    Module module = new Module(name, url);
+    Module module = new ModelExtensions.TestModule(name, url);
     assertEquals("The name of the module should be the same as that given to the constructor",
         name, module.getName());
     assertEquals("The URL of the module should be the same as that given to the constructor",
@@ -32,7 +32,7 @@ public class ModuleTest {
   @Test
   public void testCreateModuleFromJsonObject() throws MalformedURLException {
     JSONObject jsonObject = new JSONObject("{\"name\":\"Name\",\"url\":\"https://aalto.fi\"}");
-    Module module = Module.fromJsonObject(jsonObject, COURSE_FACTORY);
+    Module module = Module.fromJsonObject(jsonObject, MODEL_FACTORY);
     assertEquals("The name of the module should be the same as that in the JSON object",
         "Name", module.getName());
     assertEquals("The URL of the module should be the same as that in the JSON object",
@@ -42,19 +42,19 @@ public class ModuleTest {
   @Test(expected = JSONException.class)
   public void testCreateModuleFromJsonObjectMissingName() throws MalformedURLException {
     JSONObject jsonObject = new JSONObject("{\"url\":\"https://example.org\"}");
-    Module.fromJsonObject(jsonObject, COURSE_FACTORY);
+    Module.fromJsonObject(jsonObject, MODEL_FACTORY);
   }
 
   @Test(expected = JSONException.class)
   public void testCreateModuleFromJsonObjectMissingUrl() throws MalformedURLException {
     JSONObject jsonObject = new JSONObject("{\"name\":\"Name\"}");
-    Module.fromJsonObject(jsonObject, COURSE_FACTORY);
+    Module.fromJsonObject(jsonObject, MODEL_FACTORY);
   }
 
   @Test(expected = MalformedURLException.class)
   public void testCreateModuleFromJsonObjectWithMalformedUrl() throws MalformedURLException {
     JSONObject jsonObject = new JSONObject("{\"name\":\"Name\",\"url\":\"\"}");
-    Module.fromJsonObject(jsonObject, COURSE_FACTORY);
+    Module.fromJsonObject(jsonObject, MODEL_FACTORY);
   }
 
   @SuppressWarnings("unchecked")
@@ -63,7 +63,7 @@ public class ModuleTest {
     URL url = new URL("https://example.com");
     Object listener = new Object();
     Event.Callback<Object> callback = mock(Event.Callback.class);
-    Module module = new Module("Changing module", url);
+    Module module = new ModelExtensions.TestModule("Changing module", url);
     module.stateChanged.addListener(listener, callback);
     verifyNoInteractions(callback);
     assertEquals(Module.NOT_INSTALLED, module.stateMonitor.get());

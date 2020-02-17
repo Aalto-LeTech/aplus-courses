@@ -5,12 +5,11 @@ import fi.aalto.cs.apluscourses.utils.StateMonitor;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Collections;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
-public class Module {
+public abstract class Module {
 
   public static final int ERROR = StateMonitor.ERROR;
   public static final int NOT_INSTALLED = StateMonitor.INITIAL;
@@ -50,13 +49,14 @@ public class Module {
    * }
    * </pre>
    * @param jsonObject The JSON object containing information about a single module.
+   * @param factory    A {@link ModelFactory} object that is responsible for actual object creation.
    * @return A module constructed from the given JSON object.
    * @throws MalformedURLException  If the URL of the module is malformed.
    * @throws org.json.JSONException If the jsonObject doesn't contain "name" and "url" keys with
    *                                string values.
    */
   @NotNull
-  public static Module fromJsonObject(@NotNull JSONObject jsonObject, ModelFactory factory)
+  public static Module fromJsonObject(@NotNull JSONObject jsonObject, @NotNull ModelFactory factory)
       throws MalformedURLException {
     String name = jsonObject.getString("name");
     URL url = new URL(jsonObject.getString("url"));
@@ -81,17 +81,11 @@ public class Module {
    * @throws ModuleLoadException If dependencies could not be read.
    */
   @NotNull
-  public List<String> getDependencies() throws ModuleLoadException {
-    return Collections.emptyList();
-  }
+  public abstract List<String> getDependencies() throws ModuleLoadException;
   
-  public void fetch() throws IOException {
-    // Default implementation: do nothing
-  }
+  public abstract void fetch() throws IOException;
 
-  public void load() throws ModuleLoadException {
-    // Default implementation: do nothing
-  }
+  public abstract void load() throws ModuleLoadException;
 
   protected void onStateChanged() {
     stateChanged.trigger();

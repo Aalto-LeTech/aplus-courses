@@ -12,12 +12,11 @@ import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.model.Course;
+import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.model.ModuleInstaller;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -34,10 +33,9 @@ public class ImportModuleActionTest {
 
   /**
    * Called before each test method call.  Initializes private fields.
-   * @throws MalformedURLException Shouldn't happen.
    */
   @Before
-  public void createMockObjects() throws MalformedURLException  {
+  public void createMockObjects()   {
     project = mock(Project.class);
 
     mainViewModel = new MainViewModel();
@@ -45,9 +43,9 @@ public class ImportModuleActionTest {
     doReturn(mainViewModel).when(mainViewModelProvider).getMainViewModel(project);
 
     List<Module> modules = new ArrayList<>();
-    modules.add(new Module("module1", new URL("https://example.com/1")));
-    modules.add(new Module("module2", new URL("https://example.com/2")));
-    modules.add(new Module("module3", new URL("https://example.com/3")));
+    modules.add(new ModelExtensions.TestModule("module1"));
+    modules.add(new ModelExtensions.TestModule("module2"));
+    modules.add(new ModelExtensions.TestModule("module3"));
 
     Course course = new Course("course", modules, Collections.emptyMap());
     mainViewModel.courseViewModel.set(new CourseViewModel(course));

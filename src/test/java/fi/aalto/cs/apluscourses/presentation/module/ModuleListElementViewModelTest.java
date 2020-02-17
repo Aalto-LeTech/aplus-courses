@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.model.Module;
 import java.awt.font.TextAttribute;
 import java.net.MalformedURLException;
@@ -14,9 +15,9 @@ import org.junit.Test;
 public class ModuleListElementViewModelTest {
 
   @Test
-  public void testStateChanged() throws MalformedURLException {
+  public void testStateChanged() {
     AtomicBoolean isOnChangedCalled = new AtomicBoolean(false);
-    Module module = new Module("testModule", new URL("https://example.com/1"));
+    Module module = new ModelExtensions.TestModule("testModule");
     ModuleListElementViewModel moduleViewModel = new ModuleListElementViewModel(module) {
       @Override
       public void onChanged() {
@@ -33,7 +34,7 @@ public class ModuleListElementViewModelTest {
   public void testNameAndUrl() throws MalformedURLException {
     String name = "Wanda";
     String url = "https://example.com/wanda";
-    Module module = new Module(name, new URL(url));
+    Module module = new ModelExtensions.TestModule(name, new URL(url));
     ModuleListElementViewModel moduleViewModel = new ModuleListElementViewModel(module);
     assertEquals("getName() should return module's name",
         name, moduleViewModel.getName());
@@ -42,8 +43,8 @@ public class ModuleListElementViewModelTest {
   }
 
   @Test
-  public void testStatus() throws MalformedURLException {
-    Module module = new Module("testStatusModule", new URL("https://example.com/2"));
+  public void testStatus() {
+    Module module = new ModelExtensions.TestModule("testStatusModule");
     ModuleListElementViewModel moduleViewModel = new ModuleListElementViewModel(module);
 
     float delta = 0.001f;
