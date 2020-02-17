@@ -7,8 +7,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ModelExtensions {
+
+  private static final Logger logger = LoggerFactory.getLogger(ModelExtensions.class);
+
+  private ModelExtensions() {
+
+  }
 
   public static class TestModule extends Module {
 
@@ -18,7 +26,7 @@ public class ModelExtensions {
       try {
         testURL = new URL("https://example.com");
       } catch (MalformedURLException e) {
-        e.printStackTrace();
+        logger.error("Test URL is malformed", e);
       }
     }
 
