@@ -16,9 +16,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import net.lingala.zip4j.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
+import net.lingala.zip4j.model.FileHeader;
 import org.jdom.JDOMException;
 import org.jetbrains.annotations.CalledWithWriteLock;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
@@ -76,8 +79,25 @@ class IntelliJModule extends Module {
     return FileUtilRt.createTempFile(getName(), ".zip");
   }
 
-  protected void extractZip(File file) throws IOException {
-    new ZipFile(file).extractAll(getBasePath());
+  protected void extractZip(File file) throws ZipException {
+    // ZIP may contain other dirs (typically, dependency modules) but we only extract the files that
+    // belongs to this module.
+    ZipFile zipFile = new ZipFile(file);
+    String basePath = getBasePath();
+    for (String fileName : zipFile.getFileHeaders()
+        .stream()
+        .map(FileHeader::getFileName)
+        .filter(this::doesZippedFileBelongToThisModule)
+        .toArray(String[]::new)) {
+      zipFile.extractFile(fileName, basePath);
+    }
+  }
+
+  private boolean doesZippedFileBelongToThisModule(@Nullable String fileName) {
+    // File names in ZIP should always use forward slashes.
+    // See section 4.4.17 of the ".ZIP File Format Specification" v6.3.6 FINAL.
+    // Available online: https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT
+    return fileName != null && fileName.startsWith(getName() + "/");
   }
 
   protected void fetchZipTo(File file) throws IOException {

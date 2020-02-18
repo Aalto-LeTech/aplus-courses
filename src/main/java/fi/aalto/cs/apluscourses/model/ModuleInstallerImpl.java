@@ -6,8 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ModuleInstallerImpl<T> implements ModuleInstaller {
+
+  private static Logger logger = LoggerFactory.getLogger(ModuleInstallerImpl.class);
 
   private final ModuleSource moduleSource;
   private final TaskManager<T> taskManager;
@@ -69,6 +73,7 @@ public class ModuleInstallerImpl<T> implements ModuleInstaller {
         load();
         waitForDependencies();
       } catch (IOException | ModuleLoadException | NoSuchModuleException e) {
+        logger.info("A module could not be installed", e);
         module.stateMonitor.set(Module.ERROR);
       }
     }
