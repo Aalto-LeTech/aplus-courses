@@ -69,6 +69,49 @@ a manual testing manual. Marked with a github issue label "manual testing".
     dependancies for the project from LOCAL #30</a>
   </summary>
   <div>
+    <h5>Part 0.  Setup: download module ZIPs</h5>
+    <ol>
+      <li>
+        Open the directory where you are going to create your test IDEA project (e.g. open
+        <code>~/IdeaProjects</code>, if your test project will be
+        <code>~/IdeaProjects/test-project</code>).
+      </li>
+      <li>Create there a subdirectory called <code>modules</code>.</li>
+      <li>
+        Open a text editor and copy-paste the following script to a new file.  <sub>Tip: in Windows,
+        you can use Notepad++ as a text editor.</sub>
+<pre>
+#!/bin/sh
+for m in $(echo "Adventure AdventureDraft Aliohjelmia AuctionHouse1
+  AuctionHouse2 Ave AveFI CarSim CitySim DoWhile Election Files FlappyBug
+  Football1 Football2 Football3 Football4 ForLoops GoodStuff HigherOrder
+  IntroApps IntroOOP Miscellaneous MoreApps MovieStats O1Library Odds Oliointro
+  Peeveli Pikkusovelluksia Pong Recursion RobotTribes Robots Sananmuunnos
+  Sentiments Snake Stars Subprograms Subtypes SwingExamples Train Viinaharava");
+do
+  curl "https://grader.cs.hut.fi/static/O1_2020/projects/given/$m/$m.zip" \
+    -o $m.zip
+done
+</pre>
+        Save that file to the newly-created <code>modules</code> directory as
+        <code>get-modules</code>.
+      </li>
+      <li>
+        Open a terminal in <code>modules</code> directory.  <sub>In Windows, use Git Bash.  You can
+        open it by right-clicking the folder and choosing <em>Git Bash Here</em>.  Git Bash should
+        be pre-installed in our testing VMs.</sub>
+       </li>
+       <li>
+         Make <code>get-modules</code> script executable and run with the following shell commands:
+<pre>
+chmod 755 get-modules
+./get-modules
+</pre>
+         This downloads all the necessary ZIP files  (~800&nbsp;MB).
+       </li>
+    </ol>
+  </div>
+  <div>
     <h5>Part 1.  Importing a module by double-clicking it</h5>
     <ol>
       <li>Create a new project.</li>
