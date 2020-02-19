@@ -34,8 +34,8 @@ public class ActionUtil {
    * @param source A {@link Component} that gives the {@link DataContext} for the action.
    * @return An {@link ActionListener}
    */
-  public static ActionListener onEventLauncher(@NotNull String actionId,
-                                               @NotNull Component source) {
+  public static ActionListener createOnEventLauncher(@NotNull String actionId,
+                                                     @NotNull Component source) {
     return actionEvent -> launch(actionId, DataManager.getInstance().getDataContext(source));
   }
 

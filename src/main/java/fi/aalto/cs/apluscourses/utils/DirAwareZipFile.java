@@ -36,12 +36,14 @@ public class DirAwareZipFile extends ZipFile {
       throw new FileNotFoundException(dirName);
     }
 
-    for (String fileName : getFileHeaders()
+    String[] fileNames = getFileHeaders()
         .stream()
         .map(FileHeader::getFileName)
         .filter(Objects::nonNull)
         .filter(fileName -> fileName.startsWith(prefix))
-        .toArray(String[]::new)) {
+        .toArray(String[]::new);
+
+    for (String fileName : fileNames) {
       extractFile(fileName, destinationPath);
     }
   }
