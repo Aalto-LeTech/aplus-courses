@@ -12,7 +12,7 @@
     ]]></description>
 
     <change-notes><![CDATA[
-      Adding the initial skeleton of the plugin.<br>
+      Added some basic functionality for plugin configuration and basic course materials loading.<br>
     ]]>
     </change-notes>
 
