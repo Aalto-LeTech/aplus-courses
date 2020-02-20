@@ -9,6 +9,10 @@ public class ClientIoError extends Notification {
   @NotNull
   private final Exception exception;
 
+  /**
+   * Constructs a notification that notifies the user of an IO error arising from the HTTP client.
+   * @param exception An exception that caused this notification.
+   */
   public ClientIoError(@NotNull Exception exception) {
     // Tell the user to restart for now as a temporary solution.
     super("A+", "A+ Courses plugin encountered a network error",
