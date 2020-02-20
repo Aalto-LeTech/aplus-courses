@@ -8,8 +8,8 @@ a manual testing manual. Marked with a github issue label "manual testing".
   <summary>
     <a href="https://github.com/Aalto-LeTech/intellij-plugin/issues/9">making hints on missing plugins #9</a>
   </summary>
-  <p>
-    <p><b>Part 1. Checking missing plugins</b></p>
+  <div>
+    <h5>Part 1. Checking missing plugins</h5>
     <ol>
       <li>Ensure "Scala" plugin is not installer <b>(File | Settings | Plugins | Marketplace)</b></li>
       <li>Restart an IDE</li>
@@ -25,9 +25,9 @@ a manual testing manual. Marked with a github issue label "manual testing".
       <li>Click on the highlighted part of the notification, approve restart of the IDE</li>
       <li>After the restart is done, ensure there is no notification anymore</li>
     </ol>  
-  </p>
-    <p>
-    <p><b>Part 2. Checking disabled plugins</b></p>
+  </div>
+  <div>
+    <h5>Part 2. Checking disabled plugins</h5>
     <ol>
       <li>Ensure 'Scala' plugin is installed and disabled
         <img src="images/%239_disable_plugin.png" alt="Ensure 'Scala' plugin is installed and disabled">
@@ -42,14 +42,14 @@ a manual testing manual. Marked with a github issue label "manual testing".
       </li>
       <li>After the restart is done, ensure there is no notification anymore</li>
     </ol>  
-  </p>
+  </div>
 </details>
 <details>
   <summary>
     <a href="https://github.com/Aalto-LeTech/intellij-plugin/issues/44">add new startup notification saying the plugin is in beta/dev #44</a>
   </summary>
-  <p>
-    <p><b>Checking the notification regard the current A+ Course plugin version</b></p>
+  <div>
+    <h5>Checking the notification regard the current A+ Course plugin version</h5>
     <ol>
       <li>Ensure "A+ Course" plugin is installed <b>(File | Settings | Plugins | Installed)</b> and check the plugin version from the plugin window or <a href="https://plugins.jetbrains.com/plugin/13634-a-plugin-for-intellij/versions">online.</a></li>
       <li>Restart an IDE</li>
@@ -61,5 +61,121 @@ a manual testing manual. Marked with a github issue label "manual testing".
       </li>
       <li>The notification should reamin after the restart is done.</li>
     </ol>  
-  </p>
+  </div>
+</details>
+<details>
+  <summary>
+    <a href="https://github.com/Aalto-LeTech/intellij-plugin/issues/30">install required
+    dependancies for the project from LOCAL #30</a>
+  </summary>
+  <div>
+    <h5>Part 0.  Setup: download module ZIPs</h5>
+    <ol>
+      <li>
+        Open the directory where you are going to create your test IDEA project (e.g. open
+        <code>~/IdeaProjects</code>, if your test project will be
+        <code>~/IdeaProjects/test-project</code>).
+      </li>
+      <li>Create there a subdirectory called <code>modules</code>.</li>
+      <li>
+        Open a text editor and copy-paste the following script to a new file.  <sub>Tip: in Windows,
+        you can use Notepad++ as a text editor.</sub>
+<pre>
+#!/bin/sh
+for m in $(echo "Adventure AdventureDraft Aliohjelmia AuctionHouse1
+  AuctionHouse2 Ave AveFI CarSim CitySim DoWhile Election Files FlappyBug
+  Football1 Football2 Football3 Football4 ForLoops GoodStuff HigherOrder
+  IntroApps IntroOOP Miscellaneous MoreApps MovieStats O1Library Odds Oliointro
+  Peeveli Pikkusovelluksia Pong Recursion RobotTribes Robots Sananmuunnos
+  Sentiments Snake Stars Subprograms Subtypes SwingExamples Train Viinaharava");
+do
+  curl "https://grader.cs.hut.fi/static/O1_2020/projects/given/$m/$m.zip" \
+    -o $m.zip
+done
+</pre>
+        Save that file to the newly-created <code>modules</code> directory as
+        <code>get-modules</code>.
+      </li>
+      <li>
+        Open a terminal in <code>modules</code> directory.  <sub>In Windows, use Git Bash.  You can
+        open it by right-clicking the folder and choosing <em>Git Bash Here</em>.  Git Bash should
+        be pre-installed in our testing VMs.</sub>
+       </li>
+       <li>
+         Make <code>get-modules</code> script executable and run with the following shell commands:
+<pre>
+chmod 755 get-modules
+./get-modules
+</pre>
+         This downloads all the necessary ZIP files  (~800&nbsp;MB).
+       </li>
+    </ol>
+  </div>
+  <div>
+    <h5>Part 1.  Importing a module by double-clicking it</h5>
+    <ol>
+      <li>Create a new project.</li>
+      <li>
+        Open the <em>Modules</em> tool window (if it is not open).  <sub>You may have to wait a
+        few seconds for the list of modules to be initialized.  If the initialization takes more
+        than 10&nbsp;seconds, consider it an error.</sub>
+      </li>
+      <li>Select <em>GoodStuff</em> from the list and double click it.</li>
+      <li>
+        Ensure that <em>GoodStuff</em> and <em>O1Library</em> appear as loaded modules in the
+        project tree, and their contents match the image below:<br/>
+        <img src="images/30_module_loaded.png" alt="GoodStuff and O1Library contents" /><br/>
+        <sub>It shouldn't take longer than 5 seconds for modules to be imported.</sub>
+      </li>
+      <li>
+        Ensure that <em>GoodStuff</em> and <em>O1Library</em> are marked <em>Installed</em> in the
+        <em>Modules</em> tool window.
+      </li>
+    </ol>
+  </div>
+  <div>
+    <h5>Part 2.  Importing a module using context menu.</h5>
+    <ol>
+      <li>
+        Continuing from <strong>Part 1</strong>, right-click a non-installed module of your choice
+        in the <em>Modules</em> tool window.  <sub>On Mac with only one mouse button, you may need
+        to use some other gesture to open a context menu, like holding <em>Ctrl</em> key while
+        clicking.  Use the way that is standard to the system.</sub>
+      </li>
+      <li>Ensure that a pop-up menu appears next to the mouse pointer.</li>
+      <li>Click <em>Import A+ Module</em> menu item.</li>
+      <li>
+        Ensure that the module appears in the project tree.  <sub>If module has dependencies, those
+        are imported too.  If other modules appear in the project tree in this step, you can assume
+        they are dependencies of the module you chose and ignore them.</sub>
+      </li>
+      <li>
+        Ensure that the module is marked <em>Installed</em> in the <em>Modules</em> tool window.
+      </li>
+    </ol>
+  </div>
+  <div>
+    <h5>Part 3.  Importing multiple modules using toolbar button.</h5>
+    <ol>
+      <li>
+        Continuing from <strong>Part 2</strong>, select multiple non-installed modules in the
+        <em>Modules</em> tool window by clicking them while holding <em>Ctrl</em> key.
+        <sub>Again, Mac may do things differently, so use the way to select multiple items that is
+        standard to the system.</sub>
+      </li>
+      <li>
+        Click <em>Import A+ Module</em> toolbar button on the top of the <em>Modules</em> tool
+        window.  <sub>The button is denoted with a "download" icon.</sub>
+      </li>
+      <li>
+        Ensure that the selected modules appear in the project tree.  <sub>Again, in case other
+        modules appear there as well, assume they are appropriate dependencies and ignore them.
+        </sub>
+      </li>
+      <li>
+        Ensure that the modules you selected are marked <em>Installed</em> in the <em>Modules</em>
+        tool window.
+      </li>
+    </ol>
+  </div>
 </details>
