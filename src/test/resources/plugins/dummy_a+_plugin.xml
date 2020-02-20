@@ -1,7 +1,7 @@
 <idea-plugin>
   <version>0.1.101</version>
   <idea-version since-build="193.5662" until-build="193.*"/>
-  <id>fi.aalto.cs.apluscourses</id>
+  <id>fi.aalto.cs.intellij-plugin</id>
   <name>A+ Courses</name>
   <vendor email="intellij-plugin-letech@aalto.fi" url="https://research.cs.aalto.fi/LeTech/">LeTech Group at Aalto University</vendor>
   <description>
