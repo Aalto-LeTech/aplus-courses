@@ -17,6 +17,7 @@
     </change-notes>
 
     <depends>com.intellij.modules.java</depends>
+    <depends>org.intellij.scala</depends>
 
     <extensions defaultExtensionNs="com.intellij">
 
