@@ -11,3 +11,7 @@ Intellij IDEA plugin for A+
 
 This project uses google checkstyle from [Checkstyle GitHub](https://github.com/checkstyle/checkstyle/blob/checkstyle-8.12/src/main/resources/google_checks.xml) for code formatting. The particular version applied to this project is stored at: `checkstyle/`. Please note, that the checkstyle file itself is licensed under **GNU LGPL** (stored at that same folder).
 
+## Packaging
+
+Due to a certain delay, required for JetBrains to verify the plugin and expose it via official plugin repository: [**Stable** channel](https://plugins.jetbrains.com/plugin/13634-a-courses/versions), 
+the built artifact of the latest production-ready "A+ Courses" plugin is now additionally being stored at [GitHub Packages service](https://github.com/Aalto-LeTech/intellij-plugin/packages).
