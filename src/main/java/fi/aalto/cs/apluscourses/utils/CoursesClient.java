@@ -1,9 +1,6 @@
 package fi.aalto.cs.apluscourses.utils;
 
-import fi.aalto.cs.apluscourses.model.UnexpectedResponseBodyException;
 import fi.aalto.cs.apluscourses.model.UnexpectedResponseException;
-import fi.aalto.cs.apluscourses.model.UnexpectedResponseHeadersException;
-import fi.aalto.cs.apluscourses.model.UnexpectedResponseStatusException;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -55,7 +52,28 @@ public class CoursesClient {
     });
   }
 
-
+  /**
+   * Makes a GET request to the given URL and returns the value of the Last-Modified header of the
+   * response. Note that some servers don't add the Last-Modified header to the response.
+   * @return A string containing the value of the Last-Modified header.
+   * @throws IOException                 If an error occurs in the execution of the request.
+   * @throws UnexpectedResponseException If the status code of the response isn't 2xx, or if the
+   *                                     response doesn't contain the Last-Modified header
+   */
+  @NotNull
+  String getLastModified(@NotNull URL url) throws IOException, UnexpectedResponseException {
+    HttpGet request = new HttpGet(url.toString());
+    try (CloseableHttpClient client = HttpClients.createDefault();
+         CloseableHttpResponse response = client.execute(request)) {
+      requireSuccessStatusCode(response);
+      Header lastModified = response.getLastHeader("Last-Modified");
+      if (lastModified == null) {
+        throw new UnexpectedResponseException(response, "Response is missing Last-Modified header",
+            null);
+      }
+      return lastModified.getValue();
+    }
+  }
 
   /**
    * Makes a GET request to the given URL and returns the response body.
@@ -64,18 +82,13 @@ public class CoursesClient {
    *                         if no checking of the MIME type should be done.
    * @param mapper           A {@link EntityMapper} that converts the {@link HttpEntity} containing
    *                         the response body to the desired format.
-   * @param <T> The result type of the {@code mapper}.
    * @return The result of {@code mapper.map(response)}, where response is a {@link HttpEntity}
    *         containing the response body.
    * @throws IOException                 If an issue occurs while making the request, which includes
    *                                     cases such as an unknown host.
-   * @throws UnexpectedResponseException Throws an instance of {@link
-   *                                     UnexpectedResponseStatusException} if the status of the
-   *                                     response isn't 2xx, an instance of {@link
-   *                                     UnexpectedResponseHeadersException} if the Content-Type
-   *                                     header doesn't match the expected value, or an instance of
-   *                                     {@link UnexpectedResponseBodyException} if the response is
-   *                                     missing a body.
+   * @throws UnexpectedResponseException If the status of the response isn't 2xx, if the
+   *                                     Content-Type header doesn't match the expected value, or if
+   *                                     the response is missing a body.
    */
   public static <T> T fetch(@NotNull URL url,
                             @Nullable String expectedMimeType,
@@ -90,39 +103,10 @@ public class CoursesClient {
 
   /**
    * A functional interface for that maps a {@link HttpEntity} to a desired result.
-   * @param <T> The type of the result of {@link EntityMapper#map}.
    */
   @FunctionalInterface
   public interface EntityMapper<T> {
     T map(@NotNull HttpEntity entity) throws IOException;
-  }
-
-  /**
-   * Makes a GET request to the given URL and returns the value of the Last-Modified header of the
-   * response. Note that some servers don't add the Last-Modified header to the response.
-   * @param url The URL to which the request is made.
-   * @return A string containing the value of the Last-Modified header.
-   * @throws IOException                 If an error occurs in the execution of the request.
-   * @throws UnexpectedResponseException If the status code of the response isn't 2xx (in which case
-   *                                     the thrown exception is an instance of {@link
-   *                                     UnexpectedResponseStatusException}, or if the the response
-   *                                     doesn't contain the Last-Modified header (in which case the
-   *                                     thrown exception is an instance of {@link
-   *                                     UnexpectedResponseHeadersException}).
-   */
-  @NotNull
-  String getLastModified(@NotNull URL url) throws IOException, UnexpectedResponseException {
-    HttpGet request = new HttpGet(url.toString());
-    try (CloseableHttpClient client = HttpClients.createDefault();
-         CloseableHttpResponse response = client.execute(request)) {
-      requireSuccessStatusCode(response);
-      Header lastModified = response.getLastHeader("Last-Modified");
-      if (lastModified == null) {
-        throw new UnexpectedResponseHeadersException("Response is missing Last-Modified header",
-            null);
-      }
-      return lastModified.getValue();
-    }
   }
 
   /**
@@ -144,46 +128,43 @@ public class CoursesClient {
       requireContentType(response, expectedContentType);
       HttpEntity entity = response.getEntity();
       if (entity == null) {
-        throw new UnexpectedResponseBodyException("Response is missing body", null);
+        throw new UnexpectedResponseException(response, "Response is missing body", null);
       }
       return mapper.map(entity);
     }
   }
 
-
-
-
   /**
-   * Throws {@link UnexpectedResponseStatusException} if the given response status code isn't 2xx,
+   * Throws {@link UnexpectedResponseException} if the given response status code isn't 2xx,
    * otherwise does nothing.
    * @param response The HTTP response from which the status code is checked.
    */
   @NotNull
   private static void requireSuccessStatusCode(@NotNull HttpResponse response)
-      throws UnexpectedResponseStatusException {
+      throws UnexpectedResponseException {
     StatusLine statusLine = response.getStatusLine();
     int statusCode = statusLine.getStatusCode();
     if (statusCode < 200 || statusCode >= 300) {
-      throw new UnexpectedResponseStatusException(statusLine, null);
+      throw new UnexpectedResponseException(response, "Status code doesn't indicate success", null);
     }
   }
 
   /**
-   * Throws {@link UnexpectedResponseHeadersException} if the given response is missing the
+   * Throws {@link UnexpectedResponseException} if the given response is missing the
    * Content-Type header, or if the value is not equal to the given content type string.
    * @param response The response from which the header is checked.
    * @param expected The expected content type of the response. If the parameter is null, then this
    *                 method does nothing.
    */
   private static void requireContentType(@NotNull HttpResponse response, @Nullable String expected)
-      throws UnexpectedResponseHeadersException {
+      throws UnexpectedResponseException {
     if (expected == null) {
       return;
     }
 
     Header contentType = response.getLastHeader("Content-Type");
     if (contentType == null || !contentType.getValue().equals(expected)) {
-      throw new UnexpectedResponseHeadersException("Unexpected Content-Type header", null);
+      throw new UnexpectedResponseException(response, "Unexpected Content-Type header", null);
     }
   }
 
