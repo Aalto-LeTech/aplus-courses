@@ -7,6 +7,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtilRt;
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.model.ModuleLoadException;
+import fi.aalto.cs.apluscourses.model.UnexpectedResponseException;
+import fi.aalto.cs.apluscourses.utils.CoursesClient;
 import fi.aalto.cs.apluscourses.utils.DirAwareZipFile;
 import fi.aalto.cs.apluscourses.utils.DomUtil;
 import java.io.File;
@@ -77,6 +79,7 @@ class IntelliJModule extends Module {
   }
 
   protected void extractZip(File file) throws IOException {
+
     // ZIP may contain other dirs (typically, dependency modules) but we only extract the files that
     // belongs to this module.
     new DirAwareZipFile(file).extractDir(getName(), getBasePath());
@@ -84,8 +87,12 @@ class IntelliJModule extends Module {
 
 
   protected void fetchZipTo(File file) throws IOException {
-    // Call HTTP client
-    throw new UnsupportedOperationException();
+    try {
+      CoursesClient.fetchZip(getUrl(), file);
+    } catch (UnexpectedResponseException ex) {
+      // At this point, the URL is most likely incorrect or the server is missing the file.
+      throw new IOException(ex);
+    }
   }
 
   @NotNull

@@ -6,10 +6,11 @@ import fi.aalto.cs.apluscourses.model.UnexpectedResponseHeadersException;
 import fi.aalto.cs.apluscourses.model.UnexpectedResponseStatusException;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.net.URL;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -26,16 +27,38 @@ import org.jetbrains.annotations.Nullable;
 public class CoursesClient {
 
   /**
-   * A functional interface for that maps a {@link HttpEntity} to a desired result.
-   * @param <T> The type of the result of {@link EntityMapper#map}.
+   * Downloads a JSON text from the given URl and returns it in a {@link ByteArrayInputStream}.
+   * @throws IOException                 If an error (e.g. network error) occurs while downloading
+   *                                     the file.
+   * @throws UnexpectedResponseException If the response isn't as expected (i.e. a status code other
+   *                                     than 2xx or different Content-Type header).
    */
-  @FunctionalInterface
-  public interface EntityMapper<T> {
-    T map(@NotNull HttpEntity entity);
+  @NotNull
+  public static ByteArrayInputStream fetchJson(@NotNull URL url)
+      throws IOException, UnexpectedResponseException {
+    return fetch(url, "application/json",
+        entity -> new ByteArrayInputStream(EntityUtils.toByteArray(entity)));
   }
 
   /**
-   * Fetches content from the given URL and returns the result.
+   * Downloads a ZIP archive from the given URL and copies it to the given file.
+   * @throws IOException                 If an error (e.g. network error) occurs while downloading
+   *                                     the file.
+   * @throws UnexpectedResponseException If the response isn't as expected (i.e. a status code other
+   *                                     than 2xx or different Content-Type header).
+   */
+  public static void fetchZip(@NotNull URL url, @NotNull File file)
+      throws IOException, UnexpectedResponseException {
+    fetch(url, "application/zip", entity -> {
+      FileUtils.copyInputStreamToFile(entity.getContent(), file);
+      return null; // The return value gets ignored here
+    });
+  }
+
+
+
+  /**
+   * Makes a GET request to the given URL and returns the response body.
    * @param url              The URL to which the GET request is made.
    * @param expectedMimeType The expected value of the Content-Type header of the response, or null
    *                         if no checking of the MIME type should be done.
@@ -54,7 +77,6 @@ public class CoursesClient {
    *                                     {@link UnexpectedResponseBodyException} if the response is
    *                                     missing a body.
    */
-  @NotNull
   public static <T> T fetch(@NotNull URL url,
                             @Nullable String expectedMimeType,
                             @NotNull EntityMapper<T> mapper)
@@ -67,96 +89,12 @@ public class CoursesClient {
   }
 
   /**
-   * Makes a GET request to the given URL and returns the response body.
-   * <p>
-   * Note: as this method returns a {@link ByteArrayInputStream}, the entire body of the HTTP
-   * response is read into memory, meaning that this method should be avoided for larger files.
-   * </p>
-   * @param url              The URL to which the request is made.
-   * @param expectedMimeType The expected value of the Content-Type header of the response, or null
-   *                         if no checking of the MIME type should be done.
-   * @return A {@link ByteArrayInputStream} containing the response body.
+   * A functional interface for that maps a {@link HttpEntity} to a desired result.
+   * @param <T> The type of the result of {@link EntityMapper#map}.
    */
-  @NotNull
-  public static ByteArrayInputStream fetch(@NotNull URL url, @Nullable String expectedMimeType)
-      throws IOException, UnexpectedResponseException {
-    return fetch(url, expectedMimeType, toByteArrayInputStream);
-  }
-
-  /**
-   * Equivalent to {@code fetch(url, null)}.
-   */
-  @NotNull
-  public static ByteArrayInputStream fetch(@NotNull URL url)
-      throws IOException, UnexpectedResponseException {
-    return fetch(url, null);
-  }
-
-  /**
-   * Equivalent to {@code fetch(url, CourseClient.JSON_MIME_TYPE)}.
-   */
-  @NotNull
-  public static ByteArrayInputStream fetchJson(@NotNull URL url)
-      throws IOException, UnexpectedResponseException {
-    return fetch(url, JSON_MIME_TYPE);
-  }
-
-  /**
-   * Equivalent to {@code fetch(url, CourseClient.ZIP_MIME_TYPE}.
-   */
-  @NotNull
-  public static ByteArrayInputStream fetchZip(@NotNull URL url)
-      throws IOException, UnexpectedResponseException {
-    return fetch(url, ZIP_MIME_TYPE);
-  }
-
-  /** A constant for the MIME type of JSON text, that is, "application/json". */
-  public static final String JSON_MIME_TYPE = "application/json";
-  /** A constant for the MIME type of ZIP archives, that is, "application/zip". */
-  public static final String ZIP_MIME_TYPE = "application/zip";
-
-  private static final EntityMapper<ByteArrayInputStream> toByteArrayInputStream = entity -> {
-    try {
-      return new ByteArrayInputStream(EntityUtils.toByteArray(entity));
-    } catch (IOException ex) {
-      throw new UncheckedIOException(ex);
-    }
-  };
-
-  /**
-   * Executes the given request, performs some checks on the response and returns the result of
-   * passing the response body to the given mapper.
-   * @param request             The HTTP request to be executed.
-   * @param expectedContentType The expected value of the Content-Type header of the response, or
-   *                            {@code null} if the header shouldn't be checked.
-   * @param mapper              A {@link EntityMapper mapping }
-   * @param <T> The type of the result returned.
-   * @return The result of {@code mapper.map(entity)}, where {@code entity} is a {@link HttpEntity}
-   *         containing the body of the response.
-   * @throws IOException                 If an error occurs in the execution of the request.
-   * @throws UnexpectedResponseException Throws an instance of {@link
-   *                                     UnexpectedResponseStatusException} if the status of the
-   *                                     response isn't 2xx, an instance of {@link
-   *                                     UnexpectedResponseHeadersException} if the Content-Type
-   *                                     header doesn't match the expected value, or an instance of
-   *                                     {@link UnexpectedResponseBodyException} if the response is
-   *                                     missing a body.
-   */
-  @NotNull
-  public static <T> T getResponseBody(@NotNull HttpUriRequest request,
-                                      @Nullable String expectedContentType,
-                                      @NotNull EntityMapper<T> mapper)
-      throws IOException, UnexpectedResponseException {
-    try (CloseableHttpClient client = HttpClients.createDefault();
-         CloseableHttpResponse response = client.execute(request)) {
-      requireSuccessStatusCode(response);
-      requireContentType(response, expectedContentType);
-      HttpEntity entity = response.getEntity();
-      if (entity == null) {
-        throw new UnexpectedResponseBodyException("Response is missing body", null);
-      }
-      return mapper.map(entity);
-    }
+  @FunctionalInterface
+  public interface EntityMapper<T> {
+    T map(@NotNull HttpEntity entity) throws IOException;
   }
 
   /**
@@ -187,14 +125,38 @@ public class CoursesClient {
     }
   }
 
+  /**
+   * Executes the given request, performs some checks on the response and returns the result of
+   * passing the response body to the given mapper.
+   * @param expectedContentType The expected value of the Content-Type header of the response, or
+   *                            {@code null} if the header shouldn't be checked.
+   * @throws IOException                 If an error occurs in the execution of the request.
+   * @throws UnexpectedResponseException If the response isn't as expected (i.e. unexpeted status
+   *                                     code or no body in the response).
+   */
+  private static <T> T getResponseBody(@NotNull HttpUriRequest request,
+                                       @Nullable String expectedContentType,
+                                       @NotNull EntityMapper<T> mapper)
+      throws IOException, UnexpectedResponseException {
+    try (CloseableHttpClient client = HttpClients.createDefault();
+         CloseableHttpResponse response = client.execute(request)) {
+      requireSuccessStatusCode(response);
+      requireContentType(response, expectedContentType);
+      HttpEntity entity = response.getEntity();
+      if (entity == null) {
+        throw new UnexpectedResponseBodyException("Response is missing body", null);
+      }
+      return mapper.map(entity);
+    }
+  }
+
+
 
 
   /**
    * Throws {@link UnexpectedResponseStatusException} if the given response status code isn't 2xx,
    * otherwise does nothing.
    * @param response The HTTP response from which the status code is checked.
-   * @throws UnexpectedResponseStatusException If the status code of the response doesn't indicate
-   *                                           success.
    */
   @NotNull
   private static void requireSuccessStatusCode(@NotNull HttpResponse response)
@@ -212,8 +174,6 @@ public class CoursesClient {
    * @param response The response from which the header is checked.
    * @param expected The expected content type of the response. If the parameter is null, then this
    *                 method does nothing.
-   * @throws UnexpectedResponseHeadersException If the Content-Type header of the response doesn't
-   *                                            match the expected value.
    */
   private static void requireContentType(@NotNull HttpResponse response, @Nullable String expected)
       throws UnexpectedResponseHeadersException {

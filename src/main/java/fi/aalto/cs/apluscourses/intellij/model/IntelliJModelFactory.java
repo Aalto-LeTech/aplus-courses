@@ -27,7 +27,6 @@ public class IntelliJModelFactory implements ModelFactory {
 
   @Override
   public Module createModule(@NotNull String name, @NotNull URL url) {
-    // Change this when modules are no longer fetched from a local dir.
-    return new LocalFetchingIntelliJModule(name, url, project);
+    return new IntelliJModule(name, url, project);
   }
 }
