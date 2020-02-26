@@ -54,24 +54,6 @@ public class Course implements ModuleSource {
   }
 
   /**
-   * Parses the course configuration file located at the given path.
-   *
-   * @param pathToCourseConfig The path to the course configuration file.
-   * @return A course instance containing the information parsed from the configuration file.
-   * @throws FileNotFoundException                     If the configuration file can't be found with
-   *                                                   the given path.
-   * @throws MalformedCourseConfigurationFileException If the configuration file is malformed in
-   *                                                   any way.
-   */
-  @NotNull
-  public static Course fromConfigurationFile(@NotNull String pathToCourseConfig,
-                                             @NotNull ModelFactory factory)
-      throws FileNotFoundException, MalformedCourseConfigurationFileException {
-    FileReader fileReader = new FileReader(pathToCourseConfig);
-    return fromConfigurationData(fileReader, pathToCourseConfig, factory);
-  }
-
-  /**
    * Creates a course instance from the course configuration data in the given reader.
    *
    * @param reader A reader providing a character stream with the course configuration data.
@@ -131,25 +113,6 @@ public class Course implements ModuleSource {
   }
 
   /**
-   * Returns the URL from which the module with the given name can be fetched.
-   *
-   * @param moduleName             The name of the module.
-   * @return                       The URL from which the module can be fetched.
-   * @throws NoSuchModuleException if the course doesn't contain a module with the given name.
-   */
-  @NotNull
-  public URL getModuleUrl(String moduleName) throws NoSuchModuleException {
-    Optional<Module> matchingModule = modules
-        .stream()
-        .filter(module -> module.getName().equals(moduleName))
-        .findFirst();
-    return matchingModule
-        .orElseThrow(() -> new NoSuchModuleException(moduleName, null))
-        .getUrl();
-  }
-
-
-  /**
    * Returns a map containing the required plugins for the course. The keys are the ids of the
    * plugins and the values are the names corresponding to the ids.
    *
@@ -161,38 +124,38 @@ public class Course implements ModuleSource {
   }
 
   @NotNull
-  private static JSONObject getCourseJsonObject(@NotNull Reader reader, @NotNull String path)
+  private static JSONObject getCourseJsonObject(@NotNull Reader reader, @NotNull String source)
       throws MalformedCourseConfigurationFileException {
     JSONTokener tokenizer = new JSONTokener(reader);
     try {
       return new JSONObject(tokenizer);
     } catch (JSONException ex) {
-      throw new MalformedCourseConfigurationFileException(path,
+      throw new MalformedCourseConfigurationFileException(source,
           "Course configuration file should consist of a valid JSON object", ex);
     }
   }
 
   @NotNull
-  private static String getCourseName(@NotNull JSONObject jsonObject, @NotNull String path)
+  private static String getCourseName(@NotNull JSONObject jsonObject, @NotNull String source)
       throws MalformedCourseConfigurationFileException {
     try {
       return jsonObject.getString("name");
     } catch (JSONException ex) {
-      throw new MalformedCourseConfigurationFileException(path,
+      throw new MalformedCourseConfigurationFileException(source,
           "Missing or malformed \"name\" key", ex);
     }
   }
 
   @NotNull
   private static List<Module> getCourseModules(@NotNull JSONObject jsonObject,
-                                               @NotNull String path,
+                                               @NotNull String source,
                                                @NotNull ModelFactory factory)
       throws MalformedCourseConfigurationFileException {
     JSONArray modulesJsonArray;
     try {
       modulesJsonArray = jsonObject.getJSONArray("modules");
     } catch (JSONException ex) {
-      throw new MalformedCourseConfigurationFileException(path,
+      throw new MalformedCourseConfigurationFileException(source,
           "Missing or malformed \"modules\" key", ex);
     }
 
@@ -203,10 +166,10 @@ public class Course implements ModuleSource {
         JSONObject moduleObject = modulesJsonArray.getJSONObject(i);
         modules.add(Module.fromJsonObject(moduleObject, factory));
       } catch (JSONException ex) {
-        throw new MalformedCourseConfigurationFileException(path,
+        throw new MalformedCourseConfigurationFileException(source,
             "\"modules\" value should be an array of objects containing module information", ex);
       } catch (MalformedURLException ex) {
-        throw new MalformedCourseConfigurationFileException(path,
+        throw new MalformedCourseConfigurationFileException(source,
             "Malformed URL in module object", ex);
       }
     }
@@ -215,14 +178,14 @@ public class Course implements ModuleSource {
 
   @NotNull
   private static Map<String, String> getCourseRequiredPlugins(@NotNull JSONObject jsonObject,
-                                                              @NotNull String path)
+                                                              @NotNull String source)
       throws MalformedCourseConfigurationFileException {
     HashMap<String, String> requiredPlugins = new HashMap<>();
     JSONObject requiredPluginsJson;
     try {
       requiredPluginsJson = jsonObject.getJSONObject("requiredPlugins");
     } catch (JSONException ex) {
-      throw new MalformedCourseConfigurationFileException(path,
+      throw new MalformedCourseConfigurationFileException(source,
           "Missing or malformed \"requiredPlugins\" key", ex);
     }
     Iterable<String> keys = requiredPluginsJson::keys;
@@ -231,7 +194,7 @@ public class Course implements ModuleSource {
         String pluginName = requiredPluginsJson.getString(pluginId);
         requiredPlugins.put(pluginId, pluginName);
       } catch (JSONException ex) {
-        throw new MalformedCourseConfigurationFileException(path,
+        throw new MalformedCourseConfigurationFileException(source,
             "Expected id-name-pairs in requiredPlugins object", ex);
       }
     }

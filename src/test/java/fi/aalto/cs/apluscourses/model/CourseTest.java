@@ -36,18 +36,20 @@ public class CourseTest {
   }
 
   @Test
-  public void testGetModuleUrl() throws MalformedURLException, NoSuchModuleException {
+  public void testGetModule() throws MalformedURLException, NoSuchModuleException {
     Module module1 = new ModelExtensions.TestModule("Test Module", new URL("https://example.com"));
     Module module2 = new ModelExtensions.TestModule("Awesome Module", new URL("https://slack.com"));
     Course course = new Course("", Arrays.asList(module1, module2), new HashMap<>());
-    assertEquals("Course#getModuleUrl should return the correct URL",
-        new URL("https://slack.com"), course.getModuleUrl("Awesome Module"));
+    assertEquals("Course#getModule should return the correct module",
+        "Awesome Module", course.getModule("Awesome Module").getName());
+    assertEquals("Course#getModule should return the correct module",
+        new URL("https://slack.com"), course.getModule("Awesome Module").getUrl());
   }
 
   @Test(expected = NoSuchModuleException.class)
-  public void testGetModuleUrlWithMissingModule() throws NoSuchModuleException {
+  public void testGetModuleWithMissingModule() throws NoSuchModuleException {
     Course course = new Course("Just some course", Collections.emptyList(), Collections.emptyMap());
-    course.getModuleUrl("Test Module");
+    course.getModule("Test Module");
   }
 
   private static String nameJson = "\"name\":\"Awesome Course\"";
