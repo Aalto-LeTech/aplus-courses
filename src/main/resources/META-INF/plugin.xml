@@ -12,7 +12,7 @@
     ]]></description>
 
     <change-notes><![CDATA[
-      Adding the initial skeleton of the plugin.<br>
+      Added some basic functionality for plugin configuration and basic course materials loading.<br>
     ]]>
     </change-notes>
 
@@ -20,24 +20,35 @@
 
     <extensions defaultExtensionNs="com.intellij">
 
-        <backgroundPostStartupActivity implementation="fi.aalto.cs.intellij.activities.RequiredPluginsCheckerActivity"/>
-        <backgroundPostStartupActivity implementation="fi.aalto.cs.intellij.activities.VersionCheckerActivity"/>
-        <applicationService serviceImplementation="fi.aalto.cs.intellij.services.PluginSettings" />
+        <backgroundPostStartupActivity implementation="fi.aalto.cs.apluscourses.intellij.activities.VersionCheckerActivity"/>
+        <backgroundPostStartupActivity implementation="fi.aalto.cs.apluscourses.intellij.activities.InitializationActivity"/>
+
+        <applicationService serviceImplementation="fi.aalto.cs.apluscourses.intellij.services.PluginSettings" />
         <toolWindow id="Modules"
                     anchor="right"
-                    factoryClass="fi.aalto.cs.intellij.actions.ModulesToolWindow" />
+                    factoryClass="fi.aalto.cs.apluscourses.intellij.toolwindows.ModulesToolWindowFactory" />
         <toolWindow id="Exercises"
                     anchor="right"
-                    factoryClass="fi.aalto.cs.intellij.actions.ExercisesToolWindow" />
+                    factoryClass="fi.aalto.cs.apluscourses.intellij.toolwindows.ExercisesToolWindowFactory" />
     </extensions>
 
     <actions>
         <group id="A+.Menu" text="A+" description="A+ Menu">
             <add-to-group group-id="MainMenu" anchor="last" />
             <action id="About A+ Plugin"
-                    class="fi.aalto.cs.intellij.actions.AboutAction"
+                    class="fi.aalto.cs.apluscourses.intellij.actions.AboutAction"
                     text="About A+ Plugin"
                     description="Information about the A+ plugin for IntelliJ" />
         </group>
+        <group id="fi.aalto.cs.apluscourses.intellij.actions.ActionGroups.MODULE_ACTIONS"
+               text="A+ Module"
+               description="Actions for A+ modules">
+            <action id="fi.aalto.cs.apluscourses.intellij.actions.ImportModuleAction"
+                    class="fi.aalto.cs.apluscourses.intellij.actions.ImportModuleAction"
+                    text="Import A+ Module" icon="AllIcons.Actions.Download"/>
+        </group>
+        <action id="fi.aalto.cs.apluscourses.intellij.actions.RequiredPluginsCheckerAction"
+                class="fi.aalto.cs.apluscourses.intellij.actions.RequiredPluginsCheckerAction"
+                text="Check Required Plugins"/>
     </actions>
 </idea-plugin>
