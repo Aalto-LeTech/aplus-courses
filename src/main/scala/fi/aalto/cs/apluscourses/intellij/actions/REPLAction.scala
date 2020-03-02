@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.intellij.actions
 
+import com.intellij.execution.impl.EditConfigurationsDialog
 import com.intellij.execution.{RunManager, RunManagerEx, RunnerAndConfigurationSettings}
 import com.intellij.openapi.actionSystem.{AnActionEvent, CommonDataKeys}
 import com.intellij.openapi.module.{ModuleManager, ModuleUtilCore}
@@ -16,18 +17,6 @@ class REPLAction extends RunConsoleAction {
 
   override def actionPerformed(e: AnActionEvent): Unit = {
     println("inside REPLAction: yeah, baby, yeah!")
-
-    val dataContext = e.getDataContext
-    val file = CommonDataKeys.PSI_FILE.getData(dataContext)
-    val module = ModuleUtilCore.findModuleForFile(file)
-
-    println("current module: " + module.getName + " for file: " + file)
-
-    val moduleNames = List("1", "2", "3").asJava
-    val allModules = ModuleManager.getInstance(e.getProject).getModules.filter(_.getModuleTypeName == "JAVA_MODULE")
-
-    println("available modules:")
-    allModules.foreach(ev => println("  - " + ev.getName))
 
     customDoRunAction(e)
   }
@@ -58,6 +47,12 @@ class REPLAction extends RunConsoleAction {
       setting = RunManager.getInstance(project).createConfiguration("Scala REPL for module: " + module.getName, factory)
     }
 
+    val dialog = new EditConfigurationsDialog(project)
+    if(dialog.showAndGet()){
+      val components = dialog.getContentPane.getComponents
+    }
+
+    setting.setEditBeforeRun(true)
     val configuration = setting.getConfiguration.asInstanceOf[ScalaConsoleRunConfiguration]
     configuration.setWorkingDirectory(moduleDirPath.substring(0, index))
     configuration.setModule(module)
