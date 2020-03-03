@@ -87,6 +87,12 @@ public abstract class Module {
 
   public abstract void load() throws ModuleLoadException;
 
+  /**
+   * Checks the state of the module (for an example by looking at the file system) and updates
+   * #{@link Module#stateMonitor} to the correct state.
+   */
+  public abstract void updateState();
+
   protected void onStateChanged() {
     stateChanged.trigger();
   }

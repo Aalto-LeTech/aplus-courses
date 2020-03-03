@@ -27,6 +27,10 @@ public class IntelliJModelFactory implements ModelFactory {
 
   @Override
   public Module createModule(@NotNull String name, @NotNull URL url) {
-    return new IntelliJModule(name, url, project);
+    Module module = new IntelliJModule(name, url, project);
+    // IntelliJ modules may already be present in the project or file system, so update the state
+    // at module creation here.
+    module.updateState();
+    return module;
   }
 }

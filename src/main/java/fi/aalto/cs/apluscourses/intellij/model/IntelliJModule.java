@@ -40,7 +40,6 @@ class IntelliJModule extends Module {
 
   IntelliJModule(@NotNull String name, @NotNull URL url, @NotNull Project project) {
     super(name, url);
-
     this.project = project;
   }
 
@@ -70,6 +69,28 @@ class IntelliJModule extends Module {
       WriteAction.runAndWait(new Loader(getProject(), getImlFile())::load);
     } catch (Exception e) {
       throw new ModuleLoadException(this, e);
+    }
+  }
+
+  @Override
+  public void updateState() {
+    /*
+     * Three cases to check for here:
+     *   1. The module is in the project, so its state should be INSTALLED.
+     *   2. The module is not in the project but the module files are present in the file system, so
+     *      the its state should be FETCHED.
+     *   3. The module files aren't present in the file system (and by extension the module isn't in
+     *      the project), so its state should be NOT_INSTALLED.
+     */
+    if (ModuleManager.getInstance(project).findModuleByName(getName()) != null) {
+      stateMonitor.set(Module.INSTALLED);
+    } else if (new File(project.getBasePath(), getName()).isDirectory()) {
+      // We assume, that if the project directory contains a directory with the name of a module,
+      // then the module files are present. Of course, it's possible that some relevant module files
+      // have been removed from the directory.
+      stateMonitor.set(Module.FETCHED);
+    } else {
+      stateMonitor.set(Module.NOT_INSTALLED);
     }
   }
 
@@ -115,7 +136,7 @@ class IntelliJModule extends Module {
     private final ModuleManager moduleManager;
     private final String imlFileName;
 
-    public Loader(Project project, File imlFile) {
+    public Loader(Project project, @NotNull File imlFile) {
       moduleManager = ModuleManager.getInstance(project);
       imlFileName = imlFile.toString();
     }
