@@ -32,8 +32,7 @@ public class Course implements ModuleSource {
   private final Map<String, String> requiredPlugins;
 
   /**
-   * Constructs a course with the given parameters. Course objects are usually created using
-   * {@link Course#fromConfigurationFile}
+   * Constructs a course with the given parameters.
    *
    * @param name            The name of the course
    * @param modules         The list of modules in the course.
@@ -102,14 +101,37 @@ public class Course implements ModuleSource {
 
   /**
    * Returns the list of all modules in this course. If the course object is created with
-   * {@link Course#fromConfigurationFile}, then the modules are returned in the order in which they
-   * are listed in the course configuration file.
+   * {@link Course#fromConfigurationData}, then the modules are returned in the order in which they
+   * are listed in the course configuration data.
    *
    * @return All modules of this course.
    */
   @NotNull
   public List<Module> getModules() {
     return Collections.unmodifiableList(modules);
+  }
+
+  /**
+   * Returns the list of all modules in this course, that are dependent on the given module. Note,
+   * that only modules that are in state #{@link Module#FETCHED} or further are considered, as
+   * {@link Module#getDependencies} should only be called for such modules.
+   */
+  @NotNull
+  public List<Module> getModulesDependentOn(@NotNull Module dependencyModule) {
+    String dependencyName = dependencyModule.getName();
+    List<Module> dependentModules = new ArrayList<>();
+    for (Module module : modules) {
+      if (module.stateMonitor.get() >= Module.FETCHED) {
+        try {
+          if (module.getDependencies().contains(dependencyName)) {
+            dependentModules.add(module);
+          }
+        } catch (ModuleLoadException e) {
+          throw new IllegalStateException("Failed to read module dependencies", e);
+        }
+      }
+    }
+    return dependentModules;
   }
 
   /**
@@ -211,4 +233,5 @@ public class Course implements ModuleSource {
         .findFirst()
         .orElseThrow(() -> new NoSuchModuleException(moduleName, null));
   }
+
 }
