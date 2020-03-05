@@ -32,16 +32,16 @@ public class DirAwareZipFile extends ZipFile {
     // Available online: https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT
     String prefix = dirName + "/";
 
-    if (getFileHeader(prefix) == null) {
-      throw new FileNotFoundException(dirName);
-    }
-
     String[] fileNames = getFileHeaders()
         .stream()
         .map(FileHeader::getFileName)
         .filter(Objects::nonNull)
         .filter(fileName -> fileName.startsWith(prefix))
         .toArray(String[]::new);
+
+    if (fileNames.length == 0) {
+      throw new FileNotFoundException(dirName);
+    }
 
     for (String fileName : fileNames) {
       extractFile(fileName, destinationPath);

@@ -8,7 +8,6 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -45,8 +44,8 @@ public class ModuleInstallerTest {
     installer.install(module);
 
     InOrder order = inOrder(module);
-    order.verify(module, times(1)).fetch();
-    order.verify(module, times(1)).load();
+    order.verify(module).fetch();
+    order.verify(module).load();
 
     assertEquals("Module should be in INSTALLED state, after the installation has ended.",
         Module.INSTALLED, module.stateMonitor.get());
@@ -81,25 +80,25 @@ public class ModuleInstallerTest {
     installer.install(module1);
 
     InOrder order1 = inOrder(module1);
-    order1.verify(module1, times(1)).fetch();
-    order1.verify(module1, times(1)).load();
+    order1.verify(module1).fetch();
+    order1.verify(module1).load();
 
     InOrder order2 = inOrder(firstDep);
-    order2.verify(firstDep, times(1)).fetch();
-    order2.verify(firstDep, times(1)).load();
+    order2.verify(firstDep).fetch();
+    order2.verify(firstDep).load();
 
     InOrder order3 = inOrder(secondDep);
-    order3.verify(secondDep, times(1)).fetch();
-    order3.verify(secondDep, times(1)).load();
+    order3.verify(secondDep).fetch();
+    order3.verify(secondDep).load();
 
     assertEquals("Dependent module should be in INSTALLED state, after the installation has ended.",
         Module.INSTALLED, module1.stateMonitor.get());
 
-    assertEquals("1st dependency should be in INSTALLED state, after the installation has ended.",
-        Module.INSTALLED, firstDep.stateMonitor.get());
+    assertThat("1st dependency should be in LOADED state or further.",
+        firstDep.stateMonitor.get(), greaterThanOrEqualTo(Module.LOADED));
 
-    assertEquals("2nd dependency should be in INSTALLED state, after the installation has ended.",
-        Module.INSTALLED, secondDep.stateMonitor.get());
+    assertThat("2nd dependency should be in LOADED state or further.",
+        secondDep.stateMonitor.get(), greaterThanOrEqualTo(Module.LOADED));
   }
 
   @Test
@@ -121,11 +120,11 @@ public class ModuleInstallerTest {
     installer.install(modules);
 
     InOrder order1 = inOrder(module1);
-    order1.verify(module1, times(1)).fetch();
-    order1.verify(module1, times(1)).load();
+    order1.verify(module1).fetch();
+    order1.verify(module1).load();
     InOrder order2 = inOrder(module2);
-    order2.verify(module2, times(1)).fetch();
-    order2.verify(module2, times(1)).load();
+    order2.verify(module2).fetch();
+    order2.verify(module2).load();
 
     assertEquals("Module 1 should be in INSTALLED state, after the installation has ended.",
         Module.INSTALLED, module1.stateMonitor.get());
