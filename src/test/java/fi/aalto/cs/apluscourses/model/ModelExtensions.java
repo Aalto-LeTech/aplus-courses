@@ -59,6 +59,11 @@ public class ModelExtensions {
     public void load() throws ModuleLoadException {
       // do nothing
     }
+
+    @Override
+    public void updateState() {
+      // do nothing
+    }
   }
 
   public static class TestModelFactory implements ModelFactory {
