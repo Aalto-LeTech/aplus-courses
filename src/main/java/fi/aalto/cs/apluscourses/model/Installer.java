@@ -3,7 +3,7 @@ package fi.aalto.cs.apluscourses.model;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
-public interface ModuleInstaller {
+public interface Installer {
   void installAsync(@NotNull List<Module> modules);
 
   void install(@NotNull List<Module> modules);
@@ -11,6 +11,6 @@ public interface ModuleInstaller {
   void install(Module modules);
 
   interface Factory {
-    ModuleInstaller getInstallerFor(Course course);
+    Installer getInstallerFor(Course course);
   }
 }

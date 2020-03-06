@@ -27,6 +27,9 @@ public class Course implements ModuleSource {
   @NotNull
   private final List<Module> modules;
 
+  @NotNull
+  private final List<Library> libraries;
+
   // Maps ids of required plugins to the names of required plugins.
   @NotNull
   private final Map<String, String> requiredPlugins;
@@ -40,11 +43,14 @@ public class Course implements ModuleSource {
    * @param requiredPlugins A map containing the required plugins for this course. The keys are the
    *                        ids of the plugins and the values are the names of the plugins.
    */
-  public Course(@NotNull String name, @NotNull List<Module> modules,
+  public Course(@NotNull String name,
+                @NotNull List<Module> modules,
+                @NotNull List<Library> libraries,
                 @NotNull Map<String, String> requiredPlugins) {
     this.name = name;
     this.modules = modules;
     this.requiredPlugins = requiredPlugins;
+    this.libraries = libraries;
   }
 
   public static Course fromResource(@NotNull String resourceName, @NotNull ModelFactory factory)

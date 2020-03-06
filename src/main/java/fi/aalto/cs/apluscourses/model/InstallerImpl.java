@@ -9,20 +9,20 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ModuleInstallerImpl<T> implements ModuleInstaller {
+public class InstallerImpl<T> implements Installer {
 
-  private static Logger logger = LoggerFactory.getLogger(ModuleInstallerImpl.class);
+  private static Logger logger = LoggerFactory.getLogger(InstallerImpl.class);
 
   private final ModuleSource moduleSource;
   private final TaskManager<T> taskManager;
 
-  public ModuleInstallerImpl(ModuleSource moduleSource, TaskManager<T> taskManager) {
+  public InstallerImpl(ModuleSource moduleSource, TaskManager<T> taskManager) {
     this.moduleSource = moduleSource;
     this.taskManager = taskManager;
   }
 
   protected T waitUntilLoadedAsync(Module module) {
-    return taskManager.fork(() -> module.stateMonitor.waitUntil(Module.LOADED));
+    return taskManager.fork(() -> module.stateMonitor.waitUntil(Installable.LOADED));
   }
 
   protected T installInternalAsync(Module module) {
@@ -74,38 +74,38 @@ public class ModuleInstallerImpl<T> implements ModuleInstaller {
         waitForDependencies();
       } catch (IOException | ModuleLoadException | NoSuchModuleException e) {
         logger.info("A module could not be installed", e);
-        module.stateMonitor.set(Module.ERROR);
+        module.stateMonitor.set(Installable.ERROR);
       }
     }
     
     private void fetch() throws IOException {
-      if (module.stateMonitor.setConditionally(Module.NOT_INSTALLED, Module.FETCHING)) {
+      if (module.stateMonitor.setConditionally(Installable.NOT_INSTALLED, Installable.FETCHING)) {
         module.fetch();
-        module.stateMonitor.set(Module.FETCHED);
+        module.stateMonitor.set(Installable.FETCHED);
       } else {
-        module.stateMonitor.waitUntil(Module.FETCHED);
+        module.stateMonitor.waitUntil(Installable.FETCHED);
       }
     }
 
     private void load() throws ModuleLoadException {
-      if (module.stateMonitor.setConditionally(Module.FETCHED, Module.LOADING)) {
+      if (module.stateMonitor.setConditionally(Installable.FETCHED, Installable.LOADING)) {
         installAsync(dependencies);
         module.load();
-        module.stateMonitor.set(Module.LOADED);
+        module.stateMonitor.set(Installable.LOADED);
       } else {
-        module.stateMonitor.waitUntil(Module.LOADED);
+        module.stateMonitor.waitUntil(Installable.LOADED);
       }
     }
 
     private void waitForDependencies() {
-      if (module.stateMonitor.setConditionally(Module.LOADED, Module.WAITING_FOR_DEPS)) {
+      if (module.stateMonitor.setConditionally(Installable.LOADED, Installable.WAITING_FOR_DEPS)) {
         taskManager.joinAll(dependencies
             .stream()
-            .map(ModuleInstallerImpl.this::waitUntilLoadedAsync)
+            .map(InstallerImpl.this::waitUntilLoadedAsync)
             .collect(Collectors.toList()));
-        module.stateMonitor.set(Module.INSTALLED);
+        module.stateMonitor.set(Installable.INSTALLED);
       } else {
-        module.stateMonitor.waitUntil(Module.INSTALLED);
+        module.stateMonitor.waitUntil(Installable.INSTALLED);
       }
     }
 
@@ -121,7 +121,7 @@ public class ModuleInstallerImpl<T> implements ModuleInstaller {
     }
   }
 
-  public static class FactoryImpl<T> implements ModuleInstaller.Factory {
+  public static class FactoryImpl<T> implements Installer.Factory {
 
     private final TaskManager<T> taskManager;
 
@@ -130,8 +130,8 @@ public class ModuleInstallerImpl<T> implements ModuleInstaller {
     }
 
     @Override
-    public ModuleInstaller getInstallerFor(Course course) {
-      return new ModuleInstallerImpl<>(course, taskManager);
+    public Installer getInstallerFor(Course course) {
+      return new InstallerImpl<>(course, taskManager);
     }
   }
 }

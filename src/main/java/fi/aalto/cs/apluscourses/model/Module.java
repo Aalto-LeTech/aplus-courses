@@ -1,30 +1,13 @@
 package fi.aalto.cs.apluscourses.model;
 
-import fi.aalto.cs.apluscourses.utils.Event;
-import fi.aalto.cs.apluscourses.utils.StateMonitor;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
-public abstract class Module {
+public abstract class Module extends Installable {
 
-  public static final int ERROR = StateMonitor.ERROR;
-  public static final int NOT_INSTALLED = StateMonitor.INITIAL;
-  public static final int FETCHING = NOT_INSTALLED + 1;
-  public static final int FETCHED = FETCHING + 1;
-  public static final int LOADING = FETCHED + 1;
-  public static final int LOADED = LOADING + 1;
-  public static final int WAITING_FOR_DEPS = LOADED + 1;
-  public static final int INSTALLED = WAITING_FOR_DEPS + 1;
-
-  public final Event stateChanged = new Event();
-  public final StateMonitor stateMonitor = new StateMonitor(this::onStateChanged);
-
-  @NotNull
-  private final String name;
   @NotNull
   private final URL url;
 
@@ -34,7 +17,7 @@ public abstract class Module {
    * @param url The URL from which the module can be downloaded.
    */
   public Module(@NotNull String name, @NotNull URL url) {
-    this.name = name;
+    super(name);
     this.url = url;
   }
 
@@ -64,34 +47,9 @@ public abstract class Module {
   }
 
   @NotNull
-  public String getName() {
-    return name;
-  }
-
-  @NotNull
   public URL getUrl() {
     return url;
   }
 
-  /**
-   * Returns the names of the modules on which this module is dependent.  This method should not be
-   * called unless the module is in FETCHED state or further.
-   *
-   * @return Names of the dependencies, as a {@link List}.
-   * @throws ModuleLoadException If dependencies could not be read.
-   */
-  @NotNull
-  public abstract List<String> getDependencies() throws ModuleLoadException;
-  
-  public abstract void fetch() throws IOException;
-
-  public abstract void load() throws ModuleLoadException;
-
-  protected void onStateChanged() {
-    stateChanged.trigger();
-  }
-
-  public boolean hasError() {
-    return stateMonitor.get() <= ERROR;
-  }
+  public abstract List<String> getLibraries() throws ModuleLoadException;
 }

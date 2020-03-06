@@ -37,6 +37,8 @@ class IntelliJModule extends Module {
   // Sonar suppression because Sonar thinks this is a filepath URI, which should not be hardcoded.
   private static final String DEPENDENCY_NAMES_XPATH =
       "/module/component/orderEntry[@type='module']/@module-name"; // NOSONAR
+  private static final String LIBRARY_NAMES_XPATH =
+      "/module/component/orderEntry[@type='library']/@name"; //NOSONAR
 
   IntelliJModule(@NotNull String name, @NotNull URL url, @NotNull Project project) {
     super(name, url);
@@ -44,17 +46,28 @@ class IntelliJModule extends Module {
     this.project = project;
   }
 
-  @Override
   @NotNull
-  public List<String> getDependencies() throws ModuleLoadException {
+  private List<String> getStringsFromXPath(String xpath) throws ModuleLoadException {
     try {
-      return DomUtil.getNodesFromXPath(DEPENDENCY_NAMES_XPATH, getImlFile())
+      return DomUtil.getNodesFromXPath(xpath, getImlFile())
           .stream()
           .map(Node::getTextContent)
           .collect(Collectors.toList());
     } catch (IOException | SAXException e) {
       throw new ModuleLoadException(this, e);
     }
+  }
+
+  @Override
+  @NotNull
+  public List<String> getDependencies() throws ModuleLoadException {
+    return getStringsFromXPath(DEPENDENCY_NAMES_XPATH);
+  }
+
+  @Override
+  @NotNull
+  public List<String> getLibraries() throws ModuleLoadException {
+    return getStringsFromXPath(LIBRARY_NAMES_XPATH);
   }
 
   @Override
