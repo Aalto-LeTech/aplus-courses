@@ -8,7 +8,7 @@ import org.jetbrains.annotations.{NotNull, Nullable}
 import org.jetbrains.plugins.scala.console.actions.RunConsoleAction
 import org.jetbrains.plugins.scala.console.configuration.ScalaConsoleRunConfiguration
 
-import collection.JavaConverters._
+import scala.collection.JavaConverters._
 
 class REPLAction extends RunConsoleAction {
 
@@ -16,11 +16,11 @@ class REPLAction extends RunConsoleAction {
     customDoRunAction(e)
   }
 
-  def checkFileOrFolderIsNotNull(@Nullable fileOrFolder: VirtualFile): Boolean = {
-    fileOrFolder != null
+  def checkFileOrFolderIsNull(@Nullable fileOrFolder: VirtualFile): Boolean = {
+    fileOrFolder == null
   }
 
-  def adjustRunConfigurationSettings(@NotNull module: Module, @NotNull configuration: ScalaConsoleRunConfiguration) = {
+  def adjustRunConfigurationSettings(@NotNull module: Module, @NotNull configuration: ScalaConsoleRunConfiguration): Unit = {
     // adjust the configuration with: name, workDir and module
     val moduleDirPath = ModuleUtilCore.getModuleDirPath(module)
     configuration.setWorkingDirectory(moduleDirPath)
@@ -28,13 +28,13 @@ class REPLAction extends RunConsoleAction {
     configuration.setName("Scala REPL for module: " + module.getName)
   }
 
-  protected def customDoRunAction(e: AnActionEvent): Unit = {
+  def customDoRunAction(e: AnActionEvent): Unit = {
     val dataContext = e.getDataContext
     val project = CommonDataKeys.PROJECT.getData(dataContext)
     // virtual file is working for both: files and folders
     val targetFileOrFolder = CommonDataKeys.VIRTUAL_FILE.getData(dataContext)
 
-    if (project == null || !checkFileOrFolderIsNotNull(targetFileOrFolder)) return
+    if (project == null || checkFileOrFolderIsNull(targetFileOrFolder)) return
 
     val runManagerEx = RunManagerEx.getInstanceEx(project)
     val configurationType = getMyConfigurationType
@@ -44,7 +44,7 @@ class REPLAction extends RunConsoleAction {
     val module = ModuleUtilCore.findModuleForFile(targetFileOrFolder, project)
 
     //choose the configuration to run based on the condition if this a new configuration of not
-    def chooseConfigurationSettings:RunnerAndConfigurationSettings = {
+    def chooseConfigurationSettings: RunnerAndConfigurationSettings = {
       var setting: RunnerAndConfigurationSettings = null
       if (settings.nonEmpty) {
         setting = settings.head
