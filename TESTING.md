@@ -171,7 +171,7 @@ a manual testing manual. Marked with a github issue label "manual testing".
         <li>Make sure, that the output directory is where the <em>GoodStuff</em> module resides</li>
         <li>Next, type into the REPL prompt: <i>sys.props("java.class.path")</i></li>
         <li>Make sure, that the output classpath contains the <em>GoodStuff</em> module, the complete result should look approximately like this:
-        <img src="images/#66_scala_REPL_workDir_and_classPath.png" alt="REPL" /><br/>
+        <img src="images/%2366_scala_REPL_workDir_and_classPath.png" alt="REPL" /><br/>
         </li>
       </ol>
     </div>
