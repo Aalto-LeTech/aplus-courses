@@ -2,12 +2,9 @@ package fi.aalto.cs.apluscourses.model;
 
 import fi.aalto.cs.apluscourses.utils.ResourceException;
 import fi.aalto.cs.apluscourses.utils.Resources;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -223,15 +220,13 @@ public class Course implements ModuleSource {
     return requiredPlugins;
   }
 
-
   @NotNull
   @Override
-  public Module getModule(@NotNull String moduleName) throws NoSuchModuleException {
+  public Optional<Module> getModuleOptional(@NotNull String moduleName) {
     return modules
         .stream()
         .filter(module -> module.getName().equals(moduleName))
-        .findFirst()
-        .orElseThrow(() -> new NoSuchModuleException(moduleName, null));
+        .findFirst();
   }
 
 }
