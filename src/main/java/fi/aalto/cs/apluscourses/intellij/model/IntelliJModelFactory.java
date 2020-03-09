@@ -3,6 +3,10 @@ package fi.aalto.cs.apluscourses.intellij.model;
 import com.intellij.ProjectTopics;
 import com.intellij.openapi.project.ModuleListener;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VirtualFileManager;
+import com.intellij.openapi.vfs.newvfs.BulkFileListener;
+import com.intellij.openapi.vfs.newvfs.events.VFileDeleteEvent;
+import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.ModelFactory;
 import fi.aalto.cs.apluscourses.model.Module;
@@ -29,10 +33,28 @@ public class IntelliJModelFactory implements ModelFactory {
     project.getMessageBus().connect().subscribe(ProjectTopics.MODULES, new ModuleListener() {
       @Override
       public void moduleRemoved(@NotNull Project project,
-                                @NotNull com.intellij.openapi.module.Module module) {
-        course.onModuleRemove(module);
+                                @NotNull com.intellij.openapi.module.Module projectModule) {
+          course
+              .getModuleOptional(projectModule.getName())
+              .ifPresent(module -> course.onModuleRemove(module));
       }
     });
+    // TODO: consider the possibility of using AsyncFileListener
+    project.getMessageBus().connect().subscribe(VirtualFileManager.VFS_CHANGES,
+        new BulkFileListener() {
+          @Override
+          public void after(@NotNull List<? extends VFileEvent> events) {
+            for (VFileEvent event : events) {
+              if (event instanceof VFileDeleteEvent) {
+                String deletedFileName = event.getFile().getName();
+                course
+                    .getModuleOptional(deletedFileName)
+                    .ifPresent(module -> course.onModuleFilesDeletion(module));
+              }
+            }
+          }
+        }
+    );
     return course;
   }
 

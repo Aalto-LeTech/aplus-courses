@@ -86,8 +86,7 @@ public class StateMonitor {
   private boolean setInternal(int newState) {
     synchronized (stateLock) {
       if (newState < state && !isError(state) && !isError(newState)) {
-        // TODO: temporary hack lol
-        //throw new IllegalStateException();
+        throw new IllegalStateException();
       }
       boolean changed = state != newState;
       state = newState;
