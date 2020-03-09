@@ -79,7 +79,8 @@ public class ModuleInstallerImpl<T> implements ModuleInstaller {
     }
     
     private void fetch() throws IOException {
-      if (module.stateMonitor.setConditionally(Module.NOT_INSTALLED, Module.FETCHING)) {
+      if (module.stateMonitor.setConditionally(Module.NOT_INSTALLED, Module.FETCHING)
+          || module.stateMonitor.setConditionally(Module.UNINSTALLED, Module.FETCHING)) {
         module.fetch();
         module.stateMonitor.set(Module.FETCHED);
       } else {
@@ -88,7 +89,8 @@ public class ModuleInstallerImpl<T> implements ModuleInstaller {
     }
 
     private void load() throws ModuleLoadException {
-      if (module.stateMonitor.setConditionally(Module.FETCHED, Module.LOADING)) {
+      if (module.stateMonitor.setConditionally(Module.FETCHED, Module.LOADING)
+          || module.stateMonitor.setConditionally(Module.UNLOADED, Module.LOADING)) {
         installAsync(dependencies);
         module.load();
         module.stateMonitor.set(Module.LOADED);

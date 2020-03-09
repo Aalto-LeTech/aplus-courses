@@ -109,29 +109,6 @@ public class Course implements ModuleSource {
   }
 
   /**
-   * Returns the list of all modules in this course, that are dependent on the given module. Note,
-   * that only modules that are in state #{@link Module#FETCHED} or further are considered, as
-   * {@link Module#getDependencies} should only be called for such modules.
-   */
-  @NotNull
-  public List<Module> getModulesDependentOn(@NotNull Module dependencyModule) {
-    String dependencyName = dependencyModule.getName();
-    List<Module> dependentModules = new ArrayList<>();
-    for (Module module : modules) {
-      if (module.stateMonitor.get() >= Module.FETCHED) {
-        try {
-          if (module.getDependencies().contains(dependencyName)) {
-            dependentModules.add(module);
-          }
-        } catch (ModuleLoadException e) {
-          throw new IllegalStateException("Failed to read module dependencies", e);
-        }
-      }
-    }
-    return dependentModules;
-  }
-
-  /**
    * Returns a map containing the required plugins for the course. The keys are the ids of the
    * plugins and the values are the names corresponding to the ids.
    *

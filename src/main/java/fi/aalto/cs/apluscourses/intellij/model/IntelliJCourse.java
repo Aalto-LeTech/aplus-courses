@@ -32,16 +32,13 @@ class IntelliJCourse extends Course {
    */
   public void onModuleRemove(@NotNull Module module) {
     module.stateMonitor.set(Module.UNLOADED);
-    // TODO: what (if any) effect does this have on modules that are dependent on the removed module
   }
 
   /**
    * This method updates the states of the module objects, when the directory with the files of the
    * given module are deleted.
-   *
    */
   public void onModuleFilesDeletion(@NotNull Module module) {
     module.stateMonitor.set(Module.UNINSTALLED);
-    // TODO: what (if any) effect does this have on modules that are dependent on the deleted module
   }
 }

@@ -13,7 +13,8 @@ public abstract class Module {
 
   public static final int ERROR = StateMonitor.ERROR;
   public static final int UNLOADED = ERROR - 1;
-  public static final int UNINSTALLED = UNLOADED - 2;
+  public static final int UNINSTALLED = UNLOADED - 1;
+
   public static final int NOT_INSTALLED = StateMonitor.INITIAL;
   public static final int FETCHING = NOT_INSTALLED + 1;
   public static final int FETCHED = FETCHING + 1;
