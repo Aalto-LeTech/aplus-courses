@@ -78,7 +78,7 @@ class IntelliJModule extends Module {
      * Three cases to check for here:
      *   1. The module is in the project, so its state should be INSTALLED.
      *   2. The module is not in the project but the module files are present in the file system, so
-     *      the its state should be FETCHED.
+     *      its state should be FETCHED.
      *   3. The module files aren't present in the file system (and by extension the module isn't in
      *      the project), so its state should be NOT_INSTALLED.
      */

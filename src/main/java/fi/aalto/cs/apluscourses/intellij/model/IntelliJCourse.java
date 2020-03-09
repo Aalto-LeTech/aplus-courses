@@ -5,7 +5,6 @@ import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Module;
 import java.util.List;
 import java.util.Map;
-
 import org.jetbrains.annotations.NotNull;
 
 class IntelliJCourse extends Course {
@@ -27,16 +26,16 @@ class IntelliJCourse extends Course {
   }
 
   /**
-   * This method updates the states of the module objects, when the given IntelliJ module is removed
-   * from the IntelliJ project of this course.
+   * Updates the states of the module objects when the given IntelliJ module is removed from the
+   * IntelliJ project of this course.
    */
   public void onModuleRemove(@NotNull Module module) {
     module.stateMonitor.set(Module.UNLOADED);
   }
 
   /**
-   * This method updates the states of the module objects, when the directory with the files of the
-   * given module are deleted.
+   * Updates the states of the module objects, when the directory with the files of the given module
+   * are deleted.
    */
   public void onModuleFilesDeletion(@NotNull Module module) {
     module.stateMonitor.set(Module.UNINSTALLED);

@@ -39,7 +39,6 @@ public class IntelliJModelFactory implements ModelFactory {
               .ifPresent(module -> course.onModuleRemove(module));
       }
     });
-    // TODO: consider the possibility of using AsyncFileListener
     project.getMessageBus().connect().subscribe(VirtualFileManager.VFS_CHANGES,
         new BulkFileListener() {
           @Override
