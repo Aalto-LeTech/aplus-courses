@@ -34,9 +34,10 @@ public class IntelliJModelFactory implements ModelFactory {
       @Override
       public void moduleRemoved(@NotNull Project project,
                                 @NotNull com.intellij.openapi.module.Module projectModule) {
-          course
-              .getModuleOptional(projectModule.getName())
-              .ifPresent(module -> course.onModuleRemove(module));
+        Module module = course.getModuleOpt(projectModule.getName());
+        if (module != null) {
+          course.onModuleRemove(module);
+        }
       }
     });
     project.getMessageBus().connect().subscribe(VirtualFileManager.VFS_CHANGES,
@@ -46,9 +47,10 @@ public class IntelliJModelFactory implements ModelFactory {
             for (VFileEvent event : events) {
               if (event instanceof VFileDeleteEvent) {
                 String deletedFileName = event.getFile().getName();
-                course
-                    .getModuleOptional(deletedFileName)
-                    .ifPresent(module -> course.onModuleFilesDeletion(module));
+                Module module = course.getModuleOpt(deletedFileName);
+                if (module != null) {
+                  course.onModuleFilesDeletion(module);
+                }
               }
             }
           }

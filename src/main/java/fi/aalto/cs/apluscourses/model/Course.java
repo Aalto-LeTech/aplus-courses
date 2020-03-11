@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -197,13 +198,14 @@ public class Course implements ModuleSource {
     return requiredPlugins;
   }
 
-  @NotNull
+  @Nullable
   @Override
-  public Optional<Module> getModuleOptional(@NotNull String moduleName) {
+  public Module getModuleOpt(@NotNull String moduleName) {
     return modules
         .stream()
         .filter(module -> module.getName().equals(moduleName))
-        .findFirst();
+        .findFirst()
+        .orElse(null);
   }
 
 }

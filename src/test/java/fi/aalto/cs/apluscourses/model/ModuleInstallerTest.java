@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
@@ -185,7 +184,7 @@ public class ModuleInstallerTest {
       }
     });
 
-    ModuleSource moduleSource = moduleName -> Optional.empty();
+    ModuleSource moduleSource = moduleName -> null;
 
     ModuleInstaller installer =
         new ModuleInstallerImpl<>(moduleSource, new SimpleAsyncTaskManager());

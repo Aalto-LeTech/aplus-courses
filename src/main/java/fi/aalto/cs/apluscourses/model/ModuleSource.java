@@ -1,16 +1,22 @@
 package fi.aalto.cs.apluscourses.model;
 
-import java.util.Optional;
-
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public interface ModuleSource {
+  /**
+   * Returns the module with the given name.
+   * @throws NoSuchModuleException If the module source doesn't have a module with the given name.
+   */
   @NotNull
   default Module getModule(@NotNull String moduleName) throws NoSuchModuleException {
-    return getModuleOptional(moduleName)
-        .orElseThrow(() -> new NoSuchModuleException(moduleName, null));
+    Module module = getModuleOpt(moduleName);
+    if (module == null) {
+      throw new NoSuchModuleException(moduleName, null);
+    }
+    return module;
   }
 
-  @NotNull
-  Optional<Module> getModuleOptional(@NotNull String moduleName);
+  @Nullable
+  Module getModuleOpt(@NotNull String moduleName);
 }
