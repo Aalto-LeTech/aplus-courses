@@ -1,6 +1,8 @@
 package fi.aalto.cs.apluscourses.model;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.io.StringReader;
 import java.net.MalformedURLException;
@@ -10,6 +12,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.junit.Test;
 
 public class CourseTest {
@@ -50,6 +53,26 @@ public class CourseTest {
   public void testGetModuleWithMissingModule() throws NoSuchModuleException {
     Course course = new Course("Just some course", Collections.emptyList(), Collections.emptyMap());
     course.getModule("Test Module");
+  }
+
+  @Test
+  public void testGetModuleOpt() throws MalformedURLException {
+    Module module1 = new ModelExtensions.TestModule("Test test", new URL("https://duckduckgo.com"));
+    Module module2 = new ModelExtensions.TestModule("Awesome Module", new URL("https://gmail.com"));
+    Course course = new Course("", Arrays.asList(module1, module2), new HashMap<>());
+    Module optModule = course.getModuleOpt("Awesome Module");
+    assertNotNull("Course#getModuleOpt should not return null for an existing module", optModule);
+    assertEquals("Course#getModuleOpt should return the correct module",
+        "Awesome Module", optModule.getName());
+    assertEquals("Course#getModuleOpt should return the correct module",
+        new URL("https://gmail.com"), optModule.getUrl());
+  }
+
+  @Test
+  public void testGetModuleOptWithMissingModule() {
+    Course course = new Course("Meaningless Name", Collections.emptyList(), Collections.emptyMap());
+    assertNull("Course#getModuleOpt should return null for a missing module",
+        course.getModuleOpt("No module has this name"));
   }
 
   private static String nameJson = "\"name\":\"Awesome Course\"";
