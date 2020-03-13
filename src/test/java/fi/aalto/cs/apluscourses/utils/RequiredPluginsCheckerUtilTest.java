@@ -60,7 +60,7 @@ public class RequiredPluginsCheckerUtilTest {
 
     assertEquals(
         "The result of provision of a dummy list containing 'null' should contain names of"
-            + " the dummy plugins and not the 'null'.", "A+ Courses, Scala", result);
+            + " the dummy plugins and not the 'null'.", "A+ Courses, Liferay IntelliJ Plugin", result);
   }
 
   @Test
@@ -69,6 +69,6 @@ public class RequiredPluginsCheckerUtilTest {
     String result = RequiredPluginsCheckerUtil.getPluginsNamesString(validList);
 
     assertEquals("The result of provision of a dummy list should contain names the "
-        + "dummy plugins.", "A+ Courses, Scala", result);
+        + "dummy plugins.", "A+ Courses, Liferay IntelliJ Plugin", result);
   }
 }

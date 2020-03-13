@@ -22,7 +22,7 @@ public class InstallPluginsNotificationTest extends PluginsTestHelper {
         "A+ Courses plugin required plugins missing warning", notification.getTitle());
     assertEquals("Content should contain the names of the plugins to install.",
         "The additional plugin(s) must be installed and enabled for the A+ plugin to work "
-            + "properly (A+ Courses, Scala).",
+            + "properly (A+ Courses, Liferay IntelliJ Plugin).",
         notification.getContent());
     assertEquals("The type of the notification should be 'WARNING'.",
         notification.getType(), NotificationType.WARNING);
