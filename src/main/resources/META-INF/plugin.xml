@@ -17,6 +17,7 @@
     </change-notes>
 
     <depends>com.intellij.modules.java</depends>
+    <depends optional="true" config-file="plugin.xml">org.intellij.scala</depends>
 
     <extensions defaultExtensionNs="com.intellij">
 
@@ -50,5 +51,10 @@
         <action id="fi.aalto.cs.apluscourses.intellij.actions.RequiredPluginsCheckerAction"
                 class="fi.aalto.cs.apluscourses.intellij.actions.RequiredPluginsCheckerAction"
                 text="Check Required Plugins"/>
+        <action id="Scala.RunConsole" class="fi.aalto.cs.apluscourses.intellij.actions.REPLAction"
+          overrides="true" text="Scala REPL..." description="Run Scala REPL">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+            <keyboard-shortcut first-keystroke="control shift D" keymap="$default"/>
+        </action>
     </actions>
 </idea-plugin>

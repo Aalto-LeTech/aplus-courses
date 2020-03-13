@@ -78,6 +78,7 @@ public class RequiredPluginsCheckerUtilFTest extends PluginsTestHelper {
   @Test
   public void testIsPluginMissingOrDisabledWithMissingPluginIdReturnsTrue() {
     String scalaPluginId = "org.intellij.scala";
+    PluginManager.getPlugin(PluginId.getId(scalaPluginId)).setEnabled(false);
 
     boolean result = RequiredPluginsCheckerUtil.isPluginMissingOrDisabled(scalaPluginId);
 
