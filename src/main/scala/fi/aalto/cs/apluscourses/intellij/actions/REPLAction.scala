@@ -16,9 +16,7 @@ class REPLAction extends RunConsoleAction {
     customDoRunAction(e)
   }
 
-  def checkFileOrFolderIsNull(@Nullable fileOrFolder: VirtualFile): Boolean = {
-    fileOrFolder == null
-  }
+  def checkFileOrFolderIsNull(@Nullable fileOrFolder: VirtualFile): Boolean = fileOrFolder == null
 
   def adjustRunConfigurationSettings(@NotNull module: Module, @NotNull configuration: ScalaConsoleRunConfiguration): Unit = {
     // adjust the configuration with: name, workDir and module
@@ -44,18 +42,11 @@ class REPLAction extends RunConsoleAction {
     val module = ModuleUtilCore.findModuleForFile(targetFileOrFolder, project)
 
     //choose the configuration to run based on the condition if this a new configuration of not
-    def chooseConfigurationSettings: RunnerAndConfigurationSettings = {
-      var setting: RunnerAndConfigurationSettings = null
-      if (settings.nonEmpty) {
-        setting = settings.head
-      } else if (settings.isEmpty) {
-        val factory = configurationType.getConfigurationFactories.apply(0)
-        setting = RunManager.getInstance(project).createConfiguration("Scala REPL for module: " + module.getName, factory)
-      }
-      setting
+    val setting = settings.headOption.getOrElse {
+      val factory = configurationType.getConfigurationFactories.apply(0)
+      RunManager.getInstance(project).createConfiguration(s"Scala REPL for module: ${module.getName}", factory)
     }
 
-    val setting = chooseConfigurationSettings
     val configuration = setting.getConfiguration.asInstanceOf[ScalaConsoleRunConfiguration]
 
     adjustRunConfigurationSettings(module, configuration)
