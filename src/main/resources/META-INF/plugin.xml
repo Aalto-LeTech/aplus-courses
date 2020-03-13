@@ -18,7 +18,6 @@
 
     <depends>com.intellij.modules.java</depends>
     <depends optional="true" config-file="">org.intellij.scala</depends>
-<!--    <depends optional="true" config-file="plugin.xml">org.intellij.scala</depends>-->
 
     <extensions defaultExtensionNs="com.intellij">
 
