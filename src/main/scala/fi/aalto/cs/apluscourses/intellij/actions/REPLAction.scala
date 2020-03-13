@@ -1,6 +1,6 @@
 package fi.aalto.cs.apluscourses.intellij.actions
 
-import com.intellij.execution.{RunManager, RunManagerEx, RunnerAndConfigurationSettings}
+import com.intellij.execution.{RunManager, RunManagerEx}
 import com.intellij.openapi.actionSystem.{AnActionEvent, CommonDataKeys}
 import com.intellij.openapi.module.{Module, ModuleUtilCore}
 import com.intellij.openapi.vfs.VirtualFile
@@ -10,6 +10,9 @@ import org.jetbrains.plugins.scala.console.configuration.ScalaConsoleRunConfigur
 
 import scala.collection.JavaConverters._
 
+/**
+ * Custom class that adjusts Scala Plugin's own RunConsoleAction with A+ requirements.
+ */
 class REPLAction extends RunConsoleAction {
 
   override def actionPerformed(e: AnActionEvent): Unit = {
@@ -26,6 +29,12 @@ class REPLAction extends RunConsoleAction {
     configuration.setName("Scala REPL for module: " + module.getName)
   }
 
+  /**
+   * Method that sets working directory and module of the REPL it was started from. Works for REPL
+   * triggered on files or folders within the module scope.
+   *
+   * @param e an [[AnActionEvent]] with payload.
+   */
   def customDoRunAction(e: AnActionEvent): Unit = {
     val dataContext = e.getDataContext
     val project = CommonDataKeys.PROJECT.getData(dataContext)
