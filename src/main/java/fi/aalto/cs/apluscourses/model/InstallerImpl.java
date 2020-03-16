@@ -13,57 +13,57 @@ public class InstallerImpl<T> implements Installer {
 
   private static Logger logger = LoggerFactory.getLogger(InstallerImpl.class);
 
-  private final ModuleSource moduleSource;
+  private final ComponentSource componentSource;
   private final TaskManager<T> taskManager;
 
-  public InstallerImpl(ModuleSource moduleSource, TaskManager<T> taskManager) {
-    this.moduleSource = moduleSource;
+  public InstallerImpl(ComponentSource componentSource, TaskManager<T> taskManager) {
+    this.componentSource = componentSource;
     this.taskManager = taskManager;
   }
 
-  protected T waitUntilLoadedAsync(Module module) {
-    return taskManager.fork(() -> module.stateMonitor.waitUntil(Installable.LOADED));
+  protected T waitUntilLoadedAsync(Component component) {
+    return taskManager.fork(() -> component.stateMonitor.waitUntil(Component.LOADED));
   }
 
-  protected T installInternalAsync(Module module) {
-    ModuleInstallation moduleInstallation = new ModuleInstallation(module);
+  protected T installInternalAsync(Component component) {
+    Installation moduleInstallation = new Installation(component);
     return taskManager.fork(moduleInstallation::doIt);
   }
 
   /**
-   * Installs multiple modules and their dependencies.
+   * Installs multiple components and their dependencies.
    *
-   * @param modules A {@link List} of {@link Module}s to be installed.
+   * @param components A {@link List} of {@link Component}s to be installed.
    */
   @Override
-  public void install(@NotNull List<Module> modules) {
-    taskManager.joinAll(modules
+  public void install(@NotNull List<Component> components) {
+    taskManager.joinAll(components
         .stream()
         .map(this::installInternalAsync)
         .collect(Collectors.toList()));
   }
 
-  /** Installs a module and its dependencies.
+  /** Installs a component and its dependencies.
    *
-   * @param module A {@link Module} to be installed.
+   * @param component A {@link Component} to be installed.
    */
   @Override
-  public void install(Module module) {
-    taskManager.join(installInternalAsync(module));
+  public void install(Component component) {
+    taskManager.join(installInternalAsync(component));
   }
 
   @Override
-  public void installAsync(@NotNull List<Module> modules) {
-    taskManager.fork(() -> install(modules));
+  public void installAsync(@NotNull List<Component> components) {
+    taskManager.fork(() -> install(components));
   }
 
-  private class ModuleInstallation {
+  private class Installation {
 
-    private final Module module;
-    List<Module> dependencies;
+    private final Component component;
+    List<Component> dependencies;
 
-    public ModuleInstallation(Module module) {
-      this.module = module;
+    public Installation(Component component) {
+      this.component = component;
     }
     
     public void doIt() {
@@ -74,38 +74,38 @@ public class InstallerImpl<T> implements Installer {
         waitForDependencies();
       } catch (IOException | ModuleLoadException | NoSuchModuleException e) {
         logger.info("A module could not be installed", e);
-        module.stateMonitor.set(Installable.ERROR);
+        component.stateMonitor.set(Component.ERROR);
       }
     }
     
     private void fetch() throws IOException {
-      if (module.stateMonitor.setConditionally(Installable.NOT_INSTALLED, Installable.FETCHING)) {
-        module.fetch();
-        module.stateMonitor.set(Installable.FETCHED);
+      if (component.stateMonitor.setConditionally(Component.NOT_INSTALLED, Component.FETCHING)) {
+        component.fetch();
+        component.stateMonitor.set(Component.FETCHED);
       } else {
-        module.stateMonitor.waitUntil(Installable.FETCHED);
+        component.stateMonitor.waitUntil(Component.FETCHED);
       }
     }
 
     private void load() throws ModuleLoadException {
-      if (module.stateMonitor.setConditionally(Installable.FETCHED, Installable.LOADING)) {
+      if (component.stateMonitor.setConditionally(Component.FETCHED, Component.LOADING)) {
         installAsync(dependencies);
-        module.load();
-        module.stateMonitor.set(Installable.LOADED);
+        component.load();
+        component.stateMonitor.set(Component.LOADED);
       } else {
-        module.stateMonitor.waitUntil(Installable.LOADED);
+        component.stateMonitor.waitUntil(Component.LOADED);
       }
     }
 
     private void waitForDependencies() {
-      if (module.stateMonitor.setConditionally(Installable.LOADED, Installable.WAITING_FOR_DEPS)) {
+      if (component.stateMonitor.setConditionally(Component.LOADED, Component.WAITING_FOR_DEPS)) {
         taskManager.joinAll(dependencies
             .stream()
             .map(InstallerImpl.this::waitUntilLoadedAsync)
             .collect(Collectors.toList()));
-        module.stateMonitor.set(Installable.INSTALLED);
+        component.stateMonitor.set(Component.INSTALLED);
       } else {
-        module.stateMonitor.waitUntil(Installable.INSTALLED);
+        component.stateMonitor.waitUntil(Component.INSTALLED);
       }
     }
 
@@ -113,10 +113,10 @@ public class InstallerImpl<T> implements Installer {
       if (dependencies != null) {
         return;
       }
-      List<String> dependencyNames = module.getDependencies();
+      List<String> dependencyNames = component.getDependencies();
       dependencies = new ArrayList<>(dependencyNames.size());
       for (String dependencyName : dependencyNames) {
-        dependencies.add(moduleSource.getModule(dependencyName));
+        dependencies.add(componentSource.getComponent(dependencyName));
       }
     }
   }

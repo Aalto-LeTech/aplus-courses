@@ -4,11 +4,11 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 public interface Installer {
-  void installAsync(@NotNull List<Module> modules);
+  void installAsync(@NotNull List<Component> components);
 
-  void install(@NotNull List<Module> modules);
+  void install(@NotNull List<Component> components);
 
-  void install(Module modules);
+  void install(Component component);
 
   interface Factory {
     Installer getInstallerFor(Course course);

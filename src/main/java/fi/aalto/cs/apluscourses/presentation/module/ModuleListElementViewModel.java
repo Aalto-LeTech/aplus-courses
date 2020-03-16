@@ -1,6 +1,6 @@
 package fi.aalto.cs.apluscourses.presentation.module;
 
-import fi.aalto.cs.apluscourses.model.Installable;
+import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.presentation.base.BaseViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.ListElementViewModel;
@@ -28,18 +28,18 @@ public class ModuleListElementViewModel extends ListElementViewModel<Module> {
    */
   public String getStatus() {
     switch (getModel().stateMonitor.get()) {
-      case Installable.NOT_INSTALLED:
-      case Installable.FETCHED:
+      case Component.NOT_INSTALLED:
+      case Component.FETCHED:
         return "Not installed";
-      case Installable.FETCHING:
+      case Component.FETCHING:
         return "Downloading...";
-      case Installable.LOADING:
+      case Component.LOADING:
         return "Installing...";
-      case Installable.LOADED:
+      case Component.LOADED:
         return "Loaded";
-      case Installable.WAITING_FOR_DEPS:
+      case Component.WAITING_FOR_DEPS:
         return "Waiting for dependencies...";
-      case Installable.INSTALLED:
+      case Component.INSTALLED:
         return "Installed";
       default:
         return "Error";
@@ -51,7 +51,7 @@ public class ModuleListElementViewModel extends ListElementViewModel<Module> {
    * @return A {@link Float} that can be set to font weight.
    */
   public float getFontWeight() {
-    return getModel().stateMonitor.get() >= Installable.LOADED
+    return getModel().stateMonitor.get() >= Component.LOADED
         ? TextAttribute.WEIGHT_BOLD
         : TextAttribute.WEIGHT_REGULAR;
   }

@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class Installable {
+public abstract class Component {
   public static final int ERROR = StateMonitor.ERROR;
   public static final int NOT_INSTALLED = StateMonitor.INITIAL;
   public static final int FETCHING = NOT_INSTALLED + 1;
@@ -20,7 +20,7 @@ public abstract class Installable {
   @NotNull
   protected final String name;
 
-  public Installable(@NotNull String name) {
+  public Component(@NotNull String name) {
     this.name = name;
   }
 
@@ -43,7 +43,7 @@ public abstract class Installable {
   }
 
   /**
-   * Returns the names of the dependencies.  This method should not be called unless the installable
+   * Returns the names of the dependencies.  This method should not be called unless the component
    * is in FETCHED state or further.
    *
    * @return Names of the dependencies, as a {@link List}.

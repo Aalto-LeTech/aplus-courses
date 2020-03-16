@@ -20,7 +20,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-public class Course implements ModuleSource {
+public class Course implements ComponentSource {
   @NotNull
   private final String name;
 
@@ -111,7 +111,8 @@ public class Course implements ModuleSource {
     List<Module> courseModules = getCourseModules(jsonObject, sourcePath, factory);
     Map<String, String> requiredPlugins
         = getCourseRequiredPlugins(jsonObject, sourcePath);
-    return factory.createCourse(courseName, courseModules, requiredPlugins);
+    return factory.createCourse(courseName, courseModules, Collections.emptyList(),
+        requiredPlugins);
   }
 
   /**
@@ -247,11 +248,11 @@ public class Course implements ModuleSource {
 
   @NotNull
   @Override
-  public Module getModule(@NotNull String moduleName) throws NoSuchModuleException {
+  public Module getComponent(@NotNull String componentName) throws NoSuchModuleException {
     return modules
         .stream()
-        .filter(module -> module.getName().equals(moduleName))
+        .filter(module -> module.getName().equals(componentName))
         .findFirst()
-        .orElseThrow(() -> new NoSuchModuleException(moduleName, null));
+        .orElseThrow(() -> new NoSuchModuleException(componentName, null));
   }
 }

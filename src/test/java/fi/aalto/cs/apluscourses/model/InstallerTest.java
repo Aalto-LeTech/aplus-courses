@@ -28,18 +28,18 @@ public class InstallerTest {
       @Override
       public void fetch() {
         assertEquals("When fetch() is called, module should be in FETCHING state.",
-            Installable.FETCHING, stateMonitor.get());
+            Component.FETCHING, stateMonitor.get());
       }
 
       @Override
       public void load() {
         assertEquals("When load() is called, module should be in LOADING state.",
-            Installable.LOADING, stateMonitor.get());
+            Component.LOADING, stateMonitor.get());
       }
     });
 
     Installer installer =
-        new InstallerImpl<>(mock(ModuleSource.class), new SimpleAsyncTaskManager());
+        new InstallerImpl<>(mock(ComponentSource.class), new SimpleAsyncTaskManager());
 
     installer.install(module);
 
@@ -48,7 +48,7 @@ public class InstallerTest {
     order.verify(module).load();
 
     assertEquals("Module should be in INSTALLED state, after the installation has ended.",
-        Installable.INSTALLED, module.stateMonitor.get());
+        Component.INSTALLED, module.stateMonitor.get());
   }
 
   @Test
@@ -59,7 +59,7 @@ public class InstallerTest {
       @Override
       public List<String> getDependencies() {
         assertThat("Module should be at least in FETCHED state when getDependencies() is called.",
-            stateMonitor.get(), greaterThanOrEqualTo(Installable.FETCHED));
+            stateMonitor.get(), greaterThanOrEqualTo(Component.FETCHED));
         List<String> dependencies = new ArrayList<>();
         dependencies.add("firstDep");
         dependencies.add("secondDep");
@@ -69,13 +69,13 @@ public class InstallerTest {
     Module firstDep = spy(new ModelExtensions.TestModule("firstDep"));
     Module secondDep = spy(new ModelExtensions.TestModule("secondDep"));
 
-    ModuleSource moduleSource = mock(ModuleSource.class);
-    when(moduleSource.getModule(module1.getName())).thenReturn(module1);
-    when(moduleSource.getModule(firstDep.getName())).thenReturn(firstDep);
-    when(moduleSource.getModule(secondDep.getName())).thenReturn(secondDep);
+    ComponentSource componentSource = mock(ComponentSource.class);
+    when(componentSource.getComponent(module1.getName())).thenReturn(module1);
+    when(componentSource.getComponent(firstDep.getName())).thenReturn(firstDep);
+    when(componentSource.getComponent(secondDep.getName())).thenReturn(secondDep);
 
     Installer installer =
-        new InstallerImpl<>(moduleSource, new SimpleAsyncTaskManager());
+        new InstallerImpl<>(componentSource, new SimpleAsyncTaskManager());
 
     installer.install(module1);
 
@@ -92,13 +92,13 @@ public class InstallerTest {
     order3.verify(secondDep).load();
 
     assertEquals("Dependent module should be in INSTALLED state, after the installation has ended.",
-        Installable.INSTALLED, module1.stateMonitor.get());
+        Component.INSTALLED, module1.stateMonitor.get());
 
     assertThat("1st dependency should be in LOADED state or further.",
-        firstDep.stateMonitor.get(), greaterThanOrEqualTo(Installable.LOADED));
+        firstDep.stateMonitor.get(), greaterThanOrEqualTo(Component.LOADED));
 
     assertThat("2nd dependency should be in LOADED state or further.",
-        secondDep.stateMonitor.get(), greaterThanOrEqualTo(Installable.LOADED));
+        secondDep.stateMonitor.get(), greaterThanOrEqualTo(Component.LOADED));
   }
 
   @Test
@@ -106,12 +106,12 @@ public class InstallerTest {
     Module module1 = spy(new ModelExtensions.TestModule("module1"));
     Module module2 = spy(new ModelExtensions.TestModule("module2"));
 
-    ModuleSource moduleSource = mock(ModuleSource.class);
-    when(moduleSource.getModule(module1.getName())).thenReturn(module1);
-    when(moduleSource.getModule(module2.getName())).thenReturn(module2);
+    ComponentSource componentSource = mock(ComponentSource.class);
+    when(componentSource.getComponent(module1.getName())).thenReturn(module1);
+    when(componentSource.getComponent(module2.getName())).thenReturn(module2);
 
     Installer installer =
-        new InstallerImpl<>(moduleSource, new SimpleAsyncTaskManager());
+        new InstallerImpl<>(componentSource, new SimpleAsyncTaskManager());
 
     List<Module> modules = new ArrayList<>();
     modules.add(module1);
@@ -127,10 +127,10 @@ public class InstallerTest {
     order2.verify(module2).load();
 
     assertEquals("Module 1 should be in INSTALLED state, after the installation has ended.",
-        Installable.INSTALLED, module1.stateMonitor.get());
+        Component.INSTALLED, module1.stateMonitor.get());
 
     assertEquals("Module 2 should be in INSTALLED state, after the installation has ended.",
-        Installable.INSTALLED, module2.stateMonitor.get());
+        Component.INSTALLED, module2.stateMonitor.get());
   }
 
   @Test
@@ -143,7 +143,7 @@ public class InstallerTest {
     });
 
     Installer installer =
-        new InstallerImpl<>(mock(ModuleSource.class), new SimpleAsyncTaskManager());
+        new InstallerImpl<>(mock(ComponentSource.class), new SimpleAsyncTaskManager());
 
     installer.install(module);
 
@@ -164,7 +164,7 @@ public class InstallerTest {
     });
 
     Installer installer =
-        new InstallerImpl<>(mock(ModuleSource.class), new SimpleAsyncTaskManager());
+        new InstallerImpl<>(mock(ComponentSource.class), new SimpleAsyncTaskManager());
 
     installer.install(module);
 
@@ -182,12 +182,12 @@ public class InstallerTest {
       }
     });
 
-    ModuleSource moduleSource = moduleName -> {
+    ComponentSource componentSource = moduleName -> {
       throw new NoSuchModuleException(moduleName, null);
     };
 
     Installer installer =
-        new InstallerImpl<>(moduleSource, new SimpleAsyncTaskManager());
+        new InstallerImpl<>(componentSource, new SimpleAsyncTaskManager());
 
     installer.install(module);
 
@@ -208,7 +208,7 @@ public class InstallerTest {
     });
 
     Installer installer =
-        new InstallerImpl<>(mock(ModuleSource.class), new SimpleAsyncTaskManager());
+        new InstallerImpl<>(mock(ComponentSource.class), new SimpleAsyncTaskManager());
 
     installer.install(module);
 
@@ -235,13 +235,13 @@ public class InstallerTest {
       }
     });
 
-    ModuleSource moduleSource = mock(ModuleSource.class);
-    when(moduleSource.getModule(dependentModule.getName())).thenReturn(dependentModule);
-    when(moduleSource.getModule(otherModule.getName())).thenReturn(otherModule);
-    when(moduleSource.getModule(failingDep.getName())).thenReturn(failingDep);
+    ComponentSource componentSource = mock(ComponentSource.class);
+    when(componentSource.getComponent(dependentModule.getName())).thenReturn(dependentModule);
+    when(componentSource.getComponent(otherModule.getName())).thenReturn(otherModule);
+    when(componentSource.getComponent(failingDep.getName())).thenReturn(failingDep);
 
     Installer installer =
-        new InstallerImpl<>(moduleSource, new SimpleAsyncTaskManager());
+        new InstallerImpl<>(componentSource, new SimpleAsyncTaskManager());
 
     List<Module> modules = new ArrayList<>();
     modules.add(dependentModule);
@@ -250,9 +250,9 @@ public class InstallerTest {
     installer.install(modules);
 
     assertEquals("Dependent module should be in INSTALLED state, after the installation has ended.",
-        Installable.INSTALLED, dependentModule.stateMonitor.get());
+        Component.INSTALLED, dependentModule.stateMonitor.get());
     assertEquals("Other module should be in INSTALLED state, after the installation has ended.",
-        Installable.INSTALLED, otherModule.stateMonitor.get());
+        Component.INSTALLED, otherModule.stateMonitor.get());
     assertTrue("Failing dependency should be in an error state, after the installation has ended.",
         failingDep.hasError());
   }
@@ -274,12 +274,12 @@ public class InstallerTest {
       }
     });
 
-    ModuleSource moduleSource = mock(ModuleSource.class);
-    when(moduleSource.getModule(moduleA.getName())).thenReturn(moduleA);
-    when(moduleSource.getModule(moduleB.getName())).thenReturn(moduleB);
+    ComponentSource componentSource = mock(ComponentSource.class);
+    when(componentSource.getComponent(moduleA.getName())).thenReturn(moduleA);
+    when(componentSource.getComponent(moduleB.getName())).thenReturn(moduleB);
 
     Installer installer =
-        new InstallerImpl<>(moduleSource, new SimpleAsyncTaskManager());
+        new InstallerImpl<>(componentSource, new SimpleAsyncTaskManager());
 
     List<Module> modules = new ArrayList<>();
     modules.add(moduleA);
@@ -288,8 +288,8 @@ public class InstallerTest {
     installer.install(modules);
 
     assertEquals("Module A should be in INSTALLED state, after the installation has ended.",
-        Installable.INSTALLED, moduleA.stateMonitor.get());
+        Component.INSTALLED, moduleA.stateMonitor.get());
     assertEquals("Module B should be in INSTALLED state, after the installation has ended.",
-        Installable.INSTALLED, moduleB.stateMonitor.get());
+        Component.INSTALLED, moduleB.stateMonitor.get());
   }
 }

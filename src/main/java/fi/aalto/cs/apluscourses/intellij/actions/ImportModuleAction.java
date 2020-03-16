@@ -4,8 +4,8 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
+import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.Course;
-import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.model.Installer;
 import fi.aalto.cs.apluscourses.model.InstallerImpl;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
@@ -54,7 +54,7 @@ public class ImportModuleAction extends AnAction {
     CourseViewModel courseViewModel =
         mainViewModelProvider.getMainViewModel(e.getProject()).courseViewModel.get();
     if (courseViewModel != null) {
-      List<Module> modules = courseViewModel.getModules().getSelectedElements()
+      List<Component> modules = courseViewModel.getModules().getSelectedElements()
           .stream()
           .map(BaseViewModel::getModel)
           .collect(Collectors.toList());

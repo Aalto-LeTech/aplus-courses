@@ -2,11 +2,14 @@ package fi.aalto.cs.apluscourses.model;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
-public abstract class Module extends Installable {
+public abstract class Module extends Component {
 
   @NotNull
   private final URL url;
@@ -51,5 +54,15 @@ public abstract class Module extends Installable {
     return url;
   }
 
+  @NotNull
+  @Override
+  public List<String> getDependencies() throws ModuleLoadException {
+    return Stream.of(getLibraries(), getDependencyModules())
+        .flatMap(List::stream)
+        .collect(Collectors.toList());
+  }
+
   public abstract List<String> getLibraries() throws ModuleLoadException;
+
+  public abstract List<String> getDependencyModules() throws ModuleLoadException;
 }

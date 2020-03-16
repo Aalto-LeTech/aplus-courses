@@ -60,7 +60,7 @@ class IntelliJModule extends Module {
 
   @Override
   @NotNull
-  public List<String> getDependencies() throws ModuleLoadException {
+  public List<String> getDependencyModules() throws ModuleLoadException {
     return getStringsFromXPath(DEPENDENCY_NAMES_XPATH);
   }
 
