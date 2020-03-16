@@ -46,7 +46,12 @@ public class ModelExtensions {
 
     @NotNull
     @Override
-    public List<String> getDependencies() throws ModuleLoadException {
+    public List<String> getDependencyModules() throws ModuleLoadException {
+      return Collections.emptyList();
+    }
+
+    @Override
+    public List<String> getLibraries() throws ModuleLoadException {
       return Collections.emptyList();
     }
 
@@ -59,6 +64,11 @@ public class ModelExtensions {
     public void load() throws ModuleLoadException {
       // do nothing
     }
+
+    @Override
+    public void updateState() {
+      // do nothing
+    }
   }
 
   public static class TestModelFactory implements ModelFactory {
@@ -66,13 +76,19 @@ public class ModelExtensions {
     @Override
     public Course createCourse(@NotNull String name,
                                @NotNull List<Module> modules,
+                               @NotNull List<Library> libraries,
                                @NotNull Map<String, String> requiredPlugins) {
-      return new Course(name, modules, requiredPlugins);
+      return new Course(name, modules, libraries, requiredPlugins);
     }
 
     @Override
     public Module createModule(@NotNull String name, @NotNull URL url) {
       return new TestModule(name, url);
+    }
+
+    @Override
+    public Library createLibrary(@NotNull String name, @NotNull String type) {
+      return null;
     }
   }
 }

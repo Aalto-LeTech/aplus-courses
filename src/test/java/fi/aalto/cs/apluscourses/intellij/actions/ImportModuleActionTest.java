@@ -11,10 +11,11 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
+import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.Course;
+import fi.aalto.cs.apluscourses.model.Installer;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.model.Module;
-import fi.aalto.cs.apluscourses.model.Installer;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import java.util.ArrayList;
@@ -47,7 +48,7 @@ public class ImportModuleActionTest {
     modules.add(new ModelExtensions.TestModule("module2"));
     modules.add(new ModelExtensions.TestModule("module3"));
 
-    Course course = new Course("course", modules, Collections.emptyMap());
+    Course course = new Course("course", modules, Collections.emptyList(), Collections.emptyMap());
     mainViewModel.courseViewModel.set(new CourseViewModel(course));
 
     installer = mock(Installer.class);
@@ -94,7 +95,7 @@ public class ImportModuleActionTest {
 
     action.actionPerformed(e);
 
-    ArgumentCaptor<List<Module>> captor = ArgumentCaptor.forClass(List.class);
+    ArgumentCaptor<List<Component>> captor = ArgumentCaptor.forClass(List.class);
 
     verify(installer).installAsync(captor.capture());
 

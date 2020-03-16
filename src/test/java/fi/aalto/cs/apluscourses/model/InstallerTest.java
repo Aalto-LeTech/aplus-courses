@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -70,9 +71,9 @@ public class InstallerTest {
     Module secondDep = spy(new ModelExtensions.TestModule("secondDep"));
 
     ComponentSource componentSource = mock(ComponentSource.class);
-    when(componentSource.getComponent(module1.getName())).thenReturn(module1);
-    when(componentSource.getComponent(firstDep.getName())).thenReturn(firstDep);
-    when(componentSource.getComponent(secondDep.getName())).thenReturn(secondDep);
+    when(componentSource.getModule(module1.getName())).thenReturn(module1);
+    when(componentSource.getModule(firstDep.getName())).thenReturn(firstDep);
+    when(componentSource.getModule(secondDep.getName())).thenReturn(secondDep);
 
     Installer installer =
         new InstallerImpl<>(componentSource, new SimpleAsyncTaskManager());
@@ -107,13 +108,13 @@ public class InstallerTest {
     Module module2 = spy(new ModelExtensions.TestModule("module2"));
 
     ComponentSource componentSource = mock(ComponentSource.class);
-    when(componentSource.getComponent(module1.getName())).thenReturn(module1);
-    when(componentSource.getComponent(module2.getName())).thenReturn(module2);
+    when(componentSource.getModule(module1.getName())).thenReturn(module1);
+    when(componentSource.getModule(module2.getName())).thenReturn(module2);
 
     Installer installer =
         new InstallerImpl<>(componentSource, new SimpleAsyncTaskManager());
 
-    List<Module> modules = new ArrayList<>();
+    List<Component> modules = new ArrayList<>();
     modules.add(module1);
     modules.add(module2);
 
@@ -182,9 +183,7 @@ public class InstallerTest {
       }
     });
 
-    ComponentSource componentSource = moduleName -> {
-      throw new NoSuchModuleException(moduleName, null);
-    };
+    ComponentSource componentSource = moduleName -> null;
 
     Installer installer =
         new InstallerImpl<>(componentSource, new SimpleAsyncTaskManager());
@@ -236,14 +235,14 @@ public class InstallerTest {
     });
 
     ComponentSource componentSource = mock(ComponentSource.class);
-    when(componentSource.getComponent(dependentModule.getName())).thenReturn(dependentModule);
-    when(componentSource.getComponent(otherModule.getName())).thenReturn(otherModule);
-    when(componentSource.getComponent(failingDep.getName())).thenReturn(failingDep);
+    when(componentSource.getModule(dependentModule.getName())).thenReturn(dependentModule);
+    when(componentSource.getModule(otherModule.getName())).thenReturn(otherModule);
+    when(componentSource.getModule(failingDep.getName())).thenReturn(failingDep);
 
     Installer installer =
         new InstallerImpl<>(componentSource, new SimpleAsyncTaskManager());
 
-    List<Module> modules = new ArrayList<>();
+    List<Component> modules = new ArrayList<>();
     modules.add(dependentModule);
     modules.add(otherModule);
 
@@ -275,13 +274,13 @@ public class InstallerTest {
     });
 
     ComponentSource componentSource = mock(ComponentSource.class);
-    when(componentSource.getComponent(moduleA.getName())).thenReturn(moduleA);
-    when(componentSource.getComponent(moduleB.getName())).thenReturn(moduleB);
+    when(componentSource.getModule(moduleA.getName())).thenReturn(moduleA);
+    when(componentSource.getModule(moduleB.getName())).thenReturn(moduleB);
 
     Installer installer =
         new InstallerImpl<>(componentSource, new SimpleAsyncTaskManager());
 
-    List<Module> modules = new ArrayList<>();
+    List<Component> modules = new ArrayList<>();
     modules.add(moduleA);
     modules.add(moduleB);
 

@@ -7,7 +7,6 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class Component {
-  public static final int ERROR = StateMonitor.ERROR;
   public static final int NOT_INSTALLED = StateMonitor.INITIAL;
   public static final int FETCHING = NOT_INSTALLED + 1;
   public static final int FETCHED = FETCHING + 1;
@@ -15,6 +14,11 @@ public abstract class Component {
   public static final int LOADED = LOADING + 1;
   public static final int WAITING_FOR_DEPS = LOADED + 1;
   public static final int INSTALLED = WAITING_FOR_DEPS + 1;
+
+  public static final int ERROR = StateMonitor.ERROR;
+  public static final int UNLOADED = ERROR - 1;
+  public static final int UNINSTALLED = UNLOADED - 1;
+
   public final Event stateChanged = new Event();
   public final StateMonitor stateMonitor = new StateMonitor(this::onStateChanged);
   @NotNull

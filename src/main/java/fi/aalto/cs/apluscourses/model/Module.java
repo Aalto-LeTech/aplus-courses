@@ -64,5 +64,11 @@ public abstract class Module extends Component {
 
   public abstract List<String> getLibraries() throws ModuleLoadException;
 
+  /**
+   * Checks the state of the module (for an example by looking at the file system) and updates
+   * #{@link Module#stateMonitor} to the correct state.
+   */
+  public abstract void updateState();
+
   public abstract List<String> getDependencyModules() throws ModuleLoadException;
 }

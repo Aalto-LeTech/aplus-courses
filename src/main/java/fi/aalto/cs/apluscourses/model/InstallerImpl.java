@@ -79,7 +79,8 @@ public class InstallerImpl<T> implements Installer {
     }
     
     private void fetch() throws IOException {
-      if (component.stateMonitor.setConditionally(Component.NOT_INSTALLED, Component.FETCHING)) {
+      if (component.stateMonitor.setConditionally(Component.NOT_INSTALLED, Component.FETCHING)
+          || component.stateMonitor.setConditionally(Component.UNINSTALLED, Module.FETCHING)) {
         component.fetch();
         component.stateMonitor.set(Component.FETCHED);
       } else {
@@ -88,7 +89,8 @@ public class InstallerImpl<T> implements Installer {
     }
 
     private void load() throws ModuleLoadException {
-      if (component.stateMonitor.setConditionally(Component.FETCHED, Component.LOADING)) {
+      if (component.stateMonitor.setConditionally(Component.FETCHED, Component.LOADING)
+          || component.stateMonitor.setConditionally(Component.UNLOADED, Component.LOADING)) {
         installAsync(dependencies);
         component.load();
         component.stateMonitor.set(Component.LOADED);
@@ -116,7 +118,7 @@ public class InstallerImpl<T> implements Installer {
       List<String> dependencyNames = component.getDependencies();
       dependencies = new ArrayList<>(dependencyNames.size());
       for (String dependencyName : dependencyNames) {
-        dependencies.add(componentSource.getComponent(dependencyName));
+        dependencies.add(componentSource.getModule(dependencyName));
       }
     }
   }

@@ -30,6 +30,8 @@ public class ModuleListElementViewModel extends ListElementViewModel<Module> {
     switch (getModel().stateMonitor.get()) {
       case Component.NOT_INSTALLED:
       case Component.FETCHED:
+      case Component.UNLOADED:
+      case Component.UNINSTALLED:
         return "Not installed";
       case Component.FETCHING:
         return "Downloading...";
