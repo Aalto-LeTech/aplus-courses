@@ -179,3 +179,49 @@ chmod 755 get-modules
     </ol>
   </div>
 </details>
+<details>
+  <summary>
+  <a href="https://github.com/Aalto-LeTech/intellij-plugin/issues/64">
+  IDEA should remember that some modules were previously installed #64
+  </a>
+  </summary>
+  <div>
+    <h5>Part 1. Installing Modules</h5>
+    <ol>
+      <li>Create a new project.</li>
+      <li>Install some course modules from the modules tool window.</li>
+    </ol>
+    
+  </div>
+  <div>
+    <h5>Part 2. Removing Modules</h5>
+    <ol>
+      <li>
+        From the project menu on the left, remove some modules from the project.
+      </li>
+      <li>
+        Ensure that the removed modules are shown as not installed in the modules tool window.
+      </li>
+      <li>
+        From the file system of the computer, delete a directory corresponding to an installed course module.
+        The folders of the modules are located in the directory of the project.
+      </li>
+      <li>
+        Ensure, that the modules corresponding to the deleted directories are shown as not installed in the modules tool
+        window.
+      </li>
+    </ol>
+  </div>
+  <div>
+    <h5>Part 3. Restarting IntelliJ</h5>
+    <ol>
+      <li>
+        Ensure that some course modules are installed in the project and restart the IDE.
+      </li>
+      <li>
+        Ensure that the previously installed modules are shown as installed in the modules tool window after restarting
+        the IDE.
+      </li>
+    </ol>
+  </div>
+</details>
