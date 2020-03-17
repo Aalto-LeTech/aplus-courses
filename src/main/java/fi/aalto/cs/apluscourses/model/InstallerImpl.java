@@ -72,7 +72,7 @@ public class InstallerImpl<T> implements Installer {
         initDependencies();
         load();
         waitForDependencies();
-      } catch (IOException | ModuleLoadException | NoSuchModuleException e) {
+      } catch (IOException | ComponentLoadException | NoSuchModuleException e) {
         logger.info("A module could not be installed", e);
         component.stateMonitor.set(Component.ERROR);
       }
@@ -88,7 +88,7 @@ public class InstallerImpl<T> implements Installer {
       }
     }
 
-    private void load() throws ModuleLoadException {
+    private void load() throws ComponentLoadException {
       if (component.stateMonitor.setConditionally(Component.FETCHED, Component.LOADING)
           || component.stateMonitor.setConditionally(Component.UNLOADED, Component.LOADING)) {
         installAsync(dependencies);
@@ -111,14 +111,14 @@ public class InstallerImpl<T> implements Installer {
       }
     }
 
-    private void initDependencies() throws ModuleLoadException, NoSuchModuleException {
+    private void initDependencies() throws ComponentLoadException, NoSuchModuleException {
       if (dependencies != null) {
         return;
       }
       List<String> dependencyNames = component.getDependencies();
       dependencies = new ArrayList<>(dependencyNames.size());
       for (String dependencyName : dependencyNames) {
-        dependencies.add(componentSource.getModule(dependencyName));
+        dependencies.add(componentSource.getComponent(dependencyName));
       }
     }
   }
@@ -132,8 +132,8 @@ public class InstallerImpl<T> implements Installer {
     }
 
     @Override
-    public Installer getInstallerFor(Course course) {
-      return new InstallerImpl<>(course, taskManager);
+    public Installer getInstallerFor(ComponentSource componentSource) {
+      return new InstallerImpl<>(componentSource, taskManager);
     }
   }
 }

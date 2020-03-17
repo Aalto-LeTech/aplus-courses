@@ -5,8 +5,8 @@ import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.module.ModuleWithNameAlreadyExists;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtilRt;
+import fi.aalto.cs.apluscourses.model.ComponentLoadException;
 import fi.aalto.cs.apluscourses.model.Module;
-import fi.aalto.cs.apluscourses.model.ModuleLoadException;
 import fi.aalto.cs.apluscourses.model.UnexpectedResponseException;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
 import fi.aalto.cs.apluscourses.utils.DirAwareZipFile;
@@ -29,7 +29,7 @@ class IntelliJModule extends Module {
   @NotNull
   private final Project project;
 
-  // XPath to the names of dependency modules in an *.ilm file.
+  // XPath to the names of dependency modules in an *.iml file.
   // <module> is the root node, <component> is its child.  Dependency modules are those <orderEntry>
   // children of <component> for which type="module".  The name of the dependency modules are
   // module-name attributes of these <orderEntry> nodes.
@@ -46,26 +46,26 @@ class IntelliJModule extends Module {
   }
 
   @NotNull
-  private List<String> getStringsFromXPath(String xpath) throws ModuleLoadException {
+  private List<String> getStringsFromXPath(String xpath) throws ComponentLoadException {
     try {
       return DomUtil.getNodesFromXPath(xpath, getImlFile())
           .stream()
           .map(Node::getTextContent)
           .collect(Collectors.toList());
     } catch (IOException | SAXException e) {
-      throw new ModuleLoadException(this, e);
+      throw new ComponentLoadException(this, e);
     }
   }
 
   @Override
   @NotNull
-  public List<String> getDependencyModules() throws ModuleLoadException {
+  public List<String> getDependencyModules() throws ComponentLoadException {
     return getStringsFromXPath(DEPENDENCY_NAMES_XPATH);
   }
 
   @Override
   @NotNull
-  public List<String> getLibraries() throws ModuleLoadException {
+  public List<String> getLibraries() throws ComponentLoadException {
     return getStringsFromXPath(LIBRARY_NAMES_XPATH);
   }
 
@@ -77,11 +77,11 @@ class IntelliJModule extends Module {
   }
 
   @Override
-  public void load() throws ModuleLoadException {
+  public void load() throws ComponentLoadException {
     try {
       WriteAction.runAndWait(new Loader(getProject(), getImlFile())::load);
     } catch (Exception e) {
-      throw new ModuleLoadException(this, e);
+      throw new ComponentLoadException(this, e);
     }
   }
 
@@ -97,8 +97,8 @@ class IntelliJModule extends Module {
      */
     if (ModuleManager.getInstance(project).findModuleByName(getName()) != null) {
       stateMonitor.set(Module.INSTALLED);
-    } else if (new File(project.getBasePath(), getName()).isDirectory()) {
-      // We assume, that if the project directory contains a directory with the name of a module,
+    } else if (new File(getFullPath()).isDirectory()) {
+      // We assume, that if the project directory contains a directory with the path of a module,
       // then the module files are present. Of course, it's possible that some relevant module files
       // have been removed from the directory.
       stateMonitor.set(Module.FETCHED);
@@ -108,19 +108,18 @@ class IntelliJModule extends Module {
   }
 
   @NotNull
-  protected File createTempFile() throws IOException {
+  private File createTempFile() throws IOException {
     return FileUtilRt.createTempFile(getName(), ".zip");
   }
 
-  protected void extractZip(File file) throws IOException {
-
+  private void extractZip(File file) throws IOException {
     // ZIP may contain other dirs (typically, dependency modules) but we only extract the files that
     // belongs to this module.
-    new DirAwareZipFile(file).extractDir(getName(), getBasePath());
+    new DirAwareZipFile(file).extractDir(getName(), getFullParentPath());
   }
 
 
-  protected void fetchZipTo(File file) throws IOException {
+  private void fetchZipTo(File file) throws IOException {
     try {
       CoursesClient.fetchZip(getUrl(), file);
     } catch (UnexpectedResponseException ex) {
@@ -130,14 +129,28 @@ class IntelliJModule extends Module {
   }
 
   @NotNull
-  protected String getBasePath() {
+  private String getBasePath() {
     return Objects.requireNonNull(getProject().getBasePath());
   }
 
   @NotNull
-  protected File getImlFile() {
-    String name = getName();
-    return Paths.get(getBasePath(), name, name + ".iml").toFile();
+  private String getFullPath() {
+    return Paths.get(getBasePath(), getRelativePath()).toString();
+  }
+
+  @NotNull
+  private String getFullParentPath() {
+    return Paths.get(getFullPath()).getParent().toString();
+  }
+
+  @NotNull
+  private File getImlFile() {
+    return Paths.get(getFullPath(), getName() + ".iml").toFile();
+  }
+
+  @NotNull
+  public String getRelativePath() {
+    return getName();
   }
 
   @NotNull

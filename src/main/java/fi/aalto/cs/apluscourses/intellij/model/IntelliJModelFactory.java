@@ -3,6 +3,7 @@ package fi.aalto.cs.apluscourses.intellij.model;
 import com.intellij.ProjectTopics;
 import com.intellij.openapi.project.ModuleListener;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.openapi.vfs.newvfs.BulkFileListener;
 import com.intellij.openapi.vfs.newvfs.events.VFileDeleteEvent;
@@ -14,10 +15,10 @@ import fi.aalto.cs.apluscourses.model.Module;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
 public class IntelliJModelFactory implements ModelFactory {
-
   @NotNull
   private final Project project;
 
@@ -36,7 +37,7 @@ public class IntelliJModelFactory implements ModelFactory {
       @Override
       public void moduleRemoved(@NotNull Project project,
                                 @NotNull com.intellij.openapi.module.Module projectModule) {
-        Module module = course.getModuleOpt(projectModule.getName());
+        Module module = course.getModuleByName(projectModule.getName());
         if (module != null) {
           course.onModuleRemove(module);
         }
@@ -48,9 +49,9 @@ public class IntelliJModelFactory implements ModelFactory {
           public void after(@NotNull List<? extends VFileEvent> events) {
             for (VFileEvent event : events) {
               if (event instanceof VFileDeleteEvent) {
-                String deletedFileName = event.getFile().getName();
-                Module module = course.getModuleOpt(deletedFileName);
-                if (module != null) {
+                VirtualFile deletedFile = Objects.requireNonNull(event.getFile());
+                IntelliJModule module = course.getModuleByName(deletedFile.getName());
+                if (module != null && module.getRelativePath().equals(deletedFile.getPath())) {
                   course.onModuleFilesDeletion(module);
                 }
               }
@@ -71,7 +72,8 @@ public class IntelliJModelFactory implements ModelFactory {
   }
 
   @Override
-  public Library createLibrary(@NotNull String name, @NotNull String type) {
-    return null;
+  public Library createLibrary(@NotNull String name) {
+    throw new UnsupportedOperationException(
+        "Only common libraries like Scala SDK are currently supported.");
   }
 }

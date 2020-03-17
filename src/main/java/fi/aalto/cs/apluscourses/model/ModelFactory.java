@@ -13,5 +13,5 @@ public interface ModelFactory {
 
   Module createModule(@NotNull String name, @NotNull URL url);
 
-  Library createLibrary(@NotNull String name, @NotNull String type);
+  Library createLibrary(@NotNull String name);
 }

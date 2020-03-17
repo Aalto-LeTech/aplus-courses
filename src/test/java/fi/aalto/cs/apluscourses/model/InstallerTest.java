@@ -24,7 +24,7 @@ import org.mockito.InOrder;
 public class InstallerTest {
 
   @Test
-  public void testInstall() throws IOException, ModuleLoadException {
+  public void testInstall() throws IOException, ComponentLoadException {
     Module module = spy(new ModelExtensions.TestModule("someModule") {
       @Override
       public void fetch() {
@@ -54,7 +54,7 @@ public class InstallerTest {
 
   @Test
   public void testInstallDependencies()
-      throws IOException, ModuleLoadException, NoSuchModuleException {
+      throws IOException, ComponentLoadException, NoSuchModuleException {
     Module module1 = spy(new ModelExtensions.TestModule("dependentModule") {
       @NotNull
       @Override
@@ -71,9 +71,9 @@ public class InstallerTest {
     Module secondDep = spy(new ModelExtensions.TestModule("secondDep"));
 
     ComponentSource componentSource = mock(ComponentSource.class);
-    when(componentSource.getModule(module1.getName())).thenReturn(module1);
-    when(componentSource.getModule(firstDep.getName())).thenReturn(firstDep);
-    when(componentSource.getModule(secondDep.getName())).thenReturn(secondDep);
+    when(componentSource.getComponent(module1.getName())).thenReturn(module1);
+    when(componentSource.getComponent(firstDep.getName())).thenReturn(firstDep);
+    when(componentSource.getComponent(secondDep.getName())).thenReturn(secondDep);
 
     Installer installer =
         new InstallerImpl<>(componentSource, new SimpleAsyncTaskManager());
@@ -103,13 +103,13 @@ public class InstallerTest {
   }
 
   @Test
-  public void testInstallMany() throws IOException, ModuleLoadException, NoSuchModuleException {
+  public void testInstallMany() throws IOException, ComponentLoadException, NoSuchModuleException {
     Module module1 = spy(new ModelExtensions.TestModule("module1"));
     Module module2 = spy(new ModelExtensions.TestModule("module2"));
 
     ComponentSource componentSource = mock(ComponentSource.class);
-    when(componentSource.getModule(module1.getName())).thenReturn(module1);
-    when(componentSource.getModule(module2.getName())).thenReturn(module2);
+    when(componentSource.getComponent(module1.getName())).thenReturn(module1);
+    when(componentSource.getComponent(module2.getName())).thenReturn(module2);
 
     Installer installer =
         new InstallerImpl<>(componentSource, new SimpleAsyncTaskManager());
@@ -135,7 +135,7 @@ public class InstallerTest {
   }
 
   @Test
-  public void testInstallFetchFails() throws ModuleLoadException {
+  public void testInstallFetchFails() throws ComponentLoadException {
     Module module = spy(new ModelExtensions.TestModule("fetchFailModule") {
       @Override
       public void fetch() throws IOException {
@@ -159,8 +159,8 @@ public class InstallerTest {
   public void testInstallLoadFails() {
     Module module = spy(new ModelExtensions.TestModule("loadFailModule") {
       @Override
-      public void load() throws ModuleLoadException {
-        throw new ModuleLoadException(this, null);
+      public void load() throws ComponentLoadException {
+        throw new ComponentLoadException(this, null);
       }
     });
 
@@ -174,7 +174,7 @@ public class InstallerTest {
   }
 
   @Test
-  public void testInstallUnknownDependency() throws ModuleLoadException {
+  public void testInstallUnknownDependency() throws ComponentLoadException {
     Module module = spy(new ModelExtensions.TestModule("unknownDepModule") {
       @NotNull
       @Override
@@ -183,7 +183,9 @@ public class InstallerTest {
       }
     });
 
-    ComponentSource componentSource = moduleName -> null;
+    ComponentSource componentSource = componentName -> {
+      throw new NoSuchModuleException(componentName, null);
+    };
 
     Installer installer =
         new InstallerImpl<>(componentSource, new SimpleAsyncTaskManager());
@@ -197,12 +199,12 @@ public class InstallerTest {
   }
 
   @Test
-  public void testInstallGetDependenciesFail() throws ModuleLoadException {
+  public void testInstallGetDependenciesFail() throws ComponentLoadException {
     Module module = spy(new ModelExtensions.TestModule("failingDepModule") {
       @NotNull
       @Override
-      public List<String> getDependencies() throws ModuleLoadException {
-        throw new ModuleLoadException(this, null);
+      public List<String> getDependencies() throws ComponentLoadException {
+        throw new ComponentLoadException(this, null);
       }
     });
 
@@ -235,9 +237,9 @@ public class InstallerTest {
     });
 
     ComponentSource componentSource = mock(ComponentSource.class);
-    when(componentSource.getModule(dependentModule.getName())).thenReturn(dependentModule);
-    when(componentSource.getModule(otherModule.getName())).thenReturn(otherModule);
-    when(componentSource.getModule(failingDep.getName())).thenReturn(failingDep);
+    when(componentSource.getComponent(dependentModule.getName())).thenReturn(dependentModule);
+    when(componentSource.getComponent(otherModule.getName())).thenReturn(otherModule);
+    when(componentSource.getComponent(failingDep.getName())).thenReturn(failingDep);
 
     Installer installer =
         new InstallerImpl<>(componentSource, new SimpleAsyncTaskManager());
@@ -274,8 +276,8 @@ public class InstallerTest {
     });
 
     ComponentSource componentSource = mock(ComponentSource.class);
-    when(componentSource.getModule(moduleA.getName())).thenReturn(moduleA);
-    when(componentSource.getModule(moduleB.getName())).thenReturn(moduleB);
+    when(componentSource.getComponent(moduleA.getName())).thenReturn(moduleA);
+    when(componentSource.getComponent(moduleB.getName())).thenReturn(moduleB);
 
     Installer installer =
         new InstallerImpl<>(componentSource, new SimpleAsyncTaskManager());

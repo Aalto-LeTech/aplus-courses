@@ -2,7 +2,6 @@ package fi.aalto.cs.apluscourses.model;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -56,13 +55,13 @@ public abstract class Module extends Component {
 
   @NotNull
   @Override
-  public List<String> getDependencies() throws ModuleLoadException {
+  public List<String> getDependencies() throws ComponentLoadException {
     return Stream.of(getLibraries(), getDependencyModules())
         .flatMap(List::stream)
         .collect(Collectors.toList());
   }
 
-  public abstract List<String> getLibraries() throws ModuleLoadException;
+  public abstract List<String> getLibraries() throws ComponentLoadException;
 
   /**
    * Checks the state of the module (for an example by looking at the file system) and updates
@@ -70,5 +69,5 @@ public abstract class Module extends Component {
    */
   public abstract void updateState();
 
-  public abstract List<String> getDependencyModules() throws ModuleLoadException;
+  public abstract List<String> getDependencyModules() throws ComponentLoadException;
 }

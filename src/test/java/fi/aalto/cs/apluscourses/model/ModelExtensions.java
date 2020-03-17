@@ -46,12 +46,12 @@ public class ModelExtensions {
 
     @NotNull
     @Override
-    public List<String> getDependencyModules() throws ModuleLoadException {
+    public List<String> getDependencyModules() throws ComponentLoadException {
       return Collections.emptyList();
     }
 
     @Override
-    public List<String> getLibraries() throws ModuleLoadException {
+    public List<String> getLibraries() throws ComponentLoadException {
       return Collections.emptyList();
     }
 
@@ -61,7 +61,7 @@ public class ModelExtensions {
     }
 
     @Override
-    public void load() throws ModuleLoadException {
+    public void load() throws ComponentLoadException {
       // do nothing
     }
 
@@ -87,7 +87,7 @@ public class ModelExtensions {
     }
 
     @Override
-    public Library createLibrary(@NotNull String name, @NotNull String type) {
+    public Library createLibrary(@NotNull String name) {
       return null;
     }
   }

@@ -1,17 +1,18 @@
 package fi.aalto.cs.apluscourses.model;
 
+import java.util.Collections;
+import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
-public class Library {
-  @NotNull
-  private final String name;
+public abstract class Library extends Component {
 
   public Library(@NotNull String name) {
-    this.name = name;
+    super(name);
   }
 
   @NotNull
-  public String getName() {
-    return name;
+  @Override
+  public List<String> getDependencies() {
+    return Collections.emptyList();
   }
 }

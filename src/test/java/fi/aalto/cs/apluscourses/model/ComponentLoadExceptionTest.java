@@ -6,16 +6,16 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
-public class ModuleLoadExceptionTest {
+public class ComponentLoadExceptionTest {
 
   @Test
   public void testCreateModuleLoadException() {
     String moduleName = "errorModule";
     Throwable cause = new Throwable();
     Module module = new ModelExtensions.TestModule(moduleName);
-    ModuleLoadException exception = new ModuleLoadException(module, cause);
+    ComponentLoadException exception = new ComponentLoadException(module, cause);
     assertSame("The module should be the same that was given to the constructor.",
-        module, exception.getModule());
+        module, exception.getComponent());
     assertSame("The cause should be the same that was given to the constructor.",
         cause, exception.getCause());
     assertThat("The message should contain the name of the module.",

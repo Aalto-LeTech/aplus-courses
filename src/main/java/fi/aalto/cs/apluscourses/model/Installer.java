@@ -11,6 +11,6 @@ public interface Installer {
   void install(Component component);
 
   interface Factory {
-    Installer getInstallerFor(Course course);
+    Installer getInstallerFor(ComponentSource componentSource);
   }
 }

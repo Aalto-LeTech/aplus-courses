@@ -205,14 +205,13 @@ public class Course implements ComponentSource {
     return requiredPlugins;
   }
 
-  @Nullable
+  @NotNull
   @Override
-  public Module getModuleOpt(@NotNull String componentName) {
+  public Component getComponent(@NotNull String componentName) throws NoSuchModuleException {
     return modules
         .stream()
         .filter(module -> module.getName().equals(componentName))
         .findFirst()
-        .orElse(null);
+        .orElseThrow(() -> new NoSuchModuleException(componentName, null));
   }
-
 }

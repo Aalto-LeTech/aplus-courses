@@ -36,7 +36,7 @@ public abstract class Component {
 
   public abstract void fetch() throws IOException;
 
-  public abstract void load() throws ModuleLoadException;
+  public abstract void load() throws ComponentLoadException;
 
   protected void onStateChanged() {
     stateChanged.trigger();
@@ -51,8 +51,8 @@ public abstract class Component {
    * is in FETCHED state or further.
    *
    * @return Names of the dependencies, as a {@link List}.
-   * @throws ModuleLoadException If dependencies could not be read.
+   * @throws ComponentLoadException If dependencies could not be read.
    */
   @NotNull
-  public abstract List<String> getDependencies() throws ModuleLoadException;
+  public abstract List<String> getDependencies() throws ComponentLoadException;
 }
