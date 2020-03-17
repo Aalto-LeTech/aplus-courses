@@ -11,7 +11,7 @@ a manual testing manual. Marked with a github issue label "manual testing".
   <div>
     <h5>Part 1. Checking missing plugins</h5>
     <ol>
-      <li>Ensure "Scala" plugin is not installer <b>(File | Settings | Plugins | Marketplace)</b></li>
+      <li>Ensure "Scala" plugin is not installed <b>(File | Settings | Plugins | Marketplace)</b></li>
       <li>Restart an IDE</li>
       <li>Observe a notification saying
         <br/>
@@ -68,49 +68,6 @@ a manual testing manual. Marked with a github issue label "manual testing".
     <a href="https://github.com/Aalto-LeTech/intellij-plugin/issues/30">install required
     dependancies for the project from LOCAL #30</a>
   </summary>
-  <div>
-    <h5>Part 0.  Setup: download module ZIPs</h5>
-    <ol>
-      <li>
-        Open the directory where you are going to create your test IDEA project (e.g. open
-        <code>~/IdeaProjects</code>, if your test project will be
-        <code>~/IdeaProjects/test-project</code>).
-      </li>
-      <li>Create there a subdirectory called <code>modules</code>.</li>
-      <li>
-        Open a text editor and copy-paste the following script to a new file.  <sub>Tip: in Windows,
-        you can use Notepad++ as a text editor.</sub>
-<pre>
-#!/bin/sh
-for m in $(echo "Adventure AdventureDraft Aliohjelmia AuctionHouse1
-  AuctionHouse2 Ave AveFI CarSim CitySim DoWhile Election Files FlappyBug
-  Football1 Football2 Football3 Football4 ForLoops GoodStuff HigherOrder
-  IntroApps IntroOOP Miscellaneous MoreApps MovieStats O1Library Odds Oliointro
-  Peeveli Pikkusovelluksia Pong Recursion RobotTribes Robots Sananmuunnos
-  Sentiments Snake Stars Subprograms Subtypes SwingExamples Train Viinaharava");
-do
-  curl "https://grader.cs.hut.fi/static/O1_2020/projects/given/$m/$m.zip" \
-    -o $m.zip
-done
-</pre>
-        Save that file to the newly-created <code>modules</code> directory as
-        <code>get-modules</code>.
-      </li>
-      <li>
-        Open a terminal in <code>modules</code> directory.  <sub>In Windows, use Git Bash.  You can
-        open it by right-clicking the folder and choosing <em>Git Bash Here</em>.  Git Bash should
-        be pre-installed in our testing VMs.</sub>
-       </li>
-       <li>
-         Make <code>get-modules</code> script executable and run with the following shell commands:
-<pre>
-chmod 755 get-modules
-./get-modules
-</pre>
-         This downloads all the necessary ZIP files  (~800&nbsp;MB).
-       </li>
-    </ol>
-  </div>
   <div>
     <h5>Part 1.  Importing a module by double-clicking it</h5>
     <ol>
@@ -182,7 +139,7 @@ chmod 755 get-modules
 <details>
   <summary>
   <a href="https://github.com/Aalto-LeTech/intellij-plugin/issues/64">
-  IDEA should remember that some modules were previously installed #64
+    IDEA should remember that some modules were previously installed #64
   </a>
   </summary>
   <div>
@@ -224,4 +181,42 @@ chmod 755 get-modules
       </li>
     </ol>
   </div>
+  <summary>
+    <a href="https://github.com/Aalto-LeTech/intellij-plugin/issues/66">implement REPL thingy #66</a>
+  </summary>
+  <div>
+    <h5>Part 1. Importing a module</h5>
+    <ol>
+      <li>Create a new project.</li>
+      <li>
+        Open the <em>Modules</em> tool window (if it is not open).  <sub>You may have to wait a
+        few seconds for the list of modules to be initialized.  If the initialization takes more
+        than 10&nbsp;seconds, consider it an error.</sub>
+      </li>
+      <li>Select <em>GoodStuff</em> from the list and double click it.</li>
+      <li>
+        Ensure that <em>GoodStuff</em> and <em>O1Library</em> appear as loaded modules in the
+        project tree, and their contents match the image below:<br/>
+        <img src="images/30_module_loaded.png" alt="GoodStuff and O1Library contents" /><br/>
+        <sub>It shouldn't take longer than 5 seconds for modules to be imported.</sub>
+      </li>
+    </ol>
+  </div>
+      <h5>Part 2. Verifying the REPL</h5>
+      <ol>
+        <li>Ensure Scala Plugin is installed and enabled</li>
+        <li>Ensure Scala SDK is set properly <b>(File | Project Structure | Global Libraries | Add | Scala SDK)</b></li>
+        <li>
+          Open REPL by choosing a folder or a file within <em>GoodStuff</em> module <a href="https://confluence.jetbrains.com/pages/viewpage.action?pageId=53326891">(how-to)</a>
+        </li>
+        <li>When the console opens, check, that the name of the REPL contains the name of the <em>GoodStuff</em> module</li>
+        <li>Next, type into the REPL prompt: <i>sys.props("user.dir")</i>
+        </li>
+        <li>Make sure, that the output directory is where the <em>GoodStuff</em> module resides</li>
+        <li>Next, type into the REPL prompt: <i>sys.props("java.class.path")</i></li>
+        <li>Make sure, that the output classpath contains the <em>GoodStuff</em> module, the complete result should look approximately like this:
+        <img src="images/%2366_scala_REPL_workDir_and_classPath.png" alt="REPL" /><br/>
+        </li>
+      </ol>
+    </div>
 </details>
