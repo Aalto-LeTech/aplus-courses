@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -182,9 +183,7 @@ public class ModuleInstallerTest {
       }
     });
 
-    ModuleSource moduleSource = moduleName -> {
-      throw new NoSuchModuleException(moduleName, null);
-    };
+    ModuleSource moduleSource = moduleName -> null;
 
     ModuleInstaller installer =
         new ModuleInstallerImpl<>(moduleSource, new SimpleAsyncTaskManager());
