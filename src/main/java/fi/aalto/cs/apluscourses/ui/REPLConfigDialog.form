@@ -3,9 +3,12 @@
   <grid id="cbd77" binding="contentPane" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="10" left="10" bottom="10" right="10"/>
     <constraints>
-      <xy x="48" y="54" width="436" height="297"/>
+      <xy x="33" y="44" width="608" height="260"/>
     </constraints>
-    <properties/>
+    <properties>
+      <minimumSize width="278" height="260"/>
+      <name value="Test"/>
+    </properties>
     <border type="none"/>
     <children>
       <grid id="94766" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
@@ -59,7 +62,9 @@
         <children>
           <component id="4126a" class="javax.swing.JLabel">
             <constraints>
-              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
+                <preferred-size width="595" height="21"/>
+              </grid>
             </constraints>
             <properties>
               <text value="Working directory:"/>
@@ -67,13 +72,17 @@
           </component>
           <component id="45c0b" class="com.intellij.openapi.ui.TextFieldWithBrowseButton" binding="workingDirectoryField" default-binding="true">
             <constraints>
-              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="595" height="38"/>
+              </grid>
             </constraints>
             <properties/>
           </component>
           <component id="7d972" class="javax.swing.JLabel">
             <constraints>
-              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
+                <preferred-size width="595" height="21"/>
+              </grid>
             </constraints>
             <properties>
               <text value="Use classpath and SDK of module:"/>
@@ -81,25 +90,29 @@
           </component>
           <vspacer id="50ca6">
             <constraints>
-              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
+                <preferred-size width="595" height="14"/>
+              </grid>
             </constraints>
           </vspacer>
-          <component id="7d573" class="javax.swing.JCheckBox" binding="donTShowThisCheckBox" default-binding="true">
+          <component id="7d573" class="javax.swing.JCheckBox" binding="dontShowThisWindowCheckBox" default-binding="true">
             <constraints>
-              <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false">
+                <preferred-size width="595" height="23"/>
+              </grid>
             </constraints>
             <properties>
               <text value="Don't show this window again"/>
             </properties>
           </component>
-          <component id="2a991" class="javax.swing.JComboBox" binding="moduleComboBox">
+          <component id="2a991" class="com.intellij.openapi.ui.ComboBox" binding="moduleComboBox">
             <constraints>
-              <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="595" height="38"/>
+              </grid>
             </constraints>
             <properties>
-              <model>
-                <item value="&lt;no module&gt;"/>
-              </model>
+              <model/>
             </properties>
           </component>
         </children>

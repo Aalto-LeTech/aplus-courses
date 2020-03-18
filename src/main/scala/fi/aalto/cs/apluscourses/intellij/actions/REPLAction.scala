@@ -61,7 +61,7 @@ class REPLAction extends RunConsoleAction {
 
     adjustRunConfigurationSettings(module, configuration)
 
-    val configDialog = new REPLConfigDialog
+    val configDialog = new REPLConfigDialog(project, module)
     configDialog.setVisible(true)
 
     RunConsoleAction.runExisting(setting, runManagerEx, project)
