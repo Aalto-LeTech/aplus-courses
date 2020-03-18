@@ -3,8 +3,6 @@ package fi.aalto.cs.apluscourses.ui;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
-import com.intellij.openapi.module.ModuleUtil;
-import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
@@ -16,7 +14,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -24,7 +21,6 @@ import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
-import org.jetbrains.annotations.NotNull;
 
 public class REPLConfigDialog extends JDialog {
 
@@ -33,26 +29,32 @@ public class REPLConfigDialog extends JDialog {
   private JButton buttonCancel;
   private TextFieldWithBrowseButton workingDirectoryField;
   private JCheckBox dontShowThisWindowCheckBox;
+  private static boolean showREPLConfig = true;
   private ComboBox moduleComboBox;
 
-  public REPLConfigDialog(Project project, Module targetModule) {
+  public REPLConfigDialog(Project project, String workDirPath, String targetModuleName) {
     setContentPane(contentPane);
     setModal(true);
     getRootPane().setDefaultButton(buttonOK);
     setTitle("REPL Configuration");
 
     addFileChooser("Choose Working Directory", workingDirectoryField, project);
-    String workDir = ModuleUtilCore.getModuleDirPath(targetModule);
-    String path = getPath(project, workDir);
-    workingDirectoryField.setText(path);
+    workingDirectoryField.setText(workDirPath);
 
-    getJavaModuleNames(project).forEach(name -> moduleComboBox.addItem(name));
-    moduleComboBox.setSelectedItem(targetModule.getName());
-    moduleComboBox.setEnabled(true);
+    Arrays.stream(ModuleManager.getInstance(project).getModules())
+        .filter(module -> module.getModuleTypeName().equals("JAVA_MODULE"))
+        .map(Module::getName)
+        .forEach(moduleName -> moduleComboBox.addItem(moduleName));
+    moduleComboBox.setSelectedItem(targetModuleName);
+    moduleComboBox.setEnabled(showREPLConfig);
     moduleComboBox.setRenderer(new ModuleComboBoxListRenderer());
 
-    dontShowThisWindowCheckBox.setSelected(true);
-    System.out.println(moduleComboBox.getSelectedItem());
+    dontShowThisWindowCheckBox.setSelected(false);
+    dontShowThisWindowCheckBox.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        showREPLConfig = !showREPLConfig;
+      }
+    });
 
 //  location "center" (it's still a big question "center" of what
     this.setLocationRelativeTo(null);
@@ -87,22 +89,8 @@ public class REPLConfigDialog extends JDialog {
         JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
   }
 
-  private String getPath(Project project, String workDir) {
-    String directory = !workDir.isEmpty() ? workDir : project.getBaseDir().getPath();
-    return directory.replace("/.idea", "");
-  }
-
-  @NotNull
-  private List<String> getJavaModuleNames(Project project) {
-    return Arrays.stream(ModuleManager.getInstance(project).getModules())
-        .filter(module -> module.getModuleTypeName().equals("JAVA_MODULE"))
-        .map(Module::getName)
-        .collect(Collectors.toList());
-  }
-
   private void onOK() {
     // add your code here
-    System.out.println("selected: " + moduleComboBox.getSelectedItem());
     dispose();
   }
 
@@ -123,5 +111,38 @@ public class REPLConfigDialog extends JDialog {
     };
     fileChooserDescriptor.setTitle(title);
     textField.addBrowseFolderListener(title, null, project, fileChooserDescriptor);
+  }
+
+  public TextFieldWithBrowseButton getWorkingDirectoryField() {
+    return workingDirectoryField;
+  }
+
+  public void setWorkingDirectoryField(
+      TextFieldWithBrowseButton workingDirectoryField) {
+    this.workingDirectoryField = workingDirectoryField;
+  }
+
+  public JCheckBox getDontShowThisWindowCheckBox() {
+    return dontShowThisWindowCheckBox;
+  }
+
+  public void setDontShowThisWindowCheckBox(JCheckBox dontShowThisWindowCheckBox) {
+    this.dontShowThisWindowCheckBox = dontShowThisWindowCheckBox;
+  }
+
+  public ComboBox getModuleComboBox() {
+    return moduleComboBox;
+  }
+
+  public void setModuleComboBox(ComboBox moduleComboBox) {
+    this.moduleComboBox = moduleComboBox;
+  }
+
+  public static boolean showREPLConfig() {
+    return showREPLConfig;
+  }
+
+  public static void setShowREPLConfig(boolean showREPLConfig) {
+    REPLConfigDialog.showREPLConfig = showREPLConfig;
   }
 }

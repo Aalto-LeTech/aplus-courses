@@ -2,7 +2,7 @@ package fi.aalto.cs.apluscourses.intellij.actions
 
 import com.intellij.execution.{RunManager, RunManagerEx}
 import com.intellij.openapi.actionSystem.{AnActionEvent, CommonDataKeys}
-import com.intellij.openapi.module.{Module, ModuleUtilCore}
+import com.intellij.openapi.module.{Module, ModuleManager, ModuleUtilCore}
 import com.intellij.openapi.vfs.VirtualFile
 import fi.aalto.cs.apluscourses.ui.REPLConfigDialog
 import org.jetbrains.annotations.{NotNull, Nullable}
@@ -48,8 +48,11 @@ class REPLAction extends RunConsoleAction {
     val configurationType = getMyConfigurationType
     val settings = runManagerEx.getConfigurationSettingsList(configurationType).asScala
 
-    // get target module
+    // get target module & workDir
     val module = ModuleUtilCore.findModuleForFile(targetFileOrFolder, project)
+    // for project "root" this points to .../.../.idea folder
+    val workDir = ModuleUtilCore.getModuleDirPath(module).replace("/.idea", "")
+    val moduleName = module.getName
 
     //choose the configuration to run based on the condition if this a new configuration of not
     val setting = settings.headOption.getOrElse {
@@ -59,10 +62,20 @@ class REPLAction extends RunConsoleAction {
 
     val configuration = setting.getConfiguration.asInstanceOf[ScalaConsoleRunConfiguration]
 
-    adjustRunConfigurationSettings(module, configuration)
+    if (REPLConfigDialog.showREPLConfig) {
+      val configDialog = new REPLConfigDialog(project, workDir, moduleName)
+      configDialog.setVisible(true)
 
-    val configDialog = new REPLConfigDialog(project, module)
-    configDialog.setVisible(true)
+      configuration.setWorkingDirectory(configDialog.getWorkingDirectoryField.getText)
+      val mName = configDialog.getModuleComboBox.getSelectedItem.asInstanceOf[String]
+      val mod = ModuleManager.getInstance(project).findModuleByName(mName)
+      configuration.setModule(mod)
+      configuration.setName("Scala REPL for module: " + mName)
+    } else {
+      configuration.setWorkingDirectory(workDir)
+      configuration.setModule(module)
+      configuration.setName("Scala REPL for module: " + module.getName)
+    }
 
     RunConsoleAction.runExisting(setting, runManagerEx, project)
   }
