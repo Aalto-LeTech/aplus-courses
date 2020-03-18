@@ -9,7 +9,7 @@ Intellij IDEA plugin for A+
 
 ## Styling
 
-This project uses google checkstyle from [Checkstyle GitHub](https://github.com/checkstyle/checkstyle/blob/checkstyle-8.12/src/main/resources/google_checks.xml) for code formatting. The particular version applied to this project is stored at: `checkstyle/`. Please note, that the checkstyle file itself is licensed under **GNU LGPL** (stored at that same folder).
+This project uses google checkstyle from [Checkstyle GitHub](https://github.com/checkstyle/checkstyle/blob/checkstyle-8.12/src/main/resources/google_checks.xml) for code formatting. The particular version applied to this project is stored at: `checkstyle/`. Please note, that the checkstyle file itself is licensed under **GNU LGPL** (stored at that same folder). Scala code is checked using the [default rules from the scalastyle repository](https://github.com/scalastyle/scalastyle/blob/master/src/main/resources/default_config.xml). The configuration file is located in `scalastyle` and it is licensed under the Apache-2.0 license.  
 
 ## Packaging
 
