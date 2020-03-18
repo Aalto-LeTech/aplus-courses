@@ -11,30 +11,6 @@ import org.mockito.Mockito.{spy, times, verify}
 class REPLActionTest extends BasePlatformTestCase {
 
   @Test
-  def testCheckFileOrFolderWithCorrectFileInputWorks(): Unit = {
-    val nonNullFileOrFolder = dir("directory")
-    val action = new REPLAction
-
-    assertFalse("Returns 'true' if the given folder is 'null'", action.checkFileOrFolderIsNull(nonNullFileOrFolder))
-  }
-
-  @Test
-  def testCheckFileOrFolderWithCorrectFolderInputWorks(): Unit = {
-    val nonNullFileOrFolder = file("file")
-    val action = new REPLAction
-
-    assertFalse("Returns 'true' if the given file is 'null'", action.checkFileOrFolderIsNull(nonNullFileOrFolder))
-  }
-
-  @Test
-  def testCheckFileOrFolderWithEmptyInputFails(): Unit = {
-    val nonNullFileOrFolder = null
-    val action = new REPLAction
-
-    assertTrue("Returns 'false' if the given file/folder is not 'null'", action.checkFileOrFolderIsNull(nonNullFileOrFolder))
-  }
-
-  @Test
   def testAdjustRunConfigurationSettingsWithValidInputWorks(): Unit = {
     val project = getProject
     val module = getModule
