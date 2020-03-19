@@ -28,7 +28,7 @@ public abstract class PluginsTestHelper extends BasePlatformTestCase {
   @NotNull
   public static List<IdeaPluginDescriptor> getDummyPluginsListOfTwo() {
     String[] paths = {"src/test/resources/plugins/dummy_a+_plugin.xml",
-        "src/test/resources/plugins/dummy_scala_plugin.xml"};
+        "src/test/resources/plugins/dummy_liferay_plugin.xml"};
     return getDummyPluginsListOfTwo(paths);
   }
 
