@@ -1,7 +1,7 @@
 ## Manual testing ##
 
 [The complete list](https://github.com/Aalto-LeTech/intellij-plugin/labels/manual%20testing) of features that require writing
-a manual testing manual. Marked with a github issue label "manual testing".
+a manual testing manual. Marked with a github issue label "manual testing". Issue that aggregates key practices to manual testing and evnironments configuration: <a href="https://github.com/Aalto-LeTech/intellij-plugin/issues/18">decide and configure testing environments #18</a>.
 
 
 <details>
