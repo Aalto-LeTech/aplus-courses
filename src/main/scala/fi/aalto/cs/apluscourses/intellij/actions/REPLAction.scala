@@ -4,7 +4,7 @@ import com.intellij.execution.{RunManager, RunManagerEx}
 import com.intellij.openapi.actionSystem.{AnActionEvent, CommonDataKeys}
 import com.intellij.openapi.module.{Module, ModuleManager, ModuleUtilCore}
 import com.intellij.openapi.vfs.VirtualFile
-import fi.aalto.cs.apluscourses.ui.REPLConfigDialog
+import fi.aalto.cs.apluscourses.ui.{REPLConfigDialog, REPLConfigurationDialog, REPLConfigurationForm}
 import org.jetbrains.annotations.{NotNull, Nullable}
 import org.jetbrains.plugins.scala.console.actions.RunConsoleAction
 import org.jetbrains.plugins.scala.console.configuration.ScalaConsoleRunConfiguration
@@ -63,11 +63,13 @@ class REPLAction extends RunConsoleAction {
     val configuration = setting.getConfiguration.asInstanceOf[ScalaConsoleRunConfiguration]
 
     if (REPLConfigDialog.showREPLConfig) {
-      val configDialog = new REPLConfigDialog(project, workDir, moduleName)
+      val configForm = new REPLConfigurationForm(project, workDir, moduleName)
+      val configDialog = new REPLConfigurationDialog
+      configDialog.setReplConfigurationForm(configForm)
       configDialog.setVisible(true)
 
-      configuration.setWorkingDirectory(configDialog.getWorkingDirectoryField.getText)
-      val mName = configDialog.getModuleComboBox.getSelectedItem.asInstanceOf[String]
+      configuration.setWorkingDirectory(configForm.getWorkingDirectoryField.getText)
+      val mName = configForm.getModuleComboBox.getSelectedItem.asInstanceOf[String]
       val mod = ModuleManager.getInstance(project).findModuleByName(mName)
       configuration.setModule(mod)
       configuration.setName("Scala REPL for module: " + mName)
