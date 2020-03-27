@@ -4,8 +4,8 @@ import com.intellij.execution.{RunManager, RunManagerEx}
 import com.intellij.openapi.actionSystem.{AnActionEvent, CommonDataKeys}
 import com.intellij.openapi.module.{Module, ModuleManager, ModuleUtilCore}
 import com.intellij.openapi.vfs.VirtualFile
-import fi.aalto.cs.apluscourses.presentation.REPLConfigurationModel
-import fi.aalto.cs.apluscourses.ui.{REPLConfigurationDialog, REPLConfigurationForm}
+import fi.aalto.cs.apluscourses.presentation.ReplConfigurationModel
+import fi.aalto.cs.apluscourses.ui.{ReplConfigurationDialog, ReplConfigurationForm}
 import org.jetbrains.annotations.{NotNull, Nullable}
 import org.jetbrains.plugins.scala.console.actions.RunConsoleAction
 import org.jetbrains.plugins.scala.console.configuration.ScalaConsoleRunConfiguration
@@ -15,7 +15,7 @@ import scala.collection.JavaConverters._
 /**
  * Custom class that adjusts Scala Plugin's own RunConsoleAction with A+ requirements.
  */
-class REPLAction extends RunConsoleAction {
+class ReplAction extends RunConsoleAction {
 
   override def actionPerformed(e: AnActionEvent): Unit = {
     customDoRunAction(e)
@@ -63,10 +63,10 @@ class REPLAction extends RunConsoleAction {
 
     val configuration = setting.getConfiguration.asInstanceOf[ScalaConsoleRunConfiguration]
 
-    if (REPLConfigurationModel.showREPLConfigWindow) {
-      val configModel = new REPLConfigurationModel(project, workDir, moduleName)
-      val configForm = new REPLConfigurationForm(configModel)
-      val configDialog = new REPLConfigurationDialog
+    if (ReplConfigurationModel.showREPLConfigWindow) {
+      val configModel = new ReplConfigurationModel(project, workDir, moduleName)
+      val configForm = new ReplConfigurationForm(configModel)
+      val configDialog = new ReplConfigurationDialog
       configDialog.setReplConfigurationForm(configForm)
       configDialog.setVisible(true)
 

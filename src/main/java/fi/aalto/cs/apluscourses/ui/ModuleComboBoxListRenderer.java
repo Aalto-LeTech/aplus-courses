@@ -17,7 +17,8 @@ public class ModuleComboBoxListRenderer extends JLabel implements ListCellRender
 
     //todo add the icon when developing locally
     ImageIcon icon4 = new ImageIcon(
-        "/u/39/denissn2/unix/IdeaProjects/intellij-plugin/src/main/resources/META-INF/icons/module.png");
+        "/u/39/denissn2/unix/IdeaProjects/intellij-plugin"
+            + "/src/main/resources/META-INF/icons/module.png");
     setText(value.toString());
     setIcon(icon4);
 

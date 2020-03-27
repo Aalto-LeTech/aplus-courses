@@ -2,18 +2,18 @@ import com.intellij.ide.DataManager
 import com.intellij.mock.MockVirtualFile.{dir, file}
 import com.intellij.openapi.actionSystem.{AnAction, AnActionEvent, Presentation}
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import fi.aalto.cs.apluscourses.intellij.actions.REPLAction
+import fi.aalto.cs.apluscourses.intellij.actions.ReplAction
 import org.jetbrains.plugins.scala.console.configuration.{ScalaConsoleConfigurationType, ScalaConsoleRunConfiguration, ScalaConsoleRunConfigurationFactory}
 import org.junit.Assert._
 import org.junit.Test
 import org.mockito.Mockito.{spy, times, verify}
 
-class REPLActionTest extends BasePlatformTestCase {
+class ReplActionTest extends BasePlatformTestCase {
 
   @Test
   def testCheckFileOrFolderWithCorrectFileInputWorks(): Unit = {
     val nonNullFileOrFolder = dir("directory")
-    val action = new REPLAction
+    val action = new ReplAction
 
     assertFalse("Returns 'true' if the given folder is 'null'", action.checkFileOrFolderIsNull(nonNullFileOrFolder))
   }
@@ -21,7 +21,7 @@ class REPLActionTest extends BasePlatformTestCase {
   @Test
   def testCheckFileOrFolderWithCorrectFolderInputWorks(): Unit = {
     val nonNullFileOrFolder = file("file")
-    val action = new REPLAction
+    val action = new ReplAction
 
     assertFalse("Returns 'true' if the given file is 'null'", action.checkFileOrFolderIsNull(nonNullFileOrFolder))
   }
@@ -29,7 +29,7 @@ class REPLActionTest extends BasePlatformTestCase {
   @Test
   def testCheckFileOrFolderWithEmptyInputFails(): Unit = {
     val nonNullFileOrFolder = null
-    val action = new REPLAction
+    val action = new ReplAction
 
     assertTrue("Returns 'false' if the given file/folder is not 'null'", action.checkFileOrFolderIsNull(nonNullFileOrFolder))
   }
@@ -41,7 +41,7 @@ class REPLActionTest extends BasePlatformTestCase {
     val factory = new ScalaConsoleRunConfigurationFactory(new ScalaConsoleConfigurationType)
     val configuration = factory.createTemplateConfiguration(project).asInstanceOf[ScalaConsoleRunConfiguration]
     configuration.setWorkingDirectory("fakeDirectoryName")
-    val action = new REPLAction
+    val action = new ReplAction
 
     action.adjustRunConfigurationSettings(module, configuration)
 
@@ -53,7 +53,7 @@ class REPLActionTest extends BasePlatformTestCase {
   @Test(expected = classOf[IllegalArgumentException])
   def testCustomDoRunActionIsTriggered(): Unit = {
     //given
-    val action = new REPLAction
+    val action = new ReplAction
     val spyAction = spy(action)
     val actionEvent = createActionEvent(action)
 

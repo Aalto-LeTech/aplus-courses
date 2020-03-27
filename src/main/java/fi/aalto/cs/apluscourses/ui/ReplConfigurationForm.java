@@ -1,6 +1,6 @@
 package fi.aalto.cs.apluscourses.ui;
 
-import static fi.aalto.cs.apluscourses.presentation.REPLConfigurationModel.showREPLConfigWindow;
+import static fi.aalto.cs.apluscourses.presentation.ReplConfigurationModel.showREPLConfigWindow;
 import static java.util.Objects.requireNonNull;
 
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
@@ -8,18 +8,16 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.vfs.VirtualFile;
-import fi.aalto.cs.apluscourses.presentation.REPLConfigurationModel;
-import java.awt.Component;
-import java.awt.Dimension;
+import fi.aalto.cs.apluscourses.presentation.ReplConfigurationModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-public class REPLConfigurationForm extends JPanel {
+public class ReplConfigurationForm extends JPanel {
 
-  private REPLConfigurationModel model;
+  private ReplConfigurationModel model;
 
   private TextFieldWithBrowseButton workingDirectoryField;
   private ComboBox moduleComboBox;
@@ -27,10 +25,10 @@ public class REPLConfigurationForm extends JPanel {
   private JPanel contentPane;
   private JLabel infoText;
 
-  public REPLConfigurationForm() {
+  public ReplConfigurationForm() {
   }
 
-  public REPLConfigurationForm(REPLConfigurationModel model) {
+  public ReplConfigurationForm(ReplConfigurationModel model) {
     this.model = model;
     dontShowThisWindowCheckBox.setSelected(!showREPLConfigWindow);
     dontShowThisWindowCheckBox.addActionListener(new ActionListener() {
@@ -81,11 +79,11 @@ public class REPLConfigurationForm extends JPanel {
     model.setWorkingDirectory(workingDirectoryField.getText());
   }
 
-  public REPLConfigurationModel getModel() {
+  public ReplConfigurationModel getModel() {
     return model;
   }
 
-  public void setModel(REPLConfigurationModel model) {
+  public void setModel(ReplConfigurationModel model) {
     this.model = model;
   }
 }

@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class REPLConfigurationModel {
+public class ReplConfigurationModel {
 
   private Project project;
   private String workingDirectory;
@@ -16,7 +16,7 @@ public class REPLConfigurationModel {
 
   public static boolean showREPLConfigWindow = true;
 
-  public REPLConfigurationModel(Project project, String workingDirectory,
+  public ReplConfigurationModel(Project project, String workingDirectory,
       String targetModuleName) {
     this.project = project;
     this.workingDirectory = workingDirectory;

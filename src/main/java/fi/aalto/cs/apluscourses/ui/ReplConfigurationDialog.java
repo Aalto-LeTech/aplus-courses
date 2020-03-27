@@ -1,28 +1,24 @@
 package fi.aalto.cs.apluscourses.ui;
 
 import com.intellij.uiDesigner.core.GridConstraints;
-import com.intellij.uiDesigner.core.GridLayoutManager;
-import com.intellij.uiDesigner.core.Spacer;
 import fi.aalto.cs.apluscourses.ui.base.DialogBaseHelper;
-import java.awt.Insets;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JPanel;
 
-public class REPLConfigurationDialog extends DialogBaseHelper {
+public class ReplConfigurationDialog extends DialogBaseHelper {
 
   private JPanel contentPane;
-  private JButton buttonOK;
+  private JButton buttonOk;
   private JButton buttonCancel;
-  private REPLConfigurationForm replConfigurationForm;
+  private ReplConfigurationForm replConfigurationForm;
   private JPanel form;
 
-  public REPLConfigurationDialog() {
+  public ReplConfigurationDialog() {
     setContentPane(contentPane);
     setModal(true);
     setResizable(false);
-    getRootPane().setDefaultButton(buttonOK);
-    addDefaultListeners(buttonOK, buttonCancel, contentPane);
+    getRootPane().setDefaultButton(buttonOk);
+    addDefaultListeners(buttonOk, buttonCancel, contentPane);
     setTitle("REPL Configuration");
 
     //  location "center" (it's still a big question "center" of what
@@ -30,17 +26,17 @@ public class REPLConfigurationDialog extends DialogBaseHelper {
     this.pack();
   }
 
-  public REPLConfigurationForm getReplConfigurationForm() {
+  public ReplConfigurationForm getReplConfigurationForm() {
     return replConfigurationForm;
   }
 
   public void setReplConfigurationForm(
-      REPLConfigurationForm replConfigurationForm) {
+      ReplConfigurationForm replConfigurationForm) {
     this.replConfigurationForm = replConfigurationForm;
     replaceReplConfigurationFormWithIn(replConfigurationForm, form);
   }
 
-  private void replaceReplConfigurationFormWithIn(REPLConfigurationForm replConfigurationForm,
+  private void replaceReplConfigurationFormWithIn(ReplConfigurationForm replConfigurationForm,
       JPanel form) {
     final GridConstraints gridConstraints = new GridConstraints(0, 0, 1, 1,
         GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE,
@@ -59,9 +55,9 @@ public class REPLConfigurationDialog extends DialogBaseHelper {
   }
 
   @Override
-  protected void onOK() {
+  protected void onOk() {
     replConfigurationForm.updateModel();
-    super.onOK();
+    super.onOk();
   }
 }
 
