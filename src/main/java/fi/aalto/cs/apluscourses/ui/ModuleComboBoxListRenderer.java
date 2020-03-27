@@ -15,10 +15,7 @@ public class ModuleComboBoxListRenderer extends JLabel implements ListCellRender
       boolean isSelected,
       boolean cellHasFocus) {
 
-    ImageIcon icon = new ImageIcon("resources/META-INF/icons/module.png");
-    ImageIcon icon1 = new ImageIcon("META-INF/icons/module.png");
-    ImageIcon icon2 = new ImageIcon("actions/module.png");
-    ImageIcon icon3 = new ImageIcon("src/main/resources/META-INF/icons/module.png");
+    //todo add the icon when developing locally
     ImageIcon icon4 = new ImageIcon(
         "/u/39/denissn2/unix/IdeaProjects/intellij-plugin/src/main/resources/META-INF/icons/module.png");
     setText(value.toString());
