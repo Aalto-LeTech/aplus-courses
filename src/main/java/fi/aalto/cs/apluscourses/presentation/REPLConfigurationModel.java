@@ -13,7 +13,6 @@ public class REPLConfigurationModel {
   private String workingDirectory;
   private String targetModuleName;
   private List<String> modules;
-  private boolean dontShowThisWindowFlag;
 
   public static boolean showREPLConfigWindow = true;
 
@@ -61,13 +60,5 @@ public class REPLConfigurationModel {
 
   public void setTargetModuleName(String targetModuleName) {
     this.targetModuleName = targetModuleName;
-  }
-
-  public boolean isDontShowThisWindowFlag() {
-    return dontShowThisWindowFlag;
-  }
-
-  public void setDontShowThisWindowFlag(boolean dontShowThisWindowFlag) {
-    this.dontShowThisWindowFlag = dontShowThisWindowFlag;
   }
 }
