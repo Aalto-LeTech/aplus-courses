@@ -1,9 +1,10 @@
-package fi.aalto.cs.apluscourses.ui;
+package fi.aalto.cs.apluscourses.ui.repl;
 
 import com.intellij.uiDesigner.core.GridConstraints;
 import fi.aalto.cs.apluscourses.ui.base.DialogBaseHelper;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import org.jetbrains.annotations.NotNull;
 
 public class ReplConfigurationDialog extends DialogBaseHelper {
 
@@ -36,20 +37,21 @@ public class ReplConfigurationDialog extends DialogBaseHelper {
     replaceReplConfigurationFormWithIn(replConfigurationForm, form);
   }
 
-  private void replaceReplConfigurationFormWithIn(ReplConfigurationForm replConfigurationForm,
-      JPanel form) {
-    final GridConstraints gridConstraints = new GridConstraints(0, 0, 1, 1,
+  protected void replaceReplConfigurationFormWithIn(
+      @NotNull ReplConfigurationForm replConfigurationForm,
+      @NotNull JPanel form) {
+    final GridConstraints gridConstraints = new GridConstraints(
+        0, 0, 1, 1,
         GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE,
         GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
-        GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null,
-        null, 0, false);
+        GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+        null, null, null, 0, false);
 
     //the only one in this particular implementation
     if (form.getComponent(0) != null) {
       form.remove(0);
     }
-    form.add(replConfigurationForm.getContentPane(),
-        gridConstraints);
+    form.add(replConfigurationForm.getContentPane(), gridConstraints);
     form.revalidate();
     form.repaint();
   }

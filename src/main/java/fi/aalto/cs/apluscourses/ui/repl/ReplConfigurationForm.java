@@ -1,6 +1,6 @@
-package fi.aalto.cs.apluscourses.ui;
+package fi.aalto.cs.apluscourses.ui.repl;
 
-import static fi.aalto.cs.apluscourses.presentation.ReplConfigurationModel.showREPLConfigWindow;
+import static fi.aalto.cs.apluscourses.presentation.ReplConfigurationFormModel.showREPLConfigWindow;
 import static java.util.Objects.requireNonNull;
 
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
@@ -8,7 +8,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.vfs.VirtualFile;
-import fi.aalto.cs.apluscourses.presentation.ReplConfigurationModel;
+import fi.aalto.cs.apluscourses.presentation.ReplConfigurationFormModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JCheckBox;
@@ -17,7 +17,7 @@ import javax.swing.JPanel;
 
 public class ReplConfigurationForm extends JPanel {
 
-  private ReplConfigurationModel model;
+  private ReplConfigurationFormModel model;
 
   private TextFieldWithBrowseButton workingDirectoryField;
   private ComboBox moduleComboBox;
@@ -28,7 +28,7 @@ public class ReplConfigurationForm extends JPanel {
   public ReplConfigurationForm() {
   }
 
-  public ReplConfigurationForm(ReplConfigurationModel model) {
+  public ReplConfigurationForm(ReplConfigurationFormModel model) {
     this.model = model;
     dontShowThisWindowCheckBox.setSelected(!showREPLConfigWindow);
     dontShowThisWindowCheckBox.addActionListener(new ActionListener() {
@@ -44,19 +44,21 @@ public class ReplConfigurationForm extends JPanel {
         + "</html>");
 
     addFileChooser("Choose Working Directory", workingDirectoryField, model.getProject());
-    workingDirectoryField.setText(model.getWorkingDirectory());
+    workingDirectoryField.setText(model.getModuleWorkingDirectory());
 
-    model.getModules().forEach(moduleName -> moduleComboBox.addItem(moduleName));
+    model.getModuleNames().forEach(moduleName -> moduleComboBox.addItem(moduleName));
     moduleComboBox.setSelectedItem(model.getTargetModuleName());
     moduleComboBox.setEnabled(showREPLConfigWindow);
     moduleComboBox.setRenderer(new ModuleComboBoxListRenderer());
   }
 
-  private void addFileChooser(final String title,
+  private void addFileChooser(
+      final String title,
       final TextFieldWithBrowseButton textField,
       final Project project) {
-    final FileChooserDescriptor fileChooserDescriptor = new FileChooserDescriptor(false, true,
-        false, false, false, false) {
+    final FileChooserDescriptor fileChooserDescriptor = new FileChooserDescriptor(
+        false, true, false,
+        false, false, false) {
       @Override
       public boolean isFileVisible(VirtualFile file, boolean showHiddenFiles) {
         return super.isFileVisible(file, showHiddenFiles) && file.isDirectory();
@@ -70,20 +72,16 @@ public class ReplConfigurationForm extends JPanel {
     return contentPane;
   }
 
-  public void setContentPane(JPanel contentPane) {
-    this.contentPane = contentPane;
-  }
-
-  protected void updateModel() {
+  public void updateModel() {
     model.setTargetModuleName(requireNonNull(moduleComboBox.getSelectedItem()).toString());
-    model.setWorkingDirectory(workingDirectoryField.getText());
+    model.setModuleWorkingDirectory(workingDirectoryField.getText());
   }
 
-  public ReplConfigurationModel getModel() {
+  public ReplConfigurationFormModel getModel() {
     return model;
   }
 
-  public void setModel(ReplConfigurationModel model) {
+  public void setModel(ReplConfigurationFormModel model) {
     this.model = model;
   }
 }
