@@ -15,7 +15,8 @@ class ReplActionTest extends BasePlatformTestCase {
     val nonNullFileOrFolder = dir("directory")
     val action = new ReplAction
 
-    assertFalse("Returns 'true' if the given folder is 'null'", action.checkFileOrFolderIsNull(nonNullFileOrFolder))
+    assertFalse("Returns 'true' if the given folder is 'null'",
+      action.checkFileOrFolderIsNull(nonNullFileOrFolder))
   }
 
   @Test
@@ -23,7 +24,8 @@ class ReplActionTest extends BasePlatformTestCase {
     val nonNullFileOrFolder = file("file")
     val action = new ReplAction
 
-    assertFalse("Returns 'true' if the given file is 'null'", action.checkFileOrFolderIsNull(nonNullFileOrFolder))
+    assertFalse("Returns 'true' if the given file is 'null'",
+      action.checkFileOrFolderIsNull(nonNullFileOrFolder))
   }
 
   @Test
@@ -31,7 +33,8 @@ class ReplActionTest extends BasePlatformTestCase {
     val nonNullFileOrFolder = null
     val action = new ReplAction
 
-    assertTrue("Returns 'false' if the given file/folder is not 'null'", action.checkFileOrFolderIsNull(nonNullFileOrFolder))
+    assertTrue("Returns 'false' if the given file/folder is not 'null'",
+      action.checkFileOrFolderIsNull(nonNullFileOrFolder))
   }
 
   @Test
@@ -39,15 +42,20 @@ class ReplActionTest extends BasePlatformTestCase {
     val project = getProject
     val module = getModule
     val factory = new ScalaConsoleRunConfigurationFactory(new ScalaConsoleConfigurationType)
-    val configuration = factory.createTemplateConfiguration(project).asInstanceOf[ScalaConsoleRunConfiguration]
+    val configuration = factory
+      .createTemplateConfiguration(project)
+      .asInstanceOf[ScalaConsoleRunConfiguration]
     configuration.setWorkingDirectory("fakeDirectoryName")
     val action = new ReplAction
 
     action.adjustRunConfigurationSettings(module, configuration)
 
-    assertEquals("Customized title of the Scala REPL contains the name of the module started from", "Scala REPL for module: light_idea_test_case", configuration.getName)
-    assertTrue("Customized working directory is set to be a subFolder of '/tmp/'", configuration.getWorkingDirectory.contains("/tmp/unitTest_"))
-    assertTrue("Configuration is triggered with the module is has been started from", configuration.getAllModules.contains(module))
+    assertEquals("Customized title of the Scala REPL contains the name of the module " +
+      "started from", "Scala REPL for module: light_idea_test_case", configuration.getName)
+    assertTrue("Customized working directory is set to be a subFolder of '/tmp/'",
+      configuration.getWorkingDirectory.contains("/tmp/unitTest_"))
+    assertTrue("Configuration is triggered with the module is has been started from",
+      configuration.getAllModules.contains(module))
   }
 
   @Test(expected = classOf[IllegalArgumentException])

@@ -4,7 +4,6 @@ import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.IdeaPluginDescriptorImpl;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.extensions.PluginId;
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -17,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * A helper class to simplify testing plugin manipulation logics.
  */
-public abstract class PluginsTestHelper extends BasePlatformTestCase {
+public abstract class PluginsTestHelper extends TestHelper {
 
   /**
    * A helper method that creates a sample {@link List} of {@link IdeaPluginDescriptor} based on the
@@ -78,3 +77,5 @@ public abstract class PluginsTestHelper extends BasePlatformTestCase {
     return Objects.requireNonNull(PluginManager.getPlugin(PluginId.getId("com.intellij")));
   }
 }
+
+

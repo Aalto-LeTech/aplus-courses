@@ -2,7 +2,6 @@ package fi.aalto.cs.apluscourses.ui.repl;
 
 import static org.junit.Assert.assertEquals;
 
-import fi.aalto.cs.apluscourses.ui.repl.ModuleComboBoxListRenderer;
 import javax.swing.JList;
 import org.junit.Test;
 

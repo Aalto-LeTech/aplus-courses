@@ -16,6 +16,7 @@ public class ReplConfigurationFormModel {
   private String targetModuleName;
   private List<String> moduleNames;
 
+  //todo this goes into course settings once they exist
   public static boolean showREPLConfigWindow = true;
 
   /**

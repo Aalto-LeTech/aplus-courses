@@ -1,6 +1,8 @@
 package fi.aalto.cs.apluscourses.ui.repl;
 
-import fi.aalto.cs.apluscourses.ui.repl.ReplConfigurationDialog;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.spy;
+
 import org.junit.Test;
 
 public class ReplConfigurationDialogTest {
@@ -16,6 +18,13 @@ public class ReplConfigurationDialogTest {
 
   @Test
   public void testOnOk() {
+    ReplConfigurationDialog replConfigurationDialog = new ReplConfigurationDialog();
+    ReplConfigurationForm replConfigurationFormSpy = spy(
+        replConfigurationDialog.getReplConfigurationForm());
+    doNothing().when(replConfigurationFormSpy).updateModel();
 
+    replConfigurationDialog.onOk();
+
+//    verify(replConfigurationDialog.getReplConfigurationForm(), times(1)).updateModel();
   }
 }

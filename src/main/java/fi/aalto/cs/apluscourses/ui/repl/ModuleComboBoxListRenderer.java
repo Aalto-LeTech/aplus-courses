@@ -1,32 +1,24 @@
 package fi.aalto.cs.apluscourses.ui.repl;
 
-import java.awt.Component;
+import com.intellij.ui.SimpleListCellRenderer;
 import javax.swing.ImageIcon;
-import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.ListCellRenderer;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Custom renderer for items (modules in this case) stored in {@link javax.swing.JComboBox}
  */
-public class ModuleComboBoxListRenderer extends JLabel implements ListCellRenderer {
+public class ModuleComboBoxListRenderer extends SimpleListCellRenderer<String> {
 
   //todo add the icon path when developing locally
   public static final String iconPath = "/u/39/denissn2/unix/IdeaProjects/intellij-plugin"
       + "/src/main/resources/META-INF/icons/module.png";
 
   @Override
-  public Component getListCellRendererComponent(
-      JList list,
-      Object value,
-      int index,
-      boolean isSelected,
-      boolean cellHasFocus) {
-
+  public void customize(@NotNull JList<? extends String> list, String value, int index,
+      boolean selected, boolean hasFocus) {
     ImageIcon icon = new ImageIcon(iconPath);
-    setText(value.toString());
+    setText(value);
     setIcon(icon);
-
-    return this;
   }
 }
