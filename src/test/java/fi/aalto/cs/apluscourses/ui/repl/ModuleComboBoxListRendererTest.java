@@ -13,7 +13,7 @@ public class ModuleComboBoxListRendererTest {
     ModuleComboBoxListRenderer renderer = new ModuleComboBoxListRenderer();
 
     //  when
-    renderer.getListCellRendererComponent(new JList(), new Object(),
+    renderer.customize(new JList(), "",
         0, true, true);
 
     //  then

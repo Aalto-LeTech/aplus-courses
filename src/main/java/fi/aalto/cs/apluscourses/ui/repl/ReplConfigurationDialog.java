@@ -27,6 +27,11 @@ public class ReplConfigurationDialog extends DialogBaseHelper {
     this.pack();
   }
 
+  public ReplConfigurationDialog(ReplConfigurationForm replConfigurationForm) {
+    this();
+    setReplConfigurationForm(replConfigurationForm);
+  }
+
   public ReplConfigurationForm getReplConfigurationForm() {
     return replConfigurationForm;
   }

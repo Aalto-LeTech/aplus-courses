@@ -2,7 +2,6 @@ package fi.aalto.cs.apluscourses.ui.repl;
 
 import static org.junit.Assert.assertNotEquals;
 
-import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.TestHelper;
 import fi.aalto.cs.apluscourses.presentation.ReplConfigurationFormModel;
 import org.junit.Test;
@@ -50,13 +49,5 @@ public class ReplConfigurationFormTest extends TestHelper {
         updatedWorkDir, model.getModuleWorkingDirectory());
     assertEquals("Presentation model's target (selected) module names gets properly updated.",
         fakeModuleName, model.getTargetModuleName());
-  }
-
-  private ReplConfigurationFormModel getDummyReplConfigurationFormModel() {
-    Project project = getProject();
-    String workDir = project.getProjectFilePath();
-    String moduleName = "light_idea_test_case";
-    makeFirstPluginScalaModule(project);
-    return new ReplConfigurationFormModel(project, workDir, moduleName);
   }
 }
