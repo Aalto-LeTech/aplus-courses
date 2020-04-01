@@ -18,18 +18,51 @@ import scala.collection.JavaConverters._
  */
 class ReplAction extends RunConsoleAction {
 
-  override def actionPerformed(e: AnActionEvent): Unit = {
+  override def actionPerformed(@NotNull e: AnActionEvent): Unit = {
     customDoRunAction(e)
   }
 
   def checkFileOrFolderIsNull(@Nullable fileOrFolder: VirtualFile): Boolean = fileOrFolder == null
 
-  def adjustRunConfigurationSettings(@NotNull module: Module, @NotNull configuration: ScalaConsoleRunConfiguration): Unit = {
-    // adjust the configuration with: name, workDir and module
-    val moduleDirPath = ModuleUtilCore.getModuleDirPath(module)
-    configuration.setWorkingDirectory(moduleDirPath)
+  def getModuleWorkDir(@NotNull module: Module): String = {
+    //  for project "root" this points to .../.../.idea folder
+    ModuleUtilCore.getModuleDirPath(module).replace("/.idea", "")
+  }
+
+  def setCustomConfigurationFields(@NotNull configuration: ScalaConsoleRunConfiguration,
+                                   @NotNull workDir: String,
+                                   @NotNull moduleName: String,
+                                   @NotNull module: Module): Unit = {
+    configuration.setWorkingDirectory(workDir)
     configuration.setModule(module)
-    configuration.setName("Scala REPL for module: " + module.getName)
+    configuration.setName("Scala REPL for module: " + moduleName)
+  }
+
+  def setConfigurationConditionally(@NotNull project: Project,
+                                    @NotNull module: Module,
+                                    @NotNull configuration: ScalaConsoleRunConfiguration): Unit = {
+    if (ReplConfigurationFormModel.showREPLConfigWindow) {
+      val configModel = new ReplConfigurationFormModel(project,
+        getModuleWorkDir(module), module.getName)
+
+      createAndShowReplConfigurationDialog(configModel)
+
+      val changedModuleName = configModel.getTargetModuleName
+      val changedModule = ModuleManager.getInstance(project).findModuleByName(changedModuleName)
+      val changedWorkDir = configModel.getModuleWorkingDirectory
+      setCustomConfigurationFields(configuration, changedWorkDir, changedModuleName, changedModule)
+    } else {
+      setCustomConfigurationFields(configuration, getModuleWorkDir(module), module.getName, module)
+    }
+  }
+
+  private def createAndShowReplConfigurationDialog(@NotNull configModel: ReplConfigurationFormModel):
+  ReplConfigurationDialog = {
+    val configForm = new ReplConfigurationForm(configModel)
+    val configDialog = new ReplConfigurationDialog
+    configDialog.setReplConfigurationForm(configForm)
+    configDialog.setVisible(true)
+    configDialog
   }
 
   /**
@@ -38,25 +71,24 @@ class ReplAction extends RunConsoleAction {
    *
    * @param e an [[AnActionEvent]] with payload.
    */
-  def customDoRunAction(e: AnActionEvent): Unit = {
+  def customDoRunAction(@NotNull e: AnActionEvent): Unit = {
     val dataContext = e.getDataContext
     val project = CommonDataKeys.PROJECT.getData(dataContext)
-    // virtual file is working for both: files and folders
+    //  virtual file is working for both: files and folders
     val targetFileOrFolder = CommonDataKeys.VIRTUAL_FILE.getData(dataContext)
 
     if (project == null || checkFileOrFolderIsNull(targetFileOrFolder)) return
 
-    // get target module & workDir
+    //  get target module & workDir
     val module = ModuleUtilCore.findModuleForFile(targetFileOrFolder, project)
 
     val runManagerEx = RunManagerEx.getInstanceEx(project)
     val configurationType = getMyConfigurationType
     val settings = runManagerEx.getConfigurationSettingsList(configurationType).asScala
 
-    //choose the configuration to run based on the condition if this a new configuration of not
+    //  choose the configuration to run based on the condition if this a new configuration of not
     val setting = settings.headOption.getOrElse {
       val factory = configurationType.getConfigurationFactories.apply(0)
-      //todo research RunManager vs. RunManagerEx
       runManagerEx.createConfiguration(s"Scala REPL for module: ${module.getName}", factory)
     }
 
@@ -64,46 +96,5 @@ class ReplAction extends RunConsoleAction {
     setConfigurationConditionally(project, module, configuration)
 
     RunConsoleAction.runExisting(setting, runManagerEx, project)
-  }
-
-  def getModuleWorkDir(module: Module) = {
-    // for project "root" this points to .../.../.idea folder
-    ModuleUtilCore.getModuleDirPath(module).replace("/.idea", "")
-  }
-
-  def setConfigurationConditionally(project: Project,
-                                    module: Module,
-                                    configuration: ScalaConsoleRunConfiguration) = {
-
-    val workDir = getModuleWorkDir(module)
-    val moduleName = module.getName
-
-    if (ReplConfigurationFormModel.showREPLConfigWindow) {
-      val configModel = new ReplConfigurationFormModel(project, workDir, moduleName)
-      createAndShowReplConfigurationDialog(configModel)
-
-      val mName = configModel.getTargetModuleName
-      val mod = ModuleManager.getInstance(project).findModuleByName(mName)
-      setCustomConfigurationFields(configuration, configModel.getModuleWorkingDirectory, mName, mod)
-    } else {
-      setCustomConfigurationFields(configuration, workDir, module.getName, module)
-    }
-  }
-
-  def setCustomConfigurationFields(configuration: ScalaConsoleRunConfiguration,
-                                   workDir: String,
-                                   mName: String,
-                                   mod: Module) = {
-    configuration.setWorkingDirectory(workDir)
-    configuration.setModule(mod)
-    configuration.setName("Scala REPL for module: " + mName)
-  }
-
-  def createAndShowReplConfigurationDialog(configModel: ReplConfigurationFormModel): ReplConfigurationDialog = {
-    val configForm = new ReplConfigurationForm(configModel)
-    val configDialog = new ReplConfigurationDialog
-    configDialog.setReplConfigurationForm(configForm)
-    configDialog.setVisible(true)
-    configDialog
   }
 }

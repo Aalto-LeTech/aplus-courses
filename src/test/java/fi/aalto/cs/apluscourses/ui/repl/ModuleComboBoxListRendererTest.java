@@ -13,8 +13,7 @@ public class ModuleComboBoxListRendererTest {
     ModuleComboBoxListRenderer renderer = new ModuleComboBoxListRenderer();
 
     //  when
-    renderer.customize(new JList(), "",
-        0, true, true);
+    renderer.customize(new JList(), "", 0, true, true);
 
     //  then
     assertEquals("The correct icon for rendering Modules in ComboBoxList is set",

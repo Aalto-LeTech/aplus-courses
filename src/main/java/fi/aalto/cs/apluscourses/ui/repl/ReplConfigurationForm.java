@@ -12,6 +12,7 @@ import fi.aalto.cs.apluscourses.presentation.ReplConfigurationFormModel;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import org.jetbrains.annotations.NotNull;
 
 public class ReplConfigurationForm extends JPanel {
 
@@ -40,7 +41,7 @@ public class ReplConfigurationForm extends JPanel {
    * Creates a workable REPL configuration form with all the bells and whistles required. Binds the
    * corresponding data model {@link ReplConfigurationFormModel} into it.
    */
-  public ReplConfigurationForm(ReplConfigurationFormModel model) {
+  public ReplConfigurationForm(@NotNull ReplConfigurationFormModel model) {
     this.model = model;
     dontShowThisWindowCheckBox.setSelected(!showREPLConfigWindow);
     dontShowThisWindowCheckBox.addActionListener(e -> showREPLConfigWindow = !showREPLConfigWindow);
@@ -57,9 +58,9 @@ public class ReplConfigurationForm extends JPanel {
   }
 
   private void addFileChooser(
-      final String title,
-      final TextFieldWithBrowseButton textField,
-      final Project project) {
+      @NotNull final String title,
+      @NotNull final TextFieldWithBrowseButton textField,
+      @NotNull final Project project) {
     final FileChooserDescriptor fileChooserDescriptor = new FileChooserDescriptor(
         false, true, false,
         false, false, false) {

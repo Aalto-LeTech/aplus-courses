@@ -27,13 +27,13 @@ public class ReplConfigurationFormModel {
    * @param targetModuleName       a {@link String} name of the {@link Module} in focus
    */
   public ReplConfigurationFormModel(
-      Project project,
-      String moduleWorkingDirectory,
-      String targetModuleName) {
+      @NotNull Project project,
+      @NotNull String moduleWorkingDirectory,
+      @NotNull String targetModuleName) {
     this.project = project;
     this.moduleWorkingDirectory = moduleWorkingDirectory;
     this.targetModuleName = targetModuleName;
-    Module[] modules = ModuleManager.getInstance(project).getModules();
+    Module[] modules = getModules(project);
     this.moduleNames = getScalaModuleNames(modules);
   }
 
@@ -68,8 +68,28 @@ public class ReplConfigurationFormModel {
     return project;
   }
 
+  /**
+   * Method additionally to setting a {@link Project} updates the list of affiliated {@link Module}
+   * names.
+   *
+   * @param project a {@link Project} to set and extract {@link Module}s to update the list of
+   *                names.
+   */
   public void setProject(Project project) {
     this.project = project;
+    Module[] modules = getModules(project);
+    this.moduleNames = getScalaModuleNames(modules);
+  }
+
+  /**
+   * Method to extract {@link Module}s from {@link Project}.
+   *
+   * @param project a {@link Project} to extract {@link Module}s from
+   * @return an array of {@link Module}
+   */
+  @NotNull
+  private Module[] getModules(@NotNull Project project) {
+    return ModuleManager.getInstance(project).getModules();
   }
 
   public String getModuleWorkingDirectory() {
