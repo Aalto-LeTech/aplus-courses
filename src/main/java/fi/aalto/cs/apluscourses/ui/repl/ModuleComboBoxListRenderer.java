@@ -6,7 +6,7 @@ import javax.swing.JList;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Custom renderer for items (modules in this case) stored in {@link javax.swing.JComboBox}
+ * Custom renderer for items (modules in this case) stored in {@link javax.swing.JComboBox}.
  */
 public class ModuleComboBoxListRenderer extends SimpleListCellRenderer<String> {
 

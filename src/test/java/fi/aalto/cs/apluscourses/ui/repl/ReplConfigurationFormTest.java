@@ -11,23 +11,23 @@ public class ReplConfigurationFormTest extends TestHelper {
   @Test
   public void testFormCreationWithValidInputWorks() {
     //  given
+    ReplConfigurationFormModel model = getDummyReplConfigurationFormModel();
     String workDir = getProject().getProjectFilePath();
     String moduleName = "light_idea_test_case";
-    ReplConfigurationFormModel model = getDummyReplConfigurationFormModel();
 
     //  when
     ReplConfigurationForm form = new ReplConfigurationForm(model);
 
     //  then
+    assertEquals("Form target module is chosen correctly",
+        moduleName, (String) form.getModuleComboBox().getSelectedItem());
+    assertEquals("Form working directory is chosen correctly",
+        workDir, form.getWorkingDirectoryField().getText());
     assertEquals("Form contains the rights informative message",
         ReplConfigurationForm.INFOLABEL_TEXT, form.getInfoTextLabel().getText());
     assertNotEquals("Form correctly picks up negated flag for showing the config dialog",
         ReplConfigurationFormModel.showREPLConfigWindow,
         form.getDontShowThisWindowCheckBox().isSelected());
-    assertEquals("Form working directory is chosen correctly",
-        workDir, form.getWorkingDirectoryField().getText());
-    assertEquals("Form target module is chosen correctly",
-        moduleName, (String) form.getModuleComboBox().getSelectedItem());
   }
 
   @Test

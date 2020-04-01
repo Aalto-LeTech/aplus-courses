@@ -2,19 +2,26 @@ package fi.aalto.cs.apluscourses.ui.repl;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import fi.aalto.cs.apluscourses.TestHelper;
+import javax.swing.JPanel;
 import org.junit.Test;
+import org.mockito.Spy;
 
 public class ReplConfigurationDialogTest extends TestHelper {
 
   @Test
   public void testCreationWithNoInputWorks() {
+    //  given & when
     ReplConfigurationDialog dialog = new ReplConfigurationDialog();
 
+    //  then
     assertTrue(dialog.isModal());
     assertFalse(dialog.isResizable());
     assertEquals("Custom title is set for the dialog.",
@@ -51,19 +58,49 @@ public class ReplConfigurationDialogTest extends TestHelper {
   }
 
   @Test
-  public void testReplaceReplConfigurationFormWithIn() {
+  public void testReplaceReplConfigurationFormWithInValidJPanelFormWorks() {
+    //  given
+    ReplConfigurationForm replConfigurationForm = getDummyReplConfigurationForm();
+    JPanel jpanelForm = new JPanel();
+    jpanelForm.add(replConfigurationForm);
+    ReplConfigurationDialog replConfigurationDialog = new ReplConfigurationDialog(
+        getDummyReplConfigurationForm());
 
+    //  when
+    replConfigurationDialog.replaceReplConfigurationFormWithIn(replConfigurationForm, jpanelForm);
+
+    //  then
+    assertSame("In the dialog configuration form gets properly replaced in the panel ",
+        replConfigurationForm.getContentPane(), jpanelForm.getComponent(0));
+  }
+
+  @Test
+  public void testReplaceReplConfigurationFormWithInEmptyJPanelFormWorks() {
+    //  given
+    ReplConfigurationForm replConfigurationForm = getDummyReplConfigurationForm();
+    JPanel jpanelForm = new JPanel();
+    ReplConfigurationDialog replConfigurationDialog = new ReplConfigurationDialog(
+        getDummyReplConfigurationForm());
+
+    //  when
+    replConfigurationDialog.replaceReplConfigurationFormWithIn(replConfigurationForm, jpanelForm);
+
+    //  then
+    assertSame("In the dialog configuration form gets properly added to the panel",
+        replConfigurationForm.getContentPane(), jpanelForm.getComponent(0));
   }
 
   @Test
   public void testOnOk() {
-    ReplConfigurationDialog replConfigurationDialog = new ReplConfigurationDialog();
-    ReplConfigurationForm replConfigurationFormSpy = spy(
-        replConfigurationDialog.getReplConfigurationForm());
-    doNothing().when(replConfigurationFormSpy).updateModel();
+    //  given
+    ReplConfigurationForm replConfigurationForm = getDummyReplConfigurationForm();
+    ReplConfigurationForm spyForm = spy(replConfigurationForm);
+    ReplConfigurationDialog dialog = new ReplConfigurationDialog(spyForm);
 
-    replConfigurationDialog.onOk();
+    //  when
+    dialog.onOk();
 
-//    verify(replConfigurationDialog.getReplConfigurationForm(), times(1)).updateModel();
+    //  then
+    verify(spyForm, times(1)).updateModel();
   }
 }

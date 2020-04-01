@@ -22,9 +22,9 @@ public class ReplConfigurationFormModel {
   /**
    * Creates a model for {@link ReplConfigurationForm}.
    *
-   * @param project a {@link Project} to extract {@link Module}s from
+   * @param project                a {@link Project} to extract {@link Module}s from
    * @param moduleWorkingDirectory a path to the workDir of the {@link Module} in focus
-   * @param targetModuleName a {@link String} name of the {@link Module} in focus
+   * @param targetModuleName       a {@link String} name of the {@link Module} in focus
    */
   public ReplConfigurationFormModel(
       Project project,
@@ -48,8 +48,8 @@ public class ReplConfigurationFormModel {
     return Arrays.stream(modules)
         .filter(module -> {
           String name = module.getModuleTypeName();
-//        Scala modules are of a "JAVA_MODULE" type,
-//        so it the way to distinct them from SBT-built ones.
+          //  Scala modules are of a "JAVA_MODULE" type,
+          //  so it the way to distinct them from SBT-built ones.
           return name != null && name.equals("JAVA_MODULE");
         })
         .map(Module::getName)

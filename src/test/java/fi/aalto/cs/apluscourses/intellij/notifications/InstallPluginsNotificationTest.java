@@ -3,11 +3,11 @@ package fi.aalto.cs.apluscourses.intellij.notifications;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
-import fi.aalto.cs.apluscourses.PluginsTestHelper;
+import fi.aalto.cs.apluscourses.TestHelper;
 import java.util.List;
 import org.junit.Test;
 
-public class InstallPluginsNotificationTest extends PluginsTestHelper {
+public class InstallPluginsNotificationTest extends TestHelper {
 
   @Test
   public void testInstallPluginsNotification() {

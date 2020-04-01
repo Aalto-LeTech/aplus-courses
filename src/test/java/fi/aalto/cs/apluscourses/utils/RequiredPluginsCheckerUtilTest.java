@@ -3,7 +3,7 @@ package fi.aalto.cs.apluscourses.utils;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.extensions.PluginId;
-import fi.aalto.cs.apluscourses.PluginsTestHelper;
+import fi.aalto.cs.apluscourses.TestHelper;
 import fi.aalto.cs.apluscourses.intellij.utils.RequiredPluginsCheckerUtil;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import org.junit.Test;
 
-public class RequiredPluginsCheckerUtilTest extends PluginsTestHelper {
+public class RequiredPluginsCheckerUtilTest extends TestHelper {
 
   public static final String THE_RESULTING_DATA_STRUCTURE_IS_OF_A_PROPER_LENGTH =
       "The resulting data structure is of a proper length.";
