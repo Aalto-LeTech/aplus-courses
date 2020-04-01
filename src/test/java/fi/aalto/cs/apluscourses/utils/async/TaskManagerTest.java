@@ -11,7 +11,6 @@ import org.junit.Test;
 
 public class TaskManagerTest {
 
-  @SuppressWarnings("unchecked")
   @Test
   public void testDefaultImplementationOfAllWithDelayTaskManager() {
     Runnable runnable1 = mock(Runnable.class);
@@ -40,7 +39,6 @@ public class TaskManagerTest {
     verifyNoMoreInteractions(runnable3);
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   public void testDefaultImplementationOfAllWithImmediateTaskManager() {
     Runnable runnable1 = mock(Runnable.class);
