@@ -78,6 +78,10 @@ public class ReplConfigurationForm extends JPanel {
     model.setModuleWorkingDirectory(workingDirectoryField.getText());
   }
 
+  public void cancelReplStart() {
+    model.setStartRepl(false);
+  }
+
   public JPanel getContentPane() {
     return contentPane;
   }

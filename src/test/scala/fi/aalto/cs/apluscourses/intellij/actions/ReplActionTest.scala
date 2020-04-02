@@ -1,24 +1,22 @@
+package fi.aalto.cs.apluscourses.intellij.actions
 
-import com.intellij.execution.configurations.ConfigurationTypeUtil
-import com.intellij.ide.DataManager
+
 import com.intellij.mock.MockVirtualFile.{dir, file}
-import com.intellij.openapi.actionSystem.{AnAction, AnActionEvent, Presentation}
-import fi.aalto.cs.apluscourses.TestHelper
-import fi.aalto.cs.apluscourses.intellij.actions.ReplAction
+import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import fi.aalto.cs.apluscourses.intellij.TestHelperScala
 import fi.aalto.cs.apluscourses.presentation.ReplConfigurationFormModel
-import org.jetbrains.plugins.scala.console.configuration.{ScalaConsoleConfigurationType, ScalaConsoleRunConfiguration, ScalaConsoleRunConfigurationFactory}
 import org.junit.Assert._
 import org.junit.Test
 import org.mockito.Mockito.{spy, times, verify}
 
-class ReplActionTest extends TestHelper {
+class ReplActionTest extends BasePlatformTestCase with TestHelperScala {
 
   @Test
-  def testSetCustomConfigurationFieldsWithDoNotShowReplFlagWorks(): Unit = {
+  def testSetConfigurationConditionallyWithDoNotShowReplFlagWorks(): Unit = {
     val project = getProject
     val module = getModule
     val configuration = getConfiguration
-    val replTitle = s"Scala REPL for module: ${module.getName}"
+    val replTitle = s"REPL in ${module.getName}"
     val action = new ReplAction
     val moduleWorkDir = action.getModuleWorkDir(module)
 
@@ -41,8 +39,29 @@ class ReplActionTest extends TestHelper {
     //  given
     val configuration = getConfiguration
     val module = getModule
-    val moduleWorkDir = "/tmp/unitTest_adjustRunConfigurationSettings"
-    val replTitle = s"Scala REPL for module: ${module.getName}"
+    val replTitle = s"REPL in ${module.getName}"
+    val action = new ReplAction
+    val moduleWorkDir = action.getModuleWorkDir(module)
+
+    //  when
+    action.setCustomConfigurationFields(configuration, moduleWorkDir, module.getName, module)
+
+    //  then
+    assertTrue("REPL's (configuration) working directory has been properly set",
+      configuration.getWorkingDirectory.contains(moduleWorkDir))
+    assertEquals("REPL's (configuration) title has been properly set",
+      replTitle, configuration.getName)
+    assertSame("REPL's (configuration) working Module has been properly set",
+      module, configuration.getModules.head)
+  }
+
+  @Test
+  def testSetCustomConfigurationFieldsWithMixedWorkDirModuleInputWorks(): Unit = {
+    //  given
+    val configuration = getConfiguration
+    val module = getModule
+    val moduleWorkDir = "/fakeWorkDir"
+    val replTitle = s"REPL in <?>"
     val action = new ReplAction
 
     //  when
@@ -58,13 +77,24 @@ class ReplActionTest extends TestHelper {
   }
 
   @Test
-  def testGetModuleWorkDirWithValidModuleWorks(): Unit = {
-    val modulePathPart = "/tmp/unitTest_getModuleWorkDirWithValidModuleWorks"
+  def testSetCustomConfigurationFieldsWithMixedModuleWorkDirInputWorks(): Unit = {
+    //  given
+    val configuration = getConfiguration
     val module = getModule
+    val moduleWorkDir = "/tmp/unitTest_setCustomConfigurationFieldsWithMixedModuleWorkDirInputWorks"
+    val replTitle = s"REPL in <?>"
     val action = new ReplAction
 
-    assertTrue("Correctly stripped path is returned",
-      action.getModuleWorkDir(module).contains(modulePathPart))
+    //  when
+    action.setCustomConfigurationFields(configuration, moduleWorkDir, module.getName, module)
+
+    //  then
+    assertTrue("REPL's (configuration) working directory has been properly set",
+      configuration.getWorkingDirectory.contains(moduleWorkDir))
+    assertEquals("REPL's (configuration) title has been properly set",
+      replTitle, configuration.getName)
+    assertSame("REPL's (configuration) working Module has been properly set",
+      module, configuration.getModules.head)
   }
 
   @Test
@@ -108,18 +138,5 @@ class ReplActionTest extends TestHelper {
     verify(spyAction, times(1)).customDoRunAction(actionEvent)
   }
 
-  //  this is copied from: https://github.com/JetBrains/intellij-community/blob/5dff73ead7da6e5f4d40a037958c74c9764bdb17/java/compiler/tests/com/intellij/compiler/artifacts/ui/ArtifactEditorActionTestCase.java#L45-L49
-  private def createActionEvent(action: AnAction) = {
-    val presentation = new Presentation
-    presentation.copyFrom(action.getTemplatePresentation)
-    AnActionEvent.createFromAnAction(action, null, "", DataManager.getInstance.getDataContext(null))
-  }
-
-  private def getConfiguration: ScalaConsoleRunConfiguration = {
-    val project = getProject
-    val configurationType = ConfigurationTypeUtil
-      .findConfigurationType(classOf[ScalaConsoleConfigurationType])
-    new ScalaConsoleRunConfigurationFactory(configurationType)
-      .createTemplateConfiguration(project).asInstanceOf[ScalaConsoleRunConfiguration]
-  }
+  def getConfiguration = super.getConfiguration(getProject)
 }

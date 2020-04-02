@@ -112,6 +112,7 @@ public abstract class TestHelper extends BasePlatformTestCase {
    *
    * @return the created {@link ReplConfigurationFormModel}
    */
+  @NotNull
   public ReplConfigurationFormModel getDummyReplConfigurationFormModel() {
     Project project = getProject();
     String workDir = project.getProjectFilePath();
@@ -125,6 +126,7 @@ public abstract class TestHelper extends BasePlatformTestCase {
    *
    * @return the created {@link ReplConfigurationForm}
    */
+  @NotNull
   public ReplConfigurationForm getDummyReplConfigurationForm() {
     return new ReplConfigurationForm(getDummyReplConfigurationFormModel());
   }

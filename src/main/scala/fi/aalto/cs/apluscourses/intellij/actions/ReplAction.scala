@@ -5,6 +5,7 @@ import com.intellij.openapi.actionSystem.{AnActionEvent, CommonDataKeys}
 import com.intellij.openapi.module.{Module, ModuleManager, ModuleUtilCore}
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import fi.aalto.cs.apluscourses.intellij.utils.CancelReplStartException
 import fi.aalto.cs.apluscourses.presentation.ReplConfigurationFormModel
 import fi.aalto.cs.apluscourses.ui.repl.{ReplConfigurationDialog, ReplConfigurationForm}
 import org.jetbrains.annotations.{NotNull, Nullable}
@@ -35,7 +36,11 @@ class ReplAction extends RunConsoleAction {
                                    @NotNull module: Module): Unit = {
     configuration.setWorkingDirectory(workDir)
     configuration.setModule(module)
-    configuration.setName("Scala REPL for module: " + moduleName)
+    if (getModuleWorkDir(module).equals(workDir)) {
+      configuration.setName("REPL in " + moduleName)
+    } else {
+      configuration.setName("REPL in <?>")
+    }
   }
 
   def setConfigurationConditionally(@NotNull project: Project,
@@ -46,6 +51,10 @@ class ReplAction extends RunConsoleAction {
         getModuleWorkDir(module), module.getName)
 
       createAndShowReplConfigurationDialog(configModel)
+
+      if (!configModel.isStartRepl) {
+        throw new CancelReplStartException
+      }
 
       val changedModuleName = configModel.getTargetModuleName
       val changedModule = ModuleManager.getInstance(project).findModuleByName(changedModuleName)
@@ -89,11 +98,15 @@ class ReplAction extends RunConsoleAction {
     //  choose the configuration to run based on the condition if this a new configuration of not
     val setting = settings.headOption.getOrElse {
       val factory = configurationType.getConfigurationFactories.apply(0)
-      runManagerEx.createConfiguration(s"Scala REPL for module: ${module.getName}", factory)
+      runManagerEx.createConfiguration(s"REPL in ${module.getName}", factory)
     }
 
     val configuration = setting.getConfiguration.asInstanceOf[ScalaConsoleRunConfiguration]
-    setConfigurationConditionally(project, module, configuration)
+    try {
+      setConfigurationConditionally(project, module, configuration)
+    } catch {
+      case _: CancelReplStartException => return
+    }
 
     RunConsoleAction.runExisting(setting, runManagerEx, project)
   }

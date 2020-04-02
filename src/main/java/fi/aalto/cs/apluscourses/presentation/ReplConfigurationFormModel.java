@@ -15,9 +15,10 @@ public class ReplConfigurationFormModel {
   private String moduleWorkingDirectory;
   private String targetModuleName;
   private List<String> moduleNames;
+  public boolean startRepl = true;
 
   //todo this goes into course settings once they exist
-  public static boolean showREPLConfigWindow = true;
+  public static boolean showREPLConfigWindow = false;
 
   /**
    * Creates a model for {@link ReplConfigurationForm}.
@@ -56,18 +57,6 @@ public class ReplConfigurationFormModel {
         .collect(Collectors.toList());
   }
 
-  public List<String> getModuleNames() {
-    return moduleNames;
-  }
-
-  public void setModuleNames(List<String> moduleNames) {
-    this.moduleNames = moduleNames;
-  }
-
-  public Project getProject() {
-    return project;
-  }
-
   /**
    * Method additionally to setting a {@link Project} updates the list of affiliated {@link Module}
    * names.
@@ -90,6 +79,22 @@ public class ReplConfigurationFormModel {
   @NotNull
   private Module[] getModules(@NotNull Project project) {
     return ModuleManager.getInstance(project).getModules();
+  }
+
+  public List<String> getModuleNames() {
+    return moduleNames;
+  }
+
+  public Project getProject() {
+    return project;
+  }
+
+  public boolean isStartRepl() {
+    return startRepl;
+  }
+
+  public void setStartRepl(boolean startRepl) {
+    this.startRepl = startRepl;
   }
 
   public String getModuleWorkingDirectory() {

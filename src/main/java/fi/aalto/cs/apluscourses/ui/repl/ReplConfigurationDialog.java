@@ -72,6 +72,7 @@ public class ReplConfigurationDialog extends DialogBaseHelper {
 
   @Override
   public void onCancel() {
+    replConfigurationForm.cancelReplStart();
     super.onCancel();
   }
 
