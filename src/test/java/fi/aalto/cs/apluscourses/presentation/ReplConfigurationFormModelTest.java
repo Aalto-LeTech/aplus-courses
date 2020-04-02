@@ -3,11 +3,12 @@ package fi.aalto.cs.apluscourses.presentation;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import fi.aalto.cs.apluscourses.TestHelper;
 import java.util.List;
 import org.junit.Test;
 
-public class ReplConfigurationFormModelTest extends TestHelper {
+public class ReplConfigurationFormModelTest extends BasePlatformTestCase implements TestHelper {
 
   @Test
   public void testGetScalaModuleNamesWithNonJavaModuleReturnsEmpty() {
@@ -29,7 +30,7 @@ public class ReplConfigurationFormModelTest extends TestHelper {
     //  Default project has only one module called:
     String moduleName = "light_idea_test_case";
     Module[] modules = ModuleManager.getInstance(project).getModules();
-    makeFirstPluginScalaModule(modules);
+    TestHelper.makeFirstPluginScalaModule(modules);
 
     //  when
     List<String> moduleNames = ReplConfigurationFormModel.getScalaModuleNames(modules);

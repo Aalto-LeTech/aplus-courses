@@ -138,5 +138,5 @@ class ReplActionTest extends BasePlatformTestCase with TestHelperScala {
     verify(spyAction, times(1)).customDoRunAction(actionEvent)
   }
 
-  def getConfiguration = super.getConfiguration(getProject)
+  private def getConfiguration = super.getConfiguration(getProject)
 }

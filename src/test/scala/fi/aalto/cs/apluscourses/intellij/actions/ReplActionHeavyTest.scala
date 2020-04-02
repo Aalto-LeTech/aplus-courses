@@ -31,9 +31,9 @@ class ReplActionHeavyTest extends HeavyPlatformTestCase with TestHelperScala {
       module, configuration.getModules.head)
   }
 
-  def getConfiguration = super.getConfiguration(getProject)
+  private def getConfiguration = super.getConfiguration(getProject)
 
-  def getModuleManager = super.getModuleManager(getProject)
+  private def getModuleManager = super.getModuleManager(getProject)
 
-  def createAndAddModule(path: String, id: String): Unit = super.createAndAddModule(getProject, path, id)
+  private def createAndAddModule(path: String, id: String): Unit = super.createAndAddModule(getProject, path, id)
 }

@@ -1,8 +1,11 @@
 package fi.aalto.cs.apluscourses.utils;
 
+import static fi.aalto.cs.apluscourses.TestHelper.getDummyPluginsListOfTwo;
+
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.extensions.PluginId;
+import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import fi.aalto.cs.apluscourses.TestHelper;
 import fi.aalto.cs.apluscourses.intellij.utils.RequiredPluginsCheckerUtil;
 import java.util.ArrayList;
@@ -11,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import org.junit.Test;
 
-public class RequiredPluginsCheckerUtilTest extends TestHelper {
+public class RequiredPluginsCheckerUtilTest extends BasePlatformTestCase implements TestHelper {
 
   public static final String THE_RESULTING_DATA_STRUCTURE_IS_OF_A_PROPER_LENGTH =
       "The resulting data structure is of a proper length.";

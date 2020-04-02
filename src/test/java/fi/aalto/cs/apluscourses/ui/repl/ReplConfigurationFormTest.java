@@ -2,11 +2,13 @@ package fi.aalto.cs.apluscourses.ui.repl;
 
 import static org.junit.Assert.assertNotEquals;
 
+import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import fi.aalto.cs.apluscourses.TestHelper;
 import fi.aalto.cs.apluscourses.presentation.ReplConfigurationFormModel;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
-public class ReplConfigurationFormTest extends TestHelper {
+public class ReplConfigurationFormTest extends BasePlatformTestCase implements TestHelper {
 
   @Test
   public void testFormCreationWithValidInputWorks() {
@@ -49,5 +51,10 @@ public class ReplConfigurationFormTest extends TestHelper {
         updatedWorkDir, model.getModuleWorkingDirectory());
     assertEquals("Presentation model's target (selected) module names gets properly updated.",
         fakeModuleName, model.getTargetModuleName());
+  }
+
+  @NotNull
+  private ReplConfigurationFormModel getDummyReplConfigurationFormModel() {
+    return getDummyReplConfigurationFormModel(getProject());
   }
 }

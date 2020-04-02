@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
+import static fi.aalto.cs.apluscourses.TestHelper.getDummyPluginsListOfTwo;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -7,12 +8,14 @@ import static org.mockito.Mockito.verify;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.notification.Notification;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import fi.aalto.cs.apluscourses.TestHelper;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
-public class EnablePluginsNotificationActionTest extends TestHelper {
+public class EnablePluginsNotificationActionTest
+    extends BasePlatformTestCase implements TestHelper {
 
   @Test
   public void testActionPerformed() {

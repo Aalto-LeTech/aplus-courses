@@ -5,11 +5,13 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import fi.aalto.cs.apluscourses.TestHelper;
 import javax.swing.JPanel;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
-public class ReplConfigurationDialogTest extends TestHelper {
+public class ReplConfigurationDialogTest extends BasePlatformTestCase implements TestHelper {
 
   @Test
   public void testCreationWithNoInputWorks() {
@@ -97,5 +99,10 @@ public class ReplConfigurationDialogTest extends TestHelper {
 
     //  then
     verify(spyForm, times(1)).updateModel();
+  }
+
+  @NotNull
+  private ReplConfigurationForm getDummyReplConfigurationForm() {
+    return getDummyReplConfigurationForm(getProject());
   }
 }
