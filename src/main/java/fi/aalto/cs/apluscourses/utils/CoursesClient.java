@@ -222,5 +222,4 @@ public class CoursesClient {
       throw new UnexpectedResponseException(response, "Response is missing body", null);
     }
   }
-
 }

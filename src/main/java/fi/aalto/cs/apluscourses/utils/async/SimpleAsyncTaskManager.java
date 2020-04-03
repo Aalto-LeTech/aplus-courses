@@ -23,5 +23,4 @@ public class SimpleAsyncTaskManager implements TaskManager<Thread> {
       Thread.currentThread().interrupt();
     }
   }
-
 }
