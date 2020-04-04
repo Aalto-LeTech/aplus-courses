@@ -3,16 +3,19 @@ package fi.aalto.cs.apluscourses.intellij.model;
 import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.OrderRootType;
+import com.intellij.openapi.roots.impl.libraries.LibraryEx;
 import com.intellij.openapi.roots.libraries.LibraryProperties;
+import com.intellij.openapi.roots.libraries.LibraryTable;
 import com.intellij.openapi.roots.libraries.LibraryTablesRegistrar;
 import com.intellij.openapi.roots.libraries.PersistentLibraryKind;
 import fi.aalto.cs.apluscourses.model.Library;
+import java.nio.file.Paths;
 import java.util.Objects;
+import org.jetbrains.annotations.CalledWithWriteLock;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.plugins.scala.project.ScalaLibraryProperties;
-import org.jetbrains.plugins.scala.project.ScalaLibraryType$;
 
-public abstract class IntelliJLibrary extends Library {
+public abstract class IntelliJLibrary<
+    K extends PersistentLibraryKind<? extends LibraryProperties<S>>, S> extends Library {
 
   @NotNull
   protected final Project project;
@@ -32,16 +35,21 @@ public abstract class IntelliJLibrary extends Library {
     return project;
   }
 
+  @CalledWithWriteLock
   private void loadInternal() {
-    com.intellij.openapi.roots.libraries.Library.ModifiableModel modifiableModel =
-        LibraryTablesRegistrar.getInstance()
-            .getLibraryTable(getProject())
-            .createLibrary(getName())
-            .getModifiableModel();
+    LibraryTable.ModifiableModel libraryTable = LibraryTablesRegistrar.getInstance()
+        .getLibraryTable(getProject())
+        .getModifiableModel();
+    com.intellij.openapi.roots.libraries.Library.ModifiableModel library = libraryTable
+        .createLibrary(getName(), getLibraryKind())
+        .getModifiableModel();
     for (String uri : getUris()) {
-      modifiableModel.addRoot(uri, OrderRootType.CLASSES);
+      library.addRoot(uri, OrderRootType.CLASSES);
     }
-    modifiableModel.commit();
+    //noinspection unchecked
+    initializeLibraryProperties(((LibraryEx) library).getProperties());
+    library.commit();
+    libraryTable.commit();
   }
 
   @Override
@@ -49,5 +57,14 @@ public abstract class IntelliJLibrary extends Library {
     WriteAction.runAndWait(this::loadInternal);
   }
 
+  public String getPath() {
+    return Paths.get(getBasePath(), "lib", getName()).toString();
+  }
+
   protected abstract String[] getUris();
+
+  protected abstract K getLibraryKind();
+
+  @CalledWithWriteLock
+  protected abstract void initializeLibraryProperties(LibraryProperties<S> properties);
 }

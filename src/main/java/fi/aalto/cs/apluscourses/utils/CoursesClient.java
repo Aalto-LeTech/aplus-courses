@@ -1,12 +1,10 @@
 package fi.aalto.cs.apluscourses.utils;
 
 import fi.aalto.cs.apluscourses.model.UnexpectedResponseException;
-
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;

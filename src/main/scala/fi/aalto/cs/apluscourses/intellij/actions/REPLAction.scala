@@ -3,8 +3,7 @@ package fi.aalto.cs.apluscourses.intellij.actions
 import com.intellij.execution.{RunManager, RunManagerEx}
 import com.intellij.openapi.actionSystem.{AnActionEvent, CommonDataKeys}
 import com.intellij.openapi.module.{Module, ModuleUtilCore}
-import com.intellij.openapi.vfs.VirtualFile
-import org.jetbrains.annotations.{NotNull, Nullable}
+import org.jetbrains.annotations.NotNull
 import org.jetbrains.plugins.scala.console.actions.RunConsoleAction
 import org.jetbrains.plugins.scala.console.configuration.ScalaConsoleRunConfiguration
 

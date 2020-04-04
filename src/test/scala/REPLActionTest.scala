@@ -1,5 +1,4 @@
 import com.intellij.ide.DataManager
-import com.intellij.mock.MockVirtualFile.{dir, file}
 import com.intellij.openapi.actionSystem.{AnAction, AnActionEvent, Presentation}
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import fi.aalto.cs.apluscourses.intellij.actions.REPLAction
