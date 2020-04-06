@@ -8,7 +8,8 @@ import org.jetbrains.annotations.NotNull;
 public interface ModelFactory {
   Course createCourse(@NotNull String name,
                       @NotNull List<Module> modules,
-                      @NotNull Map<String, String> requiredPlugins);
+                      @NotNull Map<String, String> requiredPlugins,
+                      @NotNull Map<String, URL> resourceUrls);
 
   Module createModule(@NotNull String name, @NotNull URL url);
 }

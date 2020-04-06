@@ -71,8 +71,9 @@ public class ModelExtensions {
     @Override
     public Course createCourse(@NotNull String name,
                                @NotNull List<Module> modules,
-                               @NotNull Map<String, String> requiredPlugins) {
-      return new Course(name, modules, requiredPlugins);
+                               @NotNull Map<String, String> requiredPlugins,
+                               @NotNull Map<String, URL> resourceUrls) {
+      return new Course(name, modules, requiredPlugins, resourceUrls);
     }
 
     @Override
