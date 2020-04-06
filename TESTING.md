@@ -166,41 +166,51 @@ a manual testing manual. Marked with a github issue label "manual testing".
         <li>Open REPL by choosing a folder or a file within <em>GoodStuff</em> module <a href="https://confluence.jetbrains.com/pages/viewpage.action?pageId=53326891">(how-to)</a></li>
         <div>
           <h6>Part 2.1. REPL configuration dialog is shown, checkbox unchecked</h6>
-            <li>When the REPL configuration dialog, that looks like the following image <img src="images/%2392_REPL_configuration_dialog_initial.png" alt="REPL dialog" /> is shown, uncheck the "Don't show this window again" checkbox, click <em>OK</em>.</li>
-            <li>Ensure the REPL that looks like <img src="images/%2366_scala_REPL_workDir_and_classPath.png" alt="REPL" /> is shown</li>
+            <ol>
+            <li>When the REPL configuration dialog, that looks like the following image is shown, uncheck the "Don't show this window again" checkbox, click <em>OK</em>.<img src="images/%2392_REPL_configuration_dialog_initial.png" alt="REPL dialog" /></li>
+            <li>Ensure the REPL that looks like the next one is shown. <img src="images/%2366_scala_REPL_workDir_and_classPath.png" alt="REPL" style="max-width: 50;max-width: 56% !important;"/></li>
             <li>Close the REPL and start it again.</li>
             <li>Ensure the REPL configuration dialog is shown, click "Cancel".</li>
+            </ol>
         </div>
         <div>
           <h6>Part 2.2. REPL configuration dialog is shown, checkbox unchecked, valid changes</h6>
+            <ol>
             <li>When the REPL configuration dialog, that looks like previous image is shown, uncheck the "Don't show this window again" checkbox.</li>
             <li>Under "User classpath and SDK of module" change the module to be <em>"O1Library"</em>, also select <em>"O1Library"</em>'s files source as a "Working directory", click <em>OK</em>.</li>
-            <li>Ensure the REPL that looks like <img src="images/%2392_changed_module.png" alt="REPL" /> is shown, close the REPL.</li>             
+            <li>Ensure the REPL that looks like like the next one is shown, then close REPL. <img src="images/%2392_changed_module.png" alt="REPL" /></li>             
+            </ol>
         </div> 
         <div>
           <h6>Part 2.3. REPL configuration dialog is shown, checkbox unchecked, invalid changes</h6>
+            <ol>
             <li>When the REPL configuration dialog, that looks like previous image is shown, uncheck the "Don't show this window again" checkbox.</li>
             <li>Under "User classpath and SDK of module" change the module to be <em>"O1Library"</em>, also select <em>"GoodStuff"</em>'s files source as a "Working directory", click <em>OK</em>.</li>
-            <li>Ensure the REPL that looks like <img src="images/%2392_mixed_case_changed.png" alt="REPL" /> is shown, close the REPL.</li>             
+            <li>Ensure the REPL that looks like the next image is shown, close the REPL.<img src="images/%2392_mixed_case_changed.png" alt="REPL" /></li>
+            </ol>
         </div>
         <div>              
-          <h6>Part 2.3. REPL configuration dialog is cancelled</h6>
-          <li>Click <em>Cancel</em> when the REPL configuration dialog is shown and observe nothing happens</li>
+          <h6>Part 2.4. REPL configuration dialog is cancelled</h6>
+          <ol>
+          <li>Click <em>Cancel</em> when the REPL configuration dialog is shown and observe nothing happens.</li>
+          </ol>
          </div>               
         <div>
-          <h6>Part 2.4. REPL configuration dialog is shown, checkbox checked</h6>
-          <li>Click <em>OK</em> when the REPL configuration dialog, that looks like the one displayed is shown</li>
-          <li>Ensure proper REPL is started</li>
+          <h6>Part 2.5. REPL configuration dialog is shown, checkbox checked</h6>
+          <ol>
+          <li>Click <em>OK</em> when the REPL configuration dialog, that looks like the one displayed is shown.</li>
+          <li>Ensure proper REPL is started.</li>
           <li>Close the REPL and start it again.</li>
           <li>Ensure the no REPL configuration dialog is shown.</li>
+          </ol>
         </div>
-        <h6>After each sub-part (2.x)</h6>    
-        <li>When the console opens, check, that the name of the REPL contains the name of the <em>GoodStuff</em></li>
+        <h6>After each sub-part (2.x)</h6>
+        <li>When the console opens, check, that the name of the REPL contains the name of the <em>GoodStuff</em> (selected module or "&lt;?&gt;")</li>
         <li>Next, type into the REPL prompt: <i>sys.props("user.dir")</i>
         </li>
-        <li>Make sure, that the output directory is where the <em>GoodStuff</em> module resides</li>
+        <li>Make sure, that the output directory is where the <em>GoodStuff</em> (selected) module resides</li>
         <li>Next, type into the REPL prompt: <i>sys.props("java.class.path")</i></li>
-        <li>Make sure, that the output classpath contains the <em>GoodStuff</em> module, the complete result should look approximately like this:
+        <li>Make sure, that the output classpath contains the <em>GoodStuff</em> (selected) module, the complete result should look approximately like this:
         <img src="images/%2366_scala_REPL_workDir_and_classPath.png" alt="REPL" /><br/>
         </li>
       </ol>
