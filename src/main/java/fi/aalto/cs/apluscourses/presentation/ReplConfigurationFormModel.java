@@ -18,7 +18,7 @@ public class ReplConfigurationFormModel {
   public boolean startRepl = true;
 
   //todo this goes into course settings once they exist
-  public static boolean showREPLConfigWindow = false;
+  public static boolean showREPLConfigWindow = true;
 
   /**
    * Creates a model for {@link ReplConfigurationForm}.

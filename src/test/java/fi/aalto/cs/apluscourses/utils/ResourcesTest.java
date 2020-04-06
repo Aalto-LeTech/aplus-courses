@@ -81,4 +81,29 @@ public class ResourcesTest {
     }
     fail("getProperties() should throw an exception if the stream is null");
   }
+
+  @Test
+  public void testGetIcon() throws ResourceException {
+
+  }
+
+  @Test
+  public void testGetIconWithError() {
+
+  }
+
+  @Test
+  public void testGetIconWithNullStream() {
+    Resources res = new Resources(name -> null);
+    String resourceName = "null-stream-resource";
+
+    try {
+      res.getIcon(resourceName);
+    } catch (ResourceException ex) {
+      assertEquals("Exception should have the requested resource name.",
+          resourceName, ex.getResourceName());
+      return;
+    }
+    fail("getIcon() should throw an exception if the stream is null");
+  }
 }

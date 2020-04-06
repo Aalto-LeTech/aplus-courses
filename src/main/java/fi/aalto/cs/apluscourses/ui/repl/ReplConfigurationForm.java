@@ -43,8 +43,7 @@ public class ReplConfigurationForm extends JPanel {
    */
   public ReplConfigurationForm(@NotNull ReplConfigurationFormModel model) {
     this.model = model;
-    dontShowThisWindowCheckBox.setSelected(!showREPLConfigWindow);
-    dontShowThisWindowCheckBox.addActionListener(e -> showREPLConfigWindow = !showREPLConfigWindow);
+    dontShowThisWindowCheckBox.setSelected(showREPLConfigWindow);
 
     infoTextLabel.setText(INFOLABEL_TEXT);
 
@@ -73,9 +72,14 @@ public class ReplConfigurationForm extends JPanel {
     textField.addBrowseFolderListener(title, null, project, fileChooserDescriptor);
   }
 
+  /**
+   * This method updates the embedded {@link ReplConfigurationFormModel} with the current state of
+   * the {@link ReplConfigurationForm} build.
+   */
   public void updateModel() {
     model.setTargetModuleName(requireNonNull(moduleComboBox.getSelectedItem()).toString());
     model.setModuleWorkingDirectory(workingDirectoryField.getText());
+    showREPLConfigWindow = !dontShowThisWindowCheckBox.isSelected();
   }
 
   public void cancelReplStart() {

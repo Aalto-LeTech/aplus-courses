@@ -1,8 +1,12 @@
 package fi.aalto.cs.apluscourses.utils;
 
+import static javax.imageio.ImageIO.read;
+
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import javax.swing.ImageIcon;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -68,6 +72,24 @@ public class Resources {
       throw new ResourceException(resourceName, "The resource could not be found.", null);
     }
     return stream;
+  }
+
+  /**
+   * Returns an ImageIcon from a given path to file.
+   *
+   * @param resourceName Name of the resource.
+   * @return An {@link ImageIcon} created from the given resource.
+   * @throws ResourceException if the resource could not be found.
+   */
+  @NotNull
+  public ImageIcon getIcon(@NotNull String resourceName) throws ResourceException {
+    try {
+      InputStream stream = getStream(resourceName);
+      BufferedImage bufferedImage = read(stream);
+      return new ImageIcon(bufferedImage);
+    } catch (IOException ex) {
+      throw new ResourceException(resourceName, "Resource could not be parsed to icon.", ex);
+    }
   }
 
   /**
