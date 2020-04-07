@@ -23,7 +23,7 @@ public class ModuleComboBoxListRenderer extends SimpleListCellRenderer<String> {
       boolean selected, boolean hasFocus) {
     ImageIcon icon = null;
     try {
-      icon = Resources.DEFAULT.getIcon(iconPath);
+      icon = new ImageIcon(Resources.DEFAULT.getImage(iconPath));
     } catch (ResourceException ex) {
       logger.error("Could not load the icon resource from the path", ex);
     }

@@ -6,7 +6,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-import javax.swing.ImageIcon;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -75,21 +74,24 @@ public class Resources {
   }
 
   /**
-   * Returns an ImageIcon from a given path to file.
+   * Returns an image from a given path to file.
    *
    * @param resourceName Name of the resource.
-   * @return An {@link ImageIcon} created from the given resource.
+   * @return An {@link BufferedImage} created from the given resource.
    * @throws ResourceException if the resource could not be found.
    */
   @NotNull
-  public ImageIcon getIcon(@NotNull String resourceName) throws ResourceException {
-    try {
-      InputStream stream = getStream(resourceName);
-      BufferedImage bufferedImage = read(stream);
-      return new ImageIcon(bufferedImage);
+  public BufferedImage getImage(@NotNull String resourceName) throws ResourceException {
+    BufferedImage image;
+    try (InputStream stream = getStream(resourceName)) {
+      image = read(stream);
     } catch (IOException ex) {
-      throw new ResourceException(resourceName, "Resource could not be parsed to icon.", ex);
+      throw new ResourceException(resourceName, "Could not read an image resource.", ex);
     }
+    if (image == null) {
+      throw new ResourceException(resourceName, "Resource could not be parsed to image.", null);
+    }
+    return image;
   }
 
   /**
