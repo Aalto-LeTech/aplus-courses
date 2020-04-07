@@ -12,6 +12,9 @@ import org.json.JSONObject;
 public abstract class Module {
 
   public static final int ERROR = StateMonitor.ERROR;
+  public static final int UNLOADED = ERROR - 1;
+  public static final int UNINSTALLED = UNLOADED - 1;
+
   public static final int NOT_INSTALLED = StateMonitor.INITIAL;
   public static final int FETCHING = NOT_INSTALLED + 1;
   public static final int FETCHED = FETCHING + 1;
@@ -86,6 +89,12 @@ public abstract class Module {
   public abstract void fetch() throws IOException;
 
   public abstract void load() throws ModuleLoadException;
+
+  /**
+   * Checks the state of the module (for an example by looking at the file system) and updates
+   * #{@link Module#stateMonitor} to the correct state.
+   */
+  public abstract void updateState();
 
   protected void onStateChanged() {
     stateChanged.trigger();

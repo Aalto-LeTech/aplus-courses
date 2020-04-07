@@ -24,4 +24,20 @@ class IntelliJCourse extends Course {
   public Project getProject() {
     return project;
   }
+
+  /**
+   * Updates the states of the module objects when the given IntelliJ module is removed from the
+   * IntelliJ project of this course.
+   */
+  public void onModuleRemove(@NotNull Module module) {
+    module.stateMonitor.set(Module.UNLOADED);
+  }
+
+  /**
+   * Updates the states of the module objects, when the directory with the files of the given module
+   * are deleted.
+   */
+  public void onModuleFilesDeletion(@NotNull Module module) {
+    module.stateMonitor.set(Module.UNINSTALLED);
+  }
 }
