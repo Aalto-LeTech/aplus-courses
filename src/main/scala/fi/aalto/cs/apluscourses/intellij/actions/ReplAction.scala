@@ -86,7 +86,7 @@ class ReplAction extends RunConsoleAction {
     //  virtual file is working for both: files and folders
     val targetFileOrFolder = CommonDataKeys.VIRTUAL_FILE.getData(dataContext)
 
-    if (project == null || checkFileOrFolderIsNull(targetFileOrFolder)) return
+    if (project == null || checkFileOrFolderIsNull(targetFileOrFolder)) return // scalastyle:ignore
 
     //  get target module & workDir
     val module = ModuleUtilCore.findModuleForFile(targetFileOrFolder, project)
@@ -97,7 +97,7 @@ class ReplAction extends RunConsoleAction {
 
     //  choose the configuration to run based on the condition if this a new configuration of not
     val setting = settings.headOption.getOrElse {
-      val factory = configurationType.getConfigurationFactories.apply(0)
+      val factory = configurationType.getConfigurationFactories.head
       runManagerEx.createConfiguration(s"REPL in ${module.getName}", factory)
     }
 
@@ -105,7 +105,7 @@ class ReplAction extends RunConsoleAction {
     try {
       setConfigurationConditionally(project, module, configuration)
     } catch {
-      case _: CancelReplStartException => return
+      case _: CancelReplStartException => return // scalastyle:ignore
     }
 
     RunConsoleAction.runExisting(setting, runManagerEx, project)

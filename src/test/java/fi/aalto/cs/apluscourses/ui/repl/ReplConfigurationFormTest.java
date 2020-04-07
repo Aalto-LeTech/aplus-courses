@@ -1,7 +1,5 @@
 package fi.aalto.cs.apluscourses.ui.repl;
 
-import static org.junit.Assert.assertNotEquals;
-
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import fi.aalto.cs.apluscourses.TestHelper;
 import fi.aalto.cs.apluscourses.presentation.ReplConfigurationFormModel;
