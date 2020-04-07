@@ -4,7 +4,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.libraries.LibraryProperties;
 import com.intellij.openapi.roots.libraries.PersistentLibraryKind;
 import com.intellij.openapi.util.io.FileUtilRt;
-import fi.aalto.cs.apluscourses.utils.CommonUtil;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -25,7 +24,7 @@ public class ScalaSdk extends IntelliJLibrary<PersistentLibraryKind<ScalaLibrary
     ScalaLibraryPropertiesState> {
 
   private static final String URL = "https://scala-lang.org/files/archive/";
-  private static final String[] COMPILER_CLASSES = {
+  private static final String[] ALL_CLASSES = {
       "scala-compiler.jar",
       "scala-library.jar",
       "scala-reflect.jar"
@@ -68,9 +67,8 @@ public class ScalaSdk extends IntelliJLibrary<PersistentLibraryKind<ScalaLibrary
   private void extractZip(File file) throws IOException {
     String prefix = getFileName() + "/lib/";
     String destinationPath = getPath();
-    String[] jarFiles = CommonUtil.unionArrays(CLASSES, COMPILER_CLASSES, String[]::new);
     ZipFile zipFile = new ZipFile(file);
-    for (String jarFile : jarFiles) {
+    for (String jarFile : ALL_CLASSES) {
       zipFile.extractFile(prefix + jarFile, destinationPath, jarFile);
     }
   }
@@ -103,7 +101,7 @@ public class ScalaSdk extends IntelliJLibrary<PersistentLibraryKind<ScalaLibrary
   protected void initializeLibraryProperties(
       LibraryProperties<ScalaLibraryPropertiesState> properties) {
     properties.loadState(new ScalaLibraryPropertiesState(
-        ScalaLanguageLevel.findByVersion(scalaVersion).get(), getUris(COMPILER_CLASSES)));
+        ScalaLanguageLevel.findByVersion(scalaVersion).get(), getUris(ALL_CLASSES)));
   }
 }
 

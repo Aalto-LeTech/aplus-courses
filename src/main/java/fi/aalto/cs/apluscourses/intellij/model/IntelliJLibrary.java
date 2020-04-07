@@ -46,6 +46,7 @@ public abstract class IntelliJLibrary<
     for (String uri : getUris()) {
       library.addRoot(uri, OrderRootType.CLASSES);
     }
+    //HACK: this is the only way to access properties that I am aware of
     //noinspection unchecked
     initializeLibraryProperties(((LibraryEx) library).getProperties());
     library.commit();
