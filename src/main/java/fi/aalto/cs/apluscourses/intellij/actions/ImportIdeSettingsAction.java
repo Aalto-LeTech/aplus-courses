@@ -7,9 +7,9 @@ import com.intellij.openapi.application.ex.ApplicationEx;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
-import fi.aalto.cs.apluscourses.intellij.model.IdeSettingsImporter;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
+import fi.aalto.cs.apluscourses.intellij.utils.SettingsUtil;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.UnexpectedResponseException;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
@@ -50,7 +50,7 @@ public class ImportIdeSettingsAction extends AnAction implements DumbAware {
       return;
     }
     try {
-      IdeSettingsImporter.importFromUrl(ideSettingsUrl);
+      SettingsUtil.importIdeSettings(ideSettingsUrl);
       if (userWantsToRestart(e.getProject())) {
         restart();
       }
