@@ -97,7 +97,7 @@ public class ImportIdeSettingsActionTest {
   }
 
   @Test
-  public void testInformsCourseHasNoSettings() {
+  public void testInformsCourseHasNoIdeSettings() {
     Course course = new Course("no-ide-settings", Collections.emptyList(),
         Collections.emptyMap(), Collections.emptyMap());
     mainViewModel.courseViewModel.set(new CourseViewModel(course));
@@ -114,7 +114,8 @@ public class ImportIdeSettingsActionTest {
     assertThat("The user should be informed that the course has no custom IDE settings",
         dialogs.getLastInformationMessage(),
         containsString("does not provide custom IDE settings"));
-    assertThat("Information dialog contains course name", dialogs.getLastInformationMessage(),
+    assertThat("The information dialog contains the course name",
+        dialogs.getLastInformationMessage(),
         containsString("no-ide-settings"));
   }
 
@@ -160,9 +161,7 @@ public class ImportIdeSettingsActionTest {
     AtomicInteger importCallCount = new AtomicInteger(0);
     ImportIdeSettingsAction action = new ImportIdeSettingsAction(
         p -> mainViewModel,
-        url -> {
-          importCallCount.getAndIncrement();
-        },
+        url -> importCallCount.getAndIncrement(),
         dialogs,
         () -> { });
 
@@ -179,9 +178,7 @@ public class ImportIdeSettingsActionTest {
         p -> mainViewModel,
         url -> { },
         dialogs,
-        () -> {
-          restartCallCount.getAndIncrement();
-        });
+        restartCallCount::getAndIncrement);
 
     action.actionPerformed(anActionEvent);
 
