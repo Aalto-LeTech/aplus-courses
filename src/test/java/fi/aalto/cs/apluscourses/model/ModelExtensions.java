@@ -3,6 +3,8 @@ package fi.aalto.cs.apluscourses.model;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +43,7 @@ public class ModelExtensions {
      * @param url  The URL from which the module can be downloaded.
      */
     public TestModule(@NotNull String name, @NotNull URL url) {
-      super(name, url);
+      super(name, url, NOT_INSTALLED);
     }
 
     @NotNull
@@ -55,6 +57,12 @@ public class ModelExtensions {
       return Collections.emptyList();
     }
 
+    @NotNull
+    @Override
+    public Path getPath() {
+      return Paths.get(name);
+    }
+
     @Override
     public void fetch() throws IOException {
       // do nothing
@@ -62,11 +70,6 @@ public class ModelExtensions {
 
     @Override
     public void load() throws ComponentLoadException {
-      // do nothing
-    }
-
-    @Override
-    public void updateState() {
       // do nothing
     }
   }

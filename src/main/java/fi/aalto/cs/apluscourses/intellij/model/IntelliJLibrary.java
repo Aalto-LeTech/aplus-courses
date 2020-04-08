@@ -1,16 +1,13 @@
 package fi.aalto.cs.apluscourses.intellij.model;
 
 import com.intellij.openapi.application.WriteAction;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.OrderRootType;
 import com.intellij.openapi.roots.impl.libraries.LibraryEx;
 import com.intellij.openapi.roots.libraries.LibraryProperties;
 import com.intellij.openapi.roots.libraries.LibraryTable;
-import com.intellij.openapi.roots.libraries.LibraryTablesRegistrar;
 import com.intellij.openapi.roots.libraries.PersistentLibraryKind;
 import fi.aalto.cs.apluscourses.model.Library;
-import java.nio.file.Paths;
-import java.util.Objects;
+import java.nio.file.Path;
 import org.jetbrains.annotations.CalledWithWriteLock;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,28 +15,16 @@ public abstract class IntelliJLibrary<
     K extends PersistentLibraryKind<? extends LibraryProperties<S>>, S> extends Library {
 
   @NotNull
-  protected final Project project;
+  protected final APlusProject project;
 
-  public IntelliJLibrary(@NotNull String name, @NotNull Project project) {
-    super(name);
+  public IntelliJLibrary(@NotNull String name, @NotNull APlusProject project, int state) {
+    super(name, state);
     this.project = project;
-  }
-
-  @NotNull
-  protected String getBasePath() {
-    return Objects.requireNonNull(getProject().getBasePath());
-  }
-
-  @NotNull
-  public Project getProject() {
-    return project;
   }
 
   @CalledWithWriteLock
   private void loadInternal() {
-    LibraryTable.ModifiableModel libraryTable = LibraryTablesRegistrar.getInstance()
-        .getLibraryTable(getProject())
-        .getModifiableModel();
+    LibraryTable.ModifiableModel libraryTable = project.getLibraryTable().getModifiableModel();
     com.intellij.openapi.roots.libraries.Library.ModifiableModel library = libraryTable
         .createLibrary(getName(), getLibraryKind())
         .getModifiableModel();
@@ -58,8 +43,10 @@ public abstract class IntelliJLibrary<
     WriteAction.runAndWait(this::loadInternal);
   }
 
-  public String getPath() {
-    return Paths.get(getBasePath(), "lib", getName()).toString();
+  @NotNull
+  @Override
+  public Path getPath() {
+    return project.getLibraryPath(getName());
   }
 
   protected abstract String[] getUris();

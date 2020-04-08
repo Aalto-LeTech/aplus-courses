@@ -10,7 +10,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -205,11 +207,19 @@ public class Course implements ComponentSource {
 
   @NotNull
   @Override
-  public Component getComponent(@NotNull String componentName) throws NoSuchModuleException {
-    return modules
-        .stream()
-        .filter(module -> module.getName().equals(componentName))
+  public Component getComponent(@NotNull String componentName) throws NoSuchComponentException {
+    return Stream.concat(modules.stream(), libraries.stream())
+        .filter(component -> component.getName().equals(componentName))
         .findFirst()
-        .orElseThrow(() -> new NoSuchModuleException(componentName, null));
+        .orElseThrow(() -> new NoSuchComponentException(componentName, null));
+  }
+
+  @Nullable
+  @Override
+  public Component getComponentIfExists(@NotNull String componentName) {
+    return Stream.concat(modules.stream(), libraries.stream())
+        .filter(component -> component.getName().equals(componentName))
+        .findFirst()
+        .orElse(null);
   }
 }

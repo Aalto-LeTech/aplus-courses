@@ -42,8 +42,8 @@ public class ScalaSdk extends IntelliJLibrary<PersistentLibraryKind<ScalaLibrary
    * @param name Name that must match scala-sdk-0.0.0 pattern.
    * @param project The IntelliJ project.
    */
-  public ScalaSdk(@NotNull String name, @NotNull Project project) {
-    super(name, project);
+  public ScalaSdk(@NotNull String name, @NotNull APlusProject project, int state) {
+    super(name, project, state);
 
     scalaVersion = name.replace("scala-sdk-", "");
   }
@@ -66,7 +66,7 @@ public class ScalaSdk extends IntelliJLibrary<PersistentLibraryKind<ScalaLibrary
 
   private void extractZip(File file) throws IOException {
     String prefix = getFileName() + "/lib/";
-    String destinationPath = getPath();
+    String destinationPath = project.getBasePath().resolve(getPath()).toString();
     ZipFile zipFile = new ZipFile(file);
     for (String jarFile : ALL_CLASSES) {
       zipFile.extractFile(prefix + jarFile, destinationPath, jarFile);
@@ -83,9 +83,8 @@ public class ScalaSdk extends IntelliJLibrary<PersistentLibraryKind<ScalaLibrary
   }
 
   private String[] getUris(String[] roots) {
-    Path path = Paths.get(getPath());
     return Arrays.stream(roots)
-        .map(path::resolve)
+        .map(project.getBasePath().resolve(getPath())::resolve)
         .map(Path::toUri)
         .map(URI::toString)
         .toArray(String[]::new);

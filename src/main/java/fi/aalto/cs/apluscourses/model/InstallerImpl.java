@@ -72,7 +72,7 @@ public class InstallerImpl<T> implements Installer {
         initDependencies();
         load();
         waitForDependencies();
-      } catch (IOException | ComponentLoadException | NoSuchModuleException e) {
+      } catch (IOException | ComponentLoadException | NoSuchComponentException e) {
         logger.info("A module could not be installed", e);
         component.stateMonitor.set(Component.ERROR);
       }
@@ -111,7 +111,7 @@ public class InstallerImpl<T> implements Installer {
       }
     }
 
-    private void initDependencies() throws ComponentLoadException, NoSuchModuleException {
+    private void initDependencies() throws ComponentLoadException, NoSuchComponentException {
       if (dependencies != null) {
         return;
       }

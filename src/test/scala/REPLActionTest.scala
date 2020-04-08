@@ -21,7 +21,7 @@ class REPLActionTest extends BasePlatformTestCase {
     action.adjustRunConfigurationSettings(module, configuration)
 
     assertEquals("Customized title of the Scala REPL contains the name of the module started from", "Scala REPL for module: light_idea_test_case", configuration.getName)
-    assertTrue("Customized working directory is set to be a subFolder of '/tmp/'", configuration.getWorkingDirectory.contains("/tmp/unitTest_"))
+    assertTrue("Customized working directory is set to be a folder with a name like unitTest_*", configuration.getWorkingDirectory.contains("/unitTest_"))
     assertTrue("Configuration is triggered with the module is has been started from", configuration.getAllModules.contains(module))
   }
 

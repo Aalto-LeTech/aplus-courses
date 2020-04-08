@@ -6,8 +6,8 @@ import org.jetbrains.annotations.NotNull;
 
 public abstract class Library extends Component {
 
-  public Library(@NotNull String name) {
-    super(name);
+  public Library(@NotNull String name, int state) {
+    super(name, state);
   }
 
   @NotNull

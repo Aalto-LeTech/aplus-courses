@@ -53,7 +53,7 @@ public class InstallerTest {
 
   @Test
   public void testInstallDependencies()
-      throws IOException, ComponentLoadException, NoSuchModuleException {
+      throws IOException, ComponentLoadException, NoSuchComponentException {
     Module module1 = spy(new ModelExtensions.TestModule("dependentModule") {
       @NotNull
       @Override
@@ -102,7 +102,7 @@ public class InstallerTest {
   }
 
   @Test
-  public void testInstallMany() throws IOException, ComponentLoadException, NoSuchModuleException {
+  public void testInstallMany() throws IOException, ComponentLoadException, NoSuchComponentException {
     Module module1 = spy(new ModelExtensions.TestModule("module1"));
     Module module2 = spy(new ModelExtensions.TestModule("module2"));
 
@@ -173,18 +173,21 @@ public class InstallerTest {
   }
 
   @Test
-  public void testInstallUnknownDependency() throws ComponentLoadException {
+  public void testInstallUnknownDependency()
+      throws ComponentLoadException, NoSuchComponentException {
+    String nonExistentModuleName = "nonExistentModule";
+
     Module module = spy(new ModelExtensions.TestModule("unknownDepModule") {
       @NotNull
       @Override
       public List<String> getDependencies() {
-        return Collections.singletonList("nonExistentModule");
+        return Collections.singletonList(nonExistentModuleName);
       }
     });
 
-    ComponentSource componentSource = componentName -> {
-      throw new NoSuchModuleException(componentName, null);
-    };
+    ComponentSource componentSource = mock(ComponentSource.class);
+    when(componentSource.getComponent(nonExistentModuleName))
+        .thenThrow(new NoSuchComponentException(nonExistentModuleName, null));
 
     Installer installer =
         new InstallerImpl<>(componentSource, new SimpleAsyncTaskManager());
@@ -219,7 +222,7 @@ public class InstallerTest {
   }
 
   @Test
-  public void testInstallDependencyFails() throws NoSuchModuleException {
+  public void testInstallDependencyFails() throws NoSuchComponentException {
     Module dependentModule = spy(new ModelExtensions.TestModule("dependentModule") {
       @NotNull
       @Override
@@ -258,7 +261,7 @@ public class InstallerTest {
   }
 
   @Test
-  public void testInstallCircularDependency() throws NoSuchModuleException {
+  public void testInstallCircularDependency() throws NoSuchComponentException {
     Module moduleA = spy(new ModelExtensions.TestModule("moduleA") {
       @NotNull
       @Override

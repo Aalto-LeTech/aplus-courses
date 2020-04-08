@@ -3,6 +3,7 @@ package fi.aalto.cs.apluscourses.model;
 import fi.aalto.cs.apluscourses.utils.Event;
 import fi.aalto.cs.apluscourses.utils.StateMonitor;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,12 +21,13 @@ public abstract class Component {
   public static final int UNINSTALLED = UNLOADED - 1;
 
   public final Event stateChanged = new Event();
-  public final StateMonitor stateMonitor = new StateMonitor(this::onStateChanged);
+  public final StateMonitor stateMonitor;
   @NotNull
   protected final String name;
 
-  public Component(@NotNull String name) {
+  public Component(@NotNull String name, int state) {
     this.name = name;
+    this.stateMonitor  = new StateMonitor(state, this::onStateChanged);
   }
 
 
@@ -33,6 +35,9 @@ public abstract class Component {
   public String getName() {
     return name;
   }
+
+  @NotNull
+  public abstract Path getPath();
 
   public abstract void fetch() throws IOException;
 

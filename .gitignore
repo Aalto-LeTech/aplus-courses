@@ -139,18 +139,3 @@ gradle-app.setting
 ### The entire IntelliJ IDEA settings directory ###
 # Please note that this makes many of the rules above (created with gitignore.io) redundant.
 .idea/
-
-### Checkstyle settings (Google Java Style) a.k.a. google_checks.xml ###
-#
-# When developing on a Windows platform, Checkstyle Gradle plugin does not work with the
-# configuration used in this project unless google_checks.xml file is located in the project root.
-# However, since the license status of google_checks.xml file is somewhat vague, it should not be
-# included in the repository.
-#
-# Should anyone need this file, it can be downloaded here:
-#
-# https://github.com/checkstyle/checkstyle/blob/checkstyle-8.12/src/main/resources/google_checks.xml
-#
-# Please, note that the correct file is from the version 8.12 of Checkstyle, which works with the
-# current version of Checkstyle Gradle plugin.
-/google_checks.xml

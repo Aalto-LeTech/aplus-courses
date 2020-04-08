@@ -37,7 +37,7 @@ public class CourseTest {
   }
 
   @Test
-  public void testGetModule() throws MalformedURLException, NoSuchModuleException {
+  public void testGetModule() throws MalformedURLException, NoSuchComponentException {
     Module module1 = new ModelExtensions.TestModule("Test Module", new URL("https://example.com"));
     Module module2 = new ModelExtensions.TestModule("Awesome Module", new URL("https://slack.com"));
     Course course =
@@ -46,8 +46,8 @@ public class CourseTest {
         module2, course.getComponent("Awesome Module"));
   }
 
-  @Test(expected = NoSuchModuleException.class)
-  public void testGetModuleWithMissingModule() throws NoSuchModuleException {
+  @Test(expected = NoSuchComponentException.class)
+  public void testGetModuleWithMissingModule() throws NoSuchComponentException {
     Course course = new Course("Just some course", Collections.emptyList(), Collections.emptyList(),
         Collections.emptyMap());
     course.getComponent("Test Module");

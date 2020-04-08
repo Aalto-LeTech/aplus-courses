@@ -3,7 +3,6 @@ package fi.aalto.cs.apluscourses.intellij.model;
 import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.module.ModuleWithNameAlreadyExists;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtilRt;
 import fi.aalto.cs.apluscourses.model.ComponentLoadException;
 import fi.aalto.cs.apluscourses.model.Module;
@@ -14,6 +13,7 @@ import fi.aalto.cs.apluscourses.utils.DomUtil;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
@@ -27,7 +27,7 @@ import org.xml.sax.SAXException;
 class IntelliJModule extends Module {
 
   @NotNull
-  private final Project project;
+  private final APlusProject project;
 
   // XPath to the names of dependency modules in an *.iml file.
   // <module> is the root node, <component> is its child.  Dependency modules are those <orderEntry>
@@ -40,8 +40,8 @@ class IntelliJModule extends Module {
   private static final String LIBRARY_NAMES_XPATH =
       "/module/component/orderEntry[@type='library']/@name"; //NOSONAR
 
-  IntelliJModule(@NotNull String name, @NotNull URL url, @NotNull Project project) {
-    super(name, url);
+  IntelliJModule(@NotNull String name, @NotNull URL url, @NotNull APlusProject project, int state) {
+    super(name, url, state);
     this.project = project;
   }
 
@@ -69,6 +69,12 @@ class IntelliJModule extends Module {
     return getStringsFromXPath(LIBRARY_NAMES_XPATH);
   }
 
+  @NotNull
+  @Override
+  public Path getPath() {
+    return project.getModulePath(getName());
+  }
+
   @Override
   public void fetch() throws IOException {
     File tempZipFile = createTempFile();
@@ -85,37 +91,18 @@ class IntelliJModule extends Module {
     }
   }
 
-  @Override
-  public void updateState() {
-    /*
-     * Three cases to check for here:
-     *   1. The module is in the project, so its state should be INSTALLED.
-     *   2. The module is not in the project but the module files are present in the file system, so
-     *      its state should be FETCHED.
-     *   3. The module files aren't present in the file system (and by extension the module isn't in
-     *      the project), so its state should be NOT_INSTALLED.
-     */
-    if (ModuleManager.getInstance(project).findModuleByName(getName()) != null) {
-      stateMonitor.set(Module.INSTALLED);
-    } else if (new File(getFullPath()).isDirectory()) {
-      // We assume, that if the project directory contains a directory with the path of a module,
-      // then the module files are present. Of course, it's possible that some relevant module files
-      // have been removed from the directory.
-      stateMonitor.set(Module.FETCHED);
-    } else {
-      stateMonitor.set(Module.NOT_INSTALLED);
-    }
-  }
-
   @NotNull
   private File createTempFile() throws IOException {
     return FileUtilRt.createTempFile(getName(), ".zip");
   }
 
   private void extractZip(File file) throws IOException {
+    String fullParentPath = project.getBasePath().resolve(getPath())
+        .getParent().toString();
+
     // ZIP may contain other dirs (typically, dependency modules) but we only extract the files that
     // belongs to this module.
-    new DirAwareZipFile(file).extractDir(getName(), getFullParentPath());
+    new DirAwareZipFile(file).extractDir(getName(), fullParentPath);
   }
 
 
@@ -129,32 +116,12 @@ class IntelliJModule extends Module {
   }
 
   @NotNull
-  private String getBasePath() {
-    return Objects.requireNonNull(getProject().getBasePath());
-  }
-
-  @NotNull
-  private String getFullPath() {
-    return Paths.get(getBasePath(), getRelativePath()).toString();
-  }
-
-  @NotNull
-  private String getFullParentPath() {
-    return Paths.get(getFullPath()).getParent().toString();
-  }
-
-  @NotNull
   private File getImlFile() {
-    return Paths.get(getFullPath(), getName() + ".iml").toFile();
+    return project.getBasePath().resolve(getPath()).resolve(getName() + ".iml").toFile();
   }
 
   @NotNull
-  public String getRelativePath() {
-    return getName();
-  }
-
-  @NotNull
-  public Project getProject() {
+  public APlusProject getProject() {
     return project;
   }
 
@@ -162,8 +129,8 @@ class IntelliJModule extends Module {
     private final ModuleManager moduleManager;
     private final String imlFileName;
 
-    public Loader(Project project, @NotNull File imlFile) {
-      moduleManager = ModuleManager.getInstance(project);
+    public Loader(APlusProject project, @NotNull File imlFile) {
+      moduleManager = project.getModuleManager();
       imlFileName = imlFile.toString();
     }
 
