@@ -5,7 +5,6 @@ import com.intellij.openapi.actionSystem.{AnActionEvent, CommonDataKeys}
 import com.intellij.openapi.module.{Module, ModuleManager, ModuleUtilCore}
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import fi.aalto.cs.apluscourses.intellij.utils.CancelReplStartException
 import fi.aalto.cs.apluscourses.presentation.ReplConfigurationFormModel
 import fi.aalto.cs.apluscourses.ui.repl.{ReplConfigurationDialog, ReplConfigurationForm}
 import org.jetbrains.annotations.{NotNull, Nullable}
@@ -43,25 +42,30 @@ class ReplAction extends RunConsoleAction {
     }
   }
 
+  /**
+   * Sets configuration fields for the given configuration and returns true. Returns false if the REPL start is
+   * cancelled (i.e. user selects "Cancel" in the REPL configuration dialog).
+   */
   def setConfigurationConditionally(@NotNull project: Project,
                                     @NotNull module: Module,
-                                    @NotNull configuration: ScalaConsoleRunConfiguration): Unit = {
+                                    @NotNull configuration: ScalaConsoleRunConfiguration): Boolean = {
     if (ReplConfigurationFormModel.showREPLConfigWindow) {
-      val configModel = new ReplConfigurationFormModel(project,
-        getModuleWorkDir(module), module.getName)
+      val configModel = new ReplConfigurationFormModel(project, getModuleWorkDir(module), module.getName)
 
       createAndShowReplConfigurationDialog(configModel)
 
       if (!configModel.isStartRepl) {
-        throw new CancelReplStartException
+        false
+      } else {
+        val changedModuleName = configModel.getTargetModuleName
+        val changedModule = ModuleManager.getInstance(project).findModuleByName(changedModuleName)
+        val changedWorkDir = configModel.getModuleWorkingDirectory
+        setCustomConfigurationFields(configuration, changedWorkDir, changedModuleName, changedModule)
+        true
       }
-
-      val changedModuleName = configModel.getTargetModuleName
-      val changedModule = ModuleManager.getInstance(project).findModuleByName(changedModuleName)
-      val changedWorkDir = configModel.getModuleWorkingDirectory
-      setCustomConfigurationFields(configuration, changedWorkDir, changedModuleName, changedModule)
     } else {
       setCustomConfigurationFields(configuration, getModuleWorkDir(module), module.getName, module)
+      true
     }
   }
 
@@ -102,12 +106,8 @@ class ReplAction extends RunConsoleAction {
     }
 
     val configuration = setting.getConfiguration.asInstanceOf[ScalaConsoleRunConfiguration]
-    try {
-      setConfigurationConditionally(project, module, configuration)
-    } catch {
-      case _: CancelReplStartException => return // scalastyle:ignore
+    if (setConfigurationConditionally(project, module, configuration)) {
+      RunConsoleAction.runExisting(setting, runManagerEx, project)
     }
-
-    RunConsoleAction.runExisting(setting, runManagerEx, project)
   }
 }
