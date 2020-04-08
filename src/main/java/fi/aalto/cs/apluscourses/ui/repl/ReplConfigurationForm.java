@@ -25,7 +25,7 @@ public class ReplConfigurationForm extends JPanel {
   private ReplConfigurationFormModel model;
 
   private TextFieldWithBrowseButton workingDirectoryField;
-  private ComboBox moduleComboBox;
+  private ComboBox<String> moduleComboBox;
   private JCheckBox dontShowThisWindowCheckBox;
   private JPanel contentPane;
   private JLabel infoTextLabel;
@@ -47,7 +47,7 @@ public class ReplConfigurationForm extends JPanel {
 
     infoTextLabel.setText(INFOLABEL_TEXT);
 
-    addFileChooser("Choose Working Directory", workingDirectoryField, model.getProject());
+    addFileChooser(workingDirectoryField, model.getProject());
     workingDirectoryField.setText(model.getModuleWorkingDirectory());
 
     model.getModuleNames().forEach(moduleName -> moduleComboBox.addItem(moduleName));
@@ -57,7 +57,6 @@ public class ReplConfigurationForm extends JPanel {
   }
 
   private void addFileChooser(
-      @NotNull final String title,
       @NotNull final TextFieldWithBrowseButton textField,
       @NotNull final Project project) {
     final FileChooserDescriptor fileChooserDescriptor = new FileChooserDescriptor(
@@ -68,8 +67,9 @@ public class ReplConfigurationForm extends JPanel {
         return super.isFileVisible(file, showHiddenFiles) && file.isDirectory();
       }
     };
-    fileChooserDescriptor.setTitle(title);
-    textField.addBrowseFolderListener(title, null, project, fileChooserDescriptor);
+    fileChooserDescriptor.setTitle("Choose Working Directory");
+    textField.addBrowseFolderListener("Choose Working Directory", null,
+        project, fileChooserDescriptor);
   }
 
   /**
@@ -102,36 +102,15 @@ public class ReplConfigurationForm extends JPanel {
     return workingDirectoryField;
   }
 
-  public void setWorkingDirectoryField(
-      TextFieldWithBrowseButton workingDirectoryField) {
-    this.workingDirectoryField = workingDirectoryField;
-  }
-
-  public ComboBox getModuleComboBox() {
+  public ComboBox<String> getModuleComboBox() {
     return moduleComboBox;
-  }
-
-  public void setModuleComboBox(ComboBox moduleComboBox) {
-    this.moduleComboBox = moduleComboBox;
   }
 
   public JCheckBox getDontShowThisWindowCheckBox() {
     return dontShowThisWindowCheckBox;
   }
 
-  public void setDontShowThisWindowCheckBox(JCheckBox dontShowThisWindowCheckBox) {
-    this.dontShowThisWindowCheckBox = dontShowThisWindowCheckBox;
-  }
-
-  public void setContentPane(JPanel contentPane) {
-    this.contentPane = contentPane;
-  }
-
   public JLabel getInfoTextLabel() {
     return infoTextLabel;
-  }
-
-  public void setInfoTextLabel(JLabel infoTextLabel) {
-    this.infoTextLabel = infoTextLabel;
   }
 }
