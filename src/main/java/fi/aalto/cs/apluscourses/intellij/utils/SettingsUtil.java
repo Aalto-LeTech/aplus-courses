@@ -64,41 +64,4 @@ public class SettingsUtil {
     importIdeSettings(tempFile);
   }
 
-  /**
-   * Extracts the files from the .idea directory of the given ZIP file to the .idea directory of the
-   * given project, after which the project is reloaded.
-   * @param project     The project to which the given settings are imported.
-   * @param settingsZip A ZIP file containing a ".idea" directory which contains the desired project
-   *                    settings.
-   * @throws IOException If an IO error occurs.
-   */
-  public static void importProjectSettings(@NotNull Project project, @NotNull File settingsZip)
-      throws IOException {
-    Path settingsPath = Paths.get(project.getBasePath(), Project.DIRECTORY_STORE_FOLDER);
-    ZipFile zipFile = new ZipFile(settingsZip);
-    List<String> fileNames = zipFile
-        .getFileHeaders()
-        .stream()
-        .filter(file -> !file.isDirectory())
-        .map(FileHeader::getFileName)
-        .collect(Collectors.toList());
-    for (String fileName : fileNames) {
-      Path path = Paths.get(fileName);
-      Path pathWithoutRoot = path.subpath(1, path.getNameCount());
-      zipFile.extractFile(path.toString(), settingsPath.toString(), pathWithoutRoot.toString());
-    }
-    ProjectManager.getInstance().reloadProject(project);
-  }
-
-  /**
-   * Downloads the ZIP file from the given URL to a temporary file and calls {@link
-   * SettingsUtil#importProjectSettings(Project, File)}.
-   */
-  public static void importProjectSettings(@NotNull Project project, @NotNull URL settingsUrl)
-      throws IOException, UnexpectedResponseException {
-    File tempFile = FileUtilRt.createTempFile(project.getName() + "-settings", ".zip");
-    CoursesClient.fetchZip(settingsUrl, tempFile);
-    importProjectSettings(project, tempFile);
-  }
-
 }
