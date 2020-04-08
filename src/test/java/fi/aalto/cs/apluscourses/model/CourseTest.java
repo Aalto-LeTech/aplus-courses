@@ -24,7 +24,8 @@ public class CourseTest {
     List<Module> modules = Arrays.asList(module1, module2);
     Map<String, String> requiredPlugins = new HashMap<>();
     requiredPlugins.put("org.intellij.awesome_plugin", "Awesome Plugin");
-    Course course = new Course("Tester Course", modules, Collections.emptyList(), requiredPlugins);
+    Course course = new Course("Tester Course", modules, Collections.emptyList(), requiredPlugins,
+        new ModelExtensions.TestComponentSource());
     assertEquals("The name of the course should be the same as that given to the constructor",
         "Tester Course", course.getName());
     assertEquals("The modules of the course should be the same as those given to the constructor",
@@ -40,8 +41,8 @@ public class CourseTest {
   public void testGetModule() throws MalformedURLException, NoSuchComponentException {
     Module module1 = new ModelExtensions.TestModule("Test Module", new URL("https://example.com"));
     Module module2 = new ModelExtensions.TestModule("Awesome Module", new URL("https://slack.com"));
-    Course course =
-        new Course("", Arrays.asList(module1, module2), Collections.emptyList(), new HashMap<>());
+    Course course = new Course("", Arrays.asList(module1, module2), Collections.emptyList(),
+        new HashMap<>(), new ModelExtensions.TestComponentSource());
     assertSame("Course#getModule should return the correct module",
         module2, course.getComponent("Awesome Module"));
   }
@@ -49,7 +50,7 @@ public class CourseTest {
   @Test(expected = NoSuchComponentException.class)
   public void testGetModuleWithMissingModule() throws NoSuchComponentException {
     Course course = new Course("Just some course", Collections.emptyList(), Collections.emptyList(),
-        Collections.emptyMap());
+        Collections.emptyMap(), new ModelExtensions.TestComponentSource());
     course.getComponent("Test Module");
   }
 

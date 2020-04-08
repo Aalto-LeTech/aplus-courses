@@ -1,7 +1,8 @@
+package fi.aalto.cs.apluscourses.intellij.actions
+
 import com.intellij.ide.DataManager
 import com.intellij.openapi.actionSystem.{AnAction, AnActionEvent, Presentation}
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import fi.aalto.cs.apluscourses.intellij.actions.REPLAction
 import org.jetbrains.plugins.scala.console.configuration.{ScalaConsoleConfigurationType, ScalaConsoleRunConfiguration, ScalaConsoleRunConfigurationFactory}
 import org.junit.Assert._
 import org.junit.Test

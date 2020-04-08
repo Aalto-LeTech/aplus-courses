@@ -102,7 +102,8 @@ public class InstallerTest {
   }
 
   @Test
-  public void testInstallMany() throws IOException, ComponentLoadException, NoSuchComponentException {
+  public void testInstallMany()
+      throws IOException, ComponentLoadException, NoSuchComponentException {
     Module module1 = spy(new ModelExtensions.TestModule("module1"));
     Module module2 = spy(new ModelExtensions.TestModule("module2"));
 

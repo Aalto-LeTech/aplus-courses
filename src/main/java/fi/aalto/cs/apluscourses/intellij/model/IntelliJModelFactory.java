@@ -9,7 +9,6 @@ import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.openapi.vfs.newvfs.BulkFileListener;
 import com.intellij.openapi.vfs.newvfs.events.VFileDeleteEvent;
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
-import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Library;
 import fi.aalto.cs.apluscourses.model.ModelFactory;

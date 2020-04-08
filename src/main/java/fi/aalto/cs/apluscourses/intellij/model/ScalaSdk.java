@@ -1,6 +1,5 @@
 package fi.aalto.cs.apluscourses.intellij.model;
 
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.libraries.LibraryProperties;
 import com.intellij.openapi.roots.libraries.PersistentLibraryKind;
 import com.intellij.openapi.util.io.FileUtilRt;
@@ -9,7 +8,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import net.lingala.zip4j.ZipFile;
 import org.apache.commons.io.FileUtils;

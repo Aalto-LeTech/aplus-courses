@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,7 +82,7 @@ public class ModelExtensions {
                                @NotNull List<Module> modules,
                                @NotNull List<Library> libraries,
                                @NotNull Map<String, String> requiredPlugins) {
-      return new Course(name, modules, libraries, requiredPlugins);
+      return new Course(name, modules, libraries, requiredPlugins, new TestComponentSource());
     }
 
     @Override
@@ -91,6 +92,21 @@ public class ModelExtensions {
 
     @Override
     public Library createLibrary(@NotNull String name) {
+      return null;
+    }
+  }
+
+  public static class TestComponentSource implements ComponentSource {
+
+    @NotNull
+    @Override
+    public Component getComponent(@NotNull String componentName) throws NoSuchComponentException {
+      throw new NoSuchComponentException(componentName, null);
+    }
+
+    @Nullable
+    @Override
+    public Component getComponentIfExists(@NotNull String componentName) {
       return null;
     }
   }
