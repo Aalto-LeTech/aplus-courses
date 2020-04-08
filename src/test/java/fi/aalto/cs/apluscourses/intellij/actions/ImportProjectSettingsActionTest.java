@@ -56,7 +56,7 @@ public class ImportProjectSettingsActionTest {
     TestDialogs dialogs = new TestDialogs(true);
     ImportProjectSettingsAction action = new ImportProjectSettingsAction(
         p -> mainViewModel,
-        (project, url) -> fail("ProjectSettingsImporter#doImport should not get called"),
+        (proj, url) -> fail("ProjectSettingsImporter#doImport should not get called"),
         dialogs);
 
     action.actionPerformed(anActionEvent);
@@ -71,11 +71,27 @@ public class ImportProjectSettingsActionTest {
   }
 
   @Test
+  public void testInformNoProjectOpen() {
+    TestDialogs dialogs = new TestDialogs(true);
+    ImportProjectSettingsAction action = new ImportProjectSettingsAction(
+        p -> mainViewModel,
+        (proj, url) -> fail("ProjectSettingsImporter#doImport should not get called"),
+        dialogs);
+
+    AnActionEvent e = mock(AnActionEvent.class);
+    action.actionPerformed(e);
+
+    assertThat("The user is informed that a project must be open for project settings to be "
+        + "imported", dialogs.getLastInformationMessage(),
+        containsString("project must be loaded"));
+  }
+
+  @Test
   public void testShowsErrorDialog() {
     TestDialogs dialogs = new TestDialogs(true);
     ImportProjectSettingsAction action = new ImportProjectSettingsAction(
         p -> mainViewModel,
-        (project, url) -> {
+        (proj, url) -> {
           throw new IOException();
         },
         dialogs);

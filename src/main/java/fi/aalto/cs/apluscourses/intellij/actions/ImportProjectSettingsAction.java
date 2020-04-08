@@ -54,7 +54,6 @@ public class ImportProjectSettingsAction extends AnAction {
   public void actionPerformed(@NotNull AnActionEvent e) {
     Project project = e.getProject();
     if (project == null) {
-      // TODO: override AnAction#update instead and only enable this action if a project is loaded
       informNoProjectOpen();
       return;
     }
@@ -117,7 +116,7 @@ public class ImportProjectSettingsAction extends AnAction {
 
   private void informNoProjectOpen() {
     dialogs.showInformationDialog("A project must be loaded before project settings are imported.",
-        "No Project Currently Loaded");
+        "No Project Currently Open");
   }
 
   private void informNoSettings(@NotNull Course course) {
