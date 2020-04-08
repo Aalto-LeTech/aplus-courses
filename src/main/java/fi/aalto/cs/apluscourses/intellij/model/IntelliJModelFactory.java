@@ -27,8 +27,10 @@ public class IntelliJModelFactory implements ModelFactory {
   @Override
   public Course createCourse(@NotNull String name,
                              @NotNull List<Module> modules,
-                             @NotNull Map<String, String> requiredPlugins) {
-    IntelliJCourse course = new IntelliJCourse(name, modules, requiredPlugins, project);
+                             @NotNull Map<String, String> requiredPlugins,
+                             @NotNull Map<String, URL> resourceUrls) {
+    IntelliJCourse course
+        = new IntelliJCourse(name, modules, requiredPlugins, resourceUrls, project);
     // Add a module change listener with the created course instance to the project
     project.getMessageBus().connect().subscribe(ProjectTopics.MODULES, new ModuleListener() {
       @Override

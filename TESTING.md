@@ -216,3 +216,29 @@ a manual testing manual. Marked with a github issue label "manual testing".
       </ol>
     </div>
 </details>
+<details>
+  <summary>
+    <a href="https://github.com/Aalto-LeTech/intellij-plugin/issues/117">Import IDE settings from remote #117</a>
+  </summary>
+  <div>
+    <h5>Part 1. Testing the error message</h5>
+    <ol>
+      <li>Start the IDE and make sure the course has been loaded (check the modules list for an example).</li>
+      <li>Disable networking from the computer.</li>
+      <li>Attempt to import course IDE settings from the A+ menu in the top toolbar.</li>
+      <li>Observe an error message dialog that notifies the user that an error occurred.</li>
+    </ol>
+  </div>
+  <div>
+    <h5>Part 2. Importing IDE settings</h5>
+    <ol>
+      <li>Import course IDE settings from the A+ menu in the top toolbar.</li>
+      <li>Observe a confirmation message dialog, which warns the user that settings are overwritten.</li>
+      <li>After the IDE settings have been imported, observe a message dialog proposing a restart.</li>
+      <li>
+      After restarting the IDE, ensure that the settings have been successfully imported.
+      For an example, the IDE should now be in dark mode.
+      </li>
+    </ol>
+  </div>
+</details>
