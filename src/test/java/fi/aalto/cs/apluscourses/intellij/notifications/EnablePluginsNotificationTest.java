@@ -1,13 +1,16 @@
 package fi.aalto.cs.apluscourses.intellij.notifications;
 
+import static fi.aalto.cs.apluscourses.TestHelper.getDummyPluginsListOfTwo;
+
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
-import fi.aalto.cs.apluscourses.PluginsTestHelper;
+import com.intellij.testFramework.fixtures.BasePlatformTestCase;
+import fi.aalto.cs.apluscourses.TestHelper;
 import java.util.List;
 import org.junit.Test;
 
-public class EnablePluginsNotificationTest extends PluginsTestHelper {
+public class EnablePluginsNotificationTest extends BasePlatformTestCase implements TestHelper {
 
   @Test
   public void testEnablePluginsNotification() {

@@ -1,5 +1,8 @@
 package fi.aalto.cs.apluscourses.utils;
 
+import static javax.imageio.ImageIO.read;
+
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -68,6 +71,27 @@ public class Resources {
       throw new ResourceException(resourceName, "The resource could not be found.", null);
     }
     return stream;
+  }
+
+  /**
+   * Returns an image from a given path to file.
+   *
+   * @param resourceName Name of the resource.
+   * @return An {@link BufferedImage} created from the given resource.
+   * @throws ResourceException if the resource could not be found.
+   */
+  @NotNull
+  public BufferedImage getImage(@NotNull String resourceName) throws ResourceException {
+    BufferedImage image;
+    try (InputStream stream = getStream(resourceName)) {
+      image = read(stream);
+    } catch (IOException ex) {
+      throw new ResourceException(resourceName, "Could not read an image resource.", ex);
+    }
+    if (image == null) {
+      throw new ResourceException(resourceName, "Resource could not be parsed to image.", null);
+    }
+    return image;
   }
 
   /**

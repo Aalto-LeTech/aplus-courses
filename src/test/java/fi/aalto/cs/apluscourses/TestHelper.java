@@ -4,7 +4,11 @@ import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.IdeaPluginDescriptorImpl;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.extensions.PluginId;
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
+import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleManager;
+import com.intellij.openapi.project.Project;
+import fi.aalto.cs.apluscourses.presentation.ReplConfigurationFormModel;
+import fi.aalto.cs.apluscourses.ui.repl.ReplConfigurationForm;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -15,9 +19,9 @@ import org.jdom.JDOMException;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * A helper class to simplify testing plugin manipulation logics.
+ * A helper interface< to simplify testing plugin manipulation logics.
  */
-public abstract class PluginsTestHelper extends BasePlatformTestCase {
+public interface TestHelper {
 
   /**
    * A helper method that creates a sample {@link List} of {@link IdeaPluginDescriptor} based on the
@@ -26,7 +30,7 @@ public abstract class PluginsTestHelper extends BasePlatformTestCase {
    * @return a {@link List} of two valid {@link IdeaPluginDescriptor}s.
    */
   @NotNull
-  public static List<IdeaPluginDescriptor> getDummyPluginsListOfTwo() {
+  static List<IdeaPluginDescriptor> getDummyPluginsListOfTwo() {
     String[] paths = {"src/test/resources/plugins/dummy_a+_plugin.xml",
         "src/test/resources/plugins/dummy_liferay_plugin.xml"};
     return getDummyPluginsListOfTwo(paths);
@@ -40,7 +44,7 @@ public abstract class PluginsTestHelper extends BasePlatformTestCase {
    * @return a {@link List} of two valid {@link IdeaPluginDescriptor}s.
    */
   @NotNull
-  public static List<IdeaPluginDescriptor> getDummyPluginsListOfTwo(@NotNull String[] paths) {
+  static List<IdeaPluginDescriptor> getDummyPluginsListOfTwo(@NotNull String[] paths) {
     return Arrays.stream(paths).map(path -> {
       try {
         return getIdeaPluginDescriptor(path);
@@ -59,7 +63,7 @@ public abstract class PluginsTestHelper extends BasePlatformTestCase {
    * @return a {@link List} of two valid {@link IdeaPluginDescriptor}s.
    */
   @NotNull
-  public static IdeaPluginDescriptorImpl getIdeaPluginDescriptor(@NotNull String path)
+  static IdeaPluginDescriptorImpl getIdeaPluginDescriptor(@NotNull String path)
       throws IOException, JDOMException {
     File filePath = new File(path);
     IdeaPluginDescriptorImpl ideaPluginDescriptor =
@@ -74,7 +78,54 @@ public abstract class PluginsTestHelper extends BasePlatformTestCase {
    * @return a valid {@link IdeaPluginDescriptor} for "IDEA CORE" plugin.
    */
   @NotNull
-  public static IdeaPluginDescriptor getIdeaCorePluginDescriptor() {
+  static IdeaPluginDescriptor getIdeaCorePluginDescriptor() {
     return Objects.requireNonNull(PluginManager.getPlugin(PluginId.getId("com.intellij")));
+  }
+
+  /**
+   * A helper method to ensure at least one (first) module for the default testing project is of a
+   * Scala type.
+   *
+   * @param project a default testing {@link Project}
+   */
+  static void makeFirstPluginScalaModule(@NotNull Project project) {
+    Module[] modules = ModuleManager.getInstance(project).getModules();
+    makeFirstPluginScalaModule(modules);
+  }
+
+  /**
+   * A helper method to ensure at least one (first) module for the default testing project is of a
+   * Scala type.
+   *
+   * @param modules an array of {@link Module}s
+   */
+  static void makeFirstPluginScalaModule(@NotNull Module[] modules) {
+    if (modules[0] != null) {
+      Module module = modules[0];
+      module.setModuleType("JAVA_MODULE");
+    }
+  }
+
+  /**
+   * A helper method to create a dummy {@link ReplConfigurationFormModel} from default project.
+   *
+   * @return the created {@link ReplConfigurationFormModel}
+   */
+  @NotNull
+  default ReplConfigurationFormModel getDummyReplConfigurationFormModel(Project project) {
+    String workDir = project.getProjectFilePath();
+    String moduleName = "light_idea_test_case";
+    makeFirstPluginScalaModule(project);
+    return new ReplConfigurationFormModel(project, workDir, moduleName);
+  }
+
+  /**
+   * A helper method to create a dummy {@link ReplConfigurationForm} from default project.
+   *
+   * @return the created {@link ReplConfigurationForm}
+   */
+  @NotNull
+  default ReplConfigurationForm getDummyReplConfigurationForm(Project project) {
+    return new ReplConfigurationForm(getDummyReplConfigurationFormModel(project));
   }
 }
