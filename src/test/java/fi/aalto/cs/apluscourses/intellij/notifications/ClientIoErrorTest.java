@@ -20,6 +20,5 @@ public class ClientIoErrorTest {
     assertSame("Exception should be same as the one that was given to the constructor",
         exception, notification.getException());
   }
-
 }
 

@@ -18,5 +18,4 @@ public class NoSuchModuleExceptionTest {
     assertThat("The message should contain the name of the module",
         exception.getMessage(), containsString(moduleName));
   }
-
 }

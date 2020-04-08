@@ -17,7 +17,7 @@
     </change-notes>
 
     <depends>com.intellij.modules.java</depends>
-    <depends optional="true" config-file="scala.scala-impl.resources.META-INF.plugin.xml">org.intellij.scala</depends>
+    <depends optional="true" config-file="with-scala.xml">org.intellij.scala</depends>
 
     <extensions defaultExtensionNs="com.intellij">
 
@@ -36,6 +36,10 @@
     <actions>
         <group id="A+.Menu" text="A+" description="A+ Menu">
             <add-to-group group-id="MainMenu" anchor="last" />
+            <action id="Import Course IDE Settings"
+                    class="fi.aalto.cs.apluscourses.intellij.actions.ImportIdeSettingsAction"
+                    text="Import Course IDE Settings"
+                    description="Imports the IDE settings for the currently loaded course." />
             <action id="About A+ Plugin"
                     class="fi.aalto.cs.apluscourses.intellij.actions.AboutAction"
                     text="About A+ Plugin"
@@ -51,7 +55,7 @@
         <action id="fi.aalto.cs.apluscourses.intellij.actions.RequiredPluginsCheckerAction"
                 class="fi.aalto.cs.apluscourses.intellij.actions.RequiredPluginsCheckerAction"
                 text="Check Required Plugins"/>
-        <action id="Scala.RunConsole" class="fi.aalto.cs.apluscourses.intellij.actions.REPLAction"
+        <action id="Scala.RunConsole" class="fi.aalto.cs.apluscourses.intellij.actions.ReplAction"
           overrides="true" text="Scala REPL..." description="Run Scala REPL">
             <add-to-group group-id="ToolsMenu" anchor="last"/>
             <keyboard-shortcut first-keystroke="control shift D" keymap="$default"/>
