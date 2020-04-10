@@ -5,6 +5,7 @@ import fi.aalto.cs.apluscourses.utils.Resources;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -38,6 +39,9 @@ public class Course implements ComponentSource {
   @NotNull
   private final Map<String, String> requiredPlugins;
 
+  @NotNull
+  private final Map<String, URL> resourceUrls;
+
   /**
    * Constructs a course with the given parameters.
    *
@@ -45,15 +49,19 @@ public class Course implements ComponentSource {
    * @param modules         The list of modules in the course.
    * @param requiredPlugins A map containing the required plugins for this course. The keys are the
    *                        ids of the plugins and the values are the names of the plugins.
+   * @param resourceUrls    A map containing URLs to resources related to the course. The keys are
+   *                        the names of the resources and the values are the URLs.
    */
   public Course(@NotNull String name,
                 @NotNull List<Module> modules,
                 @NotNull List<Library> libraries,
                 @NotNull Map<String, String> requiredPlugins,
+                @NotNull Map<String, URL> resourceUrls,
                 @NotNull ComponentSource commonLibraryProvider) {
     this.name = name;
     this.modules = modules;
     this.requiredPlugins = requiredPlugins;
+    this.resourceUrls = resourceUrls;
     this.libraries = libraries;
     this.components = Stream.concat(modules.stream(), libraries.stream())
         .collect(Collectors.toMap(Component::getName, Function.identity()));
@@ -98,10 +106,10 @@ public class Course implements ComponentSource {
     JSONObject jsonObject = getCourseJsonObject(reader, sourcePath);
     String courseName = getCourseName(jsonObject, sourcePath);
     List<Module> courseModules = getCourseModules(jsonObject, sourcePath, factory);
-    Map<String, String> requiredPlugins
-        = getCourseRequiredPlugins(jsonObject, sourcePath);
+    Map<String, String> requiredPlugins = getCourseRequiredPlugins(jsonObject, sourcePath);
+    Map<String, URL> resourceUrls = getCourseResourceUrls(jsonObject, sourcePath);
     return factory.createCourse(courseName, courseModules, Collections.emptyList(),
-        requiredPlugins);
+        requiredPlugins, resourceUrls);
   }
 
   /**
@@ -144,8 +152,20 @@ public class Course implements ComponentSource {
    */
   @NotNull
   public Map<String, String> getRequiredPlugins() {
-    return requiredPlugins;
+    return Collections.unmodifiableMap(requiredPlugins);
   }
+
+  /**
+   * Returns a map containing URLs of resources for the course. The keys are the names of the
+   * resources and the values are the URLs.
+   *
+   * @return A map with URLs for various resources related to the course.
+   */
+  @NotNull
+  public Map<String, URL> getResourceUrls() {
+    return Collections.unmodifiableMap(resourceUrls);
+  }
+
 
   @NotNull
   private static JSONObject getCourseJsonObject(@NotNull Reader reader, @NotNull String source)
@@ -223,6 +243,28 @@ public class Course implements ComponentSource {
       }
     }
     return requiredPlugins;
+  }
+
+  @NotNull
+  private static Map<String, URL> getCourseResourceUrls(@NotNull JSONObject jsonObject,
+                                                        @NotNull String source)
+      throws MalformedCourseConfigurationFileException {
+    Map<String, URL> resourceUrls = new HashMap<>();
+    JSONObject resourceUrlsJsonObject = jsonObject.optJSONObject("resources");
+    if (resourceUrlsJsonObject == null) {
+      return resourceUrls;
+    }
+    Iterable<String> keys = resourceUrlsJsonObject::keys;
+    for (String resourceName : keys) {
+      try {
+        URL resourceUrl = new URL(resourceUrlsJsonObject.getString(resourceName));
+        resourceUrls.put(resourceName, resourceUrl);
+      } catch (JSONException | MalformedURLException ex) {
+        throw new MalformedCourseConfigurationFileException(source,
+            "Expected name-url-pairs in \"resources\" object", ex);
+      }
+    }
+    return resourceUrls;
   }
 
   /**

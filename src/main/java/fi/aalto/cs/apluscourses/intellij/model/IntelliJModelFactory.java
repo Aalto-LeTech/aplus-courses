@@ -31,8 +31,10 @@ public class IntelliJModelFactory implements ModelFactory {
   public Course createCourse(@NotNull String name,
                              @NotNull List<Module> modules,
                              @NotNull List<Library> libraries,
-                             @NotNull Map<String, String> requiredPlugins) {
-    IntelliJCourse course = new IntelliJCourse(name, modules, libraries, requiredPlugins, project);
+                             @NotNull Map<String, String> requiredPlugins,
+                             @NotNull Map<String, URL> resourceUrls) {
+    IntelliJCourse course =
+        new IntelliJCourse(name, modules, libraries, requiredPlugins, resourceUrls, project);
     // Add a module change listener with the created course instance to the project
     // TODO: These should be handled in those classes; also, renaming issue?
     project.getMessageBus().connect().subscribe(ProjectTopics.MODULES, new ModuleListener() {

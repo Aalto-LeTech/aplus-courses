@@ -51,6 +51,7 @@ public class ImportModuleActionTest {
     Course course = new Course("course", modules,
         Collections.emptyList(),
         Collections.emptyMap(),
+        Collections.emptyMap(),
         new ModelExtensions.TestComponentSource());
     mainViewModel.courseViewModel.set(new CourseViewModel(course));
 

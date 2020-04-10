@@ -27,5 +27,4 @@ public class UnexpectedResponseExceptionTest {
     assertThat("The message should contain the message given to the constructor",
         exception.getMessage(), containsString(message));
   }
-
 }

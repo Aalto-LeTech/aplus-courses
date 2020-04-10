@@ -17,5 +17,4 @@ public class MalformedCourseConfigurationFileExceptionTest {
     assertEquals("The configuration file path should be the one given to the constructor",
         path, exception.getPathToConfigurationFile());
   }
-
 }

@@ -5,6 +5,7 @@ import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Library;
 import fi.aalto.cs.apluscourses.model.Module;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import org.jetbrains.annotations.NotNull;
@@ -18,8 +19,10 @@ class IntelliJCourse extends Course {
                         @NotNull List<Module> modules,
                         @NotNull List<Library> libraries,
                         @NotNull Map<String, String> requiredPlugins,
+                        @NotNull Map<String, URL> resourceUrls,
                         @NotNull APlusProject project) {
-    super(name, modules, libraries, requiredPlugins, new CommonLibraryProvider(project));
+    super(name, modules, libraries, requiredPlugins, resourceUrls,
+        new CommonLibraryProvider(project));
 
     this.project = project;
   }
