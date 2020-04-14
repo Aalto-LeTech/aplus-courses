@@ -72,11 +72,13 @@ public class APlusProject {
        *   3. The component files aren't present in the file system (and by extension the component
        *      isn't in the project), so its state should be NOT_INSTALLED.
        */
-      return isLoaded()
-          ? Component.INSTALLED
-          : getBasePath().resolve(getPath()).toFile().isDirectory()
-          ? Component.FETCHED
-          : Component.NOT_INSTALLED;
+      if (isLoaded()) {
+        return Component.INSTALLED;
+      }
+      if (getBasePath().resolve(getPath()).toFile().isDirectory()) {
+        return Component.FETCHED;
+      }
+      return Component.NOT_INSTALLED;
     }
 
     protected abstract boolean isLoaded();

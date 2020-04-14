@@ -80,7 +80,7 @@ public class InstallerImpl<T> implements Installer {
     
     private void fetch() throws IOException {
       if (component.stateMonitor.setConditionally(Component.NOT_INSTALLED, Component.FETCHING)
-          || component.stateMonitor.setConditionally(Component.UNINSTALLED, Module.FETCHING)) {
+          || component.stateMonitor.setConditionally(Component.UNINSTALLED, Component.FETCHING)) {
         component.fetch();
         component.stateMonitor.set(Component.FETCHED);
       } else {

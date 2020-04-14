@@ -51,7 +51,7 @@ class IntelliJModule extends Module {
           .map(Node::getTextContent)
           .collect(Collectors.toList());
     } catch (IOException | SAXException e) {
-      throw new ComponentLoadException(this, e);
+      throw new ComponentLoadException(getName(), e);
     }
   }
 
@@ -85,7 +85,7 @@ class IntelliJModule extends Module {
     try {
       WriteAction.runAndWait(new Loader(getProject(), getImlFile())::load);
     } catch (Exception e) {
-      throw new ComponentLoadException(this, e);
+      throw new ComponentLoadException(getName(), e);
     }
   }
 

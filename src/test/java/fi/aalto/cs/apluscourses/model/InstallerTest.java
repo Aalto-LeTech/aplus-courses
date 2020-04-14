@@ -157,10 +157,11 @@ public class InstallerTest {
 
   @Test
   public void testInstallLoadFails() {
-    Module module = spy(new ModelExtensions.TestModule("loadFailModule") {
+    String moduleName = "loadFailModule";
+    Module module = spy(new ModelExtensions.TestModule(moduleName) {
       @Override
       public void load() throws ComponentLoadException {
-        throw new ComponentLoadException(this, null);
+        throw new ComponentLoadException(moduleName, null);
       }
     });
 
@@ -203,11 +204,12 @@ public class InstallerTest {
 
   @Test
   public void testInstallGetDependenciesFail() throws ComponentLoadException {
-    Module module = spy(new ModelExtensions.TestModule("failingDepModule") {
+    String moduleName = "failingDepModule";
+    Module module = spy(new ModelExtensions.TestModule(moduleName) {
       @NotNull
       @Override
       public List<String> getDependencies() throws ComponentLoadException {
-        throw new ComponentLoadException(this, null);
+        throw new ComponentLoadException(moduleName, null);
       }
     });
 

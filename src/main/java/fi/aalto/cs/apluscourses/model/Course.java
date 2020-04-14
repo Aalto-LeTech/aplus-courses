@@ -273,7 +273,7 @@ public class Course implements ComponentSource {
    */
   public void onComponentRemove(@Nullable Component component) {
     if (component != null) {
-      component.stateMonitor.set(Module.UNLOADED);
+      component.stateMonitor.set(Component.UNLOADED);
     }
   }
 
@@ -283,7 +283,7 @@ public class Course implements ComponentSource {
    */
   public void onComponentFilesDeleted(@Nullable Component component) {
     if (component != null) {
-      component.stateMonitor.set(Module.UNINSTALLED);
+      component.stateMonitor.set(Component.UNINSTALLED);
     }
   }
 
