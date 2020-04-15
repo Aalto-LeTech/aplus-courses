@@ -240,3 +240,23 @@ a manual testing manual. Marked with a github issue label "manual testing".
     </ol>
   </div>
 </details>
+<details>
+  <summary>
+    <a href="https://github.com/Aalto-LeTech/intellij-plugin/issues/118">Import project settings from remote #118</a>
+  </summary>
+  <div>
+    <h5>Importing Project Settings</h5>
+    <ol>
+      <li>Create a new project and expand the <code>.idea</code> directory in the project tool window on the left.</li>
+      <li>Import course project settings from the A+ menu in the top toolbar.</li>
+      <li>Observe that the project is reloaded and the <code>.idea</code> directory should now contain new files.</li>
+      <li>Navigate to <code>File -> Settings... -> Editor -> Code Style -> Scala</code>.</li>
+      <li>Change the "Scheme" to "Project" to show project settings.</li>
+      <li>
+      Open the "Imports" tab and note that there are O1 related items in the "Imports always marked as used"
+      box at the bottom right:
+      <img src="images/project-settings.png" alt="Project Settings"/>
+      </li>
+    </ol>
+  </div>
+</details>

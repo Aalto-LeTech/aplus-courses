@@ -12,7 +12,6 @@ import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
-import fi.aalto.cs.apluscourses.ui.base.Dialogs;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -20,55 +19,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 public class ImportIdeSettingsActionTest {
-
-  private class TestDialogs implements Dialogs {
-    private boolean answerOk;
-
-    private String lastInformationMessage = "";
-    private String lastErrorMessage = "";
-    private String lastOkCancelMessage = "";
-
-    public TestDialogs(boolean answerOk) {
-      this.answerOk = answerOk;
-    }
-
-    @Override
-    public void showInformationDialog(@NotNull String message, @NotNull String title) {
-      lastInformationMessage = message;
-    }
-
-    @Override
-    public void showErrorDialog(@NotNull String message, @NotNull String title) {
-      lastErrorMessage = message;
-    }
-
-    @Override
-    public boolean showOkCancelDialog(@NotNull String message,
-                                      @NotNull String title,
-                                      @NotNull String okText,
-                                      @NotNull String cancelText) {
-      lastOkCancelMessage = message;
-      return answerOk;
-    }
-
-    public String getLastInformationMessage() {
-      return lastInformationMessage;
-    }
-
-    public String getLastErrorMessage() {
-      return lastErrorMessage;
-    }
-
-    public String getLastOkCancelMessage() {
-      return lastOkCancelMessage;
-    }
-  }
 
   private Project project;
   private MainViewModel mainViewModel;
@@ -98,7 +53,7 @@ public class ImportIdeSettingsActionTest {
   }
 
   @Test
-  public void testInformsCourseHasNoSettings() {
+  public void testInformsCourseHasNoIdeSettings() {
     Course course = new Course("no-ide-settings", Collections.emptyList(),
         Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap(),
         new ModelExtensions.TestComponentSource());
@@ -116,7 +71,8 @@ public class ImportIdeSettingsActionTest {
     assertThat("The user should be informed that the course has no custom IDE settings",
         dialogs.getLastInformationMessage(),
         containsString("does not provide custom IDE settings"));
-    assertThat("Information dialog contains course name", dialogs.getLastInformationMessage(),
+    assertThat("The information dialog contains the course name",
+        dialogs.getLastInformationMessage(),
         containsString("no-ide-settings"));
   }
 
@@ -162,9 +118,7 @@ public class ImportIdeSettingsActionTest {
     AtomicInteger importCallCount = new AtomicInteger(0);
     ImportIdeSettingsAction action = new ImportIdeSettingsAction(
         p -> mainViewModel,
-        url -> {
-          importCallCount.getAndIncrement();
-        },
+        url -> importCallCount.getAndIncrement(),
         dialogs,
         () -> { });
 
@@ -181,9 +135,7 @@ public class ImportIdeSettingsActionTest {
         p -> mainViewModel,
         url -> { },
         dialogs,
-        () -> {
-          restartCallCount.getAndIncrement();
-        });
+        restartCallCount::getAndIncrement);
 
     action.actionPerformed(anActionEvent);
 
