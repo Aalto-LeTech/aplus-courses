@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.jdom.JDOMException;
@@ -95,12 +96,11 @@ class IntelliJModule extends Module {
   }
 
   private void extractZip(File file) throws IOException {
-    String fullParentPath = project.getBasePath().resolve(getPath())
-        .getParent().toString();
+    String fullPath = project.getBasePath().resolve(getPath()).toString();
 
     // ZIP may contain other dirs (typically, dependency modules) but we only extract the files that
     // belongs to this module.
-    new DirAwareZipFile(file).extractDir(getName(), fullParentPath);
+    new DirAwareZipFile(file).extractDir(getName(), fullPath);
   }
 
 
