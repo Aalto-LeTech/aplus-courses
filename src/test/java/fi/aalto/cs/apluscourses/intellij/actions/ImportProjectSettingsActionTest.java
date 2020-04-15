@@ -108,7 +108,7 @@ public class ImportProjectSettingsActionTest {
     AtomicInteger importCallCount = new AtomicInteger(0);
     ImportProjectSettingsAction action = new ImportProjectSettingsAction(
         p -> mainViewModel,
-        (project, url) -> importCallCount.getAndIncrement(),
+        (proj, url) -> importCallCount.getAndIncrement(),
         dialogs);
 
     action.actionPerformed(anActionEvent);

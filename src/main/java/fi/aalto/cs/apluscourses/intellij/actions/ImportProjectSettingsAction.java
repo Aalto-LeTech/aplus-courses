@@ -81,24 +81,31 @@ public class ImportProjectSettingsAction extends AnAction {
   }
 
   /**
+   * Gets the file names (excluding directories) from the given ZIP file.
+   */
+  @NotNull
+  private static List<String> getFileNames(@NotNull ZipFile zipFile) throws IOException {
+    return zipFile
+        .getFileHeaders()
+        .stream()
+        .filter(file -> !file.isDirectory())
+        .map(FileHeader::getFileName)
+        .collect(Collectors.toList());
+  }
+
+  /**
    * Downloads the project settings ZIP file from the given URL to a temporary file. After that the
    * files from the .idea directory of the ZIP file are extracted to the .idea directory of the
    * given project, after which the project is reloaded.
    */
   private static void doImport(@NotNull Project project, @NotNull URL settingsUrl)
       throws IOException, UnexpectedResponseException {
+    Path settingsPath = Paths.get(project.getBasePath(), Project.DIRECTORY_STORE_FOLDER);
+
     File settingsZip = FileUtilRt.createTempFile(project.getName() + "-settings", ".zip");
     CoursesClient.fetchZip(settingsUrl, settingsZip);
     ZipFile zipFile = new ZipFile(settingsZip);
-
-    Path settingsPath = Paths.get(project.getBasePath(), Project.DIRECTORY_STORE_FOLDER);
-
-    List<String> fileNames = zipFile
-        .getFileHeaders()
-        .stream()
-        .filter(file -> !file.isDirectory())
-        .map(FileHeader::getFileName)
-        .collect(Collectors.toList());
+    List<String> fileNames = getFileNames(zipFile);
 
     for (String fileName : fileNames) {
       Path path = Paths.get(fileName);
