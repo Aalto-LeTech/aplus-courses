@@ -54,15 +54,15 @@ public class ScalaSdk extends IntelliJLibrary<PersistentLibraryKind<ScalaLibrary
   }
 
   @NotNull
-  private File createTempFile() throws IOException {
+  public File createTempFile() throws IOException {
     return FileUtilRt.createTempFile(getFileName(), ".zip");
   }
 
-  private void fetchZipTo(File file) throws IOException {
+  public void fetchZipTo(File file) throws IOException {
     FileUtils.copyURLToFile(new URL(URL + getFileName() + ".zip"), file);
   }
 
-  private void extractZip(File file) throws IOException {
+  public void extractZip(File file) throws IOException {
     String prefix = getFileName() + "/lib/";
     String destinationPath = project.getBasePath().resolve(getPath()).toString();
     ZipFile zipFile = new ZipFile(file);
@@ -71,7 +71,7 @@ public class ScalaSdk extends IntelliJLibrary<PersistentLibraryKind<ScalaLibrary
     }
   }
 
-  private String getFileName() {
+  public String getFileName() {
     return "scala-" + scalaVersion;
   }
 
@@ -80,7 +80,7 @@ public class ScalaSdk extends IntelliJLibrary<PersistentLibraryKind<ScalaLibrary
     return getUris(CLASSES);
   }
 
-  private String[] getUris(String[] roots) {
+  public String[] getUris(String[] roots) {
     return Arrays.stream(roots)
         .map(project.getBasePath().resolve(getPath())::resolve)
         .map(Path::toUri)
@@ -89,13 +89,13 @@ public class ScalaSdk extends IntelliJLibrary<PersistentLibraryKind<ScalaLibrary
   }
 
   @Override
-  protected PersistentLibraryKind<ScalaLibraryProperties> getLibraryKind() {
+  public PersistentLibraryKind<ScalaLibraryProperties> getLibraryKind() {
     return ScalaLibraryType.Kind$.MODULE$;
   }
 
   @Override
   @CalledWithWriteLock
-  protected void initializeLibraryProperties(
+  public void initializeLibraryProperties(
       LibraryProperties<ScalaLibraryPropertiesState> properties) {
     properties.loadState(new ScalaLibraryPropertiesState(
         ScalaLanguageLevel.findByVersion(scalaVersion).get(), getUris(ALL_CLASSES)));
