@@ -80,8 +80,9 @@ public class ScalaSdk extends IntelliJLibrary<PersistentLibraryKind<ScalaLibrary
     return getUris(CLASSES);
   }
 
-  public String[] getUris(String[] roots) {
+  public String[] getUris(@NotNull String[] roots) {
     return Arrays.stream(roots)
+        .filter(string -> !string.isEmpty())
         .map(project.getBasePath().resolve(getPath())::resolve)
         .map(Path::toUri)
         .map(URI::toString)
