@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-class CommonLibraryProvider implements ComponentSource {
+public class CommonLibraryProvider implements ComponentSource {
   private final APlusProject project;
   private final ConcurrentMap<String, Library> commonLibraries;
 
