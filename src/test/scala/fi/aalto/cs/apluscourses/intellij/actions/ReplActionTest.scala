@@ -1,49 +1,142 @@
 package fi.aalto.cs.apluscourses.intellij.actions
 
-import com.intellij.ide.DataManager
-import com.intellij.openapi.actionSystem.{AnAction, AnActionEvent, Presentation}
+
+import com.intellij.mock.MockVirtualFile.{dir, file}
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import org.jetbrains.plugins.scala.console.configuration.{ScalaConsoleConfigurationType, ScalaConsoleRunConfiguration, ScalaConsoleRunConfigurationFactory}
+import fi.aalto.cs.apluscourses.intellij.TestHelperScala
+import fi.aalto.cs.apluscourses.presentation.ReplConfigurationFormModel
 import org.junit.Assert._
 import org.junit.Test
 import org.mockito.Mockito.{spy, times, verify}
 
-class ReplActionTest extends BasePlatformTestCase {
+class ReplActionTest extends BasePlatformTestCase with TestHelperScala {
 
   @Test
-  def testAdjustRunConfigurationSettingsWithValidInputWorks(): Unit = {
+  def testSetConfigurationConditionallyWithDoNotShowReplFlagWorks(): Unit = {
     val project = getProject
     val module = getModule
-    val factory = new ScalaConsoleRunConfigurationFactory(new ScalaConsoleConfigurationType)
-    val configuration = factory.createTemplateConfiguration(project).asInstanceOf[ScalaConsoleRunConfiguration]
-    configuration.setWorkingDirectory("fakeDirectoryName")
+    val configuration = getConfiguration
+    val replTitle = s"REPL in ${module.getName}"
+    val action = new ReplAction
+    val moduleWorkDir = action.getModuleWorkDir(module)
+
+    //  only FALSE branch, as TRUE triggers UI
+    ReplConfigurationFormModel.showREPLConfigWindow = false
+
+    action.setConfigurationConditionally(project, module, configuration)
+
+    //  then
+    assertTrue("REPL's (configuration) working directory has been properly set",
+      configuration.getWorkingDirectory.contains(moduleWorkDir))
+    assertEquals("REPL's (configuration) title has been properly set",
+      replTitle, configuration.getName)
+    assertSame("REPL's (configuration) working Module has been properly set",
+      module, configuration.getModules.head)
+  }
+
+  @Test
+  def testSetCustomConfigurationFieldsWithValidInputWorks(): Unit = {
+    //  given
+    val configuration = getConfiguration
+    val module = getModule
+    val replTitle = s"REPL in ${module.getName}"
+    val action = new ReplAction
+    val moduleWorkDir = action.getModuleWorkDir(module)
+
+    //  when
+    action.setCustomConfigurationFields(configuration, moduleWorkDir, module.getName, module)
+
+    //  then
+    assertTrue("REPL's (configuration) working directory has been properly set",
+      configuration.getWorkingDirectory.contains(moduleWorkDir))
+    assertEquals("REPL's (configuration) title has been properly set",
+      replTitle, configuration.getName)
+    assertSame("REPL's (configuration) working Module has been properly set",
+      module, configuration.getModules.head)
+  }
+
+  @Test
+  def testSetCustomConfigurationFieldsWithMixedWorkDirModuleInputWorks(): Unit = {
+    //  given
+    val configuration = getConfiguration
+    val module = getModule
+    val moduleWorkDir = "/fakeWorkDir"
+    val replTitle = s"REPL in <?>"
     val action = new ReplAction
 
-    action.adjustRunConfigurationSettings(module, configuration)
+    //  when
+    action.setCustomConfigurationFields(configuration, moduleWorkDir, module.getName, module)
 
-    assertEquals("Customized title of the Scala REPL contains the name of the module started from", "Scala REPL for module: light_idea_test_case", configuration.getName)
-    assertTrue("Customized working directory is set to be a folder with a name like unitTest_*", configuration.getWorkingDirectory.contains("/unitTest_"))
-    assertTrue("Configuration is triggered with the module is has been started from", configuration.getAllModules.contains(module))
+    //  then
+    assertTrue("REPL's (configuration) working directory has been properly set",
+      configuration.getWorkingDirectory.contains(moduleWorkDir))
+    assertEquals("REPL's (configuration) title has been properly set",
+      replTitle, configuration.getName)
+    assertSame("REPL's (configuration) working Module has been properly set",
+      module, configuration.getModules.head)
+  }
+
+  @Test
+  def testSetCustomConfigurationFieldsWithMixedModuleWorkDirInputWorks(): Unit = {
+    //  given
+    val configuration = getConfiguration
+    val module = getModule
+    val moduleWorkDir = "/tmp/unitTest_setCustomConfigurationFieldsWithMixedModuleWorkDirInputWorks"
+    val replTitle = s"REPL in <?>"
+    val action = new ReplAction
+
+    //  when
+    action.setCustomConfigurationFields(configuration, moduleWorkDir, module.getName, module)
+
+    //  then
+    assertTrue("REPL's (configuration) working directory has been properly set",
+      configuration.getWorkingDirectory.contains(moduleWorkDir))
+    assertEquals("REPL's (configuration) title has been properly set",
+      replTitle, configuration.getName)
+    assertSame("REPL's (configuration) working Module has been properly set",
+      module, configuration.getModules.head)
+  }
+
+  @Test
+  def testCheckFileOrFolderWithCorrectFileInputWorks(): Unit = {
+    val nonNullFileOrFolder = dir("directory")
+    val action = new ReplAction
+
+    assertFalse("Returns 'true' if the given folder is 'null'",
+      action.checkFileOrFolderIsNull(nonNullFileOrFolder))
+  }
+
+  @Test
+  def testCheckFileOrFolderWithCorrectFolderInputWorks(): Unit = {
+    val nonNullFileOrFolder = file("file")
+    val action = new ReplAction
+
+    assertFalse("Returns 'true' if the given file is 'null'",
+      action.checkFileOrFolderIsNull(nonNullFileOrFolder))
+  }
+
+  @Test
+  def testCheckFileOrFolderWithEmptyInputFails(): Unit = {
+    val nonNullFileOrFolder = null
+    val action = new ReplAction
+
+    assertTrue("Returns 'false' if the given file/folder is not 'null'",
+      action.checkFileOrFolderIsNull(nonNullFileOrFolder))
   }
 
   @Test(expected = classOf[IllegalArgumentException])
   def testCustomDoRunActionIsTriggered(): Unit = {
-    //given
+    //  given
     val action = new ReplAction
     val spyAction = spy(action)
     val actionEvent = createActionEvent(action)
 
-    //when
+    //  when
     spyAction.actionPerformed(actionEvent)
 
-    //then
+    //  then
     verify(spyAction, times(1)).customDoRunAction(actionEvent)
   }
 
-  // this is copied from: https://github.com/JetBrains/intellij-community/blob/5dff73ead7da6e5f4d40a037958c74c9764bdb17/java/compiler/tests/com/intellij/compiler/artifacts/ui/ArtifactEditorActionTestCase.java#L45-L49
-  private def createActionEvent(action: AnAction) = {
-    val presentation = new Presentation
-    presentation.copyFrom(action.getTemplatePresentation)
-    AnActionEvent.createFromAnAction(action, null, "", DataManager.getInstance.getDataContext(null))
-  }
+  private def getConfiguration = super.getConfiguration(getProject)
 }
