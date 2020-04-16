@@ -49,6 +49,6 @@ public class CommonLibraryProviderTest {
 
     CommonLibraryProvider libraryProvider = new CommonLibraryProvider(project);
 
-    Component library = libraryProvider.getComponent("unknown");
+    libraryProvider.getComponent("unknown");
   }
 }
