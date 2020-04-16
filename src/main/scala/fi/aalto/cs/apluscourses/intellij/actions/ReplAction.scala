@@ -12,7 +12,7 @@ import scala.collection.JavaConverters._
 /**
  * Custom class that adjusts Scala Plugin's own RunConsoleAction with A+ requirements.
  */
-class REPLAction extends RunConsoleAction {
+class ReplAction extends RunConsoleAction {
 
   override def actionPerformed(e: AnActionEvent): Unit = {
     customDoRunAction(e)

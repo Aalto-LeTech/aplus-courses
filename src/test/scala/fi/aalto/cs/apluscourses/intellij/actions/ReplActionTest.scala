@@ -8,7 +8,7 @@ import org.junit.Assert._
 import org.junit.Test
 import org.mockito.Mockito.{spy, times, verify}
 
-class REPLActionTest extends BasePlatformTestCase {
+class ReplActionTest extends BasePlatformTestCase {
 
   @Test
   def testAdjustRunConfigurationSettingsWithValidInputWorks(): Unit = {
@@ -17,7 +17,7 @@ class REPLActionTest extends BasePlatformTestCase {
     val factory = new ScalaConsoleRunConfigurationFactory(new ScalaConsoleConfigurationType)
     val configuration = factory.createTemplateConfiguration(project).asInstanceOf[ScalaConsoleRunConfiguration]
     configuration.setWorkingDirectory("fakeDirectoryName")
-    val action = new REPLAction
+    val action = new ReplAction
 
     action.adjustRunConfigurationSettings(module, configuration)
 
@@ -29,7 +29,7 @@ class REPLActionTest extends BasePlatformTestCase {
   @Test(expected = classOf[IllegalArgumentException])
   def testCustomDoRunActionIsTriggered(): Unit = {
     //given
-    val action = new REPLAction
+    val action = new ReplAction
     val spyAction = spy(action)
     val actionEvent = createActionEvent(action)
 
