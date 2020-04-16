@@ -9,15 +9,14 @@ import fi.aalto.cs.apluscourses.model.Component;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class APlusProject {
+  @NotNull
   private final Project project;
 
-  public APlusProject(Project project) {
+  public APlusProject(@NotNull Project project) {
     this.project = project;
   }
 

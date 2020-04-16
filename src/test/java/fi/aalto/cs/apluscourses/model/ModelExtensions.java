@@ -94,7 +94,7 @@ public class ModelExtensions {
 
     @Override
     public Library createLibrary(@NotNull String name) {
-      return null;
+      throw new UnsupportedOperationException("Only common libraries are supported.");
     }
   }
 

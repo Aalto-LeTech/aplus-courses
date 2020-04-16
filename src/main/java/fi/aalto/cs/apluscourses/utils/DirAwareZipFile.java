@@ -3,7 +3,6 @@ package fi.aalto.cs.apluscourses.utils;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Objects;
-import java.util.function.Predicate;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.FileHeader;

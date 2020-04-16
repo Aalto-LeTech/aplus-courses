@@ -9,14 +9,14 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class InstallerImpl<T> implements Installer {
+public class ComponentInstallerImpl<T> implements ComponentInstaller {
 
-  private static Logger logger = LoggerFactory.getLogger(InstallerImpl.class);
+  private static Logger logger = LoggerFactory.getLogger(ComponentInstallerImpl.class);
 
   private final ComponentSource componentSource;
   private final TaskManager<T> taskManager;
 
-  public InstallerImpl(ComponentSource componentSource, TaskManager<T> taskManager) {
+  public ComponentInstallerImpl(ComponentSource componentSource, TaskManager<T> taskManager) {
     this.componentSource = componentSource;
     this.taskManager = taskManager;
   }
@@ -26,8 +26,8 @@ public class InstallerImpl<T> implements Installer {
   }
 
   protected T installInternalAsync(Component component) {
-    Installation moduleInstallation = new Installation(component);
-    return taskManager.fork(moduleInstallation::doIt);
+    Installation installation = new Installation(component);
+    return taskManager.fork(installation::doIt);
   }
 
   /**
@@ -73,7 +73,7 @@ public class InstallerImpl<T> implements Installer {
         load();
         waitForDependencies();
       } catch (IOException | ComponentLoadException | NoSuchComponentException e) {
-        logger.info("A module could not be installed", e);
+        logger.info("A component could not be installed", e);
         component.stateMonitor.set(Component.ERROR);
       }
     }
@@ -103,7 +103,7 @@ public class InstallerImpl<T> implements Installer {
       if (component.stateMonitor.setConditionally(Component.LOADED, Component.WAITING_FOR_DEPS)) {
         taskManager.joinAll(dependencies
             .stream()
-            .map(InstallerImpl.this::waitUntilLoadedAsync)
+            .map(ComponentInstallerImpl.this::waitUntilLoadedAsync)
             .collect(Collectors.toList()));
         component.stateMonitor.set(Component.INSTALLED);
       } else {
@@ -123,7 +123,7 @@ public class InstallerImpl<T> implements Installer {
     }
   }
 
-  public static class FactoryImpl<T> implements Installer.Factory {
+  public static class FactoryImpl<T> implements ComponentInstaller.Factory {
 
     private final TaskManager<T> taskManager;
 
@@ -132,8 +132,8 @@ public class InstallerImpl<T> implements Installer {
     }
 
     @Override
-    public Installer getInstallerFor(ComponentSource componentSource) {
-      return new InstallerImpl<>(componentSource, taskManager);
+    public ComponentInstaller getInstallerFor(ComponentSource componentSource) {
+      return new ComponentInstallerImpl<>(componentSource, taskManager);
     }
   }
 }

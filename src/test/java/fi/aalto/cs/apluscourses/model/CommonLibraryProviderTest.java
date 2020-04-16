@@ -12,8 +12,6 @@ import static org.mockito.Mockito.when;
 import fi.aalto.cs.apluscourses.intellij.model.APlusProject;
 import fi.aalto.cs.apluscourses.intellij.model.CommonLibraryProvider;
 import fi.aalto.cs.apluscourses.intellij.model.ScalaSdk;
-import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Test;
 
 public class CommonLibraryProviderTest {
