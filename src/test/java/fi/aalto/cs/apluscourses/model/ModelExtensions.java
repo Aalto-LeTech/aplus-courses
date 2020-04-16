@@ -81,8 +81,10 @@ public class ModelExtensions {
     public Course createCourse(@NotNull String name,
                                @NotNull List<Module> modules,
                                @NotNull List<Library> libraries,
-                               @NotNull Map<String, String> requiredPlugins) {
-      return new Course(name, modules, libraries, requiredPlugins, new TestComponentSource());
+                               @NotNull Map<String, String> requiredPlugins,
+                               @NotNull Map<String, URL> resourceUrls) {
+      return new Course(name, modules, libraries, requiredPlugins, resourceUrls,
+          new TestComponentSource());
     }
 
     @Override
@@ -92,7 +94,7 @@ public class ModelExtensions {
 
     @Override
     public Library createLibrary(@NotNull String name) {
-      return null;
+      throw new UnsupportedOperationException("Only common libraries are supported.");
     }
   }
 

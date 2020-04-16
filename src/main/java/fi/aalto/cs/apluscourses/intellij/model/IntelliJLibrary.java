@@ -11,7 +11,8 @@ import java.nio.file.Path;
 import org.jetbrains.annotations.CalledWithWriteLock;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class IntelliJLibrary<K extends PersistentLibraryKind<? extends LibraryProperties<S>>, S> extends Library {
+public abstract class IntelliJLibrary
+    <K extends PersistentLibraryKind<? extends LibraryProperties<S>>, S> extends Library {
 
   @NotNull
   protected final APlusProject project;

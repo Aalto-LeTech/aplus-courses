@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-public class InstallerTest {
+public class ComponentInstallerTest {
 
   @Test
   public void testInstall() throws IOException, ComponentLoadException {
@@ -38,8 +38,8 @@ public class InstallerTest {
       }
     });
 
-    Installer installer =
-        new InstallerImpl<>(mock(ComponentSource.class), new SimpleAsyncTaskManager());
+    ComponentInstaller installer =
+        new ComponentInstallerImpl<>(mock(ComponentSource.class), new SimpleAsyncTaskManager());
 
     installer.install(module);
 
@@ -74,8 +74,8 @@ public class InstallerTest {
     when(componentSource.getComponent(firstDep.getName())).thenReturn(firstDep);
     when(componentSource.getComponent(secondDep.getName())).thenReturn(secondDep);
 
-    Installer installer =
-        new InstallerImpl<>(componentSource, new SimpleAsyncTaskManager());
+    ComponentInstaller installer =
+        new ComponentInstallerImpl<>(componentSource, new SimpleAsyncTaskManager());
 
     installer.install(module1);
 
@@ -111,8 +111,8 @@ public class InstallerTest {
     when(componentSource.getComponent(module1.getName())).thenReturn(module1);
     when(componentSource.getComponent(module2.getName())).thenReturn(module2);
 
-    Installer installer =
-        new InstallerImpl<>(componentSource, new SimpleAsyncTaskManager());
+    ComponentInstaller installer =
+        new ComponentInstallerImpl<>(componentSource, new SimpleAsyncTaskManager());
 
     List<Component> modules = new ArrayList<>();
     modules.add(module1);
@@ -143,8 +143,8 @@ public class InstallerTest {
       }
     });
 
-    Installer installer =
-        new InstallerImpl<>(mock(ComponentSource.class), new SimpleAsyncTaskManager());
+    ComponentInstaller installer =
+        new ComponentInstallerImpl<>(mock(ComponentSource.class), new SimpleAsyncTaskManager());
 
     installer.install(module);
 
@@ -157,15 +157,16 @@ public class InstallerTest {
 
   @Test
   public void testInstallLoadFails() {
-    Module module = spy(new ModelExtensions.TestModule("loadFailModule") {
+    String moduleName = "loadFailModule";
+    Module module = spy(new ModelExtensions.TestModule(moduleName) {
       @Override
       public void load() throws ComponentLoadException {
-        throw new ComponentLoadException(this, null);
+        throw new ComponentLoadException(moduleName, null);
       }
     });
 
-    Installer installer =
-        new InstallerImpl<>(mock(ComponentSource.class), new SimpleAsyncTaskManager());
+    ComponentInstaller installer =
+        new ComponentInstallerImpl<>(mock(ComponentSource.class), new SimpleAsyncTaskManager());
 
     installer.install(module);
 
@@ -190,8 +191,8 @@ public class InstallerTest {
     when(componentSource.getComponent(nonExistentModuleName))
         .thenThrow(new NoSuchComponentException(nonExistentModuleName, null));
 
-    Installer installer =
-        new InstallerImpl<>(componentSource, new SimpleAsyncTaskManager());
+    ComponentInstaller installer =
+        new ComponentInstallerImpl<>(componentSource, new SimpleAsyncTaskManager());
 
     installer.install(module);
 
@@ -203,16 +204,17 @@ public class InstallerTest {
 
   @Test
   public void testInstallGetDependenciesFail() throws ComponentLoadException {
-    Module module = spy(new ModelExtensions.TestModule("failingDepModule") {
+    String moduleName = "failingDepModule";
+    Module module = spy(new ModelExtensions.TestModule(moduleName) {
       @NotNull
       @Override
       public List<String> getDependencies() throws ComponentLoadException {
-        throw new ComponentLoadException(this, null);
+        throw new ComponentLoadException(moduleName, null);
       }
     });
 
-    Installer installer =
-        new InstallerImpl<>(mock(ComponentSource.class), new SimpleAsyncTaskManager());
+    ComponentInstaller installer =
+        new ComponentInstallerImpl<>(mock(ComponentSource.class), new SimpleAsyncTaskManager());
 
     installer.install(module);
 
@@ -244,8 +246,8 @@ public class InstallerTest {
     when(componentSource.getComponent(otherModule.getName())).thenReturn(otherModule);
     when(componentSource.getComponent(failingDep.getName())).thenReturn(failingDep);
 
-    Installer installer =
-        new InstallerImpl<>(componentSource, new SimpleAsyncTaskManager());
+    ComponentInstaller installer =
+        new ComponentInstallerImpl<>(componentSource, new SimpleAsyncTaskManager());
 
     List<Component> modules = new ArrayList<>();
     modules.add(dependentModule);
@@ -282,8 +284,8 @@ public class InstallerTest {
     when(componentSource.getComponent(moduleA.getName())).thenReturn(moduleA);
     when(componentSource.getComponent(moduleB.getName())).thenReturn(moduleB);
 
-    Installer installer =
-        new InstallerImpl<>(componentSource, new SimpleAsyncTaskManager());
+    ComponentInstaller installer =
+        new ComponentInstallerImpl<>(componentSource, new SimpleAsyncTaskManager());
 
     List<Component> modules = new ArrayList<>();
     modules.add(moduleA);

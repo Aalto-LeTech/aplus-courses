@@ -9,14 +9,13 @@ import org.junit.Test;
 public class NoSuchComponentExceptionTest {
 
   @Test
-  public void testCreateNoSuchModuleException() {
+  public void testCreateNoSuchComponentException() {
     Throwable cause = new Throwable();
-    String moduleName = "Awesome module";
-    NoSuchComponentException exception = new NoSuchComponentException(moduleName, cause);
+    String componentName = "Awesome component";
+    NoSuchComponentException exception = new NoSuchComponentException(componentName, cause);
     assertEquals("The cause of the exception should be the one given to the constructor",
         cause, exception.getCause());
     assertThat("The message should contain the name of the module",
-        exception.getMessage(), containsString(moduleName));
+        exception.getMessage(), containsString(componentName));
   }
-
 }

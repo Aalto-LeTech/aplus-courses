@@ -18,14 +18,16 @@ public class CourseTest {
   private static final ModelFactory MODEL_FACTORY = new ModelExtensions.TestModelFactory() {};
 
   @Test
-  public void testCreateCourse() {
+  public void testCreateCourse() throws MalformedURLException {
     Module module1 = new ModelExtensions.TestModule("Module1");
     Module module2 = new ModelExtensions.TestModule("Module2");
     List<Module> modules = Arrays.asList(module1, module2);
     Map<String, String> requiredPlugins = new HashMap<>();
     requiredPlugins.put("org.intellij.awesome_plugin", "Awesome Plugin");
-    Course course = new Course("Tester Course", modules, Collections.emptyList(), requiredPlugins,
-        new ModelExtensions.TestComponentSource());
+    Map<String, URL> resourceUrls = new HashMap<>();
+    resourceUrls.put("key", new URL("http://localhost:8000"));
+    Course course = new Course("Tester Course", modules, Collections.emptyList(),
+        requiredPlugins, resourceUrls, new ModelExtensions.TestComponentSource());
     assertEquals("The name of the course should be the same as that given to the constructor",
         "Tester Course", course.getName());
     assertEquals("The modules of the course should be the same as those given to the constructor",
@@ -35,6 +37,9 @@ public class CourseTest {
     assertEquals("The required plugins of the course should be the same as those given to the "
             + "constructor", "Awesome Plugin",
         course.getRequiredPlugins().get("org.intellij.awesome_plugin"));
+    assertEquals(
+        "The resource URLs of the course should the same as those given to the constructor",
+        new URL("http://localhost:8000"), course.getResourceUrls().get("key"));
   }
 
   @Test
@@ -42,7 +47,7 @@ public class CourseTest {
     Module module1 = new ModelExtensions.TestModule("Test Module", new URL("https://example.com"));
     Module module2 = new ModelExtensions.TestModule("Awesome Module", new URL("https://slack.com"));
     Course course = new Course("", Arrays.asList(module1, module2), Collections.emptyList(),
-        new HashMap<>(), new ModelExtensions.TestComponentSource());
+        Collections.emptyMap(), Collections.emptyMap(), new ModelExtensions.TestComponentSource());
     assertSame("Course#getModule should return the correct module",
         module2, course.getComponent("Awesome Module"));
   }
@@ -50,7 +55,7 @@ public class CourseTest {
   @Test(expected = NoSuchComponentException.class)
   public void testGetModuleWithMissingModule() throws NoSuchComponentException {
     Course course = new Course("Just some course", Collections.emptyList(), Collections.emptyList(),
-        Collections.emptyMap(), new ModelExtensions.TestComponentSource());
+        Collections.emptyMap(), Collections.emptyMap(), new ModelExtensions.TestComponentSource());
     course.getComponent("Test Module");
   }
 
@@ -59,11 +64,13 @@ public class CourseTest {
       + "\"Scala\",\"org.test.tester\":\"Tester\"}";
   private static String modulesJson = "\"modules\":[{\"name\":\"O1Library\",\"url\":"
       + "\"https://wikipedia.org\"},{\"name\":\"GoodStuff\",\"url\":\"https://example.com\"}]";
+  private static String resourcesJson = "\"resources\":{\"abc\":\"http://example.com\","
+      + "\"def\":\"http://example.org\"}";
 
   @Test
   public void testFromConfigurationFile() throws MalformedCourseConfigurationFileException {
-    StringReader stringReader
-        = new StringReader("{" + nameJson + "," + requiredPluginsJson + "," + modulesJson + "}");
+    StringReader stringReader = new StringReader("{" + nameJson + "," + requiredPluginsJson + ","
+        + modulesJson + "," + resourcesJson + "}");
     Course course = Course.fromConfigurationData(stringReader, "./path/to/file", MODEL_FACTORY);
     assertEquals("Course should have the same name as that in the configuration JSON",
         "Awesome Course", course.getName());
@@ -75,6 +82,10 @@ public class CourseTest {
         "O1Library", course.getModules().get(0).getName());
     assertEquals("The course should have the modules of the configuration JSON",
         "GoodStuff", course.getModules().get(1).getName());
+    assertEquals("The course should have the resource URLs of the configuration JSON",
+        "http://example.com", course.getResourceUrls().get("abc").toString());
+    assertEquals("The course should have the resource URLs of the configuration JSON",
+        "http://example.org", course.getResourceUrls().get("def").toString());
   }
 
   @Test(expected = MalformedCourseConfigurationFileException.class)

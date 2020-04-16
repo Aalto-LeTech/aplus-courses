@@ -18,5 +18,4 @@ public class MalformedCourseConfigurationFileException extends Exception {
   public String getPathToConfigurationFile() {
     return pathToConfigurationFile;
   }
-
 }

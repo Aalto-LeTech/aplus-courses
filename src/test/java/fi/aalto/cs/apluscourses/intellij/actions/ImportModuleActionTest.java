@@ -12,8 +12,8 @@ import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.model.Component;
+import fi.aalto.cs.apluscourses.model.ComponentInstaller;
 import fi.aalto.cs.apluscourses.model.Course;
-import fi.aalto.cs.apluscourses.model.Installer;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
@@ -30,7 +30,7 @@ public class ImportModuleActionTest {
 
   private Project project;
   private MainViewModel mainViewModel;
-  private Installer installer;
+  private ComponentInstaller installer;
 
   /**
    * Called before each test method call.  Initializes private fields.
@@ -51,10 +51,11 @@ public class ImportModuleActionTest {
     Course course = new Course("course", modules,
         Collections.emptyList(),
         Collections.emptyMap(),
+        Collections.emptyMap(),
         new ModelExtensions.TestComponentSource());
     mainViewModel.courseViewModel.set(new CourseViewModel(course));
 
-    installer = mock(Installer.class);
+    installer = mock(ComponentInstaller.class);
   }
 
   @SuppressWarnings({"ConstantConditions"})

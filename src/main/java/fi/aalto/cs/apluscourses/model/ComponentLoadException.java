@@ -5,15 +5,15 @@ import org.jetbrains.annotations.Nullable;
 
 public class ComponentLoadException extends Exception {
   @NotNull
-  private final Component component;
+  private final String componentName;
 
-  public ComponentLoadException(@NotNull Component component, @Nullable Throwable cause) {
-    super("Could not load component '" + component.getName() + "'.", cause);
-    this.component = component;
+  public ComponentLoadException(@NotNull String componentName, @Nullable Throwable cause) {
+    super("Could not load component '" + componentName + "'.", cause);
+    this.componentName = componentName;
   }
 
   @NotNull
-  public Component getComponent() {
-    return component;
+  public String getComponentName() {
+    return componentName;
   }
 }

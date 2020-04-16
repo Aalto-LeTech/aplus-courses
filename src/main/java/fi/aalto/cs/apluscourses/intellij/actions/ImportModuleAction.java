@@ -5,9 +5,9 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Component;
+import fi.aalto.cs.apluscourses.model.ComponentInstaller;
+import fi.aalto.cs.apluscourses.model.ComponentInstallerImpl;
 import fi.aalto.cs.apluscourses.model.Course;
-import fi.aalto.cs.apluscourses.model.Installer;
-import fi.aalto.cs.apluscourses.model.InstallerImpl;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.BaseViewModel;
 import fi.aalto.cs.apluscourses.utils.async.SimpleAsyncTaskManager;
@@ -21,7 +21,7 @@ public class ImportModuleAction extends AnAction {
   @NotNull
   private final MainViewModelProvider mainViewModelProvider;
   @NotNull
-  private final Installer.Factory moduleInstallerFactory;
+  private final ComponentInstaller.Factory moduleInstallerFactory;
 
   /**
    * Constructs an action using given main view model provider and module installer factory.
@@ -29,7 +29,7 @@ public class ImportModuleAction extends AnAction {
    * @param moduleInstallerFactory A module installer factory.
    */
   public ImportModuleAction(@NotNull MainViewModelProvider mainViewModelProvider,
-                            @NotNull Installer.Factory moduleInstallerFactory) {
+                            @NotNull ComponentInstaller.Factory moduleInstallerFactory) {
 
     this.mainViewModelProvider = mainViewModelProvider;
     this.moduleInstallerFactory = moduleInstallerFactory;
@@ -37,7 +37,7 @@ public class ImportModuleAction extends AnAction {
 
   public ImportModuleAction() {
     this(PluginSettings.getInstance(),
-        new InstallerImpl.FactoryImpl<>(new SimpleAsyncTaskManager()));
+        new ComponentInstallerImpl.FactoryImpl<>(new SimpleAsyncTaskManager()));
   }
 
   @Override

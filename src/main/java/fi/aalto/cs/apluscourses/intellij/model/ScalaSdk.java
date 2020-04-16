@@ -3,13 +3,15 @@ package fi.aalto.cs.apluscourses.intellij.model;
 import com.intellij.openapi.roots.libraries.LibraryProperties;
 import com.intellij.openapi.roots.libraries.PersistentLibraryKind;
 import com.intellij.openapi.util.io.FileUtilRt;
+import fi.aalto.cs.apluscourses.utils.DirAwareZipFile;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.Arrays;
-import net.lingala.zip4j.ZipFile;
+import java.util.Objects;
+import java.util.stream.Stream;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.CalledWithWriteLock;
 import org.jetbrains.annotations.NotNull;
@@ -22,15 +24,13 @@ public class ScalaSdk extends IntelliJLibrary<PersistentLibraryKind<ScalaLibrary
     ScalaLibraryPropertiesState> {
 
   private static final String URL = "https://scala-lang.org/files/archive/";
-  private static final String[] ALL_CLASSES = {
-      "scala-compiler.jar",
-      "scala-library.jar",
-      "scala-reflect.jar"
-  };
   private static final String[] CLASSES = {
       "scala-library.jar",
       "scala-reflect.jar"
   };
+
+  // Sonar, unjustifiably, hates reference-typed volatile fields
+  private volatile String[] allClasses = null; //NOSONAR
 
   private final String scalaVersion;
 
@@ -63,12 +63,13 @@ public class ScalaSdk extends IntelliJLibrary<PersistentLibraryKind<ScalaLibrary
   }
 
   public void extractZip(File file) throws IOException {
-    String prefix = getFileName() + "/lib/";
-    String destinationPath = project.getBasePath().resolve(getPath()).toString();
-    ZipFile zipFile = new ZipFile(file);
-    for (String jarFile : ALL_CLASSES) {
-      zipFile.extractFile(prefix + jarFile, destinationPath, jarFile);
-    }
+    DirAwareZipFile zipFile = new DirAwareZipFile(file);
+    String libDir = getFileName() + "/lib";
+    zipFile.extractDir(libDir, getFullPath().toString());
+  }
+
+  private Path getFullPath() {
+    return project.getBasePath().resolve(getPath());
   }
 
   public String getFileName() {
@@ -94,12 +95,20 @@ public class ScalaSdk extends IntelliJLibrary<PersistentLibraryKind<ScalaLibrary
     return ScalaLibraryType.Kind$.MODULE$;
   }
 
+  private String[] getJarFiles() {
+    File[] files = Objects.requireNonNull(getFullPath().toFile().listFiles());
+    return Stream.of(files)
+        .map(File::getName)
+        .filter(fileName -> fileName.endsWith(".jar"))
+        .toArray(String[]::new);
+  }
+
   @Override
   @CalledWithWriteLock
   public void initializeLibraryProperties(
       LibraryProperties<ScalaLibraryPropertiesState> properties) {
     properties.loadState(new ScalaLibraryPropertiesState(
-        ScalaLanguageLevel.findByVersion(scalaVersion).get(), getUris(ALL_CLASSES)));
+        ScalaLanguageLevel.findByVersion(scalaVersion).get(), getUris(getJarFiles())));
   }
 }
 

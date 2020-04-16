@@ -51,7 +51,7 @@ class IntelliJModule extends Module {
           .map(Node::getTextContent)
           .collect(Collectors.toList());
     } catch (IOException | SAXException e) {
-      throw new ComponentLoadException(this, e);
+      throw new ComponentLoadException(getName(), e);
     }
   }
 
@@ -85,7 +85,7 @@ class IntelliJModule extends Module {
     try {
       WriteAction.runAndWait(new Loader(getProject(), getImlFile())::load);
     } catch (Exception e) {
-      throw new ComponentLoadException(this, e);
+      throw new ComponentLoadException(getName(), e);
     }
   }
 
@@ -95,12 +95,11 @@ class IntelliJModule extends Module {
   }
 
   private void extractZip(File file) throws IOException {
-    String fullParentPath = project.getBasePath().resolve(getPath())
-        .getParent().toString();
+    String fullPath = project.getBasePath().resolve(getPath()).toString();
 
     // ZIP may contain other dirs (typically, dependency modules) but we only extract the files that
     // belongs to this module.
-    new DirAwareZipFile(file).extractDir(getName(), fullParentPath);
+    new DirAwareZipFile(file).extractDir(getName(), fullPath);
   }
 
 

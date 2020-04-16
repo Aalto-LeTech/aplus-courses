@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class NoSuchComponentException extends Exception {
-  public NoSuchComponentException(@NotNull String moduleName, @Nullable Throwable cause) {
-    super("Module '" + moduleName + " was not found'.", cause);
+  public NoSuchComponentException(@NotNull String componentName, @Nullable Throwable cause) {
+    super("Component '" + componentName + " was not found'.", cause);
   }
 }

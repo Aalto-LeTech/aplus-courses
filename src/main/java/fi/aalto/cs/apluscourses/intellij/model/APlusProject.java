@@ -10,11 +10,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class APlusProject {
+  @NotNull
   private final Project project;
 
-  public APlusProject(Project project) {
+  public APlusProject(@NotNull Project project) {
     this.project = project;
   }
 
@@ -49,75 +51,32 @@ public class APlusProject {
   }
 
   public int resolveLibraryState(String name) {
-    return new LibraryStateResolver(name).resolveState();
+    return resolveComponentState(getLibraryTable().getLibraryByName(name), getLibraryPath(name));
   }
 
   public int resolveModuleState(String name) {
-    return new ModuleStateResolver(name).resolveState();
+    return resolveComponentState(getModuleManager().findModuleByName(name), getModulePath(name));
   }
 
-  private abstract class ComponentStateResolver {
-    protected final String name;
-
-    public ComponentStateResolver(String name) {
-      this.name = name;
+  private int resolveComponentState(@Nullable Object componentObj, @NotNull Path dirPath) {
+    /*
+     * Three cases to check for here:
+     *   1. The component is in the project, so its state should be INSTALLED.
+     *   2. The component is not in the project but the module files are present in the file
+     *      system, so its state should be FETCHED.
+     *   3. The component files aren't present in the file system (and by extension the component
+     *      isn't in the project), so its state should be NOT_INSTALLED.
+     */
+    if (componentObj != null) {
+      return Component.INSTALLED;
     }
-
-    public int resolveState() {
-      /*
-       * Three cases to check for here:
-       *   1. The component is in the project, so its state should be INSTALLED.
-       *   2. The component is not in the project but the module files are present in the file
-       *      system, so its state should be FETCHED.
-       *   3. The component files aren't present in the file system (and by extension the component
-       *      isn't in the project), so its state should be NOT_INSTALLED.
-       */
-      return isLoaded()
-          ? Component.INSTALLED
-          : getBasePath().resolve(getPath()).toFile().isDirectory()
-          ? Component.FETCHED
-          : Component.NOT_INSTALLED;
+    if (doesDirExist(dirPath)) {
+      return Component.FETCHED;
     }
-
-    protected abstract boolean isLoaded();
-
-    @NotNull
-    protected abstract Path getPath();
+    return Component.NOT_INSTALLED;
   }
 
-  private class ModuleStateResolver extends ComponentStateResolver {
-
-    public ModuleStateResolver(String name) {
-      super(name);
-    }
-
-    @Override
-    protected boolean isLoaded() {
-      return getModuleManager().findModuleByName(name) != null;
-    }
-
-    @NotNull
-    @Override
-    protected Path getPath() {
-      return getModulePath(name);
-    }
-  }
-
-  private class LibraryStateResolver extends ComponentStateResolver {
-
-    public LibraryStateResolver(String name) {
-      super(name);
-    }
-
-    @Override
-    protected boolean isLoaded() {
-      return getLibraryTable().getLibraryByName(name) != null;
-    }
-
-    @NotNull
-    @Override
-    protected Path getPath() {
-      return getLibraryPath(name);
-    }
+  private boolean doesDirExist(Path relativePath) {
+    return getBasePath().resolve(relativePath).toFile().isDirectory();
   }
 }
