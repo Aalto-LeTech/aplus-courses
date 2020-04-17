@@ -62,13 +62,19 @@ public class ScalaSdk extends IntelliJLibrary<PersistentLibraryKind<ScalaLibrary
     FileUtils.copyURLToFile(new URL(URL + getFileName() + ".zip"), file);
   }
 
+  /**
+   * Method to extract contents of the .zip file.
+   *
+   * @param file a zip {@link File} to extract.
+   * @throws IOException is thrown if zip can't be extracted.
+   */
   public void extractZip(File file) throws IOException {
     DirAwareZipFile zipFile = new DirAwareZipFile(file);
     String libDir = getFileName() + "/lib";
     zipFile.extractDir(libDir, getFullPath().toString());
   }
 
-  private Path getFullPath() {
+  public Path getFullPath() {
     return project.getBasePath().resolve(getPath());
   }
 
@@ -81,6 +87,12 @@ public class ScalaSdk extends IntelliJLibrary<PersistentLibraryKind<ScalaLibrary
     return getUris(CLASSES);
   }
 
+  /**
+   * Method to filter out SDK library root URIs.
+   *
+   * @param roots an array of {@link String} to filter.
+   * @return filtered array of root {@link String}s.
+   */
   public String[] getUris(@NotNull String[] roots) {
     return Arrays.stream(roots)
         .filter(string -> !string.isEmpty())
@@ -111,4 +123,3 @@ public class ScalaSdk extends IntelliJLibrary<PersistentLibraryKind<ScalaLibrary
         ScalaLanguageLevel.findByVersion(scalaVersion).get(), getUris(getJarFiles())));
   }
 }
-

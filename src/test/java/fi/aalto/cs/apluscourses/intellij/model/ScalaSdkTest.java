@@ -1,7 +1,11 @@
 package fi.aalto.cs.apluscourses.intellij.model;
 
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
+
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.roots.OrderRootType;
 import com.intellij.openapi.roots.libraries.Library;
 import com.intellij.openapi.roots.libraries.LibraryTable;
 import com.intellij.openapi.vfs.LocalFileSystem;
@@ -9,26 +13,23 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.testFramework.HeavyPlatformTestCase;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
+import java.nio.file.Paths;
 import org.junit.Test;
 
 public class ScalaSdkTest extends HeavyPlatformTestCase {
 
-  //todo before each or some other common setup
-
   @Test
   public void testExtractZip() throws IOException {
     //  given
-    APlusProject aPlusProject = new APlusProject(getProject());
-    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", aPlusProject, 1);
-    File zip = new File("src/test/resources/scala-2.12.10.zip");
+    APlusProject aplusProject = new APlusProject(getProject());
+    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", aplusProject, 1);
+    File scalaZip = new File("src/test/resources/scalaSdk/scala-2.12.10.zip");
     String commonPath = "/tmp/unitTest_extractZip/lib/scala-sdk-2.12.10/";
 
     //  when
-    scalaSdk.extractZip(zip);
+    scalaSdk.extractZip(scalaZip);
 
     //  then
-    String testName = getTestName(true);
     VirtualFile scalaLibrary = LocalFileSystem.getInstance().findFileByIoFile(
         new File(commonPath + "scala-library.jar"));
     assertNotNull("The extracted library scala library exists.", scalaLibrary);
@@ -43,8 +44,8 @@ public class ScalaSdkTest extends HeavyPlatformTestCase {
   @Test
   public void testCreateTempFile() throws IOException {
     //  given
-    APlusProject aPlusProject = new APlusProject(getProject());
-    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-5.5.5", aPlusProject, 1);
+    APlusProject aplusProject = new APlusProject(getProject());
+    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-5.5.5", aplusProject, 1);
 
     //  when
     File tempFile = scalaSdk.createTempFile();
@@ -60,17 +61,17 @@ public class ScalaSdkTest extends HeavyPlatformTestCase {
   @Test
   public void testFetchZipToWithValidZipWorks() throws IOException {
     //  given
-    APlusProject aPlusProject = new APlusProject(getProject());
-    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", aPlusProject, 1);
+    APlusProject aplusProject = new APlusProject(getProject());
+    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", aplusProject, 1);
     File testFile = createTempFile("testFile.zip", "");
-    File zip = new File("src/test/resources/scala-2.12.10.zip");
+    File zip = new File("src/test/resources/scalaSdk/scala-2.12.10.zip");
 
     //  when
     //  this might occasionally fail as it actually fetches data from the network
     scalaSdk.fetchZipTo(testFile);
 
-    //  then
     assertEquals(zip.length(), testFile.length());
+    //  then
     long length = testFile.length() / 1_000_000;
     assertTrue("Size of the loaded Scala stuff is around 20MB.", length >= 20);
   }
@@ -78,8 +79,8 @@ public class ScalaSdkTest extends HeavyPlatformTestCase {
   @Test
   public void testFileName() {
     //  given
-    APlusProject aPlusProject = new APlusProject(getProject());
-    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", aPlusProject, 1);
+    APlusProject aplusProject = new APlusProject(getProject());
+    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", aplusProject, 1);
 
     //  when
     String fileName = scalaSdk.getFileName();
@@ -91,8 +92,8 @@ public class ScalaSdkTest extends HeavyPlatformTestCase {
   @Test
   public void testFetchZipToWithInvalidZipThrows() throws IOException {
     //  given
-    APlusProject aPlusProject = new APlusProject(getProject());
-    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-5.5.5", aPlusProject, 1);
+    APlusProject aplusProject = new APlusProject(getProject());
+    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-5.5.5", aplusProject, 1);
     File testFile = createTempFile("testFile.zip", "");
 
     //  when
@@ -108,8 +109,8 @@ public class ScalaSdkTest extends HeavyPlatformTestCase {
   @Test
   public void testGetUrisNoArguments() {
     //  given
-    APlusProject aPlusProject = new APlusProject(getProject());
-    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", aPlusProject, 1);
+    APlusProject aplusProject = new APlusProject(getProject());
+    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", aplusProject, 1);
 
     //  when
     String[] uris = scalaSdk.getUris();
@@ -125,16 +126,16 @@ public class ScalaSdkTest extends HeavyPlatformTestCase {
   @Test
   public void testGetUrisWithValidArguments() {
     //  given
-    APlusProject aPlusProject = new APlusProject(getProject());
-    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", aPlusProject, 1);
-    final String[] ALL_CLASSES = {
+    APlusProject aplusProject = new APlusProject(getProject());
+    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", aplusProject, 1);
+    final String[] allClasses = {
         "scala-compiler.jar",
         "scala-library.jar",
         "scala-reflect.jar"
     };
 
     //  when
-    String[] uris = scalaSdk.getUris(ALL_CLASSES);
+    String[] uris = scalaSdk.getUris(allClasses);
 
     // then
     assertEquals("Two elements are present", 3, uris.length);
@@ -149,16 +150,16 @@ public class ScalaSdkTest extends HeavyPlatformTestCase {
   @Test
   public void testGetUrisWithInvalidArguments() {
     //  given
-    APlusProject aPlusProject = new APlusProject(getProject());
-    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", aPlusProject, 1);
-    final String[] ALL_CLASSES = {
+    APlusProject aplusProject = new APlusProject(getProject());
+    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", aplusProject, 1);
+    final String[] allClasses = {
         "scala-compiler.jar",
         "",
         "scala-reflect.jar"
     };
 
     //  when
-    String[] uris = scalaSdk.getUris(ALL_CLASSES);
+    String[] uris = scalaSdk.getUris(allClasses);
 
     // then
     assertEquals("Two elements are present", 2, uris.length);
@@ -171,18 +172,27 @@ public class ScalaSdkTest extends HeavyPlatformTestCase {
   @Test
   public void testLoadInternal() {
     //  given
-    Project project = getProject();
-    APlusProject aPlusProject = new APlusProject(project);
-    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", aPlusProject, 1);
+    Project project = spy(getProject());
+    APlusProject aplusProject = new APlusProject(project);
+    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", aplusProject, 1);
+    ScalaSdk spyScalaSdk = spy(scalaSdk);
+    when(spyScalaSdk.getFullPath())
+        .thenReturn(Paths.get("src/test/resources/scalaSdk/scala-2.12.10"));
 
     //  when
-    // there are dependencies on this, so doing via implementing class
-    Runnable r = scalaSdk::loadInternal;
+    //  there are dependencies on this, so doing via implementing class
+    Runnable r = spyScalaSdk::loadInternal;
     WriteCommandAction.runWriteCommandAction(project, r);
 
     // then
-    LibraryTable libraryTable = aPlusProject.getLibraryTable();
+    LibraryTable libraryTable = aplusProject.getLibraryTable();
     Library[] libraries = libraryTable.getLibraries();
-    Arrays.stream(libraries).forEach(System.out::println);
+    assertEquals("Scala SDK is created.", "scala-sdk-2.12.10", libraries[0].getName());
+    String[] jars = libraries[0].getUrls(OrderRootType.CLASSES);
+    assertEquals("Scala SDK contains two libraries.", 2, jars.length);
+    assertTrue("Scala SDK contains scala-library.jar library.",
+        jars[0].contains("scala-library.jar"));
+    assertTrue("Scala SDK contains scala-reflect.jar library.",
+        jars[1].contains("scala-reflect.jar"));
   }
 }
