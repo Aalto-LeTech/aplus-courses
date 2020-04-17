@@ -14,6 +14,7 @@ import com.intellij.testFramework.HeavyPlatformTestCase;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
+import org.jetbrains.annotations.SystemIndependent;
 import org.junit.Test;
 
 public class ScalaSdkTest extends HeavyPlatformTestCase {
@@ -23,8 +24,9 @@ public class ScalaSdkTest extends HeavyPlatformTestCase {
     //  given
     APlusProject aplusProject = new APlusProject(getProject());
     ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", aplusProject, 1);
-    File scalaZip = new File("src/test/resources/scalaSdk/scala-2.12.10.zip");
-    String commonPath = "/tmp/unitTest_extractZip/lib/scala-sdk-2.12.10/";
+    @SystemIndependent String path = "src/test/resources/scalaSdk/scala-2.12.10.zip";
+    File scalaZip = new File(path);
+    @SystemIndependent String commonPath = "/tmp/unitTest_extractZip/lib/scala-sdk-2.12.10/";
 
     //  when
     scalaSdk.extractZip(scalaZip);
@@ -42,6 +44,25 @@ public class ScalaSdkTest extends HeavyPlatformTestCase {
   }
 
   @Test
+  public void testFetchZipToWithValidZipWorks() throws IOException {
+    //  given
+    APlusProject aplusProject = new APlusProject(getProject());
+    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", aplusProject, 1);
+    File testFile = createTempFile("testFile.zip", "");
+    @SystemIndependent String path = "src/test/resources/scalaSdk/scala-2.12.10.zip";
+    File zip = new File(path);
+
+    //  when
+    //  this might occasionally fail as it actually fetches data from the network
+    scalaSdk.fetchZipTo(testFile);
+
+    assertEquals(zip.length(), testFile.length());
+    //  then
+    long length = testFile.length() / 1_000_000;
+    assertTrue("Size of the loaded Scala stuff is around 20MB.", length >= 20);
+  }
+
+  @Test
   public void testCreateTempFile() throws IOException {
     //  given
     APlusProject aplusProject = new APlusProject(getProject());
@@ -56,24 +77,6 @@ public class ScalaSdkTest extends HeavyPlatformTestCase {
         absolutePath.contains("/tmp/unitTest_createTempFile"));
     assertTrue("Created file path part is correctFile is right.",
         absolutePath.contains("/scala-5.5.5.zip"));
-  }
-
-  @Test
-  public void testFetchZipToWithValidZipWorks() throws IOException {
-    //  given
-    APlusProject aplusProject = new APlusProject(getProject());
-    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", aplusProject, 1);
-    File testFile = createTempFile("testFile.zip", "");
-    File zip = new File("src/test/resources/scalaSdk/scala-2.12.10.zip");
-
-    //  when
-    //  this might occasionally fail as it actually fetches data from the network
-    scalaSdk.fetchZipTo(testFile);
-
-    assertEquals(zip.length(), testFile.length());
-    //  then
-    long length = testFile.length() / 1_000_000;
-    assertTrue("Size of the loaded Scala stuff is around 20MB.", length >= 20);
   }
 
   @Test
