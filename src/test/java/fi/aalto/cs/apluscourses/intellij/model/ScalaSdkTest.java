@@ -8,7 +8,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.OrderRootType;
 import com.intellij.openapi.roots.libraries.Library;
 import com.intellij.openapi.roots.libraries.LibraryTable;
-import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.testFramework.HeavyPlatformTestCase;
 import java.io.File;
@@ -26,20 +25,18 @@ public class ScalaSdkTest extends HeavyPlatformTestCase {
     ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", aplusProject, 1);
     @SystemIndependent String path = "src/test/resources/scalaSdk/scala-2.12.10.zip";
     File scalaZip = new File(path);
-    @SystemIndependent String commonPath = "/tmp/unitTest_extractZip/lib/scala-sdk-2.12.10/";
+    @SystemIndependent String basePath = getProject().getBasePath();
 
     //  when
     scalaSdk.extractZip(scalaZip);
 
     //  then
-    VirtualFile scalaLibrary = LocalFileSystem.getInstance().findFileByIoFile(
-        new File(commonPath + "scala-library.jar"));
+    VirtualFile scalaLibrary = getVirtualFile(
+        new File(basePath + "/lib/scala-sdk-2.12.10/scala-library.jar"));
     assertNotNull("The extracted library scala library exists.", scalaLibrary);
-    VirtualFile scalaCompiler = LocalFileSystem.getInstance().findFileByIoFile(
-        new File(commonPath + "scala-compiler.jar"));
+    VirtualFile scalaCompiler = getVirtualFile(new File(basePath + "/lib/scala-sdk-2.12.10/scala-library.jar"));
     assertNotNull("The extracted library scala compiler exists.", scalaCompiler);
-    VirtualFile scalaReflect = LocalFileSystem.getInstance().findFileByIoFile(
-        new File(commonPath + "scala-reflect.jar"));
+    VirtualFile scalaReflect = getVirtualFile(new File(basePath + "/lib/scala-sdk-2.12.10/scala-library.jar"));
     assertNotNull("The extracted library scala reflect exists.", scalaReflect);
   }
 
@@ -51,8 +48,6 @@ public class ScalaSdkTest extends HeavyPlatformTestCase {
     File testFile = createTempFile("testFile.zip", "");
     @SystemIndependent String path = "src/test/resources/scalaSdk/scala-2.12.10.zip";
     File zip = new File(path);
-    System.out.println("zip.exists() " + zip.exists());
-    System.out.println("getTestName() " + getTestName(true));
 
     //  when
     //  this might occasionally fail as it actually fetches data from the network
@@ -73,12 +68,9 @@ public class ScalaSdkTest extends HeavyPlatformTestCase {
     //  when
     File tempFile = scalaSdk.createTempFile();
     String absolutePath = tempFile.getAbsolutePath();
-    System.out.println("absolutePath " + absolutePath);
 
     //  then
-    assertTrue("Created file path part is correctFile is right.",
-        absolutePath.contains("/tmp/unitTest_createTempFile"));
-    assertTrue("Created file path part is correctFile is right.",
+    assertTrue("Created file path part is correct.",
         absolutePath.contains("/scala-5.5.5.zip"));
   }
 
