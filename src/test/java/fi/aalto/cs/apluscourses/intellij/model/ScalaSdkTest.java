@@ -21,14 +21,14 @@ public class ScalaSdkTest extends HeavyPlatformTestCase {
   @Test
   public void testExtractZip() throws IOException {
     //  given
+    Runtime.getRuntime().exec("sh -c ls");
+    Runtime.getRuntime().exec("sh -c pwd");
     APlusProject aplusProject = new APlusProject(getProject());
     ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", aplusProject, 1);
     @SystemIndependent String path = "src/test/resources/scalaSdk/scala-2.12.10.zip";
     File scalaZip = new File(path);
     @SystemIndependent String basePath = getProject().getBasePath();
     System.out.println("basePath " + basePath);
-    Runtime.getRuntime().exec("sh -c ls");
-    Runtime.getRuntime().exec("sh -c pwd");
 
     //  when
     scalaSdk.extractZip(scalaZip);
