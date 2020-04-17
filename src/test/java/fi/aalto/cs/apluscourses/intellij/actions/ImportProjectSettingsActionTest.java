@@ -9,6 +9,7 @@ import static org.mockito.Mockito.mock;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.model.Course;
+import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import java.io.IOException;
@@ -39,8 +40,8 @@ public class ImportProjectSettingsActionTest {
 
     Map<String, URL> resourceUrls = new HashMap<>();
     resourceUrls.put("projectSettings", new URL("https://example.com"));
-    Course course =
-        new Course("course", Collections.emptyList(), Collections.emptyMap(), resourceUrls);
+    Course course = new Course("course", Collections.emptyList(), Collections.emptyList(),
+        Collections.emptyMap(), resourceUrls, new ModelExtensions.TestComponentSource());
     mainViewModel.courseViewModel.set(new CourseViewModel(course));
 
     anActionEvent = mock(AnActionEvent.class);
@@ -50,7 +51,8 @@ public class ImportProjectSettingsActionTest {
   @Test
   public void testInformCourseHasNoProjectSettings() {
     Course course = new Course("no-project-settings", Collections.emptyList(),
-        Collections.emptyMap(), Collections.emptyMap());
+        Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap(),
+        new ModelExtensions.TestComponentSource());
     mainViewModel.courseViewModel.set(new CourseViewModel(course));
 
     TestDialogs dialogs = new TestDialogs(true);

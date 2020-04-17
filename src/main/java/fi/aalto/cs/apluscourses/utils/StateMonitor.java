@@ -18,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
  * <p>The {@link StateListener}, given in the constructor is notified of the changes in state.</p>
  */
 public class StateMonitor {
-  private int state = INITIAL;
+  private int state;
   private final Object stateLock = new Object();
   private final StateListener listener;
 
@@ -26,6 +26,11 @@ public class StateMonitor {
   public static final int INITIAL = 0;
 
   public StateMonitor(@NotNull StateListener stateListener) {
+    this(INITIAL, stateListener);
+  }
+
+  public StateMonitor(int state, @NotNull StateListener stateListener) {
+    this.state = state;
     this.listener = stateListener;
   }
 

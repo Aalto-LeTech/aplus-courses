@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.model.Module;
 import java.awt.font.TextAttribute;
@@ -25,7 +26,7 @@ public class ModuleListElementViewModelTest {
         isOnChangedCalled.set(true);
       }
     };
-    module.stateMonitor.set(Module.FETCHING);
+    module.stateMonitor.set(Component.FETCHING);
     assertTrue(isOnChangedCalled.get());
     assertNotNull(moduleViewModel); // prevent weak reference from expiring
   }
@@ -51,31 +52,31 @@ public class ModuleListElementViewModelTest {
     assertEquals("Not installed", moduleViewModel.getStatus());
     assertEquals(TextAttribute.WEIGHT_REGULAR, moduleViewModel.getFontWeight(), delta);
 
-    module.stateMonitor.set(Module.FETCHING);
+    module.stateMonitor.set(Component.FETCHING);
     assertEquals("Downloading...", moduleViewModel.getStatus());
     assertEquals(TextAttribute.WEIGHT_REGULAR, moduleViewModel.getFontWeight(), delta);
 
-    module.stateMonitor.set(Module.FETCHED);
+    module.stateMonitor.set(Component.FETCHED);
     assertEquals("Not installed", moduleViewModel.getStatus());
     assertEquals(TextAttribute.WEIGHT_REGULAR, moduleViewModel.getFontWeight(), delta);
 
-    module.stateMonitor.set(Module.LOADING);
+    module.stateMonitor.set(Component.LOADING);
     assertEquals("Installing...", moduleViewModel.getStatus());
     assertEquals(TextAttribute.WEIGHT_REGULAR, moduleViewModel.getFontWeight(), delta);
 
-    module.stateMonitor.set(Module.LOADED);
+    module.stateMonitor.set(Component.LOADED);
     assertEquals("Loaded", moduleViewModel.getStatus());
     assertEquals(TextAttribute.WEIGHT_BOLD, moduleViewModel.getFontWeight(), delta);
 
-    module.stateMonitor.set(Module.WAITING_FOR_DEPS);
+    module.stateMonitor.set(Component.WAITING_FOR_DEPS);
     assertEquals("Waiting for dependencies...", moduleViewModel.getStatus());
     assertEquals(TextAttribute.WEIGHT_BOLD, moduleViewModel.getFontWeight(), delta);
 
-    module.stateMonitor.set(Module.INSTALLED);
+    module.stateMonitor.set(Component.INSTALLED);
     assertEquals("Installed", moduleViewModel.getStatus());
     assertEquals(TextAttribute.WEIGHT_BOLD, moduleViewModel.getFontWeight(), delta);
 
-    module.stateMonitor.set(Module.ERROR);
+    module.stateMonitor.set(Component.ERROR);
     assertEquals("Error", moduleViewModel.getStatus());
     assertEquals(TextAttribute.WEIGHT_REGULAR, moduleViewModel.getFontWeight(), delta);
   }

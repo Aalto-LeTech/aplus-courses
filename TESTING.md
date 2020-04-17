@@ -81,12 +81,16 @@ a manual testing manual. Marked with a github issue label "manual testing".
       <li>
         Ensure that <em>GoodStuff</em> and <em>O1Library</em> appear as loaded modules in the
         project tree, and their contents match the image below:<br/>
-        <img src="images/30_module_loaded.png" alt="GoodStuff and O1Library contents" /><br/>
-        <sub>It shouldn't take longer than 5 seconds for modules to be imported.</sub>
+        <img src="images/30_module_loaded.png" alt="GoodStuff and O1Library contents" />
       </li>
       <li>
         Ensure that <em>GoodStuff</em> and <em>O1Library</em> are marked <em>Installed</em> in the
         <em>Modules</em> tool window.
+      </li>
+      <li>
+        From <i>File</i> menu, open <i>Project Structure...</i> and navigate to <i>Modules</i> page
+        (under <i>Project Settings</i>).  Ensure that <em>GoodStuff</em> and <em>O1Library</em> are
+        listed there and neither of them is marked red (signaling missing dependencies).
       </li>
     </ol>
   </div>
@@ -149,13 +153,7 @@ a manual testing manual. Marked with a github issue label "manual testing".
         few seconds for the list of modules to be initialized. If the initialization takes more
         than 10&nbsp;seconds, consider it an error.</sub>
       </li>
-      <li>Select <em>GoodStuff</em> from the list and double click it.</li>
-      <li>
-        Ensure that <em>GoodStuff</em> and <em>O1Library</em> appear as loaded modules in the
-        project tree, and their contents match the image below:<br/>
-        <img src="images/30_module_loaded.png" alt="GoodStuff and O1Library contents" /><br/>
-        <sub>It shouldn't take longer than 5 seconds for modules to be imported.</sub>
-      </li>
+      <li>Select <em>GoodStuff</em> from the list and double click it to install the module.</li>
     </ol>
   </div>
   <div>
