@@ -37,7 +37,7 @@ public class ScalaSdk extends IntelliJLibrary<PersistentLibraryKind<ScalaLibrary
   /**
    * Constructs a new Scala SDK object.
    *
-   * @param name Name that must match scala-sdk-0.0.0 pattern.
+   * @param name    Name that must match scala-sdk-0.0.0 pattern.
    * @param project The IntelliJ project.
    */
   public ScalaSdk(@NotNull String name, @NotNull APlusProject project, int state) {
@@ -71,6 +71,8 @@ public class ScalaSdk extends IntelliJLibrary<PersistentLibraryKind<ScalaLibrary
   public void extractZip(File file) throws IOException {
     DirAwareZipFile zipFile = new DirAwareZipFile(file);
     String libDir = getFileName() + "/lib";
+    System.out.println("libDir " + libDir);
+    System.out.println("getFullPath().toString() " + getFullPath().toString());
     zipFile.extractDir(libDir, getFullPath().toString());
   }
 

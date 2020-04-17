@@ -26,6 +26,9 @@ public class ScalaSdkTest extends HeavyPlatformTestCase {
     @SystemIndependent String path = "src/test/resources/scalaSdk/scala-2.12.10.zip";
     File scalaZip = new File(path);
     @SystemIndependent String basePath = getProject().getBasePath();
+    System.out.println("basePath " + basePath);
+    Runtime.getRuntime().exec("sh -c ls");
+    Runtime.getRuntime().exec("sh -c pwd");
 
     //  when
     scalaSdk.extractZip(scalaZip);
@@ -34,9 +37,11 @@ public class ScalaSdkTest extends HeavyPlatformTestCase {
     VirtualFile scalaLibrary = getVirtualFile(
         new File(basePath + "/lib/scala-sdk-2.12.10/scala-library.jar"));
     assertNotNull("The extracted library scala library exists.", scalaLibrary);
-    VirtualFile scalaCompiler = getVirtualFile(new File(basePath + "/lib/scala-sdk-2.12.10/scala-library.jar"));
+    VirtualFile scalaCompiler = getVirtualFile(
+        new File(basePath + "/lib/scala-sdk-2.12.10/scala-library.jar"));
     assertNotNull("The extracted library scala compiler exists.", scalaCompiler);
-    VirtualFile scalaReflect = getVirtualFile(new File(basePath + "/lib/scala-sdk-2.12.10/scala-library.jar"));
+    VirtualFile scalaReflect = getVirtualFile(
+        new File(basePath + "/lib/scala-sdk-2.12.10/scala-library.jar"));
     assertNotNull("The extracted library scala reflect exists.", scalaReflect);
   }
 

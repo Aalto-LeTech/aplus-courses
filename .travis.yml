@@ -12,7 +12,7 @@ addons:
     token: $SONARCLOUD_TOKEN
 
 script:
-  - ./gradlew check --stacktrace && chmod +x start_local_a+_env.sh && ./start_local_a+_env.sh && sonar-scanner
+  - ./gradlew check --scan && chmod +x start_local_a+_env.sh && ./start_local_a+_env.sh && sonar-scanner
 
 deploy:
   - provider: script
