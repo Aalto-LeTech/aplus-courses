@@ -71,6 +71,8 @@ public class ScalaSdk extends IntelliJLibrary<PersistentLibraryKind<ScalaLibrary
   public void extractZip(File file) throws IOException {
     DirAwareZipFile zipFile = new DirAwareZipFile(file);
     String libDir = getFileName() + "/lib";
+    System.err.println("libDir " + libDir);
+    System.err.println("getFullPath().toString() " + getFullPath().toString());
     zipFile.extractDir(libDir, getFullPath().toString());
   }
 

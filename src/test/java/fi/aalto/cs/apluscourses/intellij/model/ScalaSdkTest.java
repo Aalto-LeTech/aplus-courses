@@ -51,6 +51,8 @@ public class ScalaSdkTest extends HeavyPlatformTestCase {
     File testFile = createTempFile("testFile.zip", "");
     @SystemIndependent String path = "src/test/resources/scalaSdk/scala-2.12.10.zip";
     File zip = new File(path);
+    System.out.println("zip.exists() " + zip.exists());
+    System.out.println("getTestName() " + getTestName(true));
 
     //  when
     //  this might occasionally fail as it actually fetches data from the network
@@ -71,6 +73,7 @@ public class ScalaSdkTest extends HeavyPlatformTestCase {
     //  when
     File tempFile = scalaSdk.createTempFile();
     String absolutePath = tempFile.getAbsolutePath();
+    System.out.println("absolutePath " + absolutePath);
 
     //  then
     assertTrue("Created file path part is correctFile is right.",
