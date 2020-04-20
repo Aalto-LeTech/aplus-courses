@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import org.jetbrains.annotations.SystemIndependent;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class ScalaSdkTest extends HeavyPlatformTestCase {
@@ -21,8 +22,6 @@ public class ScalaSdkTest extends HeavyPlatformTestCase {
   @Test
   public void testExtractZip() throws IOException {
     //  given
-    Runtime.getRuntime().exec("sh -c ls");
-    Runtime.getRuntime().exec("sh -c pwd");
     APlusProject aplusProject = new APlusProject(getProject());
     ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", aplusProject, 1);
     @SystemIndependent String path = "src/test/resources/scalaSdk/scala-2.12.10.zip";
@@ -45,8 +44,9 @@ public class ScalaSdkTest extends HeavyPlatformTestCase {
     assertNotNull("The extracted library scala reflect exists.", scalaReflect);
   }
 
+  @Ignore
   @Test
-  public void testFetchZipToWithValidZipWorks() throws IOException {
+  public void testFetchZipToWithValidZipWorks() throws IOException, InterruptedException {
     //  given
     APlusProject aplusProject = new APlusProject(getProject());
     ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", aplusProject, 1);
