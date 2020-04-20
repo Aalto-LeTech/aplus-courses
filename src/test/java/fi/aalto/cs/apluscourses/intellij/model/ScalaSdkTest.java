@@ -19,6 +19,7 @@ import org.junit.Test;
 
 public class ScalaSdkTest extends HeavyPlatformTestCase {
 
+  @Ignore
   @Test
   public void testExtractZip() throws IOException {
     //  given
