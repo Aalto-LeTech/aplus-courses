@@ -19,52 +19,6 @@ import org.junit.Test;
 
 public class ScalaSdkTest extends HeavyPlatformTestCase {
 
-  @Ignore
-  @Test
-  public void testExtractZip() throws IOException {
-    //  given
-    APlusProject aplusProject = new APlusProject(getProject());
-    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", aplusProject, 1);
-    @SystemIndependent String path = "src/test/resources/scalaSdk/scala-2.12.10.zip";
-    File scalaZip = new File(path);
-    @SystemIndependent String basePath = getProject().getBasePath();
-    System.out.println("basePath " + basePath);
-
-    //  when
-    scalaSdk.extractZip(scalaZip);
-
-    //  then
-    VirtualFile scalaLibrary = getVirtualFile(
-        new File(basePath + "/lib/scala-sdk-2.12.10/scala-library.jar"));
-    assertNotNull("The extracted library scala library exists.", scalaLibrary);
-    VirtualFile scalaCompiler = getVirtualFile(
-        new File(basePath + "/lib/scala-sdk-2.12.10/scala-library.jar"));
-    assertNotNull("The extracted library scala compiler exists.", scalaCompiler);
-    VirtualFile scalaReflect = getVirtualFile(
-        new File(basePath + "/lib/scala-sdk-2.12.10/scala-library.jar"));
-    assertNotNull("The extracted library scala reflect exists.", scalaReflect);
-  }
-
-  @Ignore
-  @Test
-  public void testFetchZipToWithValidZipWorks() throws IOException, InterruptedException {
-    //  given
-    APlusProject aplusProject = new APlusProject(getProject());
-    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", aplusProject, 1);
-    File testFile = createTempFile("testFile.zip", "");
-    @SystemIndependent String path = "src/test/resources/scalaSdk/scala-2.12.10.zip";
-    File zip = new File(path);
-
-    //  when
-    //  this might occasionally fail as it actually fetches data from the network
-    scalaSdk.fetchZipTo(testFile);
-
-    assertEquals(zip.length(), testFile.length());
-    //  then
-    long length = testFile.length() / 1_000_000;
-    assertTrue("Size of the loaded Scala stuff is around 20MB.", length >= 20);
-  }
-
   @Test
   public void testCreateTempFile() throws IOException {
     //  given
@@ -91,24 +45,6 @@ public class ScalaSdkTest extends HeavyPlatformTestCase {
 
     //  then
     assertEquals("The correct file name is returned.", "scala-2.12.10", fileName);
-  }
-
-  @Ignore
-  @Test
-  public void testFetchZipToWithInvalidZipThrows() throws IOException {
-    //  given
-    APlusProject aplusProject = new APlusProject(getProject());
-    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-5.5.5", aplusProject, 1);
-    File testFile = createTempFile("testFile.zip", "");
-
-    //  when
-    try {
-      scalaSdk.fetchZipTo(testFile);
-    } catch (IOException ex) {
-      //  then
-      assertEquals("The correct exception is thrown",
-          "https://scala-lang.org/files/archive/scala-5.5.5.zip", ex.getMessage());
-    }
   }
 
   @Test
