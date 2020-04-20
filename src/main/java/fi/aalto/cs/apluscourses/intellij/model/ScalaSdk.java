@@ -37,7 +37,7 @@ public class ScalaSdk extends IntelliJLibrary<PersistentLibraryKind<ScalaLibrary
   /**
    * Constructs a new Scala SDK object.
    *
-   * @param name Name that must match scala-sdk-0.0.0 pattern.
+   * @param name    Name that must match scala-sdk-0.0.0 pattern.
    * @param project The IntelliJ project.
    */
   public ScalaSdk(@NotNull String name, @NotNull APlusProject project, int state) {
@@ -54,25 +54,33 @@ public class ScalaSdk extends IntelliJLibrary<PersistentLibraryKind<ScalaLibrary
   }
 
   @NotNull
-  private File createTempFile() throws IOException {
+  public File createTempFile() throws IOException {
     return FileUtilRt.createTempFile(getFileName(), ".zip");
   }
 
-  private void fetchZipTo(File file) throws IOException {
+  public void fetchZipTo(File file) throws IOException {
     FileUtils.copyURLToFile(new URL(URL + getFileName() + ".zip"), file);
   }
 
-  private void extractZip(File file) throws IOException {
+  /**
+   * Method to extract contents of the .zip file.
+   *
+   * @param file a zip {@link File} to extract.
+   * @throws IOException is thrown if zip can't be extracted.
+   */
+  public void extractZip(File file) throws IOException {
     DirAwareZipFile zipFile = new DirAwareZipFile(file);
     String libDir = getFileName() + "/lib";
+    System.out.println("libDir " + libDir);
+    System.out.println("getFullPath().toString() " + getFullPath().toString());
     zipFile.extractDir(libDir, getFullPath().toString());
   }
 
-  private Path getFullPath() {
+  public Path getFullPath() {
     return project.getBasePath().resolve(getPath());
   }
 
-  private String getFileName() {
+  public String getFileName() {
     return "scala-" + scalaVersion;
   }
 
@@ -81,8 +89,15 @@ public class ScalaSdk extends IntelliJLibrary<PersistentLibraryKind<ScalaLibrary
     return getUris(CLASSES);
   }
 
-  private String[] getUris(@NotNull String[] roots) {
+  /**
+   * Method to filter out SDK library root URIs.
+   *
+   * @param roots an array of {@link String} to filter.
+   * @return filtered array of root {@link String}s.
+   */
+  public String[] getUris(@NotNull String[] roots) {
     return Arrays.stream(roots)
+        .filter(string -> !string.isEmpty())
         .map(project.getBasePath().resolve(getPath())::resolve)
         .map(Path::toUri)
         .map(URI::toString)
@@ -90,7 +105,7 @@ public class ScalaSdk extends IntelliJLibrary<PersistentLibraryKind<ScalaLibrary
   }
 
   @Override
-  protected PersistentLibraryKind<ScalaLibraryProperties> getLibraryKind() {
+  public PersistentLibraryKind<ScalaLibraryProperties> getLibraryKind() {
     return ScalaLibraryType.Kind$.MODULE$;
   }
 
@@ -104,10 +119,9 @@ public class ScalaSdk extends IntelliJLibrary<PersistentLibraryKind<ScalaLibrary
 
   @Override
   @CalledWithWriteLock
-  protected void initializeLibraryProperties(
+  public void initializeLibraryProperties(
       LibraryProperties<ScalaLibraryPropertiesState> properties) {
     properties.loadState(new ScalaLibraryPropertiesState(
         ScalaLanguageLevel.findByVersion(scalaVersion).get(), getUris(getJarFiles())));
   }
 }
-

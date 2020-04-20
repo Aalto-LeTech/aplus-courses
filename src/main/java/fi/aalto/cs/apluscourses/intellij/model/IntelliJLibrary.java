@@ -22,8 +22,11 @@ public abstract class IntelliJLibrary
     this.project = project;
   }
 
+  /**
+   * Method that adds libraries to SDK root.
+   */
   @CalledWithWriteLock
-  private void loadInternal() {
+  public void loadInternal() {
     LibraryTable.ModifiableModel libraryTable = project.getLibraryTable().getModifiableModel();
     com.intellij.openapi.roots.libraries.Library.ModifiableModel library = libraryTable
         .createLibrary(getName(), getLibraryKind())
