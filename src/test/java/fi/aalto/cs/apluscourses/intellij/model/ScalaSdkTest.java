@@ -92,6 +92,7 @@ public class ScalaSdkTest extends HeavyPlatformTestCase {
     assertEquals("The correct file name is returned.", "scala-2.12.10", fileName);
   }
 
+  @Ignore
   @Test
   public void testFetchZipToWithInvalidZipThrows() throws IOException {
     //  given
