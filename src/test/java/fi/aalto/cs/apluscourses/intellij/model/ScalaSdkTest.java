@@ -3,6 +3,7 @@ package fi.aalto.cs.apluscourses.intellij.model;
 import com.intellij.testFramework.HeavyPlatformTestCase;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import org.junit.Test;
 
 public class ScalaSdkTest extends HeavyPlatformTestCase {
@@ -15,11 +16,10 @@ public class ScalaSdkTest extends HeavyPlatformTestCase {
 
     //  when
     File tempFile = scalaSdk.createTempFile();
-    String absolutePath = tempFile.getAbsolutePath();
+    Path absolutePath = tempFile.toPath();
 
     //  then
-    assertTrue("Created file path part is correct.",
-        absolutePath.contains("/scala-5.5.5.zip"));
+    assertTrue("Created file path part is correct.", absolutePath.endsWith("scala-5.5.5.zip"));
   }
 
   @Test
