@@ -64,5 +64,4 @@ public class PropertyReader {
     @NotNull
     T parse(@NotNull String value);
   }
-
 }

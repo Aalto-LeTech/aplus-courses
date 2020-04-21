@@ -5,12 +5,15 @@ import fi.aalto.cs.apluscourses.utils.Resources;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
@@ -18,16 +21,26 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-public class Course implements ModuleSource {
+public class Course implements ComponentSource {
+  @NotNull
+  protected final Map<String, Component> components;
+  @NotNull
+  protected final ComponentSource commonLibraryProvider;
   @NotNull
   private final String name;
 
   @NotNull
   private final List<Module> modules;
 
+  @NotNull
+  private final List<Library> libraries;
+
   // Maps ids of required plugins to the names of required plugins.
   @NotNull
   private final Map<String, String> requiredPlugins;
+
+  @NotNull
+  private final Map<String, URL> resourceUrls;
 
   /**
    * Constructs a course with the given parameters.
@@ -36,12 +49,23 @@ public class Course implements ModuleSource {
    * @param modules         The list of modules in the course.
    * @param requiredPlugins A map containing the required plugins for this course. The keys are the
    *                        ids of the plugins and the values are the names of the plugins.
+   * @param resourceUrls    A map containing URLs to resources related to the course. The keys are
+   *                        the names of the resources and the values are the URLs.
    */
-  public Course(@NotNull String name, @NotNull List<Module> modules,
-                @NotNull Map<String, String> requiredPlugins) {
+  public Course(@NotNull String name,
+                @NotNull List<Module> modules,
+                @NotNull List<Library> libraries,
+                @NotNull Map<String, String> requiredPlugins,
+                @NotNull Map<String, URL> resourceUrls,
+                @NotNull ComponentSource commonLibraryProvider) {
     this.name = name;
     this.modules = modules;
     this.requiredPlugins = requiredPlugins;
+    this.resourceUrls = resourceUrls;
+    this.libraries = libraries;
+    this.components = Stream.concat(modules.stream(), libraries.stream())
+        .collect(Collectors.toMap(Component::getName, Function.identity()));
+    this.commonLibraryProvider = commonLibraryProvider;
   }
 
   public static Course fromResource(@NotNull String resourceName, @NotNull ModelFactory factory)
@@ -82,9 +106,10 @@ public class Course implements ModuleSource {
     JSONObject jsonObject = getCourseJsonObject(reader, sourcePath);
     String courseName = getCourseName(jsonObject, sourcePath);
     List<Module> courseModules = getCourseModules(jsonObject, sourcePath, factory);
-    Map<String, String> requiredPlugins
-        = getCourseRequiredPlugins(jsonObject, sourcePath);
-    return factory.createCourse(courseName, courseModules, requiredPlugins);
+    Map<String, String> requiredPlugins = getCourseRequiredPlugins(jsonObject, sourcePath);
+    Map<String, URL> resourceUrls = getCourseResourceUrls(jsonObject, sourcePath);
+    return factory.createCourse(courseName, courseModules, Collections.emptyList(),
+        requiredPlugins, resourceUrls);
   }
 
   /**
@@ -110,6 +135,16 @@ public class Course implements ModuleSource {
   }
 
   /**
+   * Returns the list of libraries (not including common libraries) of the course.
+   *
+   * @return Libraries of this course.
+   */
+  @NotNull
+  public List<Library> getLibraries() {
+    return libraries;
+  }
+
+  /**
    * Returns a map containing the required plugins for the course. The keys are the ids of the
    * plugins and the values are the names corresponding to the ids.
    *
@@ -117,8 +152,20 @@ public class Course implements ModuleSource {
    */
   @NotNull
   public Map<String, String> getRequiredPlugins() {
-    return requiredPlugins;
+    return Collections.unmodifiableMap(requiredPlugins);
   }
+
+  /**
+   * Returns a map containing URLs of resources for the course. The keys are the names of the
+   * resources and the values are the URLs.
+   *
+   * @return A map with URLs for various resources related to the course.
+   */
+  @NotNull
+  public Map<String, URL> getResourceUrls() {
+    return Collections.unmodifiableMap(resourceUrls);
+  }
+
 
   @NotNull
   private static JSONObject getCourseJsonObject(@NotNull Reader reader, @NotNull String source)
@@ -198,14 +245,59 @@ public class Course implements ModuleSource {
     return requiredPlugins;
   }
 
-  @Nullable
-  @Override
-  public Module getModuleOpt(@NotNull String moduleName) {
-    return modules
-        .stream()
-        .filter(module -> module.getName().equals(moduleName))
-        .findFirst()
-        .orElse(null);
+  @NotNull
+  private static Map<String, URL> getCourseResourceUrls(@NotNull JSONObject jsonObject,
+                                                        @NotNull String source)
+      throws MalformedCourseConfigurationFileException {
+    Map<String, URL> resourceUrls = new HashMap<>();
+    JSONObject resourceUrlsJsonObject = jsonObject.optJSONObject("resources");
+    if (resourceUrlsJsonObject == null) {
+      return resourceUrls;
+    }
+    Iterable<String> keys = resourceUrlsJsonObject::keys;
+    for (String resourceName : keys) {
+      try {
+        URL resourceUrl = new URL(resourceUrlsJsonObject.getString(resourceName));
+        resourceUrls.put(resourceName, resourceUrl);
+      } catch (JSONException | MalformedURLException ex) {
+        throw new MalformedCourseConfigurationFileException(source,
+            "Expected name-url-pairs in \"resources\" object", ex);
+      }
+    }
+    return resourceUrls;
   }
 
+  /**
+   * Updates the states of the component objects when the given module or library is removed from
+   * the project of this course. If the argument is null, does nothing.
+   */
+  public void onComponentRemove(@Nullable Component component) {
+    if (component != null) {
+      component.stateMonitor.set(Component.UNLOADED);
+    }
+  }
+
+  /**
+   * Updates the states of the component objects, when the directory with the files of the given
+   * module or library is deleted. If the argument is null, does nothing.
+   */
+  public void onComponentFilesDeleted(@Nullable Component component) {
+    if (component != null) {
+      component.stateMonitor.set(Component.UNINSTALLED);
+    }
+  }
+
+  @NotNull
+  @Override
+  public Component getComponent(@NotNull String componentName) throws NoSuchComponentException {
+    Component component = components.get(componentName);
+    return component != null ? component : commonLibraryProvider.getComponent(componentName);
+  }
+
+  @Nullable
+  @Override
+  public Component getComponentIfExists(@NotNull String name) {
+    Component component = components.get(name);
+    return component != null ? component : commonLibraryProvider.getComponentIfExists(name);
+  }
 }

@@ -108,5 +108,4 @@ public class BaseListViewModel<E extends ListElementViewModel<?>> extends Abstra
       }
     }
   }
-
 }

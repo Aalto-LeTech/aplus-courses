@@ -4,10 +4,10 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
+import fi.aalto.cs.apluscourses.model.Component;
+import fi.aalto.cs.apluscourses.model.ComponentInstaller;
+import fi.aalto.cs.apluscourses.model.ComponentInstallerImpl;
 import fi.aalto.cs.apluscourses.model.Course;
-import fi.aalto.cs.apluscourses.model.Module;
-import fi.aalto.cs.apluscourses.model.ModuleInstaller;
-import fi.aalto.cs.apluscourses.model.ModuleInstallerImpl;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.BaseViewModel;
 import fi.aalto.cs.apluscourses.utils.async.SimpleAsyncTaskManager;
@@ -21,7 +21,7 @@ public class ImportModuleAction extends AnAction {
   @NotNull
   private final MainViewModelProvider mainViewModelProvider;
   @NotNull
-  private final ModuleInstaller.Factory moduleInstallerFactory;
+  private final ComponentInstaller.Factory moduleInstallerFactory;
 
   /**
    * Constructs an action using given main view model provider and module installer factory.
@@ -29,7 +29,7 @@ public class ImportModuleAction extends AnAction {
    * @param moduleInstallerFactory A module installer factory.
    */
   public ImportModuleAction(@NotNull MainViewModelProvider mainViewModelProvider,
-                            @NotNull ModuleInstaller.Factory moduleInstallerFactory) {
+                            @NotNull ComponentInstaller.Factory moduleInstallerFactory) {
 
     this.mainViewModelProvider = mainViewModelProvider;
     this.moduleInstallerFactory = moduleInstallerFactory;
@@ -37,7 +37,7 @@ public class ImportModuleAction extends AnAction {
 
   public ImportModuleAction() {
     this(PluginSettings.getInstance(),
-        new ModuleInstallerImpl.FactoryImpl<>(new SimpleAsyncTaskManager()));
+        new ComponentInstallerImpl.FactoryImpl<>(new SimpleAsyncTaskManager()));
   }
 
   @Override
@@ -54,7 +54,7 @@ public class ImportModuleAction extends AnAction {
     CourseViewModel courseViewModel =
         mainViewModelProvider.getMainViewModel(e.getProject()).courseViewModel.get();
     if (courseViewModel != null) {
-      List<Module> modules = courseViewModel.getModules().getSelectedElements()
+      List<Component> modules = courseViewModel.getModules().getSelectedElements()
           .stream()
           .map(BaseViewModel::getModel)
           .collect(Collectors.toList());
