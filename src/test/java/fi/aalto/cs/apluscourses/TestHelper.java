@@ -3,6 +3,7 @@ package fi.aalto.cs.apluscourses;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.IdeaPluginDescriptorImpl;
 import com.intellij.ide.plugins.PluginManager;
+import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
@@ -112,7 +113,7 @@ public interface TestHelper {
    * @return the created {@link ReplConfigurationFormModel}
    */
   @NotNull
-  default ReplConfigurationFormModel getDummyReplConfigurationFormModel(Project project) {
+  default ReplConfigurationFormModel getDummyReplConfigurationFormModel(@NotNull Project project) {
     String workDir = project.getProjectFilePath();
     String moduleName = "light_idea_test_case";
     makeFirstPluginScalaModule(project);
@@ -125,7 +126,20 @@ public interface TestHelper {
    * @return the created {@link ReplConfigurationForm}
    */
   @NotNull
-  default ReplConfigurationForm getDummyReplConfigurationForm(Project project) {
+  default ReplConfigurationForm getDummyReplConfigurationForm(@NotNull Project project) {
     return new ReplConfigurationForm(getDummyReplConfigurationFormModel(project));
+  }
+
+  /**
+   * Helper method for {@link com.intellij.testFramework.HeavyPlatformTestCase} to add modules.
+   *
+   * @param project a {@link Project} to install {@link Module}s into
+   * @param name {@link String} name of the added {@link Module}
+   * @param id {@link String} id of the added {@link Module}
+   */
+  default void createAndAddModule(Project project, String name, String id) {
+    ModuleManager moduleManager = ModuleManager.getInstance(project);
+    Runnable r = () -> moduleManager.newModule(name, id);
+    WriteCommandAction.runWriteCommandAction(project, r);
   }
 }

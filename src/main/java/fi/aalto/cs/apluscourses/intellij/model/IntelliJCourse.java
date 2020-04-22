@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 class IntelliJCourse extends Course {
+
   @NotNull
   private final APlusProject project;
 
