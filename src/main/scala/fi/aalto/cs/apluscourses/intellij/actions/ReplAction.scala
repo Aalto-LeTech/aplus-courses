@@ -27,9 +27,7 @@ class ReplAction extends RunConsoleAction {
   def checkFileOrFolderIsNull(@Nullable fileOrFolder: VirtualFile): Boolean = fileOrFolder == null
 
   def getModuleWorkDir(@NotNull module: Module): String = {
-    //  for project "root" this points to .../.../.idea folder
-    toSystemIndependentName(ModuleUtilCore.getModuleDirPath(module)
-      .replace("/.idea", ""))
+    toSystemIndependentName(ModuleUtilCore.getModuleDirPath(module))
   }
 
   def setCustomConfigurationFields(@NotNull configuration: ScalaConsoleRunConfiguration,
