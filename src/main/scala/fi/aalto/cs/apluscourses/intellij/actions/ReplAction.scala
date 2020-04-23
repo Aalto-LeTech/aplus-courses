@@ -5,6 +5,7 @@ import com.intellij.openapi.actionSystem.{AnActionEvent, CommonDataKeys}
 import com.intellij.openapi.module.{Module, ModuleManager, ModuleUtilCore}
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import fi.aalto.cs.apluscourses.intellij.services.PluginSettings
 import fi.aalto.cs.apluscourses.presentation.ReplConfigurationFormModel
 import fi.aalto.cs.apluscourses.ui.repl.{ReplConfigurationDialog, ReplConfigurationForm}
 import org.jetbrains.annotations.{NotNull, Nullable}
@@ -49,7 +50,7 @@ class ReplAction extends RunConsoleAction {
   def setConfigurationConditionally(@NotNull project: Project,
                                     @NotNull module: Module,
                                     @NotNull configuration: ScalaConsoleRunConfiguration): Boolean = {
-    if (ReplConfigurationFormModel.showREPLConfigWindow) {
+    if (PluginSettings.isShowReplConfigurationDialog) {
       val configModel = new ReplConfigurationFormModel(project, getModuleWorkDir(module), module.getName)
 
       createAndShowReplConfigurationDialog(configModel)

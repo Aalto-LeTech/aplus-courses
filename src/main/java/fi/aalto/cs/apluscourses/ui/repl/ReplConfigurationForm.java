@@ -1,6 +1,5 @@
 package fi.aalto.cs.apluscourses.ui.repl;
 
-import static fi.aalto.cs.apluscourses.presentation.ReplConfigurationFormModel.showREPLConfigWindow;
 import static java.util.Objects.requireNonNull;
 
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
@@ -8,6 +7,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.vfs.VirtualFile;
+import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.presentation.ReplConfigurationFormModel;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
@@ -43,7 +43,7 @@ public class ReplConfigurationForm extends JPanel {
    */
   public ReplConfigurationForm(@NotNull ReplConfigurationFormModel model) {
     this.model = model;
-    dontShowThisWindowCheckBox.setSelected(showREPLConfigWindow);
+    dontShowThisWindowCheckBox.setSelected(PluginSettings.isShowReplConfigurationDialog());
 
     infoTextLabel.setText(INFOLABEL_TEXT);
 
@@ -79,7 +79,8 @@ public class ReplConfigurationForm extends JPanel {
   public void updateModel() {
     model.setTargetModuleName(requireNonNull(moduleComboBox.getSelectedItem()).toString());
     model.setModuleWorkingDirectory(workingDirectoryField.getText());
-    showREPLConfigWindow = !dontShowThisWindowCheckBox.isSelected();
+    boolean chosenState = !dontShowThisWindowCheckBox.isSelected();
+    PluginSettings.setShowReplConfigurationDialog(chosenState);
   }
 
   public void cancelReplStart() {
