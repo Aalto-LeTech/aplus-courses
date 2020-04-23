@@ -4,6 +4,7 @@ import com.intellij.execution.RunManagerEx
 import com.intellij.openapi.actionSystem.{AnActionEvent, CommonDataKeys}
 import com.intellij.openapi.module.{Module, ModuleManager, ModuleUtilCore}
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.io.FileUtilRt.toSystemIndependentName
 import com.intellij.openapi.vfs.VirtualFile
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings
 import fi.aalto.cs.apluscourses.presentation.ReplConfigurationFormModel
@@ -27,7 +28,8 @@ class ReplAction extends RunConsoleAction {
 
   def getModuleWorkDir(@NotNull module: Module): String = {
     //  for project "root" this points to .../.../.idea folder
-    ModuleUtilCore.getModuleDirPath(module).replace("/.idea", "")
+    toSystemIndependentName(ModuleUtilCore.getModuleDirPath(module)
+      .replace("/.idea", ""))
   }
 
   def setCustomConfigurationFields(@NotNull configuration: ScalaConsoleRunConfiguration,
@@ -44,8 +46,8 @@ class ReplAction extends RunConsoleAction {
   }
 
   /**
-   * Sets configuration fields for the given configuration and returns true. Returns false if the REPL start is
-   * cancelled (i.e. user selects "Cancel" in the REPL configuration dialog).
+   * Sets configuration fields for the given configuration and returns true. Returns false if
+   * the REPL start is cancelled (i.e. user selects "Cancel" in the REPL configuration dialog).
    */
   def setConfigurationConditionally(@NotNull project: Project,
                                     @NotNull module: Module,
@@ -60,7 +62,7 @@ class ReplAction extends RunConsoleAction {
       } else {
         val changedModuleName = configModel.getTargetModuleName
         val changedModule = ModuleManager.getInstance(project).findModuleByName(changedModuleName)
-        val changedWorkDir = configModel.getModuleWorkingDirectory
+        val changedWorkDir = toSystemIndependentName(configModel.getModuleWorkingDirectory)
         setCustomConfigurationFields(configuration, changedWorkDir, changedModuleName, changedModule)
         true
       }
@@ -93,7 +95,7 @@ class ReplAction extends RunConsoleAction {
 
     if (project == null || checkFileOrFolderIsNull(targetFileOrFolder)) return // scalastyle:ignore
 
-    //  get target module & workDir
+    //  get target module
     val module = ModuleUtilCore.findModuleForFile(targetFileOrFolder, project)
 
     val runManagerEx = RunManagerEx.getInstanceEx(project)
