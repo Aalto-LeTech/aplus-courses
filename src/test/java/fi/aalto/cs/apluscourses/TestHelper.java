@@ -66,10 +66,10 @@ public interface TestHelper {
   @NotNull
   static IdeaPluginDescriptorImpl getIdeaPluginDescriptor(@NotNull String path)
       throws IOException, JDOMException {
-    File filePath = new File(path);
+    File file = new File(path);
     IdeaPluginDescriptorImpl ideaPluginDescriptor =
-        new IdeaPluginDescriptorImpl(filePath, false);
-    ideaPluginDescriptor.loadFromFile(filePath, null, true);
+        new IdeaPluginDescriptorImpl(file.toPath(), false);
+    ideaPluginDescriptor.loadFromFile(file, null, true);
     return ideaPluginDescriptor;
   }
 

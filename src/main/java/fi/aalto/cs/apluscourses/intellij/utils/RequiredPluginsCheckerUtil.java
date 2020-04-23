@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.toMap;
 
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManager;
+import com.intellij.ide.plugins.PluginManagerCore;
 import com.intellij.ide.plugins.RepositoryHelper;
 import com.intellij.ide.plugins.newui.BgProgressIndicator;
 import com.intellij.notification.Notification;
@@ -158,7 +159,7 @@ public class RequiredPluginsCheckerUtil {
     return missingOrDisabledIdeaPluginDescriptors
         .stream()
         .filter(Objects::nonNull)
-        .filter(descriptor -> PluginManager.isDisabled(descriptor.getPluginId().getIdString()))
+        .filter(descriptor -> PluginManagerCore.isDisabled(descriptor.getPluginId()))
         .collect(Collectors.toList());
   }
 

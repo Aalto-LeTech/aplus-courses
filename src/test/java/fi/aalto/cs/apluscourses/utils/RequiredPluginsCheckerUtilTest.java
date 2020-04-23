@@ -154,6 +154,6 @@ public class RequiredPluginsCheckerUtilTest extends BasePlatformTestCase impleme
 
     assertNotEmpty(availablePlugins);
     assertTrue("Amount of available plugins should be substantial.",
-        3000 < availablePlugins.size());
+        2000 < availablePlugins.size());
   }
 }
