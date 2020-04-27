@@ -49,6 +49,11 @@ public class ModuleListElementViewModelTest {
     ModuleListElementViewModel moduleViewModel = new ModuleListElementViewModel(module);
 
     float delta = 0.001f;
+
+    assertEquals("Unknown", moduleViewModel.getStatus());
+    assertEquals(TextAttribute.WEIGHT_REGULAR, moduleViewModel.getFontWeight(), delta);
+
+    module.stateMonitor.set(Component.NOT_INSTALLED);
     assertEquals("Not installed", moduleViewModel.getStatus());
     assertEquals(TextAttribute.WEIGHT_REGULAR, moduleViewModel.getFontWeight(), delta);
 
@@ -65,19 +70,25 @@ public class ModuleListElementViewModelTest {
     assertEquals(TextAttribute.WEIGHT_REGULAR, moduleViewModel.getFontWeight(), delta);
 
     module.stateMonitor.set(Component.LOADED);
-    assertEquals("Loaded", moduleViewModel.getStatus());
-    assertEquals(TextAttribute.WEIGHT_BOLD, moduleViewModel.getFontWeight(), delta);
-
-    module.stateMonitor.set(Component.WAITING_FOR_DEPS);
-    assertEquals("Waiting for dependencies...", moduleViewModel.getStatus());
-    assertEquals(TextAttribute.WEIGHT_BOLD, moduleViewModel.getFontWeight(), delta);
-
-    module.stateMonitor.set(Component.INSTALLED);
     assertEquals("Installed", moduleViewModel.getStatus());
     assertEquals(TextAttribute.WEIGHT_BOLD, moduleViewModel.getFontWeight(), delta);
 
     module.stateMonitor.set(Component.ERROR);
     assertEquals("Error", moduleViewModel.getStatus());
+    assertEquals(TextAttribute.WEIGHT_REGULAR, moduleViewModel.getFontWeight(), delta);
+
+    module.stateMonitor.set(Component.LOADED);
+
+    module.dependencyStateMonitor.set(Component.DEP_WAITING);
+    assertEquals("Waiting for dependencies...", moduleViewModel.getStatus());
+    assertEquals(TextAttribute.WEIGHT_BOLD, moduleViewModel.getFontWeight(), delta);
+
+    module.dependencyStateMonitor.set(Component.DEP_LOADED);
+    assertEquals("Installed", moduleViewModel.getStatus());
+    assertEquals(TextAttribute.WEIGHT_BOLD, moduleViewModel.getFontWeight(), delta);
+
+    module.dependencyStateMonitor.set(Component.DEP_ERROR);
+    assertEquals("Error in dependencies", moduleViewModel.getStatus());
     assertEquals(TextAttribute.WEIGHT_REGULAR, moduleViewModel.getFontWeight(), delta);
   }
 }

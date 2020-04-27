@@ -3,6 +3,7 @@ package fi.aalto.cs.apluscourses.utils;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -26,7 +27,7 @@ public class StateMonitorTest {
     int newState = 42;
     stateMonitor.set(newState);
 
-    verify(stateListener).onStateChanged();
+    verify(stateListener).onStateChanged(newState);
 
     assertEquals("get() should return new state", newState, stateMonitor.get());
 
@@ -40,15 +41,14 @@ public class StateMonitorTest {
 
     int expectedState = 15;
     stateMonitor.set(expectedState);
+    verify(stateListener).onStateChanged(expectedState);
 
     int newState = 1337;
     assertTrue("setConditionally() should return true",
         stateMonitor.setConditionally(expectedState, newState));
-
-    verify(stateListener, times(2)).onStateChanged();
+    verify(stateListener).onStateChanged(newState);
 
     assertEquals("get() should return new state", newState, stateMonitor.get());
-
 
     verifyNoMoreInteractions(stateListener);
   }

@@ -69,14 +69,10 @@ public class ComponentInstallerImpl<T> implements ComponentInstaller {
       try {
         fetch();
         load();
-      } catch (IOException | ComponentLoadException e) {
+        waitForDependencies();
+      } catch (IOException | ComponentLoadException | NoSuchComponentException e) {
         logger.info("A component could not be installed", e);
         component.stateMonitor.set(Component.ERROR);
-      }
-      try {
-        waitForDependencies();
-      } catch (NoSuchComponentException e) {
-        component.dependencyStateMonitor.set(Component.DEP_ERROR);
       }
     }
     
@@ -107,7 +103,9 @@ public class ComponentInstallerImpl<T> implements ComponentInstaller {
             .stream()
             .map(ComponentInstallerImpl.this::waitUntilLoadedAsync)
             .collect(Collectors.toList()));
-        component.dependencyStateMonitor.set(Component.DEP_LOADED);
+        component.dependencyStateMonitor.set(Component.DEP_VALIDATING);
+        component.dependencyStateMonitor.set(component.checkDependencyIntegrity(componentSource)
+            ? Component.DEP_LOADED : Component.DEP_ERROR);
       } else {
         component.dependencyStateMonitor.waitUntil(Component.DEP_LOADED);
       }

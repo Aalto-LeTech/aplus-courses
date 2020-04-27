@@ -46,14 +46,18 @@ public class IntelliJModelFactory implements ModelFactory {
       @Override
       public void moduleRemoved(@NotNull Project project,
           @NotNull com.intellij.openapi.module.Module projectModule) {
-        course.setComponentUnresolved(projectModule.getName());
+        Optional.of(projectModule.getName())
+            .map(course::getComponentIfExists)
+            .ifPresent(Component::setUnresolved);
       }
     });
     project.getLibraryTable().addListener(new LibraryTable.Listener() {
       @Override
       public void afterLibraryRemoved(
           @NotNull com.intellij.openapi.roots.libraries.Library library) {
-        course.setComponentUnresolved(Optional.ofNullable(library.getName()).orElse(""));
+        Optional.ofNullable(library.getName())
+            .map(course::getComponentIfExists)
+            .ifPresent(Component::setUnresolved);
       }
     });
     project.getMessageBus().connect().subscribe(VirtualFileManager.VFS_CHANGES,
@@ -62,8 +66,9 @@ public class IntelliJModelFactory implements ModelFactory {
           public void after(@NotNull List<? extends VFileEvent> events) {
             for (VFileEvent event : events) {
               if (event instanceof VFileDeleteEvent) {
-                VirtualFile deletedFile = Objects.requireNonNull(event.getFile());
-                course.setComponentUnresolved(course.getComponentIfExists(deletedFile));
+                Optional.ofNullable(event.getFile())
+                    .map(course::getComponentIfExists)
+                    .ifPresent(Component::setUnresolved);
               }
             }
           }
@@ -76,7 +81,7 @@ public class IntelliJModelFactory implements ModelFactory {
   public Module createModule(@NotNull String name, @NotNull URL url) {
     // IntelliJ modules may already be present in the project or file system, so we determine the
     // state at module creation here.
-    return new IntelliJModule(name, url, project, Component.UNRESOLVED);
+    return new IntelliJModule(name, url, project);
   }
 
   @Override

@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -44,18 +45,7 @@ public class ModelExtensions {
      * @param url  The URL from which the module can be downloaded.
      */
     public TestModule(@NotNull String name, @NotNull URL url) {
-      super(name, url, NOT_INSTALLED);
-    }
-
-    @NotNull
-    @Override
-    public List<String> getDependencyModules() {
-      return Collections.emptyList();
-    }
-
-    @Override
-    public List<String> getLibraries() {
-      return Collections.emptyList();
+      super(name, url);
     }
 
     @NotNull
@@ -72,6 +62,16 @@ public class ModelExtensions {
     @Override
     public void load() throws ComponentLoadException {
       // do nothing
+    }
+
+    @Override
+    protected int resolveStateInternal() {
+      return Component.NOT_INSTALLED;
+    }
+
+    @Override
+    protected List<String> computeDependencies() {
+      return Collections.emptyList();
     }
   }
 
@@ -99,12 +99,6 @@ public class ModelExtensions {
   }
 
   public static class TestComponentSource implements ComponentSource {
-
-    @NotNull
-    @Override
-    public Component getComponent(@NotNull String componentName) throws NoSuchComponentException {
-      throw new NoSuchComponentException(componentName, null);
-    }
 
     @Nullable
     @Override

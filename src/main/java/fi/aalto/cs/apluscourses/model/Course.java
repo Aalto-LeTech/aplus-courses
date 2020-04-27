@@ -67,9 +67,10 @@ public class Course implements ComponentSource {
     this.requiredPlugins = requiredPlugins;
     this.resourceUrls = resourceUrls;
     this.libraries = libraries;
+    this.commonLibraryProvider = commonLibraryProvider;
     components = Stream.concat(modules.stream(), libraries.stream())
         .collect(Collectors.toMap(Component::getName, Function.identity()));
-    this.commonLibraryProvider = commonLibraryProvider;
+
     for (Component component : components.values()) {
       component.onError.addListener(this, Course::resolveAndValidate);
     }
@@ -277,17 +278,6 @@ public class Course implements ComponentSource {
       }
     }
     return resourceUrls;
-  }
-
-  public void setComponentUnresolved(@Nullable Component component) {
-    if (component != null) {
-      component.stateMonitor.set(Component.UNRESOLVED);
-      resolved.set(false);
-    }
-  }
-
-  public void setComponentUnresolved(@NotNull String name) {
-    setComponentUnresolved(getComponentIfExists(name));
   }
 
   @NotNull

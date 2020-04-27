@@ -51,6 +51,12 @@ public class APlusProject {
     return LibraryTablesRegistrar.getInstance().getLibraryTable(project);
   }
 
+  /**
+   * Returns a state in which the given component should be.
+   * @param component An IntelliJ specific component.
+   * @param <T> Type of the component.
+   * @return Component state.
+   */
   public <T extends Component & IntelliJComponent<?>> int resolveComponentState(
       @NotNull T component) {
     /*

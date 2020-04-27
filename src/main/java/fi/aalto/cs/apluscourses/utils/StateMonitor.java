@@ -109,6 +109,10 @@ public class StateMonitor {
     listener.onStateChanged(newState);
   }
 
+  /**
+   * Returns a boolean value indicating whether the state is an error state.
+   * @return True if error, otherwise false.
+   */
   public boolean hasError() {
     synchronized (stateLock) {
       return isError(state);

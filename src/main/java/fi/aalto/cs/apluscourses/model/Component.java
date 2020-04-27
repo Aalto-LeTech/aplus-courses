@@ -18,7 +18,8 @@ public abstract class Component {
 
   public static final int DEP_INITIAL = StateMonitor.INITIAL;
   public static final int DEP_WAITING = DEP_INITIAL + 1;
-  public static final int DEP_LOADED = DEP_WAITING + 1;
+  public static final int DEP_VALIDATING = DEP_WAITING + 1;
+  public static final int DEP_LOADED = DEP_VALIDATING + 1;
   public static final int DEP_ERROR = StateMonitor.ERROR;
 
   public final Event stateChanged = new Event();
@@ -56,8 +57,14 @@ public abstract class Component {
     }
   }
 
+  /**
+   * Tells whether the component is in an error state.
+   * @return True if error, otherwise false.
+   */
   public boolean hasError() {
-    return stateMonitor.hasError() || dependencyStateMonitor.hasError();
+    int state = stateMonitor.get();
+    int dependencyState = dependencyStateMonitor.get();
+    return StateMonitor.isError(state) || state == LOADED && StateMonitor.isError(dependencyState);
   }
 
   /**
@@ -76,6 +83,9 @@ public abstract class Component {
 
   protected abstract int resolveStateInternal();
 
+  /**
+   * If the state is UNRESOLVED, sets it to a state resolved by subclasses.
+   */
   public void resolveState() {
     if (stateMonitor.get() == UNRESOLVED) {
       stateMonitor.setConditionally(UNRESOLVED, resolveStateInternal());
@@ -91,8 +101,12 @@ public abstract class Component {
    * @return True if the integrity is conformed, otherwise false.
    */
   public boolean checkDependencyIntegrity(ComponentSource componentSource) {
-    return dependencyStateMonitor.get() < DEP_LOADED || getDependencies().stream()
+    return dependencyStateMonitor.get() < DEP_VALIDATING || getDependencies().stream()
         .map(componentSource::getComponentIfExists)
         .allMatch(component -> component != null && component.stateMonitor.get() == LOADED);
+  }
+
+  public void setUnresolved() {
+    stateMonitor.set(UNRESOLVED);
   }
 }

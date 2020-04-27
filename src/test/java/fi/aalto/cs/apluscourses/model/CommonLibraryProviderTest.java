@@ -20,7 +20,6 @@ public class CommonLibraryProviderTest {
   public void testGetScalaSdk() throws NoSuchComponentException {
     String name = "scala-sdk-2.13.1";
     APlusProject project = mock(APlusProject.class);
-    when(project.resolveLibraryState(any())).thenReturn(Component.NOT_INSTALLED);
 
     CommonLibraryProvider libraryProvider = new CommonLibraryProvider(project);
 

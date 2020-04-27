@@ -41,8 +41,8 @@ public class ScalaSdk extends IntelliJLibrary<PersistentLibraryKind<ScalaLibrary
    * @param name    Name that must match scala-sdk-0.0.0 pattern.
    * @param project The IntelliJ project.
    */
-  public ScalaSdk(@NotNull String name, @NotNull APlusProject project, int state) {
-    super(name, project, state);
+  public ScalaSdk(@NotNull String name, @NotNull APlusProject project) {
+    super(name, project);
 
     scalaVersion = name.replace("scala-sdk-", "");
   }

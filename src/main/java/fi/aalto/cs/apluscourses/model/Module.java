@@ -18,8 +18,8 @@ public abstract class Module extends Component {
    * @param name The name of the module.
    * @param url The URL from which the module can be downloaded.
    */
-  public Module(@NotNull String name, @NotNull URL url, int state) {
-    super(name, state);
+  public Module(@NotNull String name, @NotNull URL url) {
+    super(name);
     this.url = url;
   }
 

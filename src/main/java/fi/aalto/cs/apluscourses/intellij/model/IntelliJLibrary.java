@@ -21,8 +21,8 @@ public abstract class IntelliJLibrary
   @NotNull
   protected final APlusProject project;
 
-  public IntelliJLibrary(@NotNull String name, @NotNull APlusProject project, int state) {
-    super(name, state);
+  public IntelliJLibrary(@NotNull String name, @NotNull APlusProject project) {
+    super(name);
     this.project = project;
   }
 
