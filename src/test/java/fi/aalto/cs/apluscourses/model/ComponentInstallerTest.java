@@ -57,9 +57,9 @@ public class ComponentInstallerTest {
     Module module1 = spy(new ModelExtensions.TestModule("dependentModule") {
       @NotNull
       @Override
-      public List<String> getDependencies() {
-        assertThat("Module should be at least in FETCHED state when getDependencies() is called.",
-            stateMonitor.get(), greaterThanOrEqualTo(Component.FETCHED));
+      protected List<String> computeDependencies() {
+        assertThat("Module should be at least in LOADED state when computeDependencies() is called.",
+            stateMonitor.get(), greaterThanOrEqualTo(Component.LOADED));
         List<String> dependencies = new ArrayList<>();
         dependencies.add("firstDep");
         dependencies.add("secondDep");
@@ -182,7 +182,7 @@ public class ComponentInstallerTest {
     Module module = spy(new ModelExtensions.TestModule("unknownDepModule") {
       @NotNull
       @Override
-      public List<String> getDependencies() {
+      protected List<String> computeDependencies() {
         return Collections.singletonList(nonExistentModuleName);
       }
     });
@@ -196,30 +196,6 @@ public class ComponentInstallerTest {
 
     installer.install(module);
 
-    verify(module, never()).load();
-
-    assertTrue("Unknown-dep-module should be in an error state, after the installation has ended.",
-        module.hasError());
-  }
-
-  @Test
-  public void testInstallGetDependenciesFail() throws ComponentLoadException {
-    String moduleName = "failingDepModule";
-    Module module = spy(new ModelExtensions.TestModule(moduleName) {
-      @NotNull
-      @Override
-      public List<String> getDependencies() throws ComponentLoadException {
-        throw new ComponentLoadException(moduleName, null);
-      }
-    });
-
-    ComponentInstaller installer =
-        new ComponentInstallerImpl<>(mock(ComponentSource.class), new SimpleAsyncTaskManager());
-
-    installer.install(module);
-
-    verify(module, never()).load();
-
     assertTrue("Unknown-dep-module should be in an error state, after the installation has ended.",
         module.hasError());
   }
@@ -229,7 +205,7 @@ public class ComponentInstallerTest {
     Module dependentModule = spy(new ModelExtensions.TestModule("dependentModule") {
       @NotNull
       @Override
-      public List<String> getDependencies() {
+      protected List<String> computeDependencies() {
         return Collections.singletonList("failingDep");
       }
     });
@@ -268,14 +244,14 @@ public class ComponentInstallerTest {
     Module moduleA = spy(new ModelExtensions.TestModule("moduleA") {
       @NotNull
       @Override
-      public List<String> getDependencies() {
+      protected List<String> computeDependencies() {
         return Collections.singletonList("moduleB");
       }
     });
     Module moduleB = spy(new ModelExtensions.TestModule("moduleB") {
       @NotNull
       @Override
-      public List<String> getDependencies() {
+      protected List<String> computeDependencies() {
         return Collections.singletonList("moduleA");
       }
     });

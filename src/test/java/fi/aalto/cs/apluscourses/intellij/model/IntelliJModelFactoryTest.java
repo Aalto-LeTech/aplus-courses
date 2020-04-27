@@ -102,36 +102,4 @@ public class IntelliJModelFactoryTest extends HeavyPlatformTestCase implements T
     assertEquals("State of the " + INDEPENDENT_MODULE + " Module has not changed (0).",
         0, module2.stateMonitor.get());
   }
-
-  @Test
-  public void testGetCourseModuleDependenciesWithInvalidInputWorks() throws ComponentLoadException {
-    //  given
-    //  course & modules
-    IntelliJModelFactory factory = new IntelliJModelFactory(getProject());
-    Module module2 = mock(Module.class);
-    when(module2.getDependencies()).thenThrow(new ComponentLoadException("ex", new Throwable()));
-
-    //  when
-    List<String> courseModuleDependencies = factory.getCourseModuleDependencies(module2);
-
-    //  then
-    assertNull("Returned list is null.", courseModuleDependencies);
-  }
-
-  @Test
-  public void testGetCourseModuleDependenciesWithValidInputWorks() throws ComponentLoadException {
-    //  given
-    //  course & modules
-    IntelliJModelFactory factory = new IntelliJModelFactory(getProject());
-    Module module2 = mock(Module.class);
-    when(module2.getDependencies()).thenReturn(Collections.singletonList(O_1_LIBRARY));
-
-    //  when
-    List<String> courseModuleDependencies = factory.getCourseModuleDependencies(module2);
-
-    //  then
-    assertNotNull("Returned list is not null.", courseModuleDependencies);
-    assertTrue("Returns a List containing the correct dependent Module name(s).",
-        courseModuleDependencies.contains(O_1_LIBRARY));
-  }
 }

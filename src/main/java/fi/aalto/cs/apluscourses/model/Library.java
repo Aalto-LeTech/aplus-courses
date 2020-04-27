@@ -12,7 +12,7 @@ public abstract class Library extends Component {
 
   @NotNull
   @Override
-  public List<String> getDependencies() {
+  protected List<String> computeDependencies() {
     return Collections.emptyList();
   }
 }

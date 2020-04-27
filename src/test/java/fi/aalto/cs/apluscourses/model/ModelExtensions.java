@@ -49,12 +49,12 @@ public class ModelExtensions {
 
     @NotNull
     @Override
-    public List<String> getDependencyModules() throws ComponentLoadException {
+    public List<String> getDependencyModules() {
       return Collections.emptyList();
     }
 
     @Override
-    public List<String> getLibraries() throws ComponentLoadException {
+    public List<String> getLibraries() {
       return Collections.emptyList();
     }
 

@@ -2,7 +2,6 @@ package fi.aalto.cs.apluscourses.model;
 
 import fi.aalto.cs.apluscourses.utils.async.TaskManager;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
@@ -11,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 public class ComponentInstallerImpl<T> implements ComponentInstaller {
 
-  private static Logger logger = LoggerFactory.getLogger(ComponentInstallerImpl.class);
+  private static final Logger logger = LoggerFactory.getLogger(ComponentInstallerImpl.class);
 
   private final ComponentSource componentSource;
   private final TaskManager<T> taskManager;
@@ -60,27 +59,29 @@ public class ComponentInstallerImpl<T> implements ComponentInstaller {
   private class Installation {
 
     private final Component component;
-    List<Component> dependencies;
 
     public Installation(Component component) {
       this.component = component;
     }
     
     public void doIt() {
+      component.resolveState();
       try {
         fetch();
-        initDependencies();
         load();
-        waitForDependencies();
-      } catch (IOException | ComponentLoadException | NoSuchComponentException e) {
+      } catch (IOException | ComponentLoadException e) {
         logger.info("A component could not be installed", e);
         component.stateMonitor.set(Component.ERROR);
+      }
+      try {
+        waitForDependencies();
+      } catch (NoSuchComponentException e) {
+        component.dependencyStateMonitor.set(Component.DEP_ERROR);
       }
     }
     
     private void fetch() throws IOException {
-      if (component.stateMonitor.setConditionally(Component.NOT_INSTALLED, Component.FETCHING)
-          || component.stateMonitor.setConditionally(Component.UNINSTALLED, Component.FETCHING)) {
+      if (component.stateMonitor.setConditionally(Component.NOT_INSTALLED, Component.FETCHING)) {
         component.fetch();
         component.stateMonitor.set(Component.FETCHED);
       } else {
@@ -89,9 +90,7 @@ public class ComponentInstallerImpl<T> implements ComponentInstaller {
     }
 
     private void load() throws ComponentLoadException {
-      if (component.stateMonitor.setConditionally(Component.FETCHED, Component.LOADING)
-          || component.stateMonitor.setConditionally(Component.UNLOADED, Component.LOADING)) {
-        installAsync(dependencies);
+      if (component.stateMonitor.setConditionally(Component.FETCHED, Component.LOADING)) {
         component.load();
         component.stateMonitor.set(Component.LOADED);
       } else {
@@ -99,26 +98,18 @@ public class ComponentInstallerImpl<T> implements ComponentInstaller {
       }
     }
 
-    private void waitForDependencies() {
-      if (component.stateMonitor.setConditionally(Component.LOADED, Component.WAITING_FOR_DEPS)) {
+    private void waitForDependencies() throws NoSuchComponentException {
+      if (component.dependencyStateMonitor.setConditionally(Component.DEP_INITIAL,
+          Component.DEP_WAITING)) {
+        List<Component> dependencies = componentSource.getComponents(component.getDependencies());
+        installAsync(dependencies);
         taskManager.joinAll(dependencies
             .stream()
             .map(ComponentInstallerImpl.this::waitUntilLoadedAsync)
             .collect(Collectors.toList()));
-        component.stateMonitor.set(Component.INSTALLED);
+        component.dependencyStateMonitor.set(Component.DEP_LOADED);
       } else {
-        component.stateMonitor.waitUntil(Component.INSTALLED);
-      }
-    }
-
-    private void initDependencies() throws ComponentLoadException, NoSuchComponentException {
-      if (dependencies != null) {
-        return;
-      }
-      List<String> dependencyNames = component.getDependencies();
-      dependencies = new ArrayList<>(dependencyNames.size());
-      for (String dependencyName : dependencyNames) {
-        dependencies.add(componentSource.getComponent(dependencyName));
+        component.dependencyStateMonitor.waitUntil(Component.DEP_LOADED);
       }
     }
   }

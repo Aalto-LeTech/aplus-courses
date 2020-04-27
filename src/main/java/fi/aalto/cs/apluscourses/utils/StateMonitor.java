@@ -36,12 +36,16 @@ public class StateMonitor {
 
   /**
    * Sets the state to {@code newState}.
+   *
    * @param newState New state.
+   * @return Whether or not there was a change.
    */
-  public void set(int newState) {
+  public boolean set(int newState) {
     if (setInternal(newState)) {
-      onChanged();
+      onChanged(newState);
+      return true;
     }
+    return false;
   }
 
   /**
@@ -51,10 +55,11 @@ public class StateMonitor {
    * @param expectedState Expected state.
    * @param newState      New state.
    * @return Whether or not the current state in the beginning was equal to {@code expectedState}.
-   * @throws IllegalArgumentException If {@code newState} is less than {@code expectedState}.
+   * @throws IllegalArgumentException If {@code newState} is less than {@code expectedState} (and
+   *                                  is not an error state).
    */
   public boolean setConditionally(int expectedState, int newState) {
-    if (newState < expectedState) {
+    if (newState < expectedState && !isError(newState)) {
       throw new IllegalArgumentException();
     }
     boolean result;
@@ -66,7 +71,7 @@ public class StateMonitor {
       }
     }
     if (changed) {
-      onChanged();
+      onChanged(newState);
     }
     return result;
   }
@@ -100,11 +105,17 @@ public class StateMonitor {
     }
   }
 
-  private void onChanged() {
-    listener.onStateChanged();
+  private void onChanged(int newState) {
+    listener.onStateChanged(newState);
   }
 
-  private boolean isError(int someState) {
+  public boolean hasError() {
+    synchronized (stateLock) {
+      return isError(state);
+    }
+  }
+
+  public static boolean isError(int someState) {
     return someState <= ERROR;
   }
 
@@ -121,6 +132,6 @@ public class StateMonitor {
 
   @FunctionalInterface
   public interface StateListener {
-    void onStateChanged();
+    void onStateChanged(int newState);
   }
 }

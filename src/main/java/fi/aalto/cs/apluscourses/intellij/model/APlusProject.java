@@ -2,13 +2,18 @@ package fi.aalto.cs.apluscourses.intellij.model;
 
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.roots.libraries.LibraryTable;
 import com.intellij.openapi.roots.libraries.LibraryTablesRegistrar;
 import com.intellij.util.messages.MessageBus;
+import fi.aalto.cs.apluscourses.intellij.utils.NameListRootPolicy;
 import fi.aalto.cs.apluscourses.model.Component;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,6 +35,12 @@ public class APlusProject {
     return ModuleManager.getInstance(project);
   }
 
+  @Nullable
+  public ModuleRootManager getModuleRootManager(@NotNull String moduleName) {
+    return Optional.ofNullable(getModuleManager().findModuleByName(moduleName))
+        .map(ModuleRootManager::getInstance).orElse(null);
+  }
+
   @NotNull
   public MessageBus getMessageBus() {
     return project.getMessageBus();
@@ -40,43 +51,32 @@ public class APlusProject {
     return LibraryTablesRegistrar.getInstance().getLibraryTable(project);
   }
 
-  @NotNull
-  public Path getLibraryPath(String name) {
-    return  Paths.get("lib", name);
-  }
-
-  @NotNull
-  public Path getModulePath(String name) {
-    return Paths.get(name);
-  }
-
-  public int resolveLibraryState(String name) {
-    return resolveComponentState(getLibraryTable().getLibraryByName(name), getLibraryPath(name));
-  }
-
-  public int resolveModuleState(String name) {
-    return resolveComponentState(getModuleManager().findModuleByName(name), getModulePath(name));
-  }
-
-  private int resolveComponentState(@Nullable Object componentObj, @NotNull Path dirPath) {
+  public <T extends Component & IntelliJComponent<?>> int resolveComponentState(
+      @NotNull T component) {
     /*
-     * Three cases to check for here:
+     * Four cases to check for here:
+     *   0. The component is in the project but the files are missing -> ERROR.
      *   1. The component is in the project, so its state should be INSTALLED.
      *   2. The component is not in the project but the module files are present in the file
      *      system, so its state should be FETCHED.
      *   3. The component files aren't present in the file system (and by extension the component
      *      isn't in the project), so its state should be NOT_INSTALLED.
      */
-    if (componentObj != null) {
-      return Component.INSTALLED;
+    boolean loaded = component.getPlatformObject() != null;
+    boolean filesOk = doesDirExist(component.getPath());
+    if (loaded && !filesOk) {
+      return Component.ERROR;
     }
-    if (doesDirExist(dirPath)) {
+    if (loaded) {
+      return Component.LOADED;
+    }
+    if (filesOk) {
       return Component.FETCHED;
     }
     return Component.NOT_INSTALLED;
   }
 
-  private boolean doesDirExist(Path relativePath) {
+  public boolean doesDirExist(Path relativePath) {
     return getBasePath().resolve(relativePath).toFile().isDirectory();
   }
 }

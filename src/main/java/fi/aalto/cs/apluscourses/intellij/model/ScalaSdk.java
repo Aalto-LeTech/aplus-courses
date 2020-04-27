@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.intellij.model;
 
+import com.intellij.openapi.roots.libraries.Library;
 import com.intellij.openapi.roots.libraries.LibraryProperties;
 import com.intellij.openapi.roots.libraries.PersistentLibraryKind;
 import com.intellij.openapi.util.io.FileUtilRt;
@@ -74,10 +75,6 @@ public class ScalaSdk extends IntelliJLibrary<PersistentLibraryKind<ScalaLibrary
     zipFile.extractDir(libDir, getFullPath().toString());
   }
 
-  public Path getFullPath() {
-    return project.getBasePath().resolve(getPath());
-  }
-
   public String getFileName() {
     return "scala-" + scalaVersion;
   }
@@ -96,7 +93,7 @@ public class ScalaSdk extends IntelliJLibrary<PersistentLibraryKind<ScalaLibrary
   public String[] getUris(@NotNull String[] roots) {
     return Arrays.stream(roots)
         .filter(string -> !string.isEmpty())
-        .map(project.getBasePath().resolve(getPath())::resolve)
+        .map(getFullPath()::resolve)
         .map(Path::toUri)
         .map(URI::toString)
         .toArray(String[]::new);
@@ -122,4 +119,5 @@ public class ScalaSdk extends IntelliJLibrary<PersistentLibraryKind<ScalaLibrary
     properties.loadState(new ScalaLibraryPropertiesState(
         ScalaLanguageLevel.findByVersion(scalaVersion).get(), getUris(getJarFiles())));
   }
+
 }

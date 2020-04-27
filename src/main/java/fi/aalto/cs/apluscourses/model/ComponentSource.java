@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,4 +18,14 @@ public interface ComponentSource {
    */
   @Nullable
   Component getComponentIfExists(@NotNull String componentName);
+
+  @NotNull
+  default List<Component> getComponents(@NotNull List<String> componentNames)
+      throws NoSuchComponentException {
+    List<Component> components = new ArrayList<>(componentNames.size());
+    for (String componentName : componentNames) {
+      components.add(getComponent(componentName));
+    }
+    return components;
+  }
 }

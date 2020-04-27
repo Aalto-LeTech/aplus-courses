@@ -7,10 +7,12 @@ import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -42,6 +44,8 @@ public class Course implements ComponentSource {
   @NotNull
   private final Map<String, URL> resourceUrls;
 
+  private final AtomicBoolean resolved = new AtomicBoolean(true);
+
   /**
    * Constructs a course with the given parameters.
    *
@@ -63,9 +67,12 @@ public class Course implements ComponentSource {
     this.requiredPlugins = requiredPlugins;
     this.resourceUrls = resourceUrls;
     this.libraries = libraries;
-    this.components = Stream.concat(modules.stream(), libraries.stream())
+    components = Stream.concat(modules.stream(), libraries.stream())
         .collect(Collectors.toMap(Component::getName, Function.identity()));
     this.commonLibraryProvider = commonLibraryProvider;
+    for (Component component : components.values()) {
+      component.onError.addListener(this, Course::resolveAndValidate);
+    }
   }
 
   public static Course fromResource(@NotNull String resourceName, @NotNull ModelFactory factory)
@@ -141,7 +148,12 @@ public class Course implements ComponentSource {
    */
   @NotNull
   public List<Library> getLibraries() {
-    return libraries;
+    return Collections.unmodifiableList(libraries);
+  }
+
+  @NotNull
+  public Collection<Component> getComponents() {
+    return components.values();
   }
 
   /**
@@ -267,24 +279,15 @@ public class Course implements ComponentSource {
     return resourceUrls;
   }
 
-  /**
-   * Updates the states of the component objects when the given module or library is removed from
-   * the project of this course. If the argument is null, does nothing.
-   */
-  public void onComponentRemove(@Nullable Component component) {
+  public void setComponentUnresolved(@Nullable Component component) {
     if (component != null) {
-      component.stateMonitor.set(Component.UNLOADED);
+      component.stateMonitor.set(Component.UNRESOLVED);
+      resolved.set(false);
     }
   }
 
-  /**
-   * Updates the states of the component objects, when the directory with the files of the given
-   * module or library is deleted. If the argument is null, does nothing.
-   */
-  public void onComponentFilesDeleted(@Nullable Component component) {
-    if (component != null) {
-      component.stateMonitor.set(Component.UNINSTALLED);
-    }
+  public void setComponentUnresolved(@NotNull String name) {
+    setComponentUnresolved(getComponentIfExists(name));
   }
 
   @NotNull
@@ -299,5 +302,21 @@ public class Course implements ComponentSource {
   public Component getComponentIfExists(@NotNull String name) {
     Component component = components.get(name);
     return component != null ? component : commonLibraryProvider.getComponentIfExists(name);
+  }
+
+  /**
+   * Resolves states of unresolved components and sets components in ERROR state if they do not
+   * conform integrity constraints.
+   */
+  public void resolveAndValidate() {
+    Collection<Component> components = getComponents();
+    for (Component component : components) {
+      component.resolveState();
+    }
+    for (Component component : components) {
+      if (!component.checkDependencyIntegrity(this)) {
+        component.dependencyStateMonitor.set(Component.DEP_ERROR);
+      }
+    }
   }
 }

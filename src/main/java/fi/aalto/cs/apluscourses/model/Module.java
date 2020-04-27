@@ -52,16 +52,4 @@ public abstract class Module extends Component {
   public URL getUrl() {
     return url;
   }
-
-  @NotNull
-  @Override
-  public List<String> getDependencies() throws ComponentLoadException {
-    return Stream.of(getLibraries(), getDependencyModules())
-        .flatMap(List::stream)
-        .collect(Collectors.toList());
-  }
-
-  public abstract List<String> getLibraries() throws ComponentLoadException;
-
-  public abstract List<String> getDependencyModules() throws ComponentLoadException;
 }

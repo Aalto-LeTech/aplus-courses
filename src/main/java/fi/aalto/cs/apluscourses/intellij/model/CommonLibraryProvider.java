@@ -36,7 +36,7 @@ public class CommonLibraryProvider implements ComponentSource {
 
   private Library createLibrary(String name) {
     if (name.startsWith("scala-sdk-")) {
-      return new ScalaSdk(name, project, project.resolveLibraryState(name));
+      return new ScalaSdk(name, project, Component.UNRESOLVED);
     }
     return null;
   }

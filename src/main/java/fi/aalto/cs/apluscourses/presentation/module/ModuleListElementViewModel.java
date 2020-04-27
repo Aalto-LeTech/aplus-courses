@@ -28,10 +28,11 @@ public class ModuleListElementViewModel extends ListElementViewModel<Module> {
    */
   public String getStatus() {
     switch (getModel().stateMonitor.get()) {
+      case Component.INITIAL:
+      case Component.RESOLVING:
+        return "Unknown";
       case Component.NOT_INSTALLED:
       case Component.FETCHED:
-      case Component.UNLOADED:
-      case Component.UNINSTALLED:
         return "Not installed";
       case Component.FETCHING:
         return "Downloading...";
