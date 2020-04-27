@@ -12,7 +12,7 @@
     ]]></description>
 
     <change-notes><![CDATA[
-      Added some basic functionality for plugin configuration and basic course materials loading.<br>
+      More functionality: loading modules and IDEs settings from A+ , customized REPL.<br>
     ]]>
     </change-notes>
 
@@ -34,7 +34,9 @@
     </extensions>
 
     <actions>
-        <group id="A+.Menu" text="A+" description="A+ Menu">
+        <group id="fi.aalto.cs.apluscourses.intellij.actions.ActionGroups.MENU_ACTIONS"
+               text="A+"
+               description="Actions for A+ menu">
             <add-to-group group-id="MainMenu" anchor="last" />
             <action id="Import Course IDE Settings"
                     class="fi.aalto.cs.apluscourses.intellij.actions.ImportIdeSettingsAction"
@@ -59,9 +61,9 @@
         <action id="fi.aalto.cs.apluscourses.intellij.actions.RequiredPluginsCheckerAction"
                 class="fi.aalto.cs.apluscourses.intellij.actions.RequiredPluginsCheckerAction"
                 text="Check Required Plugins"/>
-        <action id="Scala.RunConsole" class="fi.aalto.cs.apluscourses.intellij.actions.ReplAction"
-          overrides="true" text="Scala REPL..." description="Run Scala REPL">
-            <add-to-group group-id="ToolsMenu" anchor="last"/>
+        <action id="Scala.RunConsole"
+                class="fi.aalto.cs.apluscourses.intellij.actions.ReplAction"
+                overrides="true">
             <keyboard-shortcut first-keystroke="control shift D" keymap="$default"/>
         </action>
     </actions>
