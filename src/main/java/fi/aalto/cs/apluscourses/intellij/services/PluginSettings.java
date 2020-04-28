@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.intellij.services;
 
+import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalSettingsNames.A_PLUS_IMPORTED_IDE_SETTINGS;
 import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalSettingsNames.A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG;
 
 import com.intellij.ide.util.PropertiesComponent;
@@ -18,11 +19,13 @@ public class PluginSettings implements MainViewModelProvider {
   public interface LocalSettingsNames {
 
     String A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG = "A+.showReplConfigDialog";
+
+    String A_PLUS_IMPORTED_IDE_SETTINGS = "A+.importedIdeSettings";
   }
 
   public static final String COURSE_CONFIGURATION_FILE_URL
       = "https://grader.cs.hut.fi/static/O1_2020/projects/o1_course_config.json";
-  private static final PropertiesComponent propertiesManager = PropertiesComponent.getInstance();
+  private final PropertiesComponent propertiesManager = PropertiesComponent.getInstance();
 
   @NotNull
   private final ConcurrentMap<Project, MainViewModel> mainViewModels = new ConcurrentHashMap<>();
@@ -62,21 +65,32 @@ public class PluginSettings implements MainViewModelProvider {
     return new MainViewModel();
   }
 
-  public static boolean isShowReplConfigurationDialog() {
+  public boolean shouldShowReplConfigurationDialog() {
     return propertiesManager.getBoolean(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG);
   }
 
   //  todo consider to create a listener
-  public static void setShowReplConfigurationDialog(boolean showReplConfigDialog) {
+  public void setShowReplConfigurationDialog(boolean showReplConfigDialog) {
     propertiesManager.setValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG, showReplConfigDialog);
   }
 
+  public String getImportedIdeSettingsName() {
+    return propertiesManager.getValue(A_PLUS_IMPORTED_IDE_SETTINGS);
+  }
+
+  public void setImportedIdeSettingsName(@NotNull String courseName) {
+    propertiesManager.setValue(A_PLUS_IMPORTED_IDE_SETTINGS, courseName);
+  }
+
   /**
-   * Method that checks if the value is set (exists/non-empty etc.) and sets it to 'true'.
+   * Sets unset local settings to their default values.
    */
-  public static void initiateLocalSettingShowReplConfigurationDialog() {
+  public void initializeLocalSettings() {
     if (!propertiesManager.isValueSet(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG)) {
       propertiesManager.setValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG, true);
+    }
+    if (!propertiesManager.isValueSet(A_PLUS_IMPORTED_IDE_SETTINGS)) {
+      propertiesManager.setValue(A_PLUS_IMPORTED_IDE_SETTINGS, "");
     }
   }
 }

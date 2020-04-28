@@ -43,6 +43,8 @@ public class InitializationActivity implements StartupActivity, DumbAware {
 
   @Override
   public void runActivity(@NotNull Project project) {
+    PluginSettings.getInstance().initializeLocalSettings();
+
     Course course;
     try {
       InputStream inputStream = CoursesClient.fetchJson(
@@ -64,6 +66,6 @@ public class InitializationActivity implements StartupActivity, DumbAware {
         .getMainViewModel(project).courseViewModel.set(new CourseViewModel(course));
     ActionUtil.launch(RequiredPluginsCheckerAction.ACTION_ID,
         new ExtendedDataContext().withProject(project));
-    PluginSettings.initiateLocalSettingShowReplConfigurationDialog();
+
   }
 }

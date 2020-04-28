@@ -43,7 +43,8 @@ public class ReplConfigurationForm extends JPanel {
    */
   public ReplConfigurationForm(@NotNull ReplConfigurationFormModel model) {
     this.model = model;
-    dontShowThisWindowCheckBox.setSelected(PluginSettings.isShowReplConfigurationDialog());
+    dontShowThisWindowCheckBox.setSelected(
+        PluginSettings.getInstance().shouldShowReplConfigurationDialog());
 
     infoTextLabel.setText(INFOLABEL_TEXT);
 
@@ -80,7 +81,7 @@ public class ReplConfigurationForm extends JPanel {
     model.setTargetModuleName(requireNonNull(moduleComboBox.getSelectedItem()).toString());
     model.setModuleWorkingDirectory(workingDirectoryField.getText());
     boolean chosenState = !dontShowThisWindowCheckBox.isSelected();
-    PluginSettings.setShowReplConfigurationDialog(chosenState);
+    PluginSettings.getInstance().setShowReplConfigurationDialog(chosenState);
   }
 
   public void cancelReplStart() {
