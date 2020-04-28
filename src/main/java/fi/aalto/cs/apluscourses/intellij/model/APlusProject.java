@@ -26,6 +26,11 @@ public class APlusProject {
   }
 
   @NotNull
+  public Path getCourseFilePath() {
+    return getBasePath().resolve(Paths.get(Project.DIRECTORY_STORE_FOLDER, "a-plus-project"));
+  }
+
+  @NotNull
   public ModuleManager getModuleManager() {
     return ModuleManager.getInstance(project);
   }
