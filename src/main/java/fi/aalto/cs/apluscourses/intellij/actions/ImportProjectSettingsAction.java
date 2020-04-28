@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.intellij.actions;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.util.io.FileUtilRt;
@@ -24,7 +25,7 @@ import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.model.FileHeader;
 import org.jetbrains.annotations.NotNull;
 
-public class ImportProjectSettingsAction extends AnAction {
+public class ImportProjectSettingsAction extends AnAction implements DumbAware {
   @NotNull
   private MainViewModelProvider mainViewModelProvider;
 
