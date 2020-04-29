@@ -12,7 +12,7 @@
     ]]></description>
 
     <change-notes><![CDATA[
-      Added some basic functionality for plugin configuration and basic course materials loading.<br>
+      More functionality: loading modules and IDEs settings from A+ , customized REPL.<br>
     ]]>
     </change-notes>
 
@@ -34,12 +34,18 @@
     </extensions>
 
     <actions>
-        <group id="A+.Menu" text="A+" description="A+ Menu">
+        <group id="fi.aalto.cs.apluscourses.intellij.actions.ActionGroups.MENU_ACTIONS"
+               text="A+"
+               description="Actions for A+ menu">
             <add-to-group group-id="MainMenu" anchor="last" />
             <action id="Import Course IDE Settings"
                     class="fi.aalto.cs.apluscourses.intellij.actions.ImportIdeSettingsAction"
                     text="Import Course IDE Settings"
                     description="Imports the IDE settings for the currently loaded course." />
+            <action id="Import Course Project Settings"
+                    class="fi.aalto.cs.apluscourses.intellij.actions.ImportProjectSettingsAction"
+                    text="Import Course Project Settings"
+                    description="Imports the project settings for the currently loaded course." />
             <action id="About A+ Plugin"
                     class="fi.aalto.cs.apluscourses.intellij.actions.AboutAction"
                     text="About A+ Plugin"
@@ -55,9 +61,9 @@
         <action id="fi.aalto.cs.apluscourses.intellij.actions.RequiredPluginsCheckerAction"
                 class="fi.aalto.cs.apluscourses.intellij.actions.RequiredPluginsCheckerAction"
                 text="Check Required Plugins"/>
-        <action id="Scala.RunConsole" class="fi.aalto.cs.apluscourses.intellij.actions.ReplAction"
-          overrides="true" text="Scala REPL..." description="Run Scala REPL">
-            <add-to-group group-id="ToolsMenu" anchor="last"/>
+        <action id="Scala.RunConsole"
+                class="fi.aalto.cs.apluscourses.intellij.actions.ReplAction"
+                overrides="true">
             <keyboard-shortcut first-keystroke="control shift D" keymap="$default"/>
         </action>
     </actions>

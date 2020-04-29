@@ -66,8 +66,8 @@ public class ModuleTest {
     Module module = new ModelExtensions.TestModule("Changing module", url);
     module.stateChanged.addListener(listener, callback);
     verifyNoInteractions(callback);
-    assertEquals(Module.NOT_INSTALLED, module.stateMonitor.get());
-    module.stateMonitor.set(Module.FETCHING);
+    assertEquals(Component.NOT_INSTALLED, module.stateMonitor.get());
+    module.stateMonitor.set(Component.FETCHING);
     verify(callback, times(1)).callbackUntyped(listener);
     verifyNoMoreInteractions(callback);
   }

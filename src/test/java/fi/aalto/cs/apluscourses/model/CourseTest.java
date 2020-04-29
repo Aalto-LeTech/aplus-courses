@@ -1,8 +1,7 @@
 package fi.aalto.cs.apluscourses.model;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 
 import java.io.StringReader;
 import java.net.MalformedURLException;
@@ -27,8 +26,8 @@ public class CourseTest {
     requiredPlugins.put("org.intellij.awesome_plugin", "Awesome Plugin");
     Map<String, URL> resourceUrls = new HashMap<>();
     resourceUrls.put("key", new URL("http://localhost:8000"));
-    Course course
-        = new Course("Tester Course", modules, requiredPlugins, resourceUrls);
+    Course course = new Course("Tester Course", modules, Collections.emptyList(),
+        requiredPlugins, resourceUrls, new ModelExtensions.TestComponentSource());
     assertEquals("The name of the course should be the same as that given to the constructor",
         "Tester Course", course.getName());
     assertEquals("The modules of the course should be the same as those given to the constructor",
@@ -44,44 +43,20 @@ public class CourseTest {
   }
 
   @Test
-  public void testGetModule() throws MalformedURLException, NoSuchModuleException {
+  public void testGetModule() throws MalformedURLException, NoSuchComponentException {
     Module module1 = new ModelExtensions.TestModule("Test Module", new URL("https://example.com"));
     Module module2 = new ModelExtensions.TestModule("Awesome Module", new URL("https://slack.com"));
-    Course course = new Course("", Arrays.asList(module1, module2), Collections.emptyMap(),
-        Collections.emptyMap());
-    assertEquals("Course#getModule should return the correct module",
-        "Awesome Module", course.getModule("Awesome Module").getName());
-    assertEquals("Course#getModule should return the correct module",
-        new URL("https://slack.com"), course.getModule("Awesome Module").getUrl());
+    Course course = new Course("", Arrays.asList(module1, module2), Collections.emptyList(),
+        Collections.emptyMap(), Collections.emptyMap(), new ModelExtensions.TestComponentSource());
+    assertSame("Course#getModule should return the correct module",
+        module2, course.getComponent("Awesome Module"));
   }
 
-  @Test(expected = NoSuchModuleException.class)
-  public void testGetModuleWithMissingModule() throws NoSuchModuleException {
-    Course course = new Course("Just some course", Collections.emptyList(),
-        Collections.emptyMap(), Collections.emptyMap());
-    course.getModule("Test Module");
-  }
-
-  @Test
-  public void testGetModuleOpt() throws MalformedURLException {
-    Module module1 = new ModelExtensions.TestModule("Test test", new URL("https://duckduckgo.com"));
-    Module module2 = new ModelExtensions.TestModule("Awesome Module", new URL("https://gmail.com"));
-    Course course = new Course("", Arrays.asList(module1, module2), Collections.emptyMap(),
-        Collections.emptyMap());
-    Module optModule = course.getModuleOpt("Awesome Module");
-    assertNotNull("Course#getModuleOpt should not return null for an existing module", optModule);
-    assertEquals("Course#getModuleOpt should return the correct module",
-        "Awesome Module", optModule.getName());
-    assertEquals("Course#getModuleOpt should return the correct module",
-        new URL("https://gmail.com"), optModule.getUrl());
-  }
-
-  @Test
-  public void testGetModuleOptWithMissingModule() {
-    Course course = new Course("Meaningless Name", Collections.emptyList(),
-        Collections.emptyMap(), Collections.emptyMap());
-    assertNull("Course#getModuleOpt should return null for a missing module",
-        course.getModuleOpt("No module has this name"));
+  @Test(expected = NoSuchComponentException.class)
+  public void testGetModuleWithMissingModule() throws NoSuchComponentException {
+    Course course = new Course("Just some course", Collections.emptyList(), Collections.emptyList(),
+        Collections.emptyMap(), Collections.emptyMap(), new ModelExtensions.TestComponentSource());
+    course.getComponent("Test Module");
   }
 
   private static String nameJson = "\"name\":\"Awesome Course\"";

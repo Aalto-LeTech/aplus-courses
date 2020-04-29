@@ -3,10 +3,13 @@ package fi.aalto.cs.apluscourses.model;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,13 +44,24 @@ public class ModelExtensions {
      * @param url  The URL from which the module can be downloaded.
      */
     public TestModule(@NotNull String name, @NotNull URL url) {
-      super(name, url);
+      super(name, url, NOT_INSTALLED);
     }
 
     @NotNull
     @Override
-    public List<String> getDependencies() throws ModuleLoadException {
+    public List<String> getDependencyModules() throws ComponentLoadException {
       return Collections.emptyList();
+    }
+
+    @Override
+    public List<String> getLibraries() throws ComponentLoadException {
+      return Collections.emptyList();
+    }
+
+    @NotNull
+    @Override
+    public Path getPath() {
+      return Paths.get(name);
     }
 
     @Override
@@ -56,12 +70,7 @@ public class ModelExtensions {
     }
 
     @Override
-    public void load() throws ModuleLoadException {
-      // do nothing
-    }
-
-    @Override
-    public void updateState() {
+    public void load() throws ComponentLoadException {
       // do nothing
     }
   }
@@ -71,14 +80,36 @@ public class ModelExtensions {
     @Override
     public Course createCourse(@NotNull String name,
                                @NotNull List<Module> modules,
+                               @NotNull List<Library> libraries,
                                @NotNull Map<String, String> requiredPlugins,
                                @NotNull Map<String, URL> resourceUrls) {
-      return new Course(name, modules, requiredPlugins, resourceUrls);
+      return new Course(name, modules, libraries, requiredPlugins, resourceUrls,
+          new TestComponentSource());
     }
 
     @Override
     public Module createModule(@NotNull String name, @NotNull URL url) {
       return new TestModule(name, url);
+    }
+
+    @Override
+    public Library createLibrary(@NotNull String name) {
+      throw new UnsupportedOperationException("Only common libraries are supported.");
+    }
+  }
+
+  public static class TestComponentSource implements ComponentSource {
+
+    @NotNull
+    @Override
+    public Component getComponent(@NotNull String componentName) throws NoSuchComponentException {
+      throw new NoSuchComponentException(componentName, null);
+    }
+
+    @Nullable
+    @Override
+    public Component getComponentIfExists(@NotNull String componentName) {
+      return null;
     }
   }
 }

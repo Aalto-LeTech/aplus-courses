@@ -11,10 +11,11 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
+import fi.aalto.cs.apluscourses.model.Component;
+import fi.aalto.cs.apluscourses.model.ComponentInstaller;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.model.Module;
-import fi.aalto.cs.apluscourses.model.ModuleInstaller;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ public class ImportModuleActionTest {
 
   private Project project;
   private MainViewModel mainViewModel;
-  private ModuleInstaller moduleInstaller;
+  private ComponentInstaller installer;
 
   /**
    * Called before each test method call.  Initializes private fields.
@@ -47,17 +48,20 @@ public class ImportModuleActionTest {
     modules.add(new ModelExtensions.TestModule("module2"));
     modules.add(new ModelExtensions.TestModule("module3"));
 
-    Course course
-        = new Course("course", modules, Collections.emptyMap(), Collections.emptyMap());
+    Course course = new Course("course", modules,
+        Collections.emptyList(),
+        Collections.emptyMap(),
+        Collections.emptyMap(),
+        new ModelExtensions.TestComponentSource());
     mainViewModel.courseViewModel.set(new CourseViewModel(course));
 
-    moduleInstaller = mock(ModuleInstaller.class);
+    installer = mock(ComponentInstaller.class);
   }
 
   @SuppressWarnings({"ConstantConditions"})
   @Test
   public void testUpdate() {
-    ImportModuleAction action = new ImportModuleAction(p -> mainViewModel, c -> moduleInstaller);
+    ImportModuleAction action = new ImportModuleAction(p -> mainViewModel, c -> installer);
 
     Presentation presentation = new Presentation();
     AnActionEvent e = mock(AnActionEvent.class);
@@ -83,7 +87,7 @@ public class ImportModuleActionTest {
   @SuppressWarnings({"unchecked", "ConstantConditions"})
   @Test
   public void testActionPerformed() {
-    ImportModuleAction action = new ImportModuleAction(p -> mainViewModel, c -> moduleInstaller);
+    ImportModuleAction action = new ImportModuleAction(p -> mainViewModel, c -> installer);
 
     AnActionEvent e = mock(AnActionEvent.class);
 
@@ -95,9 +99,9 @@ public class ImportModuleActionTest {
 
     action.actionPerformed(e);
 
-    ArgumentCaptor<List<Module>> captor = ArgumentCaptor.forClass(List.class);
+    ArgumentCaptor<List<Component>> captor = ArgumentCaptor.forClass(List.class);
 
-    verify(moduleInstaller).installAsync(captor.capture());
+    verify(installer).installAsync(captor.capture());
 
     List<Module> modules = mainViewModel.courseViewModel.get().getModel().getModules();
 

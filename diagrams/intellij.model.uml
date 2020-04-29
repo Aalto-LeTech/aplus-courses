@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>fi.aalto.cs.apluscourses.intellij.model.APlusProject</OriginalElement>
+  <nodes>
+    <node x="455.625" y="114.0">fi.aalto.cs.apluscourses.model.Module</node>
+    <node x="0.0" y="679.0">fi.aalto.cs.apluscourses.intellij.model.IntelliJCourse</node>
+    <node x="175.5" y="342.0">fi.aalto.cs.apluscourses.intellij.model.ScalaSdk</node>
+    <node x="181.0" y="565.0">fi.aalto.cs.apluscourses.intellij.model.CommonLibraryProvider</node>
+    <node x="40.0" y="565.0">fi.aalto.cs.apluscourses.model.Course</node>
+    <node x="415.625" y="228.0">fi.aalto.cs.apluscourses.intellij.model.IntelliJModule</node>
+    <node x="367.625" y="0.0">fi.aalto.cs.apluscourses.model.Component</node>
+    <node x="291.0" y="114.0">fi.aalto.cs.apluscourses.model.Library</node>
+    <node x="497.0" y="565.0">fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory</node>
+    <node x="140.5" y="228.0">fi.aalto.cs.apluscourses.intellij.model.IntelliJLibrary</node>
+    <node x="537.0" y="451.0">fi.aalto.cs.apluscourses.model.ModelFactory</node>
+    <node x="103.0" y="451.0">fi.aalto.cs.apluscourses.model.ComponentSource</node>
+    <node x="0.0" y="114.0">com.intellij.openapi.roots.libraries.PersistentLibraryKind</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="fi.aalto.cs.apluscourses.intellij.model.IntelliJCourse" target="fi.aalto.cs.apluscourses.model.Course">
+      <point x="0.0" y="-32.0" />
+      <point x="0.0" y="32.0" />
+    </edge>
+    <edge source="fi.aalto.cs.apluscourses.model.Module" target="fi.aalto.cs.apluscourses.model.Component">
+      <point x="0.0" y="-32.0" />
+      <point x="516.125" y="89.0" />
+      <point x="480.875" y="89.0" />
+      <point x="37.75" y="32.0" />
+    </edge>
+    <edge source="fi.aalto.cs.apluscourses.intellij.model.IntelliJLibrary" target="com.intellij.openapi.roots.libraries.PersistentLibraryKind">
+      <point x="-52.75" y="-32.0" />
+      <point x="193.25" y="203.0" />
+      <point x="135.5" y="203.0" />
+      <point x="0.0" y="32.0" />
+    </edge>
+    <edge source="fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory" target="fi.aalto.cs.apluscourses.model.ModelFactory">
+      <point x="0.0" y="-32.0" />
+      <point x="0.0" y="32.0" />
+    </edge>
+    <edge source="fi.aalto.cs.apluscourses.intellij.model.CommonLibraryProvider" target="fi.aalto.cs.apluscourses.model.ComponentSource">
+      <point x="0.0" y="-32.0" />
+      <point x="316.5" y="540.0" />
+      <point x="261.25" y="540.0" />
+      <point x="52.75" y="32.0" />
+    </edge>
+    <edge source="fi.aalto.cs.apluscourses.model.Course" target="fi.aalto.cs.apluscourses.model.ComponentSource">
+      <point x="0.0" y="-32.0" />
+      <point x="100.5" y="540.0" />
+      <point x="155.75" y="540.0" />
+      <point x="-52.75" y="32.0" />
+    </edge>
+    <edge source="fi.aalto.cs.apluscourses.intellij.model.ScalaSdk" target="fi.aalto.cs.apluscourses.intellij.model.IntelliJLibrary">
+      <point x="0.0" y="-32.0" />
+      <point x="0.0" y="32.0" />
+    </edge>
+    <edge source="fi.aalto.cs.apluscourses.model.Library" target="fi.aalto.cs.apluscourses.model.Component">
+      <point x="0.0" y="-32.0" />
+      <point x="356.5" y="89.0" />
+      <point x="405.375" y="89.0" />
+      <point x="-37.75" y="32.0" />
+    </edge>
+    <edge source="fi.aalto.cs.apluscourses.intellij.model.IntelliJModule" target="fi.aalto.cs.apluscourses.model.Module">
+      <point x="0.0" y="-32.0" />
+      <point x="0.0" y="32.0" />
+    </edge>
+    <edge source="fi.aalto.cs.apluscourses.intellij.model.IntelliJLibrary" target="fi.aalto.cs.apluscourses.model.Library">
+      <point x="52.75" y="-32.0" />
+      <point x="298.75" y="203.0" />
+      <point x="356.5" y="203.0" />
+      <point x="0.0" y="32.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="1.0" x="379.0" y="371.5" />
+  <SelectedNodes>
+    <node>fi.aalto.cs.apluscourses.model.Module</node>
+  </SelectedNodes>
+  <Categories />
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+

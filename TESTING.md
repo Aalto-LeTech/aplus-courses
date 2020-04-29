@@ -81,12 +81,16 @@ a manual testing manual. Marked with a github issue label "manual testing".
       <li>
         Ensure that <em>GoodStuff</em> and <em>O1Library</em> appear as loaded modules in the
         project tree, and their contents match the image below:<br/>
-        <img src="images/30_module_loaded.png" alt="GoodStuff and O1Library contents" /><br/>
-        <sub>It shouldn't take longer than 5 seconds for modules to be imported.</sub>
+        <img src="images/30_module_loaded.png" alt="GoodStuff and O1Library contents" />
       </li>
       <li>
         Ensure that <em>GoodStuff</em> and <em>O1Library</em> are marked <em>Installed</em> in the
         <em>Modules</em> tool window.
+      </li>
+      <li>
+        From <i>File</i> menu, open <i>Project Structure...</i> and navigate to <i>Modules</i> page
+        (under <i>Project Settings</i>).  Ensure that <em>GoodStuff</em> and <em>O1Library</em> are
+        listed there and neither of them is marked red (signaling missing dependencies).
       </li>
     </ol>
   </div>
@@ -149,13 +153,7 @@ a manual testing manual. Marked with a github issue label "manual testing".
         few seconds for the list of modules to be initialized. If the initialization takes more
         than 10&nbsp;seconds, consider it an error.</sub>
       </li>
-      <li>Select <em>GoodStuff</em> from the list and double click it.</li>
-      <li>
-        Ensure that <em>GoodStuff</em> and <em>O1Library</em> appear as loaded modules in the
-        project tree, and their contents match the image below:<br/>
-        <img src="images/30_module_loaded.png" alt="GoodStuff and O1Library contents" /><br/>
-        <sub>It shouldn't take longer than 5 seconds for modules to be imported.</sub>
-      </li>
+      <li>Select <em>GoodStuff</em> from the list and double click it to install the module.</li>
     </ol>
   </div>
   <div>
@@ -238,6 +236,26 @@ a manual testing manual. Marked with a github issue label "manual testing".
       <li>
       After restarting the IDE, ensure that the settings have been successfully imported.
       For an example, the IDE should now be in dark mode.
+      </li>
+    </ol>
+  </div>
+</details>
+<details>
+  <summary>
+    <a href="https://github.com/Aalto-LeTech/intellij-plugin/issues/118">Import project settings from remote #118</a>
+  </summary>
+  <div>
+    <h5>Importing Project Settings</h5>
+    <ol>
+      <li>Create a new project and expand the <code>.idea</code> directory in the project tool window on the left.</li>
+      <li>Import course project settings from the A+ menu in the top toolbar.</li>
+      <li>Observe that the project is reloaded and the <code>.idea</code> directory should now contain new files.</li>
+      <li>Navigate to <code>File -> Settings... -> Editor -> Code Style -> Scala</code>.</li>
+      <li>Change the "Scheme" to "Project" to show project settings.</li>
+      <li>
+      Open the "Imports" tab and note that there are O1 related items in the "Imports always marked as used"
+      box at the bottom right:
+      <img src="images/project-settings.png" alt="Project Settings"/>
       </li>
     </ol>
   </div>
