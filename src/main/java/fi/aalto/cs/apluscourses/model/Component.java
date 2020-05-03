@@ -8,18 +8,17 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class Component {
-  public static final int UNRESOLVED = StateMonitor.INITIAL;
-  public static final int NOT_INSTALLED = UNRESOLVED + 1;
+  public static final int NOT_INSTALLED = StateMonitor.INITIAL;
   public static final int FETCHING = NOT_INSTALLED + 1;
   public static final int FETCHED = FETCHING + 1;
   public static final int LOADING = FETCHED + 1;
   public static final int LOADED = LOADING + 1;
   public static final int ERROR = StateMonitor.ERROR;
+  public static final int UNRESOLVED = ERROR - 1;
 
   public static final int DEP_INITIAL = StateMonitor.INITIAL;
   public static final int DEP_WAITING = DEP_INITIAL + 1;
-  public static final int DEP_VALIDATING = DEP_WAITING + 1;
-  public static final int DEP_LOADED = DEP_VALIDATING + 1;
+  public static final int DEP_LOADED = DEP_WAITING + 1;
   public static final int DEP_ERROR = StateMonitor.ERROR;
 
   public final Event stateChanged = new Event();
@@ -63,8 +62,7 @@ public abstract class Component {
    */
   public boolean hasError() {
     int state = stateMonitor.get();
-    int dependencyState = dependencyStateMonitor.get();
-    return StateMonitor.isError(state) || state == LOADED && StateMonitor.isError(dependencyState);
+    return StateMonitor.isError(state) || state == LOADED && dependencyStateMonitor.hasError();
   }
 
   /**
@@ -95,18 +93,25 @@ public abstract class Component {
   protected abstract List<String> computeDependencies();
 
   /**
-   * Checks whether this component conforms the dependency integrity constraint, that is, its
-   * dependencies are in LOADED state.
+   * Checks whether this component's dependencies are in LOADED state.
    * @param componentSource A component source which should have the dependencies of this component.
-   * @return True if the integrity is conformed, otherwise false.
+   * @return True if the dependencies are LOADED, otherwise false.
    */
-  public boolean checkDependencyIntegrity(ComponentSource componentSource) {
-    return dependencyStateMonitor.get() < DEP_VALIDATING || getDependencies().stream()
+  public boolean areDependenciesLoaded(ComponentSource componentSource) {
+    return getDependencies().stream()
         .map(componentSource::getComponentIfExists)
         .allMatch(component -> component != null && component.stateMonitor.get() == LOADED);
   }
 
   public void setUnresolved() {
     stateMonitor.set(UNRESOLVED);
+  }
+
+  public void validate(ComponentSource componentSource) {
+    int depState;
+    if (stateMonitor.get() == LOADED && (depState = dependencyStateMonitor.get()) != DEP_WAITING) {
+      dependencyStateMonitor.setConditionally(depState,
+          areDependenciesLoaded(componentSource) ? DEP_LOADED : DEP_ERROR);
+    }
   }
 }

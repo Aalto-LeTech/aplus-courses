@@ -72,7 +72,7 @@ public class Course implements ComponentSource {
         .collect(Collectors.toMap(Component::getName, Function.identity()));
 
     for (Component component : components.values()) {
-      component.onError.addListener(this, Course::resolveAndValidate);
+      component.onError.addListener(this, Course::resolve);
     }
   }
 
@@ -295,18 +295,23 @@ public class Course implements ComponentSource {
   }
 
   /**
-   * Resolves states of unresolved components and sets components in ERROR state if they do not
-   * conform integrity constraints.
+   * Resolves states of unresolved components and calls {@code validate()}.
    */
-  public void resolveAndValidate() {
-    Collection<Component> components = getComponents();
-    for (Component component : components) {
+  public void resolve() {
+    for (Component component : getComponents()) {
       component.resolveState();
     }
-    for (Component component : components) {
-      if (!component.checkDependencyIntegrity(this)) {
-        component.dependencyStateMonitor.set(Component.DEP_ERROR);
-      }
+    validate();
+  }
+
+  /**
+   * Sets components in DEP_ERROR state if they do not conform dependency integrity constraints.
+   * Sets components that are in DEP_ERROR state to DEP_LOADED state if dependency integrity
+   * constraints are conformed.
+   */
+  public void validate() {
+    for (Component component : getComponents()) {
+      component.validate(this);
     }
   }
 }

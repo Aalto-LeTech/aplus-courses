@@ -5,7 +5,7 @@ import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.module.ModuleWithNameAlreadyExists;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.util.io.FileUtilRt;
-import fi.aalto.cs.apluscourses.intellij.utils.NameListRootPolicy;
+import fi.aalto.cs.apluscourses.intellij.utils.ListDependenciesPolicy;
 import fi.aalto.cs.apluscourses.model.ComponentLoadException;
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.model.UnexpectedResponseException;
@@ -81,7 +81,8 @@ class IntelliJModule
         .orderEntries()
         .withoutSdk()
         .withoutModuleSourceEntries()
-        .process(new NameListRootPolicy(), new ArrayList<>()));
+        .productionOnly()
+        .process(new ListDependenciesPolicy(), new ArrayList<>()));
   }
 
   @NotNull

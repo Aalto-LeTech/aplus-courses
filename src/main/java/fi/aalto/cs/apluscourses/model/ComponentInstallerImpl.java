@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,8 +53,13 @@ public class ComponentInstallerImpl<T> implements ComponentInstaller {
   }
 
   @Override
-  public void installAsync(@NotNull List<Component> components) {
-    taskManager.fork(() -> install(components));
+  public void installAsync(@NotNull List<Component> components, @Nullable Runnable callback) {
+    taskManager.fork(() -> {
+      install(components);
+      if (callback != null) {
+        callback.run();
+      }
+    });
   }
 
   private class Installation {
@@ -74,6 +80,7 @@ public class ComponentInstallerImpl<T> implements ComponentInstaller {
         logger.info("A component could not be installed", e);
         component.stateMonitor.set(Component.ERROR);
       }
+      component.validate(componentSource);
     }
     
     private void fetch() throws IOException {
@@ -98,14 +105,13 @@ public class ComponentInstallerImpl<T> implements ComponentInstaller {
       if (component.dependencyStateMonitor.setConditionally(Component.DEP_INITIAL,
           Component.DEP_WAITING)) {
         List<Component> dependencies = componentSource.getComponents(component.getDependencies());
+        dependencies.forEach(Component::resolveState);
         installAsync(dependencies);
         taskManager.joinAll(dependencies
             .stream()
             .map(ComponentInstallerImpl.this::waitUntilLoadedAsync)
             .collect(Collectors.toList()));
-        component.dependencyStateMonitor.set(Component.DEP_VALIDATING);
-        component.dependencyStateMonitor.set(component.checkDependencyIntegrity(componentSource)
-            ? Component.DEP_LOADED : Component.DEP_ERROR);
+        component.dependencyStateMonitor.set(Component.DEP_LOADED);
       } else {
         component.dependencyStateMonitor.waitUntil(Component.DEP_LOADED);
       }

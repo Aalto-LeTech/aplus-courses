@@ -59,6 +59,7 @@ public class InitializationActivity implements StartupActivity, DumbAware {
       notifier.notify(new ClientIoError(e), null);
       return;
     }
+    course.resolve();
     PluginSettings.getInstance()
         .getMainViewModel(project).courseViewModel.set(new CourseViewModel(course));
     ActionUtil.launch(RequiredPluginsCheckerAction.ACTION_ID,

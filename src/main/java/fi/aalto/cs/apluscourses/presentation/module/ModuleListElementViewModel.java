@@ -32,10 +32,11 @@ public class ModuleListElementViewModel extends ListElementViewModel<Module> {
       case Component.UNRESOLVED:
         return "Unknown";
       case Component.NOT_INSTALLED:
-      case Component.FETCHED:
-        return "Not installed";
+        return "Double-click to download";
       case Component.FETCHING:
         return "Downloading...";
+      case Component.FETCHED:
+        return "Double-click to install";
       case Component.LOADING:
         return "Installing...";
       case Component.LOADED:
@@ -45,11 +46,11 @@ public class ModuleListElementViewModel extends ListElementViewModel<Module> {
     }
     switch (model.dependencyStateMonitor.get()) {
       case Component.DEP_INITIAL:
+        return "Installed, dependencies unknown";
+      case Component.DEP_WAITING:
+        return "Waiting for dependencies...";
       case Component.DEP_LOADED:
         return "Installed";
-      case Component.DEP_WAITING:
-      case Component.DEP_VALIDATING:
-        return "Waiting for dependencies...";
       default:
         return "Error in dependencies";
     }
