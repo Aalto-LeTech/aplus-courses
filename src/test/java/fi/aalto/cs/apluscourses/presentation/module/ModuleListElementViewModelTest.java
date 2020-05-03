@@ -54,7 +54,7 @@ public class ModuleListElementViewModelTest {
     assertEquals(TextAttribute.WEIGHT_REGULAR, moduleViewModel.getFontWeight(), delta);
 
     module.stateMonitor.set(Component.NOT_INSTALLED);
-    assertEquals("Not installed", moduleViewModel.getStatus());
+    assertEquals("Double-click to download", moduleViewModel.getStatus());
     assertEquals(TextAttribute.WEIGHT_REGULAR, moduleViewModel.getFontWeight(), delta);
 
     module.stateMonitor.set(Component.FETCHING);
@@ -62,7 +62,7 @@ public class ModuleListElementViewModelTest {
     assertEquals(TextAttribute.WEIGHT_REGULAR, moduleViewModel.getFontWeight(), delta);
 
     module.stateMonitor.set(Component.FETCHED);
-    assertEquals("Not installed", moduleViewModel.getStatus());
+    assertEquals("Double-click to install", moduleViewModel.getStatus());
     assertEquals(TextAttribute.WEIGHT_REGULAR, moduleViewModel.getFontWeight(), delta);
 
     module.stateMonitor.set(Component.LOADING);
@@ -70,7 +70,7 @@ public class ModuleListElementViewModelTest {
     assertEquals(TextAttribute.WEIGHT_REGULAR, moduleViewModel.getFontWeight(), delta);
 
     module.stateMonitor.set(Component.LOADED);
-    assertEquals("Installed", moduleViewModel.getStatus());
+    assertEquals("Installed, dependencies unknown", moduleViewModel.getStatus());
     assertEquals(TextAttribute.WEIGHT_BOLD, moduleViewModel.getFontWeight(), delta);
 
     module.stateMonitor.set(Component.ERROR);

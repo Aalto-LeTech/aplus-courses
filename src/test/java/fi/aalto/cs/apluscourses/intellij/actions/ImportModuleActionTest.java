@@ -3,6 +3,7 @@ package fi.aalto.cs.apluscourses.intellij.actions;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -101,7 +102,7 @@ public class ImportModuleActionTest {
 
     ArgumentCaptor<List<Component>> captor = ArgumentCaptor.forClass(List.class);
 
-    verify(installer).installAsync(captor.capture());
+    verify(installer).installAsync(captor.capture(), any());
 
     List<Module> modules = mainViewModel.courseViewModel.get().getModel().getModules();
 

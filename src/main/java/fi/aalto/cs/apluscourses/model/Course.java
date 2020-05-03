@@ -305,9 +305,7 @@ public class Course implements ComponentSource {
   }
 
   /**
-   * Sets components in DEP_ERROR state if they do not conform dependency integrity constraints.
-   * Sets components that are in DEP_ERROR state to DEP_LOADED state if dependency integrity
-   * constraints are conformed.
+   * Validates that components conform integrity constraints.
    */
   public void validate() {
     for (Component component : getComponents()) {

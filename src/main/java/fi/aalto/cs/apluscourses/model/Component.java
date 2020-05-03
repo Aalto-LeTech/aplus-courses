@@ -107,6 +107,11 @@ public abstract class Component {
     stateMonitor.set(UNRESOLVED);
   }
 
+  /**
+   * Sets the component in DEP_ERROR state if it does not conform dependency integrity constraints.
+   * Sets the component that is in DEP_ERROR state to DEP_LOADED state if dependency integrity
+   * constraints are conformed.
+   */
   public void validate(ComponentSource componentSource) {
     int depState;
     if (stateMonitor.get() == LOADED && (depState = dependencyStateMonitor.get()) != DEP_WAITING) {

@@ -2,9 +2,6 @@ package fi.aalto.cs.apluscourses.model;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
