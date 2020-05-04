@@ -21,6 +21,40 @@ public class ModelExtensions {
 
   }
 
+  public static class TestComponent extends Component {
+
+    public TestComponent(@NotNull String name) {
+      super(name);
+    }
+
+    @NotNull
+    @Override
+    public Path getPath() {
+      return null;
+    }
+
+    @Override
+    public void fetch() throws IOException {
+
+    }
+
+    @Override
+    public void load() throws ComponentLoadException {
+
+    }
+
+    @Override
+    protected int resolveStateInternal() {
+      return 0;
+    }
+
+    @NotNull
+    @Override
+    protected List<String> computeDependencies() {
+      return null;
+    }
+  }
+
   public static class TestModule extends Module {
 
     private static URL testURL;
@@ -37,12 +71,6 @@ public class ModelExtensions {
       this(name, testURL);
     }
 
-    /**
-     * Constructs a test module with the given name and URL.
-     *
-     * @param name The name of the module.
-     * @param url  The URL from which the module can be downloaded.
-     */
     public TestModule(@NotNull String name, @NotNull URL url) {
       super(name, url);
     }
@@ -68,6 +96,7 @@ public class ModelExtensions {
       return Component.NOT_INSTALLED;
     }
 
+    @NotNull
     @Override
     protected List<String> computeDependencies() {
       return Collections.emptyList();

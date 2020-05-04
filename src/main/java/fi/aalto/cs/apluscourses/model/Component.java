@@ -90,6 +90,7 @@ public abstract class Component {
     }
   }
 
+  @NotNull
   protected abstract List<String> computeDependencies();
 
   /**
