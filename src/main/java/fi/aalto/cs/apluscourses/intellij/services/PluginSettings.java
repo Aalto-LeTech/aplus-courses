@@ -62,8 +62,8 @@ public class PluginSettings implements MainViewModelProvider {
     return new MainViewModel();
   }
 
-  public static boolean shouldShowReplConfigurationDialog() {
-    return propertiesManager.getBoolean(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG);
+  public static String shouldShowReplConfigurationDialog() {
+    return propertiesManager.getValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG);
   }
 
   /**
@@ -76,7 +76,8 @@ public class PluginSettings implements MainViewModelProvider {
   }
 
   /**
-   * Method that checks if the value is set (exists/non-empty etc.) and sets it to 'true'.
+   * Method that checks if the value is set (exists/non-empty etc.) and sets the {@link String}
+   * value to 'true'.
    */
   public static void initiateLocalSettingShowReplConfigurationDialog() {
     if (!propertiesManager.isValueSet(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG)) {

@@ -43,7 +43,8 @@ public class ReplConfigurationForm extends JPanel {
    */
   public ReplConfigurationForm(@NotNull ReplConfigurationFormModel model) {
     this.model = model;
-    dontShowThisWindowCheckBox.setSelected(PluginSettings.shouldShowReplConfigurationDialog());
+    dontShowThisWindowCheckBox.setSelected(
+        Boolean.parseBoolean(PluginSettings.shouldShowReplConfigurationDialog()));
 
     infoTextLabel.setText(INFOLABEL_TEXT);
 
