@@ -62,12 +62,16 @@ public class PluginSettings implements MainViewModelProvider {
     return new MainViewModel();
   }
 
-  public static boolean isShowReplConfigurationDialog() {
+  public static boolean shouldShowReplConfigurationDialog() {
     return propertiesManager.getBoolean(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG);
   }
 
-  //  todo consider to create a listener
-  public static void setShowReplConfigurationDialog(boolean showReplConfigDialog) {
+  /**
+   * Method to set property, responsible for showing REPL configuration window.
+   *
+   * @param showReplConfigDialog a {@link String} representing a boolean value of the flag.
+   */
+  public static void setShowReplConfigurationDialog(String showReplConfigDialog) {
     propertiesManager.setValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG, showReplConfigDialog);
   }
 
@@ -76,7 +80,7 @@ public class PluginSettings implements MainViewModelProvider {
    */
   public static void initiateLocalSettingShowReplConfigurationDialog() {
     if (!propertiesManager.isValueSet(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG)) {
-      propertiesManager.setValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG, true);
+      propertiesManager.setValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG, "true");
     }
   }
 }
