@@ -62,21 +62,28 @@ public class PluginSettings implements MainViewModelProvider {
     return new MainViewModel();
   }
 
-  public static boolean isShowReplConfigurationDialog() {
-    return propertiesManager.getBoolean(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG);
-  }
-
-  //  todo consider to create a listener
-  public static void setShowReplConfigurationDialog(boolean showReplConfigDialog) {
-    propertiesManager.setValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG, showReplConfigDialog);
+  public boolean shouldShowReplConfigurationDialog() {
+    return Boolean.parseBoolean(propertiesManager.getValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG));
   }
 
   /**
-   * Method that checks if the value is set (exists/non-empty etc.) and sets it to 'true'.
+   * Method to set property, responsible for showing REPL configuration window.
+   *
+   * @param showReplConfigDialog a boolean value of the flag.
    */
-  public static void initiateLocalSettingShowReplConfigurationDialog() {
+  public void setShowReplConfigurationDialog(boolean showReplConfigDialog) {
+    propertiesManager
+        //  a String explicitly
+        .setValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG, String.valueOf(showReplConfigDialog));
+  }
+
+  /**
+   * Method that checks if the value is set (exists/non-empty etc.) and sets the {@link String}
+   * value to 'true'.
+   */
+  public void initiateLocalSettingShowReplConfigurationDialog() {
     if (!propertiesManager.isValueSet(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG)) {
-      propertiesManager.setValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG, true);
+      propertiesManager.setValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG, String.valueOf(true));
     }
   }
 }

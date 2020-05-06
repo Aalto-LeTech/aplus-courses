@@ -18,7 +18,7 @@ public class PluginSettingsTest extends BasePlatformTestCase {
         PropertiesComponent.getInstance().isValueSet(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG));
 
     //  when
-    PluginSettings.initiateLocalSettingShowReplConfigurationDialog();
+    PluginSettings.getInstance().initiateLocalSettingShowReplConfigurationDialog();
 
     //  then
     assertTrue("The state of the given setting is now set (to 'true').",
