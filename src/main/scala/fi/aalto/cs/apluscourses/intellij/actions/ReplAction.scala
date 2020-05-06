@@ -50,7 +50,7 @@ class ReplAction extends RunConsoleAction {
   def setConfigurationConditionally(@NotNull project: Project,
                                     @NotNull module: Module,
                                     @NotNull configuration: ScalaConsoleRunConfiguration): Boolean = {
-    if (PluginSettings.shouldShowReplConfigurationDialog.toBoolean) {
+    if (PluginSettings.getInstance().shouldShowReplConfigurationDialog) {
       val configModel = new ReplConfigurationFormModel(project, getModuleWorkDir(module), module.getName)
 
       createAndShowReplConfigurationDialog(configModel)

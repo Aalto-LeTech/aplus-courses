@@ -27,7 +27,7 @@ public class ReplConfigurationFormTest extends BasePlatformTestCase implements T
     assertEquals("Form contains the rights informative message",
         ReplConfigurationForm.INFOLABEL_TEXT, form.getInfoTextLabel().getText());
     assertEquals("Form correctly picks up negated flag for showing the config dialog",
-        Boolean.parseBoolean(PluginSettings.shouldShowReplConfigurationDialog()),
+        PluginSettings.getInstance().shouldShowReplConfigurationDialog(),
         form.getDontShowThisWindowCheckBox().isSelected());
   }
 

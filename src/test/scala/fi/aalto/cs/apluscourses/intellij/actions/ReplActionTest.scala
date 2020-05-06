@@ -22,7 +22,7 @@ class ReplActionTest extends BasePlatformTestCase with TestHelperScala {
     val moduleWorkDir = action.getModuleWorkDir(module)
 
     //  only FALSE branch, as TRUE triggers UI
-    PluginSettings.setShowReplConfigurationDialog(false.toString);
+    PluginSettings.getInstance().setShowReplConfigurationDialog(false);
 
     //  when
     action.setConfigurationConditionally(project, module, configuration)

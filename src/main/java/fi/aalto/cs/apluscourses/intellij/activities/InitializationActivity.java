@@ -64,6 +64,6 @@ public class InitializationActivity implements StartupActivity, DumbAware {
         .getMainViewModel(project).courseViewModel.set(new CourseViewModel(course));
     ActionUtil.launch(RequiredPluginsCheckerAction.ACTION_ID,
         new ExtendedDataContext().withProject(project));
-    PluginSettings.initiateLocalSettingShowReplConfigurationDialog();
+    PluginSettings.getInstance().initiateLocalSettingShowReplConfigurationDialog();
   }
 }

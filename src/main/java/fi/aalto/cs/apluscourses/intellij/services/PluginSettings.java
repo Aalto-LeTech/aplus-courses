@@ -62,26 +62,28 @@ public class PluginSettings implements MainViewModelProvider {
     return new MainViewModel();
   }
 
-  public static String shouldShowReplConfigurationDialog() {
-    return propertiesManager.getValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG);
+  public boolean shouldShowReplConfigurationDialog() {
+    return Boolean.parseBoolean(propertiesManager.getValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG));
   }
 
   /**
    * Method to set property, responsible for showing REPL configuration window.
    *
-   * @param showReplConfigDialog a {@link String} representing a boolean value of the flag.
+   * @param showReplConfigDialog a boolean value of the flag.
    */
-  public static void setShowReplConfigurationDialog(String showReplConfigDialog) {
-    propertiesManager.setValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG, showReplConfigDialog);
+  public void setShowReplConfigurationDialog(boolean showReplConfigDialog) {
+    propertiesManager
+        //  a String explicitly
+        .setValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG, String.valueOf(showReplConfigDialog));
   }
 
   /**
    * Method that checks if the value is set (exists/non-empty etc.) and sets the {@link String}
    * value to 'true'.
    */
-  public static void initiateLocalSettingShowReplConfigurationDialog() {
+  public void initiateLocalSettingShowReplConfigurationDialog() {
     if (!propertiesManager.isValueSet(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG)) {
-      propertiesManager.setValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG, "true");
+      propertiesManager.setValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG, String.valueOf(true));
     }
   }
 }
