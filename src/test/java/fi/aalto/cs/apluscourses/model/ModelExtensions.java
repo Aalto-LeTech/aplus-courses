@@ -23,6 +23,10 @@ public class ModelExtensions {
 
   public static class TestComponent extends Component {
 
+    public TestComponent() {
+      super("");
+    }
+
     public TestComponent(@NotNull String name) {
       super(name);
     }
@@ -30,17 +34,23 @@ public class ModelExtensions {
     @NotNull
     @Override
     public Path getPath() {
-      return null;
+      return Paths.get("");
     }
 
     @Override
-    public void fetch() throws IOException {
-
+    public void fetch() {
+      // do nothing
     }
 
     @Override
-    public void load() throws ComponentLoadException {
+    public void load() {
+      // do nothing
+    }
 
+    @NotNull
+    @Override
+    public Path getFullPath() {
+      return getPath().toAbsolutePath();
     }
 
     @Override
@@ -51,7 +61,7 @@ public class ModelExtensions {
     @NotNull
     @Override
     protected List<String> computeDependencies() {
-      return null;
+      return Collections.emptyList();
     }
   }
 
@@ -91,6 +101,12 @@ public class ModelExtensions {
       // do nothing
     }
 
+    @NotNull
+    @Override
+    public Path getFullPath() {
+      return getPath().toAbsolutePath();
+    }
+
     @Override
     protected int resolveStateInternal() {
       return Component.NOT_INSTALLED;
@@ -111,8 +127,7 @@ public class ModelExtensions {
                                @NotNull List<Library> libraries,
                                @NotNull Map<String, String> requiredPlugins,
                                @NotNull Map<String, URL> resourceUrls) {
-      return new Course(name, modules, libraries, requiredPlugins, resourceUrls,
-          new TestComponentSource());
+      return new Course(name, modules, libraries, requiredPlugins, resourceUrls);
     }
 
     @Override

@@ -19,6 +19,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import org.jdom.JDOMException;
 import org.jetbrains.annotations.CalledWithWriteLock;
 import org.jetbrains.annotations.NotNull;
@@ -44,6 +45,7 @@ class IntelliJModule
   }
 
   @NotNull
+  @Override
   public Path getFullPath() {
     return project.getBasePath().resolve(getPath());
   }
@@ -69,6 +71,11 @@ class IntelliJModule
     }
   }
 
+  @Override
+  public void unload() {
+    super.unload();
+    Optional.ofNullable(getPlatformObject()).ifPresent(project.getModuleManager()::disposeModule);
+  }
 
   @NotNull
   @Override

@@ -49,6 +49,10 @@ public abstract class Component {
 
   public abstract void load() throws ComponentLoadException;
 
+  public void unload() {
+    dependencies = null;
+  }
+
   protected void onStateChanged(int newState) {
     stateChanged.trigger();
     if (StateMonitor.isError(newState)) {
@@ -79,6 +83,9 @@ public abstract class Component {
     return dependencies;
   }
 
+  @NotNull
+  public abstract Path getFullPath();
+
   protected abstract int resolveStateInternal();
 
   /**
@@ -86,7 +93,7 @@ public abstract class Component {
    */
   public void resolveState() {
     if (stateMonitor.get() == UNRESOLVED) {
-      stateMonitor.setConditionally(UNRESOLVED, resolveStateInternal());
+      stateMonitor.setConditionallyTo(resolveStateInternal(), UNRESOLVED);
     }
   }
 
@@ -98,7 +105,7 @@ public abstract class Component {
    * @param componentSource A component source which should have the dependencies of this component.
    * @return True if the dependencies are LOADED, otherwise false.
    */
-  public boolean areDependenciesLoaded(ComponentSource componentSource) {
+  private boolean areDependenciesLoaded(ComponentSource componentSource) {
     return getDependencies().stream()
         .map(componentSource::getComponentIfExists)
         .allMatch(component -> component != null && component.stateMonitor.get() == LOADED);
@@ -115,9 +122,10 @@ public abstract class Component {
    */
   public void validate(ComponentSource componentSource) {
     int depState;
-    if (stateMonitor.get() == LOADED && (depState = dependencyStateMonitor.get()) != DEP_WAITING) {
-      dependencyStateMonitor.setConditionally(depState,
-          areDependenciesLoaded(componentSource) ? DEP_LOADED : DEP_ERROR);
+    if (stateMonitor.get() == LOADED
+        && (depState = dependencyStateMonitor.get()) != Component.DEP_WAITING) {
+      dependencyStateMonitor.setConditionallyTo(
+          areDependenciesLoaded(componentSource) ? DEP_LOADED : DEP_ERROR, depState);
     }
   }
 }

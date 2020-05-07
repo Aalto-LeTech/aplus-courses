@@ -72,6 +72,7 @@ public class ComponentInstallerImpl<T> implements ComponentInstaller {
     
     public void doIt() {
       component.resolveState();
+      unloadIfError();
       try {
         fetch();
         load();
@@ -82,9 +83,17 @@ public class ComponentInstallerImpl<T> implements ComponentInstaller {
       }
       component.validate(componentSource);
     }
+
+    private void unloadIfError() {
+      if (component.stateMonitor.hasError()) {
+        component.unload();
+        component.setUnresolved();
+        component.resolveState();
+      }
+    }
     
     private void fetch() throws IOException {
-      if (component.stateMonitor.setConditionally(Component.NOT_INSTALLED, Component.FETCHING)) {
+      if (component.stateMonitor.setConditionallyTo(Component.FETCHING, Component.NOT_INSTALLED)) {
         component.fetch();
         component.stateMonitor.set(Component.FETCHED);
       } else {
@@ -93,7 +102,7 @@ public class ComponentInstallerImpl<T> implements ComponentInstaller {
     }
 
     private void load() throws ComponentLoadException {
-      if (component.stateMonitor.setConditionally(Component.FETCHED, Component.LOADING)) {
+      if (component.stateMonitor.setConditionallyTo(Component.LOADING, Component.FETCHED)) {
         component.load();
         component.stateMonitor.set(Component.LOADED);
       } else {
@@ -102,8 +111,8 @@ public class ComponentInstallerImpl<T> implements ComponentInstaller {
     }
 
     private void waitForDependencies() throws NoSuchComponentException {
-      if (component.dependencyStateMonitor.setConditionally(Component.DEP_INITIAL,
-          Component.DEP_WAITING)) {
+      if (component.dependencyStateMonitor.setConditionallyTo(Component.DEP_WAITING,
+          Component.DEP_INITIAL, Component.DEP_ERROR)) {
         List<Component> dependencies = componentSource.getComponents(component.getDependencies());
         dependencies.forEach(Component::resolveState);
         installAsync(dependencies);

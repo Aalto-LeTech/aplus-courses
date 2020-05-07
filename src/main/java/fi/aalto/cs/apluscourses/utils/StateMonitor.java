@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.utils;
 
+import java.util.Arrays;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -49,25 +50,30 @@ public class StateMonitor {
   }
 
   /**
-   * If the current state equals {@code expectedState}, sets it to {@code newState} and returns
-   * true.  Otherwise, returns false.
+   * If the current state equals any one of {@code expectedStates}, sets it to {@code newState} and
+   * returns true.  Otherwise, returns false.
    *
-   * @param expectedState Expected state.
-   * @param newState      New state.
-   * @return Whether or not the current state in the beginning was equal to {@code expectedState}.
-   * @throws IllegalArgumentException If {@code newState} is less than {@code expectedState} (and
-   *                                  is not an error state).
+   * @param newState       New state.
+   * @param expectedStates Expected states.
+   * @return Whether or not the current state in the beginning was equal to any of
+   *         {@code expectedStates}.
+   * @throws IllegalArgumentException If {@code newState} is less than any of {@code expectedStates}
+   *                                  (and is not an error state).
    */
-  public boolean setConditionally(int expectedState, int newState) {
-    if (newState < expectedState && !isError(newState)) {
+  public boolean setConditionallyTo(int newState, int... expectedStates) {
+    if (!isError(newState)
+        && !Arrays.stream(expectedStates).allMatch(FunctionUtil.lessThanOrEqualTo(newState))) {
       throw new IllegalArgumentException();
     }
-    boolean result;
+    boolean result = false;
     boolean changed = false;
     synchronized (stateLock) {
-      result = state == expectedState;
-      if (result) {
-        changed = setInternal(newState);
+      for (int expectedState : expectedStates) {
+        result = state == expectedState;
+        if (result) {
+          changed = setInternal(newState);
+          break;
+        }
       }
     }
     if (changed) {

@@ -6,9 +6,11 @@ import com.intellij.openapi.roots.impl.libraries.LibraryEx;
 import com.intellij.openapi.roots.libraries.LibraryProperties;
 import com.intellij.openapi.roots.libraries.LibraryTable;
 import com.intellij.openapi.roots.libraries.PersistentLibraryKind;
+import fi.aalto.cs.apluscourses.model.ComponentLoadException;
 import fi.aalto.cs.apluscourses.model.Library;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 import org.jetbrains.annotations.CalledWithWriteLock;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -50,12 +52,24 @@ public abstract class IntelliJLibrary
     WriteAction.runAndWait(this::loadInternal);
   }
 
+  @Override
+  public void unload() {
+    super.unload();
+    WriteAction.runAndWait(this::unloadInternal);
+  }
+
+  @CalledWithWriteLock
+  private void unloadInternal() {
+    Optional.ofNullable(getPlatformObject()).ifPresent(project.getLibraryTable()::removeLibrary);
+  }
+
   @NotNull
   @Override
   public Path getPath() {
     return Paths.get("lib", getName());
   }
 
+  @Override
   @NotNull
   public Path getFullPath() {
     return project.getBasePath().resolve(getPath());

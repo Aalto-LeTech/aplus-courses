@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -26,8 +27,6 @@ import org.json.JSONTokener;
 public class Course implements ComponentSource {
   @NotNull
   protected final Map<String, Component> components;
-  @NotNull
-  protected final ComponentSource commonLibraryProvider;
   @NotNull
   private final String name;
 
@@ -60,20 +59,14 @@ public class Course implements ComponentSource {
                 @NotNull List<Module> modules,
                 @NotNull List<Library> libraries,
                 @NotNull Map<String, String> requiredPlugins,
-                @NotNull Map<String, URL> resourceUrls,
-                @NotNull ComponentSource commonLibraryProvider) {
+                @NotNull Map<String, URL> resourceUrls) {
     this.name = name;
     this.modules = modules;
     this.requiredPlugins = requiredPlugins;
     this.resourceUrls = resourceUrls;
     this.libraries = libraries;
-    this.commonLibraryProvider = commonLibraryProvider;
     components = Stream.concat(modules.stream(), libraries.stream())
         .collect(Collectors.toMap(Component::getName, Function.identity()));
-
-    for (Component component : components.values()) {
-      component.onError.addListener(this, Course::resolve);
-    }
   }
 
   public static Course fromResource(@NotNull String resourceName, @NotNull ModelFactory factory)
@@ -280,27 +273,17 @@ public class Course implements ComponentSource {
     return resourceUrls;
   }
 
-  @NotNull
-  @Override
-  public Component getComponent(@NotNull String componentName) throws NoSuchComponentException {
-    Component component = components.get(componentName);
-    return component != null ? component : commonLibraryProvider.getComponent(componentName);
-  }
-
   @Nullable
   @Override
   public Component getComponentIfExists(@NotNull String name) {
-    Component component = components.get(name);
-    return component != null ? component : commonLibraryProvider.getComponentIfExists(name);
+    return components.get(name);
   }
 
   /**
    * Resolves states of unresolved components and calls {@code validate()}.
    */
   public void resolve() {
-    for (Component component : getComponents()) {
-      component.resolveState();
-    }
+    getComponents().forEach(Component::resolveState);
     validate();
   }
 

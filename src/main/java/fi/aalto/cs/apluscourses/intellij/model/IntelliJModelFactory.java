@@ -9,6 +9,7 @@ import com.intellij.openapi.vfs.newvfs.BulkFileListener;
 import com.intellij.openapi.vfs.newvfs.events.VFileDeleteEvent;
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import fi.aalto.cs.apluscourses.model.Component;
+import fi.aalto.cs.apluscourses.model.ComponentInitializationCallback;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Library;
 import fi.aalto.cs.apluscourses.model.ModelFactory;
@@ -38,8 +39,14 @@ public class IntelliJModelFactory implements ModelFactory {
       @NotNull List<Library> libraries,
       @NotNull Map<String, String> requiredPlugins,
       @NotNull Map<String, URL> resourceUrls) {
+
     IntelliJCourse course =
         new IntelliJCourse(name, modules, libraries, requiredPlugins, resourceUrls, project);
+
+    ComponentInitializationCallback componentInitializationCallback =
+        component -> registerComponentToCourse(component, course);
+    course.commonLibraryProvider.setInitializationCallback(componentInitializationCallback);
+
     project.getMessageBus().connect().subscribe(ProjectTopics.MODULES, new ModuleListener() {
       @Override
       public void moduleRemoved(@NotNull Project project,
@@ -72,7 +79,15 @@ public class IntelliJModelFactory implements ModelFactory {
           }
         }
     );
+
+    course.getComponents().forEach(componentInitializationCallback::initialize);
+    course.resolve();
+
     return course;
+  }
+
+  private void registerComponentToCourse(@NotNull Component component, @NotNull Course course) {
+    component.onError.addListener(course, Course::resolve);
   }
 
   @Override
