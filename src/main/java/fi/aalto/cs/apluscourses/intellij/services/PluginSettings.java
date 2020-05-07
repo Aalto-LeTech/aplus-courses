@@ -66,12 +66,18 @@ public class PluginSettings implements MainViewModelProvider {
   }
 
   public boolean shouldShowReplConfigurationDialog() {
-    return propertiesManager.getBoolean(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG);
+    return Boolean.parseBoolean(propertiesManager.getValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG));
   }
 
-  //  todo consider to create a listener
+  /**
+   * Method to set property, responsible for showing REPL configuration window.
+   *
+   * @param showReplConfigDialog a boolean value of the flag.
+   */
   public void setShowReplConfigurationDialog(boolean showReplConfigDialog) {
-    propertiesManager.setValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG, showReplConfigDialog);
+    propertiesManager
+        //  a String explicitly
+        .setValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG, String.valueOf(showReplConfigDialog));
   }
 
   public String getImportedIdeSettingsName() {
@@ -87,10 +93,10 @@ public class PluginSettings implements MainViewModelProvider {
    */
   public void initializeLocalSettings() {
     if (!propertiesManager.isValueSet(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG)) {
-      propertiesManager.setValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG, true);
+      setShowReplConfigurationDialog(true);
     }
     if (!propertiesManager.isValueSet(A_PLUS_IMPORTED_IDE_SETTINGS)) {
-      propertiesManager.setValue(A_PLUS_IMPORTED_IDE_SETTINGS, "");
+      setImportedIdeSettingsName("");
     }
   }
 }

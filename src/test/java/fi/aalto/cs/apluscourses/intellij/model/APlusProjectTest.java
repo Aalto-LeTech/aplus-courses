@@ -1,39 +1,35 @@
 package fi.aalto.cs.apluscourses.intellij.model;
 
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+
 import com.intellij.openapi.project.Project;
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import org.junit.Assert;
 import org.junit.Test;
 
-public class APlusProjectTest extends BasePlatformTestCase {
+public class APlusProjectTest {
 
   @Test
   public void testGetCourseFilePath() {
-    //  given
-    Project project = getProject();
+    Project project = mock(Project.class);
+    doReturn("test").when(project).getBasePath();
+
     APlusProject aplusProject = new APlusProject(project);
 
-    //  when
-    Path courseFilePath = aplusProject.getCourseFilePath();
-
-    //  then
-    assertTrue("The course file paths is a valid one. (1)",
-        courseFilePath.toString().contains("/tmp/unitTest_getBasePath"));
-    assertTrue("The course file paths is a valid one. (2)",
-        courseFilePath.toString().contains("/.idea/a-plus-project"));
+    Assert.assertEquals("The course file path should be correct",
+            Paths.get("test", ".idea", "a-plus-project"), aplusProject.getCourseFilePath());
   }
 
   @Test
   public void testGetBasePath() {
-    //  given
-    Project project = getProject();
+    Project project = mock(Project.class);
+    doReturn(".idea").when(project).getBasePath();
+
     APlusProject aplusProject = new APlusProject(project);
 
-    //  when
-    Path basePath = aplusProject.getBasePath();
-
-    //  then
-    assertTrue("The bases paths is a valid one.",
-        basePath.toString().contains("/tmp/unitTest_getBasePath"));
+    Assert.assertEquals("The base path should be correct", Paths.get(".idea"),
+            aplusProject.getBasePath());
   }
 }
