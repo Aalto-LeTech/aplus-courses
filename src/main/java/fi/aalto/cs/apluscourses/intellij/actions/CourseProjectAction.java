@@ -40,6 +40,11 @@ public class CourseProjectAction extends AnAction implements DumbAware {
   private MainViewModelProvider mainViewModelProvider;
 
   @NotNull
+  private CourseFactory courseFactory;
+
+  private boolean createCourseFile;
+
+  @NotNull
   private SettingsImporter settingsImporter;
 
   @NotNull
@@ -52,10 +57,14 @@ public class CourseProjectAction extends AnAction implements DumbAware {
    * Construct a course project action with the given main view model provider and dialogs.
    */
   public CourseProjectAction(@NotNull MainViewModelProvider mainViewModelProvider,
+                             @NotNull CourseFactory courseFactory,
+                             boolean createCourseFile,
                              @NotNull SettingsImporter settingsImporter,
                              @NotNull IdeRestarter ideRestarter,
                              @NotNull Dialogs dialogs) {
     this.mainViewModelProvider = mainViewModelProvider;
+    this.courseFactory = courseFactory;
+    this.createCourseFile = createCourseFile;
     this.settingsImporter = settingsImporter;
     this.ideRestarter = ideRestarter;
     this.dialogs = dialogs;
@@ -67,6 +76,12 @@ public class CourseProjectAction extends AnAction implements DumbAware {
   public CourseProjectAction() {
     this(
         PluginSettings.getInstance(),
+        (url, project) -> {
+          InputStream inputStream = CoursesClient.fetchJson(url);
+          return Course.fromConfigurationData(new InputStreamReader(inputStream),
+              url.toString(), new IntelliJModelFactory(project));
+        },
+        true,
         new SettingsImporterImpl(),
         () -> ((ApplicationEx) ApplicationManager.getApplication()).restart(true),
         new IntelliJDialogs());
@@ -96,7 +111,7 @@ public class CourseProjectAction extends AnAction implements DumbAware {
 
     // Importing IDE settings potentially restarts the IDE, so it's the last action. If the
     // IDE settings for the course have already been imported, do nothing.
-    if (!PluginSettings.getInstance().getImportedIdeSettingsName().equals(course.getName())) {
+    if (!settingsImporter.lastImportedIdeSettings().equals(course.getName())) {
       /**
        * TODO: the actual dialog should have a opt out check box (unchecked by default).
        */
@@ -104,11 +119,8 @@ public class CourseProjectAction extends AnAction implements DumbAware {
           + "adjust IntelliJ IDEA settings. This helps use IDEA for coursework. You can not opt "
           + "out even if you want to.", "Adjust IDEA Settings");
 
-      if (tryImportIdeSettings(course)) {
-        PluginSettings.getInstance().setImportedIdeSettingsName(course.getName());
-        if (userWantsToRestart()) {
-          ideRestarter.restart();
-        }
+      if (tryImportIdeSettings(course) && userWantsToRestart()) {
+        ideRestarter.restart();
       }
     }
   }
@@ -118,6 +130,13 @@ public class CourseProjectAction extends AnAction implements DumbAware {
     // This action is available only if a non-default project is open
     Project project = e.getProject();
     e.getPresentation().setEnabledAndVisible(project != null && !project.isDefault());
+  }
+
+  @FunctionalInterface
+  public interface CourseFactory {
+    @NotNull
+    Course fromUrl(@NotNull URL courseUrl, @NotNull Project project)
+        throws IOException, UnexpectedResponseException, MalformedCourseConfigurationFileException;
   }
 
   @FunctionalInterface
@@ -147,13 +166,8 @@ public class CourseProjectAction extends AnAction implements DumbAware {
    */
   @Nullable
   private Course tryInitializeCourse(@NotNull Project project, @NotNull URL courseUrl) {
-    Course course;
     try {
-      InputStream inputStream = CoursesClient.fetchJson(courseUrl);
-      course = Course.fromConfigurationData(
-          new InputStreamReader(inputStream),
-          courseUrl.toString(),
-          new IntelliJModelFactory(project));
+      Course course = courseFactory.fromUrl(courseUrl, project);
       mainViewModelProvider
           .getMainViewModel(project)
           .courseViewModel
@@ -176,8 +190,10 @@ public class CourseProjectAction extends AnAction implements DumbAware {
    */
   private boolean tryCreateCourseFile(@NotNull Project project, @NotNull URL courseUrl) {
     try {
-      File file = new APlusProject(project).getCourseFilePath().toFile();
-      FileUtils.writeStringToFile(file, courseUrl.toString(), StandardCharsets.UTF_8);
+      if (createCourseFile) {
+        File courseFile = new APlusProject(project).getCourseFilePath().toFile();
+        FileUtils.writeStringToFile(courseFile, courseUrl.toString(), StandardCharsets.UTF_8);
+      }
       return true;
     } catch (IOException e) {
       logger.error("Failed to create course file", e);

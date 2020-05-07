@@ -10,6 +10,9 @@ public interface SettingsImporter {
 
   void importIdeSettings(@NotNull Course course) throws IOException, UnexpectedResponseException;
 
+  @NotNull
+  String lastImportedIdeSettings();
+
   void importProjectSettings(@NotNull Project project, @NotNull Course course)
           throws IOException, UnexpectedResponseException;
 

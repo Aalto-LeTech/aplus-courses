@@ -6,6 +6,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.updateSettings.impl.UpdateSettings;
 import com.intellij.openapi.util.io.FileUtilRt;
+import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.UnexpectedResponseException;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
@@ -34,6 +35,7 @@ public class SettingsImporterImpl implements SettingsImporter {
    *                                     project settings. This usually indicates an error in the
    *                                     course configuration.
    */
+  @Override
   public void importIdeSettings(@NotNull Course course)
       throws IOException, UnexpectedResponseException {
     URL ideSettingsUrl = course.getResourceUrls().get("ideSettings");
@@ -52,6 +54,17 @@ public class SettingsImporterImpl implements SettingsImporter {
     );
 
     UpdateSettings.getInstance().forceCheckForUpdateAfterRestart();
+
+    PluginSettings.getInstance().setImportedIdeSettingsName(course.getName());
+  }
+
+  /**
+   * Returns the name of the course for which the latest IDE settings import has been done.
+   */
+  @NotNull
+  @Override
+  public String lastImportedIdeSettings() {
+    return PluginSettings.getInstance().getImportedIdeSettingsName();
   }
 
   /**
@@ -64,6 +77,7 @@ public class SettingsImporterImpl implements SettingsImporter {
    *                                     project settings. This usually indicates an error in the
    *                                     course configuration.
    */
+  @Override
   public void importProjectSettings(@NotNull Project project, @NotNull Course course)
       throws IOException, UnexpectedResponseException {
     URL settingsUrl = course.getResourceUrls().get("projectSettings");
