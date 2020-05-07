@@ -1,4 +1,4 @@
-package fi.aalto.cs.apluscourses.intellij.utils;
+package fi.aalto.cs.apluscourses.intellij.model;
 
 import com.intellij.ide.startup.StartupActionScriptManager;
 import com.intellij.openapi.application.PathManager;
@@ -21,7 +21,8 @@ import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.model.FileHeader;
 import org.jetbrains.annotations.NotNull;
 
-public class SettingsUtil {
+public class SettingsImporterImpl implements SettingsImporter {
+
 
   /**
    * Downloads the course IDE settings ZIP file to a temporary file. Also adds IDEA startup actions
@@ -33,7 +34,7 @@ public class SettingsUtil {
    *                                     project settings. This usually indicates an error in the
    *                                     course configuration.
    */
-  public static void importIdeSettings(@NotNull Course course)
+  public void importIdeSettings(@NotNull Course course)
       throws IOException, UnexpectedResponseException {
     URL ideSettingsUrl = course.getResourceUrls().get("ideSettings");
     if (ideSettingsUrl == null) {
@@ -63,7 +64,7 @@ public class SettingsUtil {
    *                                     project settings. This usually indicates an error in the
    *                                     course configuration.
    */
-  public static void importProjectSettings(@NotNull Project project, @NotNull Course course)
+  public void importProjectSettings(@NotNull Project project, @NotNull Course course)
       throws IOException, UnexpectedResponseException {
     URL settingsUrl = course.getResourceUrls().get("projectSettings");
     if (settingsUrl == null) {
@@ -89,10 +90,6 @@ public class SettingsUtil {
     }
 
     ProjectManager.getInstance().reloadProject(project);
-  }
-
-  private SettingsUtil() {
-
   }
 
 }

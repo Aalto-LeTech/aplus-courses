@@ -6,12 +6,12 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ex.ApplicationEx;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Messages;
 import fi.aalto.cs.apluscourses.intellij.model.APlusProject;
 import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory;
+import fi.aalto.cs.apluscourses.intellij.model.SettingsImporter;
+import fi.aalto.cs.apluscourses.intellij.model.SettingsImporterImpl;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
-import fi.aalto.cs.apluscourses.intellij.utils.SettingsUtil;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationFileException;
 import fi.aalto.cs.apluscourses.model.UnexpectedResponseException;
@@ -29,26 +29,47 @@ import java.nio.charset.StandardCharsets;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CourseProjectAction extends AnAction implements DumbAware {
+
+  private static final Logger logger = LoggerFactory.getLogger(CourseProjectAction.class);
 
   @NotNull
   private MainViewModelProvider mainViewModelProvider;
 
   @NotNull
-  private Dialogs dialogs;
+  private SettingsImporter settingsImporter;
 
-  public CourseProjectAction() {
-    this(PluginSettings.getInstance(), new IntelliJDialogs());
-  }
+  @NotNull
+  private IdeRestarter ideRestarter;
+
+  @NotNull
+  private Dialogs dialogs;
 
   /**
    * Construct a course project action with the given main view model provider and dialogs.
    */
   public CourseProjectAction(@NotNull MainViewModelProvider mainViewModelProvider,
+                             @NotNull SettingsImporter settingsImporter,
+                             @NotNull IdeRestarter ideRestarter,
                              @NotNull Dialogs dialogs) {
     this.mainViewModelProvider = mainViewModelProvider;
+    this.settingsImporter = settingsImporter;
+    this.ideRestarter = ideRestarter;
     this.dialogs = dialogs;
+  }
+
+  /**
+   * Construct a course project action with sensible defaults.
+   */
+  public CourseProjectAction() {
+    this(
+        PluginSettings.getInstance(),
+        new SettingsImporterImpl(),
+        () -> ((ApplicationEx) ApplicationManager.getApplication()).restart(true),
+        new IntelliJDialogs());
   }
 
   @Override
@@ -86,7 +107,7 @@ public class CourseProjectAction extends AnAction implements DumbAware {
       if (tryImportIdeSettings(course)) {
         PluginSettings.getInstance().setImportedIdeSettingsName(course.getName());
         if (userWantsToRestart()) {
-          ((ApplicationEx) ApplicationManager.getApplication()).restart(true);
+          ideRestarter.restart();
         }
       }
     }
@@ -99,19 +120,31 @@ public class CourseProjectAction extends AnAction implements DumbAware {
     e.getPresentation().setEnabledAndVisible(project != null && !project.isDefault());
   }
 
+  @FunctionalInterface
+  public interface IdeRestarter {
+    void restart();
+  }
+
   @Nullable
   private URL getSelectedCourseUrl() {
     // TODO: show a dialog with a list of courses and a URL field for custom courses, from which
     // the user selects a course.
     try {
-      URL selectedCourseUrl = new URL(PluginSettings.COURSE_CONFIGURATION_FILE_URL);
-      return selectedCourseUrl;
+      return new URL(PluginSettings.COURSE_CONFIGURATION_FILE_URL);
     } catch (MalformedURLException e) {
       // User entered an invalid URL (or the default list has an invalid URL, which would be a bug)
+      logger.error("Malformed course configuration file URL", e);
       return null;
     }
   }
 
+  /**
+   * Parses the course configuration file from the given URL and updates the course view model of
+   * the main view model provider. The user is notified if the initialization fails.
+   * @param project   The currently open project.
+   * @param courseUrl The URL from which the course configuration file is downloaded.
+   * @return The course created from the course configuration file or null in case of an error.
+   */
   @Nullable
   private Course tryInitializeCourse(@NotNull Project project, @NotNull URL courseUrl) {
     Course course;
@@ -130,6 +163,7 @@ public class CourseProjectAction extends AnAction implements DumbAware {
       notifyNetworkError();
       return null;
     } catch (MalformedCourseConfigurationFileException e) {
+      logger.error("Malformed course configuration file", e);
       notifyMalformedCourseConfiguration();
       return null;
     }
@@ -146,7 +180,7 @@ public class CourseProjectAction extends AnAction implements DumbAware {
       FileUtils.writeStringToFile(file, courseUrl.toString(), StandardCharsets.UTF_8);
       return true;
     } catch (IOException e) {
-      // TODO: what should we do if creating the file fails?
+      logger.error("Failed to create course file", e);
       return false;
     }
   }
@@ -158,7 +192,7 @@ public class CourseProjectAction extends AnAction implements DumbAware {
    */
   private boolean tryImportProjectSettings(@NotNull Project project, @NotNull Course course) {
     try {
-      SettingsUtil.importProjectSettings(project, course);
+      settingsImporter.importProjectSettings(project, course);
       return true;
     } catch (IOException | UnexpectedResponseException e) {
       notifyNetworkError();
@@ -173,7 +207,7 @@ public class CourseProjectAction extends AnAction implements DumbAware {
    */
   private boolean tryImportIdeSettings(@NotNull Course course) {
     try {
-      SettingsUtil.importIdeSettings(course);
+      settingsImporter.importIdeSettings(course);
       return true;
     } catch (IOException | UnexpectedResponseException e) {
       notifyNetworkError();

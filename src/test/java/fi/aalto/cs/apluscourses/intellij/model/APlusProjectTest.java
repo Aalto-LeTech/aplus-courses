@@ -4,7 +4,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 import com.intellij.openapi.project.Project;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.junit.Assert;
 import org.junit.Test;
@@ -19,7 +18,8 @@ public class APlusProjectTest {
     APlusProject aplusProject = new APlusProject(project);
 
     Assert.assertEquals("The course file path should be correct",
-            Paths.get("test", ".idea", "a-plus-project"), aplusProject.getCourseFilePath());
+        Paths.get("test", Project.DIRECTORY_STORE_FOLDER, "a-plus-project"),
+        aplusProject.getCourseFilePath());
   }
 
   @Test
@@ -29,7 +29,8 @@ public class APlusProjectTest {
 
     APlusProject aplusProject = new APlusProject(project);
 
-    Assert.assertEquals("The base path should be correct", Paths.get(".idea"),
-            aplusProject.getBasePath());
+    Assert.assertEquals("The base path should be correct",
+        Paths.get(Project.DIRECTORY_STORE_FOLDER),
+        aplusProject.getBasePath());
   }
 }
