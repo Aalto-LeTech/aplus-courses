@@ -6,7 +6,6 @@ import com.intellij.openapi.module.ModuleWithNameAlreadyExists;
 import com.intellij.openapi.util.io.FileUtilRt;
 import fi.aalto.cs.apluscourses.model.ComponentLoadException;
 import fi.aalto.cs.apluscourses.model.Module;
-import fi.aalto.cs.apluscourses.model.UnexpectedResponseException;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
 import fi.aalto.cs.apluscourses.utils.DirAwareZipFile;
 import fi.aalto.cs.apluscourses.utils.DomUtil;
@@ -104,12 +103,7 @@ class IntelliJModule extends Module {
 
 
   private void fetchZipTo(File file) throws IOException {
-    try {
-      CoursesClient.fetchZip(getUrl(), file);
-    } catch (UnexpectedResponseException ex) {
-      // At this point, the URL is most likely incorrect or the server is missing the file.
-      throw new IOException(ex);
-    }
+    CoursesClient.fetchZip(getUrl(), file);
   }
 
   @NotNull

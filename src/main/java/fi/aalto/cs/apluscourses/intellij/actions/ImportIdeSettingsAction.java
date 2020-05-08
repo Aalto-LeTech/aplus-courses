@@ -12,7 +12,6 @@ import com.intellij.openapi.util.io.FileUtilRt;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Course;
-import fi.aalto.cs.apluscourses.model.UnexpectedResponseException;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.ui.IntelliJDialogs;
 import fi.aalto.cs.apluscourses.ui.base.Dialogs;
@@ -78,13 +77,12 @@ public class ImportIdeSettingsAction extends AnAction implements DumbAware {
       if (userWantsToRestart()) {
         ideRestarter.restart();
       }
-    } catch (IOException | UnexpectedResponseException ex) {
+    } catch (IOException ex) {
       informErrorOccurred();
     }
   }
 
-  private static void doImport(@NotNull URL ideSettingsUrl)
-      throws IOException, UnexpectedResponseException {
+  private static void doImport(@NotNull URL ideSettingsUrl) throws IOException {
     File file = FileUtilRt.createTempFile("course-ide-settings", ".zip");
     CoursesClient.fetchZip(ideSettingsUrl, file);
     String configPath = FileUtilRt.toSystemIndependentName(PathManager.getConfigPath());
@@ -104,7 +102,7 @@ public class ImportIdeSettingsAction extends AnAction implements DumbAware {
 
   @FunctionalInterface
   public interface IdeSettingsImporter {
-    void doImport(URL file) throws IOException, UnexpectedResponseException;
+    void doImport(URL file) throws IOException;
   }
 
   private boolean userCancelsImport() {

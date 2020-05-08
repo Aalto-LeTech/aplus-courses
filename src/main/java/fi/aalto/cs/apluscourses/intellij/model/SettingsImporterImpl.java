@@ -8,7 +8,6 @@ import com.intellij.openapi.updateSettings.impl.UpdateSettings;
 import com.intellij.openapi.util.io.FileUtilRt;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Course;
-import fi.aalto.cs.apluscourses.model.UnexpectedResponseException;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
 import java.io.File;
 import java.io.IOException;
@@ -31,13 +30,9 @@ public class SettingsImporterImpl implements SettingsImporter {
    * deleted. Therefore, the new IDE settings only take effect once IDEA is restarted and the
    * temporary file must still exist at that point.
    * @throws IOException                 If an IO error occurs (e.g. network issues).
-   * @throws UnexpectedResponseException If an unexpected response is received when downloading the
-   *                                     project settings. This usually indicates an error in the
-   *                                     course configuration.
    */
   @Override
-  public void importIdeSettings(@NotNull Course course)
-      throws IOException, UnexpectedResponseException {
+  public void importIdeSettings(@NotNull Course course) throws IOException {
     URL ideSettingsUrl = course.getResourceUrls().get("ideSettings");
     if (ideSettingsUrl == null) {
       return;
@@ -73,13 +68,10 @@ public class SettingsImporterImpl implements SettingsImporter {
    * after which the project is reloaded. If the course does not provide custom project settings,
    * this method does nothing.
    * @throws IOException                 If an IO error occurs (e.g. network issues).
-   * @throws UnexpectedResponseException If an unexpected response is received when downloading the
-   *                                     project settings. This usually indicates an error in the
-   *                                     course configuration.
    */
   @Override
   public void importProjectSettings(@NotNull Project project, @NotNull Course course)
-      throws IOException, UnexpectedResponseException {
+      throws IOException {
     URL settingsUrl = course.getResourceUrls().get("projectSettings");
     if (settingsUrl == null) {
       return;

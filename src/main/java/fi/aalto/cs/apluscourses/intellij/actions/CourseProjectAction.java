@@ -14,7 +14,6 @@ import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationFileException;
-import fi.aalto.cs.apluscourses.model.UnexpectedResponseException;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.ui.IntelliJDialogs;
 import fi.aalto.cs.apluscourses.ui.base.Dialogs;
@@ -136,7 +135,7 @@ public class CourseProjectAction extends AnAction implements DumbAware {
   public interface CourseFactory {
     @NotNull
     Course fromUrl(@NotNull URL courseUrl, @NotNull Project project)
-        throws IOException, UnexpectedResponseException, MalformedCourseConfigurationFileException;
+        throws IOException, MalformedCourseConfigurationFileException;
   }
 
   @FunctionalInterface
@@ -173,7 +172,7 @@ public class CourseProjectAction extends AnAction implements DumbAware {
           .courseViewModel
           .set(new CourseViewModel(course));
       return course;
-    } catch (UnexpectedResponseException | IOException e) {
+    } catch (IOException e) {
       notifyNetworkError();
       return null;
     } catch (MalformedCourseConfigurationFileException e) {
@@ -210,7 +209,7 @@ public class CourseProjectAction extends AnAction implements DumbAware {
     try {
       settingsImporter.importProjectSettings(project, course);
       return true;
-    } catch (IOException | UnexpectedResponseException e) {
+    } catch (IOException e) {
       notifyNetworkError();
       return false;
     }
@@ -225,7 +224,7 @@ public class CourseProjectAction extends AnAction implements DumbAware {
     try {
       settingsImporter.importIdeSettings(course);
       return true;
-    } catch (IOException | UnexpectedResponseException e) {
+    } catch (IOException e) {
       notifyNetworkError();
       return false;
     }

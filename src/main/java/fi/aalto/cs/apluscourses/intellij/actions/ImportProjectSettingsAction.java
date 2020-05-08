@@ -9,7 +9,6 @@ import com.intellij.openapi.util.io.FileUtilRt;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Course;
-import fi.aalto.cs.apluscourses.model.UnexpectedResponseException;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.ui.IntelliJDialogs;
 import fi.aalto.cs.apluscourses.ui.base.Dialogs;
@@ -76,7 +75,7 @@ public class ImportProjectSettingsAction extends AnAction implements DumbAware {
 
     try {
       projectSettingsImporter.doImport(project, settingsUrl);
-    } catch (IOException | UnexpectedResponseException ex) {
+    } catch (IOException ex) {
       informErrorOccurred();
     }
   }
@@ -100,7 +99,7 @@ public class ImportProjectSettingsAction extends AnAction implements DumbAware {
    * given project, after which the project is reloaded.
    */
   private static void doImport(@NotNull Project project, @NotNull URL settingsUrl)
-      throws IOException, UnexpectedResponseException {
+      throws IOException {
     Path settingsPath = Paths.get(project.getBasePath(), Project.DIRECTORY_STORE_FOLDER);
 
     File settingsZip = FileUtilRt.createTempFile(project.getName() + "-settings", ".zip");
@@ -119,7 +118,7 @@ public class ImportProjectSettingsAction extends AnAction implements DumbAware {
 
   @FunctionalInterface
   public interface ProjectSettingsImporter {
-    void doImport(Project project, URL settingsUrl) throws IOException, UnexpectedResponseException;
+    void doImport(Project project, URL settingsUrl) throws IOException;
   }
 
   private void informNoProjectOpen() {
