@@ -4,7 +4,7 @@ package fi.aalto.cs.apluscourses.intellij.actions
 import com.intellij.mock.MockVirtualFile.{dir, file}
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import fi.aalto.cs.apluscourses.intellij.TestHelperScala
-import fi.aalto.cs.apluscourses.presentation.ReplConfigurationFormModel
+import fi.aalto.cs.apluscourses.intellij.services.PluginSettings
 import org.junit.Assert._
 import org.junit.Test
 import org.mockito.Mockito.{spy, times, verify}
@@ -13,6 +13,7 @@ class ReplActionTest extends BasePlatformTestCase with TestHelperScala {
 
   @Test
   def testSetConfigurationConditionallyWithDoNotShowReplFlagWorks(): Unit = {
+    //  given
     val project = getProject
     val module = getModule
     val configuration = getConfiguration
@@ -21,8 +22,9 @@ class ReplActionTest extends BasePlatformTestCase with TestHelperScala {
     val moduleWorkDir = action.getModuleWorkDir(module)
 
     //  only FALSE branch, as TRUE triggers UI
-    ReplConfigurationFormModel.showREPLConfigWindow = false
+    PluginSettings.getInstance().setShowReplConfigurationDialog(false);
 
+    //  when
     action.setConfigurationConditionally(project, module, configuration)
 
     //  then

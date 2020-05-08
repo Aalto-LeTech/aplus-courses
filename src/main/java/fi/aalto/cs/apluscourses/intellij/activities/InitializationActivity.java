@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 
 public class InitializationActivity implements StartupActivity, DumbAware {
+
   private static final Logger logger = LoggerFactory.getLogger(InitializationActivity.class);
 
   @NotNull
@@ -64,5 +65,6 @@ public class InitializationActivity implements StartupActivity, DumbAware {
         .getMainViewModel(project).courseViewModel.set(new CourseViewModel(course));
     ActionUtil.launch(RequiredPluginsCheckerAction.ACTION_ID,
         new ExtendedDataContext().withProject(project));
+    PluginSettings.getInstance().initiateLocalSettingShowReplConfigurationDialog();
   }
 }

@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.ui.repl;
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import fi.aalto.cs.apluscourses.TestHelper;
+import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.presentation.ReplConfigurationFormModel;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
@@ -26,7 +27,7 @@ public class ReplConfigurationFormTest extends BasePlatformTestCase implements T
     assertEquals("Form contains the rights informative message",
         ReplConfigurationForm.INFOLABEL_TEXT, form.getInfoTextLabel().getText());
     assertEquals("Form correctly picks up negated flag for showing the config dialog",
-        ReplConfigurationFormModel.showREPLConfigWindow,
+        PluginSettings.getInstance().shouldShowReplConfigurationDialog(),
         form.getDontShowThisWindowCheckBox().isSelected());
   }
 
