@@ -60,7 +60,8 @@ public class CourseProjectActionTest {
     }
 
     @Override
-    public void importProjectSettings(@NotNull Project project, @NotNull Course course) {
+    public void importProjectSettings(@NotNull Project project, @NotNull Course course)
+        throws IOException {
       ++importProjectSettingsCallCount;
     }
   }
@@ -177,5 +178,32 @@ public class CourseProjectActionTest {
         settingsImporter.getImportIdeSettingsCallCount());
     Assert.assertNull("The course of the provided main view model isn't initialized",
         mainViewModel.courseViewModel.get());
+  }
+
+  @Test
+  public void testNotifiesUserOfSettingsImportError() {
+    DummySettingsImporter failingSettingsImporter = new DummySettingsImporter() {
+      @Override
+      public void importProjectSettings(@NotNull Project project, @NotNull Course course)
+          throws IOException {
+        super.importProjectSettings(project, course);
+        throw new IOException();
+      }
+    };
+
+    CourseProjectAction action = new CourseProjectAction(
+        p -> mainViewModel,
+        (url, proj) -> emptyCourse,
+        false,
+        failingSettingsImporter,
+        () -> { },
+        dialogs);
+
+    action.actionPerformed(anActionEvent);
+
+    Assert.assertEquals("The action attempted to import project settings", 1,
+        failingSettingsImporter.getImportProjectSettingsCallCount());
+    Assert.assertThat("The user is notified of the project settings error",
+        dialogs.getLastErrorMessage(), containsString("Please check your network connection"));
   }
 }
