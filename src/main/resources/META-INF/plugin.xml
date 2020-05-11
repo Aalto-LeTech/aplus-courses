@@ -67,4 +67,7 @@
             <keyboard-shortcut first-keystroke="control shift D" keymap="$default"/>
         </action>
     </actions>
+    <applicationListeners>
+        <listener class="fi.aalto.cs.apluscourses.intellij.utils.PluginUnloadListener" topic="com.intellij.ide.plugins.DynamicPluginListener"/>
+    </applicationListeners>
 </idea-plugin>
