@@ -15,9 +15,18 @@ import org.jetbrains.annotations.Nullable;
 
 public class PluginSettings implements MainViewModelProvider {
 
-  public interface LocalSettingsNames {
+  public enum LocalSettingsNames {
+    A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG("A+.showReplConfigDialog");
 
-    String A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG = "A+.showReplConfigDialog";
+    private final String name;
+
+    LocalSettingsNames(String name) {
+      this.name = name;
+    }
+
+    public String getName() {
+      return name;
+    }
   }
 
   public static final String COURSE_CONFIGURATION_FILE_URL
@@ -63,7 +72,8 @@ public class PluginSettings implements MainViewModelProvider {
   }
 
   public boolean shouldShowReplConfigurationDialog() {
-    return Boolean.parseBoolean(propertiesManager.getValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG));
+    return Boolean.parseBoolean(
+        propertiesManager.getValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG.getName()));
   }
 
   /**
@@ -74,16 +84,27 @@ public class PluginSettings implements MainViewModelProvider {
   public void setShowReplConfigurationDialog(boolean showReplConfigDialog) {
     propertiesManager
         //  a String explicitly
-        .setValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG, String.valueOf(showReplConfigDialog));
+        .setValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG.getName(),
+            String.valueOf(showReplConfigDialog));
   }
 
   /**
-   * Method that checks if the value is set (exists/non-empty etc.) and sets the {@link String}
+   * Method that checks if the values are is set (exists/non-empty etc.) and sets the {@link String}
    * value to 'true'.
    */
   public void initiateLocalSettingShowReplConfigurationDialog() {
-    if (!propertiesManager.isValueSet(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG)) {
-      propertiesManager.setValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG, String.valueOf(true));
+    if (!propertiesManager.isValueSet(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG.getName())) {
+      propertiesManager
+          .setValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG.getName(), String.valueOf(true));
+    }
+  }
+
+  /**
+   * Method that unsets all the settings.
+   */
+  public void unsetLocalSettings() {
+    for (LocalSettingsNames settingsName : LocalSettingsNames.values()) {
+      propertiesManager.unsetValue(settingsName.getName());
     }
   }
 }
