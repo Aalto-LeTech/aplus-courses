@@ -24,13 +24,12 @@
     </td>
     <td>
       <ul>
-        <li>- [ ] <b>manual</b> testsing went well</li>
+        <li>- [ ] <b>manual</b> testing went well</li>
       </ul>
     </td>
   </tr>
 </table>  
   
-
 # Have you updated the [TESTING.md](/TESTING.md) or other relevant documentation?
 
 - [ ] Yes
