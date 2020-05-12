@@ -6,8 +6,8 @@
 <table>
   <tr>
     <th>unit</th>
-    <th>manual</th>
     <th>integration</th>
+    <th>manual</th>
   </tr>
   <tr>
     <td>
