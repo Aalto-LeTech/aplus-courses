@@ -93,7 +93,7 @@ public class PluginSettings implements MainViewModelProvider {
   }
 
   /**
-   * Method that checks if the values are is set (exists/non-empty etc.) and sets the {@link String}
+   * Method that checks if the values are set (exists/non-empty etc.) and sets the {@link String}
    * value to 'true'.
    */
   public void initiateLocalSettingShowReplConfigurationDialog() {

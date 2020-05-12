@@ -20,7 +20,6 @@
     <depends optional="true" config-file="with-scala.xml">org.intellij.scala</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-
         <backgroundPostStartupActivity implementation="fi.aalto.cs.apluscourses.intellij.activities.VersionCheckerActivity"/>
         <backgroundPostStartupActivity implementation="fi.aalto.cs.apluscourses.intellij.activities.InitializationActivity"/>
 
@@ -36,8 +35,9 @@
     <actions>
         <group id="fi.aalto.cs.apluscourses.intellij.actions.ActionGroups.MENU_ACTIONS"
                text="A+"
-               description="Actions for A+ menu">
-            <add-to-group group-id="MainMenu" anchor="last" />
+               description="Actions for A+ menu"
+               class="fi.aalto.cs.apluscourses.intellij.actions.APlusMenuGroup" >
+        <add-to-group group-id="MainMenu" anchor="last" />
             <action id="Import Course IDE Settings"
                     class="fi.aalto.cs.apluscourses.intellij.actions.ImportIdeSettingsAction"
                     text="Import Course IDE Settings"
