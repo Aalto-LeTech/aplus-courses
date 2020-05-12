@@ -8,6 +8,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.project.ProjectManagerListener;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
+import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import org.jetbrains.annotations.NotNull;
@@ -71,13 +72,16 @@ public class PluginSettings implements MainViewModelProvider {
     return new MainViewModel();
   }
 
+  /**
+   * Method (getter) to check the property, responsible for showing REPL configuration window.
+   */
   public boolean shouldShowReplConfigurationDialog() {
     return Boolean.parseBoolean(
         propertiesManager.getValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG.getName()));
   }
 
   /**
-   * Method to set property, responsible for showing REPL configuration window.
+   * Method (setter) to set property, responsible for showing REPL configuration window.
    *
    * @param showReplConfigDialog a boolean value of the flag.
    */
@@ -100,11 +104,11 @@ public class PluginSettings implements MainViewModelProvider {
   }
 
   /**
-   * Method that unsets all the settings.
+   * Method that unsets all the local settings from {@link LocalSettingsNames}.
    */
   public void unsetLocalSettings() {
-    for (LocalSettingsNames settingsName : LocalSettingsNames.values()) {
-      propertiesManager.unsetValue(settingsName.getName());
-    }
+    Arrays.stream(LocalSettingsNames.values())
+        .map(LocalSettingsNames::getName)
+        .forEach(propertiesManager::unsetValue);
   }
 }
