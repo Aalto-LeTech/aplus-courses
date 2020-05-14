@@ -21,23 +21,29 @@ class IntelliJCourse extends Course {
   @NotNull
   private final APlusProject project;
 
-  public final CommonLibraryProvider commonLibraryProvider;
+  private final CommonLibraryProvider commonLibraryProvider;
 
   public IntelliJCourse(@NotNull String name,
                         @NotNull List<Module> modules,
                         @NotNull List<Library> libraries,
                         @NotNull Map<String, String> requiredPlugins,
                         @NotNull Map<String, URL> resourceUrls,
-                        @NotNull APlusProject project) {
+                        @NotNull APlusProject project,
+                        @NotNull CommonLibraryProvider commonLibraryProvider) {
     super(name, modules, libraries, requiredPlugins, resourceUrls);
 
     this.project = project;
-    commonLibraryProvider = new CommonLibraryProvider(project);
+    this.commonLibraryProvider = commonLibraryProvider;
   }
 
   @NotNull
   public APlusProject getProject() {
     return project;
+  }
+
+  @NotNull
+  public CommonLibraryProvider getCommonLibraryProvider() {
+    return commonLibraryProvider;
   }
 
   @Nullable

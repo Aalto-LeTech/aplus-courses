@@ -41,11 +41,12 @@ public class IntelliJModelFactory implements ModelFactory {
       @NotNull Map<String, URL> resourceUrls) {
 
     IntelliJCourse course =
-        new IntelliJCourse(name, modules, libraries, requiredPlugins, resourceUrls, project);
+        new IntelliJCourse(name, modules, libraries, requiredPlugins, resourceUrls, project,
+            new CommonLibraryProvider(project));
 
     ComponentInitializationCallback componentInitializationCallback =
         component -> registerComponentToCourse(component, course);
-    course.commonLibraryProvider.setInitializationCallback(componentInitializationCallback);
+    course.getCommonLibraryProvider().setInitializationCallback(componentInitializationCallback);
 
     project.getMessageBus().connect().subscribe(ProjectTopics.MODULES, new ModuleListener() {
       @Override

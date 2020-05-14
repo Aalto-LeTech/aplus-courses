@@ -35,7 +35,7 @@ public class CommonLibraryProvider implements ComponentSource {
   }
 
   @Nullable
-  private Library createLibrary(@NotNull String name) {
+  protected Library createLibrary(@NotNull String name) {
     if (name.startsWith("scala-sdk-")) {
       return new ScalaSdk(name, project);
     }

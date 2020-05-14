@@ -119,6 +119,40 @@ public class ModelExtensions {
     }
   }
 
+  public static class TestLibrary extends Library {
+
+    public TestLibrary(@NotNull String name) {
+      super(name);
+    }
+
+    @NotNull
+    @Override
+    public Path getPath() {
+      return Paths.get(name);
+    }
+
+    @Override
+    public void fetch() throws IOException {
+      // do nothing
+    }
+
+    @Override
+    public void load() throws ComponentLoadException {
+      // do nothing
+    }
+
+    @NotNull
+    @Override
+    public Path getFullPath() {
+      return getPath().toAbsolutePath();
+    }
+
+    @Override
+    protected int resolveStateInternal() {
+      return Component.NOT_INSTALLED;
+    }
+  }
+
   public static class TestModelFactory implements ModelFactory {
 
     @Override

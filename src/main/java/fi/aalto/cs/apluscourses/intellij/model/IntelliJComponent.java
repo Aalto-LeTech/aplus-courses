@@ -1,6 +1,6 @@
 package fi.aalto.cs.apluscourses.intellij.model;
 
-import jdk.internal.jline.internal.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public interface IntelliJComponent<T> {
   @Nullable

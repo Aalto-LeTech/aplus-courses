@@ -43,8 +43,6 @@ public class Course implements ComponentSource {
   @NotNull
   private final Map<String, URL> resourceUrls;
 
-  private final AtomicBoolean resolved = new AtomicBoolean(true);
-
   /**
    * Constructs a course with the given parameters.
    *
