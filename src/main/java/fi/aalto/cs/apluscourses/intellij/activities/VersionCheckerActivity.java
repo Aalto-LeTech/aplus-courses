@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
  * An activity that checks, on startup, if the version of the plugin is a pre-release, and, if that
  * is the case, shows a {@link BetaVersionWarning}.
  */
-public class VersionCheckerActivity implements StartupActivity {
+public class VersionCheckerActivity implements StartupActivity.DumbAware {
 
   @NotNull
   private final Notifier notifier;

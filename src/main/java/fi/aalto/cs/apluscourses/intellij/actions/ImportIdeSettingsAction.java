@@ -1,12 +1,11 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
 import com.intellij.ide.startup.StartupActionScriptManager;
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.application.ex.ApplicationEx;
-import com.intellij.openapi.project.DumbAware;
+import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.openapi.updateSettings.impl.UpdateSettings;
 import com.intellij.openapi.util.io.FileUtilRt;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
@@ -23,7 +22,7 @@ import java.net.URL;
 import java.util.Arrays;
 import org.jetbrains.annotations.NotNull;
 
-public class ImportIdeSettingsAction extends AnAction implements DumbAware {
+public class ImportIdeSettingsAction extends DumbAwareAction {
   @NotNull
   private MainViewModelProvider mainViewModelProvider;
 

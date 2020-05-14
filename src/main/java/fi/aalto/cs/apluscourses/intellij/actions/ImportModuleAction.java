@@ -1,7 +1,7 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.project.DumbAwareAction;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Component;
@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
-public class ImportModuleAction extends AnAction {
+public class ImportModuleAction extends DumbAwareAction {
 
   public static final String ACTION_ID = ImportModuleAction.class.getCanonicalName();
   @NotNull
