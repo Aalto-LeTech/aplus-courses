@@ -128,7 +128,7 @@ public class ModelExtensions {
     @NotNull
     @Override
     public Path getPath() {
-      return Paths.get(name);
+      return Paths.get("lib", name);
     }
 
     @Override

@@ -5,15 +5,20 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import com.intellij.openapi.vfs.VirtualFile;
 import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.Library;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.model.Module;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
@@ -68,5 +73,43 @@ public class IntelliJCourseTest {
     assertEquals(2, components2.size());
     assertTrue(components2.contains(module));
     assertTrue(components2.contains(library));
+  }
+
+  @Test
+  public void testGetComponentIfExists() {
+    String moduleName = "moominModule";
+    VirtualFile file = mock(VirtualFile.class);
+    when(file.getName()).thenReturn(moduleName);
+    when(file.getPath()).thenReturn(Paths.get(moduleName).toAbsolutePath().toString());
+
+    Module module = new ModelExtensions.TestModule(moduleName);
+    List<Module> modules = new ArrayList<>();
+    modules.add(module);
+
+    IntelliJCourse course = new IntelliJCourse("testProject",
+        modules, Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap(),
+        mock(APlusProject.class), mock(CommonLibraryProvider.class));
+
+    assertSame(module, course.getComponentIfExists(file));
+  }
+
+  @Test
+  public void testGetComponentIfExistsReturnsNull() {
+    VirtualFile file1 = mock(VirtualFile.class);
+    when(file1.getName()).thenReturn("someFile");
+    when(file1.getPath()).thenReturn("somePath");
+
+    String moduleName = "ohBoyModule";
+    VirtualFile file2 = mock(VirtualFile.class);
+    when(file2.getName()).thenReturn(moduleName);
+    when(file2.getPath()).thenReturn("someOtherPath");
+
+    IntelliJCourse course = new IntelliJCourse("testProject",
+        Stream.of(new ModelExtensions.TestModule(moduleName)).collect(Collectors.toList()),
+        Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap(),
+        mock(APlusProject.class), mock(CommonLibraryProvider.class));
+
+    assertNull(course.getComponentIfExists(file1));
+    assertNull(course.getComponentIfExists(file2));
   }
 }
