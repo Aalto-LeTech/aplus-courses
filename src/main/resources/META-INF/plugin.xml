@@ -35,8 +35,7 @@
     <actions>
         <group id="fi.aalto.cs.apluscourses.intellij.actions.ActionGroups.MENU_ACTIONS"
                text="A+"
-               description="Actions for A+ menu"
-               class="fi.aalto.cs.apluscourses.intellij.actions.APlusMenuGroup" >
+               description="Actions for A+ menu">
         <add-to-group group-id="MainMenu" anchor="last" />
             <action id="Import Course IDE Settings"
                     class="fi.aalto.cs.apluscourses.intellij.actions.ImportIdeSettingsAction"
