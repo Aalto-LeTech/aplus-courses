@@ -3,7 +3,6 @@ package fi.aalto.cs.apluscourses.intellij.services;
 import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalSettingsNames.A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG;
 
 import com.intellij.ide.util.PropertiesComponent;
-import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.project.ProjectManagerListener;
@@ -14,6 +13,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class PluginSettings implements MainViewModelProvider {
+
+  private static PluginSettings instance;
+
+  private PluginSettings() {
+
+  }
 
   public interface LocalSettingsNames {
 
@@ -35,9 +40,17 @@ public class PluginSettings implements MainViewModelProvider {
     }
   };
 
+  /**
+   * Methods to get the Singleton instance of {@link PluginSettings}.
+   *
+   * @return an instance of {@link PluginSettings}.
+   */
   @NotNull
   public static PluginSettings getInstance() {
-    return ServiceManager.getService(PluginSettings.class);
+    if (instance == null) {
+      instance = new PluginSettings();
+    }
+    return instance;
   }
 
   /**
