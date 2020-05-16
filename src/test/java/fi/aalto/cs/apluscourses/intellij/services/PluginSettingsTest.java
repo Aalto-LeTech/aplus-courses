@@ -12,16 +12,32 @@ public class PluginSettingsTest extends BasePlatformTestCase {
   public void testInitiateLocalSettingShowReplConfigurationDialogWorks() {
     //  given
     PropertiesComponent.getInstance()
-        .unsetValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG);
+        .unsetValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG.getName());
 
     assertFalse("The state of the given setting is now 'unset'.",
-        PropertiesComponent.getInstance().isValueSet(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG));
+        PropertiesComponent.getInstance()
+            .isValueSet(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG.getName()));
 
     //  when
     PluginSettings.getInstance().initiateLocalSettingShowReplConfigurationDialog();
 
     //  then
     assertTrue("The state of the given setting is now set (to 'true').",
-        PropertiesComponent.getInstance().getBoolean(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG));
+        PropertiesComponent.getInstance()
+            .getBoolean(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG.getName()));
+  }
+
+  @Test
+  public void testUnsetLocalSettings() {
+    //  given
+    PluginSettings.getInstance().initiateLocalSettingShowReplConfigurationDialog();
+
+    //  when
+    PluginSettings.getInstance().unsetLocalSettings();
+
+    //  then
+    assertNull("A+.showReplConfigDialog is successfully removed.",
+        PropertiesComponent.getInstance().getValue(
+            A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG.getName()));
   }
 }
