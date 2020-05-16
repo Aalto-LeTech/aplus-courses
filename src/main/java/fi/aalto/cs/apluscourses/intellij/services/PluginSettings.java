@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class PluginSettings implements MainViewModelProvider {
 
-  private static PluginSettings instance;
+  private static final PluginSettings instance = new PluginSettings();
 
   private PluginSettings() {
 
@@ -47,9 +47,6 @@ public class PluginSettings implements MainViewModelProvider {
    */
   @NotNull
   public static PluginSettings getInstance() {
-    if (instance == null) {
-      instance = new PluginSettings();
-    }
     return instance;
   }
 
