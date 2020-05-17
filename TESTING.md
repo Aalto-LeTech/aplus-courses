@@ -260,3 +260,35 @@ a manual testing manual. Marked with a github issue label "manual testing".
     </ol>
   </div>
 </details>
+<details>
+  <summary>
+    <a href="https://github.com/Aalto-LeTech/intellij-plugin/issues/110">Renaming/removing module files leads to incorrect states in module list #110</a>
+  </summary>
+  <div>
+    <h5>Part 1. Removing a module</h5>
+    <ol>
+      <li>Create a new project and import <i>GoodStuff</i> module.</li>
+      <li>Right click the <i>O1Library</i> from the project tree and choose <i>Remove Module</i> from the popup menu.</li>
+      <li>Choose <i>Remove</i> from the popup window.</li>
+      <li>Ensure that <i>O1Library</i> is marked not installed in the modules list.</li>
+      <li>Ensure that <i>GoodStuff</i> is marked "error in dependencies" in the modules list.</li>
+    </ol>
+  </div>
+  <div>
+    <h5>Part 2. Reinstalling a module</h5>
+    <ol>
+      <li>Continuing from Part 1, double-click <i>O1Library</i> in the modules list to re-install it.</li>
+      <li>Ensure that <i>O1Library</i> shows loaded as a module in the project tree (it has the blue square symbol).</li>
+      <li>Ensure that <i>O1Library</i> and <i>GoodStuff</i> are marked installed in the modules list.</li>
+    </ol>
+  </div>
+  <div>
+    <h5>Part 3. Removing and reinstalling Scala SDK</h5>
+    <ol>
+      <li>Continuing from Part 3, delete the directory of Scala SDK inside the <code>lib</code> directory.</li>
+      <li>Ensure that <i>O1Library</i> and <i>GoodStuff</i> are marked "error in dependencies" in the modules list.</li>
+      <li>Double-click <i>O1Library</i> in the modules list to re-install it.</li>
+      <li>Ensure that <i>O1Library</i> and <i>GoodStuff</i> are marked installed in the modules list.</li>
+    </ol>
+  </div>
+</details>

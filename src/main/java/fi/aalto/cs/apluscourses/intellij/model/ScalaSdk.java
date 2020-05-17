@@ -40,8 +40,8 @@ public class ScalaSdk extends IntelliJLibrary<PersistentLibraryKind<ScalaLibrary
    * @param name    Name that must match scala-sdk-0.0.0 pattern.
    * @param project The IntelliJ project.
    */
-  public ScalaSdk(@NotNull String name, @NotNull APlusProject project, int state) {
-    super(name, project, state);
+  public ScalaSdk(@NotNull String name, @NotNull APlusProject project) {
+    super(name, project);
 
     scalaVersion = name.replace("scala-sdk-", "");
   }
@@ -74,10 +74,6 @@ public class ScalaSdk extends IntelliJLibrary<PersistentLibraryKind<ScalaLibrary
     zipFile.extractDir(libDir, getFullPath().toString());
   }
 
-  public Path getFullPath() {
-    return project.getBasePath().resolve(getPath());
-  }
-
   public String getFileName() {
     return "scala-" + scalaVersion;
   }
@@ -96,7 +92,7 @@ public class ScalaSdk extends IntelliJLibrary<PersistentLibraryKind<ScalaLibrary
   public String[] getUris(@NotNull String[] roots) {
     return Arrays.stream(roots)
         .filter(string -> !string.isEmpty())
-        .map(project.getBasePath().resolve(getPath())::resolve)
+        .map(getFullPath()::resolve)
         .map(Path::toUri)
         .map(URI::toString)
         .toArray(String[]::new);
@@ -122,4 +118,5 @@ public class ScalaSdk extends IntelliJLibrary<PersistentLibraryKind<ScalaLibrary
     properties.loadState(new ScalaLibraryPropertiesState(
         ScalaLanguageLevel.findByVersion(scalaVersion).get(), getUris(getJarFiles())));
   }
+
 }

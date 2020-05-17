@@ -27,24 +27,32 @@ public class ModuleListElementViewModel extends ListElementViewModel<Module> {
    * @return A {@link String} describing the status.
    */
   public String getStatus() {
-    switch (getModel().stateMonitor.get()) {
+    Module model = getModel();
+    switch (model.stateMonitor.get()) {
+      case Component.UNRESOLVED:
+        return "Unknown";
       case Component.NOT_INSTALLED:
-      case Component.FETCHED:
-      case Component.UNLOADED:
-      case Component.UNINSTALLED:
-        return "Not installed";
+        return "Double-click to download";
       case Component.FETCHING:
         return "Downloading...";
+      case Component.FETCHED:
+        return "Double-click to install";
       case Component.LOADING:
         return "Installing...";
       case Component.LOADED:
-        return "Loaded";
-      case Component.WAITING_FOR_DEPS:
-        return "Waiting for dependencies...";
-      case Component.INSTALLED:
-        return "Installed";
+        break;
       default:
         return "Error";
+    }
+    switch (model.dependencyStateMonitor.get()) {
+      case Component.DEP_INITIAL:
+        return "Installed, dependencies unknown";
+      case Component.DEP_WAITING:
+        return "Waiting for dependencies...";
+      case Component.DEP_LOADED:
+        return "Installed";
+      default:
+        return "Error in dependencies";
     }
   }
 
@@ -53,7 +61,8 @@ public class ModuleListElementViewModel extends ListElementViewModel<Module> {
    * @return A {@link Float} that can be set to font weight.
    */
   public float getFontWeight() {
-    return getModel().stateMonitor.get() >= Component.LOADED
+    Module model = getModel();
+    return !model.hasError() && model.stateMonitor.get() == Component.LOADED
         ? TextAttribute.WEIGHT_BOLD
         : TextAttribute.WEIGHT_REGULAR;
   }

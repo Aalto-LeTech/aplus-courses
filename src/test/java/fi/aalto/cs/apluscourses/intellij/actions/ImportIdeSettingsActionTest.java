@@ -45,7 +45,7 @@ public class ImportIdeSettingsActionTest {
     Map<String, URL> resourceUrls = new HashMap<>();
     resourceUrls.put("ideSettings", new URL("https://example.com"));
     Course course = new Course("course", Collections.emptyList(), Collections.emptyList(),
-        Collections.emptyMap(), resourceUrls, new ModelExtensions.TestComponentSource());
+        Collections.emptyMap(), resourceUrls);
     mainViewModel.courseViewModel.set(new CourseViewModel(course));
 
     anActionEvent = mock(AnActionEvent.class);
@@ -55,8 +55,7 @@ public class ImportIdeSettingsActionTest {
   @Test
   public void testInformsCourseHasNoIdeSettings() {
     Course course = new Course("no-ide-settings", Collections.emptyList(),
-        Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap(),
-        new ModelExtensions.TestComponentSource());
+        Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap());
     mainViewModel.courseViewModel.set(new CourseViewModel(course));
 
     TestDialogs dialogs = new TestDialogs(false);
