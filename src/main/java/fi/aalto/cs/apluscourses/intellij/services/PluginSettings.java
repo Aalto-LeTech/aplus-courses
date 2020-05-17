@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.intellij.services;
 
+import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalSettingsNames.A_PLUS_IMPORTED_IDE_SETTINGS;
 import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalSettingsNames.A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG;
 
 import com.intellij.ide.util.PropertiesComponent;
@@ -17,8 +18,8 @@ import org.jetbrains.annotations.Nullable;
 public class PluginSettings implements MainViewModelProvider {
 
   public enum LocalSettingsNames {
-    A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG("A+.showReplConfigDialog");
-
+    A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG("A+.showReplConfigDialog"),
+    A_PLUS_IMPORTED_IDE_SETTINGS("A+.importedIdeSettings");
     private final String name;
 
     LocalSettingsNames(String name) {
@@ -28,11 +29,12 @@ public class PluginSettings implements MainViewModelProvider {
     public String getName() {
       return name;
     }
+
   }
 
   public static final String COURSE_CONFIGURATION_FILE_URL
       = "https://grader.cs.hut.fi/static/O1_2020/projects/o1_course_config.json";
-  private static final PropertiesComponent propertiesManager = PropertiesComponent.getInstance();
+  private final PropertiesComponent propertiesManager = PropertiesComponent.getInstance();
 
   @NotNull
   private final ConcurrentMap<Project, MainViewModel> mainViewModels = new ConcurrentHashMap<>();
@@ -92,19 +94,36 @@ public class PluginSettings implements MainViewModelProvider {
             String.valueOf(showReplConfigDialog));
   }
 
+  public String getImportedIdeSettingsName() {
+    return propertiesManager.getValue(A_PLUS_IMPORTED_IDE_SETTINGS.getName());
+  }
+
+  public void setImportedIdeSettingsName(@NotNull String courseName) {
+    propertiesManager.setValue(A_PLUS_IMPORTED_IDE_SETTINGS.getName(), courseName);
+  }
+
   /**
-   * Method that checks if the values are set (exists/non-empty etc.) and sets the {@link String}
-   * value to 'true'.
+   * Sets unset local settings to their default values.
    */
-  public void initiateLocalSettingShowReplConfigurationDialog() {
+  public void initializeLocalSettings() {
     if (!propertiesManager.isValueSet(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG.getName())) {
-      propertiesManager
-          .setValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG.getName(), String.valueOf(true));
+      setShowReplConfigurationDialog(true);
+    }
+    if (!propertiesManager.isValueSet(A_PLUS_IMPORTED_IDE_SETTINGS.getName())) {
+      setImportedIdeSettingsName("");
     }
   }
 
   /**
-   * Method that unsets all the local settings from {@link LocalSettingsNames}.
+   * Resets all local settings to their default values.
+   */
+  public void resetLocalSettings() {
+    unsetLocalSettings();
+    initializeLocalSettings();
+  }
+
+  /**
+   * Unsets all the local settings from {@link LocalSettingsNames}.
    */
   public void unsetLocalSettings() {
     Arrays.stream(LocalSettingsNames.values())
