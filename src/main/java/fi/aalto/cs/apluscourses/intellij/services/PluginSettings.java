@@ -9,6 +9,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.project.ProjectManagerListener;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
+import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import org.jetbrains.annotations.NotNull;
@@ -16,11 +17,19 @@ import org.jetbrains.annotations.Nullable;
 
 public class PluginSettings implements MainViewModelProvider {
 
-  public interface LocalSettingsNames {
+  public enum LocalSettingsNames {
+    A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG("A+.showReplConfigDialog"),
+    A_PLUS_IMPORTED_IDE_SETTINGS("A+.importedIdeSettings");
+    private final String name;
 
-    String A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG = "A+.showReplConfigDialog";
+    LocalSettingsNames(String name) {
+      this.name = name;
+    }
 
-    String A_PLUS_IMPORTED_IDE_SETTINGS = "A+.importedIdeSettings";
+    public String getName() {
+      return name;
+    }
+
   }
 
   public static final String COURSE_CONFIGURATION_FILE_URL
@@ -65,38 +74,52 @@ public class PluginSettings implements MainViewModelProvider {
     return new MainViewModel();
   }
 
+  /**
+   * Method (getter) to check the property, responsible for showing REPL configuration window.
+   */
   public boolean shouldShowReplConfigurationDialog() {
-    return Boolean.parseBoolean(propertiesManager.getValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG));
+    return Boolean.parseBoolean(
+        propertiesManager.getValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG.getName()));
   }
 
   /**
-   * Method to set property, responsible for showing REPL configuration window.
+   * Method (setter) to set property, responsible for showing REPL configuration window.
    *
    * @param showReplConfigDialog a boolean value of the flag.
    */
   public void setShowReplConfigurationDialog(boolean showReplConfigDialog) {
     propertiesManager
         //  a String explicitly
-        .setValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG, String.valueOf(showReplConfigDialog));
+        .setValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG.getName(),
+            String.valueOf(showReplConfigDialog));
   }
 
   public String getImportedIdeSettingsName() {
-    return propertiesManager.getValue(A_PLUS_IMPORTED_IDE_SETTINGS);
+    return propertiesManager.getValue(A_PLUS_IMPORTED_IDE_SETTINGS.getName());
   }
 
   public void setImportedIdeSettingsName(@NotNull String courseName) {
-    propertiesManager.setValue(A_PLUS_IMPORTED_IDE_SETTINGS, courseName);
+    propertiesManager.setValue(A_PLUS_IMPORTED_IDE_SETTINGS.getName(), courseName);
   }
 
   /**
    * Sets unset local settings to their default values.
    */
   public void initializeLocalSettings() {
-    if (!propertiesManager.isValueSet(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG)) {
+    if (!propertiesManager.isValueSet(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG.getName())) {
       setShowReplConfigurationDialog(true);
     }
-    if (!propertiesManager.isValueSet(A_PLUS_IMPORTED_IDE_SETTINGS)) {
+    if (!propertiesManager.isValueSet(A_PLUS_IMPORTED_IDE_SETTINGS.getName())) {
       setImportedIdeSettingsName("");
     }
+  }
+
+  /**
+   * Unsets all the local settings from {@link LocalSettingsNames}.
+   */
+  public void unsetLocalSettings() {
+    Arrays.stream(LocalSettingsNames.values())
+        .map(LocalSettingsNames::getName)
+        .forEach(propertiesManager::unsetValue);
   }
 }

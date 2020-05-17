@@ -12,18 +12,34 @@ public class PluginSettingsTest extends BasePlatformTestCase {
   @Test
   public void testInitializeLocalSettings() {
     // given
-    PropertiesComponent.getInstance()
-        .unsetValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG);
-    PropertiesComponent.getInstance()
-        .unsetValue(A_PLUS_IMPORTED_IDE_SETTINGS);
+    PluginSettings.getInstance().unsetLocalSettings();
 
-    // when
+    //  when
     PluginSettings.getInstance().initializeLocalSettings();
 
-    assertTrue("The REPL configuration dialog option should be set to true",
-        PropertiesComponent.getInstance().getBoolean(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG));
+    //  then
+    assertTrue("The REPL dialog settings should be set to 'true'",
+        PropertiesComponent.getInstance()
+            .getBoolean(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG.getName()));
     assertEquals("The last imported ide settings should be an empty string",
-        "", PropertiesComponent.getInstance().getValue(A_PLUS_IMPORTED_IDE_SETTINGS));
+        "", PropertiesComponent.getInstance().getValue(A_PLUS_IMPORTED_IDE_SETTINGS.getName()));
+  }
+
+  @Test
+  public void testUnsetLocalSettings() {
+    //  given
+    PluginSettings.getInstance().initializeLocalSettings();
+
+    //  when
+    PluginSettings.getInstance().unsetLocalSettings();
+
+    //  then
+    assertNull(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG.getName() + " is successfully removed.",
+        PropertiesComponent.getInstance().getValue(
+            A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG.getName()));
+    assertNull(A_PLUS_IMPORTED_IDE_SETTINGS.getName() + " is successfully removed.",
+        PropertiesComponent.getInstance().getValue(
+            A_PLUS_IMPORTED_IDE_SETTINGS.getName()));
   }
 
 }

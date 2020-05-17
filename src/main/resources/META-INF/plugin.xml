@@ -20,7 +20,6 @@
     <depends optional="true" config-file="with-scala.xml">org.intellij.scala</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-
         <backgroundPostStartupActivity implementation="fi.aalto.cs.apluscourses.intellij.activities.VersionCheckerActivity"/>
         <backgroundPostStartupActivity implementation="fi.aalto.cs.apluscourses.intellij.activities.InitializationActivity"/>
 
@@ -63,4 +62,8 @@
             <keyboard-shortcut first-keystroke="control shift D" keymap="$default"/>
         </action>
     </actions>
+    <applicationListeners>
+        <listener class="fi.aalto.cs.apluscourses.intellij.utils.PluginLoadUnloadEventsListener"
+                  topic="com.intellij.ide.plugins.DynamicPluginListener"/>
+    </applicationListeners>
 </idea-plugin>
