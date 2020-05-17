@@ -18,7 +18,24 @@ public class PluginSettingsTest extends BasePlatformTestCase {
     PluginSettings.getInstance().initializeLocalSettings();
 
     //  then
-    assertTrue("The REPL dialog settings should be set to 'true'",
+    assertTrue("The REPL dialog setting should be set to 'true'",
+        PropertiesComponent.getInstance()
+            .getBoolean(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG.getName()));
+    assertEquals("The last imported ide settings should be an empty string",
+        "", PropertiesComponent.getInstance().getValue(A_PLUS_IMPORTED_IDE_SETTINGS.getName()));
+  }
+
+  @Test
+  public void testResetLocalSettings() {
+    // given
+    PluginSettings.getInstance().setShowReplConfigurationDialog(false);
+    PluginSettings.getInstance().setImportedIdeSettingsName("this is not an empty string");
+
+    // when
+    PluginSettings.getInstance().resetLocalSettings();
+
+    // then
+    assertTrue("The REPL dialog setting should be set to 'true'",
         PropertiesComponent.getInstance()
             .getBoolean(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG.getName()));
     assertEquals("The last imported ide settings should be an empty string",

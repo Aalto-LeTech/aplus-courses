@@ -115,6 +115,14 @@ public class PluginSettings implements MainViewModelProvider {
   }
 
   /**
+   * Resets all local settings to their default values.
+   */
+  public void resetLocalSettings() {
+    unsetLocalSettings();
+    initializeLocalSettings();
+  }
+
+  /**
    * Unsets all the local settings from {@link LocalSettingsNames}.
    */
   public void unsetLocalSettings() {
