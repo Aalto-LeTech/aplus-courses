@@ -128,4 +128,9 @@ public abstract class Component {
           areDependenciesLoaded(componentSource) ? DEP_LOADED : DEP_ERROR, depState);
     }
   }
+
+  @FunctionalInterface
+  public static interface InitializationCallback {
+    void initialize(Component component);
+  }
 }

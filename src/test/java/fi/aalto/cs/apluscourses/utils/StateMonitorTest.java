@@ -33,7 +33,7 @@ public class StateMonitorTest {
   }
 
   @Test
-  public void testSetConditionallyReturnsTrue() {
+  public void testSetConditionallyToReturnsTrue() {
     StateMonitor.StateListener stateListener = mock(StateMonitor.StateListener.class);
     StateMonitor stateMonitor = new StateMonitor(stateListener);
 
@@ -52,7 +52,7 @@ public class StateMonitorTest {
   }
 
   @Test
-  public void testSetConditionallyReturnsFalse() {
+  public void testSetConditionallyToReturnsFalse() {
     StateMonitor.StateListener stateListener = mock(StateMonitor.StateListener.class);
     StateMonitor stateMonitor = new StateMonitor(stateListener);
 
@@ -67,7 +67,7 @@ public class StateMonitorTest {
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void testSetConditionallyThrowsException() {
+  public void testSetConditionallyToThrowsException() {
     StateMonitor.StateListener stateListener = mock(StateMonitor.StateListener.class);
     StateMonitor stateMonitor = new StateMonitor(stateListener);
 

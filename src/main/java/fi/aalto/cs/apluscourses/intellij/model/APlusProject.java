@@ -32,6 +32,11 @@ public class APlusProject {
     return ModuleManager.getInstance(project);
   }
 
+  /**
+   * Returns the root manager of the given module.
+   * @param moduleName The name of the module.
+   * @return The root manager of the module or null, if the module doesn't exist in the project.
+   */
   @Nullable
   public ModuleRootManager getModuleRootManager(@NotNull String moduleName) {
     return Optional.ofNullable(getModuleManager().findModuleByName(moduleName))

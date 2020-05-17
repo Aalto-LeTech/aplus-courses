@@ -9,7 +9,6 @@ import com.intellij.openapi.vfs.newvfs.BulkFileListener;
 import com.intellij.openapi.vfs.newvfs.events.VFileDeleteEvent;
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import fi.aalto.cs.apluscourses.model.Component;
-import fi.aalto.cs.apluscourses.model.ComponentInitializationCallback;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Library;
 import fi.aalto.cs.apluscourses.model.ModelFactory;
@@ -44,7 +43,7 @@ public class IntelliJModelFactory implements ModelFactory {
         new IntelliJCourse(name, modules, libraries, requiredPlugins, resourceUrls, project,
             new CommonLibraryProvider(project));
 
-    ComponentInitializationCallback componentInitializationCallback =
+    Component.InitializationCallback componentInitializationCallback =
         component -> registerComponentToCourse(component, course);
     course.getCommonLibraryProvider().setInitializationCallback(componentInitializationCallback);
 

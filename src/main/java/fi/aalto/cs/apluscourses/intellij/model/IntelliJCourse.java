@@ -6,6 +6,7 @@ import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Library;
 import fi.aalto.cs.apluscourses.model.Module;
 import java.net.URL;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -56,8 +57,8 @@ class IntelliJCourse extends Course {
   @Nullable
   public Component getComponentIfExists(VirtualFile file) {
     Component component = getComponentIfExists(file.getName());
-    return component != null && component.getFullPath().equals(Paths.get(file.getPath()))
-        ? component : null;
+    Path pathOfTheFile = Paths.get(file.getPath());
+    return component != null && component.getFullPath().equals(pathOfTheFile) ? component : null;
   }
 
   @NotNull

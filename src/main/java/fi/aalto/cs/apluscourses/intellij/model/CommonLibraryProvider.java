@@ -1,7 +1,6 @@
 package fi.aalto.cs.apluscourses.intellij.model;
 
 import fi.aalto.cs.apluscourses.model.Component;
-import fi.aalto.cs.apluscourses.model.ComponentInitializationCallback;
 import fi.aalto.cs.apluscourses.model.ComponentSource;
 import fi.aalto.cs.apluscourses.model.Library;
 import java.util.Collection;
@@ -14,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 public class CommonLibraryProvider implements ComponentSource {
   private final APlusProject project;
   private final ConcurrentMap<String, Library> commonLibraries;
-  private volatile ComponentInitializationCallback initializationCallback; // NOSONAR
+  private volatile Component.InitializationCallback initializationCallback; // NOSONAR
 
   public CommonLibraryProvider(@NotNull APlusProject project) {
     this.project = project;
@@ -30,7 +29,7 @@ public class CommonLibraryProvider implements ComponentSource {
   }
 
   public void setInitializationCallback(
-      @Nullable ComponentInitializationCallback initializationCallback) {
+      @Nullable Component.InitializationCallback initializationCallback) {
     this.initializationCallback = initializationCallback;
   }
 

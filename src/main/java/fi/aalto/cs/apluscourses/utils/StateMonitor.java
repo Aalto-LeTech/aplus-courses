@@ -62,7 +62,7 @@ public class StateMonitor {
    */
   public boolean setConditionallyTo(int newState, int... expectedStates) {
     if (!isError(newState)
-        && !Arrays.stream(expectedStates).allMatch(FunctionUtil.lessThanOrEqualTo(newState))) {
+        && !Arrays.stream(expectedStates).allMatch(expectedState -> expectedState <= newState)) {
       throw new IllegalArgumentException();
     }
     boolean result = false;
