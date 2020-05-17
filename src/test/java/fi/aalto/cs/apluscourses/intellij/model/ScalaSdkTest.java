@@ -12,7 +12,7 @@ public class ScalaSdkTest extends HeavyPlatformTestCase {
   public void testCreateTempFile() throws IOException {
     //  given
     APlusProject aplusProject = new APlusProject(getProject());
-    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-5.5.5", aplusProject, 1);
+    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-5.5.5", aplusProject);
 
     //  when
     File tempFile = scalaSdk.createTempFile();
@@ -26,7 +26,7 @@ public class ScalaSdkTest extends HeavyPlatformTestCase {
   public void testFileName() {
     //  given
     APlusProject aplusProject = new APlusProject(getProject());
-    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", aplusProject, 1);
+    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", aplusProject);
 
     //  when
     String fileName = scalaSdk.getFileName();
@@ -39,7 +39,7 @@ public class ScalaSdkTest extends HeavyPlatformTestCase {
   public void testGetUrisNoArguments() {
     //  given
     APlusProject aplusProject = new APlusProject(getProject());
-    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", aplusProject, 1);
+    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", aplusProject);
 
     //  when
     String[] uris = scalaSdk.getUris();
@@ -56,7 +56,7 @@ public class ScalaSdkTest extends HeavyPlatformTestCase {
   public void testGetUrisWithValidArguments() {
     //  given
     APlusProject aplusProject = new APlusProject(getProject());
-    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", aplusProject, 1);
+    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", aplusProject);
     final String[] allClasses = {
         "scala-compiler.jar",
         "scala-library.jar",
@@ -80,7 +80,7 @@ public class ScalaSdkTest extends HeavyPlatformTestCase {
   public void testGetUrisWithInvalidArguments() {
     //  given
     APlusProject aplusProject = new APlusProject(getProject());
-    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", aplusProject, 1);
+    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", aplusProject);
     final String[] allClasses = {
         "scala-compiler.jar",
         "",

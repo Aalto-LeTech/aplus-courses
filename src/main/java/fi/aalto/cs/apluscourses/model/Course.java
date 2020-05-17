@@ -7,10 +7,13 @@ import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -24,8 +27,6 @@ import org.json.JSONTokener;
 public class Course implements ComponentSource {
   @NotNull
   protected final Map<String, Component> components;
-  @NotNull
-  protected final ComponentSource commonLibraryProvider;
   @NotNull
   private final String name;
 
@@ -56,16 +57,14 @@ public class Course implements ComponentSource {
                 @NotNull List<Module> modules,
                 @NotNull List<Library> libraries,
                 @NotNull Map<String, String> requiredPlugins,
-                @NotNull Map<String, URL> resourceUrls,
-                @NotNull ComponentSource commonLibraryProvider) {
+                @NotNull Map<String, URL> resourceUrls) {
     this.name = name;
     this.modules = modules;
     this.requiredPlugins = requiredPlugins;
     this.resourceUrls = resourceUrls;
     this.libraries = libraries;
-    this.components = Stream.concat(modules.stream(), libraries.stream())
+    components = Stream.concat(modules.stream(), libraries.stream())
         .collect(Collectors.toMap(Component::getName, Function.identity()));
-    this.commonLibraryProvider = commonLibraryProvider;
   }
 
   public static Course fromResource(@NotNull String resourceName, @NotNull ModelFactory factory)
@@ -141,7 +140,12 @@ public class Course implements ComponentSource {
    */
   @NotNull
   public List<Library> getLibraries() {
-    return libraries;
+    return Collections.unmodifiableList(libraries);
+  }
+
+  @NotNull
+  public Collection<Component> getComponents() {
+    return components.values();
   }
 
   /**
@@ -267,37 +271,26 @@ public class Course implements ComponentSource {
     return resourceUrls;
   }
 
-  /**
-   * Updates the states of the component objects when the given module or library is removed from
-   * the project of this course. If the argument is null, does nothing.
-   */
-  public void onComponentRemove(@Nullable Component component) {
-    if (component != null) {
-      component.stateMonitor.set(Component.UNLOADED);
-    }
-  }
-
-  /**
-   * Updates the states of the component objects, when the directory with the files of the given
-   * module or library is deleted. If the argument is null, does nothing.
-   */
-  public void onComponentFilesDeleted(@Nullable Component component) {
-    if (component != null) {
-      component.stateMonitor.set(Component.UNINSTALLED);
-    }
-  }
-
-  @NotNull
-  @Override
-  public Component getComponent(@NotNull String componentName) throws NoSuchComponentException {
-    Component component = components.get(componentName);
-    return component != null ? component : commonLibraryProvider.getComponent(componentName);
-  }
-
   @Nullable
   @Override
   public Component getComponentIfExists(@NotNull String name) {
-    Component component = components.get(name);
-    return component != null ? component : commonLibraryProvider.getComponentIfExists(name);
+    return components.get(name);
+  }
+
+  /**
+   * Resolves states of unresolved components and calls {@code validate()}.
+   */
+  public void resolve() {
+    getComponents().forEach(Component::resolveState);
+    validate();
+  }
+
+  /**
+   * Validates that components conform integrity constraints.
+   */
+  public void validate() {
+    for (Component component : getComponents()) {
+      component.validate(this);
+    }
   }
 }

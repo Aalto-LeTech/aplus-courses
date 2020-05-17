@@ -56,19 +56,4 @@ public class ModuleTest {
     JSONObject jsonObject = new JSONObject("{\"name\":\"Name\",\"url\":\"\"}");
     Module.fromJsonObject(jsonObject, MODEL_FACTORY);
   }
-
-  @SuppressWarnings("unchecked")
-  @Test
-  public void testStateChanged() throws MalformedURLException {
-    URL url = new URL("https://example.com");
-    Object listener = new Object();
-    Event.Callback<Object> callback = mock(Event.Callback.class);
-    Module module = new ModelExtensions.TestModule("Changing module", url);
-    module.stateChanged.addListener(listener, callback);
-    verifyNoInteractions(callback);
-    assertEquals(Component.NOT_INSTALLED, module.stateMonitor.get());
-    module.stateMonitor.set(Component.FETCHING);
-    verify(callback, times(1)).callbackUntyped(listener);
-    verifyNoMoreInteractions(callback);
-  }
 }

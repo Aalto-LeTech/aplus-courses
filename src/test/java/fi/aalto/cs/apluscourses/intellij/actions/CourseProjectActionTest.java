@@ -89,7 +89,7 @@ public class CourseProjectActionTest {
     doReturn(project).when(anActionEvent).getProject();
     mainViewModel = new MainViewModel();
     emptyCourse = new Course("EMPTY", Collections.emptyList(), Collections.emptyList(),
-        Collections.emptyMap(), Collections.emptyMap(), new ModelExtensions.TestComponentSource());
+        Collections.emptyMap(), Collections.emptyMap());
 
     settingsImporter = new DummySettingsImporter();
 
