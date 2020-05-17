@@ -262,6 +262,43 @@ a manual testing manual. Marked with a github issue label "manual testing".
 </details>
 <details>
   <summary>
+    <a href="https://github.com/Aalto-LeTech/intellij-plugin/issues/86">turn project into "A+ O1" project" feature #86</a>
+  </summary>
+  <div>
+    <h5>Creating a Course Project</h5>
+    <ol>
+      <li>Start the IDE and observe that the "Modules" tool window is empty (no course loaded).</li>
+      <li>From the A+ menu at the top, select "Turn Project into A+ Course Project</li>
+      <li>
+        An information dialog should appear notifying that the plugin will adjust IntelliJ
+        IDEA settings. A opt-out checkbox should be added later. 
+      </li>
+      <li>
+        A yes/no dialog should appear prompting to restart the IDE to reload the IDE settings.
+        Select "no".
+      </li>
+      <li>Observe that the project gets reloaded (may appear as a quick "flash").</li>
+      <li>The "Modules" tool window should now have a list of O1 modules.</li>
+      <li>
+        The .idea directory should contain O1 project settings (for an example scala_settings.xml).
+      </li>
+      <li>
+        Restart the IDE.
+      </li>
+      <li>The IDE should now have the dark theme from the O1 IDE settings.</li>
+      <li>
+        When the project gets opened, the plugin should recognize that the project is a O1 project
+        and update the "Modules" tool window with O1 modules. 
+      </li>
+      <li>
+        Using the "Turn Project Into A+ Course Project" action without a working internet connection
+        should result in an error message.
+      </li>
+    </ol>
+  </div>
+</details>
+<details>
+  <summary>
     <a href="https://github.com/Aalto-LeTech/intellij-plugin/issues/110">Renaming/removing module files leads to incorrect states in module list #110</a>
   </summary>
   <div>
@@ -289,6 +326,20 @@ a manual testing manual. Marked with a github issue label "manual testing".
       <li>Ensure that <i>O1Library</i> and <i>GoodStuff</i> are marked "error in dependencies" in the modules list.</li>
       <li>Double-click <i>O1Library</i> in the modules list to re-install it.</li>
       <li>Ensure that <i>O1Library</i> and <i>GoodStuff</i> are marked installed in the modules list.</li>
+    </ol>
+  </div>
+</details>
+<details>
+  <summary>
+    <a href="https://github.com/Aalto-LeTech/intellij-plugin/issues/93">reset to "A+" settings #93</a>
+  </summary>
+  <div>
+    <h5>Resetting A+ Courses Settings</h5>
+    <ol>
+      <li>Start the REPL for a module and check the "Don't show this window again" checkbox.</li>
+      <li>Start the REPL for a module again and ensure that the window isn't shown again.</li>
+      <li>From the A+ menu at the top, select "Reset A+ Courses Plugin Settings".</li>
+      <li>Start the REPL for a module again and observe that the window is shown again.</li>
     </ol>
   </div>
 </details>
