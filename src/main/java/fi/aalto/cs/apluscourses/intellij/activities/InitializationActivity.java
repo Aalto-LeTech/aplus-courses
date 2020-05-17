@@ -1,9 +1,8 @@
 package fi.aalto.cs.apluscourses.intellij.activities;
 
 import com.intellij.notification.Notifications;
-import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.startup.StartupActivity;
+import com.intellij.openapi.startup.StartupActivity.Background;
 import fi.aalto.cs.apluscourses.intellij.actions.ActionUtil;
 import fi.aalto.cs.apluscourses.intellij.actions.RequiredPluginsCheckerAction;
 import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory;
@@ -27,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class InitializationActivity implements StartupActivity, DumbAware {
+public class InitializationActivity implements Background {
 
   private static final Logger logger = LoggerFactory.getLogger(InitializationActivity.class);
 

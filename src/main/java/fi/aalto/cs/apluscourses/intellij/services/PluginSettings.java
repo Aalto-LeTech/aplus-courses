@@ -8,6 +8,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.project.ProjectManagerListener;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
+import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import org.jetbrains.annotations.NotNull;
@@ -15,9 +16,18 @@ import org.jetbrains.annotations.Nullable;
 
 public class PluginSettings implements MainViewModelProvider {
 
-  public interface LocalSettingsNames {
+  public enum LocalSettingsNames {
+    A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG("A+.showReplConfigDialog");
 
-    String A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG = "A+.showReplConfigDialog";
+    private final String name;
+
+    LocalSettingsNames(String name) {
+      this.name = name;
+    }
+
+    public String getName() {
+      return name;
+    }
   }
 
   public static final String COURSE_CONFIGURATION_FILE_URL
@@ -62,28 +72,43 @@ public class PluginSettings implements MainViewModelProvider {
     return new MainViewModel();
   }
 
+  /**
+   * Method (getter) to check the property, responsible for showing REPL configuration window.
+   */
   public boolean shouldShowReplConfigurationDialog() {
-    return Boolean.parseBoolean(propertiesManager.getValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG));
+    return Boolean.parseBoolean(
+        propertiesManager.getValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG.getName()));
   }
 
   /**
-   * Method to set property, responsible for showing REPL configuration window.
+   * Method (setter) to set property, responsible for showing REPL configuration window.
    *
    * @param showReplConfigDialog a boolean value of the flag.
    */
   public void setShowReplConfigurationDialog(boolean showReplConfigDialog) {
     propertiesManager
         //  a String explicitly
-        .setValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG, String.valueOf(showReplConfigDialog));
+        .setValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG.getName(),
+            String.valueOf(showReplConfigDialog));
   }
 
   /**
-   * Method that checks if the value is set (exists/non-empty etc.) and sets the {@link String}
+   * Method that checks if the values are set (exists/non-empty etc.) and sets the {@link String}
    * value to 'true'.
    */
   public void initiateLocalSettingShowReplConfigurationDialog() {
-    if (!propertiesManager.isValueSet(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG)) {
-      propertiesManager.setValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG, String.valueOf(true));
+    if (!propertiesManager.isValueSet(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG.getName())) {
+      propertiesManager
+          .setValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG.getName(), String.valueOf(true));
     }
+  }
+
+  /**
+   * Method that unsets all the local settings from {@link LocalSettingsNames}.
+   */
+  public void unsetLocalSettings() {
+    Arrays.stream(LocalSettingsNames.values())
+        .map(LocalSettingsNames::getName)
+        .forEach(propertiesManager::unsetValue);
   }
 }
