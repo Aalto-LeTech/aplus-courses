@@ -9,6 +9,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import fi.aalto.cs.apluscourses.ui.Binding;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 public class ImportIdeSettingsDialog extends DialogWrapper {
   private JPanel basePanel;
   private JCheckBox optOutCheckBox;
+  @Binding
   private JLabel textLabel;
 
 
