@@ -8,7 +8,6 @@ import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.model.Component;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;

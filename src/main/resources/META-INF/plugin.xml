@@ -23,7 +23,6 @@
         <backgroundPostStartupActivity implementation="fi.aalto.cs.apluscourses.intellij.activities.VersionCheckerActivity"/>
         <backgroundPostStartupActivity implementation="fi.aalto.cs.apluscourses.intellij.activities.InitializationActivity"/>
 
-        <applicationService serviceImplementation="fi.aalto.cs.apluscourses.intellij.services.PluginSettings" />
         <toolWindow id="Modules"
                     anchor="right"
                     factoryClass="fi.aalto.cs.apluscourses.intellij.toolwindows.ModulesToolWindowFactory" />
