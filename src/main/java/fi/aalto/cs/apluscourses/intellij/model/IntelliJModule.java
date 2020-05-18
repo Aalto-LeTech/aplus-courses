@@ -65,6 +65,7 @@ class IntelliJModule
   public void load() throws ComponentLoadException {
     try {
       WriteAction.runAndWait(new Loader(getProject(), getImlFile())::load);
+      project.addCourseFileEntry(this);
     } catch (Exception e) {
       throw new ComponentLoadException(getName(), e);
     }

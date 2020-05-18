@@ -6,9 +6,12 @@ import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.roots.libraries.LibraryTable;
 import com.intellij.openapi.roots.libraries.LibraryTablesRegistrar;
 import com.intellij.util.messages.MessageBus;
+
 import fi.aalto.cs.apluscourses.model.Component;
+import fi.aalto.cs.apluscourses.model.Module;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -20,7 +23,9 @@ import java.util.Optional;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 
 public class APlusProject {
   @NotNull
@@ -58,6 +63,51 @@ public class APlusProject {
     jsonObject.put("url", sourceUrl.toString());
     FileUtils.writeStringToFile(courseFile, jsonObject.toString(), StandardCharsets.UTF_8);
     return true;
+  }
+
+  /**
+   * Parses the stored URL from the course file and returns it, or null if the course file doesn't
+   * exist.
+   * @return The URL in the course file, or null if the course file doesn't exist.
+   * @throws IOException   If an IO error occurs while reading the course file.
+   * @throws JSONException If the JSON in the course file is malformed.
+   */
+  @Nullable
+  public synchronized URL getCourseFileUrl() throws IOException {
+    // TODO: synchronized unnecessary?
+    File courseFile = getCourseFilePath().toFile();
+    if (!courseFile.isFile()) {
+      return null;
+    }
+
+    // TODO: the course file is written as UTF-8, ensure that this always works
+    JSONTokener tokenizer = new JSONTokener(new FileInputStream(courseFile));
+    JSONObject jsonObject = new JSONObject(tokenizer);
+    return new URL(jsonObject.getString("url"));
+  }
+
+  /**
+   * Adds an entry for the given module to the course file. If an entry exists with the same name,
+   * it is overwritten.
+   * @param module The module for which an entry is added.
+   * @throws IOException   If an IO error occurs (for an example, the course file doesn't exist).
+   * @throws JSONException If the existing JSON in the course file is malformed.
+   */
+  public synchronized void addCourseFileEntry(@NotNull Module module) throws IOException {
+    File courseFile = getCourseFilePath().toFile();
+    JSONTokener tokenizer = new JSONTokener(new FileInputStream(courseFile));
+    JSONObject jsonObject = new JSONObject(tokenizer);
+
+    // It's possible that the "modules" key doesn't exist yet
+    JSONObject modulesObject = jsonObject.optJSONObject("modules");
+    if (modulesObject == null) {
+      modulesObject = new JSONObject();
+    }
+
+    JSONObject entry = new JSONObject().put("id", module.getVersionId());
+    modulesObject.put(module.getName(), entry);
+    jsonObject.put("modules", modulesObject);
+    FileUtils.writeStringToFile(courseFile, jsonObject.toString(), StandardCharsets.UTF_8);
   }
 
   @NotNull

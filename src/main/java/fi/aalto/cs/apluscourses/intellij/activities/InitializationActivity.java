@@ -17,8 +17,6 @@ import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationFileException;
 import fi.aalto.cs.apluscourses.model.UnexpectedResponseException;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -26,8 +24,6 @@ import java.net.URL;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,17 +80,8 @@ public class InitializationActivity implements Background {
       return null;
     }
 
-    File courseFile = new APlusProject(project).getCourseFilePath().toFile();
-    if (!courseFile.isFile()) {
-      return null;
-    }
-
     try {
-      // TODO: the course file is written as UTF-8, ensure that this always works
-      JSONTokener tokenizer = new JSONTokener(new FileInputStream(courseFile));
-      JSONObject jsonObject = new JSONObject(tokenizer);
-      String url = jsonObject.getString("url");
-      return new URL(url);
+      return new APlusProject(project).getCourseFileUrl();
     } catch (IOException | JSONException e) {
       logger.error("Malformed project course tag file", e);
       return null;

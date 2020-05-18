@@ -49,4 +49,13 @@ public abstract class Module extends Component {
   public URL getUrl() {
     return url;
   }
+
+  /**
+   * Returns a string that uniquely identifies the version of this module. That is, a different
+   * version of the same module should return a different version string.
+   */
+  @NotNull
+  public String getVersionId() {
+    return "";
+  }
 }
