@@ -64,9 +64,9 @@ public class SettingsImporterImpl implements SettingsImporter {
 
   /**
    * Downloads the course project settings ZIP file to a temporary file. After that the files from
-   * the .idea directory of the ZIP file are extracted to the .idea directory of the given project.
-   * The project should be reloaded for the changes to take effect. If the course does not provide
-   * custom project settings, this method does nothing.
+   * the .idea directory of the ZIP file are extracted to the .idea directory of the given project,
+   * after which the project is reloaded. If the course does not provide custom project settings,
+   * this method does nothing.
    * @throws IOException                 If an IO error occurs (e.g. network issues).
    */
   @Override
