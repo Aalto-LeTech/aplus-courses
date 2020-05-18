@@ -10,6 +10,7 @@ import fi.aalto.cs.apluscourses.intellij.model.SettingsImporter;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
+import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogs;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -19,6 +20,46 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class CourseProjectActionTest {
+
+  private class TestDialogs implements CourseProjectActionDialogs {
+
+    private boolean answerOk;
+
+    private String lastErrorMessage = "";
+    private String lastOkCancelMessage = "";
+
+    public TestDialogs(boolean answerOk) {
+      this.answerOk = answerOk;
+    }
+
+    @NotNull
+    public String getLastErrorMessage() {
+      return lastErrorMessage;
+    }
+
+    @NotNull
+    public String getLastOkCancelMessage() {
+      return lastOkCancelMessage;
+    }
+
+    @Override
+    public void showErrorDialog(@NotNull String message, @NotNull String title) {
+      lastErrorMessage = message;
+    }
+
+    @Override
+    public boolean showOkCancelDialog(@NotNull String message,
+                                      @NotNull String title,@NotNull String okText,
+                                      @NotNull String cancelText) {
+      lastOkCancelMessage = message;
+      return answerOk;
+    }
+
+    @Override
+    public boolean showImportIdeSettingsDialog(@NotNull Project project) {
+      return true;
+    }
+  }
 
   private AnActionEvent anActionEvent;
   private MainViewModel mainViewModel;
