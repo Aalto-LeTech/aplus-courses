@@ -7,12 +7,20 @@ import com.intellij.openapi.roots.libraries.LibraryTable;
 import com.intellij.openapi.roots.libraries.LibraryTablesRegistrar;
 import com.intellij.util.messages.MessageBus;
 import fi.aalto.cs.apluscourses.model.Component;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.Optional;
+
+import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.json.JSONObject;
 
 public class APlusProject {
   @NotNull
@@ -29,7 +37,27 @@ public class APlusProject {
 
   @NotNull
   public Path getCourseFilePath() {
-    return getBasePath().resolve(Paths.get(Project.DIRECTORY_STORE_FOLDER, "a-plus-project"));
+    return getBasePath().resolve(Paths.get(Project.DIRECTORY_STORE_FOLDER, "a-plus-project.json"));
+  }
+
+  /**
+   * Creates a local course file containing the given URL. If a course file already exists (even if
+   * it was created with a different URL), this method does nothing and returns false.
+   * @param sourceUrl The URL that is added to the course file.
+   * @return True if the course file was created successfully, false if a course file already
+   *         exists.
+   * @throws IOException If an IO error occurs while creating the file.
+   */
+  public synchronized boolean createCourseFile(@NotNull URL sourceUrl) throws IOException {
+    File courseFile = getCourseFilePath().toFile();
+    if (courseFile.isFile()) {
+      return false;
+    }
+
+    JSONObject jsonObject = new JSONObject();
+    jsonObject.put("url", sourceUrl.toString());
+    FileUtils.writeStringToFile(courseFile, jsonObject.toString(), StandardCharsets.UTF_8);
+    return true;
   }
 
   @NotNull

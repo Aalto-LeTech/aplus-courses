@@ -22,7 +22,7 @@ public class APlusProjectTest {
     APlusProject aplusProject = new APlusProject(project);
 
     Assert.assertEquals("The course file path should be correct",
-        Paths.get("test", Project.DIRECTORY_STORE_FOLDER, "a-plus-project"),
+        Paths.get("test", Project.DIRECTORY_STORE_FOLDER, "a-plus-project.json"),
         aplusProject.getCourseFilePath());
   }
 
