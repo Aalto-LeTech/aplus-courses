@@ -12,7 +12,7 @@ public interface ModelFactory {
                       @NotNull Map<String, String> requiredPlugins,
                       @NotNull Map<String, URL> resourceUrls);
 
-  Module createModule(@NotNull String name, @NotNull URL url);
+  Module createModule(@NotNull String name, @NotNull URL url, @NotNull String versionId);
 
   Library createLibrary(@NotNull String name);
 }

@@ -44,8 +44,8 @@ public class CourseTest {
 
   @Test
   public void testGetModule() throws MalformedURLException, NoSuchComponentException {
-    Module module1 = new ModelExtensions.TestModule("Test Module", new URL("https://example.com"));
-    Module module2 = new ModelExtensions.TestModule("Awesome Module", new URL("https://slack.com"));
+    Module module1 = new ModelExtensions.TestModule("Test Module");
+    Module module2 = new ModelExtensions.TestModule("Awesome Module");
     Course course = new Course("", Arrays.asList(module1, module2), Collections.emptyList(),
         Collections.emptyMap(), Collections.emptyMap());
     assertSame("Course#getModule should return the correct module",

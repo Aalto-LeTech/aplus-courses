@@ -53,7 +53,7 @@ public class APlusProject {
    *         exists.
    * @throws IOException If an IO error occurs while creating the file.
    */
-  public synchronized boolean createCourseFile(@NotNull URL sourceUrl) throws IOException {
+  public boolean createCourseFile(@NotNull URL sourceUrl) throws IOException {
     File courseFile = getCourseFilePath().toFile();
     if (courseFile.isFile()) {
       return false;
@@ -73,8 +73,7 @@ public class APlusProject {
    * @throws JSONException If the JSON in the course file is malformed.
    */
   @Nullable
-  public synchronized URL getCourseFileUrl() throws IOException {
-    // TODO: synchronized unnecessary?
+  public URL getCourseFileUrl() throws IOException {
     File courseFile = getCourseFilePath().toFile();
     if (!courseFile.isFile()) {
       return null;
@@ -86,6 +85,8 @@ public class APlusProject {
     return new URL(jsonObject.getString("url"));
   }
 
+  private static final Object courseFileLock = new Object();
+  
   /**
    * Adds an entry for the given module to the course file. If an entry exists with the same name,
    * it is overwritten.
@@ -93,21 +94,23 @@ public class APlusProject {
    * @throws IOException   If an IO error occurs (for an example, the course file doesn't exist).
    * @throws JSONException If the existing JSON in the course file is malformed.
    */
-  public synchronized void addCourseFileEntry(@NotNull Module module) throws IOException {
+  public void addCourseFileEntry(@NotNull Module module) throws IOException {
     File courseFile = getCourseFilePath().toFile();
-    JSONTokener tokenizer = new JSONTokener(new FileInputStream(courseFile));
-    JSONObject jsonObject = new JSONObject(tokenizer);
+    synchronized (courseFileLock) {
+      JSONTokener tokenizer = new JSONTokener(new FileInputStream(courseFile));
+      JSONObject jsonObject = new JSONObject(tokenizer);
 
-    // It's possible that the "modules" key doesn't exist yet
-    JSONObject modulesObject = jsonObject.optJSONObject("modules");
-    if (modulesObject == null) {
-      modulesObject = new JSONObject();
+      // It's possible that the "modules" key doesn't exist yet
+      JSONObject modulesObject = jsonObject.optJSONObject("modules");
+      if (modulesObject == null) {
+        modulesObject = new JSONObject();
+      }
+
+      JSONObject entry = new JSONObject().put("id", module.getVersionId());
+      modulesObject.put(module.getName(), entry);
+      jsonObject.put("modules", modulesObject);
+      FileUtils.writeStringToFile(courseFile, jsonObject.toString(), StandardCharsets.UTF_8);
     }
-
-    JSONObject entry = new JSONObject().put("id", module.getVersionId());
-    modulesObject.put(module.getName(), entry);
-    jsonObject.put("modules", modulesObject);
-    FileUtils.writeStringToFile(courseFile, jsonObject.toString(), StandardCharsets.UTF_8);
   }
 
   @NotNull

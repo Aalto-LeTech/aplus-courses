@@ -32,8 +32,11 @@ class IntelliJModule
   private final APlusProject project;
 
 
-  IntelliJModule(@NotNull String name, @NotNull URL url, @NotNull APlusProject project) {
-    super(name, url);
+  IntelliJModule(@NotNull String name,
+                 @NotNull URL url,
+                 @NotNull String versionId,
+                 @NotNull APlusProject project) {
+    super(name, url, versionId);
     this.project = project;
   }
 
