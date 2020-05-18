@@ -21,6 +21,50 @@ public class ModelExtensions {
 
   }
 
+  public static class TestComponent extends Component {
+
+    public TestComponent() {
+      super("");
+    }
+
+    public TestComponent(@NotNull String name) {
+      super(name);
+    }
+
+    @NotNull
+    @Override
+    public Path getPath() {
+      return Paths.get(getName());
+    }
+
+    @Override
+    public void fetch() {
+      // do nothing
+    }
+
+    @Override
+    public void load() {
+      // do nothing
+    }
+
+    @NotNull
+    @Override
+    public Path getFullPath() {
+      return getPath().toAbsolutePath();
+    }
+
+    @Override
+    protected int resolveStateInternal() {
+      return 0;
+    }
+
+    @NotNull
+    @Override
+    protected List<String> computeDependencies() {
+      return Collections.emptyList();
+    }
+  }
+
   public static class TestModule extends Module {
 
     private static URL testURL;
@@ -37,25 +81,8 @@ public class ModelExtensions {
       this(name, testURL);
     }
 
-    /**
-     * Constructs a test module with the given name and URL.
-     *
-     * @param name The name of the module.
-     * @param url  The URL from which the module can be downloaded.
-     */
     public TestModule(@NotNull String name, @NotNull URL url) {
-      super(name, url, NOT_INSTALLED);
-    }
-
-    @NotNull
-    @Override
-    public List<String> getDependencyModules() throws ComponentLoadException {
-      return Collections.emptyList();
-    }
-
-    @Override
-    public List<String> getLibraries() throws ComponentLoadException {
-      return Collections.emptyList();
+      super(name, url);
     }
 
     @NotNull
@@ -73,6 +100,57 @@ public class ModelExtensions {
     public void load() throws ComponentLoadException {
       // do nothing
     }
+
+    @NotNull
+    @Override
+    public Path getFullPath() {
+      return getPath().toAbsolutePath();
+    }
+
+    @Override
+    protected int resolveStateInternal() {
+      return Component.NOT_INSTALLED;
+    }
+
+    @NotNull
+    @Override
+    protected List<String> computeDependencies() {
+      return Collections.emptyList();
+    }
+  }
+
+  public static class TestLibrary extends Library {
+
+    public TestLibrary(@NotNull String name) {
+      super(name);
+    }
+
+    @NotNull
+    @Override
+    public Path getPath() {
+      return Paths.get("lib", name);
+    }
+
+    @Override
+    public void fetch() throws IOException {
+      // do nothing
+    }
+
+    @Override
+    public void load() throws ComponentLoadException {
+      // do nothing
+    }
+
+    @NotNull
+    @Override
+    public Path getFullPath() {
+      return getPath().toAbsolutePath();
+    }
+
+    @Override
+    protected int resolveStateInternal() {
+      return Component.NOT_INSTALLED;
+    }
   }
 
   public static class TestModelFactory implements ModelFactory {
@@ -83,8 +161,7 @@ public class ModelExtensions {
                                @NotNull List<Library> libraries,
                                @NotNull Map<String, String> requiredPlugins,
                                @NotNull Map<String, URL> resourceUrls) {
-      return new Course(name, modules, libraries, requiredPlugins, resourceUrls,
-          new TestComponentSource());
+      return new Course(name, modules, libraries, requiredPlugins, resourceUrls);
     }
 
     @Override
@@ -99,12 +176,6 @@ public class ModelExtensions {
   }
 
   public static class TestComponentSource implements ComponentSource {
-
-    @NotNull
-    @Override
-    public Component getComponent(@NotNull String componentName) throws NoSuchComponentException {
-      throw new NoSuchComponentException(componentName, null);
-    }
 
     @Nullable
     @Override

@@ -1,11 +1,8 @@
 package fi.aalto.cs.apluscourses.model;
 
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -38,8 +35,8 @@ public class ComponentInstallerTest {
       }
     });
 
-    ComponentInstaller installer =
-        new ComponentInstallerImpl<>(mock(ComponentSource.class), new SimpleAsyncTaskManager());
+    ComponentInstaller installer = new ComponentInstallerImpl<>(
+        new ModelExtensions.TestComponentSource(), new SimpleAsyncTaskManager());
 
     installer.install(module);
 
@@ -47,8 +44,10 @@ public class ComponentInstallerTest {
     order.verify(module).fetch();
     order.verify(module).load();
 
-    assertEquals("Module should be in INSTALLED state, after the installation has ended.",
-        Component.INSTALLED, module.stateMonitor.get());
+    assertEquals("Module should be in LOADED state, after the installation has ended.",
+        Component.LOADED, module.stateMonitor.get());
+    assertEquals("Module should be in DEP_LOADED state, after the installation has ended.",
+        Component.DEP_LOADED, module.dependencyStateMonitor.get());
   }
 
   @Test
@@ -57,9 +56,9 @@ public class ComponentInstallerTest {
     Module module1 = spy(new ModelExtensions.TestModule("dependentModule") {
       @NotNull
       @Override
-      public List<String> getDependencies() {
-        assertThat("Module should be at least in FETCHED state when getDependencies() is called.",
-            stateMonitor.get(), greaterThanOrEqualTo(Component.FETCHED));
+      protected List<String> computeDependencies() {
+        assertEquals("Module should be in LOADED state when computeDependencies() is called.",
+            stateMonitor.get(), Component.LOADED);
         List<String> dependencies = new ArrayList<>();
         dependencies.add("firstDep");
         dependencies.add("secondDep");
@@ -69,10 +68,10 @@ public class ComponentInstallerTest {
     Module firstDep = spy(new ModelExtensions.TestModule("firstDep"));
     Module secondDep = spy(new ModelExtensions.TestModule("secondDep"));
 
-    ComponentSource componentSource = mock(ComponentSource.class);
-    when(componentSource.getComponent(module1.getName())).thenReturn(module1);
-    when(componentSource.getComponent(firstDep.getName())).thenReturn(firstDep);
-    when(componentSource.getComponent(secondDep.getName())).thenReturn(secondDep);
+    ComponentSource componentSource = spy(new ModelExtensions.TestComponentSource());
+    when(componentSource.getComponentIfExists(module1.getName())).thenReturn(module1);
+    when(componentSource.getComponentIfExists(firstDep.getName())).thenReturn(firstDep);
+    when(componentSource.getComponentIfExists(secondDep.getName())).thenReturn(secondDep);
 
     ComponentInstaller installer =
         new ComponentInstallerImpl<>(componentSource, new SimpleAsyncTaskManager());
@@ -91,14 +90,16 @@ public class ComponentInstallerTest {
     order3.verify(secondDep).fetch();
     order3.verify(secondDep).load();
 
-    assertEquals("Dependent module should be in INSTALLED state, after the installation has ended.",
-        Component.INSTALLED, module1.stateMonitor.get());
+    assertEquals("Dependent module should be in LOADED state, after the installation has ended.",
+        Component.LOADED, module1.stateMonitor.get());
+    assertEquals("Dependent module should be in DEP_LOADED state, after the installation.",
+        Component.DEP_LOADED, module1.dependencyStateMonitor.get());
 
-    assertThat("1st dependency should be in LOADED state or further.",
-        firstDep.stateMonitor.get(), greaterThanOrEqualTo(Component.LOADED));
+    assertEquals("1st dependency should be in LOADED state.",
+        firstDep.stateMonitor.get(), Component.LOADED);
 
-    assertThat("2nd dependency should be in LOADED state or further.",
-        secondDep.stateMonitor.get(), greaterThanOrEqualTo(Component.LOADED));
+    assertEquals("2nd dependency should be in LOADED state.",
+        secondDep.stateMonitor.get(), Component.LOADED);
   }
 
   @Test
@@ -107,9 +108,9 @@ public class ComponentInstallerTest {
     Module module1 = spy(new ModelExtensions.TestModule("module1"));
     Module module2 = spy(new ModelExtensions.TestModule("module2"));
 
-    ComponentSource componentSource = mock(ComponentSource.class);
-    when(componentSource.getComponent(module1.getName())).thenReturn(module1);
-    when(componentSource.getComponent(module2.getName())).thenReturn(module2);
+    ComponentSource componentSource = spy(new ModelExtensions.TestComponentSource());
+    when(componentSource.getComponentIfExists(module1.getName())).thenReturn(module1);
+    when(componentSource.getComponentIfExists(module2.getName())).thenReturn(module2);
 
     ComponentInstaller installer =
         new ComponentInstallerImpl<>(componentSource, new SimpleAsyncTaskManager());
@@ -127,11 +128,11 @@ public class ComponentInstallerTest {
     order2.verify(module2).fetch();
     order2.verify(module2).load();
 
-    assertEquals("Module 1 should be in INSTALLED state, after the installation has ended.",
-        Component.INSTALLED, module1.stateMonitor.get());
+    assertEquals("Module 1 should be in LOADED state, after the installation has ended.",
+        Component.LOADED, module1.stateMonitor.get());
 
-    assertEquals("Module 2 should be in INSTALLED state, after the installation has ended.",
-        Component.INSTALLED, module2.stateMonitor.get());
+    assertEquals("Module 2 should be in LOADED state, after the installation has ended.",
+        Component.LOADED, module2.stateMonitor.get());
   }
 
   @Test
@@ -143,8 +144,8 @@ public class ComponentInstallerTest {
       }
     });
 
-    ComponentInstaller installer =
-        new ComponentInstallerImpl<>(mock(ComponentSource.class), new SimpleAsyncTaskManager());
+    ComponentInstaller installer = new ComponentInstallerImpl<>(
+        new ModelExtensions.TestComponentSource(), new SimpleAsyncTaskManager());
 
     installer.install(module);
 
@@ -165,8 +166,8 @@ public class ComponentInstallerTest {
       }
     });
 
-    ComponentInstaller installer =
-        new ComponentInstallerImpl<>(mock(ComponentSource.class), new SimpleAsyncTaskManager());
+    ComponentInstaller installer = new ComponentInstallerImpl<>(
+        new ModelExtensions.TestComponentSource(), new SimpleAsyncTaskManager());
 
     installer.install(module);
 
@@ -182,43 +183,17 @@ public class ComponentInstallerTest {
     Module module = spy(new ModelExtensions.TestModule("unknownDepModule") {
       @NotNull
       @Override
-      public List<String> getDependencies() {
+      protected List<String> computeDependencies() {
         return Collections.singletonList(nonExistentModuleName);
       }
     });
 
-    ComponentSource componentSource = mock(ComponentSource.class);
-    when(componentSource.getComponent(nonExistentModuleName))
-        .thenThrow(new NoSuchComponentException(nonExistentModuleName, null));
+    ComponentSource componentSource = new ModelExtensions.TestComponentSource();
 
     ComponentInstaller installer =
         new ComponentInstallerImpl<>(componentSource, new SimpleAsyncTaskManager());
 
     installer.install(module);
-
-    verify(module, never()).load();
-
-    assertTrue("Unknown-dep-module should be in an error state, after the installation has ended.",
-        module.hasError());
-  }
-
-  @Test
-  public void testInstallGetDependenciesFail() throws ComponentLoadException {
-    String moduleName = "failingDepModule";
-    Module module = spy(new ModelExtensions.TestModule(moduleName) {
-      @NotNull
-      @Override
-      public List<String> getDependencies() throws ComponentLoadException {
-        throw new ComponentLoadException(moduleName, null);
-      }
-    });
-
-    ComponentInstaller installer =
-        new ComponentInstallerImpl<>(mock(ComponentSource.class), new SimpleAsyncTaskManager());
-
-    installer.install(module);
-
-    verify(module, never()).load();
 
     assertTrue("Unknown-dep-module should be in an error state, after the installation has ended.",
         module.hasError());
@@ -229,7 +204,7 @@ public class ComponentInstallerTest {
     Module dependentModule = spy(new ModelExtensions.TestModule("dependentModule") {
       @NotNull
       @Override
-      public List<String> getDependencies() {
+      protected List<String> computeDependencies() {
         return Collections.singletonList("failingDep");
       }
     });
@@ -241,10 +216,11 @@ public class ComponentInstallerTest {
       }
     });
 
-    ComponentSource componentSource = mock(ComponentSource.class);
-    when(componentSource.getComponent(dependentModule.getName())).thenReturn(dependentModule);
-    when(componentSource.getComponent(otherModule.getName())).thenReturn(otherModule);
-    when(componentSource.getComponent(failingDep.getName())).thenReturn(failingDep);
+    ComponentSource componentSource = spy(new ModelExtensions.TestComponentSource());
+    when(componentSource.getComponentIfExists(dependentModule.getName()))
+        .thenReturn(dependentModule);
+    when(componentSource.getComponentIfExists(otherModule.getName())).thenReturn(otherModule);
+    when(componentSource.getComponentIfExists(failingDep.getName())).thenReturn(failingDep);
 
     ComponentInstaller installer =
         new ComponentInstallerImpl<>(componentSource, new SimpleAsyncTaskManager());
@@ -255,10 +231,14 @@ public class ComponentInstallerTest {
 
     installer.install(modules);
 
-    assertEquals("Dependent module should be in INSTALLED state, after the installation has ended.",
-        Component.INSTALLED, dependentModule.stateMonitor.get());
-    assertEquals("Other module should be in INSTALLED state, after the installation has ended.",
-        Component.INSTALLED, otherModule.stateMonitor.get());
+    assertEquals("Dependent module should be in LOADED state, after the installation has ended.",
+        Component.LOADED, dependentModule.stateMonitor.get());
+    assertEquals("Other module should be in LOADED state, after the installation has ended.",
+        Component.LOADED, otherModule.stateMonitor.get());
+    assertEquals("Dependent module should be in DEP_ERROR state, after the installation.",
+        Component.DEP_ERROR, dependentModule.dependencyStateMonitor.get());
+    assertEquals("Other module should be in DEP_LOADED state, after the installation.",
+        Component.DEP_LOADED, otherModule.dependencyStateMonitor.get());
     assertTrue("Failing dependency should be in an error state, after the installation has ended.",
         failingDep.hasError());
   }
@@ -268,21 +248,21 @@ public class ComponentInstallerTest {
     Module moduleA = spy(new ModelExtensions.TestModule("moduleA") {
       @NotNull
       @Override
-      public List<String> getDependencies() {
+      protected List<String> computeDependencies() {
         return Collections.singletonList("moduleB");
       }
     });
     Module moduleB = spy(new ModelExtensions.TestModule("moduleB") {
       @NotNull
       @Override
-      public List<String> getDependencies() {
+      protected List<String> computeDependencies() {
         return Collections.singletonList("moduleA");
       }
     });
 
-    ComponentSource componentSource = mock(ComponentSource.class);
-    when(componentSource.getComponent(moduleA.getName())).thenReturn(moduleA);
-    when(componentSource.getComponent(moduleB.getName())).thenReturn(moduleB);
+    ComponentSource componentSource = spy(new ModelExtensions.TestComponentSource());
+    when(componentSource.getComponentIfExists(moduleA.getName())).thenReturn(moduleA);
+    when(componentSource.getComponentIfExists(moduleB.getName())).thenReturn(moduleB);
 
     ComponentInstaller installer =
         new ComponentInstallerImpl<>(componentSource, new SimpleAsyncTaskManager());
@@ -293,9 +273,13 @@ public class ComponentInstallerTest {
 
     installer.install(modules);
 
-    assertEquals("Module A should be in INSTALLED state, after the installation has ended.",
-        Component.INSTALLED, moduleA.stateMonitor.get());
-    assertEquals("Module B should be in INSTALLED state, after the installation has ended.",
-        Component.INSTALLED, moduleB.stateMonitor.get());
+    assertEquals("Module A should be in LOADED state, after the installation has ended.",
+        Component.LOADED, moduleA.stateMonitor.get());
+    assertEquals("Module B should be in LOADED state, after the installation has ended.",
+        Component.LOADED, moduleB.stateMonitor.get());
+    assertEquals("Module A should be in DEP_LOADED state, after the installation has ended.",
+        Component.DEP_LOADED, moduleA.dependencyStateMonitor.get());
+    assertEquals("Module B should be in DEP_LOADED state, after the installation has ended.",
+        Component.DEP_LOADED, moduleB.dependencyStateMonitor.get());
   }
 }

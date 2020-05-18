@@ -2,7 +2,7 @@ package fi.aalto.cs.apluscourses.intellij.activities;
 
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.startup.StartupActivity;
+import com.intellij.openapi.startup.StartupActivity.Background;
 import fi.aalto.cs.apluscourses.intellij.notifications.BetaVersionWarning;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
  * An activity that checks, on startup, if the version of the plugin is a pre-release, and, if that
  * is the case, shows a {@link BetaVersionWarning}.
  */
-public class VersionCheckerActivity implements StartupActivity.DumbAware {
+public class VersionCheckerActivity implements Background {
 
   @NotNull
   private final Notifier notifier;

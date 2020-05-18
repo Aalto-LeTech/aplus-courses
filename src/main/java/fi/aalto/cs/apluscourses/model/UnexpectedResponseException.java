@@ -1,10 +1,11 @@
 package fi.aalto.cs.apluscourses.model;
 
+import java.io.IOException;
 import org.apache.http.HttpResponse;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class UnexpectedResponseException extends Exception {
+public class UnexpectedResponseException extends IOException {
   @NotNull
   private final HttpResponse response;
 

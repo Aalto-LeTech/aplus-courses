@@ -21,18 +21,18 @@ public class ImportModuleAction extends DumbAwareAction {
   @NotNull
   private final MainViewModelProvider mainViewModelProvider;
   @NotNull
-  private final ComponentInstaller.Factory moduleInstallerFactory;
+  private final ComponentInstaller.Factory componentInstallerFactory;
 
   /**
    * Constructs an action using given main view model provider and module installer factory.
    * @param mainViewModelProvider A main view model provider.
-   * @param moduleInstallerFactory A module installer factory.
+   * @param componentInstallerFactory A component installer factory.
    */
   public ImportModuleAction(@NotNull MainViewModelProvider mainViewModelProvider,
-                            @NotNull ComponentInstaller.Factory moduleInstallerFactory) {
+                            @NotNull ComponentInstaller.Factory componentInstallerFactory) {
 
     this.mainViewModelProvider = mainViewModelProvider;
-    this.moduleInstallerFactory = moduleInstallerFactory;
+    this.componentInstallerFactory = componentInstallerFactory;
   }
 
   public ImportModuleAction() {
@@ -59,7 +59,7 @@ public class ImportModuleAction extends DumbAwareAction {
           .map(BaseViewModel::getModel)
           .collect(Collectors.toList());
       Course course = courseViewModel.getModel();
-      moduleInstallerFactory.getInstallerFor(course).installAsync(modules);
+      componentInstallerFactory.getInstallerFor(course).installAsync(modules, course::validate);
     }
   }
 }

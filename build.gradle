@@ -31,7 +31,7 @@ dependencies {
 
 intellij {
     version '2020.1'
-    plugins = ['java', 'org.intellij.scala:2020.1.27']
+    plugins = ['java', 'org.intellij.scala:2020.1.29']
 }
 
 publishPlugin {
