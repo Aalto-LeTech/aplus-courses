@@ -216,52 +216,6 @@ a manual testing manual. Marked with a github issue label "manual testing".
 </details>
 <details>
   <summary>
-    <a href="https://github.com/Aalto-LeTech/intellij-plugin/issues/117">Import IDE settings from remote #117</a>
-  </summary>
-  <div>
-    <h5>Part 1. Testing the error message</h5>
-    <ol>
-      <li>Start the IDE and make sure the course has been loaded (check the modules list for an example).</li>
-      <li>Disable networking from the computer.</li>
-      <li>Attempt to import course IDE settings from the A+ menu in the top toolbar.</li>
-      <li>Observe an error message dialog that notifies the user that an error occurred.</li>
-    </ol>
-  </div>
-  <div>
-    <h5>Part 2. Importing IDE settings</h5>
-    <ol>
-      <li>Import course IDE settings from the A+ menu in the top toolbar.</li>
-      <li>Observe a confirmation message dialog, which warns the user that settings are overwritten.</li>
-      <li>After the IDE settings have been imported, observe a message dialog proposing a restart.</li>
-      <li>
-      After restarting the IDE, ensure that the settings have been successfully imported.
-      For an example, the IDE should now be in dark mode.
-      </li>
-    </ol>
-  </div>
-</details>
-<details>
-  <summary>
-    <a href="https://github.com/Aalto-LeTech/intellij-plugin/issues/118">Import project settings from remote #118</a>
-  </summary>
-  <div>
-    <h5>Importing Project Settings</h5>
-    <ol>
-      <li>Create a new project and expand the <code>.idea</code> directory in the project tool window on the left.</li>
-      <li>Import course project settings from the A+ menu in the top toolbar.</li>
-      <li>Observe that the project is reloaded and the <code>.idea</code> directory should now contain new files.</li>
-      <li>Navigate to <code>File -> Settings... -> Editor -> Code Style -> Scala</code>.</li>
-      <li>Change the "Scheme" to "Project" to show project settings.</li>
-      <li>
-      Open the "Imports" tab and note that there are O1 related items in the "Imports always marked as used"
-      box at the bottom right:
-      <img src="images/project-settings.png" alt="Project Settings"/>
-      </li>
-    </ol>
-  </div>
-</details>
-<details>
-  <summary>
     <a href="https://github.com/Aalto-LeTech/intellij-plugin/issues/86">turn project into "A+ O1" project" feature #86</a>
   </summary>
   <div>
@@ -271,11 +225,7 @@ a manual testing manual. Marked with a github issue label "manual testing".
       <li>From the A+ menu at the top, select "Turn Project into A+ Course Project</li>
       <li>
         An information dialog should appear notifying that the plugin will adjust IntelliJ
-        IDEA settings. A opt-out checkbox should be added later. 
-      </li>
-      <li>
-        A yes/no dialog should appear prompting to restart the IDE to reload the IDE settings.
-        Select "no".
+        IDEA settings. Check the opt out check box.
       </li>
       <li>Observe that the project gets reloaded (may appear as a quick "flash").</li>
       <li>The "Modules" tool window should now have a list of O1 modules.</li>
@@ -283,8 +233,10 @@ a manual testing manual. Marked with a github issue label "manual testing".
         The .idea directory should contain O1 project settings (for an example scala_settings.xml).
       </li>
       <li>
-        Restart the IDE.
+        Run the "Turn Project into A+ Course Project" action again, this time not opting out of the
+        IDE settings adjustments.
       </li>
+      <li>The plugin should prompt you to restart the plugin, do so.</li>
       <li>The IDE should now have the dark theme from the O1 IDE settings.</li>
       <li>
         When the project gets opened, the plugin should recognize that the project is a O1 project
@@ -293,6 +245,10 @@ a manual testing manual. Marked with a github issue label "manual testing".
       <li>
         Using the "Turn Project Into A+ Course Project" action without a working internet connection
         should result in an error message.
+      </li>
+      <li>
+        Using the "Turn Project Into A+ Course Project" action again should not import the already
+        imported IDE settings again.
       </li>
     </ol>
   </div>
