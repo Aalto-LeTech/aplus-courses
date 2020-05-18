@@ -57,7 +57,7 @@ public class CourseProjectActionTest {
 
     @Override
     public boolean showImportIdeSettingsDialog(@NotNull Project project) {
-      return true;
+      return answerOk;
     }
   }
 
@@ -242,5 +242,26 @@ public class CourseProjectActionTest {
         failingSettingsImporter.getImportProjectSettingsCallCount());
     Assert.assertThat("The user is notified of the project settings error",
         dialogs.getLastErrorMessage(), containsString("Please check your network connection"));
+  }
+
+  @Test
+  public void testDoesNotImportIdeSettingsIfOptOut() {
+    settingsImporter.setLastImportedIdeSettings(emptyCourse.getName());
+    CourseProjectAction action = new CourseProjectAction(
+        p -> mainViewModel,
+        (url, proj) -> emptyCourse,
+        false,
+        settingsImporter,
+        () -> { },
+        new TestDialogs(false));
+
+    action.actionPerformed(anActionEvent);
+
+    Assert.assertEquals("IDE settings are not imported", 0,
+        settingsImporter.getImportIdeSettingsCallCount());
+    Assert.assertEquals("Project settings are imported", 1,
+        settingsImporter.getImportProjectSettingsCallCount());
+    Assert.assertEquals("The user is not prompted to restart the IDE", "",
+        dialogs.getLastOkCancelMessage());
   }
 }
