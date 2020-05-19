@@ -110,7 +110,7 @@ public class CourseProjectAction extends AnAction implements DumbAware {
 
     // Importing IDE settings potentially restarts the IDE, so it's the last action. If the
     // IDE settings for the course have already been imported, do nothing.
-    if (!settingsImporter.lastImportedIdeSettings().equals(course.getName())) {
+    if (!course.getName().equals(settingsImporter.lastImportedIdeSettings())) {
       /**
        * TODO: the actual dialog should have a opt out check box (unchecked by default).
        */
