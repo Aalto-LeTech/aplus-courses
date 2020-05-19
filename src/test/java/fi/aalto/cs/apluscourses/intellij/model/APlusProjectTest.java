@@ -1,18 +1,31 @@
 package fi.aalto.cs.apluscourses.intellij.model;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.io.FileUtilRt;
+import com.intellij.testFramework.HeavyPlatformTestCase;
 import fi.aalto.cs.apluscourses.model.Component;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class APlusProjectTest {
+public class APlusProjectTest extends HeavyPlatformTestCase {
 
   @Test
   public void testGetCourseFilePath() {
@@ -68,5 +81,53 @@ public class APlusProjectTest {
     IntelliJModelExtensions.TestComponent errorComponent =
         new IntelliJModelExtensions.TestComponent(errorComponentName, new Object());
     assertEquals(Component.ERROR, project.resolveComponentState(errorComponent));
+  }
+
+  @Test
+  public void testAddCourseFileEntry() throws IOException, InterruptedException {
+    final int numThreads = 8;
+
+    Project project = mock(Project.class);
+    APlusProject aplusProject = new APlusProject(project);
+
+    File temp = FileUtilRt.createTempFile("test-course-file", "json", true);
+    FileUtils.writeStringToFile(temp, "{}", StandardCharsets.UTF_8);
+
+    URL url = new URL("http://localhost:8000");
+
+    List<Thread> threads = new ArrayList<>(numThreads);
+    AtomicBoolean failed = new AtomicBoolean(false);
+    for (int i = 0; i < numThreads; ++i) {
+      IntelliJModule module = new IntelliJModule("name" + i, url, "id" + i, aplusProject);
+      Runnable runnable = () -> {
+        try {
+          aplusProject.addCourseFileEntry(temp, module);
+        } catch (IOException ignored) {
+          failed.set(true);
+        }
+      };
+      threads.add(new Thread(runnable));
+    }
+
+    threads.forEach(Thread::start);
+
+    for (Thread thread : threads) {
+      thread.join();
+    }
+
+    if (failed.get()) {
+      fail("IOException thrown from APlusProject#addCourseFileEntry");
+    }
+
+    JSONObject jsonObject
+        = new JSONObject(FileUtils.readFileToString(temp, StandardCharsets.UTF_8));
+    JSONObject modulesObject = jsonObject.getJSONObject("modules");
+    Set<String> keys = modulesObject.keySet();
+    Assert.assertEquals("The file should contain the correct number of module entries",
+        numThreads, keys.size());
+    for (String key : keys) {
+      // This will throw and fail this test if the JSON format in the file is malformed
+      modulesObject.getJSONObject(key).getString("id");
+    }
   }
 }
