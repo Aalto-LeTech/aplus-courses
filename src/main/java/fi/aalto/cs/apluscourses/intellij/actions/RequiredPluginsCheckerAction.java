@@ -9,8 +9,8 @@ import static fi.aalto.cs.apluscourses.intellij.utils.RequiredPluginsCheckerUtil
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.notification.Notification;
 import com.intellij.notification.Notifications;
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.notifications.EnablePluginsNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.InstallPluginsNotification;
@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * An action that checks and hints on missing or disabled required for the course plugins.
  */
-public class RequiredPluginsCheckerAction extends AnAction {
+public class RequiredPluginsCheckerAction extends DumbAwareAction {
 
   public static final String ACTION_ID = RequiredPluginsCheckerAction.class.getCanonicalName();
 

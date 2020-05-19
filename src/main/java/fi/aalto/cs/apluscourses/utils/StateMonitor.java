@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.utils;
 
+import java.util.Arrays;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -36,37 +37,47 @@ public class StateMonitor {
 
   /**
    * Sets the state to {@code newState}.
+   *
    * @param newState New state.
+   * @return Whether or not there was a change.
    */
-  public void set(int newState) {
+  public boolean set(int newState) {
     if (setInternal(newState)) {
-      onChanged();
+      onChanged(newState);
+      return true;
     }
+    return false;
   }
 
   /**
-   * If the current state equals {@code expectedState}, sets it to {@code newState} and returns
-   * true.  Otherwise, returns false.
+   * If the current state equals any one of {@code expectedStates}, sets it to {@code newState} and
+   * returns true.  Otherwise, returns false.
    *
-   * @param expectedState Expected state.
-   * @param newState      New state.
-   * @return Whether or not the current state in the beginning was equal to {@code expectedState}.
-   * @throws IllegalArgumentException If {@code newState} is less than {@code expectedState}.
+   * @param newState       New state.
+   * @param expectedStates Expected states.
+   * @return Whether or not the current state in the beginning was equal to any of
+   *         {@code expectedStates}.
+   * @throws IllegalArgumentException If {@code newState} is less than any of {@code expectedStates}
+   *                                  (and is not an error state).
    */
-  public boolean setConditionally(int expectedState, int newState) {
-    if (newState < expectedState) {
+  public boolean setConditionallyTo(int newState, int... expectedStates) {
+    if (!isError(newState)
+        && !Arrays.stream(expectedStates).allMatch(expectedState -> expectedState <= newState)) {
       throw new IllegalArgumentException();
     }
-    boolean result;
+    boolean result = false;
     boolean changed = false;
     synchronized (stateLock) {
-      result = state == expectedState;
-      if (result) {
-        changed = setInternal(newState);
+      for (int expectedState : expectedStates) {
+        result = state == expectedState;
+        if (result) {
+          changed = setInternal(newState);
+          break;
+        }
       }
     }
     if (changed) {
-      onChanged();
+      onChanged(newState);
     }
     return result;
   }
@@ -100,11 +111,21 @@ public class StateMonitor {
     }
   }
 
-  private void onChanged() {
-    listener.onStateChanged();
+  private void onChanged(int newState) {
+    listener.onStateChanged(newState);
   }
 
-  private boolean isError(int someState) {
+  /**
+   * Returns a boolean value indicating whether the state is an error state.
+   * @return True if error, otherwise false.
+   */
+  public boolean hasError() {
+    synchronized (stateLock) {
+      return isError(state);
+    }
+  }
+
+  public static boolean isError(int someState) {
     return someState <= ERROR;
   }
 
@@ -121,6 +142,6 @@ public class StateMonitor {
 
   @FunctionalInterface
   public interface StateListener {
-    void onStateChanged();
+    void onStateChanged(int newState);
   }
 }

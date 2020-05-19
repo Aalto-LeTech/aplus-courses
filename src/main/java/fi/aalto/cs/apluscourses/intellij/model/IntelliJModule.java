@@ -3,74 +3,50 @@ package fi.aalto.cs.apluscourses.intellij.model;
 import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.module.ModuleWithNameAlreadyExists;
+import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.util.io.FileUtilRt;
+import fi.aalto.cs.apluscourses.intellij.utils.ListDependenciesPolicy;
 import fi.aalto.cs.apluscourses.model.ComponentLoadException;
 import fi.aalto.cs.apluscourses.model.Module;
-import fi.aalto.cs.apluscourses.model.UnexpectedResponseException;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
 import fi.aalto.cs.apluscourses.utils.DirAwareZipFile;
-import fi.aalto.cs.apluscourses.utils.DomUtil;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
+import java.util.Optional;
 import org.jdom.JDOMException;
 import org.jetbrains.annotations.CalledWithWriteLock;
 import org.jetbrains.annotations.NotNull;
-import org.w3c.dom.Node;
-import org.xml.sax.SAXException;
+import org.jetbrains.annotations.Nullable;
 
-class IntelliJModule extends Module {
+class IntelliJModule
+    extends Module
+    implements IntelliJComponent<com.intellij.openapi.module.Module> {
 
   @NotNull
   private final APlusProject project;
 
-  // XPath to the names of dependency modules in an *.iml file.
-  // <module> is the root node, <component> is its child.  Dependency modules are those <orderEntry>
-  // children of <component> for which type="module".  The name of the dependency modules are
-  // module-name attributes of these <orderEntry> nodes.
-  //
-  // Sonar suppression because Sonar thinks this is a filepath URI, which should not be hardcoded.
-  private static final String DEPENDENCY_NAMES_XPATH =
-      "/module/component/orderEntry[@type='module']/@module-name"; // NOSONAR
-  private static final String LIBRARY_NAMES_XPATH =
-      "/module/component/orderEntry[@type='library']/@name"; //NOSONAR
 
-  IntelliJModule(@NotNull String name, @NotNull URL url, @NotNull APlusProject project, int state) {
-    super(name, url, state);
+  IntelliJModule(@NotNull String name, @NotNull URL url, @NotNull APlusProject project) {
+    super(name, url);
     this.project = project;
-  }
-
-  @NotNull
-  private List<String> getStringsFromXPath(String xpath) throws ComponentLoadException {
-    try {
-      return DomUtil.getNodesFromXPath(xpath, getImlFile())
-          .stream()
-          .map(Node::getTextContent)
-          .collect(Collectors.toList());
-    } catch (IOException | SAXException e) {
-      throw new ComponentLoadException(getName(), e);
-    }
-  }
-
-  @Override
-  @NotNull
-  public List<String> getDependencyModules() throws ComponentLoadException {
-    return getStringsFromXPath(DEPENDENCY_NAMES_XPATH);
-  }
-
-  @Override
-  @NotNull
-  public List<String> getLibraries() throws ComponentLoadException {
-    return getStringsFromXPath(LIBRARY_NAMES_XPATH);
   }
 
   @NotNull
   @Override
   public Path getPath() {
-    return project.getModulePath(getName());
+    return Paths.get(name);
+  }
+
+  @NotNull
+  @Override
+  public Path getFullPath() {
+    return project.getBasePath().resolve(getPath());
   }
 
   @Override
@@ -78,6 +54,11 @@ class IntelliJModule extends Module {
     File tempZipFile = createTempFile();
     fetchZipTo(tempZipFile);
     extractZip(tempZipFile);
+  }
+
+  @Override
+  protected int resolveStateInternal() {
+    return project.resolveComponentState(this);
   }
 
   @Override
@@ -89,37 +70,57 @@ class IntelliJModule extends Module {
     }
   }
 
+  @Override
+  public void unload() {
+    super.unload();
+    Optional.ofNullable(getPlatformObject()).ifPresent(project.getModuleManager()::disposeModule);
+  }
+
+  @NotNull
+  @Override
+  protected List<String> computeDependencies() {
+    ModuleRootManager moduleRootManager = project.getModuleRootManager(getName());
+    if (moduleRootManager == null) {
+      throw new IllegalStateException();
+    }
+    return Objects.requireNonNull(moduleRootManager
+        .orderEntries()
+        .withoutSdk()
+        .withoutModuleSourceEntries()
+        .productionOnly()
+        .process(new ListDependenciesPolicy(), new ArrayList<>()));
+  }
+
   @NotNull
   private File createTempFile() throws IOException {
     return FileUtilRt.createTempFile(getName(), ".zip");
   }
 
   private void extractZip(File file) throws IOException {
-    String fullPath = project.getBasePath().resolve(getPath()).toString();
-
     // ZIP may contain other dirs (typically, dependency modules) but we only extract the files that
     // belongs to this module.
-    new DirAwareZipFile(file).extractDir(getName(), fullPath);
+    new DirAwareZipFile(file).extractDir(getName(), getFullPath().toString());
   }
 
 
   private void fetchZipTo(File file) throws IOException {
-    try {
-      CoursesClient.fetchZip(getUrl(), file);
-    } catch (UnexpectedResponseException ex) {
-      // At this point, the URL is most likely incorrect or the server is missing the file.
-      throw new IOException(ex);
-    }
+    CoursesClient.fetchZip(getUrl(), file);
   }
 
   @NotNull
   private File getImlFile() {
-    return project.getBasePath().resolve(getPath()).resolve(getName() + ".iml").toFile();
+    return getFullPath().resolve(getName() + ".iml").toFile();
   }
 
   @NotNull
   public APlusProject getProject() {
     return project;
+  }
+
+  @Override
+  @Nullable
+  public com.intellij.openapi.module.Module getPlatformObject() {
+    return project.getModuleManager().findModuleByName(getName());
   }
 
   private static class Loader {
@@ -132,7 +133,8 @@ class IntelliJModule extends Module {
     }
 
     @CalledWithWriteLock
-    public void load() throws JDOMException, ModuleWithNameAlreadyExists, IOException {
+    public void load()
+        throws JDOMException, ModuleWithNameAlreadyExists, IOException {
       moduleManager.loadModule(imlFileName);
     }
   }

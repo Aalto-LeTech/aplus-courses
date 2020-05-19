@@ -1,13 +1,7 @@
 package fi.aalto.cs.apluscourses.model;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-import fi.aalto.cs.apluscourses.utils.Event;
 import java.net.MalformedURLException;
 import java.net.URL;
 import org.json.JSONException;
@@ -55,20 +49,5 @@ public class ModuleTest {
   public void testCreateModuleFromJsonObjectWithMalformedUrl() throws MalformedURLException {
     JSONObject jsonObject = new JSONObject("{\"name\":\"Name\",\"url\":\"\"}");
     Module.fromJsonObject(jsonObject, MODEL_FACTORY);
-  }
-
-  @SuppressWarnings("unchecked")
-  @Test
-  public void testStateChanged() throws MalformedURLException {
-    URL url = new URL("https://example.com");
-    Object listener = new Object();
-    Event.Callback<Object> callback = mock(Event.Callback.class);
-    Module module = new ModelExtensions.TestModule("Changing module", url);
-    module.stateChanged.addListener(listener, callback);
-    verifyNoInteractions(callback);
-    assertEquals(Component.NOT_INSTALLED, module.stateMonitor.get());
-    module.stateMonitor.set(Component.FETCHING);
-    verify(callback, times(1)).callbackUntyped(listener);
-    verifyNoMoreInteractions(callback);
   }
 }

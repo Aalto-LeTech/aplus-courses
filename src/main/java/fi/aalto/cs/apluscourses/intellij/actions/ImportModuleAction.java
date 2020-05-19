@@ -1,7 +1,7 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.project.DumbAwareAction;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Component;
@@ -15,24 +15,24 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
-public class ImportModuleAction extends AnAction {
+public class ImportModuleAction extends DumbAwareAction {
 
   public static final String ACTION_ID = ImportModuleAction.class.getCanonicalName();
   @NotNull
   private final MainViewModelProvider mainViewModelProvider;
   @NotNull
-  private final ComponentInstaller.Factory moduleInstallerFactory;
+  private final ComponentInstaller.Factory componentInstallerFactory;
 
   /**
    * Constructs an action using given main view model provider and module installer factory.
    * @param mainViewModelProvider A main view model provider.
-   * @param moduleInstallerFactory A module installer factory.
+   * @param componentInstallerFactory A component installer factory.
    */
   public ImportModuleAction(@NotNull MainViewModelProvider mainViewModelProvider,
-                            @NotNull ComponentInstaller.Factory moduleInstallerFactory) {
+                            @NotNull ComponentInstaller.Factory componentInstallerFactory) {
 
     this.mainViewModelProvider = mainViewModelProvider;
-    this.moduleInstallerFactory = moduleInstallerFactory;
+    this.componentInstallerFactory = componentInstallerFactory;
   }
 
   public ImportModuleAction() {
@@ -59,7 +59,7 @@ public class ImportModuleAction extends AnAction {
           .map(BaseViewModel::getModel)
           .collect(Collectors.toList());
       Course course = courseViewModel.getModel();
-      moduleInstallerFactory.getInstallerFor(course).installAsync(modules);
+      componentInstallerFactory.getInstallerFor(course).installAsync(modules, course::validate);
     }
   }
 }

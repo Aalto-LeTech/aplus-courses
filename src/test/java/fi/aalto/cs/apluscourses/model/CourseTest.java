@@ -27,7 +27,7 @@ public class CourseTest {
     Map<String, URL> resourceUrls = new HashMap<>();
     resourceUrls.put("key", new URL("http://localhost:8000"));
     Course course = new Course("Tester Course", modules, Collections.emptyList(),
-        requiredPlugins, resourceUrls, new ModelExtensions.TestComponentSource());
+        requiredPlugins, resourceUrls);
     assertEquals("The name of the course should be the same as that given to the constructor",
         "Tester Course", course.getName());
     assertEquals("The modules of the course should be the same as those given to the constructor",
@@ -47,7 +47,7 @@ public class CourseTest {
     Module module1 = new ModelExtensions.TestModule("Test Module", new URL("https://example.com"));
     Module module2 = new ModelExtensions.TestModule("Awesome Module", new URL("https://slack.com"));
     Course course = new Course("", Arrays.asList(module1, module2), Collections.emptyList(),
-        Collections.emptyMap(), Collections.emptyMap(), new ModelExtensions.TestComponentSource());
+        Collections.emptyMap(), Collections.emptyMap());
     assertSame("Course#getModule should return the correct module",
         module2, course.getComponent("Awesome Module"));
   }
@@ -55,7 +55,7 @@ public class CourseTest {
   @Test(expected = NoSuchComponentException.class)
   public void testGetModuleWithMissingModule() throws NoSuchComponentException {
     Course course = new Course("Just some course", Collections.emptyList(), Collections.emptyList(),
-        Collections.emptyMap(), Collections.emptyMap(), new ModelExtensions.TestComponentSource());
+        Collections.emptyMap(), Collections.emptyMap());
     course.getComponent("Test Module");
   }
 

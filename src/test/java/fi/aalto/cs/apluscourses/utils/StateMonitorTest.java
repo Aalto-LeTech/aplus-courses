@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -26,7 +25,7 @@ public class StateMonitorTest {
     int newState = 42;
     stateMonitor.set(newState);
 
-    verify(stateListener).onStateChanged();
+    verify(stateListener).onStateChanged(newState);
 
     assertEquals("get() should return new state", newState, stateMonitor.get());
 
@@ -34,34 +33,33 @@ public class StateMonitorTest {
   }
 
   @Test
-  public void testSetConditionallyReturnsTrue() {
+  public void testSetConditionallyToReturnsTrue() {
     StateMonitor.StateListener stateListener = mock(StateMonitor.StateListener.class);
     StateMonitor stateMonitor = new StateMonitor(stateListener);
 
     int expectedState = 15;
     stateMonitor.set(expectedState);
+    verify(stateListener).onStateChanged(expectedState);
 
     int newState = 1337;
     assertTrue("setConditionally() should return true",
-        stateMonitor.setConditionally(expectedState, newState));
-
-    verify(stateListener, times(2)).onStateChanged();
+        stateMonitor.setConditionallyTo(newState, expectedState));
+    verify(stateListener).onStateChanged(newState);
 
     assertEquals("get() should return new state", newState, stateMonitor.get());
-
 
     verifyNoMoreInteractions(stateListener);
   }
 
   @Test
-  public void testSetConditionallyReturnsFalse() {
+  public void testSetConditionallyToReturnsFalse() {
     StateMonitor.StateListener stateListener = mock(StateMonitor.StateListener.class);
     StateMonitor stateMonitor = new StateMonitor(stateListener);
 
     int expectedState = 20;
     int newState = 220;
     assertFalse("setConditionally() should return false",
-        stateMonitor.setConditionally(expectedState, newState));
+        stateMonitor.setConditionallyTo(newState, expectedState));
 
     assertEquals("get() should return the initial state", StateMonitor.INITIAL, stateMonitor.get());
 
@@ -69,11 +67,11 @@ public class StateMonitorTest {
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void testSetConditionallyThrowsException() {
+  public void testSetConditionallyToThrowsException() {
     StateMonitor.StateListener stateListener = mock(StateMonitor.StateListener.class);
     StateMonitor stateMonitor = new StateMonitor(stateListener);
 
-    stateMonitor.setConditionally(100, 20);
+    stateMonitor.setConditionallyTo(20, 100);
 
     verifyNoInteractions(stateListener);
   }

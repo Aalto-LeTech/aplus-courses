@@ -20,11 +20,9 @@
     <depends optional="true" config-file="with-scala.xml">org.intellij.scala</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-
         <backgroundPostStartupActivity implementation="fi.aalto.cs.apluscourses.intellij.activities.VersionCheckerActivity"/>
         <backgroundPostStartupActivity implementation="fi.aalto.cs.apluscourses.intellij.activities.InitializationActivity"/>
 
-        <applicationService serviceImplementation="fi.aalto.cs.apluscourses.intellij.services.PluginSettings" />
         <toolWindow id="Modules"
                     anchor="right"
                     factoryClass="fi.aalto.cs.apluscourses.intellij.toolwindows.ModulesToolWindowFactory" />
@@ -38,15 +36,15 @@
                text="A+"
                description="Actions for A+ menu">
             <add-to-group group-id="MainMenu" anchor="last" />
-            <action id="Import Course IDE Settings"
-                    class="fi.aalto.cs.apluscourses.intellij.actions.ImportIdeSettingsAction"
-                    text="Import Course IDE Settings"
-                    description="Imports the IDE settings for the currently loaded course." />
-            <action id="Import Course Project Settings"
-                    class="fi.aalto.cs.apluscourses.intellij.actions.ImportProjectSettingsAction"
-                    text="Import Course Project Settings"
-                    description="Imports the project settings for the currently loaded course." />
-            <action id="About A+ Plugin"
+            <action id="fi.aalto.cs.apluscourses.intellij.actions.CourseProjectAction"
+                    class="fi.aalto.cs.apluscourses.intellij.actions.CourseProjectAction"
+                    text="Turn Project Into A+ Course Project"
+                    description="Turns the currently opened project into a A+ course project." />
+            <action id="fi.aalto.cs.apluscourses.intellij.actions.ResetSettingsAction"
+                    class="fi.aalto.cs.apluscourses.intellij.actions.ResetSettingsAction"
+                    text="Reset A+ Courses Plugin Settings"
+                    description="Resets all the settings related to the A+ Courses plugin." />
+            <action id="fi.aalto.cs.apluscourses.intellij.actions.AboutAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.AboutAction"
                     text="About A+ Plugin"
                     description="Information about the A+ plugin for IntelliJ" />
@@ -67,4 +65,8 @@
             <keyboard-shortcut first-keystroke="control shift D" keymap="$default"/>
         </action>
     </actions>
+    <applicationListeners>
+        <listener class="fi.aalto.cs.apluscourses.intellij.utils.PluginLoadUnloadEventsListener"
+                  topic="com.intellij.ide.plugins.DynamicPluginListener"/>
+    </applicationListeners>
 </idea-plugin>

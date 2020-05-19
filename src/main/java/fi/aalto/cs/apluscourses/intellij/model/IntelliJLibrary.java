@@ -8,17 +8,22 @@ import com.intellij.openapi.roots.libraries.LibraryTable;
 import com.intellij.openapi.roots.libraries.PersistentLibraryKind;
 import fi.aalto.cs.apluscourses.model.Library;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Optional;
 import org.jetbrains.annotations.CalledWithWriteLock;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class IntelliJLibrary
-    <K extends PersistentLibraryKind<? extends LibraryProperties<S>>, S> extends Library {
+    <K extends PersistentLibraryKind<? extends LibraryProperties<S>>, S>
+    extends Library
+    implements IntelliJComponent<com.intellij.openapi.roots.libraries.Library> {
 
   @NotNull
   protected final APlusProject project;
 
-  public IntelliJLibrary(@NotNull String name, @NotNull APlusProject project, int state) {
-    super(name, state);
+  public IntelliJLibrary(@NotNull String name, @NotNull APlusProject project) {
+    super(name);
     this.project = project;
   }
 
@@ -46,10 +51,32 @@ public abstract class IntelliJLibrary
     WriteAction.runAndWait(this::loadInternal);
   }
 
+  @Override
+  public void unload() {
+    super.unload();
+    WriteAction.runAndWait(this::unloadInternal);
+  }
+
+  @CalledWithWriteLock
+  private void unloadInternal() {
+    Optional.ofNullable(getPlatformObject()).ifPresent(project.getLibraryTable()::removeLibrary);
+  }
+
   @NotNull
   @Override
   public Path getPath() {
-    return project.getLibraryPath(getName());
+    return Paths.get("lib", getName());
+  }
+
+  @Override
+  @NotNull
+  public Path getFullPath() {
+    return project.getBasePath().resolve(getPath());
+  }
+
+  @Override
+  protected int resolveStateInternal() {
+    return project.resolveComponentState(this);
   }
 
   protected abstract String[] getUris();
@@ -58,4 +85,10 @@ public abstract class IntelliJLibrary
 
   @CalledWithWriteLock
   protected abstract void initializeLibraryProperties(LibraryProperties<S> properties);
+
+  @Override
+  @Nullable
+  public com.intellij.openapi.roots.libraries.Library getPlatformObject() {
+    return project.getLibraryTable().getLibraryByName(getName());
+  }
 }

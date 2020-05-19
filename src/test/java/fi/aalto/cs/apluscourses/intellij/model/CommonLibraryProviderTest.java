@@ -1,17 +1,14 @@
-package fi.aalto.cs.apluscourses.model;
+package fi.aalto.cs.apluscourses.intellij.model;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-import fi.aalto.cs.apluscourses.intellij.model.APlusProject;
-import fi.aalto.cs.apluscourses.intellij.model.CommonLibraryProvider;
-import fi.aalto.cs.apluscourses.intellij.model.ScalaSdk;
+import fi.aalto.cs.apluscourses.model.Component;
+import fi.aalto.cs.apluscourses.model.NoSuchComponentException;
 import org.junit.Test;
 
 public class CommonLibraryProviderTest {
@@ -20,7 +17,6 @@ public class CommonLibraryProviderTest {
   public void testGetScalaSdk() throws NoSuchComponentException {
     String name = "scala-sdk-2.13.1";
     APlusProject project = mock(APlusProject.class);
-    when(project.resolveLibraryState(any())).thenReturn(Component.NOT_INSTALLED);
 
     CommonLibraryProvider libraryProvider = new CommonLibraryProvider(project);
 

@@ -216,47 +216,86 @@ a manual testing manual. Marked with a github issue label "manual testing".
 </details>
 <details>
   <summary>
-    <a href="https://github.com/Aalto-LeTech/intellij-plugin/issues/117">Import IDE settings from remote #117</a>
+    <a href="https://github.com/Aalto-LeTech/intellij-plugin/issues/86">turn project into "A+ O1" project" feature #86</a>
   </summary>
   <div>
-    <h5>Part 1. Testing the error message</h5>
+    <h5>Creating a Course Project</h5>
     <ol>
-      <li>Start the IDE and make sure the course has been loaded (check the modules list for an example).</li>
-      <li>Disable networking from the computer.</li>
-      <li>Attempt to import course IDE settings from the A+ menu in the top toolbar.</li>
-      <li>Observe an error message dialog that notifies the user that an error occurred.</li>
-    </ol>
-  </div>
-  <div>
-    <h5>Part 2. Importing IDE settings</h5>
-    <ol>
-      <li>Import course IDE settings from the A+ menu in the top toolbar.</li>
-      <li>Observe a confirmation message dialog, which warns the user that settings are overwritten.</li>
-      <li>After the IDE settings have been imported, observe a message dialog proposing a restart.</li>
+      <li>Start the IDE and observe that the "Modules" tool window is empty (no course loaded).</li>
+      <li>From the A+ menu at the top, select "Turn Project into A+ Course Project</li>
       <li>
-      After restarting the IDE, ensure that the settings have been successfully imported.
-      For an example, the IDE should now be in dark mode.
+        An information dialog should appear notifying that the plugin will adjust IntelliJ
+        IDEA settings. Check the opt out check box.
+      </li>
+      <li>Observe that the project gets reloaded (may appear as a quick "flash").</li>
+      <li>The "Modules" tool window should now have a list of O1 modules.</li>
+      <li>
+        The .idea directory should contain O1 project settings (for an example scala_settings.xml).
+      </li>
+      <li>
+        Run the "Turn Project into A+ Course Project" action again, this time not opting out of the
+        IDE settings adjustments.
+      </li>
+      <li>The plugin should prompt you to restart the plugin, do so.</li>
+      <li>The IDE should now have the dark theme from the O1 IDE settings.</li>
+      <li>
+        When the project gets opened, the plugin should recognize that the project is a O1 project
+        and update the "Modules" tool window with O1 modules. 
+      </li>
+      <li>
+        Using the "Turn Project Into A+ Course Project" action without a working internet connection
+        should result in an error message.
+      </li>
+      <li>
+        Using the "Turn Project Into A+ Course Project" action again should not import the already
+        imported IDE settings again.
       </li>
     </ol>
   </div>
 </details>
 <details>
   <summary>
-    <a href="https://github.com/Aalto-LeTech/intellij-plugin/issues/118">Import project settings from remote #118</a>
+    <a href="https://github.com/Aalto-LeTech/intellij-plugin/issues/110">Renaming/removing module files leads to incorrect states in module list #110</a>
   </summary>
   <div>
-    <h5>Importing Project Settings</h5>
+    <h5>Part 1. Removing a module</h5>
     <ol>
-      <li>Create a new project and expand the <code>.idea</code> directory in the project tool window on the left.</li>
-      <li>Import course project settings from the A+ menu in the top toolbar.</li>
-      <li>Observe that the project is reloaded and the <code>.idea</code> directory should now contain new files.</li>
-      <li>Navigate to <code>File -> Settings... -> Editor -> Code Style -> Scala</code>.</li>
-      <li>Change the "Scheme" to "Project" to show project settings.</li>
-      <li>
-      Open the "Imports" tab and note that there are O1 related items in the "Imports always marked as used"
-      box at the bottom right:
-      <img src="images/project-settings.png" alt="Project Settings"/>
-      </li>
+      <li>Create a new project and import <i>GoodStuff</i> module.</li>
+      <li>Right click the <i>O1Library</i> from the project tree and choose <i>Remove Module</i> from the popup menu.</li>
+      <li>Choose <i>Remove</i> from the popup window.</li>
+      <li>Ensure that <i>O1Library</i> is marked not installed in the modules list.</li>
+      <li>Ensure that <i>GoodStuff</i> is marked "error in dependencies" in the modules list.</li>
+    </ol>
+  </div>
+  <div>
+    <h5>Part 2. Reinstalling a module</h5>
+    <ol>
+      <li>Continuing from Part 1, double-click <i>O1Library</i> in the modules list to re-install it.</li>
+      <li>Ensure that <i>O1Library</i> shows loaded as a module in the project tree (it has the blue square symbol).</li>
+      <li>Ensure that <i>O1Library</i> and <i>GoodStuff</i> are marked installed in the modules list.</li>
+    </ol>
+  </div>
+  <div>
+    <h5>Part 3. Removing and reinstalling Scala SDK</h5>
+    <ol>
+      <li>Continuing from Part 3, delete the directory of Scala SDK inside the <code>lib</code> directory.</li>
+      <li>Ensure that <i>O1Library</i> and <i>GoodStuff</i> are marked "error in dependencies" in the modules list.</li>
+      <li>Double-click <i>O1Library</i> in the modules list to re-install it.</li>
+      <li>Ensure that <i>O1Library</i> and <i>GoodStuff</i> are marked installed in the modules list.</li>
+    </ol>
+  </div>
+</details>
+<details>
+  <summary>
+    <a href="https://github.com/Aalto-LeTech/intellij-plugin/issues/93">reset to "A+" settings #93</a>
+  </summary>
+  <div>
+    <h5>Resetting A+ Courses Settings</h5>
+    <ol>
+      <li>Start the REPL for a module and check the "Don't show this window again" checkbox.</li>
+      <li>Start the REPL for a module again and ensure that the window isn't shown again.</li>
+      <li>From the A+ menu at the top, select "Reset A+ Courses Plugin Settings".</li>
+      <li>Start the REPL for a module again and observe that the window is shown again.</li>
     </ol>
   </div>
 </details>
