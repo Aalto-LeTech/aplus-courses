@@ -5,7 +5,7 @@ import static org.mockito.Mockito.mock;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtilRt;
-import com.intellij.testFramework.HeavyPlatformTestCase;
+
 import fi.aalto.cs.apluscourses.model.Component;
 
 import java.io.File;
@@ -25,7 +25,7 @@ import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class APlusProjectTest extends HeavyPlatformTestCase {
+public class APlusProjectTest {
 
   @Test
   public void testGetCourseFilePath() {
@@ -68,24 +68,25 @@ public class APlusProjectTest extends HeavyPlatformTestCase {
 
     IntelliJModelExtensions.TestComponent loadedComponent =
         new IntelliJModelExtensions.TestComponent(loadedComponentName, new Object());
-    assertEquals(Component.LOADED, project.resolveComponentState(loadedComponent));
+    Assert.assertEquals(Component.LOADED, project.resolveComponentState(loadedComponent));
 
     IntelliJModelExtensions.TestComponent fetchedComponent =
         new IntelliJModelExtensions.TestComponent(fetchedComponentName, null);
-    assertEquals(Component.FETCHED, project.resolveComponentState(fetchedComponent));
+    Assert.assertEquals(Component.FETCHED, project.resolveComponentState(fetchedComponent));
 
     IntelliJModelExtensions.TestComponent notInstalledComponent =
         new IntelliJModelExtensions.TestComponent(notInstalledComponentName, null);
-    assertEquals(Component.NOT_INSTALLED, project.resolveComponentState(notInstalledComponent));
+    Assert.assertEquals(Component.NOT_INSTALLED,
+        project.resolveComponentState(notInstalledComponent));
 
     IntelliJModelExtensions.TestComponent errorComponent =
         new IntelliJModelExtensions.TestComponent(errorComponentName, new Object());
-    assertEquals(Component.ERROR, project.resolveComponentState(errorComponent));
+    Assert.assertEquals(Component.ERROR, project.resolveComponentState(errorComponent));
   }
 
   @Test
   public void testAddCourseFileEntry() throws IOException, InterruptedException {
-    final int numThreads = 8;
+    final int numThreads = 16;
 
     Project project = mock(Project.class);
     APlusProject aplusProject = new APlusProject(project);
@@ -102,7 +103,7 @@ public class APlusProjectTest extends HeavyPlatformTestCase {
       Runnable runnable = () -> {
         try {
           aplusProject.addCourseFileEntry(temp, module);
-        } catch (IOException ignored) {
+        } catch (IOException e) {
           failed.set(true);
         }
       };
@@ -116,7 +117,7 @@ public class APlusProjectTest extends HeavyPlatformTestCase {
     }
 
     if (failed.get()) {
-      fail("IOException thrown from APlusProject#addCourseFileEntry");
+      Assert.fail("IOException thrown from APlusProject#addCourseFileEntry");
     }
 
     JSONObject jsonObject
