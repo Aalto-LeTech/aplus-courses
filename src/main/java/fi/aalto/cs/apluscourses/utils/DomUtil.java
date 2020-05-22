@@ -37,6 +37,7 @@ public class DomUtil {
   private static ConcurrentMap<String, XPathExpression> xPathCache;
   private static final XPathFactory xPathFactory;
   private static final DocumentBuilderFactory documentBuilderFactory;
+  private static final TransformerFactory transformerFactory;
 
   static {
     xPathCache = new ConcurrentHashMap<>();
@@ -44,9 +45,13 @@ public class DomUtil {
     xPathFactory = XPathFactory.newInstance();
 
     documentBuilderFactory = DocumentBuilderFactory.newInstance();
+
+    transformerFactory = TransformerFactory.newInstance();
     try {
       documentBuilderFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
       documentBuilderFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+      transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+      transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
     } catch (IllegalArgumentException e) {
       logger.warn("Could not set XXE restrictions for DOM tools because the platform does not "
           + "support them.");
@@ -156,8 +161,7 @@ public class DomUtil {
     Source source = new DOMSource(document);
     StreamResult result = new StreamResult(out);
     try {
-      Transformer transformer = TransformerFactory.newInstance().newTransformer();
-      transformer.transform(source, result);
+      transformerFactory.newTransformer().transform(source, result);
     } catch (TransformerException ex) {
       throw new IOException(ex);
     }

@@ -116,8 +116,13 @@ public class SettingsImporterImpl implements SettingsImporter {
   private static final String WORKSPACE_XML_OPTION_NAME = "AUTO_SHOW_ERRORS_IN_EDITOR";
   private static final String WORKSPACE_XML_OPTION_VALUE = "false";
 
+  /**
+   * Parses the XML file (usually the workspace.xml file stored in .idea) at the given path and
+   * returns a {@link Document} with file contents and an additional setting added.
+   * @param workspaceXmlPath The path pointing to the XML file.
+   */
   @NotNull
-  private static Document createCustomWorkspaceXml(@NotNull Path workspaceXmlPath) throws
+  public static Document createCustomWorkspaceXml(@NotNull Path workspaceXmlPath) throws
       IOException {
     try {
       Document document = DomUtil.parse(workspaceXmlPath.toFile());
