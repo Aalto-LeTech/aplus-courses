@@ -124,14 +124,17 @@ public class SettingsImporterImpl implements SettingsImporter {
       Node projectNode = document.getDocumentElement();
 
       // Check if a component with the given name already exists
-      Node compilerConfigurationNode = DomUtil.findChildNodeWithAttribute(projectNode,
-          "component", "name", WORKSPACE_XML_COMPONENT_NAME);
-
-      if (compilerConfigurationNode == null) {
+      List<Node> componentMatches = DomUtil.getNodesFromXPath(
+          "//component[@name=\"" + WORKSPACE_XML_COMPONENT_NAME + "\"]", projectNode);
+      Node compilerConfigurationNode;
+      if (componentMatches.isEmpty()) {
         Element compilerConfigurationElement = document.createElement("component");
         compilerConfigurationElement.setAttribute("name", WORKSPACE_XML_COMPONENT_NAME);
         compilerConfigurationNode = compilerConfigurationElement;
         projectNode.appendChild(compilerConfigurationNode);
+      } else {
+        // There should only be one match, otherwise the workspace.xml file is in a weird state
+        compilerConfigurationNode = componentMatches.get(0);
       }
 
       Element option = document.createElement("option");

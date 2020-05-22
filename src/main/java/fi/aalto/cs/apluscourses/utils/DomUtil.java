@@ -23,7 +23,6 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -112,30 +111,6 @@ public class DomUtil {
     try (InputStream stream = new FileInputStream(file)) {
       return getNodesFromXPath(xpath, stream);
     }
-  }
-
-  /**
-   * Iterates through the immediate children of the given parent and returns the first node with the
-   * given name, attribute, and attribute value, or null if such a node isn't found.
-   * @param parent         The children of this node are examined.
-   * @param tagName        The name of the tag of the child node.
-   * @param attributeName  The name of an attribute that the child node must have.
-   * @param attributeValue The value corresponding to the attribute name that the child must have.
-   * @return The first node with the given tag name, attribute name, and attribute value, or null
-   *         if such a node isn't found.
-   */
-  @Nullable
-  public static Node findChildNodeWithAttribute(@NotNull Node parent,
-                                                @NotNull String tagName,
-                                                @NotNull String attributeName,
-                                                @NotNull String attributeValue) {
-
-    List<Node> matches = getNodesFromXPath(
-        "//" + tagName + "[@" + attributeName + "=\"" + attributeValue + "\"]", parent);
-    if (matches.isEmpty()) {
-      return null;
-    }
-    return matches.get(0);
   }
 
   /**
