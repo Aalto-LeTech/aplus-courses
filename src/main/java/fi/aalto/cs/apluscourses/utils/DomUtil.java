@@ -27,7 +27,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -122,30 +121,21 @@ public class DomUtil {
    * @param tagName        The name of the tag of the child node.
    * @param attributeName  The name of an attribute that the child node must have.
    * @param attributeValue The value corresponding to the attribute name that the child must have.
+   * @return The first node with the given tag name, attribute name, and attribute value, or null
+   *         if such a node isn't found.
    */
   @Nullable
   public static Node findChildNodeWithAttribute(@NotNull Node parent,
                                                 @NotNull String tagName,
                                                 @NotNull String attributeName,
                                                 @NotNull String attributeValue) {
-    NodeList children = parent.getChildNodes();
-    for (int i = 0; i < children.getLength(); ++i) {
-      Node child = children.item(i);
-      if (!child.getNodeName().equals(tagName)) {
-        continue;
-      }
 
-      NamedNodeMap attributes = child.getAttributes();
-      if (attributes == null) {
-        continue;
-      }
-
-      Node attribute = attributes.getNamedItem(attributeName);
-      if (attribute != null && attribute.getNodeValue().equals(attributeValue)) {
-        return child;
-      }
+    List<Node> matches = getNodesFromXPath(
+        "//" + tagName + "[@" + attributeName + "=\"" + attributeValue + "\"]", parent);
+    if (matches.isEmpty()) {
+      return null;
     }
-    return null;
+    return matches.get(0);
   }
 
   /**
