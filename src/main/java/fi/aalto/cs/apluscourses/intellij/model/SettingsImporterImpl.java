@@ -7,7 +7,6 @@ import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.updateSettings.impl.UpdateSettings;
 import com.intellij.openapi.util.io.FileUtilRt;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
-import fi.aalto.cs.apluscourses.intellij.utils.startup.SilentActionCommandDecorator;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
 import java.io.File;
@@ -15,11 +14,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.model.FileHeader;
 import org.jetbrains.annotations.NotNull;
@@ -45,13 +42,12 @@ public class SettingsImporterImpl implements SettingsImporter {
     File file = FileUtilRt.createTempFile("course-ide-settings", ".zip");
     CoursesClient.fetchZip(ideSettingsUrl, file);
     String configPath = FileUtilRt.toSystemIndependentName(PathManager.getConfigPath());
-
-    List<StartupActionScriptManager.ActionCommand> actionCommands = new ArrayList<>();
-    actionCommands.add(new SilentActionCommandDecorator(
-        new StartupActionScriptManager.UnzipCommand(file, new File(configPath))));
-    actionCommands.add(new SilentActionCommandDecorator(
-        new StartupActionScriptManager.DeleteCommand(file)));
-    StartupActionScriptManager.addActionCommands(actionCommands);
+    StartupActionScriptManager.addActionCommands(
+        Arrays.asList(
+            new StartupActionScriptManager.UnzipCommand(file, new File(configPath)),
+            new StartupActionScriptManager.DeleteCommand(file)
+        )
+    );
 
     UpdateSettings.getInstance().forceCheckForUpdateAfterRestart();
 
