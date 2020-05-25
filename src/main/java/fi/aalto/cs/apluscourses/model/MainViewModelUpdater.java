@@ -135,6 +135,28 @@ public class MainViewModelUpdater {
     return updatableModules;
   }
 
+  private void runUpdateLoop() throws InterruptedException {
+    while (true) {
+      URL courseUrl = getCourseUrl();
+      Course course = getCourse(courseUrl);
+      // If parsing the course configuration file fails, then we just silently go back to sleep.
+      // For an example, if the internet connection was down, then we may succeed when we try
+      // again after sleeping.
+      if (course != null) {
+        // TODO: what do we actually do with the list of updatable modules? Notify the user?
+        List<Module> updatableModules = getUpdatableModules(course);
+        // The project may have closed while we parsed the course configuration file and computed
+        // the updatable modules, in which case we throw the result away and stop this updater.
+        ReadAction.run(this::interruptIfProjectClosed);
+        mainViewModelProvider
+            .getMainViewModel(aplusProject.getProject())
+            .courseViewModel
+            .set(new CourseViewModel(course));
+      }
+      Thread.sleep(updateInterval); // Good night :)
+    }
+  }
+
   /**
    * This method attempts to update the main view model repeatedly, sleeping a given update interval
    * time between attempts. If the project of this updater is closed, then this method returns. This
@@ -142,25 +164,7 @@ public class MainViewModelUpdater {
    */
   public void run() {
     try {
-      while (true) {
-        URL courseUrl = getCourseUrl();
-        Course course = getCourse(courseUrl);
-        // If parsing the course configuration file fails, then we just silently go back to sleep.
-        // For an example, if the internet connection was down, then we may succeed when we try
-        // again after sleeping.
-        if (course != null) {
-          // TODO: what do we actually do with the list of updatable modules? Notify the user?
-          List<Module> updatableModules = getUpdatableModules(course);
-          // The project may have closed while we parsed the course configuration file and computed
-          // the updatable modules, in which case we throw the result away and stop this updater.
-          ReadAction.run(this::interruptIfProjectClosed);
-          mainViewModelProvider
-              .getMainViewModel(aplusProject.getProject())
-              .courseViewModel
-              .set(new CourseViewModel(course));
-        }
-        Thread.sleep(updateInterval); // Good night :)
-      }
+      runUpdateLoop();
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
     }
