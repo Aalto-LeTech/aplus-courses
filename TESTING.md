@@ -299,3 +299,29 @@ a manual testing manual. Marked with a github issue label "manual testing".
     </ol>
   </div>
 </details>
+<details>
+  <summary>
+    <a href="https://github.com/Aalto-LeTech/intellij-plugin/issues/130">
+      Add AUTO_SHOW_ERRORS_IN_EDITOR="false" to workspace.xml when project settings are imported #130
+    </a>
+  </summary>
+  <div>
+    <h5>Importing project settings</h5>
+    <ol>
+      <li>Use the "Turn Project Into A+ Course Project" menu item to import project settings.</li>
+      <li>Open the file <code>.idea/workspace.xml</code>.</li>
+      <li>
+        Ensure that it contains the following:
+        <pre>
+&lt;component name="CompilerWorkspaceConfiguration">
+  &lt;option name="AUTO_SHOW_ERRORS_IN_EDITOR" value="false" />
+&lt;/component></pre>
+      </li>
+      <li>Use the "Turn Project Into A+ Course Project" menu item again.</li>
+      <li>
+        If <code>workspace.xml</code> now contains option entry multiple times, save the
+        <code>workspace.xml</code> file and ensure that the duplicate gets removed.
+      </li>
+    </ol>
+  </div>
+</details>

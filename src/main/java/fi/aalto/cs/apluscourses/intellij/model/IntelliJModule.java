@@ -32,8 +32,11 @@ class IntelliJModule
   private final APlusProject project;
 
 
-  IntelliJModule(@NotNull String name, @NotNull URL url, @NotNull APlusProject project) {
-    super(name, url);
+  IntelliJModule(@NotNull String name,
+                 @NotNull URL url,
+                 @NotNull String versionId,
+                 @NotNull APlusProject project) {
+    super(name, url, versionId);
     this.project = project;
   }
 
@@ -65,6 +68,7 @@ class IntelliJModule
   public void load() throws ComponentLoadException {
     try {
       WriteAction.runAndWait(new Loader(getProject(), getImlFile())::load);
+      project.addCourseFileEntry(this);
     } catch (Exception e) {
       throw new ComponentLoadException(getName(), e);
     }
