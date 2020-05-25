@@ -50,4 +50,12 @@ public class SettingsImporterImplTest {
         optionMatches.isEmpty());
   }
 
+  @Test(expected = IllegalStateException.class)
+  public void testCreateCustomWorkspaceXmlWithMalformedXml() throws IOException {
+    File temp = FileUtilRt.createTempFile("malformed", "xml", true);
+    FileUtils.writeStringToFile(temp, "<?xml version\"1.0\" encoding=\"UTF-8\"?><component>",
+        StandardCharsets.UTF_8);
+    SettingsImporterImpl.createCustomWorkspaceXml(temp.toPath());
+  }
+
 }
