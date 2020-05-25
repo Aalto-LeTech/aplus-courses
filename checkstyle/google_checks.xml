@@ -27,6 +27,9 @@
         <property name="eachLine" value="true"/>
     </module>
 
+    <!-- Added to the original google_checks.xml file -->
+    <module name="SuppressWarningsFilter" />
+
     <module name="TreeWalker">
         <module name="OuterTypeFilename"/>
         <module name="IllegalTokenText">
@@ -251,5 +254,8 @@
             <property name="exceptionVariableName" value="expected"/>
         </module>
         <module name="CommentsIndentation"/>
+        <!-- Added to the original google_checks.xml file -->
+        <module name="SuppressWarningsHolder" />
     </module>
+
 </module>

@@ -1,9 +1,9 @@
-package fi.aalto.cs.apluscourses.ui.base;
+package fi.aalto.cs.apluscourses.ui.courseproject;
 
+import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
-public interface Dialogs {
-  void showInformationDialog(@NotNull String message, @NotNull String title);
+public interface CourseProjectActionDialogs {
 
   void showErrorDialog(@NotNull String message, @NotNull String title);
 
@@ -14,4 +14,6 @@ public interface Dialogs {
                              @NotNull String title,
                              @NotNull String okText,
                              @NotNull String cancelText);
+
+  boolean showImportIdeSettingsDialog(@NotNull Project project);
 }
