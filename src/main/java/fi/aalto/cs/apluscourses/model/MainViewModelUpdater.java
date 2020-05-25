@@ -162,7 +162,7 @@ public class MainViewModelUpdater {
         Thread.sleep(updateInterval); // Good night :)
       }
     } catch (InterruptedException e) {
-      // Do nothing, this updater is done.
+      Thread.currentThread().interrupt();
     }
   }
 }
