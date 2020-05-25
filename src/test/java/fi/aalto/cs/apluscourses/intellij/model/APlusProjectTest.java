@@ -16,6 +16,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -129,6 +130,35 @@ public class APlusProjectTest {
     for (String key : keys) {
       // This will throw and fail this test if the JSON format in the file is malformed
       modulesObject.getJSONObject(key).getString("id");
+    }
+  }
+
+  @Test
+  public void testGetCourseFileModuleIds() throws IOException {
+    Project project = mock(Project.class);
+    File temp = FileUtilRt.createTempFile("course-file", "json", true);
+    APlusProject aplusProject = new APlusProject(project) {
+      @NotNull
+      @Override
+      public Path getCourseFilePath() {
+        return temp.toPath();
+      }
+    };
+
+    final int numModules = 16;
+    JSONObject modulesObject = new JSONObject();
+    for (int i = 0; i < numModules; ++i) {
+      String moduleName = "m" + i;
+      String moduleId = "version" + i;
+      modulesObject.put(moduleName, new JSONObject().put("id", moduleId));
+    }
+    JSONObject courseFileJson = new JSONObject().put("modules", modulesObject);
+    FileUtils.writeStringToFile(temp, courseFileJson.toString(), StandardCharsets.UTF_8);
+
+    Map<String, String> moduleIds = aplusProject.getCourseFileModuleIds();
+    for (int i = 0; i < numModules; ++i) {
+      Assert.assertEquals("The method should return the correct map", "version" + i,
+          moduleIds.get("m" + i));
     }
   }
 }
