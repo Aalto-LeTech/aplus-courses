@@ -134,7 +134,7 @@ public class APlusProjectTest {
   }
 
   @Test
-  public void testGetCourseFileModuleIds() throws IOException {
+  public void testGetCourseFileModuleIds() throws IOException, InterruptedException {
     Project project = mock(Project.class);
     File temp = FileUtilRt.createTempFile("course-file", "json", true);
     APlusProject aplusProject = new APlusProject(project) {
@@ -145,20 +145,36 @@ public class APlusProjectTest {
       }
     };
 
-    final int numModules = 16;
+    final int numThreads = 16;
+    List<Thread> threads = new ArrayList<>(numThreads);
+    AtomicBoolean failed = new AtomicBoolean(false);
+
     JSONObject modulesObject = new JSONObject();
-    for (int i = 0; i < numModules; ++i) {
+    for (int i = 0; i < numThreads; ++i) {
       String moduleName = "m" + i;
       String moduleId = "version" + i;
       modulesObject.put(moduleName, new JSONObject().put("id", moduleId));
+
+      threads.add(new Thread(() -> {
+        try {
+          Map<String, String> moduleIds = aplusProject.getCourseFileModuleIds();
+          failed.set(!moduleId.equals(moduleIds.get(moduleName)));
+        } catch (IOException e) {
+          failed.set(true);
+        }
+      }));
     }
+
     JSONObject courseFileJson = new JSONObject().put("modules", modulesObject);
     FileUtils.writeStringToFile(temp, courseFileJson.toString(), StandardCharsets.UTF_8);
 
-    Map<String, String> moduleIds = aplusProject.getCourseFileModuleIds();
-    for (int i = 0; i < numModules; ++i) {
-      Assert.assertEquals("The method should return the correct map", "version" + i,
-          moduleIds.get("m" + i));
+    threads.forEach(Thread::start);
+    for (Thread thread : threads) {
+      thread.join();
+    }
+
+    if (failed.get()) {
+      Assert.fail("APlusProject#getCourseFileModuleIds did not return the correct map");
     }
   }
 }
