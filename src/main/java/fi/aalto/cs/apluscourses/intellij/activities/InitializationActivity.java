@@ -13,6 +13,7 @@ import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.intellij.utils.ExtendedDataContext;
 import fi.aalto.cs.apluscourses.model.Course;
+import fi.aalto.cs.apluscourses.model.MainViewModelUpdater;
 import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationFileException;
 import fi.aalto.cs.apluscourses.model.UnexpectedResponseException;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
@@ -63,6 +64,8 @@ public class InitializationActivity implements Background {
     }
     PluginSettings.getInstance()
         .getMainViewModel(project).courseViewModel.set(new CourseViewModel(course));
+    MainViewModelUpdater mainViewModelUpdater = new MainViewModelUpdater(project);
+    new Thread(mainViewModelUpdater::run).start();
     ActionUtil.launch(RequiredPluginsCheckerAction.ACTION_ID,
         new ExtendedDataContext().withProject(project));
   }

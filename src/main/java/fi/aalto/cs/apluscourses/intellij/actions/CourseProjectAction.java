@@ -12,6 +12,7 @@ import fi.aalto.cs.apluscourses.intellij.model.SettingsImporterImpl;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Course;
+import fi.aalto.cs.apluscourses.model.MainViewModelUpdater;
 import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationFileException;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogs;
@@ -105,6 +106,9 @@ public class CourseProjectAction extends AnAction {
         ideRestarter.restart();
       }
     }
+
+    MainViewModelUpdater mainViewModelUpdater = new MainViewModelUpdater(project);
+    new Thread(mainViewModelUpdater::run).start();
   }
 
   @Override
