@@ -16,10 +16,7 @@ import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationFileException;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogsImpl;
-import fi.aalto.cs.apluscourses.utils.CoursesClient;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import org.jetbrains.annotations.NotNull;
@@ -71,11 +68,7 @@ public class CourseProjectAction extends AnAction {
   public CourseProjectAction() {
     this(
         PluginSettings.getInstance(),
-        (url, project) -> {
-          InputStream inputStream = CoursesClient.fetchJson(url);
-          return Course.fromConfigurationData(new InputStreamReader(inputStream),
-              url.toString(), new IntelliJModelFactory(project));
-        },
+        (url, project) -> Course.fromUrl(url, new IntelliJModelFactory(project)),
         true,
         new SettingsImporterImpl(),
         () -> ((ApplicationEx) ApplicationManager.getApplication()).restart(true),
