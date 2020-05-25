@@ -27,6 +27,12 @@ import org.xml.sax.SAXException;
 
 public class SettingsImporterImpl implements SettingsImporter {
 
+  // Some hard coded custom settings for workspace.xml. This information should eventually come from
+  // the course configuration file in some way.
+  private static final String WORKSPACE_XML_COMPONENT_NAME = "CompilerWorkspaceConfiguration";
+  private static final String WORKSPACE_XML_OPTION_NAME = "AUTO_SHOW_ERRORS_IN_EDITOR";
+  private static final String WORKSPACE_XML_OPTION_VALUE = "false";
+
   /**
    * Downloads the course IDE settings ZIP file to a temporary file. Also adds IDEA startup actions
    * that unzip the temporary file to the IDEA configuration path after which the temporary file is
@@ -95,13 +101,7 @@ public class SettingsImporterImpl implements SettingsImporter {
 
   private static void extractZipTo(@NotNull ZipFile zipFile, @NotNull Path target)
       throws IOException {
-    List<String> fileNames = zipFile
-        .getFileHeaders()
-        .stream()
-        .filter(file -> !file.isDirectory())
-        .map(FileHeader::getFileName)
-        .collect(Collectors.toList());
-
+    List<String> fileNames = getZipFileNames(zipFile);
     for (String fileName : fileNames) {
       Path path = Paths.get(fileName);
       // The ZIP contains a .idea directory with all of the settings files. We want to extract the
@@ -112,14 +112,32 @@ public class SettingsImporterImpl implements SettingsImporter {
     }
   }
 
-  private static final String WORKSPACE_XML_COMPONENT_NAME = "CompilerWorkspaceConfiguration";
-  private static final String WORKSPACE_XML_OPTION_NAME = "AUTO_SHOW_ERRORS_IN_EDITOR";
-  private static final String WORKSPACE_XML_OPTION_VALUE = "false";
+
+  /**
+   * Returns the names of the files inside the given ZIP file. Directories are not included, but
+   * files inside directories are included.
+   * @param zipFile The ZIP file from which the file names are read.
+   * @return A list of names of the files inside the given ZIP file.
+   * @throws IOException If an IO error occurs.
+   */
+  @NotNull
+  private static List<String> getZipFileNames(@NotNull ZipFile zipFile) throws IOException {
+    return zipFile
+        .getFileHeaders()
+        .stream()
+        .filter(file -> !file.isDirectory())
+        .map(FileHeader::getFileName)
+        .collect(Collectors.toList());
+  }
 
   /**
    * Parses the XML file (usually the workspace.xml file stored in .idea) at the given path and
    * returns a {@link Document} with file contents and an additional setting added.
    * @param workspaceXmlPath The path pointing to the XML file.
+   * @throws IOException           If an IO error occurs while parsing the XML file.
+   * @throws IllegalStateException If the existing XML in the given file is malformed. In practice
+   *                               this would mean that the {@code workspace.xml} file is malformed,
+   *                               which shouldn't happen.
    */
   @NotNull
   public static Document createCustomWorkspaceXml(@NotNull Path workspaceXmlPath) throws
@@ -152,6 +170,5 @@ public class SettingsImporterImpl implements SettingsImporter {
       throw new IllegalStateException();
     }
   }
-
 
 }
