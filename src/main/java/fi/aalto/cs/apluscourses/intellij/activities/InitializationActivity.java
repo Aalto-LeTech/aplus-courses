@@ -17,15 +17,13 @@ import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationFileException;
 import fi.aalto.cs.apluscourses.model.UnexpectedResponseException;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,15 +80,9 @@ public class InitializationActivity implements Background {
       return null;
     }
 
-    File courseFile = new APlusProject(project).getCourseFilePath().toFile();
-    if (!courseFile.isFile()) {
-      return null;
-    }
-
     try {
-      String contents = FileUtils.readFileToString(courseFile, StandardCharsets.UTF_8);
-      return new URL(contents);
-    } catch (IOException e) {
+      return new APlusProject(project).getCourseFileUrl();
+    } catch (IOException | JSONException e) {
       logger.error("Malformed project course tag file", e);
       return null;
     }

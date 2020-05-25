@@ -78,11 +78,11 @@ public class ModelExtensions {
     }
 
     public TestModule(@NotNull String name) {
-      this(name, testURL);
+      this(name, testURL, "");
     }
 
-    public TestModule(@NotNull String name, @NotNull URL url) {
-      super(name, url);
+    public TestModule(@NotNull String name, @NotNull URL url, @NotNull String versionId) {
+      super(name, url, versionId);
     }
 
     @NotNull
@@ -165,8 +165,8 @@ public class ModelExtensions {
     }
 
     @Override
-    public Module createModule(@NotNull String name, @NotNull URL url) {
-      return new TestModule(name, url);
+    public Module createModule(@NotNull String name, @NotNull URL url, @NotNull String versionId) {
+      return new TestModule(name, url, versionId);
     }
 
     @Override
