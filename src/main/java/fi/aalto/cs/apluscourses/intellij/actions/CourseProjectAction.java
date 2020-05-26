@@ -106,7 +106,7 @@ public class CourseProjectAction extends AnAction {
 
     // Importing IDE settings potentially restarts the IDE, so it's the last action. If the
     // IDE settings for the course have already been imported, do nothing.
-    if (!settingsImporter.lastImportedIdeSettings().equals(course.getName())) {
+    if (!course.getName().equals(settingsImporter.lastImportedIdeSettings())) {
       boolean shouldImport = dialogs.showImportIdeSettingsDialog(project);
       if (shouldImport && tryImportIdeSettings(course) && userWantsToRestart()) {
         ideRestarter.restart();
