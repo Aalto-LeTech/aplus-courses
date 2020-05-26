@@ -17,14 +17,11 @@ import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogsImpl;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -183,8 +180,7 @@ public class CourseProjectAction extends AnAction {
   private boolean tryCreateCourseFile(@NotNull Project project, @NotNull URL courseUrl) {
     try {
       if (createCourseFile) {
-        File courseFile = new APlusProject(project).getCourseFilePath().toFile();
-        FileUtils.writeStringToFile(courseFile, courseUrl.toString(), StandardCharsets.UTF_8);
+        new APlusProject(project).createCourseFile(courseUrl);
       }
       return true;
     } catch (IOException e) {
