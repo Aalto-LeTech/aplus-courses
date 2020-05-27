@@ -4,7 +4,6 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ex.ApplicationEx;
-import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.model.APlusProject;
 import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory;
@@ -15,8 +14,8 @@ import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationFileException;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
-import fi.aalto.cs.apluscourses.ui.IntelliJDialogs;
-import fi.aalto.cs.apluscourses.ui.base.Dialogs;
+import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogs;
+import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogsImpl;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CourseProjectAction extends AnAction implements DumbAware {
+public class CourseProjectAction extends AnAction {
 
   private static final Logger logger = LoggerFactory.getLogger(CourseProjectAction.class);
 
@@ -47,7 +46,7 @@ public class CourseProjectAction extends AnAction implements DumbAware {
   private IdeRestarter ideRestarter;
 
   @NotNull
-  private Dialogs dialogs;
+  private CourseProjectActionDialogs dialogs;
 
   /**
    * Construct a course project action with the given main view model provider and dialogs.
@@ -57,7 +56,7 @@ public class CourseProjectAction extends AnAction implements DumbAware {
                              boolean createCourseFile,
                              @NotNull SettingsImporter settingsImporter,
                              @NotNull IdeRestarter ideRestarter,
-                             @NotNull Dialogs dialogs) {
+                             @NotNull CourseProjectActionDialogs dialogs) {
     this.mainViewModelProvider = mainViewModelProvider;
     this.courseFactory = courseFactory;
     this.createCourseFile = createCourseFile;
@@ -80,7 +79,7 @@ public class CourseProjectAction extends AnAction implements DumbAware {
         true,
         new SettingsImporterImpl(),
         () -> ((ApplicationEx) ApplicationManager.getApplication()).restart(true),
-        new IntelliJDialogs());
+        new CourseProjectActionDialogsImpl());
   }
 
   @Override
@@ -107,15 +106,9 @@ public class CourseProjectAction extends AnAction implements DumbAware {
 
     // Importing IDE settings potentially restarts the IDE, so it's the last action. If the
     // IDE settings for the course have already been imported, do nothing.
-    if (!settingsImporter.lastImportedIdeSettings().equals(course.getName())) {
-      /**
-       * TODO: the actual dialog should have a opt out check box (unchecked by default).
-       */
-      dialogs.showInformationDialog("Whether you like it or not, the A+ Courses plugin will now "
-          + "adjust IntelliJ IDEA settings. This helps use IDEA for coursework. You can not opt "
-          + "out even if you want to.", "Adjust IDEA Settings");
-
-      if (tryImportIdeSettings(course) && userWantsToRestart()) {
+    if (!course.getName().equals(settingsImporter.lastImportedIdeSettings())) {
+      boolean shouldImport = dialogs.showImportIdeSettingsDialog(project);
+      if (shouldImport && tryImportIdeSettings(course) && userWantsToRestart()) {
         ideRestarter.restart();
       }
     }

@@ -12,6 +12,11 @@ import java.util.stream.IntStream;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Source;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
@@ -31,6 +36,7 @@ public class DomUtil {
   private static ConcurrentMap<String, XPathExpression> xPathCache;
   private static final XPathFactory xPathFactory;
   private static final DocumentBuilderFactory documentBuilderFactory;
+  private static final TransformerFactory transformerFactory;
 
   static {
     xPathCache = new ConcurrentHashMap<>();
@@ -38,9 +44,13 @@ public class DomUtil {
     xPathFactory = XPathFactory.newInstance();
 
     documentBuilderFactory = DocumentBuilderFactory.newInstance();
+
+    transformerFactory = TransformerFactory.newInstance();
     try {
       documentBuilderFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
       documentBuilderFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+      transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+      transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
     } catch (IllegalArgumentException e) {
       logger.warn("Could not set XXE restrictions for DOM tools because the platform does not "
           + "support them.");
@@ -118,9 +128,41 @@ public class DomUtil {
   public static Document parse(@NotNull InputStream stream) throws IOException, SAXException {
     try {
       return documentBuilderFactory.newDocumentBuilder().parse(stream);
-
     } catch (ParserConfigurationException e) {
       throw new IllegalStateException();
+    }
+  }
+
+  /**
+   * Parses the content of the given file to a DOM document.
+   * @param file A {@link File}.
+   * @return A DOM {@link Document}.
+   * @throws IOException  If the stream cannot be read.
+   * @throws SAXException If the content of the stream is not properly structured.
+   */
+  @NotNull
+  public static Document parse(@NotNull File file) throws IOException, SAXException {
+    try {
+      return documentBuilderFactory.newDocumentBuilder().parse(file);
+    } catch (ParserConfigurationException e) {
+      throw new IllegalStateException();
+    }
+  }
+
+  /**
+   * Writes the given document to the given file.
+   * @param document The document that is written to the file.
+   * @param out      The file to which the document is written.
+   * @throws IOException If an IO error occurs.
+   */
+  public static void writeDocumentToFile(@NotNull Document document, @NotNull File out)
+      throws IOException {
+    Source source = new DOMSource(document);
+    StreamResult result = new StreamResult(out);
+    try {
+      transformerFactory.newTransformer().transform(source, result);
+    } catch (TransformerException ex) {
+      throw new IOException(ex);
     }
   }
 }

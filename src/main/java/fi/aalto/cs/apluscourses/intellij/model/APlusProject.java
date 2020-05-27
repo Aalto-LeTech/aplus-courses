@@ -86,16 +86,19 @@ public class APlusProject {
   }
 
   private static final Object courseFileLock = new Object();
-  
+
   /**
-   * Adds an entry for the given module to the course file. If an entry exists with the same name,
-   * it is overwritten.
-   * @param module The module for which an entry is added.
-   * @throws IOException   If an IO error occurs (for an example, the course file doesn't exist).
+   * Adds an entry for the given module to the given course file. This method should only be used
+   * if when the default course file shouldn't be used (e.g. in testing). Prefer to use {@link
+   * APlusProject#addCourseFileEntry(Module)}.
+   * @param courseFile The file to which the entry is added(must already contain a valid JSON
+   *                   object).
+   * @param module     The module for which an entry is added.
+   * @throws IOException   If an IO error occurs (for an example, the file doesn't exist).
    * @throws JSONException If the existing JSON in the course file is malformed.
    */
-  public void addCourseFileEntry(@NotNull Module module) throws IOException {
-    File courseFile = getCourseFilePath().toFile();
+  public void addCourseFileEntry(@NotNull File courseFile, @NotNull Module module)
+      throws IOException {
     synchronized (courseFileLock) {
       JSONTokener tokenizer = new JSONTokener(new FileInputStream(courseFile));
       JSONObject jsonObject = new JSONObject(tokenizer);
@@ -111,6 +114,17 @@ public class APlusProject {
       jsonObject.put("modules", modulesObject);
       FileUtils.writeStringToFile(courseFile, jsonObject.toString(), StandardCharsets.UTF_8);
     }
+  }
+
+  /**
+   * Adds an entry for the given module to the course file. If an entry exists with the same name,
+   * it is overwritten.
+   * @param module The module for which an entry is added.
+   * @throws IOException   If an IO error occurs (for an example, the course file doesn't exist).
+   * @throws JSONException If the existing JSON in the course file is malformed.
+   */
+  public void addCourseFileEntry(@NotNull Module module) throws IOException {
+    addCourseFileEntry(getCourseFilePath().toFile(), module);
   }
 
   @NotNull
