@@ -5,6 +5,10 @@ import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.module.ModuleWithNameAlreadyExists;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.util.io.FileUtilRt;
+import com.intellij.openapi.vfs.VfsUtil;
+import com.intellij.openapi.vfs.VfsUtilCore;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.VirtualFileVisitor;
 import fi.aalto.cs.apluscourses.intellij.utils.ListDependenciesPolicy;
 import fi.aalto.cs.apluscourses.model.ComponentLoadException;
 import fi.aalto.cs.apluscourses.model.Module;
@@ -15,6 +19,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -31,12 +36,12 @@ class IntelliJModule
   @NotNull
   private final APlusProject project;
 
-
   IntelliJModule(@NotNull String name,
-                 @NotNull URL url,
-                 @NotNull String versionId,
-                 @NotNull APlusProject project) {
-    super(name, url, versionId);
+      @NotNull URL url,
+      @NotNull String versionId,
+      @NotNull LocalDateTime downloadedAt,
+      @NotNull APlusProject project) {
+    super(name, url, versionId, downloadedAt);
     this.project = project;
   }
 
@@ -127,7 +132,31 @@ class IntelliJModule
     return project.getModuleManager().findModuleByName(getName());
   }
 
+  @Override
+  public boolean hasLocalChanges() {
+    Path fullPath = this.getFullPath();
+    VirtualFile virtualFile = VfsUtil.findFile(fullPath, true);
+    boolean hasChanges = false;
+
+    if (virtualFile != null) {
+      VfsUtilCore.visitChildrenRecursively(virtualFile, new VirtualFileVisitor<Object>() {
+        @Override
+        public boolean visitFile(@NotNull VirtualFile file) {
+          System.out.println(virtualFile.getName());
+          return super.visitFile(file);
+        }
+      });
+    }
+    return hasChanges;
+  }
+
+  @Override
+  public void update() {
+    // todo: implement me!
+  }
+
   private static class Loader {
+
     private final ModuleManager moduleManager;
     private final String imlFileName;
 

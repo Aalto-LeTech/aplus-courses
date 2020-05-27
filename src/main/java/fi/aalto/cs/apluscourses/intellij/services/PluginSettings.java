@@ -41,7 +41,8 @@ public class PluginSettings implements MainViewModelProvider {
       = "https://grader.cs.hut.fi/static/O1_2020/projects/o1_course_config.json";
 
   // 5 minutes in milliseconds
-  public static final long MAIN_VIEW_MODEL_UPDATE_INTERVAL = 5L * 60L * 1000L;
+  public static final long MAIN_VIEW_MODEL_UPDATE_INTERVAL = 10L * 1000L;
+  //  public static final long MAIN_VIEW_MODEL_UPDATE_INTERVAL = 5L * 60L * 1000L;
 
   private final PropertiesComponent propertiesManager = PropertiesComponent.getInstance();
 

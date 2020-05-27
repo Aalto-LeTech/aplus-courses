@@ -6,10 +6,8 @@ import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.roots.libraries.LibraryTable;
 import com.intellij.openapi.roots.libraries.LibraryTablesRegistrar;
 import com.intellij.util.messages.MessageBus;
-
 import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.Module;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -17,11 +15,11 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -119,6 +117,7 @@ public class APlusProject {
       }
 
       JSONObject entry = new JSONObject().put("id", module.getVersionId());
+      entry.put("downloadedAt", LocalDateTime.now());
       modulesObject.put(module.getName(), entry);
       jsonObject.put("modules", modulesObject);
       FileUtils.writeStringToFile(courseFile, jsonObject.toString(), StandardCharsets.UTF_8);

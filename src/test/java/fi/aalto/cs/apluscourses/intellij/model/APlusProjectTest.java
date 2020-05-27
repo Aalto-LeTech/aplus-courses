@@ -5,21 +5,19 @@ import static org.mockito.Mockito.mock;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtilRt;
-
 import fi.aalto.cs.apluscourses.model.Component;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
@@ -100,7 +98,8 @@ public class APlusProjectTest {
     List<Thread> threads = new ArrayList<>(numThreads);
     AtomicBoolean failed = new AtomicBoolean(false);
     for (int i = 0; i < numThreads; ++i) {
-      IntelliJModule module = new IntelliJModule("name" + i, url, "id" + i, aplusProject);
+      IntelliJModule module = new IntelliJModule("name" + i, url, "id" + i,
+          LocalDateTime.now(), aplusProject);
       Runnable runnable = () -> {
         try {
           aplusProject.addCourseFileEntry(temp, module);

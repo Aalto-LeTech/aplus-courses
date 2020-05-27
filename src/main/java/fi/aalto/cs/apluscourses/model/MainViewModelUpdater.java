@@ -2,13 +2,11 @@ package fi.aalto.cs.apluscourses.model;
 
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.project.Project;
-
 import fi.aalto.cs.apluscourses.intellij.model.APlusProject;
 import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -17,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -97,7 +94,7 @@ public class MainViewModelUpdater {
       return aplusProject.getModuleManager().getModules();
     });
     return Arrays.stream(projectModules)
-        .map(module -> module.getName())
+        .map(com.intellij.openapi.module.Module::getName)
         .collect(Collectors.toSet());
   }
 
@@ -127,12 +124,13 @@ public class MainViewModelUpdater {
       if (!projectModules.contains(module.getName())) {
         continue;
       }
-      if (!module.getVersionId().equals(localModuleIds.get(module.getName()))) {
+      if (module.hasLocalChanges()) {
+        //  if (!module.getVersionId().equals(localModuleIds.get(module.getName()))) {
         updatableModules.add(module);
       }
     }
 
-    return updatableModules;
+    return updatableModules.stream().distinct().collect(Collectors.toList());
   }
 
   private void runUpdateLoop() throws InterruptedException {
