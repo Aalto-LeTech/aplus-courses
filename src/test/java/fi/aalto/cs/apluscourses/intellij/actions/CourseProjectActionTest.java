@@ -26,7 +26,6 @@ public class CourseProjectActionTest {
     private int userResponse;
 
     private String lastErrorMessage = "";
-    private String lastOkCancelMessage = "";
 
     public TestDialogs(int userResponse) {
       this.userResponse = userResponse;
@@ -35,11 +34,6 @@ public class CourseProjectActionTest {
     @NotNull
     public String getLastErrorMessage() {
       return lastErrorMessage;
-    }
-
-    @NotNull
-    public String getLastOkCancelMessage() {
-      return lastOkCancelMessage;
     }
 
     @Override
@@ -52,18 +46,6 @@ public class CourseProjectActionTest {
       lastErrorMessage = message;
     }
 
-    @Override
-    public boolean showOkCancelDialog(@NotNull String message,
-                                      @NotNull String title,@NotNull String okText,
-                                      @NotNull String cancelText) {
-      lastOkCancelMessage = message;
-      return true;
-    }
-
-    @Override
-    public boolean showImportIdeSettingsDialog(@NotNull Project project) {
-      return true;
-    }
   }
 
   private AnActionEvent anActionEvent;
@@ -189,8 +171,6 @@ public class CourseProjectActionTest {
 
     Assert.assertEquals("IDE settings shouldn't get imported", 0,
         settingsImporter.getImportIdeSettingsCallCount());
-    Assert.assertEquals("The user should not be prompted to restart the IDE", "",
-        dialogs.getLastOkCancelMessage());
     Assert.assertEquals("The IDE should not get restarted", 0, ideRestarter.getCallCount());
     Assert.assertEquals("Project settings should still get imported", 1,
         settingsImporter.getImportProjectSettingsCallCount());
@@ -264,7 +244,5 @@ public class CourseProjectActionTest {
         settingsImporter.getImportIdeSettingsCallCount());
     Assert.assertEquals("Project settings are imported", 1,
         settingsImporter.getImportProjectSettingsCallCount());
-    Assert.assertEquals("The user is not prompted to restart the IDE", "",
-        dialogs.getLastOkCancelMessage());
   }
 }

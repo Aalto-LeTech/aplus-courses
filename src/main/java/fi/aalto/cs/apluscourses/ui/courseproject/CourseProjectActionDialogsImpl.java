@@ -17,17 +17,4 @@ public class CourseProjectActionDialogsImpl implements CourseProjectActionDialog
     Messages.showErrorDialog(message, title);
   }
 
-  @Override
-  public boolean showOkCancelDialog(@NotNull String message,
-                                    @NotNull String title,
-                                    @NotNull String okText,
-                                    @NotNull String cancelText) {
-    return Messages.OK == Messages.showOkCancelDialog(
-        message, title, okText, cancelText, Messages.getQuestionIcon());
-  }
-
-  @Override
-  public boolean showImportIdeSettingsDialog(@NotNull Project project) {
-    return new ImportIdeSettingsDialog(project).showAndGet();
-  }
 }
