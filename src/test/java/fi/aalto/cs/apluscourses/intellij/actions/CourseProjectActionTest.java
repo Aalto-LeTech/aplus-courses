@@ -199,7 +199,7 @@ public class CourseProjectActionTest {
         (url, proj) -> emptyCourse,
         false,
         failingSettingsImporter,
-        () -> { },
+        ideRestarter,
         dialogs);
 
     action.actionPerformed(anActionEvent);
@@ -212,13 +212,12 @@ public class CourseProjectActionTest {
 
   @Test
   public void testDoesNotImportIdeSettingsIfOptOut() {
-    settingsImporter.setLastImportedIdeSettings(emptyCourse.getName());
     CourseProjectAction action = new CourseProjectAction(
         p -> mainViewModel,
         (url, proj) -> emptyCourse,
         false,
         settingsImporter,
-        () -> { },
+        ideRestarter,
         new TestDialogs(CourseProjectActionDialogs.OK_WITH_OPT_OUT));
 
     action.actionPerformed(anActionEvent);
@@ -227,5 +226,43 @@ public class CourseProjectActionTest {
         settingsImporter.getImportIdeSettingsCallCount());
     Assert.assertEquals("Project settings are imported", 1,
         settingsImporter.getImportProjectSettingsCallCount());
+  }
+
+  @Test
+  public void testLetsUserCancelAction() {
+    CourseProjectAction action = new CourseProjectAction(
+        p -> mainViewModel,
+        (url, proj) -> emptyCourse,
+        true,
+        settingsImporter,
+        ideRestarter,
+        new TestDialogs(CourseProjectActionDialogs.CANCEL));
+
+    action.actionPerformed(anActionEvent);
+
+    Assert.assertNull("The course of the main view model should not get initialized",
+        mainViewModel.courseViewModel.get());
+    Assert.assertEquals("Project settings are not imported", 0,
+        settingsImporter.getImportProjectSettingsCallCount());
+    Assert.assertEquals("IDE settings are not imported", 0,
+        settingsImporter.getImportIdeSettingsCallCount());
+    Assert.assertEquals("The IDE is not restarted", 0, ideRestarter.getCallCount());
+  }
+
+  @Test
+  public void testDoesNotRestartIfCheckboxUnselected() {
+    CourseProjectAction action = new CourseProjectAction(
+        p -> mainViewModel,
+        (url, proj) -> emptyCourse,
+        false,
+        settingsImporter,
+        ideRestarter,
+        new TestDialogs(CourseProjectActionDialogs.OK_WITHOUT_RESTART));
+
+    action.actionPerformed(anActionEvent);
+
+    Assert.assertEquals("IDE settings are imported", 1,
+        settingsImporter.getImportIdeSettingsCallCount());
+    Assert.assertEquals("The IDE is not restarted", 0, ideRestarter.getCallCount());
   }
 }
