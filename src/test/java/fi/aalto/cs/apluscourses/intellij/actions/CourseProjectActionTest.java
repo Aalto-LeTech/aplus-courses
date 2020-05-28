@@ -23,13 +23,13 @@ public class CourseProjectActionTest {
 
   private class TestDialogs implements CourseProjectActionDialogs {
 
-    private boolean answerOk;
+    private int userResponse;
 
     private String lastErrorMessage = "";
     private String lastOkCancelMessage = "";
 
-    public TestDialogs(boolean answerOk) {
-      this.answerOk = answerOk;
+    public TestDialogs(int userResponse) {
+      this.userResponse = userResponse;
     }
 
     @NotNull
@@ -43,6 +43,11 @@ public class CourseProjectActionTest {
     }
 
     @Override
+    public int showMainDialog(@NotNull Project project, @NotNull String courseName) {
+      return userResponse;
+    }
+
+    @Override
     public void showErrorDialog(@NotNull String message, @NotNull String title) {
       lastErrorMessage = message;
     }
@@ -52,12 +57,12 @@ public class CourseProjectActionTest {
                                       @NotNull String title,@NotNull String okText,
                                       @NotNull String cancelText) {
       lastOkCancelMessage = message;
-      return answerOk;
+      return true;
     }
 
     @Override
     public boolean showImportIdeSettingsDialog(@NotNull Project project) {
-      return answerOk;
+      return true;
     }
   }
 
@@ -132,7 +137,7 @@ public class CourseProjectActionTest {
 
     ideRestarter = new DummyIdeRestarter();
 
-    dialogs = new TestDialogs(true);
+    dialogs = new TestDialogs(CourseProjectActionDialogs.OK_WITH_RESTART);
   }
 
   @Test
@@ -164,8 +169,6 @@ public class CourseProjectActionTest {
     Assert.assertEquals("The IDE settings should get imported", 1,
         settingsImporter.getImportIdeSettingsCallCount());
 
-    Assert.assertThat("The user should be prompted to restart the IDE",
-        dialogs.getLastOkCancelMessage(), containsString("Restart IntelliJ IDEA now"));
     Assert.assertEquals("IdeRestarter#restart should get called", 1, ideRestarter.getCallCount());
     Assert.assertEquals("No error dialogs should be shown", "",
         dialogs.getLastErrorMessage());
@@ -253,7 +256,7 @@ public class CourseProjectActionTest {
         false,
         settingsImporter,
         () -> { },
-        new TestDialogs(false));
+        new TestDialogs(CourseProjectActionDialogs.OK_WITH_OPT_OUT));
 
     action.actionPerformed(anActionEvent);
 
