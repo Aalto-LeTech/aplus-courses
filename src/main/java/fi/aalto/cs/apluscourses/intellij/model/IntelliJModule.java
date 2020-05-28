@@ -9,6 +9,7 @@ import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileVisitor;
+import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.intellij.utils.ListDependenciesPolicy;
 import fi.aalto.cs.apluscourses.model.ComponentLoadException;
 import fi.aalto.cs.apluscourses.model.Module;
@@ -20,6 +21,7 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -134,25 +136,31 @@ class IntelliJModule
 
   @Override
   public boolean hasLocalChanges() {
-    Path fullPath = this.getFullPath();
-    VirtualFile virtualFile = VfsUtil.findFile(fullPath, true);
-    boolean hasChanges = false;
+    VirtualFile virtualFile = VfsUtil.findFile(getFullPath(), true);
+    final boolean[] hasChanges = {false};
+    long downloadedAt = getDownloadedAt().atZone(ZoneOffset.UTC).toInstant().toEpochMilli();
 
     if (virtualFile != null) {
       VfsUtilCore.visitChildrenRecursively(virtualFile, new VirtualFileVisitor<Object>() {
         @Override
         public boolean visitFile(@NotNull VirtualFile file) {
-          System.out.println(virtualFile.getName());
-          return super.visitFile(file);
+          boolean proceedVisiting = !hasChanges[0] && file.getTimeStamp()
+              > downloadedAt + PluginSettings.REASONABLE_DELAY_FOR_MODULE_INSTALLATION;
+
+          if (proceedVisiting) {
+            hasChanges[0] = true;
+            return false;
+          }
+          return true;
         }
       });
     }
-    return hasChanges;
+    return hasChanges[0];
   }
 
   @Override
   public void update() {
-    // todo: implement me!
+    // todo: @nikke234 implement me!
   }
 
   private static class Loader {
