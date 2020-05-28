@@ -5,9 +5,11 @@ import com.intellij.openapi.project.Project;
 
 import fi.aalto.cs.apluscourses.intellij.model.APlusProject;
 import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory;
+import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationFileException;
 import fi.aalto.cs.apluscourses.model.Module;
+import fi.aalto.cs.apluscourses.ui.Binding;
 
 import java.io.IOException;
 import java.net.URL;
@@ -129,6 +131,34 @@ public class MainViewModelUpdater {
     return updatableModules;
   }
 
+  private void updateMainViewModel(@NotNull Course newCourse) {
+    CourseViewModel courseViewModel = mainViewModel.courseViewModel.get();
+    if (courseViewModel == null) {
+      mainViewModel.courseViewModel.set(new CourseViewModel(newCourse));
+      return;
+    }
+
+    Course current = courseViewModel.getModel();
+    /*
+     * Updating the course view model while modules are installing leads to "Error in dependencies"
+     * in the modules tool window. The installations actually still work, and the error state
+     * disappears on the next update, but it's still bad UI/UX. Therefore we check if the currently
+     * loaded course has any "active" components, and only update the course view model if it
+     * doesn't.
+     */
+    boolean hasActiveComponents = current.getComponents()
+        .stream()
+        .anyMatch(component -> {
+          int state = component.stateMonitor.get();
+          int depState = component.dependencyStateMonitor.get();
+          return state == Component.FETCHING || state == Component.LOADING
+              || depState == Component.DEP_WAITING;
+        });
+    if (!hasActiveComponents) {
+      mainViewModel.courseViewModel.set(new CourseViewModel(newCourse));
+    }
+  }
+
   /**
    * This method attempts to update the main view model repeatedly, sleeping a given update interval
    * time between attempts. If the project of this updater is closed, then this method returns. This
@@ -144,11 +174,12 @@ public class MainViewModelUpdater {
         // again after sleeping.
         if (course != null) {
           // TODO: what do we actually do with the list of updatable modules? Notify the user?
+          @Binding
           List<Module> updatableModules = getUpdatableModules(course);
           // The project may have closed while we parsed the course configuration file and computed
           // the updatable modules, in which case we throw the result away and stop this updater.
           ReadAction.run(this::interruptIfProjectClosed);
-          mainViewModel.courseViewModel.set(new CourseViewModel(course));
+          updateMainViewModel(course);
         }
         Thread.sleep(updateInterval); // Good night :)
       }

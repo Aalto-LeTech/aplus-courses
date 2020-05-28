@@ -47,9 +47,8 @@ public class InitializationActivity implements Background {
       return;
     }
 
-    Course course;
     try {
-      course = Course.fromUrl(courseConfigurationFileUrl, new IntelliJModelFactory(project));
+      Course.fromUrl(courseConfigurationFileUrl, new IntelliJModelFactory(project));
     } catch (UnexpectedResponseException | MalformedCourseConfigurationFileException e) {
       logger.error("Error occurred while trying to parse a course configuration file", e);
       notifier.notify(new CourseConfigurationError(e), null);

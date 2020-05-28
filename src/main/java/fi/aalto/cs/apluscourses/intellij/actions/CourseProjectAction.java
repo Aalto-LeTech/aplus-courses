@@ -9,7 +9,6 @@ import fi.aalto.cs.apluscourses.intellij.model.APlusProject;
 import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory;
 import fi.aalto.cs.apluscourses.intellij.model.SettingsImporter;
 import fi.aalto.cs.apluscourses.intellij.model.SettingsImporterImpl;
-import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationFileException;
@@ -147,8 +146,7 @@ public class CourseProjectAction extends AnAction {
   @Nullable
   private Course tryInitializeCourse(@NotNull Project project, @NotNull URL courseUrl) {
     try {
-      Course course = courseFactory.fromUrl(courseUrl, project);
-      return course;
+      return courseFactory.fromUrl(courseUrl, project);
     } catch (IOException e) {
       notifyNetworkError();
       return null;
