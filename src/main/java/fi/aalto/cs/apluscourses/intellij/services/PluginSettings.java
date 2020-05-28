@@ -8,6 +8,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.project.ProjectManagerListener;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
+import fi.aalto.cs.apluscourses.presentation.MainViewModelUpdater;
 import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -48,11 +49,19 @@ public class PluginSettings implements MainViewModelProvider {
   @NotNull
   private final ConcurrentMap<Project, MainViewModel> mainViewModels = new ConcurrentHashMap<>();
 
+  @NotNull
+  private final ConcurrentMap<Project, MainViewModelUpdater> mainViewModelUpdaters
+      = new ConcurrentHashMap<>();
+
   private final ProjectManagerListener projectManagerListener = new ProjectManagerListener() {
     @Override
     public void projectClosed(@NotNull Project project) {
+      MainViewModelUpdater updater = mainViewModelUpdaters.remove(project);
+      if (updater != null) {
+        updater.interrupt();
+      }
       mainViewModels.remove(project);
-      ProjectManager.getInstance().removeProjectManagerListener(project, projectManagerListener);
+      ProjectManager.getInstance().removeProjectManagerListener(project, this);
     }
   };
 
@@ -80,6 +89,23 @@ public class PluginSettings implements MainViewModelProvider {
       project = ProjectManager.getInstance().getDefaultProject();
     }
     return mainViewModels.computeIfAbsent(project, this::createNewMainViewModel);
+  }
+
+  /**
+   * Creates a main view model and launches an updater for it that runs on a background thread.
+   *
+   * @param project The project to which the created main view model corresponds.
+   */
+  @NotNull
+  public void createUpdatingMainViewModel(@NotNull Project project) {
+    MainViewModel mainViewModel
+        = mainViewModels.computeIfAbsent(project, this::createNewMainViewModel);
+    mainViewModelUpdaters.computeIfAbsent(project, p -> {
+      MainViewModelUpdater mainViewModelUpdater
+          = new MainViewModelUpdater(mainViewModel, p, MAIN_VIEW_MODEL_UPDATE_INTERVAL);
+      mainViewModelUpdater.start();
+      return mainViewModelUpdater;
+    });
   }
 
   @NotNull

@@ -52,6 +52,8 @@ public class APlusProject {
     return getBasePath().resolve(Paths.get(Project.DIRECTORY_STORE_FOLDER, "a-plus-project.json"));
   }
 
+  private static final Object courseFileLock = new Object();
+
   /**
    * Creates a local course file containing the given URL. If a course file already exists (even if
    * it was created with a different URL), this method does nothing and returns false.
@@ -86,15 +88,13 @@ public class APlusProject {
       return null;
     }
 
-    // TODO: the course file is written as UTF-8, ensure that this always works
     synchronized (courseFileLock) {
+      // TODO: the course file is written as UTF-8, ensure that this always works
       JSONTokener tokenizer = new JSONTokener(new FileInputStream(courseFile));
       JSONObject jsonObject = new JSONObject(tokenizer);
       return new URL(jsonObject.getString("url"));
     }
   }
-
-  private static final Object courseFileLock = new Object();
 
   /**
    * Adds an entry for the given module to the given course file. This method should only be used
@@ -145,9 +145,10 @@ public class APlusProject {
    */
   @NotNull
   public Map<String, String> getCourseFileModuleIds() throws IOException {
-    File courseFile = getCourseFilePath().toFile();
-    Map<String, String> modules = new HashMap<>();
     synchronized (courseFileLock) {
+      File courseFile = getCourseFilePath().toFile();
+      Map<String, String> modules = new HashMap<>();
+
       JSONTokener tokenizer = new JSONTokener(new FileInputStream(courseFile));
       JSONObject jsonObject = new JSONObject(tokenizer);
 

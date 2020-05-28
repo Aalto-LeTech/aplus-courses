@@ -1,13 +1,13 @@
-package fi.aalto.cs.apluscourses.model;
+package fi.aalto.cs.apluscourses.presentation;
 
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.project.Project;
 
 import fi.aalto.cs.apluscourses.intellij.model.APlusProject;
 import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory;
-import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
-import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
-import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
+import fi.aalto.cs.apluscourses.model.Course;
+import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationFileException;
+import fi.aalto.cs.apluscourses.model.Module;
 
 import java.io.IOException;
 import java.net.URL;
@@ -24,35 +24,29 @@ import org.jetbrains.annotations.Nullable;
 public class MainViewModelUpdater {
 
   @NotNull
-  private MainViewModelProvider mainViewModelProvider;
+  private MainViewModel mainViewModel;
 
   @NotNull
   private APlusProject aplusProject;
 
   private long updateInterval;
 
-  /**
-   * Construct a {@link MainViewModelUpdater} with the given {@link MainViewModelProvider}, project,
-   * and update interval.
-   * @param mainViewModelProvider The {@link MainViewModelProvider} from which the main view model
-   *                              to be updated is gotten.
-   * @param project               The project to which this updater is tied.
-   * @param updateInterval        The interval at which the updater performs the update.
-   */
-  public MainViewModelUpdater(@NotNull MainViewModelProvider mainViewModelProvider,
-                              @NotNull Project project,
-                              @NotNull long updateInterval) {
-    this.mainViewModelProvider = mainViewModelProvider;
-    this.aplusProject = new APlusProject(project);
-    this.updateInterval = updateInterval;
-  }
+  private Thread thread;
 
   /**
-   * Construct a {@link MainViewModelUpdater} with the given project.
-   * @param project The project to which thsi updater is tied.
+   * Construct a {@link MainViewModelUpdater} with the given {@link MainViewModel}, project, and
+   * update interval.
+   * @param mainViewModel  The {@link MainViewModel} that gets updated.
+   * @param project        The project to which this updater is tied.
+   * @param updateInterval The interval at which the updater performs the update.
    */
-  public MainViewModelUpdater(@NotNull Project project) {
-    this(PluginSettings.getInstance(), project, PluginSettings.MAIN_VIEW_MODEL_UPDATE_INTERVAL);
+  public MainViewModelUpdater(@NotNull MainViewModel mainViewModel,
+                              @NotNull Project project,
+                              @NotNull long updateInterval) {
+    this.mainViewModel = mainViewModel;
+    this.aplusProject = new APlusProject(project);
+    this.updateInterval = updateInterval;
+    this.thread = new Thread(this::run);
   }
 
   private void interruptIfProjectClosed() throws InterruptedException {
@@ -135,38 +129,46 @@ public class MainViewModelUpdater {
     return updatableModules;
   }
 
-  private void runUpdateLoop() throws InterruptedException {
-    while (true) {
-      URL courseUrl = getCourseUrl();
-      Course course = getCourse(courseUrl);
-      // If parsing the course configuration file fails, then we just silently go back to sleep.
-      // For an example, if the internet connection was down, then we may succeed when we try
-      // again after sleeping.
-      if (course != null) {
-        // TODO: what do we actually do with the list of updatable modules? Notify the user?
-        List<Module> updatableModules = getUpdatableModules(course);
-        // The project may have closed while we parsed the course configuration file and computed
-        // the updatable modules, in which case we throw the result away and stop this updater.
-        ReadAction.run(this::interruptIfProjectClosed);
-        mainViewModelProvider
-            .getMainViewModel(aplusProject.getProject())
-            .courseViewModel
-            .set(new CourseViewModel(course));
-      }
-      Thread.sleep(updateInterval); // Good night :)
-    }
-  }
-
   /**
    * This method attempts to update the main view model repeatedly, sleeping a given update interval
    * time between attempts. If the project of this updater is closed, then this method returns. This
    * method is intended to be run on a background thread.
    */
-  public void run() {
+  private void run() {
     try {
-      runUpdateLoop();
+      while (true) {
+        URL courseUrl = getCourseUrl();
+        Course course = getCourse(courseUrl);
+        // If parsing the course configuration file fails, then we just silently go back to sleep.
+        // For an example, if the internet connection was down, then we may succeed when we try
+        // again after sleeping.
+        if (course != null) {
+          // TODO: what do we actually do with the list of updatable modules? Notify the user?
+          List<Module> updatableModules = getUpdatableModules(course);
+          // The project may have closed while we parsed the course configuration file and computed
+          // the updatable modules, in which case we throw the result away and stop this updater.
+          ReadAction.run(this::interruptIfProjectClosed);
+          mainViewModel.courseViewModel.set(new CourseViewModel(course));
+        }
+        Thread.sleep(updateInterval); // Good night :)
+      }
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
     }
+  }
+
+  /**
+   * Starts this updater on a separate thread. The updater repeatedly updates its main view model,
+   * sleeping the given amount of time between update attempts.
+   */
+  public void start() {
+    thread.start();
+  }
+
+  /**
+   * Interrupts this updater.
+   */
+  public void interrupt() {
+    thread.interrupt();
   }
 }
