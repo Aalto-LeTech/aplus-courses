@@ -96,7 +96,8 @@ public class CourseProjectAction extends AnAction {
       return;
     }
 
-    int userResponse = dialogs.showMainDialog(project, course.getName());
+    int userResponse = dialogs.showMainDialog(project, course.getName(),
+        settingsImporter.lastImportedIdeSettings());
     if (userResponse == CourseProjectActionDialogs.CANCEL) {
       return;
 
@@ -115,14 +116,10 @@ public class CourseProjectAction extends AnAction {
       return;
     }
 
-    // Importing IDE settings potentially restarts the IDE, so it's the last action. If the
-    // IDE settings for the course have already been imported, do nothing.
-    if (!course.getName().equals(settingsImporter.lastImportedIdeSettings())) {
-      boolean userWantsSettings = (userResponse != CourseProjectActionDialogs.OK_WITH_OPT_OUT);
-      boolean userWantsToRestart = (userResponse == CourseProjectActionDialogs.OK_WITH_RESTART);
-      if (userWantsSettings && tryImportIdeSettings(course) && userWantsToRestart) {
-        ideRestarter.restart();
-      }
+    boolean userWantsSettings = (userResponse != CourseProjectActionDialogs.OK_WITH_OPT_OUT);
+    boolean userWantsToRestart = (userResponse == CourseProjectActionDialogs.OK_WITH_RESTART);
+    if (userWantsSettings && tryImportIdeSettings(course) && userWantsToRestart) {
+      ideRestarter.restart();
     }
   }
 

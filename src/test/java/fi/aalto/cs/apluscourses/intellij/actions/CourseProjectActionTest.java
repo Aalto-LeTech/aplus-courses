@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +38,9 @@ public class CourseProjectActionTest {
     }
 
     @Override
-    public int showMainDialog(@NotNull Project project, @NotNull String courseName) {
+    public int showMainDialog(@NotNull Project project,
+                              @NotNull String courseName,
+                              @Nullable String currentlyImportedSettings) {
       return userResponse;
     }
 
@@ -154,26 +157,6 @@ public class CourseProjectActionTest {
     Assert.assertEquals("IdeRestarter#restart should get called", 1, ideRestarter.getCallCount());
     Assert.assertEquals("No error dialogs should be shown", "",
         dialogs.getLastErrorMessage());
-  }
-
-  @Test
-  public void testDoesNotImportIdeSettingsAgain() {
-    settingsImporter.setLastImportedIdeSettings(emptyCourse.getName());
-    CourseProjectAction action = new CourseProjectAction(
-        p -> mainViewModel,
-        (url, proj) -> emptyCourse,
-        false,
-        settingsImporter,
-        () -> { },
-        dialogs);
-
-    action.actionPerformed(anActionEvent);
-
-    Assert.assertEquals("IDE settings shouldn't get imported", 0,
-        settingsImporter.getImportIdeSettingsCallCount());
-    Assert.assertEquals("The IDE should not get restarted", 0, ideRestarter.getCallCount());
-    Assert.assertEquals("Project settings should still get imported", 1,
-        settingsImporter.getImportProjectSettingsCallCount());
   }
 
   @Test

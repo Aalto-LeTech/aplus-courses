@@ -8,19 +8,17 @@
     <properties/>
     <border type="none"/>
     <children>
-      <component id="dff5e" class="javax.swing.JLabel" binding="textLabel" custom-create="true">
+      <component id="dff5e" class="javax.swing.JLabel" binding="infoText" custom-create="true">
         <constraints>
           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
       </component>
-      <component id="2bf72" class="javax.swing.JLabel">
+      <component id="2bf72" class="javax.swing.JLabel" binding="settingsText" custom-create="true">
         <constraints>
           <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
-        <properties>
-          <text value="The A+ Courses plugin will adjust IntelliJ IDEA settings. This helps use IDEA for coursework."/>
-        </properties>
+        <properties/>
       </component>
       <vspacer id="21edc">
         <constraints>
@@ -29,14 +27,11 @@
           </grid>
         </constraints>
       </vspacer>
-      <component id="e4a07" class="javax.swing.JCheckBox" binding="restartCheckbox">
+      <component id="e4a07" class="javax.swing.JCheckBox" binding="restartCheckbox" custom-create="true">
         <constraints>
           <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <hideActionText value="false"/>
-          <selected value="true"/>
-          <text value="Restart IntelliJ IDEA to reload settings."/>
           <visible value="true"/>
         </properties>
       </component>
@@ -47,13 +42,11 @@
           </grid>
         </constraints>
       </vspacer>
-      <component id="ba79d" class="javax.swing.JCheckBox" binding="settingsOptOutCheckbox">
+      <component id="ba79d" class="javax.swing.JCheckBox" binding="settingsOptOutCheckbox" custom-create="true">
         <constraints>
           <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
-        <properties>
-          <text value="&lt;html&gt;&lt;body&gt;Leave IntelliJ settings unchanged.&lt;br&gt;(&lt;b&gt;Not recommended&lt;/b&gt;.Only pick this option if you are sure you know what you are doing.)&lt;/body&gt;&lt;/html&gt;"/>
-        </properties>
+        <properties/>
       </component>
       <component id="5ef97" class="javax.swing.JSeparator">
         <constraints>
