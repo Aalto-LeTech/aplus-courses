@@ -23,7 +23,7 @@ public class IntelliJModuleTest extends HeavyPlatformTestCase implements TestHel
 
     IntelliJModelFactory factory = new IntelliJModelFactory(project);
     Module module = factory.createModule("first", new URL("http://firstURL"), "1");
-    IntelliJModule intelliJModule = (IntelliJModule) module;
+    final IntelliJModule intelliJModule = (IntelliJModule) module;
 
     File tempDirectory = FileUtilRt.createTempDirectory("first", "", true);
     File tempFileOne = FileUtilRt.createTempFile(tempDirectory, "test1", ".json", true);
@@ -46,11 +46,11 @@ public class IntelliJModuleTest extends HeavyPlatformTestCase implements TestHel
 
     IntelliJModelFactory factory = new IntelliJModelFactory(project);
     Module module = factory.createModule("second", new URL("http://secondURL"), "1");
-    IntelliJModule intelliJModule = (IntelliJModule) module;
+    final IntelliJModule intelliJModule = (IntelliJModule) module;
 
     File tempDirectory = FileUtilRt.createTempDirectory("second", "", true);
     File tempFileOne = FileUtilRt.createTempFile(tempDirectory, "test1", ".json", true, true);
-    File tempFileTwo = FileUtilRt.createTempFile(tempDirectory, "test2", ".json", true, true);
+    FileUtilRt.createTempFile(tempDirectory, "test2", ".json", true, true);
 
     long now = Instant.now().toEpochMilli();
     tempFileOne.setLastModified(now);

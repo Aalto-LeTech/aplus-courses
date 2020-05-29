@@ -5,7 +5,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -83,7 +83,7 @@ public class ModelExtensions {
     }
 
     public TestModule(@NotNull String name, @NotNull URL url, @NotNull String versionId) {
-      super(name, url, versionId, LocalDateTime.now());
+      super(name, url, versionId, ZonedDateTime.now());
     }
 
     @NotNull
@@ -122,11 +122,6 @@ public class ModelExtensions {
     @Override
     public boolean hasLocalChanges() {
       return false;
-    }
-
-    @Override
-    public void update() {
-
     }
   }
 

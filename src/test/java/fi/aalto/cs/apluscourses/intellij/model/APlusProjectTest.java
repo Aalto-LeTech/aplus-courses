@@ -12,7 +12,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -99,7 +99,7 @@ public class APlusProjectTest {
     AtomicBoolean failed = new AtomicBoolean(false);
     for (int i = 0; i < numThreads; ++i) {
       IntelliJModule module = new IntelliJModule("name" + i, url, "id" + i,
-          LocalDateTime.now(), aplusProject);
+          ZonedDateTime.now(), aplusProject);
       Runnable runnable = () -> {
         try {
           aplusProject.addCourseFileEntry(temp, module);

@@ -14,8 +14,7 @@ import fi.aalto.cs.apluscourses.model.Library;
 import fi.aalto.cs.apluscourses.model.ModelFactory;
 import fi.aalto.cs.apluscourses.model.Module;
 import java.net.URL;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -94,7 +93,7 @@ public class IntelliJModelFactory implements ModelFactory {
 
   @Override
   public Module createModule(@NotNull String name, @NotNull URL url, @NotNull String versionId) {
-    return new IntelliJModule(name, url, versionId, LocalDateTime.now(ZoneOffset.UTC), project);
+    return new IntelliJModule(name, url, versionId, ZonedDateTime.now(), project);
   }
 
   @Override

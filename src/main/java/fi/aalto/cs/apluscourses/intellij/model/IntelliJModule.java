@@ -20,8 +20,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -41,7 +40,7 @@ class IntelliJModule
   IntelliJModule(@NotNull String name,
       @NotNull URL url,
       @NotNull String versionId,
-      @NotNull LocalDateTime downloadedAt,
+      @NotNull ZonedDateTime downloadedAt,
       @NotNull APlusProject project) {
     super(name, url, versionId, downloadedAt);
     this.project = project;
@@ -138,7 +137,7 @@ class IntelliJModule
   public boolean hasLocalChanges() {
     VirtualFile virtualFile = VfsUtil.findFile(getFullPath(), true);
     final boolean[] hasChanges = {false};
-    long downloadedAt = getDownloadedAt().atZone(ZoneOffset.UTC).toInstant().toEpochMilli();
+    long downloadedAt = getDownloadedAt().toInstant().toEpochMilli();
 
     if (virtualFile != null) {
       VfsUtilCore.visitChildrenRecursively(virtualFile, new VirtualFileVisitor<Object>() {
@@ -156,11 +155,6 @@ class IntelliJModule
       });
     }
     return hasChanges[0];
-  }
-
-  @Override
-  public void update() {
-    // todo: @nikke234 implement me!
   }
 
   private static class Loader {

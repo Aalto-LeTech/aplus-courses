@@ -2,7 +2,7 @@ package fi.aalto.cs.apluscourses.model;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
@@ -15,7 +15,7 @@ public abstract class Module extends Component {
   private final String versionId;
 
   @NotNull
-  private final LocalDateTime downloadedAt;
+  private final ZonedDateTime downloadedAt;
 
   /**
    * Constructs a module with the given name and URL.
@@ -27,7 +27,7 @@ public abstract class Module extends Component {
   public Module(@NotNull String name,
       @NotNull URL url,
       @NotNull String versionId,
-      @NotNull LocalDateTime downloadedAt) {
+      @NotNull ZonedDateTime downloadedAt) {
     super(name);
     this.url = url;
     this.versionId = versionId;
@@ -83,11 +83,9 @@ public abstract class Module extends Component {
   }
 
   @NotNull
-  public LocalDateTime getDownloadedAt() {
+  public ZonedDateTime getDownloadedAt() {
     return downloadedAt;
   }
 
   public abstract boolean hasLocalChanges();
-
-  public abstract void update();
 }

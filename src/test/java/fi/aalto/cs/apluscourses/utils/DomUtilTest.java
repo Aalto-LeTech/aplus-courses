@@ -4,12 +4,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 import com.intellij.openapi.util.io.FileUtilRt;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.w3c.dom.Document;

@@ -4,6 +4,7 @@ import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.model.APlusProject;
 import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory;
+import fi.aalto.cs.apluscourses.intellij.notifications.NewModulesVersionsNotification;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
@@ -31,14 +32,15 @@ public class MainViewModelUpdater {
   /**
    * Construct a {@link MainViewModelUpdater} with the given {@link MainViewModelProvider}, project,
    * and update interval.
+   *
    * @param mainViewModelProvider The {@link MainViewModelProvider} from which the main view model
    *                              to be updated is gotten.
    * @param project               The project to which this updater is tied.
    * @param updateInterval        The interval at which the updater performs the update.
    */
   public MainViewModelUpdater(@NotNull MainViewModelProvider mainViewModelProvider,
-                              @NotNull Project project,
-                              @NotNull long updateInterval) {
+      @NotNull Project project,
+      @NotNull long updateInterval) {
     this.mainViewModelProvider = mainViewModelProvider;
     this.aplusProject = new APlusProject(project);
     this.updateInterval = updateInterval;
@@ -46,6 +48,7 @@ public class MainViewModelUpdater {
 
   /**
    * Construct a {@link MainViewModelUpdater} with the given project.
+   *
    * @param project The project to which thsi updater is tied.
    */
   public MainViewModelUpdater(@NotNull Project project) {
@@ -124,8 +127,9 @@ public class MainViewModelUpdater {
       if (!projectModules.contains(module.getName())) {
         continue;
       }
-      if (module.hasLocalChanges()) {
-        //  if (!module.getVersionId().equals(localModuleIds.get(module.getName()))) {
+      if (!module.getVersionId().equals(localModuleIds.get(module.getName())) && module
+          // todo: a bit unsure here
+          .hasLocalChanges()) {
         updatableModules.add(module);
       }
     }
@@ -143,6 +147,9 @@ public class MainViewModelUpdater {
       if (course != null) {
         // TODO: what do we actually do with the list of updatable modules? Notify the user?
         List<Module> updatableModules = getUpdatableModules(course);
+        if (!updatableModules.isEmpty()) {
+          new NewModulesVersionsNotification(updatableModules);
+        }
         // The project may have closed while we parsed the course configuration file and computed
         // the updatable modules, in which case we throw the result away and stop this updater.
         ReadAction.run(this::interruptIfProjectClosed);
