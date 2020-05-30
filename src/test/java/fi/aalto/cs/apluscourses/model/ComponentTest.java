@@ -49,6 +49,31 @@ public class ComponentTest {
   }
 
   @Test
+  public void testIsActive() {
+    List<Integer> inactiveStates = Arrays.asList(
+        Component.NOT_INSTALLED, Component.FETCHED, Component.LOADED,
+        Component.ERROR, Component.UNRESOLVED);
+    List<Integer> activeStates = Arrays.asList(Component.FETCHING, Component.LOADING);
+
+    Component component = new ModelExtensions.TestComponent();
+
+    for (Integer activeState : activeStates) {
+      component.stateMonitor.set(activeState);
+      assertTrue("Component should be active", component.isActive());
+    }
+
+    component = new ModelExtensions.TestComponent();
+
+    for (Integer inactiveState : inactiveStates) {
+      component.stateMonitor.set(inactiveState);
+      assertFalse("Component should not be active", component.isActive());
+    }
+
+    component.dependencyStateMonitor.set(Component.DEP_WAITING);
+    assertTrue("Component should be active", component.isActive());
+  }
+
+  @Test
   public void testHasErrorReturnsTrue() {
     Component component = new ModelExtensions.TestComponent();
     component.stateMonitor.set(Component.ERROR);

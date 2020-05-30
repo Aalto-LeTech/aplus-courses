@@ -9,7 +9,6 @@ import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationFileException;
 import fi.aalto.cs.apluscourses.model.Module;
-import fi.aalto.cs.apluscourses.ui.Binding;
 
 import java.io.IOException;
 import java.net.URL;
@@ -74,11 +73,11 @@ public class MainViewModelUpdater {
   }
 
   @Nullable
-  Course getCourse(@NotNull URL courseUrl) {
-    // We don't need to be inside the read action when we parse the course configuration file.
-    // This way we avoid long read actions, which block the UI thread from making write
-    // actions and lead to UI freezes. We just have to remember to later check again that the
-    // project is still actually open.
+  Course getCourse(@Nullable URL courseUrl) {
+    if (courseUrl == null) {
+      return null;
+    }
+
     try {
       return Course.fromUrl(courseUrl, new IntelliJModelFactory(aplusProject.getProject()));
     } catch (IOException | MalformedCourseConfigurationFileException e) {
@@ -87,9 +86,12 @@ public class MainViewModelUpdater {
   }
 
   @NotNull
-  Set<String> getProjectModules() throws InterruptedException {
+  Set<String> getProjectModules() {
     com.intellij.openapi.module.Module[] projectModules = ReadAction.compute(() -> {
-      interruptIfProjectClosed();
+      Project project = aplusProject.getProject();
+      if (project.isDisposed() || !project.isOpen()) {
+        return new com.intellij.openapi.module.Module[]{};
+      }
       return aplusProject.getModuleManager().getModules();
     });
     return Arrays.stream(projectModules)
@@ -98,8 +100,11 @@ public class MainViewModelUpdater {
   }
 
   @NotNull
-  List<Module> getUpdatableModules(@NotNull Course course) throws InterruptedException {
+  List<Module> getUpdatableModules(@Nullable Course course) {
     List<Module> updatableModules = new ArrayList<>();
+    if (course == null) {
+      return updatableModules;
+    }
 
     // Modules listed in the course file may have been removed from the project, so we have to check
     // that the modules are still in the project.
@@ -131,7 +136,11 @@ public class MainViewModelUpdater {
     return updatableModules;
   }
 
-  private void updateMainViewModel(@NotNull Course newCourse) {
+  private void updateMainViewModel(@Nullable Course newCourse) {
+    if (newCourse == null) {
+      return;
+    }
+
     CourseViewModel courseViewModel = mainViewModel.courseViewModel.get();
     if (courseViewModel == null) {
       mainViewModel.courseViewModel.set(new CourseViewModel(newCourse));
@@ -148,12 +157,8 @@ public class MainViewModelUpdater {
      */
     boolean hasActiveComponents = current.getComponents()
         .stream()
-        .anyMatch(component -> {
-          int state = component.stateMonitor.get();
-          int depState = component.dependencyStateMonitor.get();
-          return state == Component.FETCHING || state == Component.LOADING
-              || depState == Component.DEP_WAITING;
-        });
+        .anyMatch(Component::isActive);
+
     if (!hasActiveComponents) {
       mainViewModel.courseViewModel.set(new CourseViewModel(newCourse));
     }
@@ -172,15 +177,9 @@ public class MainViewModelUpdater {
         // If parsing the course configuration file fails, then we just silently go back to sleep.
         // For an example, if the internet connection was down, then we may succeed when we try
         // again after sleeping.
-        if (course != null) {
-          // TODO: what do we actually do with the list of updatable modules? Notify the user?
-          @Binding
-          List<Module> updatableModules = getUpdatableModules(course);
-          // The project may have closed while we parsed the course configuration file and computed
-          // the updatable modules, in which case we throw the result away and stop this updater.
-          ReadAction.run(this::interruptIfProjectClosed);
-          updateMainViewModel(course);
-        }
+        // TODO: what do we actually do with the list of updatable modules? Notify the user?
+        List<Module> updatableModules = getUpdatableModules(course);
+        updateMainViewModel(course);
         Thread.sleep(updateInterval); // Good night :)
       }
     } catch (InterruptedException e) {
