@@ -50,24 +50,16 @@ public class MainViewModelUpdater {
     this.thread = new Thread(this::run);
   }
 
-  private void interruptIfProjectClosed() throws InterruptedException {
-    if (aplusProject.getProject().isDisposed() || !aplusProject.getProject().isOpen()) {
-      throw new InterruptedException();
-    }
-  }
-
   @NotNull
-  URL getCourseUrl() throws InterruptedException {
+  URL getCourseUrl() {
     return ReadAction.compute(() -> {
-      interruptIfProjectClosed();
       try {
-        URL url = aplusProject.getCourseFileUrl();
-        if (url == null) {
-          throw new InterruptedException();
+        if (aplusProject.getProject().isDisposed() || !aplusProject.getProject().isOpen()) {
+          return null;
         }
-        return url;
+        return aplusProject.getCourseFileUrl();
       } catch (IOException e) {
-        throw new InterruptedException();
+        return null;
       }
     });
   }
@@ -79,8 +71,9 @@ public class MainViewModelUpdater {
     }
 
     try {
-      return Course.fromUrl(courseUrl, new IntelliJModelFactory(aplusProject.getProject()));
-    } catch (IOException | MalformedCourseConfigurationFileException e) {
+      return ReadAction.compute(
+          () -> Course.fromUrl(courseUrl, new IntelliJModelFactory(aplusProject.getProject())));
+    } catch (Exception e) {
       return null;
     }
   }
