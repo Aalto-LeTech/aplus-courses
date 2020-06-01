@@ -13,10 +13,8 @@ import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.intellij.utils.ExtendedDataContext;
 import fi.aalto.cs.apluscourses.model.Course;
-import fi.aalto.cs.apluscourses.model.MainViewModelUpdater;
 import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationFileException;
 import fi.aalto.cs.apluscourses.model.UnexpectedResponseException;
-import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import java.io.IOException;
 import java.net.URL;
 import org.jetbrains.annotations.NotNull;
@@ -24,7 +22,6 @@ import org.jetbrains.annotations.Nullable;
 import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 public class InitializationActivity implements Background {
 
@@ -50,9 +47,8 @@ public class InitializationActivity implements Background {
       return;
     }
 
-    Course course;
     try {
-      course = Course.fromUrl(courseConfigurationFileUrl, new IntelliJModelFactory(project));
+      Course.fromUrl(courseConfigurationFileUrl, new IntelliJModelFactory(project));
     } catch (UnexpectedResponseException | MalformedCourseConfigurationFileException e) {
       logger.error("Error occurred while trying to parse a course configuration file", e);
       notifier.notify(new CourseConfigurationError(e), null);
@@ -62,10 +58,7 @@ public class InitializationActivity implements Background {
       notifier.notify(new ClientIoError(e), null);
       return;
     }
-    PluginSettings.getInstance()
-        .getMainViewModel(project).courseViewModel.set(new CourseViewModel(course));
-    MainViewModelUpdater mainViewModelUpdater = new MainViewModelUpdater(project);
-    new Thread(mainViewModelUpdater::run).start();
+    PluginSettings.getInstance().createUpdatingMainViewModel(project);
     ActionUtil.launch(RequiredPluginsCheckerAction.ACTION_ID,
         new ExtendedDataContext().withProject(project));
   }

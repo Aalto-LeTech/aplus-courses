@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.model.FileHeader;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -65,7 +66,7 @@ public class SettingsImporterImpl implements SettingsImporter {
   /**
    * Returns the name of the course for which the latest IDE settings import has been done.
    */
-  @NotNull
+  @Nullable
   @Override
   public String lastImportedIdeSettings() {
     return PluginSettings.getInstance().getImportedIdeSettingsName();
