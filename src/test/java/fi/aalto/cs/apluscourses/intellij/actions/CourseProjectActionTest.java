@@ -8,8 +8,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.model.SettingsImporter;
 import fi.aalto.cs.apluscourses.model.Course;
-import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
-import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogs;
 import java.io.IOException;
 import java.util.Collections;
@@ -62,7 +60,6 @@ public class CourseProjectActionTest {
   }
 
   private AnActionEvent anActionEvent;
-  private MainViewModel mainViewModel;
   private Course emptyCourse;
   private DummySettingsImporter settingsImporter;
   private DummyIdeRestarter ideRestarter;
@@ -124,7 +121,6 @@ public class CourseProjectActionTest {
     Project project = mock(Project.class);
     anActionEvent = mock(AnActionEvent.class);
     doReturn(project).when(anActionEvent).getProject();
-    mainViewModel = new MainViewModel();
     emptyCourse = new Course("EMPTY", Collections.emptyList(), Collections.emptyList(),
         Collections.emptyMap(), Collections.emptyMap());
 
@@ -139,7 +135,6 @@ public class CourseProjectActionTest {
   public void testCreateCourseProject() {
     AtomicInteger courseFactoryCallCount = new AtomicInteger(0);
     CourseProjectAction action = new CourseProjectAction(
-        p -> mainViewModel,
         (url, proj) -> {
           courseFactoryCallCount.getAndIncrement();
           return emptyCourse;
@@ -151,13 +146,8 @@ public class CourseProjectActionTest {
 
     action.actionPerformed(anActionEvent);
 
-    CourseViewModel courseViewModel = mainViewModel.courseViewModel.get();
     Assert.assertEquals("CourseFactory#fromUrl should get called", 1,
         courseFactoryCallCount.get());
-    Assert.assertNotNull("The course of the provided main view model should get initialized",
-        courseViewModel);
-    Assert.assertEquals("The course should have the correct name", emptyCourse.getName(),
-        courseViewModel.getModel().getName());
 
     Assert.assertEquals("The project settings should get imported", 1,
         settingsImporter.getImportProjectSettingsCallCount());
@@ -175,7 +165,6 @@ public class CourseProjectActionTest {
   public void testDoesNotImportIdeSettingsAgain() {
     settingsImporter.setLastImportedIdeSettings(emptyCourse.getName());
     CourseProjectAction action = new CourseProjectAction(
-        p -> mainViewModel,
         (url, proj) -> emptyCourse,
         false,
         settingsImporter,
@@ -196,7 +185,6 @@ public class CourseProjectActionTest {
   @Test
   public void testNotifiesUserOfCourseInitializationError() {
     CourseProjectAction action = new CourseProjectAction(
-        p -> mainViewModel,
         (url, proj) -> {
           throw new IOException();
         },
@@ -213,8 +201,6 @@ public class CourseProjectActionTest {
         settingsImporter.getImportProjectSettingsCallCount());
     Assert.assertEquals("IDE settings are not imported after the error", 0,
         settingsImporter.getImportIdeSettingsCallCount());
-    Assert.assertNull("The course of the provided main view model isn't initialized",
-        mainViewModel.courseViewModel.get());
   }
 
   @Test
@@ -229,7 +215,6 @@ public class CourseProjectActionTest {
     };
 
     CourseProjectAction action = new CourseProjectAction(
-        p -> mainViewModel,
         (url, proj) -> emptyCourse,
         false,
         failingSettingsImporter,
@@ -248,7 +233,6 @@ public class CourseProjectActionTest {
   public void testDoesNotImportIdeSettingsIfOptOut() {
     settingsImporter.setLastImportedIdeSettings(emptyCourse.getName());
     CourseProjectAction action = new CourseProjectAction(
-        p -> mainViewModel,
         (url, proj) -> emptyCourse,
         false,
         settingsImporter,
