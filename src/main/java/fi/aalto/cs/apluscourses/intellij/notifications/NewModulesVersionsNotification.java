@@ -21,7 +21,7 @@ public class NewModulesVersionsNotification extends Notification {
    */
   public NewModulesVersionsNotification(@NotNull List<Module> modules) {
     super("A+",
-        "Updates discovered for A+ Course Modules",
+        "Updates available for A+ Course Modules",
         "There are newer version(s) for the following A+ Course Modules: "
             + getModuleNameStrings(modules) + ".",
         NotificationType.WARNING);

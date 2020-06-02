@@ -69,8 +69,11 @@ public class MainViewModelUpdaterTest extends HeavyPlatformTestCase implements T
 
   @Test
   public void testAddSameModuleTwiceFails() throws MalformedURLException {
+    //  given, when, then, whatever
     Course course = getDummyCourse();
-    /** check {@link MainViewModelUpdaterTest#getDummyCourse()} method. */
+    /**
+     *  Check {@link MainViewModelUpdaterTest#getDummyCourse()} method.
+     **/
     fi.aalto.cs.apluscourses.model.Module module2 = new ModelExtensions.TestModule("Module2");
     assertThrows(UnsupportedOperationException.class, () -> course.getModules().add(module2));
   }
@@ -98,8 +101,6 @@ public class MainViewModelUpdaterTest extends HeavyPlatformTestCase implements T
   public void testGetUpdatableModulesWithGetCourseFileModuleIdsThrowingReturnsEmpty()
       throws IOException {
     //  given
-    Course course = getDummyCourse();
-
     Project project = getProject();
     createAndAddModule(project, "Module1", "UID#1");
     createAndAddModule(project, "Module2", "UID#1");
@@ -112,6 +113,8 @@ public class MainViewModelUpdaterTest extends HeavyPlatformTestCase implements T
     APlusProject mockAplusProject = mock(APlusProject.class);
     when(spyMainViewModelUpdater.getAplusProject()).thenReturn(mockAplusProject);
     when(mockAplusProject.getCourseFileModuleIds()).thenThrow(new IOException());
+
+    Course course = getDummyCourse();
 
     //  when
     List<fi.aalto.cs.apluscourses.model.Module> updatableModules = spyMainViewModelUpdater

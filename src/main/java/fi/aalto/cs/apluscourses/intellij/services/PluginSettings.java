@@ -43,8 +43,8 @@ public class PluginSettings implements MainViewModelProvider {
 
   //  15 minutes in milliseconds
   public static final long MAIN_VIEW_MODEL_UPDATE_INTERVAL = 15L * 60L * 1000L;
-  //  1 minute in milliseconds
-  public static final long REASONABLE_DELAY_FOR_MODULE_INSTALLATION = 60L * 1000;
+  //  15 seconds in milliseconds
+  public static final long REASONABLE_DELAY_FOR_MODULE_INSTALLATION = 15L * 1000;
 
   private final PropertiesComponent propertiesManager = PropertiesComponent.getInstance();
 

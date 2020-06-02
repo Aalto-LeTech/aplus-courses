@@ -22,8 +22,8 @@ public class NewModulesVersionsNotificationTest {
 
     // then
     assertEquals("Group ID should be 'A+'.", "A+", notification.getGroupId());
-    assertEquals("Title should be 'Updates discovered for A+ Course Modules'.",
-        "Updates discovered for A+ Course Modules", notification.getTitle());
+    assertEquals("Title should be 'Updates available for A+ Course Modules'.",
+        "Updates available for A+ Course Modules", notification.getTitle());
     assertEquals("Content should contain the names of the Modules to update.",
         "There are newer version(s) for the following A+ Course Modules: "
             + "firstModule, secondModule.",

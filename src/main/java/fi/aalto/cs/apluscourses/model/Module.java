@@ -44,7 +44,6 @@ public abstract class Module extends Component {
    *   "name": "My Module",
    *   "url": "https://example.com",
    *   "id": "abc",
-   *   "downloadedAt": "2020-05-29T11:20:42.513813+03:00[Europe/Helsinki]"
    * }
    * </pre>
    *
