@@ -75,7 +75,7 @@ public class MainViewModelUpdater {
   }
 
   @NotNull
-  Set<String> getProjectModules() {
+  Set<String> getProjectModuleNames() {
     com.intellij.openapi.module.Module[] projectModules = ReadAction.compute(() -> {
       Project project = aplusProject.getProject();
       if (project.isDisposed() || !project.isOpen()) {
@@ -97,7 +97,7 @@ public class MainViewModelUpdater {
 
     // Modules listed in the course file may have been removed from the project, so we have to check
     // that the modules are still in the project.
-    Set<String> projectModules = getProjectModules();
+    Set<String> projectModuleNames = getProjectModuleNames();
 
     // Minor concurrency issue: we make the list of updatable modules outside of a read action, so
     // (however unlikely) a module may be removed from the project in the meantime. This shouldn't
@@ -114,7 +114,7 @@ public class MainViewModelUpdater {
     for (Module module : course.getModules()) {
       // An updatable module must be in the project and it's ID in the local
       // course file must be different from the ID in the course configuration file.
-      if (!projectModules.contains(module.getName())) {
+      if (!projectModuleNames.contains(module.getName())) {
         continue;
       }
       if (!module.getVersionId().equals(localModuleIds.get(module.getName()))
