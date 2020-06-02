@@ -84,7 +84,7 @@ public class MainViewModelUpdater {
       return aplusProject.getModuleManager().getModules();
     });
     return Arrays.stream(projectModules)
-        .map(module -> module.getName())
+        .map(com.intellij.openapi.module.Module::getName)
         .collect(Collectors.toSet());
   }
 
@@ -124,7 +124,7 @@ public class MainViewModelUpdater {
       }
     }
 
-    return updatableModules.stream().distinct().collect(Collectors.toList());
+    return updatableModules;
   }
 
   private void updateMainViewModel(@Nullable Course newCourse) {
@@ -191,5 +191,10 @@ public class MainViewModelUpdater {
    */
   public void interrupt() {
     thread.interrupt();
+  }
+
+  @NotNull
+  public APlusProject getAplusProject() {
+    return aplusProject;
   }
 }
