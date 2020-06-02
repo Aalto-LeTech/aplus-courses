@@ -1,7 +1,11 @@
 package fi.aalto.cs.apluscourses.model;
 
+import fi.aalto.cs.apluscourses.utils.CoursesClient;
 import fi.aalto.cs.apluscourses.utils.ResourceException;
 import fi.aalto.cs.apluscourses.utils.Resources;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.MalformedURLException;
@@ -65,6 +69,7 @@ public class Course implements ComponentSource {
         .collect(Collectors.toMap(Component::getName, Function.identity()));
   }
 
+  @NotNull
   public static Course fromResource(@NotNull String resourceName, @NotNull ModelFactory factory)
       throws ResourceException, MalformedCourseConfigurationFileException {
     Reader reader = new InputStreamReader(Resources.DEFAULT.getStream(resourceName));
@@ -107,6 +112,23 @@ public class Course implements ComponentSource {
     Map<String, URL> resourceUrls = getCourseResourceUrls(jsonObject, sourcePath);
     return factory.createCourse(courseName, courseModules, Collections.emptyList(),
         requiredPlugins, resourceUrls);
+  }
+
+  /**
+   * Creates a course instance from the course configuration file at the given URL.
+   *
+   * @param url The URL of the course configuration file.
+   * @return A course instance containing the information parsed from the course configuration file.
+   * @throws IOException                               If an IO error occurs (network connection
+   *                                                   issues for an example).
+   * @throws MalformedCourseConfigurationFileException If the course configuration file is malformed
+   *                                                   in any way.
+   */
+  @NotNull
+  public static Course fromUrl(@NotNull URL url, @NotNull ModelFactory modelFactory)
+      throws IOException, MalformedCourseConfigurationFileException {
+    InputStream inputStream = CoursesClient.fetchJson(url);
+    return Course.fromConfigurationData(new InputStreamReader(inputStream), modelFactory);
   }
 
   /**

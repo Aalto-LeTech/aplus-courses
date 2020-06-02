@@ -17,6 +17,8 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -36,6 +38,11 @@ public class APlusProject {
   }
 
   @NotNull
+  public Project getProject() {
+    return project;
+  }
+
+  @NotNull
   public Path getBasePath() {
     return Paths.get(Objects.requireNonNull(project.getBasePath()));
   }
@@ -44,6 +51,8 @@ public class APlusProject {
   public Path getCourseFilePath() {
     return getBasePath().resolve(Paths.get(Project.DIRECTORY_STORE_FOLDER, "a-plus-project.json"));
   }
+
+  private static final Object courseFileLock = new Object();
 
   /**
    * Creates a local course file containing the given URL. If a course file already exists (even if
@@ -79,13 +88,15 @@ public class APlusProject {
       return null;
     }
 
-    // TODO: the course file is written as UTF-8, ensure that this always works
-    JSONTokener tokenizer = new JSONTokener(new FileInputStream(courseFile));
-    JSONObject jsonObject = new JSONObject(tokenizer);
-    return new URL(jsonObject.getString("url"));
+    synchronized (courseFileLock) {
+      // TODO: the course file is written as UTF-8, ensure that this always works
+      JSONTokener tokenizer = new JSONTokener(new FileInputStream(courseFile));
+      JSONObject jsonObject = new JSONObject(tokenizer);
+      return new URL(jsonObject.getString("url"));
+    }
   }
 
-  private static final Object courseFileLock = new Object();
+  private static final String COURSE_FILE_MODULES_KEY = "modules";
 
   /**
    * Adds an entry for the given module to the given course file. This method should only be used
@@ -104,14 +115,14 @@ public class APlusProject {
       JSONObject jsonObject = new JSONObject(tokenizer);
 
       // It's possible that the "modules" key doesn't exist yet
-      JSONObject modulesObject = jsonObject.optJSONObject("modules");
+      JSONObject modulesObject = jsonObject.optJSONObject(COURSE_FILE_MODULES_KEY);
       if (modulesObject == null) {
         modulesObject = new JSONObject();
       }
 
       JSONObject entry = new JSONObject().put("id", module.getVersionId());
       modulesObject.put(module.getName(), entry);
-      jsonObject.put("modules", modulesObject);
+      jsonObject.put(COURSE_FILE_MODULES_KEY, modulesObject);
       FileUtils.writeStringToFile(courseFile, jsonObject.toString(), StandardCharsets.UTF_8);
     }
   }
@@ -125,6 +136,37 @@ public class APlusProject {
    */
   public void addCourseFileEntry(@NotNull Module module) throws IOException {
     addCourseFileEntry(getCourseFilePath().toFile(), module);
+  }
+
+  /**
+   * Parses the course file and returns a mapping of module names to their version IDs in the course
+   * file. It's important to remember that a module entry in the course file does not necessarily
+   * mean that the module is still in the project.
+   * @return A map of module names to their local version IDs.
+   * @throws IOException If an IO error occurs (for an example the course file doesn't exist).
+   */
+  @NotNull
+  public Map<String, String> getCourseFileModuleIds() throws IOException {
+    synchronized (courseFileLock) {
+      File courseFile = getCourseFilePath().toFile();
+      Map<String, String> modules = new HashMap<>();
+
+      JSONTokener tokenizer = new JSONTokener(new FileInputStream(courseFile));
+      JSONObject jsonObject = new JSONObject(tokenizer);
+
+      // It's possible that the "modules" key doesn't exist
+      JSONObject modulesObject = jsonObject.optJSONObject(COURSE_FILE_MODULES_KEY);
+      if (modulesObject == null) {
+        return modules;
+      }
+
+      Iterable<String> moduleNames = modulesObject::keys;
+      for (String moduleName : moduleNames) {
+        String moduleId = modulesObject.getJSONObject(moduleName).getString("id");
+        modules.put(moduleName, moduleId);
+      }
+      return modules;
+    }
   }
 
   @NotNull

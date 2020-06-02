@@ -9,7 +9,6 @@ import fi.aalto.cs.apluscourses.intellij.model.APlusProject;
 import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory;
 import fi.aalto.cs.apluscourses.intellij.model.SettingsImporter;
 import fi.aalto.cs.apluscourses.intellij.model.SettingsImporterImpl;
-import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationFileException;
@@ -17,10 +16,7 @@ import fi.aalto.cs.apluscourses.presentation.CourseProjectViewModel;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogsImpl;
-import fi.aalto.cs.apluscourses.utils.CoursesClient;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import org.jetbrains.annotations.NotNull;
@@ -31,9 +27,6 @@ import org.slf4j.LoggerFactory;
 public class CourseProjectAction extends AnAction {
 
   private static final Logger logger = LoggerFactory.getLogger(CourseProjectAction.class);
-
-  @NotNull
-  private MainViewModelProvider mainViewModelProvider;
 
   @NotNull
   private CourseFactory courseFactory;
@@ -52,13 +45,11 @@ public class CourseProjectAction extends AnAction {
   /**
    * Construct a course project action with the given main view model provider and dialogs.
    */
-  public CourseProjectAction(@NotNull MainViewModelProvider mainViewModelProvider,
-                             @NotNull CourseFactory courseFactory,
+  public CourseProjectAction(@NotNull CourseFactory courseFactory,
                              boolean createCourseFile,
                              @NotNull SettingsImporter settingsImporter,
                              @NotNull IdeRestarter ideRestarter,
                              @NotNull CourseProjectActionDialogs dialogs) {
-    this.mainViewModelProvider = mainViewModelProvider;
     this.courseFactory = courseFactory;
     this.createCourseFile = createCourseFile;
     this.settingsImporter = settingsImporter;
@@ -71,12 +62,7 @@ public class CourseProjectAction extends AnAction {
    */
   public CourseProjectAction() {
     this(
-        PluginSettings.getInstance(),
-        (url, project) -> {
-          InputStream inputStream = CoursesClient.fetchJson(url);
-          return Course.fromConfigurationData(new InputStreamReader(inputStream),
-              url.toString(), new IntelliJModelFactory(project));
-        },
+        (url, project) -> Course.fromUrl(url, new IntelliJModelFactory(project)),
         true,
         new SettingsImporterImpl(),
         () -> ((ApplicationEx) ApplicationManager.getApplication()).restart(true),
@@ -104,11 +90,6 @@ public class CourseProjectAction extends AnAction {
       return;
     }
 
-    mainViewModelProvider
-        .getMainViewModel(project)
-        .courseViewModel
-        .set(new CourseViewModel(course));
-
     if (!tryCreateCourseFile(project, selectedCourseUrl)) {
       return;
     }
@@ -120,6 +101,11 @@ public class CourseProjectAction extends AnAction {
     if (courseProjectViewModel.userWantsSettings() && tryImportIdeSettings(course)
         && courseProjectViewModel.userWantsRestart()) {
       ideRestarter.restart();
+    }
+
+    if (createCourseFile) {
+      // The course file not created in testing.
+      PluginSettings.getInstance().createUpdatingMainViewModel(project);
     }
   }
 

@@ -53,7 +53,7 @@ public class CourseProjectView extends DialogWrapper {
     return new Action[]{getOKAction(), getCancelAction()};
   }
 
-  public void updateCheckboxes() {
+  private void updateCheckboxes() {
     restartCheckbox.setSelected(courseProjectViewModel.userWantsRestart());
     restartCheckbox.setEnabled(courseProjectViewModel.isRestartAvailable());
     settingsOptOutCheckbox.setSelected(!courseProjectViewModel.userWantsSettings());

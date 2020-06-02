@@ -11,7 +11,7 @@ public abstract class Module extends Component {
   private final URL url;
 
   @NotNull
-  private final String versionId;
+  private String versionId;
 
   /**
    * Constructs a module with the given name and URL.
@@ -68,5 +68,9 @@ public abstract class Module extends Component {
   @NotNull
   public String getVersionId() {
     return versionId;
+  }
+
+  protected void setVersionId(@NotNull String newVersionId) {
+    this.versionId = newVersionId;
   }
 }
