@@ -8,6 +8,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.model.SettingsImporter;
 import fi.aalto.cs.apluscourses.model.Course;
+import fi.aalto.cs.apluscourses.presentation.CourseProjectViewModel;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogs;
@@ -24,12 +25,16 @@ public class CourseProjectActionTest {
 
   private class TestDialogs implements CourseProjectActionDialogs {
 
-    private int userResponse;
+    private boolean doCancel;
+    private boolean doRestart;
+    private boolean doOptOut;
 
     private String lastErrorMessage = "";
 
-    public TestDialogs(int userResponse) {
-      this.userResponse = userResponse;
+    public TestDialogs(boolean doCancel, boolean doRestart, boolean doOptOut) {
+      this.doCancel = doCancel;
+      this.doRestart = doRestart;
+      this.doOptOut = doOptOut;
     }
 
     @NotNull
@@ -38,10 +43,13 @@ public class CourseProjectActionTest {
     }
 
     @Override
-    public int showMainDialog(@NotNull Project project,
-                              @NotNull String courseName,
-                              @Nullable String currentlyImportedSettings) {
-      return userResponse;
+    public void showMainDialog(@NotNull Project project,
+                               @NotNull CourseProjectViewModel courseProjectViewModel) {
+      courseProjectViewModel.setRestart(doRestart);
+      courseProjectViewModel.setSettingsOptOut(doOptOut);
+      if (doCancel) {
+        courseProjectViewModel.cancel();
+      }
     }
 
     @Override
@@ -61,7 +69,6 @@ public class CourseProjectActionTest {
   class DummySettingsImporter implements SettingsImporter {
     private int importIdeSettingsCallCount = 0;
     private int importProjectSettingsCallCount = 0;
-    private String lastIdeSettingsCourseName = "";
 
     public int getImportIdeSettingsCallCount() {
       return importIdeSettingsCallCount;
@@ -78,12 +85,8 @@ public class CourseProjectActionTest {
 
     @NotNull
     @Override
-    public String lastImportedIdeSettings() {
-      return lastIdeSettingsCourseName;
-    }
-
-    public void setLastImportedIdeSettings(@NotNull String courseName) {
-      lastIdeSettingsCourseName = courseName;
+    public String currentlyImportedIdeSettings() {
+      return "";
     }
 
     @Override
@@ -122,7 +125,7 @@ public class CourseProjectActionTest {
 
     ideRestarter = new DummyIdeRestarter();
 
-    dialogs = new TestDialogs(CourseProjectActionDialogs.OK_WITH_RESTART);
+    dialogs = new TestDialogs(false, true, false);
   }
 
   @Test
@@ -218,7 +221,7 @@ public class CourseProjectActionTest {
         false,
         settingsImporter,
         ideRestarter,
-        new TestDialogs(CourseProjectActionDialogs.OK_WITH_OPT_OUT));
+        new TestDialogs(false, true, true));
 
     action.actionPerformed(anActionEvent);
 
@@ -236,7 +239,7 @@ public class CourseProjectActionTest {
         true,
         settingsImporter,
         ideRestarter,
-        new TestDialogs(CourseProjectActionDialogs.CANCEL));
+        new TestDialogs(true, true, true));
 
     action.actionPerformed(anActionEvent);
 
@@ -257,7 +260,7 @@ public class CourseProjectActionTest {
         false,
         settingsImporter,
         ideRestarter,
-        new TestDialogs(CourseProjectActionDialogs.OK_WITHOUT_RESTART));
+        new TestDialogs(false, false, false));
 
     action.actionPerformed(anActionEvent);
 

@@ -13,6 +13,7 @@ import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationFileException;
+import fi.aalto.cs.apluscourses.presentation.CourseProjectViewModel;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogsImpl;
@@ -96,11 +97,11 @@ public class CourseProjectAction extends AnAction {
       return;
     }
 
-    int userResponse = dialogs.showMainDialog(project, course.getName(),
-        settingsImporter.lastImportedIdeSettings());
-    if (userResponse == CourseProjectActionDialogs.CANCEL) {
+    CourseProjectViewModel courseProjectViewModel
+        = new CourseProjectViewModel(course, settingsImporter.currentlyImportedIdeSettings());
+    dialogs.showMainDialog(project, courseProjectViewModel);
+    if (courseProjectViewModel.userCancels()) {
       return;
-
     }
 
     mainViewModelProvider
@@ -116,9 +117,8 @@ public class CourseProjectAction extends AnAction {
       return;
     }
 
-    boolean userWantsSettings = (userResponse != CourseProjectActionDialogs.OK_WITH_OPT_OUT);
-    boolean userWantsToRestart = (userResponse == CourseProjectActionDialogs.OK_WITH_RESTART);
-    if (userWantsSettings && tryImportIdeSettings(course) && userWantsToRestart) {
+    if (courseProjectViewModel.userWantsSettings() && tryImportIdeSettings(course)
+        && courseProjectViewModel.userWantsRestart()) {
       ideRestarter.restart();
     }
   }

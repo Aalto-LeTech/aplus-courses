@@ -2,18 +2,15 @@ package fi.aalto.cs.apluscourses.ui.courseproject;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
+import fi.aalto.cs.apluscourses.presentation.CourseProjectViewModel;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class CourseProjectActionDialogsImpl implements CourseProjectActionDialogs {
   @Override
-  public int showMainDialog(@NotNull Project project,
-                            @NotNull String courseName,
-                            @Nullable String currentlyImportedSettings) {
-    CourseProjectDialog dialog
-        = new CourseProjectDialog(project, courseName, currentlyImportedSettings);
+  public void showMainDialog(@NotNull Project project,
+                            @NotNull CourseProjectViewModel courseProjectViewModel) {
+    CourseProjectView dialog = new CourseProjectView(project, courseProjectViewModel);
     dialog.show();
-    return dialog.getExitCode();
   }
 
   @Override
