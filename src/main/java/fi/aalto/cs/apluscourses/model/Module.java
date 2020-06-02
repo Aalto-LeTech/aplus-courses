@@ -12,7 +12,7 @@ public abstract class Module extends Component {
   private final URL url;
 
   @NotNull
-  private final String versionId;
+  private String versionId;
 
   @NotNull
   private final ZonedDateTime downloadedAt;
@@ -80,6 +80,10 @@ public abstract class Module extends Component {
   @NotNull
   public String getVersionId() {
     return versionId;
+  }
+
+  protected void setVersionId(@NotNull String newVersionId) {
+    this.versionId = newVersionId;
   }
 
   @NotNull

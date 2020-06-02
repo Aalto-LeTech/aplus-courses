@@ -93,6 +93,8 @@ public class APlusProject {
     }
   }
 
+  private static final String COURSE_FILE_MODULES_KEY = "modules";
+
   /**
    * Adds an entry for the given module to the given course file. This method should only be used
    * if when the default course file shouldn't be used (e.g. in testing). Prefer to use {@link
@@ -110,7 +112,7 @@ public class APlusProject {
       JSONObject jsonObject = new JSONObject(tokenizer);
 
       // It's possible that the "modules" key doesn't exist yet
-      JSONObject modulesObject = jsonObject.optJSONObject("modules");
+      JSONObject modulesObject = jsonObject.optJSONObject(COURSE_FILE_MODULES_KEY);
       if (modulesObject == null) {
         modulesObject = new JSONObject();
       }
@@ -118,7 +120,7 @@ public class APlusProject {
       JSONObject entry = new JSONObject().put("id", module.getVersionId());
       entry.put("downloadedAt", module.getDownloadedAt());
       modulesObject.put(module.getName(), entry);
-      jsonObject.put("modules", modulesObject);
+      jsonObject.put(COURSE_FILE_MODULES_KEY, modulesObject);
       FileUtils.writeStringToFile(courseFile, jsonObject.toString(), StandardCharsets.UTF_8);
     }
   }
@@ -151,7 +153,7 @@ public class APlusProject {
       JSONObject jsonObject = new JSONObject(tokenizer);
 
       // It's possible that the "modules" key doesn't exist
-      JSONObject modulesObject = jsonObject.optJSONObject("modules");
+      JSONObject modulesObject = jsonObject.optJSONObject(COURSE_FILE_MODULES_KEY);
       if (modulesObject == null) {
         return modules;
       }
