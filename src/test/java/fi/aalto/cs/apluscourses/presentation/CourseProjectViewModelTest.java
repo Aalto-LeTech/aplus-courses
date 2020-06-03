@@ -26,13 +26,14 @@ public class CourseProjectViewModelTest {
         = new CourseProjectViewModel(emptyCourse, "different");
 
     Assert.assertTrue("By default the user should want to restart",
-        courseProjectViewModel.userWantsRestart());
-    Assert.assertTrue("By default the user should not want to opt out",
-        courseProjectViewModel.userWantsSettings());
+        courseProjectViewModel.userWantsRestart.get());
+    Assert.assertFalse("By default the user should not want to opt out",
+        courseProjectViewModel.userOptsOutOfSettings.get());
 
-    Assert.assertTrue("Restart should be available", courseProjectViewModel.isRestartAvailable());
+    Assert.assertTrue("Restart should be available",
+        courseProjectViewModel.isRestartAvailable.get());
     Assert.assertTrue("Settings opt out should be available",
-        courseProjectViewModel.isOptOutAvailable());
+        courseProjectViewModel.isSettingsOptOutAvailable.get());
 
     Assert.assertThat("The settings text should mention that IDEA settings will be adjusted",
         courseProjectViewModel.getSettingsText(), containsString("adjust IntelliJ IDEA settings"));
@@ -43,13 +44,13 @@ public class CourseProjectViewModelTest {
     CourseProjectViewModel courseProjectViewModel
         = new CourseProjectViewModel(emptyCourse, "name");
 
-    Assert.assertFalse(courseProjectViewModel.userWantsRestart());
-    Assert.assertFalse(courseProjectViewModel.userWantsSettings());
+    Assert.assertFalse(courseProjectViewModel.userWantsRestart.get());
+    Assert.assertTrue(courseProjectViewModel.userOptsOutOfSettings.get());
 
     Assert.assertFalse("Restart should not be available",
-        courseProjectViewModel.isRestartAvailable());
+        courseProjectViewModel.isRestartAvailable.get());
     Assert.assertFalse("Settings opt out should not be available",
-        courseProjectViewModel.isOptOutAvailable());
+        courseProjectViewModel.isSettingsOptOutAvailable.get());
 
     Assert.assertThat("The settings text should mention that settings are already imported",
         courseProjectViewModel.getSettingsText(),
@@ -60,27 +61,26 @@ public class CourseProjectViewModelTest {
   public void testSettingsOptOutMakesRestartUnavailable() {
     CourseProjectViewModel courseProjectViewModel = new CourseProjectViewModel(emptyCourse, "a");
 
-    courseProjectViewModel.setSettingsOptOut(true);
+    courseProjectViewModel.userOptsOutOfSettings.set(true);
     Assert.assertFalse("Setting the settings opt out to true should make the restart option "
-        + "unavailable", courseProjectViewModel.isRestartAvailable());
+        + "unavailable", courseProjectViewModel.isRestartAvailable.get());
     Assert.assertFalse("User should not want a restart after setting the opt out to true",
-        courseProjectViewModel.userWantsRestart());
+        courseProjectViewModel.userWantsRestart.get());
 
-    courseProjectViewModel.setSettingsOptOut(false);
+    courseProjectViewModel.userOptsOutOfSettings.set(false);
     Assert.assertTrue("Setting the settings opt out back to false should make the restart "
-        + "option available again", courseProjectViewModel.isRestartAvailable());
+        + "option available again", courseProjectViewModel.isRestartAvailable.get());
     Assert.assertFalse("User should still not want a restart",
-        courseProjectViewModel.userWantsRestart());
+        courseProjectViewModel.userWantsRestart.get());
   }
 
   @Test
   public void testCancel() {
     CourseProjectViewModel courseProjectViewModel = new CourseProjectViewModel(emptyCourse, "b");
-    courseProjectViewModel.cancel();
+    courseProjectViewModel.userCancels.set(true);
 
-    Assert.assertTrue(courseProjectViewModel.userCancels());
-    Assert.assertFalse(courseProjectViewModel.userWantsSettings());
-    Assert.assertFalse(courseProjectViewModel.userWantsRestart());
+    Assert.assertTrue(courseProjectViewModel.userOptsOutOfSettings.get());
+    Assert.assertFalse(courseProjectViewModel.userWantsRestart.get());
   }
 
 }

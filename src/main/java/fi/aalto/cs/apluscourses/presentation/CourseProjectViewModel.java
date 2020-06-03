@@ -1,19 +1,23 @@
 package fi.aalto.cs.apluscourses.presentation;
 
 import fi.aalto.cs.apluscourses.model.Course;
+import fi.aalto.cs.apluscourses.utils.ObservableProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class CourseProjectViewModel {
 
-  String informationText;
-  String settingsText;
+  private final String informationText;
+  private final String settingsText;
 
-  private boolean cancel;
-  private boolean optOut;
-  private boolean restart;
-  private boolean restartAvailable;
-  private boolean optOutAvailable;
+  private final ObservableProperty.ValueObserver<Boolean> settingsOptOutObserver;
+  private final ObservableProperty.ValueObserver<Boolean> cancelObserver;
+
+  public final ObservableProperty<Boolean> userCancels;
+  public final ObservableProperty<Boolean> userWantsRestart;
+  public final ObservableProperty<Boolean> userOptsOutOfSettings;
+  public final ObservableProperty<Boolean> isRestartAvailable;
+  public final ObservableProperty<Boolean> isSettingsOptOutAvailable;
 
   /**
    * Construct a course project view model with the given course and name of the currently imported
@@ -24,7 +28,7 @@ public class CourseProjectViewModel {
    */
   public CourseProjectViewModel(@NotNull Course course,
                                 @Nullable String currentlyImportedIdeSettings) {
-    cancel = false;
+    userCancels = new ObservableProperty<>(false);
 
     String courseName = course.getName();
     informationText = "<html><body>The currently opened project will be turned into a project for "
@@ -33,18 +37,34 @@ public class CourseProjectViewModel {
     if (courseName.equals(currentlyImportedIdeSettings)) {
       settingsText = "<html><body>IntelliJ IDEA settings are already imported for <b>" + courseName
           + "</b>.</body><html>";
-      restart = false;
-      optOut = true;
-      restartAvailable = false;
-      optOutAvailable = false;
+      userWantsRestart = new ObservableProperty<>(false);
+      userOptsOutOfSettings = new ObservableProperty<>(true);
+      isRestartAvailable = new ObservableProperty<>(false);
+      isSettingsOptOutAvailable = new ObservableProperty<>(false);
     } else {
       settingsText = "<html><body>The A+ Courses plugin will adjust IntelliJ IDEA settings. This "
           + "helps use IDEA for coursework.</body></html>";
-      restart = true;
-      optOut = false;
-      restartAvailable = true;
-      optOutAvailable = true;
+      userWantsRestart = new ObservableProperty<>(true);
+      userOptsOutOfSettings = new ObservableProperty<>(false);
+      isRestartAvailable = new ObservableProperty<>(true);
+      isSettingsOptOutAvailable = new ObservableProperty<>(true);
     }
+
+    settingsOptOutObserver = optOut -> {
+      isRestartAvailable.set(!optOut);
+      if (optOut) {
+        userWantsRestart.set(false);
+      }
+    };
+    userOptsOutOfSettings.addValueObserver(settingsOptOutObserver);
+
+    cancelObserver = cancel -> {
+      if (cancel) {
+        userWantsRestart.set(false);
+        userOptsOutOfSettings.set(true);
+      }
+    };
+    userCancels.addValueObserver(cancelObserver);
   }
 
   @NotNull
@@ -66,58 +86,12 @@ public class CourseProjectViewModel {
   /** Returns the text that should be displayed next to the settings opt out checkbox. */
   @NotNull
   public String getOptOutCheckboxText() {
-    if (optOutAvailable) {
+    if (isSettingsOptOutAvailable.get()) {
       return "<html><body>Leave IntelliJ settings unchanged.<br>(<b>Not recommended</b>. Only pick "
           + "this option if you are sure you know what you are doing.)</body></html>";
     } else {
       return "Leave IntelliJ settings unchanged.";
     }
-  }
-
-  @NotNull
-  public boolean userCancels() {
-    return cancel;
-  }
-
-  public boolean userWantsSettings() {
-    return !optOut;
-  }
-
-  public boolean userWantsRestart() {
-    return restart;
-  }
-
-  /**
-   * Updates the state of this view model to reflect that the user cancelled the course project
-   * action.
-   */
-  public void cancel() {
-    cancel = true;
-    restart = false;
-    optOut = true;
-  }
-
-  public void setRestart(boolean userWantsRestart) {
-    restart = userWantsRestart;
-  }
-
-  /**
-   * Sets the settings opt out to the given value and updates the model to reflect the change.
-   */
-  public void setSettingsOptOut(boolean userOptsOut) {
-    this.optOut = userOptsOut;
-    this.restartAvailable = !userOptsOut;
-    if (userOptsOut) {
-      this.restart = false;
-    }
-  }
-
-  public boolean isRestartAvailable() {
-    return restartAvailable;
-  }
-
-  public boolean isOptOutAvailable() {
-    return optOutAvailable;
   }
 
 }

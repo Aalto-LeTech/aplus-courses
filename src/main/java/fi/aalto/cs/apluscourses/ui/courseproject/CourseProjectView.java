@@ -5,8 +5,7 @@ import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import fi.aalto.cs.apluscourses.presentation.CourseProjectViewModel;
 import fi.aalto.cs.apluscourses.ui.Binding;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import fi.aalto.cs.apluscourses.ui.CheckBox;
 import javax.swing.Action;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
@@ -23,7 +22,9 @@ public class CourseProjectView extends DialogWrapper {
   private JLabel infoText;
   @Binding
   private JLabel settingsText;
+  @Binding
   private JCheckBox restartCheckbox;
+  @Binding
   private JCheckBox settingsOptOutCheckbox;
 
   CourseProjectView(@NotNull Project project,
@@ -37,7 +38,7 @@ public class CourseProjectView extends DialogWrapper {
 
   @Override
   public void doCancelAction() {
-    courseProjectViewModel.cancel();
+    courseProjectViewModel.userCancels.set(true);
     close(CANCEL_EXIT_CODE);
   }
 
@@ -53,30 +54,6 @@ public class CourseProjectView extends DialogWrapper {
     return new Action[]{getOKAction(), getCancelAction()};
   }
 
-  private void updateCheckboxes() {
-    restartCheckbox.setSelected(courseProjectViewModel.userWantsRestart());
-    restartCheckbox.setEnabled(courseProjectViewModel.isRestartAvailable());
-    settingsOptOutCheckbox.setSelected(!courseProjectViewModel.userWantsSettings());
-    settingsOptOutCheckbox.setEnabled(courseProjectViewModel.isOptOutAvailable());
-  }
-
-  @FunctionalInterface
-  private interface BooleanSetter {
-    void set(boolean newValue);
-  }
-
-  @NotNull
-  private ItemListener createCheckboxListener(BooleanSetter setter) {
-    return event -> {
-      if (event.getStateChange() == ItemEvent.SELECTED) {
-        setter.set(true);
-      } else if (event.getStateChange() == ItemEvent.DESELECTED) {
-        setter.set(false);
-      }
-      updateCheckboxes();
-    };
-  }
-
   @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
   private void createUIComponents() {
     infoText = new JLabel(Messages.getInformationIcon());
@@ -84,13 +61,14 @@ public class CourseProjectView extends DialogWrapper {
 
     settingsText = new JLabel(courseProjectViewModel.getSettingsText());
 
-    restartCheckbox = new JCheckBox(courseProjectViewModel.getRestartCheckboxText());
-    settingsOptOutCheckbox = new JCheckBox(courseProjectViewModel.getOptOutCheckboxText());
+    restartCheckbox = new CheckBox(
+        courseProjectViewModel.getRestartCheckboxText(),
+        courseProjectViewModel.userWantsRestart,
+        courseProjectViewModel.isRestartAvailable);
 
-    restartCheckbox.addItemListener(createCheckboxListener(courseProjectViewModel::setRestart));
-    settingsOptOutCheckbox.addItemListener(
-        createCheckboxListener(courseProjectViewModel::setSettingsOptOut));
-
-    updateCheckboxes();
+    settingsOptOutCheckbox = new CheckBox(
+        courseProjectViewModel.getOptOutCheckboxText(),
+        courseProjectViewModel.userOptsOutOfSettings,
+        courseProjectViewModel.isSettingsOptOutAvailable);
   }
 }
