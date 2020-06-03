@@ -68,7 +68,7 @@ public class SettingsImporterImpl implements SettingsImporter {
    */
   @Nullable
   @Override
-  public String lastImportedIdeSettings() {
+  public String currentlyImportedIdeSettings() {
     return PluginSettings.getInstance().getImportedIdeSettingsName();
   }
 
