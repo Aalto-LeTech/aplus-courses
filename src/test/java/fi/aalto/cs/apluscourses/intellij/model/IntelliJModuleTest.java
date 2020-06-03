@@ -16,6 +16,8 @@ import org.junit.Test;
 
 public class IntelliJModuleTest extends HeavyPlatformTestCase implements TestHelper {
 
+  public static final String JSON = ".json";
+
   @Test
   public void testHasLocalChangesReturnsTrue() throws IOException, InterruptedException {
     //  given
@@ -26,14 +28,14 @@ public class IntelliJModuleTest extends HeavyPlatformTestCase implements TestHel
     final IntelliJModule intelliJModule = (IntelliJModule) module;
 
     File tempDirectory = FileUtilRt.createTempDirectory("first", "", true);
-    File tempFileOne = FileUtilRt.createTempFile(tempDirectory, "test1", ".json", true);
-    File tempFileTwo = FileUtilRt.createTempFile(tempDirectory, "test2", ".json", true);
-    tempFileTwo.setLastModified(Instant.now().toEpochMilli());
+    File tempFileOne = FileUtilRt.createTempFile(tempDirectory, "test1", JSON, true);
+    File tempFileTwo = FileUtilRt.createTempFile(tempDirectory, "test2", JSON, true);
+    assertTrue(tempFileTwo.setLastModified(Instant.now().toEpochMilli()));
     long oneSecond = 1000L;
     sleep(PluginSettings.REASONABLE_DELAY_FOR_MODULE_INSTALLATION + oneSecond);
 
     long now = Instant.now().toEpochMilli();
-    tempFileOne.setLastModified(now);
+    assertTrue(tempFileOne.setLastModified(now));
 
     //  when & then
     assertTrue(intelliJModule.hasLocalChanges());
@@ -49,11 +51,11 @@ public class IntelliJModuleTest extends HeavyPlatformTestCase implements TestHel
     final IntelliJModule intelliJModule = (IntelliJModule) module;
 
     File tempDirectory = FileUtilRt.createTempDirectory("second", "", true);
-    File tempFileOne = FileUtilRt.createTempFile(tempDirectory, "test1", ".json", true, true);
-    FileUtilRt.createTempFile(tempDirectory, "test2", ".json", true, true);
+    File tempFileOne = FileUtilRt.createTempFile(tempDirectory, "test1", JSON, true, true);
+    FileUtilRt.createTempFile(tempDirectory, "test2", JSON, true, true);
 
     long now = Instant.now().toEpochMilli();
-    tempFileOne.setLastModified(now);
+    assertTrue(tempFileOne.setLastModified(now));
 
     //  when & then
     assertFalse(intelliJModule.hasLocalChanges());

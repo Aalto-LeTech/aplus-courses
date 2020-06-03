@@ -27,14 +27,18 @@ import org.junit.Test;
 
 public class MainViewModelUpdaterTest extends HeavyPlatformTestCase implements TestHelper {
 
+  public static final String MODULE_TYPE_ID = "UID#1";
+  public static final String MODULE_1 = "Module1";
+  public static final String MODULE_2 = "Module2";
+
   @Test
   public void testGetProjectModuleNamesWithCorrectModulesReturnsValid() {
     //  given
     Project project = getProject();
-    createAndAddModule(project, "module1", "UID#1");
+    createAndAddModule(project, "module1", MODULE_TYPE_ID);
     //  modules are identified by name, so only one is actually created
-    createAndAddModule(project, "module1", "UID#1");
-    createAndAddModule(project, "module2", "UID#1");
+    createAndAddModule(project, "module1", MODULE_TYPE_ID);
+    createAndAddModule(project, "module2", MODULE_TYPE_ID);
     Module[] modules = ModuleManager.getInstance(project).getModules();
     assertEquals("Only one module named 'module1' is created.", 3, modules.length);
 
@@ -74,7 +78,7 @@ public class MainViewModelUpdaterTest extends HeavyPlatformTestCase implements T
     /**
      *  Check {@link MainViewModelUpdaterTest#getDummyCourse()} method.
      **/
-    fi.aalto.cs.apluscourses.model.Module module2 = new ModelExtensions.TestModule("Module2");
+    fi.aalto.cs.apluscourses.model.Module module2 = new ModelExtensions.TestModule(MODULE_2);
     assertThrows(UnsupportedOperationException.class, () -> course.getModules().add(module2));
   }
 
@@ -82,8 +86,8 @@ public class MainViewModelUpdaterTest extends HeavyPlatformTestCase implements T
   public void testGetUpdatableModulesWithNullCourseReturnEmpty() {
     //  given
     Project project = getProject();
-    createAndAddModule(project, "Module1", "UID#1");
-    createAndAddModule(project, "Module2", "UID#1");
+    createAndAddModule(project, MODULE_1, MODULE_TYPE_ID);
+    createAndAddModule(project, MODULE_2, MODULE_TYPE_ID);
 
     MainViewModel mainViewModel = PluginSettings.getInstance().getMainViewModel(project);
     MainViewModelUpdater mainViewModelUpdater = new MainViewModelUpdater(mainViewModel,
@@ -102,8 +106,8 @@ public class MainViewModelUpdaterTest extends HeavyPlatformTestCase implements T
       throws IOException {
     //  given
     Project project = getProject();
-    createAndAddModule(project, "Module1", "UID#1");
-    createAndAddModule(project, "Module2", "UID#1");
+    createAndAddModule(project, MODULE_1, MODULE_TYPE_ID);
+    createAndAddModule(project, MODULE_2, MODULE_TYPE_ID);
 
     MainViewModel mainViewModel = PluginSettings.getInstance().getMainViewModel(project);
     MainViewModelUpdater mainViewModelUpdater = new MainViewModelUpdater(mainViewModel,
@@ -126,8 +130,8 @@ public class MainViewModelUpdaterTest extends HeavyPlatformTestCase implements T
 
   @NotNull
   private Course getDummyCourse() throws MalformedURLException {
-    fi.aalto.cs.apluscourses.model.Module module1 = new ModelExtensions.TestModule("Module1");
-    fi.aalto.cs.apluscourses.model.Module module2 = new ModelExtensions.TestModule("Module2");
+    fi.aalto.cs.apluscourses.model.Module module1 = new ModelExtensions.TestModule(MODULE_1);
+    fi.aalto.cs.apluscourses.model.Module module2 = new ModelExtensions.TestModule(MODULE_2);
     List<fi.aalto.cs.apluscourses.model.Module> modules = Arrays.asList(module1, module2);
     Map<String, String> requiredPlugins = new HashMap<>();
     requiredPlugins.put("org.intellij.awesome_plugin", "Awesome Plugin");
