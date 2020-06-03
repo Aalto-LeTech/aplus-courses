@@ -13,9 +13,9 @@ public class CourseProjectViewModel {
   private final ObservableProperty.ValueObserver<Boolean> settingsOptOutObserver;
   private final ObservableProperty.ValueObserver<Boolean> cancelObserver;
 
-  public final ObservableProperty<Boolean> userCancels;
-  public final ObservableProperty<Boolean> userWantsRestart;
-  public final ObservableProperty<Boolean> userOptsOutOfSettings;
+  public final ObservableProperty<Boolean> cancel;
+  public final ObservableProperty<Boolean> restart;
+  public final ObservableProperty<Boolean> settingsOptOut;
   public final ObservableProperty<Boolean> isRestartAvailable;
   public final ObservableProperty<Boolean> isSettingsOptOutAvailable;
 
@@ -28,7 +28,7 @@ public class CourseProjectViewModel {
    */
   public CourseProjectViewModel(@NotNull Course course,
                                 @Nullable String currentlyImportedIdeSettings) {
-    userCancels = new ObservableProperty<>(false);
+    cancel = new ObservableProperty<>(false);
 
     String courseName = course.getName();
     informationText = "<html><body>The currently opened project will be turned into a project for "
@@ -37,15 +37,15 @@ public class CourseProjectViewModel {
     if (courseName.equals(currentlyImportedIdeSettings)) {
       settingsText = "<html><body>IntelliJ IDEA settings are already imported for <b>" + courseName
           + "</b>.</body><html>";
-      userWantsRestart = new ObservableProperty<>(false);
-      userOptsOutOfSettings = new ObservableProperty<>(true);
+      restart = new ObservableProperty<>(false);
+      settingsOptOut = new ObservableProperty<>(true);
       isRestartAvailable = new ObservableProperty<>(false);
       isSettingsOptOutAvailable = new ObservableProperty<>(false);
     } else {
       settingsText = "<html><body>The A+ Courses plugin will adjust IntelliJ IDEA settings. This "
           + "helps use IDEA for coursework.</body></html>";
-      userWantsRestart = new ObservableProperty<>(true);
-      userOptsOutOfSettings = new ObservableProperty<>(false);
+      restart = new ObservableProperty<>(true);
+      settingsOptOut = new ObservableProperty<>(false);
       isRestartAvailable = new ObservableProperty<>(true);
       isSettingsOptOutAvailable = new ObservableProperty<>(true);
     }
@@ -53,18 +53,18 @@ public class CourseProjectViewModel {
     settingsOptOutObserver = optOut -> {
       isRestartAvailable.set(!optOut);
       if (optOut) {
-        userWantsRestart.set(false);
+        restart.set(false);
       }
     };
-    userOptsOutOfSettings.addValueObserver(settingsOptOutObserver);
+    settingsOptOut.addValueObserver(settingsOptOutObserver);
 
     cancelObserver = cancel -> {
       if (cancel) {
-        userWantsRestart.set(false);
-        userOptsOutOfSettings.set(true);
+        restart.set(false);
+        settingsOptOut.set(true);
       }
     };
-    userCancels.addValueObserver(cancelObserver);
+    cancel.addValueObserver(cancelObserver);
   }
 
   @NotNull
@@ -94,4 +94,15 @@ public class CourseProjectViewModel {
     }
   }
 
+  public boolean userCancels() {
+    return Boolean.TRUE.equals(cancel.get());
+  }
+
+  public boolean userWantsRestart() {
+    return Boolean.TRUE.equals(restart.get());
+  }
+
+  public boolean userOptsOutOfSettings() {
+    return Boolean.TRUE.equals(settingsOptOut.get());
+  }
 }

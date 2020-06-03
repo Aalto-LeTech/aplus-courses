@@ -42,9 +42,9 @@ public class CourseProjectActionTest {
     @Override
     public void showMainDialog(@NotNull Project project,
                                @NotNull CourseProjectViewModel courseProjectViewModel) {
-      courseProjectViewModel.userWantsRestart.set(doRestart);
-      courseProjectViewModel.userOptsOutOfSettings.set(doOptOut);
-      courseProjectViewModel.userCancels.set(doCancel);
+      courseProjectViewModel.restart.set(doRestart);
+      courseProjectViewModel.settingsOptOut.set(doOptOut);
+      courseProjectViewModel.cancel.set(doCancel);
     }
 
     @Override

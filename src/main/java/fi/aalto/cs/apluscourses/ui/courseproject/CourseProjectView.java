@@ -38,7 +38,7 @@ public class CourseProjectView extends DialogWrapper {
 
   @Override
   public void doCancelAction() {
-    courseProjectViewModel.userCancels.set(true);
+    courseProjectViewModel.cancel.set(true);
     close(CANCEL_EXIT_CODE);
   }
 
@@ -63,12 +63,12 @@ public class CourseProjectView extends DialogWrapper {
 
     restartCheckbox = new CheckBox(
         courseProjectViewModel.getRestartCheckboxText(),
-        courseProjectViewModel.userWantsRestart,
+        courseProjectViewModel.restart,
         courseProjectViewModel.isRestartAvailable);
 
     settingsOptOutCheckbox = new CheckBox(
         courseProjectViewModel.getOptOutCheckboxText(),
-        courseProjectViewModel.userOptsOutOfSettings,
+        courseProjectViewModel.settingsOptOut,
         courseProjectViewModel.isSettingsOptOutAvailable);
   }
 }

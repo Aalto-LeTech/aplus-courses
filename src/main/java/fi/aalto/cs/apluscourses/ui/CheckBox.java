@@ -14,12 +14,12 @@ import org.jetbrains.annotations.NotNull;
  */
 public class CheckBox extends JCheckBox {
 
-  private final ObservableProperty<Boolean> isChecked;
-
   // ObservableProperty only has weak references to its observers, so we have them as instance
   // variables.
-  private ObservableProperty.ValueObserver<Boolean> isCheckedObserver = b -> setSelected(b);
-  private ObservableProperty.ValueObserver<Boolean> isEnabledObserver = b -> setEnabled(b);
+  private transient ObservableProperty.ValueObserver<Boolean> isCheckedObserver
+      = super::setSelected;
+  private transient ObservableProperty.ValueObserver<Boolean> isEnabledObserver
+      = super::setEnabled;
 
   /**
    * Construct a check box with the given observable properties.
@@ -29,14 +29,14 @@ public class CheckBox extends JCheckBox {
                   @NotNull ObservableProperty<Boolean> isEnabled) {
     super(text);
 
-    this.isChecked = isChecked;
     isChecked.addValueObserver(isCheckedObserver);
     isEnabled.addValueObserver(isEnabledObserver);
 
     addItemListener(e -> {
-      if (e.getStateChange() == ItemEvent.SELECTED && !isChecked.get()) {
+      if (e.getStateChange() == ItemEvent.SELECTED && Boolean.FALSE.equals(isChecked.get())) {
         isChecked.set(true);
-      } else if (e.getStateChange() == ItemEvent.DESELECTED && isChecked.get()) {
+      } else if (e.getStateChange() == ItemEvent.DESELECTED
+          && Boolean.TRUE.equals(isChecked.get())) {
         isChecked.set(false);
       }
     });

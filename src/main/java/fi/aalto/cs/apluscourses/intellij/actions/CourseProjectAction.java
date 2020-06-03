@@ -85,7 +85,7 @@ public class CourseProjectAction extends AnAction {
     CourseProjectViewModel courseProjectViewModel
         = new CourseProjectViewModel(course, settingsImporter.currentlyImportedIdeSettings());
     dialogs.showMainDialog(project, courseProjectViewModel);
-    if (courseProjectViewModel.userCancels.get()) {
+    if (courseProjectViewModel.userCancels()) {
       return;
     }
 
@@ -97,8 +97,8 @@ public class CourseProjectAction extends AnAction {
       return;
     }
 
-    if (!courseProjectViewModel.userOptsOutOfSettings.get() && tryImportIdeSettings(course)
-        && courseProjectViewModel.userWantsRestart.get()) {
+    if (!courseProjectViewModel.userOptsOutOfSettings() && tryImportIdeSettings(course)
+        && courseProjectViewModel.userWantsRestart()) {
       ideRestarter.restart();
     }
 
