@@ -116,7 +116,7 @@ public class MainViewModelUpdaterTest extends HeavyPlatformTestCase implements T
     MainViewModelUpdater spyMainViewModelUpdater = spy(mainViewModelUpdater);
     APlusProject mockAplusProject = mock(APlusProject.class);
     when(spyMainViewModelUpdater.getAplusProject()).thenReturn(mockAplusProject);
-    when(mockAplusProject.getCourseFileModuleIds()).thenThrow(new IOException());
+    when(mockAplusProject.getCourseFileModuleMetadata()).thenThrow(new IOException());
 
     Course course = getDummyCourse();
 

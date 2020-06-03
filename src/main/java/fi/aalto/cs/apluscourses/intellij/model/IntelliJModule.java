@@ -41,9 +41,8 @@ class IntelliJModule
   IntelliJModule(@NotNull String name,
       @NotNull URL url,
       @NotNull String versionId,
-      @NotNull ZonedDateTime downloadedAt,
       @NotNull APlusProject project) {
-    super(name, url, versionId, downloadedAt);
+    super(name, url, versionId);
     this.project = project;
   }
 
@@ -155,9 +154,9 @@ class IntelliJModule
   }
 
   @Override
-  public boolean hasLocalChanges() {
+  public boolean hasLocalChanges(ZonedDateTime downloadedAt) {
     VirtualFile virtualFile = VfsUtil.findFile(getFullPath(), true);
-    ModuleVirtualFileVisitor virtualFileVisitor = new ModuleVirtualFileVisitor(getDownloadedAt());
+    ModuleVirtualFileVisitor virtualFileVisitor = new ModuleVirtualFileVisitor(downloadedAt);
 
     if (virtualFile != null) {
       VfsUtilCore.visitChildrenRecursively(virtualFile, virtualFileVisitor);

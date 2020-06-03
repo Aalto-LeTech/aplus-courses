@@ -14,9 +14,6 @@ public abstract class Module extends Component {
   @NotNull
   private String versionId;
 
-  @NotNull
-  private final ZonedDateTime downloadedAt;
-
   /**
    * Constructs a module with the given name and URL.
    *
@@ -26,12 +23,10 @@ public abstract class Module extends Component {
    */
   public Module(@NotNull String name,
       @NotNull URL url,
-      @NotNull String versionId,
-      @NotNull ZonedDateTime downloadedAt) {
+      @NotNull String versionId) {
     super(name);
     this.url = url;
     this.versionId = versionId;
-    this.downloadedAt = downloadedAt;
   }
 
   /**
@@ -85,10 +80,5 @@ public abstract class Module extends Component {
     this.versionId = newVersionId;
   }
 
-  @NotNull
-  public ZonedDateTime getDownloadedAt() {
-    return downloadedAt;
-  }
-
-  public abstract boolean hasLocalChanges();
+  public abstract boolean hasLocalChanges(ZonedDateTime downloadedAt);
 }

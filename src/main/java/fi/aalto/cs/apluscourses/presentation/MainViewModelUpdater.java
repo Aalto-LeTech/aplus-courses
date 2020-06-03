@@ -4,11 +4,13 @@ import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.model.APlusProject;
 import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory;
+import fi.aalto.cs.apluscourses.intellij.model.IntelliJModuleMetadata;
 import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Module;
 import java.io.IOException;
 import java.net.URL;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -104,9 +106,9 @@ public class MainViewModelUpdater {
     // be a big issue however, as it would just lead to a update notification for a module that has
     // been removed.
 
-    Map<String, String> localModuleIds;
+    Map<String, IntelliJModuleMetadata> localModuleIds;
     try {
-      localModuleIds = aplusProject.getCourseFileModuleIds();
+      localModuleIds = aplusProject.getCourseFileModuleMetadata();
     } catch (IOException e) {
       return updatableModules;
     }
@@ -117,9 +119,13 @@ public class MainViewModelUpdater {
       if (!projectModuleNames.contains(module.getName())) {
         continue;
       }
-      if (!module.getVersionId().equals(localModuleIds.get(module.getName()))
+
+      IntelliJModuleMetadata intelliJModuleMetadata = localModuleIds.get(module.getName());
+      String moduleId = intelliJModuleMetadata.getModuleId();
+      ZonedDateTime downloadedAt = intelliJModuleMetadata.getDownloadedAt();
+      if (!module.getVersionId().equals(moduleId)
           // todo: a bit unsure here
-          && module.hasLocalChanges()) {
+          && module.hasLocalChanges(downloadedAt)) {
         updatableModules.add(module);
       }
     }

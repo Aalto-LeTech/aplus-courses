@@ -12,7 +12,6 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -99,7 +98,7 @@ public class APlusProjectTest {
     AtomicBoolean failed = new AtomicBoolean(false);
     for (int i = 0; i < numThreads; ++i) {
       IntelliJModule module = new IntelliJModule("name" + i, url, "id" + i,
-          ZonedDateTime.now(), aplusProject);
+          aplusProject);
       Runnable runnable = () -> {
         try {
           aplusProject.addCourseFileEntry(temp, module);
@@ -156,8 +155,8 @@ public class APlusProjectTest {
 
       threads.add(new Thread(() -> {
         try {
-          Map<String, String> moduleIds = aplusProject.getCourseFileModuleIds();
-          failed.set(!moduleId.equals(moduleIds.get(moduleName)));
+          Map<String, IntelliJModuleMetadata> moduleIds = aplusProject.getCourseFileModuleMetadata();
+          failed.set(!moduleId.equals(moduleIds.get(moduleName).getModuleId()));
         } catch (IOException e) {
           failed.set(true);
         }

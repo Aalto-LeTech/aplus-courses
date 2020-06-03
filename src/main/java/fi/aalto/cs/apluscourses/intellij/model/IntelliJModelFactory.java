@@ -14,17 +14,12 @@ import fi.aalto.cs.apluscourses.model.Library;
 import fi.aalto.cs.apluscourses.model.ModelFactory;
 import fi.aalto.cs.apluscourses.model.Module;
 import java.net.URL;
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class IntelliJModelFactory implements ModelFactory {
-
-  private static final Logger logger = LoggerFactory.getLogger(IntelliJModelFactory.class);
 
   @NotNull
   private final APlusProject project;
@@ -93,7 +88,7 @@ public class IntelliJModelFactory implements ModelFactory {
 
   @Override
   public Module createModule(@NotNull String name, @NotNull URL url, @NotNull String versionId) {
-    return new IntelliJModule(name, url, versionId, ZonedDateTime.now(), project);
+    return new IntelliJModule(name, url, versionId, project);
   }
 
   @Override

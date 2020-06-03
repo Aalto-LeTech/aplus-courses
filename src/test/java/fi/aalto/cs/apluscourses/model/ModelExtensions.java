@@ -83,7 +83,7 @@ public class ModelExtensions {
     }
 
     public TestModule(@NotNull String name, @NotNull URL url, @NotNull String versionId) {
-      super(name, url, versionId, ZonedDateTime.now());
+      super(name, url, versionId);
     }
 
     @NotNull
@@ -120,7 +120,7 @@ public class ModelExtensions {
     }
 
     @Override
-    public boolean hasLocalChanges() {
+    public boolean hasLocalChanges(ZonedDateTime downloadedAt) {
       return false;
     }
   }

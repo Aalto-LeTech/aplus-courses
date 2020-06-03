@@ -15,6 +15,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -27,6 +28,7 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 public class APlusProject {
+
   @NotNull
   private final Project project;
 
@@ -54,9 +56,10 @@ public class APlusProject {
   /**
    * Creates a local course file containing the given URL. If a course file already exists (even if
    * it was created with a different URL), this method does nothing and returns false.
+   *
    * @param sourceUrl The URL that is added to the course file.
-   * @return True if the course file was created successfully, false if a course file already
-   *         exists.
+   * @return {@code true} if the course file was created successfully, {@code false} if a course
+   *    file already exists.
    * @throws IOException If an IO error occurs while creating the file.
    */
   public boolean createCourseFile(@NotNull URL sourceUrl) throws IOException {
@@ -74,6 +77,7 @@ public class APlusProject {
   /**
    * Parses the stored URL from the course file and returns it, or null if the course file doesn't
    * exist.
+   *
    * @return The URL in the course file, or null if the course file doesn't exist.
    * @throws IOException   If an IO error occurs while reading the course file.
    * @throws JSONException If the JSON in the course file is malformed.
@@ -96,9 +100,10 @@ public class APlusProject {
   private static final String COURSE_FILE_MODULES_KEY = "modules";
 
   /**
-   * Adds an entry for the given module to the given course file. This method should only be used
-   * if when the default course file shouldn't be used (e.g. in testing). Prefer to use {@link
+   * Adds an entry for the given module to the given course file. This method should only be used if
+   * when the default course file shouldn't be used (e.g. in testing). Prefer to use {@link
    * APlusProject#addCourseFileEntry(Module)}.
+   *
    * @param courseFile The file to which the entry is added(must already contain a valid JSON
    *                   object).
    * @param module     The module for which an entry is added.
@@ -118,7 +123,7 @@ public class APlusProject {
       }
 
       JSONObject entry = new JSONObject().put("id", module.getVersionId());
-      entry.put("downloadedAt", module.getDownloadedAt());
+      entry.put("downloadedAt", ZonedDateTime.now());
       modulesObject.put(module.getName(), entry);
       jsonObject.put(COURSE_FILE_MODULES_KEY, modulesObject);
       FileUtils.writeStringToFile(courseFile, jsonObject.toString(), StandardCharsets.UTF_8);
@@ -128,6 +133,7 @@ public class APlusProject {
   /**
    * Adds an entry for the given module to the course file. If an entry exists with the same name,
    * it is overwritten.
+   *
    * @param module The module for which an entry is added.
    * @throws IOException   If an IO error occurs (for an example, the course file doesn't exist).
    * @throws JSONException If the existing JSON in the course file is malformed.
@@ -137,17 +143,18 @@ public class APlusProject {
   }
 
   /**
-   * Parses the course file and returns a mapping of module names to their version IDs in the course
-   * file. It's important to remember that a module entry in the course file does not necessarily
-   * mean that the module is still in the project.
-   * @return A map of module names to their local version IDs.
+   * Parses the course file and returns a mapping of module names to its {@link
+   * IntelliJModuleMetadata}. It's important to remember that a module entry in the course file does
+   * not necessarily mean that the module is still in the project.
+   *
+   * @return A map of module names to their local {@link IntelliJModuleMetadata}.
    * @throws IOException If an IO error occurs (for an example the course file doesn't exist).
    */
   @NotNull
-  public Map<String, String> getCourseFileModuleIds() throws IOException {
+  public Map<String, IntelliJModuleMetadata> getCourseFileModuleMetadata() throws IOException {
     synchronized (courseFileLock) {
       File courseFile = getCourseFilePath().toFile();
-      Map<String, String> modules = new HashMap<>();
+      Map<String, IntelliJModuleMetadata> modules = new HashMap<>();
 
       JSONTokener tokenizer = new JSONTokener(new FileInputStream(courseFile));
       JSONObject jsonObject = new JSONObject(tokenizer);
@@ -161,7 +168,11 @@ public class APlusProject {
       Iterable<String> moduleNames = modulesObject::keys;
       for (String moduleName : moduleNames) {
         String moduleId = modulesObject.getJSONObject(moduleName).getString("id");
-        modules.put(moduleName, moduleId);
+        ZonedDateTime downloadedAt = ZonedDateTime
+            .parse(modulesObject.getJSONObject(moduleName).getString("downloadedAt"));
+        IntelliJModuleMetadata intelliJModuleMetadata = new IntelliJModuleMetadata(moduleId,
+            downloadedAt);
+        modules.put(moduleName, intelliJModuleMetadata);
       }
       return modules;
     }
@@ -174,6 +185,7 @@ public class APlusProject {
 
   /**
    * Returns the root manager of the given module.
+   *
    * @param moduleName The name of the module.
    * @return The root manager of the module or null, if the module doesn't exist in the project.
    */
@@ -195,8 +207,9 @@ public class APlusProject {
 
   /**
    * Returns a state in which the given component should be.
+   *
    * @param component An IntelliJ specific component.
-   * @param <T> Type of the component.
+   * @param <T>       Type of the component.
    * @return Component state.
    */
   public <T extends Component & IntelliJComponent<?>> int resolveComponentState(
