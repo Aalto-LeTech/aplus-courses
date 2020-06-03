@@ -22,7 +22,7 @@ public class CheckBox extends JCheckBox {
   private ObservableProperty.ValueObserver<Boolean> isEnabledObserver = b -> setEnabled(b);
 
   /**
-   * Construct a check box with the given text, getters, and setters.
+   * Construct a check box with the given observable properties.
    */
   public CheckBox(@NotNull String text,
                   @NotNull ObservableProperty<Boolean> isChecked,
