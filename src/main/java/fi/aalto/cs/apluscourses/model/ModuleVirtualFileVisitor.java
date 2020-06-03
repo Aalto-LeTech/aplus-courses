@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 public class ModuleVirtualFileVisitor extends VirtualFileVisitor<Object> {
 
   private volatile boolean hasChanges = false;
-  private long downloadedAt;
+  private final long downloadedAt;
 
   public boolean isHasChanges() {
     return hasChanges;
