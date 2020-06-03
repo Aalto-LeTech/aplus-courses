@@ -59,7 +59,7 @@ public class APlusProject {
    *
    * @param sourceUrl The URL that is added to the course file.
    * @return {@code true} if the course file was created successfully, {@code false} if a course
-   *    file already exists.
+   *        file already exists.
    * @throws IOException If an IO error occurs while creating the file.
    */
   public boolean createCourseFile(@NotNull URL sourceUrl) throws IOException {

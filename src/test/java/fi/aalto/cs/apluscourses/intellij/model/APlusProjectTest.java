@@ -155,7 +155,8 @@ public class APlusProjectTest {
 
       threads.add(new Thread(() -> {
         try {
-          Map<String, IntelliJModuleMetadata> moduleIds = aplusProject.getCourseFileModuleMetadata();
+          Map<String, IntelliJModuleMetadata> moduleIds = aplusProject
+              .getCourseFileModuleMetadata();
           failed.set(!moduleId.equals(moduleIds.get(moduleName).getModuleId()));
         } catch (IOException e) {
           failed.set(true);

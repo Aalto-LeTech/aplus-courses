@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.time.Instant;
+import java.time.ZonedDateTime;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -26,6 +27,7 @@ public class IntelliJModuleTest extends HeavyPlatformTestCase implements TestHel
     Project project = getProject();
 
     IntelliJModelFactory factory = new IntelliJModelFactory(project);
+    final ZonedDateTime zonedDateTime = ZonedDateTime.now();
     Module module = factory.createModule("first", new URL("http://firstURL"), "1");
     final IntelliJModule intelliJModule = (IntelliJModule) module;
 
@@ -40,7 +42,7 @@ public class IntelliJModuleTest extends HeavyPlatformTestCase implements TestHel
     assertTrue(tempFileOne.setLastModified(now));
 
     //  when & then
-//    assertTrue(intelliJModule.hasLocalChanges());
+    assertTrue(intelliJModule.hasLocalChanges(zonedDateTime));
   }
 
   @Ignore
@@ -50,6 +52,7 @@ public class IntelliJModuleTest extends HeavyPlatformTestCase implements TestHel
     Project project = getProject();
 
     IntelliJModelFactory factory = new IntelliJModelFactory(project);
+    final ZonedDateTime zonedDateTime = ZonedDateTime.now();
     Module module = factory.createModule("second", new URL("http://secondURL"), "1");
     final IntelliJModule intelliJModule = (IntelliJModule) module;
 
@@ -61,6 +64,6 @@ public class IntelliJModuleTest extends HeavyPlatformTestCase implements TestHel
     assertTrue(tempFileOne.setLastModified(now));
 
     //  when & then
-//    assertFalse(intelliJModule.hasLocalChanges());
+    assertFalse(intelliJModule.hasLocalChanges(zonedDateTime));
   }
 }
