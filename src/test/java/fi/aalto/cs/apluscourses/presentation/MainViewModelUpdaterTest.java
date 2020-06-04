@@ -102,7 +102,7 @@ public class MainViewModelUpdaterTest extends HeavyPlatformTestCase implements T
   }
 
   @Test
-  public void testGetUpdatableModulesWithGetCourseFileModuleIdsThrowingReturnsEmpty()
+  public void disabledTestGetUpdatableModulesWithGetCourseFileModuleIdsThrowingReturnsEmpty()
       throws IOException {
     //  given
     Project project = getProject();

@@ -5,11 +5,11 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ex.ApplicationEx;
 import com.intellij.openapi.project.Project;
-import fi.aalto.cs.apluscourses.intellij.model.APlusProject;
 import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory;
 import fi.aalto.cs.apluscourses.intellij.model.SettingsImporter;
 import fi.aalto.cs.apluscourses.intellij.model.SettingsImporterImpl;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
+import fi.aalto.cs.apluscourses.intellij.utils.CourseFileManager;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationFileException;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogs;
@@ -165,7 +165,7 @@ public class CourseProjectAction extends AnAction {
   private boolean tryCreateCourseFile(@NotNull Project project, @NotNull URL courseUrl) {
     try {
       if (createCourseFile) {
-        new APlusProject(project).createCourseFile(courseUrl);
+        CourseFileManager.getInstance().createAndLoad(project, courseUrl);
       }
       return true;
     } catch (IOException e) {
