@@ -53,56 +53,11 @@ public class APlusProject {
 
   private static final Object courseFileLock = new Object();
 
-  /**
-   * Creates a local course file containing the given URL. If a course file already exists (even if
-   * it was created with a different URL), this method does nothing and returns false.
-   *
-   * @param sourceUrl The URL that is added to the course file.
-   * @return {@code true} if the course file was created successfully, {@code false} if a course
-   *        file already exists.
-   * @throws IOException If an IO error occurs while creating the file.
-   */
-  public boolean createCourseFile(@NotNull URL sourceUrl) throws IOException {
-    File courseFile = getCourseFilePath().toFile();
-    if (courseFile.isFile()) {
-      return false;
-    }
-
-    JSONObject jsonObject = new JSONObject();
-    jsonObject.put("url", sourceUrl.toString());
-    FileUtils.writeStringToFile(courseFile, jsonObject.toString(), StandardCharsets.UTF_8);
-    return true;
-  }
-
-  /**
-   * Parses the stored URL from the course file and returns it, or null if the course file doesn't
-   * exist.
-   *
-   * @return The URL in the course file, or null if the course file doesn't exist.
-   * @throws IOException   If an IO error occurs while reading the course file.
-   * @throws JSONException If the JSON in the course file is malformed.
-   */
-  @Nullable
-  public URL getCourseFileUrl() throws IOException {
-    File courseFile = getCourseFilePath().toFile();
-    if (!courseFile.isFile()) {
-      return null;
-    }
-
-    synchronized (courseFileLock) {
-      // TODO: the course file is written as UTF-8, ensure that this always works
-      JSONTokener tokenizer = new JSONTokener(new FileInputStream(courseFile));
-      JSONObject jsonObject = new JSONObject(tokenizer);
-      return new URL(jsonObject.getString("url"));
-    }
-  }
-
   private static final String COURSE_FILE_MODULES_KEY = "modules";
 
   /**
-   * Adds an entry for the given module to the given course file. This method should only be used if
-   * when the default course file shouldn't be used (e.g. in testing). Prefer to use {@link
-   * APlusProject#addCourseFileEntry(Module)}.
+   * Adds an entry for the given module to the given course file. If an entry exists with the same
+   * name, then the existing entry is overwritten.
    *
    * @param courseFile The file to which the entry is added(must already contain a valid JSON
    *                   object).
@@ -131,18 +86,6 @@ public class APlusProject {
   }
 
   /**
-   * Adds an entry for the given module to the course file. If an entry exists with the same name,
-   * it is overwritten.
-   *
-   * @param module The module for which an entry is added.
-   * @throws IOException   If an IO error occurs (for an example, the course file doesn't exist).
-   * @throws JSONException If the existing JSON in the course file is malformed.
-   */
-  public void addCourseFileEntry(@NotNull Module module) throws IOException {
-    addCourseFileEntry(getCourseFilePath().toFile(), module);
-  }
-
-  /**
    * Parses the course file and returns a mapping of module names to its {@link
    * IntelliJModuleMetadata}. It's important to remember that a module entry in the course file does
    * not necessarily mean that the module is still in the project.
@@ -167,9 +110,9 @@ public class APlusProject {
 
       Iterable<String> moduleNames = modulesObject::keys;
       for (String moduleName : moduleNames) {
-        String moduleId = modulesObject.getJSONObject(moduleName).getString("id");
-        ZonedDateTime downloadedAt = ZonedDateTime
-            .parse(modulesObject.getJSONObject(moduleName).getString("downloadedAt"));
+        JSONObject moduleObject = modulesObject.getJSONObject(moduleName);
+        String moduleId = moduleObject.getString("id");
+        ZonedDateTime downloadedAt = ZonedDateTime.parse(moduleObject.getString("downloadedAt"));
         IntelliJModuleMetadata intelliJModuleMetadata = new IntelliJModuleMetadata(moduleId,
             downloadedAt);
         modules.put(moduleName, intelliJModuleMetadata);

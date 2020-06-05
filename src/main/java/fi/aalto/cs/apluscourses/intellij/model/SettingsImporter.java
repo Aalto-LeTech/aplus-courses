@@ -11,7 +11,7 @@ public interface SettingsImporter {
   void importIdeSettings(@NotNull Course course) throws IOException;
 
   @Nullable
-  String lastImportedIdeSettings();
+  String currentlyImportedIdeSettings();
 
   void importProjectSettings(@NotNull Project project, @NotNull Course course) throws IOException;
 

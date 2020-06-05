@@ -35,13 +35,14 @@ public class MainViewModelUpdater {
   /**
    * Construct a {@link MainViewModelUpdater} with the given {@link MainViewModel}, project, and
    * update interval.
+   *
    * @param mainViewModel  The {@link MainViewModel} that gets updated.
    * @param project        The project to which this updater is tied.
    * @param updateInterval The interval at which the updater performs the update.
    */
   public MainViewModelUpdater(@NotNull MainViewModel mainViewModel,
-                              @NotNull Project project,
-                              @NotNull long updateInterval) {
+      @NotNull Project project,
+      @NotNull long updateInterval) {
     this.mainViewModel = mainViewModel;
     this.aplusProject = new APlusProject(project);
     this.updateInterval = updateInterval;

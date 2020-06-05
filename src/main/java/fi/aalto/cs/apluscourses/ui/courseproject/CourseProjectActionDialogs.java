@@ -1,19 +1,14 @@
 package fi.aalto.cs.apluscourses.ui.courseproject;
 
 import com.intellij.openapi.project.Project;
+import fi.aalto.cs.apluscourses.presentation.CourseProjectViewModel;
 import org.jetbrains.annotations.NotNull;
 
 public interface CourseProjectActionDialogs {
 
+  void showMainDialog(@NotNull Project project,
+                      @NotNull CourseProjectViewModel courseProjectViewModel);
+
   void showErrorDialog(@NotNull String message, @NotNull String title);
 
-  /**
-   * Returns true if the user selects ok, false otherwise.
-   */
-  boolean showOkCancelDialog(@NotNull String message,
-                             @NotNull String title,
-                             @NotNull String okText,
-                             @NotNull String cancelText);
-
-  boolean showImportIdeSettingsDialog(@NotNull Project project);
 }

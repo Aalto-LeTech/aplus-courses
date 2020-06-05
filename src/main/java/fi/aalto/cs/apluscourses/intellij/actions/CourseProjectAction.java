@@ -12,6 +12,7 @@ import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.intellij.utils.CourseFileManager;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationFileException;
+import fi.aalto.cs.apluscourses.presentation.CourseProjectViewModel;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogsImpl;
 import java.io.IOException;
@@ -76,8 +77,15 @@ public class CourseProjectAction extends AnAction {
       return;
     }
 
-    Course course = tryInitializeCourse(project, selectedCourseUrl);
+    Course course = tryGetCourse(project, selectedCourseUrl);
     if (course == null) {
+      return;
+    }
+
+    CourseProjectViewModel courseProjectViewModel
+        = new CourseProjectViewModel(course, settingsImporter.currentlyImportedIdeSettings());
+    dialogs.showMainDialog(project, courseProjectViewModel);
+    if (courseProjectViewModel.userCancels()) {
       return;
     }
 
@@ -89,13 +97,9 @@ public class CourseProjectAction extends AnAction {
       return;
     }
 
-    // Importing IDE settings potentially restarts the IDE, so it's the last action. If the
-    // IDE settings for the course have already been imported, do nothing.
-    if (!course.getName().equals(settingsImporter.lastImportedIdeSettings())) {
-      boolean shouldImport = dialogs.showImportIdeSettingsDialog(project);
-      if (shouldImport && tryImportIdeSettings(course) && userWantsToRestart()) {
-        ideRestarter.restart();
-      }
+    if (!courseProjectViewModel.userOptsOutOfSettings() && tryImportIdeSettings(course)
+        && courseProjectViewModel.userWantsRestart()) {
+      ideRestarter.restart();
     }
 
     if (createCourseFile) {
@@ -137,14 +141,14 @@ public class CourseProjectAction extends AnAction {
   }
 
   /**
-   * Parses the course configuration file from the given URL and updates the course view model of
-   * the main view model provider. The user is notified if the initialization fails.
+   * Returns a course created from the course configuration file at the given URL. The user is
+   * notified if the course initialization fails.
    * @param project   The currently open project.
    * @param courseUrl The URL from which the course configuration file is downloaded.
    * @return The course created from the course configuration file or null in case of an error.
    */
   @Nullable
-  private Course tryInitializeCourse(@NotNull Project project, @NotNull URL courseUrl) {
+  private Course tryGetCourse(@NotNull Project project, @NotNull URL courseUrl) {
     try {
       return courseFactory.fromUrl(courseUrl, project);
     } catch (IOException e) {
@@ -202,12 +206,6 @@ public class CourseProjectAction extends AnAction {
       notifyNetworkError();
       return false;
     }
-  }
-
-  private boolean userWantsToRestart() {
-    return dialogs.showOkCancelDialog(
-        "Settings were imported successfully. Restart IntelliJ IDEA now to reload the settings?",
-        "Restart Needed", "Yes", "No");
   }
 
   private void notifyNetworkError() {

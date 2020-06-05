@@ -1,9 +1,11 @@
 package fi.aalto.cs.apluscourses.model;
 
 import static com.intellij.testFramework.UsefulTestCase.assertThrows;
+import static fi.aalto.cs.apluscourses.presentation.MainViewModelUpdaterTest.getDummyCourseWithTwoModules;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
+import fi.aalto.cs.apluscourses.presentation.MainViewModelUpdaterTest;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -16,6 +18,8 @@ import org.junit.Test;
 
 public class CourseTest {
 
+  public static final String MODULE_1 = "Module1";
+  public static final String MODULE_2 = "Module2";
   private static final ModelFactory MODEL_FACTORY = new ModelExtensions.TestModelFactory() {
   };
 
@@ -150,5 +154,16 @@ public class CourseTest {
     StringReader stringReader
         = new StringReader("{" + nameJson + "," + requiredPluginsJson + "," + modules + "}");
     Course.fromConfigurationData(stringReader, MODEL_FACTORY);
+  }
+
+  @Test
+  public void testAddSameModuleTwiceFails() throws MalformedURLException {
+    //  given, when, then, whatever
+    Course course = getDummyCourseWithTwoModules(MODULE_1, MODULE_2);
+    /**
+     *  Check {@link MainViewModelUpdaterTest#getDummyCourseWithTwoModules()} method.
+     **/
+    fi.aalto.cs.apluscourses.model.Module module2 = new ModelExtensions.TestModule(MODULE_2);
+    assertThrows(UnsupportedOperationException.class, () -> course.getModules().add(module2));
   }
 }

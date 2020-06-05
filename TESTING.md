@@ -325,3 +325,26 @@ a manual testing manual. Marked with a github issue label "manual testing".
     </ol>
   </div>
 </details>
+<details>
+  <summary>
+    <a href="https://github.com/Aalto-LeTech/intellij-plugin/issues/182">
+      Cancelling IDE settings import does not work #182
+    </a>
+  </summary>
+  <div>
+    <h5>Course Project Action Dialog</h5>
+    <ol>
+      <li>From the A+ menu select "Turn Project Into A+ Course Project".</li>
+      <li>Observe that the dialog mentions the course name "O1".</li>
+      <li>Observe that by default the restart checkbox is checked and the opt out checkbox isn't.</li>
+      <li>Observe that checking the opt out checkbox disables the restart checkbox.</li>
+      <li>Select "Cancel" and observe that nothing has changed in the project.</li>
+      <li>Select "Turn Project Into A+ Course Project" again.</li>
+      <li>Select "OK" with the default selections and observe that the IDE restarts.</li>
+      <li>Select "Turn Project Into A+ Course Project" again.</li>
+      <li>Observe that the dialog mentions that IDE settings are already imported for O1.</li>
+      <li>Observe that the restart checkbox is unchecked and not enabled.</li>
+      <li>Observe that the opt out checkbox is checked and not enabled.</li>
+    </ol>
+  </div>
+</details>
