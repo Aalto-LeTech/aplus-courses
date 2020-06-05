@@ -4,7 +4,6 @@ import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.model.IntelliJModuleMetadata;
 import fi.aalto.cs.apluscourses.model.Module;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -13,12 +12,10 @@ import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 
 public class CourseFileManager {
 
@@ -155,12 +152,10 @@ public class CourseFileManager {
   @NotNull
   private JSONObject createModulesObject() {
     JSONObject modulesObject = new JSONObject();
-    modulesMetadata.forEach((name, metadata) -> {
-      modulesObject
-          .put(name, new JSONObject()
-              .put(MODULE_ID_KEY, metadata.getModuleId())
-              .put(MODULE_DOWNLOADED_AT_KEY, metadata.getDownloadedAt()));
-    });
+    modulesMetadata.forEach((name, metadata) -> modulesObject
+        .put(name, new JSONObject()
+            .put(MODULE_ID_KEY, metadata.getModuleId())
+            .put(MODULE_DOWNLOADED_AT_KEY, metadata.getDownloadedAt())));
     return modulesObject;
   }
 
