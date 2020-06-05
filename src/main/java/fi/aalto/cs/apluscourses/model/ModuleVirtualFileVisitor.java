@@ -11,7 +11,7 @@ public class ModuleVirtualFileVisitor extends VirtualFileVisitor<Object> {
   private volatile boolean hasChanges = false;
   private final long downloadedAt;
 
-  public boolean isHasChanges() {
+  public boolean hasChanges() {
     return hasChanges;
   }
 

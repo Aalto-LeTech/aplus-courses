@@ -167,9 +167,9 @@ public class APlusProject {
 
       Iterable<String> moduleNames = modulesObject::keys;
       for (String moduleName : moduleNames) {
-        String moduleId = modulesObject.getJSONObject(moduleName).getString("id");
-        ZonedDateTime downloadedAt = ZonedDateTime
-            .parse(modulesObject.getJSONObject(moduleName).getString("downloadedAt"));
+        JSONObject moduleObject = modulesObject.getJSONObject(moduleName);
+        String moduleId = moduleObject.getString("id");
+        ZonedDateTime downloadedAt = ZonedDateTime.parse(moduleObject.getString("downloadedAt"));
         IntelliJModuleMetadata intelliJModuleMetadata = new IntelliJModuleMetadata(moduleId,
             downloadedAt);
         modules.put(moduleName, intelliJModuleMetadata);

@@ -47,10 +47,10 @@ public class MainViewModelUpdaterTest extends HeavyPlatformTestCase implements T
         project, 1000L);
 
     //  when
-    Set<String> projectModules = mainViewModelUpdater.getProjectModuleNames();
+    Set<String> projectModuleNames = mainViewModelUpdater.getProjectModuleNames();
 
     //  then
-    assertEquals("There are 3 (three) module names listed.", 3, projectModules.size());
+    assertEquals("There are 3 (three) module names listed.", 3, projectModuleNames.size());
   }
 
   @Test
@@ -69,17 +69,6 @@ public class MainViewModelUpdaterTest extends HeavyPlatformTestCase implements T
 
     //  then
     assertEmpty("There are 0 (zero) module names listed for a closed project.", projectModules);
-  }
-
-  @Test
-  public void testAddSameModuleTwiceFails() throws MalformedURLException {
-    //  given, when, then, whatever
-    Course course = getDummyCourse();
-    /**
-     *  Check {@link MainViewModelUpdaterTest#getDummyCourse()} method.
-     **/
-    fi.aalto.cs.apluscourses.model.Module module2 = new ModelExtensions.TestModule(MODULE_2);
-    assertThrows(UnsupportedOperationException.class, () -> course.getModules().add(module2));
   }
 
   @Test
@@ -118,7 +107,7 @@ public class MainViewModelUpdaterTest extends HeavyPlatformTestCase implements T
     when(spyMainViewModelUpdater.getAplusProject()).thenReturn(mockAplusProject);
     when(mockAplusProject.getCourseFileModuleMetadata()).thenThrow(new IOException());
 
-    Course course = getDummyCourse();
+    Course course = getDummyCourseWithTwoModules();
 
     //  when
     List<fi.aalto.cs.apluscourses.model.Module> updatableModules = spyMainViewModelUpdater
@@ -128,10 +117,31 @@ public class MainViewModelUpdaterTest extends HeavyPlatformTestCase implements T
     assertEmpty("There are no modules for an empty course.", updatableModules);
   }
 
+  /**
+   * A helper method to create a simple {@link Course} with two {@link
+   * fi.aalto.cs.apluscourses.model.Module}s.
+   *
+   * @return a {@link Course}
+   * @throws MalformedURLException if the {@link URL} has incorrect format.
+   */
   @NotNull
-  private Course getDummyCourse() throws MalformedURLException {
-    fi.aalto.cs.apluscourses.model.Module module1 = new ModelExtensions.TestModule(MODULE_1);
-    fi.aalto.cs.apluscourses.model.Module module2 = new ModelExtensions.TestModule(MODULE_2);
+  public static Course getDummyCourseWithTwoModules() throws MalformedURLException {
+    return getDummyCourseWithTwoModules(MODULE_1, MODULE_2);
+  }
+
+  /**
+   * Same as {@link this#getDummyCourseWithTwoModules()} but takes {@link
+   * fi.aalto.cs.apluscourses.model.Module} names as parameters.
+   *
+   * @return a {@link Course}
+   * @throws MalformedURLException if the {@link URL} has incorrect format.
+   */
+  @NotNull
+  public static Course getDummyCourseWithTwoModules(String firstModuleName, String secondModuleName)
+      throws MalformedURLException {
+    fi.aalto.cs.apluscourses.model.Module module1 = new ModelExtensions.TestModule(firstModuleName);
+    fi.aalto.cs.apluscourses.model.Module module2 = new ModelExtensions.TestModule(
+        secondModuleName);
     List<fi.aalto.cs.apluscourses.model.Module> modules = Arrays.asList(module1, module2);
     Map<String, String> requiredPlugins = new HashMap<>();
     requiredPlugins.put("org.intellij.awesome_plugin", "Awesome Plugin");

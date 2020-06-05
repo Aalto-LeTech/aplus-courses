@@ -35,13 +35,14 @@ public class MainViewModelUpdater {
   /**
    * Construct a {@link MainViewModelUpdater} with the given {@link MainViewModel}, project, and
    * update interval.
+   *
    * @param mainViewModel  The {@link MainViewModel} that gets updated.
    * @param project        The project to which this updater is tied.
    * @param updateInterval The interval at which the updater performs the update.
    */
   public MainViewModelUpdater(@NotNull MainViewModel mainViewModel,
-                              @NotNull Project project,
-                              @NotNull long updateInterval) {
+      @NotNull Project project,
+      @NotNull long updateInterval) {
     this.mainViewModel = mainViewModel;
     this.aplusProject = new APlusProject(project);
     this.updateInterval = updateInterval;
@@ -106,9 +107,9 @@ public class MainViewModelUpdater {
     // be a big issue however, as it would just lead to a update notification for a module that has
     // been removed.
 
-    Map<String, IntelliJModuleMetadata> localModuleIds;
+    Map<String, IntelliJModuleMetadata> localModulesMetadata;
     try {
-      localModuleIds = aplusProject.getCourseFileModuleMetadata();
+      localModulesMetadata = aplusProject.getCourseFileModuleMetadata();
     } catch (IOException e) {
       return updatableModules;
     }
@@ -120,7 +121,7 @@ public class MainViewModelUpdater {
         continue;
       }
 
-      IntelliJModuleMetadata intelliJModuleMetadata = localModuleIds.get(module.getName());
+      IntelliJModuleMetadata intelliJModuleMetadata = localModulesMetadata.get(module.getName());
       String moduleId = intelliJModuleMetadata.getModuleId();
       ZonedDateTime downloadedAt = intelliJModuleMetadata.getDownloadedAt();
       if (!module.getVersionId().equals(moduleId)

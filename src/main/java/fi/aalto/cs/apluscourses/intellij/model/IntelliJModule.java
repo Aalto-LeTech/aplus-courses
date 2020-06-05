@@ -162,7 +162,7 @@ class IntelliJModule
       VfsUtilCore.visitChildrenRecursively(virtualFile, virtualFileVisitor);
     }
 
-    return virtualFileVisitor.isHasChanges();
+    return virtualFileVisitor.hasChanges();
   }
 
   private static class Loader {

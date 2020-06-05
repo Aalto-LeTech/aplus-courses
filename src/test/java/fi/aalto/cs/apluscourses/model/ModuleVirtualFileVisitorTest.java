@@ -19,7 +19,7 @@ public class ModuleVirtualFileVisitorTest {
     ModuleVirtualFileVisitor moduleVirtualFileVisitor = new ModuleVirtualFileVisitor(now);
     VirtualFile virtualFile = new LightVirtualFile();
     VirtualFile spyVirtualFile = spy(virtualFile);
-    assertFalse(moduleVirtualFileVisitor.isHasChanges());
+    assertFalse(moduleVirtualFileVisitor.hasChanges());
     long later = now.plusSeconds(20L).toInstant().toEpochMilli();
     when(spyVirtualFile.getTimeStamp()).thenReturn(later);
 
@@ -27,7 +27,7 @@ public class ModuleVirtualFileVisitorTest {
     boolean result = moduleVirtualFileVisitor.visitFile(spyVirtualFile);
 
     //  then
-    assertTrue(moduleVirtualFileVisitor.isHasChanges());
+    assertTrue(moduleVirtualFileVisitor.hasChanges());
     assertFalse(result);
   }
 
@@ -37,13 +37,13 @@ public class ModuleVirtualFileVisitorTest {
     ModuleVirtualFileVisitor moduleVirtualFileVisitor = new ModuleVirtualFileVisitor(
         ZonedDateTime.now());
     VirtualFile virtualFile = new LightVirtualFile();
-    assertFalse(moduleVirtualFileVisitor.isHasChanges());
+    assertFalse(moduleVirtualFileVisitor.hasChanges());
 
     //  when
     boolean result = moduleVirtualFileVisitor.visitFile(virtualFile);
 
     //  then
-    assertFalse(moduleVirtualFileVisitor.isHasChanges());
+    assertFalse(moduleVirtualFileVisitor.hasChanges());
     assertTrue(result);
   }
 }

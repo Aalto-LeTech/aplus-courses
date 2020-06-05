@@ -16,15 +16,7 @@ public class IntelliJModuleMetadata {
     return moduleId;
   }
 
-  public void setModuleId(String moduleId) {
-    this.moduleId = moduleId;
-  }
-
   public ZonedDateTime getDownloadedAt() {
     return downloadedAt;
-  }
-
-  public void setDownloadedAt(ZonedDateTime downloadedAt) {
-    this.downloadedAt = downloadedAt;
   }
 }
