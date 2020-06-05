@@ -5,10 +5,10 @@ import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.model.APlusProject;
 import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory;
 import fi.aalto.cs.apluscourses.intellij.model.IntelliJModuleMetadata;
+import fi.aalto.cs.apluscourses.intellij.utils.CourseFileManager;
 import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Module;
-import java.io.IOException;
 import java.net.URL;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -52,14 +52,10 @@ public class MainViewModelUpdater {
   @NotNull
   URL getCourseUrl() {
     return ReadAction.compute(() -> {
-      try {
-        if (aplusProject.getProject().isDisposed() || !aplusProject.getProject().isOpen()) {
-          return null;
-        }
-        return aplusProject.getCourseFileUrl();
-      } catch (IOException e) {
+      if (aplusProject.getProject().isDisposed() || !aplusProject.getProject().isOpen()) {
         return null;
       }
+      return CourseFileManager.getInstance().getCourseUrl();
     });
   }
 
@@ -107,12 +103,8 @@ public class MainViewModelUpdater {
     // be a big issue however, as it would just lead to a update notification for a module that has
     // been removed.
 
-    Map<String, IntelliJModuleMetadata> localModulesMetadata;
-    try {
-      localModulesMetadata = aplusProject.getCourseFileModuleMetadata();
-    } catch (IOException e) {
-      return updatableModules;
-    }
+    Map<String, IntelliJModuleMetadata> localModulesMetadata
+        = CourseFileManager.getInstance().getModulesMetadata();
 
     for (Module module : course.getModules()) {
       // An updatable module must be in the project and it's ID in the local
@@ -179,7 +171,9 @@ public class MainViewModelUpdater {
         List<Module> updatableModules = getUpdatableModules(course);
         updateMainViewModel(course);
         Thread.sleep(updateInterval); // Good night :)
-      }
+
+        // Sonar dislikes infinite loops...
+      } //NOSONAR
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
     }

@@ -8,6 +8,7 @@ import com.intellij.openapi.util.io.FileUtilRt;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
+import fi.aalto.cs.apluscourses.intellij.utils.CourseFileManager;
 import fi.aalto.cs.apluscourses.intellij.utils.ListDependenciesPolicy;
 import fi.aalto.cs.apluscourses.model.ComponentLoadException;
 import fi.aalto.cs.apluscourses.model.Module;
@@ -78,7 +79,7 @@ class IntelliJModule
   public void load() throws ComponentLoadException {
     try {
       WriteAction.runAndWait(new Loader(getProject(), getImlFile())::load);
-      project.addCourseFileEntry(this);
+      CourseFileManager.getInstance().addEntryForModule(this);
     } catch (Exception e) {
       throw new ComponentLoadException(getName(), e);
     }

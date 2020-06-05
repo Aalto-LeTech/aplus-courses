@@ -5,12 +5,12 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.startup.StartupActivity.Background;
 import fi.aalto.cs.apluscourses.intellij.actions.ActionUtil;
 import fi.aalto.cs.apluscourses.intellij.actions.RequiredPluginsCheckerAction;
-import fi.aalto.cs.apluscourses.intellij.model.APlusProject;
 import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory;
 import fi.aalto.cs.apluscourses.intellij.notifications.ClientIoError;
 import fi.aalto.cs.apluscourses.intellij.notifications.CourseConfigurationError;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
+import fi.aalto.cs.apluscourses.intellij.utils.CourseFileManager;
 import fi.aalto.cs.apluscourses.intellij.utils.ExtendedDataContext;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationFileException;
@@ -70,7 +70,12 @@ public class InitializationActivity implements Background {
     }
 
     try {
-      return new APlusProject(project).getCourseFileUrl();
+      boolean isCourseProject = CourseFileManager.getInstance().load(project);
+      if (isCourseProject) {
+        return CourseFileManager.getInstance().getCourseUrl();
+      } else {
+        return null;
+      }
     } catch (IOException | JSONException e) {
       logger.error("Malformed project course tag file", e);
       return null;

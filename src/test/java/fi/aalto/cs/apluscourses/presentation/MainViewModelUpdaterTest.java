@@ -1,6 +1,5 @@
 package fi.aalto.cs.apluscourses.presentation;
 
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
@@ -9,11 +8,9 @@ import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.testFramework.HeavyPlatformTestCase;
 import fi.aalto.cs.apluscourses.TestHelper;
-import fi.aalto.cs.apluscourses.intellij.model.APlusProject;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
@@ -85,33 +82,6 @@ public class MainViewModelUpdaterTest extends HeavyPlatformTestCase implements T
     //  when
     List<fi.aalto.cs.apluscourses.model.Module> updatableModules = mainViewModelUpdater
         .getUpdatableModules(null);
-
-    //  then
-    assertEmpty("There are no modules for an empty course.", updatableModules);
-  }
-
-  @Test
-  public void testGetUpdatableModulesWithGetCourseFileModuleIdsThrowingReturnsEmpty()
-      throws IOException {
-    //  given
-    Project project = getProject();
-    createAndAddModule(project, MODULE_1, MODULE_TYPE_ID);
-    createAndAddModule(project, MODULE_2, MODULE_TYPE_ID);
-
-    MainViewModel mainViewModel = PluginSettings.getInstance().getMainViewModel(project);
-    MainViewModelUpdater mainViewModelUpdater = new MainViewModelUpdater(mainViewModel,
-        project, 1000L);
-
-    MainViewModelUpdater spyMainViewModelUpdater = spy(mainViewModelUpdater);
-    APlusProject mockAplusProject = mock(APlusProject.class);
-    when(spyMainViewModelUpdater.getAplusProject()).thenReturn(mockAplusProject);
-    when(mockAplusProject.getCourseFileModuleMetadata()).thenThrow(new IOException());
-
-    Course course = getDummyCourseWithTwoModules();
-
-    //  when
-    List<fi.aalto.cs.apluscourses.model.Module> updatableModules = spyMainViewModelUpdater
-        .getUpdatableModules(course);
 
     //  then
     assertEmpty("There are no modules for an empty course.", updatableModules);
