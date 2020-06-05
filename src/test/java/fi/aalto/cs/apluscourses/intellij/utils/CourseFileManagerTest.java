@@ -34,10 +34,10 @@ public class CourseFileManagerTest {
   // CourseFileManager is supposed to be thread safe, so all of these tests use multiple threads.
   private static final int NUM_THREADS = 16;
 
-  private static String URL_KEY = "url";
-  private static String MODULES_KEY = "modules";
-  private static String MODULE_ID_KEY = "id";
-  private static String MODULE_DOWNLOADED_AT_KEY = "downloadedAt";
+  private static final String URL_KEY = "url";
+  private static final String MODULES_KEY = "modules";
+  private static final String MODULE_ID_KEY = "id";
+  private static final String MODULE_DOWNLOADED_AT_KEY = "downloadedAt";
 
   private CourseFileManager manager;
   private Project project;

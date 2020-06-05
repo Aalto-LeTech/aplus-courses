@@ -90,33 +90,6 @@ public class MainViewModelUpdaterTest extends HeavyPlatformTestCase implements T
     assertEmpty("There are no modules for an empty course.", updatableModules);
   }
 
-  @Test
-  public void disabledTestGetUpdatableModulesWithGetCourseFileModuleIdsThrowingReturnsEmpty()
-      throws IOException {
-    //  given
-    Project project = getProject();
-    createAndAddModule(project, MODULE_1, MODULE_TYPE_ID);
-    createAndAddModule(project, MODULE_2, MODULE_TYPE_ID);
-
-    MainViewModel mainViewModel = PluginSettings.getInstance().getMainViewModel(project);
-    MainViewModelUpdater mainViewModelUpdater = new MainViewModelUpdater(mainViewModel,
-        project, 1000L);
-
-    MainViewModelUpdater spyMainViewModelUpdater = spy(mainViewModelUpdater);
-    APlusProject mockAplusProject = mock(APlusProject.class);
-    when(spyMainViewModelUpdater.getAplusProject()).thenReturn(mockAplusProject);
-    when(mockAplusProject.getCourseFileModuleMetadata()).thenThrow(new IOException());
-
-    Course course = getDummyCourseWithTwoModules();
-
-    //  when
-    List<fi.aalto.cs.apluscourses.model.Module> updatableModules = spyMainViewModelUpdater
-        .getUpdatableModules(course);
-
-    //  then
-    assertEmpty("There are no modules for an empty course.", updatableModules);
-  }
-
   /**
    * A helper method to create a simple {@link Course} with two {@link
    * fi.aalto.cs.apluscourses.model.Module}s.
