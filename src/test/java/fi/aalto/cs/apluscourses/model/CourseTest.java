@@ -1,8 +1,11 @@
 package fi.aalto.cs.apluscourses.model;
 
+import static com.intellij.testFramework.UsefulTestCase.assertThrows;
+import static fi.aalto.cs.apluscourses.presentation.MainViewModelUpdaterTest.getDummyCourseWithTwoModules;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
+import fi.aalto.cs.apluscourses.presentation.MainViewModelUpdaterTest;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -15,7 +18,10 @@ import org.junit.Test;
 
 public class CourseTest {
 
-  private static final ModelFactory MODEL_FACTORY = new ModelExtensions.TestModelFactory() {};
+  public static final String MODULE_1 = "Module1";
+  public static final String MODULE_2 = "Module2";
+  private static final ModelFactory MODEL_FACTORY = new ModelExtensions.TestModelFactory() {
+  };
 
   @Test
   public void testCreateCourse() throws MalformedURLException {
@@ -64,8 +70,21 @@ public class CourseTest {
       + "\"Scala\",\"org.test.tester\":\"Tester\"}";
   private static String modulesJson = "\"modules\":[{\"name\":\"O1Library\",\"url\":"
       + "\"https://wikipedia.org\"},{\"name\":\"GoodStuff\",\"url\":\"https://example.com\"}]";
+  private static String modulesFaultyJson = "\"modules\":[{\"name\":\"O1Library\",\"url\":"
+      + "\"https://wikipedia.org\"},{\"name\":\"GoodStuff\",\"url\":\"https://example.com\"},"
+      + "{\"name\":\"GoodStuff\",\"url\":\"https://example.com\"}]";
   private static String resourcesJson = "\"resources\":{\"abc\":\"http://example.com\","
       + "\"def\":\"http://example.org\"}";
+
+  @Test
+  public void testFromConfigurationFileWithSameModule() {
+    StringReader stringReader = new StringReader("{" + nameJson + "," + requiredPluginsJson + ","
+        + modulesFaultyJson + "," + resourcesJson + "}");
+    assertThrows(
+        IllegalStateException.class,
+        () -> Course.fromConfigurationData(stringReader, "./path/to/file", MODEL_FACTORY)
+    );
+  }
 
   @Test
   public void testFromConfigurationFile() throws MalformedCourseConfigurationFileException {
@@ -135,5 +154,16 @@ public class CourseTest {
     StringReader stringReader
         = new StringReader("{" + nameJson + "," + requiredPluginsJson + "," + modules + "}");
     Course.fromConfigurationData(stringReader, MODEL_FACTORY);
+  }
+
+  @Test
+  public void testAddSameModuleTwiceFails() throws MalformedURLException {
+    //  given, when, then, whatever
+    Course course = getDummyCourseWithTwoModules(MODULE_1, MODULE_2);
+    /**
+     *  Check {@link MainViewModelUpdaterTest#getDummyCourseWithTwoModules()} method.
+     **/
+    fi.aalto.cs.apluscourses.model.Module module2 = new ModelExtensions.TestModule(MODULE_2);
+    assertThrows(UnsupportedOperationException.class, () -> course.getModules().add(module2));
   }
 }

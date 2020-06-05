@@ -5,9 +5,7 @@ import static org.mockito.Mockito.mock;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtilRt;
-
 import fi.aalto.cs.apluscourses.model.Component;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -19,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
@@ -100,7 +97,8 @@ public class APlusProjectTest {
     List<Thread> threads = new ArrayList<>(numThreads);
     AtomicBoolean failed = new AtomicBoolean(false);
     for (int i = 0; i < numThreads; ++i) {
-      IntelliJModule module = new IntelliJModule("name" + i, url, "id" + i, aplusProject);
+      IntelliJModule module = new IntelliJModule("name" + i, url, "id" + i,
+          aplusProject);
       Runnable runnable = () -> {
         try {
           aplusProject.addCourseFileEntry(temp, module);
@@ -157,8 +155,9 @@ public class APlusProjectTest {
 
       threads.add(new Thread(() -> {
         try {
-          Map<String, String> moduleIds = aplusProject.getCourseFileModuleIds();
-          failed.set(!moduleId.equals(moduleIds.get(moduleName)));
+          Map<String, IntelliJModuleMetadata> moduleIds = aplusProject
+              .getCourseFileModuleMetadata();
+          failed.set(!moduleId.equals(moduleIds.get(moduleName).getModuleId()));
         } catch (IOException e) {
           failed.set(true);
         }

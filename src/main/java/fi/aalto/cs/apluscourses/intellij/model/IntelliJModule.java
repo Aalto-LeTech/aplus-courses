@@ -5,9 +5,13 @@ import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.module.ModuleWithNameAlreadyExists;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.util.io.FileUtilRt;
+import com.intellij.openapi.vfs.VfsUtil;
+import com.intellij.openapi.vfs.VfsUtilCore;
+import com.intellij.openapi.vfs.VirtualFile;
 import fi.aalto.cs.apluscourses.intellij.utils.ListDependenciesPolicy;
 import fi.aalto.cs.apluscourses.model.ComponentLoadException;
 import fi.aalto.cs.apluscourses.model.Module;
+import fi.aalto.cs.apluscourses.model.ModuleVirtualFileVisitor;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
 import fi.aalto.cs.apluscourses.utils.DirAwareZipFile;
 import java.io.File;
@@ -16,11 +20,11 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-
 import org.apache.commons.io.FileUtils;
 import org.jdom.JDOMException;
 import org.jetbrains.annotations.CalledWithWriteLock;
@@ -34,11 +38,10 @@ class IntelliJModule
   @NotNull
   private final APlusProject project;
 
-
   IntelliJModule(@NotNull String name,
-                 @NotNull URL url,
-                 @NotNull String versionId,
-                 @NotNull APlusProject project) {
+      @NotNull URL url,
+      @NotNull String versionId,
+      @NotNull APlusProject project) {
     super(name, url, versionId);
     this.project = project;
   }
@@ -150,7 +153,20 @@ class IntelliJModule
     return project.getModuleManager().findModuleByName(getName());
   }
 
+  @Override
+  public boolean hasLocalChanges(ZonedDateTime downloadedAt) {
+    VirtualFile virtualFile = VfsUtil.findFile(getFullPath(), true);
+    ModuleVirtualFileVisitor virtualFileVisitor = new ModuleVirtualFileVisitor(downloadedAt);
+
+    if (virtualFile != null) {
+      VfsUtilCore.visitChildrenRecursively(virtualFile, virtualFileVisitor);
+    }
+
+    return virtualFileVisitor.hasChanges();
+  }
+
   private static class Loader {
+
     private final ModuleManager moduleManager;
     private final String imlFileName;
 

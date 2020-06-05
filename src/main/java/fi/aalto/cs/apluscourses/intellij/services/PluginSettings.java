@@ -41,8 +41,10 @@ public class PluginSettings implements MainViewModelProvider {
   public static final String COURSE_CONFIGURATION_FILE_URL
       = "https://grader.cs.hut.fi/static/O1_2020/projects/o1_course_config.json";
 
-  // 15 minutes in milliseconds
+  //  15 minutes in milliseconds
   public static final long MAIN_VIEW_MODEL_UPDATE_INTERVAL = 15L * 60L * 1000L;
+  //  15 seconds in milliseconds
+  public static final long REASONABLE_DELAY_FOR_MODULE_INSTALLATION = 15L * 1000;
 
   private final PropertiesComponent propertiesManager = PropertiesComponent.getInstance();
 

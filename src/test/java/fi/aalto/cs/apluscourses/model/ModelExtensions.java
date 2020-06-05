@@ -5,6 +5,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -116,6 +117,11 @@ public class ModelExtensions {
     @Override
     protected List<String> computeDependencies() {
       return Collections.emptyList();
+    }
+
+    @Override
+    public boolean hasLocalChanges(ZonedDateTime downloadedAt) {
+      return false;
     }
   }
 
