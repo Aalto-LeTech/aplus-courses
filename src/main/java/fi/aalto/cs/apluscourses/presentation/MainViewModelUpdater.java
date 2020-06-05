@@ -170,7 +170,9 @@ public class MainViewModelUpdater {
         List<Module> updatableModules = getUpdatableModules(course);
         updateMainViewModel(course);
         Thread.sleep(updateInterval); // Good night :)
-      }
+
+        // Sonar dislikes infinite loops...
+      } //NOSONAR
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
     }

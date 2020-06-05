@@ -12,6 +12,8 @@ import java.nio.file.Paths;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
@@ -46,17 +48,15 @@ public class CourseFileManager {
    */
   public synchronized void createAndLoad(@NotNull Project project, @NotNull URL courseUrl)
       throws IOException {
-    courseFile = Paths
-        .get(project.getBasePath(), Project.DIRECTORY_STORE_FOLDER, COURSE_FILE_NAME)
-        .toFile();
-    if (!courseFile.exists()) {
-      this.courseUrl = courseUrl;
-      this.modulesMetadata = new HashMap<>();
-      JSONObject jsonObject = new JSONObject().put("url", courseUrl.toString());
-      FileUtils.writeStringToFile(courseFile, jsonObject.toString(), StandardCharsets.UTF_8);
-    } else {
-      internalLoad();
+    courseFile = getCourseFile(project);
+    if (courseFile.exists()) {
+      // If the course file already exists, then this is equivalent to a load
+      load(project);
+      return;
     }
+    this.courseUrl = courseUrl;
+    this.modulesMetadata = new HashMap<>();
+    writeCourseFile(new JSONObject().put("url", courseUrl.toString()));
   }
 
   /**
@@ -69,15 +69,13 @@ public class CourseFileManager {
    * @throws JSONException If the course file contains malformed JSON.
    */
   public synchronized boolean load(@NotNull Project project) throws IOException {
-    courseFile = Paths
-        .get(project.getBasePath(), Project.DIRECTORY_STORE_FOLDER, COURSE_FILE_NAME)
-        .toFile();
-    if (!courseFile.isFile()) {
-      return false;
-    } else {
-      internalLoad();
+    courseFile = getCourseFile(project);
+    if (courseFile.exists()) {
+      JSONObject jsonObject = readCourseFile();
+      loadFromJsonObject(jsonObject);
       return true;
     }
+    return false;
   }
 
   private static final String MODULE_ID_KEY = "id";
@@ -92,25 +90,19 @@ public class CourseFileManager {
   public synchronized void addEntryForModule(@NotNull Module module) throws IOException {
     IntelliJModuleMetadata newModuleMetadata
         = new IntelliJModuleMetadata(module.getVersionId(), ZonedDateTime.now());
-    JSONObject newModuleObject = new JSONObject();
-    newModuleObject.put(MODULE_ID_KEY, newModuleMetadata.getModuleId());
-    newModuleObject.put(MODULE_DOWNLOADED_AT_KEY, newModuleMetadata.getDownloadedAt());
+    JSONObject newModuleObject = new JSONObject()
+        .put(MODULE_ID_KEY, newModuleMetadata.getModuleId())
+        .put(MODULE_DOWNLOADED_AT_KEY, newModuleMetadata.getDownloadedAt());
 
-    JSONObject modulesObject = new JSONObject();
-    modulesMetadata.forEach((name, metadata) -> {
-      JSONObject moduleObject = new JSONObject();
-      moduleObject.put(MODULE_ID_KEY, metadata.getModuleId());
-      moduleObject.put(MODULE_DOWNLOADED_AT_KEY, metadata.getDownloadedAt());
-      modulesObject.put(name, moduleObject);
-    });
+    JSONObject modulesObject = createModulesObject();
 
     modulesObject.put(module.getName(), newModuleObject);
 
-    JSONObject jsonObject = new JSONObject();
-    jsonObject.put("url", courseUrl.toString());
-    jsonObject.put("modules", modulesObject);
+    JSONObject jsonObject = new JSONObject()
+        .put("url", courseUrl.toString())
+        .put("modules", modulesObject);
 
-    FileUtils.writeStringToFile(courseFile, jsonObject.toString(), StandardCharsets.UTF_8);
+    writeCourseFile(jsonObject);
 
     // Only add the entry to the map after writing to the file, so that if the write fails, the map
     // is still in the correct state.
@@ -119,7 +111,7 @@ public class CourseFileManager {
 
   /**
    * Returns the URL of the course for the currently loaded course file. This should only be called
-   * after a course file has been loaded.
+   * after a course file has been successfully loaded.
    */
   @NotNull
   public synchronized URL getCourseUrl() {
@@ -128,7 +120,7 @@ public class CourseFileManager {
 
   /**
    * Returns the metadata of modules in the currently loaded course file. This should only be called
-   * after a course file has been loaded.
+   * after a course file has been successfully loaded.
    */
   @NotNull
   public synchronized Map<String, IntelliJModuleMetadata> getModulesMetadata() {
@@ -136,9 +128,46 @@ public class CourseFileManager {
     return new HashMap<>(modulesMetadata);
   }
 
-  private void internalLoad() throws IOException {
-    JSONTokener tokenizer = new JSONTokener(new FileInputStream(courseFile));
-    JSONObject jsonObject = new JSONObject(tokenizer);
+  @NotNull
+  private JSONObject readCourseFile() throws IOException {
+    return new JSONObject(FileUtils.readFileToString(courseFile, StandardCharsets.UTF_8));
+  }
+
+  @NotNull
+  private void writeCourseFile(@NotNull JSONObject jsonObject) throws IOException {
+    FileUtils.writeStringToFile(courseFile, jsonObject.toString(), StandardCharsets.UTF_8);
+  }
+
+  /*
+   * Returns the course file corresponding to the given project.
+   */
+  private File getCourseFile(@NotNull Project project) {
+    return Paths
+        .get(Objects.requireNonNull(project.getBasePath()),
+            Project.DIRECTORY_STORE_FOLDER,
+            COURSE_FILE_NAME)
+        .toFile();
+  }
+
+  /*
+   * Returns a JSONObject corresponding to the contents of the modulesMetadata map.
+   */
+  @NotNull
+  private JSONObject createModulesObject() {
+    JSONObject modulesObject = new JSONObject();
+    modulesMetadata.forEach((name, metadata) -> {
+      modulesObject
+          .put(name, new JSONObject()
+              .put(MODULE_ID_KEY, metadata.getModuleId())
+              .put(MODULE_DOWNLOADED_AT_KEY, metadata.getDownloadedAt()));
+    });
+    return modulesObject;
+  }
+
+  /*
+   * Initializes local variables from the given JSON object.
+   */
+  private void loadFromJsonObject(@NotNull JSONObject jsonObject) throws IOException {
     this.courseUrl = new URL(jsonObject.getString("url"));
 
     this.modulesMetadata = new HashMap<>();
@@ -156,4 +185,5 @@ public class CourseFileManager {
       this.modulesMetadata.put(moduleName, new IntelliJModuleMetadata(moduleId, downloadedAt));
     }
   }
+
 }
