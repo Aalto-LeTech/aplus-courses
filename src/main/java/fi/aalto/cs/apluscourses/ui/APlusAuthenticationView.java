@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class APlusAuthenticationView extends DialogWrapper {
   @Binding
-  private JPasswordField tokenField;
+  protected JPasswordField inputField;
   private JPanel basePanel;
 
   APlusAuthenticationViewModel authenticationViewModel;
@@ -51,15 +51,10 @@ public class APlusAuthenticationView extends DialogWrapper {
 
   @Override
   protected void doOKAction() {
-    authenticationViewModel.setToken(tokenField.getPassword());
-    clearTokenArray();
+    char[] input = inputField.getPassword();
+    authenticationViewModel.setToken(input);
+    Arrays.fill(input, '\0');
     super.doOKAction();
-  }
-
-  @Override
-  public void doCancelAction() {
-    clearTokenArray();
-    super.doCancelAction();
   }
 
   @NotNull
@@ -77,17 +72,10 @@ public class APlusAuthenticationView extends DialogWrapper {
   @Nullable
   @Override
   protected ValidationInfo doValidate() {
-    char[] content = tokenField.getPassword();
-    if (content.length != 0) {
+    if (inputField.getPassword().length != 0) {
       return null;
     }
-    return new ValidationInfo("Token must not be empty", tokenField);
+    return new ValidationInfo("Token must not be empty", inputField);
   }
 
-  private void clearTokenArray() {
-    char[] token = tokenField.getPassword();
-    if (token != null) {
-      Arrays.fill(token, '0');
-    }
-  }
 }
