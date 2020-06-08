@@ -3,6 +3,7 @@ package fi.aalto.cs.apluscourses.model;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
 import fi.aalto.cs.apluscourses.utils.ResourceException;
 import fi.aalto.cs.apluscourses.utils.Resources;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -15,6 +16,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -44,6 +46,9 @@ public class Course implements ComponentSource {
   @NotNull
   private final Map<String, URL> resourceUrls;
 
+  @NotNull
+  private final List<String> autoInstallComponentNames;
+
   /**
    * Constructs a course with the given parameters.
    *
@@ -58,12 +63,14 @@ public class Course implements ComponentSource {
                 @NotNull List<Module> modules,
                 @NotNull List<Library> libraries,
                 @NotNull Map<String, String> requiredPlugins,
-                @NotNull Map<String, URL> resourceUrls) {
+                @NotNull Map<String, URL> resourceUrls,
+                @NotNull List<String> autoInstallComponentNames) {
     this.name = name;
     this.modules = modules;
     this.requiredPlugins = requiredPlugins;
     this.resourceUrls = resourceUrls;
     this.libraries = libraries;
+    this.autoInstallComponentNames = autoInstallComponentNames;
     components = Stream.concat(modules.stream(), libraries.stream())
         .collect(Collectors.toMap(Component::getName, Function.identity()));
   }
@@ -109,8 +116,10 @@ public class Course implements ComponentSource {
     List<Module> courseModules = getCourseModules(jsonObject, sourcePath, factory);
     Map<String, String> requiredPlugins = getCourseRequiredPlugins(jsonObject, sourcePath);
     Map<String, URL> resourceUrls = getCourseResourceUrls(jsonObject, sourcePath);
+    List<String> autoInstallComponentNames
+        = getCourseAutoInstallComponentNames(jsonObject, sourcePath);
     return factory.createCourse(courseName, courseModules, Collections.emptyList(),
-        requiredPlugins, resourceUrls);
+        requiredPlugins, resourceUrls, autoInstallComponentNames);
   }
 
   /**
@@ -187,6 +196,20 @@ public class Course implements ComponentSource {
   @NotNull
   public Map<String, URL> getResourceUrls() {
     return Collections.unmodifiableMap(resourceUrls);
+  }
+
+  /**
+   * Returns a list of components that should be installed automatically for this course.
+   *
+   * @return A list of components that should be installed automatically for this course.
+   */
+  @NotNull
+  public List<Component> getAutoInstallComponents() {
+    return autoInstallComponentNames
+        .stream()
+        .map(this::getComponentIfExists)
+        .filter(Objects::nonNull)
+        .collect(Collectors.toList());
   }
 
 
@@ -288,6 +311,28 @@ public class Course implements ComponentSource {
       }
     }
     return resourceUrls;
+  }
+
+  @NotNull
+  private static List<String> getCourseAutoInstallComponentNames(@NotNull JSONObject jsonObject,
+                                                                 @NotNull String source)
+      throws MalformedCourseConfigurationFileException {
+    List<String> autoInstallComponentNames = new ArrayList<>();
+    JSONArray autoInstallArray = jsonObject.optJSONArray("autoInstall");
+    if (autoInstallArray == null) {
+      return autoInstallComponentNames;
+    }
+
+    for (int i = 0; i < autoInstallArray.length(); ++i) {
+      try {
+        String autoInstallComponentName = autoInstallArray.getString(i);
+        autoInstallComponentNames.add(autoInstallComponentName);
+      } catch (JSONException e) {
+        throw new MalformedCourseConfigurationFileException(
+            source, "Names in \"autoInstall\" array should be course components", e);
+      }
+    }
+    return autoInstallComponentNames;
   }
 
   @Nullable

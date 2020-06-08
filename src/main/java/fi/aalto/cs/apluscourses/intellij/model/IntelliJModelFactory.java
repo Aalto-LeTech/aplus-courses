@@ -18,8 +18,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class IntelliJModelFactory implements ModelFactory {
+
+  private static final Logger logger = LoggerFactory.getLogger(IntelliJModelFactory.class);
 
   @NotNull
   private final APlusProject project;
@@ -30,14 +34,15 @@ public class IntelliJModelFactory implements ModelFactory {
 
   @Override
   public Course createCourse(@NotNull String name,
-      @NotNull List<Module> modules,
-      @NotNull List<Library> libraries,
-      @NotNull Map<String, String> requiredPlugins,
-      @NotNull Map<String, URL> resourceUrls) {
+                             @NotNull List<Module> modules,
+                             @NotNull List<Library> libraries,
+                             @NotNull Map<String, String> requiredPlugins,
+                             @NotNull Map<String, URL> resourceUrls,
+                             @NotNull List<String> autoInstallComponentNames) {
 
     IntelliJCourse course =
-        new IntelliJCourse(name, modules, libraries, requiredPlugins, resourceUrls, project,
-            new CommonLibraryProvider(project));
+        new IntelliJCourse(name, modules, libraries, requiredPlugins, resourceUrls,
+            autoInstallComponentNames, project, new CommonLibraryProvider(project));
 
     Component.InitializationCallback componentInitializationCallback =
         component -> registerComponentToCourse(component, course);
