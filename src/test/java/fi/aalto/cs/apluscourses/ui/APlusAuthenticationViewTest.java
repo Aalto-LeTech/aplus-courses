@@ -44,8 +44,8 @@ public class APlusAuthenticationViewTest extends LightIdeaTestCase {
     authenticationView.setInput("token");
     authenticationView.doOKAction();
 
-    Assert.assertEquals("The authentication dialog modifies the view model", "token",
-        authenticationViewModel.getAuthentication().getToken());
+    Assert.assertArrayEquals("The authentication dialog modifies the view model",
+        "token".toCharArray(), authenticationViewModel.getAuthentication().getToken());
   }
 
   @Test
@@ -79,8 +79,9 @@ public class APlusAuthenticationViewTest extends LightIdeaTestCase {
     APlusAuthenticationViewModel authenticationViewModel = new APlusAuthenticationViewModel(null);
     authenticationViewModel.setToken(new char[]{'x', 'y', 'z'});
 
-    Assert.assertEquals("Returns the existing authentication", "xyz", APlusAuthenticationView
-        .promptForAuthenticationIfMissing(authenticationViewModel).getToken());
+    Assert.assertArrayEquals("Returns the existing authentication", "xyz".toCharArray(),
+        APlusAuthenticationView
+            .promptForAuthenticationIfMissing(authenticationViewModel).getToken());
   }
 
 }

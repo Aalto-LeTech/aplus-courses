@@ -9,8 +9,8 @@ public class APlusAuthenticationTest {
   public void testAPlusAuthentication() {
     char[] token = new char[]{'a', 'b', 'c'};
     APlusAuthentication authentication = new APlusAuthentication(token);
-    Assert.assertEquals("The token should be equal to the one provided to the constructor",
-        "abc", authentication.getToken());
+    Assert.assertArrayEquals("The token should be equal to the one provided to the constructor",
+        token, authentication.getToken());
   }
 
   @Test
@@ -19,7 +19,16 @@ public class APlusAuthenticationTest {
     APlusAuthentication authentication = new APlusAuthentication(token);
     token[0] = 'g';
     Assert.assertEquals("The constructor makes a copy of the given array",
-        "def", authentication.getToken());
+        'd', authentication.getToken()[0]);
+  }
+
+  @Test
+  public void testClear() {
+    char[] token = new char[]{'g', 'h', 'i'};
+    APlusAuthentication authentication = new APlusAuthentication(token);
+    authentication.clear();
+    Assert.assertArrayEquals("The token is cleared", new char[]{'\0', '\0', '\0'},
+        authentication.getToken());
   }
 
 }

@@ -21,8 +21,8 @@ public class APlusAuthenticationViewModelTest {
 
     viewModel.setToken(new char[]{'a', 's', 'd'});
 
-    Assert.assertEquals("The view model should have an authentication instance",
-        "asd", viewModel.getAuthentication().getToken());
+    Assert.assertArrayEquals("The view model should have an authentication instance",
+        new char[]{'a', 's', 'd'}, viewModel.getAuthentication().getToken());
   }
 
 }
