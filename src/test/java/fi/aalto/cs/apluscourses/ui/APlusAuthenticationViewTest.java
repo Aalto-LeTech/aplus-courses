@@ -79,7 +79,7 @@ public class APlusAuthenticationViewTest extends LightIdeaTestCase {
     APlusAuthenticationViewModel authenticationViewModel = new APlusAuthenticationViewModel(null);
     authenticationViewModel.setToken(new char[]{'x', 'y', 'z'});
 
-    Assert.assertEquals("Returns the existing authentication", "xyz", TestAuthenticationView
+    Assert.assertEquals("Returns the existing authentication", "xyz", APlusAuthenticationView
         .promptForAuthenticationIfMissing(authenticationViewModel).getToken());
   }
 
