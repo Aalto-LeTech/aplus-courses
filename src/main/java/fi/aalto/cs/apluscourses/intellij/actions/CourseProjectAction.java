@@ -10,11 +10,14 @@ import fi.aalto.cs.apluscourses.intellij.model.SettingsImporter;
 import fi.aalto.cs.apluscourses.intellij.model.SettingsImporterImpl;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.intellij.utils.CourseFileManager;
+import fi.aalto.cs.apluscourses.model.ComponentInstaller;
+import fi.aalto.cs.apluscourses.model.ComponentInstallerImpl;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationFileException;
 import fi.aalto.cs.apluscourses.presentation.CourseProjectViewModel;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogsImpl;
+import fi.aalto.cs.apluscourses.utils.async.SimpleAsyncTaskManager;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -89,6 +92,8 @@ public class CourseProjectAction extends AnAction {
       return;
     }
 
+    startAutoInstalls(project, course, courseProjectViewModel.userWantsRestart());
+
     if (!tryCreateCourseFile(project, selectedCourseUrl)) {
       return;
     }
@@ -97,9 +102,8 @@ public class CourseProjectAction extends AnAction {
       return;
     }
 
-    if (!courseProjectViewModel.userOptsOutOfSettings() && tryImportIdeSettings(course)
-        && courseProjectViewModel.userWantsRestart()) {
-      ideRestarter.restart();
+    if (!courseProjectViewModel.userOptsOutOfSettings()) {
+      tryImportIdeSettings(course);
     }
 
     if (createCourseFile) {
@@ -159,6 +163,25 @@ public class CourseProjectAction extends AnAction {
       notifyMalformedCourseConfiguration();
       return null;
     }
+  }
+
+  private void startAutoInstalls(@NotNull Project project,
+                                 @NotNull Course course,
+                                 boolean restartWhenFinished) {
+    ComponentInstaller.Factory factory
+        = new ComponentInstallerImpl.FactoryImpl<>(new SimpleAsyncTaskManager());
+    ComponentInstaller installer = factory.getInstallerFor(course);
+
+    Runnable callback = null;
+    if (restartWhenFinished) {
+      callback = () -> ApplicationManager.getApplication().invokeLater(() -> {
+        if (dialogs.showRestartDialog(project)) {
+          ideRestarter.restart();
+        }
+      });
+    }
+
+    installer.installAsync(course.getAutoInstallComponents(), callback);
   }
 
   /**

@@ -48,6 +48,11 @@ public class CourseProjectActionTest {
     }
 
     @Override
+    public boolean showRestartDialog(@NotNull Project project) {
+      return doRestart;
+    }
+
+    @Override
     public void showErrorDialog(@NotNull String message, @NotNull String title) {
       lastErrorMessage = message;
     }
@@ -144,7 +149,6 @@ public class CourseProjectActionTest {
     Assert.assertEquals("The IDE settings should get imported", 1,
         settingsImporter.getImportIdeSettingsCallCount());
 
-    Assert.assertEquals("IdeRestarter#restart should get called", 1, ideRestarter.getCallCount());
     Assert.assertEquals("No error dialogs should be shown", "",
         dialogs.getLastErrorMessage());
   }
