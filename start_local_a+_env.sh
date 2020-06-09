@@ -12,12 +12,4 @@ head -97 docker-up.sh > docker-up-custom.sh &&
 chmod +x docker-up-custom.sh &&
 ./docker-up-custom.sh &&
 # wait for all the components of A+ to start
-sleep 2m &&
-# REMOVE NEXT 3 (THREE) LINES AFTER CONFIGURING ACTUAL INTEGRATION TESTS!
-ls -al &&
-docker ps &&
-netstat -tulpn &&
-# this is an example call to one of the components (for details check https://apluslms.github.io/guides/quick/)
-curl --user root:root http://localhost:8000/api/v2/courses/
-# groups API endpoint (populated)
-curl --user root:root http://localhost:8000/api/v2/courses/1/groups/2/
+sleep 2m

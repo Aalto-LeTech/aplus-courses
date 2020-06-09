@@ -16,33 +16,6 @@ public class ApiTest {
 
   @Test
   public void getStudentsGroupsReturnsCorrect() {
-    //{
-    //    "id": 2,
-    //    "url": "http://localhost:8000/api/v2/courses/1/groups/2/",
-    //    "members": [
-    //        {
-    //            "id": 500,
-    //            "url": "http://localhost:8000/api/v2/users/500/",
-    //            "username": "student2",
-    //            "student_id": "307518",
-    //            "email": "student2@example.org",
-    //            "full_name": "Ben Cauliflower",
-    //            "is_
-    //            external": false
-    //        },
-    //        {
-    //            "id": 501,
-    //            "url": "http://localhost:8000/api/v2/users/501/",
-    //            "username": "student3",
-    //            "student_id": "135846",
-    //            "email": "student3@example.org",
-    //            "full_name": "Ben Bond",
-    //            "is_external": false
-    //        }
-    //    ],
-    //    "timestamp": "2020-06-09T10:41:30.250085+03:00"
-    //}
-
     given()
         .auth()
         .preemptive()
