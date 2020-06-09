@@ -7,4 +7,9 @@ public class MainViewModel {
 
   @NotNull
   public final ObservableProperty<CourseViewModel> courseViewModel = new ObservableProperty<>(null);
+
+  @NotNull
+  public final ObservableProperty<APlusAuthenticationViewModel> authenticationViewModel
+      = new ObservableProperty<>(null);
+
 }
