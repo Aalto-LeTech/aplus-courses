@@ -27,6 +27,7 @@ dependencies {
     testCompile group: 'org.hamcrest', name: 'hamcrest', version: '2.2'
     testCompile group: 'org.mockito', name: 'mockito-core', version: '3.2.4'
     testCompile group: 'org.scala-lang', name: 'scala-library', version: '2.12.10'
+    testCompile group: 'io.rest-assured', name: 'rest-assured', version: '4.2.0'
 }
 
 intellij {
