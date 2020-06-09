@@ -18,7 +18,6 @@ public class EnvironmentChecker implements TestRule {
   public EnvironmentChecker(String environmentName) {
     String getenv = System.getenv(environmentName);
     isGivenEnvironment = Boolean.parseBoolean(getenv);
-    System.out.println("inside CI? " + isGivenEnvironment);
   }
 
   @Override
@@ -28,7 +27,7 @@ public class EnvironmentChecker implements TestRule {
       public void evaluate() throws Throwable {
         if (isGivenEnvironment) {
           throw new AssumptionViolatedException("inside CI");
-//          statement.evaluate();
+          //  statement.evaluate();
         }
       }
     };
