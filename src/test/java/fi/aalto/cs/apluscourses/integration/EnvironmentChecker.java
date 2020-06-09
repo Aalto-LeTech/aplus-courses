@@ -11,6 +11,7 @@ public class EnvironmentChecker implements TestRule {
   public EnvironmentChecker(String environmentName) {
     String getenv = System.getenv(environmentName);
     isGivenEnvironment = Boolean.parseBoolean(getenv);
+    System.out.println("CI env var is: " + isGivenEnvironment);
   }
 
   @Override
