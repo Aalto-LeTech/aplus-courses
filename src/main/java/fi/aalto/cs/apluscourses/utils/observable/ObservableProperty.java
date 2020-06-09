@@ -1,6 +1,5 @@
 package fi.aalto.cs.apluscourses.utils.observable;
 
-import fi.aalto.cs.apluscourses.utils.DummyArgs;
 import java.util.Map;
 import java.util.WeakHashMap;
 import org.jetbrains.annotations.NotNull;
@@ -40,7 +39,7 @@ public abstract class ObservableProperty<T> {
   }
 
   public void declareDependentOn(@NotNull ObservableProperty<?> property) {
-    property.addValueObserver(this, ObservableProperty::dependencyPropertyChanged);
+    property.addValueObserver(this, (self, dummy) -> self.onValueChanged(self.get()));
   }
 
   @Nullable
@@ -52,15 +51,6 @@ public abstract class ObservableProperty<T> {
 
   public synchronized void removeValueObserver(Object observer) {
     observers.remove(observer);
-  }
-
-  @DummyArgs
-  private void dependencyPropertyChanged(Object dummy) {
-    valueChanged();
-  }
-
-  public void valueChanged() {
-    onValueChanged(get());
   }
 
   protected synchronized void onValueChanged(@Nullable T value) {

@@ -4,7 +4,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import fi.aalto.cs.apluscourses.presentation.CourseProjectViewModel;
-import fi.aalto.cs.apluscourses.ui.Binding;
+import fi.aalto.cs.apluscourses.ui.GuiObject;
 import fi.aalto.cs.apluscourses.ui.CheckBox;
 import fi.aalto.cs.apluscourses.ui.TemplateLabel;
 import fi.aalto.cs.apluscourses.utils.bindable.Bindable;
@@ -17,19 +17,18 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class CourseProjectView extends DialogWrapper {
-  @Binding
   private JPanel basePanel;
-  @Binding
+  @GuiObject
   private TemplateLabel infoText;
-  @Binding
+  @GuiObject
   private TemplateLabel currentSettingsText;
-  @Binding
+  @GuiObject
   private JLabel settingsInfoText;
-  @Binding
+  @GuiObject
   private CheckBox restartCheckBox;
-  @Binding
+  @GuiObject
   private CheckBox settingsOptOutCheckbox;
-  @Binding
+  @GuiObject
   private JLabel warningText;
 
   private final Bindable<JLabel, Boolean> isWarningTextVisibleBindable =

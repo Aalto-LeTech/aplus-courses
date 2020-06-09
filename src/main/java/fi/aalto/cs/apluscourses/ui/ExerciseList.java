@@ -5,7 +5,7 @@ import javax.swing.JPanel;
 
 public class ExerciseList {
 
-  @Binding
+  @GuiObject
   private JList exercises;
   private JPanel basePanel;
 

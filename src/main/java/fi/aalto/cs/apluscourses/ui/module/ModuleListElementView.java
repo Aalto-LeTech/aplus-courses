@@ -1,17 +1,17 @@
 package fi.aalto.cs.apluscourses.ui.module;
 
-import fi.aalto.cs.apluscourses.ui.Binding;
+import fi.aalto.cs.apluscourses.ui.GuiObject;
 import fi.aalto.cs.apluscourses.ui.base.ListElementView;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class ModuleListElementView implements ListElementView {
-  @Binding
+  @GuiObject
   public JPanel basePanel;
-  @Binding
+  @GuiObject
   public JLabel nameLabel;
-  @Binding
+  @GuiObject
   public JLabel statusLabel;
 
   @Override

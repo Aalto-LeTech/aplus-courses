@@ -1,15 +1,15 @@
 package fi.aalto.cs.apluscourses.ui.module;
 
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
-import fi.aalto.cs.apluscourses.ui.Binding;
+import fi.aalto.cs.apluscourses.ui.GuiObject;
 import javax.swing.JPanel;
 
 public class ModulesView {
-  @Binding
+  @GuiObject
   public ModuleListView moduleListView;
-  @Binding
+  @GuiObject
   public JPanel toolbarContainer;
-  @Binding
+  @GuiObject
   public JPanel basePanel;
 
   /**
