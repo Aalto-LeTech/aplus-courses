@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # preparing and compiling the A+ env components (https://apluslms.github.io/guides/quick/)
-git clone https://github.com/apluslms/course-templates.git my_new_course &&
+git clone https://github.com/Aalto-LeTech/course-templates.git my_new_course &&
 cd my_new_course &&
 git submodule init &&
 git submodule update &&
@@ -19,3 +19,5 @@ docker ps &&
 netstat -tulpn &&
 # this is an example call to one of the components (for details check https://apluslms.github.io/guides/quick/)
 curl --user root:root http://localhost:8000/api/v2/courses/
+# groups API endpoint (populated)
+curl --user root:root http://localhost:8000/api/v2/courses/1/groups/
