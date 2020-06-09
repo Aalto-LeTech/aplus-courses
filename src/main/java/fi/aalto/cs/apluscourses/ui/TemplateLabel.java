@@ -7,8 +7,6 @@ import javax.swing.JLabel;
 public class TemplateLabel extends JLabel {
   public final transient Bindable<TemplateLabel, Object> templateArgumentBindable =
       new Bindable<>(this, TemplateLabel::applyTemplate);
-  public final transient Bindable<TemplateLabel, Boolean> isVisibleBindable =
-      new Bindable<>(this, TemplateLabel::setVisible);
 
   private String textTemplate = "{0}";
 

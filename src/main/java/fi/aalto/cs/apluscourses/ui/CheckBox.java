@@ -16,9 +16,6 @@ public class CheckBox extends JCheckBox {
   public final transient Bindable<CheckBox, Boolean> isEnabledBindable =
       new Bindable<>(this, CheckBox::setEnabled);
 
-  /**
-   * Construct a check box with the given observable properties.
-   */
   public CheckBox() {
     addItemListener(e -> isCheckedBindable.updateSource());
   }

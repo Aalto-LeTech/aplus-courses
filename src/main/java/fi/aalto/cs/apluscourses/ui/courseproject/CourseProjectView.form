@@ -18,7 +18,7 @@
       </component>
       <component id="b88a6" class="fi.aalto.cs.apluscourses.ui.TemplateLabel" binding="currentSettingsText">
         <constraints>
-          <grid row="5" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="4" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <textTemplate value="&lt;html&gt;&lt;body&gt;IntelliJ IDEA settings are already imported for &lt;b&gt;{0}&lt;/b&gt;.&lt;/body&gt;&lt;html&gt;"/>
@@ -66,7 +66,7 @@
       </component>
       <component id="50bb1" class="javax.swing.JLabel" binding="settingsInfoText">
         <constraints>
-          <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <text value="&lt;html&gt;&lt;body&gt;The A+ Courses plugin will adjust IntelliJ IDEA settings. This helps use IDEA for coursework.&lt;/body&gt;&lt;/html&gt;"/>
@@ -77,13 +77,6 @@
         <constraints>
           <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
             <preferred-size width="-1" height="8"/>
-          </grid>
-        </constraints>
-      </vspacer>
-      <vspacer id="21edc">
-        <constraints>
-          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
-            <preferred-size width="-1" height="6"/>
           </grid>
         </constraints>
       </vspacer>
@@ -98,6 +91,13 @@
       <vspacer id="20e32">
         <constraints>
           <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
+            <preferred-size width="-1" height="6"/>
+          </grid>
+        </constraints>
+      </vspacer>
+      <vspacer id="21edc">
+        <constraints>
+          <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
             <preferred-size width="-1" height="6"/>
           </grid>
         </constraints>

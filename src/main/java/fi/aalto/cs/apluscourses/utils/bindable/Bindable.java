@@ -14,20 +14,17 @@ public class Bindable<T, S> {
     this.targetSetter = targetSetter;
   }
 
-  public synchronized void bindToSource(S value) {
-    setSourcePropertyInternal(null);
-    targetSetter.accept(target, value);
-  }
-
-  public synchronized void bindToSource(ObservableProperty<S> sourceProperty) {
-    setSourcePropertyInternal(sourceProperty);
-    sourceProperty.addValueObserver(target, targetSetter::accept);
-  }
-
-  private synchronized void setSourcePropertyInternal(
-      @Nullable ObservableProperty<S> sourceProperty) {
+  /**
+   * Makes this bindable observe a source property and update the target accordingly.
+   *
+   * @param sourceProperty An {@link ObservableProperty} or null (to clear).
+   */
+  public synchronized void bindToSource(@Nullable ObservableProperty<S> sourceProperty) {
     if (this.sourceProperty != null) {
       this.sourceProperty.removeValueObserver(this);
+    }
+    if (sourceProperty != null) {
+      sourceProperty.addValueObserver(target, targetSetter::accept);
     }
     this.sourceProperty = sourceProperty;
   }

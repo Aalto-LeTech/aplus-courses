@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 
 import fi.aalto.cs.apluscourses.model.Course;
 import java.util.Collections;
-
 import org.junit.Test;
 
 public class CourseProjectViewModelTest {

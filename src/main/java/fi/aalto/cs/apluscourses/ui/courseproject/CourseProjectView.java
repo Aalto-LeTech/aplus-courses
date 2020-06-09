@@ -7,7 +7,6 @@ import fi.aalto.cs.apluscourses.presentation.CourseProjectViewModel;
 import fi.aalto.cs.apluscourses.ui.CheckBox;
 import fi.aalto.cs.apluscourses.ui.GuiObject;
 import fi.aalto.cs.apluscourses.ui.TemplateLabel;
-import fi.aalto.cs.apluscourses.utils.bindable.Bindable;
 import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -31,39 +30,31 @@ public class CourseProjectView extends DialogWrapper {
   @GuiObject
   private JLabel warningText;
 
-  private final Bindable<JLabel, Boolean> isWarningTextVisibleBindable =
-      new Bindable<>(warningText, JLabel::setVisible);
-  private final Bindable<JLabel, Boolean> isSettingsInfoTextVisibleBindable =
-      new Bindable<>(settingsInfoText, JLabel::setVisible);
-
   CourseProjectView(@NotNull Project project,
                     @NotNull CourseProjectViewModel viewModel) {
     super(project);
-    init();
 
     setTitle("Turn Project Into A+ Course Project");
     setButtonsAlignment(SwingConstants.CENTER);
+
+    init();
+
     infoText.setIcon(Messages.getInformationIcon());
 
     restartCheckBox.isCheckedBindable.bindToSource(viewModel.restartProperty);
     restartCheckBox.isEnabledBindable.bindToSource(viewModel.isRestartAvailableProperty);
 
     settingsOptOutCheckbox.isCheckedBindable.bindToSource(viewModel.settingsOptOutProperty);
-    settingsOptOutCheckbox.isEnabledBindable.bindToSource(viewModel.canUserOptOutSettings());
 
-    isWarningTextVisibleBindable.bindToSource(viewModel.shouldWarnUser());
+    settingsOptOutCheckbox.setEnabled(viewModel.canUserOptOutSettings());
 
-    isSettingsInfoTextVisibleBindable.bindToSource(viewModel.shouldShowSettingsInfo());
+    warningText.setVisible(viewModel.shouldWarnUser());
+    settingsInfoText.setVisible(viewModel.shouldShowSettingsInfo());
 
-    infoText.templateArgumentBindable.bindToSource(viewModel.getCourseName());
+    infoText.applyTemplate(viewModel.getCourseName());
 
-    currentSettingsText.templateArgumentBindable.bindToSource(viewModel.getCurrentSettings());
-    currentSettingsText.isVisibleBindable.bindToSource(viewModel.shouldShowCurrentSettings());
-  }
-
-  @Override
-  public void doCancelAction() {
-    close(CANCEL_EXIT_CODE);
+    currentSettingsText.applyTemplate(viewModel.getCurrentSettings());
+    currentSettingsText.setVisible(viewModel.shouldShowCurrentSettings());
   }
 
   @Nullable
