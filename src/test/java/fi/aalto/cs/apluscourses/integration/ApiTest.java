@@ -11,9 +11,9 @@ import org.junit.Test;
 
 public class ApiTest {
 
-//  //  For this to work the 'CI=true' environment variable is added to .travis.yml
-//  @ClassRule
-//  public static final EnvironmentChecker checker = new EnvironmentChecker("CI");
+  //  //  For this to work the 'CI=true' environment variable is added to .travis.yml
+  //  @ClassRule
+  //  public static final EnvironmentChecker checker = new EnvironmentChecker("CI");
 
   @Test
   public void getStudentsGroupsReturnsCorrect() {
