@@ -1,22 +1,17 @@
 package fi.aalto.cs.apluscourses.intellij.actions
 
-import java.util
-
 import com.intellij.execution.RunManagerEx
 import com.intellij.openapi.actionSystem.{AnActionEvent, CommonDataKeys, DataContext}
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.module.{Module, ModuleManager, ModuleUtilCore}
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.libraries.Library
-import com.intellij.openapi.roots.{LibraryOrderEntry, ModuleRootManager}
+import com.intellij.openapi.roots.ModuleRootManager
 import com.intellij.openapi.util.io.FileUtilRt.toSystemIndependentName
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.util.Processor
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings
-import fi.aalto.cs.apluscourses.intellij.utils.ListDependenciesPolicy
 import fi.aalto.cs.apluscourses.presentation.ReplConfigurationFormModel
 import fi.aalto.cs.apluscourses.ui.repl.{ReplConfigurationDialog, ReplConfigurationForm}
-import org.jetbrains.annotations.{NotNull, Nullable}
+import org.jetbrains.annotations.NotNull
 import org.jetbrains.plugins.scala.console.actions.RunConsoleAction
 import org.jetbrains.plugins.scala.console.configuration.ScalaConsoleRunConfiguration
 

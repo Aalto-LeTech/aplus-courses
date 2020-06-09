@@ -1,13 +1,10 @@
 package fi.aalto.cs.apluscourses.intellij.actions
 
-
-import com.intellij.mock.MockVirtualFile.{dir, file}
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import fi.aalto.cs.apluscourses.intellij.TestHelperScala
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings
 import org.junit.Assert._
 import org.junit.Test
-import org.mockito.Mockito.{spy, times, verify}
 
 class ReplActionTest extends BasePlatformTestCase with TestHelperScala {
 

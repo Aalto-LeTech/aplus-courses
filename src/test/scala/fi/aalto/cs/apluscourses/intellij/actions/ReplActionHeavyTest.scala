@@ -5,7 +5,6 @@ import fi.aalto.cs.apluscourses.intellij.TestHelperScala
 import org.junit.Assert.{assertEquals, assertSame, assertTrue}
 import org.junit.Test
 
-
 class ReplActionHeavyTest extends HeavyPlatformTestCase with TestHelperScala {
 
   @Test
