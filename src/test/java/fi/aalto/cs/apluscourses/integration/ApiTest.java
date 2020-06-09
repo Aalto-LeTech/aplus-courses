@@ -2,18 +2,17 @@ package fi.aalto.cs.apluscourses.integration;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.hasItems;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import io.restassured.http.ContentType;
 import org.apache.http.HttpStatus;
+import org.junit.ClassRule;
 import org.junit.Test;
 
 public class ApiTest {
 
-  //  //  For this to work the 'CI=true' environment variable is added to .travis.yml
-  //  @ClassRule
-  //  public static final EnvironmentChecker checker = new EnvironmentChecker("CI");
+  //  For this to work the 'CI=true' environment variable is added to .travis.yml
+  @ClassRule
+  public static final EnvironmentChecker checker = new EnvironmentChecker("CI");
 
   @Test
   public void getStudentsGroupsReturnsCorrect() {
@@ -43,9 +42,6 @@ public class ApiTest {
     //    ],
     //    "timestamp": "2020-06-09T10:41:30.250085+03:00"
     //}
-
-    assertTrue("CI var is there", Boolean.parseBoolean(System.getenv("CI")));
-    assertFalse("CI var is not there", Boolean.parseBoolean(System.getenv("CI")));
 
     given()
         .auth()
