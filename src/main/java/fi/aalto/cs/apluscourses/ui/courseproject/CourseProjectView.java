@@ -6,8 +6,9 @@ import com.intellij.openapi.ui.Messages;
 import fi.aalto.cs.apluscourses.presentation.CourseProjectViewModel;
 import fi.aalto.cs.apluscourses.ui.Binding;
 import fi.aalto.cs.apluscourses.ui.CheckBox;
+import fi.aalto.cs.apluscourses.ui.TemplateLabel;
+import fi.aalto.cs.apluscourses.utils.bindable.Bindable;
 import javax.swing.Action;
-import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -16,29 +17,53 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class CourseProjectView extends DialogWrapper {
-  private CourseProjectViewModel courseProjectViewModel;
+  @Binding
   private JPanel basePanel;
   @Binding
-  private JLabel infoText;
+  private TemplateLabel infoText;
   @Binding
-  private JLabel settingsText;
+  private TemplateLabel currentSettingsText;
   @Binding
-  private JCheckBox restartCheckbox;
+  private JLabel settingsInfoText;
   @Binding
-  private JCheckBox settingsOptOutCheckbox;
+  private CheckBox restartCheckBox;
+  @Binding
+  private CheckBox settingsOptOutCheckbox;
+  @Binding
+  private JLabel warningText;
+
+  private final Bindable<JLabel, Boolean> isWarningTextVisibleBindable =
+      new Bindable<>(warningText, JLabel::setVisible);
+  private final Bindable<JLabel, Boolean> isSettingsInfoTextVisibleBindable =
+      new Bindable<>(settingsInfoText, JLabel::setVisible);
 
   CourseProjectView(@NotNull Project project,
-                    @NotNull CourseProjectViewModel courseProjectViewModel) {
+                    @NotNull CourseProjectViewModel viewModel) {
     super(project);
-    this.courseProjectViewModel = courseProjectViewModel;
+    init();
+
     setTitle("Turn Project Into A+ Course Project");
     setButtonsAlignment(SwingConstants.CENTER);
-    init();
+    infoText.setIcon(Messages.getInformationIcon());
+
+    restartCheckBox.isCheckedBindable.bindToSource(viewModel.restartProperty);
+    restartCheckBox.isEnabledBindable.bindToSource(viewModel.isRestartAvailableProperty);
+
+    settingsOptOutCheckbox.isCheckedBindable.bindToSource(viewModel.settingsOptOutProperty);
+    settingsOptOutCheckbox.isEnabledBindable.bindToSource(viewModel.canUserOptOutSettings());
+
+    isWarningTextVisibleBindable.bindToSource(viewModel.shouldWarnUser());
+
+    isSettingsInfoTextVisibleBindable.bindToSource(viewModel.shouldShowSettingsInfo());
+
+    infoText.templateArgumentBindable.bindToSource(viewModel.getCourseName());
+
+    currentSettingsText.templateArgumentBindable.bindToSource(viewModel.getCurrentSettings());
+    currentSettingsText.isVisibleBindable.bindToSource(viewModel.shouldShowCurrentSettings());
   }
 
   @Override
   public void doCancelAction() {
-    courseProjectViewModel.cancel.set(true);
     close(CANCEL_EXIT_CODE);
   }
 
@@ -51,24 +76,6 @@ public class CourseProjectView extends DialogWrapper {
   @NotNull
   @Override
   protected Action[] createActions() {
-    return new Action[]{getOKAction(), getCancelAction()};
-  }
-
-  @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
-  private void createUIComponents() {
-    infoText = new JLabel(Messages.getInformationIcon());
-    infoText.setText(courseProjectViewModel.getInformationText());
-
-    settingsText = new JLabel(courseProjectViewModel.getSettingsText());
-
-    restartCheckbox = new CheckBox(
-        courseProjectViewModel.getRestartCheckboxText(),
-        courseProjectViewModel.restart,
-        courseProjectViewModel.isRestartAvailable);
-
-    settingsOptOutCheckbox = new CheckBox(
-        courseProjectViewModel.getOptOutCheckboxText(),
-        courseProjectViewModel.settingsOptOut,
-        courseProjectViewModel.isSettingsOptOutAvailable);
+    return new Action[] { getOKAction(), getCancelAction() };
   }
 }

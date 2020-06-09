@@ -1,6 +1,10 @@
 package fi.aalto.cs.apluscourses.ui;
 
-import fi.aalto.cs.apluscourses.utils.ObservableProperty;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
+import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
+import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Assert;
 import org.junit.Test;
@@ -9,9 +13,13 @@ public class CheckBoxTest {
 
   @Test
   public void testAddsItemListener() {
-    ObservableProperty<Boolean> isChecked = new ObservableProperty<>(false);
-    ObservableProperty<Boolean> isEnabled = new ObservableProperty<>(true);
-    CheckBox checkBox = new CheckBox("", isChecked, isEnabled);
+    CheckBox checkBox = new CheckBox();
+
+    ObservableProperty<Boolean> isChecked = new ObservableReadWriteProperty<>(false);
+    checkBox.isCheckedBindable.bindToSource(isChecked);
+
+    ObservableProperty<Boolean> isEnabled = new ObservableReadWriteProperty<>(true);
+    checkBox.isEnabledBindable.bindToSource(isEnabled);
 
     Assert.assertFalse("The check box should get its initial selection value from the given "
         + "observable property", checkBox.isSelected());
@@ -30,9 +38,13 @@ public class CheckBoxTest {
 
   @Test
   public void testAddsValueObservers() {
-    ObservableProperty<Boolean> isChecked = new ObservableProperty<>(false);
-    ObservableProperty<Boolean> isEnabled = new ObservableProperty<>(false);
-    CheckBox checkBox = new CheckBox("", isChecked, isEnabled);
+    CheckBox checkBox = new CheckBox();
+
+    ObservableProperty<Boolean> isChecked = new ObservableReadWriteProperty<>(false);
+    checkBox.isCheckedBindable.bindToSource(isChecked);
+
+    ObservableProperty<Boolean> isEnabled = new ObservableReadWriteProperty<>(true);
+    checkBox.isEnabledBindable.bindToSource(isEnabled);
 
     String message
         = "Changes in the given observable properties should be reflected in the check box";
@@ -49,16 +61,16 @@ public class CheckBoxTest {
   }
 
   @Test
-  public void testItemListenerDoesNotSetValueAgain() {
-    AtomicInteger callCount = new AtomicInteger(0);
-    ObservableProperty<Boolean> isChecked = new ObservableProperty<>(true);
-    ObservableProperty.ValueObserver<Boolean> isCheckedObserver
-        = b -> callCount.incrementAndGet();
-    isChecked.addValueObserver(isCheckedObserver);
+  public void testCallbackGetsCalled() {
+    CheckBox checkBox = new CheckBox();
 
-    CheckBox checkBox = new CheckBox("test", isChecked, new ObservableProperty<>(true));
+    ObservableProperty<Boolean> isChecked = new ObservableReadWriteProperty<>(true);
+
+    ObservableProperty.Callback<CheckBox, Boolean> callback = mock(
+        ObservableProperty.Callback.class);
+    isChecked.addValueObserver(checkBox, callback);
+
     checkBox.setSelected(true);
-    Assert.assertEquals("The observable property shouldn't be set with its existing value",
-        1, callCount.get());
+    verify(callback).valueChanged(checkBox, true);
   }
 }
