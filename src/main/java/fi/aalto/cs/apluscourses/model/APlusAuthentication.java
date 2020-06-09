@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class APlusAuthentication {
   @NotNull
-  private char[] token;
+  private final char[] token;
 
   /**
    * Initializes an instance with the given token. Note, that the given token array is not cleared
