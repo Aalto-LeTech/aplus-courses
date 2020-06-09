@@ -48,7 +48,7 @@ public class ApiTest {
         .then()
         .assertThat()
         .statusCode(HttpStatus.SC_OK)
-        .body("members.id", hasItems(500, 501))
-        .body("members.username", hasItems("student2", "student3"));
+        .body("members.id", hasItems(503, 504))
+        .body("members.username", hasItems("student5", "student6"));
   }
 }
