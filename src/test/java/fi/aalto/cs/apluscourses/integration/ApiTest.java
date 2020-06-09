@@ -5,13 +5,17 @@ import static org.hamcrest.CoreMatchers.hasItems;
 
 import io.restassured.http.ContentType;
 import org.apache.http.HttpStatus;
+import org.junit.ClassRule;
 import org.junit.Test;
 
 public class ApiTest {
 
+  //  For this to work the 'CI=true' environment variable is added to .travis.yml
+  @ClassRule
+  public static EnvironmentChecker checker = new EnvironmentChecker("CI");
+
   @Test
   public void getStudentsGroupsReturnsCorrect() {
-
     //{
     //    "id": 2,
     //    "url": "http://localhost:8000/api/v2/courses/1/groups/2/",

@@ -24,5 +24,8 @@ deploy:
     on:
       branch: test
 
+env:
+  - CI=true
+
 notifications:
   slack: $SLACK
