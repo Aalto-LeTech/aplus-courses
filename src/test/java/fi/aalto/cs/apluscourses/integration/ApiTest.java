@@ -12,7 +12,7 @@ public class ApiTest {
 
   //  For this to work the 'CI=true' environment variable is added to .travis.yml
   @ClassRule
-  public static EnvironmentChecker checker = new EnvironmentChecker("CI");
+  public static final EnvironmentChecker checker = new EnvironmentChecker("CI");
 
   @Test
   public void getStudentsGroupsReturnsCorrect() {

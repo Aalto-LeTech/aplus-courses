@@ -8,10 +8,16 @@ public class EnvironmentChecker implements TestRule {
 
   private boolean isGivenEnvironment;
 
+  /**
+   * A JUnit rule that checks the environment.
+   *
+   * @param environmentName the {@link String} name of the corresponding environment variable to
+   *                        check (true or false)
+   */
   public EnvironmentChecker(String environmentName) {
     String getenv = System.getenv(environmentName);
     isGivenEnvironment = Boolean.parseBoolean(getenv);
-    System.out.println("CI env var is: " + isGivenEnvironment);
+    System.out.println("inside CI? " + isGivenEnvironment);
   }
 
   @Override
