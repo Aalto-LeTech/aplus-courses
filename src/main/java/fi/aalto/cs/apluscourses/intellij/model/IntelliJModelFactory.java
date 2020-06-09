@@ -18,12 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class IntelliJModelFactory implements ModelFactory {
-
-  private static final Logger logger = LoggerFactory.getLogger(IntelliJModelFactory.class);
 
   @NotNull
   private final APlusProject project;
