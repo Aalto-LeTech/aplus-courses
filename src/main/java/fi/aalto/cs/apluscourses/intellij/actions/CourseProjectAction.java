@@ -17,6 +17,7 @@ import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationFileException;
 import fi.aalto.cs.apluscourses.presentation.CourseProjectViewModel;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogsImpl;
+import fi.aalto.cs.apluscourses.utils.PostponedRunnable;
 import fi.aalto.cs.apluscourses.utils.async.SimpleAsyncTaskManager;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -39,22 +40,44 @@ public class CourseProjectAction extends AnAction {
   private SettingsImporter settingsImporter;
 
   @NotNull
-  private IdeRestarter ideRestarter;
+  private ComponentInstaller.Factory installerFactory;
+
+  @NotNull
+  private PostponedRunnable ideRestarter;
 
   @NotNull
   private CourseProjectActionDialogs dialogs;
 
   /**
-   * Construct a course project action with the given main view model provider and dialogs.
+   * Construct a course project action with the given parameters.
+   *
+   * @param courseFactory    An instance of {@link CourseFactory} that is used to create a course
+   *                         instance from a URL.
+   * @param createCourseFile Determines whether a course file is created or not. This is useful
+   *                         mostly for testing purposes.
+   * @param settingsImporter An instance of {@link SettingsImporter} that is used to import IDE and
+   *                         project settings.
+   * @param installerFactory The factory used to create the component installer. The component
+   *                         installer is then used to install the automatically installed
+   *                         components of the course. This is useful mainly for testing.
+   * @param ideRestarter     A {@link PostponedRunnable} that is used to restart the IDE (if the
+   *                         user chooses to in the dialog) after everything related to the course
+   *                         project action is done. In practice this happens after the action is
+   *                         done and the components that the course automatically installs are
+   *                         installed. If this is {@code null}, then a default one is used that
+   *                         shows a simple dialog informing the user of the restart and giving the
+   *                         option to cancel.
    */
   public CourseProjectAction(@NotNull CourseFactory courseFactory,
                              boolean createCourseFile,
                              @NotNull SettingsImporter settingsImporter,
-                             @NotNull IdeRestarter ideRestarter,
+                             @NotNull ComponentInstaller.Factory installerFactory,
+                             @Nullable PostponedRunnable ideRestarter,
                              @NotNull CourseProjectActionDialogs dialogs) {
     this.courseFactory = courseFactory;
     this.createCourseFile = createCourseFile;
     this.settingsImporter = settingsImporter;
+    this.installerFactory = installerFactory;
     this.ideRestarter = ideRestarter;
     this.dialogs = dialogs;
   }
@@ -67,7 +90,8 @@ public class CourseProjectAction extends AnAction {
         (url, project) -> Course.fromUrl(url, new IntelliJModelFactory(project)),
         true,
         new SettingsImporterImpl(),
-        () -> ((ApplicationEx) ApplicationManager.getApplication()).restart(true),
+        new ComponentInstallerImpl.FactoryImpl<>(new SimpleAsyncTaskManager()),
+        null,
         new CourseProjectActionDialogsImpl());
   }
 
@@ -91,7 +115,7 @@ public class CourseProjectAction extends AnAction {
       return;
     }
 
-    startAutoInstalls(project, course, courseProjectViewModel.userWantsRestart());
+    startAutoInstallsWithRestart(project, course, courseProjectViewModel.userWantsRestart());
 
     if (!tryCreateCourseFile(project, selectedCourseUrl)) {
       return;
@@ -123,11 +147,6 @@ public class CourseProjectAction extends AnAction {
     @NotNull
     Course fromUrl(@NotNull URL courseUrl, @NotNull Project project)
         throws IOException, MalformedCourseConfigurationFileException;
-  }
-
-  @FunctionalInterface
-  public interface IdeRestarter {
-    void restart();
   }
 
   @Nullable
@@ -164,23 +183,22 @@ public class CourseProjectAction extends AnAction {
     }
   }
 
-  private void startAutoInstalls(@NotNull Project project,
-                                 @NotNull Course course,
-                                 boolean restartWhenFinished) {
-    ComponentInstaller.Factory factory
-        = new ComponentInstallerImpl.FactoryImpl<>(new SimpleAsyncTaskManager());
-    ComponentInstaller installer = factory.getInstallerFor(course);
-
-    Runnable callback = null;
-    if (restartWhenFinished) {
-      callback = () -> ApplicationManager.getApplication().invokeLater(() -> {
+  private void startAutoInstallsWithRestart(@NotNull Project project,
+                                            @NotNull Course course,
+                                            boolean restartWhenFinished) {
+    ComponentInstaller installer = installerFactory.getInstallerFor(course);
+    if (!restartWhenFinished) {
+      installer.installAsync(course.getAutoInstallComponents());
+    } else if (ideRestarter != null) {
+      installer.installAsync(course.getAutoInstallComponents(), ideRestarter);
+    } else {
+      PostponedRunnable callback = new PostponedRunnable(() -> {
         if (dialogs.showRestartDialog(project)) {
-          ideRestarter.restart();
+          ((ApplicationEx) ApplicationManager.getApplication()).restart(true);
         }
       });
+      installer.installAsync(course.getAutoInstallComponents(), callback);
     }
-
-    installer.installAsync(course.getAutoInstallComponents(), callback);
   }
 
   /**
