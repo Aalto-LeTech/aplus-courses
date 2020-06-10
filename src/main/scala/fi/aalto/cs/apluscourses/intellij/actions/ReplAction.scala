@@ -66,6 +66,14 @@ class ReplAction extends RunConsoleAction {
     }
   }
 
+  def setConfigurationFields(@NotNull configuration: ScalaConsoleRunConfiguration,
+                             @NotNull workingDirectory: String,
+                             @NotNull module: Module): Unit = {
+    configuration.setWorkingDirectory(workingDirectory)
+    configuration.setModule(module)
+    configuration.setName(s"REPL for ${module.getName}")
+  }
+
   /**
    * Sets configuration fields for the given configuration and returns true. Returns false if
    * the REPL start is cancelled (i.e. user selects "Cancel" in the REPL configuration dialog).
@@ -79,14 +87,6 @@ class ReplAction extends RunConsoleAction {
       setConfigurationFields(configuration, ModuleUtils.getModuleDirectory(module), module)
       true
     }
-  }
-
-  def setConfigurationFields(@NotNull configuration: ScalaConsoleRunConfiguration,
-                             @NotNull workingDirectory: String,
-                             @NotNull module: Module): Unit = {
-    configuration.setWorkingDirectory(workingDirectory)
-    configuration.setModule(module)
-    configuration.setName(s"REPL for ${module.getName}")
   }
 
   /**
