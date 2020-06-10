@@ -2,13 +2,12 @@ package fi.aalto.cs.apluscourses.intellij.actions
 
 import com.intellij.execution.RunManagerEx
 import com.intellij.openapi.actionSystem.{AnActionEvent, CommonDataKeys, DataContext}
-import com.intellij.openapi.fileEditor.FileDocumentManager
-import com.intellij.openapi.module.{Module, ModuleManager, ModuleUtilCore}
+import com.intellij.openapi.module.{Module, ModuleManager}
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.libraries.Library
 import com.intellij.openapi.roots.ModuleRootManager
 import com.intellij.openapi.util.io.FileUtilRt.toSystemIndependentName
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings
+import fi.aalto.cs.apluscourses.intellij.utils.ModuleUtils
 import fi.aalto.cs.apluscourses.presentation.ReplConfigurationFormModel
 import fi.aalto.cs.apluscourses.ui.repl.{ReplConfigurationDialog, ReplConfigurationForm}
 import org.jetbrains.annotations.NotNull
@@ -23,10 +22,6 @@ import scala.collection.JavaConverters._
 class ReplAction extends RunConsoleAction {
 
   override def actionPerformed(@NotNull e: AnActionEvent): Unit = {
-    customDoRunAction(e)
-  }
-
-  def customDoRunAction(@NotNull e: AnActionEvent): Unit = {
     val dataContext = e.getDataContext
     val project = CommonDataKeys.PROJECT.getData(dataContext)
     if (project == null) return // scalastyle:ignore
@@ -50,7 +45,6 @@ class ReplAction extends RunConsoleAction {
     val selectedModule = getScalaModuleOfEditorFile(project, dataContext)
       .orElse(getScalaModuleOfSelectedFile(project, dataContext))
 
-    // Choose the configuration to run based on the condition if this a new configuration of not
     val setting = settings.headOption.getOrElse {
       val factory = configurationType.getConfigurationFactories.head
       val configurationName = selectedModule
@@ -58,30 +52,18 @@ class ReplAction extends RunConsoleAction {
         .getOrElse("Scala REPL")
       runManagerEx.createConfiguration(configurationName, factory)
     }
+    val configuration = setting.getConfiguration.asInstanceOf[ScalaConsoleRunConfiguration]
 
     selectedModule match {
       case Some(module) =>
-        val configuration = setting.getConfiguration.asInstanceOf[ScalaConsoleRunConfiguration]
         if (setConfigurationConditionally(project, module, configuration)) {
           RunConsoleAction.runExisting(setting, runManagerEx, project)
         }
       case None =>
-        val configuration = setting.getConfiguration.asInstanceOf[ScalaConsoleRunConfiguration]
+        // For now, no dialog is shown for a project level REPL
         configuration.setName("Scala REPL")
         RunConsoleAction.runExisting(setting, runManagerEx, project)
     }
-  }
-
-  def getModuleWorkDir(@NotNull module: Module): String = {
-    toSystemIndependentName(ModuleUtilCore.getModuleDirPath(module))
-  }
-
-  def setCustomConfigurationFields(@NotNull configuration: ScalaConsoleRunConfiguration,
-                                   @NotNull workDir: String,
-                                   @NotNull module: Module): Unit = {
-    configuration.setWorkingDirectory(workDir)
-    configuration.setModule(module)
-    configuration.setName(s"REPL for ${module.getName}")
   }
 
   /**
@@ -92,56 +74,62 @@ class ReplAction extends RunConsoleAction {
                                     @NotNull module: Module,
                                     @NotNull configuration: ScalaConsoleRunConfiguration): Boolean = {
     if (PluginSettings.getInstance.shouldShowReplConfigurationDialog) {
-      val configModel = new ReplConfigurationFormModel(project, getModuleWorkDir(module), module.getName)
-      showReplConfigurationDialog(configModel)
-
-      if (!configModel.isStartRepl) {
-        false
-      } else {
-        val changedModuleName = configModel.getTargetModuleName
-        val changedModule = ModuleManager.getInstance(project).findModuleByName(changedModuleName)
-        val changedWorkDir = toSystemIndependentName(configModel.getModuleWorkingDirectory)
-        setCustomConfigurationFields(configuration, changedWorkDir, changedModule)
-        true
-      }
+      setConfigurationFieldsFromDialog(configuration, project, module)
     } else {
-      setCustomConfigurationFields(configuration, getModuleWorkDir(module), module)
+      setConfigurationFields(configuration, ModuleUtils.getModuleDirectory(module), module)
       true
     }
   }
 
-  private def showReplConfigurationDialog(@NotNull configModel: ReplConfigurationFormModel) = {
+  def setConfigurationFields(@NotNull configuration: ScalaConsoleRunConfiguration,
+                             @NotNull workingDirectory: String,
+                             @NotNull module: Module): Unit = {
+    configuration.setWorkingDirectory(workingDirectory)
+    configuration.setModule(module)
+    configuration.setName(s"REPL for ${module.getName}")
+  }
+
+  /**
+   * Sets the configuration fields from the REPL dialog. Returns true if it is done successfully,
+   * and false if the user cancels the REPL dialog.
+   */
+  private def setConfigurationFieldsFromDialog(@NotNull configuration: ScalaConsoleRunConfiguration,
+                                       @NotNull project: Project,
+                                       @NotNull module: Module): Boolean = {
+    val configModel = showReplDialog(project, module)
+    if (!configModel.isStartRepl) {
+      false
+    } else {
+      val changedModuleName = configModel.getTargetModuleName
+      val changedModule = ModuleManager.getInstance(project).findModuleByName(changedModuleName)
+      val changedWorkDir = toSystemIndependentName(configModel.getModuleWorkingDirectory)
+      setConfigurationFields(configuration, changedWorkDir, changedModule)
+      true
+    }
+  }
+
+  private def showReplDialog(@NotNull project: Project,
+                             @NotNull module: Module): ReplConfigurationFormModel = {
+    val configModel = new ReplConfigurationFormModel(project, ModuleUtils.getModuleDirectory(module), module.getName)
     val configForm = new ReplConfigurationForm(configModel)
     val configDialog = new ReplConfigurationDialog
     configDialog.setReplConfigurationForm(configForm)
     configDialog.setVisible(true)
+    configModel
   }
 
   private def getScalaModuleOfEditorFile(@NotNull project: Project,
-                                         @NotNull dataContext: DataContext): Option[Module] = {
-    val module = for {
-      editor <- Option(CommonDataKeys.EDITOR.getData(dataContext))
-      openFile <- Option(FileDocumentManager.getInstance.getFile(editor.getDocument))
-    } yield ModuleUtilCore.findModuleForFile(openFile, project)
-    module.filter(hasScalaSdkLibrary)
-  }
+                                         @NotNull context: DataContext): Option[Module] =
+    ModuleUtils.getModuleOfEditorFile(project, context).filter(hasScalaSdkLibrary)
 
   private def getScalaModuleOfSelectedFile(@NotNull project: Project,
-                                           @NotNull dataContext: DataContext): Option[Module] = {
-    Option(CommonDataKeys.VIRTUAL_FILE.getData(dataContext))
-      .map(file => ModuleUtilCore.findModuleForFile(file, project))
-      .filter(hasScalaSdkLibrary)
-  }
+                                           @NotNull context: DataContext): Option[Module] =
+    ModuleUtils.getModuleOfSelectedFile(project, context).filter(hasScalaSdkLibrary)
 
-  private def hasScalaSdkLibrary(@NotNull module: Module): Boolean = {
-    var foundScalaSdk = false
+  private def hasScalaSdkLibrary(@NotNull module: Module): Boolean = ModuleUtils.nonEmpty(
     ModuleRootManager.getInstance(module)
       .orderEntries()
-      .forEachLibrary((library: Library) => {
-        foundScalaSdk = foundScalaSdk || Option(library.getName).exists(_.contains("scala-sdk-"))
-        !foundScalaSdk
-      })
-    foundScalaSdk
-  }
+      .librariesOnly()
+      .satisfying(_.getPresentableName.startsWith("scala-sdk-")))
 
 }

@@ -3,6 +3,7 @@ package fi.aalto.cs.apluscourses.intellij.actions
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import fi.aalto.cs.apluscourses.intellij.TestHelperScala
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings
+import fi.aalto.cs.apluscourses.intellij.utils.ModuleUtils
 import org.junit.Assert._
 import org.junit.Test
 
@@ -16,7 +17,7 @@ class ReplActionTest extends BasePlatformTestCase with TestHelperScala {
     val configuration = getConfiguration
     val replTitle = s"REPL for ${module.getName}"
     val action = new ReplAction
-    val moduleWorkDir = action.getModuleWorkDir(module)
+    val moduleWorkDir = ModuleUtils.getModuleDirectory(module)
 
     //  only FALSE branch, as TRUE triggers UI
     PluginSettings.getInstance.setShowReplConfigurationDialog(false);
@@ -40,10 +41,10 @@ class ReplActionTest extends BasePlatformTestCase with TestHelperScala {
     val module = getModule
     val replTitle = s"REPL for ${module.getName}"
     val action = new ReplAction
-    val moduleWorkDir = action.getModuleWorkDir(module)
+    val moduleWorkDir = ModuleUtils.getModuleDirectory(module)
 
     //  when
-    action.setCustomConfigurationFields(configuration, moduleWorkDir, module)
+    action.setConfigurationFields(configuration, moduleWorkDir, module)
 
     //  then
     assertTrue("REPL's (configuration) working directory has been properly set",
@@ -64,7 +65,7 @@ class ReplActionTest extends BasePlatformTestCase with TestHelperScala {
     val action = new ReplAction
 
     //  when
-    action.setCustomConfigurationFields(configuration, moduleWorkDir, module)
+    action.setConfigurationFields(configuration, moduleWorkDir, module)
 
     //  then
     assertTrue("REPL's (configuration) working directory has been properly set",
@@ -85,7 +86,7 @@ class ReplActionTest extends BasePlatformTestCase with TestHelperScala {
     val action = new ReplAction
 
     //  when
-    action.setCustomConfigurationFields(configuration, moduleWorkDir, module)
+    action.setConfigurationFields(configuration, moduleWorkDir, module)
 
     //  then
     assertTrue("REPL's (configuration) working directory has been properly set",
