@@ -4,17 +4,11 @@ import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.model.APlusProject;
 import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory;
-import fi.aalto.cs.apluscourses.intellij.model.IntelliJModuleMetadata;
 import fi.aalto.cs.apluscourses.intellij.utils.CourseFileManager;
 import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.Course;
-import fi.aalto.cs.apluscourses.model.Module;
 import java.net.URL;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
@@ -87,45 +81,6 @@ public class MainViewModelUpdater {
         .collect(Collectors.toSet());
   }
 
-  @NotNull
-  List<Module> getUpdatableModules(@Nullable Course course) {
-    List<Module> updatableModules = new ArrayList<>();
-    if (course == null) {
-      return updatableModules;
-    }
-
-    // Modules listed in the course file may have been removed from the project, so we have to check
-    // that the modules are still in the project.
-    Set<String> projectModuleNames = getProjectModuleNames();
-
-    // Minor concurrency issue: we make the list of updatable modules outside of a read action, so
-    // (however unlikely) a module may be removed from the project in the meantime. This shouldn't
-    // be a big issue however, as it would just lead to a update notification for a module that has
-    // been removed.
-
-    Map<String, IntelliJModuleMetadata> localModulesMetadata
-        = CourseFileManager.getInstance().getModulesMetadata();
-
-    for (Module module : course.getModules()) {
-      // An updatable module must be in the project and it's ID in the local
-      // course file must be different from the ID in the course configuration file.
-      if (!projectModuleNames.contains(module.getName())) {
-        continue;
-      }
-
-      IntelliJModuleMetadata intelliJModuleMetadata = localModulesMetadata.get(module.getName());
-      String moduleId = intelliJModuleMetadata.getModuleId();
-      ZonedDateTime downloadedAt = intelliJModuleMetadata.getDownloadedAt();
-      if (!module.getVersionId().equals(moduleId)
-          // todo: a bit unsure here
-          && module.hasLocalChanges(downloadedAt)) {
-        updatableModules.add(module);
-      }
-    }
-
-    return updatableModules;
-  }
-
   private void updateMainViewModel(@Nullable Course newCourse) {
     if (newCourse == null) {
       return;
@@ -167,8 +122,6 @@ public class MainViewModelUpdater {
         // If parsing the course configuration file fails, then we just silently go back to sleep.
         // For an example, if the internet connection was down, then we may succeed when we try
         // again after sleeping.
-        // TODO: what do we actually do with the list of updatable modules? Notify the user?
-        List<Module> updatableModules = getUpdatableModules(course);
         updateMainViewModel(course);
         Thread.sleep(updateInterval); // Good night :)
 

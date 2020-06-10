@@ -40,10 +40,12 @@ class IntelliJModule
   private final APlusProject project;
 
   IntelliJModule(@NotNull String name,
-      @NotNull URL url,
-      @NotNull String versionId,
-      @NotNull APlusProject project) {
-    super(name, url, versionId);
+                 @NotNull URL url,
+                 @NotNull String versionId,
+                 @NotNull String localVersionId,
+                 @Nullable ZonedDateTime downloadedAt,
+                 @NotNull APlusProject project) {
+    super(name, url, versionId, localVersionId, downloadedAt);
     this.project = project;
   }
 
@@ -60,14 +62,10 @@ class IntelliJModule
   }
 
   @Override
-  public void fetch() throws IOException {
+  public void fetchInternal() throws IOException {
     File tempZipFile = createTempFile();
     fetchZipTo(tempZipFile);
     extractZip(tempZipFile);
-    String newId = getIdFileContents();
-    if (newId != null) {
-      setVersionId(newId);
-    }
   }
 
   @Override
@@ -125,7 +123,7 @@ class IntelliJModule
    * This method should only be called after extractZip has been called.
    */
   @Nullable
-  private String getIdFileContents() {
+  protected String readVersionId() {
     File idFile = getFullPath().resolve(".module_id").toFile();
     try {
       return FileUtils.readFileToString(idFile, StandardCharsets.UTF_8);
@@ -155,7 +153,7 @@ class IntelliJModule
   }
 
   @Override
-  public boolean hasLocalChanges(ZonedDateTime downloadedAt) {
+  protected boolean hasLocalChanges(@NotNull ZonedDateTime downloadedAt) {
     VirtualFile virtualFile = VfsUtil.findFile(getFullPath(), true);
     ModuleVirtualFileVisitor virtualFileVisitor = new ModuleVirtualFileVisitor(downloadedAt);
 

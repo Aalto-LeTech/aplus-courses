@@ -68,25 +68,6 @@ public class MainViewModelUpdaterTest extends HeavyPlatformTestCase implements T
     assertEmpty("There are 0 (zero) module names listed for a closed project.", projectModules);
   }
 
-  @Test
-  public void testGetUpdatableModulesWithNullCourseReturnEmpty() {
-    //  given
-    Project project = getProject();
-    createAndAddModule(project, MODULE_1, MODULE_TYPE_ID);
-    createAndAddModule(project, MODULE_2, MODULE_TYPE_ID);
-
-    MainViewModel mainViewModel = PluginSettings.getInstance().getMainViewModel(project);
-    MainViewModelUpdater mainViewModelUpdater = new MainViewModelUpdater(mainViewModel,
-        project, 1000L);
-
-    //  when
-    List<fi.aalto.cs.apluscourses.model.Module> updatableModules = mainViewModelUpdater
-        .getUpdatableModules(null);
-
-    //  then
-    assertEmpty("There are no modules for an empty course.", updatableModules);
-  }
-
   /**
    * A helper method to create a simple {@link Course} with two {@link
    * fi.aalto.cs.apluscourses.model.Module}s.

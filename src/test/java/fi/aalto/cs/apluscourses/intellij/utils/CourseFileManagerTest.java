@@ -5,10 +5,10 @@ import static org.mockito.Mockito.mock;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtilRt;
-import fi.aalto.cs.apluscourses.intellij.model.IntelliJModuleMetadata;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.model.ModelFactory;
 import fi.aalto.cs.apluscourses.model.Module;
+import fi.aalto.cs.apluscourses.model.ModuleMetadata;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -158,7 +158,7 @@ public class CourseFileManagerTest {
 
     Assert.assertEquals("CourseFileManager returns the correct URL",
         new URL("https://example.com"), manager.getCourseUrl());
-    Map<String, IntelliJModuleMetadata> metadata = manager.getModulesMetadata();
+    Map<String, ModuleMetadata> metadata = manager.getModulesMetadata();
     Assert.assertEquals("CourseFileManager should return the correct number of modules metadata",
         2, metadata.size());
     Assert.assertEquals("CourseFileManager should return the correct modules metadata",
@@ -177,9 +177,9 @@ public class CourseFileManagerTest {
   public void testAddEntryForModule() throws IOException, InterruptedException {
     URL url = new URL("http://localhost:8000");
     manager.createAndLoad(project, url);
-    ModelFactory modelFactory = new ModelExtensions.TestModelFactory();
     for (int i = 0; i < NUM_THREADS; ++i) {
-      Module module = modelFactory.createModule("name" + i, url, "id" + i);
+      Module module = new ModelExtensions.TestModule("name" + i, url, "id" + i, "lid" + i,
+          ZonedDateTime.now());
       Runnable runnable = () -> {
         try {
           manager.addEntryForModule(module);
@@ -219,7 +219,7 @@ public class CourseFileManagerTest {
       );
 
       threads.add(new Thread(() -> {
-        IntelliJModuleMetadata metadata
+        ModuleMetadata metadata
             = CourseFileManager.getInstance().getModulesMetadata().get(moduleName);
 
         threadFailed.compareAndSet(false, !moduleId.equals(metadata.getModuleId()));

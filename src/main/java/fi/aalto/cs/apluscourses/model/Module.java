@@ -1,9 +1,12 @@
 package fi.aalto.cs.apluscourses.model;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.ZonedDateTime;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
 public abstract class Module extends Component {
@@ -11,8 +14,17 @@ public abstract class Module extends Component {
   @NotNull
   private final URL url;
 
+  /* A string that uniquely identifies the version of this module. That is, a different version of
+     the same module should return a different version string. */
   @NotNull
   private String versionId;
+  @Nullable
+  private String localVersionId;
+  @Nullable
+  private ZonedDateTime downloadedAt;
+
+  /* synchronize with this when accessing variable fields of this class */
+  private final Object versionLock = new Object();
 
   /**
    * Constructs a module with the given name and URL.
@@ -22,11 +34,15 @@ public abstract class Module extends Component {
    * @param versionId A string that uniquely identifies different versions of the same module.
    */
   public Module(@NotNull String name,
-      @NotNull URL url,
-      @NotNull String versionId) {
+                @NotNull URL url,
+                @NotNull String versionId,
+                @Nullable String localVersionId,
+                @Nullable ZonedDateTime downloadedAt) {
     super(name);
     this.url = url;
     this.versionId = versionId;
+    this.localVersionId = localVersionId;
+    this.downloadedAt = downloadedAt;
   }
 
   /**
@@ -62,23 +78,79 @@ public abstract class Module extends Component {
     return factory.createModule(name, url, versionId);
   }
 
+  @Override
+  public void fetch() throws IOException {
+    fetchInternal();
+    String newId = readVersionId();
+    synchronized (versionLock) {
+      downloadedAt = ZonedDateTime.now();
+      if (newId != null) {
+        versionId = newId;
+      }
+      localVersionId = versionId;
+    }
+  }
+
+  /**
+   * Tells whether or not the module is up-to-date.
+   *
+   * @return True if the local version is the newest one, otherwise false.
+   */
+  public boolean isUpToDate() {
+    synchronized (versionLock) {
+      return versionId.equals(localVersionId);
+    }
+  }
+
+  protected abstract void fetchInternal() throws IOException;
+
+  @Nullable
+  protected abstract String readVersionId();
+
   @NotNull
   public URL getUrl() {
     return url;
   }
 
   /**
-   * Returns a string that uniquely identifies the version of this module. That is, a different
-   * version of the same module should return a different version string.
+   * Tells whether or not the module has local changes.
+   *
+   * @return True if there are local changes, otherwise false.
+   */
+  public boolean hasLocalChanges() {
+    ZonedDateTime downloadedAtVal;
+    synchronized (versionLock) {
+      downloadedAtVal = this.downloadedAt;
+    }
+    if (downloadedAtVal == null) {
+      return false;
+    }
+    return hasLocalChanges(downloadedAtVal);
+  }
+
+  protected abstract boolean hasLocalChanges(@NotNull ZonedDateTime downloadedAt);
+
+  /**
+   * Returns metadata (data that should be stored locally) of the module.
+   *
+   * @return A {@link ModuleMetadata} object.
    */
   @NotNull
+  public ModuleMetadata getMetadata() {
+    synchronized (versionLock) {
+      return new ModuleMetadata(Optional.ofNullable(localVersionId).orElse(versionId),
+          downloadedAt);
+    }
+  }
+
+  /**
+   * Returns the version ID (not local).
+   *
+   * @return Version ID.
+   */
   public String getVersionId() {
-    return versionId;
+    synchronized (versionLock) {
+      return versionId;
+    }
   }
-
-  protected void setVersionId(@NotNull String newVersionId) {
-    this.versionId = newVersionId;
-  }
-
-  public abstract boolean hasLocalChanges(ZonedDateTime downloadedAt);
 }
