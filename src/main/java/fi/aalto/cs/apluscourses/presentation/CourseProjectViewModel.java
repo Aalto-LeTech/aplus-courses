@@ -1,23 +1,23 @@
 package fi.aalto.cs.apluscourses.presentation;
 
 import fi.aalto.cs.apluscourses.model.Course;
-import fi.aalto.cs.apluscourses.utils.ObservableProperty;
+import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
+import fi.aalto.cs.apluscourses.utils.observable.ObservableReadOnlyProperty;
+import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class CourseProjectViewModel {
 
-  private final String informationText;
-  private final String settingsText;
+  public final ObservableProperty<Boolean> restartProperty;
+  public final ObservableProperty<Boolean> settingsOptOutProperty;
+  public final ObservableProperty<Boolean> isRestartAvailableProperty;
 
-  private final ObservableProperty.ValueObserver<Boolean> settingsOptOutObserver;
-  private final ObservableProperty.ValueObserver<Boolean> cancelObserver;
-
-  public final ObservableProperty<Boolean> cancel;
-  public final ObservableProperty<Boolean> restart;
-  public final ObservableProperty<Boolean> settingsOptOut;
-  public final ObservableProperty<Boolean> isRestartAvailable;
-  public final ObservableProperty<Boolean> isSettingsOptOutAvailable;
+  @NotNull
+  private final Course course;
+  @Nullable
+  private final String currentlyImportedIdeSettings;
+  private final boolean currentSettingsDiffer;
 
   /**
    * Construct a course project view model with the given course and name of the currently imported
@@ -28,81 +28,59 @@ public class CourseProjectViewModel {
    */
   public CourseProjectViewModel(@NotNull Course course,
                                 @Nullable String currentlyImportedIdeSettings) {
-    cancel = new ObservableProperty<>(false);
+    this.course = course;
+    this.currentlyImportedIdeSettings = currentlyImportedIdeSettings;
+    currentSettingsDiffer = !course.getName().equals(currentlyImportedIdeSettings);
 
-    String courseName = course.getName();
-    informationText = "<html><body>The currently opened project will be turned into a project for "
-        + "the course <b>" + courseName + "</b>.</body></html>";
+    restartProperty = new ObservableReadWriteProperty<>(currentSettingsDiffer);
 
-    if (courseName.equals(currentlyImportedIdeSettings)) {
-      settingsText = "<html><body>IntelliJ IDEA settings are already imported for <b>" + courseName
-          + "</b>.</body><html>";
-      restart = new ObservableProperty<>(false);
-      settingsOptOut = new ObservableProperty<>(true);
-      isRestartAvailable = new ObservableProperty<>(false);
-      isSettingsOptOutAvailable = new ObservableProperty<>(false);
-    } else {
-      settingsText = "<html><body>The A+ Courses plugin will adjust IntelliJ IDEA settings. This "
-          + "helps use IDEA for coursework.</body></html>";
-      restart = new ObservableProperty<>(true);
-      settingsOptOut = new ObservableProperty<>(false);
-      isRestartAvailable = new ObservableProperty<>(true);
-      isSettingsOptOutAvailable = new ObservableProperty<>(true);
-    }
+    settingsOptOutProperty = new ObservableReadWriteProperty<>(!currentSettingsDiffer);
 
-    settingsOptOutObserver = optOut -> {
-      isRestartAvailable.set(!optOut);
-      if (optOut) {
-        restart.set(false);
-      }
-    };
-    settingsOptOut.addValueObserver(settingsOptOutObserver);
-
-    cancelObserver = cancel -> {
-      if (cancel) {
-        restart.set(false);
-        settingsOptOut.set(true);
-      }
-    };
-    cancel.addValueObserver(cancelObserver);
+    isRestartAvailableProperty = new ObservableReadOnlyProperty<>(this::isRestartAvailable);
+    isRestartAvailableProperty.declareDependentOn(settingsOptOutProperty);
+    isRestartAvailableProperty.addValueObserver(this, CourseProjectViewModel::onRestartEnabled);
   }
 
-  @NotNull
-  public String getInformationText() {
-    return informationText;
-  }
-
-  @NotNull
-  public String getSettingsText() {
-    return settingsText;
-  }
-
-  /** Returns the text that should be displayed next to the restart checkbox. */
-  @NotNull
-  public String getRestartCheckboxText() {
-    return "Restart IntelliJ to reload settings.";
-  }
-
-  /** Returns the text that should be displayed next to the settings opt out checkbox. */
-  @NotNull
-  public String getOptOutCheckboxText() {
-    if (isSettingsOptOutAvailable.get()) {
-      return "<html><body>Leave IntelliJ settings unchanged.<br>(<b>Not recommended</b>. Only pick "
-          + "this option if you are sure you know what you are doing.)</body></html>";
-    } else {
-      return "Leave IntelliJ settings unchanged.";
+  private void onRestartEnabled(boolean restartEnabled) {
+    if (!restartEnabled) {
+      restartProperty.set(false);
     }
   }
 
-  public boolean userCancels() {
-    return Boolean.TRUE.equals(cancel.get());
+  public boolean shouldWarnUser() {
+    return currentSettingsDiffer;
+  }
+
+  public boolean shouldShowSettingsInfo() {
+    return currentSettingsDiffer;
+  }
+
+  public boolean canUserOptOutSettings() {
+    return currentSettingsDiffer;
+  }
+
+  public boolean isRestartAvailable() {
+    return currentSettingsDiffer && !userOptsOutOfSettings();
   }
 
   public boolean userWantsRestart() {
-    return Boolean.TRUE.equals(restart.get());
+    return Boolean.TRUE.equals(restartProperty.get());
   }
 
   public boolean userOptsOutOfSettings() {
-    return Boolean.TRUE.equals(settingsOptOut.get());
+    return Boolean.TRUE.equals(settingsOptOutProperty.get());
+  }
+
+  public String getCourseName() {
+    return course.getName();
+  }
+
+  @Nullable
+  public String getCurrentSettings() {
+    return currentlyImportedIdeSettings;
+  }
+
+  public boolean shouldShowCurrentSettings() {
+    return !currentSettingsDiffer;
   }
 }

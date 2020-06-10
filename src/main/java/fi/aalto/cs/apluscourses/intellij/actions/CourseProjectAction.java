@@ -87,8 +87,7 @@ public class CourseProjectAction extends AnAction {
 
     CourseProjectViewModel courseProjectViewModel
         = new CourseProjectViewModel(course, settingsImporter.currentlyImportedIdeSettings());
-    dialogs.showMainDialog(project, courseProjectViewModel);
-    if (courseProjectViewModel.userCancels()) {
+    if (!dialogs.showMainDialog(project, courseProjectViewModel)) {
       return;
     }
 

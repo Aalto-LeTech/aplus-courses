@@ -21,7 +21,7 @@ public class ModulesToolWindowFactory extends BaseToolWindowFactory implements D
   protected JComponent createToolWindowContentInternal(@NotNull Project project) {
     ModulesView modulesView = new ModulesView();
     PluginSettings.getInstance().getMainViewModel(project).courseViewModel
-        .addValueObserver(modulesView);
+        .addValueObserver(modulesView, ModulesView::viewModelChanged);
 
     ActionManager actionManager = ActionManager.getInstance();
     ActionGroup group = (ActionGroup) actionManager.getAction(ActionGroups.MODULE_ACTIONS);
