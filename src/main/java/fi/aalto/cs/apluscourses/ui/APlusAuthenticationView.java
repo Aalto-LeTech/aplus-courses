@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class APlusAuthenticationView extends DialogWrapper {
-  @Binding
+  @GuiObject
   protected JPasswordField inputField;
   private JPanel basePanel;
 

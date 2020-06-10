@@ -6,8 +6,8 @@ import org.jetbrains.annotations.NotNull;
 
 public interface CourseProjectActionDialogs {
 
-  void showMainDialog(@NotNull Project project,
-                      @NotNull CourseProjectViewModel courseProjectViewModel);
+  boolean showMainDialog(@NotNull Project project,
+                         @NotNull CourseProjectViewModel courseProjectViewModel);
 
   void showErrorDialog(@NotNull String message, @NotNull String title);
 

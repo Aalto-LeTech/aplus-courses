@@ -1,16 +1,15 @@
 package fi.aalto.cs.apluscourses.ui.module;
 
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
-import fi.aalto.cs.apluscourses.ui.Binding;
-import fi.aalto.cs.apluscourses.utils.ObservableProperty;
+import fi.aalto.cs.apluscourses.ui.GuiObject;
 import javax.swing.JPanel;
 
-public class ModulesView implements ObservableProperty.ValueObserver<CourseViewModel> {
-  @Binding
+public class ModulesView {
+  @GuiObject
   public ModuleListView moduleListView;
-  @Binding
+  @GuiObject
   public JPanel toolbarContainer;
-  @Binding
+  @GuiObject
   public JPanel basePanel;
 
   /**
@@ -35,8 +34,7 @@ public class ModulesView implements ObservableProperty.ValueObserver<CourseViewM
     basePanel.putClientProperty(ModulesView.class.getName(), this);
   }
 
-  @Override
-  public void valueChanged(CourseViewModel course) {
+  public void viewModelChanged(CourseViewModel course) {
     moduleListView.setModel(course == null ? null : course.getModules());
   }
 }

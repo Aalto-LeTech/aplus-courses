@@ -7,10 +7,10 @@ import org.jetbrains.annotations.NotNull;
 
 public class CourseProjectActionDialogsImpl implements CourseProjectActionDialogs {
   @Override
-  public void showMainDialog(@NotNull Project project,
-                            @NotNull CourseProjectViewModel courseProjectViewModel) {
+  public boolean showMainDialog(@NotNull Project project,
+                                @NotNull CourseProjectViewModel courseProjectViewModel) {
     CourseProjectView dialog = new CourseProjectView(project, courseProjectViewModel);
-    dialog.show();
+    return dialog.showAndGet();
   }
 
   @Override
