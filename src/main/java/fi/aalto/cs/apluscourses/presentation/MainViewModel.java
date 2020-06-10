@@ -7,6 +7,11 @@ import org.jetbrains.annotations.NotNull;
 public class MainViewModel {
 
   @NotNull
-  public final ObservableProperty<CourseViewModel> courseViewModel =
-      new ObservableReadWriteProperty<>(null);
+  public final ObservableProperty<CourseViewModel> courseViewModel
+      = new ObservableReadWriteProperty<>(null);
+
+  @NotNull
+  public final ObservableProperty<APlusAuthenticationViewModel> authenticationViewModel
+      = new ObservableReadWriteProperty<>(null);
+
 }
