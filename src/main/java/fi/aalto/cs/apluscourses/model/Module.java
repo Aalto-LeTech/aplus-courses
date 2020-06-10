@@ -96,6 +96,7 @@ public abstract class Module extends Component {
    *
    * @return True if the local version is the newest one, otherwise false.
    */
+  @Override
   public boolean isUpToDate() {
     synchronized (versionLock) {
       return versionId.equals(localVersionId);

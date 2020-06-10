@@ -73,7 +73,11 @@ public class ComponentInstallerImpl<T> implements ComponentInstaller {
     public void doIt() {
       component.resolveState();
       unloadIfError();
+      boolean update = component.stateMonitor.get() == Component.LOADED && !component.isUpToDate();
       try {
+        if (update) {
+          uninstall();
+        }
         fetch();
         load();
         waitForDependencies();
@@ -91,7 +95,16 @@ public class ComponentInstallerImpl<T> implements ComponentInstaller {
         component.resolveState();
       }
     }
-    
+
+    private void uninstall() throws IOException {
+      if (component.stateMonitor.setConditionallyTo(Component.UNINSTALLING, Component.LOADED)) {
+        component.unload();
+        component.remove();
+        component.setUnresolved();
+        component.resolveState();
+      }
+    }
+
     private void fetch() throws IOException {
       if (component.stateMonitor.setConditionallyTo(Component.FETCHING, Component.NOT_INSTALLED)) {
         component.fetch();

@@ -13,6 +13,8 @@ public class ModuleListElementView implements ListElementView {
   public JLabel nameLabel;
   @GuiObject
   public JLabel statusLabel;
+  @GuiObject
+  public JLabel updateLabel;
 
   @Override
   public JComponent getRenderer() {

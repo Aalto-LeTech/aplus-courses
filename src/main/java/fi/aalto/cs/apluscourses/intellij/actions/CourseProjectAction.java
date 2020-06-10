@@ -77,6 +77,10 @@ public class CourseProjectAction extends AnAction {
       return;
     }
 
+    if (!tryCreateCourseFile(project, selectedCourseUrl)) {
+      return;
+    }
+
     Course course = tryGetCourse(project, selectedCourseUrl);
     if (course == null) {
       return;
@@ -85,10 +89,6 @@ public class CourseProjectAction extends AnAction {
     CourseProjectViewModel courseProjectViewModel
         = new CourseProjectViewModel(course, settingsImporter.currentlyImportedIdeSettings());
     if (!dialogs.showMainDialog(project, courseProjectViewModel)) {
-      return;
-    }
-
-    if (!tryCreateCourseFile(project, selectedCourseUrl)) {
       return;
     }
 

@@ -64,6 +64,11 @@ public class ModelExtensions {
     protected List<String> computeDependencies() {
       return Collections.emptyList();
     }
+
+    @Override
+    public boolean isUpToDate() {
+      return true;
+    }
   }
 
   public static class TestModule extends Module {

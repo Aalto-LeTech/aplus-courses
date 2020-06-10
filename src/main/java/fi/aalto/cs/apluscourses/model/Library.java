@@ -15,4 +15,9 @@ public abstract class Library extends Component {
   protected List<String> computeDependencies() {
     return Collections.emptyList();
   }
+
+  @Override
+  public boolean isUpToDate() {
+    return true;
+  }
 }

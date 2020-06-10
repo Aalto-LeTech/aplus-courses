@@ -42,7 +42,7 @@ class IntelliJModule
   IntelliJModule(@NotNull String name,
                  @NotNull URL url,
                  @NotNull String versionId,
-                 @NotNull String localVersionId,
+                 @Nullable String localVersionId,
                  @Nullable ZonedDateTime downloadedAt,
                  @NotNull APlusProject project) {
     super(name, url, versionId, localVersionId, downloadedAt);
@@ -75,8 +75,10 @@ class IntelliJModule
 
   @Override
   public void load() throws ComponentLoadException {
+    ModuleManager moduleManager = project.getModuleManager();
+    String imlFileName = getImlFile().toString();
     try {
-      WriteAction.runAndWait(new Loader(getProject(), getImlFile())::load);
+      WriteAction.runAndWait(() -> moduleManager.loadModule(imlFileName));
       CourseFileManager.getInstance().addEntryForModule(this);
     } catch (Exception e) {
       throw new ComponentLoadException(getName(), e);
@@ -86,7 +88,16 @@ class IntelliJModule
   @Override
   public void unload() {
     super.unload();
-    Optional.ofNullable(getPlatformObject()).ifPresent(project.getModuleManager()::disposeModule);
+    ModuleManager moduleManager = project.getModuleManager();
+    com.intellij.openapi.module.Module module = getPlatformObject();
+    if (module != null) {
+      WriteAction.runAndWait(() -> moduleManager.disposeModule(module));
+    }
+  }
+
+  @Override
+  public void remove() throws IOException {
+    FileUtils.deleteDirectory(getFullPath().toFile());
   }
 
   @NotNull
@@ -162,22 +173,5 @@ class IntelliJModule
     }
 
     return virtualFileVisitor.hasChanges();
-  }
-
-  private static class Loader {
-
-    private final ModuleManager moduleManager;
-    private final String imlFileName;
-
-    public Loader(APlusProject project, @NotNull File imlFile) {
-      moduleManager = project.getModuleManager();
-      imlFileName = imlFile.toString();
-    }
-
-    @CalledWithWriteLock
-    public void load()
-        throws JDOMException, ModuleWithNameAlreadyExists, IOException {
-      moduleManager.loadModule(imlFileName);
-    }
   }
 }
