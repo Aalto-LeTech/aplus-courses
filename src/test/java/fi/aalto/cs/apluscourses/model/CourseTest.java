@@ -45,13 +45,29 @@ public class CourseTest {
   }
 
   @Test
-  public void testGetModule() throws MalformedURLException, NoSuchComponentException {
+  public void testGetModule() throws NoSuchComponentException {
     Module module1 = new ModelExtensions.TestModule("Test Module");
     Module module2 = new ModelExtensions.TestModule("Awesome Module");
     Course course = new Course("", Arrays.asList(module1, module2), Collections.emptyList(),
         Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList());
     assertSame("Course#getModule should return the correct module",
         module2, course.getComponent("Awesome Module"));
+  }
+
+  @Test
+  public void testGetAutoInstallComponents() throws MalformedURLException {
+    String moduleName = "test-module";
+    String libraryName = "test-library";
+    Module module = new ModelExtensions.TestModule(
+            moduleName, new URL("http://localhost:3000"), "random");
+    Library library = new ModelExtensions.TestLibrary(libraryName);
+    Course course = new Course("", Arrays.asList(module), Arrays.asList(library),
+            Collections.emptyMap(), Collections.emptyMap(),
+            Arrays.asList("test-module", "test-library"));
+    List<Component> autoInstalls = course.getAutoInstallComponents();
+    assertEquals("The course has the correct auto-install components", 2, autoInstalls.size());
+    assertEquals(moduleName, autoInstalls.get(0).getName());
+    assertEquals(libraryName, autoInstalls.get(1).getName());
   }
 
   @Test(expected = NoSuchComponentException.class)
