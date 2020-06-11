@@ -117,7 +117,7 @@ public class MainViewModelUpdaterTest extends HeavyPlatformTestCase implements T
     requiredPlugins.put("org.intellij.awesome_plugin", "Awesome Plugin");
     Map<String, URL> resourceUrls = new HashMap<>();
     resourceUrls.put("key", new URL("http://localhost:8000"));
-    return new Course("Tester Course", modules, Collections.emptyList(),
+    return new Course("", "Tester Course", modules, Collections.emptyList(),
         requiredPlugins, resourceUrls, Collections.emptyList());
   }
 }

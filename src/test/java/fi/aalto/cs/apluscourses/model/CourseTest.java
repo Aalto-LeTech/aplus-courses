@@ -28,8 +28,10 @@ public class CourseTest {
     Map<String, URL> resourceUrls = new HashMap<>();
     resourceUrls.put("key", new URL("http://localhost:8000"));
     List<String> autoInstallComponents = Arrays.asList(module1name);
-    Course course = new Course("Tester Course", modules, Collections.emptyList(),
+    Course course = new Course("13", "Tester Course", modules, Collections.emptyList(),
         requiredPlugins, resourceUrls, autoInstallComponents);
+    assertEquals("The ID of the course should be the same as that given to the constructor",
+        "13", course.getId());
     assertEquals("The name of the course should be the same as that given to the constructor",
         "Tester Course", course.getName());
     assertEquals("The modules of the course should be the same as those given to the constructor",
@@ -42,13 +44,16 @@ public class CourseTest {
     assertEquals(
         "The resource URLs of the course should the same as those given to the constructor",
         new URL("http://localhost:8000"), course.getResourceUrls().get("key"));
+    assertEquals(
+        "The auto-install components should be the same as those given to the constructor",
+        module1name, course.getAutoInstallComponents().get(0).getName());
   }
 
   @Test
   public void testGetModule() throws NoSuchComponentException {
     Module module1 = new ModelExtensions.TestModule("Test Module");
     Module module2 = new ModelExtensions.TestModule("Awesome Module");
-    Course course = new Course("", Arrays.asList(module1, module2), Collections.emptyList(),
+    Course course = new Course("", "", Arrays.asList(module1, module2), Collections.emptyList(),
         Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList());
     assertSame("Course#getModule should return the correct module",
         module2, course.getComponent("Awesome Module"));
@@ -61,7 +66,7 @@ public class CourseTest {
     Module module = new ModelExtensions.TestModule(
             moduleName, new URL("http://localhost:3000"), "random");
     Library library = new ModelExtensions.TestLibrary(libraryName);
-    Course course = new Course("", Arrays.asList(module), Arrays.asList(library),
+    Course course = new Course("", "", Arrays.asList(module), Arrays.asList(library),
             Collections.emptyMap(), Collections.emptyMap(),
             Arrays.asList("test-module", "test-library"));
     List<Component> autoInstalls = course.getAutoInstallComponents();
@@ -72,11 +77,13 @@ public class CourseTest {
 
   @Test(expected = NoSuchComponentException.class)
   public void testGetModuleWithMissingModule() throws NoSuchComponentException {
-    Course course = new Course("Just some course", Collections.emptyList(), Collections.emptyList(),
-        Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList());
+    Course course = new Course("Just some ID", "Just some course",
+        Collections.emptyList(), Collections.emptyList(), Collections.emptyMap(),
+        Collections.emptyMap(), Collections.emptyList());
     course.getComponent("Test Module");
   }
 
+  private static String idJson = "\"id\":\"1238\"";
   private static String nameJson = "\"name\":\"Awesome Course\"";
   private static String requiredPluginsJson = "\"requiredPlugins\":{\"org.intellij.scala\":"
       + "\"Scala\",\"org.test.tester\":\"Tester\"}";
@@ -88,9 +95,12 @@ public class CourseTest {
 
   @Test
   public void testFromConfigurationFile() throws MalformedCourseConfigurationFileException {
-    StringReader stringReader = new StringReader("{" + nameJson + "," + requiredPluginsJson + ","
-        + modulesJson + "," + resourcesJson + "," + autoInstallJson + "}");
+    StringReader stringReader = new StringReader("{" + idJson + "," + nameJson + ","
+        + requiredPluginsJson + "," + modulesJson + "," + resourcesJson + "," + autoInstallJson
+        + "}");
     Course course = Course.fromConfigurationData(stringReader, "./path/to/file", MODEL_FACTORY);
+    assertEquals("Course should have the same ID as that in the configuration JSON",
+        "1238", course.getId());
     assertEquals("Course should have the same name as that in the configuration JSON",
         "Awesome Course", course.getName());
     assertEquals("The course should have the required plugins of the configuration JSON",
@@ -107,6 +117,14 @@ public class CourseTest {
         "http://example.org", course.getResourceUrls().get("def").toString());
     assertEquals("The course should have the auto-install components of the configuration JSON",
         "O1Library", course.getAutoInstallComponents().get(0).getName());
+  }
+
+  @Test(expected = MalformedCourseConfigurationFileException.class)
+  public void testFromConfigurationFileMissingId()
+      throws MalformedCourseConfigurationFileException {
+    StringReader stringReader
+        = new StringReader("{" + nameJson + "," + modulesJson + "," + requiredPluginsJson + "}");
+    Course.fromConfigurationData(stringReader, MODEL_FACTORY);
   }
 
   @Test(expected = MalformedCourseConfigurationFileException.class)

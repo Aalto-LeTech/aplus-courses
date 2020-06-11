@@ -49,7 +49,10 @@ public class ImportModuleActionTest {
     modules.add(new ModelExtensions.TestModule("module2"));
     modules.add(new ModelExtensions.TestModule("module3"));
 
-    Course course = new Course("course", modules,
+    Course course = new Course(
+        "id",
+        "course",
+        modules,
         Collections.emptyList(),
         Collections.emptyMap(),
         Collections.emptyMap(),

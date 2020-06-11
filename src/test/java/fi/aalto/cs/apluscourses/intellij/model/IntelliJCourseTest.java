@@ -27,12 +27,14 @@ public class IntelliJCourseTest {
 
   @Test
   public void testCreateIntelliJCourse() {
+    String id = "id";
     String name = "testName";
     APlusProject project = mock(APlusProject.class);
     CommonLibraryProvider commonLibraryProvider = new CommonLibraryProvider(project);
-    IntelliJCourse course = new IntelliJCourse(name,
+    IntelliJCourse course = new IntelliJCourse(id, name,
         Collections.emptyList(), Collections.emptyList(), Collections.emptyMap(),
         Collections.emptyMap(), Collections.emptyList(), project, commonLibraryProvider);
+    assertEquals(id, course.getId());
     assertEquals(name, course.getName());
     assertSame(project, course.getProject());
     assertSame(commonLibraryProvider, course.getCommonLibraryProvider());
@@ -57,7 +59,7 @@ public class IntelliJCourseTest {
       }
     };
 
-    IntelliJCourse course = new IntelliJCourse("testProject",
+    IntelliJCourse course = new IntelliJCourse("cool id", "testProject",
         modules, Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap(),
         Collections.emptyList(), project, commonLibraryProvider);
 
@@ -86,7 +88,7 @@ public class IntelliJCourseTest {
     List<Module> modules = new ArrayList<>();
     modules.add(module);
 
-    IntelliJCourse course = new IntelliJCourse("testProject",
+    IntelliJCourse course = new IntelliJCourse("courseId", "testProject",
         modules, Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap(),
         Collections.emptyList(), mock(APlusProject.class), mock(CommonLibraryProvider.class));
 
@@ -104,7 +106,7 @@ public class IntelliJCourseTest {
     when(file2.getName()).thenReturn(moduleName);
     when(file2.getPath()).thenReturn("someOtherPath");
 
-    IntelliJCourse course = new IntelliJCourse("testProject",
+    IntelliJCourse course = new IntelliJCourse("testId", "testProject",
         Stream.of(new ModelExtensions.TestModule(moduleName)).collect(Collectors.toList()),
         Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap(),
         Collections.emptyList(), mock(APlusProject.class), mock(CommonLibraryProvider.class));

@@ -12,7 +12,7 @@ public class CourseProjectViewModelTest {
 
   private static final String COURSE_NAME = "NiceCourse";
 
-  private final Course emptyCourse = new Course(COURSE_NAME, Collections.emptyList(),
+  private final Course emptyCourse = new Course("", COURSE_NAME, Collections.emptyList(),
           Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap(),
           Collections.emptyList());
 

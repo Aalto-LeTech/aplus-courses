@@ -162,14 +162,16 @@ public class ModelExtensions {
   public static class TestModelFactory implements ModelFactory {
 
     @Override
-    public Course createCourse(@NotNull String name,
+    public Course createCourse(@NotNull String id,
+                               @NotNull String name,
                                @NotNull List<Module> modules,
                                @NotNull List<Library> libraries,
                                @NotNull Map<String, String> requiredPlugins,
                                @NotNull Map<String, URL> resourceUrls,
                                @NotNull List<String> autoInstallComponentNames) {
       return new Course(
-          name, modules, libraries, requiredPlugins, resourceUrls, autoInstallComponentNames);
+          id, name, modules, libraries, requiredPlugins, resourceUrls, autoInstallComponentNames
+      );
     }
 
     @Override
