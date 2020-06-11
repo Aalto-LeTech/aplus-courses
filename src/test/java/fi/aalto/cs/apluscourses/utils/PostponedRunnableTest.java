@@ -10,7 +10,7 @@ public class PostponedRunnableTest {
     AtomicInteger runnableCallCount = new AtomicInteger(0);
     AtomicInteger executorCallCount = new AtomicInteger(0);
     PostponedRunnable postponedRunnable = new PostponedRunnable(
-        () -> runnableCallCount.incrementAndGet(),
+        runnableCallCount::incrementAndGet,
         runnable -> {
           executorCallCount.incrementAndGet();
           runnable.run();

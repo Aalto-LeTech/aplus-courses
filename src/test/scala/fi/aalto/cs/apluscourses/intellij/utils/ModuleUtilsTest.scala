@@ -7,8 +7,8 @@ import com.intellij.openapi.roots.{OrderEntry, OrderEnumerator}
 import com.intellij.util.Processor
 import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
 import org.junit.Test
-import org.mockito.Mockito.{mock, when}
 import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.{mock, when}
 
 class ModuleUtilsTest {
   @Test
