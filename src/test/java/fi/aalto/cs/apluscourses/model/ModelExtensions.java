@@ -166,8 +166,10 @@ public class ModelExtensions {
                                @NotNull List<Module> modules,
                                @NotNull List<Library> libraries,
                                @NotNull Map<String, String> requiredPlugins,
-                               @NotNull Map<String, URL> resourceUrls) {
-      return new Course(name, modules, libraries, requiredPlugins, resourceUrls);
+                               @NotNull Map<String, URL> resourceUrls,
+                               @NotNull List<String> autoInstallComponentNames) {
+      return new Course(
+          name, modules, libraries, requiredPlugins, resourceUrls, autoInstallComponentNames);
     }
 
     @Override

@@ -3,7 +3,7 @@ package fi.aalto.cs.apluscourses.utils.async;
 import org.jetbrains.annotations.Nullable;
 
 // For testing/debugging purposes
-class ImmediateTaskManager implements TaskManager<Void> {
+public class ImmediateTaskManager implements TaskManager<Void> {
   @Override
   public Void fork(Runnable runnable) {
     runnable.run();

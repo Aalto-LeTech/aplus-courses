@@ -9,6 +9,8 @@ public interface CourseProjectActionDialogs {
   boolean showMainDialog(@NotNull Project project,
                          @NotNull CourseProjectViewModel courseProjectViewModel);
 
+  boolean showRestartDialog();
+
   void showErrorDialog(@NotNull String message, @NotNull String title);
 
 }

@@ -30,14 +30,15 @@ public class IntelliJModelFactory implements ModelFactory {
 
   @Override
   public Course createCourse(@NotNull String name,
-      @NotNull List<Module> modules,
-      @NotNull List<Library> libraries,
-      @NotNull Map<String, String> requiredPlugins,
-      @NotNull Map<String, URL> resourceUrls) {
+                             @NotNull List<Module> modules,
+                             @NotNull List<Library> libraries,
+                             @NotNull Map<String, String> requiredPlugins,
+                             @NotNull Map<String, URL> resourceUrls,
+                             @NotNull List<String> autoInstallComponentNames) {
 
     IntelliJCourse course =
-        new IntelliJCourse(name, modules, libraries, requiredPlugins, resourceUrls, project,
-            new CommonLibraryProvider(project));
+        new IntelliJCourse(name, modules, libraries, requiredPlugins, resourceUrls,
+            autoInstallComponentNames, project, new CommonLibraryProvider(project));
 
     Component.InitializationCallback componentInitializationCallback =
         component -> registerComponentToCourse(component, course);

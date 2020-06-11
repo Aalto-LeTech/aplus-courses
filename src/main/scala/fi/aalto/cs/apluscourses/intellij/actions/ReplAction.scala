@@ -1,15 +1,16 @@
 package fi.aalto.cs.apluscourses.intellij.actions
 
 import com.intellij.execution.RunManagerEx
-import com.intellij.openapi.actionSystem.{AnActionEvent, CommonDataKeys}
-import com.intellij.openapi.module.{Module, ModuleManager, ModuleUtilCore}
+import com.intellij.openapi.actionSystem.{AnActionEvent, CommonDataKeys, DataContext}
+import com.intellij.openapi.module.{Module, ModuleManager}
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.roots.ModuleRootManager
 import com.intellij.openapi.util.io.FileUtilRt.toSystemIndependentName
-import com.intellij.openapi.vfs.VirtualFile
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings
+import fi.aalto.cs.apluscourses.intellij.utils.ModuleUtils
 import fi.aalto.cs.apluscourses.presentation.ReplConfigurationFormModel
 import fi.aalto.cs.apluscourses.ui.repl.{ReplConfigurationDialog, ReplConfigurationForm}
-import org.jetbrains.annotations.{NotNull, Nullable}
+import org.jetbrains.annotations.NotNull
 import org.jetbrains.plugins.scala.console.actions.RunConsoleAction
 import org.jetbrains.plugins.scala.console.configuration.ScalaConsoleRunConfiguration
 
@@ -21,26 +22,56 @@ import scala.collection.JavaConverters._
 class ReplAction extends RunConsoleAction {
 
   override def actionPerformed(@NotNull e: AnActionEvent): Unit = {
-    customDoRunAction(e)
-  }
+    val dataContext = e.getDataContext
+    val project = CommonDataKeys.PROJECT.getData(dataContext)
+    if (project == null) return // scalastyle:ignore
 
-  def checkFileOrFolderIsNull(@Nullable fileOrFolder: VirtualFile): Boolean = fileOrFolder == null
+    val runManagerEx = RunManagerEx.getInstanceEx(project)
+    val configurationType = getMyConfigurationType
+    val settings = runManagerEx.getConfigurationSettingsList(configurationType).asScala
 
-  def getModuleWorkDir(@NotNull module: Module): String = {
-    toSystemIndependentName(ModuleUtilCore.getModuleDirPath(module))
-  }
+    /*
+     * The "priority order" is as follows:
+     *   1. If a file is open in the editor and it belongs to a module that has Scala SDK as a
+     *      library dependency, start the REPL for the module of the file.
+     *   2. Otherwise if a module (or file inside a module) is selected in the project menu on the
+     *      left and the module has Scala SDK as a library dependency, start the REPL for that
+     *      module.
+     *   3. Otherwise start a project level REPL
+     *
+     * Checking that the module has Scala SDK as a dependency is done to avoid the "no Scala facet
+     * configured for module" error.
+     */
+    val selectedModule = getScalaModuleOfEditorFile(project, dataContext)
+      .orElse(getScalaModuleOfSelectedFile(project, dataContext))
 
-  def setCustomConfigurationFields(@NotNull configuration: ScalaConsoleRunConfiguration,
-                                   @NotNull workDir: String,
-                                   @NotNull moduleName: String,
-                                   @NotNull module: Module): Unit = {
-    configuration.setWorkingDirectory(workDir)
-    configuration.setModule(module)
-    if (getModuleWorkDir(module).equals(workDir)) {
-      configuration.setName("REPL in " + moduleName)
-    } else {
-      configuration.setName("REPL in <?>")
+    val setting = settings.headOption.getOrElse {
+      val factory = configurationType.getConfigurationFactories.head
+      val configurationName = selectedModule
+        .map(module => s"REPL for ${module.getName}")
+        .getOrElse("Scala REPL")
+      runManagerEx.createConfiguration(configurationName, factory)
     }
+    val configuration = setting.getConfiguration.asInstanceOf[ScalaConsoleRunConfiguration]
+
+    selectedModule match {
+      case Some(module) =>
+        if (setConfigurationConditionally(project, module, configuration)) {
+          RunConsoleAction.runExisting(setting, runManagerEx, project)
+        }
+      case None =>
+        // For now, no dialog is shown for a project level REPL
+        configuration.setName("Scala REPL")
+        RunConsoleAction.runExisting(setting, runManagerEx, project)
+    }
+  }
+
+  def setConfigurationFields(@NotNull configuration: ScalaConsoleRunConfiguration,
+                             @NotNull workingDirectory: String,
+                             @NotNull module: Module): Unit = {
+    configuration.setWorkingDirectory(workingDirectory)
+    configuration.setModule(module)
+    configuration.setName(s"REPL for ${module.getName}")
   }
 
   /**
@@ -50,67 +81,55 @@ class ReplAction extends RunConsoleAction {
   def setConfigurationConditionally(@NotNull project: Project,
                                     @NotNull module: Module,
                                     @NotNull configuration: ScalaConsoleRunConfiguration): Boolean = {
-
     if (PluginSettings.getInstance.shouldShowReplConfigurationDialog) {
-
-      val configModel = new ReplConfigurationFormModel(project, getModuleWorkDir(module), module.getName)
-
-      createAndShowReplConfigurationDialog(configModel)
-
-      if (!configModel.isStartRepl) {
-        false
-      } else {
-        val changedModuleName = configModel.getTargetModuleName
-        val changedModule = ModuleManager.getInstance(project).findModuleByName(changedModuleName)
-        val changedWorkDir = toSystemIndependentName(configModel.getModuleWorkingDirectory)
-        setCustomConfigurationFields(configuration, changedWorkDir, changedModuleName, changedModule)
-        true
-      }
+      setConfigurationFieldsFromDialog(configuration, project, module)
     } else {
-      setCustomConfigurationFields(configuration, getModuleWorkDir(module), module.getName, module)
+      setConfigurationFields(configuration, ModuleUtils.getModuleDirectory(module), module)
       true
     }
   }
 
-  private def createAndShowReplConfigurationDialog(@NotNull configModel: ReplConfigurationFormModel):
-  ReplConfigurationDialog = {
+  /**
+   * Sets the configuration fields from the REPL dialog. Returns true if it is done successfully,
+   * and false if the user cancels the REPL dialog.
+   */
+  private def setConfigurationFieldsFromDialog(@NotNull configuration: ScalaConsoleRunConfiguration,
+                                               @NotNull project: Project,
+                                               @NotNull module: Module): Boolean = {
+    val configModel = showReplDialog(project, module)
+    if (!configModel.isStartRepl) {
+      false
+    } else {
+      val changedModuleName = configModel.getTargetModuleName
+      val changedModule = ModuleManager.getInstance(project).findModuleByName(changedModuleName)
+      val changedWorkDir = toSystemIndependentName(configModel.getModuleWorkingDirectory)
+      setConfigurationFields(configuration, changedWorkDir, changedModule)
+      true
+    }
+  }
+
+  private def showReplDialog(@NotNull project: Project,
+                             @NotNull module: Module): ReplConfigurationFormModel = {
+    val configModel = new ReplConfigurationFormModel(project, ModuleUtils.getModuleDirectory(module), module.getName)
     val configForm = new ReplConfigurationForm(configModel)
     val configDialog = new ReplConfigurationDialog
     configDialog.setReplConfigurationForm(configForm)
     configDialog.setVisible(true)
-    configDialog
+    configModel
   }
 
-  /**
-   * Method that sets working directory and module of the REPL it was started from. Works for REPL
-   * triggered on files or folders within the module scope.
-   *
-   * @param e an [[AnActionEvent]] with payload.
-   */
-  def customDoRunAction(@NotNull e: AnActionEvent): Unit = {
-    val dataContext = e.getDataContext
-    val project = CommonDataKeys.PROJECT.getData(dataContext)
-    //  virtual file is working for both: files and folders
-    val targetFileOrFolder = CommonDataKeys.VIRTUAL_FILE.getData(dataContext)
+  private def getScalaModuleOfEditorFile(@NotNull project: Project,
+                                         @NotNull context: DataContext): Option[Module] =
+    ModuleUtils.getModuleOfEditorFile(project, context).filter(hasScalaSdkLibrary)
 
-    if (project == null || checkFileOrFolderIsNull(targetFileOrFolder)) return // scalastyle:ignore
+  private def getScalaModuleOfSelectedFile(@NotNull project: Project,
+                                           @NotNull context: DataContext): Option[Module] =
+    ModuleUtils.getModuleOfSelectedFile(project, context).filter(hasScalaSdkLibrary)
 
-    //  get target module
-    val module = ModuleUtilCore.findModuleForFile(targetFileOrFolder, project)
+  private def hasScalaSdkLibrary(@NotNull module: Module): Boolean = ModuleUtils.nonEmpty(
+    ModuleRootManager.getInstance(module)
+      .orderEntries()
+      .librariesOnly()
+      .satisfying(_.getPresentableName.startsWith("scala-sdk-")))
 
-    val runManagerEx = RunManagerEx.getInstanceEx(project)
-    val configurationType = getMyConfigurationType
-    val settings = runManagerEx.getConfigurationSettingsList(configurationType).asScala
-
-    //  choose the configuration to run based on the condition if this a new configuration of not
-    val setting = settings.headOption.getOrElse {
-      val factory = configurationType.getConfigurationFactories.head
-      runManagerEx.createConfiguration(s"REPL in ${module.getName}", factory)
-    }
-
-    val configuration = setting.getConfiguration.asInstanceOf[ScalaConsoleRunConfiguration]
-    if (setConfigurationConditionally(project, module, configuration)) {
-      RunConsoleAction.runExisting(setting, runManagerEx, project)
-    }
-  }
 }
