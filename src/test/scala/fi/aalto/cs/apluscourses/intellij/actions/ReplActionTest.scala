@@ -1,13 +1,25 @@
 package fi.aalto.cs.apluscourses.intellij.actions
 
+import com.intellij.openapi.actionSystem.{AnActionEvent, DataContext}
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import fi.aalto.cs.apluscourses.intellij.TestHelperScala
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings
 import fi.aalto.cs.apluscourses.intellij.utils.ModuleUtils
 import org.junit.Assert._
 import org.junit.Test
+import org.mockito.Mockito.{mock, when}
 
 class ReplActionTest extends BasePlatformTestCase with TestHelperScala {
+
+  @Test
+  def testDoesNothingIfProjectNull(): Unit = {
+    val anActionEvent = mock(classOf[AnActionEvent])
+    when(anActionEvent.getDataContext).thenReturn(new DataContext {
+      override def getData(dataId: String) = null
+    })
+    // This would throw an exception if the method wouldn't return early when the project is null
+    (new ReplAction).actionPerformed(anActionEvent)
+  }
 
   @Test
   def testSetConfigurationConditionallyWithDoNotShowReplFlagWorks(): Unit = {

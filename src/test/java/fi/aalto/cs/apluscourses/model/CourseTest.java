@@ -157,4 +157,13 @@ public class CourseTest {
         = new StringReader("{" + nameJson + "," + requiredPluginsJson + "," + modules + "}");
     Course.fromConfigurationData(stringReader, MODEL_FACTORY);
   }
+
+  @Test(expected = MalformedCourseConfigurationFileException.class)
+  public void testFromConfigurationFileWithInvalidAutoInstalls()
+      throws MalformedCourseConfigurationFileException {
+    String autoInstalls = "\"autoInstall\":[1,2,3,4]";
+    StringReader stringReader = new StringReader("{" + nameJson + "," + requiredPluginsJson + ","
+        + modulesJson + "," + autoInstalls + "}");
+    Course.fromConfigurationData(stringReader, MODEL_FACTORY);
+  }
 }

@@ -14,9 +14,9 @@ public class CourseProjectActionDialogsImpl implements CourseProjectActionDialog
   }
 
   @Override
-  public boolean showRestartDialog(@NotNull Project project) {
+  public boolean showRestartDialog() {
     return Messages.showOkCancelDialog(
-        project, "IntelliJ IDEA will now restart to reload settings.", "Restart IntelliJ IDEA",
+        "IntelliJ IDEA will now restart to reload settings.", "Restart IntelliJ IDEA",
         "OK", "Cancel", Messages.getQuestionIcon()) == Messages.OK;
   }
 

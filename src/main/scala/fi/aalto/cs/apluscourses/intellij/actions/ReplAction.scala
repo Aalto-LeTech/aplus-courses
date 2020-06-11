@@ -94,8 +94,8 @@ class ReplAction extends RunConsoleAction {
    * and false if the user cancels the REPL dialog.
    */
   private def setConfigurationFieldsFromDialog(@NotNull configuration: ScalaConsoleRunConfiguration,
-                                       @NotNull project: Project,
-                                       @NotNull module: Module): Boolean = {
+                                               @NotNull project: Project,
+                                               @NotNull module: Module): Boolean = {
     val configModel = showReplDialog(project, module)
     if (!configModel.isStartRepl) {
       false

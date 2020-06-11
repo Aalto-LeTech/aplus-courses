@@ -60,19 +60,19 @@ public class CourseProjectAction extends AnAction {
    * @param installerFactory The factory used to create the component installer. The component
    *                         installer is then used to install the automatically installed
    *                         components of the course. This is useful mainly for testing.
-   * @param ideRestarter     A {@link PostponedRunnable} that is used to restart the IDE (if the
-   *                         user chooses to in the dialog) after everything related to the course
-   *                         project action is done. In practice this happens after the action is
-   *                         done and the components that the course automatically installs are
-   *                         installed. If this is {@code null}, then a default one is used that
-   *                         shows a simple dialog informing the user of the restart and giving the
-   *                         option to cancel.
+   * @param ideRestarter     A {@link PostponedRunnable} that is used to restart the IDE after
+   *                         everything related to the course project action is done. In practice,
+   *                         this is either immediately after the action is done, or after all
+   *                         automatically installed components for the course have been installed.
+   *                         Since the installation of automatically installed components may take
+   *                         quite a while, it is advisable for this to show the user a confirmation
+   *                         dialog regarding the restart.
    */
   public CourseProjectAction(@NotNull CourseFactory courseFactory,
                              boolean createCourseFile,
                              @NotNull SettingsImporter settingsImporter,
                              @NotNull ComponentInstaller.Factory installerFactory,
-                             @Nullable PostponedRunnable ideRestarter,
+                             @NotNull PostponedRunnable ideRestarter,
                              @NotNull CourseProjectActionDialogs dialogs) {
     this.courseFactory = courseFactory;
     this.createCourseFile = createCourseFile;
@@ -86,13 +86,16 @@ public class CourseProjectAction extends AnAction {
    * Construct a course project action with sensible defaults.
    */
   public CourseProjectAction() {
-    this(
-        (url, project) -> Course.fromUrl(url, new IntelliJModelFactory(project)),
-        true,
-        new SettingsImporterImpl(),
-        new ComponentInstallerImpl.FactoryImpl<>(new SimpleAsyncTaskManager()),
-        null,
-        new CourseProjectActionDialogsImpl());
+    this.courseFactory = (url, project) -> Course.fromUrl(url, new IntelliJModelFactory(project));
+    this.createCourseFile = true;
+    this.settingsImporter = new SettingsImporterImpl();
+    this.installerFactory = new ComponentInstallerImpl.FactoryImpl<>(new SimpleAsyncTaskManager());
+    this.dialogs = new CourseProjectActionDialogsImpl();
+    this.ideRestarter = new PostponedRunnable(() -> {
+      if (dialogs.showRestartDialog()) {
+        ((ApplicationEx) ApplicationManager.getApplication()).restart(true);
+      }
+    });
   }
 
   @Override
@@ -115,7 +118,7 @@ public class CourseProjectAction extends AnAction {
       return;
     }
 
-    startAutoInstallsWithRestart(project, course, courseProjectViewModel.userWantsRestart());
+    startAutoInstallsWithRestart(course, courseProjectViewModel.userWantsRestart());
 
     if (!tryCreateCourseFile(project, selectedCourseUrl)) {
       return;
@@ -183,21 +186,12 @@ public class CourseProjectAction extends AnAction {
     }
   }
 
-  private void startAutoInstallsWithRestart(@NotNull Project project,
-                                            @NotNull Course course,
-                                            boolean restartWhenFinished) {
+  private void startAutoInstallsWithRestart(@NotNull Course course, boolean restartWhenFinished) {
     ComponentInstaller installer = installerFactory.getInstallerFor(course);
     if (!restartWhenFinished) {
       installer.installAsync(course.getAutoInstallComponents());
-    } else if (ideRestarter != null) {
-      installer.installAsync(course.getAutoInstallComponents(), ideRestarter);
     } else {
-      PostponedRunnable callback = new PostponedRunnable(() -> {
-        if (dialogs.showRestartDialog(project)) {
-          ((ApplicationEx) ApplicationManager.getApplication()).restart(true);
-        }
-      });
-      installer.installAsync(course.getAutoInstallComponents(), callback);
+      installer.installAsync(course.getAutoInstallComponents(), ideRestarter);
     }
   }
 

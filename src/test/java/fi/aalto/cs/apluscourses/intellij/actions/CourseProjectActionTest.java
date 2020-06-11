@@ -53,7 +53,7 @@ public class CourseProjectActionTest {
     }
 
     @Override
-    public boolean showRestartDialog(@NotNull Project project) {
+    public boolean showRestartDialog() {
       return doRestart;
     }
 
