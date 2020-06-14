@@ -12,14 +12,14 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-public class SettingsImporterImplTest {
+public class SettingsImporterTest {
 
   @Test
   public void testCreateCustomWorkspaceXml() throws IOException {
     File temp = FileUtilRt.createTempFile("xml", "xml", true);
     FileUtils.writeStringToFile(temp, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
         + "<project version=\"4\"></project>", StandardCharsets.UTF_8);
-    Document document = SettingsImporterImpl.createCustomWorkspaceXml(temp.toPath());
+    Document document = SettingsImporter.createCustomWorkspaceXml(temp.toPath());
     List<Node> componentMatches = DomUtil.getNodesFromXPath(
         "//component[@name=\"CompilerWorkspaceConfiguration\"]", document);
     Assert.assertFalse("The customized workspace.xml should contain the correct component node",
@@ -38,7 +38,7 @@ public class SettingsImporterImplTest {
         + "<project version=\"4\"><component name=\"CompilerWorkspaceConfiguration\"><option name="
         + "\"AUTO_SHOW_ERRORS_IN_EDITOR\" value=\"true\"/></component></project>",
         StandardCharsets.UTF_8);
-    Document document = SettingsImporterImpl.createCustomWorkspaceXml(temp.toPath());
+    Document document = SettingsImporter.createCustomWorkspaceXml(temp.toPath());
     List<Node> componentMatches = DomUtil.getNodesFromXPath(
         "//component[@name=\"CompilerWorkspaceConfiguration\"]", document);
     Assert.assertFalse("The customized workspace.xml should contain the correct component node",
@@ -55,7 +55,7 @@ public class SettingsImporterImplTest {
     File temp = FileUtilRt.createTempFile("malformed", "xml", true);
     FileUtils.writeStringToFile(temp, "<?xml version\"1.0\" encoding=\"UTF-8\"?><component>",
         StandardCharsets.UTF_8);
-    SettingsImporterImpl.createCustomWorkspaceXml(temp.toPath());
+    SettingsImporter.createCustomWorkspaceXml(temp.toPath());
   }
 
 }

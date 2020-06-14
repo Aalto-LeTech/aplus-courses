@@ -72,7 +72,7 @@ public class CourseProjectActionTest {
   private PostponedRunnable ideRestarter;
   private TestDialogs dialogs;
 
-  class DummySettingsImporter implements SettingsImporter {
+  class DummySettingsImporter extends SettingsImporter {
     private int importIdeSettingsCallCount = 0;
     private int importProjectSettingsCallCount = 0;
 

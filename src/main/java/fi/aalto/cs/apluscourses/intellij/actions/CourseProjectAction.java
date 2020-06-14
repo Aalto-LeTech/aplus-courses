@@ -7,7 +7,6 @@ import com.intellij.openapi.application.ex.ApplicationEx;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory;
 import fi.aalto.cs.apluscourses.intellij.model.SettingsImporter;
-import fi.aalto.cs.apluscourses.intellij.model.SettingsImporterImpl;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.intellij.utils.CourseFileManager;
 import fi.aalto.cs.apluscourses.model.ComponentInstaller;
@@ -88,7 +87,7 @@ public class CourseProjectAction extends AnAction {
   public CourseProjectAction() {
     this.courseFactory = (url, project) -> Course.fromUrl(url, new IntelliJModelFactory(project));
     this.createCourseFile = true;
-    this.settingsImporter = new SettingsImporterImpl();
+    this.settingsImporter = new SettingsImporter();
     this.installerFactory = new ComponentInstallerImpl.FactoryImpl<>(new SimpleAsyncTaskManager());
     this.dialogs = new CourseProjectActionDialogsImpl();
     this.ideRestarter = new PostponedRunnable(() -> {
