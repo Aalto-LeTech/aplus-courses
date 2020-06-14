@@ -135,7 +135,7 @@ class IntelliJModule
   }
 
   private void fetchZipTo(File file) throws IOException {
-    CoursesClient.fetchZip(getUrl(), file);
+    CoursesClient.fetch(getUrl(), file);
   }
 
   @NotNull

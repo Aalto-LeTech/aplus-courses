@@ -9,15 +9,15 @@ import org.apache.http.HttpVersion;
 import org.apache.http.impl.DefaultHttpResponseFactory;
 import org.junit.Test;
 
-public class UnexpectedResponseExceptionTest {
+public class InvalidAuthenticationExceptionTest {
 
   @Test
   public void testCreateUnexpectedResponseExceptionTest() {
     DefaultHttpResponseFactory factory = new DefaultHttpResponseFactory();
-    HttpResponse response = factory.newHttpResponse(HttpVersion.HTTP_1_1, 200, null);
-    String message = "My awesome test message";
-    UnexpectedResponseException exception
-        = new UnexpectedResponseException(response, message);
+    HttpResponse response = factory.newHttpResponse(HttpVersion.HTTP_1_1, 401, null);
+    String message = "Test message";
+    InvalidAuthenticationException exception
+        = new InvalidAuthenticationException(response, message);
 
     assertSame("Response should be the one given to the constructor", response,
         exception.getResponse());

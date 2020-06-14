@@ -142,7 +142,7 @@ public class Course implements ComponentSource {
   @NotNull
   public static Course fromUrl(@NotNull URL url, @NotNull ModelFactory modelFactory)
       throws IOException, MalformedCourseConfigurationFileException {
-    InputStream inputStream = CoursesClient.fetchJson(url);
+    InputStream inputStream = CoursesClient.fetch(url);
     return Course.fromConfigurationData(
         new InputStreamReader(inputStream), url.toString(), modelFactory);
   }

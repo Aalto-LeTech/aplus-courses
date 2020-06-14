@@ -49,7 +49,7 @@ public class SettingsImporterImpl implements SettingsImporter {
     }
 
     File file = FileUtilRt.createTempFile("course-ide-settings", ".zip");
-    CoursesClient.fetchZip(ideSettingsUrl, file);
+    CoursesClient.fetch(ideSettingsUrl, file);
     String configPath = FileUtilRt.toSystemIndependentName(PathManager.getConfigPath());
     StartupActionScriptManager.addActionCommands(
         Arrays.asList(
@@ -90,7 +90,7 @@ public class SettingsImporterImpl implements SettingsImporter {
     Path settingsPath = Paths.get(project.getBasePath(), Project.DIRECTORY_STORE_FOLDER);
 
     File settingsZip = FileUtilRt.createTempFile(project.getName() + "-settings", ".zip");
-    CoursesClient.fetchZip(settingsUrl, settingsZip);
+    CoursesClient.fetch(settingsUrl, settingsZip);
     ZipFile zipFile = new ZipFile(settingsZip);
 
     extractZipTo(zipFile, settingsPath);
