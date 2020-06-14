@@ -19,10 +19,10 @@ public class APlusAuthenticationViewModelTest {
         "hello there", viewModel.getProject().getBasePath());
     Assert.assertNull(viewModel.getAuthentication());
 
-    viewModel.setToken(new char[]{'a', 's', 'd'});
+    viewModel.setToken(new char[] {'a', 's', 'd'});
 
-    Assert.assertArrayEquals("The view model should have an authentication instance",
-        new char[]{'a', 's', 'd'}, viewModel.getAuthentication().getToken());
+    Assert.assertNotNull("The view model should have an authentication instance",
+        viewModel.getAuthentication());
   }
 
 }

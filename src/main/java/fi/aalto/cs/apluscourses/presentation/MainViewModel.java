@@ -12,6 +12,6 @@ public class MainViewModel {
 
   @NotNull
   public final ObservableProperty<APlusAuthenticationViewModel> authenticationViewModel
-      = new ObservableReadWriteProperty<>(null);
+      = new ObservableReadWriteProperty<>(new APlusAuthenticationViewModel(null));
 
 }
