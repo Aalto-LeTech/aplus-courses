@@ -49,10 +49,6 @@
                     class="fi.aalto.cs.apluscourses.intellij.actions.ResetSettingsAction"
                     text="Reset A+ Courses Plugin Settings"
                     description="Resets all the settings related to the A+ Courses plugin." />
-            <action id="fi.aalto.cs.apluscourses.intellij.actions.ShowMySubmissionGroupsAction"
-              class="fi.aalto.cs.apluscourses.intellij.actions.ShowMySubmissionGroupsAction"
-              text="Show submission groups"
-            description="TEMPORARY IMPL action to show available in A+ submission groups"/>
             <action id="fi.aalto.cs.apluscourses.intellij.actions.AboutAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.AboutAction"
                     text="About A+ Plugin"
