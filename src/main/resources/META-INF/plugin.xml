@@ -25,7 +25,8 @@
 
         <toolWindow id="Modules"
                     anchor="right"
-                    factoryClass="fi.aalto.cs.apluscourses.intellij.toolwindows.ModulesToolWindowFactory" />
+                    factoryClass="fi.aalto.cs.apluscourses.intellij.toolwindows.ModulesToolWindowFactory"
+        icon="/META-INF/icons/scaling-toolbar-logo_dark.svg"/>
         <toolWindow id="Exercises"
                     anchor="right"
                     factoryClass="fi.aalto.cs.apluscourses.intellij.toolwindows.ExercisesToolWindowFactory" />
@@ -48,6 +49,10 @@
                     class="fi.aalto.cs.apluscourses.intellij.actions.ResetSettingsAction"
                     text="Reset A+ Courses Plugin Settings"
                     description="Resets all the settings related to the A+ Courses plugin." />
+            <action id="fi.aalto.cs.apluscourses.intellij.actions.ShowMySubmissionGroupsAction"
+              class="fi.aalto.cs.apluscourses.intellij.actions.ShowMySubmissionGroupsAction"
+              text="Show submission groups"
+            description="TEMPORARY IMPL action to show available in A+ submission groups"/>
             <action id="fi.aalto.cs.apluscourses.intellij.actions.AboutAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.AboutAction"
                     text="About A+ Plugin"
@@ -58,7 +63,8 @@
                description="Actions for A+ modules">
             <action id="fi.aalto.cs.apluscourses.intellij.actions.ImportModuleAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.ImportModuleAction"
-                    text="Import A+ Module" icon="AllIcons.Actions.Download"/>
+                    text="Import A+ Module"
+                    icon="PluginIcons.A_PLUS_DOWNLOAD"/>
         </group>
         <action id="fi.aalto.cs.apluscourses.intellij.actions.RequiredPluginsCheckerAction"
                 class="fi.aalto.cs.apluscourses.intellij.actions.RequiredPluginsCheckerAction"
