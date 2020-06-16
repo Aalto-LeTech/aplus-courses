@@ -26,7 +26,7 @@
         <toolWindow id="Modules"
                     anchor="right"
                     factoryClass="fi.aalto.cs.apluscourses.intellij.toolwindows.ModulesToolWindowFactory"
-        icon="/META-INF/icons/scaling-toolbar-logo_dark.svg"/>
+                    icon="PluginIcons.A_PLUS_LOGO"/>
         <toolWindow id="Exercises"
                     anchor="right"
                     factoryClass="fi.aalto.cs.apluscourses.intellij.toolwindows.ExercisesToolWindowFactory" />
