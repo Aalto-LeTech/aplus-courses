@@ -67,13 +67,13 @@ public class VfsUtilTest {
     File tempDirectory = FileUtilRt.createTempDirectory("first", "", true);
     File tempFileOne = FileUtilRt.createTempFile(tempDirectory, "test1", JSON, true);
     File tempFileTwo = FileUtilRt.createTempFile(tempDirectory, "test2", JSON, true);
-    assertTrue(tempFileTwo.setLastModified(Instant.now().toEpochMilli()));
 
     long now = Instant.now().toEpochMilli();
-    assertTrue(tempFileOne.setLastModified(now));
+    assertTrue(tempFileTwo.setLastModified(now));
+    assertTrue(tempFileOne.setLastModified(now + 1000));
 
     //  when & then
-    assertTrue(VfsUtil.hasDirectoryChanges(tempDirectory.toPath(), now + 1000));
+    assertTrue(VfsUtil.hasDirectoryChanges(tempDirectory.toPath(), now));
   }
 
   @Test

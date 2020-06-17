@@ -128,7 +128,7 @@ public class CourseProjectActionTest {
 
     dialogs = new TestDialogs(false, true, false);
 
-    installerDialogsFactory = mock(InstallerDialogs.Factory.class);
+    installerDialogsFactory = proj -> module -> true;
   }
 
   @Test
