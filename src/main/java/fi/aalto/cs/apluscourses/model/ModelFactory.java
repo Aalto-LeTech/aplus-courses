@@ -10,7 +10,8 @@ public interface ModelFactory {
                       @NotNull List<Module> modules,
                       @NotNull List<Library> libraries,
                       @NotNull Map<String, String> requiredPlugins,
-                      @NotNull Map<String, URL> resourceUrls);
+                      @NotNull Map<String, URL> resourceUrls,
+                      @NotNull List<String> autoInstallComponentNames);
 
   Module createModule(@NotNull String name, @NotNull URL url, @NotNull String versionId);
 

@@ -6,10 +6,16 @@ import static org.mockito.Mockito.mock;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.io.FileUtilRt;
 import fi.aalto.cs.apluscourses.intellij.model.SettingsImporter;
+import fi.aalto.cs.apluscourses.model.ComponentInstaller;
+import fi.aalto.cs.apluscourses.model.ComponentInstallerImpl;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.presentation.CourseProjectViewModel;
+import fi.aalto.cs.apluscourses.ui.InstallerDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogs;
+import fi.aalto.cs.apluscourses.utils.PostponedRunnable;
+import fi.aalto.cs.apluscourses.utils.async.ImmediateTaskManager;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -48,6 +54,11 @@ public class CourseProjectActionTest {
     }
 
     @Override
+    public boolean showRestartDialog() {
+      return doRestart;
+    }
+
+    @Override
     public void showErrorDialog(@NotNull String message, @NotNull String title) {
       lastErrorMessage = message;
     }
@@ -57,8 +68,11 @@ public class CourseProjectActionTest {
   private AnActionEvent anActionEvent;
   private Course emptyCourse;
   private DummySettingsImporter settingsImporter;
-  private DummyIdeRestarter ideRestarter;
+  private ComponentInstaller.Factory installerFactory;
+  private AtomicInteger restarterCallCount;
+  private PostponedRunnable ideRestarter;
   private TestDialogs dialogs;
+  private InstallerDialogs.Factory installerDialogsFactory;
 
   class DummySettingsImporter implements SettingsImporter {
     private int importIdeSettingsCallCount = 0;
@@ -90,35 +104,31 @@ public class CourseProjectActionTest {
     }
   }
 
-  class DummyIdeRestarter implements CourseProjectAction.IdeRestarter {
-    private int callCount = 0;
-
-    @Override
-    public void restart() {
-      ++callCount;
-    }
-
-    int getCallCount() {
-      return callCount;
-    }
-  }
-
   /**
    * Called before each test method call.  Initializes private fields.
    */
   @Before
   public void createMockObjects() {
     Project project = mock(Project.class);
+    doReturn(FileUtilRt.getTempDirectory()).when(project).getBasePath();
+
     anActionEvent = mock(AnActionEvent.class);
     doReturn(project).when(anActionEvent).getProject();
+
     emptyCourse = new Course("EMPTY", Collections.emptyList(), Collections.emptyList(),
-        Collections.emptyMap(), Collections.emptyMap());
+        Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList());
 
     settingsImporter = new DummySettingsImporter();
 
-    ideRestarter = new DummyIdeRestarter();
+    installerFactory = new ComponentInstallerImpl.FactoryImpl<>(new ImmediateTaskManager());
+
+    restarterCallCount = new AtomicInteger(0);
+
+    ideRestarter = new PostponedRunnable(restarterCallCount::incrementAndGet, Runnable::run);
 
     dialogs = new TestDialogs(false, true, false);
+
+    installerDialogsFactory = mock(InstallerDialogs.Factory.class);
   }
 
   @Test
@@ -131,8 +141,10 @@ public class CourseProjectActionTest {
         },
         false,
         settingsImporter,
+        installerFactory,
         ideRestarter,
-        dialogs);
+        dialogs,
+        installerDialogsFactory);
 
     action.actionPerformed(anActionEvent);
 
@@ -143,8 +155,8 @@ public class CourseProjectActionTest {
         settingsImporter.getImportProjectSettingsCallCount());
     Assert.assertEquals("The IDE settings should get imported", 1,
         settingsImporter.getImportIdeSettingsCallCount());
+    Assert.assertEquals("The IDE should get restarted", 1, restarterCallCount.get());
 
-    Assert.assertEquals("IdeRestarter#restart should get called", 1, ideRestarter.getCallCount());
     Assert.assertEquals("No error dialogs should be shown", "",
         dialogs.getLastErrorMessage());
   }
@@ -157,8 +169,10 @@ public class CourseProjectActionTest {
         },
         false,
         settingsImporter,
+        installerFactory,
         ideRestarter,
-        dialogs);
+        dialogs,
+        installerDialogsFactory);
 
     action.actionPerformed(anActionEvent);
 
@@ -185,8 +199,10 @@ public class CourseProjectActionTest {
         (url, proj) -> emptyCourse,
         false,
         failingSettingsImporter,
+        installerFactory,
         ideRestarter,
-        dialogs);
+        dialogs,
+        installerDialogsFactory);
 
     action.actionPerformed(anActionEvent);
 
@@ -202,8 +218,10 @@ public class CourseProjectActionTest {
         (url, proj) -> emptyCourse,
         false,
         settingsImporter,
+        installerFactory,
         ideRestarter,
-        new TestDialogs(false, true, true));
+        new TestDialogs(false, true, true),
+        installerDialogsFactory);
 
     action.actionPerformed(anActionEvent);
 
@@ -219,8 +237,10 @@ public class CourseProjectActionTest {
         (url, proj) -> emptyCourse,
         true,
         settingsImporter,
+        installerFactory,
         ideRestarter,
-        new TestDialogs(true, true, true));
+        new TestDialogs(true, true, true),
+        installerDialogsFactory);
 
     action.actionPerformed(anActionEvent);
 
@@ -228,7 +248,7 @@ public class CourseProjectActionTest {
         settingsImporter.getImportProjectSettingsCallCount());
     Assert.assertEquals("IDE settings are not imported", 0,
         settingsImporter.getImportIdeSettingsCallCount());
-    Assert.assertEquals("The IDE is not restarted", 0, ideRestarter.getCallCount());
+    Assert.assertEquals("The IDE is not restarted", 0, restarterCallCount.get());
   }
 
   @Test
@@ -237,13 +257,15 @@ public class CourseProjectActionTest {
         (url, proj) -> emptyCourse,
         false,
         settingsImporter,
+        installerFactory,
         ideRestarter,
-        new TestDialogs(false, false, false));
+        new TestDialogs(false, false, false),
+        installerDialogsFactory);
 
     action.actionPerformed(anActionEvent);
 
     Assert.assertEquals("IDE settings are imported", 1,
         settingsImporter.getImportIdeSettingsCallCount());
-    Assert.assertEquals("The IDE is not restarted", 0, ideRestarter.getCallCount());
+    Assert.assertEquals("The IDE is not restarted", 0, restarterCallCount.get());
   }
 }

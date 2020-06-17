@@ -13,13 +13,15 @@ public class CourseProjectViewModelTest {
   private static final String COURSE_NAME = "NiceCourse";
 
   private final Course emptyCourse = new Course(COURSE_NAME, Collections.emptyList(),
-      Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap());
+          Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap(),
+          Collections.emptyList());
+
 
   @Test
   public void testInformationTextIncludesCourseName() {
     CourseProjectViewModel courseProjectViewModel = new CourseProjectViewModel(emptyCourse, "");
     assertEquals("The information text contains the course name",
-        "NiceCourse", courseProjectViewModel.getCourseName());
+            COURSE_NAME, courseProjectViewModel.getCourseName());
   }
 
   @Test

@@ -70,11 +70,10 @@ public class VfsUtilTest {
     assertTrue(tempFileTwo.setLastModified(Instant.now().toEpochMilli()));
 
     long now = Instant.now().toEpochMilli();
-    assertTrue(tempFileOne.setLastModified(now + 1000));
-
+    assertTrue(tempFileOne.setLastModified(now));
 
     //  when & then
-    assertTrue(VfsUtil.hasDirectoryChanges(tempDirectory.toPath(), now));
+    assertTrue(VfsUtil.hasDirectoryChanges(tempDirectory.toPath(), now + 1000));
   }
 
   @Test

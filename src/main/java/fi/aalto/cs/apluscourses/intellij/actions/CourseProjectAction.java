@@ -10,11 +10,16 @@ import fi.aalto.cs.apluscourses.intellij.model.SettingsImporter;
 import fi.aalto.cs.apluscourses.intellij.model.SettingsImporterImpl;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.intellij.utils.CourseFileManager;
+import fi.aalto.cs.apluscourses.model.ComponentInstaller;
+import fi.aalto.cs.apluscourses.model.ComponentInstallerImpl;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationFileException;
 import fi.aalto.cs.apluscourses.presentation.CourseProjectViewModel;
+import fi.aalto.cs.apluscourses.ui.InstallerDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogsImpl;
+import fi.aalto.cs.apluscourses.utils.PostponedRunnable;
+import fi.aalto.cs.apluscourses.utils.async.SimpleAsyncTaskManager;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -36,36 +41,67 @@ public class CourseProjectAction extends AnAction {
   private SettingsImporter settingsImporter;
 
   @NotNull
-  private IdeRestarter ideRestarter;
+  private ComponentInstaller.Factory installerFactory;
+
+  @NotNull
+  private PostponedRunnable ideRestarter;
 
   @NotNull
   private CourseProjectActionDialogs dialogs;
 
+  @NotNull
+  private InstallerDialogs.Factory installerDialogsFactory;
+
   /**
-   * Construct a course project action with the given main view model provider and dialogs.
+   * Construct a course project action with the given parameters.
+   *
+   * @param courseFactory    An instance of {@link CourseFactory} that is used to create a course
+   *                         instance from a URL.
+   * @param createCourseFile Determines whether a course file is created or not. This is useful
+   *                         mostly for testing purposes.
+   * @param settingsImporter An instance of {@link SettingsImporter} that is used to import IDE and
+   *                         project settings.
+   * @param installerFactory The factory used to create the component installer. The component
+   *                         installer is then used to install the automatically installed
+   *                         components of the course. This is useful mainly for testing.
+   * @param ideRestarter     A {@link PostponedRunnable} that is used to restart the IDE after
+   *                         everything related to the course project action is done. In practice,
+   *                         this is either immediately after the action is done, or after all
+   *                         automatically installed components for the course have been installed.
+   *                         Since the installation of automatically installed components may take
+   *                         quite a while, it is advisable for this to show the user a confirmation
+   *                         dialog regarding the restart.
    */
   public CourseProjectAction(@NotNull CourseFactory courseFactory,
                              boolean createCourseFile,
                              @NotNull SettingsImporter settingsImporter,
-                             @NotNull IdeRestarter ideRestarter,
-                             @NotNull CourseProjectActionDialogs dialogs) {
+                             @NotNull ComponentInstaller.Factory installerFactory,
+                             @NotNull PostponedRunnable ideRestarter,
+                             @NotNull CourseProjectActionDialogs dialogs,
+                             @NotNull InstallerDialogs.Factory installerDialogsFactory) {
     this.courseFactory = courseFactory;
     this.createCourseFile = createCourseFile;
     this.settingsImporter = settingsImporter;
+    this.installerFactory = installerFactory;
     this.ideRestarter = ideRestarter;
     this.dialogs = dialogs;
+    this.installerDialogsFactory = installerDialogsFactory;
   }
 
   /**
    * Construct a course project action with sensible defaults.
    */
   public CourseProjectAction() {
-    this(
-        (url, project) -> Course.fromUrl(url, new IntelliJModelFactory(project)),
-        true,
-        new SettingsImporterImpl(),
-        () -> ((ApplicationEx) ApplicationManager.getApplication()).restart(true),
-        new CourseProjectActionDialogsImpl());
+    this.courseFactory = (url, project) -> Course.fromUrl(url, new IntelliJModelFactory(project));
+    this.createCourseFile = true;
+    this.settingsImporter = new SettingsImporterImpl();
+    this.installerFactory = new ComponentInstallerImpl.FactoryImpl<>(new SimpleAsyncTaskManager());
+    this.dialogs = new CourseProjectActionDialogsImpl();
+    this.ideRestarter = new PostponedRunnable(() -> {
+      if (dialogs.showRestartDialog()) {
+        ((ApplicationEx) ApplicationManager.getApplication()).restart(true);
+      }
+    });
   }
 
   @Override
@@ -92,13 +128,14 @@ public class CourseProjectAction extends AnAction {
       return;
     }
 
+    startAutoInstallsWithRestart(course, courseProjectViewModel.userWantsRestart(), project);
+
     if (!tryImportProjectSettings(project, course)) {
       return;
     }
 
-    if (!courseProjectViewModel.userOptsOutOfSettings() && tryImportIdeSettings(course)
-        && courseProjectViewModel.userWantsRestart()) {
-      ideRestarter.restart();
+    if (!courseProjectViewModel.userOptsOutOfSettings()) {
+      tryImportIdeSettings(course);
     }
 
     if (createCourseFile) {
@@ -119,11 +156,6 @@ public class CourseProjectAction extends AnAction {
     @NotNull
     Course fromUrl(@NotNull URL courseUrl, @NotNull Project project)
         throws IOException, MalformedCourseConfigurationFileException;
-  }
-
-  @FunctionalInterface
-  public interface IdeRestarter {
-    void restart();
   }
 
   @Nullable
@@ -157,6 +189,18 @@ public class CourseProjectAction extends AnAction {
       logger.error("Malformed course configuration file", e);
       notifyMalformedCourseConfiguration();
       return null;
+    }
+  }
+
+  private void startAutoInstallsWithRestart(@NotNull Course course,
+                                            boolean restartWhenFinished,
+                                            @NotNull Project project) {
+    ComponentInstaller.Dialogs installerDialogs = installerDialogsFactory.getDialogs(project);
+    ComponentInstaller installer = installerFactory.getInstallerFor(course, installerDialogs);
+    if (!restartWhenFinished) {
+      installer.installAsync(course.getAutoInstallComponents());
+    } else {
+      installer.installAsync(course.getAutoInstallComponents(), ideRestarter);
     }
   }
 
