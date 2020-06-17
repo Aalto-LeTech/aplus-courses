@@ -92,14 +92,18 @@ public abstract class Module extends Component {
   }
 
   /**
-   * Tells whether or not the module is up-to-date.
+   * Tells whether or not the module is updatable.
    *
-   * @return True if the local version is the newest one, otherwise false.
+   * @return True, if the module is loaded and the local version is not the newest one; otherwise
+   *         false.
    */
   @Override
-  public boolean isUpToDate() {
+  public boolean isUpdatable() {
+    if (stateMonitor.get() != LOADED) {
+      return false;
+    }
     synchronized (versionLock) {
-      return versionId.equals(localVersionId);
+      return !versionId.equals(localVersionId);
     }
   }
 
@@ -118,6 +122,7 @@ public abstract class Module extends Component {
    *
    * @return True if there are local changes, otherwise false.
    */
+  @Override
   public boolean hasLocalChanges() {
     ZonedDateTime downloadedAtVal;
     synchronized (versionLock) {

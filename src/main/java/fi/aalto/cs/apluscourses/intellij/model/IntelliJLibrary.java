@@ -62,7 +62,7 @@ public abstract class IntelliJLibrary
   @CalledWithWriteLock
   private void unloadInternal() {
     LibraryTable libraryTable = project.getLibraryTable();
-    com.intellij.openapi.roots.libraries.Library library =getPlatformObject();
+    com.intellij.openapi.roots.libraries.Library library = getPlatformObject();
     if (library != null) {
       libraryTable.removeLibrary(library);
     }

@@ -49,8 +49,7 @@ public abstract class Component {
    */
   public boolean isActive() {
     int state = stateMonitor.get();
-    int depState = dependencyStateMonitor.get();
-    return state == FETCHING || state == LOADING || depState == DEP_WAITING;
+    return state == FETCHING || state == LOADING || state == UNINSTALLING;
   }
 
   @NotNull
@@ -144,7 +143,9 @@ public abstract class Component {
     }
   }
 
-  public abstract boolean isUpToDate();
+  public abstract boolean isUpdatable();
+
+  public abstract boolean hasLocalChanges();
 
   @FunctionalInterface
   public static interface InitializationCallback {

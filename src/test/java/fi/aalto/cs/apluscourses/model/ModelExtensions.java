@@ -66,8 +66,13 @@ public class ModelExtensions {
     }
 
     @Override
-    public boolean isUpToDate() {
-      return true;
+    public boolean isUpdatable() {
+      return false;
+    }
+
+    @Override
+    public boolean hasLocalChanges() {
+      return false;
     }
   }
 
@@ -117,6 +122,11 @@ public class ModelExtensions {
       return null;
     }
 
+    @Override
+    protected boolean hasLocalChanges(@NotNull ZonedDateTime downloadedAt) {
+      return false;
+    }
+
     @NotNull
     @Override
     public Path getFullPath() {
@@ -132,11 +142,6 @@ public class ModelExtensions {
     @Override
     protected List<String> computeDependencies() {
       return Collections.emptyList();
-    }
-
-    @Override
-    public boolean hasLocalChanges(@NotNull ZonedDateTime downloadedAt) {
-      return false;
     }
   }
 

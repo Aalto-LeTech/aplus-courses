@@ -3,6 +3,7 @@ package fi.aalto.cs.apluscourses.model;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -35,8 +36,10 @@ public class ComponentInstallerTest {
       }
     });
 
+    ComponentInstaller.Dialogs dialogs = mock(ComponentInstaller.Dialogs.class);
+
     ComponentInstaller installer = new ComponentInstallerImpl<>(
-        new ModelExtensions.TestComponentSource(), new SimpleAsyncTaskManager());
+        new ModelExtensions.TestComponentSource(), new SimpleAsyncTaskManager(), dialogs);
 
     installer.install(module);
 
@@ -58,7 +61,7 @@ public class ComponentInstallerTest {
       @Override
       protected List<String> computeDependencies() {
         assertEquals("Module should be in LOADED state when computeDependencies() is called.",
-            stateMonitor.get(), Component.LOADED);
+            Component.LOADED, stateMonitor.get());
         List<String> dependencies = new ArrayList<>();
         dependencies.add("firstDep");
         dependencies.add("secondDep");
@@ -74,7 +77,8 @@ public class ComponentInstallerTest {
     when(componentSource.getComponentIfExists(secondDep.getName())).thenReturn(secondDep);
 
     ComponentInstaller installer =
-        new ComponentInstallerImpl<>(componentSource, new SimpleAsyncTaskManager());
+        new ComponentInstallerImpl<>(componentSource, new SimpleAsyncTaskManager(),
+            mock(ComponentInstaller.Dialogs.class));
 
     installer.install(module1);
 
@@ -96,10 +100,10 @@ public class ComponentInstallerTest {
         Component.DEP_LOADED, module1.dependencyStateMonitor.get());
 
     assertEquals("1st dependency should be in LOADED state.",
-        firstDep.stateMonitor.get(), Component.LOADED);
+        Component.LOADED, firstDep.stateMonitor.get());
 
     assertEquals("2nd dependency should be in LOADED state.",
-        secondDep.stateMonitor.get(), Component.LOADED);
+        Component.LOADED, secondDep.stateMonitor.get());
   }
 
   @Test
@@ -113,7 +117,8 @@ public class ComponentInstallerTest {
     when(componentSource.getComponentIfExists(module2.getName())).thenReturn(module2);
 
     ComponentInstaller installer =
-        new ComponentInstallerImpl<>(componentSource, new SimpleAsyncTaskManager());
+        new ComponentInstallerImpl<>(componentSource, new SimpleAsyncTaskManager(),
+            mock(ComponentInstaller.Dialogs.class));
 
     List<Component> modules = new ArrayList<>();
     modules.add(module1);
@@ -144,8 +149,11 @@ public class ComponentInstallerTest {
       }
     });
 
+
+
     ComponentInstaller installer = new ComponentInstallerImpl<>(
-        new ModelExtensions.TestComponentSource(), new SimpleAsyncTaskManager());
+        new ModelExtensions.TestComponentSource(), new SimpleAsyncTaskManager(),
+        mock(ComponentInstaller.Dialogs.class));
 
     installer.install(module);
 
@@ -167,7 +175,8 @@ public class ComponentInstallerTest {
     });
 
     ComponentInstaller installer = new ComponentInstallerImpl<>(
-        new ModelExtensions.TestComponentSource(), new SimpleAsyncTaskManager());
+        new ModelExtensions.TestComponentSource(), new SimpleAsyncTaskManager(),
+        mock(ComponentInstaller.Dialogs.class));
 
     installer.install(module);
 
@@ -191,7 +200,8 @@ public class ComponentInstallerTest {
     ComponentSource componentSource = new ModelExtensions.TestComponentSource();
 
     ComponentInstaller installer =
-        new ComponentInstallerImpl<>(componentSource, new SimpleAsyncTaskManager());
+        new ComponentInstallerImpl<>(componentSource, new SimpleAsyncTaskManager(),
+            mock(ComponentInstaller.Dialogs.class));
 
     installer.install(module);
 
@@ -223,7 +233,8 @@ public class ComponentInstallerTest {
     when(componentSource.getComponentIfExists(failingDep.getName())).thenReturn(failingDep);
 
     ComponentInstaller installer =
-        new ComponentInstallerImpl<>(componentSource, new SimpleAsyncTaskManager());
+        new ComponentInstallerImpl<>(componentSource, new SimpleAsyncTaskManager(),
+            mock(ComponentInstaller.Dialogs.class));
 
     List<Component> modules = new ArrayList<>();
     modules.add(dependentModule);
@@ -265,7 +276,8 @@ public class ComponentInstallerTest {
     when(componentSource.getComponentIfExists(moduleB.getName())).thenReturn(moduleB);
 
     ComponentInstaller installer =
-        new ComponentInstallerImpl<>(componentSource, new SimpleAsyncTaskManager());
+        new ComponentInstallerImpl<>(componentSource, new SimpleAsyncTaskManager(),
+            mock(ComponentInstaller.Dialogs.class));
 
     List<Component> modules = new ArrayList<>();
     modules.add(moduleA);

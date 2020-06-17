@@ -4,6 +4,7 @@ import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalSet
 import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalSettingsNames.A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG;
 
 import com.intellij.ide.util.PropertiesComponent;
+import com.intellij.notification.Notifications;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.project.ProjectManagerListener;
@@ -39,10 +40,10 @@ public class PluginSettings implements MainViewModelProvider {
   }
 
   public static final String COURSE_CONFIGURATION_FILE_URL
-      = "https://grader.cs.hut.fi/static/O1_2020/projects/o1_course_config.json";
+      = "http://0.0.0.0:8000/o1_course_config.json";
 
-  //  15 minutes in milliseconds
-  public static final long MAIN_VIEW_MODEL_UPDATE_INTERVAL = 15L * 60L * 1000L;
+  //  7 seconds in milliseconds
+  public static final long MAIN_VIEW_MODEL_UPDATE_INTERVAL = 7L * 1000L;
   //  15 seconds in milliseconds
   public static final long REASONABLE_DELAY_FOR_MODULE_INSTALLATION = 15L * 1000;
 
@@ -104,7 +105,8 @@ public class PluginSettings implements MainViewModelProvider {
         = mainViewModels.computeIfAbsent(project, this::createNewMainViewModel);
     mainViewModelUpdaters.computeIfAbsent(project, p -> {
       MainViewModelUpdater mainViewModelUpdater
-          = new MainViewModelUpdater(mainViewModel, p, MAIN_VIEW_MODEL_UPDATE_INTERVAL);
+          = new MainViewModelUpdater(mainViewModel, p, MAIN_VIEW_MODEL_UPDATE_INTERVAL,
+          Notifications.Bus::notify);
       mainViewModelUpdater.start();
       return mainViewModelUpdater;
     });

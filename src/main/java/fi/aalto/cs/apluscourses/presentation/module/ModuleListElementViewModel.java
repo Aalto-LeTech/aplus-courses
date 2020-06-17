@@ -23,8 +23,7 @@ public class ModuleListElementViewModel extends ListElementViewModel<Module> {
   }
 
   public Boolean isUpdateAvailable() {
-    Module model = getModel();
-    return model.stateMonitor.get() == Component.LOADED && !model.isUpToDate();
+    return getModel().isUpdatable();
   }
 
   /**

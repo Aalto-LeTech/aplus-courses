@@ -2,17 +2,14 @@ package fi.aalto.cs.apluscourses.intellij.model;
 
 import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.module.ModuleManager;
-import com.intellij.openapi.module.ModuleWithNameAlreadyExists;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.util.io.FileUtilRt;
-import com.intellij.openapi.vfs.VfsUtil;
-import com.intellij.openapi.vfs.VfsUtilCore;
-import com.intellij.openapi.vfs.VirtualFile;
+import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.intellij.utils.CourseFileManager;
 import fi.aalto.cs.apluscourses.intellij.utils.ListDependenciesPolicy;
+import fi.aalto.cs.apluscourses.intellij.utils.VfsUtil;
 import fi.aalto.cs.apluscourses.model.ComponentLoadException;
 import fi.aalto.cs.apluscourses.model.Module;
-import fi.aalto.cs.apluscourses.model.ModuleVirtualFileVisitor;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
 import fi.aalto.cs.apluscourses.utils.DirAwareZipFile;
 import java.io.File;
@@ -25,10 +22,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import org.apache.commons.io.FileUtils;
-import org.jdom.JDOMException;
-import org.jetbrains.annotations.CalledWithWriteLock;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -165,13 +159,7 @@ class IntelliJModule
 
   @Override
   protected boolean hasLocalChanges(@NotNull ZonedDateTime downloadedAt) {
-    VirtualFile virtualFile = VfsUtil.findFile(getFullPath(), true);
-    ModuleVirtualFileVisitor virtualFileVisitor = new ModuleVirtualFileVisitor(downloadedAt);
-
-    if (virtualFile != null) {
-      VfsUtilCore.visitChildrenRecursively(virtualFile, virtualFileVisitor);
-    }
-
-    return virtualFileVisitor.hasChanges();
+    return VfsUtil.hasDirectoryChanges(getFullPath(), downloadedAt.toInstant().toEpochMilli()
+        + PluginSettings.REASONABLE_DELAY_FOR_MODULE_INSTALLATION);
   }
 }

@@ -312,4 +312,17 @@ public class Course implements ComponentSource {
       component.validate(this);
     }
   }
+
+  /**
+   * Gets modules that could be updated.
+   *
+   * @return A list of modules.
+   */
+  @NotNull
+  public List<Module> getUpdatableModules() {
+    return getModules()
+        .stream()
+        .filter(Module::isUpdatable)
+        .collect(Collectors.toList());
+  }
 }

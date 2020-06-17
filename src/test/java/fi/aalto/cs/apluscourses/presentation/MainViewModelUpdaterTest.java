@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.presentation;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
@@ -8,6 +9,7 @@ import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.testFramework.HeavyPlatformTestCase;
 import fi.aalto.cs.apluscourses.TestHelper;
+import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
@@ -41,7 +43,7 @@ public class MainViewModelUpdaterTest extends HeavyPlatformTestCase implements T
 
     MainViewModel mainViewModel = PluginSettings.getInstance().getMainViewModel(project);
     MainViewModelUpdater mainViewModelUpdater = new MainViewModelUpdater(mainViewModel,
-        project, 1000L);
+        project, 1000L, mock(Notifier.class));
 
     //  when
     Set<String> projectModuleNames = mainViewModelUpdater.getProjectModuleNames();
@@ -59,7 +61,7 @@ public class MainViewModelUpdaterTest extends HeavyPlatformTestCase implements T
 
     MainViewModel mainViewModel = PluginSettings.getInstance().getMainViewModel(spyProject);
     MainViewModelUpdater mainViewModelUpdater = new MainViewModelUpdater(mainViewModel,
-        spyProject, 1000L);
+        spyProject, 1000L, mock(Notifier.class));
 
     //  when
     Set<String> projectModules = mainViewModelUpdater.getProjectModuleNames();

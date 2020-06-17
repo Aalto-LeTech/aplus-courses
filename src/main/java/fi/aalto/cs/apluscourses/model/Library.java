@@ -17,7 +17,12 @@ public abstract class Library extends Component {
   }
 
   @Override
-  public boolean isUpToDate() {
-    return true;
+  public boolean isUpdatable() {
+    return false;
+  }
+
+  @Override
+  public boolean hasLocalChanges() {
+    return false;
   }
 }
