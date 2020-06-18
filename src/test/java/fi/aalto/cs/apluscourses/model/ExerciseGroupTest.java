@@ -3,7 +3,6 @@ package fi.aalto.cs.apluscourses.model;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,20 +15,21 @@ public class ExerciseGroupTest {
   public void testExerciseGroup() {
     Exercise exercise1 = new Exercise(123, "name1");
     Exercise exercise2 = new Exercise(456, "name2");
+
     ExerciseGroup group = new ExerciseGroup("group", Arrays.asList(exercise1, exercise2));
 
     Assert.assertEquals("The name is the same as the one given to the constructor",
         "group", group.getName());
     Assert.assertEquals("The exercises are the same as those given to the constructor",
-        "name1", group.getExercises().get(0).getName());
+        "name1", group.getExercises().get("123").getName());
     Assert.assertEquals("The exercises are the same as those given to the constructor",
-        "name2", group.getExercises().get(1).getName());
+        "name2", group.getExercises().get("456").getName());
   }
 
   @Test(expected = UnsupportedOperationException.class)
-  public void testGetExercisesReturnsUnmodifiableList() {
+  public void testGetExercisesReturnsUnmodifiableMap() {
     ExerciseGroup group = new ExerciseGroup("", new ArrayList<>());
-    group.getExercises().add(new Exercise(999, "test name"));
+    group.getExercises().put("999", new Exercise(999, "test name"));
   }
 
   @Test
@@ -39,13 +39,13 @@ public class ExerciseGroupTest {
         .put("exercises", new JSONArray()
             .put(new JSONObject()
                 .put("id", 567)
-                .put("display_name", "exericse name")));
+                .put("display_name", "exercise name")));
     ExerciseGroup group = ExerciseGroup.fromJsonObject(json);
 
     Assert.assertEquals("The exercise group has the same name as in the JSON object",
         "group name", group.getName());
     Assert.assertEquals("The exercise group has the same exercises as in the JSON object",
-        "567", group.getExercises().get(0).getId());
+        "exercise name", group.getExercises().get("567").getName());
   }
 
   @Test(expected = JSONException.class)

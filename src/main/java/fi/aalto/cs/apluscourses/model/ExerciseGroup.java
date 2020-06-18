@@ -8,6 +8,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -18,11 +21,19 @@ public class ExerciseGroup {
   private String name;
 
   @NotNull
-  private List<Exercise> exercises;
+  private Map<String, Exercise> exercises;
 
+  /**
+   * Construct an exercise group with the given name and exercises.
+   *
+   * @param name      The name of the exercise group.
+   * @param exercises The exercises of this exercise group.
+   */
   public ExerciseGroup(@NotNull String name, @NotNull List<Exercise> exercises) {
     this.name = name;
-    this.exercises = exercises;
+    this.exercises = exercises
+        .stream()
+        .collect(Collectors.toMap(Exercise::getId, Function.identity()));
   }
 
   /**
@@ -59,7 +70,8 @@ public class ExerciseGroup {
 
   /**
    * Get all of the exercise groups in for the given course by making a request to the A+ API.
-   * @throws IOException TODO
+   * @throws IOException If an IO error occurs (for an example a network issue). This is an instance
+   *                     of {@link InvalidAuthenticationException} if authentication is invalid.
    */
   @NotNull
   public static List<ExerciseGroup> getCourseExerciseGroups(
@@ -76,7 +88,11 @@ public class ExerciseGroup {
     return name;
   }
 
-  public List<Exercise> getExercises() {
-    return Collections.unmodifiableList(exercises);
+  /**
+   * Returns a map that contains the exercises of this exercise group. The keys are IDs of exercises
+   * and the values are the exercises corresponding to the IDs.
+   */
+  public Map<String, Exercise> getExercises() {
+    return Collections.unmodifiableMap(exercises);
   }
 }
