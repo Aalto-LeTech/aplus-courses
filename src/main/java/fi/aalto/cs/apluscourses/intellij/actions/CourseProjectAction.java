@@ -33,24 +33,24 @@ public class CourseProjectAction extends AnAction {
   private static final Logger logger = LoggerFactory.getLogger(CourseProjectAction.class);
 
   @NotNull
-  private CourseFactory courseFactory;
+  private final CourseFactory courseFactory;
 
-  private boolean createCourseFile;
-
-  @NotNull
-  private SettingsImporter settingsImporter;
+  private final boolean createCourseFile;
 
   @NotNull
-  private ComponentInstaller.Factory installerFactory;
+  private final SettingsImporter settingsImporter;
 
   @NotNull
-  private PostponedRunnable ideRestarter;
+  private final ComponentInstaller.Factory installerFactory;
 
   @NotNull
-  private CourseProjectActionDialogs dialogs;
+  private final PostponedRunnable ideRestarter;
 
   @NotNull
-  private InstallerDialogs.Factory installerDialogsFactory;
+  private final CourseProjectActionDialogs dialogs;
+
+  @NotNull
+  private final InstallerDialogs.Factory installerDialogsFactory;
 
   /**
    * Construct a course project action with the given parameters.
@@ -102,6 +102,7 @@ public class CourseProjectAction extends AnAction {
         ((ApplicationEx) ApplicationManager.getApplication()).restart(true);
       }
     });
+    this.installerDialogsFactory = InstallerDialogs::new;
   }
 
   @Override
