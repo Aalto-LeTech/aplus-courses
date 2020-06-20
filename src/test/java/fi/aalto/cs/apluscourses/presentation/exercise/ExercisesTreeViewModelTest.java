@@ -12,6 +12,13 @@ import org.junit.Test;
 public class ExercisesTreeViewModelTest {
 
   @Test
+  public void testFromCourseAndAuthentication() {
+    ExercisesTreeViewModel viewModel
+        = ExercisesTreeViewModel.fromCourseAndAuthentication(null, null);
+    Assert.assertNull(viewModel);
+  }
+
+  @Test
   public void testEmptyTreeModel() {
     ExercisesTreeViewModel viewModel = new ExercisesTreeViewModel(Collections.emptyList());
     TreeModel treeModel = viewModel.toTreeModel();

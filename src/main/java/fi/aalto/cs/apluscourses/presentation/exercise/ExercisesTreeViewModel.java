@@ -1,12 +1,19 @@
 package fi.aalto.cs.apluscourses.presentation.exercise;
 
+import fi.aalto.cs.apluscourses.model.APlusAuthentication;
+import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
+import fi.aalto.cs.apluscourses.model.InvalidAuthenticationException;
+import fi.aalto.cs.apluscourses.presentation.APlusAuthenticationViewModel;
+import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class ExercisesTreeViewModel {
 
@@ -20,6 +27,34 @@ public class ExercisesTreeViewModel {
         .stream()
         .map(ExerciseGroupViewModel::new)
         .collect(Collectors.toList());
+  }
+
+
+  /**
+   * Construct an exercise tree view model from the given course view model and authentication view
+   * model. Returns {@code null} if either of the given view models is {@code null} or the API
+   * request fails in some way.
+   */
+  @Nullable
+  public static ExercisesTreeViewModel fromCourseAndAuthentication(
+      @Nullable CourseViewModel courseViewModel,
+      @Nullable APlusAuthenticationViewModel authenticationViewModel) {
+    if (courseViewModel == null || courseViewModel.getModel() == null
+        || authenticationViewModel == null || authenticationViewModel.getAuthentication() == null) {
+      return null;
+    }
+
+    Course course = courseViewModel.getModel();
+    APlusAuthentication authentication = authenticationViewModel.getAuthentication();
+    try {
+      return new ExercisesTreeViewModel(
+          ExerciseGroup.getCourseExerciseGroups(course, authentication));
+    } catch (InvalidAuthenticationException e) {
+      // TODO: might want to communicate this to the user somehow
+      return null;
+    } catch (IOException e) {
+      return null;
+    }
   }
 
   /**
