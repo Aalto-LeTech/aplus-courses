@@ -15,7 +15,7 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="5880d" class="javax.swing.JTree" binding="exerciseGroupsTree" custom-create="true">
+          <component id="69b8" class="fi.aalto.cs.apluscourses.ui.base.TreeView" binding="exerciseGroupsTree" custom-create="true">
             <constraints/>
             <properties>
               <rootVisible value="false"/>

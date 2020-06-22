@@ -2,16 +2,14 @@ package fi.aalto.cs.apluscourses.presentation.exercise;
 
 import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
+import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
-public class ExerciseGroupViewModel {
-
-  @NotNull
-  private final ExerciseGroup exerciseGroup;
+public class ExerciseGroupViewModel extends SelectableNodeViewModel<ExerciseGroup> {
 
   @NotNull
   private final List<ExerciseViewModel> sortedExercises;
@@ -20,7 +18,7 @@ public class ExerciseGroupViewModel {
    * Construct an exercise group view model with the given exercise group.
    */
   public ExerciseGroupViewModel(@NotNull ExerciseGroup exerciseGroup) {
-    this.exerciseGroup = exerciseGroup;
+    super(exerciseGroup);
     this.sortedExercises = exerciseGroup
         .getExercises()
         .values()
@@ -31,7 +29,7 @@ public class ExerciseGroupViewModel {
   }
 
   public String getPresentableName() {
-    return APlusLocalizationUtil.getEnglishName(exerciseGroup.getName());
+    return APlusLocalizationUtil.getEnglishName(getModel().getName());
   }
 
   @NotNull
