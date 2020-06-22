@@ -16,8 +16,8 @@ public class Exercise {
   }
 
   /**
-   * Construct an exercise from the given JSON object. The object must contain string values for the
-   * keys "id" and "display_name".
+   * Construct an exercise from the given JSON object. The object must contain an integer value for
+   * the key "id" and a string value for the key "display_name".
    *
    * @param jsonObject The JSON object from which the exercise is constructed.
    * @return An exercise instance.

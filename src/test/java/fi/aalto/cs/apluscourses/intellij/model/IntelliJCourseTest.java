@@ -88,7 +88,7 @@ public class IntelliJCourseTest {
     List<Module> modules = new ArrayList<>();
     modules.add(module);
 
-    IntelliJCourse course = new IntelliJCourse("courseId", "testProject",
+    IntelliJCourse course = new IntelliJCourse("courseId", "testtesttest",
         modules, Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap(),
         Collections.emptyList(), mock(APlusProject.class), mock(CommonLibraryProvider.class));
 

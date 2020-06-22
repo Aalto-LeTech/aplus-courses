@@ -11,6 +11,9 @@ import org.junit.Test;
 
 public class ExerciseGroupTest {
 
+  private static final String NAME_KEY = "display_name";
+  private static final String EXERCISES_KEY = "exercises";
+
   @Test
   public void testExerciseGroup() {
     Exercise exercise1 = new Exercise(123, "name1");
@@ -35,11 +38,11 @@ public class ExerciseGroupTest {
   @Test
   public void testFromJsonObject() {
     JSONObject json = new JSONObject()
-        .put("display_name", "group name")
-        .put("exercises", new JSONArray()
+        .put(NAME_KEY, "group name")
+        .put(EXERCISES_KEY, new JSONArray()
             .put(new JSONObject()
                 .put("id", 567)
-                .put("display_name", "exercise name")));
+                .put(NAME_KEY, "exercise name")));
     ExerciseGroup group = ExerciseGroup.fromJsonObject(json);
 
     Assert.assertEquals("The exercise group has the same name as in the JSON object",
@@ -50,17 +53,17 @@ public class ExerciseGroupTest {
 
   @Test(expected = JSONException.class)
   public void testFromJsonObjectMissingExercises() {
-    JSONObject json = new JSONObject().put("display_name", "group name");
+    JSONObject json = new JSONObject().put("display_name", "group test name");
     ExerciseGroup.fromJsonObject(json);
   }
 
   @Test(expected = JSONException.class)
   public void testFromJsonObjectMissingName() {
     JSONObject json = new JSONObject()
-        .put("exercises", new JSONArray()
+        .put(EXERCISES_KEY, new JSONArray()
             .put(new JSONObject()
                 .put("id", 0)
-                .put("display_name", "e")));
+                .put(NAME_KEY, "e")));
     ExerciseGroup.fromJsonObject(json);
   }
 
@@ -69,11 +72,11 @@ public class ExerciseGroupTest {
     JSONArray array = new JSONArray();
     for (int i = 0; i < 5; ++i) {
       JSONObject json = new JSONObject()
-          .put("display_name", "group " + i)
-          .put("exercises", new JSONArray()
+          .put(NAME_KEY, "group " + i)
+          .put(EXERCISES_KEY, new JSONArray()
               .put(new JSONObject()
                   .put("id", i)
-                  .put("display_name", "exericse in group " + i)));
+                  .put(NAME_KEY, "exericse in group " + i)));
       array.put(json);
     }
     List<ExerciseGroup> exerciseGroups = ExerciseGroup.fromJsonArray(array);

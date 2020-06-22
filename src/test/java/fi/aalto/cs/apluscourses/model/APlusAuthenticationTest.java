@@ -7,6 +7,8 @@ import org.junit.Test;
 
 public class APlusAuthenticationTest {
 
+  private static final String AUTHORIZATION_HEADER = "Authorization";
+
   @Test
   public void testAPlusAuthentication() {
     char[] token = new char[] {'a', 'b', 'c'};
@@ -16,7 +18,7 @@ public class APlusAuthenticationTest {
     authentication.addToRequest(request);
 
     Assert.assertEquals("The token should be added to the given request",
-        "Token abc", request.getFirstHeader("Authorization").getValue());
+        "Token abc", request.getFirstHeader(AUTHORIZATION_HEADER).getValue());
   }
 
   @Test
@@ -29,7 +31,7 @@ public class APlusAuthenticationTest {
     authentication.addToRequest(request);
 
     Assert.assertEquals("The constructor makes a copy of the given array",
-        "Token def", request.getFirstHeader("Authorization").getValue());
+        "Token def", request.getFirstHeader(AUTHORIZATION_HEADER).getValue());
   }
 
   @Test
@@ -42,7 +44,7 @@ public class APlusAuthenticationTest {
     authentication.addToRequest(request);
 
     Assert.assertEquals("The token is cleared", "Token \0\0\0",
-        request.getFirstHeader("Authorization").getValue());
+        request.getFirstHeader(AUTHORIZATION_HEADER).getValue());
   }
 
 }

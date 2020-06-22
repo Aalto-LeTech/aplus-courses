@@ -39,8 +39,7 @@ public class ExercisesTreeViewModel {
   public static ExercisesTreeViewModel fromCourseAndAuthentication(
       @Nullable CourseViewModel courseViewModel,
       @Nullable APlusAuthenticationViewModel authenticationViewModel) {
-    if (courseViewModel == null || courseViewModel.getModel() == null
-        || authenticationViewModel == null || authenticationViewModel.getAuthentication() == null) {
+    if (courseViewModel == null || authenticationViewModel == null) {
       return null;
     }
 
@@ -71,11 +70,8 @@ public class ExercisesTreeViewModel {
       DefaultMutableTreeNode groupNode = new DefaultMutableTreeNode(groupViewModel);
       groupViewModel
           .getExerciseViewModels()
-          .forEach(exerciseViewModel -> {
-            groupNode.add(
-                new DefaultMutableTreeNode(exerciseViewModel, false)
-            );
-          });
+          .forEach(exerciseViewModel ->
+              groupNode.add(new DefaultMutableTreeNode(exerciseViewModel, false)));
       root.add(groupNode);
     });
     return new DefaultTreeModel(root);

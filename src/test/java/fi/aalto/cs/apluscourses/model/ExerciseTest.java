@@ -38,9 +38,9 @@ public class ExerciseTest {
   @Test(expected = JSONException.class)
   public void testExerciseFromJsonObjectMissingId() {
     JSONObject json = new JSONObject()
-        .put(NAME_KEY, "Cool name");
+        .put(NAME_KEY, "A name");
 
-    Exercise exercise = Exercise.fromJsonObject(json);
+    Exercise.fromJsonObject(json);
   }
 
   @Test(expected = JSONException.class)
@@ -48,7 +48,7 @@ public class ExerciseTest {
     JSONObject json = new JSONObject()
         .put(ID_KEY, 357);
 
-    Exercise exercise = Exercise.fromJsonObject(json);
+    Exercise.fromJsonObject(json);
   }
 
 }

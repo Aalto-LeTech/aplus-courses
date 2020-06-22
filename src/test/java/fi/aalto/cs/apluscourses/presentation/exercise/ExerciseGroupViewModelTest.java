@@ -48,12 +48,11 @@ public class ExerciseGroupViewModelTest {
     ExerciseGroupViewModel groupViewModel = new ExerciseGroupViewModel(group);
     List<ExerciseViewModel> exerciseViewModels = groupViewModel.getExerciseViewModels();
 
-    Assert.assertEquals("The exercises are sorted by assignment numbers",
-        first.getName(), exerciseViewModels.get(0).getPresentableName());
-    Assert.assertEquals("The exercises are sorted by assignment numbers",
-        second.getName(), exerciseViewModels.get(1).getPresentableName());
-    Assert.assertEquals("The exercises are sorted by assignment numbers",
-        third.getName(), exerciseViewModels.get(2).getPresentableName());
+    String message = "The exercises are sorted by assignment numbers";
+
+    Assert.assertEquals(message, first.getName(), exerciseViewModels.get(0).getPresentableName());
+    Assert.assertEquals(message, second.getName(), exerciseViewModels.get(1).getPresentableName());
+    Assert.assertEquals(message, third.getName(), exerciseViewModels.get(2).getPresentableName());
   }
 
 }
