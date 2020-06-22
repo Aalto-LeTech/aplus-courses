@@ -21,7 +21,7 @@ public class ExerciseGroup {
   private String name;
 
   @NotNull
-  private Map<String, Exercise> exercises;
+  private Map<Long, Exercise> exercises;
 
   /**
    * Construct an exercise group with the given name and exercises.
@@ -92,7 +92,7 @@ public class ExerciseGroup {
    * Returns a map that contains the exercises of this exercise group. The keys are IDs of exercises
    * and the values are the exercises corresponding to the IDs.
    */
-  public Map<String, Exercise> getExercises() {
+  public Map<Long, Exercise> getExercises() {
     return Collections.unmodifiableMap(exercises);
   }
 }

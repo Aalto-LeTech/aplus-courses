@@ -12,7 +12,7 @@ public class ExerciseTest {
     Exercise exercise = new Exercise(987, "def");
 
     Assert.assertEquals("The ID is the same as the one given to the constructor",
-        "987", exercise.getId());
+        987L, exercise.getId());
     Assert.assertEquals("The name is the same as the one given to the constructor",
         "def", exercise.getName());
   }
@@ -30,7 +30,7 @@ public class ExerciseTest {
     Exercise exercise = Exercise.fromJsonObject(json);
 
     Assert.assertEquals("The ID is the same as the one in the JSON object",
-        "123", exercise.getId());
+        123L, exercise.getId());
     Assert.assertEquals("The name is the same as the one in the JSON object",
         "Cool name", exercise.getName());
   }

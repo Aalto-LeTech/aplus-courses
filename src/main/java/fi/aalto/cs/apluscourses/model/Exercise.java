@@ -4,14 +4,14 @@ import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
 public class Exercise {
-  @NotNull
-  private String id;
+
+  private long id;
 
   @NotNull
   private String name;
 
   public Exercise(long id, @NotNull String name) {
-    this.id = String.valueOf(id);
+    this.id = id;
     this.name = name;
   }
 
@@ -29,8 +29,7 @@ public class Exercise {
     return new Exercise(id, name);
   }
 
-  @NotNull
-  public String getId() {
+  public long getId() {
     return id;
   }
 

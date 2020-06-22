@@ -20,18 +20,4 @@ public class ExerciseViewModelTest {
         "Just a name", viewModel2.getPresentableName());
   }
 
-  @Test
-  public void testGetAssignmentNumber() {
-    Exercise exercise1 = new Exercise(111, "blah blah Assignment 13 blah 7 filler text");
-    ExerciseViewModel viewModel1 = new ExerciseViewModel(exercise1);
-
-    Exercise exercise2 = new Exercise(222, "No assignment number in this name");
-    ExerciseViewModel viewModel2 = new ExerciseViewModel(exercise2);
-
-    Assert.assertEquals("getAssignmentNumber returns the correct assignment number",
-        13, viewModel1.getAssignmentNumber());
-    Assert.assertEquals("getAssignmentNumber returns -1 when no assignment number is present",
-        -1, viewModel2.getAssignmentNumber());
-  }
-
 }

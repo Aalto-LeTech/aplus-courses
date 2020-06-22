@@ -25,22 +25,8 @@ public class ExerciseGroupViewModelTest {
   }
 
   @Test
-  public void testRemovesFeedbackExercises() {
-    Exercise nonFeedback = new Exercise(0, "Cool Exercise");
-    Exercise feedback = new Exercise(1, "Feedback");
-
-    ExerciseGroup group = new ExerciseGroup("group", Arrays.asList(nonFeedback, feedback));
-    ExerciseGroupViewModel viewModel = new ExerciseGroupViewModel(group);
-
-    Assert.assertEquals("The feedback exercise is removed",
-        1, viewModel.getExerciseViewModels().size());
-    Assert.assertEquals("The feedback exercise is removed",
-        "Cool Exercise", viewModel.getExerciseViewModels().get(0).getPresentableName());
-  }
-
-  @Test
   public void testSortsExercises() {
-    Exercise first = new Exercise(1, "No assignment number");
+    Exercise first = new Exercise(1, "Assignment 0");
     Exercise second = new Exercise(2, "Assignment 5");
     Exercise third = new Exercise(3, "Assignment 10");
 
@@ -48,7 +34,7 @@ public class ExerciseGroupViewModelTest {
     ExerciseGroupViewModel groupViewModel = new ExerciseGroupViewModel(group);
     List<ExerciseViewModel> exerciseViewModels = groupViewModel.getExerciseViewModels();
 
-    String message = "The exercises are sorted by assignment numbers";
+    String message = "The exercises are sorted by IDs";
 
     Assert.assertEquals(message, first.getName(), exerciseViewModels.get(0).getPresentableName());
     Assert.assertEquals(message, second.getName(), exerciseViewModels.get(1).getPresentableName());
