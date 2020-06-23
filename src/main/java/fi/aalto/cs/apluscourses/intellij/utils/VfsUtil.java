@@ -5,6 +5,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileVisitor;
 import java.nio.file.Path;
 import java.time.ZonedDateTime;
+import org.jetbrains.annotations.CalledWithReadLock;
 import org.jetbrains.annotations.NotNull;
 
 public class VfsUtil {
@@ -20,6 +21,7 @@ public class VfsUtil {
    * @param comparisonTime Epoch milli to compare.
    * @return True or false.
    */
+  @CalledWithReadLock
   public static boolean hasDirectoryChanges(Path dirPath, long comparisonTime) {
     VirtualFile virtualFile = com.intellij.openapi.vfs.VfsUtil.findFile(dirPath, true);
     HasChangedVirtualFileVisitor visitor = new HasChangedVirtualFileVisitor(comparisonTime);

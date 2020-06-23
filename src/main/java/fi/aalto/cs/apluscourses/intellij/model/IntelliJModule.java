@@ -1,7 +1,7 @@
 package fi.aalto.cs.apluscourses.intellij.model;
 
+import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.application.WriteAction;
-import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.util.io.FileUtilRt;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import org.apache.commons.io.FileUtils;
+import org.jetbrains.annotations.CalledWithReadLock;
+import org.jetbrains.annotations.CalledWithWriteLock;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -69,10 +71,13 @@ class IntelliJModule
 
   @Override
   public void load() throws ComponentLoadException {
-    ModuleManager moduleManager = project.getModuleManager();
-    String imlFileName = getImlFile().toString();
+    WriteAction.runAndWait(this::loadInternal);
+  }
+
+  @CalledWithWriteLock
+  private void loadInternal() throws ComponentLoadException {
     try {
-      WriteAction.runAndWait(() -> moduleManager.loadModule(imlFileName));
+      project.getModuleManager().loadModule(getImlFile().toString());
       CourseFileManager.getInstance().addEntryForModule(this);
     } catch (Exception e) {
       throw new ComponentLoadException(getName(), e);
@@ -82,10 +87,15 @@ class IntelliJModule
   @Override
   public void unload() {
     super.unload();
-    ModuleManager moduleManager = project.getModuleManager();
+    WriteAction.runAndWait(this::unloadInternal);
+
+  }
+
+  @CalledWithWriteLock
+  private void unloadInternal() {
     com.intellij.openapi.module.Module module = getPlatformObject();
     if (module != null) {
-      WriteAction.runAndWait(() -> moduleManager.disposeModule(module));
+      project.getModuleManager().disposeModule(module);
     }
   }
 
@@ -127,6 +137,7 @@ class IntelliJModule
    * always fall back to the ID from the course configuration file, and the ID file is optional.
    * This method should only be called after extractZip has been called.
    */
+  @Override
   @Nullable
   protected String readVersionId() {
     File idFile = getFullPath().resolve(".module_id").toFile();
@@ -152,6 +163,7 @@ class IntelliJModule
   }
 
   @Override
+  @CalledWithReadLock
   @Nullable
   public com.intellij.openapi.module.Module getPlatformObject() {
     return project.getModuleManager().findModuleByName(getName());
@@ -159,7 +171,9 @@ class IntelliJModule
 
   @Override
   protected boolean hasLocalChanges(@NotNull ZonedDateTime downloadedAt) {
-    return VfsUtil.hasDirectoryChanges(getFullPath(), downloadedAt.toInstant().toEpochMilli()
-        + PluginSettings.REASONABLE_DELAY_FOR_MODULE_INSTALLATION);
+    Path fullPath = getFullPath();
+    long timeStamp = downloadedAt.toInstant().toEpochMilli()
+        + PluginSettings.REASONABLE_DELAY_FOR_MODULE_INSTALLATION;
+    return ReadAction.compute(() -> VfsUtil.hasDirectoryChanges(fullPath, timeStamp));
   }
 }

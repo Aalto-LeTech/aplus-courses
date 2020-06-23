@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.intellij.model;
 
 import com.intellij.ProjectTopics;
+import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.project.ModuleListener;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.libraries.LibraryTable;
@@ -19,6 +20,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.jetbrains.annotations.CalledWithReadLock;
 import org.jetbrains.annotations.NotNull;
 
 public class IntelliJModelFactory implements ModelFactory {
@@ -49,11 +51,21 @@ public class IntelliJModelFactory implements ModelFactory {
     Component.InitializationCallback componentInitializationCallback =
         component -> registerComponentToCourse(component, course);
     course.getCommonLibraryProvider().setInitializationCallback(componentInitializationCallback);
+    course.getComponents().forEach(componentInitializationCallback::initialize);
 
+    ReadAction.run(() -> addListeners(course));
+
+    course.resolve();
+
+    return course;
+  }
+
+  @CalledWithReadLock
+  private void addListeners(IntelliJCourse course) {
     project.getMessageBus().connect().subscribe(ProjectTopics.MODULES, new ModuleListener() {
       @Override
       public void moduleRemoved(@NotNull Project project,
-          @NotNull com.intellij.openapi.module.Module projectModule) {
+                                @NotNull com.intellij.openapi.module.Module projectModule) {
         Optional.of(projectModule.getName())
             .map(course::getComponentIfExists)
             .ifPresent(Component::setUnresolved);
@@ -82,11 +94,6 @@ public class IntelliJModelFactory implements ModelFactory {
           }
         }
     );
-
-    course.getComponents().forEach(componentInitializationCallback::initialize);
-    course.resolve();
-
-    return course;
   }
 
   private void registerComponentToCourse(@NotNull Component component, @NotNull Course course) {

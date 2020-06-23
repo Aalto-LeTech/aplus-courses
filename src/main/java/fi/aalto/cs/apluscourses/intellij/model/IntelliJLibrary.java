@@ -12,6 +12,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
 import org.apache.commons.io.FileUtils;
+import org.jetbrains.annotations.CalledWithReadLock;
 import org.jetbrains.annotations.CalledWithWriteLock;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -98,6 +99,7 @@ public abstract class IntelliJLibrary
   protected abstract void initializeLibraryProperties(LibraryProperties<S> properties);
 
   @Override
+  @CalledWithReadLock
   @Nullable
   public com.intellij.openapi.roots.libraries.Library getPlatformObject() {
     return project.getLibraryTable().getLibraryByName(getName());

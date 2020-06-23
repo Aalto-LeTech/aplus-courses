@@ -22,19 +22,17 @@ import org.jetbrains.annotations.Nullable;
 public class MainViewModelUpdater {
 
   @NotNull
-  private MainViewModel mainViewModel;
-
-  @NotNull
-  private APlusProject aplusProject;
+  private final MainViewModel mainViewModel;
 
   @NotNull
   private final Project project;
 
-  private long updateInterval;
+  private final long updateInterval;
+
   @NotNull
   private final Notifier notifier;
 
-  private Thread thread;
+  private final Thread thread;
 
   private Notification newModulesVersionsNotification = null;
 
@@ -48,10 +46,9 @@ public class MainViewModelUpdater {
    */
   public MainViewModelUpdater(@NotNull MainViewModel mainViewModel,
                               @NotNull Project project,
-                              @NotNull long updateInterval,
+                              long updateInterval,
                               @NotNull Notifier notifier) {
     this.mainViewModel = mainViewModel;
-    this.aplusProject = new APlusProject(project);
     this.project = project;
     this.updateInterval = updateInterval;
     this.notifier = notifier;
@@ -61,7 +58,7 @@ public class MainViewModelUpdater {
   @NotNull
   URL getCourseUrl() {
     return ReadAction.compute(() -> {
-      if (aplusProject.getProject().isDisposed() || !aplusProject.getProject().isOpen()) {
+      if (project.isDisposed() || !project.isOpen()) {
         return null;
       }
       return CourseFileManager.getInstance().getCourseUrl();
@@ -76,24 +73,10 @@ public class MainViewModelUpdater {
 
     try {
       return ReadAction.compute(
-          () -> Course.fromUrl(courseUrl, new IntelliJModelFactory(aplusProject.getProject())));
+          () -> Course.fromUrl(courseUrl, new IntelliJModelFactory(project)));
     } catch (Exception e) {
       return null;
     }
-  }
-
-  @NotNull
-  Set<String> getProjectModuleNames() {
-    com.intellij.openapi.module.Module[] projectModules = ReadAction.compute(() -> {
-      Project project = aplusProject.getProject();
-      if (project.isDisposed() || !project.isOpen()) {
-        return new com.intellij.openapi.module.Module[]{};
-      }
-      return aplusProject.getModuleManager().getModules();
-    });
-    return Arrays.stream(projectModules)
-        .map(com.intellij.openapi.module.Module::getName)
-        .collect(Collectors.toSet());
   }
 
   private void updateMainViewModel(@Nullable Course newCourse) {
@@ -173,10 +156,5 @@ public class MainViewModelUpdater {
    */
   public void interrupt() {
     thread.interrupt();
-  }
-
-  @NotNull
-  public APlusProject getAplusProject() {
-    return aplusProject;
   }
 }

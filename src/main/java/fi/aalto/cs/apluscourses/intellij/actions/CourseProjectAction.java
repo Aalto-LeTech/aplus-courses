@@ -109,6 +109,10 @@ public class CourseProjectAction extends AnAction {
   public void actionPerformed(@NotNull AnActionEvent e) {
     Project project = e.getProject();
 
+    if (project == null) {
+      return;
+    }
+
     URL selectedCourseUrl = getSelectedCourseUrl();
     if (selectedCourseUrl == null) {
       return;
