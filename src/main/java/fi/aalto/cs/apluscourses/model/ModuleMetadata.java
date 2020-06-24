@@ -1,13 +1,13 @@
-package fi.aalto.cs.apluscourses.intellij.model;
+package fi.aalto.cs.apluscourses.model;
 
 import java.time.ZonedDateTime;
 
-public class IntelliJModuleMetadata {
+public class ModuleMetadata {
 
   private String moduleId;
   private ZonedDateTime downloadedAt;
 
-  public IntelliJModuleMetadata(String moduleId, ZonedDateTime downloadedAt) {
+  public ModuleMetadata(String moduleId, ZonedDateTime downloadedAt) {
     this.moduleId = moduleId;
     this.downloadedAt = downloadedAt;
   }

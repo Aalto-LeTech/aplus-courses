@@ -6,6 +6,7 @@ import static org.junit.Assert.assertSame;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -64,7 +65,7 @@ public class CourseTest {
     String moduleName = "test-module";
     String libraryName = "test-library";
     Module module = new ModelExtensions.TestModule(
-            moduleName, new URL("http://localhost:3000"), "random");
+            moduleName, new URL("http://localhost:3000"), "random", null, null);
     Library library = new ModelExtensions.TestLibrary(libraryName);
     Course course = new Course("", "", Arrays.asList(module), Arrays.asList(library),
             Collections.emptyMap(), Collections.emptyMap(),

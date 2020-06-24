@@ -4,6 +4,7 @@ import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalSet
 import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalSettingsNames.A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG;
 
 import com.intellij.ide.util.PropertiesComponent;
+import com.intellij.notification.Notifications;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.project.ProjectManagerListener;
@@ -106,7 +107,8 @@ public class PluginSettings implements MainViewModelProvider {
         = mainViewModels.computeIfAbsent(project, this::createNewMainViewModel);
     mainViewModelUpdaters.computeIfAbsent(project, p -> {
       MainViewModelUpdater mainViewModelUpdater
-          = new MainViewModelUpdater(mainViewModel, p, MAIN_VIEW_MODEL_UPDATE_INTERVAL);
+          = new MainViewModelUpdater(mainViewModel, p, MAIN_VIEW_MODEL_UPDATE_INTERVAL,
+          Notifications.Bus::notify);
       mainViewModelUpdater.start();
       return mainViewModelUpdater;
     });

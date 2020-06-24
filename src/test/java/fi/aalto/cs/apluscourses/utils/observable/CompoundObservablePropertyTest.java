@@ -1,10 +1,9 @@
 package fi.aalto.cs.apluscourses.utils.observable;
 
-import org.junit.Assert;
-import org.junit.Test;
-
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
+import org.junit.Assert;
+import org.junit.Test;
 
 public class CompoundObservablePropertyTest {
 

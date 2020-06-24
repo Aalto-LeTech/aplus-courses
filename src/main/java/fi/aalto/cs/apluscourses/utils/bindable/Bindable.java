@@ -2,7 +2,7 @@ package fi.aalto.cs.apluscourses.utils.bindable;
 
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import java.util.function.BiConsumer;
-import jdk.internal.jline.internal.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class Bindable<T, S> {
   protected final T target;

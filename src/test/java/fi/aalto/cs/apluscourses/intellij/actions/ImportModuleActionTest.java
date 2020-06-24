@@ -19,6 +19,7 @@ import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
+import fi.aalto.cs.apluscourses.ui.InstallerDialogs;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -32,6 +33,7 @@ public class ImportModuleActionTest {
   private Project project;
   private MainViewModel mainViewModel;
   private ComponentInstaller installer;
+  private InstallerDialogs.Factory dialogsFactory;
 
   /**
    * Called before each test method call.  Initializes private fields.
@@ -60,12 +62,15 @@ public class ImportModuleActionTest {
     mainViewModel.courseViewModel.set(new CourseViewModel(course));
 
     installer = mock(ComponentInstaller.class);
+
+    dialogsFactory = mock(InstallerDialogs.Factory.class);
   }
 
   @SuppressWarnings({"ConstantConditions"})
   @Test
   public void testUpdate() {
-    ImportModuleAction action = new ImportModuleAction(p -> mainViewModel, c -> installer);
+    ImportModuleAction action = new ImportModuleAction(p -> mainViewModel, (c, d) -> installer,
+        dialogsFactory);
 
     Presentation presentation = new Presentation();
     AnActionEvent e = mock(AnActionEvent.class);
@@ -91,7 +96,8 @@ public class ImportModuleActionTest {
   @SuppressWarnings({"unchecked", "ConstantConditions"})
   @Test
   public void testActionPerformed() {
-    ImportModuleAction action = new ImportModuleAction(p -> mainViewModel, c -> installer);
+    ImportModuleAction action = new ImportModuleAction(p -> mainViewModel, (c, d) -> installer,
+        dialogsFactory);
 
     AnActionEvent e = mock(AnActionEvent.class);
 

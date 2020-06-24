@@ -64,6 +64,16 @@ public class ModelExtensions {
     protected List<String> computeDependencies() {
       return Collections.emptyList();
     }
+
+    @Override
+    public boolean isUpdatable() {
+      return false;
+    }
+
+    @Override
+    public boolean hasLocalChanges() {
+      return false;
+    }
   }
 
   public static class TestModule extends Module {
@@ -79,11 +89,15 @@ public class ModelExtensions {
     }
 
     public TestModule(@NotNull String name) {
-      this(name, testURL, "");
+      this(name, testURL, "", null, null);
     }
 
-    public TestModule(@NotNull String name, @NotNull URL url, @NotNull String versionId) {
-      super(name, url, versionId);
+    public TestModule(@NotNull String name,
+                      @NotNull URL url,
+                      @NotNull String versionId,
+                      @Nullable String localVersionId,
+                      @Nullable ZonedDateTime downloadedAt) {
+      super(name, url, versionId, localVersionId, downloadedAt);
     }
 
     @NotNull
@@ -93,13 +107,24 @@ public class ModelExtensions {
     }
 
     @Override
-    public void fetch() throws IOException {
+    public void fetchInternal() throws IOException {
       // do nothing
     }
 
     @Override
     public void load() throws ComponentLoadException {
       // do nothing
+    }
+
+    @Nullable
+    @Override
+    protected String readVersionId() {
+      return null;
+    }
+
+    @Override
+    protected boolean hasLocalChanges(@NotNull ZonedDateTime downloadedAt) {
+      return false;
     }
 
     @NotNull
@@ -117,11 +142,6 @@ public class ModelExtensions {
     @Override
     protected List<String> computeDependencies() {
       return Collections.emptyList();
-    }
-
-    @Override
-    public boolean hasLocalChanges(ZonedDateTime downloadedAt) {
-      return false;
     }
   }
 
@@ -176,7 +196,7 @@ public class ModelExtensions {
 
     @Override
     public Module createModule(@NotNull String name, @NotNull URL url, @NotNull String versionId) {
-      return new TestModule(name, url, versionId);
+      return new TestModule(name, url, versionId, null, null);
     }
 
     @Override

@@ -1,8 +1,9 @@
 package fi.aalto.cs.apluscourses.ui.repl;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
+import icons.PluginIcons;
 import javax.swing.JList;
 import org.junit.Test;
 
@@ -17,24 +18,7 @@ public class ModuleComboBoxListRendererTest {
     renderer.customize(new JList<String>(), "", 0, true, true);
 
     //  then
-    assertNotNull("The icon for rendering Modules in ComboBoxList is set",
-        renderer.getIcon());
-  }
-
-  @Test
-  public void testCustomizeWithInvalidInputFails() {
-    //  given
-    ModuleComboBoxListRenderer renderer = new ModuleComboBoxListRenderer();
-    final String initialPath = ModuleComboBoxListRenderer.iconPath;
-    ModuleComboBoxListRenderer.iconPath = "/fakePath";
-
-    //  when
-    renderer.customize(new JList<String>(), "", 0, true, true);
-
-    //  then
-    assertNull("The icon for rendering Modules in ComboBoxList is NOT set",
-        renderer.getIcon());
-    //  rolling back the initial value
-    ModuleComboBoxListRenderer.iconPath = initialPath;
+    assertNotNull("The icon for rendering Modules in ComboBoxList is set", renderer.getIcon());
+    assertEquals("There is a correct icon set.", PluginIcons.A_PLUS_MODULE, renderer.getIcon());
   }
 }

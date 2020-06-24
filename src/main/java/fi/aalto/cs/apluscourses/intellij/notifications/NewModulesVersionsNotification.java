@@ -24,7 +24,7 @@ public class NewModulesVersionsNotification extends Notification {
         "Updates available for A+ Course Modules",
         "There are newer version(s) for the following A+ Course Modules: "
             + getModuleNameStrings(modules) + ".",
-        NotificationType.WARNING);
+        NotificationType.INFORMATION);
   }
 
   /**

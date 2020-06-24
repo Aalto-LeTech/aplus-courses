@@ -15,4 +15,14 @@ public abstract class Library extends Component {
   protected List<String> computeDependencies() {
     return Collections.emptyList();
   }
+
+  @Override
+  public boolean isUpdatable() {
+    return false;
+  }
+
+  @Override
+  public boolean hasLocalChanges() {
+    return false;
+  }
 }

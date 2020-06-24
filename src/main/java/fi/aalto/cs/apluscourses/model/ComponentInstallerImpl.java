@@ -15,10 +15,21 @@ public class ComponentInstallerImpl<T> implements ComponentInstaller {
 
   private final ComponentSource componentSource;
   private final TaskManager<T> taskManager;
+  private final Dialogs dialogs;
 
-  public ComponentInstallerImpl(ComponentSource componentSource, TaskManager<T> taskManager) {
+  /**
+   * Constructor.
+   *
+   * @param componentSource E.g. a {@link Course} object.
+   * @param taskManager     A manager object who orchestrates asynchronous execution.
+   * @param dialogs         Dialogs to be shown during the installation.
+   */
+  public ComponentInstallerImpl(@NotNull ComponentSource componentSource,
+                                @NotNull TaskManager<T> taskManager,
+                                @NotNull Dialogs dialogs) {
     this.componentSource = componentSource;
     this.taskManager = taskManager;
+    this.dialogs = dialogs;
   }
 
   protected T waitUntilLoadedAsync(Component component) {
@@ -74,6 +85,9 @@ public class ComponentInstallerImpl<T> implements ComponentInstaller {
       component.resolveState();
       unloadIfError();
       try {
+        if (component.isUpdatable()) {
+          uninstallForUpdate();
+        }
         fetch();
         load();
         waitForDependencies();
@@ -91,7 +105,18 @@ public class ComponentInstallerImpl<T> implements ComponentInstaller {
         component.resolveState();
       }
     }
-    
+
+    private void uninstallForUpdate() throws IOException {
+      if (component.stateMonitor.setConditionallyTo(Component.UNINSTALLING, Component.LOADED)) {
+        if (!component.hasLocalChanges() || dialogs.shouldOverwrite(component)) {
+          component.unload();
+          component.remove();
+        }
+        component.setUnresolved();
+        component.resolveState();
+      }
+    }
+
     private void fetch() throws IOException {
       if (component.stateMonitor.setConditionallyTo(Component.FETCHING, Component.NOT_INSTALLED)) {
         component.fetch();
@@ -128,16 +153,18 @@ public class ComponentInstallerImpl<T> implements ComponentInstaller {
   }
 
   public static class FactoryImpl<T> implements ComponentInstaller.Factory {
-
+    @NotNull
     private final TaskManager<T> taskManager;
 
-    public FactoryImpl(TaskManager<T> taskManager) {
+    public FactoryImpl(@NotNull TaskManager<T> taskManager) {
       this.taskManager = taskManager;
     }
 
     @Override
-    public ComponentInstaller getInstallerFor(ComponentSource componentSource) {
-      return new ComponentInstallerImpl<>(componentSource, taskManager);
+    @NotNull
+    public ComponentInstaller getInstallerFor(@NotNull ComponentSource componentSource,
+                                              @NotNull Dialogs dialogs) {
+      return new ComponentInstallerImpl<>(componentSource, taskManager, dialogs);
     }
   }
 }
