@@ -29,7 +29,7 @@ public class PluginSettingsTest extends BasePlatformTestCase {
   public void testResetLocalSettings() {
     // given
     PluginSettings.getInstance().setShowReplConfigurationDialog(false);
-    PluginSettings.getInstance().setImportedIdeSettingsName("this is not an empty string");
+    PluginSettings.getInstance().setImportedIdeSettingsId("this is not an empty string");
 
     // when
     PluginSettings.getInstance().resetLocalSettings();

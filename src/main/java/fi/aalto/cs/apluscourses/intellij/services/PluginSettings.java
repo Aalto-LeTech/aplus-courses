@@ -140,12 +140,12 @@ public class PluginSettings implements MainViewModelProvider {
             String.valueOf(showReplConfigDialog));
   }
 
-  public String getImportedIdeSettingsName() {
+  public String getImportedIdeSettingsId() {
     return propertiesManager.getValue(A_PLUS_IMPORTED_IDE_SETTINGS.getName());
   }
 
-  public void setImportedIdeSettingsName(@NotNull String courseName) {
-    propertiesManager.setValue(A_PLUS_IMPORTED_IDE_SETTINGS.getName(), courseName);
+  public void setImportedIdeSettingsId(@NotNull String courseId) {
+    propertiesManager.setValue(A_PLUS_IMPORTED_IDE_SETTINGS.getName(), courseId);
   }
 
   /**
@@ -156,7 +156,7 @@ public class PluginSettings implements MainViewModelProvider {
       setShowReplConfigurationDialog(true);
     }
     if (!propertiesManager.isValueSet(A_PLUS_IMPORTED_IDE_SETTINGS.getName())) {
-      setImportedIdeSettingsName("");
+      setImportedIdeSettingsId("");
     }
   }
 

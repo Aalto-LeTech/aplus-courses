@@ -59,15 +59,15 @@ public class SettingsImporter {
 
     UpdateSettings.getInstance().forceCheckForUpdateAfterRestart();
 
-    PluginSettings.getInstance().setImportedIdeSettingsName(course.getName());
+    PluginSettings.getInstance().setImportedIdeSettingsId(course.getId());
   }
 
   /**
-   * Returns the name of the course for which the latest IDE settings import has been done.
+   * Returns the ID of the course for which the latest IDE settings import has been done.
    */
   @Nullable
   public String currentlyImportedIdeSettings() {
-    return PluginSettings.getInstance().getImportedIdeSettingsName();
+    return PluginSettings.getInstance().getImportedIdeSettingsId();
   }
 
   /**

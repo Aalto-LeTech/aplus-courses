@@ -40,7 +40,7 @@ public class TreeView extends Tree {
   }
 
   public void onTreeActionPerformed() {
-
+    throw new UnsupportedOperationException();
   }
 
   private class SelectionListener implements TreeSelectionListener {
@@ -50,20 +50,16 @@ public class TreeView extends Tree {
       // Don't do anything if this is the root node, since it is hidden.
       if (oldSelection != null && oldSelection.getPathCount() > 1) {
         DefaultMutableTreeNode node = (DefaultMutableTreeNode) oldSelection.getLastPathComponent();
-        if (node.isLeaf()) {
-          SelectableNodeViewModel<?> viewModel = (SelectableNodeViewModel) node.getUserObject();
-          viewModel.setSelected(false);
-        }
+        SelectableNodeViewModel<?> viewModel = (SelectableNodeViewModel) node.getUserObject();
+        viewModel.setSelected(false);
       }
 
       TreePath newSelection = e.getNewLeadSelectionPath();
       // Don't do anything if this is the root node, since it is hidden.
       if (newSelection != null && newSelection.getPathCount() > 1) {
         DefaultMutableTreeNode node = (DefaultMutableTreeNode) newSelection.getLastPathComponent();
-        if (node.isLeaf()) {
-          SelectableNodeViewModel<?> viewModel = (SelectableNodeViewModel) node.getUserObject();
-          viewModel.setSelected(true);
-        }
+        SelectableNodeViewModel<?> viewModel = (SelectableNodeViewModel) node.getUserObject();
+        viewModel.setSelected(true);
       }
     }
   }

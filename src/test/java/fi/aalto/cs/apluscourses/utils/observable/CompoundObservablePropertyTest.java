@@ -1,7 +1,8 @@
 package fi.aalto.cs.apluscourses.utils.observable;
 
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -10,7 +11,7 @@ public class CompoundObservablePropertyTest {
   @Test
   public void testCompoundObservableProperty() {
     AtomicInteger converterCallCount = new AtomicInteger(0);
-    BiFunction<Integer, Integer, Integer> converter = (a, b) -> {
+    BinaryOperator<Integer> converter = (a, b) -> {
       converterCallCount.incrementAndGet();
       return a / b;
     };

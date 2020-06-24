@@ -6,8 +6,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
-import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
 import org.junit.Test;
 
 public class ObservablePropertyTest {

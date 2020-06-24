@@ -10,9 +10,7 @@ import org.junit.Test;
 
 public class CourseProjectViewModelTest {
 
-  private static final String COURSE_NAME = "NiceCourse";
-
-  private final Course emptyCourse = new Course("", COURSE_NAME, Collections.emptyList(),
+  private final Course emptyCourse = new Course("123", "NiceCourse", Collections.emptyList(),
           Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap(),
           Collections.emptyList());
 
@@ -21,7 +19,7 @@ public class CourseProjectViewModelTest {
   public void testInformationTextIncludesCourseName() {
     CourseProjectViewModel courseProjectViewModel = new CourseProjectViewModel(emptyCourse, "");
     assertEquals("The information text contains the course name",
-            COURSE_NAME, courseProjectViewModel.getCourseName());
+        "NiceCourse", courseProjectViewModel.getCourseName());
   }
 
   @Test
@@ -46,7 +44,7 @@ public class CourseProjectViewModelTest {
   @Test
   public void testIdeSettingsAlreadyImported() {
     CourseProjectViewModel courseProjectViewModel
-        = new CourseProjectViewModel(emptyCourse, COURSE_NAME);
+        = new CourseProjectViewModel(emptyCourse, "123");
 
     assertFalse(courseProjectViewModel.userWantsRestart());
     assertTrue(courseProjectViewModel.userOptsOutOfSettings());

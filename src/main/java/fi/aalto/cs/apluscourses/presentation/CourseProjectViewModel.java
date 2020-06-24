@@ -23,14 +23,14 @@ public class CourseProjectViewModel {
    * Construct a course project view model with the given course and name of the currently imported
    * IDE settings.
    * @param course                       The course bound to this course project view model.
-   * @param currentlyImportedIdeSettings The name of the course for which the IDE settings have
+   * @param currentlyImportedIdeSettings The ID of the course for which the IDE settings have
    *                                     currently been imported.
    */
   public CourseProjectViewModel(@NotNull Course course,
                                 @Nullable String currentlyImportedIdeSettings) {
     this.course = course;
     this.currentlyImportedIdeSettings = currentlyImportedIdeSettings;
-    currentSettingsDiffer = !course.getName().equals(currentlyImportedIdeSettings);
+    currentSettingsDiffer = !course.getId().equals(currentlyImportedIdeSettings);
 
     restartProperty = new ObservableReadWriteProperty<>(currentSettingsDiffer);
 
@@ -73,11 +73,6 @@ public class CourseProjectViewModel {
 
   public String getCourseName() {
     return course.getName();
-  }
-
-  @Nullable
-  public String getCurrentSettings() {
-    return currentlyImportedIdeSettings;
   }
 
   public boolean shouldShowCurrentSettings() {
