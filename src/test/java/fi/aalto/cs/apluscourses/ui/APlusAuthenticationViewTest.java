@@ -3,6 +3,7 @@ package fi.aalto.cs.apluscourses.ui;
 import static org.hamcrest.CoreMatchers.containsString;
 
 import com.intellij.testFramework.LightIdeaTestCase;
+import fi.aalto.cs.apluscourses.model.APlusAuthentication;
 import fi.aalto.cs.apluscourses.presentation.APlusAuthenticationViewModel;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
@@ -41,11 +42,13 @@ public class APlusAuthenticationViewTest extends LightIdeaTestCase {
     APlusAuthenticationViewModel authenticationViewModel = new APlusAuthenticationViewModel(null);
     TestAuthenticationView authenticationView
         = new TestAuthenticationView(authenticationViewModel);
+    Assert.assertNull(authenticationViewModel.getAuthentication());
+
     authenticationView.setInput("token");
     authenticationView.doOKAction();
 
-    Assert.assertArrayEquals("The authentication dialog modifies the view model",
-        "token".toCharArray(), authenticationViewModel.getAuthentication().getToken());
+    Assert.assertNotNull("The authentication dialog modifies the view model",
+        authenticationViewModel.getAuthentication());
   }
 
   @Test
@@ -77,11 +80,12 @@ public class APlusAuthenticationViewTest extends LightIdeaTestCase {
   @Test
   public void testPromptForAuthenticationIfMissing() {
     APlusAuthenticationViewModel authenticationViewModel = new APlusAuthenticationViewModel(null);
-    authenticationViewModel.setToken(new char[]{'x', 'y', 'z'});
 
-    Assert.assertArrayEquals("Returns the existing authentication", "xyz".toCharArray(),
-        APlusAuthenticationView
-            .promptForAuthenticationIfMissing(authenticationViewModel).getToken());
+    authenticationViewModel.setToken(new char[] {'x', 'y', 'z'});
+    APlusAuthentication authentication = authenticationViewModel.getAuthentication();
+
+    Assert.assertEquals("Returns the existing authentication", authentication,
+        APlusAuthenticationView.promptForAuthenticationIfMissing(authenticationViewModel));
   }
 
 }
