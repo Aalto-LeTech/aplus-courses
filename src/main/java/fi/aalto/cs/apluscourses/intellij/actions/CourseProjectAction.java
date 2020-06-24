@@ -15,6 +15,7 @@ import fi.aalto.cs.apluscourses.model.ComponentInstallerImpl;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationFileException;
 import fi.aalto.cs.apluscourses.presentation.CourseProjectViewModel;
+import fi.aalto.cs.apluscourses.ui.InstallerDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogsImpl;
 import fi.aalto.cs.apluscourses.utils.PostponedRunnable;
@@ -32,21 +33,24 @@ public class CourseProjectAction extends AnAction {
   private static final Logger logger = LoggerFactory.getLogger(CourseProjectAction.class);
 
   @NotNull
-  private CourseFactory courseFactory;
+  private final CourseFactory courseFactory;
 
-  private boolean createCourseFile;
-
-  @NotNull
-  private SettingsImporter settingsImporter;
+  private final boolean createCourseFile;
 
   @NotNull
-  private ComponentInstaller.Factory installerFactory;
+  private final SettingsImporter settingsImporter;
 
   @NotNull
-  private PostponedRunnable ideRestarter;
+  private final ComponentInstaller.Factory installerFactory;
 
   @NotNull
-  private CourseProjectActionDialogs dialogs;
+  private final PostponedRunnable ideRestarter;
+
+  @NotNull
+  private final CourseProjectActionDialogs dialogs;
+
+  @NotNull
+  private final InstallerDialogs.Factory installerDialogsFactory;
 
   /**
    * Construct a course project action with the given parameters.
@@ -73,13 +77,15 @@ public class CourseProjectAction extends AnAction {
                              @NotNull SettingsImporter settingsImporter,
                              @NotNull ComponentInstaller.Factory installerFactory,
                              @NotNull PostponedRunnable ideRestarter,
-                             @NotNull CourseProjectActionDialogs dialogs) {
+                             @NotNull CourseProjectActionDialogs dialogs,
+                             @NotNull InstallerDialogs.Factory installerDialogsFactory) {
     this.courseFactory = courseFactory;
     this.createCourseFile = createCourseFile;
     this.settingsImporter = settingsImporter;
     this.installerFactory = installerFactory;
     this.ideRestarter = ideRestarter;
     this.dialogs = dialogs;
+    this.installerDialogsFactory = installerDialogsFactory;
   }
 
   /**
@@ -96,14 +102,23 @@ public class CourseProjectAction extends AnAction {
         ((ApplicationEx) ApplicationManager.getApplication()).restart(true);
       }
     });
+    this.installerDialogsFactory = InstallerDialogs::new;
   }
 
   @Override
   public void actionPerformed(@NotNull AnActionEvent e) {
     Project project = e.getProject();
 
+    if (project == null) {
+      return;
+    }
+
     URL selectedCourseUrl = getSelectedCourseUrl();
     if (selectedCourseUrl == null) {
+      return;
+    }
+
+    if (!tryCreateCourseFile(project, selectedCourseUrl)) {
       return;
     }
 
@@ -118,11 +133,7 @@ public class CourseProjectAction extends AnAction {
       return;
     }
 
-    startAutoInstallsWithRestart(course, courseProjectViewModel.userWantsRestart());
-
-    if (!tryCreateCourseFile(project, selectedCourseUrl)) {
-      return;
-    }
+    startAutoInstallsWithRestart(course, courseProjectViewModel.userWantsRestart(), project);
 
     if (!tryImportProjectSettings(project, course)) {
       return;
@@ -186,8 +197,11 @@ public class CourseProjectAction extends AnAction {
     }
   }
 
-  private void startAutoInstallsWithRestart(@NotNull Course course, boolean restartWhenFinished) {
-    ComponentInstaller installer = installerFactory.getInstallerFor(course);
+  private void startAutoInstallsWithRestart(@NotNull Course course,
+                                            boolean restartWhenFinished,
+                                            @NotNull Project project) {
+    ComponentInstaller.Dialogs installerDialogs = installerDialogsFactory.getDialogs(project);
+    ComponentInstaller installer = installerFactory.getInstallerFor(course, installerDialogs);
     if (!restartWhenFinished) {
       installer.installAsync(course.getAutoInstallComponents());
     } else {

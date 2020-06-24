@@ -1,8 +1,8 @@
 package fi.aalto.cs.apluscourses.intellij.utils;
 
 import com.intellij.openapi.project.Project;
-import fi.aalto.cs.apluscourses.intellij.model.IntelliJModuleMetadata;
 import fi.aalto.cs.apluscourses.model.Module;
+import fi.aalto.cs.apluscourses.model.ModuleMetadata;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -21,7 +21,7 @@ public class CourseFileManager {
 
   private File courseFile;
   private URL courseUrl;
-  private Map<String, IntelliJModuleMetadata> modulesMetadata;
+  private Map<String, ModuleMetadata> modulesMetadata;
 
   private CourseFileManager() {
 
@@ -85,8 +85,7 @@ public class CourseFileManager {
    * @throws IOException If an IO error occurs while writing to the course file.
    */
   public synchronized void addEntryForModule(@NotNull Module module) throws IOException {
-    IntelliJModuleMetadata newModuleMetadata
-        = new IntelliJModuleMetadata(module.getVersionId(), ZonedDateTime.now());
+    ModuleMetadata newModuleMetadata = module.getMetadata();
     JSONObject newModuleObject = new JSONObject()
         .put(MODULE_ID_KEY, newModuleMetadata.getModuleId())
         .put(MODULE_DOWNLOADED_AT_KEY, newModuleMetadata.getDownloadedAt());
@@ -120,7 +119,7 @@ public class CourseFileManager {
    * after a course file has been successfully loaded.
    */
   @NotNull
-  public synchronized Map<String, IntelliJModuleMetadata> getModulesMetadata() {
+  public synchronized Map<String, ModuleMetadata> getModulesMetadata() {
     // Return a copy so that later changes to the map aren't visible in the returned map.
     return new HashMap<>(modulesMetadata);
   }
@@ -177,7 +176,7 @@ public class CourseFileManager {
       String moduleId = moduleObject.getString(MODULE_ID_KEY);
       ZonedDateTime downloadedAt
           = ZonedDateTime.parse(moduleObject.getString(MODULE_DOWNLOADED_AT_KEY));
-      this.modulesMetadata.put(moduleName, new IntelliJModuleMetadata(moduleId, downloadedAt));
+      this.modulesMetadata.put(moduleName, new ModuleMetadata(moduleId, downloadedAt));
     }
   }
 

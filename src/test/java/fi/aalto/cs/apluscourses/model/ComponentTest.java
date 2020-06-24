@@ -69,7 +69,7 @@ public class ComponentTest {
       assertFalse("Component should not be active", component.isActive());
     }
 
-    component.dependencyStateMonitor.set(Component.DEP_WAITING);
+    component.stateMonitor.set(Component.UNINSTALLING);
     assertTrue("Component should be active", component.isActive());
   }
 

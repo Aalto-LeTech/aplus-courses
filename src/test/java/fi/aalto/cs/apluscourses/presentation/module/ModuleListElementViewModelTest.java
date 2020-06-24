@@ -35,7 +35,7 @@ public class ModuleListElementViewModelTest {
   public void testNameAndUrl() throws MalformedURLException {
     String name = "Wanda";
     String url = "https://example.com/wanda";
-    Module module = new ModelExtensions.TestModule(name, new URL(url), "");
+    Module module = new ModelExtensions.TestModule(name, new URL(url), "", null, null);
     ModuleListElementViewModel moduleViewModel = new ModuleListElementViewModel(module);
     assertEquals("getName() should return module's name",
         name, moduleViewModel.getName());

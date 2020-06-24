@@ -28,8 +28,8 @@ public class NewModulesVersionsNotificationTest {
         "There are newer version(s) for the following A+ Course Modules: "
             + "firstModule, secondModule.",
         notification.getContent());
-    assertEquals("The type of the notification should be 'WARNING'.",
-        notification.getType(), NotificationType.WARNING);
+    assertEquals("The type of the notification should be 'INFORMATION'.",
+        NotificationType.INFORMATION, notification.getType());
   }
 
   @Test

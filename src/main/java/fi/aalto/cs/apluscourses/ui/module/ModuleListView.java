@@ -20,5 +20,6 @@ public class ModuleListView
     ComponentUtil.setFont(elementView.nameLabel, TextAttribute.WEIGHT, element.getFontWeight());
     elementView.statusLabel.setText("[" + element.getStatus() + "]");
     elementView.basePanel.setToolTipText(element.getUrl());
+    elementView.updateLabel.setVisible(element.isUpdateAvailable());
   }
 }

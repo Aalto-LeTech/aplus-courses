@@ -14,6 +14,8 @@ public class ModuleListElementView implements ListElementView {
   public JLabel nameLabel;
   @GuiObject
   public JLabel statusLabel;
+  @GuiObject
+  public JLabel updateLabel;
 
   public ModuleListElementView() {
     nameLabel.setIcon(PluginIcons.A_PLUS_MODULE);

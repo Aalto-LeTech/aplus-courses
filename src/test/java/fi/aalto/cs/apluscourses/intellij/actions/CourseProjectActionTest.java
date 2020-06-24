@@ -12,6 +12,7 @@ import fi.aalto.cs.apluscourses.model.ComponentInstaller;
 import fi.aalto.cs.apluscourses.model.ComponentInstallerImpl;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.presentation.CourseProjectViewModel;
+import fi.aalto.cs.apluscourses.ui.InstallerDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogs;
 import fi.aalto.cs.apluscourses.utils.PostponedRunnable;
 import fi.aalto.cs.apluscourses.utils.async.ImmediateTaskManager;
@@ -71,6 +72,7 @@ public class CourseProjectActionTest {
   private AtomicInteger restarterCallCount;
   private PostponedRunnable ideRestarter;
   private TestDialogs dialogs;
+  private InstallerDialogs.Factory installerDialogsFactory;
 
   class DummySettingsImporter implements SettingsImporter {
     private int importIdeSettingsCallCount = 0;
@@ -125,6 +127,8 @@ public class CourseProjectActionTest {
     ideRestarter = new PostponedRunnable(restarterCallCount::incrementAndGet, Runnable::run);
 
     dialogs = new TestDialogs(false, true, false);
+
+    installerDialogsFactory = proj -> module -> true;
   }
 
   @Test
@@ -139,7 +143,8 @@ public class CourseProjectActionTest {
         settingsImporter,
         installerFactory,
         ideRestarter,
-        dialogs);
+        dialogs,
+        installerDialogsFactory);
 
     action.actionPerformed(anActionEvent);
 
@@ -166,7 +171,8 @@ public class CourseProjectActionTest {
         settingsImporter,
         installerFactory,
         ideRestarter,
-        dialogs);
+        dialogs,
+        installerDialogsFactory);
 
     action.actionPerformed(anActionEvent);
 
@@ -195,7 +201,8 @@ public class CourseProjectActionTest {
         failingSettingsImporter,
         installerFactory,
         ideRestarter,
-        dialogs);
+        dialogs,
+        installerDialogsFactory);
 
     action.actionPerformed(anActionEvent);
 
@@ -213,7 +220,8 @@ public class CourseProjectActionTest {
         settingsImporter,
         installerFactory,
         ideRestarter,
-        new TestDialogs(false, true, true));
+        new TestDialogs(false, true, true),
+        installerDialogsFactory);
 
     action.actionPerformed(anActionEvent);
 
@@ -231,7 +239,8 @@ public class CourseProjectActionTest {
         settingsImporter,
         installerFactory,
         ideRestarter,
-        new TestDialogs(true, true, true));
+        new TestDialogs(true, true, true),
+        installerDialogsFactory);
 
     action.actionPerformed(anActionEvent);
 
@@ -250,7 +259,8 @@ public class CourseProjectActionTest {
         settingsImporter,
         installerFactory,
         ideRestarter,
-        new TestDialogs(false, false, false));
+        new TestDialogs(false, false, false),
+        installerDialogsFactory);
 
     action.actionPerformed(anActionEvent);
 

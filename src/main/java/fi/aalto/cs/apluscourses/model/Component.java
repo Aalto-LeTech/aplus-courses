@@ -13,6 +13,7 @@ public abstract class Component {
   public static final int FETCHED = FETCHING + 1;
   public static final int LOADING = FETCHED + 1;
   public static final int LOADED = LOADING + 1;
+  public static final int UNINSTALLING = LOADED + 1;
   public static final int ERROR = StateMonitor.ERROR;
   public static final int UNRESOLVED = ERROR - 1;
 
@@ -48,8 +49,7 @@ public abstract class Component {
    */
   public boolean isActive() {
     int state = stateMonitor.get();
-    int depState = dependencyStateMonitor.get();
-    return state == FETCHING || state == LOADING || depState == DEP_WAITING;
+    return state == FETCHING || state == LOADING || state == UNINSTALLING;
   }
 
   @NotNull
@@ -61,6 +61,10 @@ public abstract class Component {
 
   public void unload() {
     dependencies = null;
+  }
+
+  public void remove() throws IOException {
+    // subclasses may do their removal operations
   }
 
   protected void onStateChanged(int newState) {
@@ -138,6 +142,10 @@ public abstract class Component {
           areDependenciesLoaded(componentSource) ? DEP_LOADED : DEP_ERROR, depState);
     }
   }
+
+  public abstract boolean isUpdatable();
+
+  public abstract boolean hasLocalChanges();
 
   @FunctionalInterface
   public static interface InitializationCallback {
