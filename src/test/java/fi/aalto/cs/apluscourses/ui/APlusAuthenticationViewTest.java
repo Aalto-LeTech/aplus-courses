@@ -77,15 +77,4 @@ public class APlusAuthenticationViewTest extends LightIdeaTestCase {
         authenticationView.doValidate());
   }
 
-  @Test
-  public void testPromptForAuthenticationIfMissing() {
-    APlusAuthenticationViewModel authenticationViewModel = new APlusAuthenticationViewModel(null);
-
-    authenticationViewModel.setToken(new char[] {'x', 'y', 'z'});
-    APlusAuthentication authentication = authenticationViewModel.getAuthentication();
-
-    Assert.assertEquals("Returns the existing authentication", authentication,
-        APlusAuthenticationView.promptForAuthenticationIfMissing(authenticationViewModel));
-  }
-
 }
