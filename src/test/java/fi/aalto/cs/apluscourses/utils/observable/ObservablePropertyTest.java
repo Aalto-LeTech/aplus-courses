@@ -1,4 +1,4 @@
-package fi.aalto.cs.apluscourses.utils;
+package fi.aalto.cs.apluscourses.utils.observable;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

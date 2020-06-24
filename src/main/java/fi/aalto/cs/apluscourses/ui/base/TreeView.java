@@ -51,7 +51,7 @@ public class TreeView extends Tree {
       if (oldSelection != null && oldSelection.getPathCount() > 1) {
         DefaultMutableTreeNode node = (DefaultMutableTreeNode) oldSelection.getLastPathComponent();
         if (node.isLeaf()) {
-          SelectableNodeViewModel viewModel = (SelectableNodeViewModel) node.getUserObject();
+          SelectableNodeViewModel<?> viewModel = (SelectableNodeViewModel) node.getUserObject();
           viewModel.setSelected(false);
         }
       }
@@ -61,7 +61,7 @@ public class TreeView extends Tree {
       if (newSelection != null && newSelection.getPathCount() > 1) {
         DefaultMutableTreeNode node = (DefaultMutableTreeNode) newSelection.getLastPathComponent();
         if (node.isLeaf()) {
-          SelectableNodeViewModel viewModel = (SelectableNodeViewModel) node.getUserObject();
+          SelectableNodeViewModel<?> viewModel = (SelectableNodeViewModel) node.getUserObject();
           viewModel.setSelected(true);
         }
       }
