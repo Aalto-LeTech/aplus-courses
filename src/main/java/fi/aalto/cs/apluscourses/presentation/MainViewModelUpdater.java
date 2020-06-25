@@ -3,7 +3,6 @@ package fi.aalto.cs.apluscourses.presentation;
 import com.intellij.notification.Notification;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.project.Project;
-import fi.aalto.cs.apluscourses.intellij.model.APlusProject;
 import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory;
 import fi.aalto.cs.apluscourses.intellij.notifications.NewModulesVersionsNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
@@ -12,10 +11,7 @@ import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Module;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -85,27 +81,26 @@ public class MainViewModelUpdater {
     }
 
     CourseViewModel courseViewModel = mainViewModel.courseViewModel.get();
-    if (courseViewModel == null) {
-      mainViewModel.courseViewModel.set(new CourseViewModel(newCourse));
-      return;
+    if (courseViewModel != null) {
+      Course current = courseViewModel.getModel();
+      /*
+       * Updating the course view model while modules are installing leads to "Error in
+       * dependencies" in the modules tool window. The installations actually still work, and the
+       * error state disappears on the next update, but it's still bad UI/UX. Therefore we check if
+       * the currently loaded course has any "active" components, and only update the course view
+       * model if it doesn't.
+       */
+      if (current.getComponents().stream().anyMatch(Component::isActive)) {
+        return;
+      }
+
+      current.unregister();
     }
 
-    Course current = courseViewModel.getModel();
-    /*
-     * Updating the course view model while modules are installing leads to "Error in dependencies"
-     * in the modules tool window. The installations actually still work, and the error state
-     * disappears on the next update, but it's still bad UI/UX. Therefore we check if the currently
-     * loaded course has any "active" components, and only update the course view model if it
-     * doesn't.
-     */
-    boolean hasActiveComponents = current.getComponents()
-        .stream()
-        .anyMatch(Component::isActive);
+    mainViewModel.courseViewModel.set(new CourseViewModel(newCourse));
+    notifyNewVersions(newCourse);
 
-    if (!hasActiveComponents) {
-      mainViewModel.courseViewModel.set(new CourseViewModel(newCourse));
-      notifyNewVersions(newCourse);
-    }
+    newCourse.register();
   }
 
   private void notifyNewVersions(Course newCourse) {

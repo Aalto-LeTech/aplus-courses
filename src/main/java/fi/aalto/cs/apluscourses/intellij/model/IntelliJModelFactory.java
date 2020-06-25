@@ -1,14 +1,6 @@
 package fi.aalto.cs.apluscourses.intellij.model;
 
-import com.intellij.ProjectTopics;
-import com.intellij.openapi.application.ReadAction;
-import com.intellij.openapi.project.ModuleListener;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.roots.libraries.LibraryTable;
-import com.intellij.openapi.vfs.VirtualFileManager;
-import com.intellij.openapi.vfs.newvfs.BulkFileListener;
-import com.intellij.openapi.vfs.newvfs.events.VFileDeleteEvent;
-import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import fi.aalto.cs.apluscourses.intellij.utils.CourseFileManager;
 import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.Course;
@@ -20,7 +12,6 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.jetbrains.annotations.CalledWithReadLock;
 import org.jetbrains.annotations.NotNull;
 
 public class IntelliJModelFactory implements ModelFactory {
@@ -53,47 +44,9 @@ public class IntelliJModelFactory implements ModelFactory {
     course.getCommonLibraryProvider().setInitializationCallback(componentInitializationCallback);
     course.getComponents().forEach(componentInitializationCallback::initialize);
 
-    ReadAction.run(() -> addListeners(course));
-
     course.resolve();
 
     return course;
-  }
-
-  @CalledWithReadLock
-  private void addListeners(IntelliJCourse course) {
-    project.getMessageBus().connect().subscribe(ProjectTopics.MODULES, new ModuleListener() {
-      @Override
-      public void moduleRemoved(@NotNull Project project,
-                                @NotNull com.intellij.openapi.module.Module projectModule) {
-        Optional.of(projectModule.getName())
-            .map(course::getComponentIfExists)
-            .ifPresent(Component::setUnresolved);
-      }
-    });
-    project.getLibraryTable().addListener(new LibraryTable.Listener() {
-      @Override
-      public void afterLibraryRemoved(
-          @NotNull com.intellij.openapi.roots.libraries.Library library) {
-        Optional.ofNullable(library.getName())
-            .map(course::getComponentIfExists)
-            .ifPresent(Component::setUnresolved);
-      }
-    });
-    project.getMessageBus().connect().subscribe(VirtualFileManager.VFS_CHANGES,
-        new BulkFileListener() {
-          @Override
-          public void after(@NotNull List<? extends VFileEvent> events) {
-            for (VFileEvent event : events) {
-              if (event instanceof VFileDeleteEvent) {
-                Optional.ofNullable(event.getFile())
-                    .map(course::getComponentIfExists)
-                    .ifPresent(Component::setUnresolved);
-              }
-            }
-          }
-        }
-    );
   }
 
   private void registerComponentToCourse(@NotNull Component component, @NotNull Course course) {

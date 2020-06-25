@@ -1,7 +1,6 @@
 package fi.aalto.cs.apluscourses.intellij.model;
 
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 
 import com.intellij.openapi.project.Project;

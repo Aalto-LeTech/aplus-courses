@@ -6,7 +6,6 @@ import static org.junit.Assert.assertSame;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
