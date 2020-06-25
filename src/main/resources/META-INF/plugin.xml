@@ -25,7 +25,8 @@
 
         <toolWindow id="Modules"
                     anchor="right"
-                    factoryClass="fi.aalto.cs.apluscourses.intellij.toolwindows.ModulesToolWindowFactory" />
+                    factoryClass="fi.aalto.cs.apluscourses.intellij.toolwindows.ModulesToolWindowFactory"
+                    icon="PluginIcons.A_PLUS_LOGO"/>
         <toolWindow id="Exercises"
                     anchor="right"
                     factoryClass="fi.aalto.cs.apluscourses.intellij.toolwindows.ExercisesToolWindowFactory" />
@@ -58,7 +59,8 @@
                description="Actions for A+ modules">
             <action id="fi.aalto.cs.apluscourses.intellij.actions.ImportModuleAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.ImportModuleAction"
-                    text="Import A+ Module" icon="AllIcons.Actions.Download"/>
+                    text="Import A+ Module"
+                    icon="PluginIcons.A_PLUS_DOWNLOAD"/>
         </group>
         <action id="fi.aalto.cs.apluscourses.intellij.actions.RequiredPluginsCheckerAction"
                 class="fi.aalto.cs.apluscourses.intellij.actions.RequiredPluginsCheckerAction"

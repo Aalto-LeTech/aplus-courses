@@ -28,7 +28,8 @@ import org.json.JSONTokener;
 
 public class Course implements ComponentSource {
   @NotNull
-  protected final Map<String, Component> components;
+  private final String id;
+
   @NotNull
   private final String name;
 
@@ -48,6 +49,9 @@ public class Course implements ComponentSource {
   @NotNull
   private final List<String> autoInstallComponentNames;
 
+  @NotNull
+  protected final Map<String, Component> components;
+
   /**
    * Constructs a course with the given parameters.
    *
@@ -58,12 +62,14 @@ public class Course implements ComponentSource {
    * @param resourceUrls    A map containing URLs to resources related to the course. The keys are
    *                        the names of the resources and the values are the URLs.
    */
-  public Course(@NotNull String name,
+  public Course(@NotNull String id,
+                @NotNull String name,
                 @NotNull List<Module> modules,
                 @NotNull List<Library> libraries,
                 @NotNull Map<String, String> requiredPlugins,
                 @NotNull Map<String, URL> resourceUrls,
                 @NotNull List<String> autoInstallComponentNames) {
+    this.id = id;
     this.name = name;
     this.modules = modules;
     this.requiredPlugins = requiredPlugins;
@@ -111,13 +117,14 @@ public class Course implements ComponentSource {
                                              @NotNull ModelFactory factory)
       throws MalformedCourseConfigurationFileException {
     JSONObject jsonObject = getCourseJsonObject(reader, sourcePath);
+    String courseId = getCourseId(jsonObject, sourcePath);
     String courseName = getCourseName(jsonObject, sourcePath);
     List<Module> courseModules = getCourseModules(jsonObject, sourcePath, factory);
     Map<String, String> requiredPlugins = getCourseRequiredPlugins(jsonObject, sourcePath);
     Map<String, URL> resourceUrls = getCourseResourceUrls(jsonObject, sourcePath);
     List<String> autoInstallComponentNames
         = getCourseAutoInstallComponentNames(jsonObject, sourcePath);
-    return factory.createCourse(courseName, courseModules, Collections.emptyList(),
+    return factory.createCourse(courseId, courseName, courseModules, Collections.emptyList(),
         requiredPlugins, resourceUrls, autoInstallComponentNames);
   }
 
@@ -134,8 +141,17 @@ public class Course implements ComponentSource {
   @NotNull
   public static Course fromUrl(@NotNull URL url, @NotNull ModelFactory modelFactory)
       throws IOException, MalformedCourseConfigurationFileException {
-    InputStream inputStream = CoursesClient.fetchJson(url);
-    return Course.fromConfigurationData(new InputStreamReader(inputStream), modelFactory);
+    InputStream inputStream = CoursesClient.fetch(url);
+    return Course.fromConfigurationData(
+        new InputStreamReader(inputStream), url.toString(), modelFactory);
+  }
+
+  /**
+   * Returns the id of the course.
+   */
+  @NotNull
+  public String getId() {
+    return id;
   }
 
   /**
@@ -221,6 +237,17 @@ public class Course implements ComponentSource {
     } catch (JSONException ex) {
       throw new MalformedCourseConfigurationFileException(source,
           "Course configuration file should consist of a valid JSON object", ex);
+    }
+  }
+
+  @NotNull
+  private static String getCourseId(@NotNull JSONObject jsonObject, @NotNull String source)
+      throws MalformedCourseConfigurationFileException {
+    try {
+      return jsonObject.getString("id");
+    } catch (JSONException ex) {
+      throw new MalformedCourseConfigurationFileException(source,
+          "Missing or malformed \"id\" key", ex);
     }
   }
 

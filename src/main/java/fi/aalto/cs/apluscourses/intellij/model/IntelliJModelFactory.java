@@ -28,7 +28,8 @@ public class IntelliJModelFactory implements ModelFactory {
   }
 
   @Override
-  public Course createCourse(@NotNull String name,
+  public Course createCourse(@NotNull String id,
+                             @NotNull String name,
                              @NotNull List<Module> modules,
                              @NotNull List<Library> libraries,
                              @NotNull Map<String, String> requiredPlugins,
@@ -36,7 +37,7 @@ public class IntelliJModelFactory implements ModelFactory {
                              @NotNull List<String> autoInstallComponentNames) {
 
     IntelliJCourse course =
-        new IntelliJCourse(name, modules, libraries, requiredPlugins, resourceUrls,
+        new IntelliJCourse(id, name, modules, libraries, requiredPlugins, resourceUrls,
             autoInstallComponentNames, project, new CommonLibraryProvider(project));
 
     Component.InitializationCallback componentInitializationCallback =

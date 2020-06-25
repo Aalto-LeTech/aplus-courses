@@ -53,7 +53,7 @@ public class CourseProjectView extends DialogWrapper {
 
     infoText.applyTemplate(viewModel.getCourseName());
 
-    currentSettingsText.applyTemplate(viewModel.getCurrentSettings());
+    currentSettingsText.applyTemplate(viewModel.getCourseName());
     currentSettingsText.setVisible(viewModel.shouldShowCurrentSettings());
   }
 

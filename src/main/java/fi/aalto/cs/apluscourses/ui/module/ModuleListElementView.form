@@ -12,7 +12,6 @@
       <component id="e26e5" class="javax.swing.JLabel" binding="nameLabel">
         <constraints/>
         <properties>
-          <icon value="META-INF/icons/module.png"/>
           <text value="Module"/>
         </properties>
       </component>

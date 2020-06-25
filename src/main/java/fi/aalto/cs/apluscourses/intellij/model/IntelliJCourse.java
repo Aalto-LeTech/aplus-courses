@@ -38,7 +38,8 @@ class IntelliJCourse extends Course {
 
   private final PlatformListener platformListener;
 
-  public IntelliJCourse(@NotNull String name,
+  public IntelliJCourse(@NotNull String id,
+                        @NotNull String name,
                         @NotNull List<Module> modules,
                         @NotNull List<Library> libraries,
                         @NotNull Map<String, String> requiredPlugins,
@@ -46,7 +47,7 @@ class IntelliJCourse extends Course {
                         @NotNull List<String> autoInstallComponentNames,
                         @NotNull APlusProject project,
                         @NotNull CommonLibraryProvider commonLibraryProvider) {
-    super(name, modules, libraries, requiredPlugins, resourceUrls, autoInstallComponentNames);
+    super(id, name, modules, libraries, requiredPlugins, resourceUrls, autoInstallComponentNames);
 
     this.project = project;
     this.commonLibraryProvider = commonLibraryProvider;

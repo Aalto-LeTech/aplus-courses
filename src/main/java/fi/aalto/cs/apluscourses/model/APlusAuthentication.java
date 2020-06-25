@@ -1,6 +1,8 @@
 package fi.aalto.cs.apluscourses.model;
 
 import java.util.Arrays;
+
+import org.apache.http.HttpRequest;
 import org.jetbrains.annotations.NotNull;
 
 public class APlusAuthentication {
@@ -15,9 +17,8 @@ public class APlusAuthentication {
     this.token = token.clone();
   }
 
-  @NotNull
-  public char[] getToken() {
-    return token;
+  public void addToRequest(@NotNull HttpRequest request) {
+    request.addHeader("Authorization", "Token " + new String(token));
   }
 
   public void clear() {
