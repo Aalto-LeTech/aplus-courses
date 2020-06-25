@@ -6,7 +6,6 @@ import static org.mockito.Mockito.mock;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtilRt;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
-import fi.aalto.cs.apluscourses.model.ModelFactory;
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.model.ModuleMetadata;
 import java.io.File;
