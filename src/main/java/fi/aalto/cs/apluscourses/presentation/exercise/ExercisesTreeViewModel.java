@@ -31,7 +31,6 @@ public class ExercisesTreeViewModel implements TreeViewModel {
         .collect(Collectors.toList());
   }
 
-
   /**
    * Construct an exercise tree view model from the given course view model and authentication view
    * model. Returns {@code null} if either of the given view models is {@code null} or the API
