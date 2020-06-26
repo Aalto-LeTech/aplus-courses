@@ -25,17 +25,17 @@ public class CompoundObservablePropertyTest {
         2, converterCallCount.get());
     Assert.assertEquals("Calling get() returns the value from the converter",
         Integer.valueOf(3), compound.get());
-    Assert.assertEquals(3, converterCallCount.get());
+    Assert.assertEquals(2, converterCallCount.get());
 
     property1.set(16);
     Assert.assertEquals("Changing the value of a dependency property triggers a converter call",
-        4, converterCallCount.get());
+        3, converterCallCount.get());
     Assert.assertEquals(Integer.valueOf(4), compound.get());
-    Assert.assertEquals(5, converterCallCount.get());
+    Assert.assertEquals(3, converterCallCount.get());
 
     property2.set(8);
     Assert.assertEquals("Changing the value of a dependency property triggers a converter call",
-        6, converterCallCount.get());
+        4, converterCallCount.get());
     Assert.assertEquals(Integer.valueOf(2), compound.get());
   }
 
