@@ -5,7 +5,9 @@ import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.model.APlusAuthentication;
 import fi.aalto.cs.apluscourses.model.Group;
+import fi.aalto.cs.apluscourses.model.SubmissionHistory;
 import fi.aalto.cs.apluscourses.model.SubmittableExercise;
+import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,24 +19,30 @@ public class SubmissionViewModel {
 
   private SubmittableExercise exercise;
 
-  private List<Group> groups;
+  private SubmissionHistory submissionHistory;
+
+  private List<Group> availableGroups;
+
+  private Group selectedGroup;
 
   private APlusAuthentication authentication;
 
   private Project project;
 
-  private Module module;
+  private Module selectedModule;
 
   /**
    * Construct a submission view model with the given exercise, groups, authentication, and project.
    */
   public SubmissionViewModel(@NotNull SubmittableExercise exercise,
-                             @NotNull List<Group> groups,
+                             @NotNull SubmissionHistory submissionHistory,
+                             @NotNull List<Group> availableGroups,
                              @NotNull APlusAuthentication authentication,
                              @NotNull Project project
                              ) {
     this.exercise = exercise;
-    this.groups = groups;
+    this.submissionHistory = submissionHistory;
+    this.availableGroups = availableGroups;
     this.authentication = authentication;
     this.project = project;
   }
@@ -42,6 +50,38 @@ public class SubmissionViewModel {
   @NotNull
   public Project getProject() {
     return project;
+  }
+
+  @NotNull
+  public String getPresentableExerciseName() {
+    return APlusLocalizationUtil.getEnglishName(exercise.getName());
+  }
+
+  @NotNull
+  public List<Group> getAvailableGroups() {
+    return availableGroups;
+  }
+
+  @NotNull
+  public Group getSelectedGroup() {
+    return selectedGroup;
+  }
+
+  public void setGroup(@NotNull Group group) {
+    this.selectedGroup = group;
+  }
+
+  @NotNull
+  public List<String> getFilenames() {
+    return exercise.getFilenames();
+  }
+
+  public int getNumberOfSubmissions() {
+    return submissionHistory.getNumberOfSubmissions();
+  }
+
+  public int getMaxNumberOfSubmissions() {
+    return exercise.getSubmissionsLimit();
   }
 
   /**
@@ -56,8 +96,8 @@ public class SubmissionViewModel {
   }
 
   @Nullable
-  public Module getModule() {
-    return module;
+  public Module getSelectedModule() {
+    return selectedModule;
   }
 
   /**
@@ -65,7 +105,7 @@ public class SubmissionViewModel {
    */
   @CalledWithReadLock
   public void setModule(@NotNull String moduleName) {
-    this.module = Arrays
+    this.selectedModule = Arrays
         .stream(ModuleManager.getInstance(project).getModules())
         .filter(module -> moduleName.equals(module.getName()))
         .findAny()

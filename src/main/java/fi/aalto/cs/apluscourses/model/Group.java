@@ -42,7 +42,8 @@ public class Group {
 
   /**
    * Get all of the groups from the A+ API for the user corresponding to the given authentication.
-   * Note, that a group with just the user itself is not included here.
+   * A group with id 0 and a single member name "Submit alone" is added to the beginning of the
+   * list.
    *
    * @return A list of {@link Group}s that the user is a member of in the given course.
    * @throws IOException If an error occurs (e.g. network error).
@@ -56,7 +57,8 @@ public class Group {
     InputStream inputStream = CoursesClient.fetch(url, authentication::addToRequest);
     JSONObject response = new JSONObject(new JSONTokener(inputStream));
     JSONArray results = response.getJSONArray("results");
-    List<Group> groups = new ArrayList<>(results.length());
+    List<Group> groups = new ArrayList<>(results.length() + 1);
+    groups.add(new Group(0, Collections.singletonList("Submit alone")));
     for (int i = 0; i < results.length(); ++i) {
       groups.add(fromJsonObject(results.getJSONObject(i)));
     }

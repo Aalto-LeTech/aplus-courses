@@ -79,7 +79,7 @@ public class SubmittableExercise extends Exercise {
     return fromJsonObject(response);
   }
 
-  int getSubmissionsLimit() {
+  public int getSubmissionsLimit() {
     return submissionsLimit;
   }
 
