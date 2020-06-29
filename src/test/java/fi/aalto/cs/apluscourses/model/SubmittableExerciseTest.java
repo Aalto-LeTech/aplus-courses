@@ -12,12 +12,14 @@ public class SubmittableExerciseTest {
 
   @Test
   public void testSubmittableExercise() {
-    SubmittableExercise exercise = new SubmittableExercise(123, "yay",
+    SubmittableExercise exercise = new SubmittableExercise(123, "yay", 10,
         Arrays.asList("file1", "file2"));
     Assert.assertEquals("The ID is the same as the one given to the constructor",
         123, exercise.getId());
     Assert.assertEquals("The name is the same as the one given to the constructor",
         "yay", exercise.getName());
+    Assert.assertEquals("The submissions limit is the same as the one given to the constructor",
+        10, exercise.getSubmissionsLimit());
     Assert.assertEquals("The filenames are the same as those given to the constructor",
         "file1", exercise.getFilenames().get(0));
     Assert.assertEquals("The filenames are the same as those given to the constructor",
@@ -26,7 +28,7 @@ public class SubmittableExerciseTest {
 
   @Test(expected = UnsupportedOperationException.class)
   public void testGetFilenamesReturnsUnmodifiableList() {
-    SubmittableExercise exercise = new SubmittableExercise(0, "", Collections.emptyList());
+    SubmittableExercise exercise = new SubmittableExercise(0, "", 0, Collections.emptyList());
     exercise.getFilenames().add("");
   }
 
@@ -51,13 +53,16 @@ public class SubmittableExerciseTest {
     JSONObject json = new JSONObject()
         .put("id", 321)
         .put("name", "test exercise")
-        .put("exercise_info", exerciseInfo);
+        .put("exercise_info", exerciseInfo)
+        .put("max_submissions", 13);
 
     SubmittableExercise exercise = SubmittableExercise.fromJsonObject(json);
 
     Assert.assertEquals("The ID is the same as that in the JSON", 321, exercise.getId());
     Assert.assertEquals("The name is the same as that in the JSON",
         "test exercise", exercise.getName());
+    Assert.assertEquals("The submissions limit is the same as that in the JSON",
+        13, exercise.getSubmissionsLimit());
     Assert.assertEquals("The filenames are parsed from the JSON",
         "coolFilename.scala", exercise.getFilenames().get(0));
   }

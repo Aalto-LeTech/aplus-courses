@@ -9,18 +9,27 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
 public class SubmittableExercise extends Exercise {
 
+  private int submissionsLimit;
+
   @NotNull
   private final List<String> filenames;
 
-  public SubmittableExercise(long id, @NotNull String name, @NotNull List<String> filenames) {
+  /**
+   * Construct a submittable exercise instance with the given id, name, submission limit,
+   * and filenames.
+   */
+  public SubmittableExercise(long id,
+                             @NotNull String name,
+                             int submissionsLimit,
+                             @NotNull List<String> filenames) {
     super(id, name);
+    this.submissionsLimit = submissionsLimit;
     this.filenames = filenames;
   }
 
@@ -50,8 +59,9 @@ public class SubmittableExercise extends Exercise {
 
     long id = jsonObject.getLong("id");
     String name = jsonObject.getString("name");
+    int submissionLimit = jsonObject.getInt("max_submissions");
 
-    return new SubmittableExercise(id, name, filenames);
+    return new SubmittableExercise(id, name, submissionLimit, filenames);
   }
 
   /**
@@ -67,6 +77,10 @@ public class SubmittableExercise extends Exercise {
     InputStream inputStream = CoursesClient.fetch(url, authentication::addToRequest);
     JSONObject response = new JSONObject(new JSONTokener(inputStream));
     return fromJsonObject(response);
+  }
+
+  int getSubmissionsLimit() {
+    return submissionsLimit;
   }
 
   @NotNull
