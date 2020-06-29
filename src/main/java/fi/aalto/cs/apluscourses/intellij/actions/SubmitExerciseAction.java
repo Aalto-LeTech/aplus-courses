@@ -97,6 +97,9 @@ public class SubmitExerciseAction extends AnAction {
     }
 
     List<Group> groups = tryGetUserGroups(course, authentication, project);
+    if (groups == null) {
+      return;
+    }
 
     SubmissionViewModel viewModel = new SubmissionViewModel(
         exercise, submissionHistory, groups, authentication, project);
