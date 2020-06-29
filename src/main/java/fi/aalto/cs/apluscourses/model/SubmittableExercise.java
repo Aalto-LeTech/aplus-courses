@@ -59,7 +59,7 @@ public class SubmittableExercise extends Exercise {
    *
    * @throws IOException If an IO error occurs (e.g. network error).
    */
-  @Nullable
+  @NotNull
   public static SubmittableExercise fromExerciseId(long exerciseId,
                                                    @NotNull APlusAuthentication authentication)
       throws IOException {
