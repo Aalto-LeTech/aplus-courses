@@ -1,7 +1,7 @@
 package fi.aalto.cs.apluscourses.intellij.utils
 
-import com.intellij.openapi.module.Module
 import com.intellij.openapi.actionSystem.DataContext
+import com.intellij.openapi.module.Module
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.{OrderEntry, OrderEnumerator}
 import com.intellij.util.Processor

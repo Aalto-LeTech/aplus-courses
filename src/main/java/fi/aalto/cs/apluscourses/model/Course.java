@@ -3,7 +3,6 @@ package fi.aalto.cs.apluscourses.model;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
 import fi.aalto.cs.apluscourses.utils.ResourceException;
 import fi.aalto.cs.apluscourses.utils.Resources;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -396,5 +395,13 @@ public class Course implements ComponentSource {
         .stream()
         .filter(Module::isUpdatable)
         .collect(Collectors.toList());
+  }
+
+  public void register() {
+    // Subclasses may do things.
+  }
+
+  public void unregister() {
+    // Subclasses may do things.
   }
 }

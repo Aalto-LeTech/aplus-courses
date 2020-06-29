@@ -112,13 +112,13 @@ public class ComponentInstallerImpl<T> implements ComponentInstaller {
           component.unload();
           component.remove();
         }
-        component.setUnresolved();
-        component.resolveState();
+        component.stateMonitor.set(Component.UNINSTALLED);
       }
     }
 
     private void fetch() throws IOException {
-      if (component.stateMonitor.setConditionallyTo(Component.FETCHING, Component.NOT_INSTALLED)) {
+      if (component.stateMonitor.setConditionallyTo(Component.FETCHING, Component.NOT_INSTALLED,
+          Component.UNINSTALLED)) {
         component.fetch();
         component.stateMonitor.set(Component.FETCHED);
       } else {

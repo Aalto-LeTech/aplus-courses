@@ -10,7 +10,6 @@ import fi.aalto.cs.apluscourses.model.Library;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Optional;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.CalledWithReadLock;
 import org.jetbrains.annotations.CalledWithWriteLock;

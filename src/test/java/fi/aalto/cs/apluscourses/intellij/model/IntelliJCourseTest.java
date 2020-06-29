@@ -8,6 +8,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.util.messages.MessageBus;
 import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.Library;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
@@ -30,6 +31,7 @@ public class IntelliJCourseTest {
     String id = "id";
     String name = "testName";
     APlusProject project = mock(APlusProject.class);
+    when(project.getMessageBus()).thenReturn(mock(MessageBus.class));
     CommonLibraryProvider commonLibraryProvider = new CommonLibraryProvider(project);
     IntelliJCourse course = new IntelliJCourse(id, name,
         Collections.emptyList(), Collections.emptyList(), Collections.emptyMap(),
