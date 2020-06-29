@@ -100,7 +100,6 @@ public class VfsUtil {
 
     @Override
     public boolean visitFile(@NotNull VirtualFile file) {
-      // TODO: rename this
       boolean proceedVisiting = !hasChanges && file.getTimeStamp() > comparisonValue;
 
       if (proceedVisiting) {
