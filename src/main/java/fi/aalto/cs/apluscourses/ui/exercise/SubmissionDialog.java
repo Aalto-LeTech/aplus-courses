@@ -59,7 +59,8 @@ public class SubmissionDialog extends DialogWrapper {
   @Nullable
   @Override
   protected ValidationInfo doValidate() {
-    if ("Select group...".equals(groupComboBox.getSelectedItem())) {
+    Group selectedGroup = (Group) groupComboBox.getSelectedItem();
+    if (selectedGroup.getId() == -1) {
       return new ValidationInfo("Select a group", groupComboBox);
     }
     return null;
