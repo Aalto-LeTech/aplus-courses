@@ -92,6 +92,9 @@ public class SubmitExerciseAction extends AnAction {
 
     SubmissionHistory submissionHistory = tryGetSubmissionHistory(
         exercise, authentication, project);
+    if (submissionHistory == null) {
+      return;
+    }
 
     List<Group> groups = tryGetUserGroups(course, authentication, project);
 

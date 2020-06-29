@@ -2,7 +2,6 @@ package fi.aalto.cs.apluscourses.ui;
 
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
-import fi.aalto.cs.apluscourses.model.APlusAuthentication;
 import fi.aalto.cs.apluscourses.presentation.APlusAuthenticationViewModel;
 import java.util.Arrays;
 import javax.swing.Action;

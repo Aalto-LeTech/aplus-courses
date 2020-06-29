@@ -38,8 +38,7 @@ public class SubmissionViewModel {
                              @NotNull SubmissionHistory submissionHistory,
                              @NotNull List<Group> availableGroups,
                              @NotNull APlusAuthentication authentication,
-                             @NotNull Project project
-                             ) {
+                             @NotNull Project project) {
     this.exercise = exercise;
     this.submissionHistory = submissionHistory;
     this.availableGroups = availableGroups;

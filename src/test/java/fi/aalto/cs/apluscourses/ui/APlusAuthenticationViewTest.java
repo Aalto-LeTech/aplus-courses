@@ -3,7 +3,6 @@ package fi.aalto.cs.apluscourses.ui;
 import static org.hamcrest.CoreMatchers.containsString;
 
 import com.intellij.testFramework.LightIdeaTestCase;
-import fi.aalto.cs.apluscourses.model.APlusAuthentication;
 import fi.aalto.cs.apluscourses.presentation.APlusAuthenticationViewModel;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
