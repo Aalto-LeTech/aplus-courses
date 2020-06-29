@@ -12,6 +12,8 @@ import fi.aalto.cs.apluscourses.presentation.ReplConfigurationFormModel;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+
+import fi.aalto.cs.apluscourses.ui.ModuleComboBoxListRenderer;
 import org.jetbrains.annotations.NotNull;
 
 public class ReplConfigurationForm extends JPanel {
