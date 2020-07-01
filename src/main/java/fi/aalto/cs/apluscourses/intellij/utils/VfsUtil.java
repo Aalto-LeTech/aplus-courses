@@ -30,7 +30,7 @@ public class VfsUtil {
     if (virtualFile == null) {
       return null;
     }
-    com.intellij.openapi.vfs.VfsUtilCore.visitChildrenRecursively(virtualFile, visitor);
+    VfsUtilCore.visitChildrenRecursively(virtualFile, visitor);
     return visitor.getPath();
   }
 

@@ -6,6 +6,8 @@ import com.intellij.openapi.ui.ValidationInfo;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionViewModel;
 import fi.aalto.cs.apluscourses.ui.GuiObject;
+
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.swing.Action;
@@ -22,13 +24,11 @@ public class SubmissionDialog extends DialogWrapper {
   private SubmissionViewModel viewModel;
   private JPanel basePanel;
 
-  @GuiObject
-  private JLabel exerciseName;
+  protected JLabel exerciseName;
 
-  private JComboBox<Group> groupComboBox;
+  protected JComboBox<Group> groupComboBox;
 
-  @GuiObject
-  private JLabel submissionCount;
+  protected JLabel submissionCount;
 
   @GuiObject
   private JLabel filenames;
@@ -77,7 +77,8 @@ public class SubmissionDialog extends DialogWrapper {
     exerciseName = new JLabel("<html><body><h2>" + viewModel.getPresentableExerciseName()
         + "</h2></body></html>");
 
-    List<Group> availableGroups = viewModel.getAvailableGroups();
+    // We make a copy of the list as we are modifying it
+    List<Group> availableGroups = new ArrayList<>(viewModel.getAvailableGroups());
     availableGroups.add(0,
         new Group(-1, Collections.singletonList("Select group...")));
     groupComboBox = new ComboBox<>(availableGroups.stream().toArray(Group[]::new));
