@@ -4,6 +4,7 @@ import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.notifications.MissingFileNotification;
@@ -16,12 +17,14 @@ import fi.aalto.cs.apluscourses.intellij.utils.VfsUtil;
 import fi.aalto.cs.apluscourses.model.APlusAuthentication;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Exercise;
+import fi.aalto.cs.apluscourses.model.FileDoesNotExistException;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.SubmissionHistory;
 import fi.aalto.cs.apluscourses.model.SubmittableExercise;
 import fi.aalto.cs.apluscourses.presentation.APlusAuthenticationViewModel;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
+import fi.aalto.cs.apluscourses.presentation.ModuleSelectionViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionViewModel;
@@ -30,9 +33,8 @@ import fi.aalto.cs.apluscourses.ui.exercise.SubmissionDialog;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
-import org.jetbrains.annotations.CalledWithReadLock;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -101,22 +103,39 @@ public class SubmitExerciseAction extends AnAction {
       return;
     }
 
+    Module[] modules = Optional.ofNullable(project)
+        .map(ModuleManager::getInstance)
+        .map(ModuleManager::getModules)
+        .orElseGet(() -> new Module[0]);
+
+    ModuleSelectionViewModel moduleSelectionViewModel = new ModuleSelectionViewModel(modules);
+
+    if (!new ModuleSelectionDialog(project, moduleSelectionViewModel).showAndGet()) {
+      return;
+    }
+
+    Module selectedModule = moduleSelectionViewModel.selectedModule.get();
+
+    if (selectedModule == null) {
+      return;
+    }
+
+
+    Path basePath = Paths.get(ModuleUtilCore.getModuleDirPath(selectedModule));
+
+    Path[] filePaths;
+    try {
+      filePaths = exercise.getFilePaths(basePath);
+    } catch (FileDoesNotExistException ex) {
+      notifier.notify(new MissingFileNotification(selectedModule.getName(), ex.getName()), project);
+      return;
+    }
+
     SubmissionViewModel viewModel = new SubmissionViewModel(
-        exercise, submissionHistory, groups, authentication, project);
+        exercise, submissionHistory, groups, authentication, selectedModule, filePaths);
 
-    if (!new ModuleSelectionDialog(viewModel).showAndGet()
-        || viewModel.getSelectedModule() == null) {
-      return;
-    }
-
-    List<Path> filePaths = tryGetFilePaths(
-        exercise.getFilenames(), viewModel.getSelectedModule(), project);
-    if (filePaths == null) {
-      return;
-    }
-
-    if (new SubmissionDialog(viewModel).showAndGet()) {
-      // Do actual submission
+    if (new SubmissionDialog(viewModel, project).showAndGet()) {
+      viewModel.buildSubmission().submit();
     }
   }
 
@@ -127,7 +146,7 @@ public class SubmitExerciseAction extends AnAction {
     try {
       SubmittableExercise submittableExercise = SubmittableExercise.fromExerciseId(
           exercise.getId(), authentication);
-      if (submittableExercise.getFilenames().isEmpty()) {
+      if (submittableExercise.getFiles().isEmpty()) {
         notifier.notify(new NotSubmittableNotification(), project);
         return null;
       }
@@ -160,24 +179,6 @@ public class SubmitExerciseAction extends AnAction {
       notifyNetworkError(e, project);
       return null;
     }
-  }
-
-  @CalledWithReadLock
-  @Nullable
-  private List<Path> tryGetFilePaths(@NotNull List<String> filenames,
-                                     @NotNull Module module,
-                                     @Nullable Project project) {
-    Path modulePath = Paths.get(ModuleUtilCore.getModuleDirPath(module));
-    List<Path> filePaths = new ArrayList<>(filenames.size());
-    for (String filename : filenames) {
-      Path filePath = VfsUtil.findFileInDirectory(modulePath, filename);
-      if (filePath == null) {
-        notifier.notify(new MissingFileNotification(module.getName(), filename), project);
-        return null;
-      }
-      filePaths.add(filePath);
-    }
-    return filePaths;
   }
 
   private void notifyNetworkError(@NotNull IOException exception, @Nullable Project project) {

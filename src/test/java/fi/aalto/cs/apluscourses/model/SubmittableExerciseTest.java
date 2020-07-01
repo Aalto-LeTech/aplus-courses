@@ -13,7 +13,7 @@ public class SubmittableExerciseTest {
   @Test
   public void testSubmittableExercise() {
     SubmittableExercise exercise = new SubmittableExercise(123, "yay", 10,
-        Arrays.asList("file1", "file2"));
+        Arrays.asList(new SubmittableFile("file1"), new SubmittableFile("file2")));
     Assert.assertEquals("The ID is the same as the one given to the constructor",
         123, exercise.getId());
     Assert.assertEquals("The name is the same as the one given to the constructor",
@@ -21,15 +21,9 @@ public class SubmittableExerciseTest {
     Assert.assertEquals("The submissions limit is the same as the one given to the constructor",
         10, exercise.getSubmissionsLimit());
     Assert.assertEquals("The filenames are the same as those given to the constructor",
-        "file1", exercise.getFilenames().get(0));
+        "file1", exercise.getFiles().get(0));
     Assert.assertEquals("The filenames are the same as those given to the constructor",
-        "file2", exercise.getFilenames().get(1));
-  }
-
-  @Test(expected = UnsupportedOperationException.class)
-  public void testGetFilenamesReturnsUnmodifiableList() {
-    SubmittableExercise exercise = new SubmittableExercise(0, "", 0, Collections.emptyList());
-    exercise.getFilenames().add("");
+        "file2", exercise.getFiles().get(1));
   }
 
   @Test
@@ -64,7 +58,7 @@ public class SubmittableExerciseTest {
     Assert.assertEquals("The submissions limit is the same as that in the JSON",
         13, exercise.getSubmissionsLimit());
     Assert.assertEquals("The filenames are parsed from the JSON",
-        "coolFilename.scala", exercise.getFilenames().get(0));
+        "coolFilename.scala", exercise.getFiles().get(0));
   }
 
 }

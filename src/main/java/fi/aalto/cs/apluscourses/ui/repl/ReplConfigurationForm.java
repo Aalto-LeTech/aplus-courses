@@ -9,7 +9,9 @@ import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.vfs.VirtualFile;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.presentation.ReplConfigurationFormModel;
-import fi.aalto.cs.apluscourses.ui.ModuleComboBoxListRenderer;
+import fi.aalto.cs.apluscourses.ui.IconListCellRenderer;
+import icons.PluginIcons;
+import java.util.function.Function;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -56,7 +58,7 @@ public class ReplConfigurationForm extends JPanel {
     model.getModuleNames().forEach(moduleName -> moduleComboBox.addItem(moduleName));
     moduleComboBox.setSelectedItem(model.getTargetModuleName());
     moduleComboBox.setEnabled(true);
-    moduleComboBox.setRenderer(new ModuleComboBoxListRenderer());
+    moduleComboBox.setRenderer(new IconListCellRenderer<>(PluginIcons.A_PLUS_MODULE));
   }
 
   private void addFileChooser(

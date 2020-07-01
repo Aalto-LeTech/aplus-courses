@@ -5,6 +5,7 @@ import fi.aalto.cs.apluscourses.utils.CoursesClient;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -18,7 +19,7 @@ public class SubmittableExercise extends Exercise {
   private int submissionsLimit;
 
   @NotNull
-  private final List<String> filenames;
+  private final List<SubmittableFile> files;
 
   /**
    * Construct a submittable exercise instance with the given id, name, submission limit,
@@ -27,10 +28,10 @@ public class SubmittableExercise extends Exercise {
   public SubmittableExercise(long id,
                              @NotNull String name,
                              int submissionsLimit,
-                             @NotNull List<String> filenames) {
+                             @NotNull List<SubmittableFile> files) {
     super(id, name);
     this.submissionsLimit = submissionsLimit;
-    this.filenames = filenames;
+    this.files = files;
   }
 
   /**
@@ -41,7 +42,7 @@ public class SubmittableExercise extends Exercise {
     JSONObject exerciseInfo = jsonObject.getJSONObject("exercise_info");
     JSONArray formSpec = exerciseInfo.getJSONArray("form_spec");
     JSONObject localizationInfo = exerciseInfo.getJSONObject("form_i18n");
-    List<String> filenames = new ArrayList<>(formSpec.length());
+    List<SubmittableFile> files = new ArrayList<>(formSpec.length());
 
     for (int i = 0; i < formSpec.length(); ++i) {
       JSONObject spec = formSpec.getJSONObject(i);
@@ -54,14 +55,14 @@ public class SubmittableExercise extends Exercise {
       String englishFilename = localizationInfo
           .getJSONObject(title)
           .getString("en");
-      filenames.add(englishFilename);
+      files.add(new SubmittableFile(englishFilename));
     }
 
     long id = jsonObject.getLong("id");
     String name = jsonObject.getString("name");
     int submissionLimit = jsonObject.getInt("max_submissions");
 
-    return new SubmittableExercise(id, name, submissionLimit, filenames);
+    return new SubmittableExercise(id, name, submissionLimit, files);
   }
 
   /**
@@ -84,7 +85,22 @@ public class SubmittableExercise extends Exercise {
   }
 
   @NotNull
-  public List<String> getFilenames() {
-    return Collections.unmodifiableList(filenames);
+  public List<SubmittableFile> getFiles() {
+    return Collections.unmodifiableList(files);
+  }
+
+  /**
+   * Returns file paths of the files in this exercise.
+   *
+   * @param basePath The path inside which the file should be.
+   * @return Array of paths
+   * @throws FileDoesNotExistException If file not found.
+   */
+  public Path[] getFilePaths(Path basePath) throws FileDoesNotExistException {
+    Path[] paths = new Path[files.size()];
+    for (int i = 0; i < files.size(); ++i) {
+      paths[i] = files.get(i).getPath(basePath);
+    }
+    return paths;
   }
 }

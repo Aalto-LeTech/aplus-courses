@@ -1,11 +1,13 @@
 package fi.aalto.cs.apluscourses.ui.exercise;
 
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionViewModel;
 import fi.aalto.cs.apluscourses.ui.GuiObject;
+import fi.aalto.cs.apluscourses.ui.OurComboBox;
 import java.util.Collections;
 import java.util.List;
 import javax.swing.Action;
@@ -18,14 +20,15 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class SubmissionDialog extends DialogWrapper {
+  @NotNull
+  private final SubmissionViewModel viewModel;
 
-  private SubmissionViewModel viewModel;
   private JPanel basePanel;
 
   @GuiObject
   private JLabel exerciseName;
 
-  private JComboBox<Group> groupComboBox;
+  private OurComboBox<Group> groupComboBox;
 
   @GuiObject
   private JLabel submissionCount;
@@ -36,11 +39,12 @@ public class SubmissionDialog extends DialogWrapper {
   /**
    * Construct a submission dialog with the given view model.
    */
-  public SubmissionDialog(@NotNull SubmissionViewModel viewModel) {
-    super(viewModel.getProject());
+  public SubmissionDialog(@NotNull SubmissionViewModel viewModel, @Nullable Project project) {
+    super(project);
     this.viewModel = viewModel;
     setTitle("Submit Exercise");
     setButtonsAlignment(SwingConstants.CENTER);
+    groupComboBox.selectedItemBindable.bindToSource(viewModel.selectedGroup);
     init();
   }
 
@@ -59,17 +63,10 @@ public class SubmissionDialog extends DialogWrapper {
   @Nullable
   @Override
   protected ValidationInfo doValidate() {
-    Group selectedGroup = (Group) groupComboBox.getSelectedItem();
-    if (selectedGroup.getId() == -1) {
+    if (groupComboBox == null) {
       return new ValidationInfo("Select a group", groupComboBox);
     }
     return null;
-  }
-
-  @Override
-  protected void doOKAction() {
-    viewModel.setGroup((Group) groupComboBox.getSelectedItem());
-    super.doOKAction();
   }
 
   @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
@@ -78,13 +75,11 @@ public class SubmissionDialog extends DialogWrapper {
         + "</h2></body></html>");
 
     List<Group> availableGroups = viewModel.getAvailableGroups();
-    availableGroups.add(0,
-        new Group(-1, Collections.singletonList("Select group...")));
-    groupComboBox = new ComboBox<>(availableGroups.stream().toArray(Group[]::new));
+    groupComboBox = new OurComboBox<>(availableGroups.stream().toArray(Group[]::new), Group.class);
     groupComboBox.setRenderer(new GroupRenderer());
 
     StringBuilder filenamesHtml = new StringBuilder("<html><body>Files:<ul>");
-    viewModel.getFilenames().forEach(filename -> filenamesHtml.append("<li>" + filename + "</li>"));
+    viewModel.getFiles().forEach(file -> filenamesHtml.append("<li>" + file.getName() + "</li>"));
     filenamesHtml.append("</ul></body></html>");
     filenames = new JLabel(filenamesHtml.toString());
 

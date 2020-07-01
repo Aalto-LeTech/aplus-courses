@@ -1,13 +1,14 @@
 package fi.aalto.cs.apluscourses.ui.exercise;
 
-import com.intellij.openapi.ui.ComboBox;
+import com.intellij.openapi.module.Module;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
-import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionViewModel;
-import fi.aalto.cs.apluscourses.ui.ModuleComboBoxListRenderer;
-import java.util.List;
+import fi.aalto.cs.apluscourses.presentation.ModuleSelectionViewModel;
+import fi.aalto.cs.apluscourses.ui.IconListCellRenderer;
+import fi.aalto.cs.apluscourses.ui.OurComboBox;
+import icons.PluginIcons;
 import javax.swing.Action;
-import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
@@ -15,15 +16,16 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ModuleSelectionDialog extends DialogWrapper {
-  private SubmissionViewModel viewModel;
+  private ModuleSelectionViewModel viewModel;
   private JPanel basePanel;
-  private JComboBox<String> modulesComboBox;
+  private OurComboBox<Module> modulesComboBox;
 
   /**
    * Construct a module selection dialog with the given view model.
    */
-  public ModuleSelectionDialog(@NotNull SubmissionViewModel viewModel) {
-    super(viewModel.getProject());
+  public ModuleSelectionDialog(@Nullable Project project,
+                               @NotNull ModuleSelectionViewModel viewModel) {
+    super(project);
     this.viewModel = viewModel;
     setButtonsAlignment(SwingConstants.CENTER);
     setTitle("Select Module");
@@ -39,20 +41,13 @@ public class ModuleSelectionDialog extends DialogWrapper {
   @NotNull
   @Override
   protected Action[] createActions() {
-    return new Action[] {getOKAction(), getCancelAction()};
-  }
-
-  @Override
-  protected void doOKAction() {
-    viewModel.setModule((String) modulesComboBox.getSelectedItem());
-    super.doOKAction();
+    return new Action[] { getOKAction(), getCancelAction() };
   }
 
   @Nullable
   @Override
   protected ValidationInfo doValidate() {
-    String selectedModuleName = (String) modulesComboBox.getSelectedItem();
-    if ("Select module...".equals(selectedModuleName)) {
+    if (modulesComboBox.getSelectedItem() == null) {
       return new ValidationInfo("Select a module", modulesComboBox);
     }
     return null;
@@ -60,9 +55,9 @@ public class ModuleSelectionDialog extends DialogWrapper {
 
   @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
   private void createUIComponents() {
-    List<String> moduleNames = viewModel.getAvailableModuleNames();
-    moduleNames.add(0, "Select module...");
-    modulesComboBox = new ComboBox<>(moduleNames.stream().toArray(String[]::new));
-    modulesComboBox.setRenderer(new ModuleComboBoxListRenderer());
+    modulesComboBox = new OurComboBox<>(viewModel.getModules(), Module.class);
+    modulesComboBox.setRenderer(new IconListCellRenderer<>(viewModel.getPrompt(),
+        Module::getName, PluginIcons.A_PLUS_MODULE));
+    modulesComboBox.selectedItemBindable.bindToSource(viewModel.selectedModule);
   }
 }
