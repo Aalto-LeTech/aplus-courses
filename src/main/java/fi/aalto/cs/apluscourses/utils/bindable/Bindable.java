@@ -1,15 +1,22 @@
 package fi.aalto.cs.apluscourses.utils.bindable;
 
+import fi.aalto.cs.apluscourses.ui.base.OurDialogWrapper;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
+import java.util.Optional;
 import java.util.function.BiConsumer;
+import javax.swing.JComponent;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class Bindable<T, S> {
+public class Bindable<T extends JComponent, S> implements OurDialogWrapper.ValidationItem {
+  @NotNull
   protected final T target;
+  @NotNull
   protected final BiConsumer<T, S> targetSetter;
+  @Nullable
   protected ObservableProperty<S> sourceProperty;
 
-  public Bindable(T target, BiConsumer<T, S> targetSetter) {
+  public Bindable(@NotNull T target, @NotNull BiConsumer<T, S> targetSetter) {
     this.target = target;
     this.targetSetter = targetSetter;
   }
@@ -27,5 +34,16 @@ public class Bindable<T, S> {
       sourceProperty.addValueObserver(target, targetSetter::accept);
     }
     this.sourceProperty = sourceProperty;
+  }
+
+  @Nullable
+  @Override
+  public synchronized String validate() {
+    return Optional.ofNullable(sourceProperty).map(ObservableProperty::validate).orElse(null);
+  }
+
+  @Override
+  public JComponent getComponent() {
+    return target;
   }
 }

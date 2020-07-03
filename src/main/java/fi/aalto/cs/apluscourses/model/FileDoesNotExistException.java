@@ -1,6 +1,5 @@
 package fi.aalto.cs.apluscourses.model;
 
-import java.nio.file.Path;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

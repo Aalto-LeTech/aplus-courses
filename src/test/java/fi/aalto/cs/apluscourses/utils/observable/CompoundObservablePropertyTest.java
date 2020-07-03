@@ -2,7 +2,6 @@ package fi.aalto.cs.apluscourses.utils.observable;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BinaryOperator;
-
 import org.junit.Assert;
 import org.junit.Test;
 

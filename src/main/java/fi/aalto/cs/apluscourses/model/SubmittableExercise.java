@@ -75,7 +75,7 @@ public class SubmittableExercise extends Exercise {
                                                    @NotNull APlusAuthentication authentication)
       throws IOException {
     URL url = new URL(PluginSettings.A_PLUS_API_BASE_URL + "/exercises/" + exerciseId + "/");
-    InputStream inputStream = CoursesClient.fetch(url, authentication::addToRequest);
+    InputStream inputStream = CoursesClient.fetch(url, authentication);
     JSONObject response = new JSONObject(new JSONTokener(inputStream));
     return fromJsonObject(response);
   }

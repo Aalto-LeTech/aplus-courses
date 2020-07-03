@@ -54,7 +54,7 @@ public class Group {
       throws IOException {
     URL url =
         new URL(PluginSettings.A_PLUS_API_BASE_URL + "/courses/" + course.getId() + "/mygroups/");
-    InputStream inputStream = CoursesClient.fetch(url, authentication::addToRequest);
+    InputStream inputStream = CoursesClient.fetch(url, authentication);
     JSONObject response = new JSONObject(new JSONTokener(inputStream));
     JSONArray results = response.getJSONArray("results");
     List<Group> groups = new ArrayList<>(results.length() + 1);

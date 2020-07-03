@@ -13,7 +13,6 @@ import fi.aalto.cs.apluscourses.intellij.notifications.NotSubmittableNotificatio
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
-import fi.aalto.cs.apluscourses.intellij.utils.VfsUtil;
 import fi.aalto.cs.apluscourses.model.APlusAuthentication;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Exercise;
@@ -92,12 +91,6 @@ public class SubmitExerciseAction extends AnAction {
       return;
     }
 
-    SubmissionHistory submissionHistory = tryGetSubmissionHistory(
-        exercise, authentication, project);
-    if (submissionHistory == null) {
-      return;
-    }
-
     List<Group> groups = tryGetUserGroups(course, authentication, project);
     if (groups == null) {
       return;
@@ -131,11 +124,28 @@ public class SubmitExerciseAction extends AnAction {
       return;
     }
 
-    SubmissionViewModel viewModel = new SubmissionViewModel(
-        exercise, submissionHistory, groups, authentication, selectedModule, filePaths);
+    IOException ioException = null;
 
-    if (new SubmissionDialog(viewModel, project).showAndGet()) {
-      viewModel.buildSubmission().submit();
+    while (true) {
+      SubmissionHistory submissionHistory = tryGetSubmissionHistory(
+          exercise, authentication, project);
+      if (submissionHistory == null) {
+        return;
+      }
+
+      SubmissionViewModel viewModel = new SubmissionViewModel(exercise, submissionHistory, groups,
+          authentication, selectedModule, filePaths, ioException);
+
+      if (!new SubmissionDialog(viewModel, project).showAndGet()) {
+        return;
+      }
+
+      try {
+        viewModel.buildSubmission().submit();
+        return;
+      } catch (IOException ex) {
+        ioException = ex;
+      }
     }
   }
 

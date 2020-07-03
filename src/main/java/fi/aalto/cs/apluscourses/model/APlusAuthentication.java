@@ -1,11 +1,11 @@
 package fi.aalto.cs.apluscourses.model;
 
+import fi.aalto.cs.apluscourses.utils.CoursesClient;
 import java.util.Arrays;
-
 import org.apache.http.HttpRequest;
 import org.jetbrains.annotations.NotNull;
 
-public class APlusAuthentication {
+public class APlusAuthentication implements CoursesClient.Authentication {
   @NotNull
   private final char[] token;
 
