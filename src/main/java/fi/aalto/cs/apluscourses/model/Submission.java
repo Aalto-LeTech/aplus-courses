@@ -42,6 +42,6 @@ public class Submission {
       data.put(path.getFileName().toString(), path.toFile());
     }
     CoursesClient.post(new URL(PluginSettings.A_PLUS_API_BASE_URL + "/exercises/" + exercise.getId()
-        + "/submissions/submit"), authentication, data);
+        + "/submissions/submit/"), authentication, data);
   }
 }
