@@ -1,13 +1,18 @@
 package fi.aalto.cs.apluscourses.ui.exercise;
 
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
+import fi.aalto.cs.apluscourses.ui.GuiObject;
 import javax.swing.JPanel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ExercisesView {
-  private ExercisesTreeView exerciseGroupsTree;
-  private JPanel basePanel;
+  @GuiObject
+  public ExercisesTreeView exerciseGroupsTree;
+  @GuiObject
+  public JPanel toolbarContainer;
+  @GuiObject
+  public JPanel basePanel;
 
   public ExercisesView() {
     // See ModulesView.java
@@ -31,6 +36,4 @@ public class ExercisesView {
     exerciseGroupsTree = new ExercisesTreeView();
     exerciseGroupsTree.setCellRenderer(new ExercisesTreeRenderer());
   }
-
-
 }
