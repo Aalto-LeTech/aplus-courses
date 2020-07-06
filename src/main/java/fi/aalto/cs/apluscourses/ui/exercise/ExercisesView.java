@@ -1,7 +1,6 @@
 package fi.aalto.cs.apluscourses.ui.exercise;
 
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
-
 import javax.swing.JPanel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
