@@ -87,4 +87,16 @@ public class SubmissionsDashboard {
   public static URL getSubmissionsDashboardAPIURL(long courseId) throws MalformedURLException {
     return new URL(PluginSettings.A_PLUS_API_BASE_URL + "/courses/" + courseId + "/points/me/");
   }
+
+  public long getStudentId() {
+    return studentId;
+  }
+
+  public List<SubmissionResult> getSubmissionResults() {
+    return submissionResults;
+  }
+
+  public int getTotalPoints() {
+    return totalPoints;
+  }
 }
