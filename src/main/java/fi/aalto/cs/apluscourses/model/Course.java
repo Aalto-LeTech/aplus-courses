@@ -80,7 +80,7 @@ public class Course implements ComponentSource {
     this.resourceUrls = resourceUrls;
     this.libraries = libraries;
     this.autoInstallComponentNames = autoInstallComponentNames;
-    components = Stream.concat(modules.stream(), libraries.stream())
+    this.components = Stream.concat(modules.stream(), libraries.stream())
         .collect(Collectors.toMap(Component::getName, Function.identity()));
   }
 

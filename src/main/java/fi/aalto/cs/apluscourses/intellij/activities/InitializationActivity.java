@@ -63,11 +63,14 @@ public class InitializationActivity implements Background {
     }
     PluginSettings.getInstance().createUpdatingMainViewModel(project);
     ActionUtil.launch(RequiredPluginsCheckerAction.ACTION_ID,
-                      new ExtendedDataContext().withProject(project));
+        new ExtendedDataContext().withProject(project));
 
-    new ScheduledTaskExecutor(() -> ActionUtil.launch(GetSubmissionsDashboardAction.ACTION_ID,
-                                    new ExtendedDataContext().withProject(project)),
-                     0, PluginSettings.REASONABLE_DELAY_FOR_SUBMISSION_RESULTS_UPDATE, TimeUnit.SECONDS);
+    // todo: this validation should be somewhere in the Project (A+) class
+    if (CourseFileManager.getInstance().courseFileExists(project)) {
+      new ScheduledTaskExecutor(() -> ActionUtil.launch(GetSubmissionsDashboardAction.ACTION_ID,
+          new ExtendedDataContext().withProject(project)),
+          0, PluginSettings.REASONABLE_DELAY_FOR_SUBMISSION_RESULTS_UPDATE, TimeUnit.SECONDS);
+    }
   }
 
   @Nullable

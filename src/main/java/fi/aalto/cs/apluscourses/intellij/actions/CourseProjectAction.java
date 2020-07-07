@@ -9,6 +9,7 @@ import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory;
 import fi.aalto.cs.apluscourses.intellij.model.SettingsImporter;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.intellij.utils.CourseFileManager;
+import fi.aalto.cs.apluscourses.intellij.utils.ExtendedDataContext;
 import fi.aalto.cs.apluscourses.model.ComponentInstaller;
 import fi.aalto.cs.apluscourses.model.ComponentInstallerImpl;
 import fi.aalto.cs.apluscourses.model.Course;
@@ -137,6 +138,9 @@ public class CourseProjectAction extends AnAction {
     if (!tryImportProjectSettings(project, course)) {
       return;
     }
+
+    ActionUtil.launch(GetSubmissionsDashboardAction.ACTION_ID,
+        new ExtendedDataContext().withProject(project));
 
     if (!courseProjectViewModel.userOptsOutOfSettings()) {
       tryImportIdeSettings(course);

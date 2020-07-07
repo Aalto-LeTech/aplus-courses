@@ -145,6 +145,10 @@ public class CourseFileManager {
         .toFile();
   }
 
+  public boolean courseFileExists(@NotNull Project project){
+    return getCourseFile(project).exists();
+  }
+
   /*
    * Returns a JSONObject corresponding to the contents of the modulesMetadata map.
    */
