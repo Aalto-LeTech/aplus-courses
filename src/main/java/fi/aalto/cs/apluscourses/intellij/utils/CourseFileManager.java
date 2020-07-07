@@ -138,11 +138,13 @@ public class CourseFileManager {
    * Returns the course file corresponding to the given project.
    */
   private File getCourseFile(@NotNull Project project) {
-    return Paths
+    File file = Paths
         .get(Objects.requireNonNull(project.getBasePath()),
             Project.DIRECTORY_STORE_FOLDER,
             COURSE_FILE_NAME)
         .toFile();
+
+    return file;
   }
 
   public boolean courseFileExists(@NotNull Project project){

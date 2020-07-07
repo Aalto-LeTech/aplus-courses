@@ -65,12 +65,15 @@ public class InitializationActivity implements Background {
     ActionUtil.launch(RequiredPluginsCheckerAction.ACTION_ID,
         new ExtendedDataContext().withProject(project));
 
-    // todo: this validation should be somewhere in the Project (A+) class
-    if (CourseFileManager.getInstance().courseFileExists(project)) {
+    if (isAPlusProject(project)) {
       new ScheduledTaskExecutor(() -> ActionUtil.launch(GetSubmissionsDashboardAction.ACTION_ID,
           new ExtendedDataContext().withProject(project)),
           0, PluginSettings.REASONABLE_DELAY_FOR_SUBMISSION_RESULTS_UPDATE, TimeUnit.SECONDS);
     }
+  }
+
+  public static boolean isAPlusProject(@NotNull Project project) {
+    return CourseFileManager.getInstance().courseFileExists(project);
   }
 
   @Nullable

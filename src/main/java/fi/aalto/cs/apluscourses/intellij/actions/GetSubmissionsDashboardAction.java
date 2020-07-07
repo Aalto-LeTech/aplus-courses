@@ -23,17 +23,20 @@ public class GetSubmissionsDashboardAction extends DumbAwareAction {
   public static final String ACTION_ID = GetSubmissionsDashboardAction.class.getCanonicalName();
 
   @NotNull
-  private MainViewModelProvider mainViewModelProvider;
+  private final MainViewModelProvider mainViewModelProvider;
 
   @NotNull
-  private Notifier notifier;
+  private final Notifier notifier;
 
+  /**
+   * Constructs the action with meaningful defaults.
+   */
   public GetSubmissionsDashboardAction() {
     this(PluginSettings.getInstance(), Notifications.Bus::notify);
   }
 
   public GetSubmissionsDashboardAction(@NotNull MainViewModelProvider mainViewModelProvider,
-      @NotNull Notifier notifier) {
+                                       @NotNull Notifier notifier) {
     this.mainViewModelProvider = mainViewModelProvider;
     this.notifier = notifier;
   }
@@ -47,14 +50,14 @@ public class GetSubmissionsDashboardAction extends DumbAwareAction {
     Course course = requireNonNull(mainViewModel.courseViewModel.get()).getModel();
 
     if (authentication != null) {
-      SubmissionsDashboard submissionsDashboard = tryGetSubmissionDashboard(
+      SubmissionsDashboard submissionsDashboard = tryGetSubmissionsDashboard(
           Long.parseLong(course.getId()), authentication, requireNonNull(project));
       course.setSubmissionsDashboard(requireNonNull(submissionsDashboard));
     }
   }
 
   @Nullable
-  public SubmissionsDashboard tryGetSubmissionDashboard(long id,
+  public SubmissionsDashboard tryGetSubmissionsDashboard(long id,
                                                         @NotNull APlusAuthentication authentication,
                                                         @NotNull Project project) {
     try {

@@ -15,21 +15,38 @@ import org.json.JSONTokener;
 
 public class SubmissionsDashboard {
 
-  private final int studentId;
+  private final long studentId;
   private final List<SubmissionResult> submissionResults;
   private final int totalPoints;
 
-  public SubmissionsDashboard(int studentId, List<SubmissionResult> submissionResults,
-      int totalPoints) {
+  /**
+   * Hi there! It turned out, that there is a way to get all the data on {@link Course} {@link
+   * SubmissionResult}s is one call. Well, so here I am, the {@link SubmissionsDashboard} ;-) .
+   *
+   * @param studentId an A+ student Id.
+   * @param submissionResults a {@link List} with {@link SubmissionResult}s having the data.
+   * @param totalPoints an amount of points achieved so far for the whole course.
+   */
+  public SubmissionsDashboard(long studentId,
+                              List<SubmissionResult> submissionResults,
+                              int totalPoints) {
     this.studentId = studentId;
     this.submissionResults = submissionResults;
     this.totalPoints = totalPoints;
   }
 
+  /**
+   * Constructs a {@link SubmissionsDashboard} from the given JSON object. The object must contain an long value for the
+   * key "id", integer value for the key "points" and an array value for the key "modules"
+   * (containing another array for the key "exercises" in its turn).
+   *
+   * @param jsonObject The JSON object from which the dashboard is constructed.
+   * @return a SubmissionsDashboard instance.
+   */
   @NotNull
   public static SubmissionsDashboard fromJsonObject(@NotNull JSONObject jsonObject) {
     List<SubmissionResult> submissionResults = new ArrayList<>();
-    int studentId = jsonObject.getInt("id");
+    long studentId = jsonObject.getLong("id");
     int points = jsonObject.getInt("points");
     JSONArray modulesArray = jsonObject.getJSONArray("modules");
 
@@ -60,7 +77,13 @@ public class SubmissionsDashboard {
     return fromJsonObject(response);
   }
 
-  // todo: to propose combining all the calls like this together to test
+  /**
+   * An API endpoint represented as {@link URL}.
+   *
+   * @param courseId an id for the course to fetch the results for.
+   * @return a {@link URL} representation of the endpoint location.
+   * @throws MalformedURLException an exception thrown in case of something went wrong.
+   */
   public static URL getSubmissionsDashboardAPIURL(long courseId) throws MalformedURLException {
     return new URL(PluginSettings.A_PLUS_API_BASE_URL + "/courses/" + courseId + "/points/me/");
   }

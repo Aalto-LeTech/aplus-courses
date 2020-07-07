@@ -16,7 +16,7 @@ public class SubmissionResult {
   //  private int maxSubmissionsCount;
   private int pointsToPass;
   private int maxPoints;
-  private int totalPoints;
+  private int points;
 
   /**
    * A result of a single submission.
@@ -29,26 +29,34 @@ public class SubmissionResult {
    * @param totalPoints a total amount of points achieved for the exercise.
    */
   public SubmissionResult(int exerciseId, List<Integer> submissionIds, int submissionsCount,
-      int pointsToPass, int maxPoints, int totalPoints) {
+      int pointsToPass, int maxPoints, int points) {
     this.exerciseId = exerciseId;
     this.submissionIds = submissionIds;
     this.submissionsCount = submissionsCount;
     this.pointsToPass = pointsToPass;
     this.maxPoints = maxPoints;
-    this.totalPoints = totalPoints;
+    this.points = points;
   }
 
+  /**
+   * Constructs {@link SubmissionResult} from the given JSON object. The object must contain an long value for the
+   * key "id", integer value for the key "points" and an array value for the key "modules"
+   * (containing another array for the key "exercises" in its turn).
+   *
+   * @param jsonObject The JSON object from which the dashboard is constructed.
+   * @return a SubmissionsDashboard instance.
+   */
   @NotNull
   public static SubmissionResult fromJsonObject(@NotNull JSONObject jsonObject) {
     int exerciseId = jsonObject.getInt("id");
-    List<Integer> submissionIds = fromJsonArray(jsonObject.getJSONArray("submissions"));
+    List<Integer> submissionIds = getSubmissionIdsFromJsonArray(jsonObject.getJSONArray("submissions"));
     int submissionsCount = jsonObject.getInt("submission_count");
     int pointsToPass = jsonObject.getInt("points_to_pass");
-    int totalPoints = jsonObject.getInt("points");
+    int points = jsonObject.getInt("points");
     int maxPoints = jsonObject.getInt("max_points");
 
     return new SubmissionResult(exerciseId, submissionIds, submissionsCount, pointsToPass,
-        maxPoints, totalPoints);
+        maxPoints, points);
   }
 
   /**
@@ -58,7 +66,7 @@ public class SubmissionResult {
    * @return a {@link List} of integers representing submission ids
    */
   @NotNull
-  public static List<Integer> fromJsonArray(@NotNull JSONArray jsonArray) {
+  public static List<Integer> getSubmissionIdsFromJsonArray(@NotNull JSONArray jsonArray) {
     return jsonArray
         .toList()
         .stream()
@@ -66,5 +74,29 @@ public class SubmissionResult {
         .map(url -> substringBetween(url, "/api/v2/submissions/", "/"))
         .map(Integer::parseInt)
         .collect(Collectors.toList());
+  }
+
+  public int getExerciseId() {
+    return exerciseId;
+  }
+
+  public List<Integer> getSubmissionIds() {
+    return submissionIds;
+  }
+
+  public int getSubmissionsCount() {
+    return submissionsCount;
+  }
+
+  public int getPointsToPass() {
+    return pointsToPass;
+  }
+
+  public int getMaxPoints() {
+    return maxPoints;
+  }
+
+  public int getPoints() {
+    return points;
   }
 }
