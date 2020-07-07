@@ -38,7 +38,6 @@ public class SubmissionResult {
     this.totalPoints = totalPoints;
   }
 
-
   @NotNull
   public static SubmissionResult fromJsonObject(@NotNull JSONObject jsonObject) {
     int exerciseId = jsonObject.getInt("id");

@@ -37,6 +37,9 @@ public class Course implements ComponentSource {
   private final List<Module> modules;
 
   @NotNull
+  private SubmissionsDashboard submissionsDashboard;
+
+  @NotNull
   private final List<Library> libraries;
 
   // Maps ids of required plugins to the names of required plugins.
@@ -52,6 +55,7 @@ public class Course implements ComponentSource {
   @NotNull
   protected final Map<String, Component> components;
 
+  //todo: javadoc is out of date
   /**
    * Constructs a course with the given parameters.
    *
@@ -403,5 +407,14 @@ public class Course implements ComponentSource {
 
   public void unregister() {
     // Subclasses may do things.
+  }
+
+  @NotNull
+  public SubmissionsDashboard getSubmissionsDashboard() {
+    return submissionsDashboard;
+  }
+
+  public void setSubmissionsDashboard(@NotNull SubmissionsDashboard submissionsDashboard) {
+    this.submissionsDashboard = submissionsDashboard;
   }
 }

@@ -46,6 +46,8 @@ public class PluginSettings implements MainViewModelProvider {
 
   //  15 minutes in milliseconds
   public static final long MAIN_VIEW_MODEL_UPDATE_INTERVAL = 15L * 60L * 1000L;
+  //  10 minutes in milliseconds
+  public static final long REASONABLE_DELAY_FOR_SUBMISSION_RESULTS_UPDATE = 10L * 60 * 1000;
   //  15 seconds in milliseconds
   public static final long REASONABLE_DELAY_FOR_MODULE_INSTALLATION = 15L * 1000;
 

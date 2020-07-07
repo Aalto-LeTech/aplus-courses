@@ -63,9 +63,11 @@ public class InitializationActivity implements Background {
     }
     PluginSettings.getInstance().createUpdatingMainViewModel(project);
     ActionUtil.launch(RequiredPluginsCheckerAction.ACTION_ID,
-        new ExtendedDataContext().withProject(project));
-    new ScheduledTaskExecutor(() -> new GetSubmissionsDashboardAction().fetchSubmissionsDashboard(),
-        30, 30, TimeUnit.SECONDS);
+                      new ExtendedDataContext().withProject(project));
+
+    new ScheduledTaskExecutor(() -> ActionUtil.launch(GetSubmissionsDashboardAction.ACTION_ID,
+                                    new ExtendedDataContext().withProject(project)),
+                     0, PluginSettings.REASONABLE_DELAY_FOR_SUBMISSION_RESULTS_UPDATE, TimeUnit.SECONDS);
   }
 
   @Nullable
