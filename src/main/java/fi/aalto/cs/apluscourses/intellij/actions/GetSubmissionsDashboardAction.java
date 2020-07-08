@@ -58,8 +58,8 @@ public class GetSubmissionsDashboardAction extends DumbAwareAction {
 
   @Nullable
   public SubmissionsDashboard tryGetSubmissionsDashboard(long id,
-                                                        @NotNull APlusAuthentication authentication,
-                                                        @NotNull Project project) {
+                                                         @NotNull APlusAuthentication authentication,
+                                                         @NotNull Project project) {
     try {
       return SubmissionsDashboard.getSubmissionsDashboard(id, authentication);
     } catch (IOException e) {

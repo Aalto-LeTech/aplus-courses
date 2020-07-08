@@ -22,4 +22,9 @@ public class MainViewModel {
           courseViewModel,
           authenticationViewModel,
           ExercisesTreeViewModel::fromCourseAndAuthentication);
+
+  @NotNull
+  public ObservableProperty<APlusAuthenticationViewModel> getAuthenticationViewModel() {
+    return authenticationViewModel;
+  }
 }
