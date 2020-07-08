@@ -40,12 +40,13 @@ public class GetSubmissionsDashboardActionTest extends BasePlatformTestCase {
         .thenReturn(mockCourse);
     when(mockCourse.getId()).thenReturn("1");
 
-    //  submissions
+    //  action
     GetSubmissionsDashboardAction getSubmissionsDashboardAction = new GetSubmissionsDashboardAction(
         mockMainViewModelProvider, Notifications.Bus::notify);
     GetSubmissionsDashboardAction spyGetSubmissionsDashboardAction = spy(
         getSubmissionsDashboardAction);
 
+    //  submissions
     SubmissionsDashboard mockSubmissionsDashboard = mock(SubmissionsDashboard.class);
     doReturn(mockSubmissionsDashboard).when(spyGetSubmissionsDashboardAction)
         .tryGetSubmissionsDashboard(1L, mockAuthentication, project);
@@ -80,12 +81,13 @@ public class GetSubmissionsDashboardActionTest extends BasePlatformTestCase {
         .thenReturn(mockCourse);
     when(mockCourse.getId()).thenReturn("1");
 
-    //  submissions
+    //  action
     GetSubmissionsDashboardAction getSubmissionsDashboardAction = new GetSubmissionsDashboardAction(
         mockMainViewModelProvider, Notifications.Bus::notify);
     GetSubmissionsDashboardAction spyGetSubmissionsDashboardAction = spy(
         getSubmissionsDashboardAction);
 
+    //  submissions
     SubmissionsDashboard mockSubmissionsDashboard = mock(SubmissionsDashboard.class);
     doReturn(mockSubmissionsDashboard).when(spyGetSubmissionsDashboardAction)
         .tryGetSubmissionsDashboard(1L, mockAuthentication, project);
@@ -98,10 +100,5 @@ public class GetSubmissionsDashboardActionTest extends BasePlatformTestCase {
         .tryGetSubmissionsDashboard(1L, mockAuthentication, project);
     verify(mockCourse, times(0))
         .setSubmissionsDashboard(mockSubmissionsDashboard);
-  }
-
-  @Test
-  public void testTryGetSubmissionsDashboard() {
-
   }
 }
