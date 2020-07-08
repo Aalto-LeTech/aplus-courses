@@ -46,8 +46,8 @@ public class GetSubmissionsDashboardAction extends DumbAwareAction {
     Project project = e.getProject();
     MainViewModel mainViewModel = mainViewModelProvider.getMainViewModel(project);
     APlusAuthentication authentication =
-        requireNonNull(mainViewModel.authenticationViewModel.get()).getAuthentication();
-    Course course = requireNonNull(mainViewModel.courseViewModel.get()).getModel();
+        requireNonNull(mainViewModel.getAuthenticationViewModel().get()).getAuthentication();
+    Course course = requireNonNull(mainViewModel.getCourseViewModel().get()).getModel();
 
     if (authentication != null) {
       SubmissionsDashboard submissionsDashboard = tryGetSubmissionsDashboard(

@@ -27,4 +27,9 @@ public class MainViewModel {
   public ObservableProperty<APlusAuthenticationViewModel> getAuthenticationViewModel() {
     return authenticationViewModel;
   }
+
+  @NotNull
+  public ObservableProperty<CourseViewModel> getCourseViewModel() {
+    return courseViewModel;
+  }
 }
