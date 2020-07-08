@@ -10,7 +10,9 @@ import org.jetbrains.annotations.Nullable;
  * @param <T> Type of the property's value.
  */
 public abstract class ObservableProperty<T> {
-  protected final Map<Object, Callback<?, T>> observers = new WeakHashMap<>();
+  private final Map<Object, Callback<?, T>> observers = new WeakHashMap<>();
+  @NotNull
+  private volatile Validator<T> validator = whatever -> null;
 
   /**
    * Add a new observer and calls its {@code valueChanged} method.
@@ -42,6 +44,10 @@ public abstract class ObservableProperty<T> {
     property.addValueObserver(this, (self, dummy) -> self.onValueChanged(self.get()));
   }
 
+  public void setValidator(@NotNull Validator<T> validator) {
+    this.validator = validator;
+  }
+
   @Nullable
   public abstract T get();
 
@@ -58,6 +64,10 @@ public abstract class ObservableProperty<T> {
       entry.getValue().valueChangedUntyped(entry.getKey(), value);
     }
   }
+  
+  public String validate() {
+    return validator.validate(get());
+  }
 
   public interface Callback<O, T> {
     void valueChanged(@NotNull O observer, @Nullable T value);
@@ -66,5 +76,10 @@ public abstract class ObservableProperty<T> {
     default void valueChangedUntyped(@NotNull Object observer, @Nullable T value) {
       valueChanged((O) observer, value);
     }
+  }
+
+  public interface Validator<T> {
+    @Nullable
+    String validate(T value);
   }
 }

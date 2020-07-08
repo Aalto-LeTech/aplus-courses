@@ -6,13 +6,20 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.ContentBody;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
@@ -147,6 +154,41 @@ public class CoursesClient {
     consumeResponseBody(request, consumer);
   }
 
+  public static void post(@NotNull URL url,
+                          @Nullable Authentication authentication,
+                          @Nullable Map<String, Object> data) throws IOException {
+    MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+    if (data != null) {
+      for (Map.Entry<String, Object> entry : data.entrySet()) {
+        builder.addPart(entry.getKey(), getContentBody(entry.getValue()));
+      }
+    }
+    HttpPost request = new HttpPost(url.toString());
+    request.setEntity(builder.build());
+
+    if (authentication != null) {
+      authentication.addToRequest(request);
+    }
+
+    try (CloseableHttpClient client = HttpClients.createDefault();
+         CloseableHttpResponse response = client.execute(request)) {
+      requireSuccessStatusCode(response);
+    }
+  }
+
+  private static ContentBody getContentBody(Object value) {
+    if (value instanceof String) {
+      return new StringBody((String) value, ContentType.DEFAULT_TEXT);
+    }
+    if (value instanceof Number) {
+      return getContentBody(String.valueOf(value));
+    }
+    if (value instanceof File) {
+      return new FileBody((File) value);
+    }
+    throw new IllegalArgumentException("Type of value not supported.");
+  }
+
   /**
    * Executes the given request, performs some checks on the response and returns the result of
    * passing the response body to the given mapper.
@@ -180,7 +222,6 @@ public class CoursesClient {
    * Throws a {@link UnexpectedResponseException} if the response status code isn't 2xx. Otherwise
    * does nothing.
    */
-  @NotNull
   private static void requireSuccessStatusCode(@NotNull HttpResponse response)
       throws UnexpectedResponseException {
     int statusCode = response.getStatusLine().getStatusCode();

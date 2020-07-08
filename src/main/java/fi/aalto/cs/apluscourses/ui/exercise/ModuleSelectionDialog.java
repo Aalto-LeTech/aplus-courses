@@ -9,7 +9,7 @@ import fi.aalto.cs.apluscourses.intellij.actions.GetSubmissionsDashboardAction;
 import fi.aalto.cs.apluscourses.intellij.utils.ExtendedDataContext;
 import fi.aalto.cs.apluscourses.presentation.ModuleSelectionViewModel;
 import fi.aalto.cs.apluscourses.ui.IconListCellRenderer;
-import fi.aalto.cs.apluscourses.ui.OurComboBox;
+import fi.aalto.cs.apluscourses.ui.base.OurComboBox;
 import icons.PluginIcons;
 import javax.swing.Action;
 import javax.swing.JComponent;

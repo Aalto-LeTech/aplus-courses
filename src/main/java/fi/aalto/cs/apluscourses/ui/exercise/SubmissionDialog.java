@@ -1,12 +1,11 @@
 package fi.aalto.cs.apluscourses.ui.exercise;
 
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.openapi.ui.ValidationInfo;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionViewModel;
 import fi.aalto.cs.apluscourses.ui.GuiObject;
-import fi.aalto.cs.apluscourses.ui.OurComboBox;
+import fi.aalto.cs.apluscourses.ui.base.OurComboBox;
+import fi.aalto.cs.apluscourses.ui.base.OurDialogWrapper;
 import java.util.List;
 import javax.swing.Action;
 import javax.swing.JComponent;
@@ -16,7 +15,7 @@ import javax.swing.SwingConstants;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class SubmissionDialog extends DialogWrapper {
+public class SubmissionDialog extends OurDialogWrapper {
   @NotNull
   private final SubmissionViewModel viewModel;
 
@@ -33,15 +32,24 @@ public class SubmissionDialog extends DialogWrapper {
   @GuiObject
   private JLabel filenames;
 
+  private JLabel IoException;
+
   /**
    * Construct a submission dialog with the given view model.
    */
   public SubmissionDialog(@NotNull SubmissionViewModel viewModel, @Nullable Project project) {
     super(project);
+
     this.viewModel = viewModel;
+
     setTitle("Submit Exercise");
     setButtonsAlignment(SwingConstants.CENTER);
+
     groupComboBox.selectedItemBindable.bindToSource(viewModel.selectedGroup);
+    registerValidationItem(groupComboBox.selectedItemBindable);
+    registerValidationItem(viewModel::validateSubmissionCount);
+    IoException.setText(viewModel.getIoExceptionText());
+
     init();
   }
 
@@ -55,15 +63,6 @@ public class SubmissionDialog extends DialogWrapper {
   @Override
   protected Action[] createActions() {
     return new Action[] {getOKAction(), getCancelAction()};
-  }
-
-  @Nullable
-  @Override
-  protected ValidationInfo doValidate() {
-    if (groupComboBox == null) {
-      return new ValidationInfo("Select a group", groupComboBox);
-    }
-    return null;
   }
 
   @SuppressWarnings("checkstyle:AbbreviationAsWordInName")

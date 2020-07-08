@@ -24,7 +24,7 @@
           <textTemplate value="&lt;html&gt;&lt;body&gt;IntelliJ IDEA settings are already imported for &lt;b&gt;{0}&lt;/b&gt;.&lt;/body&gt;&lt;html&gt;"/>
         </properties>
       </component>
-      <component id="84cae" class="fi.aalto.cs.apluscourses.ui.CheckBox" binding="settingsOptOutCheckbox">
+      <component id="84cae" class="fi.aalto.cs.apluscourses.ui.base.CheckBox" binding="settingsOptOutCheckbox">
         <constraints>
           <grid row="8" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
@@ -80,7 +80,7 @@
           </grid>
         </constraints>
       </vspacer>
-      <component id="b4256" class="fi.aalto.cs.apluscourses.ui.CheckBox" binding="restartCheckBox">
+      <component id="b4256" class="fi.aalto.cs.apluscourses.ui.base.CheckBox" binding="restartCheckBox">
         <constraints>
           <grid row="6" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>

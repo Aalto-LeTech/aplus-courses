@@ -10,8 +10,10 @@ import fi.aalto.cs.apluscourses.model.SubmittableFile;
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
 public class SubmissionViewModel {
@@ -30,6 +32,8 @@ public class SubmissionViewModel {
 
   public final ObservableProperty<Group> selectedGroup = new ObservableReadWriteProperty<>(null);
 
+  private final IOException ioException;
+
   /**
    * Construct a submission view model with the given exercise, groups, authentication, and project.
    */
@@ -38,13 +42,20 @@ public class SubmissionViewModel {
                              @NotNull List<Group> availableGroups,
                              @NotNull APlusAuthentication authentication,
                              @NotNull Module selectedModule,
-                             @NotNull Path[] filePaths) {
+                             @NotNull Path[] filePaths, IOException ioException) {
     this.exercise = exercise;
     this.submissionHistory = submissionHistory;
     this.availableGroups = availableGroups;
     this.authentication = authentication;
     this.selectedModule = selectedModule;
     this.filePaths = filePaths;
+    this.ioException = ioException;
+
+    selectedGroup.setValidator(SubmissionViewModel::validateGroupSelection);
+  }
+
+  private static String validateGroupSelection(Group group) {
+    return group == null ? "Select a group" : null;
   }
 
   @NotNull
@@ -70,8 +81,21 @@ public class SubmissionViewModel {
     return exercise.getSubmissionsLimit();
   }
 
+  @NotNull
   public Submission buildSubmission() {
-    return new Submission(exercise, filePaths, authentication, selectedGroup.get());
+    Group group = Objects.requireNonNull(selectedGroup.get());
+    return new Submission(exercise, filePaths, authentication, group);
   }
 
+  public String validateSubmissionCount() {
+    return getNumberOfSubmissions() >= getMaxNumberOfSubmissions() ?
+        "Max. number of submissions exceeded" : null;
+  }
+
+  public String getIoExceptionText() {
+    if (ioException == null) {
+      return "";
+    }
+    return "Upload failed: " + ioException.getLocalizedMessage();
+  }
 }

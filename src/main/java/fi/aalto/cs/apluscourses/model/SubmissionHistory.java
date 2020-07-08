@@ -33,7 +33,7 @@ public class SubmissionHistory {
       long exerciseId, @NotNull APlusAuthentication authentication) throws IOException {
     URL url = new URL(PluginSettings.A_PLUS_API_BASE_URL + "/exercises/" + exerciseId
         + "/submissions/me/");
-    InputStream inputStream = CoursesClient.fetch(url, authentication::addToRequest);
+    InputStream inputStream = CoursesClient.fetch(url, authentication);
     JSONObject response = new JSONObject(new JSONTokener(inputStream));
     return fromJsonObject(response);
   }

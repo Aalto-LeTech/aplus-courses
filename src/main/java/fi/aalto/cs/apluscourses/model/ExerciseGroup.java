@@ -78,7 +78,7 @@ public class ExerciseGroup {
       @NotNull Course course, @NotNull APlusAuthentication authentication) throws IOException {
     URL url = new URL(PluginSettings.A_PLUS_API_BASE_URL + "/courses/" + course.getId()
         + "/exercises/");
-    InputStream inputStream = CoursesClient.fetch(url, authentication::addToRequest);
+    InputStream inputStream = CoursesClient.fetch(url, authentication);
     JSONObject response = new JSONObject(new JSONTokener(inputStream));
     JSONArray results = response.getJSONArray("results");
     return fromJsonArray(results);

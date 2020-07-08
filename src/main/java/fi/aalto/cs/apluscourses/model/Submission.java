@@ -1,6 +1,12 @@
 package fi.aalto.cs.apluscourses.model;
 
+import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
+import fi.aalto.cs.apluscourses.utils.CoursesClient;
+import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 
 public class Submission {
@@ -12,7 +18,7 @@ public class Submission {
   private final Group group;
 
   /**
-   * Constructs a new instance.
+   * Constructs a new object instance.
    *
    * @param exercise Exercise.
    * @param filePaths Array of paths.
@@ -29,7 +35,13 @@ public class Submission {
     this.group = group;
   }
 
-  public void submit() {
-
+  public void submit() throws IOException {
+    Map<String, Object> data = new HashMap<>();
+    data.put("_aplus_group", group.getId());
+    for (Path path : filePaths) {
+      data.put(path.getFileName().toString(), path.toFile());
+    }
+    CoursesClient.post(new URL(PluginSettings.A_PLUS_API_BASE_URL + "/exercises/" + exercise.getId()
+        + "/submissions/submit/"), authentication, data);
   }
 }
