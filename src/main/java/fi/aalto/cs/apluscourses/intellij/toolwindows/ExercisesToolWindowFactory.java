@@ -19,7 +19,8 @@ public class ExercisesToolWindowFactory extends BaseToolWindowFactory {
     ExercisesView exercisesView = new ExercisesView();
 
     MainViewModel mainViewModel = PluginSettings.getInstance().getMainViewModel(project);
-    mainViewModel.exercisesViewModel.addValueObserver(exercisesView, ExercisesView::viewModelChanged);
+    mainViewModel.exercisesViewModel
+        .addValueObserver(exercisesView, ExercisesView::viewModelChanged);
 
     ActionManager actionManager = ActionManager.getInstance();
     ActionGroup group = (ActionGroup) actionManager.getAction(ActionGroups.EXERCISE_ACTIONS);

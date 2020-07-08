@@ -36,7 +36,7 @@ public class GetSubmissionsDashboardAction extends DumbAwareAction {
   }
 
   public GetSubmissionsDashboardAction(@NotNull MainViewModelProvider mainViewModelProvider,
-                                       @NotNull Notifier notifier) {
+      @NotNull Notifier notifier) {
     this.mainViewModelProvider = mainViewModelProvider;
     this.notifier = notifier;
   }
@@ -56,12 +56,20 @@ public class GetSubmissionsDashboardAction extends DumbAwareAction {
     }
   }
 
+  /**
+   * A wrapper method for a method that pulls the A+ API for course exercises' results.
+   *
+   * @param courseId       an id of the course results data to pull
+   * @param authentication an {@link APlusAuthentication} object to use with API.
+   * @param project        a current {@link Project} to notify to
+   * @return a fully-inflated {@link SubmissionsDashboard} or null if the API call was unsuccessful.
+   */
   @Nullable
-  public SubmissionsDashboard tryGetSubmissionsDashboard(long id,
-                                                         @NotNull APlusAuthentication authentication,
-                                                         @NotNull Project project) {
+  public SubmissionsDashboard tryGetSubmissionsDashboard(long courseId,
+      @NotNull APlusAuthentication authentication,
+      @NotNull Project project) {
     try {
-      return SubmissionsDashboard.getSubmissionsDashboard(id, authentication);
+      return SubmissionsDashboard.getSubmissionsDashboard(courseId, authentication);
     } catch (IOException e) {
       notifyNetworkError(e, project);
       return null;

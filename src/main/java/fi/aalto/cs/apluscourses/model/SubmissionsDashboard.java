@@ -23,22 +23,22 @@ public class SubmissionsDashboard {
    * Hi there! It turned out, that there is a way to get all the data on {@link Course} {@link
    * SubmissionResult}s is one call. Well, so here I am, the {@link SubmissionsDashboard} ;-) .
    *
-   * @param studentId an A+ student Id.
+   * @param studentId         an A+ student Id.
    * @param submissionResults a {@link List} with {@link SubmissionResult}s having the data.
-   * @param totalPoints an amount of points achieved so far for the whole course.
+   * @param totalPoints       an amount of points achieved so far for the whole course.
    */
   public SubmissionsDashboard(long studentId,
-                              List<SubmissionResult> submissionResults,
-                              int totalPoints) {
+      List<SubmissionResult> submissionResults,
+      int totalPoints) {
     this.studentId = studentId;
     this.submissionResults = submissionResults;
     this.totalPoints = totalPoints;
   }
 
   /**
-   * Constructs a {@link SubmissionsDashboard} from the given JSON object. The object must contain an long value for the
-   * key "id", integer value for the key "points" and an array value for the key "modules"
-   * (containing another array for the key "exercises" in its turn).
+   * Constructs a {@link SubmissionsDashboard} from the given JSON object. The object must contain
+   * an long value for the key "id", integer value for the key "points" and an array value for the
+   * key "modules" (containing another array for the key "exercises" in its turn).
    *
    * @param jsonObject The JSON object from which the dashboard is constructed.
    * @return a SubmissionsDashboard instance.
@@ -66,12 +66,14 @@ public class SubmissionsDashboard {
   /**
    * Get the all the submissions for the given course by current user from the A+ API.
    *
+   * @param courseId       an id of the course results data to pull
+   * @param authentication an {@link APlusAuthentication} object to use with API.
    * @throws IOException If an IO error occurs (e.g. network error).
    */
   @NotNull
   public static SubmissionsDashboard getSubmissionsDashboard(long courseId,
       @NotNull APlusAuthentication authentication) throws IOException {
-    URL url = getSubmissionsDashboardAPIURL(courseId);
+    URL url = getSubmissionsDashboardApiUrl(courseId);
     InputStream inputStream = CoursesClient.fetch(url, authentication::addToRequest);
     JSONObject response = new JSONObject(new JSONTokener(inputStream));
     return fromJsonObject(response);
@@ -84,7 +86,7 @@ public class SubmissionsDashboard {
    * @return a {@link URL} representation of the endpoint location.
    * @throws MalformedURLException an exception thrown in case of something went wrong.
    */
-  public static URL getSubmissionsDashboardAPIURL(long courseId) throws MalformedURLException {
+  public static URL getSubmissionsDashboardApiUrl(long courseId) throws MalformedURLException {
     return new URL(PluginSettings.A_PLUS_API_BASE_URL + "/courses/" + courseId + "/points/me/");
   }
 

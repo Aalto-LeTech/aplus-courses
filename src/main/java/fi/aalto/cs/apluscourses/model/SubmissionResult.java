@@ -21,12 +21,12 @@ public class SubmissionResult {
   /**
    * A result of a single submission.
    *
-   * @param exerciseId an id of the exercise.
-   * @param submissionIds an {@link List} of submission ids.
+   * @param exerciseId       an id of the exercise.
+   * @param submissionIds    an {@link List} of submission ids.
    * @param submissionsCount an amount of submissions made.
-   * @param pointsToPass a required amount of points to pass the exercise.
-   * @param maxPoints a possible maximum amount of points for the exercise.
-   * @param totalPoints a total amount of points achieved for the exercise.
+   * @param pointsToPass     a required amount of points to pass the exercise.
+   * @param maxPoints        a possible maximum amount of points for the exercise.
+   * @param points           a total amount of points achieved for the exercise.
    */
   public SubmissionResult(int exerciseId, List<Integer> submissionIds, int submissionsCount,
       int pointsToPass, int maxPoints, int points) {
@@ -39,9 +39,9 @@ public class SubmissionResult {
   }
 
   /**
-   * Constructs {@link SubmissionResult} from the given JSON object. The object must contain an long value for the
-   * key "id", integer value for the key "points" and an array value for the key "modules"
-   * (containing another array for the key "exercises" in its turn).
+   * Constructs {@link SubmissionResult} from the given JSON object. The object must contain an long
+   * value for the key "id", integer value for the key "points" and an array value for the key
+   * "modules" (containing another array for the key "exercises" in its turn).
    *
    * @param jsonObject The JSON object from which the dashboard is constructed.
    * @return a SubmissionsDashboard instance.
@@ -49,7 +49,8 @@ public class SubmissionResult {
   @NotNull
   public static SubmissionResult fromJsonObject(@NotNull JSONObject jsonObject) {
     int exerciseId = jsonObject.getInt("id");
-    List<Integer> submissionIds = getSubmissionIdsFromJsonArray(jsonObject.getJSONArray("submissions"));
+    List<Integer> submissionIds = getSubmissionIdsFromJsonArray(
+        jsonObject.getJSONArray("submissions"));
     int submissionsCount = jsonObject.getInt("submission_count");
     int pointsToPass = jsonObject.getInt("points_to_pass");
     int points = jsonObject.getInt("points");
@@ -60,7 +61,7 @@ public class SubmissionResult {
   }
 
   /**
-   * Extract the list of submission ids from the {@link JSONArray} provided
+   * Extract the list of submission ids from the {@link JSONArray} provided.
    *
    * @param jsonArray a {@link JSONArray} to extract data from
    * @return a {@link List} of integers representing submission ids

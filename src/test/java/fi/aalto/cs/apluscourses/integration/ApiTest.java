@@ -18,15 +18,13 @@ public class ApiTest {
 
   @Test
   public void getSubmissionsResultsReturns() throws MalformedURLException {
-    final int COURSE_ID = 163;
-
     given()
         .auth()
         .preemptive()
         .basic("root", "root")
         .when()
         .contentType(ContentType.JSON)
-        .get(SubmissionsDashboard.getSubmissionsDashboardAPIURL(COURSE_ID).toString())
+        .get(SubmissionsDashboard.getSubmissionsDashboardApiUrl(163).toString())
         .then()
         .assertThat()
         .statusCode(HttpStatus.SC_OK)

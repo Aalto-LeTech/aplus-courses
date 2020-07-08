@@ -39,8 +39,9 @@ public class CourseFileManager {
    * Attempts to create a course file and load it for the given project with the given URL. If a
    * course file for already exists (even with a different URL), this method loads the existing
    * course file.
-   * @param project      The project for which the course file is created.
-   * @param courseUrl    The URL that gets added to the course file (if it doesn't exist yet).
+   *
+   * @param project   The project for which the course file is created.
+   * @param courseUrl The URL that gets added to the course file (if it doesn't exist yet).
    * @throws IOException If an IO error occurs.
    */
   public synchronized void createAndLoad(@NotNull Project project, @NotNull URL courseUrl)
@@ -59,6 +60,7 @@ public class CourseFileManager {
   /**
    * Attempts to load the course file corresponding to the given project. Returns {@code false} if
    * the course file doesn't exist, {@code true} otherwise.
+   *
    * @param project The project from which the course file is loaded.
    * @return {@code true} if the course file was successfully loaded, {@code false} if the course
    *         file doesn't exist.
@@ -81,6 +83,7 @@ public class CourseFileManager {
   /**
    * Adds an entry for the given module to the currently loaded course file. If an entry already
    * exists for the given module, then it is overwritten with the new entry.
+   *
    * @param module The module for which an entry is added.
    * @throws IOException If an IO error occurs while writing to the course file.
    */
@@ -138,17 +141,11 @@ public class CourseFileManager {
    * Returns the course file corresponding to the given project.
    */
   private File getCourseFile(@NotNull Project project) {
-    File file = Paths
+    return Paths
         .get(Objects.requireNonNull(project.getBasePath()),
             Project.DIRECTORY_STORE_FOLDER,
             COURSE_FILE_NAME)
         .toFile();
-
-    return file;
-  }
-
-  public boolean courseFileExists(@NotNull Project project){
-    return getCourseFile(project).exists();
   }
 
   /*
