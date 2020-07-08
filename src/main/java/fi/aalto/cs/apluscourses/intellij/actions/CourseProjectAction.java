@@ -150,6 +150,7 @@ public class CourseProjectAction extends AnAction {
       // The course file not created in testing.
       PluginSettings.getInstance().createUpdatingMainViewModel(project);
     }
+    PluginSettings.getInstance().setIsAPlusProjectSetting(project, true);
   }
 
   @Override

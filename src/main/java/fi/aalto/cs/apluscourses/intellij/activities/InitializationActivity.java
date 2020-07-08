@@ -43,7 +43,7 @@ public class InitializationActivity implements Background {
 
   @Override
   public void runActivity(@NotNull Project project) {
-    PluginSettings.getInstance().initializeLocalSettings();
+    PluginSettings.getInstance().initializeLocalIdeSettings();
 
     URL courseConfigurationFileUrl = getCourseUrlFromProject(project);
     if (courseConfigurationFileUrl == null) {
@@ -65,15 +65,11 @@ public class InitializationActivity implements Background {
     ActionUtil.launch(RequiredPluginsCheckerAction.ACTION_ID,
         new ExtendedDataContext().withProject(project));
 
-    if (isAPlusProject(project)) {
+    if (PluginSettings.getInstance().isAPlusProjectSetting(project)) {
       new ScheduledTaskExecutor(() -> ActionUtil.launch(GetSubmissionsDashboardAction.ACTION_ID,
           new ExtendedDataContext().withProject(project)),
           0, PluginSettings.REASONABLE_DELAY_FOR_SUBMISSION_RESULTS_UPDATE, TimeUnit.SECONDS);
     }
-  }
-
-  public static boolean isAPlusProject(@NotNull Project project) {
-    return CourseFileManager.getInstance().courseFileExists(project);
   }
 
   @Nullable
