@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -15,49 +16,31 @@ import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.model.APlusAuthentication;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.SubmissionsDashboard;
-import fi.aalto.cs.apluscourses.presentation.APlusAuthenticationViewModel;
-import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
-import fi.aalto.cs.apluscourses.presentation.MainViewModel;
-import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import org.junit.Test;
 
 public class GetSubmissionsDashboardActionTest extends BasePlatformTestCase {
 
   @Test
-  public void testActionPerformed() {
+  public void testActionPerformedWithValidDataWorks() {
+    //  given
     Project project = getProject();
     AnActionEvent anActionEvent = mock(AnActionEvent.class);
     doReturn(project).when(anActionEvent).getProject();
 
-    MainViewModelProvider mockMainViewModelProvider = mock(MainViewModelProvider.class);
-    MainViewModel mockMainViewModel = mock(MainViewModel.class);
-    @SuppressWarnings("unchecked")
-    ObservableProperty<APlusAuthenticationViewModel> mockAuthenticationViewModelObservableProperty =
-        (ObservableProperty<APlusAuthenticationViewModel>) mock(ObservableProperty.class);
-    APlusAuthenticationViewModel mockAuthenticationViewModel =
-        mock(APlusAuthenticationViewModel.class);
+    MainViewModelProvider mockMainViewModelProvider = mock(MainViewModelProvider.class,
+        RETURNS_DEEP_STUBS);
+    //  auth
     APlusAuthentication mockAuthentication = mock(APlusAuthentication.class);
+    when(mockMainViewModelProvider.getMainViewModel(project).getAuthenticationViewModel().get()
+        .getAuthentication()).thenReturn(mockAuthentication);
 
-    @SuppressWarnings("unchecked")
-    ObservableProperty<CourseViewModel> mockCourseViewModelObservableProperty =
-        (ObservableProperty<CourseViewModel>) mock(ObservableProperty.class);
-    CourseViewModel mockCourseViewModel = mock(CourseViewModel.class);
+    //  course
     Course mockCourse = mock(Course.class);
-
-    when(mockMainViewModelProvider.getMainViewModel(project)).thenReturn(mockMainViewModel);
-    when(mockMainViewModel.getAuthenticationViewModel())
-        .thenReturn(mockAuthenticationViewModelObservableProperty);
-    when(mockAuthenticationViewModelObservableProperty.get())
-        .thenReturn(mockAuthenticationViewModel);
-    when(mockAuthenticationViewModel.getAuthentication()).thenReturn(mockAuthentication);
-
-    when(mockMainViewModel.getCourseViewModel())
-        .thenReturn(mockCourseViewModelObservableProperty);
-    when(mockCourseViewModelObservableProperty.get())
-        .thenReturn(mockCourseViewModel);
-    when(mockCourseViewModel.getModel()).thenReturn(mockCourse);
+    when(mockMainViewModelProvider.getMainViewModel(project).getCourseViewModel().get().getModel())
+        .thenReturn(mockCourse);
     when(mockCourse.getId()).thenReturn("1");
 
+    //  submissions
     GetSubmissionsDashboardAction getSubmissionsDashboardAction = new GetSubmissionsDashboardAction(
         mockMainViewModelProvider, Notifications.Bus::notify);
     GetSubmissionsDashboardAction spyGetSubmissionsDashboardAction = spy(
@@ -67,14 +50,58 @@ public class GetSubmissionsDashboardActionTest extends BasePlatformTestCase {
     doReturn(mockSubmissionsDashboard).when(spyGetSubmissionsDashboardAction)
         .tryGetSubmissionsDashboard(1L, mockAuthentication, project);
 
+    //  when
     spyGetSubmissionsDashboardAction.actionPerformed(anActionEvent);
 
+    //  then
     verify(spyGetSubmissionsDashboardAction, times(1))
         .tryGetSubmissionsDashboard(1L, mockAuthentication, project);
-    verify(mockCourse, times(1)).setSubmissionsDashboard(mockSubmissionsDashboard);
+    verify(mockCourse, times(1))
+        .setSubmissionsDashboard(mockSubmissionsDashboard);
+  }
+
+  @Test
+  public void testActionPerformedWithInValidDataFails() {
+    //  given
+    Project project = getProject();
+    AnActionEvent anActionEvent = mock(AnActionEvent.class);
+    doReturn(project).when(anActionEvent).getProject();
+
+    MainViewModelProvider mockMainViewModelProvider = mock(MainViewModelProvider.class,
+        RETURNS_DEEP_STUBS);
+    //  auth
+    APlusAuthentication mockAuthentication = null;
+    when(mockMainViewModelProvider.getMainViewModel(project).getAuthenticationViewModel().get()
+        .getAuthentication()).thenReturn(mockAuthentication);
+
+    //  course
+    Course mockCourse = mock(Course.class);
+    when(mockMainViewModelProvider.getMainViewModel(project).getCourseViewModel().get().getModel())
+        .thenReturn(mockCourse);
+    when(mockCourse.getId()).thenReturn("1");
+
+    //  submissions
+    GetSubmissionsDashboardAction getSubmissionsDashboardAction = new GetSubmissionsDashboardAction(
+        mockMainViewModelProvider, Notifications.Bus::notify);
+    GetSubmissionsDashboardAction spyGetSubmissionsDashboardAction = spy(
+        getSubmissionsDashboardAction);
+
+    SubmissionsDashboard mockSubmissionsDashboard = mock(SubmissionsDashboard.class);
+    doReturn(mockSubmissionsDashboard).when(spyGetSubmissionsDashboardAction)
+        .tryGetSubmissionsDashboard(1L, mockAuthentication, project);
+
+    //  when
+    spyGetSubmissionsDashboardAction.actionPerformed(anActionEvent);
+
+    //  then
+    verify(spyGetSubmissionsDashboardAction, times(0))
+        .tryGetSubmissionsDashboard(1L, mockAuthentication, project);
+    verify(mockCourse, times(0))
+        .setSubmissionsDashboard(mockSubmissionsDashboard);
   }
 
   @Test
   public void testTryGetSubmissionsDashboard() {
+
   }
 }
