@@ -134,7 +134,7 @@ public class SubmitExerciseAction extends AnAction {
       }
 
       SubmissionViewModel viewModel = new SubmissionViewModel(exercise, submissionHistory, groups,
-          authentication, selectedModule, filePaths, ioException);
+          authentication, filePaths, ioException);
 
       if (!new SubmissionDialog(viewModel, project).showAndGet()) {
         return;

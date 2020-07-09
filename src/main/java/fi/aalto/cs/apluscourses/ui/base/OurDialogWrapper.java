@@ -15,6 +15,11 @@ public abstract class OurDialogWrapper extends DialogWrapper {
     super(project);
   }
 
+  /**
+   * Registers a validation item that will be checked when the dialog is validated.
+   *
+   * @param validationItem A validation item to be registered.
+   */
   public void registerValidationItem(ValidationItem validationItem) {
     synchronized (validationItems) {
       validationItems.add(validationItem);

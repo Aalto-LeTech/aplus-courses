@@ -10,18 +10,20 @@ public class SubmittableExerciseTest {
 
   @Test
   public void testSubmittableExercise() {
+    SubmittableFile file1 = new SubmittableFile("file1");
+    SubmittableFile file2 = new SubmittableFile("file2");
     SubmittableExercise exercise = new SubmittableExercise(123, "yay", 10,
-        Arrays.asList(new SubmittableFile("file1"), new SubmittableFile("file2")));
+        Arrays.asList(file1, file2));
     Assert.assertEquals("The ID is the same as the one given to the constructor",
         123, exercise.getId());
     Assert.assertEquals("The name is the same as the one given to the constructor",
         "yay", exercise.getName());
     Assert.assertEquals("The submissions limit is the same as the one given to the constructor",
         10, exercise.getSubmissionsLimit());
-    Assert.assertEquals("The filenames are the same as those given to the constructor",
-        "file1", exercise.getFiles().get(0));
-    Assert.assertEquals("The filenames are the same as those given to the constructor",
-        "file2", exercise.getFiles().get(1));
+    Assert.assertSame("The files are the same as those given to the constructor",
+        file1, exercise.getFiles().get(0));
+    Assert.assertSame("The files are the same as those given to the constructor",
+        file2, exercise.getFiles().get(1));
   }
 
   @Test
@@ -56,7 +58,7 @@ public class SubmittableExerciseTest {
     Assert.assertEquals("The submissions limit is the same as that in the JSON",
         13, exercise.getSubmissionsLimit());
     Assert.assertEquals("The filenames are parsed from the JSON",
-        "coolFilename.scala", exercise.getFiles().get(0));
+        "coolFilename.scala", exercise.getFiles().get(0).getName());
   }
 
 }

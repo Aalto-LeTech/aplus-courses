@@ -15,6 +15,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class SubmissionViewModel {
 
@@ -25,8 +26,6 @@ public class SubmissionViewModel {
   private final List<Group> availableGroups;
 
   private final APlusAuthentication authentication;
-
-  private final Module selectedModule;
 
   private final Path[] filePaths;
 
@@ -41,13 +40,12 @@ public class SubmissionViewModel {
                              @NotNull SubmissionHistory submissionHistory,
                              @NotNull List<Group> availableGroups,
                              @NotNull APlusAuthentication authentication,
-                             @NotNull Module selectedModule,
-                             @NotNull Path[] filePaths, IOException ioException) {
+                             @NotNull Path[] filePaths,
+                             @Nullable IOException ioException) {
     this.exercise = exercise;
     this.submissionHistory = submissionHistory;
     this.availableGroups = availableGroups;
     this.authentication = authentication;
-    this.selectedModule = selectedModule;
     this.filePaths = filePaths;
     this.ioException = ioException;
 
@@ -88,14 +86,12 @@ public class SubmissionViewModel {
   }
 
   public String validateSubmissionCount() {
-    return getNumberOfSubmissions() >= getMaxNumberOfSubmissions() ?
-        "Max. number of submissions exceeded" : null;
+    return getNumberOfSubmissions() >= getMaxNumberOfSubmissions()
+        ? "Max. number of submissions exceeded" : null;
   }
 
+  @NotNull
   public String getIoExceptionText() {
-    if (ioException == null) {
-      return "";
-    }
-    return "Upload failed: " + ioException.getLocalizedMessage();
+    return ioException == null ? "" : "Upload failed: " + ioException.getLocalizedMessage();
   }
 }

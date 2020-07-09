@@ -6,6 +6,7 @@ import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionViewModel;
 import fi.aalto.cs.apluscourses.ui.GuiObject;
 import fi.aalto.cs.apluscourses.ui.base.OurComboBox;
 import fi.aalto.cs.apluscourses.ui.base.OurDialogWrapper;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.Action;
 import javax.swing.JComponent;
@@ -21,18 +22,16 @@ public class SubmissionDialog extends OurDialogWrapper {
 
   private JPanel basePanel;
 
-  @GuiObject
-  private JLabel exerciseName;
+  protected JLabel exerciseName;
 
-  private OurComboBox<Group> groupComboBox;
+  protected OurComboBox<Group> groupComboBox;
 
-  @GuiObject
-  private JLabel submissionCount;
+  protected JLabel submissionCount;
 
   @GuiObject
   private JLabel filenames;
 
-  private JLabel IoException;
+  private JLabel ioException;
 
   /**
    * Construct a submission dialog with the given view model.
@@ -48,7 +47,7 @@ public class SubmissionDialog extends OurDialogWrapper {
     groupComboBox.selectedItemBindable.bindToSource(viewModel.selectedGroup);
     registerValidationItem(groupComboBox.selectedItemBindable);
     registerValidationItem(viewModel::validateSubmissionCount);
-    IoException.setText(viewModel.getIoExceptionText());
+    ioException.setText(viewModel.getIoExceptionText());
 
     init();
   }
@@ -70,7 +69,8 @@ public class SubmissionDialog extends OurDialogWrapper {
     exerciseName = new JLabel("<html><body><h2>" + viewModel.getPresentableExerciseName()
         + "</h2></body></html>");
 
-    List<Group> availableGroups = viewModel.getAvailableGroups();
+    // We make a copy of the list as we are modifying it
+    List<Group> availableGroups = new ArrayList<>(viewModel.getAvailableGroups());
     groupComboBox = new OurComboBox<>(availableGroups.stream().toArray(Group[]::new), Group.class);
     groupComboBox.setRenderer(new GroupRenderer());
 

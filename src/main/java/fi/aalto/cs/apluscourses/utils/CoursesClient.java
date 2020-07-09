@@ -154,6 +154,15 @@ public class CoursesClient {
     consumeResponseBody(request, consumer);
   }
 
+  /**
+   * Sends a POST request to the given URL.
+   *
+   * @param url            A URL.
+   * @param authentication The method of authentication.
+   * @param data           Map of request data.  Values can be strings, numbers or files.
+   *
+   * @throws IOException In case of I/O related errors or non-successful response.
+   */
   public static void post(@NotNull URL url,
                           @Nullable Authentication authentication,
                           @Nullable Map<String, Object> data) throws IOException {
