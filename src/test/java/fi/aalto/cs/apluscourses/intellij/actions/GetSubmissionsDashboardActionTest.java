@@ -29,6 +29,7 @@ public class GetSubmissionsDashboardActionTest extends BasePlatformTestCase {
 
     MainViewModelProvider mockMainViewModelProvider = mock(MainViewModelProvider.class,
         RETURNS_DEEP_STUBS);
+
     //  auth
     APlusAuthentication mockAuthentication = mock(APlusAuthentication.class);
     when(mockMainViewModelProvider.getMainViewModel(project).getAuthenticationViewModel().get()
