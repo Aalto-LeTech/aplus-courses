@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # preparing and compiling the A+ env components (https://apluslms.github.io/guides/quick/)
+git clone https://github.com/apluslms/a-plus.git &&
 git clone https://github.com/Aalto-LeTech/course-templates.git my_new_course &&
 cd my_new_course &&
 git submodule init &&
