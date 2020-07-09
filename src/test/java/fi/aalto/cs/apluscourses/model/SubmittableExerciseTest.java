@@ -19,9 +19,9 @@ public class SubmittableExerciseTest {
     Assert.assertEquals("The submissions limit is the same as the one given to the constructor",
         10, exercise.getSubmissionsLimit());
     Assert.assertEquals("The filenames are the same as those given to the constructor",
-        "file1", exercise.getFiles().get(0));
+        "file1", exercise.getFiles().get(0).getName());
     Assert.assertEquals("The filenames are the same as those given to the constructor",
-        "file2", exercise.getFiles().get(1));
+        "file2", exercise.getFiles().get(1).getName());
   }
 
   @Test
@@ -56,7 +56,7 @@ public class SubmittableExerciseTest {
     Assert.assertEquals("The submissions limit is the same as that in the JSON",
         13, exercise.getSubmissionsLimit());
     Assert.assertEquals("The filenames are parsed from the JSON",
-        "coolFilename.scala", exercise.getFiles().get(0));
+        "coolFilename.scala", exercise.getFiles().get(0).getName());
   }
 
 }

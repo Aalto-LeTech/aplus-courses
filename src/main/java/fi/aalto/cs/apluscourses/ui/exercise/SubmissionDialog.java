@@ -32,7 +32,7 @@ public class SubmissionDialog extends OurDialogWrapper {
   @GuiObject
   private JLabel filenames;
 
-  private JLabel IoException;
+  private JLabel ioException;
 
   /**
    * Construct a submission dialog with the given view model.
@@ -48,7 +48,7 @@ public class SubmissionDialog extends OurDialogWrapper {
     groupComboBox.selectedItemBindable.bindToSource(viewModel.selectedGroup);
     registerValidationItem(groupComboBox.selectedItemBindable);
     registerValidationItem(viewModel::validateSubmissionCount);
-    IoException.setText(viewModel.getIoExceptionText());
+    ioException.setText(viewModel.getIoExceptionText());
 
     init();
   }

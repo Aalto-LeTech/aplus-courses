@@ -49,7 +49,7 @@ public class GetSubmissionsDashboardAction extends DumbAwareAction {
 
     APlusAuthenticationViewModel authenticationViewModel =
         mainViewModel.getAuthenticationViewModel().get();
-    if (authenticationViewModel == null){
+    if (authenticationViewModel == null) {
       return;
     }
 
@@ -67,9 +67,9 @@ public class GetSubmissionsDashboardAction extends DumbAwareAction {
   /**
    * A wrapper method for a method that pulls the A+ API for course exercises' results.
    *
-   * @param courseId       an id of the course results data to pull
+   * @param courseId       an id of the course results data to pull.
    * @param authentication an {@link APlusAuthentication} object to use with API.
-   * @param project        a current {@link Project} to notify to
+   * @param project        a current {@link Project} to notify to.
    * @return a fully-inflated {@link SubmissionsDashboard} or null if the API call was unsuccessful.
    */
   @Nullable

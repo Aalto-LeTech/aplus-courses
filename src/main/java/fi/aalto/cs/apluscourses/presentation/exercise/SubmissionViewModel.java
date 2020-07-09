@@ -88,8 +88,8 @@ public class SubmissionViewModel {
   }
 
   public String validateSubmissionCount() {
-    return getNumberOfSubmissions() >= getMaxNumberOfSubmissions() ?
-        "Max. number of submissions exceeded" : null;
+    return getNumberOfSubmissions() >= getMaxNumberOfSubmissions()
+        ? "Max. number of submissions exceeded" : null;
   }
 
   public String getIoExceptionText() {
