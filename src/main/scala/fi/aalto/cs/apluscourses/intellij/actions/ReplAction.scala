@@ -1,16 +1,23 @@
 package fi.aalto.cs.apluscourses.intellij.actions
 
-import com.intellij.execution.RunManagerEx
+import com.intellij.execution.configurations.{ConfigurationFactory, JavaCommandLineState, RunProfileState}
+import com.intellij.execution.filters.TextConsoleBuilderImpl
+import com.intellij.execution.impl.{RunManagerImpl, RunnerAndConfigurationSettingsImpl}
+import com.intellij.execution.runners.ExecutionEnvironment
+import com.intellij.execution.ui.{ConsoleView, ConsoleViewContentType}
+import com.intellij.execution.{Executor, RunManagerEx}
 import com.intellij.openapi.actionSystem.{AnActionEvent, CommonDataKeys, DataContext}
 import com.intellij.openapi.module.{Module, ModuleManager}
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ModuleRootManager
 import com.intellij.openapi.util.io.FileUtilRt.toSystemIndependentName
+import fi.aalto.cs.apluscourses.intellij.MyScalaLanguageConsole
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings
 import fi.aalto.cs.apluscourses.intellij.utils.ModuleUtils
 import fi.aalto.cs.apluscourses.presentation.ReplConfigurationFormModel
 import fi.aalto.cs.apluscourses.ui.repl.{ReplConfigurationDialog, ReplConfigurationForm}
 import org.jetbrains.annotations.NotNull
+import org.jetbrains.plugins.scala.console.ScalaConsoleInfo
 import org.jetbrains.plugins.scala.console.actions.RunConsoleAction
 import org.jetbrains.plugins.scala.console.configuration.ScalaConsoleRunConfiguration
 
@@ -21,9 +28,12 @@ import scala.collection.JavaConverters._
  */
 class ReplAction extends RunConsoleAction {
 
+
   override def actionPerformed(@NotNull e: AnActionEvent): Unit = {
     val dataContext = e.getDataContext
     val project = CommonDataKeys.PROJECT.getData(dataContext)
+    val console = ScalaConsoleInfo.getConsole(project)
+
     if (project == null) return // scalastyle:ignore
 
     val runManagerEx = RunManagerEx.getInstanceEx(project)
@@ -52,6 +62,7 @@ class ReplAction extends RunConsoleAction {
         .getOrElse("Scala REPL")
       runManagerEx.createConfiguration(configurationName, factory)
     }
+
     val configuration = setting.getConfiguration.asInstanceOf[ScalaConsoleRunConfiguration]
 
     selectedModule match {
@@ -63,6 +74,47 @@ class ReplAction extends RunConsoleAction {
         // For now, no dialog is shown for a project level REPL
         configuration.setName("Scala REPL")
         RunConsoleAction.runExisting(setting, runManagerEx, project)
+    }
+  }
+
+  class MySetting(manager:RunManagerImpl, project: Project, factory: ConfigurationFactory, name: String)
+    extends RunnerAndConfigurationSettingsImpl(manager) {
+    val configuration = new MyConfiguration(project, factory, name)
+  }
+
+  class MyConfiguration(project: Project,
+                        configurationFactory: ConfigurationFactory,
+                        name: String
+                       ) extends ScalaConsoleRunConfiguration(
+    project: Project,
+    configurationFactory: ConfigurationFactory,
+    name: String
+  ) {
+
+    private def getModule: Option[Module] = Option(getConfigurationModule.getModule)
+
+    override def getState(executor: Executor, env: ExecutionEnvironment): RunProfileState = {
+      val state = super.getState(executor, env).asInstanceOf[JavaCommandLineState]
+
+      getModule match {
+        case Some(module) =>
+          state.setConsoleBuilder(new MyBuilder(module))
+        case None =>
+      }
+      state
+    }
+  }
+
+  class MyBuilder(module: Module) extends TextConsoleBuilderImpl(module.getProject) {
+    override def createConsole(): ConsoleView = {
+      val consoleView = new MyScalaLanguageConsole(module)
+      ScalaConsoleInfo.setIsConsole(consoleView.getFile, flag = true)
+
+      //pretend that we are a prompt from Scala REPL process
+      consoleView.setPrompt("ScalaPromptIdleText")
+      consoleView.setPromptAttributes(ConsoleViewContentType.NORMAL_OUTPUT)
+
+      consoleView
     }
   }
 
