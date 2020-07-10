@@ -22,11 +22,11 @@ public class ApiTest {
         .basic("root", "root")
         .when()
         .contentType(ContentType.JSON)
-        .get("http://localhost:8000/api/v2/courses/1/groups/2/")
+        .get("http://localhost:8000/api/v2/courses/100/groups/200/")
         .then()
         .assertThat()
         .statusCode(HttpStatus.SC_OK)
-        .body("members.id", hasItems(503, 504))
-        .body("members.username", hasItems("student5", "student6"));
+        .body("members.id", hasItems(500, 501))
+        .body("members.username", hasItems("percash0", "zoralst1"));
   }
 }
