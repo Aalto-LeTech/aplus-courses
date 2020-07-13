@@ -1,6 +1,6 @@
 package fi.aalto.cs.apluscourses.intellij.actions
 
-import com.intellij.execution.configurations.{ConfigurationFactory, JavaCommandLineState, RunProfileState}
+import com.intellij.execution.configurations.{ConfigurationFactory, JavaCommandLineState, RunConfiguration, RunProfileState}
 import com.intellij.execution.filters.TextConsoleBuilderImpl
 import com.intellij.execution.impl.{RunManagerImpl, RunnerAndConfigurationSettingsImpl}
 import com.intellij.execution.runners.ExecutionEnvironment
@@ -38,7 +38,6 @@ class ReplAction extends RunConsoleAction {
 
     val runManagerEx = RunManagerEx.getInstanceEx(project)
     val configurationType = getMyConfigurationType
-    val settings = runManagerEx.getConfigurationSettingsList(configurationType).asScala
 
     /*
      * The "priority order" is as follows:
@@ -55,66 +54,46 @@ class ReplAction extends RunConsoleAction {
     val selectedModule = getScalaModuleOfEditorFile(project, dataContext)
       .orElse(getScalaModuleOfSelectedFile(project, dataContext))
 
-    val setting = settings.headOption.getOrElse {
-      val factory = configurationType.getConfigurationFactories.head
-      val configurationName = selectedModule
-        .map(module => s"REPL for ${module.getName}")
-        .getOrElse("Scala REPL")
-      runManagerEx.createConfiguration(configurationName, factory)
-    }
-
+    val setting = runManagerEx.createConfiguration("Scala REPL", new MyConfigurationFactory())
     val configuration = setting.getConfiguration.asInstanceOf[ScalaConsoleRunConfiguration]
 
     selectedModule match {
       case Some(module) =>
-        if (setConfigurationConditionally(project, module, configuration)) {
-          RunConsoleAction.runExisting(setting, runManagerEx, project)
+        if (!setConfigurationConditionally(project, module, configuration)) {
+          return
         }
-      case None =>
-        // For now, no dialog is shown for a project level REPL
-        configuration.setName("Scala REPL")
-        RunConsoleAction.runExisting(setting, runManagerEx, project)
+      case None => // For now, no dialog is shown for a project level REPL
     }
+    RunConsoleAction.runExisting(setting, runManagerEx, project)
   }
 
-  class MySetting(manager:RunManagerImpl, project: Project, factory: ConfigurationFactory, name: String)
-    extends RunnerAndConfigurationSettingsImpl(manager) {
-    val configuration = new MyConfiguration(project, factory, name)
-  }
+  private class MyConfigurationFactory() extends ConfigurationFactory(getMyConfigurationType) {
+    override def createTemplateConfiguration(project: Project): ScalaConsoleRunConfiguration = {
+      new MyConfiguration(project, this, "Scala REPL")
+    }
 
-  class MyConfiguration(project: Project,
-                        configurationFactory: ConfigurationFactory,
-                        name: String
-                       ) extends ScalaConsoleRunConfiguration(
-    project: Project,
-    configurationFactory: ConfigurationFactory,
-    name: String
-  ) {
+    private class MyConfiguration(project: Project,
+                                  configurationFactory: ConfigurationFactory,
+                                  name: String)
+      extends ScalaConsoleRunConfiguration(project, configurationFactory, name) {
 
-    private def getModule: Option[Module] = Option(getConfigurationModule.getModule)
+      private def getModule: Option[Module] = Option(getConfigurationModule.getModule)
 
-    override def getState(executor: Executor, env: ExecutionEnvironment): RunProfileState = {
-      val state = super.getState(executor, env).asInstanceOf[JavaCommandLineState]
+      override def getState(executor: Executor, env: ExecutionEnvironment): RunProfileState = {
+        val state = super.getState(executor, env).asInstanceOf[JavaCommandLineState]
 
-      getModule match {
-        case Some(module) =>
-          state.setConsoleBuilder(new MyBuilder(module))
-        case None =>
+        getModule match {
+          case Some(module) =>
+            state.setConsoleBuilder(new MyBuilder(module))
+          case None =>
+        }
+
+        state
       }
-      state
-    }
-  }
 
-  class MyBuilder(module: Module) extends TextConsoleBuilderImpl(module.getProject) {
-    override def createConsole(): ConsoleView = {
-      val consoleView = new MyScalaLanguageConsole(module)
-      ScalaConsoleInfo.setIsConsole(consoleView.getFile, flag = true)
-
-      //pretend that we are a prompt from Scala REPL process
-      consoleView.setPrompt("ScalaPromptIdleText")
-      consoleView.setPromptAttributes(ConsoleViewContentType.NORMAL_OUTPUT)
-
-      consoleView
+      private class MyBuilder(module: Module) extends TextConsoleBuilderImpl(module.getProject) {
+        override def createConsole(): ConsoleView = new MyScalaLanguageConsole(module)
+      }
     }
   }
 

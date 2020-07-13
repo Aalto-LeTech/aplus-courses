@@ -9,7 +9,7 @@ class MyScalaLanguageConsole(module: Module)
   override def print(text: String, contentType: ConsoleViewContentType): Unit = {
     var updatedText = text
     if (text.contains("Welcome")){
-      updatedText = "blaaaaah! "
+      updatedText = "blaaaaah! " + module.getName + "\n"
     }
 
     super.print(updatedText, contentType)
