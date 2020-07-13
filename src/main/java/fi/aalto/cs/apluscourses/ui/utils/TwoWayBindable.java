@@ -1,4 +1,4 @@
-package fi.aalto.cs.apluscourses.utils.bindable;
+package fi.aalto.cs.apluscourses.ui.utils;
 
 import java.util.function.BiConsumer;
 import java.util.function.Function;

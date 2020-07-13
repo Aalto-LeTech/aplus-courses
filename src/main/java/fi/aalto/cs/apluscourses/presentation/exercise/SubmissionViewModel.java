@@ -1,6 +1,5 @@
 package fi.aalto.cs.apluscourses.presentation.exercise;
 
-import com.intellij.openapi.module.Module;
 import fi.aalto.cs.apluscourses.model.APlusAuthentication;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.Submission;
@@ -10,6 +9,7 @@ import fi.aalto.cs.apluscourses.model.SubmittableFile;
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
+import fi.aalto.cs.apluscourses.utils.observable.ValidationError;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
@@ -29,7 +29,8 @@ public class SubmissionViewModel {
 
   private final Path[] filePaths;
 
-  public final ObservableProperty<Group> selectedGroup = new ObservableReadWriteProperty<>(null);
+  public final ObservableProperty<Group> selectedGroup =
+      new ObservableReadWriteProperty<>(null, SubmissionViewModel::validateGroupSelection);
 
   private final IOException ioException;
 
@@ -48,12 +49,10 @@ public class SubmissionViewModel {
     this.authentication = authentication;
     this.filePaths = filePaths;
     this.ioException = ioException;
-
-    selectedGroup.setValidator(SubmissionViewModel::validateGroupSelection);
   }
 
-  private static String validateGroupSelection(Group group) {
-    return group == null ? "Select a group" : null;
+  private static ValidationError validateGroupSelection(Group group) {
+    return group == null ? new GroupNotSelectedError() : null;
   }
 
   @NotNull
@@ -71,8 +70,8 @@ public class SubmissionViewModel {
     return exercise.getFiles();
   }
 
-  public int getNumberOfSubmissions() {
-    return submissionHistory.getNumberOfSubmissions();
+  public int getCurrentSubmissionNumber() {
+    return submissionHistory.getNumberOfSubmissions() + 1;
   }
 
   public int getMaxNumberOfSubmissions() {
@@ -85,13 +84,31 @@ public class SubmissionViewModel {
     return new Submission(exercise, filePaths, authentication, group);
   }
 
-  public String validateSubmissionCount() {
-    return getNumberOfSubmissions() >= getMaxNumberOfSubmissions()
-        ? "Max. number of submissions exceeded" : null;
+  public ValidationError validateSubmissionCount() {
+    return getCurrentSubmissionNumber() > getMaxNumberOfSubmissions()
+        ? new MaxNumberOfSubmissionsExceededError() : null;
   }
 
   @NotNull
   public String getIoExceptionText() {
     return ioException == null ? "" : "Upload failed: " + ioException.getLocalizedMessage();
+  }
+
+  public static class MaxNumberOfSubmissionsExceededError implements ValidationError {
+
+    @NotNull
+    @Override
+    public String getDescription() {
+      return "Max. number of submissions exceeded";
+    }
+  }
+
+  public static class GroupNotSelectedError implements ValidationError {
+
+    @NotNull
+    @Override
+    public String getDescription() {
+      return "Select a group";
+    }
   }
 }

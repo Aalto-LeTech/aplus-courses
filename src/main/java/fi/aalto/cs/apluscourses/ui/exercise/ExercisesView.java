@@ -1,12 +1,15 @@
 package fi.aalto.cs.apluscourses.ui.exercise;
 
+import fi.aalto.cs.apluscourses.intellij.actions.ActionUtil;
+import fi.aalto.cs.apluscourses.intellij.actions.SubmitExerciseAction;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
+import fi.aalto.cs.apluscourses.ui.base.TreeView;
 import javax.swing.JPanel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ExercisesView {
-  private ExercisesTreeView exerciseGroupsTree;
+  private TreeView exerciseGroupsTree;
   private JPanel basePanel;
 
   public ExercisesView() {
@@ -28,9 +31,9 @@ public class ExercisesView {
 
   @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
   private void createUIComponents() {
-    exerciseGroupsTree = new ExercisesTreeView();
+    exerciseGroupsTree = new TreeView();
     exerciseGroupsTree.setCellRenderer(new ExercisesTreeRenderer());
+    exerciseGroupsTree.addNodeAppliedListener(
+        ActionUtil.createOnEventLauncher(SubmitExerciseAction.ACTION_ID, exerciseGroupsTree));
   }
-
-
 }

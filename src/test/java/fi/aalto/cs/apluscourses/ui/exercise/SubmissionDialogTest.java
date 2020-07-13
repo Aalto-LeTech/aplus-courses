@@ -55,13 +55,13 @@ public class SubmissionDialogTest extends LightIdeaTestCase {
   private SubmissionViewModel createMockViewModel(@NotNull String exerciseName,
                                                   @NotNull List<Group> availableGroups,
                                                   @NotNull List<SubmittableFile> files,
-                                                  int numberOfSubmissions,
+                                                  int currentSubmissionNumber,
                                                   int maxNumberOfSubmissions) {
     SubmissionViewModel viewModel = mock(SubmissionViewModel.class);
     doReturn(exerciseName).when(viewModel).getPresentableExerciseName();
     doReturn(availableGroups).when(viewModel).getAvailableGroups();
     doReturn(files).when(viewModel).getFiles();
-    doReturn(numberOfSubmissions).when(viewModel).getNumberOfSubmissions();
+    doReturn(currentSubmissionNumber).when(viewModel).getCurrentSubmissionNumber();
     doReturn(maxNumberOfSubmissions).when(viewModel).getMaxNumberOfSubmissions();
     return viewModel;
   }
@@ -73,7 +73,7 @@ public class SubmissionDialogTest extends LightIdeaTestCase {
             "Cool Name",
             Arrays.asList(new Group(123, Arrays.asList("Jarkko", "Petteri"))),
             Arrays.asList(new SubmittableFile("file1"), new SubmittableFile("file2")),
-            3,
+            4,
             10
         )
     );

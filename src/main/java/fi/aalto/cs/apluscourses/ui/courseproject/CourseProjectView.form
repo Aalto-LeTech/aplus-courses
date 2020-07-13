@@ -8,7 +8,7 @@
     <properties/>
     <border type="none"/>
     <children>
-      <component id="e74ba" class="fi.aalto.cs.apluscourses.ui.TemplateLabel" binding="infoText">
+      <component id="e74ba" class="fi.aalto.cs.apluscourses.ui.base.TemplateLabel" binding="infoText">
         <constraints>
           <grid row="0" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
@@ -16,7 +16,7 @@
           <textTemplate value="&lt;html&gt;&lt;body&gt;The currently opened project will be turned into a project for &lt;b&gt;{0}&lt;/b&gt;.&lt;/body&gt;&lt;html&gt;"/>
         </properties>
       </component>
-      <component id="b88a6" class="fi.aalto.cs.apluscourses.ui.TemplateLabel" binding="currentSettingsText">
+      <component id="b88a6" class="fi.aalto.cs.apluscourses.ui.base.TemplateLabel" binding="currentSettingsText">
         <constraints>
           <grid row="4" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>

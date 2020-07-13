@@ -2,11 +2,11 @@ package fi.aalto.cs.apluscourses.ui.exercise;
 
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.model.Group;
+import fi.aalto.cs.apluscourses.model.SubmittableFile;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionViewModel;
 import fi.aalto.cs.apluscourses.ui.GuiObject;
 import fi.aalto.cs.apluscourses.ui.base.OurComboBox;
 import fi.aalto.cs.apluscourses.ui.base.OurDialogWrapper;
-import java.util.ArrayList;
 import java.util.List;
 import javax.swing.Action;
 import javax.swing.JComponent;
@@ -70,17 +70,18 @@ public class SubmissionDialog extends OurDialogWrapper {
         + "</h2></body></html>");
 
     // We make a copy of the list as we are modifying it
-    List<Group> availableGroups = new ArrayList<>(viewModel.getAvailableGroups());
-    groupComboBox = new OurComboBox<>(availableGroups.stream().toArray(Group[]::new), Group.class);
+    List<Group> availableGroups = viewModel.getAvailableGroups();
+    groupComboBox = new OurComboBox<>(availableGroups.toArray(new Group[0]), Group.class);
     groupComboBox.setRenderer(new GroupRenderer());
 
     StringBuilder filenamesHtml = new StringBuilder("<html><body>Files:<ul>");
-    viewModel.getFiles().forEach(file -> filenamesHtml.append("<li>" + file.getName() + "</li>"));
+    for (SubmittableFile file : viewModel.getFiles()) {
+      filenamesHtml.append("<li>").append(file.getName()).append("</li>");
+    }
     filenamesHtml.append("</ul></body></html>");
     filenames = new JLabel(filenamesHtml.toString());
 
-    submissionCount = new JLabel("You are about to make submission "
-        + (viewModel.getNumberOfSubmissions() + 1) + " out of "
-        + viewModel.getMaxNumberOfSubmissions() + ".");
+    submissionCount = new JLabel(String.format("You are about to make submission %d out of %d.",
+        viewModel.getCurrentSubmissionNumber(), viewModel.getMaxNumberOfSubmissions()));
   }
 }
