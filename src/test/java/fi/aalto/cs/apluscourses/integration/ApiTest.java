@@ -17,10 +17,12 @@ public class ApiTest {
   @ClassRule
   public static final EnvironmentChecker checker = new EnvironmentChecker("CI");
 
+  private static final String BASE_URL = "http://localhost:8000/api/v2/";
+
   @Test
   public void getSubmissionsResultsReturns() throws MalformedURLException {
     final String firstExercise = "modules[0].exercises[0]";
-    final String url = "http://localhost:8000/api/v2/courses/100/points/me/";
+    final String url = BASE_URL + "courses/100/points/me/";
 
     given()
         .auth()
@@ -52,7 +54,7 @@ public class ApiTest {
         .basic("zoralst1", "zoralst1")
         .when()
         .contentType(ContentType.JSON)
-        .get("http://localhost:8000/api/v2/courses/100/mygroups/")
+        .get(BASE_URL + "courses/100/mygroups/")
         .then()
         .assertThat()
         .statusCode(HttpStatus.SC_OK)
