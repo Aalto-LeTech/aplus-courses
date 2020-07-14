@@ -35,6 +35,11 @@ public class Submission {
     this.group = group;
   }
 
+  /**
+   * Sends the submission to the server.
+   *
+   * @throws IOException If there are IO related errors.
+   */
   public void submit() throws IOException {
     Map<String, Object> data = new HashMap<>();
     data.put("_aplus_group", group.getId());

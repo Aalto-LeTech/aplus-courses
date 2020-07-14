@@ -1,7 +1,7 @@
 package fi.aalto.cs.apluscourses.ui.base;
 
 import com.intellij.openapi.ui.ComboBox;
-import fi.aalto.cs.apluscourses.utils.bindable.TwoWayBindable;
+import fi.aalto.cs.apluscourses.ui.utils.TwoWayBindable;
 import org.jetbrains.annotations.Nullable;
 
 public class OurComboBox<E> extends ComboBox<E> {

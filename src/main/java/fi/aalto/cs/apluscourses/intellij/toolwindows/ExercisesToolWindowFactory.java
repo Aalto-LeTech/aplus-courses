@@ -26,7 +26,7 @@ public class ExercisesToolWindowFactory extends BaseToolWindowFactory {
     ActionGroup group = (ActionGroup) actionManager.getAction(ActionGroups.EXERCISE_ACTIONS);
 
     ActionToolbar toolbar = actionManager.createActionToolbar(ActionPlaces.TOOLBAR, group, true);
-    toolbar.setTargetComponent(exercisesView.exerciseGroupsTree);
+    toolbar.setTargetComponent(exercisesView.getExerciseGroupsTree());
     exercisesView.toolbarContainer.add(toolbar.getComponent());
 
     return exercisesView.getBasePanel();

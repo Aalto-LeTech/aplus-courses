@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.ui.exercise;
 
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.model.Group;
+import fi.aalto.cs.apluscourses.model.SubmittableFile;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionViewModel;
 import fi.aalto.cs.apluscourses.ui.GuiObject;
 import fi.aalto.cs.apluscourses.ui.base.OurComboBox;
@@ -21,13 +22,11 @@ public class SubmissionDialog extends OurDialogWrapper {
 
   private JPanel basePanel;
 
-  @GuiObject
-  private JLabel exerciseName;
+  protected JLabel exerciseName;
 
-  private OurComboBox<Group> groupComboBox;
+  protected OurComboBox<Group> groupComboBox;
 
-  @GuiObject
-  private JLabel submissionCount;
+  protected JLabel submissionCount;
 
   @GuiObject
   private JLabel filenames;
@@ -70,17 +69,19 @@ public class SubmissionDialog extends OurDialogWrapper {
     exerciseName = new JLabel("<html><body><h2>" + viewModel.getPresentableExerciseName()
         + "</h2></body></html>");
 
+    // We make a copy of the list as we are modifying it
     List<Group> availableGroups = viewModel.getAvailableGroups();
-    groupComboBox = new OurComboBox<>(availableGroups.stream().toArray(Group[]::new), Group.class);
+    groupComboBox = new OurComboBox<>(availableGroups.toArray(new Group[0]), Group.class);
     groupComboBox.setRenderer(new GroupRenderer());
 
     StringBuilder filenamesHtml = new StringBuilder("<html><body>Files:<ul>");
-    viewModel.getFiles().forEach(file -> filenamesHtml.append("<li>" + file.getName() + "</li>"));
+    for (SubmittableFile file : viewModel.getFiles()) {
+      filenamesHtml.append("<li>").append(file.getName()).append("</li>");
+    }
     filenamesHtml.append("</ul></body></html>");
     filenames = new JLabel(filenamesHtml.toString());
 
-    submissionCount = new JLabel("You are about to make submission "
-        + (viewModel.getNumberOfSubmissions() + 1) + " out of "
-        + viewModel.getMaxNumberOfSubmissions() + ".");
+    submissionCount = new JLabel(String.format("You are about to make submission %d out of %d.",
+        viewModel.getCurrentSubmissionNumber(), viewModel.getMaxNumberOfSubmissions()));
   }
 }
