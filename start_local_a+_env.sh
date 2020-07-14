@@ -13,4 +13,4 @@ head -102 docker-up.sh > docker-up-custom.sh &&
 chmod +x docker-up-custom.sh &&
 ./docker-up-custom.sh &&
 # wait for all the components of A+ to start
-sleep 2m
+sleep 5m
