@@ -2,34 +2,28 @@ package fi.aalto.cs.apluscourses.model;
 
 import java.util.Arrays;
 import java.util.Collections;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class SubmittableExerciseTest {
+public class SubmissionInfoTest {
 
   @Test
-  public void testSubmittableExercise() {
-    SubmittableExercise exercise = new SubmittableExercise(123, "yay", 10,
-        Arrays.asList("file1", "file2"));
-    Assert.assertEquals("The ID is the same as the one given to the constructor",
-        123, exercise.getId());
-    Assert.assertEquals("The name is the same as the one given to the constructor",
-        "yay", exercise.getName());
+  public void testSubmissionInfo() {
+    SubmissionInfo info = new SubmissionInfo(10, Arrays.asList("file1", "file2"));
     Assert.assertEquals("The submissions limit is the same as the one given to the constructor",
-        10, exercise.getSubmissionsLimit());
+        10, info.getSubmissionsLimit());
     Assert.assertEquals("The filenames are the same as those given to the constructor",
-        "file1", exercise.getFilenames().get(0));
+        "file1", info.getFilenames().get(0));
     Assert.assertEquals("The filenames are the same as those given to the constructor",
-        "file2", exercise.getFilenames().get(1));
+        "file2", info.getFilenames().get(1));
   }
 
   @Test(expected = UnsupportedOperationException.class)
   public void testGetFilenamesReturnsUnmodifiableList() {
-    SubmittableExercise exercise = new SubmittableExercise(0, "", 0, Collections.emptyList());
-    exercise.getFilenames().add("");
+    SubmissionInfo info = new SubmissionInfo(0, Collections.emptyList());
+    info.getFilenames().add("");
   }
 
   @Test
@@ -56,15 +50,12 @@ public class SubmittableExerciseTest {
         .put("exercise_info", exerciseInfo)
         .put("max_submissions", 13);
 
-    SubmittableExercise exercise = SubmittableExercise.fromJsonObject(json);
+    SubmissionInfo info = SubmissionInfo.fromJsonObject(json);
 
-    Assert.assertEquals("The ID is the same as that in the JSON", 321, exercise.getId());
-    Assert.assertEquals("The name is the same as that in the JSON",
-        "test exercise", exercise.getName());
     Assert.assertEquals("The submissions limit is the same as that in the JSON",
-        13, exercise.getSubmissionsLimit());
+        13, info.getSubmissionsLimit());
     Assert.assertEquals("The filenames are parsed from the JSON",
-        "coolFilename.scala", exercise.getFilenames().get(0));
+        "coolFilename.scala", info.getFilenames().get(0));
   }
 
 }

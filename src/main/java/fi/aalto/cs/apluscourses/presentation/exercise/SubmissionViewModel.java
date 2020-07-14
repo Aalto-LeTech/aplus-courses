@@ -4,9 +4,10 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.model.APlusAuthentication;
+import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.SubmissionHistory;
-import fi.aalto.cs.apluscourses.model.SubmittableExercise;
+import fi.aalto.cs.apluscourses.model.SubmissionInfo;
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
 import java.util.Arrays;
 import java.util.List;
@@ -17,7 +18,9 @@ import org.jetbrains.annotations.Nullable;
 
 public class SubmissionViewModel {
 
-  private SubmittableExercise exercise;
+  private Exercise exercise;
+
+  private SubmissionInfo submissionInfo;
 
   private SubmissionHistory submissionHistory;
 
@@ -34,12 +37,14 @@ public class SubmissionViewModel {
   /**
    * Construct a submission view model with the given exercise, groups, authentication, and project.
    */
-  public SubmissionViewModel(@NotNull SubmittableExercise exercise,
+  public SubmissionViewModel(@NotNull Exercise exercise,
+                             @NotNull SubmissionInfo submissionInfo,
                              @NotNull SubmissionHistory submissionHistory,
                              @NotNull List<Group> availableGroups,
                              @NotNull APlusAuthentication authentication,
                              @NotNull Project project) {
     this.exercise = exercise;
+    this.submissionInfo = submissionInfo;
     this.submissionHistory = submissionHistory;
     this.availableGroups = availableGroups;
     this.authentication = authentication;
@@ -72,7 +77,7 @@ public class SubmissionViewModel {
 
   @NotNull
   public List<String> getFilenames() {
-    return exercise.getFilenames();
+    return submissionInfo.getFilenames();
   }
 
   public int getNumberOfSubmissions() {
@@ -80,7 +85,7 @@ public class SubmissionViewModel {
   }
 
   public int getMaxNumberOfSubmissions() {
-    return exercise.getSubmissionsLimit();
+    return submissionInfo.getSubmissionsLimit();
   }
 
   /**

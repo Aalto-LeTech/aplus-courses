@@ -18,7 +18,7 @@ import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.SubmissionHistory;
-import fi.aalto.cs.apluscourses.model.SubmittableExercise;
+import fi.aalto.cs.apluscourses.model.SubmissionInfo;
 import fi.aalto.cs.apluscourses.presentation.APlusAuthenticationViewModel;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
@@ -46,6 +46,9 @@ public class SubmitExerciseAction extends AnAction {
   @NotNull
   private Notifier notifier;
 
+  /**
+   * Constructor with reasonable defaults.
+   */
   public SubmitExerciseAction() {
     this(PluginSettings.getInstance(), Notifications.Bus::notify);
   }
@@ -78,15 +81,16 @@ public class SubmitExerciseAction extends AnAction {
     if (selectedExercise == null) {
       return;
     }
+    Exercise exercise = selectedExercise.getModel();
 
     APlusAuthentication authentication
         = mainViewModel.authenticationViewModel.get().getAuthentication();
     Course course = mainViewModel.courseViewModel.get().getModel();
     Project project = e.getProject();
 
-    SubmittableExercise exercise = tryGetSubmittableExercise(
+    SubmissionInfo submissionInfo = tryGetSubmissionInfo(
         selectedExercise.getModel(), authentication, project);
-    if (exercise == null) {
+    if (submissionInfo == null) {
       return;
     }
 
@@ -102,7 +106,7 @@ public class SubmitExerciseAction extends AnAction {
     }
 
     SubmissionViewModel viewModel = new SubmissionViewModel(
-        exercise, submissionHistory, groups, authentication, project);
+        exercise, submissionInfo, submissionHistory, groups, authentication, project);
 
     if (!new ModuleSelectionDialog(viewModel).showAndGet()
         || viewModel.getSelectedModule() == null) {
@@ -110,7 +114,7 @@ public class SubmitExerciseAction extends AnAction {
     }
 
     List<Path> filePaths = tryGetFilePaths(
-        exercise.getFilenames(), viewModel.getSelectedModule(), project);
+        submissionInfo.getFilenames(), viewModel.getSelectedModule(), project);
     if (filePaths == null) {
       return;
     }
@@ -121,17 +125,17 @@ public class SubmitExerciseAction extends AnAction {
   }
 
   @Nullable
-  private SubmittableExercise tryGetSubmittableExercise(@NotNull Exercise exercise,
-                                                        @NotNull APlusAuthentication authentication,
-                                                        @Nullable Project project) {
+  private SubmissionInfo tryGetSubmissionInfo(@NotNull Exercise exercise,
+                                              @NotNull APlusAuthentication authentication,
+                                              @Nullable Project project) {
     try {
-      SubmittableExercise submittableExercise = SubmittableExercise.fromExerciseId(
-          exercise.getId(), authentication);
-      if (submittableExercise.getFilenames().isEmpty()) {
+      SubmissionInfo submissionInfo
+          = SubmissionInfo.forExercise(exercise, authentication);
+      if (submissionInfo.getFilenames().isEmpty()) {
         notifier.notify(new NotSubmittableNotification(), project);
         return null;
       }
-      return submittableExercise;
+      return submissionInfo;
     } catch (IOException e) {
       notifyNetworkError(e, project);
       return null;
@@ -143,7 +147,7 @@ public class SubmitExerciseAction extends AnAction {
                                                     @NotNull APlusAuthentication authentication,
                                                     @Nullable Project project) {
     try {
-      return SubmissionHistory.getSubmissionHistory(exercise.getId(), authentication);
+      return SubmissionHistory.forExercise(exercise, authentication);
     } catch (IOException e) {
       notifyNetworkError(e, project);
       return null;

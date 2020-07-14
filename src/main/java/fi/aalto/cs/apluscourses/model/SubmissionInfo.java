@@ -13,31 +13,26 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-public class SubmittableExercise extends Exercise {
+public class SubmissionInfo {
 
-  private int submissionsLimit;
+  private final int submissionsLimit;
 
   @NotNull
   private final List<String> filenames;
 
   /**
-   * Construct a submittable exercise instance with the given id, name, submission limit,
-   * and filenames.
+   * Construct a submission info instance with the given submission limit and filenames.
    */
-  public SubmittableExercise(long id,
-                             @NotNull String name,
-                             int submissionsLimit,
-                             @NotNull List<String> filenames) {
-    super(id, name);
+  public SubmissionInfo(int submissionsLimit, @NotNull List<String> filenames) {
     this.submissionsLimit = submissionsLimit;
     this.filenames = filenames;
   }
 
   /**
-   * Construct a submittable exercise from the given JSON object.
+   * Construct a submission info instance from the given JSON object.
    */
   @NotNull
-  public static SubmittableExercise fromJsonObject(@NotNull JSONObject jsonObject) {
+  public static SubmissionInfo fromJsonObject(@NotNull JSONObject jsonObject) {
     JSONObject exerciseInfo = jsonObject.getJSONObject("exercise_info");
     JSONArray formSpec = exerciseInfo.getJSONArray("form_spec");
     JSONObject localizationInfo = exerciseInfo.getJSONObject("form_i18n");
@@ -57,11 +52,9 @@ public class SubmittableExercise extends Exercise {
       filenames.add(englishFilename);
     }
 
-    long id = jsonObject.getLong("id");
-    String name = jsonObject.getString("name");
     int submissionLimit = jsonObject.getInt("max_submissions");
 
-    return new SubmittableExercise(id, name, submissionLimit, filenames);
+    return new SubmissionInfo(submissionLimit, filenames);
   }
 
   /**
@@ -70,10 +63,10 @@ public class SubmittableExercise extends Exercise {
    * @throws IOException If an IO error occurs (e.g. network error).
    */
   @NotNull
-  public static SubmittableExercise fromExerciseId(long exerciseId,
-                                                   @NotNull APlusAuthentication authentication)
+  public static SubmissionInfo forExercise(@NotNull Exercise exercise,
+                                           @NotNull APlusAuthentication authentication)
       throws IOException {
-    URL url = new URL(PluginSettings.A_PLUS_API_BASE_URL + "/exercises/" + exerciseId + "/");
+    URL url = new URL(PluginSettings.A_PLUS_API_BASE_URL + "/exercises/" + exercise.getId() + "/");
     InputStream inputStream = CoursesClient.fetch(url, authentication::addToRequest);
     JSONObject response = new JSONObject(new JSONTokener(inputStream));
     return fromJsonObject(response);

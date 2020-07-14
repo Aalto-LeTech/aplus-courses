@@ -24,10 +24,6 @@ public class SubmissionDialogTest extends LightIdeaTestCase {
       super(viewModel);
     }
 
-    public String getTitle() {
-      return super.getTitle();
-    }
-
     public String getHeader() {
       return super.exerciseName.getText();
     }
@@ -44,9 +40,6 @@ public class SubmissionDialogTest extends LightIdeaTestCase {
       return super.createActions();
     }
 
-    public ValidationInfo doValidate() {
-      return super.doValidate();
-    }
   }
 
   @NotNull
@@ -96,7 +89,7 @@ public class SubmissionDialogTest extends LightIdeaTestCase {
   @Test
   public void testSubmissionDialogGroupSelection() {
     TestDialog testDialog = createTestDialog();
-    JComboBox comboBox = testDialog.getGroupComboBox();
+    JComboBox<Group> comboBox = testDialog.getGroupComboBox();
 
     Group defaultSelection = (Group) comboBox.getSelectedItem();
     Assert.assertEquals("The default selection is no group", "Select group...",
