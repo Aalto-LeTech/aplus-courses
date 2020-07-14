@@ -34,7 +34,7 @@ public class ApiTest {
         .then()
         .assertThat()
         .statusCode(HttpStatus.SC_OK)
-        .body("modules[0].id", equalTo(3))
+        .body("modules[0].id", equalTo(10))
         .body(firstExercise + ".id", equalTo(300))
         .body(firstExercise + ".max_points", equalTo(100))
         .body(firstExercise + ".points_to_pass", equalTo(50))

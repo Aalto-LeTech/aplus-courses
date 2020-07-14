@@ -76,7 +76,6 @@ public class SubmissionsDashboard {
     URL url = getSubmissionsDashboardApiUrl(courseId);
     InputStream inputStream = CoursesClient.fetch(url, authentication::addToRequest);
     JSONObject response = new JSONObject(new JSONTokener(inputStream));
-    System.out.println(response);
     return fromJsonObject(response);
   }
 
