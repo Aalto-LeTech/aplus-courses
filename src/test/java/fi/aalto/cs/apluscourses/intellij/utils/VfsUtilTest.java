@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.ZonedDateTime;
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
