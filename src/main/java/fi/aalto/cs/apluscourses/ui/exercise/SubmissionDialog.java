@@ -69,9 +69,8 @@ public class SubmissionDialog extends OurDialogWrapper {
     exerciseName = new JLabel("<html><body><h2>" + viewModel.getPresentableExerciseName()
         + "</h2></body></html>");
 
-    // We make a copy of the list as we are modifying it
-    List<Group> availableGroups = viewModel.getAvailableGroups();
-    groupComboBox = new OurComboBox<>(availableGroups.toArray(new Group[0]), Group.class);
+    groupComboBox =
+        new OurComboBox<>(viewModel.getAvailableGroups().toArray(new Group[0]), Group.class);
     groupComboBox.setRenderer(new GroupRenderer());
 
     StringBuilder filenamesHtml = new StringBuilder("<html><body>Files:<ul>");

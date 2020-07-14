@@ -23,7 +23,7 @@ public class SubmissionDialogTest extends LightIdeaTestCase {
 
   public class TestDialog extends SubmissionDialog {
     public TestDialog(@NotNull SubmissionViewModel viewModel) {
-      super(viewModel, mock(Project.class));
+      super(viewModel, getProject());
     }
 
     public String getTitle() {
@@ -55,13 +55,13 @@ public class SubmissionDialogTest extends LightIdeaTestCase {
   private SubmissionViewModel createMockViewModel(@NotNull String exerciseName,
                                                   @NotNull List<Group> availableGroups,
                                                   @NotNull List<SubmittableFile> files,
-                                                  int currentSubmissionNumber,
+                                                  int numberOfSubmissions,
                                                   int maxNumberOfSubmissions) {
     SubmissionViewModel viewModel = mock(SubmissionViewModel.class);
     doReturn(exerciseName).when(viewModel).getPresentableExerciseName();
     doReturn(availableGroups).when(viewModel).getAvailableGroups();
     doReturn(files).when(viewModel).getFiles();
-    doReturn(currentSubmissionNumber).when(viewModel).getCurrentSubmissionNumber();
+    doReturn(numberOfSubmissions).when(viewModel).getCurrentSubmissionNumber();
     doReturn(maxNumberOfSubmissions).when(viewModel).getMaxNumberOfSubmissions();
     return viewModel;
   }
