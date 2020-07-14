@@ -35,6 +35,11 @@ public class APlusAuthentication implements CoursesClient.Authentication {
     PasswordSafe.getInstance().set(credentialAttributes, credentials);
   }
 
+  /**
+   * The getter for a {@link PasswordSafe}-stored token.
+   *
+   * @return a token as char[] OR 'null' if empty.
+   */
   @Nullable
   public char[] getToken() {
     Credentials credentials = PasswordSafe.getInstance().get(credentialAttributes);

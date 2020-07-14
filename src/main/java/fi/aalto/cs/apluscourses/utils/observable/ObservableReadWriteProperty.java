@@ -13,6 +13,11 @@ public class ObservableReadWriteProperty<T> extends ObservableProperty<T> {
    * @param initialValue Initial value of this {@link ObservableReadWriteProperty}
    */
   public ObservableReadWriteProperty(@Nullable T initialValue) {
+    this(initialValue, null);
+  }
+
+  public ObservableReadWriteProperty(@Nullable T initialValue, @Nullable Validator<T> validator) {
+    super(validator);
     value = initialValue;
   }
 

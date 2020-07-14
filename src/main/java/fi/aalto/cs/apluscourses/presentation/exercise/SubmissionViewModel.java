@@ -1,6 +1,5 @@
 package fi.aalto.cs.apluscourses.presentation.exercise;
 
-import com.intellij.openapi.module.Module;
 import fi.aalto.cs.apluscourses.model.APlusAuthentication;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.Submission;
@@ -10,11 +9,13 @@ import fi.aalto.cs.apluscourses.model.SubmittableFile;
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
+import fi.aalto.cs.apluscourses.utils.observable.ValidationError;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class SubmissionViewModel {
 
@@ -26,11 +27,10 @@ public class SubmissionViewModel {
 
   private final APlusAuthentication authentication;
 
-  private final Module selectedModule;
-
   private final Path[] filePaths;
 
-  public final ObservableProperty<Group> selectedGroup = new ObservableReadWriteProperty<>(null);
+  public final ObservableProperty<Group> selectedGroup =
+      new ObservableReadWriteProperty<>(null, SubmissionViewModel::validateGroupSelection);
 
   private final IOException ioException;
 
@@ -41,21 +41,18 @@ public class SubmissionViewModel {
                              @NotNull SubmissionHistory submissionHistory,
                              @NotNull List<Group> availableGroups,
                              @NotNull APlusAuthentication authentication,
-                             @NotNull Module selectedModule,
-                             @NotNull Path[] filePaths, IOException ioException) {
+                             @NotNull Path[] filePaths,
+                             @Nullable IOException ioException) {
     this.exercise = exercise;
     this.submissionHistory = submissionHistory;
     this.availableGroups = availableGroups;
     this.authentication = authentication;
-    this.selectedModule = selectedModule;
     this.filePaths = filePaths;
     this.ioException = ioException;
-
-    selectedGroup.setValidator(SubmissionViewModel::validateGroupSelection);
   }
 
-  private static String validateGroupSelection(Group group) {
-    return group == null ? "Select a group" : null;
+  private static ValidationError validateGroupSelection(Group group) {
+    return group == null ? new GroupNotSelectedError() : null;
   }
 
   @NotNull
@@ -73,8 +70,8 @@ public class SubmissionViewModel {
     return exercise.getFiles();
   }
 
-  public int getNumberOfSubmissions() {
-    return submissionHistory.getNumberOfSubmissions();
+  public int getCurrentSubmissionNumber() {
+    return submissionHistory.getNumberOfSubmissions() + 1;
   }
 
   public int getMaxNumberOfSubmissions() {
@@ -87,15 +84,31 @@ public class SubmissionViewModel {
     return new Submission(exercise, filePaths, authentication, group);
   }
 
-  public String validateSubmissionCount() {
-    return getNumberOfSubmissions() >= getMaxNumberOfSubmissions()
-        ? "Max. number of submissions exceeded" : null;
+  public ValidationError validateSubmissionCount() {
+    return getCurrentSubmissionNumber() > getMaxNumberOfSubmissions()
+        ? new MaxNumberOfSubmissionsExceededError() : null;
   }
 
+  @NotNull
   public String getIoExceptionText() {
-    if (ioException == null) {
-      return "";
+    return ioException == null ? "" : "Upload failed: " + ioException.getLocalizedMessage();
+  }
+
+  public static class MaxNumberOfSubmissionsExceededError implements ValidationError {
+
+    @NotNull
+    @Override
+    public String getDescription() {
+      return "Max. number of submissions exceeded";
     }
-    return "Upload failed: " + ioException.getLocalizedMessage();
+  }
+
+  public static class GroupNotSelectedError implements ValidationError {
+
+    @NotNull
+    @Override
+    public String getDescription() {
+      return "Select a group";
+    }
   }
 }

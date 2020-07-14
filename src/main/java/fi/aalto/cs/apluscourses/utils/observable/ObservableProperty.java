@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.utils.observable;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.WeakHashMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -12,7 +13,15 @@ import org.jetbrains.annotations.Nullable;
 public abstract class ObservableProperty<T> {
   private final Map<Object, Callback<?, T>> observers = new WeakHashMap<>();
   @NotNull
-  private volatile Validator<T> validator = whatever -> null;
+  private final Validator<T> validator;
+
+  public ObservableProperty() {
+    this(null);
+  }
+
+  public ObservableProperty(@Nullable Validator<T> validator) {
+    this.validator = Optional.ofNullable(validator).orElse(whatever -> null);
+  }
 
   /**
    * Add a new observer and calls its {@code valueChanged} method.
@@ -44,10 +53,6 @@ public abstract class ObservableProperty<T> {
     property.addValueObserver(this, (self, dummy) -> self.onValueChanged(self.get()));
   }
 
-  public void setValidator(@NotNull Validator<T> validator) {
-    this.validator = validator;
-  }
-
   @Nullable
   public abstract T get();
 
@@ -65,7 +70,7 @@ public abstract class ObservableProperty<T> {
     }
   }
   
-  public String validate() {
+  public ValidationError validate() {
     return validator.validate(get());
   }
 
@@ -78,8 +83,9 @@ public abstract class ObservableProperty<T> {
     }
   }
 
-  public interface Validator<T> {
+  @FunctionalInterface
+  public static interface Validator<T> {
     @Nullable
-    String validate(T value);
+    ValidationError validate(T value);
   }
 }
