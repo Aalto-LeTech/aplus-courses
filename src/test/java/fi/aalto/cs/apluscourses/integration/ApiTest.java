@@ -6,7 +6,6 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.hasItems;
 
-import fi.aalto.cs.apluscourses.model.SubmissionsDashboard;
 import io.restassured.http.ContentType;
 import java.net.MalformedURLException;
 import org.apache.http.HttpStatus;
@@ -22,6 +21,7 @@ public class ApiTest {
   @Test
   public void getSubmissionsResultsReturns() throws MalformedURLException {
     final String firstExercise = "modules.exercises[0]";
+    final String url = "http://localhost:8000/api/v2/courses/100/points/me/";
 
     given()
         .auth()
@@ -29,7 +29,7 @@ public class ApiTest {
         .basic("zoralst1", "zoralst1")
         .when()
         .contentType(ContentType.JSON)
-        .get(SubmissionsDashboard.getSubmissionsDashboardApiUrl(100).toString())
+        .get(url)
         .then()
         .assertThat()
         .statusCode(HttpStatus.SC_OK)
