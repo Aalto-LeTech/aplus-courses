@@ -4,6 +4,7 @@ import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.notifications.MissingFileNotification;
@@ -22,6 +23,7 @@ import fi.aalto.cs.apluscourses.model.SubmissionInfo;
 import fi.aalto.cs.apluscourses.presentation.APlusAuthenticationViewModel;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
+import fi.aalto.cs.apluscourses.presentation.ModuleSelectionViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionViewModel;
@@ -32,6 +34,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.jetbrains.annotations.CalledWithReadLock;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -41,22 +44,90 @@ public class SubmitExerciseAction extends AnAction {
   public static final String ACTION_ID = SubmitExerciseAction.class.getCanonicalName();
 
   @NotNull
-  private MainViewModelProvider mainViewModelProvider;
+  private final MainViewModelProvider mainViewModelProvider;
 
   @NotNull
-  private Notifier notifier;
+  private final SubmissionInfoFactory submissionInfoFactory;
+
+  @NotNull
+  private final SubmissionHistoryFactory submissionHistoryFactory;
+
+  @NotNull
+  private final GroupsFactory groupsFactory;
+
+  @NotNull
+  private final FileFinder fileFinder;
+
+  @NotNull
+  private final ModuleSelectionDialog.Factory moduleDialogFactory;
+
+  @NotNull
+  private final SubmissionDialog.Factory submissionDialogFactory;
+
+  @NotNull
+  private final Notifier notifier;
+
 
   /**
    * Constructor with reasonable defaults.
    */
   public SubmitExerciseAction() {
-    this(PluginSettings.getInstance(), Notifications.Bus::notify);
+    this(
+        PluginSettings.getInstance(),
+        SubmissionInfo::forExercise,
+        SubmissionHistory::forExercise,
+        Group::getGroups,
+        VfsUtil::findFileInDirectory,
+        viewModel -> new ModuleSelectionDialog(viewModel),
+        viewModel -> new SubmissionDialog(viewModel),
+        Notifications.Bus::notify
+    );
   }
 
+  /**
+   * Construct an exercise submission action with the given parameters. This constructor is useful
+   * for testing purposes.
+   */
   public SubmitExerciseAction(@NotNull MainViewModelProvider mainViewModelProvider,
+                              @NotNull SubmissionInfoFactory submissionInfoFactory,
+                              @NotNull SubmissionHistoryFactory submissionHistoryFactory,
+                              @NotNull GroupsFactory groupsFactory,
+                              @NotNull FileFinder fileFinder,
+                              @NotNull ModuleSelectionDialog.Factory moduleDialogFactory,
+                              @NotNull SubmissionDialog.Factory submissionDialogFactory,
                               @NotNull Notifier notifier) {
     this.mainViewModelProvider = mainViewModelProvider;
+    this.submissionInfoFactory = submissionInfoFactory;
+    this.submissionHistoryFactory = submissionHistoryFactory;
+    this.groupsFactory = groupsFactory;
+    this.fileFinder = fileFinder;
+    this.moduleDialogFactory = moduleDialogFactory;
+    this.submissionDialogFactory = submissionDialogFactory;
     this.notifier = notifier;
+  }
+
+  @FunctionalInterface
+  public interface SubmissionInfoFactory {
+    SubmissionInfo fromExercise(@NotNull Exercise exercise,
+                                @NotNull APlusAuthentication authentication) throws IOException;
+  }
+
+  @FunctionalInterface
+  public interface SubmissionHistoryFactory {
+    SubmissionHistory fromExercise(@NotNull Exercise exercise,
+                                   @NotNull APlusAuthentication authentication) throws IOException;
+  }
+
+  @FunctionalInterface
+  public interface GroupsFactory {
+    List<Group> getAvailableGroups(@NotNull Course course,
+                                   @NotNull APlusAuthentication authentication) throws IOException;
+  }
+
+  @FunctionalInterface
+  public interface FileFinder {
+    @Nullable
+    Path findFile(@NotNull Path directory, @NotNull String filename);
   }
 
   @Override
@@ -105,21 +176,27 @@ public class SubmitExerciseAction extends AnAction {
       return;
     }
 
-    SubmissionViewModel viewModel = new SubmissionViewModel(
-        exercise, submissionInfo, submissionHistory, groups, authentication, project);
-
-    if (!new ModuleSelectionDialog(viewModel).showAndGet()
-        || viewModel.getSelectedModule() == null) {
+    Module[] modules = Optional.ofNullable(project)
+        .map(ModuleManager::getInstance)
+        .map(ModuleManager::getModules)
+        .orElseGet(() -> new Module[0]);
+    ModuleSelectionViewModel moduleSelectionViewModel
+        = new ModuleSelectionViewModel(modules, project);
+    if (!moduleDialogFactory.createDialog(moduleSelectionViewModel).showAndGet()
+        || moduleSelectionViewModel.getSelectedModule() == null) {
       return;
     }
 
+    SubmissionViewModel submissionViewModel = new SubmissionViewModel(
+        exercise, submissionInfo, submissionHistory, groups, authentication, project);
+
     List<Path> filePaths = tryGetFilePaths(
-        submissionInfo.getFilenames(), viewModel.getSelectedModule(), project);
+        submissionInfo.getFilenames(), moduleSelectionViewModel.getSelectedModule(), project);
     if (filePaths == null) {
       return;
     }
 
-    if (new SubmissionDialog(viewModel).showAndGet()) {
+    if (submissionDialogFactory.createDialog(submissionViewModel).showAndGet()) {
       // Do actual submission
     }
   }
@@ -130,7 +207,7 @@ public class SubmitExerciseAction extends AnAction {
                                               @Nullable Project project) {
     try {
       SubmissionInfo submissionInfo
-          = SubmissionInfo.forExercise(exercise, authentication);
+          = submissionInfoFactory.fromExercise(exercise, authentication);
       if (submissionInfo.getFilenames().isEmpty()) {
         notifier.notify(new NotSubmittableNotification(), project);
         return null;
@@ -147,7 +224,7 @@ public class SubmitExerciseAction extends AnAction {
                                                     @NotNull APlusAuthentication authentication,
                                                     @Nullable Project project) {
     try {
-      return SubmissionHistory.forExercise(exercise, authentication);
+      return submissionHistoryFactory.fromExercise(exercise, authentication);
     } catch (IOException e) {
       notifyNetworkError(e, project);
       return null;
@@ -159,7 +236,7 @@ public class SubmitExerciseAction extends AnAction {
                                        @NotNull APlusAuthentication authentication,
                                        @Nullable Project project) {
     try {
-      return Group.getGroups(course, authentication);
+      return groupsFactory.getAvailableGroups(course, authentication);
     } catch (IOException e) {
       notifyNetworkError(e, project);
       return null;
@@ -174,7 +251,7 @@ public class SubmitExerciseAction extends AnAction {
     Path modulePath = Paths.get(ModuleUtilCore.getModuleDirPath(module));
     List<Path> filePaths = new ArrayList<>(filenames.size());
     for (String filename : filenames) {
-      Path filePath = VfsUtil.findFileInDirectory(modulePath, filename);
+      Path filePath = fileFinder.findFile(modulePath, filename);
       if (filePath == null) {
         notifier.notify(new MissingFileNotification(module.getName(), filename), project);
         return null;

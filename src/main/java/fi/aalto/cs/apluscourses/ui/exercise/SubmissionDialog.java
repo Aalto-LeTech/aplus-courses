@@ -93,4 +93,9 @@ public class SubmissionDialog extends DialogWrapper {
         + (viewModel.getNumberOfSubmissions() + 1) + " out of "
         + viewModel.getMaxNumberOfSubmissions() + ".");
   }
+
+  @FunctionalInterface
+  public interface Factory {
+    SubmissionDialog createDialog(@NotNull SubmissionViewModel viewModel);
+  }
 }
