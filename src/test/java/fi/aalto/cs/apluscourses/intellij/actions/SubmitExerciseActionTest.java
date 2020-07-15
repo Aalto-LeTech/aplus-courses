@@ -29,7 +29,7 @@ import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionViewModel;
 import fi.aalto.cs.apluscourses.ui.exercise.ModuleSelectionDialog;
 import fi.aalto.cs.apluscourses.ui.exercise.SubmissionDialog;
-import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
+import fi.aalto.cs.apluscourses.utils.observable.CompoundObservableProperty;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -135,7 +135,8 @@ public class SubmitExerciseActionTest extends LightIdeaTestCase {
     doReturn(mock(Course.class)).when(courseViewModel).getModel();
     APlusAuthenticationViewModel authenticationViewModel = mock(APlusAuthenticationViewModel.class);
     doReturn(mock(APlusAuthentication.class)).when(authenticationViewModel).getAuthentication();
-    mainViewModel.exercisesViewModel = new ObservableReadWriteProperty<>(exercisesViewModel);
+    ((CompoundObservableProperty) mainViewModel.exercisesViewModel).setConverter(
+        (p1, p2) -> exercisesViewModel);
     mainViewModel.courseViewModel.set(courseViewModel);
     mainViewModel.authenticationViewModel.set(authenticationViewModel);
 
