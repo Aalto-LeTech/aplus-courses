@@ -34,7 +34,7 @@ public abstract class IntelliJLibrary
    */
   @CalledWithWriteLock
   @SuppressWarnings("unchecked")
-  public void loadInternal() {
+  protected void loadInternal() {
     LibraryTable.ModifiableModel libraryTable = project.getLibraryTable().getModifiableModel();
     com.intellij.openapi.roots.libraries.Library.ModifiableModel library = libraryTable
         .createLibrary(getName(), getLibraryKind())
