@@ -161,7 +161,7 @@ public class SubmitExerciseActionTest extends LightIdeaTestCase {
 
     moduleDialogFactory = viewModel -> new TestModuleSelectionDialog(viewModel, true);
 
-    submissionDialogFactory = viewModel -> new TestSubmissionDialog(viewModel);
+    submissionDialogFactory = TestSubmissionDialog::new;
     submissionDialogIsShown = new AtomicBoolean(false);
 
     notifier = new TestNotifier();
