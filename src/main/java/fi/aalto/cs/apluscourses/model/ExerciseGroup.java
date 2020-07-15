@@ -76,8 +76,8 @@ public class ExerciseGroup {
   @NotNull
   public static List<ExerciseGroup> getCourseExerciseGroups(
       @NotNull Course course, @NotNull APlusAuthentication authentication) throws IOException {
-    URL url = new URL(String.format("%1$s/courses/%2$s/exercises/",
-        PluginSettings.A_PLUS_API_BASE_URL, course.getId()));
+    URL url = new URL(PluginSettings.A_PLUS_API_BASE_URL + "/courses/" + course.getId()
+        + "/exercises/");
     InputStream inputStream = CoursesClient.fetch(url, authentication::addToRequest);
     JSONObject response = new JSONObject(new JSONTokener(inputStream));
     JSONArray results = response.getJSONArray("results");

@@ -2,7 +2,6 @@ package fi.aalto.cs.apluscourses.ui;
 
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
-import fi.aalto.cs.apluscourses.model.APlusAuthentication;
 import fi.aalto.cs.apluscourses.presentation.APlusAuthenticationViewModel;
 import java.util.Arrays;
 import javax.swing.Action;
@@ -29,24 +28,6 @@ public class APlusAuthenticationView extends DialogWrapper {
     setTitle("A+ Token");
     setButtonsAlignment(SwingConstants.CENTER);
     init();
-  }
-
-  /**
-   * If the given authentication view model already contains an authentication, then that is
-   * returned. Otherwise the user is prompted for authentication, which is then set to the given
-   * view model and returned. The user may cancel the authentication prompt, in which case this
-   * method returns {@code null}. This method is useful for prompting the user for authentication in
-   * an on-demand fashion. Since the authentication prompt can be cancelled, all actions using this
-   * method should be prepared for the user cancelling the action.
-   */
-  @Nullable
-  public static APlusAuthentication promptForAuthenticationIfMissing(
-      @NotNull APlusAuthenticationViewModel authenticationViewModel) {
-    if (authenticationViewModel.getAuthentication() != null) {
-      return authenticationViewModel.getAuthentication();
-    }
-    new APlusAuthenticationView(authenticationViewModel).show();
-    return authenticationViewModel.getAuthentication();
   }
 
   @Override

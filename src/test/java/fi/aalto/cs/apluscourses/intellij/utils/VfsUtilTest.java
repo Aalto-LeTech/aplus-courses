@@ -2,6 +2,8 @@ package fi.aalto.cs.apluscourses.intellij.utils;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
@@ -10,11 +12,40 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.testFramework.LightVirtualFile;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.ZonedDateTime;
+import org.junit.Assert;
 import org.junit.Test;
 
 public class VfsUtilTest {
+
+  @Test
+  public void testFileFinderVisitorDoesNotSetPath() {
+    VirtualFile virtualFile = mock(VirtualFile.class);
+    doReturn("not equal").when(virtualFile).getName();
+
+    VfsUtil.FileFinderVirtualFileVisitor visitor =
+        new VfsUtil.FileFinderVirtualFileVisitor("test name");
+    boolean result = visitor.visitFile(virtualFile);
+    Assert.assertTrue(result);
+    Assert.assertNull("The path is null when the visited file has a different name",
+        visitor.getPath());
+  }
+
+  @Test
+  public void testFileFinderVisitorSetsPath() {
+    VirtualFile virtualFile = mock(VirtualFile.class);
+    doReturn("equal").when(virtualFile).getName();
+    doReturn("testPath").when(virtualFile).getPath();
+
+    VfsUtil.FileFinderVirtualFileVisitor visitor =
+        new VfsUtil.FileFinderVirtualFileVisitor("equal");
+    boolean result = visitor.visitFile(virtualFile);
+    Assert.assertFalse(result);
+    Assert.assertEquals("The path is the path of the matching virtual file", Paths.get("testPath"),
+        visitor.getPath());
+  }
 
   @Test
   public void testVisitFileReturnsTrue() {

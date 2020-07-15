@@ -62,6 +62,9 @@
                     text="Import A+ Module"
                     icon="PluginIcons.A_PLUS_DOWNLOAD"/>
         </group>
+        <action id="fi.aalto.cs.apluscourses.intellij.actions.SubmitExerciseAction"
+                class="fi.aalto.cs.apluscourses.intellij.actions.SubmitExerciseAction"
+                text="Submit A+ Exercise" />
         <action id="fi.aalto.cs.apluscourses.intellij.actions.RequiredPluginsCheckerAction"
                 class="fi.aalto.cs.apluscourses.intellij.actions.RequiredPluginsCheckerAction"
                 text="Check Required Plugins"/>

@@ -1,4 +1,4 @@
-package fi.aalto.cs.apluscourses.ui.repl;
+package fi.aalto.cs.apluscourses.ui;
 
 import com.intellij.ui.SimpleListCellRenderer;
 import icons.PluginIcons;

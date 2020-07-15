@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.utils.observable;
 
+import java.util.Objects;
 import java.util.function.BiFunction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -22,7 +23,10 @@ public class CompoundObservableProperty<T1, T2, T> extends ObservableProperty<T>
   private final ObservableProperty<T2> property2;
 
   @NotNull
-  private final BiFunction<T1, T2, T> converter;
+  private BiFunction<T1, T2, T> converter;
+
+  @Nullable
+  private T value;
 
   /**
    * Construct a compound observable property that is dependent on the two given observable
@@ -41,13 +45,33 @@ public class CompoundObservableProperty<T1, T2, T> extends ObservableProperty<T>
     this.property2 = property2;
     this.converter = converter;
 
-    declareDependentOn(property1);
-    declareDependentOn(property2);
+    property1.addValueObserver(this, (self, prop1) -> update(prop1, this.property2.get()));
+    property2.addValueObserver(this, (self, prop2) -> update(this.property1.get(), prop2));
+  }
+
+  /**
+   * Sets the function determining the value of this observable property. The function is
+   * immediately called with the two dependency properties of this observable property. This method
+   * is mainly useful for testing purposes.
+   */
+  public synchronized void setConverter(@NotNull BiFunction<T1, T2, T> converter) {
+    this.converter = converter;
+    update(property1.get(), property2.get());
+  }
+
+  private synchronized void update(@Nullable T1 firstPropertyValue,
+                                   @Nullable T2 secondPropertyValue) {
+    T newValue = converter.apply(firstPropertyValue, secondPropertyValue);
+    boolean changed = !Objects.equals(value, newValue);
+    this.value = newValue;
+    if (changed) {
+      onValueChanged(newValue);
+    }
   }
 
   @Nullable
   @Override
   public T get() {
-    return converter.apply(property1.get(), property2.get());
+    return value;
   }
 }

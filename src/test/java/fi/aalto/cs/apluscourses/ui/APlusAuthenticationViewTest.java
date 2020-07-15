@@ -3,7 +3,6 @@ package fi.aalto.cs.apluscourses.ui;
 import static org.hamcrest.CoreMatchers.containsString;
 
 import com.intellij.testFramework.LightIdeaTestCase;
-import fi.aalto.cs.apluscourses.model.APlusAuthentication;
 import fi.aalto.cs.apluscourses.presentation.APlusAuthenticationViewModel;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
@@ -75,17 +74,6 @@ public class APlusAuthenticationViewTest extends LightIdeaTestCase {
     authenticationView.setInput("not empty");
     Assert.assertNull("The dialog accepts a nonempty input field",
         authenticationView.doValidate());
-  }
-
-  @Test
-  public void testPromptForAuthenticationIfMissing() {
-    APlusAuthenticationViewModel authenticationViewModel = new APlusAuthenticationViewModel(null);
-
-    authenticationViewModel.setToken(new char[] {'x', 'y', 'z'});
-    APlusAuthentication authentication = authenticationViewModel.getAuthentication();
-
-    Assert.assertEquals("Returns the existing authentication", authentication,
-        APlusAuthenticationView.promptForAuthenticationIfMissing(authenticationViewModel));
   }
 
 }

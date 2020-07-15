@@ -3,6 +3,7 @@ package fi.aalto.cs.apluscourses.ui.repl;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import fi.aalto.cs.apluscourses.ui.ModuleComboBoxListRenderer;
 import icons.PluginIcons;
 import javax.swing.JList;
 import org.junit.Test;
