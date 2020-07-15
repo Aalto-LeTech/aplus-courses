@@ -36,15 +36,16 @@ public class ApiTest {
     given()
         .auth()
         .preemptive()
-        .basic("student", "student")
+        .basic("root", "root")
         .when()
         .contentType(ContentType.JSON)
         .get("http://localhost:8000/api/v2/courses/100/exercises/")
         .then()
         .assertThat()
         .statusCode(HttpStatus.SC_OK)
-        .body("results.display_name", hasItems("1. First Module", "1. Second Module"))
-        .body("results.exercises.id", hasItems(300, 301, 302));
+        .body("results.display_name", hasItems("1. First module", "1. Second module"))
+        .body("results.exercises.id[0]", hasItems(300, 301))
+        .body("results.exercises.id[1]", hasItems(302));
   }
 
   @Test
@@ -52,7 +53,7 @@ public class ApiTest {
     given()
         .auth()
         .preemptive()
-        .basic("student", "student")
+        .basic("root", "root")
         .when()
         .contentType(ContentType.JSON)
         .get("http://localhost:8000/api/v2/exercises/301/")
@@ -68,7 +69,7 @@ public class ApiTest {
     given()
         .auth()
         .preemptive()
-        .basic("student", "student")
+        .basic("root", "root")
         .when()
         .contentType(ContentType.JSON)
         .get("http://localhost:8000/api/v2/exercises/301/submissions/me/")
