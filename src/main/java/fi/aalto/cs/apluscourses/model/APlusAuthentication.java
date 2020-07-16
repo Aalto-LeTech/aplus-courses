@@ -1,7 +1,6 @@
 package fi.aalto.cs.apluscourses.model;
 
 import java.util.Arrays;
-
 import org.apache.http.HttpRequest;
 import org.jetbrains.annotations.NotNull;
 

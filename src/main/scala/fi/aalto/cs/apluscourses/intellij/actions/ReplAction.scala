@@ -1,43 +1,37 @@
 package fi.aalto.cs.apluscourses.intellij.actions
 
-import com.intellij.execution.configurations.{ConfigurationFactory, JavaCommandLineState, RunConfiguration, RunProfileState}
+import com.intellij.execution.configurations.{ConfigurationFactory, JavaCommandLineState, RunProfileState}
 import com.intellij.execution.filters.TextConsoleBuilderImpl
-import com.intellij.execution.impl.{RunManagerImpl, RunnerAndConfigurationSettingsImpl}
 import com.intellij.execution.runners.ExecutionEnvironment
-import com.intellij.execution.ui.{ConsoleView, ConsoleViewContentType}
+import com.intellij.execution.ui.ConsoleView
 import com.intellij.execution.{Executor, RunManagerEx}
 import com.intellij.openapi.actionSystem.{AnActionEvent, CommonDataKeys, DataContext}
+import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.module.{Module, ModuleManager}
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ModuleRootManager
 import com.intellij.openapi.util.io.FileUtilRt.toSystemIndependentName
-import fi.aalto.cs.apluscourses.intellij.MyScalaLanguageConsole
+import fi.aalto.cs.apluscourses.intellij.Repl
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings
-import fi.aalto.cs.apluscourses.intellij.utils.ModuleUtils
+import fi.aalto.cs.apluscourses.intellij.utils.ReplUtils
 import fi.aalto.cs.apluscourses.presentation.ReplConfigurationFormModel
 import fi.aalto.cs.apluscourses.ui.repl.{ReplConfigurationDialog, ReplConfigurationForm}
 import org.jetbrains.annotations.NotNull
-import org.jetbrains.plugins.scala.console.ScalaConsoleInfo
 import org.jetbrains.plugins.scala.console.actions.RunConsoleAction
 import org.jetbrains.plugins.scala.console.configuration.ScalaConsoleRunConfiguration
-
-import scala.collection.JavaConverters._
 
 /**
  * Custom class that adjusts Scala Plugin's own RunConsoleAction with A+ requirements.
  */
 class ReplAction extends RunConsoleAction {
 
-
   override def actionPerformed(@NotNull e: AnActionEvent): Unit = {
     val dataContext = e.getDataContext
     val project = CommonDataKeys.PROJECT.getData(dataContext)
-    val console = ScalaConsoleInfo.getConsole(project)
 
     if (project == null) return // scalastyle:ignore
 
     val runManagerEx = RunManagerEx.getInstanceEx(project)
-    val configurationType = getMyConfigurationType
 
     /*
      * The "priority order" is as follows:
@@ -54,8 +48,14 @@ class ReplAction extends RunConsoleAction {
     val selectedModule = getScalaModuleOfEditorFile(project, dataContext)
       .orElse(getScalaModuleOfSelectedFile(project, dataContext))
 
-    val setting = runManagerEx.createConfiguration("Scala REPL", new MyConfigurationFactory())
+    val setting = runManagerEx.createConfiguration("Scala REPL", new ReplConfigurationFactory())
     val configuration = setting.getConfiguration.asInstanceOf[ScalaConsoleRunConfiguration]
+    // here will be a check if that file "repl-commands" exists
+    configuration.setMyConsoleArgs("-usejavacp -i .repl-commands")
+    // this stuff here hides any desired file from project view (be it here for now)
+    val manager = FileTypeManager.getInstance()
+    val existing = manager.getIgnoredFilesList
+    manager.setIgnoredFilesList(existing + ".repl-commands;")
 
     selectedModule match {
       case Some(module) =>
@@ -67,14 +67,14 @@ class ReplAction extends RunConsoleAction {
     RunConsoleAction.runExisting(setting, runManagerEx, project)
   }
 
-  private class MyConfigurationFactory() extends ConfigurationFactory(getMyConfigurationType) {
+  private class ReplConfigurationFactory() extends ConfigurationFactory(getMyConfigurationType) {
     override def createTemplateConfiguration(project: Project): ScalaConsoleRunConfiguration = {
-      new MyConfiguration(project, this, "Scala REPL")
+      new ReplConfiguration(project, this, "Scala REPL")
     }
 
-    private class MyConfiguration(project: Project,
-                                  configurationFactory: ConfigurationFactory,
-                                  name: String)
+    private class ReplConfiguration(project: Project,
+                                    configurationFactory: ConfigurationFactory,
+                                    name: String)
       extends ScalaConsoleRunConfiguration(project, configurationFactory, name) {
 
       private def getModule: Option[Module] = Option(getConfigurationModule.getModule)
@@ -92,7 +92,7 @@ class ReplAction extends RunConsoleAction {
       }
 
       private class MyBuilder(module: Module) extends TextConsoleBuilderImpl(module.getProject) {
-        override def createConsole(): ConsoleView = new MyScalaLanguageConsole(module)
+        override def createConsole(): ConsoleView = new Repl(module)
       }
     }
   }
@@ -115,7 +115,7 @@ class ReplAction extends RunConsoleAction {
     if (PluginSettings.getInstance.shouldShowReplConfigurationDialog) {
       setConfigurationFieldsFromDialog(configuration, project, module)
     } else {
-      setConfigurationFields(configuration, ModuleUtils.getModuleDirectory(module), module)
+      setConfigurationFields(configuration, ReplUtils.getModuleDirectory(module), module)
       true
     }
   }
@@ -141,7 +141,7 @@ class ReplAction extends RunConsoleAction {
 
   private def showReplDialog(@NotNull project: Project,
                              @NotNull module: Module): ReplConfigurationFormModel = {
-    val configModel = new ReplConfigurationFormModel(project, ModuleUtils.getModuleDirectory(module), module.getName)
+    val configModel = new ReplConfigurationFormModel(project, ReplUtils.getModuleDirectory(module), module.getName)
     val configForm = new ReplConfigurationForm(configModel)
     val configDialog = new ReplConfigurationDialog
     configDialog.setReplConfigurationForm(configForm)
@@ -151,13 +151,13 @@ class ReplAction extends RunConsoleAction {
 
   private def getScalaModuleOfEditorFile(@NotNull project: Project,
                                          @NotNull context: DataContext): Option[Module] =
-    ModuleUtils.getModuleOfEditorFile(project, context).filter(hasScalaSdkLibrary)
+    ReplUtils.getModuleOfEditorFile(project, context).filter(hasScalaSdkLibrary)
 
   private def getScalaModuleOfSelectedFile(@NotNull project: Project,
                                            @NotNull context: DataContext): Option[Module] =
-    ModuleUtils.getModuleOfSelectedFile(project, context).filter(hasScalaSdkLibrary)
+    ReplUtils.getModuleOfSelectedFile(project, context).filter(hasScalaSdkLibrary)
 
-  private def hasScalaSdkLibrary(@NotNull module: Module): Boolean = ModuleUtils.nonEmpty(
+  private def hasScalaSdkLibrary(@NotNull module: Module): Boolean = ReplUtils.nonEmpty(
     ModuleRootManager.getInstance(module)
       .orderEntries()
       .librariesOnly()
