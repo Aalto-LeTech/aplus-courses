@@ -23,8 +23,8 @@ public class ModuleSelectionDialog extends DialogWrapper {
   /**
    * Construct a module selection dialog with the given view model.
    */
-  public ModuleSelectionDialog(@Nullable Project project,
-                               @NotNull ModuleSelectionViewModel viewModel) {
+  public ModuleSelectionDialog(@NotNull ModuleSelectionViewModel viewModel,
+                               @Nullable Project project) {
     super(project);
     this.viewModel = viewModel;
     setButtonsAlignment(SwingConstants.CENTER);
@@ -59,5 +59,11 @@ public class ModuleSelectionDialog extends DialogWrapper {
     modulesComboBox.setRenderer(new IconListCellRenderer<>(viewModel.getPrompt(),
         Module::getName, PluginIcons.A_PLUS_MODULE));
     modulesComboBox.selectedItemBindable.bindToSource(viewModel.selectedModule);
+  }
+
+  @FunctionalInterface
+  public interface Factory {
+    ModuleSelectionDialog createDialog(@NotNull ModuleSelectionViewModel viewModel,
+                                       @Nullable Project project);
   }
 }

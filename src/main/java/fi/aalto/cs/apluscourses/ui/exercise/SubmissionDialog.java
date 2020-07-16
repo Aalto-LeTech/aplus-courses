@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class SubmissionDialog extends OurDialogWrapper {
+
   @NotNull
   private final SubmissionViewModel viewModel;
 
@@ -30,8 +31,6 @@ public class SubmissionDialog extends OurDialogWrapper {
 
   @GuiObject
   private JLabel filenames;
-
-  private JLabel ioException;
 
   /**
    * Construct a submission dialog with the given view model.
@@ -47,9 +46,13 @@ public class SubmissionDialog extends OurDialogWrapper {
     groupComboBox.selectedItemBindable.bindToSource(viewModel.selectedGroup);
     registerValidationItem(groupComboBox.selectedItemBindable);
     registerValidationItem(viewModel::validateSubmissionCount);
-    ioException.setText(viewModel.getIoExceptionText());
 
     init();
+  }
+
+  @NotNull
+  public SubmissionViewModel getViewModel() {
+    return viewModel;
   }
 
   @Nullable
@@ -82,5 +85,11 @@ public class SubmissionDialog extends OurDialogWrapper {
 
     submissionCount = new JLabel(String.format("You are about to make submission %d out of %d.",
         viewModel.getCurrentSubmissionNumber(), viewModel.getMaxNumberOfSubmissions()));
+  }
+
+  @FunctionalInterface
+  public interface Factory {
+    SubmissionDialog createDialog(@NotNull SubmissionViewModel viewModel,
+                                  @Nullable Project project);
   }
 }

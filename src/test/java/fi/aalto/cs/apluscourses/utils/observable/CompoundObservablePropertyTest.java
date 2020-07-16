@@ -38,4 +38,24 @@ public class CompoundObservablePropertyTest {
     Assert.assertEquals(Integer.valueOf(2), compound.get());
   }
 
+  @Test
+  public void testSetConverter() {
+    AtomicInteger converterCallCount = new AtomicInteger(0);
+    BinaryOperator<Integer> converter = (a, b) -> {
+      converterCallCount.incrementAndGet();
+      return a - b;
+    };
+
+    CompoundObservableProperty<Integer, Integer, Integer> prop = new CompoundObservableProperty<>(
+        new ObservableReadWriteProperty<>(5),
+        new ObservableReadWriteProperty<>(3),
+        (p1, p2) -> 1
+    );
+    prop.setConverter(converter);
+
+    Assert.assertEquals("The converter is called", 1, converterCallCount.get());
+    Assert.assertEquals("The value returned by the new converter is used",
+        Integer.valueOf(2), prop.get());
+  }
+
 }

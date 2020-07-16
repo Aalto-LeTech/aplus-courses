@@ -29,9 +29,10 @@ public class SubmissionHistory {
    * @throws IOException If an IO error occurs (e.g. network error).
    */
   @NotNull
-  public static SubmissionHistory getSubmissionHistory(
-      long exerciseId, @NotNull APlusAuthentication authentication) throws IOException {
-    URL url = new URL(PluginSettings.A_PLUS_API_BASE_URL + "/exercises/" + exerciseId
+  public static SubmissionHistory forExercise(@NotNull Exercise exercise,
+                                              @NotNull APlusAuthentication authentication)
+      throws IOException {
+    URL url = new URL(PluginSettings.A_PLUS_API_BASE_URL + "/exercises/" + exercise.getId()
         + "/submissions/me/");
     InputStream inputStream = CoursesClient.fetch(url, authentication);
     JSONObject response = new JSONObject(new JSONTokener(inputStream));

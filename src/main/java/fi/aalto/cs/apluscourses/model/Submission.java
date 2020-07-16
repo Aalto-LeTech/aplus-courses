@@ -11,11 +11,14 @@ import org.jetbrains.annotations.NotNull;
 
 public class Submission {
 
-  private final SubmittableExercise exercise;
+  private final Exercise exercise;
+  private final SubmissionInfo submissionInfo;
   private final Path[] filePaths;
   @NotNull
   private final APlusAuthentication authentication;
   private final Group group;
+  @NotNull
+  private final Submitter submitter;
 
   /**
    * Constructs a new object instance.
@@ -25,14 +28,18 @@ public class Submission {
    * @param authentication API authentication.
    * @param group Group in which the submission is made.
    */
-  public Submission(@NotNull SubmittableExercise exercise,
+  public Submission(@NotNull Exercise exercise,
+                    @NotNull SubmissionInfo submissionInfo,
                     @NotNull Path[] filePaths,
                     @NotNull APlusAuthentication authentication,
-                    @NotNull Group group) {
+                    @NotNull Group group,
+                    @NotNull Submitter submitter) {
     this.exercise = exercise;
+    this.submissionInfo = submissionInfo;
     this.filePaths = filePaths;
     this.authentication = authentication;
     this.group = group;
+    this.submitter = submitter;
   }
 
   /**
@@ -46,7 +53,13 @@ public class Submission {
     for (Path path : filePaths) {
       data.put(path.getFileName().toString(), path.toFile());
     }
-    CoursesClient.post(new URL(PluginSettings.A_PLUS_API_BASE_URL + "/exercises/" + exercise.getId()
+    submitter.submit(new URL(PluginSettings.A_PLUS_API_BASE_URL + "/exercises/" + exercise.getId()
         + "/submissions/submit/"), authentication, data);
+  }
+
+  @FunctionalInterface
+  public interface Submitter {
+    void submit(URL url, CoursesClient.Authentication authentication, Map<String, Object> data)
+        throws IOException;
   }
 }
