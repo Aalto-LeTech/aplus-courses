@@ -15,7 +15,8 @@ import org.junit.Test;
 
 public class CourseTest {
 
-  private static final ModelFactory MODEL_FACTORY = new ModelExtensions.TestModelFactory() {};
+  private static final ModelFactory MODEL_FACTORY = new ModelExtensions.TestModelFactory() {
+  };
 
   @Test
   public void testCreateCourse() throws MalformedURLException {
@@ -28,8 +29,10 @@ public class CourseTest {
     Map<String, URL> resourceUrls = new HashMap<>();
     resourceUrls.put("key", new URL("http://localhost:8000"));
     List<String> autoInstallComponents = Arrays.asList(module1name);
+    Map<String, String> replInitialCommands = new HashMap<>();
+    replInitialCommands.put("Module1", "import o1._");
     Course course = new Course("13", "Tester Course", modules, Collections.emptyList(),
-        requiredPlugins, resourceUrls, autoInstallComponents);
+        requiredPlugins, resourceUrls, autoInstallComponents, replInitialCommands);
     assertEquals("The ID of the course should be the same as that given to the constructor",
         "13", course.getId());
     assertEquals("The name of the course should be the same as that given to the constructor",
@@ -47,6 +50,8 @@ public class CourseTest {
     assertEquals(
         "The auto-install components should be the same as those given to the constructor",
         module1name, course.getAutoInstallComponents().get(0).getName());
+    assertEquals("The REPL initial commands for Module1 are correct.", "import o1._",
+        course.getReplInitialCommands().get("Module1"));
   }
 
   @Test
@@ -54,7 +59,8 @@ public class CourseTest {
     Module module1 = new ModelExtensions.TestModule("Test Module");
     Module module2 = new ModelExtensions.TestModule("Awesome Module");
     Course course = new Course("", "", Arrays.asList(module1, module2), Collections.emptyList(),
-        Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList());
+        Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList(),
+        Collections.emptyMap());
     assertSame("Course#getModule should return the correct module",
         module2, course.getComponent("Awesome Module"));
   }
@@ -64,11 +70,11 @@ public class CourseTest {
     String moduleName = "test-module";
     String libraryName = "test-library";
     Module module = new ModelExtensions.TestModule(
-            moduleName, new URL("http://localhost:3000"), "random", null, null, null);
+        moduleName, new URL("http://localhost:3000"), "random", null, null);
     Library library = new ModelExtensions.TestLibrary(libraryName);
     Course course = new Course("", "", Arrays.asList(module), Arrays.asList(library),
-            Collections.emptyMap(), Collections.emptyMap(),
-            Arrays.asList("test-module", "test-library"));
+        Collections.emptyMap(), Collections.emptyMap(),
+        Arrays.asList("test-module", "test-library"), Collections.emptyMap());
     List<Component> autoInstalls = course.getAutoInstallComponents();
     assertEquals("The course has the correct auto-install components", 2, autoInstalls.size());
     assertEquals(moduleName, autoInstalls.get(0).getName());
@@ -79,7 +85,7 @@ public class CourseTest {
   public void testGetModuleWithMissingModule() throws NoSuchComponentException {
     Course course = new Course("Just some ID", "Just some course",
         Collections.emptyList(), Collections.emptyList(), Collections.emptyMap(),
-        Collections.emptyMap(), Collections.emptyList());
+        Collections.emptyMap(), Collections.emptyList(), Collections.emptyMap());
     course.getComponent("Test Module");
   }
 

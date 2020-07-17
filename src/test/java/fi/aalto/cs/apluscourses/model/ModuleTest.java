@@ -26,8 +26,7 @@ public class ModuleTest {
     ZonedDateTime downloadedAt = ZonedDateTime.now();
     List<String> replInitialCommands = new ArrayList<>(Arrays.asList("import o1._"));
 
-    Module module = new ModelExtensions.TestModule(name, url, id, localId, downloadedAt,
-        replInitialCommands);
+    Module module = new ModelExtensions.TestModule(name, url, id, localId, downloadedAt);
     ModuleMetadata metadata = module.getMetadata();
 
     assertEquals("The name of the module should be the same as that given to the constructor",
@@ -38,8 +37,6 @@ public class ModuleTest {
         localId, metadata.getModuleId());
     assertEquals("The metadata should have the correct time stamp",
         downloadedAt, metadata.getDownloadedAt());
-    assertEquals("The REPL initial commands are correct.", replInitialCommands,
-        module.getReplInitialCommands());
   }
 
   @Test

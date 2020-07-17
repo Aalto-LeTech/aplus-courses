@@ -52,6 +52,9 @@ public class Course implements ComponentSource {
   @NotNull
   protected final Map<String, Component> components;
 
+  @NotNull
+  private final Map<String, String> replInitialCommands;
+
   /**
    * Constructs a course with the given parameters.
    *
@@ -68,7 +71,8 @@ public class Course implements ComponentSource {
                 @NotNull List<Library> libraries,
                 @NotNull Map<String, String> requiredPlugins,
                 @NotNull Map<String, URL> resourceUrls,
-                @NotNull List<String> autoInstallComponentNames) {
+                @NotNull List<String> autoInstallComponentNames,
+                @NotNull Map<String, String> replInitialCommands) {
     this.id = id;
     this.name = name;
     this.modules = modules;
@@ -76,8 +80,9 @@ public class Course implements ComponentSource {
     this.resourceUrls = resourceUrls;
     this.libraries = libraries;
     this.autoInstallComponentNames = autoInstallComponentNames;
-    components = Stream.concat(modules.stream(), libraries.stream())
+    this.components = Stream.concat(modules.stream(), libraries.stream())
         .collect(Collectors.toMap(Component::getName, Function.identity()));
+    this.replInitialCommands = replInitialCommands;
   }
 
   @NotNull
@@ -124,8 +129,9 @@ public class Course implements ComponentSource {
     Map<String, URL> resourceUrls = getCourseResourceUrls(jsonObject, sourcePath);
     List<String> autoInstallComponentNames
         = getCourseAutoInstallComponentNames(jsonObject, sourcePath);
+    Map<String, String> replInitialCommands = null;
     return factory.createCourse(courseId, courseName, courseModules, Collections.emptyList(),
-        requiredPlugins, resourceUrls, autoInstallComponentNames);
+        requiredPlugins, resourceUrls, autoInstallComponentNames, replInitialCommands);
   }
 
   /**
@@ -403,5 +409,10 @@ public class Course implements ComponentSource {
 
   public void unregister() {
     // Subclasses may do things.
+  }
+
+  @NotNull
+  public Map<String, String> getReplInitialCommands() {
+    return replInitialCommands;
   }
 }

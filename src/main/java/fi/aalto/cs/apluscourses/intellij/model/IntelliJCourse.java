@@ -45,9 +45,11 @@ class IntelliJCourse extends Course {
                         @NotNull Map<String, String> requiredPlugins,
                         @NotNull Map<String, URL> resourceUrls,
                         @NotNull List<String> autoInstallComponentNames,
+                        @NotNull Map<String, String> replInitialCommands,
                         @NotNull APlusProject project,
                         @NotNull CommonLibraryProvider commonLibraryProvider) {
-    super(id, name, modules, libraries, requiredPlugins, resourceUrls, autoInstallComponentNames);
+    super(id, name, modules, libraries, requiredPlugins, resourceUrls, autoInstallComponentNames,
+        replInitialCommands);
 
     this.project = project;
     this.commonLibraryProvider = commonLibraryProvider;
@@ -99,6 +101,7 @@ class IntelliJCourse extends Course {
   }
 
   private class PlatformListener {
+
     private MessageBusConnection messageBusConnection;
 
     @NotNull

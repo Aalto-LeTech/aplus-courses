@@ -34,11 +34,12 @@ public class IntelliJModelFactory implements ModelFactory {
                              @NotNull List<Library> libraries,
                              @NotNull Map<String, String> requiredPlugins,
                              @NotNull Map<String, URL> resourceUrls,
-                             @NotNull List<String> autoInstallComponentNames) {
+                             @NotNull List<String> autoInstallComponentNames,
+                             @NotNull Map<String, String> replInitialCommands) {
 
     IntelliJCourse course =
         new IntelliJCourse(id, name, modules, libraries, requiredPlugins, resourceUrls,
-            autoInstallComponentNames, project, new CommonLibraryProvider(project));
+            autoInstallComponentNames, replInitialCommands, project, new CommonLibraryProvider(project));
 
     Component.InitializationCallback componentInitializationCallback =
         component -> registerComponentToCourse(component, course);
@@ -57,12 +58,11 @@ public class IntelliJModelFactory implements ModelFactory {
   @Override
   public Module createModule(@NotNull String name,
                              @NotNull URL url,
-                             @NotNull String versionId,
-                             @NotNull List<String> replInitialCommands) {
+                             @NotNull String versionId) {
     ModuleMetadata moduleMetadata = Optional.ofNullable(modulesMetadata.get(name))
         .orElse(new ModuleMetadata(null, null));
     return new IntelliJModule(name, url, versionId, moduleMetadata.getModuleId(),
-        moduleMetadata.getDownloadedAt(), replInitialCommands, project);
+        moduleMetadata.getDownloadedAt(), project);
   }
 
   @Override

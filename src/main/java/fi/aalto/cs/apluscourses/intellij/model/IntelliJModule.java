@@ -40,9 +40,8 @@ class IntelliJModule
                  @NotNull String versionId,
                  @Nullable String localVersionId,
                  @Nullable ZonedDateTime downloadedAt,
-                 @Nullable List<String> replInitialCommands,
                  @NotNull APlusProject project) {
-    super(name, url, versionId, localVersionId, downloadedAt, replInitialCommands);
+    super(name, url, versionId, localVersionId, downloadedAt);
     this.project = project;
   }
 
@@ -73,6 +72,7 @@ class IntelliJModule
   @Override
   public void load() throws ComponentLoadException {
     WriteAction.runAndWait(this::loadInternal);
+    // here goes the files creating
   }
 
   @CalledWithWriteLock

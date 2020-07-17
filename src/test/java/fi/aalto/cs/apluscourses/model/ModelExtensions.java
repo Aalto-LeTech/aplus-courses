@@ -89,16 +89,15 @@ public class ModelExtensions {
     }
 
     public TestModule(@NotNull String name) {
-      this(name, testURL, "", null, null, null);
+      this(name, testURL, "", null, null);
     }
 
     public TestModule(@NotNull String name,
                       @NotNull URL url,
                       @NotNull String versionId,
                       @Nullable String localVersionId,
-                      @Nullable ZonedDateTime downloadedAt,
-                      @Nullable List<String> replInitialCommands) {
-      super(name, url, versionId, localVersionId, downloadedAt, replInitialCommands);
+                      @Nullable ZonedDateTime downloadedAt) {
+      super(name, url, versionId, localVersionId, downloadedAt);
     }
 
     @NotNull
@@ -189,18 +188,19 @@ public class ModelExtensions {
                                @NotNull List<Library> libraries,
                                @NotNull Map<String, String> requiredPlugins,
                                @NotNull Map<String, URL> resourceUrls,
-                               @NotNull List<String> autoInstallComponentNames) {
+                               @NotNull List<String> autoInstallComponentNames,
+                               @NotNull Map<String, String> replInitialCommands) {
       return new Course(
-          id, name, modules, libraries, requiredPlugins, resourceUrls, autoInstallComponentNames
+          id, name, modules, libraries, requiredPlugins, resourceUrls, autoInstallComponentNames,
+          replInitialCommands
       );
     }
 
     @Override
     public Module createModule(@NotNull String name,
                                @NotNull URL url,
-                               @NotNull String versionId,
-                               @Nullable List<String> replInitialCommands) {
-      return new TestModule(name, url, versionId, null, null, replInitialCommands);
+                               @NotNull String versionId) {
+      return new TestModule(name, url, versionId, null, null);
     }
 
     @Override
