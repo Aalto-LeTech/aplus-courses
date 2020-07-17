@@ -1,7 +1,5 @@
 package fi.aalto.cs.apluscourses.model;
 
-import java.util.Arrays;
-import java.util.Collections;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;

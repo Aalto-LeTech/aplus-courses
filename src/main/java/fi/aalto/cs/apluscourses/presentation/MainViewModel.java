@@ -1,6 +1,5 @@
 package fi.aalto.cs.apluscourses.presentation;
 
-import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.InvalidAuthenticationException;
 import fi.aalto.cs.apluscourses.model.Main;
 import fi.aalto.cs.apluscourses.presentation.base.BaseViewModel;

@@ -1,6 +1,5 @@
 package fi.aalto.cs.apluscourses.model;
 
-import fi.aalto.cs.apluscourses.utils.CoursesClient;
 import java.util.Arrays;
 import org.apache.http.HttpRequest;
 import org.jetbrains.annotations.NotNull;
@@ -16,6 +15,7 @@ public class APlusAuthentication implements Authentication {
     this.maxLength = maxLength;
   }
 
+  @Override
   public synchronized void addToRequest(@NotNull HttpRequest request) {
     if (!isSet()) {
       throw new IllegalStateException("Token is not set");

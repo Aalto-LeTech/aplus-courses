@@ -35,7 +35,7 @@ public class APlusAuthenticationTest {
         "Token def", request.getFirstHeader(AUTHORIZATION_HEADER).getValue());
   }
 
-  @Test
+  @Test(expected = IllegalStateException.class)
   public void testClear() {
     Authentication authentication = new APlusAuthentication(3);
 
@@ -43,10 +43,8 @@ public class APlusAuthenticationTest {
 
     HttpRequest request = new HttpGet("http://localhost:1234");
     authentication.clear();
-    authentication.addToRequest(request);
 
-    Assert.assertEquals("The token is cleared", "Token ",
-        request.getFirstHeader(AUTHORIZATION_HEADER).getValue());
+    authentication.addToRequest(request);
   }
 
 }

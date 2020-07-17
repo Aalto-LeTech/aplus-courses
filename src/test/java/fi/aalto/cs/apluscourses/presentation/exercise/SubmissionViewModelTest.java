@@ -2,7 +2,6 @@ package fi.aalto.cs.apluscourses.presentation.exercise;
 
 import static org.junit.Assert.assertNotNull;
 
-import fi.aalto.cs.apluscourses.model.APlusAuthentication;
 import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.SubmissionHistory;
