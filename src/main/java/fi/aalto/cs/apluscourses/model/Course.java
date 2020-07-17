@@ -1,8 +1,6 @@
 package fi.aalto.cs.apluscourses.model;
 
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
-import fi.aalto.cs.apluscourses.utils.ResourceException;
-import fi.aalto.cs.apluscourses.utils.Resources;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
