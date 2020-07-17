@@ -6,6 +6,7 @@ import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 
 public interface ModelFactory {
+
   Course createCourse(@NotNull String id,
                       @NotNull String name,
                       @NotNull List<Module> modules,
@@ -14,7 +15,8 @@ public interface ModelFactory {
                       @NotNull Map<String, URL> resourceUrls,
                       @NotNull List<String> autoInstallComponentNames);
 
-  Module createModule(@NotNull String name, @NotNull URL url, @NotNull String versionId);
+  Module createModule(@NotNull String name, @NotNull URL url, @NotNull String versionId,
+                      @NotNull List<String> replInitialCommands);
 
   Library createLibrary(@NotNull String name);
 }

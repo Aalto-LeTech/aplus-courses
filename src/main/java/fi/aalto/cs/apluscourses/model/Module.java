@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
@@ -22,6 +24,8 @@ public abstract class Module extends Component {
   private String localVersionId;
   @Nullable
   private ZonedDateTime downloadedAt;
+  @Nullable
+  private List<String> replInitialCommands;
 
   /* synchronize with this when accessing variable fields of this class */
   private final Object versionLock = new Object();
@@ -37,12 +41,14 @@ public abstract class Module extends Component {
                 @NotNull URL url,
                 @NotNull String versionId,
                 @Nullable String localVersionId,
-                @Nullable ZonedDateTime downloadedAt) {
+                @Nullable ZonedDateTime downloadedAt,
+                @Nullable List<String> replInitialCommands) {
     super(name);
     this.url = url;
     this.versionId = versionId;
     this.localVersionId = localVersionId;
     this.downloadedAt = downloadedAt;
+    this.replInitialCommands = replInitialCommands;
   }
 
   /**
@@ -55,6 +61,10 @@ public abstract class Module extends Component {
    *   "name": "My Module",
    *   "url": "https://example.com",
    *   "id": "abc",
+   *   "replInitialCommands": [
+   *                            "import o1._",
+   *                            "import o1.train._"
+   *                          ]
    * }
    * </pre>
    *
@@ -72,10 +82,21 @@ public abstract class Module extends Component {
     String name = jsonObject.getString("name");
     URL url = new URL(jsonObject.getString("url"));
     String versionId = jsonObject.optString("id");
+    List<String> replInitialCommands = getReplCommands(jsonObject, "replInitialCommands") ;
     if (versionId == null) {
       versionId = "";
     }
-    return factory.createModule(name, url, versionId);
+    return factory.createModule(name, url, versionId, replInitialCommands);
+  }
+
+  @NotNull
+  public static List<String> getReplCommands(@NotNull JSONObject jsonObject, String key) {
+    return jsonObject
+        .getJSONArray(key)
+        .toList()
+        .stream()
+        .map(String.class::cast)
+        .collect(Collectors.toList());
   }
 
   @Override
@@ -95,7 +116,7 @@ public abstract class Module extends Component {
    * Tells whether or not the module is updatable.
    *
    * @return True, if the module is loaded and the local version is not the newest one; otherwise
-   *         false.
+   * false.
    */
   @Override
   public boolean isUpdatable() {
@@ -158,5 +179,10 @@ public abstract class Module extends Component {
     synchronized (versionLock) {
       return versionId;
     }
+  }
+
+  @Nullable
+  public List<String> getReplInitialCommands() {
+    return replInitialCommands;
   }
 }

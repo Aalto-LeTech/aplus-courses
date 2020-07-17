@@ -55,11 +55,14 @@ public class IntelliJModelFactory implements ModelFactory {
   }
 
   @Override
-  public Module createModule(@NotNull String name, @NotNull URL url, @NotNull String versionId) {
+  public Module createModule(@NotNull String name,
+                             @NotNull URL url,
+                             @NotNull String versionId,
+                             @NotNull List<String> replInitialCommands) {
     ModuleMetadata moduleMetadata = Optional.ofNullable(modulesMetadata.get(name))
         .orElse(new ModuleMetadata(null, null));
-    return new IntelliJModule(name, url, versionId,
-        moduleMetadata.getModuleId(), moduleMetadata.getDownloadedAt(), project);
+    return new IntelliJModule(name, url, versionId, moduleMetadata.getModuleId(),
+        moduleMetadata.getDownloadedAt(), replInitialCommands, project);
   }
 
   @Override

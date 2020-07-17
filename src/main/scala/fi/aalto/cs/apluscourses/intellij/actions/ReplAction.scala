@@ -6,14 +6,15 @@ import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.ui.ConsoleView
 import com.intellij.execution.{Executor, RunManagerEx}
 import com.intellij.openapi.actionSystem.{AnActionEvent, CommonDataKeys, DataContext}
-import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.module.{Module, ModuleManager}
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ModuleRootManager
 import com.intellij.openapi.util.io.FileUtilRt.toSystemIndependentName
 import fi.aalto.cs.apluscourses.intellij.Repl
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings
+import fi.aalto.cs.apluscourses.intellij.services.PluginSettings.MODULE_REPL_INITIAL_COMMANDS_FILE_NAME
 import fi.aalto.cs.apluscourses.intellij.utils.ReplUtils
+import fi.aalto.cs.apluscourses.intellij.utils.ReplUtils.{ignoreFileInProjectView, initialReplCommandsFileExist}
 import fi.aalto.cs.apluscourses.presentation.ReplConfigurationFormModel
 import fi.aalto.cs.apluscourses.ui.repl.{ReplConfigurationDialog, ReplConfigurationForm}
 import org.jetbrains.annotations.NotNull
@@ -50,12 +51,6 @@ class ReplAction extends RunConsoleAction {
 
     val setting = runManagerEx.createConfiguration("Scala REPL", new ReplConfigurationFactory())
     val configuration = setting.getConfiguration.asInstanceOf[ScalaConsoleRunConfiguration]
-    // here will be a check if that file "repl-commands" exists
-    configuration.setMyConsoleArgs("-usejavacp -i .repl-commands")
-    // this stuff here hides any desired file from project view (be it here for now)
-    val manager = FileTypeManager.getInstance()
-    val existing = manager.getIgnoredFilesList
-    manager.setIgnoredFilesList(existing + ".repl-commands;")
 
     selectedModule match {
       case Some(module) =>
@@ -103,6 +98,12 @@ class ReplAction extends RunConsoleAction {
     configuration.setWorkingDirectory(workingDirectory)
     configuration.setModule(module)
     configuration.setName(s"REPL for ${module.getName}")
+
+    if (initialReplCommandsFileExist(MODULE_REPL_INITIAL_COMMANDS_FILE_NAME,
+                                     module.getModuleFilePath)) {
+      configuration.setMyConsoleArgs("-usejavacp -i " + MODULE_REPL_INITIAL_COMMANDS_FILE_NAME)
+      ignoreFileInProjectView(MODULE_REPL_INITIAL_COMMANDS_FILE_NAME, module.getProject)
+    }
   }
 
   /**
@@ -112,6 +113,8 @@ class ReplAction extends RunConsoleAction {
   def setConfigurationConditionally(@NotNull project: Project,
                                     @NotNull module: Module,
                                     @NotNull configuration: ScalaConsoleRunConfiguration): Boolean = {
+
+
     if (PluginSettings.getInstance.shouldShowReplConfigurationDialog) {
       setConfigurationFieldsFromDialog(configuration, project, module)
     } else {

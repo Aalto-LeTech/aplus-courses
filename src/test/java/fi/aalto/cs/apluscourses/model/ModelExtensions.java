@@ -89,15 +89,16 @@ public class ModelExtensions {
     }
 
     public TestModule(@NotNull String name) {
-      this(name, testURL, "", null, null);
+      this(name, testURL, "", null, null, null);
     }
 
     public TestModule(@NotNull String name,
                       @NotNull URL url,
                       @NotNull String versionId,
                       @Nullable String localVersionId,
-                      @Nullable ZonedDateTime downloadedAt) {
-      super(name, url, versionId, localVersionId, downloadedAt);
+                      @Nullable ZonedDateTime downloadedAt,
+                      @Nullable List<String> replInitialCommands) {
+      super(name, url, versionId, localVersionId, downloadedAt, replInitialCommands);
     }
 
     @NotNull
@@ -195,8 +196,11 @@ public class ModelExtensions {
     }
 
     @Override
-    public Module createModule(@NotNull String name, @NotNull URL url, @NotNull String versionId) {
-      return new TestModule(name, url, versionId, null, null);
+    public Module createModule(@NotNull String name,
+                               @NotNull URL url,
+                               @NotNull String versionId,
+                               @Nullable List<String> replInitialCommands) {
+      return new TestModule(name, url, versionId, null, null, replInitialCommands);
     }
 
     @Override

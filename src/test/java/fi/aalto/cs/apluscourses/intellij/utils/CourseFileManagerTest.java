@@ -178,7 +178,7 @@ public class CourseFileManagerTest {
     manager.createAndLoad(project, url);
     for (int i = 0; i < NUM_THREADS; ++i) {
       Module module = new ModelExtensions.TestModule("name" + i, url, "id" + i, "lid" + i,
-          ZonedDateTime.now());
+          ZonedDateTime.now(), null);
       Runnable runnable = () -> {
         try {
           manager.addEntryForModule(module);

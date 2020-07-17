@@ -40,8 +40,9 @@ class IntelliJModule
                  @NotNull String versionId,
                  @Nullable String localVersionId,
                  @Nullable ZonedDateTime downloadedAt,
+                 @Nullable List<String> replInitialCommands,
                  @NotNull APlusProject project) {
-    super(name, url, versionId, localVersionId, downloadedAt);
+    super(name, url, versionId, localVersionId, downloadedAt, replInitialCommands);
     this.project = project;
   }
 
@@ -88,7 +89,6 @@ class IntelliJModule
   public void unload() {
     super.unload();
     WriteAction.runAndWait(this::unloadInternal);
-
   }
 
   @CalledWithWriteLock

@@ -64,7 +64,7 @@ public class CourseTest {
     String moduleName = "test-module";
     String libraryName = "test-library";
     Module module = new ModelExtensions.TestModule(
-            moduleName, new URL("http://localhost:3000"), "random", null, null);
+            moduleName, new URL("http://localhost:3000"), "random", null, null, null);
     Library library = new ModelExtensions.TestLibrary(libraryName);
     Course course = new Course("", "", Arrays.asList(module), Arrays.asList(library),
             Collections.emptyMap(), Collections.emptyMap(),

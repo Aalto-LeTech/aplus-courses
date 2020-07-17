@@ -5,13 +5,17 @@ import static org.junit.Assert.assertEquals;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 
 public class ModuleTest {
 
-  private static final ModelFactory MODEL_FACTORY = new ModelExtensions.TestModelFactory() {};
+  private static final ModelFactory MODEL_FACTORY = new ModelExtensions.TestModelFactory() {
+  };
 
   @Test
   public void testCreateModule() throws MalformedURLException {
@@ -20,8 +24,10 @@ public class ModuleTest {
     String id = "cool id";
     String localId = "meh id";
     ZonedDateTime downloadedAt = ZonedDateTime.now();
+    List<String> replInitialCommands = new ArrayList<>(Arrays.asList("import o1._"));
 
-    Module module = new ModelExtensions.TestModule(name, url, id, localId, downloadedAt);
+    Module module = new ModelExtensions.TestModule(name, url, id, localId, downloadedAt,
+        replInitialCommands);
     ModuleMetadata metadata = module.getMetadata();
 
     assertEquals("The name of the module should be the same as that given to the constructor",
@@ -32,6 +38,8 @@ public class ModuleTest {
         localId, metadata.getModuleId());
     assertEquals("The metadata should have the correct time stamp",
         downloadedAt, metadata.getDownloadedAt());
+    assertEquals("The REPL initial commands are correct.", replInitialCommands,
+        module.getReplInitialCommands());
   }
 
   @Test
