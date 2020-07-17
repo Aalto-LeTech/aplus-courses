@@ -8,6 +8,7 @@ import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.notifications.MissingFileNotification;
+import fi.aalto.cs.apluscourses.intellij.notifications.MissingModuleNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.NotSubmittableNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
@@ -34,6 +35,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.jetbrains.annotations.CalledWithReadLock;
 import org.jetbrains.annotations.NotNull;
@@ -182,9 +184,18 @@ public class SubmitExerciseAction extends AnAction {
         .orElseGet(() -> new Module[0]);
     ModuleSelectionViewModel moduleSelectionViewModel
         = new ModuleSelectionViewModel(modules, project);
-    if (!moduleDialogFactory.createDialog(moduleSelectionViewModel).showAndGet()
-        || moduleSelectionViewModel.getSelectedModule() == null) {
-      return;
+    String moduleName = tryGetExerciseModuleName(course, exercise);
+    if (moduleName == null) {
+      if (!moduleDialogFactory.createDialog(moduleSelectionViewModel).showAndGet()
+          || moduleSelectionViewModel.getSelectedModule() == null) {
+        return;
+      }
+    } else {
+      moduleSelectionViewModel.setSelectedModule(moduleName);
+      if (moduleSelectionViewModel.getSelectedModule() == null) {
+        notifier.notify(new MissingModuleNotification(moduleName), project);
+        return;
+      }
     }
 
     SubmissionViewModel submissionViewModel = new SubmissionViewModel(
@@ -241,6 +252,17 @@ public class SubmitExerciseAction extends AnAction {
       notifyNetworkError(e, project);
       return null;
     }
+  }
+
+  @Nullable
+  private String tryGetExerciseModuleName(@NotNull Course course,
+                                          @NotNull Exercise exercise) {
+    Map<String, String> exerciseModules = course.getExerciseModules().get(exercise.getId());
+    if (exerciseModules == null) {
+      return null;
+    }
+
+    return exerciseModules.get("en");
   }
 
   @CalledWithReadLock
