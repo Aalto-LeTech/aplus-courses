@@ -47,7 +47,7 @@ public class SubmissionDialogTest extends LightIdeaTestCase {
   @NotNull
   private SubmissionViewModel createMockViewModel(@NotNull String exerciseName,
                                                   @NotNull List<Group> availableGroups,
-                                                  @NotNull List<SubmittableFile> files,
+                                                  @NotNull SubmittableFile[] files,
                                                   int numberOfSubmissions,
                                                   int maxNumberOfSubmissions) {
     SubmissionViewModel viewModel = mock(SubmissionViewModel.class);
@@ -65,7 +65,7 @@ public class SubmissionDialogTest extends LightIdeaTestCase {
         createMockViewModel(
             "Cool Name",
             Arrays.asList(new Group(123, Arrays.asList("Jarkko", "Petteri"))),
-            Arrays.asList(new SubmittableFile("file1"), new SubmittableFile("file2")),
+            new SubmittableFile[] { new SubmittableFile("file1"), new SubmittableFile("file2") },
             4,
             10
         )

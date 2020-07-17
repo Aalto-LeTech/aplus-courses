@@ -1,9 +1,13 @@
 package fi.aalto.cs.apluscourses.ui;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.mockito.Mockito.mock;
 
+import com.intellij.openapi.project.Project;
 import com.intellij.testFramework.LightIdeaTestCase;
-import fi.aalto.cs.apluscourses.presentation.APlusAuthenticationViewModel;
+import fi.aalto.cs.apluscourses.model.APlusAuthentication;
+import fi.aalto.cs.apluscourses.model.Authentication;
+import fi.aalto.cs.apluscourses.presentation.AuthenticationViewModel;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
@@ -13,11 +17,11 @@ public class APlusAuthenticationViewTest extends LightIdeaTestCase {
   class TestAuthenticationView extends APlusAuthenticationView {
 
     public TestAuthenticationView() {
-      super(new APlusAuthenticationViewModel(null));
+      super(new AuthenticationViewModel(new APlusAuthentication(10)), mock(Project.class));
     }
 
-    public TestAuthenticationView(APlusAuthenticationViewModel viewModel) {
-      super(viewModel);
+    public TestAuthenticationView(AuthenticationViewModel viewModel) {
+      super(viewModel, mock(Project.class));
     }
 
     public void setInput(@NotNull String text) {
@@ -38,28 +42,31 @@ public class APlusAuthenticationViewTest extends LightIdeaTestCase {
 
   @Test
   public void testSetsViewModelAfterOk() {
-    APlusAuthenticationViewModel authenticationViewModel = new APlusAuthenticationViewModel(null);
-    TestAuthenticationView authenticationView
-        = new TestAuthenticationView(authenticationViewModel);
-    Assert.assertNull(authenticationViewModel.getAuthentication());
+    Authentication authentication = new APlusAuthentication(20);
+    AuthenticationViewModel authenticationViewModel = new AuthenticationViewModel(authentication);
+    TestAuthenticationView authenticationView = new TestAuthenticationView(authenticationViewModel);
+
+    Assert.assertFalse(authentication.isSet());
 
     authenticationView.setInput("token");
     authenticationView.doOKAction();
 
-    Assert.assertNotNull("The authentication dialog modifies the view model",
-        authenticationViewModel.getAuthentication());
+    Assert.assertTrue("The authentication dialog modifies the model", authentication.isSet());
   }
 
   @Test
   public void testDoesNotSetViewModelAfterCancel() {
-    APlusAuthenticationViewModel authenticationViewModel = new APlusAuthenticationViewModel(null);
-    TestAuthenticationView authenticationView
-        = new TestAuthenticationView(authenticationViewModel);
+    Authentication authentication = new APlusAuthentication(20);
+    AuthenticationViewModel authenticationViewModel = new AuthenticationViewModel(authentication);
+    TestAuthenticationView authenticationView = new TestAuthenticationView(authenticationViewModel);
+
+    Assert.assertFalse(authentication.isSet());
+
     authenticationView.setInput("another token");
     authenticationView.doCancelAction();
 
-    Assert.assertNull("The authentication dialog does not modify the view model after cancelling",
-        authenticationViewModel.getAuthentication());
+    Assert.assertFalse("The authentication dialog does not modify the model after cancelling",
+        authentication.isSet());
   }
 
   @Test

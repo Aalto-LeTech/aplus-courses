@@ -11,20 +11,14 @@ public class SubmissionInfoTest {
 
   @Test
   public void testSubmissionInfo() {
-    SubmissionInfo info = new SubmissionInfo(10,
-        Arrays.asList(new SubmittableFile("file1"), new SubmittableFile("file2")));
+    SubmissionInfo info = new SubmissionInfo(10, new SubmittableFile[] {
+        new SubmittableFile("file1"), new SubmittableFile("file2") });
     Assert.assertEquals("The submissions limit is the same as the one given to the constructor",
         10, info.getSubmissionsLimit());
     Assert.assertEquals("The filenames are the same as those given to the constructor",
-        "file1", info.getFiles().get(0).getName());
+        "file1", info.getFiles()[0].getName());
     Assert.assertEquals("The filenames are the same as those given to the constructor",
-        "file2", info.getFiles().get(1).getName());
-  }
-
-  @Test(expected = UnsupportedOperationException.class)
-  public void testGetFilenamesReturnsUnmodifiableList() {
-    SubmissionInfo info = new SubmissionInfo(0, Collections.emptyList());
-    info.getFiles().add(new SubmittableFile("file99"));
+        "file2", info.getFiles()[1].getName());
   }
 
   @Test
@@ -56,7 +50,7 @@ public class SubmissionInfoTest {
     Assert.assertEquals("The submissions limit is the same as that in the JSON",
         13, info.getSubmissionsLimit());
     Assert.assertEquals("The filenames are parsed from the JSON",
-        "coolFilename.scala", info.getFiles().get(0).getName());
+        "coolFilename.scala", info.getFiles()[0].getName());
   }
 
 }

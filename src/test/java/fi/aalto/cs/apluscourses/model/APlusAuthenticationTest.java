@@ -11,8 +11,8 @@ public class APlusAuthenticationTest {
 
   @Test
   public void testAPlusAuthentication() {
-    char[] token = new char[] {'a', 'b', 'c'};
-    APlusAuthentication authentication = new APlusAuthentication(token);
+    Authentication authentication = new APlusAuthentication(3);
+    authentication.setToken(new char[] {'a', 'b', 'c'});
 
     HttpRequest request = new HttpGet("https://example.com");
     authentication.addToRequest(request);
@@ -23,8 +23,9 @@ public class APlusAuthenticationTest {
 
   @Test
   public void testMakesCopyOfArray() {
+    Authentication authentication = new APlusAuthentication(10);
     char[] token = new char[] {'d', 'e', 'f'};
-    APlusAuthentication authentication = new APlusAuthentication(token);
+    authentication.setToken(token);
 
     token[0] = 'g';
     HttpRequest request = new HttpGet("https://example.org");
@@ -36,14 +37,15 @@ public class APlusAuthenticationTest {
 
   @Test
   public void testClear() {
-    char[] token = new char[] {'g', 'h', 'i'};
-    APlusAuthentication authentication = new APlusAuthentication(token);
+    Authentication authentication = new APlusAuthentication(3);
+
+    authentication.setToken(new char[] {'g', 'h', 'i'});
 
     HttpRequest request = new HttpGet("http://localhost:1234");
     authentication.clear();
     authentication.addToRequest(request);
 
-    Assert.assertEquals("The token is cleared", "Token \0\0\0",
+    Assert.assertEquals("The token is cleared", "Token ",
         request.getFirstHeader(AUTHORIZATION_HEADER).getValue());
   }
 

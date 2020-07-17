@@ -1,17 +1,16 @@
 package fi.aalto.cs.apluscourses.model;
 
+import fi.aalto.cs.apluscourses.utils.LongIdObject;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
-public class Exercise {
-
-  private long id;
+public class Exercise extends LongIdObject {
 
   @NotNull
   private String name;
 
   public Exercise(long id, @NotNull String name) {
-    this.id = id;
+    super(id);
     this.name = name;
   }
 
@@ -27,10 +26,6 @@ public class Exercise {
     long id = jsonObject.getLong("id");
     String name = jsonObject.getString("display_name");
     return new Exercise(id, name);
-  }
-
-  public long getId() {
-    return id;
   }
 
   @NotNull

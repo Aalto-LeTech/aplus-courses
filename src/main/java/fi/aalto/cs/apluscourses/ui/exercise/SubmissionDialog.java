@@ -4,10 +4,10 @@ import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.SubmittableFile;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionViewModel;
+import fi.aalto.cs.apluscourses.ui.Dialog;
 import fi.aalto.cs.apluscourses.ui.GuiObject;
 import fi.aalto.cs.apluscourses.ui.base.OurComboBox;
 import fi.aalto.cs.apluscourses.ui.base.OurDialogWrapper;
-import java.util.List;
 import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -50,11 +50,6 @@ public class SubmissionDialog extends OurDialogWrapper {
     init();
   }
 
-  @NotNull
-  public SubmissionViewModel getViewModel() {
-    return viewModel;
-  }
-
   @Nullable
   @Override
   protected JComponent createCenterPanel() {
@@ -85,11 +80,5 @@ public class SubmissionDialog extends OurDialogWrapper {
 
     submissionCount = new JLabel(String.format("You are about to make submission %d out of %d.",
         viewModel.getCurrentSubmissionNumber(), viewModel.getMaxNumberOfSubmissions()));
-  }
-
-  @FunctionalInterface
-  public interface Factory {
-    SubmissionDialog createDialog(@NotNull SubmissionViewModel viewModel,
-                                  @Nullable Project project);
   }
 }

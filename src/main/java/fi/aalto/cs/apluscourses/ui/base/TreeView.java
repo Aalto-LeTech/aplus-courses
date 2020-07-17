@@ -7,12 +7,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Optional;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import org.jetbrains.annotations.NotNull;
@@ -40,9 +41,22 @@ public class TreeView extends Tree {
    */
   public void setViewModel(@Nullable TreeViewModel viewModel) {
     if (viewModel != null) {
-      setModel(viewModel.toTreeModel());
+      setModel(new DefaultTreeModel(createNode(viewModel)));
     }
     selectedItem = null;
+  }
+
+  @NotNull
+  private static DefaultMutableTreeNode createNode(@NotNull TreeViewModel tree) {
+    List<? extends TreeViewModel> subtrees = tree.getSubtrees();
+    boolean allowsChildren = subtrees != null;
+    DefaultMutableTreeNode node = new DefaultMutableTreeNode(tree, allowsChildren);
+    if (allowsChildren) {
+      for (TreeViewModel subtree : subtrees) {
+        node.add(createNode(subtree));
+      }
+    }
+    return node;
   }
 
   public void addNodeAppliedListener(ActionListener listener) {

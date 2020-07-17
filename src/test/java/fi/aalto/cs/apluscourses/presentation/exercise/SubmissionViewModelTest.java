@@ -20,8 +20,7 @@ public class SubmissionViewModelTest {
   public void testValidation() {
     String fileName = "some.file";
     SubmittableFile file = new SubmittableFile(fileName);
-    List<SubmittableFile> files = new ArrayList<>();
-    files.add(file);
+    SubmittableFile[] files = new SubmittableFile[] { file };
 
     Exercise exercise = new Exercise(100, "Exercise");
     SubmissionInfo submissionInfo = new SubmissionInfo(4, files);
@@ -35,14 +34,11 @@ public class SubmissionViewModelTest {
     List<Group> groups = new ArrayList<>();
     groups.add(group);
 
-    APlusAuthentication auth = new APlusAuthentication("deadbeef".toCharArray());
-
     Path path = Paths.get(fileName);
     Path[] paths = new Path[] { path };
 
     SubmissionViewModel submissionViewModel =
-        new SubmissionViewModel(exercise, submissionInfo, history, groups, auth, paths,
-            (a,b,c) -> { });
+        new SubmissionViewModel(exercise, submissionInfo, history, groups, paths);
 
     assertNotNull("The validation should fail when no group is yet selected",
         submissionViewModel.selectedGroup.validate());

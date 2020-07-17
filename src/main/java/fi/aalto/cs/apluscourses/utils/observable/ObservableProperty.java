@@ -49,8 +49,12 @@ public abstract class ObservableProperty<T> {
     callback.valueChanged(observer, get());
   }
 
+  public <O> void addValueObserver(@NotNull O observer, @NotNull SimpleCallback<O> callback) {
+    addValueObserver(observer, new CallbackWrapper<>(callback));
+  }
+
   public void declareDependentOn(@NotNull ObservableProperty<?> property) {
-    property.addValueObserver(this, (self, dummy) -> self.onValueChanged(self.get()));
+    property.addValueObserver(this, ObservableProperty<T>::onValueChangedInternal);
   }
 
   @Nullable
@@ -60,8 +64,8 @@ public abstract class ObservableProperty<T> {
     throw new UnsupportedOperationException();
   }
 
-  public synchronized void removeValueObserver(Object observer) {
-    observers.remove(observer);
+  private void onValueChangedInternal() {
+    onValueChanged(get());
   }
 
   protected synchronized void onValueChanged(@Nullable T value) {
@@ -69,7 +73,11 @@ public abstract class ObservableProperty<T> {
       entry.getValue().valueChangedUntyped(entry.getKey(), value);
     }
   }
-  
+
+  public synchronized void removeValueObserver(Object observer) {
+    observers.remove(observer);
+  }
+
   public ValidationError validate() {
     return validator.validate(get());
   }
@@ -83,9 +91,28 @@ public abstract class ObservableProperty<T> {
     }
   }
 
+  public interface SimpleCallback<O> {
+    void valueChanged(@NotNull O observer);
+  }
+
+  private static class CallbackWrapper<O, T> implements Callback<O, T> {
+
+    @NotNull
+    private final SimpleCallback<O> callback;
+
+    public CallbackWrapper(@NotNull SimpleCallback<O> callback) {
+      this.callback = callback;
+    }
+
+    @Override
+    public void valueChanged(@NotNull O observer, @Nullable T value) {
+      callback.valueChanged(observer);
+    }
+  }
+
   @FunctionalInterface
   public static interface Validator<T> {
     @Nullable
-    ValidationError validate(T value);
+    ValidationError validate(@Nullable T value);
   }
 }

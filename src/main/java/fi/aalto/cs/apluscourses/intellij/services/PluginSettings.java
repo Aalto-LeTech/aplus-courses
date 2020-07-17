@@ -8,6 +8,8 @@ import com.intellij.notification.Notifications;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.project.ProjectManagerListener;
+import fi.aalto.cs.apluscourses.dal.APlusExerciseDataSource;
+import fi.aalto.cs.apluscourses.model.Main;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModelUpdater;
 import java.util.Arrays;
@@ -42,7 +44,7 @@ public class PluginSettings implements MainViewModelProvider {
   public static final String COURSE_CONFIGURATION_FILE_URL
       = "https://grader.cs.hut.fi/static/O1_2020/projects/o1_course_config.json";
 
-  public static final String A_PLUS_API_BASE_URL = "https://plus.cs.aalto.fi/api/v2";
+  public static final String A_PLUS_API_BASE_URL = "https://minus.cs.aalto.fi/api/v2";
 
   //  15 minutes in milliseconds
   public static final long MAIN_VIEW_MODEL_UPDATE_INTERVAL = 15L * 60L * 1000L;
@@ -117,7 +119,7 @@ public class PluginSettings implements MainViewModelProvider {
   @NotNull
   private MainViewModel createNewMainViewModel(@NotNull Project project) {
     ProjectManager.getInstance().addProjectManagerListener(project, projectManagerListener);
-    return new MainViewModel();
+    return new MainViewModel(new Main(new APlusExerciseDataSource()));
   }
 
   /**

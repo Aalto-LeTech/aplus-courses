@@ -3,13 +3,14 @@ package fi.aalto.cs.apluscourses.ui.base;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
+import fi.aalto.cs.apluscourses.ui.Dialog;
 import fi.aalto.cs.apluscourses.ui.utils.ValidationItem;
 import fi.aalto.cs.apluscourses.utils.observable.ValidationError;
 import java.util.ArrayList;
 import java.util.List;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class OurDialogWrapper extends DialogWrapper {
+public abstract class OurDialogWrapper extends DialogWrapper implements Dialog {
   private final List<ValidationItem> validationItems = new ArrayList<>();
 
   protected OurDialogWrapper(@Nullable Project project) {

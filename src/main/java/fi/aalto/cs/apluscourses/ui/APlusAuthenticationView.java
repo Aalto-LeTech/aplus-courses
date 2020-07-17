@@ -1,8 +1,9 @@
 package fi.aalto.cs.apluscourses.ui;
 
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
-import fi.aalto.cs.apluscourses.presentation.APlusAuthenticationViewModel;
+import fi.aalto.cs.apluscourses.presentation.AuthenticationViewModel;
 import java.util.Arrays;
 import javax.swing.Action;
 import javax.swing.JComponent;
@@ -17,13 +18,14 @@ public class APlusAuthenticationView extends DialogWrapper {
   protected JPasswordField inputField;
   private JPanel basePanel;
 
-  APlusAuthenticationViewModel authenticationViewModel;
+  AuthenticationViewModel authenticationViewModel;
 
   /**
    * Construct an instance with the given authentication view model.
    */
-  public APlusAuthenticationView(@NotNull APlusAuthenticationViewModel authenticationViewModel) {
-    super(authenticationViewModel.getProject());
+  public APlusAuthenticationView(@NotNull AuthenticationViewModel authenticationViewModel,
+                                 @Nullable Project project) {
+    super(project);
     this.authenticationViewModel = authenticationViewModel;
     setTitle("A+ Token");
     setButtonsAlignment(SwingConstants.CENTER);
@@ -53,10 +55,16 @@ public class APlusAuthenticationView extends DialogWrapper {
   @Nullable
   @Override
   protected ValidationInfo doValidate() {
-    if (inputField.getPassword().length != 0) {
-      return null;
+    int length = inputField.getPassword().length;
+    int maxLength = authenticationViewModel.getMaxLength();
+    if (length == 0) {
+      return new ValidationInfo("Token must not be empty", inputField);
     }
-    return new ValidationInfo("Token must not be empty", inputField);
+    if (length > maxLength) {
+      return new ValidationInfo(String.format("Token must not be longer than %d characters",
+          maxLength), inputField);
+    }
+    return null;
   }
 
 }

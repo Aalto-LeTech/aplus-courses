@@ -1,6 +1,5 @@
 package fi.aalto.cs.apluscourses.presentation.exercise;
 
-import fi.aalto.cs.apluscourses.model.APlusAuthentication;
 import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.Submission;
@@ -27,22 +26,10 @@ public class SubmissionViewModel {
 
   private final List<Group> availableGroups;
 
-  private final APlusAuthentication authentication;
-
   private final Path[] filePaths;
-  @NotNull
-  private final Submission.Submitter submitter;
 
   public final ObservableProperty<Group> selectedGroup =
       new ObservableReadWriteProperty<>(null, SubmissionViewModel::validateGroupSelection);
-
-  public final ObservableProperty<String> selectedModule =
-      new ObservableReadWriteProperty<>(null, SubmissionViewModel::validateModuleSelection);
-
-  @Nullable
-  private static ValidationError validateModuleSelection(@Nullable String module) {
-    return module == null ? new ModuleNotSelectedError() : null;
-  }
 
   @Nullable
   private static ValidationError validateGroupSelection(@Nullable Group group) {
@@ -56,16 +43,12 @@ public class SubmissionViewModel {
                              @NotNull SubmissionInfo submissionInfo,
                              @NotNull SubmissionHistory submissionHistory,
                              @NotNull List<Group> availableGroups,
-                             @NotNull APlusAuthentication authentication,
-                             @NotNull Path[] filePaths,
-                             @NotNull Submission.Submitter submitter) {
+                             @NotNull Path[] filePaths) {
     this.exercise = exercise;
     this.submissionInfo = submissionInfo;
     this.submissionHistory = submissionHistory;
     this.availableGroups = availableGroups;
-    this.authentication = authentication;
     this.filePaths = filePaths;
-    this.submitter = submitter;
   }
 
   @NotNull
@@ -79,7 +62,7 @@ public class SubmissionViewModel {
   }
 
   @NotNull
-  public List<SubmittableFile> getFiles() {
+  public SubmittableFile[] getFiles() {
     return submissionInfo.getFiles();
   }
 
@@ -93,7 +76,7 @@ public class SubmissionViewModel {
 
   public Submission buildSubmission() {
     Group group = Objects.requireNonNull(selectedGroup.get());
-    return new Submission(exercise, submissionInfo, filePaths, authentication, group, submitter);
+    return new Submission(exercise, submissionInfo, filePaths, group);
   }
 
   public ValidationError validateSubmissionCount() {

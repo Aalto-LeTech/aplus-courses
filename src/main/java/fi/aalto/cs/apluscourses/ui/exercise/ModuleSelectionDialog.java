@@ -5,6 +5,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
 import fi.aalto.cs.apluscourses.presentation.ModuleSelectionViewModel;
+import fi.aalto.cs.apluscourses.ui.Dialog;
 import fi.aalto.cs.apluscourses.ui.IconListCellRenderer;
 import fi.aalto.cs.apluscourses.ui.base.OurComboBox;
 import icons.PluginIcons;
@@ -15,8 +16,10 @@ import javax.swing.SwingConstants;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class ModuleSelectionDialog extends DialogWrapper {
-  private ModuleSelectionViewModel viewModel;
+public class ModuleSelectionDialog extends DialogWrapper
+    implements Dialog {
+
+  private final ModuleSelectionViewModel viewModel;
   private JPanel basePanel;
   private OurComboBox<Module> modulesComboBox;
 
@@ -59,11 +62,5 @@ public class ModuleSelectionDialog extends DialogWrapper {
     modulesComboBox.setRenderer(new IconListCellRenderer<>(viewModel.getPrompt(),
         Module::getName, PluginIcons.A_PLUS_MODULE));
     modulesComboBox.selectedItemBindable.bindToSource(viewModel.selectedModule);
-  }
-
-  @FunctionalInterface
-  public interface Factory {
-    ModuleSelectionDialog createDialog(@NotNull ModuleSelectionViewModel viewModel,
-                                       @Nullable Project project);
   }
 }

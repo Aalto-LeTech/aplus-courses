@@ -1,311 +1,276 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-import com.intellij.notification.Notification;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
-import com.intellij.testFramework.LightIdeaTestCase;
 
-import fi.aalto.cs.apluscourses.intellij.model.FileFinder;
+import fi.aalto.cs.apluscourses.intellij.DialogHelper;
 import fi.aalto.cs.apluscourses.intellij.notifications.MissingFileNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.NotSubmittableNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
+import fi.aalto.cs.apluscourses.intellij.services.Dialogs;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
-import fi.aalto.cs.apluscourses.model.APlusAuthentication;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Exercise;
+import fi.aalto.cs.apluscourses.model.ExerciseDataSource;
+import fi.aalto.cs.apluscourses.model.ExerciseGroup;
+import fi.aalto.cs.apluscourses.model.FileDoesNotExistException;
+import fi.aalto.cs.apluscourses.model.FileFinder;
 import fi.aalto.cs.apluscourses.model.Group;
+import fi.aalto.cs.apluscourses.model.Main;
+import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.model.Submission;
-import fi.aalto.cs.apluscourses.model.SubmissionHistory;
 import fi.aalto.cs.apluscourses.model.SubmissionInfo;
 import fi.aalto.cs.apluscourses.model.SubmittableFile;
-import fi.aalto.cs.apluscourses.presentation.APlusAuthenticationViewModel;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import fi.aalto.cs.apluscourses.presentation.ModuleSelectionViewModel;
-import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionViewModel;
-import fi.aalto.cs.apluscourses.ui.exercise.ModuleSelectionDialog;
-import fi.aalto.cs.apluscourses.ui.exercise.SubmissionDialog;
-import fi.aalto.cs.apluscourses.utils.observable.CompoundObservableProperty;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 
-public class SubmitExerciseActionTest extends LightIdeaTestCase {
+public class SubmitExerciseActionTest {
 
-  private AnActionEvent actionEvent;
+  Course course;
+  Exercise exercise;
+  Group group;
+  List<Group> groups;
+  ExerciseGroup exerciseGroup;
+  List<ExerciseGroup> exerciseGroups;
+  String fileName;
+  SubmittableFile file;
+  SubmissionInfo submissionInfo;
+  ExerciseDataSource exerciseDataSource;
+  Main main;
+  MainViewModel mainViewModel;
+  CourseViewModel courseViewModel;
+  ExercisesTreeViewModel exercises;
+  String moduleName;
+  Path modulePath;
+  String moduleFilePath;
+  Module module;
+  Project project;
+  Path filePath;
+  DialogHelper<ModuleSelectionViewModel> moduleSelectionDialogHelper;
+  DialogHelper<SubmissionViewModel> submissionDialogHelper;
+  Dialogs.Factory<ModuleSelectionViewModel> moduleSelectionDialogFactory;
+  Dialogs.Factory<SubmissionViewModel> submissionDialogFactory;
+  MainViewModelProvider mainVmProvider;
+  FileFinder fileFinder;
+  SubmitExerciseAction.ModuleSource moduleSource;
+  Dialogs dialogs;
+  Notifier notifier;
+  AnActionEvent event;
+  SubmitExerciseAction action;
 
-  private Module module;
+  /**
+   * Called before each test.
+   *
+   * @throws IOException Never.
+   * @throws FileDoesNotExistException Never.
+   */
+  @SuppressWarnings("unchecked")
+  @Before
+  public void setUp() throws IOException, FileDoesNotExistException {
+    course = new ModelExtensions.TestCourse("91");
+    exercise = new Exercise(12, "Test exercise");
+    group = new Group(124, Collections.singletonList("Only you"));
+    groups = Collections.singletonList(group);
+    exerciseGroup = new ExerciseGroup("Test EG", Collections.singletonList(exercise));
+    exerciseGroups = Collections.singletonList(exerciseGroup);
+    fileName = "some_file.scala";
+    file = new SubmittableFile(fileName);
+    submissionInfo = new SubmissionInfo(1, new SubmittableFile[]{file});
+    exerciseDataSource = spy(new ModelExtensions.TestExerciseDataSource());
+    doReturn(groups).when(exerciseDataSource).getGroups(course);
+    doReturn(submissionInfo).when(exerciseDataSource).getSubmissionInfo(exercise);
+    doReturn(exerciseGroups).when(exerciseDataSource).getExerciseGroups(course);
+    main = new Main(exerciseDataSource);
 
-  private MainViewModelProvider mainViewModelProvider;
-
-  private SubmitExerciseAction.SubmissionInfoFactory submissionInfoFactory;
-  private AtomicInteger submissionInfoCallCount = new AtomicInteger(0);
-
-  private SubmitExerciseAction.SubmissionHistoryFactory submissionHistoryFactory;
-  private AtomicInteger submissionHistoryCallCount = new AtomicInteger(0);
-
-  private SubmitExerciseAction.GroupsFactory groupsFactory;
-  private AtomicInteger groupsCallCount = new AtomicInteger(0);
-
-  private FileFinder fileFinder;
-
-  private ModuleSelectionDialog.Factory moduleDialogFactory;
-
-  private SubmissionDialog.Factory submissionDialogFactory;
-  private AtomicBoolean submissionDialogIsShown;
-
-  private TestNotifier notifier;
-
-  private Submission.Submitter submitter;
-
-  private final Group selfGroup = new Group(0, Collections.singletonList("Submit alone"));
-
-  class TestModuleSelectionDialog extends ModuleSelectionDialog {
-
-    private ModuleSelectionViewModel viewModel;
-    private boolean ok;
-
-    public TestModuleSelectionDialog(ModuleSelectionViewModel viewModel,
-                                     Project project,
-                                     boolean ok) {
-      super(viewModel, project);
-      this.viewModel = viewModel;
-      this.ok = ok;
-    }
-
-    @Override
-    public boolean showAndGet() {
-      viewModel.selectedModule.set(module);
-      return ok;
-    }
-  }
-
-  class TestSubmissionDialog extends SubmissionDialog {
-
-    public TestSubmissionDialog(SubmissionViewModel viewModel, Project project) {
-      super(viewModel, project);
-    }
-
-    @Override
-    public boolean showAndGet() {
-      getViewModel().selectedGroup.set(selfGroup);
-      submissionDialogIsShown.set(true);
-      return true;
-    }
-
-  }
-
-  class TestNotifier implements Notifier {
-    private Notification notification;
-
-    @Override
-    public void notify(@NotNull Notification notification, @Nullable Project project) {
-      this.notification = notification;
-    }
-
-    public Notification getNotification() {
-      return notification;
-    }
-  }
-
-  @Override
-  protected void setUp() throws Exception {
-    super.setUp();
-
-    actionEvent = mock(AnActionEvent.class);
-    Project project = mock(Project.class);
-    doReturn(project).when(actionEvent).getProject();
-
-    module = mock(Module.class);
-    doReturn(Paths.get("parent", "child").toString())
-        .when(module).getModuleFilePath();
-    doReturn("name").when(module).getName();
-
-    ExerciseViewModel exercise = new ExerciseViewModel(new Exercise(0, ""));
-    ExercisesTreeViewModel exercisesViewModel = mock(ExercisesTreeViewModel.class);
-    doReturn(exercise).when(exercisesViewModel).getSelectedExercise();
-
-    MainViewModel mainViewModel = new MainViewModel();
-    CourseViewModel courseViewModel = mock(CourseViewModel.class);
-    doReturn(mock(Course.class)).when(courseViewModel).getModel();
-    APlusAuthenticationViewModel authenticationViewModel = mock(APlusAuthenticationViewModel.class);
-    doReturn(mock(APlusAuthentication.class)).when(authenticationViewModel).getAuthentication();
-    ((CompoundObservableProperty) mainViewModel.exercisesViewModel).setConverter(
-        (p1, p2) -> exercisesViewModel);
+    mainViewModel = new MainViewModel(main);
+    courseViewModel = new CourseViewModel(course);
     mainViewModel.courseViewModel.set(courseViewModel);
-    mainViewModel.authenticationViewModel.set(authenticationViewModel);
+    exercises = new ExercisesTreeViewModel(Collections.singletonList(exerciseGroup));
+    mainViewModel.exercisesViewModel.set(exercises);
 
-    mainViewModelProvider = p -> mainViewModel;
+    exercises.getGroupViewModels().get(0).getExerciseViewModels().get(0).setSelected(true);
 
-    submissionInfoFactory = (ex, auth) -> {
-      submissionInfoCallCount.incrementAndGet();
-      return new SubmissionInfo(10, Collections.singletonList(new SubmittableFile("file.scala")));
-    };
+    moduleName = "MyModule";
+    modulePath = Paths.get(moduleName);
+    moduleFilePath = modulePath.resolve("MyModule.iml").toString();
+    module = mock(Module.class);
+    doReturn(moduleFilePath).when(module).getModuleFilePath();
+    doReturn(moduleName).when(module).getName();
 
-    submissionHistoryFactory = (ex, auth) -> {
-      submissionHistoryCallCount.incrementAndGet();
-      return new SubmissionHistory(4);
-    };
+    project = mock(Project.class);
 
-    groupsFactory = (course, auth) -> {
-      groupsCallCount.incrementAndGet();
-      return Collections.singletonList(selfGroup);
-    };
+    filePath = modulePath.resolve(fileName);
 
-    fileFinder = (directory, name) -> Paths.get("file.scala");
+    mainVmProvider = mock(MainViewModelProvider.class);
+    doReturn(mainViewModel).when(mainVmProvider).getMainViewModel(project);
 
-    moduleDialogFactory = (viewModel, proj) -> new TestModuleSelectionDialog(viewModel, proj, true);
+    fileFinder = mock(FileFinder.class);
+    doReturn(filePath).when(fileFinder).tryFindFile(modulePath, fileName);
+    doCallRealMethod().when(fileFinder).findFile(any(), any());
+    doCallRealMethod().when(fileFinder).findFiles(any(), any());
 
-    submissionDialogFactory = TestSubmissionDialog::new;
-    submissionDialogIsShown = new AtomicBoolean(false);
+    moduleSource = mock(SubmitExerciseAction.ModuleSource.class);
+    doReturn(new Module[] { module }).when(moduleSource).getModules(project);
 
-    notifier = new TestNotifier();
+    dialogs = new Dialogs();
 
-    submitter = (url, authentication, data) -> { };
+    notifier = mock(Notifier.class);
+
+    event = mock(AnActionEvent.class);
+    doReturn(project).when(event).getProject();
+
+    moduleSelectionDialogHelper = spy(new DialogHelper<>(viewModel -> {
+      viewModel.selectedModule.set(viewModel.getModules()[0]);
+      return true;
+    }));
+    moduleSelectionDialogFactory = new DialogHelper.Factory<>(moduleSelectionDialogHelper, project);
+    dialogs.register(ModuleSelectionViewModel.class, moduleSelectionDialogFactory);
+
+    submissionDialogHelper = spy(new DialogHelper<>(viewModel -> {
+      viewModel.selectedGroup.set(viewModel.getAvailableGroups().get(0));
+      return true;
+    }));
+    submissionDialogFactory = new DialogHelper.Factory<>(submissionDialogHelper, project);
+    dialogs.register(SubmissionViewModel.class, submissionDialogFactory);
+
+    action = new SubmitExerciseAction(mainVmProvider, fileFinder, moduleSource, dialogs, notifier);
   }
 
   @Test
-  public void testSubmitExerciseAction() {
-    SubmitExerciseAction action = new SubmitExerciseAction(
-        mainViewModelProvider,
-        submissionInfoFactory,
-        submissionHistoryFactory,
-        groupsFactory,
-        fileFinder,
-        moduleDialogFactory,
-        submissionDialogFactory,
-        notifier,
-        submitter
-    );
-    action.actionPerformed(actionEvent);
+  public void testSubmitExerciseAction() throws IOException {
+    action.actionPerformed(event);
 
-    Assert.assertEquals("The action fetches information necessary for submission",
-        1, submissionInfoCallCount.get());
-    Assert.assertEquals("The action fetches the submission history",
-        1, submissionHistoryCallCount.get());
-    Assert.assertEquals("The action fetches the available groups", 1, groupsCallCount.get());
+    ArgumentCaptor<Submission> submissionArg = ArgumentCaptor.forClass(Submission.class);
+    verify(exerciseDataSource).submit(submissionArg.capture());
+
+    Submission submission = submissionArg.getValue();
+    assertEquals(group, submission.getGroup());
+    assertEquals(exercise, submission.getExercise());
+    assertThat(submission.getFilePaths(),
+        is(new Path[] { filePath }));
+
+    verifyNoInteractions(notifier);
   }
 
   @Test
-  public void testNotifiesOfMissingFile() {
-    SubmitExerciseAction action = new SubmitExerciseAction(
-        mainViewModelProvider,
-        submissionInfoFactory,
-        submissionHistoryFactory,
-        groupsFactory,
-        (directory, filename) -> null,
-        moduleDialogFactory,
-        submissionDialogFactory,
-        notifier,
-        submitter
-    );
-    action.actionPerformed(actionEvent);
+  public void testNotifiesOfMissingFile() throws FileDoesNotExistException, IOException {
+    doReturn(null).when(fileFinder).tryFindFile(modulePath, fileName);
 
-    Assert.assertFalse("The submission dialog is not shown", submissionDialogIsShown.get());
-    Assert.assertTrue("A notification of the missing file is shown",
-        notifier.getNotification() instanceof MissingFileNotification);
+    action.actionPerformed(event);
+
+    verifyNoInteractions(submissionDialogHelper);
+    verify(exerciseDataSource, never()).submit(any());
+
+    ArgumentCaptor<MissingFileNotification> notificationArg =
+        ArgumentCaptor.forClass(MissingFileNotification.class);
+
+    verify(notifier).notify(notificationArg.capture(), eq(project));
+
+    MissingFileNotification notification = notificationArg.getValue();
+    assertEquals(fileName, notification.getFilename());
+    assertEquals(modulePath, notification.getPath());
+
+    verifyNoMoreInteractions(notifier);
   }
 
   @Test
-  public void testNotifiesExerciseNotSubmittable() {
-    SubmitExerciseAction action = new SubmitExerciseAction(
-        mainViewModelProvider,
-        (exercise, authentication) -> new SubmissionInfo(10, Collections.emptyList()),
-        submissionHistoryFactory,
-        groupsFactory,
-        fileFinder,
-        moduleDialogFactory,
-        submissionDialogFactory,
-        notifier,
-        submitter
-    );
-    action.actionPerformed(actionEvent);
+  public void testNotifiesExerciseNotSubmittable() throws IOException {
+    doReturn(new SubmissionInfo(1, new SubmittableFile[0]))
+        .when(exerciseDataSource)
+        .getSubmissionInfo(exercise);
 
-    Assert.assertFalse("The submission dialog is not shown", submissionDialogIsShown.get());
-    Assert.assertTrue("A notification of the error is shown",
-        notifier.getNotification() instanceof NotSubmittableNotification);
+    action.actionPerformed(event);
+
+    verifyNoInteractions(moduleSelectionDialogHelper);
+    verifyNoInteractions(submissionDialogHelper);
+    verify(exerciseDataSource, never()).submit(any());
+
+    verify(notifier).notify(any(NotSubmittableNotification.class), eq(project));
+
+    verifyNoMoreInteractions(notifier);
   }
 
   @Test
-  public void testNotifiesOfNetworkError1() {
-    SubmitExerciseAction action = new SubmitExerciseAction(
-        mainViewModelProvider,
-        submissionInfoFactory,
-        (exercise, authentication) -> {
-          throw new IOException();
-        },
-        groupsFactory,
-        fileFinder,
-        moduleDialogFactory,
-        submissionDialogFactory,
-        notifier,
-        submitter
-    );
-    action.actionPerformed(actionEvent);
+  public void testNotifiesOfNetworkError1() throws IOException {
+    IOException exception = new IOException();
+    doThrow(exception).when(exerciseDataSource).getSubmissionHistory(exercise);
 
-    Assert.assertFalse("The submission dialog is not shown", submissionDialogIsShown.get());
-    Assert.assertTrue("A network error notification is shown",
-        notifier.getNotification() instanceof NetworkErrorNotification);
+    action.actionPerformed(event);
+
+    verifyNoInteractions(submissionDialogHelper);
+    verify(exerciseDataSource, never()).submit(any());
+
+    ArgumentCaptor<NetworkErrorNotification> notificationArg =
+        ArgumentCaptor.forClass(NetworkErrorNotification.class);
+
+    verify(notifier).notify(notificationArg.capture(), eq(project));
+
+    NetworkErrorNotification notification = notificationArg.getValue();
+    assertSame(exception, notification.getException());
+
+    verifyNoMoreInteractions(notifier);
   }
 
   @Test
-  public void testNotifiesOfNetworkError2() {
-    SubmitExerciseAction action = new SubmitExerciseAction(
-        mainViewModelProvider,
-        submissionInfoFactory,
-        submissionHistoryFactory,
-        (course, authentication) -> {
-          throw new IOException();
-        },
-        fileFinder,
-        moduleDialogFactory,
-        submissionDialogFactory,
-        notifier,
-        submitter
-    );
-    action.actionPerformed(actionEvent);
+  public void testNotifiesOfNetworkError2() throws IOException {
+    IOException exception = new IOException();
+    doThrow(exception).when(exerciseDataSource).getGroups(course);
 
-    Assert.assertFalse("The submission dialog is not shown", submissionDialogIsShown.get());
-    Assert.assertTrue("A network error notification is shown",
-        notifier.getNotification() instanceof NetworkErrorNotification);
+    action.actionPerformed(event);
+
+    verifyNoInteractions(submissionDialogHelper);
+    verify(exerciseDataSource, never()).submit(any());
+
+    ArgumentCaptor<NetworkErrorNotification> notificationArg =
+        ArgumentCaptor.forClass(NetworkErrorNotification.class);
+
+    verify(notifier).notify(notificationArg.capture(), eq(project));
+
+    NetworkErrorNotification notification = notificationArg.getValue();
+    assertSame(exception, notification.getException());
+
+    verifyNoMoreInteractions(notifier);
   }
 
   @Test
-  public void testModuleSelectionDialogCancel() {
-    SubmitExerciseAction action = new SubmitExerciseAction(
-        mainViewModelProvider,
-        submissionInfoFactory,
-        submissionHistoryFactory,
-        groupsFactory,
-        fileFinder,
-        (viewModel, proj) -> new TestModuleSelectionDialog(viewModel, proj, false),
-        submissionDialogFactory,
-        notifier,
-        submitter
-    );
-    action.actionPerformed(actionEvent);
+  public void testModuleSelectionDialogCancel() throws IOException {
+    dialogs.register(SubmissionViewModel.class, (submission, project) -> () -> false);
 
-    Assert.assertFalse("The submission dialog is not shown", submissionDialogIsShown.get());
-    Assert.assertEquals("The submission information is fetched",
-        1, submissionInfoCallCount.get());
-    Assert.assertEquals("The submission history is not fetched",
-        0, submissionHistoryCallCount.get());
-    Assert.assertEquals("The groups are fetched", 1, groupsCallCount.get());
+    action.actionPerformed(event);
+
+    verify(exerciseDataSource, never()).submit(any());
+
+    verifyNoInteractions(notifier);
   }
-
 }

@@ -22,6 +22,18 @@ public class ObservableReadWriteProperty<T> extends ObservableProperty<T> {
   }
 
   /**
+   * Sets a new value to the property.
+   *
+   * @param newValue The new value to be set.
+   * @return True, if new value was different than the old value, otherwise false.
+   */
+  protected synchronized boolean setInternal(T newValue) {
+    boolean changed = !Objects.equals(value, newValue);
+    value = newValue;
+    return changed;
+  }
+
+  /**
    * Sets a new value to the property and notifies the observers (that are still alive) by calling
    * {@code valueChanged} of their callbacks (synchronously in an arbitrary order) with the new
    * value, unless the new value equals the old value, in which case observers are not notified.
@@ -30,9 +42,7 @@ public class ObservableReadWriteProperty<T> extends ObservableProperty<T> {
    */
   @Override
   public synchronized void set(T newValue) {
-    boolean changed = !Objects.equals(value, newValue);
-    value = newValue;
-    if (changed) {
+    if (setInternal(newValue)) {
       onValueChanged(newValue);
     }
   }

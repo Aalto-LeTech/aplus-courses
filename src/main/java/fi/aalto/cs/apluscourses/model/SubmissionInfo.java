@@ -1,30 +1,22 @@
 package fi.aalto.cs.apluscourses.model;
 
-import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
-import fi.aalto.cs.apluscourses.utils.CoursesClient;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 
 public class SubmissionInfo {
 
   private final int submissionsLimit;
 
   @NotNull
-  private final List<SubmittableFile> files;
+  private final SubmittableFile[] files;
 
   /**
-   * Construct a submission info instance with the given submission limit and filenames.
+   * Construct a submission info instance with the given submission limit and files.
    */
-  public SubmissionInfo(int submissionsLimit, @NotNull List<SubmittableFile> files) {
+  public SubmissionInfo(int submissionsLimit, @NotNull SubmittableFile[] files) {
     this.submissionsLimit = submissionsLimit;
     this.files = files;
   }
@@ -55,22 +47,7 @@ public class SubmissionInfo {
 
     int submissionLimit = jsonObject.getInt("max_submissions");
 
-    return new SubmissionInfo(submissionLimit, files);
-  }
-
-  /**
-   * Makes a request to the A+ API to get the details of the given exercise.
-   *
-   * @throws IOException If an IO error occurs (e.g. network error).
-   */
-  @NotNull
-  public static SubmissionInfo forExercise(@NotNull Exercise exercise,
-                                           @NotNull APlusAuthentication authentication)
-      throws IOException {
-    URL url = new URL(PluginSettings.A_PLUS_API_BASE_URL + "/exercises/" + exercise.getId() + "/");
-    InputStream inputStream = CoursesClient.fetch(url, authentication);
-    JSONObject response = new JSONObject(new JSONTokener(inputStream));
-    return fromJsonObject(response);
+    return new SubmissionInfo(submissionLimit, files.toArray(new SubmittableFile[0]));
   }
 
   public int getSubmissionsLimit() {
@@ -78,7 +55,11 @@ public class SubmissionInfo {
   }
 
   @NotNull
-  public List<SubmittableFile> getFiles() {
-    return Collections.unmodifiableList(files);
+  public SubmittableFile[] getFiles() {
+    return files;
+  }
+
+  public boolean isSubmittable() {
+    return files.length > 0;
   }
 }

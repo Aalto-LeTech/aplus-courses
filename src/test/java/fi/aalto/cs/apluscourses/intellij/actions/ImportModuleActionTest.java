@@ -15,6 +15,8 @@ import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.ComponentInstaller;
 import fi.aalto.cs.apluscourses.model.Course;
+import fi.aalto.cs.apluscourses.model.ExerciseDataSource;
+import fi.aalto.cs.apluscourses.model.Main;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
@@ -42,7 +44,7 @@ public class ImportModuleActionTest {
   public void createMockObjects()   {
     project = mock(Project.class);
 
-    mainViewModel = new MainViewModel();
+    mainViewModel = new MainViewModel(new Main(new ModelExtensions.TestExerciseDataSource()));
     MainViewModelProvider mainViewModelProvider = mock(MainViewModelProvider.class);
     doReturn(mainViewModel).when(mainViewModelProvider).getMainViewModel(project);
 
