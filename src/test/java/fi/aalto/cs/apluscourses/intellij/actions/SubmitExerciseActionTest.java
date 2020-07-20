@@ -47,7 +47,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -60,6 +62,7 @@ public class SubmitExerciseActionTest {
   List<Group> groups;
   ExerciseGroup exerciseGroup;
   List<ExerciseGroup> exerciseGroups;
+  String fileKey;
   String fileName;
   SubmittableFile file;
   SubmissionInfo submissionInfo;
@@ -102,7 +105,8 @@ public class SubmitExerciseActionTest {
     exerciseGroup = new ExerciseGroup("Test EG", Collections.singletonList(exercise));
     exerciseGroups = Collections.singletonList(exerciseGroup);
     fileName = "some_file.scala";
-    file = new SubmittableFile(fileName);
+    fileKey = "file1";
+    file = new SubmittableFile(fileKey, fileName);
     submissionInfo = new SubmissionInfo(1, new SubmittableFile[]{file});
     exerciseDataSource = spy(new ModelExtensions.TestExerciseDataSource());
     doReturn(groups).when(exerciseDataSource).getGroups(course);
@@ -174,8 +178,10 @@ public class SubmitExerciseActionTest {
     Submission submission = submissionArg.getValue();
     assertEquals(group, submission.getGroup());
     assertEquals(exercise, submission.getExercise());
-    assertThat(submission.getFilePaths(),
-        is(new Path[] { filePath }));
+
+    Map<String, Path> files = new HashMap<>();
+    files.put(fileKey, filePath);
+    assertThat(submission.getFiles(), is(files));
 
     verifyNoInteractions(notifier);
   }

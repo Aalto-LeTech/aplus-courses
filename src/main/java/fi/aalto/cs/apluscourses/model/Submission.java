@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.model;
 
 import java.nio.file.Path;
+import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 
 public class Submission {
@@ -10,7 +11,7 @@ public class Submission {
   @NotNull
   private final SubmissionInfo submissionInfo;
   @NotNull
-  private final Path[] filePaths;
+  private final Map<String, Path> files;
   @NotNull
   private final Group group;
 
@@ -19,16 +20,16 @@ public class Submission {
    *
    * @param exercise       Exercise.
    * @param submissionInfo Information for the submission.
-   * @param filePaths      Array of paths.
+   * @param files          Map from keys to file paths.
    * @param group          Group in which the submission is made.
    */
   public Submission(@NotNull Exercise exercise,
                     @NotNull SubmissionInfo submissionInfo,
-                    @NotNull Path[] filePaths,
+                    @NotNull Map<String, Path> files,
                     @NotNull Group group) {
     this.exercise = exercise;
     this.submissionInfo = submissionInfo;
-    this.filePaths = filePaths;
+    this.files = files;
     this.group = group;
   }
 
@@ -48,7 +49,7 @@ public class Submission {
   }
 
   @NotNull
-  public Path[] getFilePaths() {
-    return filePaths;
+  public Map<String, Path> getFiles() {
+    return files;
   }
 }

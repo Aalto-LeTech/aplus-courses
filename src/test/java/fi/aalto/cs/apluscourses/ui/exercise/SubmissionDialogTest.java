@@ -63,7 +63,10 @@ public class SubmissionDialogTest extends LightIdeaTestCase {
         createMockViewModel(
             "Cool Name",
             Arrays.asList(new Group(123, Arrays.asList("Jarkko", "Petteri"))),
-            new SubmittableFile[] { new SubmittableFile("file1"), new SubmittableFile("file2") },
+            new SubmittableFile[] {
+                new SubmittableFile("file1", "main.c"),
+                new SubmittableFile("file2", "main.h")
+            },
             4,
             10
         )

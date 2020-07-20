@@ -1,16 +1,17 @@
 package fi.aalto.cs.apluscourses.model;
 
-import fi.aalto.cs.apluscourses.utils.LongIdObject;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
-public class Exercise extends LongIdObject {
+public class Exercise {
+
+  private final long id;
 
   @NotNull
-  private String name;
+  private final String name;
 
   public Exercise(long id, @NotNull String name) {
-    super(id);
+    this.id = id;
     this.name = name;
   }
 
@@ -31,5 +32,19 @@ public class Exercise extends LongIdObject {
   @NotNull
   public String getName() {
     return name;
+  }
+
+  public long getId() {
+    return id;
+  }
+
+  @Override
+  public int hashCode() {
+    return Long.hashCode(id);
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    return obj instanceof Exercise && ((Exercise) obj).getId() == getId();
   }
 }

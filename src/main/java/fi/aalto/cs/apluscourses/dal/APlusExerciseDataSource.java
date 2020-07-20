@@ -26,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+import scala.meta.Pat;
 
 public class APlusExerciseDataSource implements ExerciseDataSource {
 
@@ -113,9 +114,9 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
    */
   public void submit(Submission submission) throws IOException {
     Map<String, Object> data = new HashMap<>();
-    data.put("_aplus_group", submission.getGroup().getId());
-    for (Path path : submission.getFilePaths()) {
-      data.put(path.getFileName().toString(), path.toFile());
+    data.put("__aplus__", "{ \"group\": " + submission.getGroup().getId() + ", \"lang\": \"en\" }");
+    for (Map.Entry<String, Path> entry : submission.getFiles().entrySet()) {
+      data.put(entry.getKey(), entry.getValue().toFile());
     }
     CoursesClient.post(new URL(PluginSettings.A_PLUS_API_BASE_URL + "/exercises/"
         + submission.getExercise().getId()

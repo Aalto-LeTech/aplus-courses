@@ -35,7 +35,12 @@ import fi.aalto.cs.apluscourses.utils.ArrayUtil;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -148,9 +153,10 @@ public class SubmitExerciseAction extends AnAction {
     }
 
     Path modulePath = Paths.get(ModuleUtilCore.getModuleDirPath(selectedModule));
-    String[] fileNames =
-        ArrayUtil.mapArray(submissionInfo.getFiles(), SubmittableFile::getName, String[]::new);
-    Path[] filePaths = fileFinder.findFiles(modulePath, fileNames);
+    Map<String, Path> files = new HashMap<>();
+    for (SubmittableFile file : submissionInfo.getFiles()) {
+      files.put(file.getKey(), fileFinder.findFile(modulePath, file.getName()));
+    }
 
     SubmissionHistory history = exerciseDataSource.getSubmissionHistory(exercise);
 
@@ -158,7 +164,7 @@ public class SubmitExerciseAction extends AnAction {
     List<Group> groups = exerciseDataSource.getGroups(course);
 
     SubmissionViewModel submission =
-        new SubmissionViewModel(exercise, submissionInfo, history, groups, filePaths);
+        new SubmissionViewModel(exercise, submissionInfo, history, groups, files);
 
     if (!dialogs.create(submission, project).showAndGet()) {
       return;

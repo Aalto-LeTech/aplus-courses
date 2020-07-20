@@ -10,13 +10,13 @@ public class SubmissionInfoTest {
   @Test
   public void testSubmissionInfo() {
     SubmissionInfo info = new SubmissionInfo(10, new SubmittableFile[] {
-        new SubmittableFile("file1"), new SubmittableFile("file2") });
+        new SubmittableFile("file1", "f1.py"), new SubmittableFile("file2", "f2.py") });
     Assert.assertEquals("The submissions limit is the same as the one given to the constructor",
         10, info.getSubmissionsLimit());
     Assert.assertEquals("The filenames are the same as those given to the constructor",
-        "file1", info.getFiles()[0].getName());
+        "f1.py", info.getFiles()[0].getName());
     Assert.assertEquals("The filenames are the same as those given to the constructor",
-        "file2", info.getFiles()[1].getName());
+        "f2.py", info.getFiles()[1].getName());
   }
 
   @Test

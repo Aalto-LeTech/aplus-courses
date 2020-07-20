@@ -7,6 +7,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 public class GroupTest {
 
@@ -55,5 +56,4 @@ public class GroupTest {
     JSONObject json = new JSONObject().put("id", 0);
     Group.fromJsonObject(json);
   }
-
 }

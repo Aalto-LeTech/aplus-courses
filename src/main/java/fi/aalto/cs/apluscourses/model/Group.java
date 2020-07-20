@@ -1,6 +1,5 @@
 package fi.aalto.cs.apluscourses.model;
 
-import fi.aalto.cs.apluscourses.utils.LongIdObject;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -8,12 +7,14 @@ import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class Group extends LongIdObject {
+public class Group {
+
+  private final long id;
 
   private final List<String> memberNames;
 
   public Group(long id, @NotNull List<String> memberNames) {
-    super(id);
+    this.id = id;
     this.memberNames = memberNames;
   }
 
@@ -33,8 +34,23 @@ public class Group extends LongIdObject {
     return new Group(id, memberNames);
   }
 
+  public long getId() {
+    return id;
+  }
+
   @NotNull
   public List<String> getMemberNames() {
     return Collections.unmodifiableList(memberNames);
+  }
+
+
+  @Override
+  public int hashCode() {
+    return Long.hashCode(id);
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    return obj instanceof Group && ((Group) obj).getId() == getId();
   }
 }

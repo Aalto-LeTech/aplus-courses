@@ -12,6 +12,7 @@ import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ValidationError;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,7 +27,7 @@ public class SubmissionViewModel {
 
   private final List<Group> availableGroups;
 
-  private final Path[] filePaths;
+  private final Map<String, Path> files;
 
   public final ObservableProperty<Group> selectedGroup =
       new ObservableReadWriteProperty<>(null, SubmissionViewModel::validateGroupSelection);
@@ -43,12 +44,12 @@ public class SubmissionViewModel {
                              @NotNull SubmissionInfo submissionInfo,
                              @NotNull SubmissionHistory submissionHistory,
                              @NotNull List<Group> availableGroups,
-                             @NotNull Path[] filePaths) {
+                             @NotNull Map<String, Path> files) {
     this.exercise = exercise;
     this.submissionInfo = submissionInfo;
     this.submissionHistory = submissionHistory;
     this.availableGroups = availableGroups;
-    this.filePaths = filePaths;
+    this.files = files;
   }
 
   @NotNull
@@ -76,7 +77,7 @@ public class SubmissionViewModel {
 
   public Submission buildSubmission() {
     Group group = Objects.requireNonNull(selectedGroup.get());
-    return new Submission(exercise, submissionInfo, filePaths, group);
+    return new Submission(exercise, submissionInfo, files, group);
   }
 
   public ValidationError validateSubmissionCount() {

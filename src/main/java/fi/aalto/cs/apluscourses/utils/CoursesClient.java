@@ -187,7 +187,7 @@ public class CoursesClient {
 
   private static ContentBody getContentBody(Object value) {
     if (value instanceof String) {
-      return new StringBody((String) value, ContentType.DEFAULT_TEXT);
+      return new StringBody((String) value, ContentType.MULTIPART_FORM_DATA);
     }
     if (value instanceof Number) {
       return getContentBody(String.valueOf(value));

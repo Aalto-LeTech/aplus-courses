@@ -38,11 +38,12 @@ public class SubmissionInfo {
         continue;
       }
 
+      String key = spec.getString("key");
       String title = spec.getString("title");
       String englishFilename = localizationInfo
           .getJSONObject(title)
           .getString("en");
-      files.add(new SubmittableFile(englishFilename));
+      files.add(new SubmittableFile(key, englishFilename));
     }
 
     int submissionLimit = jsonObject.getInt("max_submissions");
