@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -182,27 +183,21 @@ public class SubmitExerciseAction extends AnAction {
         .map(ModuleManager::getInstance)
         .map(ModuleManager::getModules)
         .orElseGet(() -> new Module[0]);
-    ModuleSelectionViewModel moduleSelectionViewModel
-        = new ModuleSelectionViewModel(modules, project);
+    Module selectedModule;
     String moduleName = tryGetExerciseModuleName(course, exercise);
     if (moduleName == null) {
-      if (!moduleDialogFactory.createDialog(moduleSelectionViewModel).showAndGet()
-          || moduleSelectionViewModel.getSelectedModule() == null) {
-        return;
-      }
+      selectedModule = tryGetModuleFromDialog(modules, project);
     } else {
-      moduleSelectionViewModel.setSelectedModule(moduleName);
-      if (moduleSelectionViewModel.getSelectedModule() == null) {
-        notifier.notify(new MissingModuleNotification(moduleName), project);
-        return;
-      }
+      selectedModule = tryGetModuleFromName(modules, moduleName, project);
+    }
+    if (selectedModule == null) {
+      return;
     }
 
     SubmissionViewModel submissionViewModel = new SubmissionViewModel(
         exercise, submissionInfo, submissionHistory, groups, authentication, project);
 
-    List<Path> filePaths = tryGetFilePaths(
-        submissionInfo.getFilenames(), moduleSelectionViewModel.getSelectedModule(), project);
+    List<Path> filePaths = tryGetFilePaths(submissionInfo.getFilenames(), selectedModule, project);
     if (filePaths == null) {
       return;
     }
@@ -263,6 +258,32 @@ public class SubmitExerciseAction extends AnAction {
     }
 
     return exerciseModules.get("en");
+  }
+
+  @CalledWithReadLock
+  @Nullable
+  private Module tryGetModuleFromDialog(@NotNull Module[] modules, @Nullable Project project) {
+    ModuleSelectionViewModel viewModel = new ModuleSelectionViewModel(modules, project);
+    if (!moduleDialogFactory.createDialog(viewModel).showAndGet()) {
+      return null;
+    }
+    return viewModel.getSelectedModule();
+  }
+
+  @CalledWithReadLock
+  @Nullable
+  private Module tryGetModuleFromName(@NotNull Module[] modules,
+                                      @NotNull String moduleName,
+                                      @Nullable Project project) {
+    Optional<Module> match = Arrays
+        .stream(modules)
+        .filter(module -> moduleName.equals(module.getName()))
+        .findFirst();
+    if (match.isPresent()) {
+      return match.get();
+    }
+    notifier.notify(new MissingModuleNotification(moduleName), project);
+    return null;
   }
 
   @CalledWithReadLock
