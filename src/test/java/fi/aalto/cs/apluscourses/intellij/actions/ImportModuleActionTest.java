@@ -58,6 +58,7 @@ public class ImportModuleActionTest {
         Collections.emptyList(),
         Collections.emptyMap(),
         Collections.emptyMap(),
+        Collections.emptyMap(),
         Collections.emptyList());
     mainViewModel.courseViewModel.set(new CourseViewModel(course));
 

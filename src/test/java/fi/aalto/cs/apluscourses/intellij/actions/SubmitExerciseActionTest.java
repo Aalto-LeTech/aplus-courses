@@ -10,6 +10,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.testFramework.LightIdeaTestCase;
 
 import fi.aalto.cs.apluscourses.intellij.notifications.MissingFileNotification;
+import fi.aalto.cs.apluscourses.intellij.notifications.MissingModuleNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.NotSubmittableNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
@@ -34,6 +35,7 @@ import fi.aalto.cs.apluscourses.utils.observable.CompoundObservableProperty;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -48,6 +50,7 @@ public class SubmitExerciseActionTest extends LightIdeaTestCase {
 
   private Module module;
 
+  private MainViewModel mainViewModel;
   private MainViewModelProvider mainViewModelProvider;
 
   private SubmitExerciseAction.SubmissionInfoFactory submissionInfoFactory;
@@ -62,6 +65,7 @@ public class SubmitExerciseActionTest extends LightIdeaTestCase {
   private SubmitExerciseAction.FileFinder fileFinder;
 
   private ModuleSelectionDialog.Factory moduleDialogFactory;
+  private AtomicBoolean moduleDialogIsShown;
 
   private SubmissionDialog.Factory submissionDialogFactory;
   private AtomicBoolean submissionDialogIsShown;
@@ -82,6 +86,7 @@ public class SubmitExerciseActionTest extends LightIdeaTestCase {
     @Override
     public boolean showAndGet() {
       viewModel.setSelectedModule(module);
+      moduleDialogIsShown.set(true);
       return ok;
     }
   }
@@ -130,9 +135,8 @@ public class SubmitExerciseActionTest extends LightIdeaTestCase {
     ExercisesTreeViewModel exercisesViewModel = mock(ExercisesTreeViewModel.class);
     doReturn(exercise).when(exercisesViewModel).getSelectedExercise();
 
-    MainViewModel mainViewModel = new MainViewModel();
-    CourseViewModel courseViewModel = mock(CourseViewModel.class);
-    doReturn(mock(Course.class)).when(courseViewModel).getModel();
+    mainViewModel = new MainViewModel();
+    CourseViewModel courseViewModel = new CourseViewModel(mock(Course.class));
     APlusAuthenticationViewModel authenticationViewModel = mock(APlusAuthenticationViewModel.class);
     doReturn(mock(APlusAuthentication.class)).when(authenticationViewModel).getAuthentication();
     ((CompoundObservableProperty) mainViewModel.exercisesViewModel).setConverter(
@@ -160,6 +164,7 @@ public class SubmitExerciseActionTest extends LightIdeaTestCase {
     fileFinder = (directory, name) -> Paths.get("file.scala");
 
     moduleDialogFactory = viewModel -> new TestModuleSelectionDialog(viewModel, true);
+    moduleDialogIsShown = new AtomicBoolean(false);
 
     submissionDialogFactory = TestSubmissionDialog::new;
     submissionDialogIsShown = new AtomicBoolean(false);
@@ -186,6 +191,8 @@ public class SubmitExerciseActionTest extends LightIdeaTestCase {
     Assert.assertEquals("The action fetches the submission history",
         1, submissionHistoryCallCount.get());
     Assert.assertEquals("The action fetches the available groups", 1, groupsCallCount.get());
+    Assert.assertTrue("The module selection dialog is shown", moduleDialogIsShown.get());
+    Assert.assertTrue("The submission dialog is shown", submissionDialogIsShown.get());
   }
 
   @Test
@@ -205,6 +212,33 @@ public class SubmitExerciseActionTest extends LightIdeaTestCase {
     Assert.assertFalse("The submission dialog is not shown", submissionDialogIsShown.get());
     Assert.assertTrue("A notification of the missing file is shown",
         notifier.getNotification() instanceof MissingFileNotification);
+  }
+
+  @Test
+  public void testNotifiesOfMissingModule() {
+    SubmitExerciseAction action = new SubmitExerciseAction(
+        mainViewModelProvider,
+        submissionInfoFactory,
+        submissionHistoryFactory,
+        groupsFactory,
+        fileFinder,
+        moduleDialogFactory,
+        submissionDialogFactory,
+        notifier
+    );
+
+    Course course = mock(Course.class);
+    Map<Long, Map<String, String>> map
+        = Collections.singletonMap(0L, Collections.singletonMap("en", "nonexistent module"));
+    doReturn(map).when(course).getExerciseModules();
+    mainViewModel.courseViewModel.set(new CourseViewModel(course));
+
+    action.actionPerformed(actionEvent);
+
+    Assert.assertFalse("The module selection dialog is not shown", moduleDialogIsShown.get());
+    Assert.assertFalse("The submission dialog is not shown", submissionDialogIsShown.get());
+    Assert.assertTrue("A missing module notification is shown",
+        notifier.getNotification() instanceof MissingModuleNotification);
   }
 
   @Test
@@ -230,6 +264,27 @@ public class SubmitExerciseActionTest extends LightIdeaTestCase {
   public void testNotifiesOfNetworkError1() {
     SubmitExerciseAction action = new SubmitExerciseAction(
         mainViewModelProvider,
+        (exercise, authentication) -> {
+          throw new IOException();
+        },
+        submissionHistoryFactory,
+        groupsFactory,
+        fileFinder,
+        moduleDialogFactory,
+        submissionDialogFactory,
+        notifier
+    );
+    action.actionPerformed(actionEvent);
+
+    Assert.assertFalse("The submission dialog is not shown", submissionDialogIsShown.get());
+    Assert.assertTrue("A network error notification is shown",
+        notifier.getNotification() instanceof NetworkErrorNotification);
+  }
+
+  @Test
+  public void testNotifiesOfNetworkError2() {
+    SubmitExerciseAction action = new SubmitExerciseAction(
+        mainViewModelProvider,
         submissionInfoFactory,
         (exercise, authentication) -> {
           throw new IOException();
@@ -248,7 +303,7 @@ public class SubmitExerciseActionTest extends LightIdeaTestCase {
   }
 
   @Test
-  public void testNotifiesOfNetworkError2() {
+  public void testNotifiesOfNetworkError3() {
     SubmitExerciseAction action = new SubmitExerciseAction(
         mainViewModelProvider,
         submissionInfoFactory,

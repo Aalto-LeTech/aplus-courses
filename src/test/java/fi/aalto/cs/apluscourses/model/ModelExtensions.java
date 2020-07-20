@@ -186,11 +186,19 @@ public class ModelExtensions {
                                @NotNull String name,
                                @NotNull List<Module> modules,
                                @NotNull List<Library> libraries,
+                               @NotNull Map<Long, Map<String, String>> exerciseModules,
                                @NotNull Map<String, String> requiredPlugins,
                                @NotNull Map<String, URL> resourceUrls,
                                @NotNull List<String> autoInstallComponentNames) {
       return new Course(
-          id, name, modules, libraries, requiredPlugins, resourceUrls, autoInstallComponentNames
+          id,
+          name,
+          modules,
+          libraries,
+          exerciseModules,
+          requiredPlugins,
+          resourceUrls,
+          autoInstallComponentNames
       );
     }
 

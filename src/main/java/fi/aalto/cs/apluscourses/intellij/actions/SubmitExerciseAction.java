@@ -8,6 +8,7 @@ import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.notifications.MissingFileNotification;
+import fi.aalto.cs.apluscourses.intellij.notifications.MissingModuleNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.NotSubmittableNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
@@ -33,7 +34,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.jetbrains.annotations.CalledWithReadLock;
 import org.jetbrains.annotations.NotNull;
@@ -180,18 +183,21 @@ public class SubmitExerciseAction extends AnAction {
         .map(ModuleManager::getInstance)
         .map(ModuleManager::getModules)
         .orElseGet(() -> new Module[0]);
-    ModuleSelectionViewModel moduleSelectionViewModel
-        = new ModuleSelectionViewModel(modules, project);
-    if (!moduleDialogFactory.createDialog(moduleSelectionViewModel).showAndGet()
-        || moduleSelectionViewModel.getSelectedModule() == null) {
+    Module selectedModule;
+    String moduleName = tryGetExerciseModuleName(course, exercise);
+    if (moduleName == null) {
+      selectedModule = tryGetModuleFromDialog(modules, project);
+    } else {
+      selectedModule = tryGetModuleFromName(modules, moduleName, project);
+    }
+    if (selectedModule == null) {
       return;
     }
 
     SubmissionViewModel submissionViewModel = new SubmissionViewModel(
         exercise, submissionInfo, submissionHistory, groups, authentication, project);
 
-    List<Path> filePaths = tryGetFilePaths(
-        submissionInfo.getFilenames(), moduleSelectionViewModel.getSelectedModule(), project);
+    List<Path> filePaths = tryGetFilePaths(submissionInfo.getFilenames(), selectedModule, project);
     if (filePaths == null) {
       return;
     }
@@ -241,6 +247,43 @@ public class SubmitExerciseAction extends AnAction {
       notifyNetworkError(e, project);
       return null;
     }
+  }
+
+  @Nullable
+  private String tryGetExerciseModuleName(@NotNull Course course,
+                                          @NotNull Exercise exercise) {
+    Map<String, String> exerciseModules = course.getExerciseModules().get(exercise.getId());
+    if (exerciseModules == null) {
+      return null;
+    }
+
+    return exerciseModules.get("en");
+  }
+
+  @CalledWithReadLock
+  @Nullable
+  private Module tryGetModuleFromDialog(@NotNull Module[] modules, @Nullable Project project) {
+    ModuleSelectionViewModel viewModel = new ModuleSelectionViewModel(modules, project);
+    if (!moduleDialogFactory.createDialog(viewModel).showAndGet()) {
+      return null;
+    }
+    return viewModel.getSelectedModule();
+  }
+
+  @CalledWithReadLock
+  @Nullable
+  private Module tryGetModuleFromName(@NotNull Module[] modules,
+                                      @NotNull String moduleName,
+                                      @Nullable Project project) {
+    Optional<Module> match = Arrays
+        .stream(modules)
+        .filter(module -> moduleName.equals(module.getName()))
+        .findFirst();
+    if (match.isPresent()) {
+      return match.get();
+    }
+    notifier.notify(new MissingModuleNotification(moduleName), project);
+    return null;
   }
 
   @CalledWithReadLock

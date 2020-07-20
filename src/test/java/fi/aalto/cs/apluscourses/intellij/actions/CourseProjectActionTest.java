@@ -116,7 +116,8 @@ public class CourseProjectActionTest {
     doReturn(project).when(anActionEvent).getProject();
 
     emptyCourse = new Course("ID","EMPTY", Collections.emptyList(), Collections.emptyList(),
-        Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList());
+        Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap(),
+        Collections.emptyList());
 
     settingsImporter = new DummySettingsImporter();
 
