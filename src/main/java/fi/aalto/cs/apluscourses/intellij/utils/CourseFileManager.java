@@ -182,5 +182,4 @@ public class CourseFileManager {
       this.modulesMetadata.put(moduleName, new ModuleMetadata(moduleId, downloadedAt));
     }
   }
-
 }

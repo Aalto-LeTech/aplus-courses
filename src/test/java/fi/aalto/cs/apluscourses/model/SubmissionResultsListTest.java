@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.json.JSONObject;
 import org.junit.Test;
 
-public class SubmissionsDashboardTest {
+public class SubmissionResultsListTest {
 
   @Test
   public void testFromJsonObject() {
@@ -14,14 +14,14 @@ public class SubmissionsDashboardTest {
     JSONObject jsonObject = new JSONObject(jsonObjectString);
 
     //  when
-    SubmissionsDashboard submissionsDashboard = SubmissionsDashboard.fromJsonObject(jsonObject);
+    SubmissionResultsList submissionResultsList = SubmissionResultsList.fromJsonObject(jsonObject);
 
     //  then
-    assertEquals("Student id is correct.", 19457, submissionsDashboard.getStudentId());
+    assertEquals("Student id is correct.", 19457, submissionResultsList.getStudentId());
     assertEquals("List of SubmissionResults is of a correct length.", 4,
-        submissionsDashboard.getSubmissionResults().size());
+        submissionResultsList.getSubmissionResults().size());
     assertEquals("The total amount of points is correct.", 5,
-        submissionsDashboard.getTotalPoints());
+        submissionResultsList.getTotalPoints());
   }
 
   private String getLargeJsonString() {

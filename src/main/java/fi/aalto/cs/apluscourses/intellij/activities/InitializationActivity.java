@@ -4,7 +4,6 @@ import com.intellij.notification.Notifications;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.startup.StartupActivity.Background;
 import fi.aalto.cs.apluscourses.intellij.actions.ActionUtil;
-import fi.aalto.cs.apluscourses.intellij.actions.GetSubmissionsDashboardAction;
 import fi.aalto.cs.apluscourses.intellij.actions.RequiredPluginsCheckerAction;
 import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory;
 import fi.aalto.cs.apluscourses.intellij.notifications.CourseConfigurationError;
@@ -16,10 +15,8 @@ import fi.aalto.cs.apluscourses.intellij.utils.ExtendedDataContext;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationFileException;
 import fi.aalto.cs.apluscourses.model.UnexpectedResponseException;
-import fi.aalto.cs.apluscourses.utils.async.ScheduledTaskExecutor;
 import java.io.IOException;
 import java.net.URL;
-import java.util.concurrent.TimeUnit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONException;
@@ -66,9 +63,7 @@ public class InitializationActivity implements Background {
         new ExtendedDataContext().withProject(project));
 
     if (PluginSettings.getInstance().isAPlusProjectSetting(project)) {
-      new ScheduledTaskExecutor(() -> ActionUtil.launch(GetSubmissionsDashboardAction.ACTION_ID,
-          new ExtendedDataContext().withProject(project)),
-          0, PluginSettings.REASONABLE_DELAY_FOR_SUBMISSION_RESULTS_UPDATE, TimeUnit.SECONDS);
+      PluginSettings.getInstance().startRegularSubmissionResultsPolling(project);
     }
   }
 

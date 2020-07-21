@@ -3,8 +3,8 @@ package fi.aalto.cs.apluscourses.intellij.actions;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -15,10 +15,10 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.model.APlusAuthentication;
 import fi.aalto.cs.apluscourses.model.Course;
-import fi.aalto.cs.apluscourses.model.SubmissionsDashboard;
+import fi.aalto.cs.apluscourses.model.SubmissionResultsList;
 import org.junit.Test;
 
-public class GetSubmissionsDashboardActionTest extends BasePlatformTestCase {
+public class GetSubmissionResultsListActionTest extends BasePlatformTestCase {
 
   @Test
   public void testActionPerformedWithValidDataWorks() {
@@ -48,18 +48,17 @@ public class GetSubmissionsDashboardActionTest extends BasePlatformTestCase {
         getSubmissionsDashboardAction);
 
     //  submissions
-    SubmissionsDashboard mockSubmissionsDashboard = mock(SubmissionsDashboard.class);
-    doReturn(mockSubmissionsDashboard).when(spyGetSubmissionsDashboardAction)
+    SubmissionResultsList mockSubmissionResultsList = mock(SubmissionResultsList.class);
+    doReturn(mockSubmissionResultsList).when(spyGetSubmissionsDashboardAction)
         .tryGetSubmissionsDashboard(1L, mockAuthentication, project);
 
     //  when
     spyGetSubmissionsDashboardAction.actionPerformed(anActionEvent);
 
     //  then
-    verify(spyGetSubmissionsDashboardAction, times(1))
+    verify(spyGetSubmissionsDashboardAction)
         .tryGetSubmissionsDashboard(1L, mockAuthentication, project);
-    verify(mockCourse, times(1))
-        .setSubmissionsDashboard(mockSubmissionsDashboard);
+    verify(mockCourse).setSubmissionsDashboard(mockSubmissionResultsList);
   }
 
   @Test
@@ -89,17 +88,17 @@ public class GetSubmissionsDashboardActionTest extends BasePlatformTestCase {
         getSubmissionsDashboardAction);
 
     //  submissions
-    SubmissionsDashboard mockSubmissionsDashboard = mock(SubmissionsDashboard.class);
-    doReturn(mockSubmissionsDashboard).when(spyGetSubmissionsDashboardAction)
+    SubmissionResultsList mockSubmissionResultsList = mock(SubmissionResultsList.class);
+    doReturn(mockSubmissionResultsList).when(spyGetSubmissionsDashboardAction)
         .tryGetSubmissionsDashboard(1L, mockAuthentication, project);
 
     //  when
     spyGetSubmissionsDashboardAction.actionPerformed(anActionEvent);
 
     //  then
-    verify(spyGetSubmissionsDashboardAction, times(0))
+    verify(spyGetSubmissionsDashboardAction, never())
         .tryGetSubmissionsDashboard(1L, mockAuthentication, project);
-    verify(mockCourse, times(0))
-        .setSubmissionsDashboard(mockSubmissionsDashboard);
+    verify(mockCourse, never())
+        .setSubmissionsDashboard(mockSubmissionResultsList);
   }
 }

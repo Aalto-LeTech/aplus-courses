@@ -10,10 +10,9 @@ import org.json.JSONObject;
 
 public class SubmissionResult {
 
-  private int exerciseId;
+  private long exerciseId;
   private List<Integer> submissionIds;
   private int submissionsCount;
-  //  private int maxSubmissionsCount;
   private int pointsToPass;
   private int maxPoints;
   private int points;
@@ -28,7 +27,7 @@ public class SubmissionResult {
    * @param maxPoints        a possible maximum amount of points for the exercise.
    * @param points           a total amount of points achieved for the exercise.
    */
-  public SubmissionResult(int exerciseId, List<Integer> submissionIds, int submissionsCount,
+  public SubmissionResult(long exerciseId, List<Integer> submissionIds, int submissionsCount,
       int pointsToPass, int maxPoints, int points) {
     this.exerciseId = exerciseId;
     this.submissionIds = submissionIds;
@@ -77,7 +76,7 @@ public class SubmissionResult {
         .collect(Collectors.toList());
   }
 
-  public int getExerciseId() {
+  public long getExerciseId() {
     return exerciseId;
   }
 

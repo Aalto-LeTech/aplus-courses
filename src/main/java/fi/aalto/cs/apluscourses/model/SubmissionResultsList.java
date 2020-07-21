@@ -13,7 +13,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-public class SubmissionsDashboard {
+public class SubmissionResultsList {
 
   private final long studentId;
   private final List<SubmissionResult> submissionResults;
@@ -21,22 +21,22 @@ public class SubmissionsDashboard {
 
   /**
    * Hi there! It turned out, that there is a way to get all the data on {@link Course} {@link
-   * SubmissionResult}s is one call. Well, so here I am, the {@link SubmissionsDashboard} ;-) .
+   * SubmissionResult}s is one call. Well, so here I am, the {@link SubmissionResultsList} ;-) .
    *
    * @param studentId         an A+ student Id.
    * @param submissionResults a {@link List} with {@link SubmissionResult}s having the data.
    * @param totalPoints       an amount of points achieved so far for the whole course.
    */
-  public SubmissionsDashboard(long studentId,
-      List<SubmissionResult> submissionResults,
-      int totalPoints) {
+  public SubmissionResultsList(long studentId,
+                               List<SubmissionResult> submissionResults,
+                               int totalPoints) {
     this.studentId = studentId;
     this.submissionResults = submissionResults;
     this.totalPoints = totalPoints;
   }
 
   /**
-   * Constructs a {@link SubmissionsDashboard} from the given JSON object. The object must contain
+   * Constructs a {@link SubmissionResultsList} from the given JSON object. The object must contain
    * an long value for the key "id", integer value for the key "points" and an array value for the
    * key "modules" (containing another array for the key "exercises" in its turn).
    *
@@ -44,7 +44,7 @@ public class SubmissionsDashboard {
    * @return a SubmissionsDashboard instance.
    */
   @NotNull
-  public static SubmissionsDashboard fromJsonObject(@NotNull JSONObject jsonObject) {
+  public static SubmissionResultsList fromJsonObject(@NotNull JSONObject jsonObject) {
     List<SubmissionResult> submissionResults = new ArrayList<>();
     long studentId = jsonObject.getLong("id");
     int points = jsonObject.getInt("points");
@@ -60,7 +60,7 @@ public class SubmissionsDashboard {
       }
     }
 
-    return new SubmissionsDashboard(studentId, submissionResults, points);
+    return new SubmissionResultsList(studentId, submissionResults, points);
   }
 
   /**
@@ -71,9 +71,11 @@ public class SubmissionsDashboard {
    * @throws IOException If an IO error occurs (e.g. network error).
    */
   @NotNull
-  public static SubmissionsDashboard getSubmissionsDashboard(long courseId,
-      @NotNull APlusAuthentication authentication) throws IOException {
-    URL url = getSubmissionsDashboardApiUrl(courseId);
+  public static SubmissionResultsList getSubmissionResultsList(long courseId,
+                                                               @NotNull APlusAuthentication
+                                                                   authentication)
+      throws IOException {
+    URL url = getSubmissionResultsListApiUrl(courseId);
     InputStream inputStream = CoursesClient.fetch(url, authentication::addToRequest);
     JSONObject response = new JSONObject(new JSONTokener(inputStream));
     return fromJsonObject(response);
@@ -86,7 +88,7 @@ public class SubmissionsDashboard {
    * @return a {@link URL} representation of the endpoint location.
    * @throws MalformedURLException an exception thrown in case of something went wrong.
    */
-  public static URL getSubmissionsDashboardApiUrl(long courseId) throws MalformedURLException {
+  public static URL getSubmissionResultsListApiUrl(long courseId) throws MalformedURLException {
     return new URL(PluginSettings.A_PLUS_API_BASE_URL + "/courses/" + courseId + "/points/me/");
   }
 

@@ -12,7 +12,7 @@ import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.APlusAuthentication;
 import fi.aalto.cs.apluscourses.model.Course;
-import fi.aalto.cs.apluscourses.model.SubmissionsDashboard;
+import fi.aalto.cs.apluscourses.model.SubmissionResultsList;
 import fi.aalto.cs.apluscourses.presentation.APlusAuthenticationViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import java.io.IOException;
@@ -37,7 +37,7 @@ public class GetSubmissionsDashboardAction extends DumbAwareAction {
   }
 
   public GetSubmissionsDashboardAction(@NotNull MainViewModelProvider mainViewModelProvider,
-      @NotNull Notifier notifier) {
+                                       @NotNull Notifier notifier) {
     this.mainViewModelProvider = mainViewModelProvider;
     this.notifier = notifier;
   }
@@ -58,9 +58,9 @@ public class GetSubmissionsDashboardAction extends DumbAwareAction {
     Course course = requireNonNull(mainViewModel.getCourseViewModel().get()).getModel();
 
     if (authentication != null) {
-      SubmissionsDashboard submissionsDashboard = tryGetSubmissionsDashboard(
+      SubmissionResultsList submissionResultsList = tryGetSubmissionsDashboard(
           Long.parseLong(course.getId()), authentication, requireNonNull(project));
-      course.setSubmissionsDashboard(requireNonNull(submissionsDashboard));
+      course.setSubmissionsDashboard(requireNonNull(submissionResultsList));
     }
   }
 
@@ -70,14 +70,16 @@ public class GetSubmissionsDashboardAction extends DumbAwareAction {
    * @param courseId       an id of the course results data to pull.
    * @param authentication an {@link APlusAuthentication} object to use with API.
    * @param project        a current {@link Project} to notify to.
-   * @return a fully-inflated {@link SubmissionsDashboard} or null if the API call was unsuccessful.
+   * @return a fully-inflated {@link SubmissionResultsList} or null if the API call was
+   *        unsuccessful.
    */
   @Nullable
-  public SubmissionsDashboard tryGetSubmissionsDashboard(long courseId,
-      @NotNull APlusAuthentication authentication,
-      @NotNull Project project) {
+  public SubmissionResultsList tryGetSubmissionsDashboard(long courseId,
+                                                          @NotNull
+                                                              APlusAuthentication authentication,
+                                                          @NotNull Project project) {
     try {
-      return SubmissionsDashboard.getSubmissionsDashboard(courseId, authentication);
+      return SubmissionResultsList.getSubmissionResultsList(courseId, authentication);
     } catch (IOException e) {
       notifyNetworkError(e, project);
       return null;

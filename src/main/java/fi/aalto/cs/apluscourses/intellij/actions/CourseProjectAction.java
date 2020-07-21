@@ -151,6 +151,7 @@ public class CourseProjectAction extends AnAction {
       PluginSettings.getInstance().createUpdatingMainViewModel(project);
     }
     PluginSettings.getInstance().setIsAPlusProjectSetting(project, true);
+    PluginSettings.getInstance().startRegularSubmissionResultsPolling(project);
   }
 
   @Override

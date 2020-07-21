@@ -9,17 +9,23 @@ import com.intellij.notification.Notifications;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.project.ProjectManagerListener;
+import fi.aalto.cs.apluscourses.intellij.actions.ActionUtil;
+import fi.aalto.cs.apluscourses.intellij.actions.GetSubmissionsDashboardAction;
+import fi.aalto.cs.apluscourses.intellij.utils.ExtendedDataContext;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModelUpdater;
+import fi.aalto.cs.apluscourses.utils.async.ScheduledTaskExecutor;
 import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class PluginSettings implements MainViewModelProvider {
 
   private static final PluginSettings instance = new PluginSettings();
+  private boolean regularSubmissionResultsPollingStarted;
 
   private PluginSettings() {
 
@@ -216,5 +222,14 @@ public class PluginSettings implements MainViewModelProvider {
   public void setIsAPlusProjectSetting(@NotNull Project project, boolean state) {
     PropertiesComponent.getInstance(project)
         .setValue(A_PLUS_IS_A_PLUS_PROJECT.getName(), String.valueOf(state));
+  }
+
+  public void startRegularSubmissionResultsPolling(@NotNull Project project) {
+    if (!regularSubmissionResultsPollingStarted) {
+      new ScheduledTaskExecutor(() -> ActionUtil.launch(GetSubmissionsDashboardAction.ACTION_ID,
+          new ExtendedDataContext().withProject(project)),
+          0, PluginSettings.REASONABLE_DELAY_FOR_SUBMISSION_RESULTS_UPDATE, TimeUnit.SECONDS);
+      regularSubmissionResultsPollingStarted = true;
+    }
   }
 }
