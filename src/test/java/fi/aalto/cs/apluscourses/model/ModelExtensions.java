@@ -66,7 +66,7 @@ public class ModelExtensions {
 
     public TestCourse(@NotNull String id, @NotNull String name) {
       super(id, name, Collections.emptyList(), Collections.emptyList(), Collections.emptyMap(),
-          Collections.emptyMap(), Collections.emptyList());
+          Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList());
     }
   }
 
@@ -234,11 +234,19 @@ public class ModelExtensions {
                                @NotNull String name,
                                @NotNull List<Module> modules,
                                @NotNull List<Library> libraries,
+                               @NotNull Map<Long, Map<String, String>> exerciseModules,
                                @NotNull Map<String, String> requiredPlugins,
                                @NotNull Map<String, URL> resourceUrls,
                                @NotNull List<String> autoInstallComponentNames) {
       return new Course(
-          id, name, modules, libraries, requiredPlugins, resourceUrls, autoInstallComponentNames
+          id,
+          name,
+          modules,
+          libraries,
+          exerciseModules,
+          requiredPlugins,
+          resourceUrls,
+          autoInstallComponentNames
       );
     }
 

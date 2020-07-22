@@ -21,6 +21,7 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.DialogHelper;
 import fi.aalto.cs.apluscourses.intellij.notifications.MissingFileNotification;
+import fi.aalto.cs.apluscourses.intellij.notifications.MissingModuleNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.NotSubmittableNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
@@ -59,6 +60,7 @@ import org.mockito.ArgumentCaptor;
 public class SubmitExerciseActionTest {
 
   Course course;
+  long exerciseId;
   Exercise exercise;
   Group group;
   List<Group> groups;
@@ -103,8 +105,9 @@ public class SubmitExerciseActionTest {
   @SuppressWarnings("unchecked")
   @Before
   public void setUp() throws IOException, FileDoesNotExistException {
-    course = new ModelExtensions.TestCourse("91");
-    exercise = new Exercise(12, "Test exercise");
+    course = spy(new ModelExtensions.TestCourse("91"));
+    exerciseId = 12;
+    exercise = new Exercise(exerciseId, "Test exercise");
     group = new Group(124, Collections.singletonList("Only you"));
     groups = Collections.singletonList(group);
     exerciseGroup = new ExerciseGroup("Test EG", Collections.singletonList(exercise));
@@ -158,6 +161,7 @@ public class SubmitExerciseActionTest {
 
     moduleSource = mock(SubmitExerciseAction.ModuleSource.class);
     doReturn(new Module[] { module }).when(moduleSource).getModules(project);
+    doReturn(module).when(moduleSource).getModule(project, moduleName);
 
     dialogs = new Dialogs();
 
@@ -219,6 +223,31 @@ public class SubmitExerciseActionTest {
     MissingFileNotification notification = notificationArg.getValue();
     assertEquals(fileName, notification.getFilename());
     assertEquals(modulePath, notification.getPath());
+
+    verifyNoMoreInteractions(notifier);
+  }
+
+  @Test
+  public void testNotifiesOfMissingModule() throws IOException {
+    String nonexistentModuleName = "nonexistent module";
+
+    Map<Long, Map<String, String>> map = Collections.singletonMap(exerciseId,
+        Collections.singletonMap("en", nonexistentModuleName));
+    doReturn(map).when(course).getExerciseModules();
+
+    action.actionPerformed(event);
+
+    verifyNoInteractions(moduleSelectionDialog);
+    verifyNoInteractions(submissionDialog);
+    verify(exerciseDataSource, never()).submit(any());
+
+    ArgumentCaptor<MissingModuleNotification> notificationArg =
+        ArgumentCaptor.forClass(MissingModuleNotification.class);
+
+    verify(notifier).notify(notificationArg.capture(), eq(project));
+
+    MissingModuleNotification notification = notificationArg.getValue();
+    assertEquals(nonexistentModuleName, notification.getModuleName());
 
     verifyNoMoreInteractions(notifier);
   }

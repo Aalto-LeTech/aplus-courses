@@ -80,4 +80,9 @@ public class SubmissionDialog extends OurDialogWrapper {
     submissionCount = new JLabel(String.format("You are about to make submission %d out of %d.",
         viewModel.getCurrentSubmissionNumber(), viewModel.getMaxNumberOfSubmissions()));
   }
+
+  @FunctionalInterface
+  public interface Factory {
+    SubmissionDialog createDialog(@NotNull SubmissionViewModel viewModel);
+  }
 }

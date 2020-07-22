@@ -8,6 +8,7 @@ import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.notifications.MissingFileNotification;
+import fi.aalto.cs.apluscourses.intellij.notifications.MissingModuleNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.NotSubmittableNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
@@ -38,6 +39,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -67,7 +69,7 @@ public class SubmitExerciseAction extends AnAction {
     this(
         PluginSettings.getInstance(),
         VfsUtil::findFileInDirectory,
-        project -> ModuleManager.getInstance(project).getModules(),
+        DefaultModuleSource.INSTANCE,
         Dialogs.DEFAULT,
         Notifications.Bus::notify
     );
@@ -113,10 +115,13 @@ public class SubmitExerciseAction extends AnAction {
       notifyNetworkError(ex, project);
     } catch (FileDoesNotExistException ex) {
       notifier.notify(new MissingFileNotification(ex.getPath(), ex.getName()), project);
+    } catch (ModuleMissingException ex) {
+      notifier.notify(new MissingModuleNotification(ex.getModuleName()), project);
     }
   }
 
-  private void trySubmit(@NotNull Project project) throws IOException, FileDoesNotExistException {
+  private void trySubmit(@NotNull Project project)
+      throws IOException, FileDoesNotExistException, ModuleMissingException {
     MainViewModel mainViewModel = mainViewModelProvider.getMainViewModel(project);
     CourseViewModel courseViewModel = mainViewModel.courseViewModel.get();
     ExercisesTreeViewModel exercisesViewModel = mainViewModel.exercisesViewModel.get();
@@ -139,13 +144,26 @@ public class SubmitExerciseAction extends AnAction {
       return;
     }
 
-    Module[] modules = moduleSource.getModules(project);
-    ModuleSelectionViewModel moduleSelectionViewModel = new ModuleSelectionViewModel(modules);
-    if (!dialogs.create(moduleSelectionViewModel, project).showAndGet()) {
-      return;
+    Map<String, String> exerciseModules =
+        courseViewModel.getModel().getExerciseModules().get(exercise.getId());
+
+    Optional<String> moduleName = Optional.ofNullable(exerciseModules).map(self -> self.get("en"));
+
+    Module selectedModule;
+    if (moduleName.isPresent()) {
+      selectedModule = moduleName
+          .map(self -> moduleSource.getModule(project, self))
+          .orElseThrow(() -> new ModuleMissingException(moduleName.get()));
+    } else {
+      Module[] modules = moduleSource.getModules(project);
+
+      ModuleSelectionViewModel moduleSelectionViewModel = new ModuleSelectionViewModel(modules);
+      if (!dialogs.create(moduleSelectionViewModel, project).showAndGet()) {
+        return;
+      }
+      selectedModule = moduleSelectionViewModel.selectedModule.get();
     }
 
-    Module selectedModule = moduleSelectionViewModel.selectedModule.get();
     if (selectedModule == null) {
       return;
     }
@@ -177,6 +195,40 @@ public class SubmitExerciseAction extends AnAction {
   }
 
   public interface ModuleSource {
-    Module[] getModules(Project project);
+    @NotNull
+    Module[] getModules(@NotNull Project project);
+
+    @Nullable
+    Module getModule(@NotNull Project project, @NotNull String moduleName);
+  }
+
+  private static class DefaultModuleSource implements ModuleSource {
+    public static final ModuleSource INSTANCE = new DefaultModuleSource();
+
+    @Override
+    @NotNull
+    public Module[] getModules(@NotNull Project project) {
+      return ModuleManager.getInstance(project).getModules();
+    }
+
+    @Override
+    @Nullable
+    public Module getModule(@NotNull Project project, @NotNull String moduleName) {
+      return ModuleManager.getInstance(project).findModuleByName(moduleName);
+    }
+  }
+
+  private static class ModuleMissingException extends Exception {
+    @NotNull
+    private final String moduleName;
+
+    public ModuleMissingException(@NotNull String moduleName) {
+      this.moduleName = moduleName;
+    }
+
+    @NotNull
+    public String getModuleName() {
+      return moduleName;
+    }
   }
 }

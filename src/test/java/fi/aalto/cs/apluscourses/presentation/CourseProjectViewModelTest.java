@@ -11,8 +11,8 @@ import org.junit.Test;
 public class CourseProjectViewModelTest {
 
   private final Course emptyCourse = new Course("123", "NiceCourse", Collections.emptyList(),
-          Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap(),
-          Collections.emptyList());
+      Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap(),
+      Collections.emptyMap(), Collections.emptyList());
 
 
   @Test
