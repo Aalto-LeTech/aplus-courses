@@ -30,6 +30,7 @@ public class SubmissionDialog extends OurDialogWrapper {
 
   @GuiObject
   private JLabel filenames;
+  private JLabel warning;
 
   /**
    * Construct a submission dialog with the given view model.
@@ -44,7 +45,8 @@ public class SubmissionDialog extends OurDialogWrapper {
 
     groupComboBox.selectedItemBindable.bindToSource(viewModel.selectedGroup);
     registerValidationItem(groupComboBox.selectedItemBindable);
-    registerValidationItem(viewModel::validateSubmissionCount);
+
+    warning.setText(viewModel.getSubmissionWarning());
 
     init();
   }

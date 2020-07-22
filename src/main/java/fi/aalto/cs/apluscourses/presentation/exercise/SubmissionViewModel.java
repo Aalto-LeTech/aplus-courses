@@ -75,23 +75,27 @@ public class SubmissionViewModel {
     return submissionInfo.getSubmissionsLimit();
   }
 
+  /**
+   * Warning text if max submission number is exceeded or close to be exceeded.
+   *
+   * @return A warning text or null, if no warning.
+   */
+  @Nullable
+  public String getSubmissionWarning() {
+    int submissionsLeft =
+        submissionInfo.getSubmissionsLimit() - submissionHistory.getNumberOfSubmissions();
+    if (submissionsLeft == 1) {
+      return "Warning! This is your last submission.";
+    }
+    if (submissionsLeft <= 0) {
+      return "Warning! Max. number of submissions exceeded.";
+    }
+    return null;
+  }
+
   public Submission buildSubmission() {
     Group group = Objects.requireNonNull(selectedGroup.get());
     return new Submission(exercise, submissionInfo, files, group);
-  }
-
-  public ValidationError validateSubmissionCount() {
-    return getCurrentSubmissionNumber() > getMaxNumberOfSubmissions()
-        ? new MaxNumberOfSubmissionsExceededError() : null;
-  }
-
-  public static class MaxNumberOfSubmissionsExceededError implements ValidationError {
-
-    @NotNull
-    @Override
-    public String getDescription() {
-      return "Max. number of submissions exceeded";
-    }
   }
 
   public static class GroupNotSelectedError implements ValidationError {
@@ -100,16 +104,6 @@ public class SubmissionViewModel {
     @Override
     public String getDescription() {
       return "Select a group";
-    }
-  }
-
-
-  public static class ModuleNotSelectedError implements ValidationError {
-
-    @NotNull
-    @Override
-    public String getDescription() {
-      return "Select a module";
     }
   }
 }
