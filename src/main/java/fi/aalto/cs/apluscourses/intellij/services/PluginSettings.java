@@ -8,8 +8,6 @@ import com.intellij.notification.Notifications;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.project.ProjectManagerListener;
-import fi.aalto.cs.apluscourses.dal.APlusExerciseDataSource;
-import fi.aalto.cs.apluscourses.model.Main;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModelUpdater;
 import java.util.Arrays;
@@ -67,7 +65,10 @@ public class PluginSettings implements MainViewModelProvider {
       if (updater != null) {
         updater.interrupt();
       }
-      mainViewModels.remove(project);
+      MainViewModel mainViewModel = mainViewModels.remove(project);
+      if (mainViewModel != null) {
+        mainViewModel.clear();
+      }
       ProjectManager.getInstance().removeProjectManagerListener(project, this);
     }
   };
@@ -103,7 +104,6 @@ public class PluginSettings implements MainViewModelProvider {
    *
    * @param project The project to which the created main view model corresponds.
    */
-  @NotNull
   public void createUpdatingMainViewModel(@NotNull Project project) {
     MainViewModel mainViewModel
         = mainViewModels.computeIfAbsent(project, this::createNewMainViewModel);
@@ -119,7 +119,7 @@ public class PluginSettings implements MainViewModelProvider {
   @NotNull
   private MainViewModel createNewMainViewModel(@NotNull Project project) {
     ProjectManager.getInstance().addProjectManagerListener(project, projectManagerListener);
-    return new MainViewModel(new Main(new APlusExerciseDataSource()));
+    return new MainViewModel();
   }
 
   /**

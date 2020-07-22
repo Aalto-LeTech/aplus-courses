@@ -1,9 +1,11 @@
 package fi.aalto.cs.apluscourses.ui;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.testFramework.LightIdeaTestCase;
 import fi.aalto.cs.apluscourses.model.APlusAuthentication;
 import fi.aalto.cs.apluscourses.model.Authentication;
@@ -14,10 +16,10 @@ import org.junit.Test;
 
 public class APlusAuthenticationViewTest extends LightIdeaTestCase {
 
-  class TestAuthenticationView extends APlusAuthenticationView {
+  private static class TestAuthenticationView extends APlusAuthenticationView {
 
     public TestAuthenticationView() {
-      super(new AuthenticationViewModel(new APlusAuthentication(10)), mock(Project.class));
+      super(new AuthenticationViewModel(), mock(Project.class));
     }
 
     public TestAuthenticationView(AuthenticationViewModel viewModel) {
@@ -36,46 +38,35 @@ public class APlusAuthenticationViewTest extends LightIdeaTestCase {
 
     Assert.assertEquals("The dialog has 'OK' and 'Cancel' buttons",
         2, authenticationView.createActions().length);
-    Assert.assertThat("The dialog title mentions 'A+ Token'", authenticationView.getTitle(),
+    assertThat("The dialog title mentions 'A+ Token'", authenticationView.getTitle(),
         containsString("A+ Token"));
   }
 
   @Test
   public void testSetsViewModelAfterOk() {
-    Authentication authentication = new APlusAuthentication(20);
-    AuthenticationViewModel authenticationViewModel = new AuthenticationViewModel(authentication);
+    AuthenticationViewModel authenticationViewModel = new AuthenticationViewModel();
     TestAuthenticationView authenticationView = new TestAuthenticationView(authenticationViewModel);
 
-    Assert.assertFalse(authentication.isSet());
+    String tokenString = "wxyz";
 
-    authenticationView.setInput("token");
+    authenticationView.setInput(tokenString);
     authenticationView.doOKAction();
 
-    Assert.assertTrue("The authentication dialog modifies the model", authentication.isSet());
-  }
+    Authentication authentication = authenticationViewModel.build();
 
-  @Test
-  public void testDoesNotSetViewModelAfterCancel() {
-    Authentication authentication = new APlusAuthentication(20);
-    AuthenticationViewModel authenticationViewModel = new AuthenticationViewModel(authentication);
-    TestAuthenticationView authenticationView = new TestAuthenticationView(authenticationViewModel);
-
-    Assert.assertFalse(authentication.isSet());
-
-    authenticationView.setInput("another token");
-    authenticationView.doCancelAction();
-
-    Assert.assertFalse("The authentication dialog does not modify the model after cancelling",
-        authentication.isSet());
+    assertTrue("The authentication dialog produces the correct model object",
+        ((APlusAuthentication) authentication).tokenEquals(tokenString));
   }
 
   @Test
   public void testValidation() {
     TestAuthenticationView authenticationView = new TestAuthenticationView();
 
-    Assert.assertNotNull("The dialog does not accept an empty input field",
-        authenticationView.doValidate());
-    Assert.assertThat(authenticationView.doValidate().message,
+
+    ValidationInfo validationInfo = authenticationView.doValidate();
+    assertNotNull("The dialog does not accept an empty input field",
+        validationInfo);
+    assertThat(validationInfo.message,
         containsString("must not be empty"));
 
     authenticationView.setInput("not empty");

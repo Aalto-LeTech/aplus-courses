@@ -23,9 +23,11 @@ public class SubmissionInfoTest {
   public void testFromJsonObject() {
     JSONArray formSpec = new JSONArray()
         .put(new JSONObject()
+            .put("key", "file1")
             .put("title", "i18n_coolFilename.scala")
             .put("type", "file"))
         .put(new JSONObject()
+            .put("key", "file2")
             .put("title", "ignored because")
             .put("type", "is not file"));
 

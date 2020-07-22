@@ -24,23 +24,20 @@ import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.SubmissionHistory;
 import fi.aalto.cs.apluscourses.model.SubmissionInfo;
 import fi.aalto.cs.apluscourses.model.SubmittableFile;
-import fi.aalto.cs.apluscourses.presentation.AuthenticationViewModel;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import fi.aalto.cs.apluscourses.presentation.ModuleSelectionViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionViewModel;
-import fi.aalto.cs.apluscourses.utils.ArrayUtil;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -56,12 +53,12 @@ public class SubmitExerciseAction extends AnAction {
 
   @NotNull
   private final ModuleSource moduleSource;
+
   @NotNull
   private final Dialogs dialogs;
 
   @NotNull
   private final Notifier notifier;
-
 
   /**
    * Constructor with reasonable defaults.
@@ -94,13 +91,14 @@ public class SubmitExerciseAction extends AnAction {
 
   @Override
   public void update(@NotNull AnActionEvent e) {
-    MainViewModel mainViewModel = mainViewModelProvider.getMainViewModel(e.getProject());
+    Project project = e.getProject();
+    MainViewModel mainViewModel = mainViewModelProvider.getMainViewModel(project);
     CourseViewModel courseViewModel = mainViewModel.courseViewModel.get();
     ExercisesTreeViewModel exercisesViewModel = mainViewModel.exercisesViewModel.get();
-    AuthenticationViewModel authenticationViewModel = mainViewModel.getAuthentication();
+    ExerciseDataSource exerciseDataSource = mainViewModel.getExerciseDataSource();
 
-    e.getPresentation().setEnabled(e.getProject() != null && exercisesViewModel != null
-        && authenticationViewModel.isSet() && courseViewModel != null);
+    e.getPresentation().setEnabled(project != null && exercisesViewModel != null
+        && exerciseDataSource != null && courseViewModel != null);
   }
 
   @Override
@@ -122,8 +120,9 @@ public class SubmitExerciseAction extends AnAction {
     MainViewModel mainViewModel = mainViewModelProvider.getMainViewModel(project);
     CourseViewModel courseViewModel = mainViewModel.courseViewModel.get();
     ExercisesTreeViewModel exercisesViewModel = mainViewModel.exercisesViewModel.get();
+    ExerciseDataSource exerciseDataSource = mainViewModel.getExerciseDataSource();
 
-    if (courseViewModel == null || exercisesViewModel == null) {
+    if (courseViewModel == null || exercisesViewModel == null || exerciseDataSource == null) {
       return;
     }
 
@@ -133,7 +132,6 @@ public class SubmitExerciseAction extends AnAction {
     }
 
     Exercise exercise = selectedExercise.getModel();
-    ExerciseDataSource exerciseDataSource = mainViewModel.getModel().getExerciseDataSource();
     SubmissionInfo submissionInfo = exerciseDataSource.getSubmissionInfo(exercise);
 
     if (!submissionInfo.isSubmittable()) {
@@ -161,7 +159,8 @@ public class SubmitExerciseAction extends AnAction {
     SubmissionHistory history = exerciseDataSource.getSubmissionHistory(exercise);
 
     Course course = courseViewModel.getModel();
-    List<Group> groups = exerciseDataSource.getGroups(course);
+    List<Group> groups = new ArrayList<>(exerciseDataSource.getGroups(course));
+    groups.add(0, new Group(0, Collections.singletonList("Submit alone")));
 
     SubmissionViewModel submission =
         new SubmissionViewModel(exercise, submissionInfo, history, groups, files);

@@ -22,9 +22,11 @@ public class ModelExtensions {
 
   }
 
-  public static class TestExerciseDataSource implements ExerciseDataSource {
+  public static class TestExerciseDataSource extends ExerciseDataSource {
 
-    private final Authentication authentication = new APlusAuthentication(10);
+    public TestExerciseDataSource() {
+      super(() -> new APlusAuthentication(new char[0]));
+    }
 
     @NotNull
     @Override
@@ -48,12 +50,6 @@ public class ModelExtensions {
     @Override
     public List<ExerciseGroup> getExerciseGroups(@NotNull Course course) throws IOException {
       return Collections.emptyList();
-    }
-
-    @NotNull
-    @Override
-    public Authentication getAuthentication() {
-      return authentication;
     }
 
     @Override

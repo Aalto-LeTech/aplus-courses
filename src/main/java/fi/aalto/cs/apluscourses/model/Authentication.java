@@ -1,15 +1,10 @@
 package fi.aalto.cs.apluscourses.model;
 
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
-import org.jetbrains.annotations.NotNull;
 
 public interface Authentication extends CoursesClient.HttpAuthentication {
-
+  /**
+   * Should clear all sensitive data from memory.
+   */
   void clear();
-
-  int maxTokenLength();
-
-  void setToken(@NotNull char[] newToken);
-
-  boolean isSet();
 }

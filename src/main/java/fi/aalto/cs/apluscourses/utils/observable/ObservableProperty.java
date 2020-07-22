@@ -54,7 +54,7 @@ public abstract class ObservableProperty<T> {
   }
 
   public void declareDependentOn(@NotNull ObservableProperty<?> property) {
-    property.addValueObserver(this, ObservableProperty<T>::onValueChangedInternal);
+    property.addValueObserver(this, (self, dummy) -> self.onValueChanged(self.get()));
   }
 
   @Nullable
@@ -62,10 +62,6 @@ public abstract class ObservableProperty<T> {
 
   public void set(T value) {
     throw new UnsupportedOperationException();
-  }
-
-  private void onValueChangedInternal() {
-    onValueChanged(get());
   }
 
   protected synchronized void onValueChanged(@Nullable T value) {
@@ -111,7 +107,7 @@ public abstract class ObservableProperty<T> {
   }
 
   @FunctionalInterface
-  public static interface Validator<T> {
+  public interface Validator<T> {
     @Nullable
     ValidationError validate(@Nullable T value);
   }

@@ -13,7 +13,7 @@ import javax.swing.SwingConstants;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class APlusAuthenticationView extends DialogWrapper {
+public class APlusAuthenticationView extends DialogWrapper implements Dialog {
   @GuiObject
   protected JPasswordField inputField;
   private JPanel basePanel;
@@ -55,14 +55,8 @@ public class APlusAuthenticationView extends DialogWrapper {
   @Nullable
   @Override
   protected ValidationInfo doValidate() {
-    int length = inputField.getPassword().length;
-    int maxLength = authenticationViewModel.getMaxLength();
-    if (length == 0) {
+    if (inputField.getPassword().length == 0) {
       return new ValidationInfo("Token must not be empty", inputField);
-    }
-    if (length > maxLength) {
-      return new ValidationInfo(String.format("Token must not be longer than %d characters",
-          maxLength), inputField);
     }
     return null;
   }

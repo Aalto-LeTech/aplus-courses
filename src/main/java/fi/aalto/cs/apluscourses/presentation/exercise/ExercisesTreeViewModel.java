@@ -37,6 +37,7 @@ public class ExercisesTreeViewModel extends BaseViewModel<List<ExerciseGroup>>
         .orElse(null);
   }
 
+  @NotNull
   public List<ExerciseGroupViewModel> getGroupViewModels() {
     return groupViewModels;
   }

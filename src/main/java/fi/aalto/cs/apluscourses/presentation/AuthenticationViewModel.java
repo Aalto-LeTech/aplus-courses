@@ -1,33 +1,33 @@
 package fi.aalto.cs.apluscourses.presentation;
 
+import fi.aalto.cs.apluscourses.model.APlusAuthentication;
 import fi.aalto.cs.apluscourses.model.Authentication;
-import fi.aalto.cs.apluscourses.presentation.base.BaseViewModel;
-import fi.aalto.cs.apluscourses.utils.Event;
+import java.util.Arrays;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class AuthenticationViewModel extends BaseViewModel<Authentication> {
-
-  public final Event changed = new Event();
-
-  public AuthenticationViewModel(@NotNull Authentication authentication) {
-    super(authentication);
-  }
-
-  public int getMaxLength() {
-    return getModel().maxTokenLength();
-  }
+public class AuthenticationViewModel {
+  @Nullable
+  private volatile char[] token;
 
   public void setToken(@NotNull char[] token) {
-    getModel().setToken(token);
-    onChanged();
+    this.token = token.clone();
   }
 
-  @Override
-  public void onChanged() {
-    changed.trigger();
-  }
-
-  public boolean isSet() {
-    return getModel().isSet();
+  /**
+   * Builds an authentication object based on the data given to this view model and clears that
+   * data from memory.
+   *
+   * @return A new {@link Authentication} object.
+   */
+  @NotNull
+  public Authentication build() {
+    char[] localToken = token;
+    if (localToken == null) {
+      throw new IllegalStateException("Token is not set");
+    }
+    Authentication authentication = new APlusAuthentication(localToken);
+    Arrays.fill(localToken, '\0');
+    return authentication;
   }
 }

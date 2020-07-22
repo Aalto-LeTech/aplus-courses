@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.model;
 
+import static org.junit.Assert.assertTrue;
+
 import org.apache.http.HttpRequest;
 import org.apache.http.client.methods.HttpGet;
 import org.junit.Assert;
@@ -11,8 +13,7 @@ public class APlusAuthenticationTest {
 
   @Test
   public void testAPlusAuthentication() {
-    Authentication authentication = new APlusAuthentication(3);
-    authentication.setToken(new char[] {'a', 'b', 'c'});
+    Authentication authentication = new APlusAuthentication(new char[] {'a', 'b', 'c'});
 
     HttpRequest request = new HttpGet("https://example.com");
     authentication.addToRequest(request);
@@ -23,9 +24,9 @@ public class APlusAuthenticationTest {
 
   @Test
   public void testMakesCopyOfArray() {
-    Authentication authentication = new APlusAuthentication(10);
-    char[] token = new char[] {'d', 'e', 'f'};
-    authentication.setToken(token);
+    char[] token = (new char[] {'d', 'e', 'f'});
+
+    Authentication authentication = new APlusAuthentication(token);
 
     token[0] = 'g';
     HttpRequest request = new HttpGet("https://example.org");
@@ -35,16 +36,13 @@ public class APlusAuthenticationTest {
         "Token def", request.getFirstHeader(AUTHORIZATION_HEADER).getValue());
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void testClear() {
-    Authentication authentication = new APlusAuthentication(3);
+    APlusAuthentication authentication = new APlusAuthentication(new char[] {'g', 'h', 'i'});
 
-    authentication.setToken(new char[] {'g', 'h', 'i'});
-
-    HttpRequest request = new HttpGet("http://localhost:1234");
     authentication.clear();
 
-    authentication.addToRequest(request);
+    assertTrue(authentication.tokenEquals("\0\0\0"));
   }
 
 }

@@ -1,7 +1,6 @@
 package fi.aalto.cs.apluscourses.dal;
 
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
-import fi.aalto.cs.apluscourses.model.APlusAuthentication;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Exercise;
@@ -17,25 +16,52 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.jetbrains.annotations.NotNull;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-import scala.meta.Pat;
 
-public class APlusExerciseDataSource implements ExerciseDataSource {
-
-  @NotNull
-  private final Authentication authentication = new APlusAuthentication(40);
+public class APlusExerciseDataSource extends ExerciseDataSource {
 
   @NotNull
-  public Authentication getAuthentication() {
-    return authentication;
+  private final Client client;
+
+  @NotNull
+  private String apiUrl;
+
+  @NotNull
+  private final Parser parser;
+
+  /**
+   * Default constructor.
+   *
+   * @param authProvider Used for creating an authentication for this data source.
+   */
+  public APlusExerciseDataSource(@NotNull AuthProvider authProvider) {
+    this(authProvider,
+        DefaultDataAccess.INSTANCE,
+        PluginSettings.A_PLUS_API_BASE_URL,
+        DefaultDataAccess.INSTANCE);
+  }
+
+  /**
+   * Constructor for demanding use (e.g. tests).
+   *
+   * @param authProvider Authentication provider.
+   * @param client       Client to fetch and post.
+   * @param apiUrl       The base URL of API.
+   * @param parser       JSON parser.
+   */
+  public APlusExerciseDataSource(@NotNull AuthProvider authProvider,
+                                 @NotNull Client client,
+                                 @NotNull String apiUrl,
+                                 @NotNull Parser parser) {
+    super(authProvider);
+    this.client = client;
+    this.apiUrl = apiUrl;
+    this.parser = parser;
   }
 
   /**
@@ -46,10 +72,9 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   @Override
   @NotNull
   public SubmissionInfo getSubmissionInfo(@NotNull Exercise exercise) throws IOException {
-    URL url = new URL(PluginSettings.A_PLUS_API_BASE_URL + "/exercises/" + exercise.getId() + "/");
-    InputStream inputStream = CoursesClient.fetch(url, authentication);
-    JSONObject response = new JSONObject(new JSONTokener(inputStream));
-    return SubmissionInfo.fromJsonObject(response);
+    String url = apiUrl + "/exercises/" + exercise.getId() + "/";
+    JSONObject response = client.fetch(url, authentication);
+    return parser.parseSubmissionInfo(response);
   }
 
   /**
@@ -60,11 +85,9 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   @NotNull
   @Override
   public SubmissionHistory getSubmissionHistory(@NotNull Exercise exercise) throws IOException {
-    URL url = new URL(PluginSettings.A_PLUS_API_BASE_URL + "/exercises/" + exercise.getId()
-        + "/submissions/me/");
-    InputStream inputStream = CoursesClient.fetch(url, authentication);
-    JSONObject response = new JSONObject(new JSONTokener(inputStream));
-    return SubmissionHistory.fromJsonObject(response);
+    String url = apiUrl + "/exercises/" + exercise.getId() + "/submissions/me/";
+    JSONObject response = client.fetch(url, authentication);
+    return parser.parseSubmissionHistory(response);
   }
 
   /**
@@ -78,17 +101,9 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   @NotNull
   public List<Group> getGroups(@NotNull Course course)
       throws IOException {
-    URL url =
-        new URL(PluginSettings.A_PLUS_API_BASE_URL + "/courses/" + course.getId() + "/mygroups/");
-    InputStream inputStream = CoursesClient.fetch(url, authentication);
-    JSONObject response = new JSONObject(new JSONTokener(inputStream));
-    JSONArray results = response.getJSONArray("results");
-    List<Group> groups = new ArrayList<>(results.length() + 1);
-    groups.add(new Group(0, Collections.singletonList("Submit alone")));
-    for (int i = 0; i < results.length(); ++i) {
-      groups.add(Group.fromJsonObject(results.getJSONObject(i)));
-    }
-    return groups;
+    String url = apiUrl + "/courses/" + course.getId() + "/mygroups/";
+    JSONObject response = client.fetch(url, authentication);
+    return parser.parseArray(response.getJSONArray("results"), parser::parseGroup);
   }
 
   /**
@@ -99,12 +114,9 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   @NotNull
   public List<ExerciseGroup> getExerciseGroups(@NotNull Course course)
       throws IOException {
-    URL url = new URL(PluginSettings.A_PLUS_API_BASE_URL + "/courses/" + course.getId()
-        + "/exercises/");
-    InputStream inputStream = CoursesClient.fetch(url, authentication);
-    JSONObject response = new JSONObject(new JSONTokener(inputStream));
-    JSONArray results = response.getJSONArray("results");
-    return ExerciseGroup.fromJsonArray(results);
+    String url = apiUrl + "/courses/" + course.getId() + "/exercises/";
+    JSONObject response = client.fetch(url, authentication);
+    return parser.parseArray(response.getJSONArray("results"), parser::parseExerciseGroup);
   }
 
   /**
@@ -118,8 +130,63 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
     for (Map.Entry<String, Path> entry : submission.getFiles().entrySet()) {
       data.put(entry.getKey(), entry.getValue().toFile());
     }
-    CoursesClient.post(new URL(PluginSettings.A_PLUS_API_BASE_URL + "/exercises/"
-        + submission.getExercise().getId()
-        + "/submissions/submit/"), authentication, data);
+    String url = apiUrl + "/exercises/" + submission.getExercise().getId() + "/submissions/submit/";
+    client.post(url, authentication, data);
+  }
+
+  @NotNull
+  public Client getClient() {
+    return client;
+  }
+
+  @NotNull
+  public String getApiUrl() {
+    return apiUrl;
+  }
+
+  public Parser getParser() {
+    return parser;
+  }
+
+  public static class DefaultDataAccess implements Client, Parser {
+
+    public static final DefaultDataAccess INSTANCE = new DefaultDataAccess();
+
+    private DefaultDataAccess() {
+
+    }
+
+    @Override
+    public JSONObject fetch(String url, Authentication authentication) throws IOException {
+      try (InputStream inputStream = CoursesClient.fetch(new URL(url), authentication)) {
+        return new JSONObject(new JSONTokener(inputStream));
+      }
+    }
+
+    @Override
+    public void post(String url, Authentication authentication, Map<String, Object> data)
+        throws IOException {
+      CoursesClient.post(new URL(url), authentication, data);
+    }
+
+    @Override
+    public SubmissionInfo parseSubmissionInfo(JSONObject object) {
+      return SubmissionInfo.fromJsonObject(object);
+    }
+
+    @Override
+    public SubmissionHistory parseSubmissionHistory(JSONObject object) {
+      return SubmissionHistory.fromJsonObject(object);
+    }
+
+    @Override
+    public Group parseGroup(JSONObject object) {
+      return Group.fromJsonObject(object);
+    }
+
+    @Override
+    public ExerciseGroup parseExerciseGroup(JSONObject object) {
+      return ExerciseGroup.fromJsonObject(object);
+    }
   }
 }
