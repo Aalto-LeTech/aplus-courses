@@ -6,13 +6,20 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.ContentBody;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
@@ -56,7 +63,7 @@ public class CoursesClient {
    */
   @NotNull
   public static ByteArrayInputStream fetch(@NotNull URL url,
-                                           @NotNull Authentication authentication)
+                                           @NotNull HttpAuthentication authentication)
       throws IOException {
     return fetchAndMap(url, authentication,
         entity -> new ByteArrayInputStream(EntityUtils.toByteArray(entity)));
@@ -79,7 +86,7 @@ public class CoursesClient {
    * A functional interface for adding authentication to an HTTP request.
    */
   @FunctionalInterface
-  public interface Authentication {
+  public interface HttpAuthentication {
     void addToRequest(HttpRequest request);
   }
 
@@ -105,8 +112,8 @@ public class CoursesClient {
    * Makes a GET request to the given URL and returns the response body.
    *
    * @param url            The URL to which the GET request is made.
-   * @param authentication An instance of {@link Authentication} that gets added to the request, or
-   *                       null if no authentication should be added.
+   * @param authentication An instance of {@link HttpAuthentication} that gets added to the request,
+   *                       or null if no authentication should be added.
    * @param mapper         A {@link EntityMapper} that converts the {@link HttpEntity} containing
    *                       the response body to the desired format.
    * @return The result of {@code mapper.map(response)}, where response is a {@link HttpEntity}
@@ -116,7 +123,7 @@ public class CoursesClient {
    *                     if the status code isn't 2xx or the response is missing a body.
    */
   public static <T> T fetchAndMap(@NotNull URL url,
-                                  @Nullable Authentication authentication,
+                                  @Nullable HttpAuthentication authentication,
                                   @NotNull EntityMapper<T> mapper) throws IOException {
     HttpGet request = new HttpGet(url.toString());
     if (authentication != null) {
@@ -129,8 +136,8 @@ public class CoursesClient {
    * Makes a GET request to the given URL and consumes the response body.
    *
    * @param url            The URL to which the GET request is made.
-   * @param authentication An instance of {@link Authentication} that gets added to the request, or
-   *                       null if no authentication should be added.
+   * @param authentication An instance of {@link HttpAuthentication} that gets added to the request,
+   *                       or null if no authentication should be added.
    * @param consumer       A {@link EntityConsumer} that consumes the {@link HttpEntity} containing
    *                       the response body.
    * @throws IOException If an issue occurs while making the request, which includes cases such as
@@ -138,13 +145,57 @@ public class CoursesClient {
    *                     if the status code isn't 2xx or the response is missing a body.
    */
   public static void fetchAndConsume(@NotNull URL url,
-                                     @Nullable Authentication authentication,
+                                     @Nullable HttpAuthentication authentication,
                                      @NotNull EntityConsumer consumer) throws IOException {
     HttpGet request = new HttpGet(url.toString());
     if (authentication != null) {
       authentication.addToRequest(request);
     }
     consumeResponseBody(request, consumer);
+  }
+
+  /**
+   * Sends a POST request to the given URL.
+   *
+   * @param url            A URL.
+   * @param authentication The method of authentication.
+   * @param data           Map of request data.  Values can be strings, numbers or files.
+   *
+   * @throws IOException In case of I/O related errors or non-successful response.
+   */
+  public static void post(@NotNull URL url,
+                          @Nullable HttpAuthentication authentication,
+                          @Nullable Map<String, Object> data) throws IOException {
+    MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+    if (data != null) {
+      for (Map.Entry<String, Object> entry : data.entrySet()) {
+        builder.addPart(entry.getKey(), getContentBody(entry.getValue()));
+      }
+    }
+    HttpPost request = new HttpPost(url.toString());
+    request.setEntity(builder.build());
+
+    if (authentication != null) {
+      authentication.addToRequest(request);
+    }
+
+    try (CloseableHttpClient client = HttpClients.createDefault();
+         CloseableHttpResponse response = client.execute(request)) {
+      requireSuccessStatusCode(response);
+    }
+  }
+
+  private static ContentBody getContentBody(Object value) {
+    if (value instanceof String) {
+      return new StringBody((String) value, ContentType.MULTIPART_FORM_DATA);
+    }
+    if (value instanceof Number) {
+      return getContentBody(String.valueOf(value));
+    }
+    if (value instanceof File) {
+      return new FileBody((File) value);
+    }
+    throw new IllegalArgumentException("Type of value not supported.");
   }
 
   /**
@@ -180,7 +231,6 @@ public class CoursesClient {
    * Throws a {@link UnexpectedResponseException} if the response status code isn't 2xx. Otherwise
    * does nothing.
    */
-  @NotNull
   private static void requireSuccessStatusCode(@NotNull HttpResponse response)
       throws UnexpectedResponseException {
     int statusCode = response.getStatusLine().getStatusCode();

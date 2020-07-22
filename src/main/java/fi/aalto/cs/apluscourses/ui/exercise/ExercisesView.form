@@ -15,7 +15,7 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="2cca" class="fi.aalto.cs.apluscourses.ui.exercise.ExercisesTreeView" binding="exerciseGroupsTree" custom-create="true">
+          <component id="2cca" class="fi.aalto.cs.apluscourses.ui.base.TreeView" binding="exerciseGroupsTree" custom-create="true">
             <constraints/>
             <properties>
               <rootVisible value="false"/>

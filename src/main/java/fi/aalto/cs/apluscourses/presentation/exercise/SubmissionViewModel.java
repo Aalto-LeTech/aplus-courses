@@ -1,30 +1,41 @@
 package fi.aalto.cs.apluscourses.presentation.exercise;
 
-import com.intellij.openapi.project.Project;
-import fi.aalto.cs.apluscourses.model.APlusAuthentication;
 import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.Group;
+import fi.aalto.cs.apluscourses.model.Submission;
 import fi.aalto.cs.apluscourses.model.SubmissionHistory;
 import fi.aalto.cs.apluscourses.model.SubmissionInfo;
+import fi.aalto.cs.apluscourses.model.SubmittableFile;
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
+import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
+import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
+import fi.aalto.cs.apluscourses.utils.observable.ValidationError;
+import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class SubmissionViewModel {
 
-  private Exercise exercise;
+  private final Exercise exercise;
 
-  private SubmissionInfo submissionInfo;
+  private final SubmissionInfo submissionInfo;
 
-  private SubmissionHistory submissionHistory;
+  private final SubmissionHistory submissionHistory;
 
-  private List<Group> availableGroups;
+  private final List<Group> availableGroups;
 
-  private Group selectedGroup;
+  private final Map<String, Path> files;
 
-  private APlusAuthentication authentication;
+  public final ObservableProperty<Group> selectedGroup =
+      new ObservableReadWriteProperty<>(null, SubmissionViewModel::validateGroupSelection);
 
-  private Project project;
+  @Nullable
+  private static ValidationError validateGroupSelection(@Nullable Group group) {
+    return group == null ? new GroupNotSelectedError() : null;
+  }
 
   /**
    * Construct a submission view model with the given exercise, groups, authentication, and project.
@@ -33,19 +44,12 @@ public class SubmissionViewModel {
                              @NotNull SubmissionInfo submissionInfo,
                              @NotNull SubmissionHistory submissionHistory,
                              @NotNull List<Group> availableGroups,
-                             @NotNull APlusAuthentication authentication,
-                             @NotNull Project project) {
+                             @NotNull Map<String, Path> files) {
     this.exercise = exercise;
     this.submissionInfo = submissionInfo;
     this.submissionHistory = submissionHistory;
     this.availableGroups = availableGroups;
-    this.authentication = authentication;
-    this.project = project;
-  }
-
-  @NotNull
-  public Project getProject() {
-    return project;
+    this.files = files;
   }
 
   @NotNull
@@ -59,25 +63,47 @@ public class SubmissionViewModel {
   }
 
   @NotNull
-  public Group getSelectedGroup() {
-    return selectedGroup;
+  public SubmittableFile[] getFiles() {
+    return submissionInfo.getFiles();
   }
 
-  public void setGroup(@NotNull Group group) {
-    this.selectedGroup = group;
-  }
-
-  @NotNull
-  public List<String> getFilenames() {
-    return submissionInfo.getFilenames();
-  }
-
-  public int getNumberOfSubmissions() {
-    return submissionHistory.getNumberOfSubmissions();
+  public int getCurrentSubmissionNumber() {
+    return submissionHistory.getNumberOfSubmissions() + 1;
   }
 
   public int getMaxNumberOfSubmissions() {
     return submissionInfo.getSubmissionsLimit();
   }
 
+  /**
+   * Warning text if max submission number is exceeded or close to be exceeded.
+   *
+   * @return A warning text or null, if no warning.
+   */
+  @Nullable
+  public String getSubmissionWarning() {
+    int submissionsLeft =
+        submissionInfo.getSubmissionsLimit() - submissionHistory.getNumberOfSubmissions();
+    if (submissionsLeft == 1) {
+      return "Warning! This is your last submission.";
+    }
+    if (submissionsLeft <= 0) {
+      return "Warning! Max. number of submissions exceeded.";
+    }
+    return null;
+  }
+
+  public Submission buildSubmission() {
+    Group group = Objects.requireNonNull(selectedGroup.get());
+    return new Submission(exercise, submissionInfo, files, group);
+  }
+
+  public static class GroupNotSelectedError implements ValidationError {
+
+    @NotNull
+    @Override
+    public String getDescription() {
+      return "Select a group";
+    }
+  }
 }

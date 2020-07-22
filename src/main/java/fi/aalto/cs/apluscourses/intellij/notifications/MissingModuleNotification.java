@@ -6,6 +6,9 @@ import org.jetbrains.annotations.NotNull;
 
 public class MissingModuleNotification extends Notification {
 
+  @NotNull
+  private final String moduleName;
+
   /**
    * Construct a missing module notification that explains that a module with the given name
    * couldn't be found.
@@ -16,6 +19,12 @@ public class MissingModuleNotification extends Notification {
         "Could not find file",
         "A+ Courses plugin couldn't find the module " + moduleName + ".",
         NotificationType.ERROR);
+    this.moduleName = moduleName;
+  }
+
+  @NotNull
+  public String getModuleName() {
+    return moduleName;
   }
 
 }

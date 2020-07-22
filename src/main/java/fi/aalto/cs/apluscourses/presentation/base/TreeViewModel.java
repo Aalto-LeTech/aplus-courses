@@ -1,7 +1,9 @@
 package fi.aalto.cs.apluscourses.presentation.base;
 
-import javax.swing.tree.TreeModel;
+import java.util.List;
+import org.jetbrains.annotations.Nullable;
 
 public interface TreeViewModel {
-  TreeModel toTreeModel();
+  @Nullable
+  List<? extends TreeViewModel> getSubtrees();
 }

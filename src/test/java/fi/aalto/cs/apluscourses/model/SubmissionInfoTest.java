@@ -1,7 +1,5 @@
 package fi.aalto.cs.apluscourses.model;
 
-import java.util.Arrays;
-import java.util.Collections;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
@@ -11,28 +9,25 @@ public class SubmissionInfoTest {
 
   @Test
   public void testSubmissionInfo() {
-    SubmissionInfo info = new SubmissionInfo(10, Arrays.asList("file1", "file2"));
+    SubmissionInfo info = new SubmissionInfo(10, new SubmittableFile[] {
+        new SubmittableFile("file1", "f1.py"), new SubmittableFile("file2", "f2.py") });
     Assert.assertEquals("The submissions limit is the same as the one given to the constructor",
         10, info.getSubmissionsLimit());
     Assert.assertEquals("The filenames are the same as those given to the constructor",
-        "file1", info.getFilenames().get(0));
+        "f1.py", info.getFiles()[0].getName());
     Assert.assertEquals("The filenames are the same as those given to the constructor",
-        "file2", info.getFilenames().get(1));
-  }
-
-  @Test(expected = UnsupportedOperationException.class)
-  public void testGetFilenamesReturnsUnmodifiableList() {
-    SubmissionInfo info = new SubmissionInfo(0, Collections.emptyList());
-    info.getFilenames().add("");
+        "f2.py", info.getFiles()[1].getName());
   }
 
   @Test
   public void testFromJsonObject() {
     JSONArray formSpec = new JSONArray()
         .put(new JSONObject()
+            .put("key", "file1")
             .put("title", "i18n_coolFilename.scala")
             .put("type", "file"))
         .put(new JSONObject()
+            .put("key", "file2")
             .put("title", "ignored because")
             .put("type", "is not file"));
 
@@ -55,7 +50,7 @@ public class SubmissionInfoTest {
     Assert.assertEquals("The submissions limit is the same as that in the JSON",
         13, info.getSubmissionsLimit());
     Assert.assertEquals("The filenames are parsed from the JSON",
-        "coolFilename.scala", info.getFilenames().get(0));
+        "coolFilename.scala", info.getFiles()[0].getName());
   }
 
 }

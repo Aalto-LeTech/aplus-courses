@@ -1,7 +1,7 @@
-package fi.aalto.cs.apluscourses.ui;
+package fi.aalto.cs.apluscourses.ui.base;
 
-import fi.aalto.cs.apluscourses.utils.bindable.Bindable;
-import fi.aalto.cs.apluscourses.utils.bindable.TwoWayBindable;
+import fi.aalto.cs.apluscourses.ui.utils.Bindable;
+import fi.aalto.cs.apluscourses.ui.utils.TwoWayBindable;
 import javax.swing.JCheckBox;
 
 /**

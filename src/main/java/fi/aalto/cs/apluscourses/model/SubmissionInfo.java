@@ -1,31 +1,24 @@
 package fi.aalto.cs.apluscourses.model;
 
-import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
-import fi.aalto.cs.apluscourses.utils.CoursesClient;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 
 public class SubmissionInfo {
 
   private final int submissionsLimit;
 
   @NotNull
-  private final List<String> filenames;
+  private final SubmittableFile[] files;
 
   /**
-   * Construct a submission info instance with the given submission limit and filenames.
+   * Construct a submission info instance with the given submission limit and files.
    */
-  public SubmissionInfo(int submissionsLimit, @NotNull List<String> filenames) {
+  public SubmissionInfo(int submissionsLimit, @NotNull SubmittableFile[] files) {
     this.submissionsLimit = submissionsLimit;
-    this.filenames = filenames;
+    this.files = files;
   }
 
   /**
@@ -36,7 +29,7 @@ public class SubmissionInfo {
     JSONObject exerciseInfo = jsonObject.getJSONObject("exercise_info");
     JSONArray formSpec = exerciseInfo.getJSONArray("form_spec");
     JSONObject localizationInfo = exerciseInfo.getJSONObject("form_i18n");
-    List<String> filenames = new ArrayList<>(formSpec.length());
+    List<SubmittableFile> files = new ArrayList<>(formSpec.length());
 
     for (int i = 0; i < formSpec.length(); ++i) {
       JSONObject spec = formSpec.getJSONObject(i);
@@ -45,31 +38,17 @@ public class SubmissionInfo {
         continue;
       }
 
+      String key = spec.getString("key");
       String title = spec.getString("title");
       String englishFilename = localizationInfo
           .getJSONObject(title)
           .getString("en");
-      filenames.add(englishFilename);
+      files.add(new SubmittableFile(key, englishFilename));
     }
 
     int submissionLimit = jsonObject.getInt("max_submissions");
 
-    return new SubmissionInfo(submissionLimit, filenames);
-  }
-
-  /**
-   * Makes a request to the A+ API to get the details of the given exercise.
-   *
-   * @throws IOException If an IO error occurs (e.g. network error).
-   */
-  @NotNull
-  public static SubmissionInfo forExercise(@NotNull Exercise exercise,
-                                           @NotNull APlusAuthentication authentication)
-      throws IOException {
-    URL url = new URL(PluginSettings.A_PLUS_API_BASE_URL + "/exercises/" + exercise.getId() + "/");
-    InputStream inputStream = CoursesClient.fetch(url, authentication::addToRequest);
-    JSONObject response = new JSONObject(new JSONTokener(inputStream));
-    return fromJsonObject(response);
+    return new SubmissionInfo(submissionLimit, files.toArray(new SubmittableFile[0]));
   }
 
   public int getSubmissionsLimit() {
@@ -77,7 +56,11 @@ public class SubmissionInfo {
   }
 
   @NotNull
-  public List<String> getFilenames() {
-    return Collections.unmodifiableList(filenames);
+  public SubmittableFile[] getFiles() {
+    return files;
+  }
+
+  public boolean isSubmittable() {
+    return files.length > 0;
   }
 }

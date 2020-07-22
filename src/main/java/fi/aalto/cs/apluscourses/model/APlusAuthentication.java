@@ -1,11 +1,11 @@
 package fi.aalto.cs.apluscourses.model;
 
 import java.util.Arrays;
-
 import org.apache.http.HttpRequest;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class APlusAuthentication {
+public class APlusAuthentication implements Authentication {
   @NotNull
   private final char[] token;
 
@@ -17,11 +17,29 @@ public class APlusAuthentication {
     this.token = token.clone();
   }
 
+  @Override
   public void addToRequest(@NotNull HttpRequest request) {
-    request.addHeader("Authorization", "Token " + new String(token));
+    synchronized (token) {
+      request.addHeader("Authorization", "Token " + new String(token));
+    }
   }
 
+  @Override
   public void clear() {
-    Arrays.fill(token, '\0');
+    synchronized (token) {
+      Arrays.fill(token, '\0');
+    }
+  }
+
+  /**
+   * Returns true if the token represents the same string as the parameter.
+   *
+   * @param string String to compare.
+   * @return True, if strings are equal, otherwise false.
+   */
+  public synchronized boolean tokenEquals(@Nullable String string) {
+    synchronized (token) {
+      return new String(token).equals(string);
+    }
   }
 }

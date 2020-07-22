@@ -1,4 +1,4 @@
-package fi.aalto.cs.apluscourses.ui;
+package fi.aalto.cs.apluscourses.ui.base;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;

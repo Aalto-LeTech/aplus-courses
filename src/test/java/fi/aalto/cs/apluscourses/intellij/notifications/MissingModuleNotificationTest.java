@@ -9,10 +9,12 @@ public class MissingModuleNotificationTest {
 
   @Test
   public void testMissingModuleNotification() {
-    MissingModuleNotification notification = new MissingModuleNotification("module name");
+    String name = "module name";
+    MissingModuleNotification notification = new MissingModuleNotification(name);
+    Assert.assertEquals("Module name should be correct", name, notification.getModuleName());
     Assert.assertEquals("Group ID should be A+", "A+", notification.getGroupId());
     Assert.assertThat("The content should contain the module name", notification.getContent(),
-        containsString("module name"));
+        containsString(name));
   }
 
 }

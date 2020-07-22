@@ -33,6 +33,7 @@ public abstract class IntelliJLibrary
    * Method that adds libraries to SDK root.
    */
   @CalledWithWriteLock
+  @SuppressWarnings("unchecked")
   public void loadInternal() {
     LibraryTable.ModifiableModel libraryTable = project.getLibraryTable().getModifiableModel();
     com.intellij.openapi.roots.libraries.Library.ModifiableModel library = libraryTable
@@ -42,7 +43,6 @@ public abstract class IntelliJLibrary
       library.addRoot(uri, OrderRootType.CLASSES);
     }
     //HACK: this is the only way to access properties that I am aware of
-    //noinspection unchecked
     initializeLibraryProperties(((LibraryEx) library).getProperties());
     library.commit();
     libraryTable.commit();

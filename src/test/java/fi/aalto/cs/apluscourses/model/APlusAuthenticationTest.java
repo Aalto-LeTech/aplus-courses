@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.model;
 
+import static org.junit.Assert.assertTrue;
+
 import org.apache.http.HttpRequest;
 import org.apache.http.client.methods.HttpGet;
 import org.junit.Assert;
@@ -11,8 +13,7 @@ public class APlusAuthenticationTest {
 
   @Test
   public void testAPlusAuthentication() {
-    char[] token = new char[] {'a', 'b', 'c'};
-    APlusAuthentication authentication = new APlusAuthentication(token);
+    Authentication authentication = new APlusAuthentication(new char[] {'a', 'b', 'c'});
 
     HttpRequest request = new HttpGet("https://example.com");
     authentication.addToRequest(request);
@@ -23,8 +24,9 @@ public class APlusAuthenticationTest {
 
   @Test
   public void testMakesCopyOfArray() {
-    char[] token = new char[] {'d', 'e', 'f'};
-    APlusAuthentication authentication = new APlusAuthentication(token);
+    char[] token = (new char[] {'d', 'e', 'f'});
+
+    Authentication authentication = new APlusAuthentication(token);
 
     token[0] = 'g';
     HttpRequest request = new HttpGet("https://example.org");
@@ -36,15 +38,11 @@ public class APlusAuthenticationTest {
 
   @Test
   public void testClear() {
-    char[] token = new char[] {'g', 'h', 'i'};
-    APlusAuthentication authentication = new APlusAuthentication(token);
+    APlusAuthentication authentication = new APlusAuthentication(new char[] {'g', 'h', 'i'});
 
-    HttpRequest request = new HttpGet("http://localhost:1234");
     authentication.clear();
-    authentication.addToRequest(request);
 
-    Assert.assertEquals("The token is cleared", "Token \0\0\0",
-        request.getFirstHeader(AUTHORIZATION_HEADER).getValue());
+    assertTrue(authentication.tokenEquals("\0\0\0"));
   }
 
 }

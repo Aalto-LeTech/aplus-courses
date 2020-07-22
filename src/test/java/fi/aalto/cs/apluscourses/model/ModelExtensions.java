@@ -22,6 +22,54 @@ public class ModelExtensions {
 
   }
 
+  public static class TestExerciseDataSource extends ExerciseDataSource {
+
+    public TestExerciseDataSource() {
+      super(() -> new APlusAuthentication(new char[0]));
+    }
+
+    @NotNull
+    @Override
+    public SubmissionInfo getSubmissionInfo(@NotNull Exercise exercise) throws IOException {
+      return new SubmissionInfo(1, new SubmittableFile[0]);
+    }
+
+    @NotNull
+    @Override
+    public SubmissionHistory getSubmissionHistory(@NotNull Exercise exercise) throws IOException {
+      return new SubmissionHistory(0);
+    }
+
+    @NotNull
+    @Override
+    public List<Group> getGroups(@NotNull Course course) throws IOException {
+      return Collections.singletonList(new Group(0, Collections.singletonList("Only you")));
+    }
+
+    @NotNull
+    @Override
+    public List<ExerciseGroup> getExerciseGroups(@NotNull Course course) throws IOException {
+      return Collections.emptyList();
+    }
+
+    @Override
+    public void submit(Submission submission) throws IOException {
+      // do nothing
+    }
+  }
+
+  public static class TestCourse extends Course {
+
+    public TestCourse(@NotNull String id) {
+      this(id, "");
+    }
+
+    public TestCourse(@NotNull String id, @NotNull String name) {
+      super(id, name, Collections.emptyList(), Collections.emptyList(), Collections.emptyMap(),
+          Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList());
+    }
+  }
+
   public static class TestComponent extends Component {
 
     public TestComponent() {

@@ -86,7 +86,7 @@ public class VfsUtilTest {
   public static final String JSON = ".json";
 
   @Test
-  public void testHasLocalChangesReturnsTrue() throws IOException, InterruptedException {
+  public void testHasLocalChangesReturnsTrue() throws IOException {
     //  given
     File tempDirectory = FileUtilRt.createTempDirectory("first", "", true);
     File tempFileOne = FileUtilRt.createTempFile(tempDirectory, "test1", JSON, true);

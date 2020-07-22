@@ -3,17 +3,17 @@ package fi.aalto.cs.apluscourses.ui.repl;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import fi.aalto.cs.apluscourses.ui.ModuleComboBoxListRenderer;
+import fi.aalto.cs.apluscourses.ui.IconListCellRenderer;
 import icons.PluginIcons;
 import javax.swing.JList;
 import org.junit.Test;
 
-public class ModuleComboBoxListRendererTest {
+public class IconListCellRendererTest {
 
   @Test
   public void testCustomizeWithValidInputWorks() {
     //  given
-    ModuleComboBoxListRenderer renderer = new ModuleComboBoxListRenderer();
+    IconListCellRenderer renderer = new IconListCellRenderer(PluginIcons.A_PLUS_MODULE);
 
     //  when
     renderer.customize(new JList<String>(), "", 0, true, true);

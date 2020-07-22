@@ -1,17 +1,13 @@
 package fi.aalto.cs.apluscourses.ui.exercise;
 
-import com.intellij.openapi.ui.ComboBox;
-import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.openapi.ui.ValidationInfo;
+import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.model.Group;
+import fi.aalto.cs.apluscourses.model.SubmittableFile;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionViewModel;
 import fi.aalto.cs.apluscourses.ui.GuiObject;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import fi.aalto.cs.apluscourses.ui.base.OurComboBox;
+import fi.aalto.cs.apluscourses.ui.base.OurDialogWrapper;
 import javax.swing.Action;
-import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -19,28 +15,39 @@ import javax.swing.SwingConstants;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class SubmissionDialog extends DialogWrapper {
+public class SubmissionDialog extends OurDialogWrapper {
 
-  private SubmissionViewModel viewModel;
+  @NotNull
+  private final SubmissionViewModel viewModel;
+
   private JPanel basePanel;
 
   protected JLabel exerciseName;
 
-  protected JComboBox<Group> groupComboBox;
+  protected OurComboBox<Group> groupComboBox;
 
   protected JLabel submissionCount;
 
   @GuiObject
   private JLabel filenames;
+  private JLabel warning;
 
   /**
    * Construct a submission dialog with the given view model.
    */
-  public SubmissionDialog(@NotNull SubmissionViewModel viewModel) {
-    super(viewModel.getProject());
+  public SubmissionDialog(@NotNull SubmissionViewModel viewModel, @Nullable Project project) {
+    super(project);
+
     this.viewModel = viewModel;
+
     setTitle("Submit Exercise");
     setButtonsAlignment(SwingConstants.CENTER);
+
+    groupComboBox.selectedItemBindable.bindToSource(viewModel.selectedGroup);
+    registerValidationItem(groupComboBox.selectedItemBindable);
+
+    warning.setText(viewModel.getSubmissionWarning());
+
     init();
   }
 
@@ -56,42 +63,24 @@ public class SubmissionDialog extends DialogWrapper {
     return new Action[] {getOKAction(), getCancelAction()};
   }
 
-  @Nullable
-  @Override
-  protected ValidationInfo doValidate() {
-    Group selectedGroup = (Group) groupComboBox.getSelectedItem();
-    if (selectedGroup.getId() == -1) {
-      return new ValidationInfo("Select a group", groupComboBox);
-    }
-    return null;
-  }
-
-  @Override
-  protected void doOKAction() {
-    viewModel.setGroup((Group) groupComboBox.getSelectedItem());
-    super.doOKAction();
-  }
-
   @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
   private void createUIComponents() {
     exerciseName = new JLabel("<html><body><h2>" + viewModel.getPresentableExerciseName()
         + "</h2></body></html>");
 
-    // We make a copy of the list as we are modifying it
-    List<Group> availableGroups = new ArrayList<>(viewModel.getAvailableGroups());
-    availableGroups.add(0,
-        new Group(-1, Collections.singletonList("Select group...")));
-    groupComboBox = new ComboBox<>(availableGroups.stream().toArray(Group[]::new));
+    groupComboBox =
+        new OurComboBox<>(viewModel.getAvailableGroups().toArray(new Group[0]), Group.class);
     groupComboBox.setRenderer(new GroupRenderer());
 
     StringBuilder filenamesHtml = new StringBuilder("<html><body>Files:<ul>");
-    viewModel.getFilenames().forEach(filename -> filenamesHtml.append("<li>" + filename + "</li>"));
+    for (SubmittableFile file : viewModel.getFiles()) {
+      filenamesHtml.append("<li>").append(file.getName()).append("</li>");
+    }
     filenamesHtml.append("</ul></body></html>");
     filenames = new JLabel(filenamesHtml.toString());
 
-    submissionCount = new JLabel("You are about to make submission "
-        + (viewModel.getNumberOfSubmissions() + 1) + " out of "
-        + viewModel.getMaxNumberOfSubmissions() + ".");
+    submissionCount = new JLabel(String.format("You are about to make submission %d out of %d.",
+        viewModel.getCurrentSubmissionNumber(), viewModel.getMaxNumberOfSubmissions()));
   }
 
   @FunctionalInterface
