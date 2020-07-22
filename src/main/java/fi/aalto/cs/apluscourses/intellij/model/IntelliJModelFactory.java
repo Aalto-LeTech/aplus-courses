@@ -35,7 +35,7 @@ public class IntelliJModelFactory implements ModelFactory {
                              @NotNull Map<String, String> requiredPlugins,
                              @NotNull Map<String, URL> resourceUrls,
                              @NotNull List<String> autoInstallComponentNames,
-                             @NotNull Map<String, String> replInitialCommands) {
+                             @NotNull Map<String, String[]> replInitialCommands) {
 
     IntelliJCourse course =
         new IntelliJCourse(id, name, modules, libraries, requiredPlugins, resourceUrls,

@@ -27,6 +27,7 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 public class Course implements ComponentSource {
+
   @NotNull
   private final String id;
 
@@ -53,17 +54,20 @@ public class Course implements ComponentSource {
   protected final Map<String, Component> components;
 
   @NotNull
-  private final Map<String, String> replInitialCommands;
+  private final Map<String, String[]> replInitialCommands;
 
   /**
    * Constructs a course with the given parameters.
    *
-   * @param name            The name of the course
-   * @param modules         The list of modules in the course.
-   * @param requiredPlugins A map containing the required plugins for this course. The keys are the
-   *                        ids of the plugins and the values are the names of the plugins.
-   * @param resourceUrls    A map containing URLs to resources related to the course. The keys are
-   *                        the names of the resources and the values are the URLs.
+   * @param name                The name of the course.
+   * @param modules             The list of modules in the course.
+   * @param requiredPlugins     A map containing the required plugins for this course. The keys are
+   *                            the ids of the plugins and the values are the names of the plugins.
+   * @param resourceUrls        A map containing URLs to resources related to the course. The keys
+   *                            are the names of the resources and the values are the URLs.
+   * @param replInitialCommands A {@link HashMap}, with module name {@link String} as a key and a
+   *                            {@link String} array of the commands to be executed on REPL
+   *                            startup.
    */
   public Course(@NotNull String id,
                 @NotNull String name,
@@ -72,7 +76,7 @@ public class Course implements ComponentSource {
                 @NotNull Map<String, String> requiredPlugins,
                 @NotNull Map<String, URL> resourceUrls,
                 @NotNull List<String> autoInstallComponentNames,
-                @NotNull Map<String, String> replInitialCommands) {
+                @NotNull Map<String, String[]> replInitialCommands) {
     this.id = id;
     this.name = name;
     this.modules = modules;
@@ -97,8 +101,8 @@ public class Course implements ComponentSource {
    *
    * @param reader A reader providing a character stream with the course configuration data.
    * @return A course instance containing the information parsed from the configuration data.
-   * @throws MalformedCourseConfigurationFileException If the configuration data is malformed in
-   *                                                   any way
+   * @throws MalformedCourseConfigurationFileException If the configuration data is malformed in any
+   *                                                   way
    */
   @NotNull
   public static Course fromConfigurationData(@NotNull Reader reader, @NotNull ModelFactory factory)
@@ -113,8 +117,8 @@ public class Course implements ComponentSource {
    * @param sourcePath The path to the source of the reader, which is stored in exceptions thrown
    *                   from this method.
    * @return A course instance containing the information parsed from the configuration data.
-   * @throws MalformedCourseConfigurationFileException If the configuration data is malformed in
-   *                                                   any way
+   * @throws MalformedCourseConfigurationFileException If the configuration data is malformed in any
+   *                                                   way
    */
   @NotNull
   public static Course fromConfigurationData(@NotNull Reader reader,
@@ -129,7 +133,7 @@ public class Course implements ComponentSource {
     Map<String, URL> resourceUrls = getCourseResourceUrls(jsonObject, sourcePath);
     List<String> autoInstallComponentNames
         = getCourseAutoInstallComponentNames(jsonObject, sourcePath);
-    Map<String, String> replInitialCommands = null;
+    Map<String, String[]> replInitialCommands = Collections.emptyMap();
     return factory.createCourse(courseId, courseName, courseModules, Collections.emptyList(),
         requiredPlugins, resourceUrls, autoInstallComponentNames, replInitialCommands);
   }
@@ -171,9 +175,9 @@ public class Course implements ComponentSource {
   }
 
   /**
-   * Returns the list of all modules in this course. If the course object is created with
-   * {@link Course#fromConfigurationData}, then the modules are returned in the order in which they
-   * are listed in the course configuration data.
+   * Returns the list of all modules in this course. If the course object is created with {@link
+   * Course#fromConfigurationData}, then the modules are returned in the order in which they are
+   * listed in the course configuration databp.
    *
    * @return All modules of this course.
    */
@@ -412,7 +416,42 @@ public class Course implements ComponentSource {
   }
 
   @NotNull
-  public Map<String, String> getReplInitialCommands() {
+  public Map<String, String[]> getCourseReplInitialCommands() {
+    return replInitialCommands;
+  }
+
+  @NotNull
+  protected static Map<String, String[]> getCourseReplInitialCommands(@NotNull JSONObject jsonObject,
+                                                                      @NotNull String source)
+      throws MalformedCourseConfigurationFileException {
+    Map<String, String[]> replInitialCommands = new HashMap<>();
+    JSONArray replJSONArray;
+    try {
+      replJSONArray = jsonObject.getJSONArray("repl");
+
+      if (replJSONArray == null) {
+        return replInitialCommands;
+      }
+
+      for (int i = 0; i < replJSONArray.length(); ++i) {
+
+        JSONObject replCommandsForModuleObject = replJSONArray.getJSONObject(i);
+        String moduleName = replCommandsForModuleObject.getString("module");
+        JSONArray replInitialCommandsArray = replCommandsForModuleObject
+            .getJSONArray("initialCommands");
+        String[] commands = replInitialCommandsArray
+            .toList()
+            .stream()
+            .map(command -> (String) command)
+            .toArray(String[]::new);
+
+        replInitialCommands.put(moduleName, commands);
+      }
+    } catch (JSONException e) {
+      throw new MalformedCourseConfigurationFileException(
+          source, "Expected moduleName-commands-pairs in \"repl\" object", e);
+    }
+
     return replInitialCommands;
   }
 }

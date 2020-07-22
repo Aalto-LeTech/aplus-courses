@@ -1,0 +1,24 @@
+{
+  "repl": [
+    {
+      "module": "GoodStuff",
+      "initialCommands": [
+        "import o1._",
+        "import o1.goodstuff._"
+      ]
+    },
+    {
+      "module": "Train",
+      "initialCommands": [
+        "import o1._",
+        "import o1.train._"
+      ]
+    },
+    {
+      "module": "O1",
+      "initialCommands": [
+        "import o1._"
+      ]
+    }
+  ]
+}

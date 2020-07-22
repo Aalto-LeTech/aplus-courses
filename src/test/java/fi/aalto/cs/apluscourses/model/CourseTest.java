@@ -3,14 +3,19 @@ package fi.aalto.cs.apluscourses.model;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.io.FileUtils;
+import org.json.JSONObject;
 import org.junit.Test;
 
 public class CourseTest {
@@ -29,8 +34,8 @@ public class CourseTest {
     Map<String, URL> resourceUrls = new HashMap<>();
     resourceUrls.put("key", new URL("http://localhost:8000"));
     List<String> autoInstallComponents = Arrays.asList(module1name);
-    Map<String, String> replInitialCommands = new HashMap<>();
-    replInitialCommands.put("Module1", "import o1._");
+    Map<String, String[]> replInitialCommands = new HashMap<>();
+    replInitialCommands.put("Module1", new String[]{"import o1._"});
     Course course = new Course("13", "Tester Course", modules, Collections.emptyList(),
         requiredPlugins, resourceUrls, autoInstallComponents, replInitialCommands);
     assertEquals("The ID of the course should be the same as that given to the constructor",
@@ -51,7 +56,7 @@ public class CourseTest {
         "The auto-install components should be the same as those given to the constructor",
         module1name, course.getAutoInstallComponents().get(0).getName());
     assertEquals("The REPL initial commands for Module1 are correct.", "import o1._",
-        course.getReplInitialCommands().get("Module1"));
+        course.getCourseReplInitialCommands().get("Module1"));
   }
 
   @Test
@@ -189,5 +194,42 @@ public class CourseTest {
     StringReader stringReader = new StringReader("{" + nameJson + "," + requiredPluginsJson + ","
         + modulesJson + "," + autoInstalls + "}");
     Course.fromConfigurationData(stringReader, MODEL_FACTORY);
+  }
+
+  @Test
+  public void testGetReplInitialCommandsWorksWithValidInput()
+      throws IOException, MalformedCourseConfigurationFileException {
+    //  given
+    File testDataJson = new File("src/test/resources/replInitialCommandsTestData.json");
+    JSONObject replInitialCommandsJson = getJsonObject(testDataJson);
+
+    //  when
+    Map<String, String[]> replInitialCommands = Course
+        .getCourseReplInitialCommands(replInitialCommandsJson, "");
+
+    //  then
+    String[] trainsCommands = replInitialCommands.get("Train");
+    String[] o1sCommands = replInitialCommands.get("O1");
+    assertEquals("Amount of initial commands for module 'Train' is equal to 2 (two).", 2,
+        trainsCommands.length);
+    assertEquals("The first 'Train' module's command is correct.", "import o1._",
+        trainsCommands[0]);
+    assertEquals("The second 'Train' module's command is correct.", "import o1.train._",
+        trainsCommands[1]);
+    assertEquals("Amount of initial commands for module 'O1' is equal to 1 (one).", 1,
+        o1sCommands.length);
+    assertEquals("The 'O1' module's command is correct.", "import o1._", o1sCommands[0]);
+  }
+
+  @Test(expected = MalformedCourseConfigurationFileException.class)
+  public void testGetReplInitialCommandsThrowsWhenShould()
+      throws MalformedCourseConfigurationFileException {
+    JSONObject wrongJsonStringJson = new JSONObject("{}");
+
+    Course.getCourseReplInitialCommands(wrongJsonStringJson, "");
+  }
+
+  public static JSONObject getJsonObject(File file) throws IOException {
+    return new JSONObject(FileUtils.readFileToString(file, StandardCharsets.UTF_8));
   }
 }
