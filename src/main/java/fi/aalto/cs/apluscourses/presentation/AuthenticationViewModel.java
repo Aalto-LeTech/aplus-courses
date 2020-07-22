@@ -8,10 +8,21 @@ import org.jetbrains.annotations.Nullable;
 
 public class AuthenticationViewModel {
   @Nullable
-  private volatile char[] token;
+  private char[] token;
+  private final Object lock = new Object();
 
-  public void setToken(@NotNull char[] token) {
-    this.token = token.clone();
+  /**
+   * Sets token by cloning the given token.
+   *
+   * @param tokenToBeCloned A token.
+   */
+  public void setToken(@NotNull char[] tokenToBeCloned) {
+    synchronized (lock) {
+      if (token != null) {
+        throw new IllegalStateException("Token can be set only once");
+      }
+      token = tokenToBeCloned.clone();
+    }
   }
 
   /**
@@ -22,12 +33,13 @@ public class AuthenticationViewModel {
    */
   @NotNull
   public Authentication build() {
-    char[] localToken = token;
-    if (localToken == null) {
-      throw new IllegalStateException("Token is not set");
+    synchronized (lock) {
+      if (token == null) {
+        throw new IllegalStateException("Token is not set");
+      }
+      Authentication authentication = new APlusAuthentication(token);
+      Arrays.fill(token, '\0');
+      return authentication;
     }
-    Authentication authentication = new APlusAuthentication(localToken);
-    Arrays.fill(localToken, '\0');
-    return authentication;
   }
 }

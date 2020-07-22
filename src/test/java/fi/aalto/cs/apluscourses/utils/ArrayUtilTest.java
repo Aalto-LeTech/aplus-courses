@@ -19,7 +19,7 @@ public class ArrayUtilTest {
 
   @Test(expected = UnsupportedOperationException.class)
   @SuppressWarnings("unchecked")
-  public void testMapArrayThrows() throws UnsupportedOperationException {
+  public void testMapArrayThrows() {
     ArrayUtil.ThrowingFunction<String, Void, UnsupportedOperationException> func
         = mock(ArrayUtil.ThrowingFunction.class);
     doThrow(new UnsupportedOperationException()).when(func).apply("seal");
