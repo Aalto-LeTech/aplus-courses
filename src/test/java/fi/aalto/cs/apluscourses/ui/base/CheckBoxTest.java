@@ -1,9 +1,8 @@
-package fi.aalto.cs.apluscourses.ui;
+package fi.aalto.cs.apluscourses.ui.base;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import fi.aalto.cs.apluscourses.ui.base.CheckBox;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
 import org.junit.Assert;

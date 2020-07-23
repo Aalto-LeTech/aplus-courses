@@ -1,24 +1,25 @@
 package fi.aalto.cs.apluscourses.model;
 
-import fi.aalto.cs.apluscourses.intellij.utils.VfsUtil;
-import java.nio.file.Path;
-import java.util.Optional;
-import jdk.internal.jline.internal.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 public class SubmittableFile {
+  @NotNull
+  private final String key;
+  @NotNull
   private final String name;
 
-  public SubmittableFile(String name) {
+  public SubmittableFile(@NotNull String key, @NotNull String name) {
+    this.key = key;
     this.name = name;
   }
 
-  @Nullable
-  public Path getPath(Path basePath) throws FileDoesNotExistException {
-    return Optional.ofNullable(VfsUtil.findFileInDirectory(basePath, name))
-        .orElseThrow(() -> new FileDoesNotExistException(name, null));
-  }
-
+  @NotNull
   public String getName() {
     return name;
+  }
+
+  @NotNull
+  public String getKey() {
+    return key;
   }
 }

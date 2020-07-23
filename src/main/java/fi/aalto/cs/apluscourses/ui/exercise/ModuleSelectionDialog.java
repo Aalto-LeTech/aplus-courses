@@ -8,6 +8,7 @@ import fi.aalto.cs.apluscourses.intellij.actions.ActionUtil;
 import fi.aalto.cs.apluscourses.intellij.actions.GetSubmissionsDashboardAction;
 import fi.aalto.cs.apluscourses.intellij.utils.ExtendedDataContext;
 import fi.aalto.cs.apluscourses.presentation.ModuleSelectionViewModel;
+import fi.aalto.cs.apluscourses.ui.Dialog;
 import fi.aalto.cs.apluscourses.ui.IconListCellRenderer;
 import fi.aalto.cs.apluscourses.ui.base.OurComboBox;
 import icons.PluginIcons;
@@ -18,8 +19,10 @@ import javax.swing.SwingConstants;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class ModuleSelectionDialog extends DialogWrapper {
-  private ModuleSelectionViewModel viewModel;
+public class ModuleSelectionDialog extends DialogWrapper
+    implements Dialog {
+
+  private final ModuleSelectionViewModel viewModel;
   private JPanel basePanel;
   private OurComboBox<Module> modulesComboBox;
   private final Project project;
@@ -27,8 +30,8 @@ public class ModuleSelectionDialog extends DialogWrapper {
   /**
    * Construct a module selection dialog with the given view model.
    */
-  public ModuleSelectionDialog(@Nullable Project project,
-                               @NotNull ModuleSelectionViewModel viewModel) {
+  public ModuleSelectionDialog(@NotNull ModuleSelectionViewModel viewModel,
+                               @Nullable Project project) {
     super(project);
     this.project = project;
     this.viewModel = viewModel;

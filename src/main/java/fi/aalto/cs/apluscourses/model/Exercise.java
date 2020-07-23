@@ -5,10 +5,10 @@ import org.json.JSONObject;
 
 public class Exercise {
 
-  private long id;
+  private final long id;
 
   @NotNull
-  private String name;
+  private final String name;
 
   public Exercise(long id, @NotNull String name) {
     this.id = id;
@@ -29,12 +29,22 @@ public class Exercise {
     return new Exercise(id, name);
   }
 
+  @NotNull
+  public String getName() {
+    return name;
+  }
+
   public long getId() {
     return id;
   }
 
-  @NotNull
-  public String getName() {
-    return name;
+  @Override
+  public int hashCode() {
+    return Long.hashCode(id);
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    return obj instanceof Exercise && ((Exercise) obj).getId() == getId();
   }
 }

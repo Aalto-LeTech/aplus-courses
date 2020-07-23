@@ -6,6 +6,9 @@ import org.jetbrains.annotations.NotNull;
 
 public class NetworkErrorNotification extends Notification {
 
+  @NotNull
+  private final Exception exception;
+
   /**
    * Constructs a notification that notifies the user of an IO error arising from the HTTP client.
    * @param exception An exception that caused this notification.
@@ -16,6 +19,11 @@ public class NetworkErrorNotification extends Notification {
         "Please check your network connection and try again. Error message: '"
             + exception.getMessage() + "'.",
         NotificationType.ERROR);
+    this.exception = exception;
   }
 
+  @NotNull
+  public Exception getException() {
+    return exception;
+  }
 }

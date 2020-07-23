@@ -4,15 +4,17 @@ import com.intellij.credentialStore.CredentialAttributes;
 import com.intellij.credentialStore.CredentialAttributesKt;
 import com.intellij.credentialStore.Credentials;
 import com.intellij.ide.passwordSafe.PasswordSafe;
-import fi.aalto.cs.apluscourses.utils.CoursesClient;
+import java.util.Arrays;
 import org.apache.http.HttpRequest;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class APlusAuthentication implements CoursesClient.Authentication {
+public class APlusAuthentication implements Authentication {
 
   public static final String A_COURSES_PLUGIN = "A+ Courses Plugin";
   public static final String A_API = "A+ API";
+
+  private final Object authenticationLock = new Object();
 
   @NotNull
   private final CredentialAttributes credentialAttributes;
@@ -53,8 +55,33 @@ public class APlusAuthentication implements CoursesClient.Authentication {
     PasswordSafe.getInstance().set(credentialAttributes, null);
   }
 
+  @Override
   public void addToRequest(@NotNull HttpRequest request) {
-    request.addHeader("Authorization", "Token " + new String(getToken()));
+    synchronized (authenticationLock) {
+      char[] token = getToken();
+      if (token != null) {
+        request.addHeader("Authorization", "Token " + new String(token));
+      }
+    }
+  }
+
+  @Override
+  public void clear() {
+    synchronized (authenticationLock) {
+      Arrays.fill(token, '\0');
+    }
+  }
+
+  /**
+   * Returns true if the token represents the same string as the parameter.
+   *
+   * @param string String to compare.
+   * @return True, if strings are equal, otherwise false.
+   */
+  public synchronized boolean tokenEquals(@Nullable String string) {
+    synchronized (authenticationLock) {
+      return new String(token).equals(string);
+    }
   }
 
   @NotNull

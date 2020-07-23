@@ -3,13 +3,16 @@ package fi.aalto.cs.apluscourses.presentation.exercise;
 import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
+import fi.aalto.cs.apluscourses.presentation.base.TreeViewModel;
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class ExerciseGroupViewModel extends SelectableNodeViewModel<ExerciseGroup> {
+public class ExerciseGroupViewModel extends SelectableNodeViewModel<ExerciseGroup>
+    implements TreeViewModel {
 
   @NotNull
   private final List<ExerciseViewModel> sortedExercises;
@@ -35,5 +38,11 @@ public class ExerciseGroupViewModel extends SelectableNodeViewModel<ExerciseGrou
   @NotNull
   public List<ExerciseViewModel> getExerciseViewModels() {
     return sortedExercises;
+  }
+
+  @Nullable
+  @Override
+  public List<ExerciseViewModel> getSubtrees() {
+    return getExerciseViewModels();
   }
 }

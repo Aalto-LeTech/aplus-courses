@@ -1,13 +1,5 @@
 package fi.aalto.cs.apluscourses.model;
 
-import static fi.aalto.cs.apluscourses.model.APlusAuthentication.A_API;
-import static fi.aalto.cs.apluscourses.model.APlusAuthentication.A_COURSES_PLUGIN;
-import static org.junit.Assert.assertArrayEquals;
-
-import com.intellij.credentialStore.CredentialAttributes;
-import com.intellij.credentialStore.CredentialAttributesKt;
-import com.intellij.ide.passwordSafe.PasswordSafe;
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import org.apache.http.HttpRequest;
 import org.apache.http.client.methods.HttpGet;
 import org.junit.Test;
@@ -19,8 +11,7 @@ public class APlusAuthenticationTest extends BasePlatformTestCase {
 
   @Test
   public void testAPlusAuthentication() {
-    char[] token = new char[]{'a', 'b', 'c'};
-    APlusAuthentication authentication = new APlusAuthentication(token);
+    Authentication authentication = new APlusAuthentication(new char[]{'a', 'b', 'c'});
 
     HttpRequest request = new HttpGet("https://example.com");
     authentication.addToRequest(request);
@@ -31,8 +22,9 @@ public class APlusAuthenticationTest extends BasePlatformTestCase {
 
   @Test
   public void testMakesCopyOfArray() {
-    char[] token = new char[]{'d', 'e', 'f'};
-    APlusAuthentication authentication = new APlusAuthentication(token);
+    char[] token = (new char[]{'d', 'e', 'f'});
+
+    Authentication authentication = new APlusAuthentication(token);
 
     token[0] = 'g';
     HttpRequest request = new HttpGet("https://example.org");
@@ -54,25 +46,14 @@ public class APlusAuthenticationTest extends BasePlatformTestCase {
 
   @Test
   public void testCreateCredentialAttributes() throws Exception {
-    char[] token = new char[]{'g', 'h', 'i'};
-    APlusAuthentication authentication = new APlusAuthentication(token);
+    APlusAuthentication authentication = new APlusAuthentication(new char[]{'g', 'h', 'i'});
 
-    CredentialAttributes credentialAttributes = Whitebox
-        .invokeMethod(authentication, "createCredentialAttributes");
-    String serviceName = credentialAttributes.getServiceName();
+    HttpRequest request = new HttpGet("http://localhost:1234");
+    authentication.clear();
+    authentication.addToRequest(request);
 
-    assertEquals("The credentials attributes have been created with a correct service name.",
-        "IntelliJ Platform " + A_COURSES_PLUGIN + " — " + A_API, serviceName);
-  }
-
-  @Test
-  public void testGetToken() {
-    char[] token = new char[]{'g', 'h', 'i'};
-    APlusAuthentication authentication = new APlusAuthentication(token);
-
-    char[] extractedToken = authentication.getToken();
-
-    assertArrayEquals("The extracted token is as expected.", token, extractedToken);
+    Assert.assertEquals("The token is cleared", "Token \0\0\0",
+        request.getFirstHeader(AUTHORIZATION_HEADER).getValue());
   }
 
   @Test

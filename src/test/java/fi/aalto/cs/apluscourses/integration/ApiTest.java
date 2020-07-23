@@ -47,7 +47,7 @@ public class ApiTest {
   }
 
   @Test
-  public void getStudentsGroupsReturnsCorrect() {
+  public void testGetStudentsGroups() {
     given()
         .auth()
         .preemptive()
@@ -61,5 +61,53 @@ public class ApiTest {
         .body("results[0].id", equalTo(200))
         .body("results[0].members.id", hasItems(5, 6))
         .body("results[0].members.full_name", hasItems("Perry Cash", "Zorita Alston"));
+  }
+
+  @Test
+  public void testGetExercises() {
+    given()
+        .auth()
+        .preemptive()
+        .basic("root", "root")
+        .when()
+        .contentType(ContentType.JSON)
+        .get("http://localhost:8000/api/v2/courses/100/exercises/")
+        .then()
+        .assertThat()
+        .statusCode(HttpStatus.SC_OK)
+        .body("results.display_name", hasItems("1. First module", "1. Second module"))
+        .body("results.exercises.id[0]", hasItems(300, 301))
+        .body("results.exercises.id[1]", hasItems(302));
+  }
+
+  @Test
+  public void testGetIndividualExercise() {
+    given()
+        .auth()
+        .preemptive()
+        .basic("root", "root")
+        .when()
+        .contentType(ContentType.JSON)
+        .get("http://localhost:8000/api/v2/exercises/301/")
+        .then()
+        .assertThat()
+        .statusCode(HttpStatus.SC_OK)
+        .body("exercise_info", equalTo(null))
+        .body("max_submissions", equalTo(5));
+  }
+
+  @Test
+  public void testGetSubmissions() {
+    given()
+        .auth()
+        .preemptive()
+        .basic("root", "root")
+        .when()
+        .contentType(ContentType.JSON)
+        .get("http://localhost:8000/api/v2/exercises/301/submissions/me/")
+        .then()
+        .assertThat()
+        .statusCode(HttpStatus.SC_OK)
+        .body("count", equalTo(0));
   }
 }

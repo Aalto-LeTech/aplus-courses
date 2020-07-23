@@ -4,8 +4,6 @@ import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.testFramework.LightIdeaTestCase;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.SubmittableFile;
@@ -23,11 +21,7 @@ public class SubmissionDialogTest extends LightIdeaTestCase {
 
   public class TestDialog extends SubmissionDialog {
     public TestDialog(@NotNull SubmissionViewModel viewModel) {
-      super(viewModel, mock(Project.class));
-    }
-
-    public String getTitle() {
-      return super.getTitle();
+      super(viewModel, getProject());
     }
 
     public String getHeader() {
@@ -46,22 +40,19 @@ public class SubmissionDialogTest extends LightIdeaTestCase {
       return super.createActions();
     }
 
-    public ValidationInfo doValidate() {
-      return super.doValidate();
-    }
   }
 
   @NotNull
   private SubmissionViewModel createMockViewModel(@NotNull String exerciseName,
                                                   @NotNull List<Group> availableGroups,
-                                                  @NotNull List<SubmittableFile> files,
-                                                  int currentSubmissionNumber,
+                                                  @NotNull SubmittableFile[] files,
+                                                  int numberOfSubmissions,
                                                   int maxNumberOfSubmissions) {
     SubmissionViewModel viewModel = mock(SubmissionViewModel.class);
     doReturn(exerciseName).when(viewModel).getPresentableExerciseName();
     doReturn(availableGroups).when(viewModel).getAvailableGroups();
     doReturn(files).when(viewModel).getFiles();
-    doReturn(currentSubmissionNumber).when(viewModel).getCurrentSubmissionNumber();
+    doReturn(numberOfSubmissions).when(viewModel).getCurrentSubmissionNumber();
     doReturn(maxNumberOfSubmissions).when(viewModel).getMaxNumberOfSubmissions();
     return viewModel;
   }
@@ -72,7 +63,10 @@ public class SubmissionDialogTest extends LightIdeaTestCase {
         createMockViewModel(
             "Cool Name",
             Arrays.asList(new Group(123, Arrays.asList("Jarkko", "Petteri"))),
-            Arrays.asList(new SubmittableFile("file1"), new SubmittableFile("file2")),
+            new SubmittableFile[] {
+                new SubmittableFile("file1", "main.c"),
+                new SubmittableFile("file2", "main.h")
+            },
             4,
             10
         )
@@ -97,7 +91,7 @@ public class SubmissionDialogTest extends LightIdeaTestCase {
   @Test
   public void testSubmissionDialogGroupSelection() {
     TestDialog testDialog = createTestDialog();
-    JComboBox comboBox = testDialog.getGroupComboBox();
+    JComboBox<Group> comboBox = testDialog.getGroupComboBox();
 
     ComboBoxModel<Group> model = comboBox.getModel();
     Assert.assertEquals("The group selection combo box includes available groups", 123,

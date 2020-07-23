@@ -1,8 +1,6 @@
 package fi.aalto.cs.apluscourses.model;
 
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
-import fi.aalto.cs.apluscourses.utils.ResourceException;
-import fi.aalto.cs.apluscourses.utils.Resources;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -42,6 +40,9 @@ public class Course implements ComponentSource {
   @NotNull
   private final List<Library> libraries;
 
+  @NotNull
+  private final Map<Long, Map<String, String>> exerciseModules;
+
   // Maps ids of required plugins to the names of required plugins.
   @NotNull
   private final Map<String, String> requiredPlugins;
@@ -70,25 +71,20 @@ public class Course implements ComponentSource {
                 @NotNull String name,
                 @NotNull List<Module> modules,
                 @NotNull List<Library> libraries,
+                @NotNull Map<Long, Map<String, String>> exerciseModules,
                 @NotNull Map<String, String> requiredPlugins,
                 @NotNull Map<String, URL> resourceUrls,
                 @NotNull List<String> autoInstallComponentNames) {
     this.id = id;
     this.name = name;
     this.modules = modules;
+    this.libraries = libraries;
+    this.exerciseModules = exerciseModules;
     this.requiredPlugins = requiredPlugins;
     this.resourceUrls = resourceUrls;
-    this.libraries = libraries;
     this.autoInstallComponentNames = autoInstallComponentNames;
     this.components = Stream.concat(modules.stream(), libraries.stream())
         .collect(Collectors.toMap(Component::getName, Function.identity()));
-  }
-
-  @NotNull
-  public static Course fromResource(@NotNull String resourceName, @NotNull ModelFactory factory)
-      throws ResourceException, MalformedCourseConfigurationFileException {
-    Reader reader = new InputStreamReader(Resources.DEFAULT.getStream(resourceName));
-    return fromConfigurationData(reader, resourceName, factory);
   }
 
   /**
@@ -124,12 +120,14 @@ public class Course implements ComponentSource {
     String courseId = getCourseId(jsonObject, sourcePath);
     String courseName = getCourseName(jsonObject, sourcePath);
     List<Module> courseModules = getCourseModules(jsonObject, sourcePath, factory);
+    Map<Long, Map<String, String>> exerciseModules
+        = getCourseExerciseModules(jsonObject, sourcePath);
     Map<String, String> requiredPlugins = getCourseRequiredPlugins(jsonObject, sourcePath);
     Map<String, URL> resourceUrls = getCourseResourceUrls(jsonObject, sourcePath);
     List<String> autoInstallComponentNames
         = getCourseAutoInstallComponentNames(jsonObject, sourcePath);
     return factory.createCourse(courseId, courseName, courseModules, Collections.emptyList(),
-        requiredPlugins, resourceUrls, autoInstallComponentNames);
+        exerciseModules, requiredPlugins, resourceUrls, autoInstallComponentNames);
   }
 
   /**
@@ -193,6 +191,16 @@ public class Course implements ComponentSource {
   @NotNull
   public Collection<Component> getComponents() {
     return components.values();
+  }
+
+  /**
+   * Returns a mapping of exercise IDs to modules. The keys are exercise IDs, and the values are
+   * maps from language codes to module names. Note, that some exercises use modules that are not in
+   * the course configuration file, so the modules may not be in {@link Course#getModules}.
+   */
+  @NotNull
+  public Map<Long, Map<String, String>> getExerciseModules() {
+    return Collections.unmodifiableMap(exerciseModules);
   }
 
   /**
@@ -294,6 +302,34 @@ public class Course implements ComponentSource {
       }
     }
     return modules;
+  }
+
+  @NotNull
+  private static Map<Long, Map<String, String>> getCourseExerciseModules(@NotNull JSONObject object,
+                                                                         @NotNull String source)
+      throws MalformedCourseConfigurationFileException {
+    Map<Long, Map<String, String>> exerciseModules = new HashMap<>();
+    JSONObject exerciseModulesJson = object.optJSONObject("exerciseModules");
+    if (exerciseModulesJson == null) {
+      return exerciseModules;
+    }
+
+    try {
+      Iterable<String> keys = exerciseModulesJson::keys;
+      for (String exerciseId : keys) {
+        JSONObject modules = exerciseModulesJson.getJSONObject(exerciseId);
+        Map<String, String> languageToModule = new HashMap<>();
+        Iterable<String> languages = modules::keys;
+        for (String language : languages) {
+          languageToModule.put(language, modules.getString(language));
+        }
+        exerciseModules.put(Long.valueOf(exerciseId), languageToModule);
+      }
+      return exerciseModules;
+    } catch (JSONException e) {
+      throw new MalformedCourseConfigurationFileException(source,
+          "Malformed \"exerciseModules\" object", e);
+    }
   }
 
   @NotNull
