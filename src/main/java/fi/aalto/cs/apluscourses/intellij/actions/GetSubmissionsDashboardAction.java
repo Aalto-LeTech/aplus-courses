@@ -69,7 +69,7 @@ public class GetSubmissionsDashboardAction extends DumbAwareAction {
    * @param authentication an {@link APlusAuthentication} object to use with API.
    * @param project        a current {@link Project} to notify to.
    * @return a fully-inflated {@link SubmissionResultsList} or null if the API call was
-   * unsuccessful.
+   *        unsuccessful.
    */
   @Nullable
   public SubmissionResultsList tryGetSubmissionsDashboard(long courseId,

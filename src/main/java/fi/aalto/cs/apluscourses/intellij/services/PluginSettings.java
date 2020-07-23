@@ -226,6 +226,11 @@ public class PluginSettings implements MainViewModelProvider {
         .setValue(A_PLUS_IS_A_PLUS_PROJECT.getName(), String.valueOf(state));
   }
 
+  /**
+   * Starts an {@link ScheduledTaskExecutor} that polls A+ to get the latest submissions results.
+   *
+   * @param project a {@link Project} to trigger the poll action from.
+   */
   public void startRegularSubmissionResultsPolling(@NotNull Project project) {
     if (!regularSubmissionResultsPollingStarted) {
       new ScheduledTaskExecutor(() -> ActionUtil.launch(GetSubmissionsDashboardAction.ACTION_ID,
