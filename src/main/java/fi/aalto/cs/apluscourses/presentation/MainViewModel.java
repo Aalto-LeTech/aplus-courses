@@ -37,9 +37,6 @@ public class MainViewModel {
 
   private void setExerciseDataSource(@Nullable ExerciseDataSource exerciseDataSource) {
     synchronized (exerciseDataSourceLock) {
-      if (this.exerciseDataSource != null) {
-        this.exerciseDataSource.clear();
-      }
       this.exerciseDataSource = exerciseDataSource;
     }
   }
@@ -76,4 +73,8 @@ public class MainViewModel {
     }
   }
 
+  @NotNull
+  public ObservableProperty<CourseViewModel> getCourseViewModel() {
+    return courseViewModel;
+  }
 }

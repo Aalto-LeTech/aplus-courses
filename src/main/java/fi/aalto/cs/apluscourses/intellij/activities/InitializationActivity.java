@@ -40,7 +40,7 @@ public class InitializationActivity implements Background {
 
   @Override
   public void runActivity(@NotNull Project project) {
-    PluginSettings.getInstance().initializeLocalSettings();
+    PluginSettings.getInstance().initializeLocalIdeSettings();
 
     URL courseConfigurationFileUrl = getCourseUrlFromProject(project);
     if (courseConfigurationFileUrl == null) {
@@ -61,6 +61,10 @@ public class InitializationActivity implements Background {
     PluginSettings.getInstance().createUpdatingMainViewModel(project);
     ActionUtil.launch(RequiredPluginsCheckerAction.ACTION_ID,
         new ExtendedDataContext().withProject(project));
+
+    if (PluginSettings.getInstance().isAPlusProjectSetting(project)) {
+      PluginSettings.getInstance().startRegularSubmissionResultsPolling(project);
+    }
   }
 
   @Nullable

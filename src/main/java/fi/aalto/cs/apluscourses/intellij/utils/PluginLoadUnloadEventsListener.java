@@ -9,6 +9,6 @@ public class PluginLoadUnloadEventsListener implements DynamicPluginListener {
 
   @Override
   public void beforePluginUnload(@NotNull IdeaPluginDescriptor pluginDescriptor, boolean isUpdate) {
-    PluginSettings.getInstance().unsetLocalSettings();
+    PluginSettings.getInstance().unsetLocalIdeSettings();
   }
 }

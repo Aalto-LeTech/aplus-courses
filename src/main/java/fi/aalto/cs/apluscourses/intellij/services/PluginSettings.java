@@ -1,42 +1,62 @@
 package fi.aalto.cs.apluscourses.intellij.services;
 
-import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalSettingsNames.A_PLUS_IMPORTED_IDE_SETTINGS;
-import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalSettingsNames.A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG;
+import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalIdeSettingsNames.A_PLUS_IMPORTED_IDE_SETTINGS;
+import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalIdeSettingsNames.A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG;
+import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalProjectSettingsNames.A_PLUS_IS_A_PLUS_PROJECT;
 
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.project.ProjectManagerListener;
+import fi.aalto.cs.apluscourses.intellij.actions.ActionUtil;
+import fi.aalto.cs.apluscourses.intellij.actions.GetSubmissionsDashboardAction;
+import fi.aalto.cs.apluscourses.intellij.utils.ExtendedDataContext;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModelUpdater;
+import fi.aalto.cs.apluscourses.utils.async.ScheduledTaskExecutor;
 import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class PluginSettings implements MainViewModelProvider {
 
   private static final PluginSettings instance = new PluginSettings();
+  private boolean regularSubmissionResultsPollingStarted;
 
   private PluginSettings() {
 
   }
 
-  public enum LocalSettingsNames {
+  public enum LocalIdeSettingsNames {
     A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG("A+.showReplConfigDialog"),
     A_PLUS_IMPORTED_IDE_SETTINGS("A+.importedIdeSettings");
     private final String name;
 
-    LocalSettingsNames(String name) {
+    LocalIdeSettingsNames(String name) {
       this.name = name;
     }
 
     public String getName() {
       return name;
     }
+  }
 
+  public enum LocalProjectSettingsNames {
+    A_PLUS_IS_A_PLUS_PROJECT("A+.isAPlusProject");
+
+    private final String name;
+
+    LocalProjectSettingsNames(String name) {
+      this.name = name;
+    }
+
+    public String getName() {
+      return name;
+    }
   }
 
   public static final String COURSE_CONFIGURATION_FILE_URL
@@ -46,10 +66,13 @@ public class PluginSettings implements MainViewModelProvider {
 
   //  15 minutes in milliseconds
   public static final long MAIN_VIEW_MODEL_UPDATE_INTERVAL = 15L * 60L * 1000L;
+  //  10 minutes in milliseconds
+  public static final long REASONABLE_DELAY_FOR_SUBMISSION_RESULTS_UPDATE = 10L * 60 * 1000;
   //  15 seconds in milliseconds
   public static final long REASONABLE_DELAY_FOR_MODULE_INSTALLATION = 15L * 1000;
 
-  private final PropertiesComponent propertiesManager = PropertiesComponent.getInstance();
+  private final PropertiesComponent applicationPropertiesManager = PropertiesComponent
+      .getInstance();
 
   @NotNull
   private final ConcurrentMap<Project, MainViewModel> mainViewModels = new ConcurrentHashMap<>();
@@ -127,7 +150,7 @@ public class PluginSettings implements MainViewModelProvider {
    */
   public boolean shouldShowReplConfigurationDialog() {
     return Boolean.parseBoolean(
-        propertiesManager.getValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG.getName()));
+        applicationPropertiesManager.getValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG.getName()));
   }
 
   /**
@@ -136,28 +159,28 @@ public class PluginSettings implements MainViewModelProvider {
    * @param showReplConfigDialog a boolean value of the flag.
    */
   public void setShowReplConfigurationDialog(boolean showReplConfigDialog) {
-    propertiesManager
+    applicationPropertiesManager
         //  a String explicitly
         .setValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG.getName(),
             String.valueOf(showReplConfigDialog));
   }
 
   public String getImportedIdeSettingsId() {
-    return propertiesManager.getValue(A_PLUS_IMPORTED_IDE_SETTINGS.getName());
+    return applicationPropertiesManager.getValue(A_PLUS_IMPORTED_IDE_SETTINGS.getName());
   }
 
   public void setImportedIdeSettingsId(@NotNull String courseId) {
-    propertiesManager.setValue(A_PLUS_IMPORTED_IDE_SETTINGS.getName(), courseId);
+    applicationPropertiesManager.setValue(A_PLUS_IMPORTED_IDE_SETTINGS.getName(), courseId);
   }
 
   /**
-   * Sets unset local settings to their default values.
+   * Sets unset local IDE settings to their default values.
    */
-  public void initializeLocalSettings() {
-    if (!propertiesManager.isValueSet(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG.getName())) {
+  public void initializeLocalIdeSettings() {
+    if (!applicationPropertiesManager.isValueSet(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG.getName())) {
       setShowReplConfigurationDialog(true);
     }
-    if (!propertiesManager.isValueSet(A_PLUS_IMPORTED_IDE_SETTINGS.getName())) {
+    if (!applicationPropertiesManager.isValueSet(A_PLUS_IMPORTED_IDE_SETTINGS.getName())) {
       setImportedIdeSettingsId("");
     }
   }
@@ -166,16 +189,54 @@ public class PluginSettings implements MainViewModelProvider {
    * Resets all local settings to their default values.
    */
   public void resetLocalSettings() {
-    unsetLocalSettings();
-    initializeLocalSettings();
+    unsetLocalIdeSettings();
+    initializeLocalIdeSettings();
   }
 
   /**
-   * Unsets all the local settings from {@link LocalSettingsNames}.
+   * Unsets all the local IDE settings from {@link LocalIdeSettingsNames}.
    */
-  public void unsetLocalSettings() {
-    Arrays.stream(LocalSettingsNames.values())
-        .map(LocalSettingsNames::getName)
-        .forEach(propertiesManager::unsetValue);
+  public void unsetLocalIdeSettings() {
+    Arrays.stream(LocalIdeSettingsNames.values())
+        .map(LocalIdeSettingsNames::getName)
+        .forEach(applicationPropertiesManager::unsetValue);
+  }
+
+  /**
+   * Method (getter) to check the property, representing if the project has been "Turned into A+
+   * project".
+   *
+   * @param project a {@link Project} to set the setting to.
+   * @return a boolean value that represent the state of the project.
+   */
+  public boolean isAPlusProjectSetting(@NotNull Project project) {
+    return Boolean.parseBoolean(
+        PropertiesComponent.getInstance(project).getValue(A_PLUS_IS_A_PLUS_PROJECT.getName()));
+  }
+
+  /**
+   * Method (setter) to set property, representing if the project has been "Turned into A+
+   * project".
+   *
+   * @param project a {@link Project} to set the setting to.
+   * @param state   a boolean value to be set to represent the state of the project.
+   */
+  public void setIsAPlusProjectSetting(@NotNull Project project, boolean state) {
+    PropertiesComponent.getInstance(project)
+        .setValue(A_PLUS_IS_A_PLUS_PROJECT.getName(), String.valueOf(state));
+  }
+
+  /**
+   * Starts an {@link ScheduledTaskExecutor} that polls A+ to get the latest submissions results.
+   *
+   * @param project a {@link Project} to trigger the poll action from.
+   */
+  public void startRegularSubmissionResultsPolling(@NotNull Project project) {
+    if (!regularSubmissionResultsPollingStarted) {
+      new ScheduledTaskExecutor(() -> ActionUtil.launch(GetSubmissionsDashboardAction.ACTION_ID,
+          new ExtendedDataContext().withProject(project)),
+          0, PluginSettings.REASONABLE_DELAY_FOR_SUBMISSION_RESULTS_UPDATE, TimeUnit.MILLISECONDS);
+      regularSubmissionResultsPollingStarted = true;
+    }
   }
 }

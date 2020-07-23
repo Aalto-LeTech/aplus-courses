@@ -61,7 +61,7 @@ class IntelliJCourse extends Course {
 
     this.project = project;
     this.commonLibraryProvider = commonLibraryProvider;
-    platformListener = new PlatformListener();
+    this.platformListener = new PlatformListener();
   }
 
   @NotNull

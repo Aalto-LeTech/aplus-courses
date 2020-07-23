@@ -29,13 +29,6 @@ public abstract class ExerciseDataSource {
 
   public abstract void submit(Submission submission) throws IOException;
 
-  /**
-   * Erases sensitive data from memory.
-   */
-  public void clear() {
-    authentication.clear();
-  }
-
   @NotNull
   public Authentication getAuthentication() {
     return authentication;

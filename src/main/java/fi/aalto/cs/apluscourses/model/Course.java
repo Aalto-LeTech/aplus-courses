@@ -35,6 +35,9 @@ public class Course implements ComponentSource {
   private final List<Module> modules;
 
   @NotNull
+  private SubmissionResultsList submissionResultsList;
+
+  @NotNull
   private final List<Library> libraries;
 
   @NotNull
@@ -53,6 +56,7 @@ public class Course implements ComponentSource {
   @NotNull
   protected final Map<String, Component> components;
 
+  //todo: javadoc is out of date
   /**
    * Constructs a course with the given parameters.
    *
@@ -79,7 +83,7 @@ public class Course implements ComponentSource {
     this.requiredPlugins = requiredPlugins;
     this.resourceUrls = resourceUrls;
     this.autoInstallComponentNames = autoInstallComponentNames;
-    components = Stream.concat(modules.stream(), libraries.stream())
+    this.components = Stream.concat(modules.stream(), libraries.stream())
         .collect(Collectors.toMap(Component::getName, Function.identity()));
   }
 
@@ -439,5 +443,14 @@ public class Course implements ComponentSource {
 
   public void unregister() {
     // Subclasses may do things.
+  }
+
+  @NotNull
+  public SubmissionResultsList getSubmissionsDashboard() {
+    return submissionResultsList;
+  }
+
+  public void setSubmissionsDashboard(@NotNull SubmissionResultsList submissionResultsList) {
+    this.submissionResultsList = submissionResultsList;
   }
 }
