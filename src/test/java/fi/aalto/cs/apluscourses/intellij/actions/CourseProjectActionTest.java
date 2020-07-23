@@ -46,7 +46,7 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
 
     @Override
     public boolean showMainDialog(@NotNull Project project,
-        @NotNull CourseProjectViewModel courseProjectViewModel) {
+                                  @NotNull CourseProjectViewModel courseProjectViewModel) {
       courseProjectViewModel.settingsOptOutProperty.set(doOptOut);
       courseProjectViewModel.restartProperty.set(doRestart);
       return !doCancel;
@@ -112,7 +112,8 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
     when(anActionEvent.getProject()).thenReturn(project);
 
     emptyCourse = new Course("ID", "EMPTY", Collections.emptyList(), Collections.emptyList(),
-        Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList());
+        Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap(),
+        Collections.emptyList());
 
     settingsImporter = new DummySettingsImporter();
 

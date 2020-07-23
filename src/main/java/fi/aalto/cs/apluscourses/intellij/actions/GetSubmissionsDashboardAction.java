@@ -13,7 +13,6 @@ import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.APlusAuthentication;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.SubmissionResultsList;
-import fi.aalto.cs.apluscourses.presentation.APlusAuthenticationViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import java.io.IOException;
 import org.jetbrains.annotations.NotNull;
@@ -47,21 +46,14 @@ public class GetSubmissionsDashboardAction extends DumbAwareAction {
     Project project = e.getProject();
     MainViewModel mainViewModel = mainViewModelProvider.getMainViewModel(project);
 
-    APlusAuthenticationViewModel authenticationViewModel =
-        mainViewModel.getAuthenticationViewModel().get();
-    if (authenticationViewModel == null) {
-      return;
-    }
+    APlusAuthentication authentication = (APlusAuthentication) requireNonNull(
+        mainViewModel.getExerciseDataSource()).getAuthentication();
 
-    APlusAuthentication authentication =
-        requireNonNull(mainViewModel.getAuthenticationViewModel().get()).getAuthentication();
     Course course = requireNonNull(mainViewModel.getCourseViewModel().get()).getModel();
 
-    if (authentication != null) {
-      SubmissionResultsList submissionResultsList = tryGetSubmissionsDashboard(
-          Long.parseLong(course.getId()), authentication, requireNonNull(project));
-      course.setSubmissionsDashboard(requireNonNull(submissionResultsList));
-    }
+    SubmissionResultsList submissionResultsList = tryGetSubmissionsDashboard(
+        Long.parseLong(course.getId()), authentication, requireNonNull(project));
+    course.setSubmissionsDashboard(requireNonNull(submissionResultsList));
   }
 
   /**
@@ -71,7 +63,7 @@ public class GetSubmissionsDashboardAction extends DumbAwareAction {
    * @param authentication an {@link APlusAuthentication} object to use with API.
    * @param project        a current {@link Project} to notify to.
    * @return a fully-inflated {@link SubmissionResultsList} or null if the API call was
-   *        unsuccessful.
+   * unsuccessful.
    */
   @Nullable
   public SubmissionResultsList tryGetSubmissionsDashboard(long courseId,

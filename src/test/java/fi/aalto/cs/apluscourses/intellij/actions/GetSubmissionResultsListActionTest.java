@@ -32,7 +32,7 @@ public class GetSubmissionResultsListActionTest extends BasePlatformTestCase {
 
     //  auth
     APlusAuthentication mockAuthentication = mock(APlusAuthentication.class);
-    when(mockMainViewModelProvider.getMainViewModel(project).getAuthenticationViewModel().get()
+    when(mockMainViewModelProvider.getMainViewModel(project).getExerciseDataSource()
         .getAuthentication()).thenReturn(mockAuthentication);
 
     //  course
@@ -72,7 +72,7 @@ public class GetSubmissionResultsListActionTest extends BasePlatformTestCase {
         RETURNS_DEEP_STUBS);
     //  auth
     APlusAuthentication mockAuthentication = null;
-    when(mockMainViewModelProvider.getMainViewModel(project).getAuthenticationViewModel().get()
+    when(mockMainViewModelProvider.getMainViewModel(project).getExerciseDataSource()
         .getAuthentication()).thenReturn(mockAuthentication);
 
     //  course
