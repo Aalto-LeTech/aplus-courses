@@ -17,6 +17,7 @@ public abstract class Component {
   public static final int ERROR = StateMonitor.ERROR;
   public static final int UNRESOLVED = ERROR - 1;
   public static final int UNINSTALLED = UNRESOLVED - 1;
+  public static final int ACTION_ABORTED = 99;
 
   public static final int DEP_INITIAL = StateMonitor.INITIAL;
   public static final int DEP_WAITING = DEP_INITIAL + 1;
@@ -126,9 +127,12 @@ public abstract class Component {
         .allMatch(component -> component != null && component.stateMonitor.get() == LOADED);
   }
 
+  /**
+   * Sets component to the unresolved state, unless it is active.
+   */
   public void setUnresolved() {
-    // Only if not active
-    stateMonitor.setConditionallyTo(UNRESOLVED, NOT_INSTALLED, FETCHED, LOADED, ERROR, UNINSTALLED);
+    stateMonitor.setConditionallyTo(UNRESOLVED,
+        NOT_INSTALLED, FETCHED, LOADED, ERROR, UNINSTALLED, ACTION_ABORTED);
   }
 
   /**
