@@ -1,13 +1,20 @@
 package fi.aalto.cs.apluscourses.model;
 
+import static fi.aalto.cs.apluscourses.model.APlusAuthentication.AUTHORIZATION_HEADER;
+import static fi.aalto.cs.apluscourses.model.APlusAuthentication.A_API;
+import static fi.aalto.cs.apluscourses.model.APlusAuthentication.A_COURSES_PLUGIN;
+import static org.junit.Assert.assertArrayEquals;
+
+import com.intellij.credentialStore.CredentialAttributes;
+import com.intellij.credentialStore.CredentialAttributesKt;
+import com.intellij.ide.passwordSafe.PasswordSafe;
+import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import org.apache.http.HttpRequest;
 import org.apache.http.client.methods.HttpGet;
 import org.junit.Test;
 import org.powermock.reflect.Whitebox;
 
 public class APlusAuthenticationTest extends BasePlatformTestCase {
-
-  private static final String AUTHORIZATION_HEADER = "Authorization";
 
   @Test
   public void testAPlusAuthentication() {
@@ -21,7 +28,7 @@ public class APlusAuthenticationTest extends BasePlatformTestCase {
   }
 
   @Test
-  public void testMakesCopyOfArray() {
+  public void testCreationCopiesToken() {
     char[] token = (new char[]{'d', 'e', 'f'});
 
     Authentication authentication = new APlusAuthentication(token);
@@ -30,7 +37,21 @@ public class APlusAuthenticationTest extends BasePlatformTestCase {
     HttpRequest request = new HttpGet("https://example.org");
     authentication.addToRequest(request);
 
-    assertEquals("The constructor makes a copy of the given array",
+    assertEquals("The constructor makes a copy of the given array.",
+        "Token def", request.getFirstHeader(AUTHORIZATION_HEADER).getValue());
+  }
+
+  @Test
+  public void testSettingCopiesToken() {
+    APlusAuthentication authentication = new APlusAuthentication(new char[]{});
+    char[] token = (new char[]{'d', 'e', 'f'});
+    authentication.setToken(token);
+
+    token[0] = 'g';
+    HttpRequest request = new HttpGet("https://example.org");
+    authentication.addToRequest(request);
+
+    assertEquals("The #setToken() makes a copy of the given array.",
         "Token def", request.getFirstHeader(AUTHORIZATION_HEADER).getValue());
   }
 
@@ -46,14 +67,15 @@ public class APlusAuthenticationTest extends BasePlatformTestCase {
 
   @Test
   public void testCreateCredentialAttributes() throws Exception {
-    APlusAuthentication authentication = new APlusAuthentication(new char[]{'g', 'h', 'i'});
+    char[] token = new char[]{'g', 'h', 'i'};
+    APlusAuthentication authentication = new APlusAuthentication(token);
 
-    HttpRequest request = new HttpGet("http://localhost:1234");
-    authentication.clear();
-    authentication.addToRequest(request);
+    CredentialAttributes credentialAttributes = Whitebox
+        .invokeMethod(authentication, "createCredentialAttributes");
+    String serviceName = credentialAttributes.getServiceName();
 
-    Assert.assertEquals("The token is cleared", "Token \0\0\0",
-        request.getFirstHeader(AUTHORIZATION_HEADER).getValue());
+    assertEquals("The credentials attributes have been created with a correct service name.",
+        "IntelliJ Platform " + A_COURSES_PLUGIN + " — " + A_API, serviceName);
   }
 
   @Test
@@ -78,5 +100,15 @@ public class APlusAuthenticationTest extends BasePlatformTestCase {
     authentication.setToken(newToken);
 
     assertArrayEquals("The new token is as expected.", newToken, authentication.getToken());
+  }
+
+  @Test
+  public void testGetToken() {
+    char[] token = new char[]{'g', 'h', 'i'};
+    APlusAuthentication authentication = new APlusAuthentication(token);
+
+    char[] extractedToken = authentication.getToken();
+
+    assertArrayEquals("The extracted token is as expected.", token, extractedToken);
   }
 }

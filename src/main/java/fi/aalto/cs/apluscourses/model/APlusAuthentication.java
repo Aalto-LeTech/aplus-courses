@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class APlusAuthentication implements Authentication {
 
+  public static final String AUTHORIZATION_HEADER = "Authorization";
   public static final String A_COURSES_PLUGIN = "A+ Courses Plugin";
   public static final String A_API = "A+ API";
 
@@ -60,15 +61,8 @@ public class APlusAuthentication implements Authentication {
     synchronized (authenticationLock) {
       char[] token = getToken();
       if (token != null) {
-        request.addHeader("Authorization", "Token " + new String(token));
+        request.addHeader(AUTHORIZATION_HEADER, "Token " + new String(token));
       }
-    }
-  }
-
-  @Override
-  public void clear() {
-    synchronized (authenticationLock) {
-      Arrays.fill(token, '\0');
     }
   }
 
@@ -80,8 +74,12 @@ public class APlusAuthentication implements Authentication {
    */
   public synchronized boolean tokenEquals(@Nullable String string) {
     synchronized (authenticationLock) {
-      return new String(token).equals(string);
+      char[] token = getToken();
+      if (token != null) {
+        return new String(token).equals(string);
+      }
     }
+    return false;
   }
 
   @NotNull
