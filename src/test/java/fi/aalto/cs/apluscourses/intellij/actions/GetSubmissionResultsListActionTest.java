@@ -62,7 +62,7 @@ public class GetSubmissionResultsListActionTest extends BasePlatformTestCase {
   }
 
   @Test
-  public void testActionPerformedWithInValidDataFails() {
+  public void testActionPerformedWithInvalidDataFails() {
     //  given
     Project project = getProject();
     AnActionEvent anActionEvent = mock(AnActionEvent.class);
@@ -70,10 +70,10 @@ public class GetSubmissionResultsListActionTest extends BasePlatformTestCase {
 
     MainViewModelProvider mockMainViewModelProvider = mock(MainViewModelProvider.class,
         RETURNS_DEEP_STUBS);
-    //  auth
+    //  exerciseDataSource (auth)
     APlusAuthentication mockAuthentication = null;
-    when(mockMainViewModelProvider.getMainViewModel(project).getExerciseDataSource()
-        .getAuthentication()).thenReturn(mockAuthentication);
+    when(mockMainViewModelProvider.getMainViewModel(project).getExerciseDataSource())
+        .thenReturn(null);
 
     //  course
     Course mockCourse = mock(Course.class);

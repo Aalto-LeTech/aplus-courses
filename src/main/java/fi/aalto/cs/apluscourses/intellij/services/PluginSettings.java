@@ -230,7 +230,7 @@ public class PluginSettings implements MainViewModelProvider {
     if (!regularSubmissionResultsPollingStarted) {
       new ScheduledTaskExecutor(() -> ActionUtil.launch(GetSubmissionsDashboardAction.ACTION_ID,
           new ExtendedDataContext().withProject(project)),
-          0, PluginSettings.REASONABLE_DELAY_FOR_SUBMISSION_RESULTS_UPDATE, TimeUnit.SECONDS);
+          0, PluginSettings.REASONABLE_DELAY_FOR_SUBMISSION_RESULTS_UPDATE, TimeUnit.MILLISECONDS);
       regularSubmissionResultsPollingStarted = true;
     }
   }

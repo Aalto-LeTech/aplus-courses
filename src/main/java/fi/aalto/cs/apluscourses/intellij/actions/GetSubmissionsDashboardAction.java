@@ -12,6 +12,7 @@ import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.APlusAuthentication;
 import fi.aalto.cs.apluscourses.model.Course;
+import fi.aalto.cs.apluscourses.model.ExerciseDataSource;
 import fi.aalto.cs.apluscourses.model.SubmissionResultsList;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import java.io.IOException;
@@ -45,9 +46,14 @@ public class GetSubmissionsDashboardAction extends DumbAwareAction {
   public void actionPerformed(@NotNull AnActionEvent e) {
     Project project = e.getProject();
     MainViewModel mainViewModel = mainViewModelProvider.getMainViewModel(project);
+    ExerciseDataSource exerciseDataSource = mainViewModel.getExerciseDataSource();
 
-    APlusAuthentication authentication = (APlusAuthentication) requireNonNull(
-        mainViewModel.getExerciseDataSource()).getAuthentication();
+    if (exerciseDataSource == null) {
+      return;
+    }
+
+    APlusAuthentication authentication =
+        (APlusAuthentication) exerciseDataSource.getAuthentication();
 
     Course course = requireNonNull(mainViewModel.getCourseViewModel().get()).getModel();
 
