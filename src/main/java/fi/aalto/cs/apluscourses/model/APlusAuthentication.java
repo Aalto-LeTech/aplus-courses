@@ -4,7 +4,6 @@ import com.intellij.credentialStore.CredentialAttributes;
 import com.intellij.credentialStore.CredentialAttributesKt;
 import com.intellij.credentialStore.Credentials;
 import com.intellij.ide.passwordSafe.PasswordSafe;
-import java.util.Arrays;
 import org.apache.http.HttpRequest;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,8 +13,6 @@ public class APlusAuthentication implements Authentication {
   public static final String AUTHORIZATION_HEADER = "Authorization";
   public static final String A_COURSES_PLUGIN = "A+ Courses Plugin";
   public static final String A_API = "A+ API";
-
-  private final Object authenticationLock = new Object();
 
   @NotNull
   private final CredentialAttributes credentialAttributes;
@@ -58,11 +55,9 @@ public class APlusAuthentication implements Authentication {
 
   @Override
   public void addToRequest(@NotNull HttpRequest request) {
-    synchronized (authenticationLock) {
-      char[] token = getToken();
-      if (token != null) {
-        request.addHeader(AUTHORIZATION_HEADER, "Token " + new String(token));
-      }
+    char[] token = getToken();
+    if (token != null) {
+      request.addHeader(AUTHORIZATION_HEADER, "Token " + new String(token));
     }
   }
 
@@ -72,14 +67,9 @@ public class APlusAuthentication implements Authentication {
    * @param string String to compare.
    * @return True, if strings are equal, otherwise false.
    */
-  public synchronized boolean tokenEquals(@Nullable String string) {
-    synchronized (authenticationLock) {
-      char[] token = getToken();
-      if (token != null) {
-        return new String(token).equals(string);
-      }
-    }
-    return false;
+  public boolean tokenEquals(@Nullable String string) {
+    char[] token = getToken();
+    return token != null && new String(token).equals(string);
   }
 
   @NotNull
