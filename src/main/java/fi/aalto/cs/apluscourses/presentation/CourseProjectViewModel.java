@@ -2,7 +2,6 @@ package fi.aalto.cs.apluscourses.presentation;
 
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
-import fi.aalto.cs.apluscourses.utils.observable.ObservableReadOnlyProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
