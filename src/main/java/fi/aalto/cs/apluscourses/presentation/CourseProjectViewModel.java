@@ -2,21 +2,18 @@ package fi.aalto.cs.apluscourses.presentation;
 
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
-import fi.aalto.cs.apluscourses.utils.observable.ObservableReadOnlyProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class CourseProjectViewModel {
 
-  public final ObservableProperty<Boolean> restartProperty;
   public final ObservableProperty<Boolean> settingsOptOutProperty;
-  public final ObservableProperty<Boolean> isRestartAvailableProperty;
 
   @NotNull
   private final Course course;
   @Nullable
-  private final String currentlyImportedIdeSettings;
+
   private final boolean currentSettingsDiffer;
 
   /**
@@ -29,22 +26,10 @@ public class CourseProjectViewModel {
   public CourseProjectViewModel(@NotNull Course course,
                                 @Nullable String currentlyImportedIdeSettings) {
     this.course = course;
-    this.currentlyImportedIdeSettings = currentlyImportedIdeSettings;
+
     currentSettingsDiffer = !course.getId().equals(currentlyImportedIdeSettings);
 
-    restartProperty = new ObservableReadWriteProperty<>(currentSettingsDiffer);
-
     settingsOptOutProperty = new ObservableReadWriteProperty<>(!currentSettingsDiffer);
-
-    isRestartAvailableProperty = new ObservableReadOnlyProperty<>(this::isRestartAvailable);
-    isRestartAvailableProperty.declareDependentOn(settingsOptOutProperty);
-    isRestartAvailableProperty.addValueObserver(this, CourseProjectViewModel::onRestartEnabled);
-  }
-
-  private void onRestartEnabled(boolean restartEnabled) {
-    if (!restartEnabled) {
-      restartProperty.set(false);
-    }
   }
 
   public boolean shouldWarnUser() {
@@ -57,14 +42,6 @@ public class CourseProjectViewModel {
 
   public boolean canUserOptOutSettings() {
     return currentSettingsDiffer;
-  }
-
-  public boolean isRestartAvailable() {
-    return currentSettingsDiffer && !userOptsOutOfSettings();
-  }
-
-  public boolean userWantsRestart() {
-    return Boolean.TRUE.equals(restartProperty.get());
   }
 
   public boolean userOptsOutOfSettings() {

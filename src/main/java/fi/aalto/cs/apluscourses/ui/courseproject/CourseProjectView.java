@@ -24,8 +24,6 @@ public class CourseProjectView extends DialogWrapper {
   @GuiObject
   private JLabel settingsInfoText;
   @GuiObject
-  private CheckBox restartCheckBox;
-  @GuiObject
   private CheckBox settingsOptOutCheckbox;
   @GuiObject
   private JLabel warningText;
@@ -40,9 +38,6 @@ public class CourseProjectView extends DialogWrapper {
     init();
 
     infoText.setIcon(Messages.getInformationIcon());
-
-    restartCheckBox.isCheckedBindable.bindToSource(viewModel.restartProperty);
-    restartCheckBox.isEnabledBindable.bindToSource(viewModel.isRestartAvailableProperty);
 
     settingsOptOutCheckbox.isCheckedBindable.bindToSource(viewModel.settingsOptOutProperty);
 
