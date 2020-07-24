@@ -49,6 +49,8 @@ public class ModuleListElementViewModel extends ListElementViewModel<Module> {
         return "Removing...";
       case Component.UNINSTALLED:
         return "Removed";
+      case Component.ACTION_ABORTED:
+        return "Cancelling...";
       default:
         return "Error";
     }

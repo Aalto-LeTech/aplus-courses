@@ -108,17 +108,27 @@ public class ComponentInstallerImpl<T> implements ComponentInstaller {
 
     private void uninstallForUpdate() throws IOException {
       if (component.stateMonitor.setConditionallyTo(Component.UNINSTALLING, Component.LOADED)) {
-        if (!component.hasLocalChanges() || dialogs.shouldOverwrite(component)) {
-          component.unload();
-          component.remove();
+        if (component.hasLocalChanges() && !dialogs.shouldOverwrite(component)) {
+          abortAction();
+          return;
         }
+        component.unload();
+        component.remove();
         component.stateMonitor.set(Component.UNINSTALLED);
       }
     }
 
+    private void abortAction() {
+      if (component.stateMonitor.setConditionallyTo(Component.ACTION_ABORTED,
+          Component.FETCHING, Component.LOADING, Component.UNINSTALLING)) {
+        component.setUnresolved();
+        component.resolveState();
+      }
+    }
+
     private void fetch() throws IOException {
-      if (component.stateMonitor.setConditionallyTo(Component.FETCHING, Component.NOT_INSTALLED,
-          Component.UNINSTALLED)) {
+      if (component.stateMonitor.setConditionallyTo(Component.FETCHING,
+          Component.NOT_INSTALLED, Component.UNINSTALLED)) {
         component.fetch();
         component.stateMonitor.set(Component.FETCHED);
       } else {
