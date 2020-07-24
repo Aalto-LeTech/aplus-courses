@@ -133,7 +133,7 @@ public class CourseProjectAction extends AnAction {
       return;
     }
 
-    startAutoInstallsWithRestart(course, courseProjectViewModel.userWantsRestart(), project);
+    startAutoInstallsWithRestart(course, !courseProjectViewModel.userOptsOutOfSettings(), project);
 
     if (!tryImportProjectSettings(project, course)) {
       return;

@@ -48,7 +48,6 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
     public boolean showMainDialog(@NotNull Project project,
                                   @NotNull CourseProjectViewModel courseProjectViewModel) {
       courseProjectViewModel.settingsOptOutProperty.set(doOptOut);
-      courseProjectViewModel.restartProperty.set(doRestart);
       return !doCancel;
     }
 
@@ -253,8 +252,10 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
     Assert.assertEquals("The IDE is not restarted", 0, restarterCallCount.get());
   }
 
+
+
   @Test
-  public void testDoesNotRestartIfCheckboxUnselected() {
+  public void testDoesNotRestartIfSettingsOptOut() {
     createMockObjects();
     CourseProjectAction action = new CourseProjectAction(
         (url, proj) -> emptyCourse,
@@ -262,13 +263,11 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
         settingsImporter,
         installerFactory,
         ideRestarter,
-        new TestDialogs(false, false, false),
+        new TestDialogs(false, false, true),
         installerDialogsFactory);
 
     action.actionPerformed(anActionEvent);
 
-    Assert.assertEquals("IDE settings are imported", 1,
-        settingsImporter.getImportIdeSettingsCallCount());
     Assert.assertEquals("The IDE is not restarted", 0, restarterCallCount.get());
   }
 }
