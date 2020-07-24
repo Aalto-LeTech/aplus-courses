@@ -4,6 +4,7 @@ import com.intellij.ui.ColoredTreeCellRenderer;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseGroupViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
+import icons.PluginIcons;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import org.jetbrains.annotations.NotNull;
@@ -26,10 +27,10 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
     }
 
     if (isLeaf) {
-      // TODO: set custom exercise icon here using setIcon
       ExerciseViewModel exerciseViewModel = (ExerciseViewModel) userObject;
       append(exerciseViewModel.getPresentableName());
     } else {
+      setIcon(PluginIcons.A_PLUS_EXERCISE_GROUP);
       ExerciseGroupViewModel groupViewModel = (ExerciseGroupViewModel) userObject;
       append(groupViewModel.getPresentableName());
     }

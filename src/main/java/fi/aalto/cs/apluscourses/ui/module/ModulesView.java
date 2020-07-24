@@ -2,9 +2,8 @@ package fi.aalto.cs.apluscourses.ui.module;
 
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.ui.GuiObject;
-import org.jetbrains.annotations.NotNull;
-
 import javax.swing.JPanel;
+import org.jetbrains.annotations.NotNull;
 
 public class ModulesView {
   @GuiObject
