@@ -11,14 +11,28 @@ import fi.aalto.cs.apluscourses.intellij.actions.ActionGroups;
 import fi.aalto.cs.apluscourses.intellij.actions.ActionUtil;
 import fi.aalto.cs.apluscourses.intellij.actions.ImportModuleAction;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
+import fi.aalto.cs.apluscourses.presentation.MainViewModel;
+import fi.aalto.cs.apluscourses.ui.exercise.ExercisesView;
 import fi.aalto.cs.apluscourses.ui.module.ModulesView;
 import javax.swing.JComponent;
+import javax.swing.JSplitPane;
 import org.jetbrains.annotations.NotNull;
 
-public class ModulesToolWindowFactory extends BaseToolWindowFactory implements DumbAware {
+public class APlusToolWindowFactory extends BaseToolWindowFactory implements DumbAware {
 
   @Override
   protected JComponent createToolWindowContentInternal(@NotNull Project project) {
+    ModulesView modulesView = createModulesView(project);
+    ExercisesView exercisesView = createExercisesView(project);
+    return new JSplitPane(
+        JSplitPane.VERTICAL_SPLIT,
+        modulesView.getBasePanel(),
+        exercisesView.getBasePanel()
+    );
+  }
+
+  @NotNull
+  private static ModulesView createModulesView(@NotNull Project project) {
     ModulesView modulesView = new ModulesView();
     PluginSettings.getInstance().getMainViewModel(project).courseViewModel
         .addValueObserver(modulesView, ModulesView::viewModelChanged);
@@ -38,6 +52,25 @@ public class ModulesToolWindowFactory extends BaseToolWindowFactory implements D
     modulesView.moduleListView.addListActionListener(ActionUtil.createOnEventLauncher(
         ImportModuleAction.ACTION_ID, modulesView.moduleListView));
 
-    return modulesView.basePanel;
+    return modulesView;
   }
+
+  @NotNull
+  private static ExercisesView createExercisesView(@NotNull Project project) {
+    ExercisesView exercisesView = new ExercisesView();
+
+    MainViewModel mainViewModel = PluginSettings.getInstance().getMainViewModel(project);
+    mainViewModel.exercisesViewModel
+        .addValueObserver(exercisesView, ExercisesView::viewModelChanged);
+
+    ActionManager actionManager = ActionManager.getInstance();
+    ActionGroup group = (ActionGroup) actionManager.getAction(ActionGroups.EXERCISE_ACTIONS);
+
+    ActionToolbar toolbar = actionManager.createActionToolbar(ActionPlaces.TOOLBAR, group, true);
+    toolbar.setTargetComponent(exercisesView.getExerciseGroupsTree());
+    exercisesView.toolbarContainer.add(toolbar.getComponent());
+
+    return exercisesView;
+  }
+
 }

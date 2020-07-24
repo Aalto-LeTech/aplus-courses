@@ -2,6 +2,8 @@ package fi.aalto.cs.apluscourses.ui.module;
 
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.ui.GuiObject;
+import org.jetbrains.annotations.NotNull;
+
 import javax.swing.JPanel;
 
 public class ModulesView {
@@ -10,7 +12,7 @@ public class ModulesView {
   @GuiObject
   public JPanel toolbarContainer;
   @GuiObject
-  public JPanel basePanel;
+  private JPanel basePanel;
 
   /**
    * A view that holds the content of the Modules tool window.
@@ -32,6 +34,11 @@ public class ModulesView {
     //
     // We use class name as a unique key for the property.
     basePanel.putClientProperty(ModulesView.class.getName(), this);
+  }
+
+  @NotNull
+  public JPanel getBasePanel() {
+    return basePanel;
   }
 
   public void viewModelChanged(CourseViewModel course) {

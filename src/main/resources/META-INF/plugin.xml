@@ -23,13 +23,10 @@
         <backgroundPostStartupActivity implementation="fi.aalto.cs.apluscourses.intellij.activities.VersionCheckerActivity"/>
         <backgroundPostStartupActivity implementation="fi.aalto.cs.apluscourses.intellij.activities.InitializationActivity"/>
 
-        <toolWindow id="Modules"
+        <toolWindow id="A+ Courses"
                     anchor="right"
-                    factoryClass="fi.aalto.cs.apluscourses.intellij.toolwindows.ModulesToolWindowFactory"
+                    factoryClass="fi.aalto.cs.apluscourses.intellij.toolwindows.APlusToolWindowFactory"
                     icon="PluginIcons.A_PLUS_LOGO"/>
-        <toolWindow id="Exercises"
-                    anchor="right"
-                    factoryClass="fi.aalto.cs.apluscourses.intellij.toolwindows.ExercisesToolWindowFactory" />
     </extensions>
 
     <actions>
