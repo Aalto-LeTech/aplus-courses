@@ -1,9 +1,7 @@
 package fi.aalto.cs.apluscourses.intellij.utils
 
 import com.intellij.openapi.actionSystem.{CommonDataKeys, DataContext}
-import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.fileEditor.FileDocumentManager
-import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.module.{Module, ModuleUtilCore}
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.OrderEnumerator
@@ -34,14 +32,6 @@ object ReplUtils {
       false
     }
     nonEmpty
-  }
-
-  def ignoreFileInProjectView(@NotNull fileName: String, @NotNull project: Project) = {
-    // this stuff here hides any desired file from project view (be it here for now)
-    val manager = FileTypeManager.getInstance()
-    val existing = manager.getIgnoredFilesList
-    val r: Runnable = () => manager.setIgnoredFilesList(existing + fileName + ";")
-    WriteCommandAction.runWriteCommandAction(project, r)
   }
 
   def naiveValidate(@NotNull command: String) =
@@ -91,7 +81,7 @@ object ReplUtils {
   def initialReplCommandsFileExist(@NotNull replCommandsFileName: String,
                                    @NotNull moduleFilePath: String) = {
     val moduleDir = getModuleRoot(moduleFilePath)
-    false
+    true
   }
 
   @NotNull

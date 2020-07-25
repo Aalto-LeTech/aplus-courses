@@ -184,7 +184,7 @@ class IntelliJModule
         Objects.requireNonNull(this.getPlatformObject()));
     if (commands != null && !ArrayUtils.isEmpty(commands)) {
 
-      File file = new File(getFullPath() +
+      File file = new File(getFullPath() + "/" +
           PluginSettings.MODULE_REPL_INITIAL_COMMANDS_FILE_NAME);
       try {
         FileUtils.writeLines(file, StandardCharsets.UTF_8.name(), Arrays.asList(commands));
@@ -197,7 +197,7 @@ class IntelliJModule
 
   //todo: remove as a duplicate (of a Scala object code that I could not call directly)
   @Nullable
-  private String[] getReplInitialCommandsForModule(com.intellij.openapi.module.Module module) {
+  protected String[] getReplInitialCommandsForModule(com.intellij.openapi.module.Module module) {
     return PluginSettings
         .getInstance()
         .getMainViewModel(module.getProject())
@@ -206,6 +206,5 @@ class IntelliJModule
         .getModel()
         .getCourseReplInitialCommands()
         .getOrDefault(module.getName(), null);
-
   }
 }

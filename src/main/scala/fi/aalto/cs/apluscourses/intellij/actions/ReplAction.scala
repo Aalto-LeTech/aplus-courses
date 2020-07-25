@@ -14,7 +14,7 @@ import fi.aalto.cs.apluscourses.intellij.Repl
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings.MODULE_REPL_INITIAL_COMMANDS_FILE_NAME
 import fi.aalto.cs.apluscourses.intellij.utils.ReplUtils
-import fi.aalto.cs.apluscourses.intellij.utils.ReplUtils.{ignoreFileInProjectView, initialReplCommandsFileExist}
+import fi.aalto.cs.apluscourses.intellij.utils.ReplUtils.initialReplCommandsFileExist
 import fi.aalto.cs.apluscourses.presentation.ReplConfigurationFormModel
 import fi.aalto.cs.apluscourses.ui.repl.{ReplConfigurationDialog, ReplConfigurationForm}
 import org.jetbrains.annotations.NotNull
@@ -102,7 +102,6 @@ class ReplAction extends RunConsoleAction {
     if (initialReplCommandsFileExist(MODULE_REPL_INITIAL_COMMANDS_FILE_NAME,
       module.getModuleFilePath)) {
       configuration.setMyConsoleArgs("-usejavacp -i " + MODULE_REPL_INITIAL_COMMANDS_FILE_NAME)
-      ignoreFileInProjectView(MODULE_REPL_INITIAL_COMMANDS_FILE_NAME, module.getProject)
     }
   }
 

@@ -39,7 +39,8 @@ public class IntelliJModelFactory implements ModelFactory {
 
     IntelliJCourse course =
         new IntelliJCourse(id, name, modules, libraries, requiredPlugins, resourceUrls,
-            autoInstallComponentNames, replInitialCommands, project, new CommonLibraryProvider(project));
+            autoInstallComponentNames, replInitialCommands, project,
+            new CommonLibraryProvider(project));
 
     Component.InitializationCallback componentInitializationCallback =
         component -> registerComponentToCourse(component, course);

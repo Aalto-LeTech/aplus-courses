@@ -1,6 +1,8 @@
 package fi.aalto.cs.apluscourses.intellij.activities;
 
 import com.intellij.notification.Notifications;
+import com.intellij.openapi.command.WriteCommandAction;
+import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.startup.StartupActivity.Background;
 import fi.aalto.cs.apluscourses.intellij.actions.ActionUtil;
@@ -41,6 +43,7 @@ public class InitializationActivity implements Background {
   @Override
   public void runActivity(@NotNull Project project) {
     PluginSettings.getInstance().initializeLocalSettings();
+    ignoreFileInProjectView(PluginSettings.MODULE_REPL_INITIAL_COMMANDS_FILE_NAME, project);
 
     URL courseConfigurationFileUrl = getCourseUrlFromProject(project);
     if (courseConfigurationFileUrl == null) {
@@ -80,5 +83,14 @@ public class InitializationActivity implements Background {
       logger.error("Malformed project course tag file", e);
       return null;
     }
+  }
+
+  public void ignoreFileInProjectView(@NotNull String ignoredFileName,
+                                             @NotNull Project project) {
+    FileTypeManager fileTypeManager = FileTypeManager.getInstance();
+    String ignoredFilesList = fileTypeManager.getIgnoredFilesList();
+    Runnable runnable = () -> fileTypeManager
+        .setIgnoredFilesList(ignoredFilesList + ignoredFileName + ";");
+    WriteCommandAction.runWriteCommandAction(project, runnable);
   }
 }

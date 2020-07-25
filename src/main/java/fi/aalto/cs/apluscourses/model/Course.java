@@ -133,7 +133,8 @@ public class Course implements ComponentSource {
     Map<String, URL> resourceUrls = getCourseResourceUrls(jsonObject, sourcePath);
     List<String> autoInstallComponentNames
         = getCourseAutoInstallComponentNames(jsonObject, sourcePath);
-    Map<String, String[]> replInitialCommands = Collections.emptyMap();
+    Map<String, String[]> replInitialCommands = getCourseReplInitialCommands(jsonObject,
+        sourcePath);
     return factory.createCourse(courseId, courseName, courseModules, Collections.emptyList(),
         requiredPlugins, resourceUrls, autoInstallComponentNames, replInitialCommands);
   }
