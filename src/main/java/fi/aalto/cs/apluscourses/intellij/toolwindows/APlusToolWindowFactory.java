@@ -7,6 +7,7 @@ import com.intellij.openapi.actionSystem.ActionPopupMenu;
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
+import com.intellij.ui.JBSplitter;
 import fi.aalto.cs.apluscourses.intellij.actions.ActionGroups;
 import fi.aalto.cs.apluscourses.intellij.actions.ActionUtil;
 import fi.aalto.cs.apluscourses.intellij.actions.ImportModuleAction;
@@ -15,7 +16,6 @@ import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import fi.aalto.cs.apluscourses.ui.exercise.ExercisesView;
 import fi.aalto.cs.apluscourses.ui.module.ModulesView;
 import javax.swing.JComponent;
-import javax.swing.JSplitPane;
 import org.jetbrains.annotations.NotNull;
 
 public class APlusToolWindowFactory extends BaseToolWindowFactory implements DumbAware {
@@ -24,11 +24,10 @@ public class APlusToolWindowFactory extends BaseToolWindowFactory implements Dum
   protected JComponent createToolWindowContentInternal(@NotNull Project project) {
     ModulesView modulesView = createModulesView(project);
     ExercisesView exercisesView = createExercisesView(project);
-    return new JSplitPane(
-        JSplitPane.VERTICAL_SPLIT,
-        modulesView.getBasePanel(),
-        exercisesView.getBasePanel()
-    );
+    JBSplitter splitter = new JBSplitter(true);
+    splitter.setFirstComponent(modulesView.getBasePanel());
+    splitter.setSecondComponent(exercisesView.getBasePanel());
+    return splitter;
   }
 
   @NotNull
