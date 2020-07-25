@@ -7,8 +7,9 @@ import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.{OrderEntry, OrderEnumerator}
-import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import com.intellij.testFramework.HeavyPlatformTestCase
 import com.intellij.util.Processor
+import fi.aalto.cs.apluscourses.intellij.TestHelperScala
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings._
 import fi.aalto.cs.apluscourses.intellij.utils.ReplUtils._
 import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
@@ -16,7 +17,7 @@ import org.junit.Test
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{mock, when}
 
-class ReplUtilsTest extends BasePlatformTestCase {
+class ReplUtilsTest extends HeavyPlatformTestCase with TestHelperScala {
 
   @Test
   def testGetModuleDirectory(): Unit = {
@@ -68,7 +69,8 @@ class ReplUtilsTest extends BasePlatformTestCase {
   def testGetImportsTextForTwoImportReturnsCorrect(): Unit = {
     val commands = Array("o1", "o1.train")
 
-    assertEquals("Auto-imported packages [o1, o1.train] for your convenience.",
+    assertEquals("Correct text for imported commands is returned.",
+      "Auto-imported packages [o1, o1.train] for your convenience.",
       getCommandsText(commands))
   }
 
@@ -76,7 +78,8 @@ class ReplUtilsTest extends BasePlatformTestCase {
   def testGetImportsTextForOneImportReturnsCorrect(): Unit = {
     val commands = Array("o1")
 
-    assertEquals("Auto-imported package [o1] for your convenience.",
+    assertEquals("Correct text for imported commands is returned.",
+      "Auto-imported package [o1] for your convenience.",
       getCommandsText(commands))
   }
 
@@ -93,8 +96,10 @@ class ReplUtilsTest extends BasePlatformTestCase {
     val expectedArray = Array("o1", "o1.train")
     val actualArray = clearCommands(commands)
 
-    assertEquals("", expectedArray(0), actualArray(0))
-    assertEquals("", expectedArray(1), actualArray(1))
+    assertEquals("The first element is properly cleared for presentation.",
+      expectedArray(0), actualArray(0))
+    assertEquals("The second element is properly cleared for presentation.",
+      expectedArray(1), actualArray(1))
   }
 
   @Test
@@ -128,18 +133,55 @@ class ReplUtilsTest extends BasePlatformTestCase {
   def testNaiveValidateTen(): Unit = assertFalse(naiveValidate("import o1"))
 
   @Test
-  def testGetUpdatedText() = {
+  def testGetUpdatedTextForProjectModule() = {
     val commands = Array("import o1._", "import o1.train._")
-    val moduleName = "SampleModule"
-    val originalText = "Sample original text"
 
-    val expectedText = "Loaded A+ Courses module [SampleModule]. Auto-imported packages [o1, " +
+    val module = getModule
+    val originalText = "Sample original text."
+
+    val expectedText = "\nWrite a line (or more) of Scala and press [Ctrl+Enter] " +
+      "to run it. Use [Up] and [Down] to scroll through your earlier inputs. \nChanges to the " +
+      "module are not loaded automatically. If you edit the files, restart the REPL with [Ctrl+F5] " +
+      "or the icon on the left. \nSample original text.\nNote: This REPL session is not linked to " +
+      "any course module. To use a module from the REPL, select the module and press [Ctrl+Shift+D] " +
+      "to launch a new session."
+
+    assertEquals("", expectedText, getUpdatedText(module, commands, originalText))
+  }
+
+  @Test
+  def testGetUpdatedTextFullForRegularModule() = {
+    val commands = Array("import o1._", "import o1.train._")
+    val project = getProject
+
+    createAndAddModule(project, "light_idea_test_case", "JAVA_MODULE")
+    val module = getModuleManager(project).getModules.lift(1).get
+    val originalText = "Sample original text."
+
+    val expectedText = "Loaded A+ Courses module [light_idea_test_case]. Auto-imported packages [o1, " +
       "o1.train] for your convenience.\nWrite a line (or more) of Scala and press [Ctrl+Enter] " +
       "to run it. Use [Up] and [Down] to scroll through your earlier inputs. \nChanges to the " +
       "module are not loaded automatically. If you edit the files, restart the REPL with [Ctrl+F5] " +
-      "or the icon on the left. \nSample original text"
+      "or the icon on the left. \nSample original text."
 
-    assertEquals("", expectedText, getUpdatedText(moduleName, commands, originalText))
+    assertEquals("", expectedText, getUpdatedText(module, commands, originalText))
+  }
+
+  @Test
+  def testGetUpdatedTextNoInitialCommands() = {
+    val commands = Array.empty[String]
+    val project = getProject
+
+    createAndAddModule(project, "light_idea_test_case", "JAVA_MODULE")
+    val module = getModuleManager(project).getModules.lift(1).get
+    val originalText = "Sample original text."
+
+    val expectedText = "Loaded A+ Courses module [light_idea_test_case]. \nWrite a line (or more) of" +
+      " Scala and press [Ctrl+Enter] to run it. Use [Up] and [Down] to scroll through your earlier " +
+      "inputs. \nChanges to the module are not loaded automatically. If you edit the files, restart " +
+      "the REPL with [Ctrl+F5] or the icon on the left. \nSample original text."
+
+    assertEquals("", expectedText, getUpdatedText(module, commands, originalText))
   }
 
   @Test
@@ -160,7 +202,7 @@ class ReplUtilsTest extends BasePlatformTestCase {
       "light_idea_test_case.iml"
 
     val expected = "/tmp/unitTest_setConfigurationFieldsWithValidInputWorks1/"
-    val actual = getTheModuleRoot(moduleFilePath)
+    val actual = getModuleRoot(moduleFilePath)
 
     assertEquals("The paths are identical.", expected, actual)
   }
@@ -174,7 +216,7 @@ class ReplUtilsTest extends BasePlatformTestCase {
 
   @Test
   def testInitialReplCommandsFileExistIsTrueForExistingFile(): Unit = {
-    val path = getTheModuleRoot(getModule.getModuleFilePath)
+    val path = getModuleRoot(getModule.getModuleFilePath)
     val file = new File(path, MODULE_REPL_INITIAL_COMMANDS_FILE_NAME)
     println(file.getPath)
 

@@ -54,11 +54,7 @@ public abstract class Module extends Component {
    * {
    *   "name": "My Module",
    *   "url": "https://example.com",
-   *   "id": "abc",
-   *   "replInitialCommands": [
-   *                            "import o1._",
-   *                            "import o1.train._"
-   *                          ]
+   *   "id": "abc"
    * }
    * </pre>
    *

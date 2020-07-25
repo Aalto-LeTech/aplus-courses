@@ -89,7 +89,9 @@ class ReplAction extends RunConsoleAction {
       private class MyBuilder(module: Module) extends TextConsoleBuilderImpl(module.getProject) {
         override def createConsole(): ConsoleView = new Repl(module)
       }
+
     }
+
   }
 
   def setConfigurationFields(@NotNull configuration: ScalaConsoleRunConfiguration,
@@ -100,7 +102,7 @@ class ReplAction extends RunConsoleAction {
     configuration.setName(s"REPL for ${module.getName}")
 
     if (initialReplCommandsFileExist(MODULE_REPL_INITIAL_COMMANDS_FILE_NAME,
-                                     module.getModuleFilePath)) {
+      module.getModuleFilePath)) {
       configuration.setMyConsoleArgs("-usejavacp -i " + MODULE_REPL_INITIAL_COMMANDS_FILE_NAME)
       ignoreFileInProjectView(MODULE_REPL_INITIAL_COMMANDS_FILE_NAME, module.getProject)
     }

@@ -2,20 +2,17 @@ package fi.aalto.cs.apluscourses.intellij
 
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.openapi.module.Module
-import fi.aalto.cs.apluscourses.intellij.utils.ReplUtils.getUpdatedText
+import fi.aalto.cs.apluscourses.intellij.utils.ReplUtils.{getReplInitialCommandsForModule, getUpdatedText}
 import org.jetbrains.plugins.scala.console.ScalaLanguageConsole
 
 class Repl(module: Module) extends ScalaLanguageConsole(module: Module) {
 
-  override def print(text: String, contentType: ConsoleViewContentType): Unit = {
+  override def print(text: String, contentType: ConsoleViewContentType) = {
     var updatedText = text
 
-    val moduleName = module.getName
-    //  read from the course config file or smth
-    val commands = Array("import o1._", "import o1.train._")
-
     if (text.contains("Type in expressions")) {
-      updatedText = getUpdatedText(moduleName, commands, text)
+      val commands = getReplInitialCommandsForModule(module)
+      updatedText = getUpdatedText(module, commands, text)
     }
 
     super.print(updatedText, contentType)

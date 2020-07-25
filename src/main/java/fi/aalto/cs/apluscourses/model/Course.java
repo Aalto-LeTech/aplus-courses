@@ -421,8 +421,9 @@ public class Course implements ComponentSource {
   }
 
   @NotNull
-  protected static Map<String, String[]> getCourseReplInitialCommands(@NotNull JSONObject jsonObject,
-                                                                      @NotNull String source)
+  protected static Map<String, String[]> getCourseReplInitialCommands(
+      @NotNull JSONObject jsonObject,
+      @NotNull String source)
       throws MalformedCourseConfigurationFileException {
     Map<String, String[]> replInitialCommands = new HashMap<>();
     JSONArray replJSONArray;

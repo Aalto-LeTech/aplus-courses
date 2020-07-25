@@ -8,7 +8,8 @@ import com.intellij.openapi.module.{Module, ModuleUtilCore}
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.OrderEnumerator
 import com.intellij.openapi.util.io.FileUtilRt
-import org.jetbrains.annotations.NotNull
+import fi.aalto.cs.apluscourses.intellij.services.PluginSettings
+import org.jetbrains.annotations.{NotNull, Nullable}
 
 object ReplUtils {
 
@@ -43,10 +44,10 @@ object ReplUtils {
     WriteCommandAction.runWriteCommandAction(project, r)
   }
 
-  def naiveValidate(@NotNull command: String): Boolean =
+  def naiveValidate(@NotNull command: String) =
     command.matches("import\\so1\\.[a-z]*(\\_|\\._)$")
 
-  def clearCommands(@NotNull imports: Array[String]): Array[String] =
+  def clearCommands(@NotNull imports: Array[String]) =
     imports
       .clone
       .map(_.replace("import ", ""))
@@ -59,27 +60,51 @@ object ReplUtils {
       case _ => "Auto-imported packages [" + imports.mkString(", ") + "] for your convenience."
     }
 
-  def getUpdatedText(@NotNull moduleName: String,
+  def getUpdatedText(@NotNull module: Module,
                      @NotNull commands: Array[String],
                      @NotNull originalText: String) = {
-    val validCommands = commands.filter(command => naiveValidate(command))
-    val clearedCommands = clearCommands(validCommands)
-    val commandsText = getCommandsText(clearedCommands)
-
-    "Loaded A+ Courses module [" + moduleName + "]. " + commandsText + "\nWrite a line (or more) of " +
+    val commonText = "\nWrite a line (or more) of " +
       "Scala and press [Ctrl+Enter] to run it. Use [Up] and [Down] to scroll through your earlier " +
       "inputs. \nChanges to the module are not loaded automatically. If you edit the files, restart" +
-      " the REPL with [Ctrl+F5] or the icon on the left. \n" + originalText
+      " the REPL with [Ctrl+F5] or the icon on the left. \n"
+
+    if (isTopLevelModule(module)) {
+      commonText + originalText + "\nNote: This REPL session is not linked to any course module. To " +
+        "use a module from the REPL, select the module and press [Ctrl+Shift+D] to launch a new " +
+        "session."
+    } else {
+      val validCommands = commands.filter(command => naiveValidate(command))
+      val clearedCommands = clearCommands(validCommands)
+      val commandsText = getCommandsText(clearedCommands)
+
+      "Loaded A+ Courses module [" + module.getName + "]. " + commandsText + commonText +
+        originalText
+    }
   }
 
-  def getTheModuleRoot(@NotNull moduleFilePath: String) = {
+  def getModuleRoot(@NotNull moduleFilePath: String) = {
     val lastIndexOf = moduleFilePath.lastIndexOf("/")
     moduleFilePath.substring(0, lastIndexOf + 1)
   }
 
+  //todo: needs testing? incomplete?
   def initialReplCommandsFileExist(@NotNull replCommandsFileName: String,
-                                   @NotNull moduleFilePath: String): Boolean = {
-    val moduleDir = getTheModuleRoot(moduleFilePath)
+                                   @NotNull moduleFilePath: String) = {
+    val moduleDir = getModuleRoot(moduleFilePath)
     false
   }
+
+  @Nullable
+  def getReplInitialCommandsForModule(module: Module) = {
+    PluginSettings
+      .getInstance()
+      .getMainViewModel(module.getProject)
+      .courseViewModel
+      .get()
+      .getModel
+      .getCourseReplInitialCommands
+      .getOrDefault(module.getName, null)
+  }
+
+  def isTopLevelModule(module: Module) = module.getName.equals(module.getProject.getName)
 }

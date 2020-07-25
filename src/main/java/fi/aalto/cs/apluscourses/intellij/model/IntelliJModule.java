@@ -20,9 +20,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.jetbrains.annotations.CalledWithReadLock;
 import org.jetbrains.annotations.CalledWithWriteLock;
 import org.jetbrains.annotations.NotNull;
@@ -72,7 +74,7 @@ class IntelliJModule
   @Override
   public void load() throws ComponentLoadException {
     WriteAction.runAndWait(this::loadInternal);
-    // here goes the files creating
+    writeReplInitialCommandsFile();
   }
 
   @CalledWithWriteLock
@@ -175,5 +177,32 @@ class IntelliJModule
     long timeStamp = downloadedAt.toInstant().toEpochMilli()
         + PluginSettings.REASONABLE_DELAY_FOR_MODULE_INSTALLATION;
     return ReadAction.compute(() -> VfsUtil.hasDirectoryChanges(fullPath, timeStamp));
+  }
+
+  protected void writeReplInitialCommandsFile() {
+    String[] commands = getReplInitialCommandsForModule(this.getPlatformObject());
+    if (commands != null && !ArrayUtils.isEmpty(commands)) {
+
+      File file = new File(getFullPath() + "/.repl-commands-test");
+      try {
+        FileUtils.writeLines(file, StandardCharsets.UTF_8.name(), Arrays.asList(commands));
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+      FileUtilRt.createIfNotExists(file);
+    }
+  }
+
+  //todo: remove as a duplicate (of a Scala object code that I could not call directly)
+  private String[] getReplInitialCommandsForModule(com.intellij.openapi.module.Module module) {
+    return PluginSettings
+        .getInstance()
+        .getMainViewModel(module.getProject())
+        .courseViewModel
+        .get()
+        .getModel()
+        .getCourseReplInitialCommands()
+        .getOrDefault(module.getName(), null);
+
   }
 }
