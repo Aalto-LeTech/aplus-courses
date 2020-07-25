@@ -63,13 +63,13 @@ object ReplUtils {
   def getUpdatedText(@NotNull module: Module,
                      @NotNull commands: Array[String],
                      @NotNull originalText: String) = {
-    val commonText = "\nWrite a line (or more) of " +
+    val commonText = "Write a line (or more) of " +
       "Scala and press [Ctrl+Enter] to run it. Use [Up] and [Down] to scroll through your earlier " +
       "inputs. \nChanges to the module are not loaded automatically. If you edit the files, restart" +
       " the REPL with [Ctrl+F5] or the icon on the left. \n"
 
     if (isTopLevelModule(module)) {
-      commonText + originalText + "\nNote: This REPL session is not linked to any course module. To " +
+      commonText + originalText + "Note: This REPL session is not linked to any course module. To " +
         "use a module from the REPL, select the module and press [Ctrl+Shift+D] to launch a new " +
         "session."
     } else {
@@ -77,7 +77,7 @@ object ReplUtils {
       val clearedCommands = clearCommands(validCommands)
       val commandsText = getCommandsText(clearedCommands)
 
-      "Loaded A+ Courses module [" + module.getName + "]. " + commandsText + commonText +
+      "Loaded A+ Courses module [" + module.getName + "]. " + commandsText + "\n" + commonText +
         originalText
     }
   }

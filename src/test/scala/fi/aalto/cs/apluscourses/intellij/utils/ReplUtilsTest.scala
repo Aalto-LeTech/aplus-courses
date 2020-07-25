@@ -66,11 +66,11 @@ class ReplUtilsTest extends HeavyPlatformTestCase with TestHelperScala {
   }
 
   @Test
-  def testGetImportsTextForTwoImportReturnsCorrect(): Unit = {
-    val commands = Array("o1", "o1.train")
+  def testGetImportsTextForThreeImportReturnsCorrect(): Unit = {
+    val commands = Array("o1", "o1.train", "o1.bus")
 
     assertEquals("Correct text for imported commands is returned.",
-      "Auto-imported packages [o1, o1.train] for your convenience.",
+      "Auto-imported packages [o1, o1.train, o1.bus] for your convenience.",
       getCommandsText(commands))
   }
 
@@ -139,10 +139,10 @@ class ReplUtilsTest extends HeavyPlatformTestCase with TestHelperScala {
     val module = getModule
     val originalText = "Sample original text."
 
-    val expectedText = "\nWrite a line (or more) of Scala and press [Ctrl+Enter] " +
+    val expectedText = "Write a line (or more) of Scala and press [Ctrl+Enter] " +
       "to run it. Use [Up] and [Down] to scroll through your earlier inputs. \nChanges to the " +
       "module are not loaded automatically. If you edit the files, restart the REPL with [Ctrl+F5] " +
-      "or the icon on the left. \nSample original text.\nNote: This REPL session is not linked to " +
+      "or the icon on the left. \nSample original text.Note: This REPL session is not linked to " +
       "any course module. To use a module from the REPL, select the module and press [Ctrl+Shift+D] " +
       "to launch a new session."
 
