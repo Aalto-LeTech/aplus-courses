@@ -9,7 +9,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.OrderEnumerator
 import com.intellij.openapi.util.io.FileUtilRt
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings
-import org.jetbrains.annotations.{NotNull, Nullable}
+import org.jetbrains.annotations.NotNull
 
 object ReplUtils {
 
@@ -94,7 +94,7 @@ object ReplUtils {
     false
   }
 
-  @Nullable
+  @NotNull
   def getReplInitialCommandsForModule(module: Module) = {
     PluginSettings
       .getInstance()
@@ -103,7 +103,7 @@ object ReplUtils {
       .get()
       .getModel
       .getCourseReplInitialCommands
-      .getOrDefault(module.getName, null)
+      .getOrDefault(module.getName, Array.empty)
   }
 
   def isTopLevelModule(module: Module) = module.getName.equals(module.getProject.getName)

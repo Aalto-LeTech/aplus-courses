@@ -1,24 +1,17 @@
 {
-  "repl": [
-    {
-      "module": "GoodStuff",
-      "initialCommands": [
+  "repl": {
+    "initialCommands": {
+      "GoodStuff": [
         "import o1._",
         "import o1.goodstuff._"
-      ]
-    },
-    {
-      "module": "Train",
-      "initialCommands": [
+      ],
+      "Train": [
         "import o1._",
         "import o1.train._"
-      ]
-    },
-    {
-      "module": "O1",
-      "initialCommands": [
+      ],
+      "O1": [
         "import o1._"
       ]
     }
-  ]
+  }
 }

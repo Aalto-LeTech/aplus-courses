@@ -426,33 +426,32 @@ public class Course implements ComponentSource {
       @NotNull String source)
       throws MalformedCourseConfigurationFileException {
     Map<String, String[]> replInitialCommands = new HashMap<>();
-    JSONArray replJSONArray;
+    JSONObject replInitialCommandsJsonObject;
     try {
-      replJSONArray = jsonObject.getJSONArray("repl");
+      replInitialCommandsJsonObject = jsonObject
+          .getJSONObject("repl").getJSONObject("initialCommands");
 
-      if (replJSONArray == null) {
+      if (replInitialCommandsJsonObject == null) {
         return replInitialCommands;
       }
 
-      for (int i = 0; i < replJSONArray.length(); ++i) {
-
-        JSONObject replCommandsForModuleObject = replJSONArray.getJSONObject(i);
-        String moduleName = replCommandsForModuleObject.getString("module");
-        JSONArray replInitialCommandsArray = replCommandsForModuleObject
-            .getJSONArray("initialCommands");
-        String[] commands = replInitialCommandsArray
+      Iterable<String> keys = replInitialCommandsJsonObject::keys;
+      for (String moduleName : keys) {
+        String[] replCommands = replInitialCommandsJsonObject
+            .getJSONArray(moduleName)
             .toList()
             .stream()
             .map(command -> (String) command)
             .toArray(String[]::new);
 
-        replInitialCommands.put(moduleName, commands);
+        replInitialCommands.put(moduleName, replCommands);
       }
-    } catch (JSONException e) {
-      throw new MalformedCourseConfigurationFileException(
-          source, "Expected moduleName-commands-pairs in \"repl\" object", e);
+    } catch (JSONException ex) {
+      throw new MalformedCourseConfigurationFileException(source,
+          "Expected moduleName-commands-pairs in \"repl\" object", ex);
     }
 
     return replInitialCommands;
   }
 }
+
