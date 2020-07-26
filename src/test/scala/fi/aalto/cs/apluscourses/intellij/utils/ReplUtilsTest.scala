@@ -3,10 +3,10 @@ package fi.aalto.cs.apluscourses.intellij.utils
 import java.io.File
 
 import com.intellij.openapi.actionSystem.DataContext
-import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.{OrderEntry, OrderEnumerator}
+import com.intellij.openapi.util.io.FileUtilRt
 import com.intellij.testFramework.HeavyPlatformTestCase
 import com.intellij.util.Processor
 import fi.aalto.cs.apluscourses.intellij.TestHelperScala
@@ -185,18 +185,6 @@ class ReplUtilsTest extends HeavyPlatformTestCase with TestHelperScala {
   }
 
   @Test
-  def testIgnoreFileInProject(): Unit = {
-    val fileName = ".sampleFileToIgnore"
-    val expected = FileTypeManager.getInstance().getIgnoredFilesList + fileName + ";"
-
-    ignoreFileInProjectView(fileName, getProject)
-
-    val actual = FileTypeManager.getInstance().getIgnoredFilesList
-    assertEquals("The file is successfully added to the ignored files list.",
-      expected, actual)
-  }
-
-  @Test
   def testGetTheModuleRoot(): Unit = {
     val moduleFilePath = "/tmp/unitTest_setConfigurationFieldsWithValidInputWorks1/" +
       "light_idea_test_case.iml"
@@ -218,7 +206,7 @@ class ReplUtilsTest extends HeavyPlatformTestCase with TestHelperScala {
   def testInitialReplCommandsFileExistIsTrueForExistingFile(): Unit = {
     val path = getModuleRoot(getModule.getModuleFilePath)
     val file = new File(path, MODULE_REPL_INITIAL_COMMANDS_FILE_NAME)
-    println(file.getPath)
+    FileUtilRt.createIfNotExists(file)
 
     assertTrue("Returns 'true' if the REPL initial commands file exists.",
       initialReplCommandsFileExist(MODULE_REPL_INITIAL_COMMANDS_FILE_NAME,

@@ -5,6 +5,8 @@ import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalSet
 
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.notification.Notifications;
+import com.intellij.openapi.command.WriteCommandAction;
+import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.project.ProjectManagerListener;
@@ -178,5 +180,20 @@ public class PluginSettings implements MainViewModelProvider {
     Arrays.stream(LocalSettingsNames.values())
         .map(LocalSettingsNames::getName)
         .forEach(propertiesManager::unsetValue);
+  }
+
+  /**
+   * Method that adds a new file (pattern) to the list of files not being shown in the Project UI.
+   *
+   * @param ignoredFileName a {@link String} name of the file to be ignored.
+   * @param project a {@link Project} to ignore the file from.
+   */
+  public static void ignoreFileInProjectView(@NotNull String ignoredFileName,
+                                      @NotNull Project project) {
+    FileTypeManager fileTypeManager = FileTypeManager.getInstance();
+    String ignoredFilesList = fileTypeManager.getIgnoredFilesList();
+    Runnable runnable = () -> fileTypeManager
+        .setIgnoredFilesList(ignoredFilesList + ignoredFileName + ";");
+    WriteCommandAction.runWriteCommandAction(project, runnable);
   }
 }

@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.intellij.utils
 
+import java.nio.file.{Files, Path}
+
 import com.intellij.openapi.actionSystem.{CommonDataKeys, DataContext}
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.module.{Module, ModuleUtilCore}
@@ -77,11 +79,10 @@ object ReplUtils {
     moduleFilePath.substring(0, lastIndexOf + 1)
   }
 
-  //todo: needs testing? incomplete?
   def initialReplCommandsFileExist(@NotNull replCommandsFileName: String,
                                    @NotNull moduleFilePath: String) = {
     val moduleDir = getModuleRoot(moduleFilePath)
-    true
+    Files.exists(Path.of(moduleDir + replCommandsFileName))
   }
 
   @NotNull
