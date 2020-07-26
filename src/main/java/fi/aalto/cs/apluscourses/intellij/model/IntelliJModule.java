@@ -187,6 +187,7 @@ class IntelliJModule
    * Creates a file with commands to be run on Scala REPL startup (in case commands are listed for
    * the Module in course configuration file).
    */
+  // todo: test me!
   protected void writeReplInitialCommandsFile() {
     String[] commands = getReplInitialCommandsForModule(
         Objects.requireNonNull(this.getPlatformObject()));
@@ -201,18 +202,5 @@ class IntelliJModule
       }
       FileUtilRt.createIfNotExists(file);
     }
-  }
-
-  //todo: remove as a duplicate (of a Scala object code that I could not call directly)
-  @Nullable
-  protected String[] getReplInitialCommandsForModule(com.intellij.openapi.module.Module module) {
-    return PluginSettings
-        .getInstance()
-        .getMainViewModel(module.getProject())
-        .courseViewModel
-        .get()
-        .getModel()
-        .getCourseReplInitialCommands()
-        .getOrDefault(module.getName(), null);
   }
 }

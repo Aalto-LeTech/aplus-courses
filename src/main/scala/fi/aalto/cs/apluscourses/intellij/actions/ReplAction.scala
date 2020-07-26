@@ -13,8 +13,8 @@ import com.intellij.openapi.util.io.FileUtilRt.toSystemIndependentName
 import fi.aalto.cs.apluscourses.intellij.Repl
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings.MODULE_REPL_INITIAL_COMMANDS_FILE_NAME
-import fi.aalto.cs.apluscourses.intellij.utils.ReplUtils
-import fi.aalto.cs.apluscourses.intellij.utils.ReplUtils.initialReplCommandsFileExist
+import fi.aalto.cs.apluscourses.intellij.utils.ModuleUtils
+import fi.aalto.cs.apluscourses.intellij.utils.ModuleUtils.initialReplCommandsFileExist
 import fi.aalto.cs.apluscourses.presentation.ReplConfigurationFormModel
 import fi.aalto.cs.apluscourses.ui.repl.{ReplConfigurationDialog, ReplConfigurationForm}
 import org.jetbrains.annotations.NotNull
@@ -131,7 +131,7 @@ class ReplAction extends RunConsoleAction {
     if (PluginSettings.getInstance.shouldShowReplConfigurationDialog) {
       setConfigurationFieldsFromDialog(configuration, project, module)
     } else {
-      setConfigurationFields(configuration, ReplUtils.getModuleDirectory(module), module)
+      setConfigurationFields(configuration, ModuleUtils.getModuleDirectory(module), module)
       true
     }
   }
@@ -157,7 +157,7 @@ class ReplAction extends RunConsoleAction {
 
   private def showReplDialog(@NotNull project: Project,
                              @NotNull module: Module): ReplConfigurationFormModel = {
-    val configModel = new ReplConfigurationFormModel(project, ReplUtils.getModuleDirectory(module), module.getName)
+    val configModel = new ReplConfigurationFormModel(project, ModuleUtils.getModuleDirectory(module), module.getName)
     val configForm = new ReplConfigurationForm(configModel)
     val configDialog = new ReplConfigurationDialog
     configDialog.setReplConfigurationForm(configForm)
@@ -167,13 +167,13 @@ class ReplAction extends RunConsoleAction {
 
   private def getScalaModuleOfEditorFile(@NotNull project: Project,
                                          @NotNull context: DataContext): Option[Module] =
-    ReplUtils.getModuleOfEditorFile(project, context).filter(hasScalaSdkLibrary)
+    ModuleUtils.getModuleOfEditorFile(project, context).filter(hasScalaSdkLibrary)
 
   private def getScalaModuleOfSelectedFile(@NotNull project: Project,
                                            @NotNull context: DataContext): Option[Module] =
-    ReplUtils.getModuleOfSelectedFile(project, context).filter(hasScalaSdkLibrary)
+    ModuleUtils.getModuleOfSelectedFile(project, context).filter(hasScalaSdkLibrary)
 
-  private def hasScalaSdkLibrary(@NotNull module: Module): Boolean = ReplUtils.nonEmpty(
+  private def hasScalaSdkLibrary(@NotNull module: Module): Boolean = ModuleUtils.nonEmpty(
     ModuleRootManager.getInstance(module)
       .orderEntries()
       .librariesOnly()

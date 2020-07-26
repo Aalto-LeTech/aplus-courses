@@ -4,7 +4,7 @@ import com.intellij.openapi.actionSystem.{AnActionEvent, DataContext}
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import fi.aalto.cs.apluscourses.intellij.TestHelperScala
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings
-import fi.aalto.cs.apluscourses.intellij.utils.ReplUtils
+import fi.aalto.cs.apluscourses.intellij.utils.ModuleUtils
 import org.junit.Assert._
 import org.junit.Test
 import org.mockito.Mockito.{mock, when}
@@ -29,7 +29,7 @@ class ReplActionTest extends BasePlatformTestCase with TestHelperScala {
     val configuration = getConfiguration
     val replTitle = s"REPL for ${module.getName}"
     val action = new ReplAction
-    val moduleWorkDir = ReplUtils.getModuleDirectory(module)
+    val moduleWorkDir = ModuleUtils.getModuleDirectory(module)
 
     //  only FALSE branch, as TRUE triggers UI
     PluginSettings.getInstance.setShowReplConfigurationDialog(false);
@@ -53,7 +53,7 @@ class ReplActionTest extends BasePlatformTestCase with TestHelperScala {
     val module = getModule
     val replTitle = s"REPL for ${module.getName}"
     val action = new ReplAction
-    val moduleWorkDir = ReplUtils.getModuleDirectory(module)
+    val moduleWorkDir = ModuleUtils.getModuleDirectory(module)
 
     //  when
     action.setConfigurationFields(configuration, moduleWorkDir, module)

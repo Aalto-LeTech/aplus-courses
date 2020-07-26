@@ -11,20 +11,20 @@ import com.intellij.testFramework.HeavyPlatformTestCase
 import com.intellij.util.Processor
 import fi.aalto.cs.apluscourses.intellij.TestHelperScala
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings._
-import fi.aalto.cs.apluscourses.intellij.utils.ReplUtils._
+import fi.aalto.cs.apluscourses.intellij.utils.ModuleUtils._
 import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
 import org.junit.Test
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{mock, when}
 
-class ReplUtilsTest extends HeavyPlatformTestCase with TestHelperScala {
+class ModuleUtilsTest extends HeavyPlatformTestCase with TestHelperScala {
 
   @Test
   def testGetModuleDirectory(): Unit = {
     val module = mock(classOf[Module])
     when(module.getModuleFilePath).thenReturn("test/path/module.iml")
     assertEquals("getModuleDirectory returns the correct path", "test/path",
-      ReplUtils.getModuleDirectory(module))
+      ModuleUtils.getModuleDirectory(module))
   }
 
   val nullDataContext = new DataContext {
@@ -33,11 +33,11 @@ class ReplUtilsTest extends HeavyPlatformTestCase with TestHelperScala {
 
   @Test
   def testGetModuleOfEditorFile(): Unit =
-    assertFalse(ReplUtils.getModuleOfEditorFile(mock(classOf[Project]), nullDataContext).isDefined)
+    assertFalse(ModuleUtils.getModuleOfEditorFile(mock(classOf[Project]), nullDataContext).isDefined)
 
   @Test
   def testGetModuleOfSelectedFile(): Unit =
-    assertFalse(ReplUtils.getModuleOfEditorFile(mock(classOf[Project]), nullDataContext).isDefined)
+    assertFalse(ModuleUtils.getModuleOfEditorFile(mock(classOf[Project]), nullDataContext).isDefined)
 
   @Test
   def testNonEmptyWithEmptyOrderEnumerator(): Unit = {
@@ -47,7 +47,7 @@ class ReplUtilsTest extends HeavyPlatformTestCase with TestHelperScala {
         any(classOf[Processor[OrderEntry]])
       )
     ).thenAnswer(_ => {})
-    assertFalse(ReplUtils.nonEmpty(emptyOrderEnumerator))
+    assertFalse(ModuleUtils.nonEmpty(emptyOrderEnumerator))
   }
 
   @Test
@@ -62,7 +62,7 @@ class ReplUtilsTest extends HeavyPlatformTestCase with TestHelperScala {
       val processor = mockInvocation.getArgument[Processor[OrderEntry]](0)
       processor.process(orderEntry)
     })
-    assertTrue(ReplUtils.nonEmpty(orderEnumerator))
+    assertTrue(ModuleUtils.nonEmpty(orderEnumerator))
   }
 
   @Test

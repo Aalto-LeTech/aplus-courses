@@ -2,7 +2,7 @@ package fi.aalto.cs.apluscourses.intellij
 
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.openapi.module.Module
-import fi.aalto.cs.apluscourses.intellij.utils.ReplUtils.{getReplInitialCommandsForModule, getUpdatedText}
+import fi.aalto.cs.apluscourses.intellij.utils.ModuleUtils.{getReplInitialCommandsForModule, getUpdatedText}
 import org.jetbrains.plugins.scala.console.ScalaLanguageConsole
 
 class Repl(module: Module) extends ScalaLanguageConsole(module: Module) {

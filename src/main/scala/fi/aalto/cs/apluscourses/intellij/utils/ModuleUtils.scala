@@ -11,7 +11,7 @@ import com.intellij.openapi.util.io.FileUtilRt
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings
 import org.jetbrains.annotations.NotNull
 
-object ReplUtils {
+object ModuleUtils {
 
   def getModuleDirectory(@NotNull module: Module): String =
     FileUtilRt.toSystemIndependentName(ModuleUtilCore.getModuleDirPath(module))
@@ -97,5 +97,6 @@ object ReplUtils {
       .getOrDefault(module.getName, Array.empty)
   }
 
+  // todo: test me!
   def isTopLevelModule(module: Module) = module.getName.equals(module.getProject.getName)
 }

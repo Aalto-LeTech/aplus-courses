@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.model;
 
+import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -158,5 +159,20 @@ public abstract class Module extends Component {
     synchronized (versionLock) {
       return versionId;
     }
+  }
+
+  //todo: remove as a duplicate (of a Scala object code that I could not call directly)
+  // ReplUtils.getReplInitialCommandsForModule(...) & test me!
+  @Nullable
+  protected static String[] getReplInitialCommandsForModule(
+      com.intellij.openapi.module.Module module) {
+    return PluginSettings
+        .getInstance()
+        .getMainViewModel(module.getProject())
+        .courseViewModel
+        .get()
+        .getModel()
+        .getCourseReplInitialCommands()
+        .getOrDefault(module.getName(), null);
   }
 }
