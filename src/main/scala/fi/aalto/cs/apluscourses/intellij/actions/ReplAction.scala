@@ -18,13 +18,25 @@ import fi.aalto.cs.apluscourses.intellij.utils.ReplUtils.initialReplCommandsFile
 import fi.aalto.cs.apluscourses.presentation.ReplConfigurationFormModel
 import fi.aalto.cs.apluscourses.ui.repl.{ReplConfigurationDialog, ReplConfigurationForm}
 import org.jetbrains.annotations.NotNull
+import org.jetbrains.plugins.scala.actions.ScalaActionUtil
 import org.jetbrains.plugins.scala.console.actions.RunConsoleAction
 import org.jetbrains.plugins.scala.console.configuration.ScalaConsoleRunConfiguration
+import org.jetbrains.plugins.scala.project.ProjectExt
 
 /**
  * Custom class that adjusts Scala Plugin's own RunConsoleAction with A+ requirements.
  */
 class ReplAction extends RunConsoleAction {
+
+  override def update(e: AnActionEvent): Unit = {
+    if (e.getProject == null || e.getProject.isDisposed) return
+
+    if (e.getProject.hasScala) {
+      ScalaActionUtil.enablePresentation(e)
+    } else {
+      ScalaActionUtil.disablePresentation(e)
+    }
+  }
 
   override def actionPerformed(@NotNull e: AnActionEvent): Unit = {
     val dataContext = e.getDataContext
@@ -89,7 +101,9 @@ class ReplAction extends RunConsoleAction {
       private class MyBuilder(module: Module) extends TextConsoleBuilderImpl(module.getProject) {
         override def createConsole(): ConsoleView = new Repl(module)
       }
+
     }
+
   }
 
   def setConfigurationFields(@NotNull configuration: ScalaConsoleRunConfiguration,
