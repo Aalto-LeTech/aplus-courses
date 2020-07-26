@@ -46,8 +46,8 @@
      inkscape:document-rotation="0"
      inkscape:current-layer="layer1"
      inkscape:document-units="px"
-     inkscape:cy="8.889496"
-     inkscape:cx="4.7031832"
+     inkscape:cy="7.3868491"
+     inkscape:cx="-6.0296297"
      inkscape:zoom="44.62346"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
@@ -65,8 +65,8 @@
        type="xygrid"
        id="grid2030"
        empspacing="4"
-       originx="-3.1835794"
-       originy="-3.1680759" />
+       originx="-3.5804543"
+       originy="-3.5656515" />
   </sodipodi:namedview>
   <metadata
      id="metadata1051">
@@ -76,7 +76,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -84,10 +84,10 @@
      id="layer1"
      inkscape:groupmode="layer"
      inkscape:label="Layer 1"
-     transform="translate(-3.1835796,-3.1744574)">
+     transform="translate(-3.5804549,-3.5720321)">
     <g
        id="g2036"
-       transform="matrix(0.03859666,0.00147497,-0.0013739,0.03736516,1.5495124,1.080686)"
+       transform="matrix(0.03135978,0.00119841,-0.00111629,0.03035919,2.2527752,1.8708433)"
        style="fill:#afb1b3;fill-opacity:1">
       <path
          style="fill:#afb1b3;fill-opacity:1;stroke:#000000;stroke-width:3.07195997;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
