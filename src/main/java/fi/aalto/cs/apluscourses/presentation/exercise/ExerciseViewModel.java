@@ -18,6 +18,15 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
     return APlusLocalizationUtil.getEnglishName(getModel().getName());
   }
 
+  /**
+   * Returns {@code true} if the exercise is submittable from the plugin, {@code false} otherwise.
+   */
+  public boolean isSubmittable() {
+    String presentableName = getPresentableName();
+    return presentableName.length() > "Assignment xx (".length()
+        && !"Assignment 1 (Piazza)".equals(presentableName);
+  }
+
   @Nullable
   @Override
   public List<TreeViewModel> getSubtrees() {

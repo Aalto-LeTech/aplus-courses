@@ -26,12 +26,13 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
     }
 
     if (isLeaf) {
-      // TODO: set custom exercise icon here using setIcon
       ExerciseViewModel exerciseViewModel = (ExerciseViewModel) userObject;
       append(exerciseViewModel.getPresentableName());
+      setEnabled(exerciseViewModel.isSubmittable());
     } else {
       ExerciseGroupViewModel groupViewModel = (ExerciseGroupViewModel) userObject;
       append(groupViewModel.getPresentableName());
+      setEnabled(true);
     }
   }
 
