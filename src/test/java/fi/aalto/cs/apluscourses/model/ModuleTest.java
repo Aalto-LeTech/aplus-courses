@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.ZonedDateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
@@ -17,13 +18,20 @@ public class ModuleTest {
     String name = "Awesome module";
     URL url = new URL("https://example.com");
     String id = "cool id";
-    Module module = new ModelExtensions.TestModule(name, url, id);
+    String localId = "meh id";
+    ZonedDateTime downloadedAt = ZonedDateTime.now();
+
+    Module module = new ModelExtensions.TestModule(name, url, id, localId, downloadedAt);
+    ModuleMetadata metadata = module.getMetadata();
+
     assertEquals("The name of the module should be the same as that given to the constructor",
         name, module.getName());
     assertEquals("The URL of the module should be the same as that given to the constructor",
         url, module.getUrl());
-    assertEquals("The id of the module should be the same as that given to the constructor",
-        id, module.getVersionId());
+    assertEquals("The id of the module metadata should be the local id given to the constructor",
+        localId, metadata.getModuleId());
+    assertEquals("The metadata should have the correct time stamp",
+        downloadedAt, metadata.getDownloadedAt());
   }
 
   @Test

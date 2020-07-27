@@ -1,8 +1,6 @@
 package fi.aalto.cs.apluscourses.model;
 
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
-import fi.aalto.cs.apluscourses.utils.ResourceException;
-import fi.aalto.cs.apluscourses.utils.Resources;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -15,6 +13,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -27,7 +26,8 @@ import org.json.JSONTokener;
 
 public class Course implements ComponentSource {
   @NotNull
-  protected final Map<String, Component> components;
+  private final String id;
+
   @NotNull
   private final String name;
 
@@ -35,7 +35,13 @@ public class Course implements ComponentSource {
   private final List<Module> modules;
 
   @NotNull
+  private SubmissionResultsList submissionResultsList;
+
+  @NotNull
   private final List<Library> libraries;
+
+  @NotNull
+  private final Map<Long, Map<String, String>> exerciseModules;
 
   // Maps ids of required plugins to the names of required plugins.
   @NotNull
@@ -44,6 +50,13 @@ public class Course implements ComponentSource {
   @NotNull
   private final Map<String, URL> resourceUrls;
 
+  @NotNull
+  private final List<String> autoInstallComponentNames;
+
+  @NotNull
+  protected final Map<String, Component> components;
+
+  //todo: javadoc is out of date
   /**
    * Constructs a course with the given parameters.
    *
@@ -54,25 +67,24 @@ public class Course implements ComponentSource {
    * @param resourceUrls    A map containing URLs to resources related to the course. The keys are
    *                        the names of the resources and the values are the URLs.
    */
-  public Course(@NotNull String name,
+  public Course(@NotNull String id,
+                @NotNull String name,
                 @NotNull List<Module> modules,
                 @NotNull List<Library> libraries,
+                @NotNull Map<Long, Map<String, String>> exerciseModules,
                 @NotNull Map<String, String> requiredPlugins,
-                @NotNull Map<String, URL> resourceUrls) {
+                @NotNull Map<String, URL> resourceUrls,
+                @NotNull List<String> autoInstallComponentNames) {
+    this.id = id;
     this.name = name;
     this.modules = modules;
+    this.libraries = libraries;
+    this.exerciseModules = exerciseModules;
     this.requiredPlugins = requiredPlugins;
     this.resourceUrls = resourceUrls;
-    this.libraries = libraries;
-    components = Stream.concat(modules.stream(), libraries.stream())
+    this.autoInstallComponentNames = autoInstallComponentNames;
+    this.components = Stream.concat(modules.stream(), libraries.stream())
         .collect(Collectors.toMap(Component::getName, Function.identity()));
-  }
-
-  @NotNull
-  public static Course fromResource(@NotNull String resourceName, @NotNull ModelFactory factory)
-      throws ResourceException, MalformedCourseConfigurationFileException {
-    Reader reader = new InputStreamReader(Resources.DEFAULT.getStream(resourceName));
-    return fromConfigurationData(reader, resourceName, factory);
   }
 
   /**
@@ -105,12 +117,17 @@ public class Course implements ComponentSource {
                                              @NotNull ModelFactory factory)
       throws MalformedCourseConfigurationFileException {
     JSONObject jsonObject = getCourseJsonObject(reader, sourcePath);
+    String courseId = getCourseId(jsonObject, sourcePath);
     String courseName = getCourseName(jsonObject, sourcePath);
     List<Module> courseModules = getCourseModules(jsonObject, sourcePath, factory);
+    Map<Long, Map<String, String>> exerciseModules
+        = getCourseExerciseModules(jsonObject, sourcePath);
     Map<String, String> requiredPlugins = getCourseRequiredPlugins(jsonObject, sourcePath);
     Map<String, URL> resourceUrls = getCourseResourceUrls(jsonObject, sourcePath);
-    return factory.createCourse(courseName, courseModules, Collections.emptyList(),
-        requiredPlugins, resourceUrls);
+    List<String> autoInstallComponentNames
+        = getCourseAutoInstallComponentNames(jsonObject, sourcePath);
+    return factory.createCourse(courseId, courseName, courseModules, Collections.emptyList(),
+        exerciseModules, requiredPlugins, resourceUrls, autoInstallComponentNames);
   }
 
   /**
@@ -126,8 +143,17 @@ public class Course implements ComponentSource {
   @NotNull
   public static Course fromUrl(@NotNull URL url, @NotNull ModelFactory modelFactory)
       throws IOException, MalformedCourseConfigurationFileException {
-    InputStream inputStream = CoursesClient.fetchJson(url);
-    return Course.fromConfigurationData(new InputStreamReader(inputStream), modelFactory);
+    InputStream inputStream = CoursesClient.fetch(url);
+    return Course.fromConfigurationData(
+        new InputStreamReader(inputStream), url.toString(), modelFactory);
+  }
+
+  /**
+   * Returns the id of the course.
+   */
+  @NotNull
+  public String getId() {
+    return id;
   }
 
   /**
@@ -168,6 +194,16 @@ public class Course implements ComponentSource {
   }
 
   /**
+   * Returns a mapping of exercise IDs to modules. The keys are exercise IDs, and the values are
+   * maps from language codes to module names. Note, that some exercises use modules that are not in
+   * the course configuration file, so the modules may not be in {@link Course#getModules}.
+   */
+  @NotNull
+  public Map<Long, Map<String, String>> getExerciseModules() {
+    return Collections.unmodifiableMap(exerciseModules);
+  }
+
+  /**
    * Returns a map containing the required plugins for the course. The keys are the ids of the
    * plugins and the values are the names corresponding to the ids.
    *
@@ -189,6 +225,20 @@ public class Course implements ComponentSource {
     return Collections.unmodifiableMap(resourceUrls);
   }
 
+  /**
+   * Returns a list of components that should be installed automatically for this course.
+   *
+   * @return A list of components that should be installed automatically for this course.
+   */
+  @NotNull
+  public List<Component> getAutoInstallComponents() {
+    return autoInstallComponentNames
+        .stream()
+        .map(this::getComponentIfExists)
+        .filter(Objects::nonNull)
+        .collect(Collectors.toList());
+  }
+
 
   @NotNull
   private static JSONObject getCourseJsonObject(@NotNull Reader reader, @NotNull String source)
@@ -199,6 +249,17 @@ public class Course implements ComponentSource {
     } catch (JSONException ex) {
       throw new MalformedCourseConfigurationFileException(source,
           "Course configuration file should consist of a valid JSON object", ex);
+    }
+  }
+
+  @NotNull
+  private static String getCourseId(@NotNull JSONObject jsonObject, @NotNull String source)
+      throws MalformedCourseConfigurationFileException {
+    try {
+      return jsonObject.getString("id");
+    } catch (JSONException ex) {
+      throw new MalformedCourseConfigurationFileException(source,
+          "Missing or malformed \"id\" key", ex);
     }
   }
 
@@ -241,6 +302,34 @@ public class Course implements ComponentSource {
       }
     }
     return modules;
+  }
+
+  @NotNull
+  private static Map<Long, Map<String, String>> getCourseExerciseModules(@NotNull JSONObject object,
+                                                                         @NotNull String source)
+      throws MalformedCourseConfigurationFileException {
+    Map<Long, Map<String, String>> exerciseModules = new HashMap<>();
+    JSONObject exerciseModulesJson = object.optJSONObject("exerciseModules");
+    if (exerciseModulesJson == null) {
+      return exerciseModules;
+    }
+
+    try {
+      Iterable<String> keys = exerciseModulesJson::keys;
+      for (String exerciseId : keys) {
+        JSONObject modules = exerciseModulesJson.getJSONObject(exerciseId);
+        Map<String, String> languageToModule = new HashMap<>();
+        Iterable<String> languages = modules::keys;
+        for (String language : languages) {
+          languageToModule.put(language, modules.getString(language));
+        }
+        exerciseModules.put(Long.valueOf(exerciseId), languageToModule);
+      }
+      return exerciseModules;
+    } catch (JSONException e) {
+      throw new MalformedCourseConfigurationFileException(source,
+          "Malformed \"exerciseModules\" object", e);
+    }
   }
 
   @NotNull
@@ -290,6 +379,28 @@ public class Course implements ComponentSource {
     return resourceUrls;
   }
 
+  @NotNull
+  private static List<String> getCourseAutoInstallComponentNames(@NotNull JSONObject jsonObject,
+                                                                 @NotNull String source)
+      throws MalformedCourseConfigurationFileException {
+    List<String> autoInstallComponentNames = new ArrayList<>();
+    JSONArray autoInstallArray = jsonObject.optJSONArray("autoInstall");
+    if (autoInstallArray == null) {
+      return autoInstallComponentNames;
+    }
+
+    for (int i = 0; i < autoInstallArray.length(); ++i) {
+      try {
+        String autoInstallComponentName = autoInstallArray.getString(i);
+        autoInstallComponentNames.add(autoInstallComponentName);
+      } catch (JSONException e) {
+        throw new MalformedCourseConfigurationFileException(
+            source, "Names in \"autoInstall\" array should be course components", e);
+      }
+    }
+    return autoInstallComponentNames;
+  }
+
   @Nullable
   @Override
   public Component getComponentIfExists(@NotNull String name) {
@@ -311,5 +422,35 @@ public class Course implements ComponentSource {
     for (Component component : getComponents()) {
       component.validate(this);
     }
+  }
+
+  /**
+   * Gets modules that could be updated.
+   *
+   * @return A list of modules.
+   */
+  @NotNull
+  public List<Module> getUpdatableModules() {
+    return getModules()
+        .stream()
+        .filter(Module::isUpdatable)
+        .collect(Collectors.toList());
+  }
+
+  public void register() {
+    // Subclasses may do things.
+  }
+
+  public void unregister() {
+    // Subclasses may do things.
+  }
+
+  @NotNull
+  public SubmissionResultsList getSubmissionsDashboard() {
+    return submissionResultsList;
+  }
+
+  public void setSubmissionsDashboard(@NotNull SubmissionResultsList submissionResultsList) {
+    this.submissionResultsList = submissionResultsList;
   }
 }

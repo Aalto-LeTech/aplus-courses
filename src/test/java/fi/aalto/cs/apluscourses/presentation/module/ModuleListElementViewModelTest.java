@@ -35,7 +35,7 @@ public class ModuleListElementViewModelTest {
   public void testNameAndUrl() throws MalformedURLException {
     String name = "Wanda";
     String url = "https://example.com/wanda";
-    Module module = new ModelExtensions.TestModule(name, new URL(url), "");
+    Module module = new ModelExtensions.TestModule(name, new URL(url), "", null, null);
     ModuleListElementViewModel moduleViewModel = new ModuleListElementViewModel(module);
     assertEquals("getName() should return module's name",
         name, moduleViewModel.getName());
@@ -73,8 +73,16 @@ public class ModuleListElementViewModelTest {
     assertEquals("Installed, dependencies unknown", moduleViewModel.getStatus());
     assertEquals(TextAttribute.WEIGHT_BOLD, moduleViewModel.getFontWeight(), delta);
 
+    module.stateMonitor.set(Component.UNINSTALLING);
+    assertEquals("Removing...", moduleViewModel.getStatus());
+    assertEquals(TextAttribute.WEIGHT_REGULAR, moduleViewModel.getFontWeight(), delta);
+
     module.stateMonitor.set(Component.ERROR);
     assertEquals("Error", moduleViewModel.getStatus());
+    assertEquals(TextAttribute.WEIGHT_REGULAR, moduleViewModel.getFontWeight(), delta);
+
+    module.stateMonitor.set(Component.UNINSTALLED);
+    assertEquals("Removed", moduleViewModel.getStatus());
     assertEquals(TextAttribute.WEIGHT_REGULAR, moduleViewModel.getFontWeight(), delta);
 
     module.stateMonitor.set(Component.LOADED);

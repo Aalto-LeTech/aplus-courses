@@ -2,7 +2,10 @@ package fi.aalto.cs.apluscourses.model;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -35,10 +38,14 @@ public class ComponentInstallerTest {
       }
     });
 
+    ComponentInstaller.Dialogs dialogs = mock(ComponentInstaller.Dialogs.class);
+
     ComponentInstaller installer = new ComponentInstallerImpl<>(
-        new ModelExtensions.TestComponentSource(), new SimpleAsyncTaskManager());
+        new ModelExtensions.TestComponentSource(), new SimpleAsyncTaskManager(), dialogs);
 
     installer.install(module);
+
+    verify(dialogs, never()).shouldOverwrite(any());
 
     InOrder order = inOrder(module);
     order.verify(module).fetch();
@@ -52,13 +59,13 @@ public class ComponentInstallerTest {
 
   @Test
   public void testInstallDependencies()
-      throws IOException, ComponentLoadException, NoSuchComponentException {
+      throws IOException, ComponentLoadException {
     Module module1 = spy(new ModelExtensions.TestModule("dependentModule") {
       @NotNull
       @Override
       protected List<String> computeDependencies() {
         assertEquals("Module should be in LOADED state when computeDependencies() is called.",
-            stateMonitor.get(), Component.LOADED);
+            Component.LOADED, stateMonitor.get());
         List<String> dependencies = new ArrayList<>();
         dependencies.add("firstDep");
         dependencies.add("secondDep");
@@ -74,7 +81,8 @@ public class ComponentInstallerTest {
     when(componentSource.getComponentIfExists(secondDep.getName())).thenReturn(secondDep);
 
     ComponentInstaller installer =
-        new ComponentInstallerImpl<>(componentSource, new SimpleAsyncTaskManager());
+        new ComponentInstallerImpl<>(componentSource, new SimpleAsyncTaskManager(),
+            mock(ComponentInstaller.Dialogs.class));
 
     installer.install(module1);
 
@@ -96,15 +104,15 @@ public class ComponentInstallerTest {
         Component.DEP_LOADED, module1.dependencyStateMonitor.get());
 
     assertEquals("1st dependency should be in LOADED state.",
-        firstDep.stateMonitor.get(), Component.LOADED);
+        Component.LOADED, firstDep.stateMonitor.get());
 
     assertEquals("2nd dependency should be in LOADED state.",
-        secondDep.stateMonitor.get(), Component.LOADED);
+        Component.LOADED, secondDep.stateMonitor.get());
   }
 
   @Test
   public void testInstallMany()
-      throws IOException, ComponentLoadException, NoSuchComponentException {
+      throws IOException, ComponentLoadException {
     Module module1 = spy(new ModelExtensions.TestModule("module1"));
     Module module2 = spy(new ModelExtensions.TestModule("module2"));
 
@@ -113,7 +121,8 @@ public class ComponentInstallerTest {
     when(componentSource.getComponentIfExists(module2.getName())).thenReturn(module2);
 
     ComponentInstaller installer =
-        new ComponentInstallerImpl<>(componentSource, new SimpleAsyncTaskManager());
+        new ComponentInstallerImpl<>(componentSource, new SimpleAsyncTaskManager(),
+            mock(ComponentInstaller.Dialogs.class));
 
     List<Component> modules = new ArrayList<>();
     modules.add(module1);
@@ -144,8 +153,11 @@ public class ComponentInstallerTest {
       }
     });
 
+
+
     ComponentInstaller installer = new ComponentInstallerImpl<>(
-        new ModelExtensions.TestComponentSource(), new SimpleAsyncTaskManager());
+        new ModelExtensions.TestComponentSource(), new SimpleAsyncTaskManager(),
+        mock(ComponentInstaller.Dialogs.class));
 
     installer.install(module);
 
@@ -167,7 +179,8 @@ public class ComponentInstallerTest {
     });
 
     ComponentInstaller installer = new ComponentInstallerImpl<>(
-        new ModelExtensions.TestComponentSource(), new SimpleAsyncTaskManager());
+        new ModelExtensions.TestComponentSource(), new SimpleAsyncTaskManager(),
+        mock(ComponentInstaller.Dialogs.class));
 
     installer.install(module);
 
@@ -176,8 +189,7 @@ public class ComponentInstallerTest {
   }
 
   @Test
-  public void testInstallUnknownDependency()
-      throws ComponentLoadException, NoSuchComponentException {
+  public void testInstallUnknownDependency() {
     String nonExistentModuleName = "nonExistentModule";
 
     Module module = spy(new ModelExtensions.TestModule("unknownDepModule") {
@@ -191,7 +203,8 @@ public class ComponentInstallerTest {
     ComponentSource componentSource = new ModelExtensions.TestComponentSource();
 
     ComponentInstaller installer =
-        new ComponentInstallerImpl<>(componentSource, new SimpleAsyncTaskManager());
+        new ComponentInstallerImpl<>(componentSource, new SimpleAsyncTaskManager(),
+            mock(ComponentInstaller.Dialogs.class));
 
     installer.install(module);
 
@@ -200,7 +213,7 @@ public class ComponentInstallerTest {
   }
 
   @Test
-  public void testInstallDependencyFails() throws NoSuchComponentException {
+  public void testInstallDependencyFails() {
     Module dependentModule = spy(new ModelExtensions.TestModule("dependentModule") {
       @NotNull
       @Override
@@ -223,7 +236,8 @@ public class ComponentInstallerTest {
     when(componentSource.getComponentIfExists(failingDep.getName())).thenReturn(failingDep);
 
     ComponentInstaller installer =
-        new ComponentInstallerImpl<>(componentSource, new SimpleAsyncTaskManager());
+        new ComponentInstallerImpl<>(componentSource, new SimpleAsyncTaskManager(),
+            mock(ComponentInstaller.Dialogs.class));
 
     List<Component> modules = new ArrayList<>();
     modules.add(dependentModule);
@@ -244,7 +258,7 @@ public class ComponentInstallerTest {
   }
 
   @Test
-  public void testInstallCircularDependency() throws NoSuchComponentException {
+  public void testInstallCircularDependency() {
     Module moduleA = spy(new ModelExtensions.TestModule("moduleA") {
       @NotNull
       @Override
@@ -265,7 +279,8 @@ public class ComponentInstallerTest {
     when(componentSource.getComponentIfExists(moduleB.getName())).thenReturn(moduleB);
 
     ComponentInstaller installer =
-        new ComponentInstallerImpl<>(componentSource, new SimpleAsyncTaskManager());
+        new ComponentInstallerImpl<>(componentSource, new SimpleAsyncTaskManager(),
+            mock(ComponentInstaller.Dialogs.class));
 
     List<Component> modules = new ArrayList<>();
     modules.add(moduleA);
@@ -281,5 +296,70 @@ public class ComponentInstallerTest {
         Component.DEP_LOADED, moduleA.dependencyStateMonitor.get());
     assertEquals("Module B should be in DEP_LOADED state, after the installation has ended.",
         Component.DEP_LOADED, moduleB.dependencyStateMonitor.get());
+  }
+
+  @Test
+  public void testUpdate() throws ComponentLoadException, IOException {
+    Component component = spy(new ModelExtensions.TestComponent());
+    doReturn(true).when(component).isUpdatable();
+    doReturn(true).when(component).hasLocalChanges();
+
+    component.stateMonitor.set(Component.LOADED);
+
+    ComponentInstaller.Dialogs dialogs = mock(ComponentInstaller.Dialogs.class);
+    doReturn(true).when(dialogs).shouldOverwrite(component);
+
+    ComponentInstaller installer = new ComponentInstallerImpl<>(
+        new ModelExtensions.TestComponentSource(), new SimpleAsyncTaskManager(), dialogs);
+    installer.install(component);
+
+    verify(component).fetch();
+    verify(component).load();
+
+    assertEquals(Component.LOADED, component.stateMonitor.get());
+  }
+
+  @Test
+  public void testUpdateCancelled() throws ComponentLoadException, IOException {
+    Component component = spy(new ModelExtensions.TestComponent());
+    doReturn(true).when(component).isUpdatable();
+    doReturn(true).when(component).hasLocalChanges();
+    doReturn(Component.LOADED).when(component).resolveStateInternal();
+
+    component.stateMonitor.set(Component.LOADED);
+
+    ComponentInstaller.Dialogs dialogs = mock(ComponentInstaller.Dialogs.class);
+    doReturn(false).when(dialogs).shouldOverwrite(component);
+
+    ComponentInstaller installer = new ComponentInstallerImpl<>(
+        new ModelExtensions.TestComponentSource(), new SimpleAsyncTaskManager(), dialogs);
+    installer.install(component);
+
+    verify(component, never()).fetch();
+    verify(component, never()).load();
+
+    assertEquals(Component.LOADED, component.stateMonitor.get());
+  }
+
+  @Test
+  public void testUpdateWithoutAsking() throws ComponentLoadException, IOException {
+    Component component = spy(new ModelExtensions.TestComponent());
+    doReturn(true).when(component).isUpdatable();
+    doReturn(false).when(component).hasLocalChanges();
+
+    component.stateMonitor.set(Component.LOADED);
+
+    ComponentInstaller.Dialogs dialogs = mock(ComponentInstaller.Dialogs.class);
+
+    ComponentInstaller installer = new ComponentInstallerImpl<>(
+        new ModelExtensions.TestComponentSource(), new SimpleAsyncTaskManager(), dialogs);
+    installer.install(component);
+
+    verify(dialogs, never()).shouldOverwrite(any());
+
+    verify(component).fetch();
+    verify(component).load();
+
+    assertEquals(Component.LOADED, component.stateMonitor.get());
   }
 }

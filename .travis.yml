@@ -12,7 +12,7 @@ addons:
     token: $SONARCLOUD_TOKEN
 
 script:
-  - ./gradlew check && chmod +x start_local_a+_env.sh && ./start_local_a+_env.sh && sonar-scanner
+  - chmod +x start_local_a+_env.sh && ./start_local_a+_env.sh && ./gradlew check && sonar-scanner
 
 deploy:
   - provider: script
@@ -23,6 +23,9 @@ deploy:
     script: env INTELLIJ_PUBLISH_CHANNEL=test ./gradlew publishPlugin
     on:
       branch: test
+
+env:
+  - CI=true
 
 notifications:
   slack: $SLACK

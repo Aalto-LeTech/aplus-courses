@@ -2,9 +2,9 @@ package fi.aalto.cs.apluscourses.intellij.actions
 
 import com.intellij.testFramework.HeavyPlatformTestCase
 import fi.aalto.cs.apluscourses.intellij.TestHelperScala
+import fi.aalto.cs.apluscourses.intellij.utils.ModuleUtils
 import org.junit.Assert.{assertEquals, assertSame, assertTrue}
 import org.junit.Test
-
 
 class ReplActionHeavyTest extends HeavyPlatformTestCase with TestHelperScala {
 
@@ -15,12 +15,12 @@ class ReplActionHeavyTest extends HeavyPlatformTestCase with TestHelperScala {
     val modules = getModuleManager.getModules
     val configuration = getConfiguration
     val module = modules.apply(1)
-    val replTitle = s"REPL in <?>"
+    val replTitle = s"REPL for ${module.getName}"
     val action = new ReplAction
-    val moduleWorkDir = action.getModuleWorkDir(modules.apply(0))
+    val moduleWorkDir = ModuleUtils.getModuleDirectory(modules.head)
 
     //  when
-    action.setCustomConfigurationFields(configuration, moduleWorkDir, module.getName, module)
+    action.setConfigurationFields(configuration, moduleWorkDir, module)
 
     //  then
     assertTrue("REPL's (configuration) working directory has been properly set",

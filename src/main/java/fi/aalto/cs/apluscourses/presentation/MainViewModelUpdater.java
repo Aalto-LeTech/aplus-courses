@@ -1,36 +1,36 @@
 package fi.aalto.cs.apluscourses.presentation;
 
+import com.intellij.notification.Notification;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.project.Project;
-import fi.aalto.cs.apluscourses.intellij.model.APlusProject;
 import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory;
-import fi.aalto.cs.apluscourses.intellij.model.IntelliJModuleMetadata;
+import fi.aalto.cs.apluscourses.intellij.notifications.NewModulesVersionsNotification;
+import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.utils.CourseFileManager;
 import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Module;
 import java.net.URL;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class MainViewModelUpdater {
 
   @NotNull
-  private MainViewModel mainViewModel;
+  private final MainViewModel mainViewModel;
 
   @NotNull
-  private APlusProject aplusProject;
+  private final Project project;
 
-  private long updateInterval;
+  private final long updateInterval;
 
-  private Thread thread;
+  @NotNull
+  private final Notifier notifier;
+
+  private final Thread thread;
+
+  private Notification newModulesVersionsNotification = null;
 
   /**
    * Construct a {@link MainViewModelUpdater} with the given {@link MainViewModel}, project, and
@@ -41,18 +41,20 @@ public class MainViewModelUpdater {
    * @param updateInterval The interval at which the updater performs the update.
    */
   public MainViewModelUpdater(@NotNull MainViewModel mainViewModel,
-      @NotNull Project project,
-      @NotNull long updateInterval) {
+                              @NotNull Project project,
+                              long updateInterval,
+                              @NotNull Notifier notifier) {
     this.mainViewModel = mainViewModel;
-    this.aplusProject = new APlusProject(project);
+    this.project = project;
     this.updateInterval = updateInterval;
+    this.notifier = notifier;
     this.thread = new Thread(this::run);
   }
 
   @NotNull
   URL getCourseUrl() {
     return ReadAction.compute(() -> {
-      if (aplusProject.getProject().isDisposed() || !aplusProject.getProject().isOpen()) {
+      if (project.isDisposed() || !project.isOpen()) {
         return null;
       }
       return CourseFileManager.getInstance().getCourseUrl();
@@ -67,63 +69,10 @@ public class MainViewModelUpdater {
 
     try {
       return ReadAction.compute(
-          () -> Course.fromUrl(courseUrl, new IntelliJModelFactory(aplusProject.getProject())));
+          () -> Course.fromUrl(courseUrl, new IntelliJModelFactory(project)));
     } catch (Exception e) {
       return null;
     }
-  }
-
-  @NotNull
-  Set<String> getProjectModuleNames() {
-    com.intellij.openapi.module.Module[] projectModules = ReadAction.compute(() -> {
-      Project project = aplusProject.getProject();
-      if (project.isDisposed() || !project.isOpen()) {
-        return new com.intellij.openapi.module.Module[]{};
-      }
-      return aplusProject.getModuleManager().getModules();
-    });
-    return Arrays.stream(projectModules)
-        .map(com.intellij.openapi.module.Module::getName)
-        .collect(Collectors.toSet());
-  }
-
-  @NotNull
-  List<Module> getUpdatableModules(@Nullable Course course) {
-    List<Module> updatableModules = new ArrayList<>();
-    if (course == null) {
-      return updatableModules;
-    }
-
-    // Modules listed in the course file may have been removed from the project, so we have to check
-    // that the modules are still in the project.
-    Set<String> projectModuleNames = getProjectModuleNames();
-
-    // Minor concurrency issue: we make the list of updatable modules outside of a read action, so
-    // (however unlikely) a module may be removed from the project in the meantime. This shouldn't
-    // be a big issue however, as it would just lead to a update notification for a module that has
-    // been removed.
-
-    Map<String, IntelliJModuleMetadata> localModulesMetadata
-        = CourseFileManager.getInstance().getModulesMetadata();
-
-    for (Module module : course.getModules()) {
-      // An updatable module must be in the project and it's ID in the local
-      // course file must be different from the ID in the course configuration file.
-      if (!projectModuleNames.contains(module.getName())) {
-        continue;
-      }
-
-      IntelliJModuleMetadata intelliJModuleMetadata = localModulesMetadata.get(module.getName());
-      String moduleId = intelliJModuleMetadata.getModuleId();
-      ZonedDateTime downloadedAt = intelliJModuleMetadata.getDownloadedAt();
-      if (!module.getVersionId().equals(moduleId)
-          // todo: a bit unsure here
-          && module.hasLocalChanges(downloadedAt)) {
-        updatableModules.add(module);
-      }
-    }
-
-    return updatableModules;
   }
 
   private void updateMainViewModel(@Nullable Course newCourse) {
@@ -132,25 +81,37 @@ public class MainViewModelUpdater {
     }
 
     CourseViewModel courseViewModel = mainViewModel.courseViewModel.get();
-    if (courseViewModel == null) {
-      mainViewModel.courseViewModel.set(new CourseViewModel(newCourse));
-      return;
+    if (courseViewModel != null) {
+      Course current = courseViewModel.getModel();
+      /*
+       * Updating the course view model while modules are installing leads to "Error in
+       * dependencies" in the modules tool window. The installations actually still work, and the
+       * error state disappears on the next update, but it's still bad UI/UX. Therefore we check if
+       * the currently loaded course has any "active" components, and only update the course view
+       * model if it doesn't.
+       */
+      if (current.getComponents().stream().anyMatch(Component::isActive)) {
+        return;
+      }
+
+      current.unregister();
     }
 
-    Course current = courseViewModel.getModel();
-    /*
-     * Updating the course view model while modules are installing leads to "Error in dependencies"
-     * in the modules tool window. The installations actually still work, and the error state
-     * disappears on the next update, but it's still bad UI/UX. Therefore we check if the currently
-     * loaded course has any "active" components, and only update the course view model if it
-     * doesn't.
-     */
-    boolean hasActiveComponents = current.getComponents()
-        .stream()
-        .anyMatch(Component::isActive);
+    mainViewModel.courseViewModel.set(new CourseViewModel(newCourse));
+    notifyNewVersions(newCourse);
 
-    if (!hasActiveComponents) {
-      mainViewModel.courseViewModel.set(new CourseViewModel(newCourse));
+    newCourse.register();
+  }
+
+  private void notifyNewVersions(Course newCourse) {
+    if (newModulesVersionsNotification != null) {
+      newModulesVersionsNotification.expire();
+      newModulesVersionsNotification = null;
+    }
+    List<Module> updatableModules = newCourse.getUpdatableModules();
+    if (!updatableModules.isEmpty()) {
+      newModulesVersionsNotification = new NewModulesVersionsNotification(updatableModules);
+      notifier.notify(newModulesVersionsNotification, project);
     }
   }
 
@@ -161,19 +122,17 @@ public class MainViewModelUpdater {
    */
   private void run() {
     try {
-      while (true) {
+      // Sonar dislikes infinite loops...
+      while (true) { //NOSONAR
         URL courseUrl = getCourseUrl();
         Course course = getCourse(courseUrl);
         // If parsing the course configuration file fails, then we just silently go back to sleep.
         // For an example, if the internet connection was down, then we may succeed when we try
         // again after sleeping.
-        // TODO: what do we actually do with the list of updatable modules? Notify the user?
-        List<Module> updatableModules = getUpdatableModules(course);
         updateMainViewModel(course);
         Thread.sleep(updateInterval); // Good night :)
 
-        // Sonar dislikes infinite loops...
-      } //NOSONAR
+      }
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
     }
@@ -192,10 +151,5 @@ public class MainViewModelUpdater {
    */
   public void interrupt() {
     thread.interrupt();
-  }
-
-  @NotNull
-  public APlusProject getAplusProject() {
-    return aplusProject;
   }
 }

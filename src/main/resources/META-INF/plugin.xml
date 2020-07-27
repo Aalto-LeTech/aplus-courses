@@ -23,12 +23,10 @@
         <backgroundPostStartupActivity implementation="fi.aalto.cs.apluscourses.intellij.activities.VersionCheckerActivity"/>
         <backgroundPostStartupActivity implementation="fi.aalto.cs.apluscourses.intellij.activities.InitializationActivity"/>
 
-        <toolWindow id="Modules"
+        <toolWindow id="A+ Courses"
                     anchor="right"
-                    factoryClass="fi.aalto.cs.apluscourses.intellij.toolwindows.ModulesToolWindowFactory" />
-        <toolWindow id="Exercises"
-                    anchor="right"
-                    factoryClass="fi.aalto.cs.apluscourses.intellij.toolwindows.ExercisesToolWindowFactory" />
+                    factoryClass="fi.aalto.cs.apluscourses.intellij.toolwindows.APlusToolWindowFactory"
+                    icon="PluginIcons.A_PLUS_LOGO"/>
     </extensions>
 
     <actions>
@@ -40,6 +38,10 @@
                     class="fi.aalto.cs.apluscourses.intellij.actions.CourseProjectAction"
                     text="Turn Project Into A+ Course Project"
                     description="Turns the currently opened project into a A+ course project." />
+            <action id="fi.aalto.cs.apluscourses.intellij.actions.APlusAuthenticationAction"
+                    class="fi.aalto.cs.apluscourses.intellij.actions.APlusAuthenticationAction"
+                    text="Set A+ Token"
+                    description="Set the A+ authentication token" />
             <action id="fi.aalto.cs.apluscourses.intellij.actions.ResetSettingsAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.ResetSettingsAction"
                     text="Reset A+ Courses Plugin Settings"
@@ -54,7 +56,20 @@
                description="Actions for A+ modules">
             <action id="fi.aalto.cs.apluscourses.intellij.actions.ImportModuleAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.ImportModuleAction"
-                    text="Import A+ Module" icon="AllIcons.Actions.Download"/>
+                    text="Import A+ Module"
+                    icon="PluginIcons.A_PLUS_DOWNLOAD"/>
+        </group>
+        <group id="fi.aalto.cs.apluscourses.intellij.actions.ActionGroups.EXERCISE_ACTIONS"
+               text="A+ Exercise"
+               description="Actions for A+ modules">
+            <action id="fi.aalto.cs.apluscourses.intellij.actions.SubmitExerciseAction"
+                    class="fi.aalto.cs.apluscourses.intellij.actions.SubmitExerciseAction"
+                    text="Submit A+ Exercise"
+                    icon="PluginIcons.A_PLUS_UPLOAD"/>
+            <action id="fi.aalto.cs.apluscourses.intellij.actions.GetSubmissionsDashboardAction"
+                    class="fi.aalto.cs.apluscourses.intellij.actions.GetSubmissionsDashboardAction"
+                    text="Get submissions' results"
+                    icon="PluginIcons.A_PLUS_GET_RESULTS"/>
         </group>
         <action id="fi.aalto.cs.apluscourses.intellij.actions.RequiredPluginsCheckerAction"
                 class="fi.aalto.cs.apluscourses.intellij.actions.RequiredPluginsCheckerAction"

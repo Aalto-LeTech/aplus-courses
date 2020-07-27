@@ -1,24 +1,29 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
+import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import fi.aalto.cs.apluscourses.intellij.model.SettingsImporter;
+import fi.aalto.cs.apluscourses.model.ComponentInstaller;
+import fi.aalto.cs.apluscourses.model.ComponentInstallerImpl;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.presentation.CourseProjectViewModel;
+import fi.aalto.cs.apluscourses.ui.InstallerDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogs;
+import fi.aalto.cs.apluscourses.utils.PostponedRunnable;
+import fi.aalto.cs.apluscourses.utils.async.ImmediateTaskManager;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
-public class CourseProjectActionTest {
+public class CourseProjectActionTest extends BasePlatformTestCase {
 
   private class TestDialogs implements CourseProjectActionDialogs {
 
@@ -40,27 +45,34 @@ public class CourseProjectActionTest {
     }
 
     @Override
-    public void showMainDialog(@NotNull Project project,
-                               @NotNull CourseProjectViewModel courseProjectViewModel) {
-      courseProjectViewModel.restart.set(doRestart);
-      courseProjectViewModel.settingsOptOut.set(doOptOut);
-      courseProjectViewModel.cancel.set(doCancel);
+    public boolean showMainDialog(@NotNull Project project,
+                                  @NotNull CourseProjectViewModel courseProjectViewModel) {
+      courseProjectViewModel.settingsOptOutProperty.set(doOptOut);
+      return !doCancel;
+    }
+
+    @Override
+    public boolean showRestartDialog() {
+      return doRestart;
     }
 
     @Override
     public void showErrorDialog(@NotNull String message, @NotNull String title) {
       lastErrorMessage = message;
     }
-
   }
 
   private AnActionEvent anActionEvent;
   private Course emptyCourse;
   private DummySettingsImporter settingsImporter;
-  private DummyIdeRestarter ideRestarter;
+  private ComponentInstaller.Factory installerFactory;
+  private AtomicInteger restarterCallCount;
+  private PostponedRunnable ideRestarter;
   private TestDialogs dialogs;
+  private InstallerDialogs.Factory installerDialogsFactory;
 
-  class DummySettingsImporter implements SettingsImporter {
+  class DummySettingsImporter extends SettingsImporter {
+
     private int importIdeSettingsCallCount = 0;
     private int importProjectSettingsCallCount = 0;
 
@@ -90,39 +102,34 @@ public class CourseProjectActionTest {
     }
   }
 
-  class DummyIdeRestarter implements CourseProjectAction.IdeRestarter {
-    private int callCount = 0;
-
-    @Override
-    public void restart() {
-      ++callCount;
-    }
-
-    int getCallCount() {
-      return callCount;
-    }
-  }
-
   /**
-   * Called before each test method call.  Initializes private fields.
+   * Called before each test method call. Initializes private fields.
    */
-  @Before
   public void createMockObjects() {
-    Project project = mock(Project.class);
     anActionEvent = mock(AnActionEvent.class);
-    doReturn(project).when(anActionEvent).getProject();
-    emptyCourse = new Course("EMPTY", Collections.emptyList(), Collections.emptyList(),
-        Collections.emptyMap(), Collections.emptyMap());
+    Project project = getProject();
+    when(anActionEvent.getProject()).thenReturn(project);
+
+    emptyCourse = new Course("ID", "EMPTY", Collections.emptyList(), Collections.emptyList(),
+        Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap(),
+        Collections.emptyList());
 
     settingsImporter = new DummySettingsImporter();
 
-    ideRestarter = new DummyIdeRestarter();
+    installerFactory = new ComponentInstallerImpl.FactoryImpl<>(new ImmediateTaskManager());
+
+    restarterCallCount = new AtomicInteger(0);
+
+    ideRestarter = new PostponedRunnable(restarterCallCount::incrementAndGet, Runnable::run);
 
     dialogs = new TestDialogs(false, true, false);
+
+    installerDialogsFactory = proj -> module -> true;
   }
 
   @Test
   public void testCreateCourseProject() {
+    createMockObjects();
     AtomicInteger courseFactoryCallCount = new AtomicInteger(0);
     CourseProjectAction action = new CourseProjectAction(
         (url, proj) -> {
@@ -131,8 +138,10 @@ public class CourseProjectActionTest {
         },
         false,
         settingsImporter,
+        installerFactory,
         ideRestarter,
-        dialogs);
+        dialogs,
+        installerDialogsFactory);
 
     action.actionPerformed(anActionEvent);
 
@@ -143,22 +152,25 @@ public class CourseProjectActionTest {
         settingsImporter.getImportProjectSettingsCallCount());
     Assert.assertEquals("The IDE settings should get imported", 1,
         settingsImporter.getImportIdeSettingsCallCount());
+    Assert.assertEquals("The IDE should get restarted", 1, restarterCallCount.get());
 
-    Assert.assertEquals("IdeRestarter#restart should get called", 1, ideRestarter.getCallCount());
     Assert.assertEquals("No error dialogs should be shown", "",
         dialogs.getLastErrorMessage());
   }
 
   @Test
   public void testNotifiesUserOfCourseInitializationError() {
+    createMockObjects();
     CourseProjectAction action = new CourseProjectAction(
         (url, proj) -> {
           throw new IOException();
         },
         false,
         settingsImporter,
+        installerFactory,
         ideRestarter,
-        dialogs);
+        dialogs,
+        installerDialogsFactory);
 
     action.actionPerformed(anActionEvent);
 
@@ -172,6 +184,7 @@ public class CourseProjectActionTest {
 
   @Test
   public void testNotifiesUserOfSettingsImportError() {
+    createMockObjects();
     DummySettingsImporter failingSettingsImporter = new DummySettingsImporter() {
       @Override
       public void importProjectSettings(@NotNull Project project, @NotNull Course course)
@@ -185,8 +198,10 @@ public class CourseProjectActionTest {
         (url, proj) -> emptyCourse,
         false,
         failingSettingsImporter,
+        installerFactory,
         ideRestarter,
-        dialogs);
+        dialogs,
+        installerDialogsFactory);
 
     action.actionPerformed(anActionEvent);
 
@@ -198,12 +213,15 @@ public class CourseProjectActionTest {
 
   @Test
   public void testDoesNotImportIdeSettingsIfOptOut() {
+    createMockObjects();
     CourseProjectAction action = new CourseProjectAction(
         (url, proj) -> emptyCourse,
         false,
         settingsImporter,
+        installerFactory,
         ideRestarter,
-        new TestDialogs(false, true, true));
+        new TestDialogs(false, true, true),
+        installerDialogsFactory);
 
     action.actionPerformed(anActionEvent);
 
@@ -215,12 +233,15 @@ public class CourseProjectActionTest {
 
   @Test
   public void testLetsUserCancelAction() {
+    createMockObjects();
     CourseProjectAction action = new CourseProjectAction(
         (url, proj) -> emptyCourse,
         true,
         settingsImporter,
+        installerFactory,
         ideRestarter,
-        new TestDialogs(true, true, true));
+        new TestDialogs(true, true, true),
+        installerDialogsFactory);
 
     action.actionPerformed(anActionEvent);
 
@@ -228,22 +249,25 @@ public class CourseProjectActionTest {
         settingsImporter.getImportProjectSettingsCallCount());
     Assert.assertEquals("IDE settings are not imported", 0,
         settingsImporter.getImportIdeSettingsCallCount());
-    Assert.assertEquals("The IDE is not restarted", 0, ideRestarter.getCallCount());
+    Assert.assertEquals("The IDE is not restarted", 0, restarterCallCount.get());
   }
 
+
+
   @Test
-  public void testDoesNotRestartIfCheckboxUnselected() {
+  public void testDoesNotRestartIfSettingsOptOut() {
+    createMockObjects();
     CourseProjectAction action = new CourseProjectAction(
         (url, proj) -> emptyCourse,
         false,
         settingsImporter,
+        installerFactory,
         ideRestarter,
-        new TestDialogs(false, false, false));
+        new TestDialogs(false, false, true),
+        installerDialogsFactory);
 
     action.actionPerformed(anActionEvent);
 
-    Assert.assertEquals("IDE settings are imported", 1,
-        settingsImporter.getImportIdeSettingsCallCount());
-    Assert.assertEquals("The IDE is not restarted", 0, ideRestarter.getCallCount());
+    Assert.assertEquals("The IDE is not restarted", 0, restarterCallCount.get());
   }
 }

@@ -1,9 +1,10 @@
 package fi.aalto.cs.apluscourses.intellij.model;
 
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 
 import com.intellij.openapi.project.Project;
+import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import fi.aalto.cs.apluscourses.model.Component;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -11,11 +12,11 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class APlusProjectTest {
+public class APlusProjectTest extends BasePlatformTestCase {
 
   @Test
   public void testGetBasePath() {
-    Project project = mock(Project.class);
+    Project project = spy(getProject());
     doReturn(".idea").when(project).getBasePath();
 
     APlusProject aplusProject = new APlusProject(project);
@@ -32,7 +33,7 @@ public class APlusProjectTest {
     final String notInstalledComponentName = "notInstalledModule";
     final String errorComponentName = "errorModule";
 
-    APlusProject project = new APlusProject(mock(Project.class)) {
+    APlusProject project = new APlusProject(getProject()) {
       @Override
       public boolean doesDirExist(@NotNull Path relativePath) {
         String pathStr = relativePath.toString();

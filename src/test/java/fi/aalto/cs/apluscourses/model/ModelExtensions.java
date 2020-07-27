@@ -22,6 +22,54 @@ public class ModelExtensions {
 
   }
 
+  public static class TestExerciseDataSource extends ExerciseDataSource {
+
+    public TestExerciseDataSource() {
+      super(() -> new APlusAuthentication(new char[0]));
+    }
+
+    @NotNull
+    @Override
+    public SubmissionInfo getSubmissionInfo(@NotNull Exercise exercise) throws IOException {
+      return new SubmissionInfo(1, new SubmittableFile[0]);
+    }
+
+    @NotNull
+    @Override
+    public SubmissionHistory getSubmissionHistory(@NotNull Exercise exercise) throws IOException {
+      return new SubmissionHistory(0);
+    }
+
+    @NotNull
+    @Override
+    public List<Group> getGroups(@NotNull Course course) throws IOException {
+      return Collections.singletonList(new Group(0, Collections.singletonList("Only you")));
+    }
+
+    @NotNull
+    @Override
+    public List<ExerciseGroup> getExerciseGroups(@NotNull Course course) throws IOException {
+      return Collections.emptyList();
+    }
+
+    @Override
+    public void submit(Submission submission) throws IOException {
+      // do nothing
+    }
+  }
+
+  public static class TestCourse extends Course {
+
+    public TestCourse(@NotNull String id) {
+      this(id, "");
+    }
+
+    public TestCourse(@NotNull String id, @NotNull String name) {
+      super(id, name, Collections.emptyList(), Collections.emptyList(), Collections.emptyMap(),
+          Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList());
+    }
+  }
+
   public static class TestComponent extends Component {
 
     public TestComponent() {
@@ -64,6 +112,16 @@ public class ModelExtensions {
     protected List<String> computeDependencies() {
       return Collections.emptyList();
     }
+
+    @Override
+    public boolean isUpdatable() {
+      return false;
+    }
+
+    @Override
+    public boolean hasLocalChanges() {
+      return false;
+    }
   }
 
   public static class TestModule extends Module {
@@ -79,11 +137,15 @@ public class ModelExtensions {
     }
 
     public TestModule(@NotNull String name) {
-      this(name, testURL, "");
+      this(name, testURL, "", null, null);
     }
 
-    public TestModule(@NotNull String name, @NotNull URL url, @NotNull String versionId) {
-      super(name, url, versionId);
+    public TestModule(@NotNull String name,
+                      @NotNull URL url,
+                      @NotNull String versionId,
+                      @Nullable String localVersionId,
+                      @Nullable ZonedDateTime downloadedAt) {
+      super(name, url, versionId, localVersionId, downloadedAt);
     }
 
     @NotNull
@@ -93,13 +155,24 @@ public class ModelExtensions {
     }
 
     @Override
-    public void fetch() throws IOException {
+    public void fetchInternal() throws IOException {
       // do nothing
     }
 
     @Override
     public void load() throws ComponentLoadException {
       // do nothing
+    }
+
+    @Nullable
+    @Override
+    protected String readVersionId() {
+      return null;
+    }
+
+    @Override
+    protected boolean hasLocalChanges(@NotNull ZonedDateTime downloadedAt) {
+      return false;
     }
 
     @NotNull
@@ -117,11 +190,6 @@ public class ModelExtensions {
     @Override
     protected List<String> computeDependencies() {
       return Collections.emptyList();
-    }
-
-    @Override
-    public boolean hasLocalChanges(ZonedDateTime downloadedAt) {
-      return false;
     }
   }
 
@@ -162,17 +230,29 @@ public class ModelExtensions {
   public static class TestModelFactory implements ModelFactory {
 
     @Override
-    public Course createCourse(@NotNull String name,
+    public Course createCourse(@NotNull String id,
+                               @NotNull String name,
                                @NotNull List<Module> modules,
                                @NotNull List<Library> libraries,
+                               @NotNull Map<Long, Map<String, String>> exerciseModules,
                                @NotNull Map<String, String> requiredPlugins,
-                               @NotNull Map<String, URL> resourceUrls) {
-      return new Course(name, modules, libraries, requiredPlugins, resourceUrls);
+                               @NotNull Map<String, URL> resourceUrls,
+                               @NotNull List<String> autoInstallComponentNames) {
+      return new Course(
+          id,
+          name,
+          modules,
+          libraries,
+          exerciseModules,
+          requiredPlugins,
+          resourceUrls,
+          autoInstallComponentNames
+      );
     }
 
     @Override
     public Module createModule(@NotNull String name, @NotNull URL url, @NotNull String versionId) {
-      return new TestModule(name, url, versionId);
+      return new TestModule(name, url, versionId, null, null);
     }
 
     @Override

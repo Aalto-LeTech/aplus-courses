@@ -22,6 +22,10 @@ public class ModuleListElementViewModel extends ListElementViewModel<Module> {
     return getModel().getUrl().toString();
   }
 
+  public Boolean isUpdateAvailable() {
+    return getModel().isUpdatable();
+  }
+
   /**
    * Returns a textual representation of the status of the module.
    * @return A {@link String} describing the status.
@@ -41,6 +45,12 @@ public class ModuleListElementViewModel extends ListElementViewModel<Module> {
         return "Installing...";
       case Component.LOADED:
         break;
+      case Component.UNINSTALLING:
+        return "Removing...";
+      case Component.UNINSTALLED:
+        return "Removed";
+      case Component.ACTION_ABORTED:
+        return "Cancelling...";
       default:
         return "Error";
     }
