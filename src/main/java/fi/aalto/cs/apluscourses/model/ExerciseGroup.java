@@ -45,7 +45,7 @@ public class ExerciseGroup {
     List<Exercise> exercises = new ArrayList<>(exercisesArray.length());
     for (int i = 0; i < exercisesArray.length(); ++i) {
       JSONObject exerciseObject = exercisesArray.getJSONObject(i);
-      exercises.add(Exercise.fromJsonObject(exerciseObject));
+      exercises.add(Exercise.fromJsonObject(exerciseObject, points));
     }
     return new ExerciseGroup(name, exercises);
   }

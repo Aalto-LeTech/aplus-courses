@@ -109,7 +109,7 @@ public class SubmitExerciseActionTest {
   public void setUp() throws IOException, FileDoesNotExistException {
     course = spy(new ModelExtensions.TestCourse("91"));
     exerciseId = 12;
-    exercise = new Exercise(exerciseId, "Test exercise");
+    exercise = new Exercise(exerciseId, "Test exercise", Collections.emptyList(), 0, 0, 0);
     group = new Group(124, Collections.singletonList("Only you"));
     groups = Collections.singletonList(group);
     exerciseGroup = new ExerciseGroup("Test EG", Collections.singletonList(exercise));

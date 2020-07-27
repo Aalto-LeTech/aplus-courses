@@ -4,6 +4,7 @@ import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -15,11 +16,14 @@ public class ExerciseGroupTest {
 
   private static final String NAME_KEY = "display_name";
   private static final String EXERCISES_KEY = "exercises";
+  private static final String ID_KEY = "id";
+  private static final String MAX_SUBMISSIONS_KEY = "max_submissions";
+  private static final String MAX_POINTS_KEY = "max_points";
 
   @Test
   public void testExerciseGroup() {
-    Exercise exercise1 = new Exercise(123, "name1");
-    Exercise exercise2 = new Exercise(456, "name2");
+    Exercise exercise1 = new Exercise(123, "name1", Collections.emptyList(), 0, 0, 0);
+    Exercise exercise2 = new Exercise(456, "name2", Collections.emptyList(), 0, 0, 0);
 
     ExerciseGroup group = new ExerciseGroup("group", Arrays.asList(exercise1, exercise2));
 
@@ -34,7 +38,7 @@ public class ExerciseGroupTest {
   @Test(expected = UnsupportedOperationException.class)
   public void testGetExercisesReturnsUnmodifiableMap() {
     ExerciseGroup group = new ExerciseGroup("", new ArrayList<>());
-    group.getExercises().put(999L, new Exercise(999, "test name"));
+    group.getExercises().put(999L, null);
   }
 
   @Test
@@ -43,8 +47,10 @@ public class ExerciseGroupTest {
         .put(NAME_KEY, "group name")
         .put(EXERCISES_KEY, new JSONArray()
             .put(new JSONObject()
-                .put("id", 567)
-                .put(NAME_KEY, "exercise name")));
+                .put(ID_KEY, 567)
+                .put(NAME_KEY, "exercise name")
+                .put(MAX_POINTS_KEY, 50)
+                .put(MAX_SUBMISSIONS_KEY, 10)));
     ExerciseGroup group = ExerciseGroup.fromJsonObject(json, mock(Points.class));
 
     Assert.assertEquals("The exercise group has the same name as in the JSON object",
@@ -64,8 +70,10 @@ public class ExerciseGroupTest {
     JSONObject json = new JSONObject()
         .put(EXERCISES_KEY, new JSONArray()
             .put(new JSONObject()
-                .put("id", 0)
-                .put(NAME_KEY, "e")));
+                .put(ID_KEY, 0)
+                .put(NAME_KEY, "e")
+                .put(MAX_POINTS_KEY, 45)
+                .put(MAX_SUBMISSIONS_KEY, 9)));
     ExerciseGroup.fromJsonObject(json, mock(Points.class));
   }
 
@@ -78,7 +86,9 @@ public class ExerciseGroupTest {
           .put(EXERCISES_KEY, new JSONArray()
               .put(new JSONObject()
                   .put("id", i)
-                  .put(NAME_KEY, "exericse in group " + i)));
+                  .put(NAME_KEY, "exercise in group " + i)
+                  .put(MAX_POINTS_KEY, 30)
+                  .put(MAX_SUBMISSIONS_KEY, 8)));
       array.put(json);
     }
     List<ExerciseGroup> exerciseGroups = ExerciseGroup.fromJsonArray(array, mock(Points.class));

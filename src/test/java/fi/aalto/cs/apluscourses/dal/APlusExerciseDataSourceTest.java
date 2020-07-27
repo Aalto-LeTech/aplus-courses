@@ -29,6 +29,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,7 +77,7 @@ public class APlusExerciseDataSourceTest {
     doReturn(response).when(client).fetch("https://example.com/exercises/55/", authentication);
     doReturn(submissionInfo).when(parser).parseSubmissionInfo(response);
 
-    Exercise exercise = new Exercise(55, "myex");
+    Exercise exercise = new Exercise(55, "myex", Collections.emptyList(), 0, 0, 0);
 
     assertSame(submissionInfo, exerciseDataSource.getSubmissionInfo(exercise));
   }
@@ -90,7 +91,7 @@ public class APlusExerciseDataSourceTest {
         .fetch("https://example.com/exercises/43/submissions/me/", authentication);
     doReturn(submissionHistory).when(parser).parseSubmissionHistory(response);
 
-    Exercise exercise = new Exercise(43, "someex");
+    Exercise exercise = new Exercise(43, "someex", Collections.emptyList(), 0, 0, 0);
 
     assertSame(submissionHistory, exerciseDataSource.getSubmissionHistory(exercise));
   }
@@ -165,7 +166,7 @@ public class APlusExerciseDataSourceTest {
     SubmissionInfo submissionInfo =
         new SubmissionInfo(1, new SubmittableFile[] { subFile0, subFile1 });
 
-    Exercise exercise = new Exercise(71, "newex");
+    Exercise exercise = new Exercise(71, "newex", Collections.emptyList(), 0, 0, 0);
 
     Group group = new Group(435, new ArrayList<>());
 
