@@ -1,350 +1,350 @@
-## Manual testing ##
+Manual testing
+==============
 
-[The complete list](https://github.com/Aalto-LeTech/intellij-plugin/labels/manual%20testing) of features that require writing
-a manual testing manual. Marked with a github issue label "manual testing".
+[The complete list](https://github.com/Aalto-LeTech/intellij-plugin/labels/manual%20testing)
+of features that require writing a manual testing manual.
+Marked with a github issue label "manual testing."
 
+### Notes
 
-<details>
-  <summary>
-    <a href="https://github.com/Aalto-LeTech/intellij-plugin/issues/9">making hints on missing plugins #9</a>
-  </summary>
-  <div>
-    <h5>Part 1. Checking missing plugins</h5>
-    <ol>
-      <li>Ensure "Scala" plugin is not installed <b>(File | Settings | Plugins | Marketplace)</b></li>
-      <li>Restart an IDE</li>
-      <li>Observe a notification saying
-        <br/>
-        <i>
-        "A+
-        The additional plugin(s) must be installed and enabled for the A+ plugin to work properly (Scala).
-        <br/>
-        <a href="">Install missing (Scala) plugin(s).</a>"
-       </i>
-      </li>
-      <li>Click on the highlighted part of the notification, approve restart of the IDE</li>
-      <li>After the restart is done, ensure there is no notification anymore</li>
-    </ol>
-  </div>
-  <div>
-    <h5>Part 2. Checking disabled plugins</h5>
-    <ol>
-      <li>Ensure 'Scala' plugin is installed and disabled
-        <img src="images/%239_disable_plugin.png" alt="Ensure 'Scala' plugin is installed and disabled">
-      </li>
-      <li>Restart an IDE</li>
-      <li>Observe a notification
-        <img src="images/%239_enable_plugins_notification.png" alt="Observe a notification">
-      </li>
-      <li>Click on the highlighted part of the notification</li>
-      <li>Check the notification became inactive
-        <img src="images/%239_notification_inactive.png" alt="Check the notification became inactive">
-      </li>
-      <li>After the restart is done, ensure there is no notification anymore</li>
-    </ol>  
-  </div>
-</details>
-<details>
-  <summary>
-    <a href="https://github.com/Aalto-LeTech/intellij-plugin/issues/44">add new startup notification saying the plugin is in beta/dev #44</a>
-  </summary>
-  <div>
-    <h5>Checking the notification regard the current A+ Course plugin version</h5>
-    <ol>
-      <li>Ensure "A+ Course" plugin is installed <b>(File | Settings | Plugins | Installed)</b> and check the plugin version from the plugin window or <a href="https://plugins.jetbrains.com/plugin/13634-a-plugin-for-intellij/versions">online.</a></li>
-      <li>Restart an IDE</li>
-      <li>Observe a notification saying and ensure the version matches the one shown for the plugin.
-        <br/>
-        <i>
-          "A+ Courses plugin is under development: You are using version <b>0.1.0</b> of A+ Courses plugin, which is a pre-release version of the plugin and still under development. Some features of this plugin are still probably missing, and the plugin is not yet tested thoroughly. Use this plugin with caution and on your own risk!
-       </i>
-      </li>
-      <li>The notification should remain after the restart is done.</li>
-    </ol>
-  </div>
-</details>
-<details>
-  <summary>
-    <a href="https://github.com/Aalto-LeTech/intellij-plugin/issues/30">install required
-    dependencies for the project from LOCAL #30</a>
-  </summary>
-  <div>
-    <h5>Part 1. Importing a module by double-clicking it</h5>
-    <ol>
-      <li>Create a new project.</li>
-      <li>
-        Open the <em>Modules</em> tool window (if it is not open). <sub>You may have to wait a
-        few seconds for the list of modules to be initialized. If the initialization takes more
-        than 10&nbsp;seconds, consider it an error.</sub>
-      </li>
-      <li>Select <em>GoodStuff</em> from the list and double click it.</li>
-      <li>
-        Ensure that <em>GoodStuff</em> and <em>O1Library</em> appear as loaded modules in the
-        project tree, and their contents match the image below:<br/>
-        <img src="images/30_module_loaded.png" alt="GoodStuff and O1Library contents" />
-      </li>
-      <li>
-        Ensure that <em>GoodStuff</em> and <em>O1Library</em> are marked <em>Installed</em> in the
-        <em>Modules</em> tool window.
-      </li>
-      <li>
-        From <i>File</i> menu, open <i>Project Structure...</i> and navigate to <i>Modules</i> page
-        (under <i>Project Settings</i>).  Ensure that <em>GoodStuff</em> and <em>O1Library</em> are
-        listed there and neither of them is marked red (signaling missing dependencies).
-      </li>
-    </ol>
-  </div>
-  <div>
-    <h5>Part 2. Importing a module using context menu.</h5>
-    <ol>
-      <li>
-        Continuing from <strong>Part 1</strong>, right-click a non-installed module of your choice
-        in the <em>Modules</em> tool window. <sub>On Mac with only one mouse button, you may need
-        to use some other gesture to open a context menu, like holding <em>Ctrl</em> key while
-        clicking. Use the way that is standard to the system.</sub>
-      </li>
-      <li>Ensure that a pop-up menu appears next to the mouse pointer.</li>
-      <li>Click <em>Import A+ Module</em> menu item.</li>
-      <li>
-        Ensure that the module appears in the project tree. <sub>If module has dependencies, those
-        are imported too. If other modules appear in the project tree in this step, you can assume
-        they are dependencies of the module you chose and ignore them.</sub>
-      </li>
-      <li>
-        Ensure that the module is marked <em>Installed</em> in the <em>Modules</em> tool window.
-      </li>
-    </ol>
-  </div>
-  <div>
-    <h5>Part 3. Importing multiple modules using toolbar button.</h5>
-    <ol>
-      <li>
-        Continuing from <strong>Part 2</strong>, select multiple non-installed modules in the
-        <em>Modules</em> tool window by clicking them while holding <em>Ctrl</em> key.
-        <sub>Again, Mac may do things differently, so use the way to select multiple items that is
-        standard to the system.</sub>
-      </li>
-      <li>
-        Click <em>Import A+ Module</em> toolbar button on the top of the <em>Modules</em> tool
-        window. <sub>The button is denoted with a "download" icon.</sub>
-      </li>
-      <li>
-        Ensure that the selected modules appear in the project tree. <sub>Again, in case other
-        modules appear there as well, assume they are appropriate dependencies and ignore them.
-        </sub>
-      </li>
-      <li>
-        Ensure that the modules you selected are marked <em>Installed</em> in the <em>Modules</em>
-        tool window.
-      </li>
-    </ol>
-  </div>
-</details>
-<details>
-  <summary>
-    <a href="https://github.com/Aalto-LeTech/intellij-plugin/issues/92">implement REPL thingy #92</a>
-  </summary>
-  <div>
-    <h5>Part 1. Importing a module</h5>
-    <ol>
-      <li>Create a new project.</li>
-      <li>
-        Open the <em>Modules</em> tool window (if it is not open). <sub>You may have to wait a
-        few seconds for the list of modules to be initialized. If the initialization takes more
-        than 10&nbsp;seconds, consider it an error.</sub>
-      </li>
-      <li>Select <em>GoodStuff</em> from the list and double click it to install the module.</li>
-    </ol>
-  </div>
-  <div>
-      <h5>Part 2. Verifying the REPL</h5>
-      <ol>
-        <li>Ensure Scala Plugin is installed and enabled</li>
-        <li>Ensure Scala SDK is set properly <b>(File | Project Structure | Global Libraries | Add | Scala SDK)</b></li>
-        <li>Open REPL by choosing a folder or a file within <em>GoodStuff</em> module <a href="https://confluence.jetbrains.com/pages/viewpage.action?pageId=53326891">(how-to)</a></li>
-        <div>
-          <h6>Part 2.1. REPL configuration dialog is shown, checkbox unchecked</h6>
-            <ol>
-            <li>When the REPL configuration dialog, that looks like the following image is shown, uncheck the "Don't show this window again" checkbox, click <em>OK</em>.<img src="images/%2392_REPL_configuration_dialog_initial.png" alt="REPL dialog" /></li>
-            <li>Ensure the REPL that looks like the next one is shown. <img src="images/%2366_scala_REPL_workDir_and_classPath.png" alt="REPL" style="max-width: 50;max-width: 56% !important;"/></li>
-            <li>Close the REPL and start it again.</li>
-            <li>Ensure the REPL configuration dialog is shown, click "Cancel".</li>
-            </ol>
-        </div>
-        <div>
-          <h6>Part 2.2. REPL configuration dialog is shown, checkbox unchecked, valid changes</h6>
-            <ol>
-            <li>When the REPL configuration dialog, that looks like previous image is shown, uncheck the "Don't show this window again" checkbox.</li>
-            <li>Under "User classpath and SDK of module" change the module to be <em>"O1Library"</em>, also select <em>"O1Library"</em>'s files source as a "Working directory", click <em>OK</em>.</li>
-            <li>Ensure the REPL that looks like like the next one is shown, then close REPL. <img src="images/%2392_changed_module.png" alt="REPL" /></li>             
-            </ol>
-        </div> 
-        <div>
-          <h6>Part 2.3. REPL configuration dialog is shown, checkbox unchecked, invalid changes</h6>
-            <ol>
-            <li>When the REPL configuration dialog, that looks like previous image is shown, uncheck the "Don't show this window again" checkbox.</li>
-            <li>Under "User classpath and SDK of module" change the module to be <em>"O1Library"</em>, also select <em>"GoodStuff"</em>'s files source as a "Working directory", click <em>OK</em>.</li>
-            <li>Ensure the REPL that looks like the next image is shown, close the REPL.<img src="images/%2392_mixed_case_changed.png" alt="REPL" /></li>
-            </ol>
-        </div>
-        <div>              
-          <h6>Part 2.4. REPL configuration dialog is cancelled</h6>
-          <ol>
-          <li>Click <em>Cancel</em> when the REPL configuration dialog is shown and observe nothing happens.</li>
-          </ol>
-         </div>               
-        <div>
-          <h6>Part 2.5. REPL configuration dialog is shown, checkbox checked</h6>
-          <ol>
-          <li>Click <em>OK</em> when the REPL configuration dialog, that looks like the one displayed is shown.</li>
-          <li>Ensure proper REPL is started.</li>
-          <li>Close the REPL and start it again.</li>
-          <li>Ensure the no REPL configuration dialog is shown.</li>
-          </ol>
-        </div>
-        <h6>After each sub-part (2.x)</h6>
-        <li>When the console opens, check, that the name of the REPL contains the name of the <em>GoodStuff</em> (selected module or "&lt;?&gt;")</li>
-        <li>Next, type into the REPL prompt: <i>sys.props("user.dir")</i>
-        </li>
-        <li>Make sure, that the output directory is where the <em>GoodStuff</em> (selected) module resides</li>
-        <li>Next, type into the REPL prompt: <i>sys.props("java.class.path")</i></li>
-        <li>Make sure, that the output classpath contains the <em>GoodStuff</em> (selected) module, the complete result should look approximately like this:
-        <img src="images/%2366_scala_REPL_workDir_and_classPath.png" alt="REPL" /><br/>
-        </li>
-      </ol>
-    </div>
-</details>
-<details>
-  <summary>
-    <a href="https://github.com/Aalto-LeTech/intellij-plugin/issues/86">turn project into "A+ O1" project" feature #86</a>
-  </summary>
-  <div>
-    <h5>Creating a Course Project</h5>
-    <ol>
-      <li>Start the IDE and observe that the "Modules" tool window is empty (no course loaded).</li>
-      <li>From the A+ menu at the top, select "Turn Project into A+ Course Project</li>
-      <li>
-        An information dialog should appear notifying that the plugin will adjust IntelliJ
-        IDEA settings. Check the opt out check box.
-      </li>
-      <li>Observe that the project gets reloaded (may appear as a quick "flash").</li>
-      <li>The "Modules" tool window should now have a list of O1 modules.</li>
-      <li>
-        The .idea directory should contain O1 project settings (for an example scala_settings.xml).
-      </li>
-      <li>
-        Run the "Turn Project into A+ Course Project" action again, this time not opting out of the
-        IDE settings adjustments.
-      </li>
-      <li>The plugin should prompt you to restart the plugin, do so.</li>
-      <li>The IDE should now have the dark theme from the O1 IDE settings.</li>
-      <li>
-        When the project gets opened, the plugin should recognize that the project is a O1 project
-        and update the "Modules" tool window with O1 modules. 
-      </li>
-      <li>
-        Using the "Turn Project Into A+ Course Project" action without a working internet connection
-        should result in an error message.
-      </li>
-      <li>
-        Using the "Turn Project Into A+ Course Project" action again should not import the already
-        imported IDE settings again.
-      </li>
-    </ol>
-  </div>
-</details>
-<details>
-  <summary>
-    <a href="https://github.com/Aalto-LeTech/intellij-plugin/issues/110">Renaming/removing module files leads to incorrect states in module list #110</a>
-  </summary>
-  <div>
-    <h5>Part 1. Removing a module</h5>
-    <ol>
-      <li>Create a new project and import <i>GoodStuff</i> module.</li>
-      <li>Right click the <i>O1Library</i> from the project tree and choose <i>Remove Module</i> from the popup menu.</li>
-      <li>Choose <i>Remove</i> from the popup window.</li>
-      <li>Ensure that <i>O1Library</i> is marked not installed in the modules list.</li>
-      <li>Ensure that <i>GoodStuff</i> is marked "error in dependencies" in the modules list.</li>
-    </ol>
-  </div>
-  <div>
-    <h5>Part 2. Reinstalling a module</h5>
-    <ol>
-      <li>Continuing from Part 1, double-click <i>O1Library</i> in the modules list to re-install it.</li>
-      <li>Ensure that <i>O1Library</i> shows loaded as a module in the project tree (it has the blue square symbol).</li>
-      <li>Ensure that <i>O1Library</i> and <i>GoodStuff</i> are marked installed in the modules list.</li>
-    </ol>
-  </div>
-  <div>
-    <h5>Part 3. Removing and reinstalling Scala SDK</h5>
-    <ol>
-      <li>Continuing from Part 3, delete the directory of Scala SDK inside the <code>lib</code> directory.</li>
-      <li>Ensure that <i>O1Library</i> and <i>GoodStuff</i> are marked "error in dependencies" in the modules list.</li>
-      <li>Double-click <i>O1Library</i> in the modules list to re-install it.</li>
-      <li>Ensure that <i>O1Library</i> and <i>GoodStuff</i> are marked installed in the modules list.</li>
-    </ol>
-  </div>
-</details>
-<details>
-  <summary>
-    <a href="https://github.com/Aalto-LeTech/intellij-plugin/issues/93">reset to "A+" settings #93</a>
-  </summary>
-  <div>
-    <h5>Resetting A+ Courses Settings</h5>
-    <ol>
-      <li>Start the REPL for a module and check the "Don't show this window again" checkbox.</li>
-      <li>Start the REPL for a module again and ensure that the window isn't shown again.</li>
-      <li>From the A+ menu at the top, select "Reset A+ Courses Plugin Settings".</li>
-      <li>Start the REPL for a module again and observe that the window is shown again.</li>
-    </ol>
-  </div>
-</details>
-<details>
-  <summary>
-    <a href="https://github.com/Aalto-LeTech/intellij-plugin/issues/130">
-      Add AUTO_SHOW_ERRORS_IN_EDITOR="false" to workspace.xml when project settings are imported #130
-    </a>
-  </summary>
-  <div>
-    <h5>Importing project settings</h5>
-    <ol>
-      <li>Use the "Turn Project Into A+ Course Project" menu item to import project settings.</li>
-      <li>Open the file <code>.idea/workspace.xml</code>.</li>
-      <li>
-        Ensure that it contains the following:
-        <pre>
-&lt;component name="CompilerWorkspaceConfiguration">
-  &lt;option name="AUTO_SHOW_ERRORS_IN_EDITOR" value="false" />
-&lt;/component></pre>
-      </li>
-      <li>Use the "Turn Project Into A+ Course Project" menu item again.</li>
-      <li>
-        If <code>workspace.xml</code> now contains option entry multiple times, save the
-        <code>workspace.xml</code> file and ensure that the duplicate gets removed.
-      </li>
-    </ol>
-  </div>
-</details>
-<details>
-  <summary>
-    <a href="https://github.com/Aalto-LeTech/intellij-plugin/issues/182">
-      Cancelling IDE settings import does not work #182
-    </a>
-  </summary>
-  <div>
-    <h5>Course Project Action Dialog</h5>
-    <ol>
-      <li>From the A+ menu select "Turn Project Into A+ Course Project".</li>
-      <li>Observe that the dialog mentions the course name "O1".</li>
-      <li>Observe that by default the restart checkbox is checked and the opt out checkbox isn't.</li>
-      <li>Observe that checking the opt out checkbox disables the restart checkbox.</li>
-      <li>Select "Cancel" and observe that nothing has changed in the project.</li>
-      <li>Select "Turn Project Into A+ Course Project" again.</li>
-      <li>Select "OK" with the default selections and observe that the IDE restarts.</li>
-      <li>Select "Turn Project Into A+ Course Project" again.</li>
-      <li>Observe that the dialog mentions that IDE settings are already imported for O1.</li>
-      <li>Observe that the restart checkbox is unchecked and not enabled.</li>
-      <li>Observe that the opt out checkbox is checked and not enabled.</li>
-    </ol>
-  </div>
-</details>
++ The menus of IntelliJ are bit different on Mac than on Linux/Windows.
+  For example, to open settings on Linux, one can navigate to **File > Settings...**
+  but on Mac, the same thing is achieved with **IntelliJ IDEA > Preferences...**.
+
++ Similarly, on Mac one does not use right-click
+  but, instead, clicks holding **Ctrl** key down.
+
+### 0 Setup
+
+**0.1** Make sure you are using a clean installment of
+        **IntelliJ IDEA Community** version **2020.1**.
+- You can download IntelliJ IDEA Community from https://www.jetbrains.com/idea/download.
+- In case you use pre-existing installment of IntelliJ IDEA,
+  you can use one of the following ways to restore to the default settings:
+
+**0.1.A.** In the main window, choose **File > Manage IDE Settings > Restore Default Settings...**
+- In the popup window, choose **Restore and restart**.
+
+**0.1.B** In the startup window, choose **Configure > Restore Default Settings...**
+- In the popup window, choose **Restore and restart**.
+
+**0.2** When the IntelliJ IDEA opens first time, choose **Light** UI theme and
+        click **Skip Remaining and Set Defaults**.
+
+**0.3** Remove installed external plugins, if there are any.
+- In the startup window, choose **Configure > Plugins** and open **Installed** tab.
+- If there are **Downloaded** plugins on the top of the list,
+  uninstall all of them, one by one.
+- Restart IntelliJ IDEA.
+
+### 1 Install **A+ Courses** plugin.
+
+**1.1** In the startup window, choose **Configure > Plugins**.
+
+**1.2** Do one of the following options, depending on whether you are testing
+        a pre-publish version of the plugin or a published version.
+
+**1.2.A** Install a pre-publish version.
+- If you don't have a ZIP file yet, you can generate it.
+  To get the source code, execute
+
+      git clone https://github.com/Aalto-LeTech/intellij-plugin.git
+
+  and navigate to the cloned directory.
+  Checkout the branch/tag/commit you want to test, and execute
+ 
+      ./gradlew buildPlugin
+  
+  Once the build is ready,
+  the generated ZIP file can be found in `build/distributions`.
+- In **Plugins** window, click the cog icon next to the tabs.
+- From a popup menu, choose **Install Plugin from Disk...**
+- Select the ZIP file on the popped-up file selector.
+
+**1.2.B** Install a published version.
+- Open **Marketplace** tab and search **A+ Courses** plugin.
+- Ensure that the version is the one you want to test.
+- Click **Install**.
+
+**1.3** Exit **Plugins** window by clicking **OK**.
+
+**1.4** ASSERTION: IntelliJ IDEA does not request a restart.
+
+### 2 Initialize a new project
+
+**2.1** In the startup window, click **Create New Project**.
+
+**2.2** In **New Project** window, choose **Empty Project** on a left-hand side list.
+
+**2.3** Click **Next**.
+
+**2.4** On the next view, click **Finish**.
+
+**2.5** If **Tip of the Day** window is shown,
+        check **Don't show tips** and click **Close**. 
+
+**2.6** ASSERTION: **Project Structure** window opens with **Modules** tab visible.
+
+**2.7** Switch to **Project** tab.
+
+**2.8** ASSERTION: **Project SDK** reads **\<No SDK\>**.
+
+**2.9** Choose JDK 11 as **Project SDK**.
+- If JDK 11 is not installed on the computer,
+  choose **Add SDK > Download JDK...**
+- On the window that opens,
+  choose **AdoptOpenJDK (HotSpot)** as **Vendor**
+  and **11.x.x** as **Version**,
+  and click **Download**.
+
+**2.10** Click **OK** to close **Project Structure** window.
+
+### 3 Observe startup notification
+
+**3.1** ASSERTION: The screen shows a notification telling
+        you are using a pre-release version of the plugin.
+
+**3.2** ASSERTION: The version mentioned in the notification is correct.
+
+![Version notification](images/version-notification.png)
+
+- You can check the version of the plugin in **File > Settings... > Plugins > Installed**
+
+### 4 Observe Scala plugin notification
+
+**4.1** ASSERTION: The screen shows a notification telling the Scala plugin is not installed.
+- The notification has a clickable option to install Scala plugin.
+
+**4.2** Click the highlighted part of the notification.
+
+**4.3** The screen shows a dialog asking if the user wants to restart to apply changes.
+        Click **Yes**.
+
+**4.4** The IDE restarts.
+
+**4.6** ASSERTION: No notification about Scala plugin is shown anymore.
+
+**4.5** ASSERTION: Scala plugin is installed.
+- Navigate to **File > Settings... > Plugins > Installed** to see this. 
+
+**4.7** Disable Scala plugin.
+
+**4.8** Restart the IDE.
+
+**4.9** ASSERTION: The screen shows a notification telling the Scala plugin is disabled.
+
+- The notification has a clickable option to enable Scala plugin.
+
+**4.10** Click the highlighted part of the notification.
+
+**4.11** The screen shows a dialog asking if the user wants to restart to apply changes.
+        Click **Yes**.
+
+**4.12** The IDE restarts.
+
+**4.13** ASSERTION: No notification about Scala plugin is shown anymore.
+
+**4.14** ASSERTION: Scala plugin is enabled.
+- Navigate to **File > Settings... > Plugins > Installed** to see this.
+
+### 5 About window
+
+**5.1** From the main menu, choose **A+ > About A+ Plugin**.
+
+**5.2** The about window is shown.
+
+**5.3** Close the window by clicking **OK**.
+
+### 6 Turn project into A+ project
+
+**6.1** From the main menu, choose **A+ > Turn project into A+ course project**.
+
+**6.2** On the dialog that opens, click **Cancel**.
+
+**6.3** ASSERTION: The dialog closes but nothing else seems to happen.
+
+**6.4** Open **A+ > Turn project into A+ course project** again.
+
+**6.5** ASSERTION: **Leave IntelliJ settings unchanged** checkbutton is not checked.
+
+**6.6** Check "leave unchanged" checkbox and click OK.
+
+**6.7** ASSERTION: **O1Library** appears as a module in the project tree.
+
+**6.8** ASSERTION: **A+ Courses** tool window shows a list of O1 modules in **Modules** list.
+
+**6.9** ASSERTION: **O1Library** is marked **Installed** in **Modules** list.
+
+**6.10** Once again, navigate to **A+ > Turn project into A+ course project**.
+
+**6.11** Leave the checkbox unchecked and click **OK**.
+
+**6.12** The screen shows a dialog that tells the IDE will be restarted.
+
+**6.13** Click **OK**.
+
+**6.14** The IDE restarts.
+
+**6.15** ASSERTION: The theme has changed to dark.
+
+### 7 Importing modules
+
+**7.1** On **Modules** list  tool window, double-click **RobotTribes**.
+
+**7.2** ASSERTION: **RobotTribes** and **Robots** appear as modules in the project tree.
+
+**7.3** ASSERTION: **RobotTribes** and **Robots** are marked **Installed** in **Modules** list.
+
+**7.4** On **Modules** list, right-click **SwingExamples**.
+
+**7.5** On the context menu that appears, choose **Import A+ module**.
+
+**7.6** ASSERTION: **SwingExamples** appears as a module in the project tree.
+
+![Project tree](images/project-tree.png)
+
+**7.7** ASSERTION: **SwingExamples** is marked **Installed** in the modules list.
+
+**7.8** On **Modules** list, select multiple uninstalled modules.
+- Hold **Ctrl**/**Cmd** key down while clicking to select many items.
+
+**7.9** Click the button with download icon
+        on the top of the **Modules** list
+        to install all selected modules.
+
+**7.10** ASSERTION: The chosen modules appear in the project tree.
+
+**7.11** ASSERTION: The chosen modules are marked **Installed** in **Modules** list.
+
+**7.12** ASSERTION: All the installed modules have their dependencies correctly configured.
+- To check this, navigate to **File > Project Structure... > Modules**
+  and make sure none of the modules is underlined in red.
+- Exit **Project Structure** window by clicking **Cancel**.
+
+### 8 Using Scala REPL
+
+#### Part I: Basic case
+
+**8.1** Open REPL by choosing a folder or a file within **SwingExamples** module.
+- Read [this](https://confluence.jetbrains.com/pages/viewpage.action?pageId=53326891)
+  if you don't know how to open and use REPL.
+
+**8.2** In **REPL configuration** window that opens,
+        uncheck **Don't show this window again** checkbox.
+
+![REPL dialog](images/repl-dialog.png)
+
+**8.3** Click **OK**.
+
+**8.4** ASSERTION: A REPL opens with **SwingExamples** in its title.
+
+**8.5** Execute the following two commands in REPL:
+
+    sys.props("user.dir")
+    sys.props("java.class.path")
+
+**8.6** ASSERTION: The output of the first statement is the directory of **SwingExamples** module.
+
+**8.7** ASSERTION: The output of the second statement (classpath) contains **SwingExamples**.
+
+**8.8** Close the REPL by clicking X next to its tab title.
+
+**8.9** The window opens asking whether REPL should be terminated.
+        Check **Remember, don't ask again** checkbox and click **Terminate**.
+
+#### Part II: Changing parameters
+
+**8.10** Reopen REPL by choosing a folder or a file within **SwingExamples** module.
+
+**8.11** Again, uncheck **Don't show this window again** checkbox.
+
+**8.12** Change **Working directory** to be the directory of **O1Library** module.
+- Just replacing **SwingExamples** with **O1Library** in the path does the trick.
+
+**8.13** Change value for **Use classpath and SDK of module** dropdown list to be **O1Library**.
+
+**8.14** Click **OK**.
+
+**8.15** ASSERTION: A REPL opens with **O1Library** in its title.
+
+**8.16** In REPL, execute the same two commands as in **8.5**.
+
+**8.17** ASSERTION: The output of the first statement is the directory of **O1Library** module.
+
+**8.18** ASSERTION: The output of the second statement (classpath) contains **O1Library**
+         (but not other modules, such as **SwingExamples**).
+
+**8.19** Close the REPL.
+
+#### Part III: Inconsistent parameters
+
+**8.20** Reopen REPL by choosing a folder or a file within **O1Library** module.
+
+**8.21** This time, leave **Don't show this window again** checkbox checked.
+
+**8.22** Change **Working directory** to be the directory of **SwingExamples** module.
+
+**8.23** Click **OK**.
+
+**8.24** ASSERTION: A REPL opens with **O1Library** in its title.
+
+**8.25** In REPL, execute the same two commands as in **8.5**.
+
+**8.26** ASSERTION: The output of the first statement is the directory of **SwingExamples** module.
+
+**8.27** ASSERTION: The output of the second statement (classpath) contains **O1Library**
+         (but not other modules, such as **SwingExamples**).
+
+**8.28** Close the REPL.
+
+#### Part IV: Persistence of choice
+
+**8.29** Reopen REPL by choosing a folder or a file within **O1Library** module.
+
+**8.30** ASSERTION: **REPL Configuration** window does not show up.
+
+**8.31** ASSERTION: A REPL opens with **O1Library** in its title.
+
+**8.32** Execute the same two commands as in **8.5**.
+
+**8.33** ASSERTION: The output of the first statement is the directory of **O1Library** module.
+
+**8.34** ASSERTION: The output of the second statement (classpath) contains **O1Library**
+         (but not other modules, such as **SwingExamples**).
+
+**8.35** Close the REPL.
+
+**8.36** Restart te IDE.
+
+**8.37** Once the IDE has restarted, open the REPL by choosing any file.
+
+**8.38** ASSERTION: **REPL Configuration** window does not show up.
+
+**8.39** ASSERTION: A REPL opens.
+
+**8.40** Close the REPL.
+
+#### Part V: Settings reset.
+
+**8.41** From the main menu, choose **A+ > Reset A+ Courses Plugin Settings**.
+
+**8.42** Open REPL by choosing any file.
+
+**8.43** ASSERTION: **REPL Configuration** window shows up.
+
+**8.44** Close the window by clicking **Cancel**.
+
+**8.45** ASSERTION: No REPL opens.
+
+### 9 Removing a module
+
+**9.1** Right-click **SwingExamples** in the project tree
+        and choose **Remove Module** from the context menu.
+
+**9.2** Confirm the removal by clicking **Remove** on a popup window.
+
+**9.3** ASSERTION: **SwingExamples** no longer shows **Installed** in **Modules** list.
+
+**9.4** Double click **SwingExamples** in **Modules** list.
+
+**9.5** ASSERTION: **SwingExamples** shows up as a module in the project tree.
