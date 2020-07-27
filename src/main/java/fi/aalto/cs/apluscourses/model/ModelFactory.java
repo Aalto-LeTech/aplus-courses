@@ -11,6 +11,7 @@ public interface ModelFactory {
                       @NotNull String name,
                       @NotNull List<Module> modules,
                       @NotNull List<Library> libraries,
+                      @NotNull Map<Long, Map<String, String>> exerciseModules,
                       @NotNull Map<String, String> requiredPlugins,
                       @NotNull Map<String, URL> resourceUrls,
                       @NotNull List<String> autoInstallComponentNames,

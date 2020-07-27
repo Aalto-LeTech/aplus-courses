@@ -3,14 +3,15 @@ package fi.aalto.cs.apluscourses.intellij.model;
 import com.intellij.openapi.roots.libraries.LibraryProperties;
 import com.intellij.openapi.roots.libraries.PersistentLibraryKind;
 import com.intellij.openapi.util.io.FileUtilRt;
+import com.intellij.openapi.vfs.VfsUtil;
 import fi.aalto.cs.apluscourses.utils.DirAwareZipFile;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Stream;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.CalledWithWriteLock;
@@ -28,9 +29,6 @@ public class ScalaSdk extends IntelliJLibrary<PersistentLibraryKind<ScalaLibrary
       "scala-library.jar",
       "scala-reflect.jar"
   };
-
-  // Sonar, unjustifiably, hates reference-typed volatile fields
-  private volatile String[] allClasses = null; //NOSONAR
 
   private final String scalaVersion;
 
@@ -80,22 +78,26 @@ public class ScalaSdk extends IntelliJLibrary<PersistentLibraryKind<ScalaLibrary
 
   @Override
   protected String[] getUris() {
-    return getUris(CLASSES);
+    return getUris(CLASSES, path -> VfsUtil.getUrlForLibraryRoot(path.toFile()));
   }
 
   /**
-   * Method to filter out SDK library root URIs.
+   * Method to filter out SDK library root URLs.
    *
-   * @param roots an array of {@link String} to filter.
+   * @param roots      An array of {@link String} to filter.
+   * @param pathToUri  A mapper that creates a URI string from a {@link Path}.
    * @return filtered array of root {@link String}s.
    */
-  public String[] getUris(@NotNull String[] roots) {
+  public String[] getUris(@NotNull String[] roots, Function<Path, String> pathToUri) {
     return Arrays.stream(roots)
         .filter(string -> !string.isEmpty())
         .map(getFullPath()::resolve)
-        .map(Path::toUri)
-        .map(URI::toString)
+        .map(pathToUri)
         .toArray(String[]::new);
+  }
+
+  public String[] getUris(@NotNull String[] roots) {
+    return getUris(roots, path -> path.toUri().toString());
   }
 
   @Override
@@ -116,7 +118,8 @@ public class ScalaSdk extends IntelliJLibrary<PersistentLibraryKind<ScalaLibrary
   public void initializeLibraryProperties(
       LibraryProperties<ScalaLibraryPropertiesState> properties) {
     properties.loadState(new ScalaLibraryPropertiesState(
-        ScalaLanguageLevel.findByVersion(scalaVersion).get(), getUris(getJarFiles())));
+        ScalaLanguageLevel.findByVersion(scalaVersion).get(),
+        getUris(getJarFiles())));
   }
 
 }

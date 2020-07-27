@@ -6,8 +6,8 @@ import com.intellij.openapi.startup.StartupActivity.Background;
 import fi.aalto.cs.apluscourses.intellij.actions.ActionUtil;
 import fi.aalto.cs.apluscourses.intellij.actions.RequiredPluginsCheckerAction;
 import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory;
-import fi.aalto.cs.apluscourses.intellij.notifications.ClientIoError;
 import fi.aalto.cs.apluscourses.intellij.notifications.CourseConfigurationError;
+import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.intellij.utils.CourseFileManager;
@@ -41,7 +41,7 @@ public class InitializationActivity implements Background {
   @Override
   public void runActivity(@NotNull Project project) {
     PluginSettings pluginSettings = PluginSettings.getInstance();
-    pluginSettings.initializeLocalSettings();
+    pluginSettings.initializeLocalIdeSettings();
     pluginSettings
         .ignoreFileInProjectView(PluginSettings.MODULE_REPL_INITIAL_COMMANDS_FILE_NAME, project);
 
@@ -58,12 +58,16 @@ public class InitializationActivity implements Background {
       return;
     } catch (IOException e) {
       logger.info("IOException occurred while using the HTTP client", e);
-      notifier.notify(new ClientIoError(e), null);
+      notifier.notify(new NetworkErrorNotification(e), null);
       return;
     }
     pluginSettings.createUpdatingMainViewModel(project);
     ActionUtil.launch(RequiredPluginsCheckerAction.ACTION_ID,
         new ExtendedDataContext().withProject(project));
+
+    if (PluginSettings.getInstance().isAPlusProjectSetting(project)) {
+      PluginSettings.getInstance().startRegularSubmissionResultsPolling(project);
+    }
   }
 
   @Nullable

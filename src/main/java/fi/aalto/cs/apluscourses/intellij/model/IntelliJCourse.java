@@ -42,18 +42,27 @@ class IntelliJCourse extends Course {
                         @NotNull String name,
                         @NotNull List<Module> modules,
                         @NotNull List<Library> libraries,
+                        @NotNull Map<Long, Map<String, String>> exerciseModules,
                         @NotNull Map<String, String> requiredPlugins,
                         @NotNull Map<String, URL> resourceUrls,
                         @NotNull List<String> autoInstallComponentNames,
                         @NotNull Map<String, String[]> replInitialCommands,
                         @NotNull APlusProject project,
                         @NotNull CommonLibraryProvider commonLibraryProvider) {
-    super(id, name, modules, libraries, requiredPlugins, resourceUrls, autoInstallComponentNames,
+    super(
+        id,
+        name,
+        modules,
+        libraries,
+        exerciseModules,
+        requiredPlugins,
+        resourceUrls,
+        autoInstallComponentNames,
         replInitialCommands);
 
     this.project = project;
     this.commonLibraryProvider = commonLibraryProvider;
-    platformListener = new PlatformListener();
+    this.platformListener = new PlatformListener();
   }
 
   @NotNull

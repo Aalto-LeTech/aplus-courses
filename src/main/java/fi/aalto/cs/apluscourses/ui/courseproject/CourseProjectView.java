@@ -4,9 +4,9 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import fi.aalto.cs.apluscourses.presentation.CourseProjectViewModel;
-import fi.aalto.cs.apluscourses.ui.CheckBox;
 import fi.aalto.cs.apluscourses.ui.GuiObject;
-import fi.aalto.cs.apluscourses.ui.TemplateLabel;
+import fi.aalto.cs.apluscourses.ui.base.CheckBox;
+import fi.aalto.cs.apluscourses.ui.base.TemplateLabel;
 import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -24,8 +24,6 @@ public class CourseProjectView extends DialogWrapper {
   @GuiObject
   private JLabel settingsInfoText;
   @GuiObject
-  private CheckBox restartCheckBox;
-  @GuiObject
   private CheckBox settingsOptOutCheckbox;
   @GuiObject
   private JLabel warningText;
@@ -40,9 +38,6 @@ public class CourseProjectView extends DialogWrapper {
     init();
 
     infoText.setIcon(Messages.getInformationIcon());
-
-    restartCheckBox.isCheckedBindable.bindToSource(viewModel.restartProperty);
-    restartCheckBox.isEnabledBindable.bindToSource(viewModel.isRestartAvailableProperty);
 
     settingsOptOutCheckbox.isCheckedBindable.bindToSource(viewModel.settingsOptOutProperty);
 

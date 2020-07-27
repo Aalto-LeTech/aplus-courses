@@ -13,7 +13,24 @@ public class ObservableReadWriteProperty<T> extends ObservableProperty<T> {
    * @param initialValue Initial value of this {@link ObservableReadWriteProperty}
    */
   public ObservableReadWriteProperty(@Nullable T initialValue) {
+    this(initialValue, null);
+  }
+
+  public ObservableReadWriteProperty(@Nullable T initialValue, @Nullable Validator<T> validator) {
+    super(validator);
     value = initialValue;
+  }
+
+  /**
+   * Sets a new value to the property.
+   *
+   * @param newValue The new value to be set.
+   * @return True, if new value was different than the old value, otherwise false.
+   */
+  protected synchronized boolean setInternal(T newValue) {
+    boolean changed = !Objects.equals(value, newValue);
+    value = newValue;
+    return changed;
   }
 
   /**
@@ -25,9 +42,7 @@ public class ObservableReadWriteProperty<T> extends ObservableProperty<T> {
    */
   @Override
   public synchronized void set(T newValue) {
-    boolean changed = !Objects.equals(value, newValue);
-    value = newValue;
-    if (changed) {
+    if (setInternal(newValue)) {
       onValueChanged(newValue);
     }
   }

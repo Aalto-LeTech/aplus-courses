@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.utils.observable;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.WeakHashMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -10,7 +11,17 @@ import org.jetbrains.annotations.Nullable;
  * @param <T> Type of the property's value.
  */
 public abstract class ObservableProperty<T> {
-  protected final Map<Object, Callback<?, T>> observers = new WeakHashMap<>();
+  private final Map<Object, Callback<?, T>> observers = new WeakHashMap<>();
+  @NotNull
+  private final Validator<T> validator;
+
+  public ObservableProperty() {
+    this(null);
+  }
+
+  public ObservableProperty(@Nullable Validator<T> validator) {
+    this.validator = Optional.ofNullable(validator).orElse(whatever -> null);
+  }
 
   /**
    * Add a new observer and calls its {@code valueChanged} method.
@@ -38,6 +49,10 @@ public abstract class ObservableProperty<T> {
     callback.valueChanged(observer, get());
   }
 
+  public <O> void addValueObserver(@NotNull O observer, @NotNull SimpleCallback<O> callback) {
+    addValueObserver(observer, new CallbackWrapper<>(callback));
+  }
+
   public void declareDependentOn(@NotNull ObservableProperty<?> property) {
     property.addValueObserver(this, (self, dummy) -> self.onValueChanged(self.get()));
   }
@@ -49,14 +64,18 @@ public abstract class ObservableProperty<T> {
     throw new UnsupportedOperationException();
   }
 
-  public synchronized void removeValueObserver(Object observer) {
-    observers.remove(observer);
-  }
-
   protected synchronized void onValueChanged(@Nullable T value) {
     for (Map.Entry<Object, Callback<?, T>> entry : observers.entrySet()) {
       entry.getValue().valueChangedUntyped(entry.getKey(), value);
     }
+  }
+
+  public synchronized void removeValueObserver(Object observer) {
+    observers.remove(observer);
+  }
+
+  public ValidationError validate() {
+    return validator.validate(get());
   }
 
   public interface Callback<O, T> {
@@ -66,5 +85,30 @@ public abstract class ObservableProperty<T> {
     default void valueChangedUntyped(@NotNull Object observer, @Nullable T value) {
       valueChanged((O) observer, value);
     }
+  }
+
+  public interface SimpleCallback<O> {
+    void valueChanged(@NotNull O observer);
+  }
+
+  private static class CallbackWrapper<O, T> implements Callback<O, T> {
+
+    @NotNull
+    private final SimpleCallback<O> callback;
+
+    public CallbackWrapper(@NotNull SimpleCallback<O> callback) {
+      this.callback = callback;
+    }
+
+    @Override
+    public void valueChanged(@NotNull O observer, @Nullable T value) {
+      callback.valueChanged(observer);
+    }
+  }
+
+  @FunctionalInterface
+  public interface Validator<T> {
+    @Nullable
+    ValidationError validate(@Nullable T value);
   }
 }

@@ -1,10 +1,5 @@
 package fi.aalto.cs.apluscourses.model;
 
-import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
-import fi.aalto.cs.apluscourses.utils.CoursesClient;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -14,7 +9,6 @@ import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 
 public class ExerciseGroup {
   @NotNull
@@ -66,22 +60,6 @@ public class ExerciseGroup {
       exerciseGroups.add(fromJsonObject(jsonArray.getJSONObject(i)));
     }
     return exerciseGroups;
-  }
-
-  /**
-   * Get all of the exercise groups in for the given course by making a request to the A+ API.
-   * @throws IOException If an IO error occurs (for an example a network issue). This is an instance
-   *                     of {@link InvalidAuthenticationException} if authentication is invalid.
-   */
-  @NotNull
-  public static List<ExerciseGroup> getCourseExerciseGroups(
-      @NotNull Course course, @NotNull APlusAuthentication authentication) throws IOException {
-    URL url = new URL(String.format("%1$s/courses/%2$s/exercises/",
-        PluginSettings.A_PLUS_API_BASE_URL, course.getId()));
-    InputStream inputStream = CoursesClient.fetch(url, authentication::addToRequest);
-    JSONObject response = new JSONObject(new JSONTokener(inputStream));
-    JSONArray results = response.getJSONArray("results");
-    return fromJsonArray(results);
   }
 
   public String getName() {

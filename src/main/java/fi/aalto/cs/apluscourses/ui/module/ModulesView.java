@@ -26,7 +26,7 @@ public class ModulesView {
     //
     // If UI components are GC'ed, this object can also go.
     //
-    // It depends on the implementation of IntelliJ's GUI designer whether this "hack" is actually
+    // It depends on the implementation of IntelliJ's GUI designer whether this "hack"
     // needed (I don't know if these objects of bound classes are strongly referred to from UI or
     // not), but it's better to play it safe.
     //

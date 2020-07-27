@@ -22,6 +22,73 @@ public class ModelExtensions {
 
   }
 
+  public static class TestExerciseDataSource extends ExerciseDataSource {
+
+    public TestExerciseDataSource() {
+      super(() -> new APlusAuthentication(new char[0]));
+    }
+
+    @NotNull
+    @Override
+    public SubmissionInfo getSubmissionInfo(@NotNull Exercise exercise) throws IOException {
+      return new SubmissionInfo(1, new SubmittableFile[0]);
+    }
+
+    @NotNull
+    @Override
+    public SubmissionHistory getSubmissionHistory(@NotNull Exercise exercise) throws IOException {
+      return new SubmissionHistory(0);
+    }
+
+    @NotNull
+    @Override
+    public List<Group> getGroups(@NotNull Course course) throws IOException {
+      return Collections.singletonList(new Group(0, Collections.singletonList("Only you")));
+    }
+
+    @NotNull
+    @Override
+    public List<ExerciseGroup> getExerciseGroups(@NotNull Course course) throws IOException {
+      return Collections.emptyList();
+    }
+
+    @Override
+    public void submit(Submission submission) throws IOException {
+      // do nothing
+    }
+  }
+
+  public static class TestCourse extends Course {
+
+    public TestCourse(@NotNull String id) {
+      this(id, "");
+    }
+
+    /**
+     * Creates a dummy {@link Course} for testing purposes.
+     *
+     * @param id {@link String} id for the {@link Course}
+     * @param name {@link String} for the {@link Course}.
+     */
+    public TestCourse(@NotNull String id, @NotNull String name) {
+      super(id, name,
+          //  modules
+          Collections.emptyList(),
+          //  libraries
+          Collections.emptyList(),
+          //  exerciseModules
+          Collections.emptyMap(),
+          //  requiredPlugins
+          Collections.emptyMap(),
+          //  resourceUrls
+          Collections.emptyMap(),
+          //  autoInstallComponentNames
+          Collections.emptyList(),
+          //  replInitialCommands
+          Collections.emptyMap());
+    }
+  }
+
   public static class TestComponent extends Component {
 
     public TestComponent() {
@@ -186,12 +253,20 @@ public class ModelExtensions {
                                @NotNull String name,
                                @NotNull List<Module> modules,
                                @NotNull List<Library> libraries,
+                               @NotNull Map<Long, Map<String, String>> exerciseModules,
                                @NotNull Map<String, String> requiredPlugins,
                                @NotNull Map<String, URL> resourceUrls,
                                @NotNull List<String> autoInstallComponentNames,
                                @NotNull Map<String, String[]> replInitialCommands) {
       return new Course(
-          id, name, modules, libraries, requiredPlugins, resourceUrls, autoInstallComponentNames,
+          id,
+          name,
+          modules,
+          libraries,
+          exerciseModules,
+          requiredPlugins,
+          resourceUrls,
+          autoInstallComponentNames,
           replInitialCommands
       );
     }

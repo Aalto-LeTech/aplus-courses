@@ -1,12 +1,13 @@
 package fi.aalto.cs.apluscourses.utils;
 
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ModalityState;
 import java.util.concurrent.Executor;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * A runnable whose {@code run} method uses some {@code invokeLater} method (by default {@code
- * ApplicationManager.getApplication()::invokeLater} is used.
+ * ApplicationManager.getApplication()::invokeLater} with {@link ModalityState#NON_MODAL}is used).
  */
 public class PostponedRunnable implements Runnable {
   @NotNull
@@ -24,7 +25,8 @@ public class PostponedRunnable implements Runnable {
   }
 
   public PostponedRunnable(@NotNull Runnable task) {
-    this(task, ApplicationManager.getApplication()::invokeLater);
+    this(task, runnable ->
+        ApplicationManager.getApplication().invokeLater(runnable, ModalityState.NON_MODAL));
   }
 
   @Override

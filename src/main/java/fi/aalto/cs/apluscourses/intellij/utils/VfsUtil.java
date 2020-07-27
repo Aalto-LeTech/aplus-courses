@@ -4,13 +4,64 @@ import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileVisitor;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import org.jetbrains.annotations.CalledWithReadLock;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class VfsUtil {
 
   private VfsUtil() {
 
+  }
+
+  /**
+   * Recursively looks for a file in the given directory with the given name.
+   *
+   * @param directory The directory from which the search is done.
+   * @param filename  The name of the file that is searched for.
+   * @return A {@link Path} to the found file, or {@code null} if a file isn't found.
+   */
+  @CalledWithReadLock
+  @Nullable
+  public static Path findFileInDirectory(@NotNull Path directory, @NotNull String filename) {
+    VirtualFile virtualFile = com.intellij.openapi.vfs.VfsUtil.findFile(directory, true);
+    FileFinderVirtualFileVisitor visitor = new FileFinderVirtualFileVisitor(filename);
+    if (virtualFile == null) {
+      return null;
+    }
+    VfsUtilCore.visitChildrenRecursively(virtualFile, visitor);
+    return visitor.getPath();
+  }
+
+  static class FileFinderVirtualFileVisitor extends VirtualFileVisitor<Object> {
+    private String filename;
+    private Path path;
+
+    public FileFinderVirtualFileVisitor(@NotNull String filename, Option... options) {
+      super(options);
+      this.filename = filename;
+      this.path = null;
+    }
+
+    @Nullable
+    public Path getPath() {
+      return path;
+    }
+
+    @Override
+    public boolean visitFile(@NotNull VirtualFile file) {
+      if (path != null) {
+        return false;
+      }
+
+      if (file.getName().equals(filename)) {
+        path = Paths.get(file.getPath());
+        return false;
+      }
+
+      return true;
+    }
   }
 
   /**
