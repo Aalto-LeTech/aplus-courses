@@ -13,6 +13,9 @@ public class Exercise {
   private final String name;
 
   @NotNull
+  private final String htmlUrl;
+
+  @NotNull
   private final List<Long> submissionIds;
 
   private final int userPoints;
@@ -33,12 +36,14 @@ public class Exercise {
    */
   public Exercise(long id,
                   @NotNull String name,
+                  @NotNull String htmlUrl,
                   @NotNull List<Long> submissionIds,
                   int userPoints,
                   int maxPoints,
                   int maxSubmissions) {
     this.id = id;
     this.name = name;
+    this.htmlUrl = htmlUrl;
     this.submissionIds = submissionIds;
     this.userPoints = userPoints;
     this.maxPoints = maxPoints;
@@ -47,8 +52,8 @@ public class Exercise {
 
   /**
    * Construct an exercise from the given JSON object. The object must contain an integer value for
-   * the key "id", a string value for the key "display_name", and integer values for the keys
-   * "max_points" and "max_submissions".
+   * the key "id", a string value for the key "display_name", a string value for the key "html_url",
+   * and integer values for the keys "max_points" and "max_submissions".
    *
    * @param jsonObject The JSON object from which the exercise is constructed.
    * @return An exercise instance.
@@ -58,11 +63,16 @@ public class Exercise {
                                         @NotNull Points points) {
     long id = jsonObject.getLong("id");
     String name = jsonObject.getString("display_name");
+    String htmlUrl = jsonObject.getString("html_url");
     List<Long> submissionIds = points.getSubmissions().getOrDefault(id, Collections.emptyList());
     int userPoints = points.getPoints().getOrDefault(id, 0);
     int maxPoints = jsonObject.getInt("max_points");
     int maxSubmissions = jsonObject.getInt("max_submissions");
-    return new Exercise(id, name, submissionIds, userPoints, maxPoints, maxSubmissions);
+    return new Exercise(id, name, htmlUrl, submissionIds, userPoints, maxPoints, maxSubmissions);
+  }
+
+  public long getId() {
+    return id;
   }
 
   @NotNull
@@ -70,8 +80,9 @@ public class Exercise {
     return name;
   }
 
-  public long getId() {
-    return id;
+  @NotNull
+  public String getHtmlUrl() {
+    return htmlUrl;
   }
 
   @NotNull

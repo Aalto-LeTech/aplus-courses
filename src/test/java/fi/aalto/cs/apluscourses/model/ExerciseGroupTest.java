@@ -17,13 +17,16 @@ public class ExerciseGroupTest {
   private static final String NAME_KEY = "display_name";
   private static final String EXERCISES_KEY = "exercises";
   private static final String ID_KEY = "id";
+  private static final String HTML_KEY = "html_url";
   private static final String MAX_SUBMISSIONS_KEY = "max_submissions";
   private static final String MAX_POINTS_KEY = "max_points";
 
   @Test
   public void testExerciseGroup() {
-    Exercise exercise1 = new Exercise(123, "name1", Collections.emptyList(), 0, 0, 0);
-    Exercise exercise2 = new Exercise(456, "name2", Collections.emptyList(), 0, 0, 0);
+    Exercise exercise1 = new Exercise(123, "name1", "https://example.com",
+        Collections.emptyList(), 0, 0, 0);
+    Exercise exercise2 = new Exercise(456, "name2", "https://example.org",
+        Collections.emptyList(), 0, 0, 0);
 
     ExerciseGroup group = new ExerciseGroup("group", Arrays.asList(exercise1, exercise2));
 
@@ -49,6 +52,7 @@ public class ExerciseGroupTest {
             .put(new JSONObject()
                 .put(ID_KEY, 567)
                 .put(NAME_KEY, "exercise name")
+                .put(HTML_KEY, "http://localhost:7000")
                 .put(MAX_POINTS_KEY, 50)
                 .put(MAX_SUBMISSIONS_KEY, 10)));
     ExerciseGroup group = ExerciseGroup.fromJsonObject(json, mock(Points.class));
@@ -72,6 +76,7 @@ public class ExerciseGroupTest {
             .put(new JSONObject()
                 .put(ID_KEY, 0)
                 .put(NAME_KEY, "e")
+                .put(HTML_KEY, "http://localhost:3000")
                 .put(MAX_POINTS_KEY, 45)
                 .put(MAX_SUBMISSIONS_KEY, 9)));
     ExerciseGroup.fromJsonObject(json, mock(Points.class));
@@ -85,8 +90,9 @@ public class ExerciseGroupTest {
           .put(NAME_KEY, "group " + i)
           .put(EXERCISES_KEY, new JSONArray()
               .put(new JSONObject()
-                  .put("id", i)
+                  .put(ID_KEY, i)
                   .put(NAME_KEY, "exercise in group " + i)
+                  .put(HTML_KEY, "http://localhost:4000")
                   .put(MAX_POINTS_KEY, 30)
                   .put(MAX_SUBMISSIONS_KEY, 8)));
       array.put(json);
