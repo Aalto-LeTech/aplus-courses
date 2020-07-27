@@ -7,7 +7,7 @@ import org.jetbrains.plugins.scala.console.ScalaLanguageConsole
 
 class Repl(module: Module) extends ScalaLanguageConsole(module: Module) {
 
-  override def print(text: String, contentType: ConsoleViewContentType) = {
+  override def print(text: String, contentType: ConsoleViewContentType): Unit = {
     var updatedText = text
 
     if (text.contains("Type in expressions")) {

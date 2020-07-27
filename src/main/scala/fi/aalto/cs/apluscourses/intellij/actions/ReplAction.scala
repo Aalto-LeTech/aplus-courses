@@ -29,7 +29,7 @@ import org.jetbrains.plugins.scala.project.ProjectExt
 class ReplAction extends RunConsoleAction {
 
   override def update(e: AnActionEvent): Unit = {
-    if (e.getProject == null || e.getProject.isDisposed) return
+    if (e.getProject == null || e.getProject.isDisposed) return // scalastyle:ignore
 
     if (e.getProject.hasScala) {
       ScalaActionUtil.enablePresentation(e)
@@ -67,7 +67,7 @@ class ReplAction extends RunConsoleAction {
     selectedModule match {
       case Some(module) =>
         if (!setConfigurationConditionally(project, module, configuration)) {
-          return
+          return // scalastyle:ignore
         }
       case None => // For now, no dialog is shown for a project level REPL
     }

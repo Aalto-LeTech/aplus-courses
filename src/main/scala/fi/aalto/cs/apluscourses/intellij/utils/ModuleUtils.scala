@@ -36,25 +36,25 @@ object ModuleUtils {
     nonEmpty
   }
 
-  def naiveValidate(@NotNull command: String) =
+  def naiveValidate(@NotNull command: String): Boolean =
     command.matches("import\\so1\\.[a-z]*(\\_|\\._)$")
 
-  def clearCommands(@NotNull imports: Array[String]) =
+  def clearCommands(@NotNull imports: Array[String]): Array[String] =
     imports
       .clone
       .map(_.replace("import ", ""))
       .map(_.replace("._", ""))
 
-  def getCommandsText(@NotNull imports: Array[String]) =
+  def getCommandsText(@NotNull imports: Array[String]): String =
     imports.length match {
       case 0 => ""
-      case 1 => "Auto-imported package [" + imports(0) + "] for your convenience."
+      case 1 => "Auto-imported package [" + imports(0) + "] for your convenience." // scalastyle:ignore
       case _ => "Auto-imported packages [" + imports.mkString(", ") + "] for your convenience."
     }
 
   def getUpdatedText(@NotNull module: Module,
                      @NotNull commands: Array[String],
-                     @NotNull originalText: String) = {
+                     @NotNull originalText: String): String = {
     val commonText = "Write a line (or more) of " +
       "Scala and press [Ctrl+Enter] to run it. Use [Up] and [Down] to scroll through your earlier " +
       "inputs. \nChanges to the module are not loaded automatically. If you edit the files, restart" +
@@ -74,19 +74,19 @@ object ModuleUtils {
     }
   }
 
-  def getModuleRoot(@NotNull moduleFilePath: String) = {
+  def getModuleRoot(@NotNull moduleFilePath: String): String = {
     val lastIndexOf = moduleFilePath.lastIndexOf("/")
-    moduleFilePath.substring(0, lastIndexOf + 1)
+    moduleFilePath.substring(0, lastIndexOf + 1) // scalastyle:ignore
   }
 
   def initialReplCommandsFileExist(@NotNull replCommandsFileName: String,
-                                   @NotNull moduleFilePath: String) = {
+                                   @NotNull moduleFilePath: String): Boolean = {
     val moduleDir = getModuleRoot(moduleFilePath)
     Files.exists(Path.of(moduleDir + replCommandsFileName))
   }
 
   @NotNull
-  def getReplInitialCommandsForModule(module: Module) = {
+  def getReplInitialCommandsForModule(module: Module): Array[String] = {
     PluginSettings
       .getInstance()
       .getMainViewModel(module.getProject)
@@ -97,6 +97,5 @@ object ModuleUtils {
       .getOrDefault(module.getName, Array.empty)
   }
 
-  // todo: test me!
-  def isTopLevelModule(module: Module) = module.getName.equals(module.getProject.getName)
+  def isTopLevelModule(module: Module): Boolean = module.getName.equals(module.getProject.getName)
 }
