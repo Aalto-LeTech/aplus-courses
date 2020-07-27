@@ -5,6 +5,8 @@ import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.TreeViewModel;
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -53,6 +55,10 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
   @Nullable
   @Override
   public List<TreeViewModel> getSubtrees() {
-    return null;
+    return getModel()
+        .getSubmissionResults()
+        .stream()
+        .map(SubmissionResultViewModel::new)
+        .collect(Collectors.toList());
   }
 }

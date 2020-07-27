@@ -4,6 +4,7 @@ import com.intellij.ui.ColoredTreeCellRenderer;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseGroupViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
+import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionResultViewModel;
 import icons.PluginIcons;
 import javax.swing.Icon;
 import javax.swing.JTree;
@@ -43,17 +44,21 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
       return;
     }
 
-    if (isLeaf) {
+    if (userObject instanceof ExerciseViewModel) {
       ExerciseViewModel exerciseViewModel = (ExerciseViewModel) userObject;
       append(exerciseViewModel.getPresentableName());
       setEnabled(exerciseViewModel.isSubmittable());
       setIcon(statusToIcon(exerciseViewModel.getStatus()));
-    } else {
+    } else if (userObject instanceof ExerciseGroupViewModel) {
       setIcon(PluginIcons.A_PLUS_EXERCISE_GROUP);
       ExerciseGroupViewModel groupViewModel = (ExerciseGroupViewModel) userObject;
       append(groupViewModel.getPresentableName());
       setEnabled(true);
       setIcon(PluginIcons.A_PLUS_EXERCISE_GROUP);
+    } else if (userObject instanceof SubmissionResultViewModel) {
+      SubmissionResultViewModel submissionResultViewModel = (SubmissionResultViewModel) userObject;
+      setEnabled(true);
+      append(submissionResultViewModel.getPresentableName());
     }
   }
 
