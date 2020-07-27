@@ -35,7 +35,7 @@ public class Course implements ComponentSource {
   private final List<Module> modules;
 
   @NotNull
-  private SubmissionResultsList submissionResultsList;
+  private Points submissionResultsList;
 
   @NotNull
   private final List<Library> libraries;
@@ -446,11 +446,11 @@ public class Course implements ComponentSource {
   }
 
   @NotNull
-  public SubmissionResultsList getSubmissionsDashboard() {
+  public Points getSubmissionsDashboard() {
     return submissionResultsList;
   }
 
-  public void setSubmissionsDashboard(@NotNull SubmissionResultsList submissionResultsList) {
+  public void setSubmissionsDashboard(@NotNull Points submissionResultsList) {
     this.submissionResultsList = submissionResultsList;
   }
 }

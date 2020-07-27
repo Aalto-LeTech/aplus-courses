@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.model;
 
+import static org.mockito.Mockito.mock;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -43,7 +45,7 @@ public class ExerciseGroupTest {
             .put(new JSONObject()
                 .put("id", 567)
                 .put(NAME_KEY, "exercise name")));
-    ExerciseGroup group = ExerciseGroup.fromJsonObject(json);
+    ExerciseGroup group = ExerciseGroup.fromJsonObject(json, mock(Points.class));
 
     Assert.assertEquals("The exercise group has the same name as in the JSON object",
         "group name", group.getName());
@@ -54,7 +56,7 @@ public class ExerciseGroupTest {
   @Test(expected = JSONException.class)
   public void testFromJsonObjectMissingExercises() {
     JSONObject json = new JSONObject().put(NAME_KEY, "group test name");
-    ExerciseGroup.fromJsonObject(json);
+    ExerciseGroup.fromJsonObject(json, mock(Points.class));
   }
 
   @Test(expected = JSONException.class)
@@ -64,7 +66,7 @@ public class ExerciseGroupTest {
             .put(new JSONObject()
                 .put("id", 0)
                 .put(NAME_KEY, "e")));
-    ExerciseGroup.fromJsonObject(json);
+    ExerciseGroup.fromJsonObject(json, mock(Points.class));
   }
 
   @Test
@@ -79,7 +81,7 @@ public class ExerciseGroupTest {
                   .put(NAME_KEY, "exericse in group " + i)));
       array.put(json);
     }
-    List<ExerciseGroup> exerciseGroups = ExerciseGroup.fromJsonArray(array);
+    List<ExerciseGroup> exerciseGroups = ExerciseGroup.fromJsonArray(array, mock(Points.class));
 
     for (int i = 0; i < 5; ++i) {
       Assert.assertEquals("group " + i, exerciseGroups.get(i).getName());

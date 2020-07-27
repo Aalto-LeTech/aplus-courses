@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -17,6 +18,7 @@ import fi.aalto.cs.apluscourses.model.ExerciseDataSource;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
+import fi.aalto.cs.apluscourses.model.Points;
 import fi.aalto.cs.apluscourses.model.Submission;
 import fi.aalto.cs.apluscourses.model.SubmissionHistory;
 import fi.aalto.cs.apluscourses.model.SubmissionInfo;
@@ -26,6 +28,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -123,23 +126,22 @@ public class APlusExerciseDataSourceTest {
   public void testGetExerciseGroups() throws IOException {
     JSONObject object0 = new JSONObject();
     JSONObject object1 = new JSONObject();
+    JSONArray array = new JSONArray().put(object0).put(object1);
 
-    JSONObject response = new JSONObject()
-        .put("results", new JSONArray()
-            .put(object0)
-            .put(object1));
+    JSONObject response = new JSONObject().put("results", array);
 
     ExerciseGroup exGroup0 = new ExerciseGroup("First Week", new ArrayList<>());
     ExerciseGroup exGroup1 = new ExerciseGroup("Second Week", new ArrayList<>());
 
     doReturn(response).when(client)
         .fetch("https://example.com/courses/99/exercises/", authentication);
-    doReturn(exGroup0).when(parser).parseExerciseGroup(object0);
-    doReturn(exGroup1).when(parser).parseExerciseGroup(object1);
+    doReturn(Arrays.asList(exGroup0, exGroup1))
+        .when(parser)
+        .parseExerciseGroups(same(array), any(Points.class));
 
     Course course = new ModelExtensions.TestCourse("99");
 
-    List<ExerciseGroup> exGroups = exerciseDataSource.getExerciseGroups(course);
+    List<ExerciseGroup> exGroups = exerciseDataSource.getExerciseGroups(course, mock(Points.class));
 
     assertEquals(2, exGroups.size());
     assertSame(exGroup0, exGroups.get(0));

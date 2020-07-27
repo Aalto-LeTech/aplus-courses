@@ -6,6 +6,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -37,6 +38,7 @@ import fi.aalto.cs.apluscourses.model.FileDoesNotExistException;
 import fi.aalto.cs.apluscourses.model.FileFinder;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
+import fi.aalto.cs.apluscourses.model.Points;
 import fi.aalto.cs.apluscourses.model.Submission;
 import fi.aalto.cs.apluscourses.model.SubmissionInfo;
 import fi.aalto.cs.apluscourses.model.SubmittableFile;
@@ -125,7 +127,9 @@ public class SubmitExerciseActionTest {
     exerciseDataSource = spy(new ModelExtensions.TestExerciseDataSource());
     doReturn(groups).when(exerciseDataSource).getGroups(course);
     doReturn(submissionInfo).when(exerciseDataSource).getSubmissionInfo(exercise);
-    doReturn(exerciseGroups).when(exerciseDataSource).getExerciseGroups(course);
+    doReturn(exerciseGroups)
+        .when(exerciseDataSource)
+        .getExerciseGroups(same(course), any(Points.class));
 
     token = "testtoken";
     authentication = new APlusAuthentication(token.toCharArray());
