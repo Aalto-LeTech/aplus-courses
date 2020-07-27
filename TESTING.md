@@ -18,7 +18,7 @@ Marked with a github issue label "manual testing."
 
 **0.1** Make sure you are using a clean installment of
         **IntelliJ IDEA Community** version **2020.1**.
-- You can download IntelliJ IDEA Community [here](https://www.jetbrains.com/idea/download).
+- You can download IntelliJ IDEA Community from https://www.jetbrains.com/idea/download.
 - In case you use pre-existing installment of IntelliJ IDEA,
   you can use one of the following ways to restore to the default settings:
 
@@ -80,25 +80,24 @@ Marked with a github issue label "manual testing."
 
 **2.4** On the next view, click **Finish**.
 
-**2.5** ASSERTION: **Project Structure** window opens with **Modules** tab visible.
+**2.5** If **Tip of the Day** window is shown,
+        check **Don't show tips** and click **Close**. 
 
-**2.6** Switch to **Project** tab.
+**2.6** ASSERTION: **Project Structure** window opens with **Modules** tab visible.
 
-**2.7** ASSERTION: **Project SDK** reads **\<No SDK\>**.
+**2.7** Switch to **Project** tab.
 
-**2.8** Choose JDK 11 as **Project SDK**.
+**2.8** ASSERTION: **Project SDK** reads **\<No SDK\>**.
+
+**2.9** Choose JDK 11 as **Project SDK**.
 - If JDK 11 is not installed on the computer,
   choose **Add SDK > Download JDK...**
 - On the window that opens,
   choose **AdoptOpenJDK (HotSpot)** as **Vendor**
   and **11.x.x** as **Version**,
   and click **Download**.
-  Wait for the download to complete.
 
-**2.9** Click **OK** to close **Project Structure** window.
-
-**2.10** If **Tip of the Day** window is shown,
-        check **Don't show tips** and click **Close**. 
+**2.10** Click **OK** to close **Project Structure** window.
 
 ### 3 Observe startup notification
 
@@ -106,6 +105,8 @@ Marked with a github issue label "manual testing."
         you are using a pre-release version of the plugin.
 
 **3.2** ASSERTION: The version mentioned in the notification is correct.
+
+![Version notification](images/version-notification.png)
 
 - You can check the version of the plugin in **File > Settings... > Plugins > Installed**
 
@@ -165,60 +166,55 @@ Marked with a github issue label "manual testing."
 **6.4** Open **A+ > Turn project into A+ course project** again.
 
 **6.5** ASSERTION: **Leave IntelliJ settings unchanged** checkbutton is not checked.
-        **Restart IntelliJ to reload settings** checkbutton is checked.
 
-**6.6** Check "leave unchanged" checkbox.
+**6.6** Check "leave unchanged" checkbox and click OK.
 
-**6.7** ASSERTION: "Restart" checkbox gets unchecked and disabled.
+**6.7** ASSERTION: **O1Library** appears as a module in the project tree.
 
-**6.8** Uncheck "leave unchanged" checkbox.
+**6.8** ASSERTION: **A+ Courses** tool window shows a list of O1 modules in **Modules** list.
 
-**6.9** ASSERTION: "Restart" checkbox gets enabled.
+**6.9** ASSERTION: **O1Library** is marked **Installed** in **Modules** list.
 
-**6.10** Check "leave unchanged" checkbox again and click OK.
+**6.10** Once again, navigate to **A+ > Turn project into A+ course project**.
 
-**6.11** ASSERTION: **O1Library** appears as a module in the project tree.
+**6.11** Leave the checkbox unchecked and click **OK**.
 
-**6.12** ASSERTION: **Modules** tool window shows a list of O1 modules.
+**6.12** The screen shows a dialog that tells the IDE will be restarted.
 
-**6.13** Once again, navigate to **A+ > Turn project into A+ course project**.
+**6.13** Click **OK**.
 
-**6.14** Leave the checkboxes as they are and click **OK**.
+**6.14** The IDE restarts.
 
-**6.15** The screen shows a dialog that tells the IDE will be restarted.
-
-**6.16** Click **OK**.
-
-**6.17** The IDE restarts.
-
-**6.18** ASSERTION: The theme has changed to dark.
+**6.15** ASSERTION: The theme has changed to dark.
 
 ### 7 Importing modules
 
-**7.1** On **Modules** tool window, double-click **RobotTribes**.
+**7.1** On **Modules** list  tool window, double-click **RobotTribes**.
 
 **7.2** ASSERTION: **RobotTribes** and **Robots** appear as modules in the project tree.
 
-**7.3** ASSERTION: **RobotTribes** and **Robots** are marked **Installed** in the modules list.
+**7.3** ASSERTION: **RobotTribes** and **Robots** are marked **Installed** in **Modules** list.
 
-**7.4** On **Modules** tool window, right-click **GoodStuff**.
+**7.4** On **Modules** list, right-click **SwingExamples**.
 
 **7.5** On the context menu that appears, choose **Import A+ module**.
 
-**7.6** ASSERTION: **GoodStuff** appears as a module in the project tree.
+**7.6** ASSERTION: **SwingExamples** appears as a module in the project tree.
 
-**7.7** ASSERTION: **GoodStuff** is marked **Installed** in the modules list.
+![Project tree](images/project-tree.png)
 
-**7.8** On **Modules** tool window, select multiple uninstalled modules.
+**7.7** ASSERTION: **SwingExamples** is marked **Installed** in the modules list.
+
+**7.8** On **Modules** list, select multiple uninstalled modules.
 - Hold **Ctrl**/**Cmd** key down while clicking to select many items.
 
 **7.9** Click the button with download icon
-        on the top of the **Modules** tool window
+        on the top of the **Modules** list
         to install all selected modules.
 
 **7.10** ASSERTION: The chosen modules appear in the project tree.
 
-**7.11** ASSERTION: The chosen modules are marked **Installed** in the modules list.
+**7.11** ASSERTION: The chosen modules are marked **Installed** in **Modules** list.
 
 **7.12** ASSERTION: All the installed modules have their dependencies correctly configured.
 - To check this, navigate to **File > Project Structure... > Modules**
@@ -229,25 +225,27 @@ Marked with a github issue label "manual testing."
 
 #### Part I: Basic case
 
-**8.1** Open REPL by choosing a folder or a file within **GoodStuff** module.
+**8.1** Open REPL by choosing a folder or a file within **SwingExamples** module.
 - Read [this](https://confluence.jetbrains.com/pages/viewpage.action?pageId=53326891)
   if you don't know how to open and use REPL.
 
 **8.2** In **REPL configuration** window that opens,
         uncheck **Don't show this window again** checkbox.
 
+![REPL dialog](images/repl-dialog.png)
+
 **8.3** Click **OK**.
 
-**8.4** ASSERTION: A REPL opens with **GoodStuff** in its title.
+**8.4** ASSERTION: A REPL opens with **SwingExamples** in its title.
 
 **8.5** Execute the following two commands in REPL:
 
     sys.props("user.dir")
     sys.props("java.class.path")
 
-**8.6** ASSERTION: The output of the first statement is the directory of **GoodStuff** module.
+**8.6** ASSERTION: The output of the first statement is the directory of **SwingExamples** module.
 
-**8.7** ASSERTION: The output of the second statement (classpath) contains **GoodStuff**.
+**8.7** ASSERTION: The output of the second statement (classpath) contains **SwingExamples**.
 
 **8.8** Close the REPL by clicking X next to its tab title.
 
@@ -256,12 +254,12 @@ Marked with a github issue label "manual testing."
 
 #### Part II: Changing parameters
 
-**8.10** Reopen REPL by choosing a folder or a file within **GoodStuff** module.
+**8.10** Reopen REPL by choosing a folder or a file within **SwingExamples** module.
 
 **8.11** Again, uncheck **Don't show this window again** checkbox.
 
 **8.12** Change **Working directory** to be the directory of **O1Library** module.
-- Just replacing **GoodStuff** with **O1Library** in the path does the trick.
+- Just replacing **SwingExamples** with **O1Library** in the path does the trick.
 
 **8.13** Change value for **Use classpath and SDK of module** dropdown list to be **O1Library**.
 
@@ -274,7 +272,7 @@ Marked with a github issue label "manual testing."
 **8.17** ASSERTION: The output of the first statement is the directory of **O1Library** module.
 
 **8.18** ASSERTION: The output of the second statement (classpath) contains **O1Library**
-         (but not other modules, such as **GoodStuff**).
+         (but not other modules, such as **SwingExamples**).
 
 **8.19** Close the REPL.
 
@@ -284,7 +282,7 @@ Marked with a github issue label "manual testing."
 
 **8.21** This time, leave **Don't show this window again** checkbox checked.
 
-**8.22** Change **Working directory** to be the directory of **GoodStuff** module.
+**8.22** Change **Working directory** to be the directory of **SwingExamples** module.
 
 **8.23** Click **OK**.
 
@@ -292,10 +290,10 @@ Marked with a github issue label "manual testing."
 
 **8.25** In REPL, execute the same two commands as in **8.5**.
 
-**8.26** ASSERTION: The output of the first statement is the directory of **GoodStuff** module.
+**8.26** ASSERTION: The output of the first statement is the directory of **SwingExamples** module.
 
 **8.27** ASSERTION: The output of the second statement (classpath) contains **O1Library**
-         (but not other modules, such as **GoodStuff**).
+         (but not other modules, such as **SwingExamples**).
 
 **8.28** Close the REPL.
 
@@ -312,7 +310,7 @@ Marked with a github issue label "manual testing."
 **8.33** ASSERTION: The output of the first statement is the directory of **O1Library** module.
 
 **8.34** ASSERTION: The output of the second statement (classpath) contains **O1Library**
-         (but not other modules, such as **GoodStuff**).
+         (but not other modules, such as **SwingExamples**).
 
 **8.35** Close the REPL.
 
@@ -340,13 +338,13 @@ Marked with a github issue label "manual testing."
 
 ### 9 Removing a module
 
-**9.1** Right-click **GoodStuff** in the project tree
+**9.1** Right-click **SwingExamples** in the project tree
         and choose **Remove Module** from the context menu.
 
 **9.2** Confirm the removal by clicking **Remove** on a popup window.
 
-**9.3** ASSERTION: **GoodStuff** no longer shows **Installed** in the modules list.
+**9.3** ASSERTION: **SwingExamples** no longer shows **Installed** in **Modules** list.
 
-**9.4** Double click **GoodStuff** in the modules list.
+**9.4** Double click **SwingExamples** in **Modules** list.
 
-**9.5** ASSERTION: **GoodStuff** shows up as a module in the project tree.
+**9.5** ASSERTION: **SwingExamples** shows up as a module in the project tree.
