@@ -10,12 +10,25 @@ import org.jetbrains.annotations.Nullable;
 public class SubmissionResultViewModel extends SelectableNodeViewModel<SubmissionResult>
     implements TreeViewModel {
 
-  public SubmissionResultViewModel(@NotNull SubmissionResult submissionResult) {
+  @NotNull String submissionUrl;
+
+  /**
+   * Construct a view model corresponding to the given submission result.
+   */
+  public SubmissionResultViewModel(@NotNull SubmissionResult submissionResult,
+                                   @NotNull String exerciseUrl) {
     super(submissionResult);
+    this.submissionUrl = exerciseUrl + "submissions/" + submissionResult.getId() + "/";
   }
 
+  @NotNull
   public String getPresentableName() {
     return "Submission " + getModel().getSubmissionNumber();
+  }
+
+  @NotNull
+  public String getSubmissionUrl() {
+    return submissionUrl;
   }
 
   @Nullable

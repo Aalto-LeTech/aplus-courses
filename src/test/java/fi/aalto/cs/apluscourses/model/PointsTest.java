@@ -44,9 +44,9 @@ public class PointsTest {
     Assert.assertArrayEquals("The points of exercises are the same as those in the JSON",
         new int[] {5, 2, 0, 0}, exercisePoints);
 
-    Assert.assertEquals("The submissions for exercises are the same as those in the JSON",
-        Long.valueOf(2921874L), points.getSubmissions().get(26038L).get(0));
-    Assert.assertEquals("The submissions for exercises are the same as those in the JSON",
+    Assert.assertEquals("The submissions for exercises are the same as those in the JSON reversed",
+        Long.valueOf(2921874L), points.getSubmissions().get(26038L).get(2));
+    Assert.assertEquals("The submissions for exercises are the same as those in the JSON reversed",
         Long.valueOf(2921867L), points.getSubmissions().get(26038L).get(1));
   }
 

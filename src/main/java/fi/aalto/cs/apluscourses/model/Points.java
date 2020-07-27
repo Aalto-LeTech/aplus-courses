@@ -75,7 +75,7 @@ public class Points {
   private static List<Long> getSubmissionIds(@NotNull JSONObject exercise) {
     JSONArray submissionsArray = exercise.getJSONArray("submissions");
     List<Long> submissionIds = new ArrayList<>(submissionsArray.length());
-    for (int i = 0; i < submissionsArray.length(); ++i) {
+    for (int i = submissionsArray.length() - 1; i >= 0; --i) {
       String submissionUrl = submissionsArray.getString(i);
       submissionIds.add(parseSubmissionId(submissionUrl));
     }

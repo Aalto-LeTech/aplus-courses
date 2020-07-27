@@ -12,8 +12,19 @@ import org.jetbrains.annotations.Nullable;
 
 public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> implements TreeViewModel {
 
+  @NotNull
+  private final List<SubmissionResultViewModel> submissionResultViewModels;
+
+  /**
+   * Construct a view model corresponding to the given exercise.
+   */
   public ExerciseViewModel(@NotNull Exercise exercise) {
     super(exercise);
+    submissionResultViewModels = exercise
+        .getSubmissionResults()
+        .stream()
+        .map(submission -> new SubmissionResultViewModel(submission, exercise.getHtmlUrl()))
+        .collect(Collectors.toList());
   }
 
   public String getPresentableName() {
@@ -52,13 +63,16 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
     }
   }
 
+  public List<SubmissionResultViewModel> getSubmissionResultViewModels() {
+    return submissionResultViewModels;
+  }
+
   @Nullable
   @Override
   public List<TreeViewModel> getSubtrees() {
-    return getModel()
-        .getSubmissionResults()
+    return getSubmissionResultViewModels()
         .stream()
-        .map(SubmissionResultViewModel::new)
+        .map(viewModel -> (TreeViewModel) viewModel)
         .collect(Collectors.toList());
   }
 }
