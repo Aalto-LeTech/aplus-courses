@@ -61,10 +61,7 @@ public class InitializationActivity implements Background {
     PluginSettings.getInstance().createUpdatingMainViewModel(project);
     ActionUtil.launch(RequiredPluginsCheckerAction.ACTION_ID,
         new ExtendedDataContext().withProject(project));
-
-    if (PluginSettings.getInstance().isAPlusProjectSetting(project)) {
-      PluginSettings.getInstance().startRegularSubmissionResultsPolling(project);
-    }
+    
   }
 
   @Nullable
