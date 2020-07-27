@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.presentation.exercise;
 
 import fi.aalto.cs.apluscourses.model.Exercise;
+import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import java.util.Collections;
 import org.junit.Assert;
 import org.junit.Test;
@@ -48,12 +49,12 @@ public class ExerciseViewModelTest {
   public void testGetStatus() {
     Exercise noSubmissions = new Exercise(0, "", "http://localhost:6000",Collections.emptyList(),
         0, 10, 10);
-    Exercise noPoints = new Exercise(0, "", "http://localhost:7000", Collections.singletonList(1L),
-        0, 10, 10);
+    Exercise noPoints = new Exercise(0, "", "http://localhost:7000",
+        Collections.singletonList(new SubmissionResult(1L, 0)), 0, 10, 10);
     Exercise partialPoints = new Exercise(0, "", "http://localhost:8000",
-        Collections.singletonList(1L), 5, 10, 10);
+        Collections.singletonList(new SubmissionResult(1L, 0)), 5, 10, 10);
     Exercise fullPoints = new Exercise(0, "", "http://localhost:9000",
-        Collections.singletonList(1L), 10, 10, 10);
+        Collections.singletonList(new SubmissionResult(1L, 0)), 10, 10, 10);
 
     Assert.assertEquals(ExerciseViewModel.Status.NO_SUBMISSIONS,
         new ExerciseViewModel(noSubmissions).getStatus());

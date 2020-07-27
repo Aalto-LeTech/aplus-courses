@@ -39,7 +39,7 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
    */
   public Status getStatus() {
     Exercise exercise = getModel();
-    if (exercise.getSubmissionIds().isEmpty()) {
+    if (exercise.getSubmissionResults().isEmpty()) {
       return Status.NO_SUBMISSIONS;
     } else if (exercise.getUserPoints() == exercise.getMaxPoints()) {
       return Status.FULL_POINTS;

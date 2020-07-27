@@ -68,9 +68,9 @@ public class ExerciseTest {
     assertEquals("The HTML URL is the same as the one in the JSON object",
         "http://localhost:1000", exercise.getHtmlUrl());
     assertEquals("The submission IDs are read from the points object",
-        Long.valueOf(1L), exercise.getSubmissionIds().get(0));
+        1L, exercise.getSubmissionResults().get(0).getId());
     assertEquals("The submission IDs are read from the points object",
-        Long.valueOf(2L), exercise.getSubmissionIds().get(1));
+        2L, exercise.getSubmissionResults().get(1).getId());
     assertEquals("The user points are read from the points object",
         10, exercise.getUserPoints());
     assertEquals("The max points is the same as the one in the JSON object",
@@ -128,9 +128,9 @@ public class ExerciseTest {
     Exercise exercise = new Exercise(7, "oneex", "http://localhost:1111",
         Collections.emptyList(), 0, 0, 0);
     Exercise sameExercise = new Exercise(7, "twoex", "http://localhost:2222",
-        Collections.singletonList(1L), 2, 3, 4);
+        Collections.emptyList(), 2, 3, 4);
     Exercise otherExercise = new Exercise(4, "oneex", "http://localhost:2222",
-        Collections.singletonList(4L), 3, 2, 1);
+        Collections.emptyList(), 3, 2, 1);
 
     assertEquals(exercise, sameExercise);
     assertEquals(exercise.hashCode(), sameExercise.hashCode());
