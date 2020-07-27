@@ -49,6 +49,7 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
       setEnabled(exerciseViewModel.isSubmittable());
       setIcon(statusToIcon(exerciseViewModel.getStatus()));
     } else {
+      setIcon(PluginIcons.A_PLUS_EXERCISE_GROUP);
       ExerciseGroupViewModel groupViewModel = (ExerciseGroupViewModel) userObject;
       append(groupViewModel.getPresentableName());
       setEnabled(true);

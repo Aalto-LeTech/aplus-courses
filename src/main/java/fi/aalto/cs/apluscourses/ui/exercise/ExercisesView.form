@@ -12,7 +12,9 @@
         <constraints>
           <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
-        <properties/>
+        <properties>
+          <foreground color="-1"/>
+        </properties>
         <border type="none"/>
         <children>
           <component id="2cca" class="fi.aalto.cs.apluscourses.ui.base.TreeView" binding="exerciseGroupsTree" custom-create="true">
@@ -25,11 +27,28 @@
       </scrollpane>
       <grid id="f02c8" binding="toolbarContainer" layout-manager="FlowLayout" hgap="0" vgap="0" flow-align="3">
         <constraints>
-          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="3" anchor="1" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="-1" height="17"/>
+          </grid>
         </constraints>
         <properties/>
         <border type="none"/>
-        <children/>
+        <children>
+          <component id="8a531" class="javax.swing.JToolBar$Separator">
+            <constraints/>
+            <properties/>
+          </component>
+          <component id="de40" class="javax.swing.JLabel">
+            <constraints/>
+            <properties>
+              <text value="Exercises"/>
+            </properties>
+          </component>
+          <component id="5c667" class="javax.swing.JToolBar$Separator">
+            <constraints/>
+            <properties/>
+          </component>
+        </children>
       </grid>
     </children>
   </grid>
