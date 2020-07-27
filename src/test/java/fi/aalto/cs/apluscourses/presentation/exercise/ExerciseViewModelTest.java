@@ -37,4 +37,21 @@ public class ExerciseViewModelTest {
     Assert.assertFalse("The Piazza assignment is not submittable", ex3.isSubmittable());
   }
 
+  @Test
+  public void testGetStatus() {
+    Exercise noSubmissions = new Exercise(0, "", Collections.emptyList(), 0, 10, 10);
+    Exercise noPoints = new Exercise(0, "", Collections.singletonList(1L), 0, 10, 10);
+    Exercise partialPoints = new Exercise(0, "", Collections.singletonList(1L), 5, 10, 10);
+    Exercise fullPoints = new Exercise(0, "", Collections.singletonList(1L), 10, 10, 10);
+
+    Assert.assertEquals(ExerciseViewModel.Status.NO_SUBMISSIONS,
+        new ExerciseViewModel(noSubmissions).getStatus());
+    Assert.assertEquals(ExerciseViewModel.Status.NO_POINTS,
+        new ExerciseViewModel(noPoints).getStatus());
+    Assert.assertEquals(ExerciseViewModel.Status.PARTIAL_POINTS,
+        new ExerciseViewModel(partialPoints).getStatus());
+    Assert.assertEquals(ExerciseViewModel.Status.FULL_POINTS,
+        new ExerciseViewModel(fullPoints).getStatus());
+  }
+
 }

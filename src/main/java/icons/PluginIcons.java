@@ -13,6 +13,11 @@ import javax.swing.Icon;
 public interface PluginIcons {
 
   Icon A_PLUS_MODULE = IconLoader.getIcon("/META-INF/icons/module.svg");
+  Icon A_PLUS_EXERCISE_GROUP = IconLoader.getIcon("/META-INF/icons/exerciseGroup.svg");
+  Icon A_PLUS_NO_SUBMISSIONS = IconLoader.getIcon("/META-INF/icons/noSubmissions.svg");
+  Icon A_PLUS_NO_POINTS = IconLoader.getIcon("/META-INF/icons/noPoints.svg");
+  Icon A_PLUS_PARTIAL_POINTS = IconLoader.getIcon("/META-INF/icons/partialPoints.svg");
+  Icon A_PLUS_FULL_POINTS = IconLoader.getIcon("/META-INF/icons/fullPoints.svg");
   Icon A_PLUS_GET_RESULTS = IconLoader.getIcon("/META-INF/icons/resultsTable.svg");
   Icon A_PLUS_DOWNLOAD = IconLoader.getIcon("/META-INF/icons/download.svg");
   Icon A_PLUS_UPLOAD = IconLoader.getIcon("/META-INF/icons/upload.svg");
