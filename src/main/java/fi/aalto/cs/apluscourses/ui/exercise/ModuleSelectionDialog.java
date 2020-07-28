@@ -58,11 +58,6 @@ public class ModuleSelectionDialog extends DialogWrapper
     return null;
   }
 
-  @Override
-  public boolean showAndGet() {
-    return super.showAndGet();
-  }
-
   @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
   private void createUIComponents() {
     modulesComboBox = new OurComboBox<>(viewModel.getModules(), Module.class);
