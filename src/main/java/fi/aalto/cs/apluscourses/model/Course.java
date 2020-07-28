@@ -71,7 +71,7 @@ public class Course implements ComponentSource {
    *                            the ids of the plugins and the values are the names of the plugins.
    * @param resourceUrls        A map containing URLs to resources related to the course. The keys
    *                            are the names of the resources and the values are the URLs.
-   * @param replInitialCommands A {@link HashMap}, with module name {@link String} as a key and a
+   * @param replInitialCommands A {@link Map}, with module name {@link String} as a key and a
    *                            {@link String} array of the commands to be executed on REPL
    *                            startup.
    */
@@ -143,7 +143,7 @@ public class Course implements ComponentSource {
     Map<String, URL> resourceUrls = getCourseResourceUrls(jsonObject, sourcePath);
     List<String> autoInstallComponentNames
         = getCourseAutoInstallComponentNames(jsonObject, sourcePath);
-    Map<String, String[]> replInitialCommands = getCourseReplInitialCommands(jsonObject,
+    Map<String, String[]> replInitialCommands = getReplInitialCommands(jsonObject,
         sourcePath);
     return factory.createCourse(courseId, courseName, courseModules,
         //  libraries
@@ -194,7 +194,7 @@ public class Course implements ComponentSource {
   /**
    * Returns the list of all modules in this course. If the course object is created with {@link
    * Course#fromConfigurationData}, then the modules are returned in the order in which they are
-   * listed in the course configuration databp.
+   * listed in the course configuration data.
    *
    * @return All modules of this course.
    */
@@ -471,12 +471,12 @@ public class Course implements ComponentSource {
   }
 
   @NotNull
-  public Map<String, String[]> getCourseReplInitialCommands() {
+  public Map<String, String[]> getReplInitialCommands() {
     return replInitialCommands;
   }
 
   @NotNull
-  protected static Map<String, String[]> getCourseReplInitialCommands(
+  protected static Map<String, String[]> getReplInitialCommands(
       @NotNull JSONObject jsonObject,
       @NotNull String source)
       throws MalformedCourseConfigurationFileException {

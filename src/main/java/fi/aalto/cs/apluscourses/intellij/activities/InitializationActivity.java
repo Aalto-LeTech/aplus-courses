@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.intellij.activities;
 
+import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.MODULE_REPL_INITIAL_COMMANDS_FILE_NAME;
+
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.startup.StartupActivity.Background;
@@ -42,8 +44,7 @@ public class InitializationActivity implements Background {
   public void runActivity(@NotNull Project project) {
     PluginSettings pluginSettings = PluginSettings.getInstance();
     pluginSettings.initializeLocalIdeSettings();
-    pluginSettings
-        .ignoreFileInProjectView(PluginSettings.MODULE_REPL_INITIAL_COMMANDS_FILE_NAME, project);
+    PluginSettings.ignoreFileInProjectView(MODULE_REPL_INITIAL_COMMANDS_FILE_NAME, project);
 
     URL courseConfigurationFileUrl = getCourseUrlFromProject(project);
     if (courseConfigurationFileUrl == null) {

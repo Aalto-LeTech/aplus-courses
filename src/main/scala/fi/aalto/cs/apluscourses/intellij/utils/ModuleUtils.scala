@@ -36,6 +36,7 @@ object ModuleUtils {
     nonEmpty
   }
 
+  // O1_SPECIFIC
   def naiveValidate(@NotNull command: String): Boolean =
     command.matches("import\\so1\\.[a-z]*(\\_|\\._)$")
 
@@ -48,8 +49,8 @@ object ModuleUtils {
   def getCommandsText(@NotNull imports: Array[String]): String =
     imports.length match {
       case 0 => ""
-      case 1 => "Auto-imported package [" + imports(0) + "] for your convenience." // scalastyle:ignore
-      case _ => "Auto-imported packages [" + imports.mkString(", ") + "] for your convenience."
+      case 1 => s"Auto-imported package [${imports.head}] for your convenience."
+      case _ => s"Auto-imported packages [${imports.mkString(", ")}] for your convenience."
     }
 
   def getUpdatedText(@NotNull module: Module,
@@ -61,7 +62,7 @@ object ModuleUtils {
       " the REPL with [Ctrl+F5] or the icon on the left. \n"
 
     if (isTopLevelModule(module)) {
-      commonText + originalText + "Note: This REPL session is not linked to any course module. To " +
+      s"${commonText}${originalText}Note: This REPL session is not linked to any course module. To " +
         "use a module from the REPL, select the module and press [Ctrl+Shift+D] to launch a new " +
         "session."
     } else {
@@ -69,8 +70,7 @@ object ModuleUtils {
       val clearedCommands = clearCommands(validCommands)
       val commandsText = getCommandsText(clearedCommands)
 
-      "Loaded A+ Courses module [" + module.getName + "]. " + commandsText + "\n" + commonText +
-        originalText
+      s"Loaded A+ Courses module [${module.getName}]. ${commandsText}\n${commonText}${originalText}"
     }
   }
 
@@ -93,7 +93,7 @@ object ModuleUtils {
       .courseViewModel
       .get()
       .getModel
-      .getCourseReplInitialCommands
+      .getReplInitialCommands
       .getOrDefault(module.getName, Array.empty)
   }
 

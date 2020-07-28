@@ -65,7 +65,7 @@ public class PluginSettingsTest extends BasePlatformTestCase {
     String fileName = ".sampleFileToIgnore";
     String expected = FileTypeManager.getInstance().getIgnoredFilesList() + fileName + ";";
 
-    PluginSettings.ignoreFileInProjectView(fileName, getProject());
+    PluginSettings.getInstance().ignoreFileInProjectView(fileName, getProject());
 
     String actual = FileTypeManager.getInstance().getIgnoredFilesList();
     assertEquals("The file is successfully added to the ignored files list.", expected, actual);

@@ -188,7 +188,7 @@ class IntelliJModule
    * the Module in course configuration file).
    */
   // todo: test me!
-  protected void writeReplInitialCommandsFile() {
+  private void writeReplInitialCommandsFile() {
     String[] commands = getReplInitialCommandsForModule(
         Objects.requireNonNull(this.getPlatformObject()));
     if (commands != null && !ArrayUtils.isEmpty(commands)) {
@@ -202,5 +202,21 @@ class IntelliJModule
       }
       FileUtilRt.createIfNotExists(file);
     }
+  }
+
+
+  //todo: remove as a duplicate (of a Scala object code that I could not call directly)
+  // ReplUtils.getReplInitialCommandsForModule(...) & test me!
+  @NotNull
+  protected static String[] getReplInitialCommandsForModule(
+      com.intellij.openapi.module.Module module) {
+    return PluginSettings
+        .getInstance()
+        .getMainViewModel(module.getProject())
+        .courseViewModel
+        .get()
+        .getModel()
+        .getReplInitialCommands()
+        .getOrDefault(module.getName(), ArrayUtils.EMPTY_STRING_ARRAY);
   }
 }

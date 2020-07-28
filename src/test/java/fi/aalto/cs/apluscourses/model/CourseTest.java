@@ -57,7 +57,7 @@ public class CourseTest {
         "The auto-install components should be the same as those given to the constructor",
         module1name, course.getAutoInstallComponents().get(0).getName());
     assertEquals("The REPL initial commands for Module1 are correct.", "import o1._",
-        course.getCourseReplInitialCommands().get("Module1")[0]);
+        course.getReplInitialCommands().get("Module1")[0]);
   }
 
   @Test
@@ -137,9 +137,9 @@ public class CourseTest {
     assertEquals("The course should have the auto-install components of the configuration JSON",
         "O1Library", course.getAutoInstallComponents().get(0).getName());
     assertEquals("The course should have the REPL initial commands of the configuration JSON",
-        "import o1._", course.getCourseReplInitialCommands().get("GoodStuff")[0]);
+        "import o1._", course.getReplInitialCommands().get("GoodStuff")[0]);
     assertEquals("The course should have the REPL initial commands of the configuration JSON",
-        "import o1.goodstuff._", course.getCourseReplInitialCommands().get("GoodStuff")[1]);
+        "import o1.goodstuff._", course.getReplInitialCommands().get("GoodStuff")[1]);
   }
 
   @Test(expected = MalformedCourseConfigurationFileException.class)
@@ -217,7 +217,7 @@ public class CourseTest {
 
     //  when
     Map<String, String[]> replInitialCommands = Course
-        .getCourseReplInitialCommands(replInitialCommandsJson, "");
+        .getReplInitialCommands(replInitialCommandsJson, "");
 
     //  then
     String[] trainsCommands = replInitialCommands.get("Train");
@@ -238,7 +238,7 @@ public class CourseTest {
       throws MalformedCourseConfigurationFileException {
     JSONObject wrongJsonStringJson = new JSONObject("{}");
 
-    Course.getCourseReplInitialCommands(wrongJsonStringJson, "");
+    Course.getReplInitialCommands(wrongJsonStringJson, "");
   }
 
   public static JSONObject getJsonObject(File file) throws IOException {
