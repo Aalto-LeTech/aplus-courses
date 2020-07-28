@@ -25,7 +25,7 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
       case FULL_POINTS:
         return PluginIcons.A_PLUS_FULL_POINTS;
       default:
-        return null;
+        throw new IllegalStateException("Invalid exercise view model status");
     }
   }
 

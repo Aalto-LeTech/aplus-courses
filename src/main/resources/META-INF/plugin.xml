@@ -77,10 +77,6 @@
                     class="fi.aalto.cs.apluscourses.intellij.actions.RefreshAction"
                     text="Update Exercises"
                     icon="PluginIcons.A_PLUS_REFRESH" />
-            <action id="fi.aalto.cs.apluscourses.intellij.actions.GetSubmissionsDashboardAction"
-                    class="fi.aalto.cs.apluscourses.intellij.actions.GetSubmissionsDashboardAction"
-                    text="Get submissions' results"
-                    icon="PluginIcons.A_PLUS_GET_RESULTS"/>
         </group>
         <action id="fi.aalto.cs.apluscourses.intellij.actions.RequiredPluginsCheckerAction"
                 class="fi.aalto.cs.apluscourses.intellij.actions.RequiredPluginsCheckerAction"
