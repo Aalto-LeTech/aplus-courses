@@ -7,19 +7,19 @@ import static org.mockito.Mockito.mock;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.testFramework.LightIdeaTestCase;
-import fi.aalto.cs.apluscourses.model.APlusAuthentication;
+import fi.aalto.cs.apluscourses.dal.APlusTokenAuthentication;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.presentation.AuthenticationViewModel;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class APlusAuthenticationViewTest extends LightIdeaTestCase {
+public class APlusTokenAuthenticationViewTest extends LightIdeaTestCase {
 
   private static class TestAuthenticationView extends APlusAuthenticationView {
 
     public TestAuthenticationView() {
-      super(new AuthenticationViewModel(), mock(Project.class));
+      super(new AuthenticationViewModel(APlusTokenAuthentication::new), mock(Project.class));
     }
 
     public TestAuthenticationView(AuthenticationViewModel viewModel) {
@@ -44,7 +44,8 @@ public class APlusAuthenticationViewTest extends LightIdeaTestCase {
 
   @Test
   public void testSetsViewModelAfterOk() {
-    AuthenticationViewModel authenticationViewModel = new AuthenticationViewModel();
+    AuthenticationViewModel authenticationViewModel =
+        new AuthenticationViewModel(APlusTokenAuthentication::new);
     TestAuthenticationView authenticationView = new TestAuthenticationView(authenticationViewModel);
 
     String tokenString = "wxyz";
@@ -55,7 +56,7 @@ public class APlusAuthenticationViewTest extends LightIdeaTestCase {
     Authentication authentication = authenticationViewModel.build();
 
     assertTrue("The authentication dialog produces the correct model object",
-        ((APlusAuthentication) authentication).tokenEquals(tokenString));
+        ((APlusTokenAuthentication) authentication).tokenEquals(tokenString));
   }
 
   @Test

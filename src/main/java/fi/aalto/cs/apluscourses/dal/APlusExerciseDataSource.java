@@ -31,7 +31,7 @@ public class APlusExerciseDataSource extends ExerciseDataSource {
   private final Client client;
 
   @NotNull
-  private String apiUrl;
+  private final String apiUrl;
 
   @NotNull
   private final Parser parser;
@@ -39,28 +39,28 @@ public class APlusExerciseDataSource extends ExerciseDataSource {
   /**
    * Default constructor.
    *
-   * @param authProvider Used for creating an authentication for this data source.
+   * @param authentication Used for authenticating this data source.
    */
-  public APlusExerciseDataSource(@NotNull AuthProvider authProvider) {
-    this(authProvider,
+  public APlusExerciseDataSource(@NotNull Authentication authentication, @NotNull String apiUrl) {
+    this(authentication,
+        apiUrl,
         DefaultDataAccess.INSTANCE,
-        PluginSettings.A_PLUS_API_BASE_URL,
         DefaultDataAccess.INSTANCE);
   }
 
   /**
    * Constructor for demanding use (e.g. tests).
    *
-   * @param authProvider Authentication provider.
-   * @param client       Client to fetch and post.
-   * @param apiUrl       The base URL of API.
-   * @param parser       JSON parser.
+   * @param authentication Authentication object.
+   * @param client         Client to fetch and post.
+   * @param apiUrl         The base URL of API.
+   * @param parser         JSON parser.
    */
-  public APlusExerciseDataSource(@NotNull AuthProvider authProvider,
-                                 @NotNull Client client,
+  public APlusExerciseDataSource(@NotNull Authentication authentication,
                                  @NotNull String apiUrl,
+                                 @NotNull Client client,
                                  @NotNull Parser parser) {
-    super(authProvider);
+    super(authentication);
     this.client = client;
     this.apiUrl = apiUrl;
     this.parser = parser;
@@ -161,6 +161,7 @@ public class APlusExerciseDataSource extends ExerciseDataSource {
     return apiUrl;
   }
 
+  @NotNull
   public Parser getParser() {
     return parser;
   }

@@ -97,7 +97,7 @@ public class SubmitExerciseAction extends AnAction {
     MainViewModel mainViewModel = mainViewModelProvider.getMainViewModel(project);
     CourseViewModel courseViewModel = mainViewModel.courseViewModel.get();
     ExercisesTreeViewModel exercisesViewModel = mainViewModel.exercisesViewModel.get();
-    ExerciseDataSource exerciseDataSource = mainViewModel.getExerciseDataSource();
+    ExerciseDataSource exerciseDataSource = mainViewModel.exerciseDataSource.get();
 
     e.getPresentation().setEnabled(project != null && exercisesViewModel != null
         && exerciseDataSource != null && courseViewModel != null);
@@ -125,7 +125,7 @@ public class SubmitExerciseAction extends AnAction {
     MainViewModel mainViewModel = mainViewModelProvider.getMainViewModel(project);
     CourseViewModel courseViewModel = mainViewModel.courseViewModel.get();
     ExercisesTreeViewModel exercisesViewModel = mainViewModel.exercisesViewModel.get();
-    ExerciseDataSource exerciseDataSource = mainViewModel.getExerciseDataSource();
+    ExerciseDataSource exerciseDataSource = mainViewModel.exerciseDataSource.get();
 
     if (courseViewModel == null || exercisesViewModel == null || exerciseDataSource == null) {
       return;

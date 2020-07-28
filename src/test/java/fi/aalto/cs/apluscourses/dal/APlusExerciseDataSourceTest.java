@@ -43,7 +43,6 @@ import org.mockito.ArgumentCaptor;
 public class APlusExerciseDataSourceTest {
 
   final Authentication authentication = mock(Authentication.class);
-  final ExerciseDataSource.AuthProvider authProvider = () -> authentication;
   final String url = "https://example.com";
 
   Client client;
@@ -58,14 +57,15 @@ public class APlusExerciseDataSourceTest {
     client = mock(Client.class);
     parser = mock(Parser.class);
     doCallRealMethod().when(parser).parseArray(any(), any());
-    exerciseDataSource = new APlusExerciseDataSource(authProvider, client, url, parser);
+    exerciseDataSource = new APlusExerciseDataSource(authentication, url, client, parser);
   }
 
   @Test
   public void testDefaultConstructor() {
-    APlusExerciseDataSource exerciseDataSource = new APlusExerciseDataSource(authProvider);
+    APlusExerciseDataSource exerciseDataSource = new APlusExerciseDataSource(authentication, url);
+    assertSame(authentication, exerciseDataSource.getAuthentication());
+    assertSame(url, exerciseDataSource.getApiUrl());
     assertSame(APlusExerciseDataSource.DefaultDataAccess.INSTANCE, exerciseDataSource.getClient());
-    assertEquals(PluginSettings.A_PLUS_API_BASE_URL, exerciseDataSource.getApiUrl());
     assertSame(APlusExerciseDataSource.DefaultDataAccess.INSTANCE, exerciseDataSource.getParser());
   }
 

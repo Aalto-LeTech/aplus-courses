@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.model;
 
+import com.intellij.openapi.vfs.local.PluggableFileWatcher;
+import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
 import java.io.IOException;
 import java.io.InputStream;
@@ -442,4 +444,8 @@ public class Course implements ComponentSource {
     // Subclasses may do things.
   }
 
+  public String getApiUrl() {
+    //TODO This should be read from course config file
+    return PluginSettings.A_PLUS_API_BASE_URL;
+  }
 }

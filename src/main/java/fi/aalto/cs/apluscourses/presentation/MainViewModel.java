@@ -5,15 +5,17 @@ import fi.aalto.cs.apluscourses.model.ExerciseGroup;
 import fi.aalto.cs.apluscourses.model.InvalidAuthenticationException;
 import fi.aalto.cs.apluscourses.model.Points;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
+import fi.aalto.cs.apluscourses.utils.Event;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
 import java.io.IOException;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class MainViewModel {
+
+  public final Event disposing = new Event();
 
   @NotNull
   public final ObservableProperty<CourseViewModel> courseViewModel =
@@ -23,46 +25,19 @@ public class MainViewModel {
   public final ObservableProperty<ExercisesTreeViewModel> exercisesViewModel =
       new ObservableReadWriteProperty<>(null);
 
-  private ExerciseDataSource exerciseDataSource;
-  private final Object exerciseDataSourceLock = new Object();
+  public final ObservableProperty<ExerciseDataSource> exerciseDataSource =
+      new ObservableReadWriteProperty<>(null);
 
   /**
    * Instantiates a new view model for the main object.
    */
   public MainViewModel() {
     courseViewModel.addValueObserver(this, MainViewModel::updateExercises);
-  }
-
-  public void setExerciseDataSource(@NotNull ExerciseDataSource.Provider provider,
-                                    @NotNull ExerciseDataSource.AuthProvider authProvider) {
-    setExerciseDataSource(provider.create(authProvider));
-    updateExercises();
-  }
-
-  private void setExerciseDataSource(@Nullable ExerciseDataSource exerciseDataSource) {
-    synchronized (exerciseDataSourceLock) {
-      this.exerciseDataSource = exerciseDataSource;
-    }
-  }
-
-  /**
-   * Returns data source object for exercises.
-   *
-   * @return An {@link ExerciseDataSource} object.
-   */
-  @Nullable
-  public ExerciseDataSource getExerciseDataSource() {
-    synchronized (exerciseDataSourceLock) {
-      return exerciseDataSource;
-    }
-  }
-
-  public void clear() {
-    setExerciseDataSource(null);
+    exerciseDataSource.addValueObserver(this, MainViewModel::updateExercises);
   }
 
   private void updateExercises() {
-    ExerciseDataSource localExerciseDataSource = getExerciseDataSource();
+    ExerciseDataSource localExerciseDataSource = exerciseDataSource.get();
     CourseViewModel course = courseViewModel.get();
     if (course == null || localExerciseDataSource == null) {
       return;
@@ -78,6 +53,10 @@ public class MainViewModel {
     } catch (IOException e) {
       // This too
     }
+  }
+
+  public void dispose() {
+    disposing.trigger();
   }
 
   @NotNull

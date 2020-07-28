@@ -28,8 +28,6 @@ import fi.aalto.cs.apluscourses.intellij.notifications.NotSubmittableNotificatio
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.services.Dialogs;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
-import fi.aalto.cs.apluscourses.model.APlusAuthentication;
-import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.ExerciseDataSource;
@@ -74,10 +72,6 @@ public class SubmitExerciseActionTest {
   SubmissionInfo submissionInfo;
   MainViewModel mainViewModel;
   CourseViewModel courseViewModel;
-  String token;
-  Authentication authentication;
-  ExerciseDataSource.AuthProvider authProvider;
-  ExerciseDataSource.Provider exerciseDataSourceProvider;
   ExerciseDataSource exerciseDataSource;
   ExercisesTreeViewModel exercises;
   String moduleName;
@@ -131,15 +125,7 @@ public class SubmitExerciseActionTest {
         .when(exerciseDataSource)
         .getExerciseGroups(same(course), any(Points.class));
 
-    token = "testtoken";
-    authentication = new APlusAuthentication(token.toCharArray());
-    authProvider = mock(ExerciseDataSource.AuthProvider.class);
-    doReturn(authentication).when(authProvider).create();
-
-    exerciseDataSourceProvider = mock(ExerciseDataSource.Provider.class);
-    doReturn(exerciseDataSource).when(exerciseDataSourceProvider).create(authProvider);
-
-    mainViewModel.setExerciseDataSource(exerciseDataSourceProvider, authProvider);
+    mainViewModel.exerciseDataSource.set(exerciseDataSource);
 
     exercises = Objects.requireNonNull(mainViewModel.exercisesViewModel.get());
     exercises.getGroupViewModels().get(0).getExerciseViewModels().get(0).setSelected(true);

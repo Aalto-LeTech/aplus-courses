@@ -8,19 +8,21 @@ import static org.mockito.Mockito.mock;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
+import fi.aalto.cs.apluscourses.dal.APlusTokenAuthentication;
 import fi.aalto.cs.apluscourses.intellij.DialogHelper;
 import fi.aalto.cs.apluscourses.intellij.services.Dialogs;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
-import fi.aalto.cs.apluscourses.model.APlusAuthentication;
 import fi.aalto.cs.apluscourses.model.ExerciseDataSource;
+import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.presentation.AuthenticationViewModel;
+import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import java.util.Objects;
 import org.junit.Before;
 import org.junit.Test;
 
-public class APlusAuthenticationActionTest {
+public class APlusTokenAuthenticationActionTest {
 
   Project project;
   AnActionEvent actionEvent;
@@ -46,6 +48,7 @@ public class APlusAuthenticationActionTest {
   @Test
   public void testActionPerformed() {
     MainViewModel mainViewModel = new MainViewModel();
+    mainViewModel.courseViewModel.set(new CourseViewModel(new ModelExtensions.TestCourse("oe1")));
     MainViewModelProvider mainViewModelProvider = mock(MainViewModelProvider.class);
     doReturn(mainViewModel).when(mainViewModelProvider).getMainViewModel(project);
 
@@ -59,12 +62,14 @@ public class APlusAuthenticationActionTest {
     Dialogs dialogs = new Dialogs();
     dialogs.register(AuthenticationViewModel.class, new DialogHelper.Factory<>(dialog, project));
 
-    new APlusAuthenticationAction(mainViewModelProvider, dialogs).actionPerformed(actionEvent);
+    new APlusAuthenticationAction(mainViewModelProvider, service -> null, dialogs)
+        .actionPerformed(actionEvent);
 
     ExerciseDataSource exerciseDataSource =
-        Objects.requireNonNull(mainViewModel.getExerciseDataSource());
+        Objects.requireNonNull(mainViewModel.exerciseDataSource.get());
 
-    assertTrue(((APlusAuthentication) exerciseDataSource.getAuthentication()).tokenEquals(token));
+    assertTrue(
+        ((APlusTokenAuthentication) exerciseDataSource.getAuthentication()).tokenEquals(token));
   }
 
   @Test
@@ -78,9 +83,10 @@ public class APlusAuthenticationActionTest {
     Dialogs dialogs = new Dialogs();
     dialogs.register(AuthenticationViewModel.class, new DialogHelper.Factory<>(dialog, project));
 
-    new APlusAuthenticationAction(mainViewModelProvider, dialogs).actionPerformed(actionEvent);
+    new APlusAuthenticationAction(mainViewModelProvider, service -> null, dialogs)
+        .actionPerformed(actionEvent);
 
-    assertNull(mainViewModel.getExerciseDataSource());
+    assertNull(mainViewModel.exerciseDataSource.get());
   }
 
 }

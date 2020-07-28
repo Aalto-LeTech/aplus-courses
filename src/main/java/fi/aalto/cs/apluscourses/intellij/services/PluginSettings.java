@@ -67,7 +67,7 @@ public class PluginSettings implements MainViewModelProvider {
       }
       MainViewModel mainViewModel = mainViewModels.remove(project);
       if (mainViewModel != null) {
-        mainViewModel.clear();
+        mainViewModel.dispose();
       }
       ProjectManager.getInstance().removeProjectManagerListener(project, this);
     }

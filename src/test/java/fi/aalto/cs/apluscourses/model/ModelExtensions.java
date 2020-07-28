@@ -1,6 +1,5 @@
 package fi.aalto.cs.apluscourses.model;
 
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 import java.io.IOException;
@@ -28,7 +27,7 @@ public class ModelExtensions {
   public static class TestExerciseDataSource extends ExerciseDataSource {
 
     public TestExerciseDataSource() {
-      super(() -> mock(APlusAuthentication.class));
+      super(mock(Authentication.class));
     }
 
     @NotNull
