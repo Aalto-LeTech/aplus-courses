@@ -10,11 +10,28 @@
     <children>
       <grid id="5c051" binding="toolbarContainer" layout-manager="FlowLayout" hgap="0" vgap="0" flow-align="3">
         <constraints>
-          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="3" anchor="1" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="-1" height="17"/>
+          </grid>
         </constraints>
         <properties/>
         <border type="none"/>
-        <children/>
+        <children>
+          <component id="ce006" class="javax.swing.JToolBar$Separator">
+            <constraints/>
+            <properties/>
+          </component>
+          <component id="a54c3" class="javax.swing.JLabel">
+            <constraints/>
+            <properties>
+              <text value="Modules"/>
+            </properties>
+          </component>
+          <component id="2132d" class="javax.swing.JToolBar$Separator">
+            <constraints/>
+            <properties/>
+          </component>
+        </children>
       </grid>
       <scrollpane id="7ffb3">
         <constraints>
@@ -25,7 +42,6 @@
         <children>
           <component id="b661" class="fi.aalto.cs.apluscourses.ui.module.ModuleListView" binding="moduleListView">
             <constraints/>
-            <properties/>
           </component>
         </children>
       </scrollpane>
