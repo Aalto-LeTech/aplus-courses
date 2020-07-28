@@ -29,7 +29,7 @@ public class ExerciseViewModelTest {
     ExerciseViewModel ex2 = new ExerciseViewModel(new Exercise(
         2, "|en:Assignment 13 (Test)|fi:Tehtava 13 (Test)|", Collections.emptyList(), 0, 0, 0));
     ExerciseViewModel ex3 = new ExerciseViewModel(new Exercise(
-        2, "|en:Assignment 1 (Piazza)|fi:Tehtava 1 (Piazzza)|", Collections.emptyList(), 0, 0, 0));
+        2, "|en:Assignment 1 (Piazza)|fi:Tehtava 1 (Piazza)|", Collections.emptyList(), 0, 0, 0));
 
     Assert.assertFalse("An assignment without a specific name is not submittable",
         ex1.isSubmittable());
