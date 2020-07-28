@@ -38,26 +38,28 @@ public class ExerciseGroup {
    * @param jsonObject The JSON object from which the exercise group is constructed.
    */
   @NotNull
-  public static ExerciseGroup fromJsonObject(@NotNull JSONObject jsonObject) {
+  public static ExerciseGroup fromJsonObject(@NotNull JSONObject jsonObject,
+                                             @NotNull Points points) {
     String name = jsonObject.getString("display_name");
     JSONArray exercisesArray = jsonObject.getJSONArray("exercises");
     List<Exercise> exercises = new ArrayList<>(exercisesArray.length());
     for (int i = 0; i < exercisesArray.length(); ++i) {
       JSONObject exerciseObject = exercisesArray.getJSONObject(i);
-      exercises.add(Exercise.fromJsonObject(exerciseObject));
+      exercises.add(Exercise.fromJsonObject(exerciseObject, points));
     }
     return new ExerciseGroup(name, exercises);
   }
 
   /**
    * Return the list of exercise groups contained in the given JSON array. Each element in the array
-   * should be a JSON object that works with {@link ExerciseGroup#fromJsonObject(JSONObject)}.
+   * should be a JSON object that works with {@link ExerciseGroup#fromJsonObject}.
    */
   @NotNull
-  public static List<ExerciseGroup> fromJsonArray(@NotNull JSONArray jsonArray) {
+  public static List<ExerciseGroup> fromJsonArray(@NotNull JSONArray jsonArray,
+                                                  @NotNull Points points) {
     List<ExerciseGroup> exerciseGroups = new ArrayList<>(jsonArray.length());
     for (int i = 0; i < jsonArray.length(); ++i) {
-      exerciseGroups.add(fromJsonObject(jsonArray.getJSONObject(i)));
+      exerciseGroups.add(fromJsonObject(jsonArray.getJSONObject(i), points));
     }
     return exerciseGroups;
   }

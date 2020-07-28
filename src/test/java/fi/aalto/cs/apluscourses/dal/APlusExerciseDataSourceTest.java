@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -17,6 +18,7 @@ import fi.aalto.cs.apluscourses.model.ExerciseDataSource;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
+import fi.aalto.cs.apluscourses.model.Points;
 import fi.aalto.cs.apluscourses.model.Submission;
 import fi.aalto.cs.apluscourses.model.SubmissionHistory;
 import fi.aalto.cs.apluscourses.model.SubmissionInfo;
@@ -26,6 +28,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,7 +77,7 @@ public class APlusExerciseDataSourceTest {
     doReturn(response).when(client).fetch("https://example.com/exercises/55/", authentication);
     doReturn(submissionInfo).when(parser).parseSubmissionInfo(response);
 
-    Exercise exercise = new Exercise(55, "myex");
+    Exercise exercise = new Exercise(55, "myex", Collections.emptyList(), 0, 0, 0);
 
     assertSame(submissionInfo, exerciseDataSource.getSubmissionInfo(exercise));
   }
@@ -87,7 +91,7 @@ public class APlusExerciseDataSourceTest {
         .fetch("https://example.com/exercises/43/submissions/me/", authentication);
     doReturn(submissionHistory).when(parser).parseSubmissionHistory(response);
 
-    Exercise exercise = new Exercise(43, "someex");
+    Exercise exercise = new Exercise(43, "someex", Collections.emptyList(), 0, 0, 0);
 
     assertSame(submissionHistory, exerciseDataSource.getSubmissionHistory(exercise));
   }
@@ -123,23 +127,22 @@ public class APlusExerciseDataSourceTest {
   public void testGetExerciseGroups() throws IOException {
     JSONObject object0 = new JSONObject();
     JSONObject object1 = new JSONObject();
+    JSONArray array = new JSONArray().put(object0).put(object1);
 
-    JSONObject response = new JSONObject()
-        .put("results", new JSONArray()
-            .put(object0)
-            .put(object1));
+    JSONObject response = new JSONObject().put("results", array);
 
     ExerciseGroup exGroup0 = new ExerciseGroup("First Week", new ArrayList<>());
     ExerciseGroup exGroup1 = new ExerciseGroup("Second Week", new ArrayList<>());
 
     doReturn(response).when(client)
         .fetch("https://example.com/courses/99/exercises/", authentication);
-    doReturn(exGroup0).when(parser).parseExerciseGroup(object0);
-    doReturn(exGroup1).when(parser).parseExerciseGroup(object1);
+    doReturn(Arrays.asList(exGroup0, exGroup1))
+        .when(parser)
+        .parseExerciseGroups(same(array), any(Points.class));
 
     Course course = new ModelExtensions.TestCourse("99");
 
-    List<ExerciseGroup> exGroups = exerciseDataSource.getExerciseGroups(course);
+    List<ExerciseGroup> exGroups = exerciseDataSource.getExerciseGroups(course, mock(Points.class));
 
     assertEquals(2, exGroups.size());
     assertSame(exGroup0, exGroups.get(0));
@@ -163,7 +166,7 @@ public class APlusExerciseDataSourceTest {
     SubmissionInfo submissionInfo =
         new SubmissionInfo(1, new SubmittableFile[] { subFile0, subFile1 });
 
-    Exercise exercise = new Exercise(71, "newex");
+    Exercise exercise = new Exercise(71, "newex", Collections.emptyList(), 0, 0, 0);
 
     Group group = new Group(435, new ArrayList<>());
 

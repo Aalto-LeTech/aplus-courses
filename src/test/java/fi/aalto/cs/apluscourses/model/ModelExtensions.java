@@ -1,5 +1,8 @@
 package fi.aalto.cs.apluscourses.model;
 
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -25,7 +28,7 @@ public class ModelExtensions {
   public static class TestExerciseDataSource extends ExerciseDataSource {
 
     public TestExerciseDataSource() {
-      super(() -> new APlusAuthentication(new char[0]));
+      super(() -> mock(APlusAuthentication.class));
     }
 
     @NotNull
@@ -48,8 +51,15 @@ public class ModelExtensions {
 
     @NotNull
     @Override
-    public List<ExerciseGroup> getExerciseGroups(@NotNull Course course) throws IOException {
+    public List<ExerciseGroup> getExerciseGroups(@NotNull Course course,
+                                                 @NotNull Points points) throws IOException {
       return Collections.emptyList();
+    }
+
+    @NotNull
+    @Override
+    public Points getPoints(@NotNull Course course) throws IOException {
+      return new Points(Collections.emptyMap(), Collections.emptyMap());
     }
 
     @Override

@@ -1,29 +1,57 @@
 package fi.aalto.cs.apluscourses.model;
 
-import static org.junit.Assert.assertEquals;
-
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
+import org.junit.Assert;
 import org.junit.Test;
 
-public class SubmissionResultsListTest {
+public class PointsTest {
+
+  @Test
+  public void testPoints() {
+    Points points = new Points(
+        Collections.singletonMap(123L, Arrays.asList(11L, 22L)),
+        Collections.singletonMap(123L, 55)
+    );
+
+    Assert.assertEquals("The submission ID list is the same as that given to the constructor",
+        Long.valueOf(11L), points.getSubmissions().get(123L).get(0));
+    Assert.assertEquals("The submission ID list is the same as that given to the constructor",
+        Long.valueOf(22L), points.getSubmissions().get(123L).get(1));
+    Assert.assertEquals("The points for an exercise is the same as that given to the constructor",
+        Integer.valueOf(55), points.getPoints().get(123L));
+  }
 
   @Test
   public void testFromJsonObject() {
-    //  given
     String jsonObjectString = getLargeJsonString();
     JSONObject jsonObject = new JSONObject(jsonObjectString);
 
-    //  when
-    SubmissionResultsList submissionResultsList = SubmissionResultsList.fromJsonObject(jsonObject);
+    Points points = Points.fromJsonObject(jsonObject);
+    Map<Long, Integer> idToPoints = points.getPoints();
 
-    //  then
-    assertEquals("Student id is correct.", 19457, submissionResultsList.getStudentId());
-    assertEquals("List of SubmissionResults is of a correct length.", 4,
-        submissionResultsList.getSubmissionResults().size());
-    assertEquals("The total amount of points is correct.", 5,
-        submissionResultsList.getTotalPoints());
+    int[] exercisePoints = new int[] {
+        idToPoints.get(26038L),
+        idToPoints.get(26039L),
+        idToPoints.get(26160L),
+        idToPoints.get(26162L)
+    };
+
+    Assert.assertArrayEquals("The points of exercises are the same as those in the JSON",
+        new int[] {5, 2, 0, 0}, exercisePoints);
+
+    Assert.assertEquals("The submissions for exercises are the same as those in the JSON",
+        Long.valueOf(2921874L), points.getSubmissions().get(26038L).get(0));
+    Assert.assertEquals("The submissions for exercises are the same as those in the JSON",
+        Long.valueOf(2921867L), points.getSubmissions().get(26038L).get(1));
   }
 
+  @NotNull
+  @Contract(pure = true)
   private String getLargeJsonString() {
     return "{\"id\":19457,\"url\":\"https://plus.cs.aalto.fi/api/v2/users/19457/?format=json\","
         + "\"username\":\"testik34@aalto.fi\",\"student_id\":\"TESTI64\","
