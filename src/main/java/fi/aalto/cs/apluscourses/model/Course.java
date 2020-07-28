@@ -486,10 +486,6 @@ public class Course implements ComponentSource {
       replInitialCommandsJsonObject = jsonObject
           .getJSONObject("repl").getJSONObject("initialCommands");
 
-      if (replInitialCommandsJsonObject == null) {
-        return replInitialCommands;
-      }
-
       Iterable<String> keys = replInitialCommandsJsonObject::keys;
       for (String moduleName : keys) {
         String[] replCommands = replInitialCommandsJsonObject

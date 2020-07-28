@@ -251,7 +251,7 @@ public class PluginSettings implements MainViewModelProvider {
    * @param ignoredFileName a {@link String} name of the file to be ignored.
    * @param project a {@link Project} to ignore the file from.
    */
-  public static void ignoreFileInProjectView(@NotNull String ignoredFileName,
+  public void ignoreFileInProjectView(@NotNull String ignoredFileName,
                                       @NotNull Project project) {
     FileTypeManager fileTypeManager = FileTypeManager.getInstance();
     String ignoredFilesList = fileTypeManager.getIgnoredFilesList();

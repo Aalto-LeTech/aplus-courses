@@ -191,7 +191,7 @@ class IntelliJModule
   private void writeReplInitialCommandsFile() {
     String[] commands = getReplInitialCommandsForModule(
         Objects.requireNonNull(this.getPlatformObject()));
-    if (commands != null && !ArrayUtils.isEmpty(commands)) {
+    if (!ArrayUtils.isEmpty(commands)) {
 
       File file = new File(getFullPath() + "/"
           + PluginSettings.MODULE_REPL_INITIAL_COMMANDS_FILE_NAME);
@@ -210,13 +210,13 @@ class IntelliJModule
   @NotNull
   protected static String[] getReplInitialCommandsForModule(
       com.intellij.openapi.module.Module module) {
-    return PluginSettings
+    return ReadAction.compute(() -> PluginSettings
         .getInstance()
         .getMainViewModel(module.getProject())
         .courseViewModel
         .get()
         .getModel()
         .getReplInitialCommands()
-        .getOrDefault(module.getName(), ArrayUtils.EMPTY_STRING_ARRAY);
+        .getOrDefault(module.getName(), ArrayUtils.EMPTY_STRING_ARRAY));
   }
 }
