@@ -79,7 +79,8 @@
                 text="Check Required Plugins"/>
         <action id="Scala.RunConsole"
                 class="fi.aalto.cs.apluscourses.intellij.actions.ReplAction"
-                overrides="true">
+                overrides="true"
+                icon="PluginIcons.A_PLUS_REPL">
             <keyboard-shortcut first-keystroke="control shift D" keymap="$default"/>
         </action>
     </actions>
