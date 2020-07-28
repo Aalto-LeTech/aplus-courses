@@ -15,7 +15,7 @@ public class SubmissionTest {
 
   @Test
   public void testCreate() {
-    Exercise exercise = new Exercise(85678, "ex");
+    Exercise exercise = new Exercise(85678, "ex", Collections.emptyList(), 0, 0, 0);
     SubmittableFile fileA = new SubmittableFile("keyA", "fileA");
     SubmittableFile fileB = new SubmittableFile("keyB", "fileB");
     SubmissionInfo info = new SubmissionInfo(10, new SubmittableFile[] { fileA, fileB });

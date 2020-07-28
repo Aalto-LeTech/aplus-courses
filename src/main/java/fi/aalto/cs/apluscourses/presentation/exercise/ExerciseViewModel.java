@@ -18,6 +18,38 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
     return APlusLocalizationUtil.getEnglishName(getModel().getName());
   }
 
+  /**
+   * Returns {@code true} if the exercise is submittable from the plugin, {@code false} otherwise.
+   */
+  public boolean isSubmittable() {
+    String presentableName = getPresentableName();
+    return presentableName.length() > "Assignment xx (".length()
+        && !"Assignment 1 (Piazza)".equals(presentableName);
+  }
+
+  public enum Status {
+    NO_SUBMISSIONS,
+    NO_POINTS,
+    PARTIAL_POINTS,
+    FULL_POINTS,
+  }
+
+  /**
+   * Returns a {@link Status} that indicates the points status of this exercise.
+   */
+  public Status getStatus() {
+    Exercise exercise = getModel();
+    if (exercise.getSubmissionIds().isEmpty()) {
+      return Status.NO_SUBMISSIONS;
+    } else if (exercise.getUserPoints() == exercise.getMaxPoints()) {
+      return Status.FULL_POINTS;
+    } else if (exercise.getUserPoints() == 0) {
+      return Status.NO_POINTS;
+    } else {
+      return Status.PARTIAL_POINTS;
+    }
+  }
+
   @Nullable
   @Override
   public List<TreeViewModel> getSubtrees() {

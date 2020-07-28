@@ -8,6 +8,7 @@ import fi.aalto.cs.apluscourses.model.ExerciseDataSource;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.InvalidAuthenticationException;
+import fi.aalto.cs.apluscourses.model.Points;
 import fi.aalto.cs.apluscourses.model.Submission;
 import fi.aalto.cs.apluscourses.model.SubmissionHistory;
 import fi.aalto.cs.apluscourses.model.SubmissionInfo;
@@ -20,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
@@ -82,8 +84,8 @@ public class APlusExerciseDataSource extends ExerciseDataSource {
    *
    * @throws IOException If an IO error occurs (e.g. network error).
    */
-  @NotNull
   @Override
+  @NotNull
   public SubmissionHistory getSubmissionHistory(@NotNull Exercise exercise) throws IOException {
     String url = apiUrl + "/exercises/" + exercise.getId() + "/submissions/me/";
     JSONObject response = client.fetch(url, authentication);
@@ -107,16 +109,30 @@ public class APlusExerciseDataSource extends ExerciseDataSource {
   }
 
   /**
-   * Get all of the exercise groups in for the given course by making a request to the A+ API.
+   * Get all of the exercise groups in the given course by making a request to the A+ API.
    * @throws IOException If an IO error occurs (for an example a network issue). This is an instance
    *                     of {@link InvalidAuthenticationException} if authentication is invalid.
    */
+  @Override
   @NotNull
-  public List<ExerciseGroup> getExerciseGroups(@NotNull Course course)
+  public List<ExerciseGroup> getExerciseGroups(@NotNull Course course, @NotNull Points points)
       throws IOException {
     String url = apiUrl + "/courses/" + course.getId() + "/exercises/";
     JSONObject response = client.fetch(url, authentication);
-    return parser.parseArray(response.getJSONArray("results"), parser::parseExerciseGroup);
+    return parser.parseExerciseGroups(response.getJSONArray("results"), points);
+  }
+
+  /**
+   * Get all of the points for the given course by making a request to the A+ API.
+   * @throws IOException If an IO error occurs (for an example a network issue). This is an instance
+   *                     of {@link InvalidAuthenticationException} if authentication is invalid.
+   */
+  @Override
+  @NotNull
+  public Points getPoints(@NotNull Course course) throws IOException {
+    String url = apiUrl + "/courses/" + course.getId() + "/points/me/";
+    JSONObject response = client.fetch(url, authentication);
+    return parser.parsePoints(response);
   }
 
   /**
@@ -124,6 +140,7 @@ public class APlusExerciseDataSource extends ExerciseDataSource {
    *
    * @throws IOException If there are IO related errors.
    */
+  @Override
   public void submit(Submission submission) throws IOException {
     Map<String, Object> data = new HashMap<>();
     data.put("__aplus__", "{ \"group\": " + submission.getGroup().getId() + ", \"lang\": \"en\" }");
@@ -185,8 +202,14 @@ public class APlusExerciseDataSource extends ExerciseDataSource {
     }
 
     @Override
-    public ExerciseGroup parseExerciseGroup(JSONObject object) {
-      return ExerciseGroup.fromJsonObject(object);
+    public List<ExerciseGroup> parseExerciseGroups(JSONArray array, Points points) {
+      return ExerciseGroup.fromJsonArray(array, points);
     }
+
+    @Override
+    public Points parsePoints(JSONObject object) {
+      return Points.fromJsonObject(object);
+    }
+
   }
 }

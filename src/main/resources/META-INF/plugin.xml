@@ -66,10 +66,6 @@
                     class="fi.aalto.cs.apluscourses.intellij.actions.SubmitExerciseAction"
                     text="Submit A+ Exercise"
                     icon="PluginIcons.A_PLUS_UPLOAD"/>
-            <action id="fi.aalto.cs.apluscourses.intellij.actions.GetSubmissionsDashboardAction"
-                    class="fi.aalto.cs.apluscourses.intellij.actions.GetSubmissionsDashboardAction"
-                    text="Get submissions' results"
-                    icon="PluginIcons.A_PLUS_GET_RESULTS"/>
         </group>
         <action id="fi.aalto.cs.apluscourses.intellij.actions.RequiredPluginsCheckerAction"
                 class="fi.aalto.cs.apluscourses.intellij.actions.RequiredPluginsCheckerAction"

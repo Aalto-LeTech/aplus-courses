@@ -1,11 +1,15 @@
 package fi.aalto.cs.apluscourses.presentation;
 
 import fi.aalto.cs.apluscourses.model.ExerciseDataSource;
+import fi.aalto.cs.apluscourses.model.ExerciseGroup;
 import fi.aalto.cs.apluscourses.model.InvalidAuthenticationException;
+import fi.aalto.cs.apluscourses.model.Points;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
 import java.io.IOException;
+import java.util.List;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -64,8 +68,11 @@ public class MainViewModel {
       return;
     }
     try {
-      exercisesViewModel.set(
-          new ExercisesTreeViewModel(localExerciseDataSource.getExerciseGroups(course.getModel())));
+      Points points
+          = localExerciseDataSource.getPoints(course.getModel());
+      List<ExerciseGroup> exerciseGroups
+          = localExerciseDataSource.getExerciseGroups(course.getModel(), points);
+      exercisesViewModel.set(new ExercisesTreeViewModel(exerciseGroups));
     } catch (InvalidAuthenticationException e) {
       // TODO: might want to communicate this to the user somehow
     } catch (IOException e) {
