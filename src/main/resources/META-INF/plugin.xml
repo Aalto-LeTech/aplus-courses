@@ -58,6 +58,10 @@
                     class="fi.aalto.cs.apluscourses.intellij.actions.ImportModuleAction"
                     text="Import A+ Module"
                     icon="PluginIcons.A_PLUS_DOWNLOAD"/>
+            <action id="fi.aalto.cs.apluscourses.intellij.actions.ModulesRefreshAction"
+                    class="fi.aalto.cs.apluscourses.intellij.actions.RefreshAction"
+                    text="Update Modules"
+                    icon="PluginIcons.A_PLUS_REFRESH" />
         </group>
         <group id="fi.aalto.cs.apluscourses.intellij.actions.ActionGroups.EXERCISE_ACTIONS"
                text="A+ Exercise"
@@ -69,6 +73,10 @@
             <action id="fi.aalto.cs.apluscourses.intellij.actions.OpenSubmissionAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.OpenSubmissionAction"
                     text="Open A+ Submission" />
+            <action id="fi.aalto.cs.apluscourses.intellij.actions.ExercisesRefreshAction"
+                    class="fi.aalto.cs.apluscourses.intellij.actions.RefreshAction"
+                    text="Update Exercises"
+                    icon="PluginIcons.A_PLUS_REFRESH" />
             <action id="fi.aalto.cs.apluscourses.intellij.actions.GetSubmissionsDashboardAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.GetSubmissionsDashboardAction"
                     text="Get submissions' results"

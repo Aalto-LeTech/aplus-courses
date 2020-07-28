@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.ui.base;
 
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ModalityState;
 import com.intellij.ui.components.JBList;
 import fi.aalto.cs.apluscourses.presentation.base.ListElementViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableListModel;
@@ -90,10 +92,16 @@ public abstract class BaseListView<E extends ListElementViewModel<?>, V extends 
     if (model == null) {
       model = new DefaultListModel<>();
     }
-    super.setModel(model);
-    if (model instanceof SelectableListModel) {
-      setSelectionModel(((SelectableListModel<E>) model).getSelectionModel());
-    }
+    ListModel<E> finalModel = model;
+    ApplicationManager.getApplication().invokeLater(
+        () -> {
+          super.setModel(finalModel);
+          if (finalModel instanceof SelectableListModel) {
+            setSelectionModel(((SelectableListModel<E>) finalModel).getSelectionModel());
+          }
+        },
+        ModalityState.any()
+    );
   }
 
   /**

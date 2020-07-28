@@ -2,7 +2,6 @@ package fi.aalto.cs.apluscourses.ui.exercise;
 
 import fi.aalto.cs.apluscourses.intellij.actions.ActionUtil;
 import fi.aalto.cs.apluscourses.intellij.actions.OpenSubmissionAction;
-import fi.aalto.cs.apluscourses.intellij.actions.SubmitExerciseAction;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.ui.GuiObject;
 import fi.aalto.cs.apluscourses.ui.base.TreeView;

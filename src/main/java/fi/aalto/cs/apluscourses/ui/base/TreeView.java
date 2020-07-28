@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.ui.base;
 
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ModalityState;
 import com.intellij.ui.treeStructure.Tree;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.TreeViewModel;
@@ -41,7 +43,10 @@ public class TreeView extends Tree {
    */
   public void setViewModel(@Nullable TreeViewModel viewModel) {
     if (viewModel != null) {
-      setModel(new DefaultTreeModel(createNode(viewModel)));
+      ApplicationManager.getApplication().invokeLater(
+          () -> setModel(new DefaultTreeModel(createNode(viewModel))),
+          ModalityState.any()
+      );
     }
     selectedItem = null;
   }

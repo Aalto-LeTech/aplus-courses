@@ -28,7 +28,7 @@ public class MainViewModelUpdater {
   @NotNull
   private final Notifier notifier;
 
-  private final Thread thread;
+  private Thread thread;
 
   private Notification newModulesVersionsNotification = null;
 
@@ -52,7 +52,7 @@ public class MainViewModelUpdater {
   }
 
   @NotNull
-  URL getCourseUrl() {
+  private URL getCourseUrl() {
     return ReadAction.compute(() -> {
       if (project.isDisposed() || !project.isOpen()) {
         return null;
@@ -62,7 +62,7 @@ public class MainViewModelUpdater {
   }
 
   @Nullable
-  Course getCourse(@Nullable URL courseUrl) {
+  private Course getCourse(@Nullable URL courseUrl) {
     if (courseUrl == null) {
       return null;
     }
@@ -143,6 +143,16 @@ public class MainViewModelUpdater {
    * sleeping the given amount of time between update attempts.
    */
   public void start() {
+    thread.start();
+  }
+
+  /**
+   * Interrupts the updater and starts it again. This can be used to trigger an instant main view
+   * model update, skipping the sleep interval.
+   */
+  public void restart() {
+    thread.interrupt();
+    thread = new Thread(this::run);
     thread.start();
   }
 
