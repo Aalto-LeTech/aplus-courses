@@ -502,4 +502,8 @@ public class Course implements ComponentSource {
     return replInitialCommands;
   }
 
+  @NotNull
+  public List<String> getAutoInstallComponentNames() {
+    return autoInstallComponentNames;
+  }
 }
