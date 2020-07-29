@@ -236,45 +236,60 @@ Marked with a github issue label "manual testing."
 
 **8.3** Click **OK**.
 
-**8.4** ASSERTION: A REPL opens with **SwingExamples** in its title.
+**8.4** ASSERTION: A REPL opens with **SwingExamples** in its title. 
 
-**8.5** Execute the following two commands in REPL:
+**8.5** ASSERTION: Welcome message contains the **SwingExamples** as module name and a list of 
+imported packages: **o1, o1.llama, o1.randomtext**.
+
+![REPL welcome](images/repl-welcome.png)
+
+**8.6** Execute the following command in REPL:
+
+    val RTA = RandomTextApp
+
+**8.7** ASSERTION: Results of the command has no errors and looks alike the following image.
+
+![REPL RTA](images/repl-rta.png)
+
+**8.8** Execute the following two commands in REPL:
 
     sys.props("user.dir")
     sys.props("java.class.path")
 
-**8.6** ASSERTION: The output of the first statement is the directory of **SwingExamples** module.
+**8.9** ASSERTION: The output of the first statement is the directory of **SwingExamples** module.
 
-**8.7** ASSERTION: The output of the second statement (classpath) contains **SwingExamples**.
+![REPL verify](images/repl-verify.png)
 
-**8.8** Close the REPL by clicking X next to its tab title.
+**8.10** ASSERTION: The output of the second statement (classpath) contains **SwingExamples**.
 
-**8.9** The window opens asking whether REPL should be terminated.
+**8.11** Close the REPL by clicking X next to its tab title.
+
+**8.12** The window opens asking whether REPL should be terminated.
         Check **Remember, don't ask again** checkbox and click **Terminate**.
 
 #### Part II: Changing parameters
 
-**8.10** Reopen REPL by choosing a folder or a file within **SwingExamples** module.
+**8.13** Reopen REPL by choosing a folder or a file within **SwingExamples** module.
 
-**8.11** Again, uncheck **Don't show this window again** checkbox.
+**8.14** Again, uncheck **Don't show this window again** checkbox.
 
-**8.12** Change **Working directory** to be the directory of **O1Library** module.
+**8.15** Change **Working directory** to be the directory of **O1Library** module.
 - Just replacing **SwingExamples** with **O1Library** in the path does the trick.
 
-**8.13** Change value for **Use classpath and SDK of module** dropdown list to be **O1Library**.
+**8.16** Change value for **Use classpath and SDK of module** dropdown list to be **O1Library**.
 
-**8.14** Click **OK**.
+**8.17** Click **OK**.
 
-**8.15** ASSERTION: A REPL opens with **O1Library** in its title.
+**8.18** ASSERTION: A REPL opens with **O1Library** in its title.
 
-**8.16** In REPL, execute the same two commands as in **8.5**.
+**8.19** In REPL, execute the same two commands as in **8.8**.
 
-**8.17** ASSERTION: The output of the first statement is the directory of **O1Library** module.
+**8.20** ASSERTION: The output of the first statement is the directory of **O1Library** module.
 
-**8.18** ASSERTION: The output of the second statement (classpath) contains **O1Library**
+**8.21** ASSERTION: The output of the second statement (classpath) contains **O1Library**
          (but not other modules, such as **SwingExamples**).
 
-**8.19** Close the REPL.
+**8.22** Close the REPL.
 
 #### Part III: Inconsistent parameters
 
@@ -288,7 +303,7 @@ Marked with a github issue label "manual testing."
 
 **8.24** ASSERTION: A REPL opens with **O1Library** in its title.
 
-**8.25** In REPL, execute the same two commands as in **8.5**.
+**8.25** In REPL, execute the same two commands as in **8.8**.
 
 **8.26** ASSERTION: The output of the first statement is the directory of **SwingExamples** module.
 
@@ -305,7 +320,7 @@ Marked with a github issue label "manual testing."
 
 **8.31** ASSERTION: A REPL opens with **O1Library** in its title.
 
-**8.32** Execute the same two commands as in **8.5**.
+**8.32** Execute the same two commands as in **8.8**.
 
 **8.33** ASSERTION: The output of the first statement is the directory of **O1Library** module.
 

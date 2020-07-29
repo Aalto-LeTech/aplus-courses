@@ -35,8 +35,8 @@ public class IntelliJCourseTest {
     CommonLibraryProvider commonLibraryProvider = new CommonLibraryProvider(project);
     IntelliJCourse course = new IntelliJCourse(id, name,
         Collections.emptyList(), Collections.emptyList(), Collections.emptyMap(),
-        Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList(), project,
-        commonLibraryProvider);
+        Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList(),
+        Collections.emptyMap(), project, commonLibraryProvider);
     assertEquals(id, course.getId());
     assertEquals(name, course.getName());
     assertSame(project, course.getProject());
@@ -64,7 +64,8 @@ public class IntelliJCourseTest {
 
     IntelliJCourse course = new IntelliJCourse("cool id", "testProject",
         modules, Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap(),
-        Collections.emptyMap(), Collections.emptyList(), project, commonLibraryProvider);
+        Collections.emptyMap(), Collections.emptyList(), Collections.emptyMap(), project,
+        commonLibraryProvider);
 
     Collection<Component> components1 = course.getComponents();
     assertEquals(1, components1.size());
@@ -93,8 +94,8 @@ public class IntelliJCourseTest {
 
     IntelliJCourse course = new IntelliJCourse("courseId", "testtesttest",
         modules, Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap(),
-        Collections.emptyMap(), Collections.emptyList(), mock(APlusProject.class),
-        mock(CommonLibraryProvider.class));
+        Collections.emptyMap(), Collections.emptyList(), Collections.emptyMap(),
+        mock(APlusProject.class), mock(CommonLibraryProvider.class));
 
     assertSame(module, course.getComponentIfExists(file));
   }
@@ -113,8 +114,8 @@ public class IntelliJCourseTest {
     IntelliJCourse course = new IntelliJCourse("testId", "testProject",
         Stream.of(new ModelExtensions.TestModule(moduleName)).collect(Collectors.toList()),
         Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap(),
-        Collections.emptyMap(), Collections.emptyList(), mock(APlusProject.class),
-        mock(CommonLibraryProvider.class));
+        Collections.emptyMap(), Collections.emptyList(), Collections.emptyMap(),
+        mock(APlusProject.class), mock(CommonLibraryProvider.class));
 
     assertNull(course.getComponentIfExists(file1));
     assertNull(course.getComponentIfExists(file2));
