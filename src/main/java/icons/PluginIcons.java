@@ -20,6 +20,7 @@ public interface PluginIcons {
   Icon A_PLUS_FULL_POINTS = IconLoader.getIcon("/META-INF/icons/fullPoints.svg");
   Icon A_PLUS_DOWNLOAD = IconLoader.getIcon("/META-INF/icons/download.svg");
   Icon A_PLUS_UPLOAD = IconLoader.getIcon("/META-INF/icons/upload.svg");
+  Icon A_PLUS_BROWSE = IconLoader.getIcon("/META-INF/icons/web.svg");
   Icon A_PLUS_REFRESH = IconLoader.getIcon("/META-INF/icons/refresh.svg");
   Icon A_PLUS_LOGO = IconLoader.getIcon("/META-INF/icons/aPlusLogo.svg");
 }

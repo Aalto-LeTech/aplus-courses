@@ -72,7 +72,8 @@
                     icon="PluginIcons.A_PLUS_UPLOAD"/>
             <action id="fi.aalto.cs.apluscourses.intellij.actions.OpenSubmissionAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.OpenSubmissionAction"
-                    text="Open A+ Submission" />
+                    text="Open A+ Submission"
+                    icon="PluginIcons.A_PLUS_BROWSE" />
             <action id="fi.aalto.cs.apluscourses.intellij.actions.ExercisesRefreshAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.RefreshAction"
                     text="Update Exercises"
