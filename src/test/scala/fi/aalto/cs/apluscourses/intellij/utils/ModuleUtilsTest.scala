@@ -212,4 +212,17 @@ class ModuleUtilsTest extends HeavyPlatformTestCase with TestHelperScala {
       initialReplCommandsFileExist(MODULE_REPL_INITIAL_COMMANDS_FILE_NAME,
         getModule.getModuleFilePath))
   }
+
+  @Test
+  def testGetPrettyKeyMapStringReturnsPretty(): Unit =
+    assertEquals("Returns the correct 'Shift+Ctrl+D'.",
+      "Shift+Ctrl+D",
+      getPrettyKeyMapString("Scala.RunConsole"))
+
+  @Test
+  def testGetPrettyKeyMapStringReturnsDefault(): Unit = {
+    assertEquals("Returns the default 'SHORTCUT MISSING'.",
+      "SHORTCUT MISSING",
+      getPrettyKeyMapString("Console.History.Previous"))
+  }
 }
