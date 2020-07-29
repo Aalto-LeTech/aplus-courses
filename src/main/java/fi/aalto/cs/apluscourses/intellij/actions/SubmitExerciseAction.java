@@ -12,6 +12,7 @@ import fi.aalto.cs.apluscourses.intellij.notifications.MissingModuleNotification
 import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.NotSubmittableNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
+import fi.aalto.cs.apluscourses.intellij.notifications.SuccessfulSubmissionNotification;
 import fi.aalto.cs.apluscourses.intellij.services.Dialogs;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
@@ -188,6 +189,11 @@ public class SubmitExerciseAction extends AnAction {
     }
 
     exerciseDataSource.submit(submission.buildSubmission());
+    notifySuccessfulSubmission(project);
+  }
+
+  private void notifySuccessfulSubmission(@Nullable Project project) {
+    notifier.notify(new SuccessfulSubmissionNotification(), project);
   }
 
   private void notifyNetworkError(@NotNull IOException exception, @Nullable Project project) {

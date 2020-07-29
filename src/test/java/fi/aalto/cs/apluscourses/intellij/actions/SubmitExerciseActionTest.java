@@ -26,6 +26,7 @@ import fi.aalto.cs.apluscourses.intellij.notifications.MissingModuleNotification
 import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.NotSubmittableNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
+import fi.aalto.cs.apluscourses.intellij.notifications.SuccessfulSubmissionNotification;
 import fi.aalto.cs.apluscourses.intellij.services.Dialogs;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.model.APlusAuthentication;
@@ -208,7 +209,10 @@ public class SubmitExerciseActionTest {
     files.put(fileKey, filePath);
     assertThat(submission.getFiles(), is(files));
 
-    verifyNoInteractions(notifier);
+    ArgumentCaptor<SuccessfulSubmissionNotification> notificationArg =
+        ArgumentCaptor.forClass(SuccessfulSubmissionNotification.class);
+
+    verify(notifier).notify(notificationArg.capture(), eq(project));
   }
 
   @Test
