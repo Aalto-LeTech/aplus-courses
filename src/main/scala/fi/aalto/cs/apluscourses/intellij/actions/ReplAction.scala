@@ -79,6 +79,8 @@ class ReplAction extends RunConsoleAction {
       new ReplConfiguration(project, this, "Scala REPL")
     }
 
+    override def getId: String = "A+ extended Scala REPL"
+
     private class ReplConfiguration(project: Project,
                                     configurationFactory: ConfigurationFactory,
                                     name: String)
