@@ -7,6 +7,12 @@
 
 # ![Small_Logo](images/small_logo.png) Intellij IDEA plugin for A+ Courses
 
+## Welcome
+
+This repository hosts the code for [IntelliJ IDEA](https://www.jetbrains.com/idea/) plugin operating with [A+ LMS](https://github.com/apluslms/a-plus). It allows users to retrieve, submit and manipulate assignments for introductory programming courses taught at Aalto Univerity Computer Science Faculty (like "Programming 1").
+
+The project is developed under [Aalto Le-Tech research group](https://research.cs.aalto.fi/LeTech/) and is steered by [@jsorva](https://github.com/jsorva) and [@oseppata](https://github.com/oseppala).
+
 ## Maintenance
 
 If you are a Student discovered an issue you'd like to report, please turn to [Teaching Assistants (TA)](https://plus.cs.aalto.fi/o1/2020/w01/ch01/#course-staff), so they would handle. For (head) TAs, please create issues directly here: [Aalto-LeTech/intellij-plugin/issues](https://github.com/Aalto-LeTech/intellij-plugin/issues).
