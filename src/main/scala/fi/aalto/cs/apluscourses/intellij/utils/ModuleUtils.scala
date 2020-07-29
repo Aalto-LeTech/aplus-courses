@@ -4,6 +4,7 @@ import java.nio.file.{Files, Path}
 
 import com.intellij.openapi.actionSystem.{CommonDataKeys, DataContext}
 import com.intellij.openapi.fileEditor.FileDocumentManager
+import com.intellij.openapi.keymap.KeymapManager
 import com.intellij.openapi.module.{Module, ModuleUtilCore}
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.OrderEnumerator
@@ -56,21 +57,50 @@ object ModuleUtils {
   def getUpdatedText(@NotNull module: Module,
                      @NotNull commands: Array[String],
                      @NotNull originalText: String): String = {
-    val commonText = "Write a line (or more) of " +
-      "Scala and press [Ctrl+Enter] to run it. Use [Up] and [Down] to scroll through your earlier " +
-      "inputs. \nChanges to the module are not loaded automatically. If you edit the files, restart" +
-      " the REPL with [Ctrl+F5] or the icon on the left. \n"
+    val runConsoleShortCut = getPrettyKeyMapString("Scala.RunConsole")
+    val executeConsoleShortCut = getPrettyKeyMapString("ScalaConsole.Execute")
+    val reRunShortCut = getPrettyKeyMapString("Rerun")
+    val editorUpShortCut = getPrettyKeyMapString("EditorUp")
+    val editorDownShortCut = getPrettyKeyMapString("EditorDown")
+
+    val commonText = s"Write a line (or more) of Scala and press [${executeConsoleShortCut}] to run " +
+      s"it. Use [${editorUpShortCut}] and [${editorDownShortCut}] to scroll through your earlier " +
+      s"inputs. \nChanges to the module are not loaded automatically. If you edit the files, restart" +
+      s" the REPL with [${reRunShortCut}] or the icon on the left. \n"
 
     if (isTopLevelModule(module)) {
       s"${commonText}${originalText}Note: This REPL session is not linked to any course module. To " +
-        "use a module from the REPL, select the module and press [Ctrl+Shift+D] to launch a new " +
-        "session."
+        s"use a module from the REPL, select the module and press [${runConsoleShortCut}] to launch" +
+        s" a new session."
     } else {
       val validCommands = commands.filter(command => naiveValidate(command))
       val clearedCommands = clearCommands(validCommands)
       val commandsText = getCommandsText(clearedCommands)
 
       s"Loaded A+ Courses module [${module.getName}]. ${commandsText}\n${commonText}${originalText}"
+    }
+  }
+
+  @NotNull
+  def getPrettyKeyMapString(@NotNull actionId: String): String = {
+    val shortCuts = KeymapManager
+      .getInstance
+      .getActiveKeymap
+      .getShortcuts(actionId)
+
+    if (shortCuts.nonEmpty) {
+      shortCuts
+        .head
+        .toString
+        .replace("[", "")
+        .replace("]", "")
+        .split(" ")
+        .filter(part => !part.equals("pressed"))
+        .map(_.toLowerCase)
+        .map(_.capitalize)
+        .mkString("+")
+    } else {
+      "SHORTCUT MISSING"
     }
   }
 
