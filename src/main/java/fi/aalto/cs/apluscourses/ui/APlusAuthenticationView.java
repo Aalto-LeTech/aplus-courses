@@ -61,4 +61,9 @@ public class APlusAuthenticationView extends DialogWrapper implements Dialog {
     return null;
   }
 
+  @Nullable
+  @Override
+  public JComponent getPreferredFocusedComponent() {
+    return inputField;
+  }
 }
