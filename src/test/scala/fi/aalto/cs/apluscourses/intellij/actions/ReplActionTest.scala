@@ -47,7 +47,7 @@ class ReplActionTest extends BasePlatformTestCase with TestHelperScala {
   }
 
   @Test
-  def testSetCustomConfigurationFieldsWithValidInputWorks(): Unit = {
+  def testSetConfigurationFieldsWithValidInputWorks(): Unit = {
     //  given
     val configuration = getConfiguration
     val module = getModule
@@ -68,7 +68,7 @@ class ReplActionTest extends BasePlatformTestCase with TestHelperScala {
   }
 
   @Test
-  def testSetCustomConfigurationFieldsWithMixedWorkDirModuleInputWorks(): Unit = {
+  def testSetConfigurationFieldsWithMixedWorkDirModuleInputWorks(): Unit = {
     //  given
     val configuration = getConfiguration
     val module = getModule
@@ -89,7 +89,7 @@ class ReplActionTest extends BasePlatformTestCase with TestHelperScala {
   }
 
   @Test
-  def testSetCustomConfigurationFieldsWithMixedModuleWorkDirInputWorks(): Unit = {
+  def testSetConfigurationFieldsWithMixedModuleWorkDirInputWorks(): Unit = {
     //  given
     val configuration = getConfiguration
     val module = getModule

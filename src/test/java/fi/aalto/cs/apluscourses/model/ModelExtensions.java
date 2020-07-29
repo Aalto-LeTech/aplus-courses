@@ -73,9 +73,28 @@ public class ModelExtensions {
       this(id, "");
     }
 
+    /**
+     * Creates a dummy {@link Course} for testing purposes.
+     *
+     * @param id {@link String} id for the {@link Course}
+     * @param name {@link String} for the {@link Course}.
+     */
     public TestCourse(@NotNull String id, @NotNull String name) {
-      super(id, name, Collections.emptyList(), Collections.emptyList(), Collections.emptyMap(),
-          Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList());
+      super(id, name,
+          //  modules
+          Collections.emptyList(),
+          //  libraries
+          Collections.emptyList(),
+          //  exerciseModules
+          Collections.emptyMap(),
+          //  requiredPlugins
+          Collections.emptyMap(),
+          //  resourceUrls
+          Collections.emptyMap(),
+          //  autoInstallComponentNames
+          Collections.emptyList(),
+          //  replInitialCommands
+          Collections.emptyMap());
     }
   }
 
@@ -246,7 +265,8 @@ public class ModelExtensions {
                                @NotNull Map<Long, Map<String, String>> exerciseModules,
                                @NotNull Map<String, String> requiredPlugins,
                                @NotNull Map<String, URL> resourceUrls,
-                               @NotNull List<String> autoInstallComponentNames) {
+                               @NotNull List<String> autoInstallComponentNames,
+                               @NotNull Map<String, String[]> replInitialCommands) {
       return new Course(
           id,
           name,
@@ -255,12 +275,15 @@ public class ModelExtensions {
           exerciseModules,
           requiredPlugins,
           resourceUrls,
-          autoInstallComponentNames
+          autoInstallComponentNames,
+          replInitialCommands
       );
     }
 
     @Override
-    public Module createModule(@NotNull String name, @NotNull URL url, @NotNull String versionId) {
+    public Module createModule(@NotNull String name,
+                               @NotNull URL url,
+                               @NotNull String versionId) {
       return new TestModule(name, url, versionId, null, null);
     }
 

@@ -112,7 +112,8 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
 
     emptyCourse = new Course("ID", "EMPTY", Collections.emptyList(), Collections.emptyList(),
         Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap(),
-        Collections.emptyList());
+        Collections.emptyList(),
+        Collections.emptyMap());
 
     settingsImporter = new DummySettingsImporter();
 

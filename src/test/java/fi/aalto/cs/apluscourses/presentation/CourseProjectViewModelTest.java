@@ -12,7 +12,7 @@ public class CourseProjectViewModelTest {
 
   private final Course emptyCourse = new Course("123", "NiceCourse", Collections.emptyList(),
       Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap(),
-      Collections.emptyMap(), Collections.emptyList());
+      Collections.emptyMap(), Collections.emptyList(), Collections.emptyMap());
 
 
   @Test
@@ -50,5 +50,4 @@ public class CourseProjectViewModelTest {
     assertTrue("The settings text should mention that settings are already imported",
         courseProjectViewModel.shouldShowCurrentSettings());
   }
-
 }
