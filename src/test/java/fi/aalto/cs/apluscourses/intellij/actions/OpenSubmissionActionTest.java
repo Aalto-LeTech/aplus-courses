@@ -47,6 +47,7 @@ public class OpenSubmissionActionTest {
     notifier = mock(Notifier.class);
     submissionRenderer = mock(OpenSubmissionAction.SubmissionRenderer.class);
     actionEvent = mock(AnActionEvent.class);
+    doReturn(mock(Project.class)).when(actionEvent).getProject();
   }
 
   @Test
