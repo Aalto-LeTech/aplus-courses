@@ -70,7 +70,7 @@ public class Exercise {
     List<Long> submissionIds = points.getSubmissions().getOrDefault(id, Collections.emptyList());
     List<SubmissionResult> submissionResults = IntStream
         .range(0, submissionIds.size())
-        .mapToObj(i -> new SubmissionResult(submissionIds.get(i), i + 1))
+        .mapToObj(i -> new SubmissionResult(submissionIds.get(i), i + 1, htmlUrl))
         .collect(Collectors.toList());
     int userPoints = points.getPoints().getOrDefault(id, 0);
     int maxPoints = jsonObject.getInt("max_points");

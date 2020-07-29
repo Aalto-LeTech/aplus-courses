@@ -23,7 +23,7 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
     submissionResultViewModels = exercise
         .getSubmissionResults()
         .stream()
-        .map(submission -> new SubmissionResultViewModel(submission, exercise.getHtmlUrl()))
+        .map(SubmissionResultViewModel::new)
         .collect(Collectors.toList());
   }
 
