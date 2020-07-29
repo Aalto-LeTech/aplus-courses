@@ -11,7 +11,7 @@
 
 If you are a Student discovered an issue you'd like to report, please turn to [Teaching Assistants (TA)](https://plus.cs.aalto.fi/o1/2020/w01/ch01/#course-staff), so they would handle. For (head) TAs, please create issues directly here: [Aalto-LeTech/intellij-plugin/issues](https://github.com/Aalto-LeTech/intellij-plugin/issues).
 
-Once the issue (bug report) is made, the development team (@OlliKiljunen, @nikke234, @superseacat) will handle it on a **best-effort basis:**
+Once the issue (bug report) is made, the development team (**[@OlliKiljunen](https://github.com/OlliKiljunen)**, **[@nikke234](https://github.com/nikke234)**, **[@superseacat](https://github.com/superseacat)**) will handle it on a **best-effort basis:**
 
 1. in **48h** the issue will be labeled and triaged;
 2. in **72h** the estimate when the issue could be fixed is made;
