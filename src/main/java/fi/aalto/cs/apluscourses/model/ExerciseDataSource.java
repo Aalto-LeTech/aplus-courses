@@ -10,7 +10,7 @@ public abstract class ExerciseDataSource {
   @NotNull
   protected final Authentication authentication;
 
-  public ExerciseDataSource(AuthProvider authProvider) {
+  public ExerciseDataSource(@NotNull AuthProvider authProvider) {
     this.authentication = authProvider.create();
   }
 
@@ -25,7 +25,11 @@ public abstract class ExerciseDataSource {
   public abstract List<Group> getGroups(@NotNull Course course) throws IOException;
 
   @NotNull
-  public abstract List<ExerciseGroup> getExerciseGroups(@NotNull Course course) throws IOException;
+  public abstract List<ExerciseGroup> getExerciseGroups(@NotNull Course course,
+                                                        @NotNull Points points) throws IOException;
+
+  @NotNull
+  public abstract Points getPoints(@NotNull Course course) throws IOException;
 
   public abstract void submit(Submission submission) throws IOException;
 

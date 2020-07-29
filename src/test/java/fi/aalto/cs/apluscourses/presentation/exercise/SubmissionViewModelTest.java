@@ -40,7 +40,7 @@ public class SubmissionViewModelTest {
 
     SubmissionHistory history = new SubmissionHistory(4);
 
-    Exercise exercise = new Exercise(100, "Exercise");
+    Exercise exercise = new Exercise(100, "Exercise", Collections.emptyList(), 0, 0, 0);
 
     SubmissionViewModel submissionViewModel =
         new SubmissionViewModel(exercise, submissionInfo, history, groups, fileMap);
@@ -51,7 +51,7 @@ public class SubmissionViewModelTest {
 
   @Test
   public void testSubmissionNumbers() {
-    Exercise exercise = new Exercise(1, "ex");
+    Exercise exercise = new Exercise(1, "ex", Collections.emptyList(), 0, 0, 0);
     SubmissionInfo info = new SubmissionInfo(5, new SubmittableFile[0]);
 
     SubmissionViewModel submissionViewModel1 = new SubmissionViewModel(exercise, info,
