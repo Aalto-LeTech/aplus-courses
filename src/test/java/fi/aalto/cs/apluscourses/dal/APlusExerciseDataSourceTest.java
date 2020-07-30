@@ -43,7 +43,6 @@ import org.mockito.ArgumentCaptor;
 public class APlusExerciseDataSourceTest {
 
   final Authentication authentication = mock(Authentication.class);
-  final ExerciseDataSource.AuthProvider authProvider = () -> authentication;
   final String url = "https://example.com";
 
   Client client;
@@ -58,14 +57,14 @@ public class APlusExerciseDataSourceTest {
     client = mock(Client.class);
     parser = mock(Parser.class);
     doCallRealMethod().when(parser).parseArray(any(), any());
-    exerciseDataSource = new APlusExerciseDataSource(authProvider, client, url, parser);
+    exerciseDataSource = new APlusExerciseDataSource(url, client, parser);
   }
 
   @Test
   public void testDefaultConstructor() {
-    APlusExerciseDataSource exerciseDataSource = new APlusExerciseDataSource(authProvider);
+    APlusExerciseDataSource exerciseDataSource = new APlusExerciseDataSource(url);
+    assertEquals(url, exerciseDataSource.getApiUrl());
     assertSame(APlusExerciseDataSource.DefaultDataAccess.INSTANCE, exerciseDataSource.getClient());
-    assertEquals(PluginSettings.A_PLUS_API_BASE_URL, exerciseDataSource.getApiUrl());
     assertSame(APlusExerciseDataSource.DefaultDataAccess.INSTANCE, exerciseDataSource.getParser());
   }
 
@@ -79,7 +78,7 @@ public class APlusExerciseDataSourceTest {
 
     Exercise exercise = new Exercise(55, "myex", Collections.emptyList(), 0, 0, 0);
 
-    assertSame(submissionInfo, exerciseDataSource.getSubmissionInfo(exercise));
+    assertSame(submissionInfo, exerciseDataSource.getSubmissionInfo(exercise, authentication));
   }
 
   @Test
@@ -93,7 +92,8 @@ public class APlusExerciseDataSourceTest {
 
     Exercise exercise = new Exercise(43, "someex", Collections.emptyList(), 0, 0, 0);
 
-    assertSame(submissionHistory, exerciseDataSource.getSubmissionHistory(exercise));
+    assertSame(submissionHistory,
+        exerciseDataSource.getSubmissionHistory(exercise, authentication));
   }
 
   @Test
@@ -116,7 +116,7 @@ public class APlusExerciseDataSourceTest {
 
     Course course = new ModelExtensions.TestCourse("123");
 
-    List<Group> groups = exerciseDataSource.getGroups(course);
+    List<Group> groups = exerciseDataSource.getGroups(course, authentication);
 
     assertEquals(2, groups.size());
     assertSame(group0, groups.get(0));
@@ -142,7 +142,8 @@ public class APlusExerciseDataSourceTest {
 
     Course course = new ModelExtensions.TestCourse("99");
 
-    List<ExerciseGroup> exGroups = exerciseDataSource.getExerciseGroups(course, mock(Points.class));
+    List<ExerciseGroup> exGroups =
+        exerciseDataSource.getExerciseGroups(course, mock(Points.class), authentication);
 
     assertEquals(2, exGroups.size());
     assertSame(exGroup0, exGroups.get(0));
@@ -172,7 +173,7 @@ public class APlusExerciseDataSourceTest {
 
     Submission submission = new Submission(exercise, submissionInfo, paths, group);
 
-    exerciseDataSource.submit(submission);
+    exerciseDataSource.submit(submission, authentication);
 
     ArgumentCaptor<Map<String, Object>> dataCaptor = ArgumentCaptor.forClass(Map.class);
     verify(client).post(

@@ -11,8 +11,10 @@ import com.intellij.openapi.vfs.newvfs.BulkFileListener;
 import com.intellij.openapi.vfs.newvfs.events.VFileDeleteEvent;
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import com.intellij.util.messages.MessageBusConnection;
+import fi.aalto.cs.apluscourses.dal.APlusExerciseDataSource;
 import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.Course;
+import fi.aalto.cs.apluscourses.model.ExerciseDataSource;
 import fi.aalto.cs.apluscourses.model.Library;
 import fi.aalto.cs.apluscourses.model.Module;
 import java.net.URL;
@@ -37,6 +39,8 @@ class IntelliJCourse extends Course {
   private final CommonLibraryProvider commonLibraryProvider;
 
   private final PlatformListener platformListener;
+
+  private final ExerciseDataSource exerciseDataSource;
 
   public IntelliJCourse(@NotNull String id,
                         @NotNull String name,
@@ -63,6 +67,7 @@ class IntelliJCourse extends Course {
     this.project = project;
     this.commonLibraryProvider = commonLibraryProvider;
     this.platformListener = new PlatformListener();
+    this.exerciseDataSource = new APlusExerciseDataSource(getApiUrl());
   }
 
   @NotNull
@@ -107,6 +112,12 @@ class IntelliJCourse extends Course {
   public void unregister() {
     ReadAction.run(platformListener::unregisterListeners);
 
+  }
+
+  @NotNull
+  @Override
+  public ExerciseDataSource getExerciseDataSource() {
+    return exerciseDataSource;
   }
 
   private class PlatformListener {

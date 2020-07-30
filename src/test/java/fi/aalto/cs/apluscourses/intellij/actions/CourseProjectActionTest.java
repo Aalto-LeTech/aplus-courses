@@ -11,6 +11,7 @@ import fi.aalto.cs.apluscourses.intellij.model.SettingsImporter;
 import fi.aalto.cs.apluscourses.model.ComponentInstaller;
 import fi.aalto.cs.apluscourses.model.ComponentInstallerImpl;
 import fi.aalto.cs.apluscourses.model.Course;
+import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.presentation.CourseProjectViewModel;
 import fi.aalto.cs.apluscourses.ui.InstallerDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogs;
@@ -110,7 +111,8 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
     Project project = getProject();
     when(anActionEvent.getProject()).thenReturn(project);
 
-    emptyCourse = new Course("ID", "EMPTY", Collections.emptyList(), Collections.emptyList(),
+    emptyCourse = new ModelExtensions.TestCourse("ID", "EMPTY",
+        Collections.emptyList(), Collections.emptyList(),
         Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap(),
         Collections.emptyList(),
         Collections.emptyMap());

@@ -1,15 +1,23 @@
 package fi.aalto.cs.apluscourses.presentation;
 
-import fi.aalto.cs.apluscourses.model.APlusAuthentication;
+import fi.aalto.cs.apluscourses.dal.APlusTokenAuthentication;
+import fi.aalto.cs.apluscourses.dal.TokenAuthentication;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import java.util.Arrays;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class AuthenticationViewModel {
+  @NotNull
+  private final TokenAuthentication.Factory authenticationFactory;
+
   @Nullable
   private char[] token;
   private final Object lock = new Object();
+
+  public AuthenticationViewModel(@NotNull TokenAuthentication.Factory authenticationFactory) {
+    this.authenticationFactory = authenticationFactory;
+  }
 
   /**
    * Sets token by cloning the given token.
@@ -37,7 +45,7 @@ public class AuthenticationViewModel {
       if (token == null) {
         throw new IllegalStateException("Token is not set");
       }
-      Authentication authentication = new APlusAuthentication(token);
+      Authentication authentication = authenticationFactory.create(token);
       Arrays.fill(token, '\0');
       return authentication;
     }

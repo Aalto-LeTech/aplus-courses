@@ -10,6 +10,7 @@ import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.project.ProjectManagerListener;
+import fi.aalto.cs.apluscourses.intellij.dal.IntelliJPasswordStorage;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModelUpdater;
 import java.util.Arrays;
@@ -72,7 +73,7 @@ public class PluginSettings implements MainViewModelProvider {
       }
       MainViewModel mainViewModel = mainViewModels.remove(project);
       if (mainViewModel != null) {
-        mainViewModel.clear();
+        mainViewModel.dispose();
       }
       ProjectManager.getInstance().removeProjectManagerListener(project, this);
     }
@@ -115,7 +116,7 @@ public class PluginSettings implements MainViewModelProvider {
     mainViewModelUpdaters.computeIfAbsent(project, p -> {
       MainViewModelUpdater mainViewModelUpdater
           = new MainViewModelUpdater(mainViewModel, p, MAIN_VIEW_MODEL_UPDATE_INTERVAL,
-          Notifications.Bus::notify);
+          Notifications.Bus::notify, IntelliJPasswordStorage::new);
       mainViewModelUpdater.start();
       return mainViewModelUpdater;
     });
