@@ -5,6 +5,7 @@ import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.dal.APlusTokenAuthentication;
 import fi.aalto.cs.apluscourses.dal.PasswordStorage;
+import fi.aalto.cs.apluscourses.dal.TokenAuthentication;
 import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory;
 import fi.aalto.cs.apluscourses.intellij.notifications.NewModulesVersionsNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
@@ -107,13 +108,10 @@ public class MainViewModelUpdater {
 
     mainViewModel.courseViewModel.set(new CourseViewModel(newCourse));
 
-    if (mainViewModel.authentication.get() == null) {
-      PasswordStorage passwordStorage = passwordStorageFactory.create(newCourse.getApiUrl());
-      Optional.ofNullable(passwordStorage)
-          .map(PasswordStorage::restorePassword)
-          .map(APlusTokenAuthentication.getFactoryFor(passwordStorage)::create)
-          .ifPresent(mainViewModel::setAuthentication);
-    }
+    PasswordStorage passwordStorage = passwordStorageFactory.create(newCourse.getApiUrl());
+    TokenAuthentication.Factory authenticationFactory =
+        APlusTokenAuthentication.getFactoryFor(passwordStorage);
+    mainViewModel.readAuthenticationFromStorage(passwordStorage, authenticationFactory);
 
     notifyNewVersions(newCourse);
 
