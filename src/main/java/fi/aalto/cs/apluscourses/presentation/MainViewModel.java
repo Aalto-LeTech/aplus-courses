@@ -1,16 +1,23 @@
 package fi.aalto.cs.apluscourses.presentation;
 
+import fi.aalto.cs.apluscourses.dal.APlusExerciseDataSource;
+import fi.aalto.cs.apluscourses.model.Authentication;
+import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.ExerciseDataSource;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
 import fi.aalto.cs.apluscourses.model.InvalidAuthenticationException;
 import fi.aalto.cs.apluscourses.model.Points;
+import fi.aalto.cs.apluscourses.presentation.base.BaseViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.utils.Event;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
+import fi.aalto.cs.apluscourses.utils.observable.ObservableReadOnlyProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
 import java.io.IOException;
 import java.util.List;
 
+import java.util.Objects;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 
 public class MainViewModel {
@@ -25,7 +32,8 @@ public class MainViewModel {
   public final ObservableProperty<ExercisesTreeViewModel> exercisesViewModel =
       new ObservableReadWriteProperty<>(null);
 
-  public final ObservableProperty<ExerciseDataSource> exerciseDataSource =
+  @NotNull
+  public final ObservableProperty<Authentication> authentication =
       new ObservableReadWriteProperty<>(null);
 
   /**
@@ -33,20 +41,22 @@ public class MainViewModel {
    */
   public MainViewModel() {
     courseViewModel.addValueObserver(this, MainViewModel::updateExercises);
-    exerciseDataSource.addValueObserver(this, MainViewModel::updateExercises);
+    authentication.addValueObserver(this, MainViewModel::updateExercises);
   }
 
   private void updateExercises() {
-    ExerciseDataSource localExerciseDataSource = exerciseDataSource.get();
-    CourseViewModel course = courseViewModel.get();
-    if (course == null || localExerciseDataSource == null) {
+    Course course = Optional.ofNullable(courseViewModel.get())
+        .map(BaseViewModel::getModel)
+        .orElse(null);
+    Authentication auth = authentication.get();
+    if (course == null || auth == null) {
+      exercisesViewModel.set(null);
       return;
     }
+    ExerciseDataSource dataSource = course.getExerciseDataSource();
     try {
-      Points points
-          = localExerciseDataSource.getPoints(course.getModel());
-      List<ExerciseGroup> exerciseGroups
-          = localExerciseDataSource.getExerciseGroups(course.getModel(), points);
+      Points points = dataSource.getPoints(course, auth);
+      List<ExerciseGroup> exerciseGroups = dataSource.getExerciseGroups(course, points, auth);
       exercisesViewModel.set(new ExercisesTreeViewModel(exerciseGroups));
     } catch (InvalidAuthenticationException e) {
       // TODO: might want to communicate this to the user somehow

@@ -3,7 +3,7 @@ package fi.aalto.cs.apluscourses.ui.base;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
-import fi.aalto.cs.apluscourses.ui.Dialog;
+import fi.aalto.cs.apluscourses.presentation.dialogs.Dialog;
 import fi.aalto.cs.apluscourses.ui.utils.ValidationItem;
 import fi.aalto.cs.apluscourses.utils.observable.ValidationError;
 import java.util.ArrayList;

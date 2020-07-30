@@ -8,38 +8,61 @@ import javax.swing.JComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class Bindable<T extends JComponent, S> implements ValidationItem {
+public abstract class Bindable<T extends JComponent, S> implements ValidationItem {
   @NotNull
   protected final T target;
   @NotNull
   protected final BiConsumer<T, S> targetSetter;
-  @Nullable
-  protected ObservableProperty<S> sourceProperty;
 
-  public Bindable(@NotNull T target, @NotNull BiConsumer<T, S> targetSetter) {
-    this.target = target;
-    this.targetSetter = targetSetter;
-  }
+  private final S fallbackValue;
 
   /**
-   * Makes this bindable observe a source property and update the target accordingly.
+   * <p>Constructs a new {@link Bindable}.  Bindables can be used to bind UI components' properties
+   * (e.g. the content of a text box) to an ObservableProperty of a view model (e.g. "first name"),
+   * in a way that changes in one of them is automatically updated to another.</p>
    *
-   * @param sourceProperty An {@link ObservableProperty} or null (to clear).
+   * <p>Use {@link OneWayBindable} if you only want UI to reflect the state of the view model, and
+   * {@link TwoWayBindable} if you also want UI to update the view model.</p>
+   *
+   * @param target        The target UI component.
+   * @param targetSetter  A setter that sets the property of the target (e.g.
+   *                      {@code JComponent::setVisible} if you want the visibility of the
+   *                      component being determined by a boolean property of the view model).
+   * @param fallbackValue Value that is passed to the target setter, if the view model is null.
    */
-  public synchronized void bindToSource(@Nullable ObservableProperty<S> sourceProperty) {
-    if (this.sourceProperty != null) {
-      this.sourceProperty.removeValueObserver(this);
-    }
+  public Bindable(@NotNull T target, @NotNull BiConsumer<T, S> targetSetter, S fallbackValue) {
+    this.target = target;
+    this.targetSetter = targetSetter;
+    this.fallbackValue = fallbackValue;
+    setToDefault();
+  }
+
+  private void setToDefault() {
+    targetSetter.accept(target, fallbackValue);
+  }
+
+  protected void clearProperty() {
+    ObservableProperty<?> sourceProperty = getSourceProperty();
     if (sourceProperty != null) {
+      sourceProperty.removeValueObserver(this);
+    }
+  }
+
+  protected void bindInternal(@Nullable ObservableProperty<? extends S> sourceProperty) {
+    if (sourceProperty == null) {
+      setToDefault();
+    } else {
       sourceProperty.addValueObserver(target, targetSetter::accept);
     }
-    this.sourceProperty = sourceProperty;
   }
+
+  @Nullable
+  protected abstract ObservableProperty<?> getSourceProperty();
 
   @Nullable
   @Override
-  public synchronized ValidationError validate() {
-    return Optional.ofNullable(sourceProperty).map(ObservableProperty::validate).orElse(null);
+  public ValidationError validate() {
+    return Optional.ofNullable(getSourceProperty()).map(ObservableProperty::validate).orElse(null);
   }
 
   @Override

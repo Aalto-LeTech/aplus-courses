@@ -18,6 +18,10 @@ public class Points {
   @NotNull
   private final Map<Long, Integer> points;
 
+  public Points() {
+    this(Collections.emptyMap(), Collections.emptyMap());
+  }
+
   /**
    * Construct an instance with the given maps.
    * @param submissions A map of exercise IDs to a list of submissions IDs for that exercise.

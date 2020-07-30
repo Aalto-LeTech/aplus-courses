@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.swing.event.TreeSelectionEvent;
@@ -20,6 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class TreeView extends Tree {
+
   private final transient Set<ActionListener> nodeAppliedListeners = ConcurrentHashMap.newKeySet();
 
   @Nullable
@@ -36,13 +38,13 @@ public class TreeView extends Tree {
   }
 
   /**
-   * Set the model of the this tree to the given view model, or do nothing if the given view model
-   * is {@code null}.
+   * Set the model of the this tree to the given view model.
    */
   public void setViewModel(@Nullable TreeViewModel viewModel) {
-    if (viewModel != null) {
-      setModel(new DefaultTreeModel(createNode(viewModel)));
-    }
+    setModel(Optional.ofNullable(viewModel)
+        .map(TreeView::createNode)
+        .map(DefaultTreeModel::new)
+        .orElse(null));
     selectedItem = null;
   }
 

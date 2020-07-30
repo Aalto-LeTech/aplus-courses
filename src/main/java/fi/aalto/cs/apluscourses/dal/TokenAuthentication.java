@@ -29,10 +29,8 @@ public abstract class TokenAuthentication implements Authentication {
   }
 
   @Override
-  public void persist() {
-    if (passwordStorage != null) {
-      passwordStorage.store(user, token);
-    }
+  public boolean persist() {
+    return passwordStorage != null && passwordStorage.store(user, token);
   }
 
   /**

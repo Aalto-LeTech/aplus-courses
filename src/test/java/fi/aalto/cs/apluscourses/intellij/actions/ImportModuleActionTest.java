@@ -51,16 +51,9 @@ public class ImportModuleActionTest {
     modules.add(new ModelExtensions.TestModule("module2"));
     modules.add(new ModelExtensions.TestModule("module3"));
 
-    Course course = new Course(
-        "id",
-        "course",
-        modules,
-        Collections.emptyList(),
-        Collections.emptyMap(),
-        Collections.emptyMap(),
-        Collections.emptyMap(),
-        Collections.emptyList(),
-        Collections.emptyMap());
+    Course course = new ModelExtensions.TestCourse("id", "course", modules, Collections.emptyList(),
+        Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap(),
+        Collections.emptyList(), Collections.emptyMap());
     mainViewModel.courseViewModel.set(new CourseViewModel(course));
 
     installer = mock(ComponentInstaller.class);

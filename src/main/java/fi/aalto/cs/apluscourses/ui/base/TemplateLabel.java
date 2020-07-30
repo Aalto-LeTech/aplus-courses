@@ -1,12 +1,13 @@
 package fi.aalto.cs.apluscourses.ui.base;
 
 import fi.aalto.cs.apluscourses.ui.utils.Bindable;
+import fi.aalto.cs.apluscourses.ui.utils.OneWayBindable;
 import java.text.MessageFormat;
 import javax.swing.JLabel;
 
 public class TemplateLabel extends JLabel {
-  public final transient Bindable<TemplateLabel, Object> templateArgumentBindable =
-      new Bindable<>(this, TemplateLabel::applyTemplate);
+  public final transient OneWayBindable<TemplateLabel, Object> templateArgumentBindable =
+      new OneWayBindable<>(this, TemplateLabel::applyTemplate, null);
 
   private String textTemplate = "{0}";
 

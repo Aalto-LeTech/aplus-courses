@@ -1,17 +1,17 @@
-package fi.aalto.cs.apluscourses.intellij.services;
+package fi.aalto.cs.apluscourses.intellij.io;
 
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.presentation.AuthenticationViewModel;
 import fi.aalto.cs.apluscourses.presentation.ModuleSelectionViewModel;
+import fi.aalto.cs.apluscourses.presentation.dialogs.Dialog;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionViewModel;
 import fi.aalto.cs.apluscourses.ui.APlusAuthenticationView;
-import fi.aalto.cs.apluscourses.ui.Dialog;
 import fi.aalto.cs.apluscourses.ui.exercise.ModuleSelectionDialog;
 import fi.aalto.cs.apluscourses.ui.exercise.SubmissionDialog;
 import fi.aalto.cs.apluscourses.utils.FactorySelector;
 
-public class Dialogs extends FactorySelector<Project, Dialog> {
-  public static final Dialogs DEFAULT = new Dialogs();
+public class IntelliJDialogs extends FactorySelector<Project, Dialog> {
+  public static final IntelliJDialogs DEFAULT = new IntelliJDialogs();
 
   static {
     DEFAULT.register(ModuleSelectionViewModel.class, ModuleSelectionDialog::new);

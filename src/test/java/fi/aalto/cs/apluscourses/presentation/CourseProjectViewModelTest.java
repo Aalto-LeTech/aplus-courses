@@ -5,16 +5,14 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import fi.aalto.cs.apluscourses.model.Course;
+import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import java.util.Collections;
 import org.junit.Test;
 
 public class CourseProjectViewModelTest {
 
-  private final Course emptyCourse = new Course("123", "NiceCourse", Collections.emptyList(),
-      Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap(),
-      Collections.emptyMap(), Collections.emptyList(), Collections.emptyMap());
-
-
+  private final Course emptyCourse = new ModelExtensions.TestCourse("123", "NiceCourse");
+  
   @Test
   public void testInformationTextIncludesCourseName() {
     CourseProjectViewModel courseProjectViewModel = new CourseProjectViewModel(emptyCourse, "");

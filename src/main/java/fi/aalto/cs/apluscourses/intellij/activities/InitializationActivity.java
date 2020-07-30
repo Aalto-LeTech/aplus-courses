@@ -6,10 +6,10 @@ import com.intellij.notification.Notifications;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.startup.StartupActivity.Background;
 import fi.aalto.cs.apluscourses.intellij.actions.ActionUtil;
+import fi.aalto.cs.apluscourses.intellij.actions.CommandAction;
 import fi.aalto.cs.apluscourses.intellij.actions.RequiredPluginsCheckerAction;
 import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory;
 import fi.aalto.cs.apluscourses.intellij.notifications.CourseConfigurationError;
-import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.intellij.utils.CourseFileManager;
@@ -17,6 +17,7 @@ import fi.aalto.cs.apluscourses.intellij.utils.ExtendedDataContext;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationFileException;
 import fi.aalto.cs.apluscourses.model.UnexpectedResponseException;
+import fi.aalto.cs.apluscourses.presentation.messages.NetworkErrorMessage;
 import java.io.IOException;
 import java.net.URL;
 import org.jetbrains.annotations.NotNull;
@@ -59,7 +60,7 @@ public class InitializationActivity implements Background {
       return;
     } catch (IOException e) {
       logger.info("IOException occurred while using the HTTP client", e);
-      notifier.notify(new NetworkErrorNotification(e), null);
+      notifier.notify(CommandAction.getNotificationFor(new NetworkErrorMessage(e)), null);
       return;
     }
     pluginSettings.createUpdatingMainViewModel(project);

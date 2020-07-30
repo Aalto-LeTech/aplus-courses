@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.ui.base;
 
 import fi.aalto.cs.apluscourses.ui.utils.Bindable;
+import fi.aalto.cs.apluscourses.ui.utils.OneWayBindable;
 import fi.aalto.cs.apluscourses.ui.utils.TwoWayBindable;
 import javax.swing.JCheckBox;
 
@@ -11,10 +12,10 @@ import javax.swing.JCheckBox;
 public class CheckBox extends JCheckBox {
 
   public final transient TwoWayBindable<CheckBox, Boolean> isCheckedBindable =
-      new TwoWayBindable<>(this, CheckBox::setSelected, CheckBox::isSelected);
+      new TwoWayBindable<>(this, CheckBox::setSelected, CheckBox::isSelected, false);
 
-  public final transient Bindable<CheckBox, Boolean> isEnabledBindable =
-      new Bindable<>(this, CheckBox::setEnabled);
+  public final transient OneWayBindable<CheckBox, Boolean> isEnabledBindable =
+      new OneWayBindable<>(this, CheckBox::setEnabled, false);
 
   public CheckBox() {
     addItemListener(e -> isCheckedBindable.updateSource());

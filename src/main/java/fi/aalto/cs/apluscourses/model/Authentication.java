@@ -4,7 +4,7 @@ import fi.aalto.cs.apluscourses.utils.CoursesClient;
 
 public interface Authentication extends CoursesClient.HttpAuthentication {
 
-  void persist();
+  boolean persist();
 
   void clear();
 }

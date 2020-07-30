@@ -8,7 +8,7 @@ public class OurComboBox<E> extends ComboBox<E> {
   private final Class<E> klass;
 
   public final TwoWayBindable<OurComboBox<E>, E> selectedItemBindable = new TwoWayBindable<>(this,
-      OurComboBox::setSelectedItem, OurComboBox::getSelectedItemTyped);
+      OurComboBox::setSelectedItem, OurComboBox::getSelectedItemTyped, null);
 
   /**
    * A constructor.

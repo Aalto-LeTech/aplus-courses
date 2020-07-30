@@ -64,6 +64,11 @@ public abstract class ObservableProperty<T> {
     throw new UnsupportedOperationException();
   }
 
+  @Nullable
+  public T getAndSet(T value) {
+    throw new UnsupportedOperationException();
+  }
+
   protected synchronized void onValueChanged(@Nullable T value) {
     for (Map.Entry<Object, Callback<?, T>> entry : observers.entrySet()) {
       entry.getValue().valueChangedUntyped(entry.getKey(), value);

@@ -1,8 +1,11 @@
 package fi.aalto.cs.apluscourses.presentation.exercise;
 
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
+import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.BaseViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.TreeViewModel;
+import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
+import fi.aalto.cs.apluscourses.utils.observable.ObservableReadOnlyProperty;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;

@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public interface PasswordStorage {
-  void store(@NotNull String user, @Nullable char[] password);
+  boolean store(@NotNull String user, @Nullable char[] password);
 
   @Nullable
   char[] restorePassword();

@@ -1,6 +1,5 @@
 package fi.aalto.cs.apluscourses.model;
 
-import com.intellij.openapi.vfs.local.PluggableFileWatcher;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
 import fi.aalto.cs.apluscourses.utils.ResourceException;
@@ -28,7 +27,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-public class Course implements ComponentSource {
+public abstract class Course implements ComponentSource {
 
   @NotNull
   private final String id;
@@ -74,15 +73,15 @@ public class Course implements ComponentSource {
    *                            {@link String} array of the commands to be executed on REPL
    *                            startup.
    */
-  public Course(@NotNull String id,
-                @NotNull String name,
-                @NotNull List<Module> modules,
-                @NotNull List<Library> libraries,
-                @NotNull Map<Long, Map<String, String>> exerciseModules,
-                @NotNull Map<String, String> requiredPlugins,
-                @NotNull Map<String, URL> resourceUrls,
-                @NotNull List<String> autoInstallComponentNames,
-                @NotNull Map<String, String[]> replInitialCommands) {
+  protected Course(@NotNull String id,
+                   @NotNull String name,
+                   @NotNull List<Module> modules,
+                   @NotNull List<Library> libraries,
+                   @NotNull Map<Long, Map<String, String>> exerciseModules,
+                   @NotNull Map<String, String> requiredPlugins,
+                   @NotNull Map<String, URL> resourceUrls,
+                   @NotNull List<String> autoInstallComponentNames,
+                   @NotNull Map<String, String[]> replInitialCommands) {
     this.id = id;
     this.name = name;
     this.modules = modules;
@@ -510,4 +509,6 @@ public class Course implements ComponentSource {
     return replInitialCommands;
   }
 
+  @NotNull
+  public abstract ExerciseDataSource getExerciseDataSource();
 }

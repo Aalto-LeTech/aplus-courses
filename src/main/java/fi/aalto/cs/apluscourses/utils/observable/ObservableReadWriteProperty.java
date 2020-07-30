@@ -47,6 +47,13 @@ public class ObservableReadWriteProperty<T> extends ObservableProperty<T> {
     }
   }
 
+  @Override
+  public synchronized T getAndSet(T value) {
+    T oldValue = get();
+    set(value);
+    return oldValue;
+  }
+
   @Nullable
   @Override
   public synchronized T get() {
