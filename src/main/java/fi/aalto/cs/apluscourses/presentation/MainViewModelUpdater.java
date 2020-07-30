@@ -107,11 +107,13 @@ public class MainViewModelUpdater {
 
     mainViewModel.courseViewModel.set(new CourseViewModel(newCourse));
 
-    PasswordStorage passwordStorage = passwordStorageFactory.create(newCourse.getApiUrl());
-    Optional.ofNullable(passwordStorage)
-        .map(PasswordStorage::restorePassword)
-        .map(APlusTokenAuthentication.getFactoryFor(passwordStorage)::create)
-        .ifPresent(mainViewModel::setAuthentication);
+    if (mainViewModel.authentication.get() == null) {
+      PasswordStorage passwordStorage = passwordStorageFactory.create(newCourse.getApiUrl());
+      Optional.ofNullable(passwordStorage)
+          .map(PasswordStorage::restorePassword)
+          .map(APlusTokenAuthentication.getFactoryFor(passwordStorage)::create)
+          .ifPresent(mainViewModel::setAuthentication);
+    }
 
     notifyNewVersions(newCourse);
 
