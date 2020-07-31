@@ -66,9 +66,9 @@ Marked with a github issue label "manual testing."
 - Ensure that the version is the one you want to test.
 - Click **Install**.
 
-**1.3** Exit **Plugins** window by clicking **OK**.
+**1.3** ASSERTION: IntelliJ IDEA requires a restart.
 
-**1.4** ASSERTION: IntelliJ IDEA does not request a restart.
+**1.4** Restart IntelliJ IDEA.
 
 ### 2 Initialize a new project
 
@@ -236,105 +236,122 @@ Marked with a github issue label "manual testing."
 
 **8.3** Click **OK**.
 
-**8.4** ASSERTION: A REPL opens with **SwingExamples** in its title.
+**8.4** ASSERTION: A REPL opens with **SwingExamples** in its title. 
 
-**8.5** Execute the following two commands in REPL:
+**8.5** ASSERTION: Welcome message contains the **SwingExamples** as module name and a list of 
+imported packages: **o1, o1.llama, o1.randomtext**.
+
+**8.6** ASSERTION: Welcome message contains `[Ctrl+Enter]` as one of the available commands.
+
+![REPL welcome](images/repl-welcome.png)
+
+**8.7** Execute the following command in REPL:
+
+    val RTA = RandomTextApp
+
+**8.8** ASSERTION: Results of the command has no errors and looks alike the following image.
+
+![REPL RTA](images/repl-rta.png)
+
+**8.9** Execute the following two commands in REPL:
 
     sys.props("user.dir")
     sys.props("java.class.path")
 
-**8.6** ASSERTION: The output of the first statement is the directory of **SwingExamples** module.
+**8.10** ASSERTION: The output of the first statement is the directory of **SwingExamples** module.
 
-**8.7** ASSERTION: The output of the second statement (classpath) contains **SwingExamples**.
+![REPL verify](images/repl-verify.png)
 
-**8.8** Close the REPL by clicking X next to its tab title.
+**8.11** ASSERTION: The output of the second statement (classpath) contains **SwingExamples**.
 
-**8.9** The window opens asking whether REPL should be terminated.
+**8.12** Close the REPL by clicking X next to its tab title.
+
+**8.13** The window opens asking whether REPL should be terminated.
         Check **Remember, don't ask again** checkbox and click **Terminate**.
 
 #### Part II: Changing parameters
 
-**8.10** Reopen REPL by choosing a folder or a file within **SwingExamples** module.
+**8.14** Reopen REPL by choosing a folder or a file within **SwingExamples** module.
 
-**8.11** Again, uncheck **Don't show this window again** checkbox.
+**8.15** Again, uncheck **Don't show this window again** checkbox.
 
-**8.12** Change **Working directory** to be the directory of **O1Library** module.
+**8.16** Change **Working directory** to be the directory of **O1Library** module.
 - Just replacing **SwingExamples** with **O1Library** in the path does the trick.
 
-**8.13** Change value for **Use classpath and SDK of module** dropdown list to be **O1Library**.
+**8.17** Change value for **Use classpath and SDK of module** dropdown list to be **O1Library**.
 
-**8.14** Click **OK**.
+**8.18** Click **OK**.
 
-**8.15** ASSERTION: A REPL opens with **O1Library** in its title.
+**8.19** ASSERTION: A REPL opens with **O1Library** in its title.
 
-**8.16** In REPL, execute the same two commands as in **8.5**.
+**8.20** In REPL, execute the same two commands as in **8.9**.
 
-**8.17** ASSERTION: The output of the first statement is the directory of **O1Library** module.
+**8.21** ASSERTION: The output of the first statement is the directory of **O1Library** module.
 
-**8.18** ASSERTION: The output of the second statement (classpath) contains **O1Library**
+**8.22** ASSERTION: The output of the second statement (classpath) contains **O1Library**
          (but not other modules, such as **SwingExamples**).
 
-**8.19** Close the REPL.
+**8.23** Close the REPL.
 
 #### Part III: Inconsistent parameters
 
-**8.20** Reopen REPL by choosing a folder or a file within **O1Library** module.
+**8.24** Reopen REPL by choosing a folder or a file within **O1Library** module.
 
-**8.21** This time, leave **Don't show this window again** checkbox checked.
+**8.25** This time, leave **Don't show this window again** checkbox checked.
 
-**8.22** Change **Working directory** to be the directory of **SwingExamples** module.
+**8.26** Change **Working directory** to be the directory of **SwingExamples** module.
 
-**8.23** Click **OK**.
+**8.27** Click **OK**.
 
-**8.24** ASSERTION: A REPL opens with **O1Library** in its title.
+**8.28** ASSERTION: A REPL opens with **O1Library** in its title.
 
-**8.25** In REPL, execute the same two commands as in **8.5**.
+**8.29** In REPL, execute the same two commands as in **8.9**.
 
-**8.26** ASSERTION: The output of the first statement is the directory of **SwingExamples** module.
+**8.30** ASSERTION: The output of the first statement is the directory of **SwingExamples** module.
 
-**8.27** ASSERTION: The output of the second statement (classpath) contains **O1Library**
+**8.31** ASSERTION: The output of the second statement (classpath) contains **O1Library**
          (but not other modules, such as **SwingExamples**).
 
-**8.28** Close the REPL.
+**8.32** Close the REPL.
 
 #### Part IV: Persistence of choice
 
-**8.29** Reopen REPL by choosing a folder or a file within **O1Library** module.
+**8.33** Reopen REPL by choosing a folder or a file within **O1Library** module.
 
-**8.30** ASSERTION: **REPL Configuration** window does not show up.
+**8.34** ASSERTION: **REPL Configuration** window does not show up.
 
-**8.31** ASSERTION: A REPL opens with **O1Library** in its title.
+**8.35** ASSERTION: A REPL opens with **O1Library** in its title.
 
-**8.32** Execute the same two commands as in **8.5**.
+**8.36** Execute the same two commands as in **8.9**.
 
-**8.33** ASSERTION: The output of the first statement is the directory of **O1Library** module.
+**8.37** ASSERTION: The output of the first statement is the directory of **O1Library** module.
 
-**8.34** ASSERTION: The output of the second statement (classpath) contains **O1Library**
+**8.38** ASSERTION: The output of the second statement (classpath) contains **O1Library**
          (but not other modules, such as **SwingExamples**).
 
-**8.35** Close the REPL.
+**8.39** Close the REPL.
 
-**8.36** Restart te IDE.
+**8.40** Restart te IDE.
 
-**8.37** Once the IDE has restarted, open the REPL by choosing any file.
+**8.41** Once the IDE has restarted, open the REPL by choosing any file.
 
-**8.38** ASSERTION: **REPL Configuration** window does not show up.
+**8.42** ASSERTION: **REPL Configuration** window does not show up.
 
-**8.39** ASSERTION: A REPL opens.
+**8.43** ASSERTION: A REPL opens.
 
-**8.40** Close the REPL.
+**8.44** Close the REPL.
 
 #### Part V: Settings reset.
 
-**8.41** From the main menu, choose **A+ > Reset A+ Courses Plugin Settings**.
+**8.45** From the main menu, choose **A+ > Reset A+ Courses Plugin Settings**.
 
-**8.42** Open REPL by choosing any file.
+**8.46** Open REPL by choosing any file.
 
-**8.43** ASSERTION: **REPL Configuration** window shows up.
+**8.47** ASSERTION: **REPL Configuration** window shows up.
 
-**8.44** Close the window by clicking **Cancel**.
+**8.48** Close the window by clicking **Cancel**.
 
-**8.45** ASSERTION: No REPL opens.
+**8.49** ASSERTION: No REPL opens.
 
 ### 9 Removing a module
 

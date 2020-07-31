@@ -5,6 +5,8 @@ import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalIde
 
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.notification.Notifications;
+import com.intellij.openapi.command.WriteCommandAction;
+import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.project.ProjectManagerListener;
@@ -40,6 +42,9 @@ public class PluginSettings implements MainViewModelProvider {
 
   public static final String COURSE_CONFIGURATION_FILE_URL
       = "https://grader.cs.hut.fi/static/O1_2020/projects/o1_course_config.json";
+
+  public static final String MODULE_REPL_INITIAL_COMMANDS_FILE_NAME
+      = ".repl-commands";
 
   public static final String A_PLUS_API_BASE_URL = "https://minus.cs.aalto.fi/api/v2";
 
@@ -191,6 +196,21 @@ public class PluginSettings implements MainViewModelProvider {
     Arrays.stream(LocalIdeSettingsNames.values())
         .map(LocalIdeSettingsNames::getName)
         .forEach(applicationPropertiesManager::unsetValue);
+  }
+
+  /**
+   * Method that adds a new file (pattern) to the list of files not being shown in the Project UI.
+   *
+   * @param ignoredFileName a {@link String} name of the file to be ignored.
+   * @param project a {@link Project} to ignore the file from.
+   */
+  public void ignoreFileInProjectView(@NotNull String ignoredFileName,
+                                      @NotNull Project project) {
+    FileTypeManager fileTypeManager = FileTypeManager.getInstance();
+    String ignoredFilesList = fileTypeManager.getIgnoredFilesList();
+    Runnable runnable = () -> fileTypeManager
+        .setIgnoredFilesList(ignoredFilesList + ignoredFileName + ";");
+    WriteCommandAction.runWriteCommandAction(project, runnable);
   }
 
 }

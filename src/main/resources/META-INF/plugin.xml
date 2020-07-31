@@ -1,4 +1,4 @@
-<idea-plugin>
+<idea-plugin require-restart="true">
     <id>fi.aalto.cs.intellij-plugin</id>
     <name>A+ Courses</name>
     <vendor email="intellij-plugin-letech@aalto.fi" url="https://research.cs.aalto.fi/LeTech/">LeTech Group at Aalto University</vendor>
@@ -84,7 +84,8 @@
                 text="Check Required Plugins"/>
         <action id="Scala.RunConsole"
                 class="fi.aalto.cs.apluscourses.intellij.actions.ReplAction"
-                overrides="true">
+                overrides="true"
+                icon="PluginIcons.A_PLUS_REPL">
             <keyboard-shortcut first-keystroke="control shift D" keymap="$default"/>
         </action>
     </actions>

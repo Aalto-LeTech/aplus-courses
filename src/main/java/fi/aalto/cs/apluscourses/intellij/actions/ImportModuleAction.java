@@ -72,5 +72,4 @@ public class ImportModuleAction extends DumbAwareAction {
           .installAsync(modules, course::validate);
     }
   }
-
 }

@@ -10,6 +10,7 @@ import com.intellij.testFramework.LightIdeaTestCase;
 import fi.aalto.cs.apluscourses.model.APlusAuthentication;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.presentation.AuthenticationViewModel;
+import javax.swing.JPasswordField;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
@@ -36,10 +37,12 @@ public class APlusAuthenticationViewTest extends LightIdeaTestCase {
   public void testAplusAuthenticationView() {
     TestAuthenticationView authenticationView = new TestAuthenticationView();
 
-    Assert.assertEquals("The dialog has 'OK' and 'Cancel' buttons",
+    assertEquals("The dialog has 'OK' and 'Cancel' buttons",
         2, authenticationView.createActions().length);
     assertThat("The dialog title mentions 'A+ Token'", authenticationView.getTitle(),
         containsString("A+ Token"));
+    assertTrue("The password field is the preferred focused component",
+        authenticationView.getPreferredFocusedComponent() instanceof JPasswordField);
   }
 
   @Test
