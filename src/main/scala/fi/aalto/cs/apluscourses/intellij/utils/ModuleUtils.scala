@@ -95,7 +95,7 @@ object ModuleUtils {
         .replace("[", "")
         .replace("]", "")
         .split(" ")
-        .filter(part => !part.equals("pressed"))
+        .filter(_ != "pressed")
         .map(_.toLowerCase)
         .map(_.capitalize)
         .mkString("+")

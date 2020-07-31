@@ -504,6 +504,6 @@ public class Course implements ComponentSource {
 
   @NotNull
   public List<String> getAutoInstallComponentNames() {
-    return autoInstallComponentNames;
+    return Collections.unmodifiableList(autoInstallComponentNames);
   }
 }
