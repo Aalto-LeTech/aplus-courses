@@ -66,9 +66,9 @@ Marked with a github issue label "manual testing."
 - Ensure that the version is the one you want to test.
 - Click **Install**.
 
-**1.3** Exit **Plugins** window by clicking **OK**.
+**1.3** ASSERTION: IntelliJ IDEA requires a restart.
 
-**1.4** ASSERTION: IntelliJ IDEA does not request a restart.
+**1.4** Restart IntelliJ IDEA.
 
 ### 2 Initialize a new project
 
