@@ -510,5 +510,10 @@ public abstract class Course implements ComponentSource {
   }
 
   @NotNull
+  public List<String> getAutoInstallComponentNames() {
+    return Collections.unmodifiableList(autoInstallComponentNames);
+  }
+
+  @NotNull
   public abstract ExerciseDataSource getExerciseDataSource();
 }

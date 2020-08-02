@@ -23,6 +23,8 @@ import org.jetbrains.plugins.scala.console.actions.RunConsoleAction
 import org.jetbrains.plugins.scala.console.configuration.ScalaConsoleRunConfiguration
 import org.jetbrains.plugins.scala.project.ProjectExt
 
+import scala.collection.convert.ImplicitConversions.`collection AsScalaIterable`
+
 /**
  * Custom class that adjusts Scala Plugin's own RunConsoleAction with A+ requirements.
  */
@@ -59,7 +61,7 @@ class ReplAction extends RunConsoleAction {
      * configured for module" error.
      */
     val selectedModule = getScalaModuleOfEditorFile(project, dataContext)
-      .orElse(getScalaModuleOfSelectedFile(project, dataContext))
+      .orElse(getScalaModuleOfSelectedFile(project, dataContext)).orElse(getDefaultModule(project))
 
     val setting = runManagerEx.createConfiguration("Scala REPL", new ReplConfigurationFactory())
     val configuration = setting.getConfiguration.asInstanceOf[ScalaConsoleRunConfiguration]
@@ -107,6 +109,18 @@ class ReplAction extends RunConsoleAction {
     }
 
   }
+
+  def getDefaultModule(@NotNull project: Project): Option[Module] =
+    Option(ModuleManager.getInstance(project).findModuleByName(PluginSettings
+      .getInstance()
+      .getMainViewModel(project)
+      .courseViewModel
+      .get()
+      .getModel
+      .getAutoInstallComponentNames
+      //  we, hereby, commonly agree, that the first in the list auto install component (module)
+      //  is ultimately REPL's default module (as it's most likely to exist). sorry :pensive:
+      .head))
 
   def setConfigurationFields(@NotNull configuration: ScalaConsoleRunConfiguration,
                              @NotNull workingDirectory: String,
