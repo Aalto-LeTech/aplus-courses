@@ -1,9 +1,12 @@
 package fi.aalto.cs.apluscourses.ui.module;
 
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ModalityState;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.ui.GuiObject;
 import javax.swing.JPanel;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class ModulesView {
   @GuiObject
@@ -40,7 +43,13 @@ public class ModulesView {
     return basePanel;
   }
 
-  public void viewModelChanged(CourseViewModel course) {
-    moduleListView.setModel(course == null ? null : course.getModules());
+  /**
+   * Update this modules view with the given view model (which may be null).
+   */
+  public void viewModelChanged(@Nullable CourseViewModel course) {
+    ApplicationManager.getApplication().invokeLater(
+        () -> moduleListView.setModel(course == null ? null : course.getModules()),
+        ModalityState.any()
+    );
   }
 }

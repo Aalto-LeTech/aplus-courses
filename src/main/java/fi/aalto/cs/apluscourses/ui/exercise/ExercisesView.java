@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.ui.exercise;
 
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ModalityState;
 import fi.aalto.cs.apluscourses.intellij.actions.ActionUtil;
 import fi.aalto.cs.apluscourses.intellij.actions.OpenSubmissionAction;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
@@ -30,7 +32,10 @@ public class ExercisesView {
    * Sets the view model of this view, or does nothing if the given view model is null.
    */
   public void viewModelChanged(@Nullable ExercisesTreeViewModel viewModel) {
-    exerciseGroupsTree.setViewModel(viewModel);
+    ApplicationManager.getApplication().invokeLater(
+        () -> exerciseGroupsTree.setViewModel(viewModel),
+        ModalityState.any()
+    );
   }
 
   @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
