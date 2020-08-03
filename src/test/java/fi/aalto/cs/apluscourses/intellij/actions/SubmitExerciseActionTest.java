@@ -21,6 +21,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.DialogHelper;
+import fi.aalto.cs.apluscourses.intellij.notifications.ExerciseNotSelectedNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.MissingFileNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.MissingModuleNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
@@ -213,6 +214,18 @@ public class SubmitExerciseActionTest {
         ArgumentCaptor.forClass(SuccessfulSubmissionNotification.class);
 
     verify(notifier).notify(notificationArg.capture(), eq(project));
+  }
+
+  @Test
+  public void testNotifiesNoExerciseSelected() {
+    exercises.getGroupViewModels().get(0).getExerciseViewModels().get(0).setSelected(false);
+
+    action.actionPerformed(event);
+
+    ArgumentCaptor<ExerciseNotSelectedNotification> notification
+        = ArgumentCaptor.forClass(ExerciseNotSelectedNotification.class);
+
+    verify(notifier).notify(notification.capture(), eq(project));
   }
 
   @Test
