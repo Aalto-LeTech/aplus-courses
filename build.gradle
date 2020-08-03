@@ -9,7 +9,11 @@ plugins {
 }
 
 group 'fi.aalto.cs'
-version '1.0.' + (System.getenv('TRAVIS_BUILD_NUMBER') ?: '0')
+version = System.getenv('TRAVIS_BUILD_NUMBER')
+        //  1379 is not a "magic number" it's # of Travis last build
+        //  on the moment of creating this code :kissing_heart:
+        ? ('1.0.' + (System.getenv('TRAVIS_BUILD_NUMBER') - 1379))
+        : '1.0.0'
 
 sourceCompatibility = 1.8
 
