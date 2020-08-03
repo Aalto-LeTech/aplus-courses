@@ -9,7 +9,7 @@ plugins {
 }
 
 group 'fi.aalto.cs'
-version '0.1.' + (System.getenv('TRAVIS_BUILD_NUMBER') ?: '0')
+version '1.0.' + (System.getenv('TRAVIS_BUILD_NUMBER') ?: '0')
 
 sourceCompatibility = 1.8
 
@@ -33,8 +33,11 @@ dependencies {
 }
 
 intellij {
-    version '2020.1'
-    plugins = ['java', 'org.intellij.scala:2020.1.29']
+    //  this is the version of the IntelliJ IDEA API (SDK) used to build the plugin
+//    version '2020.1.4'
+    version '2020.2'
+//    plugins = ['java', 'org.intellij.scala:2020.1.41']
+    plugins = ['java', 'org.intellij.scala:2020.2.17']
 }
 
 publishPlugin {

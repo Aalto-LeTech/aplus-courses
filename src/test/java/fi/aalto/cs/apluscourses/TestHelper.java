@@ -3,6 +3,7 @@ package fi.aalto.cs.apluscourses;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.IdeaPluginDescriptorImpl;
 import com.intellij.ide.plugins.PluginManager;
+import com.intellij.ide.plugins.PluginManagerCore;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.module.Module;
@@ -13,6 +14,7 @@ import fi.aalto.cs.apluscourses.ui.repl.ReplConfigurationForm;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -61,15 +63,16 @@ public interface TestHelper {
    * provided data.
    *
    * @param path a {@link String} pointing to plugin.xml file of plugins to load.
-   * @return a {@link List} of two valid {@link IdeaPluginDescriptor}s.
+   * @return a {@link IdeaPluginDescriptor}.
    */
   @NotNull
   static IdeaPluginDescriptorImpl getIdeaPluginDescriptor(@NotNull String path)
       throws IOException, JDOMException {
     File file = new File(path);
     IdeaPluginDescriptorImpl ideaPluginDescriptor =
-        new IdeaPluginDescriptorImpl(file.toPath(), false);
-    ideaPluginDescriptor.loadFromFile(file, null, true);
+        new IdeaPluginDescriptorImpl(file.toPath(), file.toPath(), false);
+    PluginManager.loadDescriptorFromFile(ideaPluginDescriptor, file.toPath(),
+        null, Collections.emptySet());
     return ideaPluginDescriptor;
   }
 
@@ -80,7 +83,7 @@ public interface TestHelper {
    */
   @NotNull
   static IdeaPluginDescriptor getIdeaCorePluginDescriptor() {
-    return Objects.requireNonNull(PluginManager.getPlugin(PluginId.getId("com.intellij")));
+    return Objects.requireNonNull(PluginManagerCore.getPlugin(PluginId.getId("com.intellij")));
   }
 
   /**
@@ -133,8 +136,8 @@ public interface TestHelper {
   /**
    * Helper method for {@link com.intellij.testFramework.HeavyPlatformTestCase} to add modules.
    *
-   * @param project a {@link Project} to install {@link Module}s into
-   * @param name {@link String} name of the added {@link Module}
+   * @param project      a {@link Project} to install {@link Module}s into
+   * @param name         {@link String} name of the added {@link Module}
    * @param moduleTypeId {@link String} id of the added {@link Module}
    */
   default void createAndAddModule(Project project, String name, String moduleTypeId) {

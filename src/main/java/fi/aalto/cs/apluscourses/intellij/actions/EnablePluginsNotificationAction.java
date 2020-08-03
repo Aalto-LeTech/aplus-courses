@@ -2,8 +2,8 @@ package fi.aalto.cs.apluscourses.intellij.actions;
 
 import static fi.aalto.cs.apluscourses.intellij.utils.RequiredPluginsCheckerUtil.getPluginsNamesString;
 
+import com.intellij.ide.plugins.DisabledPluginsState;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
-import com.intellij.ide.plugins.PluginManager;
 import com.intellij.ide.plugins.PluginManagerConfigurable;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationAction;
@@ -29,7 +29,7 @@ public class EnablePluginsNotificationAction extends NotificationAction {
    */
   public EnablePluginsNotificationAction(List<IdeaPluginDescriptor> disabledPluginDescriptors) {
     this(disabledPluginDescriptors,
-        PluginManager::enablePlugin,
+        DisabledPluginsState::enablePlugin,
         EnablePluginsNotificationAction::proposeRestart);
   }
 
@@ -60,7 +60,7 @@ public class EnablePluginsNotificationAction extends NotificationAction {
   @Override
   public void actionPerformed(@NotNull AnActionEvent e, @NotNull Notification notification) {
     disabledPluginDescriptors
-        .forEach(descriptor -> pluginEnabler.enable(descriptor.getPluginId().getIdString()));
+        .forEach(descriptor -> pluginEnabler.enable(descriptor.getPluginId()));
     notification.expire();
     restartProposer.proposeRestart();
   }
@@ -87,6 +87,6 @@ public class EnablePluginsNotificationAction extends NotificationAction {
      * @param pluginId is the {@link String} id of the desired plugin.
      * @return is true for the case of successful enablement and false if it did not work.
      */
-    boolean enable(String pluginId);
+    boolean enable(PluginId pluginId);
   }
 }

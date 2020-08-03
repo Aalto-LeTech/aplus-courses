@@ -6,6 +6,7 @@ import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.ide.plugins.PluginManagerCore;
 import com.intellij.ide.plugins.RepositoryHelper;
+import com.intellij.ide.plugins.marketplace.MarketplaceRequests;
 import com.intellij.ide.plugins.newui.BgProgressIndicator;
 import com.intellij.notification.Notification;
 import com.intellij.notification.Notifications;
@@ -94,7 +95,7 @@ public class RequiredPluginsCheckerUtil {
   public static boolean isPluginMissingOrDisabled(@NotNull String id) {
     PluginId pluginId = PluginId.getId(id);
     return !PluginManager.isPluginInstalled(pluginId)
-        || !PluginManager.getPlugin(pluginId).isEnabled();
+        || !PluginManagerCore.getPlugin(pluginId).isEnabled();
   }
 
   /**
@@ -138,6 +139,7 @@ public class RequiredPluginsCheckerUtil {
     List<IdeaPluginDescriptor> availableIdeaPluginDescriptors = new ArrayList<>();
     try {
       availableIdeaPluginDescriptors = RepositoryHelper.loadPlugins(new BgProgressIndicator());
+      availableIdeaPluginDescriptors = MarketplaceRequests.getInstance(). RepositoryHelper.loadPlugins(new BgProgressIndicator());
     } catch (IOException ex) {
       logger.error("Could not retrieve plugins data from the main repository.", ex);
       Notification notification = new FailedToLoadPluginsNotification();

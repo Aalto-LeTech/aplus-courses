@@ -1,18 +1,31 @@
 <idea-plugin require-restart="true">
     <id>fi.aalto.cs.intellij-plugin</id>
     <name>A+ Courses</name>
-    <vendor email="intellij-plugin-letech@aalto.fi" url="https://research.cs.aalto.fi/LeTech/">LeTech Group at Aalto University</vendor>
+    <vendor email="intellij-plugin-letech@aalto.fi"
+            url="https://research.cs.aalto.fi/LeTech/">LeTech Group at Aalto University</vendor>
+    <!--  this is the range of supported IntelliJ IDEA version the plugin can be used with  -->
+    <idea-version since-build="202.6397.94"/>
 
     <description><![CDATA[
-    NOTE: This plugin is still under development. Use with caution!
-
-    This plugin supports the educational use of IntelliJ (and its Scala plugin) in programming courses that rely on the
-    A+ course platform, which has been developed at Aalto University. The plugin accesses programming assignments and
-    automated grading services provided by A+ and otherwise enhances the student experience.
+    This plugin supports the educational use of IntelliJ IDEA (and its Scala plugin) in programming
+    courses that rely on the A+ LMS developed at Aalto University. The plugin accesses programming
+    assignments and automated grading services provided by A+ and otherwise enhances the student
+    experience.
+      <br>
+      <br>
+      Available features:
+      <br>
+      <li>loading IDE and project settings for <a href="https://plus.cs.aalto.fi/o1/2020/user/enroll/">O1 course</a></li>
+      <li>installing learning Modules</li>
+      <li>notification of available Modules version updates</li>
+      <li>customized Scala REPL (read–eval–print loop)</li>
+      <li>submission of learning Assignments from the IDE</li>
+      <li>seeing submissions' results in IDE</li>
     ]]></description>
 
     <change-notes><![CDATA[
-      More functionality: loading modules and IDEs settings from A+ , customized REPL.<br>
+      More functionality: modules' lifecycle, submission from the IDE, seeing results, deeper REPL
+      customization.<br>
     ]]>
     </change-notes>
 
