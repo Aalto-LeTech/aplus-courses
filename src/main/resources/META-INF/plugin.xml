@@ -30,7 +30,7 @@
     </change-notes>
 
     <depends>com.intellij.modules.java</depends>
-    <depends optional="true" config-file="with-scala.xml">org.intellij.scala</depends>
+    <depends>org.intellij.scala</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <backgroundPostStartupActivity implementation="fi.aalto.cs.apluscourses.intellij.activities.VersionCheckerActivity"/>
@@ -80,9 +80,6 @@
                     text="Submit A+ Exercise"
                     icon="PluginIcons.A_PLUS_UPLOAD"/>
         </group>
-        <action id="fi.aalto.cs.apluscourses.intellij.actions.RequiredPluginsCheckerAction"
-                class="fi.aalto.cs.apluscourses.intellij.actions.RequiredPluginsCheckerAction"
-                text="Check Required Plugins"/>
         <action id="Scala.RunConsole"
                 class="fi.aalto.cs.apluscourses.intellij.actions.ReplAction"
                 overrides="true"
