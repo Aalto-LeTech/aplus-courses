@@ -51,7 +51,7 @@ public class ImportModuleActionTest {
     modules.add(new ModelExtensions.TestModule("module2"));
     modules.add(new ModelExtensions.TestModule("module3"));
 
-    Course course = new Course(
+    Course course = new ModelExtensions.TestCourse(
         "id",
         "course",
         modules,

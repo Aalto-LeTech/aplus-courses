@@ -18,6 +18,7 @@ import fi.aalto.cs.apluscourses.intellij.services.Dialogs;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.intellij.utils.VfsUtil;
+import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.ExerciseDataSource;
@@ -99,10 +100,10 @@ public class SubmitExerciseAction extends AnAction {
     MainViewModel mainViewModel = mainViewModelProvider.getMainViewModel(project);
     CourseViewModel courseViewModel = mainViewModel.courseViewModel.get();
     ExercisesTreeViewModel exercisesViewModel = mainViewModel.exercisesViewModel.get();
-    ExerciseDataSource exerciseDataSource = mainViewModel.getExerciseDataSource();
+    Authentication authentication = mainViewModel.authentication.get();
 
     e.getPresentation().setEnabled(project != null && exercisesViewModel != null
-        && exerciseDataSource != null && courseViewModel != null);
+        && authentication != null && courseViewModel != null);
   }
 
   @Override
@@ -127,9 +128,9 @@ public class SubmitExerciseAction extends AnAction {
     MainViewModel mainViewModel = mainViewModelProvider.getMainViewModel(project);
     CourseViewModel courseViewModel = mainViewModel.courseViewModel.get();
     ExercisesTreeViewModel exercisesViewModel = mainViewModel.exercisesViewModel.get();
-    ExerciseDataSource exerciseDataSource = mainViewModel.getExerciseDataSource();
+    Authentication authentication = mainViewModel.authentication.get();
 
-    if (courseViewModel == null || exercisesViewModel == null || exerciseDataSource == null) {
+    if (courseViewModel == null || exercisesViewModel == null || authentication == null) {
       return;
     }
 
@@ -139,9 +140,13 @@ public class SubmitExerciseAction extends AnAction {
       return;
     }
 
-    Exercise exercise = selectedExercise.getModel();
-    SubmissionInfo submissionInfo = exerciseDataSource.getSubmissionInfo(exercise);
 
+    Exercise exercise = selectedExercise.getModel();
+
+    Course course = courseViewModel.getModel();
+    ExerciseDataSource exerciseDataSource = course.getExerciseDataSource();
+
+    SubmissionInfo submissionInfo = exerciseDataSource.getSubmissionInfo(exercise, authentication);
     if (!submissionInfo.isSubmittable()) {
       notifier.notify(new NotSubmittableNotification(), project);
       return;
@@ -177,10 +182,9 @@ public class SubmitExerciseAction extends AnAction {
       files.put(file.getKey(), fileFinder.findFile(modulePath, file.getName()));
     }
 
-    SubmissionHistory history = exerciseDataSource.getSubmissionHistory(exercise);
+    SubmissionHistory history = exerciseDataSource.getSubmissionHistory(exercise, authentication);
 
-    Course course = courseViewModel.getModel();
-    List<Group> groups = new ArrayList<>(exerciseDataSource.getGroups(course));
+    List<Group> groups = new ArrayList<>(exerciseDataSource.getGroups(course, authentication));
     groups.add(0, new Group(0, Collections.singletonList("Submit alone")));
 
     SubmissionViewModel submission =
@@ -190,11 +194,7 @@ public class SubmitExerciseAction extends AnAction {
       return;
     }
 
-    exerciseDataSource.submit(submission.buildSubmission());
-    notifySuccessfulSubmission(project);
-  }
-
-  private void notifySuccessfulSubmission(@Nullable Project project) {
+    exerciseDataSource.submit(submission.buildSubmission(), authentication);
     notifier.notify(new SuccessfulSubmissionNotification(), project);
   }
 
