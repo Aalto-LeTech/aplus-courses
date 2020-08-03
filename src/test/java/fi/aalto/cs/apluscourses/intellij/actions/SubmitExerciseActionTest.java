@@ -22,11 +22,13 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.testFramework.LightIdeaTestCase;
 import fi.aalto.cs.apluscourses.intellij.DialogHelper;
+import fi.aalto.cs.apluscourses.intellij.notifications.ExerciseNotSelectedNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.MissingFileNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.MissingModuleNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.NotSubmittableNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
+import fi.aalto.cs.apluscourses.intellij.notifications.SuccessfulSubmissionNotification;
 import fi.aalto.cs.apluscourses.intellij.services.Dialogs;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.model.Authentication;
@@ -110,7 +112,8 @@ public class SubmitExerciseActionTest {
   @Before
   public void setUp() throws IOException, FileDoesNotExistException {
     exerciseId = 12;
-    exercise = new Exercise(exerciseId, "Test exercise", Collections.emptyList(), 0, 0, 0);
+    exercise = new Exercise(exerciseId, "Test exercise", "http://localhost:10000",
+        Collections.emptyList(), 0, 0, 0);
     group = new Group(124, Collections.singletonList("Only you"));
     groups = Collections.singletonList(group);
     exerciseGroup = new ExerciseGroup("Test EG", Collections.singletonList(exercise));
@@ -207,7 +210,22 @@ public class SubmitExerciseActionTest {
     files.put(fileKey, filePath);
     assertThat(submission.getFiles(), is(files));
 
-    verifyNoInteractions(notifier);
+    ArgumentCaptor<SuccessfulSubmissionNotification> notificationArg =
+        ArgumentCaptor.forClass(SuccessfulSubmissionNotification.class);
+
+    verify(notifier).notify(notificationArg.capture(), eq(project));
+  }
+
+  @Test
+  public void testNotifiesNoExerciseSelected() {
+    exercises.getGroupViewModels().get(0).getExerciseViewModels().get(0).setSelected(false);
+
+    action.actionPerformed(event);
+
+    ArgumentCaptor<ExerciseNotSelectedNotification> notification
+        = ArgumentCaptor.forClass(ExerciseNotSelectedNotification.class);
+
+    verify(notifier).notify(notification.capture(), eq(project));
   }
 
   @Test

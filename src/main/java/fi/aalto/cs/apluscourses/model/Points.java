@@ -20,7 +20,9 @@ public class Points {
 
   /**
    * Construct an instance with the given maps.
-   * @param submissions A map of exercise IDs to a list of submissions IDs for that exercise.
+   * @param submissions A map of exercise IDs to a list of submissions IDs for that exercise. The
+   *                    first element of the list should be the ID of the oldest submission and the
+   *                    last element should be the ID of the latest submission.
    * @param points      A map of exercise IDs to the best points gotten from that exercise.
    */
   public Points(@NotNull Map<Long, List<Long>> submissions, @NotNull Map<Long, Integer> points) {
@@ -75,7 +77,7 @@ public class Points {
   private static List<Long> getSubmissionIds(@NotNull JSONObject exercise) {
     JSONArray submissionsArray = exercise.getJSONArray("submissions");
     List<Long> submissionIds = new ArrayList<>(submissionsArray.length());
-    for (int i = 0; i < submissionsArray.length(); ++i) {
+    for (int i = submissionsArray.length() - 1; i >= 0; --i) {
       String submissionUrl = submissionsArray.getString(i);
       submissionIds.add(parseSubmissionId(submissionUrl));
     }

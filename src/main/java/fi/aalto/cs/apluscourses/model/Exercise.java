@@ -2,6 +2,9 @@ package fi.aalto.cs.apluscourses.model;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
@@ -13,7 +16,10 @@ public class Exercise {
   private final String name;
 
   @NotNull
-  private final List<Long> submissionIds;
+  private final String htmlUrl;
+
+  @NotNull
+  private final List<SubmissionResult> submissionResults;
 
   private final int userPoints;
 
@@ -24,22 +30,24 @@ public class Exercise {
   /**
    * Construct an exercise instance with the given parameters.
    *
-   * @param id             The ID of the exercise.
-   * @param name           The name of the exercise.
-   * @param submissionIds  A list of IDs corresponding to submissions to this exercise.
-   * @param userPoints     The best points that the user has gotten from this exercise.
-   * @param maxPoints      The maximum points available from this exercise.
-   * @param maxSubmissions The maximum number of submissions allowed for this exercise.
+   * @param id                 The ID of the exercise.
+   * @param name               The name of the exercise.
+   * @param submissionResults  A list of submission results corresponding to this exercise.
+   * @param userPoints         The best points that the user has gotten from this exercise.
+   * @param maxPoints          The maximum points available from this exercise.
+   * @param maxSubmissions     The maximum number of submissions allowed for this exercise.
    */
   public Exercise(long id,
                   @NotNull String name,
-                  @NotNull List<Long> submissionIds,
+                  @NotNull String htmlUrl,
+                  @NotNull List<SubmissionResult> submissionResults,
                   int userPoints,
                   int maxPoints,
                   int maxSubmissions) {
     this.id = id;
     this.name = name;
-    this.submissionIds = submissionIds;
+    this.htmlUrl = htmlUrl;
+    this.submissionResults = submissionResults;
     this.userPoints = userPoints;
     this.maxPoints = maxPoints;
     this.maxSubmissions = maxSubmissions;
@@ -47,8 +55,8 @@ public class Exercise {
 
   /**
    * Construct an exercise from the given JSON object. The object must contain an integer value for
-   * the key "id", a string value for the key "display_name", and integer values for the keys
-   * "max_points" and "max_submissions".
+   * the key "id", a string value for the key "display_name", a string value for the key "html_url",
+   * and integer values for the keys "max_points" and "max_submissions".
    *
    * @param jsonObject The JSON object from which the exercise is constructed.
    * @return An exercise instance.
@@ -58,16 +66,17 @@ public class Exercise {
                                         @NotNull Points points) {
     long id = jsonObject.getLong("id");
     String name = jsonObject.getString("display_name");
+    String htmlUrl = jsonObject.getString("html_url");
     List<Long> submissionIds = points.getSubmissions().getOrDefault(id, Collections.emptyList());
+    List<SubmissionResult> submissionResults = IntStream
+        .range(0, submissionIds.size())
+        .mapToObj(i -> new SubmissionResult(submissionIds.get(i), i + 1, htmlUrl))
+        .collect(Collectors.toList());
     int userPoints = points.getPoints().getOrDefault(id, 0);
     int maxPoints = jsonObject.getInt("max_points");
     int maxSubmissions = jsonObject.getInt("max_submissions");
-    return new Exercise(id, name, submissionIds, userPoints, maxPoints, maxSubmissions);
-  }
-
-  @NotNull
-  public String getName() {
-    return name;
+    return new Exercise(id, name, htmlUrl, submissionResults,
+        userPoints, maxPoints, maxSubmissions);
   }
 
   public long getId() {
@@ -75,8 +84,18 @@ public class Exercise {
   }
 
   @NotNull
-  public List<Long> getSubmissionIds() {
-    return Collections.unmodifiableList(submissionIds);
+  public String getName() {
+    return name;
+  }
+
+  @NotNull
+  public String getHtmlUrl() {
+    return htmlUrl;
+  }
+
+  @NotNull
+  public List<SubmissionResult> getSubmissionResults() {
+    return Collections.unmodifiableList(submissionResults);
   }
 
   public int getUserPoints() {

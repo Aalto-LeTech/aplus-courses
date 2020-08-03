@@ -16,7 +16,7 @@ public class MissingModuleNotification extends Notification {
   public MissingModuleNotification(@NotNull String moduleName) {
     super(
         "A+",
-        "Could not find file",
+        "Could not find module",
         "A+ Courses plugin couldn't find the module " + moduleName + ".",
         NotificationType.ERROR);
     this.moduleName = moduleName;
