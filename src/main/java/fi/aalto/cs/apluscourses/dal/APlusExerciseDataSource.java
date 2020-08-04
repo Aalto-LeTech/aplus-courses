@@ -12,6 +12,7 @@ import fi.aalto.cs.apluscourses.model.Points;
 import fi.aalto.cs.apluscourses.model.Submission;
 import fi.aalto.cs.apluscourses.model.SubmissionHistory;
 import fi.aalto.cs.apluscourses.model.SubmissionInfo;
+import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
 import java.io.IOException;
 import java.io.InputStream;
@@ -140,6 +141,15 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
     return parser.parsePoints(response);
   }
 
+  @Override
+  @NotNull
+  public SubmissionResult getSubmissionResult(@NotNull String submissionUrl,
+                                              @NotNull Authentication authentication)
+      throws IOException {
+    JSONObject response = client.fetch(submissionUrl, authentication);
+    return parser.parseSubmissionResult(response);
+  }
+
   /**
    * Sends the submission to the server.
    *
@@ -191,8 +201,9 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
 
     @Override
     @Nullable
-    public String post(String url, Authentication authentication, Map<String, Object> data)
-        throws IOException {
+    public String post(@NotNull String url,
+                       @NotNull Authentication authentication,
+                       @NotNull Map<String, Object> data) throws IOException {
       return CoursesClient.post(
           new URL(url),
           authentication,
@@ -227,6 +238,11 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
     @Override
     public Points parsePoints(JSONObject object) {
       return Points.fromJsonObject(object);
+    }
+
+    @Override
+    public SubmissionResult parseSubmissionResult(JSONObject object) {
+      return SubmissionResult.fromJsonObject(object);
     }
 
   }
