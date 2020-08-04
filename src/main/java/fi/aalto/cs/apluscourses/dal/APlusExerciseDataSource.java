@@ -20,7 +20,11 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
+import org.apache.http.Header;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -141,14 +145,15 @@ public class APlusExerciseDataSource extends ExerciseDataSource {
    * @throws IOException If there are IO related errors.
    */
   @Override
-  public void submit(Submission submission) throws IOException {
+  @Nullable
+  public String submit(Submission submission) throws IOException {
     Map<String, Object> data = new HashMap<>();
     data.put("__aplus__", "{ \"group\": " + submission.getGroup().getId() + ", \"lang\": \"en\" }");
     for (Map.Entry<String, Path> entry : submission.getFiles().entrySet()) {
       data.put(entry.getKey(), entry.getValue().toFile());
     }
     String url = apiUrl + "/exercises/" + submission.getExercise().getId() + "/submissions/submit/";
-    client.post(url, authentication, data);
+    return client.post(url, authentication, data);
   }
 
   @NotNull
@@ -181,9 +186,18 @@ public class APlusExerciseDataSource extends ExerciseDataSource {
     }
 
     @Override
-    public void post(String url, Authentication authentication, Map<String, Object> data)
+    @Nullable
+    public String post(String url, Authentication authentication, Map<String, Object> data)
         throws IOException {
-      CoursesClient.post(new URL(url), authentication, data);
+      return CoursesClient.post(
+          new URL(url),
+          authentication,
+          data,
+          response -> Optional
+              .ofNullable(response.getFirstHeader("Location"))
+              .map(Header::getValue)
+              .orElse(null)
+      );
     }
 
     @Override

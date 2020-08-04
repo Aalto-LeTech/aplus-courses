@@ -31,7 +31,7 @@ public abstract class ExerciseDataSource {
   @NotNull
   public abstract Points getPoints(@NotNull Course course) throws IOException;
 
-  public abstract void submit(Submission submission) throws IOException;
+  public abstract String submit(Submission submission) throws IOException;
 
   @NotNull
   public Authentication getAuthentication() {

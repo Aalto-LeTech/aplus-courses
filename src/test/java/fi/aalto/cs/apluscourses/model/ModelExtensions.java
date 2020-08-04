@@ -63,8 +63,9 @@ public class ModelExtensions {
     }
 
     @Override
-    public void submit(Submission submission) throws IOException {
+    public String submit(Submission submission) throws IOException {
       // do nothing
+      return "";
     }
   }
 

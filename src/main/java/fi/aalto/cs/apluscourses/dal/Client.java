@@ -8,5 +8,7 @@ import org.json.JSONObject;
 public interface Client {
   JSONObject fetch(String url, Authentication authentication) throws IOException;
 
-  void post(String url, Authentication authentication, Map<String, Object> data) throws IOException;
+  String post(String url,
+              Authentication authentication,
+              Map<String, Object> data) throws IOException;
 }
