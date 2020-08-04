@@ -26,9 +26,12 @@ public class ExerciseGroupViewModelTest {
 
   @Test
   public void testSortsExercises() {
-    Exercise first = new Exercise(1, "Assignment 0", Collections.emptyList(), 0, 0,0);
-    Exercise second = new Exercise(2, "Assignment 5", Collections.emptyList(), 0, 0,0);
-    Exercise third = new Exercise(3, "Assignment 10", Collections.emptyList(), 0, 0,0);
+    Exercise first = new Exercise(1, "Assignment 0", "http://localhost:1000",
+        Collections.emptyList(), 0, 0,0);
+    Exercise second = new Exercise(2, "Assignment 5", "http://localhost:2000",
+        Collections.emptyList(), 0, 0,0);
+    Exercise third = new Exercise(3, "Assignment 10", "http://localhost:3000",
+        Collections.emptyList(), 0, 0,0);
 
     ExerciseGroup group = new ExerciseGroup("", Arrays.asList(third, second, first));
     ExerciseGroupViewModel groupViewModel = new ExerciseGroupViewModel(group);

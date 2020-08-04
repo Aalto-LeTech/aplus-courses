@@ -23,7 +23,7 @@ public class SubmissionViewModelTest {
   @Test
   public void testValidation() {
     List<String> names = new ArrayList<>();
-    names.add("Som Eone");
+    names.add("Someone");
 
     Group group = new Group(200, names);
     List<Group> groups = new ArrayList<>();
@@ -40,7 +40,8 @@ public class SubmissionViewModelTest {
 
     SubmissionHistory history = new SubmissionHistory(4);
 
-    Exercise exercise = new Exercise(100, "Exercise", Collections.emptyList(), 0, 0, 0);
+    Exercise exercise = new Exercise(100, "Exercise", "http://localhost:1000",
+        Collections.emptyList(), 0, 0, 0);
 
     SubmissionViewModel submissionViewModel =
         new SubmissionViewModel(exercise, submissionInfo, history, groups, fileMap);
@@ -51,7 +52,8 @@ public class SubmissionViewModelTest {
 
   @Test
   public void testSubmissionNumbers() {
-    Exercise exercise = new Exercise(1, "ex", Collections.emptyList(), 0, 0, 0);
+    Exercise exercise = new Exercise(1, "ex", "http://localhost:2000", Collections.emptyList(),
+        0, 0, 0);
     SubmissionInfo info = new SubmissionInfo(5, new SubmittableFile[0]);
 
     SubmissionViewModel submissionViewModel1 = new SubmissionViewModel(exercise, info,

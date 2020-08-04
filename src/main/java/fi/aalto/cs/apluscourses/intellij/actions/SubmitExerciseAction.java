@@ -7,11 +7,13 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
+import fi.aalto.cs.apluscourses.intellij.notifications.ExerciseNotSelectedNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.MissingFileNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.MissingModuleNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.NotSubmittableNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
+import fi.aalto.cs.apluscourses.intellij.notifications.SuccessfulSubmissionNotification;
 import fi.aalto.cs.apluscourses.intellij.services.Dialogs;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
@@ -134,6 +136,7 @@ public class SubmitExerciseAction extends AnAction {
 
     ExerciseViewModel selectedExercise = exercisesViewModel.getSelectedExercise();
     if (selectedExercise == null) {
+      notifier.notify(new ExerciseNotSelectedNotification(), project);
       return;
     }
 
@@ -192,6 +195,7 @@ public class SubmitExerciseAction extends AnAction {
     }
 
     exerciseDataSource.submit(submission.buildSubmission(), authentication);
+    notifier.notify(new SuccessfulSubmissionNotification(), project);
   }
 
   private void notifyNetworkError(@NotNull IOException exception, @Nullable Project project) {

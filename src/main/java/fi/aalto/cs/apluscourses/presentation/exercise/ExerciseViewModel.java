@@ -5,13 +5,26 @@ import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.TreeViewModel;
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> implements TreeViewModel {
 
+  @NotNull
+  private final List<SubmissionResultViewModel> submissionResultViewModels;
+
+  /**
+   * Construct a view model corresponding to the given exercise.
+   */
   public ExerciseViewModel(@NotNull Exercise exercise) {
     super(exercise);
+    submissionResultViewModels = exercise
+        .getSubmissionResults()
+        .stream()
+        .map(SubmissionResultViewModel::new)
+        .collect(Collectors.toList());
   }
 
   public String getPresentableName() {
@@ -39,7 +52,7 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
    */
   public Status getStatus() {
     Exercise exercise = getModel();
-    if (exercise.getSubmissionIds().isEmpty()) {
+    if (exercise.getSubmissionResults().isEmpty()) {
       return Status.NO_SUBMISSIONS;
     } else if (exercise.getUserPoints() == exercise.getMaxPoints()) {
       return Status.FULL_POINTS;
@@ -50,9 +63,16 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
     }
   }
 
+  public List<SubmissionResultViewModel> getSubmissionResultViewModels() {
+    return submissionResultViewModels;
+  }
+
   @Nullable
   @Override
   public List<TreeViewModel> getSubtrees() {
-    return null;
+    return getSubmissionResultViewModels()
+        .stream()
+        .map(viewModel -> (TreeViewModel) viewModel)
+        .collect(Collectors.toList());
   }
 }

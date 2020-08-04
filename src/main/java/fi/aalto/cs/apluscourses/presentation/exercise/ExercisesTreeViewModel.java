@@ -37,6 +37,19 @@ public class ExercisesTreeViewModel extends BaseViewModel<List<ExerciseGroup>>
         .orElse(null);
   }
 
+  /**
+   * Returns the submission from this tree that is selected, or null if no submission is selected.
+   */
+  @Nullable
+  public SubmissionResultViewModel getSelectedSubmission() {
+    return getGroupViewModels().stream()
+        .flatMap(group -> group.getExerciseViewModels().stream())
+        .flatMap(exercise -> exercise.getSubmissionResultViewModels().stream())
+        .filter(SubmissionResultViewModel::isSelected)
+        .findFirst()
+        .orElse(null);
+  }
+
   @NotNull
   public List<ExerciseGroupViewModel> getGroupViewModels() {
     return groupViewModels;

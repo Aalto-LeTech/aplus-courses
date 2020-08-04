@@ -106,6 +106,20 @@ public class PluginSettings implements MainViewModelProvider {
   }
 
   /**
+   * Triggers a main view model update for the main view model corresponding to the given project.
+   * If the project is null, this method does nothing.
+   */
+  public void updateMainViewModel(@Nullable Project project) {
+    if (project == null) {
+      return;
+    }
+    MainViewModelUpdater updater = mainViewModelUpdaters.get(project);
+    if (updater != null) {
+      updater.restart();
+    }
+  }
+
+  /**
    * Creates a main view model and launches an updater for it that runs on a background thread.
    *
    * @param project The project to which the created main view model corresponds.
