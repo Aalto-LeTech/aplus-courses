@@ -5,46 +5,30 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class ExerciseDataSource {
+public interface ExerciseDataSource {
 
   @NotNull
-  protected final Authentication authentication;
-
-  public ExerciseDataSource(@NotNull AuthProvider authProvider) {
-    this.authentication = authProvider.create();
-  }
+  SubmissionInfo getSubmissionInfo(@NotNull Exercise exercise,
+                                   @NotNull Authentication authentication) throws IOException;
 
   @NotNull
-  public abstract SubmissionInfo getSubmissionInfo(@NotNull Exercise exercise) throws IOException;
+  SubmissionHistory getSubmissionHistory(@NotNull Exercise exercise,
+                                         @NotNull Authentication authentication) throws IOException;
 
   @NotNull
-  public abstract SubmissionHistory getSubmissionHistory(@NotNull Exercise exercise)
+  List<Group> getGroups(@NotNull Course course, @NotNull Authentication authentication)
       throws IOException;
 
   @NotNull
-  public abstract List<Group> getGroups(@NotNull Course course) throws IOException;
+  List<ExerciseGroup> getExerciseGroups(@NotNull Course course,
+                                        @NotNull Points points,
+                                        @NotNull Authentication authentication) throws IOException;
 
   @NotNull
-  public abstract List<ExerciseGroup> getExerciseGroups(@NotNull Course course,
-                                                        @NotNull Points points) throws IOException;
+  Points getPoints(@NotNull Course course, @NotNull Authentication authentication)
+      throws IOException;
 
-  @NotNull
-  public abstract Points getPoints(@NotNull Course course) throws IOException;
-
-  public abstract String submit(Submission submission) throws IOException;
-
-  @NotNull
-  public Authentication getAuthentication() {
-    return authentication;
-  }
-
-  public interface Provider {
-    @Nullable
-    ExerciseDataSource create(AuthProvider authentication);
-  }
-
-  public interface AuthProvider {
-    @NotNull
-    Authentication create();
-  }
+  @Nullable
+  String submit(@NotNull Submission submission, @NotNull Authentication authentication)
+      throws IOException;
 }

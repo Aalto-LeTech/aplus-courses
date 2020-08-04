@@ -3,15 +3,20 @@ package fi.aalto.cs.apluscourses.presentation;
 import com.intellij.notification.Notification;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.project.Project;
+import fi.aalto.cs.apluscourses.dal.APlusTokenAuthentication;
+import fi.aalto.cs.apluscourses.dal.PasswordStorage;
+import fi.aalto.cs.apluscourses.dal.TokenAuthentication;
 import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory;
 import fi.aalto.cs.apluscourses.intellij.notifications.NewModulesVersionsNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.utils.CourseFileManager;
+import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Module;
 import java.net.URL;
 import java.util.List;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,6 +32,8 @@ public class MainViewModelUpdater {
 
   @NotNull
   private final Notifier notifier;
+  @NotNull
+  private final PasswordStorage.Factory passwordStorageFactory;
 
   private Thread thread;
 
@@ -43,11 +50,13 @@ public class MainViewModelUpdater {
   public MainViewModelUpdater(@NotNull MainViewModel mainViewModel,
                               @NotNull Project project,
                               long updateInterval,
-                              @NotNull Notifier notifier) {
+                              @NotNull Notifier notifier,
+                              @NotNull PasswordStorage.Factory passwordStorageFactory) {
     this.mainViewModel = mainViewModel;
     this.project = project;
     this.updateInterval = updateInterval;
     this.notifier = notifier;
+    this.passwordStorageFactory = passwordStorageFactory;
     this.thread = new Thread(this::run);
   }
 
@@ -98,6 +107,12 @@ public class MainViewModelUpdater {
     }
 
     mainViewModel.courseViewModel.set(new CourseViewModel(newCourse));
+
+    PasswordStorage passwordStorage = passwordStorageFactory.create(newCourse.getApiUrl());
+    TokenAuthentication.Factory authenticationFactory =
+        APlusTokenAuthentication.getFactoryFor(passwordStorage);
+    mainViewModel.readAuthenticationFromStorage(passwordStorage, authenticationFactory);
+
     notifyNewVersions(newCourse);
 
     newCourse.register();

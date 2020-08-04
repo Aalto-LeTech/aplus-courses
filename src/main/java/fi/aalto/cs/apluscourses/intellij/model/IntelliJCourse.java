@@ -11,8 +11,10 @@ import com.intellij.openapi.vfs.newvfs.BulkFileListener;
 import com.intellij.openapi.vfs.newvfs.events.VFileDeleteEvent;
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import com.intellij.util.messages.MessageBusConnection;
+import fi.aalto.cs.apluscourses.dal.APlusExerciseDataSource;
 import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.Course;
+import fi.aalto.cs.apluscourses.model.ExerciseDataSource;
 import fi.aalto.cs.apluscourses.model.Library;
 import fi.aalto.cs.apluscourses.model.Module;
 import java.net.URL;
@@ -38,6 +40,8 @@ class IntelliJCourse extends Course {
 
   private final PlatformListener platformListener;
 
+  private final ExerciseDataSource exerciseDataSource;
+
   public IntelliJCourse(@NotNull String id,
                         @NotNull String name,
                         @NotNull List<Module> modules,
@@ -46,6 +50,7 @@ class IntelliJCourse extends Course {
                         @NotNull Map<String, String> requiredPlugins,
                         @NotNull Map<String, URL> resourceUrls,
                         @NotNull List<String> autoInstallComponentNames,
+                        @NotNull Map<String, String[]> replInitialCommands,
                         @NotNull APlusProject project,
                         @NotNull CommonLibraryProvider commonLibraryProvider) {
     super(
@@ -56,12 +61,13 @@ class IntelliJCourse extends Course {
         exerciseModules,
         requiredPlugins,
         resourceUrls,
-        autoInstallComponentNames
-    );
+        autoInstallComponentNames,
+        replInitialCommands);
 
     this.project = project;
     this.commonLibraryProvider = commonLibraryProvider;
     this.platformListener = new PlatformListener();
+    this.exerciseDataSource = new APlusExerciseDataSource(getApiUrl());
   }
 
   @NotNull
@@ -108,7 +114,14 @@ class IntelliJCourse extends Course {
 
   }
 
+  @NotNull
+  @Override
+  public ExerciseDataSource getExerciseDataSource() {
+    return exerciseDataSource;
+  }
+
   private class PlatformListener {
+
     private MessageBusConnection messageBusConnection;
 
     @NotNull

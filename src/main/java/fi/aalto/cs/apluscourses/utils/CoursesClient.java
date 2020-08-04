@@ -47,10 +47,7 @@ public class CoursesClient {
    */
   @NotNull
   public static ByteArrayInputStream fetch(@NotNull URL url) throws IOException {
-    return fetchAndMap(url, null, response -> {
-      requireResponseEntity(response);
-      return new ByteArrayInputStream(EntityUtils.toByteArray(response.getEntity()));
-    });
+    return fetch(url, (HttpAuthentication) null);
   }
 
   /**
@@ -66,7 +63,7 @@ public class CoursesClient {
    */
   @NotNull
   public static ByteArrayInputStream fetch(@NotNull URL url,
-                                           @NotNull HttpAuthentication authentication)
+                                           @Nullable HttpAuthentication authentication)
       throws IOException {
     return fetchAndMap(url, authentication,
         response -> {

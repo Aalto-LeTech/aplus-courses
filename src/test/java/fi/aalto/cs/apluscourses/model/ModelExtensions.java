@@ -25,45 +25,50 @@ public class ModelExtensions {
 
   }
 
-  public static class TestExerciseDataSource extends ExerciseDataSource {
-
-    public TestExerciseDataSource() {
-      super(() -> mock(APlusAuthentication.class));
-    }
+  public static class TestExerciseDataSource implements ExerciseDataSource {
 
     @NotNull
     @Override
-    public SubmissionInfo getSubmissionInfo(@NotNull Exercise exercise) throws IOException {
+    public SubmissionInfo getSubmissionInfo(@NotNull Exercise exercise,
+                                            @NotNull Authentication authentication)
+        throws IOException {
       return new SubmissionInfo(1, new SubmittableFile[0]);
     }
 
     @NotNull
     @Override
-    public SubmissionHistory getSubmissionHistory(@NotNull Exercise exercise) throws IOException {
+    public SubmissionHistory getSubmissionHistory(@NotNull Exercise exercise,
+                                                  @NotNull Authentication authentication)
+        throws IOException {
       return new SubmissionHistory(0);
     }
 
     @NotNull
     @Override
-    public List<Group> getGroups(@NotNull Course course) throws IOException {
+    public List<Group> getGroups(@NotNull Course course, @NotNull Authentication authentication)
+        throws IOException {
       return Collections.singletonList(new Group(0, Collections.singletonList("Only you")));
     }
 
     @NotNull
     @Override
     public List<ExerciseGroup> getExerciseGroups(@NotNull Course course,
-                                                 @NotNull Points points) throws IOException {
+                                                 @NotNull Points points,
+                                                 @NotNull Authentication authentication)
+        throws IOException {
       return Collections.emptyList();
     }
 
     @NotNull
     @Override
-    public Points getPoints(@NotNull Course course) throws IOException {
+    public Points getPoints(@NotNull Course course, @NotNull Authentication authentication)
+        throws IOException {
       return new Points(Collections.emptyMap(), Collections.emptyMap());
     }
 
     @Override
-    public String submit(Submission submission) throws IOException {
+    public String submit(@NotNull Submission submission, @NotNull Authentication authentication)
+        throws IOException {
       // do nothing
       return "";
     }
@@ -71,13 +76,60 @@ public class ModelExtensions {
 
   public static class TestCourse extends Course {
 
-    public TestCourse(@NotNull String id) {
-      this(id, "");
+    private final ExerciseDataSource exerciseDataSource;
+
+    /**
+     * Constructor matching superclass.
+     */
+    public TestCourse(@NotNull String id,
+                      @NotNull String name,
+                      @NotNull List<Module> modules,
+                      @NotNull List<Library> libraries,
+                      @NotNull Map<Long, Map<String, String>> exerciseModules,
+                      @NotNull Map<String, String> requiredPlugins,
+                      @NotNull Map<String, URL> resourceUrls,
+                      @NotNull List<String> autoInstallComponentNames,
+                      @NotNull Map<String, String[]> replInitialCommands) {
+      super(id, name, modules, libraries, exerciseModules, requiredPlugins, resourceUrls,
+          autoInstallComponentNames, replInitialCommands);
+      exerciseDataSource = new TestExerciseDataSource();
     }
 
-    public TestCourse(@NotNull String id, @NotNull String name) {
-      super(id, name, Collections.emptyList(), Collections.emptyList(), Collections.emptyMap(),
-          Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList());
+    public TestCourse(@NotNull String id) {
+      this(id, "", new TestExerciseDataSource());
+    }
+
+    /**
+     * Creates a dummy {@link Course} for testing purposes.
+     *
+     * @param id {@link String} id for the {@link Course}
+     * @param name {@link String} for the {@link Course}.
+     * @param exerciseDataSource Data source for exercises.
+     */
+    public TestCourse(@NotNull String id, @NotNull String name,
+                      @NotNull ExerciseDataSource exerciseDataSource) {
+      super(id, name,
+          //  modules
+          Collections.emptyList(),
+          //  libraries
+          Collections.emptyList(),
+          //  exerciseModules
+          Collections.emptyMap(),
+          //  requiredPlugins
+          Collections.emptyMap(),
+          //  resourceUrls
+          Collections.emptyMap(),
+          //  autoInstallComponentNames
+          Collections.emptyList(),
+          //  replInitialCommands
+          Collections.emptyMap());
+      this.exerciseDataSource = exerciseDataSource;
+    }
+
+    @NotNull
+    @Override
+    public ExerciseDataSource getExerciseDataSource() {
+      return exerciseDataSource;
     }
   }
 
@@ -248,8 +300,9 @@ public class ModelExtensions {
                                @NotNull Map<Long, Map<String, String>> exerciseModules,
                                @NotNull Map<String, String> requiredPlugins,
                                @NotNull Map<String, URL> resourceUrls,
-                               @NotNull List<String> autoInstallComponentNames) {
-      return new Course(
+                               @NotNull List<String> autoInstallComponentNames,
+                               @NotNull Map<String, String[]> replInitialCommands) {
+      return new ModelExtensions.TestCourse(
           id,
           name,
           modules,
@@ -257,12 +310,15 @@ public class ModelExtensions {
           exerciseModules,
           requiredPlugins,
           resourceUrls,
-          autoInstallComponentNames
+          autoInstallComponentNames,
+          replInitialCommands
       );
     }
 
     @Override
-    public Module createModule(@NotNull String name, @NotNull URL url, @NotNull String versionId) {
+    public Module createModule(@NotNull String name,
+                               @NotNull URL url,
+                               @NotNull String versionId) {
       return new TestModule(name, url, versionId, null, null);
     }
 

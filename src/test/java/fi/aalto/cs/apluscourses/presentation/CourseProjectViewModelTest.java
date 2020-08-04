@@ -5,14 +5,16 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import fi.aalto.cs.apluscourses.model.Course;
+import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import java.util.Collections;
 import org.junit.Test;
 
 public class CourseProjectViewModelTest {
 
-  private final Course emptyCourse = new Course("123", "NiceCourse", Collections.emptyList(),
-      Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap(),
-      Collections.emptyMap(), Collections.emptyList());
+  private final Course emptyCourse = new ModelExtensions.TestCourse("123", "NiceCourse",
+      Collections.emptyList(), Collections.emptyList(), Collections.emptyMap(),
+      Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList(),
+      Collections.emptyMap());
 
 
   @Test
@@ -50,5 +52,4 @@ public class CourseProjectViewModelTest {
     assertTrue("The settings text should mention that settings are already imported",
         courseProjectViewModel.shouldShowCurrentSettings());
   }
-
 }

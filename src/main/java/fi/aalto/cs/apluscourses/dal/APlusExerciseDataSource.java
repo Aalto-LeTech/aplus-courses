@@ -29,42 +29,36 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-public class APlusExerciseDataSource extends ExerciseDataSource {
+public class APlusExerciseDataSource implements ExerciseDataSource {
 
   @NotNull
   private final Client client;
 
   @NotNull
-  private String apiUrl;
+  private final String apiUrl;
 
   @NotNull
   private final Parser parser;
 
   /**
    * Default constructor.
-   *
-   * @param authProvider Used for creating an authentication for this data source.
    */
-  public APlusExerciseDataSource(@NotNull AuthProvider authProvider) {
-    this(authProvider,
+  public APlusExerciseDataSource(@NotNull String apiUrl) {
+    this(apiUrl,
         DefaultDataAccess.INSTANCE,
-        PluginSettings.A_PLUS_API_BASE_URL,
         DefaultDataAccess.INSTANCE);
   }
 
   /**
    * Constructor for demanding use (e.g. tests).
    *
-   * @param authProvider Authentication provider.
-   * @param client       Client to fetch and post.
-   * @param apiUrl       The base URL of API.
-   * @param parser       JSON parser.
+   * @param client         Client to fetch and post.
+   * @param apiUrl         The base URL of API.
+   * @param parser         JSON parser.
    */
-  public APlusExerciseDataSource(@NotNull AuthProvider authProvider,
+  public APlusExerciseDataSource(@NotNull String apiUrl,
                                  @NotNull Client client,
-                                 @NotNull String apiUrl,
                                  @NotNull Parser parser) {
-    super(authProvider);
     this.client = client;
     this.apiUrl = apiUrl;
     this.parser = parser;
@@ -77,7 +71,9 @@ public class APlusExerciseDataSource extends ExerciseDataSource {
    */
   @Override
   @NotNull
-  public SubmissionInfo getSubmissionInfo(@NotNull Exercise exercise) throws IOException {
+  public SubmissionInfo getSubmissionInfo(@NotNull Exercise exercise,
+                                          @NotNull Authentication authentication)
+      throws IOException {
     String url = apiUrl + "/exercises/" + exercise.getId() + "/";
     JSONObject response = client.fetch(url, authentication);
     return parser.parseSubmissionInfo(response);
@@ -90,7 +86,9 @@ public class APlusExerciseDataSource extends ExerciseDataSource {
    */
   @Override
   @NotNull
-  public SubmissionHistory getSubmissionHistory(@NotNull Exercise exercise) throws IOException {
+  public SubmissionHistory getSubmissionHistory(@NotNull Exercise exercise,
+                                                @NotNull Authentication authentication)
+      throws IOException {
     String url = apiUrl + "/exercises/" + exercise.getId() + "/submissions/me/";
     JSONObject response = client.fetch(url, authentication);
     return parser.parseSubmissionHistory(response);
@@ -105,7 +103,7 @@ public class APlusExerciseDataSource extends ExerciseDataSource {
    * @throws IOException If an error occurs (e.g. network error).
    */
   @NotNull
-  public List<Group> getGroups(@NotNull Course course)
+  public List<Group> getGroups(@NotNull Course course, @NotNull Authentication authentication)
       throws IOException {
     String url = apiUrl + "/courses/" + course.getId() + "/mygroups/";
     JSONObject response = client.fetch(url, authentication);
@@ -119,7 +117,9 @@ public class APlusExerciseDataSource extends ExerciseDataSource {
    */
   @Override
   @NotNull
-  public List<ExerciseGroup> getExerciseGroups(@NotNull Course course, @NotNull Points points)
+  public List<ExerciseGroup> getExerciseGroups(@NotNull Course course,
+                                               @NotNull Points points,
+                                               @NotNull Authentication authentication)
       throws IOException {
     String url = apiUrl + "/courses/" + course.getId() + "/exercises/";
     JSONObject response = client.fetch(url, authentication);
@@ -133,7 +133,8 @@ public class APlusExerciseDataSource extends ExerciseDataSource {
    */
   @Override
   @NotNull
-  public Points getPoints(@NotNull Course course) throws IOException {
+  public Points getPoints(@NotNull Course course, @NotNull Authentication authentication)
+      throws IOException {
     String url = apiUrl + "/courses/" + course.getId() + "/points/me/";
     JSONObject response = client.fetch(url, authentication);
     return parser.parsePoints(response);
@@ -146,7 +147,8 @@ public class APlusExerciseDataSource extends ExerciseDataSource {
    */
   @Override
   @Nullable
-  public String submit(Submission submission) throws IOException {
+  public String submit(@NotNull Submission submission, @NotNull Authentication authentication)
+      throws IOException {
     Map<String, Object> data = new HashMap<>();
     data.put("__aplus__", "{ \"group\": " + submission.getGroup().getId() + ", \"lang\": \"en\" }");
     for (Map.Entry<String, Path> entry : submission.getFiles().entrySet()) {
@@ -166,6 +168,7 @@ public class APlusExerciseDataSource extends ExerciseDataSource {
     return apiUrl;
   }
 
+  @NotNull
   public Parser getParser() {
     return parser;
   }
@@ -179,7 +182,8 @@ public class APlusExerciseDataSource extends ExerciseDataSource {
     }
 
     @Override
-    public JSONObject fetch(String url, Authentication authentication) throws IOException {
+    public JSONObject fetch(@NotNull String url, @Nullable Authentication authentication)
+        throws IOException {
       try (InputStream inputStream = CoursesClient.fetch(new URL(url), authentication)) {
         return new JSONObject(new JSONTokener(inputStream));
       }

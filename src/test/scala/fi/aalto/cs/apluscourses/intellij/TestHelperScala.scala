@@ -13,9 +13,9 @@ trait TestHelperScala {
   def getModuleManager(project: Project): ModuleManager =
     ModuleManager.getInstance(project)
 
-  def createAndAddModule(project: Project, path: String, id: String): Unit = {
+  def createAndAddModule(project: Project, name: String, moduleTypeId: String): Unit = {
     val manager = getModuleManager(project)
-    val r: Runnable = () => manager.newModule("path", "anId")
+    val r: Runnable = () => manager.newModule(name, moduleTypeId)
     WriteCommandAction.runWriteCommandAction(project, r)
   }
 
