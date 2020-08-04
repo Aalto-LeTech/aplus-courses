@@ -33,7 +33,9 @@ dependencies {
     testCompile group: 'org.powermock', name: 'powermock-module-junit4', version: '2.0.2'
     testCompile group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.2'
     testCompile group: 'org.scala-lang', name: 'scala-library', version: '2.12.10'
-    testCompile group: 'io.rest-assured', name: 'rest-assured', version: '4.2.0'
+    testCompile('io.rest-assured:rest-assured:4.2.0') {
+        exclude group:'org.codehaus.groovy', module: 'groovy-xml'
+    }
 }
 
 intellij {
