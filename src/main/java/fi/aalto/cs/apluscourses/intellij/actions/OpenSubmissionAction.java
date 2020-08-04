@@ -7,12 +7,9 @@ import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.SubmissionRenderingErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
-import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import fi.aalto.cs.apluscourses.model.UrlRenderer;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionResultViewModel;
-import java.awt.Desktop;
-import java.net.URI;
 import org.jetbrains.annotations.NotNull;
 
 public class OpenSubmissionAction extends DumbAwareAction {

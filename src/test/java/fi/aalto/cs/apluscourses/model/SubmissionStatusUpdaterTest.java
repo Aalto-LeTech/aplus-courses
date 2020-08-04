@@ -70,7 +70,7 @@ public class SubmissionStatusUpdaterTest {
         25L, // 0.025 seconds
         10000L
     ).start();
-    Thread.currentThread().sleep(800L);
+    Thread.sleep(800L);
 
     assertEquals("The submission results are not fetched anymore after feedback is available",
         3, dataSource.getSubmissionResultFetchCount());
@@ -89,7 +89,7 @@ public class SubmissionStatusUpdaterTest {
         25L, // 0.025 seconds
         200L
     ).start();
-    Thread.currentThread().sleep(800L);
+    Thread.sleep(800L);
     assertTrue(dataSource.getSubmissionResultFetchCount() <= 8);
     verifyNoInteractions(notifier);
   }
