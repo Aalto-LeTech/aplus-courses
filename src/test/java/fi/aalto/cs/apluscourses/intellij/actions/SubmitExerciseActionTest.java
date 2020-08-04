@@ -138,6 +138,9 @@ public class SubmitExerciseActionTest {
     doReturn(points).when(exerciseDataSource).getPoints(course, authentication);
     doReturn(exerciseGroups).when(exerciseDataSource)
         .getExerciseGroups(course, points, authentication);
+    doReturn("http://localhost:1000")
+        .when(exerciseDataSource)
+        .submit(any(Submission.class), any(Authentication.class));
 
     courseViewModel = new CourseViewModel(course);
     mainViewModel.courseViewModel.set(courseViewModel);

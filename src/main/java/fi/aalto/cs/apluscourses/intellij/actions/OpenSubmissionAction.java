@@ -8,6 +8,7 @@ import fi.aalto.cs.apluscourses.intellij.notifications.SubmissionRenderingErrorN
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
+import fi.aalto.cs.apluscourses.model.UrlRenderer;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionResultViewModel;
 import java.awt.Desktop;
@@ -22,21 +23,21 @@ public class OpenSubmissionAction extends DumbAwareAction {
   private final MainViewModelProvider mainViewModelProvider;
 
   @NotNull
-  private final Notifier notifier;
+  private final UrlRenderer submissionRenderer;
 
   @NotNull
-  private final SubmissionRenderer submissionRenderer;
+  private final Notifier notifier;
 
   /**
    * Construct an {@link OpenSubmissionAction} instance with the given parameters. This constructor
    * is mainly useful for testing purposes.
    */
   public OpenSubmissionAction(@NotNull MainViewModelProvider mainViewModelProvider,
-                              @NotNull Notifier notifier,
-                              @NotNull SubmissionRenderer submissionRenderer) {
+                              @NotNull UrlRenderer submissionRenderer,
+                              @NotNull Notifier notifier) {
     this.mainViewModelProvider = mainViewModelProvider;
-    this.notifier = notifier;
     this.submissionRenderer = submissionRenderer;
+    this.notifier = notifier;
   }
 
   /**
@@ -45,8 +46,8 @@ public class OpenSubmissionAction extends DumbAwareAction {
   public OpenSubmissionAction() {
     this(
         PluginSettings.getInstance(),
-        Notifications.Bus::notify,
-        submission -> Desktop.getDesktop().browse(new URI(submission.getUrl()))
+        new UrlRenderer(),
+        Notifications.Bus::notify
     );
   }
 
@@ -66,15 +67,10 @@ public class OpenSubmissionAction extends DumbAwareAction {
     }
 
     try {
-      submissionRenderer.show(submission.getModel());
+      submissionRenderer.show(submission.getModel().getUrl());
     } catch (Exception ex) {
       notifier.notify(new SubmissionRenderingErrorNotification(ex), e.getProject());
     }
-  }
-
-  @FunctionalInterface
-  public interface SubmissionRenderer {
-    void show(@NotNull SubmissionResult submission) throws Exception;
   }
 
 }
