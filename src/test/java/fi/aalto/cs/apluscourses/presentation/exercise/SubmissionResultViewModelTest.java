@@ -8,8 +8,8 @@ public class SubmissionResultViewModelTest {
 
   @Test
   public void testSubmissionResultViewModel() {
-    SubmissionResult submissionResult = new SubmissionResult(123L, 34, "https://example.com/");
-    SubmissionResultViewModel viewModel = new SubmissionResultViewModel(submissionResult);
+    SubmissionResult submissionResult = new SubmissionResult(123L, "https://example.com/");
+    SubmissionResultViewModel viewModel = new SubmissionResultViewModel(submissionResult, 34);
 
     Assert.assertEquals("Submission 34", viewModel.getPresentableName());
     Assert.assertNull(viewModel.getSubtrees());

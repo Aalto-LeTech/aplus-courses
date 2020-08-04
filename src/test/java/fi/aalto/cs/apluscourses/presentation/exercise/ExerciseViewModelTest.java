@@ -50,11 +50,11 @@ public class ExerciseViewModelTest {
     String htmlUrl = "http://localhost:6000";
     Exercise noSubmissions = new Exercise(0, "", htmlUrl, Collections.emptyList(), 0, 10, 10);
     Exercise noPoints = new Exercise(0, "", htmlUrl,
-        Collections.singletonList(new SubmissionResult(1L, 0, htmlUrl)), 0, 10, 10);
+        Collections.singletonList(new SubmissionResult(1L, htmlUrl)), 0, 10, 10);
     Exercise partialPoints = new Exercise(0, "", htmlUrl,
-        Collections.singletonList(new SubmissionResult(1L, 0, htmlUrl)), 5, 10, 10);
+        Collections.singletonList(new SubmissionResult(1L, htmlUrl)), 5, 10, 10);
     Exercise fullPoints = new Exercise(0, "", htmlUrl,
-        Collections.singletonList(new SubmissionResult(1L, 0, htmlUrl)), 10, 10, 10);
+        Collections.singletonList(new SubmissionResult(1L, htmlUrl)), 10, 10, 10);
 
     Assert.assertEquals(ExerciseViewModel.Status.NO_SUBMISSIONS,
         new ExerciseViewModel(noSubmissions).getStatus());
