@@ -12,7 +12,6 @@
       <component id="e26e5" class="javax.swing.JLabel" binding="nameLabel">
         <constraints/>
         <properties>
-          <icon value="META-INF/icons/module.png"/>
           <text value="Module"/>
         </properties>
       </component>
@@ -21,6 +20,14 @@
         <properties>
           <font size="10" style="2"/>
           <text value="[Status]"/>
+        </properties>
+      </component>
+      <component id="c424d" class="javax.swing.JLabel" binding="updateLabel">
+        <constraints/>
+        <properties>
+          <font style="1"/>
+          <foreground color="-98404"/>
+          <text value="UPDATE AVAILABLE!"/>
         </properties>
       </component>
     </children>

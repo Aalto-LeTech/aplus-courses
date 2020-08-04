@@ -13,8 +13,11 @@ public abstract class Component {
   public static final int FETCHED = FETCHING + 1;
   public static final int LOADING = FETCHED + 1;
   public static final int LOADED = LOADING + 1;
+  public static final int UNINSTALLING = LOADED + 1;
   public static final int ERROR = StateMonitor.ERROR;
   public static final int UNRESOLVED = ERROR - 1;
+  public static final int UNINSTALLED = UNRESOLVED - 1;
+  public static final int ACTION_ABORTED = 99;
 
   public static final int DEP_INITIAL = StateMonitor.INITIAL;
   public static final int DEP_WAITING = DEP_INITIAL + 1;
@@ -42,6 +45,15 @@ public abstract class Component {
     return name;
   }
 
+  /**
+   * A component is active if its state is likely to change soon. For an example, a component in
+   * state {@code FETCHING} is active, as its state is likely to change soon.
+   */
+  public boolean isActive() {
+    int state = stateMonitor.get();
+    return state == FETCHING || state == LOADING || state == UNINSTALLING;
+  }
+
   @NotNull
   public abstract Path getPath();
 
@@ -51,6 +63,10 @@ public abstract class Component {
 
   public void unload() {
     dependencies = null;
+  }
+
+  public void remove() throws IOException {
+    // subclasses may do their removal operations
   }
 
   protected void onStateChanged(int newState) {
@@ -111,8 +127,12 @@ public abstract class Component {
         .allMatch(component -> component != null && component.stateMonitor.get() == LOADED);
   }
 
+  /**
+   * Sets component to the unresolved state, unless it is active.
+   */
   public void setUnresolved() {
-    stateMonitor.set(UNRESOLVED);
+    stateMonitor.setConditionallyTo(UNRESOLVED,
+        NOT_INSTALLED, FETCHED, LOADED, ERROR, UNINSTALLED, ACTION_ABORTED);
   }
 
   /**
@@ -128,6 +148,10 @@ public abstract class Component {
           areDependenciesLoaded(componentSource) ? DEP_LOADED : DEP_ERROR, depState);
     }
   }
+
+  public abstract boolean isUpdatable();
+
+  public abstract boolean hasLocalChanges();
 
   @FunctionalInterface
   public static interface InitializationCallback {

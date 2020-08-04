@@ -16,6 +16,12 @@ public interface ComponentInstaller {
   void install(Component component);
 
   interface Factory {
-    ComponentInstaller getInstallerFor(ComponentSource componentSource);
+    @NotNull
+    ComponentInstaller getInstallerFor(@NotNull ComponentSource componentSource,
+                                       @NotNull Dialogs dialogs);
+  }
+
+  interface Dialogs {
+    boolean shouldOverwrite(@NotNull Component component);
   }
 }

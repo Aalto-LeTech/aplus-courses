@@ -6,13 +6,18 @@ import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 
 public interface ModelFactory {
-  Course createCourse(@NotNull String name,
+
+  Course createCourse(@NotNull String id,
+                      @NotNull String name,
                       @NotNull List<Module> modules,
                       @NotNull List<Library> libraries,
+                      @NotNull Map<Long, Map<String, String>> exerciseModules,
                       @NotNull Map<String, String> requiredPlugins,
-                      @NotNull Map<String, URL> resourceUrls);
+                      @NotNull Map<String, URL> resourceUrls,
+                      @NotNull List<String> autoInstallComponentNames,
+                      @NotNull Map<String, String[]> replInitialCommands);
 
-  Module createModule(@NotNull String name, @NotNull URL url);
+  Module createModule(@NotNull String name, @NotNull URL url, @NotNull String versionId);
 
   Library createLibrary(@NotNull String name);
 }

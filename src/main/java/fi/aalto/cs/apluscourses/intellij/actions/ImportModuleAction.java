@@ -10,6 +10,7 @@ import fi.aalto.cs.apluscourses.model.ComponentInstallerImpl;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.BaseViewModel;
+import fi.aalto.cs.apluscourses.ui.InstallerDialogs;
 import fi.aalto.cs.apluscourses.utils.async.SimpleAsyncTaskManager;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,6 +23,8 @@ public class ImportModuleAction extends DumbAwareAction {
   private final MainViewModelProvider mainViewModelProvider;
   @NotNull
   private final ComponentInstaller.Factory componentInstallerFactory;
+  @NotNull
+  private final InstallerDialogs.Factory dialogsFactory;
 
   /**
    * Constructs an action using given main view model provider and module installer factory.
@@ -29,15 +32,21 @@ public class ImportModuleAction extends DumbAwareAction {
    * @param componentInstallerFactory A component installer factory.
    */
   public ImportModuleAction(@NotNull MainViewModelProvider mainViewModelProvider,
-                            @NotNull ComponentInstaller.Factory componentInstallerFactory) {
+                            @NotNull ComponentInstaller.Factory componentInstallerFactory,
+                            @NotNull InstallerDialogs.Factory dialogsFactory) {
 
     this.mainViewModelProvider = mainViewModelProvider;
     this.componentInstallerFactory = componentInstallerFactory;
+    this.dialogsFactory = dialogsFactory;
   }
 
+  /**
+   * Called by the framework.
+   */
   public ImportModuleAction() {
     this(PluginSettings.getInstance(),
-        new ComponentInstallerImpl.FactoryImpl<>(new SimpleAsyncTaskManager()));
+        new ComponentInstallerImpl.FactoryImpl<>(new SimpleAsyncTaskManager()),
+        InstallerDialogs::new);
   }
 
   @Override
@@ -59,7 +68,8 @@ public class ImportModuleAction extends DumbAwareAction {
           .map(BaseViewModel::getModel)
           .collect(Collectors.toList());
       Course course = courseViewModel.getModel();
-      componentInstallerFactory.getInstallerFor(course).installAsync(modules, course::validate);
+      componentInstallerFactory.getInstallerFor(course, dialogsFactory.getDialogs(e.getProject()))
+          .installAsync(modules, course::validate);
     }
   }
 }

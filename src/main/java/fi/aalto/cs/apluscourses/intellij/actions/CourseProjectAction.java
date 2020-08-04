@@ -5,26 +5,23 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ex.ApplicationEx;
 import com.intellij.openapi.project.Project;
-import fi.aalto.cs.apluscourses.intellij.model.APlusProject;
 import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory;
 import fi.aalto.cs.apluscourses.intellij.model.SettingsImporter;
-import fi.aalto.cs.apluscourses.intellij.model.SettingsImporterImpl;
-import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
+import fi.aalto.cs.apluscourses.intellij.utils.CourseFileManager;
+import fi.aalto.cs.apluscourses.model.ComponentInstaller;
+import fi.aalto.cs.apluscourses.model.ComponentInstallerImpl;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationFileException;
-import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
+import fi.aalto.cs.apluscourses.presentation.CourseProjectViewModel;
+import fi.aalto.cs.apluscourses.ui.InstallerDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogsImpl;
-import fi.aalto.cs.apluscourses.utils.CoursesClient;
-import java.io.File;
+import fi.aalto.cs.apluscourses.utils.PostponedRunnable;
+import fi.aalto.cs.apluscourses.utils.async.SimpleAsyncTaskManager;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -35,67 +32,88 @@ public class CourseProjectAction extends AnAction {
   private static final Logger logger = LoggerFactory.getLogger(CourseProjectAction.class);
 
   @NotNull
-  private MainViewModelProvider mainViewModelProvider;
+  private final CourseFactory courseFactory;
+
+  private final boolean createCourseFile;
 
   @NotNull
-  private CourseFactory courseFactory;
-
-  private boolean createCourseFile;
+  private final SettingsImporter settingsImporter;
 
   @NotNull
-  private SettingsImporter settingsImporter;
+  private final ComponentInstaller.Factory installerFactory;
 
   @NotNull
-  private IdeRestarter ideRestarter;
+  private final PostponedRunnable ideRestarter;
 
   @NotNull
-  private CourseProjectActionDialogs dialogs;
+  private final CourseProjectActionDialogs dialogs;
+
+  @NotNull
+  private final InstallerDialogs.Factory installerDialogsFactory;
 
   /**
-   * Construct a course project action with the given main view model provider and dialogs.
+   * Construct a course project action with the given parameters.
+   *
+   * @param courseFactory    An instance of {@link CourseFactory} that is used to create a course
+   *                         instance from a URL.
+   * @param createCourseFile Determines whether a course file is created or not. This is useful
+   *                         mostly for testing purposes.
+   * @param settingsImporter An instance of {@link SettingsImporter} that is used to import IDE and
+   *                         project settings.
+   * @param installerFactory The factory used to create the component installer. The component
+   *                         installer is then used to install the automatically installed
+   *                         components of the course. This is useful mainly for testing.
+   * @param ideRestarter     A {@link PostponedRunnable} that is used to restart the IDE after
+   *                         everything related to the course project action is done. In practice,
+   *                         this is either immediately after the action is done, or after all
+   *                         automatically installed components for the course have been installed.
+   *                         Since the installation of automatically installed components may take
+   *                         quite a while, it is advisable for this to show the user a confirmation
+   *                         dialog regarding the restart.
    */
-  public CourseProjectAction(@NotNull MainViewModelProvider mainViewModelProvider,
-                             @NotNull CourseFactory courseFactory,
+  public CourseProjectAction(@NotNull CourseFactory courseFactory,
                              boolean createCourseFile,
                              @NotNull SettingsImporter settingsImporter,
-                             @NotNull IdeRestarter ideRestarter,
-                             @NotNull CourseProjectActionDialogs dialogs) {
-    this.mainViewModelProvider = mainViewModelProvider;
+                             @NotNull ComponentInstaller.Factory installerFactory,
+                             @NotNull PostponedRunnable ideRestarter,
+                             @NotNull CourseProjectActionDialogs dialogs,
+                             @NotNull InstallerDialogs.Factory installerDialogsFactory) {
     this.courseFactory = courseFactory;
     this.createCourseFile = createCourseFile;
     this.settingsImporter = settingsImporter;
+    this.installerFactory = installerFactory;
     this.ideRestarter = ideRestarter;
     this.dialogs = dialogs;
+    this.installerDialogsFactory = installerDialogsFactory;
   }
 
   /**
    * Construct a course project action with sensible defaults.
    */
   public CourseProjectAction() {
-    this(
-        PluginSettings.getInstance(),
-        (url, project) -> {
-          InputStream inputStream = CoursesClient.fetchJson(url);
-          return Course.fromConfigurationData(new InputStreamReader(inputStream),
-              url.toString(), new IntelliJModelFactory(project));
-        },
-        true,
-        new SettingsImporterImpl(),
-        () -> ((ApplicationEx) ApplicationManager.getApplication()).restart(true),
-        new CourseProjectActionDialogsImpl());
+    this.courseFactory = (url, project) -> Course.fromUrl(url, new IntelliJModelFactory(project));
+    this.createCourseFile = true;
+    this.settingsImporter = new SettingsImporter();
+    this.installerFactory = new ComponentInstallerImpl.FactoryImpl<>(new SimpleAsyncTaskManager());
+    this.dialogs = new CourseProjectActionDialogsImpl();
+    this.ideRestarter = new PostponedRunnable(() -> {
+      if (dialogs.showRestartDialog()) {
+        ((ApplicationEx) ApplicationManager.getApplication()).restart(true);
+      }
+    });
+    this.installerDialogsFactory = InstallerDialogs::new;
   }
 
   @Override
   public void actionPerformed(@NotNull AnActionEvent e) {
     Project project = e.getProject();
 
-    URL selectedCourseUrl = getSelectedCourseUrl();
-    if (selectedCourseUrl == null) {
+    if (project == null) {
       return;
     }
 
-    Course course = tryInitializeCourse(project, selectedCourseUrl);
-    if (course == null) {
+    URL selectedCourseUrl = getSelectedCourseUrl();
+    if (selectedCourseUrl == null) {
       return;
     }
 
@@ -103,17 +121,30 @@ public class CourseProjectAction extends AnAction {
       return;
     }
 
+    Course course = tryGetCourse(project, selectedCourseUrl);
+    if (course == null) {
+      return;
+    }
+
+    CourseProjectViewModel courseProjectViewModel
+        = new CourseProjectViewModel(course, settingsImporter.currentlyImportedIdeSettings());
+    if (!dialogs.showMainDialog(project, courseProjectViewModel)) {
+      return;
+    }
+
+    startAutoInstallsWithRestart(course, !courseProjectViewModel.userOptsOutOfSettings(), project);
+
     if (!tryImportProjectSettings(project, course)) {
       return;
     }
 
-    // Importing IDE settings potentially restarts the IDE, so it's the last action. If the
-    // IDE settings for the course have already been imported, do nothing.
-    if (!settingsImporter.lastImportedIdeSettings().equals(course.getName())) {
-      boolean shouldImport = dialogs.showImportIdeSettingsDialog(project);
-      if (shouldImport && tryImportIdeSettings(course) && userWantsToRestart()) {
-        ideRestarter.restart();
-      }
+    if (!courseProjectViewModel.userOptsOutOfSettings()) {
+      tryImportIdeSettings(course);
+    }
+
+    if (createCourseFile) {
+      // The course file not created in testing.
+      PluginSettings.getInstance().createUpdatingMainViewModel(project);
     }
   }
 
@@ -131,11 +162,6 @@ public class CourseProjectAction extends AnAction {
         throws IOException, MalformedCourseConfigurationFileException;
   }
 
-  @FunctionalInterface
-  public interface IdeRestarter {
-    void restart();
-  }
-
   @Nullable
   private URL getSelectedCourseUrl() {
     // TODO: show a dialog with a list of courses and a URL field for custom courses, from which
@@ -150,21 +176,16 @@ public class CourseProjectAction extends AnAction {
   }
 
   /**
-   * Parses the course configuration file from the given URL and updates the course view model of
-   * the main view model provider. The user is notified if the initialization fails.
+   * Returns a course created from the course configuration file at the given URL. The user is
+   * notified if the course initialization fails.
    * @param project   The currently open project.
    * @param courseUrl The URL from which the course configuration file is downloaded.
    * @return The course created from the course configuration file or null in case of an error.
    */
   @Nullable
-  private Course tryInitializeCourse(@NotNull Project project, @NotNull URL courseUrl) {
+  private Course tryGetCourse(@NotNull Project project, @NotNull URL courseUrl) {
     try {
-      Course course = courseFactory.fromUrl(courseUrl, project);
-      mainViewModelProvider
-          .getMainViewModel(project)
-          .courseViewModel
-          .set(new CourseViewModel(course));
-      return course;
+      return courseFactory.fromUrl(courseUrl, project);
     } catch (IOException e) {
       notifyNetworkError();
       return null;
@@ -172,6 +193,18 @@ public class CourseProjectAction extends AnAction {
       logger.error("Malformed course configuration file", e);
       notifyMalformedCourseConfiguration();
       return null;
+    }
+  }
+
+  private void startAutoInstallsWithRestart(@NotNull Course course,
+                                            boolean restartWhenFinished,
+                                            @NotNull Project project) {
+    ComponentInstaller.Dialogs installerDialogs = installerDialogsFactory.getDialogs(project);
+    ComponentInstaller installer = installerFactory.getInstallerFor(course, installerDialogs);
+    if (!restartWhenFinished) {
+      installer.installAsync(course.getAutoInstallComponents());
+    } else {
+      installer.installAsync(course.getAutoInstallComponents(), ideRestarter);
     }
   }
 
@@ -183,8 +216,7 @@ public class CourseProjectAction extends AnAction {
   private boolean tryCreateCourseFile(@NotNull Project project, @NotNull URL courseUrl) {
     try {
       if (createCourseFile) {
-        File courseFile = new APlusProject(project).getCourseFilePath().toFile();
-        FileUtils.writeStringToFile(courseFile, courseUrl.toString(), StandardCharsets.UTF_8);
+        CourseFileManager.getInstance().createAndLoad(project, courseUrl);
       }
       return true;
     } catch (IOException e) {
@@ -221,12 +253,6 @@ public class CourseProjectAction extends AnAction {
       notifyNetworkError();
       return false;
     }
-  }
-
-  private boolean userWantsToRestart() {
-    return dialogs.showOkCancelDialog(
-        "Settings were imported successfully. Restart IntelliJ IDEA now to reload the settings?",
-        "Restart Needed", "Yes", "No");
   }
 
   private void notifyNetworkError() {

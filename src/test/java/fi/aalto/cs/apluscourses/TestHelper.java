@@ -135,11 +135,11 @@ public interface TestHelper {
    *
    * @param project a {@link Project} to install {@link Module}s into
    * @param name {@link String} name of the added {@link Module}
-   * @param id {@link String} id of the added {@link Module}
+   * @param moduleTypeId {@link String} id of the added {@link Module}
    */
-  default void createAndAddModule(Project project, String name, String id) {
+  default void createAndAddModule(Project project, String name, String moduleTypeId) {
     ModuleManager moduleManager = ModuleManager.getInstance(project);
-    Runnable r = () -> moduleManager.newModule(name, id);
+    Runnable r = () -> moduleManager.newModule(name, moduleTypeId);
     WriteCommandAction.runWriteCommandAction(project, r);
   }
 }

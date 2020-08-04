@@ -1,21 +1,22 @@
 package fi.aalto.cs.apluscourses.intellij.services;
 
-import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalSettingsNames.A_PLUS_IMPORTED_IDE_SETTINGS;
-import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalSettingsNames.A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG;
+import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalIdeSettingsNames.A_PLUS_IMPORTED_IDE_SETTINGS;
+import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalIdeSettingsNames.A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG;
 
 import com.intellij.ide.util.PropertiesComponent;
+import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import org.junit.Test;
 
 public class PluginSettingsTest extends BasePlatformTestCase {
 
   @Test
-  public void testInitializeLocalSettings() {
+  public void testInitializeLocalIdeSettings() {
     // given
-    PluginSettings.getInstance().unsetLocalSettings();
+    PluginSettings.getInstance().unsetLocalIdeSettings();
 
     //  when
-    PluginSettings.getInstance().initializeLocalSettings();
+    PluginSettings.getInstance().initializeLocalIdeSettings();
 
     //  then
     assertTrue("The REPL dialog setting should be set to 'true'",
@@ -26,10 +27,10 @@ public class PluginSettingsTest extends BasePlatformTestCase {
   }
 
   @Test
-  public void testResetLocalSettings() {
+  public void testResetLocalIdeSettings() {
     // given
     PluginSettings.getInstance().setShowReplConfigurationDialog(false);
-    PluginSettings.getInstance().setImportedIdeSettingsName("this is not an empty string");
+    PluginSettings.getInstance().setImportedIdeSettingsId("this is not an empty string");
 
     // when
     PluginSettings.getInstance().resetLocalSettings();
@@ -43,12 +44,12 @@ public class PluginSettingsTest extends BasePlatformTestCase {
   }
 
   @Test
-  public void testUnsetLocalSettings() {
+  public void testUnsetLocalIdeSettings() {
     //  given
-    PluginSettings.getInstance().initializeLocalSettings();
+    PluginSettings.getInstance().initializeLocalIdeSettings();
 
     //  when
-    PluginSettings.getInstance().unsetLocalSettings();
+    PluginSettings.getInstance().unsetLocalIdeSettings();
 
     //  then
     assertNull(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG.getName() + " is successfully removed.",
@@ -59,4 +60,14 @@ public class PluginSettingsTest extends BasePlatformTestCase {
             A_PLUS_IMPORTED_IDE_SETTINGS.getName()));
   }
 
+  @Test
+  public void testIgnoreFileInProject() {
+    String fileName = ".sampleFileToIgnore";
+    String expected = FileTypeManager.getInstance().getIgnoredFilesList() + fileName + ";";
+
+    PluginSettings.getInstance().ignoreFileInProjectView(fileName, getProject());
+
+    String actual = FileTypeManager.getInstance().getIgnoredFilesList();
+    assertEquals("The file is successfully added to the ignored files list.", expected, actual);
+  }
 }
