@@ -11,11 +11,20 @@ import org.junit.Test;
 
 public class CourseProjectViewModelTest {
 
-  private final Course emptyCourse = new ModelExtensions.TestCourse("123", "NiceCourse",
-      Collections.emptyList(), Collections.emptyList(), Collections.emptyMap(),
-      Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList(),
+  private final Course emptyCourse = new ModelExtensions.TestCourse("123",
+      "NiceCourse",
+      //  modules
+      Collections.emptyList(),
+      //  libraries
+      Collections.emptyList(),
+      //  exerciseModules
+      Collections.emptyMap(),
+      //  resourceUrls
+      Collections.emptyMap(),
+      //  autoInstallComponentNames
+      Collections.emptyList(),
+      //  replInitialCommands
       Collections.emptyMap());
-
 
   @Test
   public void testInformationTextIncludesCourseName() {

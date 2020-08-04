@@ -36,9 +36,17 @@ public class CourseTest {
     List<String> autoInstallComponents = Arrays.asList(module1name);
     Map<String, String[]> replInitialCommands = new HashMap<>();
     replInitialCommands.put("Module1", new String[]{"import o1._"});
-    Course course = new ModelExtensions.TestCourse("13", "Tester Course", modules,
-        Collections.emptyList(), Collections.emptyMap(), requiredPlugins, resourceUrls,
-        autoInstallComponents, replInitialCommands);
+    Course course = new ModelExtensions.TestCourse(
+        "13",
+        "Tester Course",
+        modules,
+        //  libraries
+        Collections.emptyList(),
+        //  exerciseModules
+        Collections.emptyMap(),
+        resourceUrls,
+        autoInstallComponents,
+        replInitialCommands);
     assertEquals("The ID of the course should be the same as that given to the constructor",
         "13", course.getId());
     assertEquals("The name of the course should be the same as that given to the constructor",
@@ -47,9 +55,6 @@ public class CourseTest {
         module1name, course.getModules().get(0).getName());
     assertEquals("The modules of the course should be the same as those given to the constructor",
         "Module2", course.getModules().get(1).getName());
-    assertEquals("The required plugins of the course should be the same as those given to the "
-            + "constructor", "Awesome Plugin",
-        course.getRequiredPlugins().get("org.intellij.awesome_plugin"));
     assertEquals(
         "The resource URLs of the course should the same as those given to the constructor",
         new URL("http://localhost:8000"), course.getResourceUrls().get("key"));
@@ -64,9 +69,23 @@ public class CourseTest {
   public void testGetModule() throws NoSuchComponentException {
     Module module1 = new ModelExtensions.TestModule("Test Module");
     Module module2 = new ModelExtensions.TestModule("Awesome Module");
-    Course course = new ModelExtensions.TestCourse("", "", Arrays.asList(module1, module2),
-        Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap(),
-        Collections.emptyMap(), Collections.emptyList(), Collections.emptyMap());
+    Course course = new ModelExtensions.TestCourse(
+        // id
+        "",
+        //  name
+        "",
+        //  modules
+        Arrays.asList(module1, module2),
+        //  libraries
+        Collections.emptyList(),
+        //  exerciseModules
+        Collections.emptyMap(),
+        //  resourceUrls
+        Collections.emptyMap(),
+        //  autoInstallComponentNames
+        Collections.emptyList(),
+        //  replInitialCommands
+        Collections.emptyMap());
     assertSame("Course#getModule should return the correct module",
         module2, course.getComponent("Awesome Module"));
   }
@@ -78,9 +97,22 @@ public class CourseTest {
     Module module = new ModelExtensions.TestModule(
         moduleName, new URL("http://localhost:3000"), "random", null, null);
     Library library = new ModelExtensions.TestLibrary(libraryName);
-    Course course = new ModelExtensions.TestCourse("", "", Arrays.asList(module),
-        Arrays.asList(library), Collections.emptyMap(),Collections.emptyMap(),
-        Collections.emptyMap(), Arrays.asList("test-module", "test-library"),
+    Course course = new ModelExtensions.TestCourse(
+        //  id
+        "",
+        //  name
+        "",
+        //  modules
+        Arrays.asList(module),
+        //  libraries
+        Arrays.asList(library),
+        //  exerciseModules
+        Collections.emptyMap(),
+        // resourceUrls
+        Collections.emptyMap(),
+        //  autoInstallComponentNames
+        Arrays.asList("test-module", "test-library"),
+        //  replInitialCommands
         Collections.emptyMap());
     List<Component> autoInstalls = course.getAutoInstallComponents();
     assertEquals("The course has the correct auto-install components", 2, autoInstalls.size());
@@ -90,9 +122,20 @@ public class CourseTest {
 
   @Test(expected = NoSuchComponentException.class)
   public void testGetModuleWithMissingModule() throws NoSuchComponentException {
-    Course course = new ModelExtensions.TestCourse("Just some ID", "Just some course",
-        Collections.emptyList(), Collections.emptyList(), Collections.emptyMap(),
-        Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList(),
+    Course course = new ModelExtensions.TestCourse(
+        "Just some ID",
+        "Just some course",
+        //  modules
+        Collections.emptyList(),
+        //  libraries
+        Collections.emptyList(),
+        //  exerciseModules
+        Collections.emptyMap(),
+        //  resourceUrls
+        Collections.emptyMap(),
+        //  autoInstallComponentNames
+        Collections.emptyList(),
+        //  replInitialCommands
         Collections.emptyMap());
     course.getComponent("Test Module");
   }
@@ -113,17 +156,13 @@ public class CourseTest {
   @Test
   public void testFromConfigurationFile() throws MalformedCourseConfigurationFileException {
     StringReader stringReader = new StringReader("{" + idJson + "," + nameJson + ","
-        + requiredPluginsJson + "," + modulesJson + "," + exerciseModulesJson + ","
-        + resourcesJson + "," + autoInstallJson + "," + replInitialCommands + "}");
+        + modulesJson + "," + exerciseModulesJson + "," + resourcesJson + ","
+        + autoInstallJson + "," + replInitialCommands + "}");
     Course course = Course.fromConfigurationData(stringReader, "./path/to/file", MODEL_FACTORY);
     assertEquals("Course should have the same ID as that in the configuration JSON",
         "1238", course.getId());
     assertEquals("Course should have the same name as that in the configuration JSON",
         "Awesome Course", course.getName());
-    assertEquals("The course should have the required plugins of the configuration JSON",
-        "Tester", course.getRequiredPlugins().get("org.test.tester"));
-    assertEquals("The course should have the required plugins of the configuration JSON",
-        "Scala", course.getRequiredPlugins().get("org.intellij.scala"));
     assertEquals("The course should have the modules of the configuration JSON",
         "O1Library", course.getModules().get(0).getName());
     assertEquals("The course should have the modules of the configuration JSON",

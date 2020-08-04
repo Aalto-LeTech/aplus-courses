@@ -6,7 +6,6 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItems;
 
 import io.restassured.http.ContentType;
-import java.net.MalformedURLException;
 import org.apache.http.HttpStatus;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -20,7 +19,7 @@ public class ApiTest {
   private static final String BASE_URL = "http://localhost:8000/api/v2/";
 
   @Test
-  public void getSubmissionsResultsReturns() throws MalformedURLException {
+  public void getSubmissionsResultsReturns() {
     final String firstExercise = "modules[0].exercises[0]";
     final String url = BASE_URL + "courses/100/points/me/";
 

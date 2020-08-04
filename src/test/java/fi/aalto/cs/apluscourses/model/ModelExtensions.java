@@ -1,8 +1,5 @@
 package fi.aalto.cs.apluscourses.model;
 
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -85,12 +82,11 @@ public class ModelExtensions {
                       @NotNull List<Module> modules,
                       @NotNull List<Library> libraries,
                       @NotNull Map<Long, Map<String, String>> exerciseModules,
-                      @NotNull Map<String, String> requiredPlugins,
                       @NotNull Map<String, URL> resourceUrls,
                       @NotNull List<String> autoInstallComponentNames,
                       @NotNull Map<String, String[]> replInitialCommands) {
-      super(id, name, modules, libraries, exerciseModules, requiredPlugins, resourceUrls,
-          autoInstallComponentNames, replInitialCommands);
+      super(id, name, modules, libraries, exerciseModules, resourceUrls, autoInstallComponentNames,
+          replInitialCommands);
       exerciseDataSource = new TestExerciseDataSource();
     }
 
@@ -113,8 +109,6 @@ public class ModelExtensions {
           //  libraries
           Collections.emptyList(),
           //  exerciseModules
-          Collections.emptyMap(),
-          //  requiredPlugins
           Collections.emptyMap(),
           //  resourceUrls
           Collections.emptyMap(),
@@ -297,7 +291,6 @@ public class ModelExtensions {
                                @NotNull List<Module> modules,
                                @NotNull List<Library> libraries,
                                @NotNull Map<Long, Map<String, String>> exerciseModules,
-                               @NotNull Map<String, String> requiredPlugins,
                                @NotNull Map<String, URL> resourceUrls,
                                @NotNull List<String> autoInstallComponentNames,
                                @NotNull Map<String, String[]> replInitialCommands) {
@@ -307,7 +300,6 @@ public class ModelExtensions {
           modules,
           libraries,
           exerciseModules,
-          requiredPlugins,
           resourceUrls,
           autoInstallComponentNames,
           replInitialCommands
