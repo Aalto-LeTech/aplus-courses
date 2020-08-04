@@ -33,7 +33,8 @@ public class OpenSubmissionActionTest {
    */
   @Before
   public void setUp() {
-    submissionResult = new SubmissionResult(1, "http://example.com");
+    submissionResult
+        = new SubmissionResult(1, SubmissionResult.Status.GRADED, "http://example.com");
     SubmissionResultViewModel viewModel = new SubmissionResultViewModel(submissionResult, 1);
 
     ExercisesTreeViewModel exercisesTree = mock(ExercisesTreeViewModel.class);

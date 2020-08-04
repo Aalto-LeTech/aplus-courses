@@ -48,13 +48,14 @@ public class ExerciseViewModelTest {
   @Test
   public void testGetStatus() {
     String htmlUrl = "http://localhost:6000";
+    SubmissionResult.Status resultStatus = SubmissionResult.Status.GRADED;
     Exercise noSubmissions = new Exercise(0, "", htmlUrl, Collections.emptyList(), 0, 10, 10);
     Exercise noPoints = new Exercise(0, "", htmlUrl,
-        Collections.singletonList(new SubmissionResult(1L, htmlUrl)), 0, 10, 10);
+        Collections.singletonList(new SubmissionResult(1L, resultStatus, htmlUrl)), 0, 10, 10);
     Exercise partialPoints = new Exercise(0, "", htmlUrl,
-        Collections.singletonList(new SubmissionResult(1L, htmlUrl)), 5, 10, 10);
+        Collections.singletonList(new SubmissionResult(1L, resultStatus, htmlUrl)), 5, 10, 10);
     Exercise fullPoints = new Exercise(0, "", htmlUrl,
-        Collections.singletonList(new SubmissionResult(1L, htmlUrl)), 10, 10, 10);
+        Collections.singletonList(new SubmissionResult(1L, resultStatus, htmlUrl)), 10, 10, 10);
 
     Assert.assertEquals(ExerciseViewModel.Status.NO_SUBMISSIONS,
         new ExerciseViewModel(noSubmissions).getStatus());
