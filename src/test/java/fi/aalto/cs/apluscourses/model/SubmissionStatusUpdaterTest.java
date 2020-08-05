@@ -67,8 +67,9 @@ public class SubmissionStatusUpdaterTest {
         notifier,
         "http://localhost:1000",
         "Cool Exercise Name",
-        25L, // 0.025 seconds
-        10000L
+        25L, // 0.025 second interval
+        0L, // don't increment the interval at all
+        10000L // 10 second time limit, which shouldn't be reached
     ).start();
     Thread.sleep(800L);
 
@@ -86,8 +87,9 @@ public class SubmissionStatusUpdaterTest {
         notifier,
         "http://localhost:1000",
         "Cool Exercise Name",
-        25L, // 0.025 seconds
-        200L
+        25L, // 0.025 second interval
+        0L, // don't increment the interval at all
+        200L // 0.2 second time limit, should update at most 8 times
     ).start();
     Thread.sleep(800L);
     assertTrue(dataSource.getSubmissionResultFetchCount() <= 8);

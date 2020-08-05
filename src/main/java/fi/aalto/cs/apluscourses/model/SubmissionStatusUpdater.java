@@ -23,7 +23,9 @@ public class SubmissionStatusUpdater {
   @NotNull
   private final String exerciseName;
 
-  private final long interval;
+  private long interval;
+
+  private final long increment;
 
   private final long timeLimit;
 
@@ -33,6 +35,9 @@ public class SubmissionStatusUpdater {
 
   // 10 seconds in milliseconds
   private static final long DEFAULT_INTERVAL = 10L * 1000;
+
+  // 5 seconds in milliseconds
+  private static final long DEFAULT_INCREMENT = 5L * 1000;
 
   // 3 minutes in milliseconds
   private static final long DEFAULT_TIME_LIMIT = 3L * 60 * 1000;
@@ -46,6 +51,7 @@ public class SubmissionStatusUpdater {
                                  @NotNull String submissionUrl,
                                  @NotNull String exerciseName,
                                  long interval,
+                                 long increment,
                                  long timeLimit) {
     this.dataSource = dataSource;
     this.authentication = authentication;
@@ -53,6 +59,7 @@ public class SubmissionStatusUpdater {
     this.submissionUrl = submissionUrl;
     this.exerciseName = exerciseName;
     this.interval = interval;
+    this.increment = increment;
     this.timeLimit = timeLimit;
     thread = new Thread(this::run);
     this.totalTime = 0;
@@ -72,6 +79,7 @@ public class SubmissionStatusUpdater {
         submissionUrl,
         exerciseName,
         DEFAULT_INTERVAL,
+        DEFAULT_INCREMENT,
         DEFAULT_TIME_LIMIT
     );
   }
@@ -98,8 +106,9 @@ public class SubmissionStatusUpdater {
           // Fail silently
         }
 
-        totalTime += interval;
         Thread.sleep(interval);
+        totalTime += interval;
+        interval += increment;
       }
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();

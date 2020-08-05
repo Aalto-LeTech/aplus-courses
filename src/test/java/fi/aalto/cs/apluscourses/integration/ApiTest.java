@@ -6,7 +6,6 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItems;
 
 import io.restassured.http.ContentType;
-import java.net.MalformedURLException;
 import org.apache.http.HttpStatus;
 import org.junit.ClassRule;
 import org.junit.Test;
