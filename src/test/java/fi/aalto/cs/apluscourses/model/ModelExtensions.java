@@ -66,10 +66,19 @@ public class ModelExtensions {
       return new Points(Collections.emptyMap(), Collections.emptyMap());
     }
 
+    @NotNull
     @Override
-    public void submit(@NotNull Submission submission, @NotNull Authentication authentication)
+    public SubmissionResult getSubmissionResult(@NotNull String submissionUrl,
+                                                @NotNull Authentication authentication)
+        throws IOException {
+      return new SubmissionResult(0, SubmissionResult.Status.GRADED, "http://localhost:8000");
+    }
+
+    @Override
+    public String submit(@NotNull Submission submission, @NotNull Authentication authentication)
         throws IOException {
       // do nothing
+      return "";
     }
   }
 

@@ -12,6 +12,7 @@ import fi.aalto.cs.apluscourses.model.Points;
 import fi.aalto.cs.apluscourses.model.Submission;
 import fi.aalto.cs.apluscourses.model.SubmissionHistory;
 import fi.aalto.cs.apluscourses.model.SubmissionInfo;
+import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,6 +21,9 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
+import org.apache.http.Header;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
@@ -137,13 +141,23 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
     return parser.parsePoints(response);
   }
 
+  @Override
+  @NotNull
+  public SubmissionResult getSubmissionResult(@NotNull String submissionUrl,
+                                              @NotNull Authentication authentication)
+      throws IOException {
+    JSONObject response = client.fetch(submissionUrl, authentication);
+    return parser.parseSubmissionResult(response);
+  }
+
   /**
    * Sends the submission to the server.
    *
    * @throws IOException If there are IO related errors.
    */
   @Override
-  public void submit(@NotNull Submission submission, @NotNull Authentication authentication)
+  @Nullable
+  public String submit(@NotNull Submission submission, @NotNull Authentication authentication)
       throws IOException {
     Map<String, Object> data = new HashMap<>();
     data.put("__aplus__", "{ \"group\": " + submission.getGroup().getId() + ", \"lang\": \"en\" }");
@@ -151,7 +165,7 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
       data.put(entry.getKey(), entry.getValue().toFile());
     }
     String url = apiUrl + "/exercises/" + submission.getExercise().getId() + "/submissions/submit/";
-    client.post(url, authentication, data);
+    return client.post(url, authentication, data);
   }
 
   @NotNull
@@ -186,11 +200,19 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
     }
 
     @Override
-    public void post(@NotNull String url,
-                     @NotNull Authentication authentication,
-                     @NotNull Map<String, Object> data)
-        throws IOException {
-      CoursesClient.post(new URL(url), authentication, data);
+    @Nullable
+    public String post(@NotNull String url,
+                       @NotNull Authentication authentication,
+                       @NotNull Map<String, Object> data) throws IOException {
+      return CoursesClient.post(
+          new URL(url),
+          authentication,
+          data,
+          response -> Optional
+              .ofNullable(response.getFirstHeader("Location"))
+              .map(Header::getValue)
+              .orElse(null)
+      );
     }
 
     @Override
@@ -216,6 +238,11 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
     @Override
     public Points parsePoints(JSONObject object) {
       return Points.fromJsonObject(object);
+    }
+
+    @Override
+    public SubmissionResult parseSubmissionResult(JSONObject object) {
+      return SubmissionResult.fromJsonObject(object);
     }
 
   }

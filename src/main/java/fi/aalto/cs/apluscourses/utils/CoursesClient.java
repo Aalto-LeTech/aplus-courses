@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Map;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
@@ -65,7 +66,10 @@ public class CoursesClient {
                                            @Nullable HttpAuthentication authentication)
       throws IOException {
     return fetchAndMap(url, authentication,
-        entity -> new ByteArrayInputStream(EntityUtils.toByteArray(entity)));
+        response -> {
+          requireResponseEntity(response);
+          return new ByteArrayInputStream(EntityUtils.toByteArray(response.getEntity()));
+        });
   }
 
   /**
@@ -78,7 +82,11 @@ public class CoursesClient {
    */
   public static void fetch(@NotNull URL url, @NotNull File file) throws IOException {
     fetchAndConsume(url, null,
-        entity -> FileUtils.copyInputStreamToFile(entity.getContent(), file));
+        response -> {
+          requireResponseEntity(response);
+          FileUtils.copyInputStreamToFile(response.getEntity().getContent(), file);
+        }
+    );
   }
 
   /**
@@ -90,81 +98,87 @@ public class CoursesClient {
   }
 
   /**
-   * A functional interface for functions that map a {@link HttpEntity} to a desired result. See
+   * A functional interface for functions that map a {@link HttpResponse} to a desired result. See
    * {@link EntityUtils} for useful methods for working with {@link HttpEntity} instances.
    */
   @FunctionalInterface
-  public interface EntityMapper<T> {
-    T map(@NotNull HttpEntity entity) throws IOException;
+  public interface ResponseMapper<T> {
+    T map(@NotNull HttpResponse response) throws IOException;
   }
 
   /**
-   * A functional interface for functions that consume a {@link HttpEntity} and use it for
+   * A functional interface for functions that consume a {@link HttpResponse} and use it for
    * side-effects.
    */
   @FunctionalInterface
-  public interface EntityConsumer {
-    void consume(@NotNull HttpEntity entity) throws IOException;
+  public interface ResponseConsumer {
+    void consume(@NotNull HttpResponse response) throws IOException;
   }
 
   /**
-   * Makes a GET request to the given URL and returns the response body.
+   * Makes a GET request to the given URL and returns the mapped response.
    *
    * @param url            The URL to which the GET request is made.
    * @param authentication An instance of {@link HttpAuthentication} that gets added to the request,
    *                       or null if no authentication should be added.
-   * @param mapper         A {@link EntityMapper} that converts the {@link HttpEntity} containing
-   *                       the response body to the desired format.
-   * @return The result of {@code mapper.map(response)}, where response is a {@link HttpEntity}
-   *         containing the response body.
+   * @param mapper         A {@link ResponseMapper} that converts the {@link HttpResponse} instance
+   *                       to the desired format.
+   * @return The result of {@code mapper.map(response)}, where response is a {@link HttpResponse}
+   *         containing the response.
    * @throws IOException If an issue occurs while making the request, which includes cases such as
    *                     an unknown host. This is an instance of {@link UnexpectedResponseException}
-   *                     if the status code isn't 2xx or the response is missing a body.
+   *                     if the status code isn't 2xx.
    */
   public static <T> T fetchAndMap(@NotNull URL url,
                                   @Nullable HttpAuthentication authentication,
-                                  @NotNull EntityMapper<T> mapper) throws IOException {
+                                  @NotNull ResponseMapper<T> mapper) throws IOException {
     HttpGet request = new HttpGet(url.toString());
     if (authentication != null) {
       authentication.addToRequest(request);
     }
-    return mapResponseBody(request, mapper);
+    return mapResponse(request, mapper);
   }
 
   /**
-   * Makes a GET request to the given URL and consumes the response body.
+   * Makes a GET request to the given URL and consumes the response.
    *
    * @param url            The URL to which the GET request is made.
    * @param authentication An instance of {@link HttpAuthentication} that gets added to the request,
    *                       or null if no authentication should be added.
-   * @param consumer       A {@link EntityConsumer} that consumes the {@link HttpEntity} containing
-   *                       the response body.
+   * @param consumer       A {@link ResponseConsumer} that consumes the {@link HttpResponse}
+   *                       instance.
    * @throws IOException If an issue occurs while making the request, which includes cases such as
    *                     an unknown host. This is an instance of {@link UnexpectedResponseException}
-   *                     if the status code isn't 2xx or the response is missing a body.
+   *                     if the status code isn't 2xx.
    */
   public static void fetchAndConsume(@NotNull URL url,
                                      @Nullable HttpAuthentication authentication,
-                                     @NotNull EntityConsumer consumer) throws IOException {
+                                     @NotNull ResponseConsumer consumer) throws IOException {
     HttpGet request = new HttpGet(url.toString());
     if (authentication != null) {
       authentication.addToRequest(request);
     }
-    consumeResponseBody(request, consumer);
+    consumeResponse(request, consumer);
   }
 
   /**
-   * Sends a POST request to the given URL.
+   * Sends a POST request to the given URL and returns the value created by the mapper.
    *
    * @param url            A URL.
    * @param authentication The method of authentication.
    * @param data           Map of request data.  Values can be strings, numbers or files.
+   * @param mapper         A {@link ResponseMapper} that maps the HTTP response to the desired
+   *                       format.
+   *
+   * @return The value created by passing the response to the given mapper.
    *
    * @throws IOException In case of I/O related errors or non-successful response.
    */
-  public static void post(@NotNull URL url,
-                          @Nullable HttpAuthentication authentication,
-                          @Nullable Map<String, Object> data) throws IOException {
+  @Nullable
+  public static <T> T post(@NotNull URL url,
+                           @Nullable HttpAuthentication authentication,
+                           @Nullable Map<String, Object> data,
+                           @NotNull ResponseMapper<T> mapper) throws IOException {
     MultipartEntityBuilder builder = MultipartEntityBuilder.create();
     if (data != null) {
       for (Map.Entry<String, Object> entry : data.entrySet()) {
@@ -181,10 +195,11 @@ public class CoursesClient {
     try (CloseableHttpClient client = HttpClients.createDefault();
          CloseableHttpResponse response = client.execute(request)) {
       requireSuccessStatusCode(response);
+      return mapper.map(response);
     }
   }
 
-  private static ContentBody getContentBody(Object value) {
+  private static ContentBody getContentBody(@NotNull Object value) {
     if (value instanceof String) {
       return new StringBody((String) value, ContentType.MULTIPART_FORM_DATA);
     }
@@ -199,29 +214,27 @@ public class CoursesClient {
 
   /**
    * Executes the given request, performs some checks on the response and returns the result of
-   * passing the response body to the given mapper.
+   * passing the response to the given mapper.
    */
-  private static <T> T mapResponseBody(@NotNull HttpUriRequest request,
-                                       @NotNull EntityMapper<T> mapper) throws IOException {
+  private static <T> T mapResponse(@NotNull HttpUriRequest request,
+                                   @NotNull ResponseMapper<T> mapper) throws IOException {
     try (CloseableHttpClient client = HttpClients.createDefault();
          CloseableHttpResponse response = client.execute(request)) {
       requireSuccessStatusCode(response);
-      requireResponseEntity(response);
-      return mapper.map(response.getEntity());
+      return mapper.map(response);
     }
   }
 
   /**
-   * Executes the given request, performs some checks on the response and passes the response body
-   * to the given consumer.
+   * Executes the given request, performs some checks on the response and passes the response to the
+   * given consumer.
    */
-  private static void consumeResponseBody(@NotNull HttpUriRequest request,
-                                          @NotNull EntityConsumer consumer) throws IOException {
+  private static void consumeResponse(@NotNull HttpUriRequest request,
+                                      @NotNull ResponseConsumer consumer) throws IOException {
     try (CloseableHttpClient client = HttpClients.createDefault();
          CloseableHttpResponse response = client.execute(request)) {
       requireSuccessStatusCode(response);
-      requireResponseEntity(response);
-      consumer.consume(response.getEntity());
+      consumer.consume(response);
     }
   }
 

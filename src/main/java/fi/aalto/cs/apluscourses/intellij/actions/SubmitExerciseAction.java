@@ -27,6 +27,7 @@ import fi.aalto.cs.apluscourses.model.FileFinder;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.SubmissionHistory;
 import fi.aalto.cs.apluscourses.model.SubmissionInfo;
+import fi.aalto.cs.apluscourses.model.SubmissionStatusUpdater;
 import fi.aalto.cs.apluscourses.model.SubmittableFile;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
@@ -194,7 +195,10 @@ public class SubmitExerciseAction extends AnAction {
       return;
     }
 
-    exerciseDataSource.submit(submission.buildSubmission(), authentication);
+    String submissionUrl = exerciseDataSource.submit(submission.buildSubmission(), authentication);
+    new SubmissionStatusUpdater(
+        exerciseDataSource, authentication, submissionUrl, selectedExercise.getPresentableName()
+    ).start();
     notifier.notify(new SuccessfulSubmissionNotification(), project);
   }
 

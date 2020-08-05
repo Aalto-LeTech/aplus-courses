@@ -6,7 +6,6 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItems;
 
 import io.restassured.http.ContentType;
-import java.net.MalformedURLException;
 import org.apache.http.HttpStatus;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -20,7 +19,7 @@ public class ApiTest {
   private static final String BASE_URL = "http://localhost:8000/api/v2/";
 
   @Test
-  public void getSubmissionsResultsReturns() throws MalformedURLException {
+  public void testGetPoints() {
     final String firstExercise = "modules[0].exercises[0]";
     final String url = BASE_URL + "courses/100/points/me/";
 
@@ -29,11 +28,11 @@ public class ApiTest {
         .preemptive()
         .basic("zoralst1", "zoralst1")
         .when()
-        .contentType(ContentType.JSON)
         .get(url)
         .then()
         .assertThat()
         .statusCode(HttpStatus.SC_OK)
+        .contentType(ContentType.JSON)
         .body("modules[0].id", equalTo(10))
         .body(firstExercise + ".id", equalTo(300))
         .body(firstExercise + ".max_points", equalTo(100))
@@ -53,11 +52,11 @@ public class ApiTest {
         .preemptive()
         .basic("zoralst1", "zoralst1")
         .when()
-        .contentType(ContentType.JSON)
         .get(BASE_URL + "courses/100/mygroups/")
         .then()
         .assertThat()
         .statusCode(HttpStatus.SC_OK)
+        .contentType(ContentType.JSON)
         .body("results[0].id", equalTo(200))
         .body("results[0].members.id", hasItems(5, 6))
         .body("results[0].members.full_name", hasItems("Perry Cash", "Zorita Alston"));
@@ -68,13 +67,13 @@ public class ApiTest {
     given()
         .auth()
         .preemptive()
-        .basic("root", "root")
+        .basic("zoralst1", "zoralst1")
         .when()
-        .contentType(ContentType.JSON)
         .get("http://localhost:8000/api/v2/courses/100/exercises/")
         .then()
         .assertThat()
         .statusCode(HttpStatus.SC_OK)
+        .contentType(ContentType.JSON)
         .body("results.display_name", hasItems("1. First module", "1. Second module"))
         .body("results.exercises.id[0]", hasItems(300, 301))
         .body("results.exercises.id[1]", hasItems(302));
@@ -85,13 +84,13 @@ public class ApiTest {
     given()
         .auth()
         .preemptive()
-        .basic("root", "root")
+        .basic("zoralst1", "zoralst1")
         .when()
-        .contentType(ContentType.JSON)
         .get("http://localhost:8000/api/v2/exercises/301/")
         .then()
         .assertThat()
         .statusCode(HttpStatus.SC_OK)
+        .contentType(ContentType.JSON)
         .body("exercise_info", equalTo(null))
         .body("max_submissions", equalTo(5));
   }
@@ -101,13 +100,32 @@ public class ApiTest {
     given()
         .auth()
         .preemptive()
-        .basic("root", "root")
+        .basic("zoralst1", "zoralst1")
         .when()
-        .contentType(ContentType.JSON)
         .get("http://localhost:8000/api/v2/exercises/301/submissions/me/")
         .then()
         .assertThat()
         .statusCode(HttpStatus.SC_OK)
+        .contentType(ContentType.JSON)
         .body("count", equalTo(0));
+  }
+
+  @Test
+  public void testGetIndividualSubmission() {
+    given()
+        .auth()
+        .preemptive()
+        .basic("zoralst1", "zoralst1")
+        .when()
+        .get("http://localhost:8000/api/v2/submissions/401/")
+        .then()
+        .assertThat()
+        .statusCode(HttpStatus.SC_OK)
+        .contentType(ContentType.JSON)
+        .body(
+            "exercise.html_url",
+            equalTo("http://localhost:8000/test-course/test-instance/first-module/easy-exercise/")
+        )
+        .body("status", equalTo("ready"));
   }
 }
