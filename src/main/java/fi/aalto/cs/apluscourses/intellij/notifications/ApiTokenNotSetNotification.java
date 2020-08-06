@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.intellij.notifications;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 
@@ -9,10 +11,8 @@ public class ApiTokenNotSetNotification extends Notification {
    */
   public ApiTokenNotSetNotification() {
     super("A+",
-        "API token not stored",
-        "Token could not be persistently stored. You will be requested to paste the token again "
-        + "next time you'll open the project. To allow token to be securely stored in your "
-        + "machine, check your keyring settings.",
+        getText("notification.ApiTokenNotSet.title"),
+        getText("notification.ApiTokenNotSet.content"),
         NotificationType.INFORMATION);
   }
 }

@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.intellij.notifications;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 
@@ -12,8 +14,8 @@ public class ExerciseNotSelectedNotification extends Notification {
   public ExerciseNotSelectedNotification() {
     super(
         "A+",
-        "No exercise is selected",
-        "Select an exercise in the list and click the submission button to submit an exercise.",
+        getText("notification.ExerciseNotSelectedNotification.title"),
+        getText("notification.ExerciseNotSelectedNotification.content"),
         NotificationType.INFORMATION);
   }
 

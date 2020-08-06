@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.intellij.notifications;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 
@@ -11,8 +13,8 @@ public class SuccessfulSubmissionNotification extends Notification {
   public SuccessfulSubmissionNotification() {
     super(
         "A+",
-        "Exercise submitted successfully",
-        "You will be notified when feedback for the exercise is available.",
+        getText("notification.SuccessfulSubmissionNotification.title"),
+        getText("notification.SuccessfulSubmissionNotification.content"),
         NotificationType.INFORMATION
     );
   }

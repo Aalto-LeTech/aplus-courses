@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.intellij.notifications;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 
@@ -14,10 +16,8 @@ public class FailedToLoadPluginsNotification extends Notification {
    */
   public FailedToLoadPluginsNotification() {
     super("A+",
-        "A+ Courses plugin internal error",
-        "A+ Course failed to download a list of available plugins from JetBrains' plugin "
-            + "repository, please ensure Internet connectivity and restart the IDE. If problem "
-            + "persist, please contact the course administration.",
+        getText("notification.FailedToLoadPluginsNotification.title"),
+        getText("notification.FailedToLoadPluginsNotification.content"),
         NotificationType.ERROR);
   }
 }

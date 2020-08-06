@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.intellij.notifications;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 
@@ -11,8 +13,8 @@ public class NotSubmittableNotification extends Notification {
   public NotSubmittableNotification() {
     super(
         "A+",
-        "Cannot submit exercise",
-        "This exercise can only be submitted from the A+ web interface.",
+        getText("notification.NotSubmittableNotification.title"),
+        getText("notification.NotSubmittableNotification.content"),
         NotificationType.ERROR
     );
   }

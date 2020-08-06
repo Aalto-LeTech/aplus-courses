@@ -1,5 +1,8 @@
 package fi.aalto.cs.apluscourses.intellij.notifications;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getAndReplaceText;
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import org.jetbrains.annotations.NotNull;
@@ -16,9 +19,9 @@ public class SubmissionRenderingErrorNotification extends Notification {
   public SubmissionRenderingErrorNotification(@NotNull Exception exception) {
     super(
         "A+",
-        "Failed to open submission",
-        "Failed to open submission. Please open the submission in the A+ web interface. Error "
-            + "message: '" + exception.getMessage() + "'",
+        getText("notification.SubmissionRenderingErrorNotification.title"),
+        getAndReplaceText("notification.SubmissionRenderingErrorNotification.content",
+            exception.getMessage()),
         NotificationType.ERROR
     );
     this.exception = exception;

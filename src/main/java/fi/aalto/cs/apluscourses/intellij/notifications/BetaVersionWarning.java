@@ -1,8 +1,10 @@
 package fi.aalto.cs.apluscourses.intellij.notifications;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getAndReplaceText;
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
-import com.intellij.util.LineSeparator;
 import fi.aalto.cs.apluscourses.utils.Version;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,13 +19,8 @@ public class BetaVersionWarning extends Notification {
    */
   public BetaVersionWarning(@NotNull Version version) {
     super("A+",
-        "A+ Courses plugin is under development",
-        "You are using version " + version + " of A+ Courses plugin, "
-            + "which is a pre-release version of the plugin and still under development. "
-            + LineSeparator.getSystemLineSeparator().getSeparatorString()
-            + "Some features of this plugin are still probably missing, "
-            + "and the plugin is not yet tested thoroughly. "
-            + "Use this plugin with caution and on your own risk!",
+        getText("notification.BetaVersionWarning.title"),
+        getAndReplaceText("notification.BetaVersionWarning.content", version),
         NotificationType.WARNING);
     this.version = version;
   }

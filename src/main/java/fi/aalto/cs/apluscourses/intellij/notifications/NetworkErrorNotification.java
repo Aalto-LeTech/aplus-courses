@@ -1,5 +1,8 @@
 package fi.aalto.cs.apluscourses.intellij.notifications;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getAndReplaceText;
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import org.jetbrains.annotations.NotNull;
@@ -15,9 +18,10 @@ public class NetworkErrorNotification extends Notification {
    */
   public NetworkErrorNotification(@NotNull Exception exception) {
     // Tell the user to restart for now as a temporary solution.
-    super("A+", "A+ Courses plugin encountered a network error",
-        "Please check your network connection and try again. Error message: '"
-            + exception.getMessage() + "'.",
+    super("A+",
+        getText("notification.NetworkErrorNotification.title"),
+        getAndReplaceText("notification.NetworkErrorNotification.content",
+            exception.getMessage()),
         NotificationType.ERROR);
     this.exception = exception;
   }
