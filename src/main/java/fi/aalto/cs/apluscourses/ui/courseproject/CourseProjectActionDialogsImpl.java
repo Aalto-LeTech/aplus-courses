@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.ui.courseproject;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import fi.aalto.cs.apluscourses.presentation.CourseProjectViewModel;
@@ -16,8 +18,11 @@ public class CourseProjectActionDialogsImpl implements CourseProjectActionDialog
   @Override
   public boolean showRestartDialog() {
     return Messages.showOkCancelDialog(
-        "IntelliJ IDEA will now restart to reload settings.", "Restart IntelliJ IDEA",
-        "OK", "Cancel", Messages.getQuestionIcon()) == Messages.OK;
+        getText("ui.courseProject.dialogs.showRestartDialog.message"),
+        getText("ui.courseProject.dialogs.showRestartDialog.title"),
+        getText("ui.courseProject.dialogs.showRestartDialog.okText"),
+        getText("ui.courseProject.dialogs.showRestartDialog.cancelText"),
+        Messages.getQuestionIcon()) == Messages.OK;
   }
 
   @Override

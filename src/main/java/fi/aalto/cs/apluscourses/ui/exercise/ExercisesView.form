@@ -41,7 +41,7 @@
           <component id="de40" class="javax.swing.JLabel">
             <constraints/>
             <properties>
-              <text value="Exercises"/>
+              <text resource-bundle="resources" key="ui.toolWindow.subTab.exercises.name"/>
             </properties>
           </component>
           <component id="5c667" class="javax.swing.JToolBar$Separator">

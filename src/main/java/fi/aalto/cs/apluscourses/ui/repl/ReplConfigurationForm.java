@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.ui.repl;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 import static java.util.Objects.requireNonNull;
 
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
@@ -18,11 +19,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class ReplConfigurationForm extends JPanel {
 
-  public static final String INFOLABEL_TEXT = "<html>"
-      + "This is an A+ Scala REPL configuration window. By default, the working "
-      + "directory and the dependencies, loaded to the REPL classpath belong to the Module, that "
-      + "it was started on. To change the behavior, use the checkbox at the bottom of the window."
-      + "</html>";
+  public static final String INFOLABEL_TEXT = getText("ui.repl.infoLabel");
 
   private ReplConfigurationFormModel model;
 
@@ -71,8 +68,8 @@ public class ReplConfigurationForm extends JPanel {
         return super.isFileVisible(file, showHiddenFiles) && file.isDirectory();
       }
     };
-    fileChooserDescriptor.setTitle("Choose Working Directory");
-    textField.addBrowseFolderListener("Choose Working Directory", null,
+    fileChooserDescriptor.setTitle(getText("ui.repl.chooseWorkingDirectory"));
+    textField.addBrowseFolderListener(getText("ui.repl.chooseWorkingDirectory"), null,
         project, fileChooserDescriptor);
   }
 

@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.ui.repl;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import com.intellij.uiDesigner.core.GridConstraints;
 import fi.aalto.cs.apluscourses.ui.base.DialogBaseHelper;
 import javax.swing.JButton;
@@ -23,7 +25,7 @@ public class ReplConfigurationDialog extends DialogBaseHelper {
     setResizable(false);
     getRootPane().setDefaultButton(buttonOk);
     addDefaultListeners(buttonOk, buttonCancel, contentPane);
-    setTitle("REPL Configuration");
+    setTitle(getText("ui.repl.configuration.dialog.title"));
 
     //  location "center" (it's still a big question "center" of what)
     this.setLocationRelativeTo(null);

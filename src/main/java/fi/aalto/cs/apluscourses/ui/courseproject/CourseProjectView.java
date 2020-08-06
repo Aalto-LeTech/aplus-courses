@@ -7,6 +7,7 @@ import fi.aalto.cs.apluscourses.presentation.CourseProjectViewModel;
 import fi.aalto.cs.apluscourses.ui.GuiObject;
 import fi.aalto.cs.apluscourses.ui.base.CheckBox;
 import fi.aalto.cs.apluscourses.ui.base.TemplateLabel;
+import fi.aalto.cs.apluscourses.utils.PluginResourceBundle;
 import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -32,7 +33,7 @@ public class CourseProjectView extends DialogWrapper {
                     @NotNull CourseProjectViewModel viewModel) {
     super(project);
 
-    setTitle("Turn Project Into A+ Course Project");
+    setTitle(PluginResourceBundle.getText("ui.courseProject.view"));
     setButtonsAlignment(SwingConstants.CENTER);
 
     init();

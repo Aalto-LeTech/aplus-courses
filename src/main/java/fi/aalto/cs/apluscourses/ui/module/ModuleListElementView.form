@@ -12,14 +12,14 @@
       <component id="e26e5" class="javax.swing.JLabel" binding="nameLabel">
         <constraints/>
         <properties>
-          <text value="Module"/>
+          <text resource-bundle="resources" key="ui.toolWindow.subTab.modules.module.name"/>
         </properties>
       </component>
       <component id="80135" class="javax.swing.JLabel" binding="statusLabel">
         <constraints/>
         <properties>
           <font size="10" style="2"/>
-          <text value="[Status]"/>
+          <text resource-bundle="resources" key="ui.toolWindow.subTab.modules.module.status"/>
         </properties>
       </component>
       <component id="c424d" class="javax.swing.JLabel" binding="updateLabel">
@@ -27,7 +27,7 @@
         <properties>
           <font style="1"/>
           <foreground color="-98404"/>
-          <text value="UPDATE AVAILABLE!"/>
+          <text resource-bundle="resources" key="ui.toolWindow.subTab.modules.module.updateAvailable"/>
         </properties>
       </component>
     </children>
