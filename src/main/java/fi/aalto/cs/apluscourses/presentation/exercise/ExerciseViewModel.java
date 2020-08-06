@@ -64,6 +64,13 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
     }
   }
 
+  @NotNull
+  public String getStatusText() {
+    Exercise exercise = getModel();
+    return "" + exercise.getSubmissionResults().size() + " of " + exercise.getMaxSubmissions()
+        + ", " + exercise.getUserPoints() + "/" + exercise.getMaxPoints();
+  }
+
   public List<SubmissionResultViewModel> getSubmissionResultViewModels() {
     return submissionResultViewModels;
   }

@@ -67,4 +67,13 @@ public class ExerciseViewModelTest {
         new ExerciseViewModel(fullPoints).getStatus());
   }
 
+  @Test
+  public void testGetStatusText() {
+    Exercise exercise = new Exercise(0, "", "http://localhost:1212", Collections.emptyList(),
+        3, 49, 12);
+    ExerciseViewModel viewModel = new ExerciseViewModel(exercise);
+
+    Assert.assertEquals("The status text is correct", "0 of 12, 3/49", viewModel.getStatusText());
+  }
+
 }
