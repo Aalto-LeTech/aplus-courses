@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
@@ -157,6 +159,7 @@ public class CourseProjectAction extends AnAction {
 
   @FunctionalInterface
   public interface CourseFactory {
+
     @NotNull
     Course fromUrl(@NotNull URL courseUrl, @NotNull Project project)
         throws IOException, MalformedCourseConfigurationFileException;
@@ -178,6 +181,7 @@ public class CourseProjectAction extends AnAction {
   /**
    * Returns a course created from the course configuration file at the given URL. The user is
    * notified if the course initialization fails.
+   *
    * @param project   The currently open project.
    * @param courseUrl The URL from which the course configuration file is downloaded.
    * @return The course created from the course configuration file or null in case of an error.
@@ -211,6 +215,7 @@ public class CourseProjectAction extends AnAction {
   /**
    * Creates a file in the project settings directory which contains the given course configuration
    * file URL.
+   *
    * @return True if the file was successfully created, false otherwise.
    */
   private boolean tryCreateCourseFile(@NotNull Project project, @NotNull URL courseUrl) {
@@ -228,6 +233,7 @@ public class CourseProjectAction extends AnAction {
   /**
    * Tries importing project settings from the given course. Shows an error dialog to the user if a
    * network error occurs.
+   *
    * @return True if project settings were successfully imported, false otherwise.
    */
   private boolean tryImportProjectSettings(@NotNull Project project, @NotNull Course course) {
@@ -243,6 +249,7 @@ public class CourseProjectAction extends AnAction {
   /**
    * Tries importing IDE settings from the given course. Shows an error dialog to the user if a
    * network error occurs.
+   *
    * @return True if IDE settings were successfully imported, false otherwise.
    */
   private boolean tryImportIdeSettings(@NotNull Course course) {
@@ -256,14 +263,15 @@ public class CourseProjectAction extends AnAction {
   }
 
   private void notifyNetworkError() {
-    dialogs.showErrorDialog("An error occurred while creating a course project. Please check your "
-        + "network connection and try again, or contact the course staff if the issue persists.",
-        "Network Error");
+    dialogs
+        .showErrorDialog(getText("ui.courseProject.dialogs.showErrorDialog.networkError.message"),
+            getText("ui.courseProject.dialogs.showErrorDialog.networkError.title"));
   }
 
   private void notifyMalformedCourseConfiguration() {
-    dialogs.showErrorDialog("An error occurred while reading the course configuration. Please "
-        + "contact the course staff.", "Course Configuration Error");
+    dialogs.showErrorDialog(
+        getText("ui.courseProject.dialogs.showErrorDialog.malformedCourseConfiguration.message"),
+        getText("ui.courseProject.dialogs.showErrorDialog.malformedCourseConfiguration.title"));
   }
 
 }
