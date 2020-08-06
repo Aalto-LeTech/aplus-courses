@@ -5,7 +5,7 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Aalto-LeTech_intellij-plugin&metric=alert_status)](https://sonarcloud.io/dashboard?id=Aalto-LeTech_intellij-plugin)
 [![JetBrains IntelliJ plugins](https://img.shields.io/jetbrains/plugin/d/13634-a-plugin-for-intellij?label=plugin%20downloads)](https://plugins.jetbrains.com/plugin/13634-a-plugin-for-intellij)
 
-# ![Small_Logo](images/small_logo.png) Intellij IDEA plugin for A+ Courses
+# ![Small_Logo](images/small_logo.png) IntelliJ IDEA plugin for A+ Courses
 
 ## Welcome
 

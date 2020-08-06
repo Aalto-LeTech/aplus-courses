@@ -1,7 +1,10 @@
 package fi.aalto.cs.apluscourses.utils;
 
-public interface PluginXmlConstants {
+public class PluginXmlConstants {
 
-  String A_PLUS_COURSES = PluginResourceBundle.getText("pluginXmlConstants.ui.toolWindow.tab.name");
+  public static final String A_PLUS_COURSES = PluginResourceBundle.getText("pluginXmlConstants.ui.toolWindow.tab.name");
 
+  private PluginXmlConstants() {
+
+  }
 }
