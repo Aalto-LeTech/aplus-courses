@@ -13,7 +13,7 @@ public class ExerciseNotSelectedNotification extends Notification {
    */
   public ExerciseNotSelectedNotification() {
     super(
-        "A+",
+        getText("general.aPlus"),
         getText("notification.ExerciseNotSelectedNotification.title"),
         getText("notification.ExerciseNotSelectedNotification.content"),
         NotificationType.INFORMATION);

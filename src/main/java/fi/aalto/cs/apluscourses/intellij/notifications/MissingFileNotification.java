@@ -21,7 +21,7 @@ public class MissingFileNotification extends Notification {
    */
   public MissingFileNotification(@NotNull Path path, @NotNull String filename) {
     super(
-        "A+",
+        getText("general.aPlus"),
         getText("notification.MissingFileNotification.title"),
         getAndReplaceText("notification.MissingFileNotification.content", filename, path),
         NotificationType.ERROR);

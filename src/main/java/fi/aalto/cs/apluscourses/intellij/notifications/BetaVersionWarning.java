@@ -18,7 +18,8 @@ public class BetaVersionWarning extends Notification {
    * @param version Version of the software.
    */
   public BetaVersionWarning(@NotNull Version version) {
-    super("A+",
+    super(
+        getText("general.aPlus"),
         getText("notification.BetaVersionWarning.title"),
         getAndReplaceText("notification.BetaVersionWarning.content", version),
         NotificationType.WARNING);

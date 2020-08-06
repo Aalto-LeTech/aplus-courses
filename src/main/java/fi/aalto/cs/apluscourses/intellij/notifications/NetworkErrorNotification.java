@@ -18,7 +18,8 @@ public class NetworkErrorNotification extends Notification {
    */
   public NetworkErrorNotification(@NotNull Exception exception) {
     // Tell the user to restart for now as a temporary solution.
-    super("A+",
+    super(
+        getText("general.aPlus"),
         getText("notification.NetworkErrorNotification.title"),
         getAndReplaceText("notification.NetworkErrorNotification.content",
             exception.getMessage()),

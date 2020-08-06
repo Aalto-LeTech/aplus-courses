@@ -15,7 +15,8 @@ public class FailedToLoadPluginsNotification extends Notification {
    * Builds the notification.
    */
   public FailedToLoadPluginsNotification() {
-    super("A+",
+    super(
+        getText("general.aPlus"),
         getText("notification.FailedToLoadPluginsNotification.title"),
         getText("notification.FailedToLoadPluginsNotification.content"),
         NotificationType.ERROR);

@@ -12,7 +12,7 @@ public class NotSubmittableNotification extends Notification {
    */
   public NotSubmittableNotification() {
     super(
-        "A+",
+        getText("general.aPlus"),
         getText("notification.NotSubmittableNotification.title"),
         getText("notification.NotSubmittableNotification.content"),
         NotificationType.ERROR

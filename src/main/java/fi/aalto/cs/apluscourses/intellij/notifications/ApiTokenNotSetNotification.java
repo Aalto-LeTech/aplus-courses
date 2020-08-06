@@ -10,7 +10,8 @@ public class ApiTokenNotSetNotification extends Notification {
    * Constructs a notification that tells authentication is not set.
    */
   public ApiTokenNotSetNotification() {
-    super("A+",
+    super(
+        getText("general.aPlus"),
         getText("notification.ApiTokenNotSet.title"),
         getText("notification.ApiTokenNotSet.content"),
         NotificationType.INFORMATION);

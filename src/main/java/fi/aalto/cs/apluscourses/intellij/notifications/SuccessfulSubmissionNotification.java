@@ -12,7 +12,7 @@ public class SuccessfulSubmissionNotification extends Notification {
    */
   public SuccessfulSubmissionNotification() {
     super(
-        "A+",
+        getText("general.aPlus"),
         getText("notification.SuccessfulSubmissionNotification.title"),
         getText("notification.SuccessfulSubmissionNotification.content"),
         NotificationType.INFORMATION

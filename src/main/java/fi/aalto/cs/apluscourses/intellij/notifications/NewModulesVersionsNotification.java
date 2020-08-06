@@ -23,7 +23,8 @@ public class NewModulesVersionsNotification extends Notification {
    * @param modules is a {@link List} {@link Module}s to process.
    */
   public NewModulesVersionsNotification(@NotNull List<Module> modules) {
-    super("A+",
+    super(
+        getText("general.aPlus"),
         getText("notification.NewModulesVersionsNotification.title"),
         getAndReplaceText("notification.NewModulesVersionsNotification.content",
             getModuleNameStrings(modules)),

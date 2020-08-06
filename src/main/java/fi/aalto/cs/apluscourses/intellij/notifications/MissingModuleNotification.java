@@ -17,7 +17,8 @@ public class MissingModuleNotification extends Notification {
    * couldn't be found.
    */
   public MissingModuleNotification(@NotNull String moduleName) {
-    super("A+",
+    super(
+        getText("general.aPlus"),
         getText("notification.MissingModuleNotification.title"),
         getAndReplaceText("notification.MissingModuleNotification.content", moduleName),
         NotificationType.ERROR);

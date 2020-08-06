@@ -18,7 +18,8 @@ public class CourseConfigurationError extends Notification {
    * @param exception An exception that caused this notification.
    */
   public CourseConfigurationError(@NotNull Exception exception) {
-    super("A+",
+    super(
+        getText("general.aPlus"),
         getText("notification.CourseConfigurationError.title"),
         getAndReplaceText("notification.CourseConfigurationError.content",
             exception.getMessage()),

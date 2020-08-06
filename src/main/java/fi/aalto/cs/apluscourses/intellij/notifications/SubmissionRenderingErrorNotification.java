@@ -18,7 +18,7 @@ public class SubmissionRenderingErrorNotification extends Notification {
    */
   public SubmissionRenderingErrorNotification(@NotNull Exception exception) {
     super(
-        "A+",
+        getText("general.aPlus"),
         getText("notification.SubmissionRenderingErrorNotification.title"),
         getAndReplaceText("notification.SubmissionRenderingErrorNotification.content",
             exception.getMessage()),
