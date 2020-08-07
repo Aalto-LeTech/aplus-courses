@@ -76,7 +76,7 @@ public class APlusAuthenticationView extends DialogWrapper implements Dialog {
   private void createUIComponents() {
     // TODO: place custom component creation code here
     tokenPageLink = new LinkLabel<>(
-        "Forgot your token1?",
+        "What's my token?",
         AllIcons.Ide.External_link_arrow,
         (first, second) ->
             BrowserUtil.browse(PluginSettings.A_PLUS_BASE_URL + "/accounts/accounts/"));
