@@ -25,7 +25,7 @@ public class ReplConfigurationDialog extends DialogBaseHelper {
     setResizable(false);
     getRootPane().setDefaultButton(buttonOk);
     addDefaultListeners(buttonOk, buttonCancel, contentPane);
-    setTitle(getText("ui.repl.configuration.dialog.title"));
+    setTitle(getText("ui.repl.configuration.form.title"));
 
     //  location "center" (it's still a big question "center" of what)
     this.setLocationRelativeTo(null);

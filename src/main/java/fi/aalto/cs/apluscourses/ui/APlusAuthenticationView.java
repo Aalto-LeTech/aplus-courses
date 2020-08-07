@@ -58,7 +58,7 @@ public class APlusAuthenticationView extends DialogWrapper implements Dialog {
   @Override
   protected ValidationInfo doValidate() {
     if (inputField.getPassword().length == 0) {
-      return new ValidationInfo(getText("ui.authenticationView.emptyToken"), inputField);
+      return new ValidationInfo(getText("ui.authenticationView.noEmptyToken"), inputField);
     }
     return null;
   }

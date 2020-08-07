@@ -19,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class ReplConfigurationForm extends JPanel {
 
-  public static final String INFOLABEL_TEXT = getText("ui.repl.infoLabel");
+  public static final String INFOLABEL_TEXT = getText("ui.repl.configuration.form.infoLabel");
 
   private ReplConfigurationFormModel model;
 
@@ -68,9 +68,10 @@ public class ReplConfigurationForm extends JPanel {
         return super.isFileVisible(file, showHiddenFiles) && file.isDirectory();
       }
     };
-    fileChooserDescriptor.setTitle(getText("ui.repl.chooseWorkingDirectory"));
-    textField.addBrowseFolderListener(getText("ui.repl.chooseWorkingDirectory"), null,
-        project, fileChooserDescriptor);
+    fileChooserDescriptor.setTitle(getText("ui.repl.configuration.form.chooseWorkingDirectory"));
+    textField.addBrowseFolderListener(
+        getText("ui.repl.configuration.form.chooseWorkingDirectory"),
+        null, project, fileChooserDescriptor);
   }
 
   /**

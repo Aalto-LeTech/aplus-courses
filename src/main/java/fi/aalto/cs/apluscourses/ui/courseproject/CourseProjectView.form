@@ -13,7 +13,7 @@
           <grid row="0" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <textTemplate value="&lt;html&gt;&lt;body&gt;The currently opened project will be turned into a project for &lt;b&gt;{0}&lt;/b&gt;.&lt;/body&gt;&lt;html&gt;"/>
+          <textTemplate resource-bundle="resources" key="ui.courseProject.form.textTemplate"/>
         </properties>
       </component>
       <component id="b88a6" class="fi.aalto.cs.apluscourses.ui.base.TemplateLabel" binding="currentSettingsText">
@@ -21,7 +21,7 @@
           <grid row="4" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <textTemplate value="&lt;html&gt;&lt;body&gt;IntelliJ IDEA settings are already imported for &lt;b&gt;{0}&lt;/b&gt;.&lt;/body&gt;&lt;html&gt;"/>
+          <textTemplate resource-bundle="resources" key="ui.courseProject.form.currentSettingsText"/>
         </properties>
       </component>
       <component id="84cae" class="fi.aalto.cs.apluscourses.ui.base.CheckBox" binding="settingsOptOutCheckbox">

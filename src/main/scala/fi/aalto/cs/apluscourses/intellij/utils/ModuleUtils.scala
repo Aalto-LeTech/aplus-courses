@@ -10,6 +10,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.OrderEnumerator
 import com.intellij.openapi.util.io.FileUtilRt
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings
+import fi.aalto.cs.apluscourses.utils.PluginResourceBundle.{getAndReplaceText, getText}
 import org.jetbrains.annotations.NotNull
 
 object ModuleUtils {
@@ -50,8 +51,8 @@ object ModuleUtils {
   def getCommandsText(@NotNull imports: Array[String]): String =
     imports.length match {
       case 0 => ""
-      case 1 => s"Auto-imported package [${imports.head}] for your convenience."
-      case _ => s"Auto-imported packages [${imports.mkString(", ")}] for your convenience."
+      case 1 => getAndReplaceText("ui.repl.console.welcome.autoImport.single.message", imports.head)
+      case _ => getAndReplaceText("ui.repl.console.welcome.autoImport.multiple.message", imports.mkString(", "))
     }
 
   def getUpdatedText(@NotNull module: Module,
@@ -63,21 +64,19 @@ object ModuleUtils {
     val editorUpShortCut = getPrettyKeyMapString("EditorUp")
     val editorDownShortCut = getPrettyKeyMapString("EditorDown")
 
-    val commonText = s"Write a line (or more) of Scala and press [${executeConsoleShortCut}] to run " +
-      s"it. Use [${editorUpShortCut}] and [${editorDownShortCut}] to scroll through your earlier " +
-      s"inputs. \nChanges to the module are not loaded automatically. If you edit the files, restart" +
-      s" the REPL with [${reRunShortCut}] or the icon on the left. \n"
+    val commonText = getAndReplaceText("ui.repl.console.welcome.commonText",
+      executeConsoleShortCut, editorUpShortCut, editorDownShortCut, reRunShortCut)
 
     if (isTopLevelModule(module)) {
-      s"${commonText}${originalText}Note: This REPL session is not linked to any course module. To " +
-        s"use a module from the REPL, select the module and press [${runConsoleShortCut}] to launch" +
-        s" a new session."
+      getAndReplaceText("ui.repl.console.welcome.noModuleText",
+        commonText, originalText, runConsoleShortCut)
     } else {
       val validCommands = commands.filter(command => naiveValidate(command))
       val clearedCommands = clearCommands(validCommands)
       val commandsText = getCommandsText(clearedCommands)
 
-      s"Loaded A+ Courses module [${module.getName}]. ${commandsText}\n${commonText}${originalText}"
+      getAndReplaceText("ui.repl.console.welcome.fullText",
+        module.getName, commandsText, commonText, originalText)
     }
   }
 
@@ -100,7 +99,7 @@ object ModuleUtils {
         .map(_.capitalize)
         .mkString("+")
     } else {
-      "SHORTCUT MISSING"
+      getText("ui.repl.console.welcome.shortcutMissing")
     }
   }
 
