@@ -42,6 +42,7 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
   }
 
   public enum Status {
+    OPTIONAL_PRACTICE,
     NO_SUBMISSIONS,
     NO_POINTS,
     PARTIAL_POINTS,
@@ -53,7 +54,9 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
    */
   public Status getStatus() {
     Exercise exercise = getModel();
-    if (exercise.getSubmissionResults().isEmpty()) {
+    if (exercise.getMaxSubmissions() == 0 && exercise.getMaxPoints() == 0) {
+      return Status.OPTIONAL_PRACTICE;
+    } else if (exercise.getSubmissionResults().isEmpty()) {
       return Status.NO_SUBMISSIONS;
     } else if (exercise.getUserPoints() == exercise.getMaxPoints()) {
       return Status.FULL_POINTS;
@@ -62,6 +65,19 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
     } else {
       return Status.PARTIAL_POINTS;
     }
+  }
+
+  /**
+   * Returns a text describing the status of the exercise (points and number of submissions).
+   */
+  @NotNull
+  public String getStatusText() {
+    if (getStatus() == Status.OPTIONAL_PRACTICE) {
+      return "optional practice";
+    }
+    Exercise exercise = getModel();
+    return "" + exercise.getSubmissionResults().size() + " of " + exercise.getMaxSubmissions()
+        + ", " + exercise.getUserPoints() + "/" + exercise.getMaxPoints();
   }
 
   public List<SubmissionResultViewModel> getSubmissionResultViewModels() {

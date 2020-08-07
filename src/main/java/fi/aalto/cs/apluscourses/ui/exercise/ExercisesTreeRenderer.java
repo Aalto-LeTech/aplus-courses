@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.ui.exercise;
 
 import com.intellij.ui.ColoredTreeCellRenderer;
+import com.intellij.ui.SimpleTextAttributes;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseGroupViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
@@ -16,6 +17,8 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
   @NotNull
   private static Icon statusToIcon(@NotNull ExerciseViewModel.Status exerciseStatus) {
     switch (exerciseStatus) {
+      case OPTIONAL_PRACTICE:
+        return PluginIcons.A_PLUS_OPTIONAL_PRACTICE;
       case NO_SUBMISSIONS:
         return PluginIcons.A_PLUS_NO_SUBMISSIONS;
       case NO_POINTS:
@@ -47,7 +50,12 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
     if (userObject instanceof ExerciseViewModel) {
       ExerciseViewModel exerciseViewModel = (ExerciseViewModel) userObject;
       append(exerciseViewModel.getPresentableName());
+      append(" [" + exerciseViewModel.getStatusText() + "]", new SimpleTextAttributes(
+              SimpleTextAttributes.STYLE_ITALIC | SimpleTextAttributes.STYLE_SMALLER, null));
       setEnabled(exerciseViewModel.isSubmittable());
+      setToolTipText(exerciseViewModel.isSubmittable()
+          ? "Use the upload button to submit an exercise"
+          : "This exercise cannot be submitted from the IDE");
       setIcon(statusToIcon(exerciseViewModel.getStatus()));
     } else if (userObject instanceof ExerciseGroupViewModel) {
       setIcon(PluginIcons.A_PLUS_EXERCISE_GROUP);
@@ -55,10 +63,12 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
       append(groupViewModel.getPresentableName());
       setEnabled(true);
       setIcon(PluginIcons.A_PLUS_EXERCISE_GROUP);
+      setToolTipText("");
     } else if (userObject instanceof SubmissionResultViewModel) {
       SubmissionResultViewModel submissionResultViewModel = (SubmissionResultViewModel) userObject;
       setEnabled(true);
       append(submissionResultViewModel.getPresentableName());
+      setToolTipText("Double-click the submission to open it in the browser");
     }
   }
 
