@@ -73,8 +73,8 @@ public class APlusAuthenticationView extends DialogWrapper implements Dialog {
     return inputField;
   }
 
-  private void createUIComponents() {
-    // TODO: place custom component creation code here
+  @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
+  private void createUIComponents() { //
     tokenPageLink = new LinkLabel<>(
         "What's my token?",
         AllIcons.Ide.External_link_arrow,
