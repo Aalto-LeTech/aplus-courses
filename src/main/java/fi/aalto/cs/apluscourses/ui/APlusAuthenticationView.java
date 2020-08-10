@@ -1,8 +1,12 @@
 package fi.aalto.cs.apluscourses.ui;
 
+import com.intellij.icons.AllIcons;
+import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
+import com.intellij.ui.components.labels.LinkLabel;
+import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.presentation.AuthenticationViewModel;
 import java.util.Arrays;
 import javax.swing.Action;
@@ -14,9 +18,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class APlusAuthenticationView extends DialogWrapper implements Dialog {
+
   @GuiObject
   protected JPasswordField inputField;
   private JPanel basePanel;
+  private LinkLabel<Object> tokenPageLink;
 
   AuthenticationViewModel authenticationViewModel;
 
@@ -65,5 +71,16 @@ public class APlusAuthenticationView extends DialogWrapper implements Dialog {
   @Override
   public JComponent getPreferredFocusedComponent() {
     return inputField;
+  }
+
+  @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
+  private void createUIComponents() { //
+    tokenPageLink = new LinkLabel<>(
+        "What's my token?",
+        AllIcons.Ide.External_link_arrow,
+        (first, second) ->
+            BrowserUtil.browse(PluginSettings.A_PLUS_BASE_URL + "/accounts/accounts/"));
+    tokenPageLink.setIconTextGap(0);
+    tokenPageLink.setHorizontalTextPosition(SwingConstants.LEFT);
   }
 }
