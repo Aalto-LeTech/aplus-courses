@@ -223,6 +223,11 @@ public class CourseFileManagerTest {
 
   @Test
   public void testGetModulesMetadata() throws IOException, InterruptedException {
+    Assert.assertTrue(
+        "Course file manager returns empty metadata map when no course file has been loaded",
+        manager.getModulesMetadata().isEmpty()
+    );
+
     JSONObject modulesObject = new JSONObject();
     for (int i = 0; i < NUM_THREADS; ++i) {
       String moduleName = "module" + i;

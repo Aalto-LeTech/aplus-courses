@@ -9,6 +9,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.time.ZonedDateTime;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -138,13 +139,13 @@ public class CourseFileManager {
   }
 
   /**
-   * Returns the metadata of modules in the currently loaded course file. This should only be called
-   * after a course file has been successfully loaded.
+   * Returns the metadata of modules in the currently loaded course file, or an empty map if no
+   * course file has been loaded.
    */
   @NotNull
   public synchronized Map<String, ModuleMetadata> getModulesMetadata() {
     // Return a copy so that later changes to the map aren't visible in the returned map.
-    return new HashMap<>(modulesMetadata);
+    return modulesMetadata != null ? new HashMap<>(modulesMetadata) : Collections.emptyMap();
   }
 
   @NotNull
