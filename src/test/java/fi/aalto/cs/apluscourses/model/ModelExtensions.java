@@ -32,7 +32,7 @@ public class ModelExtensions {
     public SubmissionInfo getSubmissionInfo(@NotNull Exercise exercise,
                                             @NotNull Authentication authentication)
         throws IOException {
-      return new SubmissionInfo(1, new SubmittableFile[0]);
+      return new SubmissionInfo(1, Collections.emptyMap());
     }
 
     @NotNull

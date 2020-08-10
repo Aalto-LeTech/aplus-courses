@@ -1,7 +1,11 @@
 package fi.aalto.cs.apluscourses.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -11,12 +15,15 @@ public class SubmissionInfo {
   private final int submissionsLimit;
 
   @NotNull
-  private final SubmittableFile[] files;
+  private final Map<String, List<SubmittableFile>> files;
 
   /**
    * Construct a submission info instance with the given submission limit and files.
+   *
+   * @param files A map from language codes to list of submittable files corresponding to the
+   *              language.
    */
-  public SubmissionInfo(int submissionsLimit, @NotNull SubmittableFile[] files) {
+  public SubmissionInfo(int submissionsLimit, @NotNull Map<String, List<SubmittableFile>> files) {
     this.submissionsLimit = submissionsLimit;
     this.files = files;
   }
@@ -29,7 +36,7 @@ public class SubmissionInfo {
     JSONObject exerciseInfo = jsonObject.getJSONObject("exercise_info");
     JSONArray formSpec = exerciseInfo.getJSONArray("form_spec");
     JSONObject localizationInfo = exerciseInfo.getJSONObject("form_i18n");
-    List<SubmittableFile> files = new ArrayList<>(formSpec.length());
+    Map<String, List<SubmittableFile>> files = new HashMap<>();
 
     for (int i = 0; i < formSpec.length(); ++i) {
       JSONObject spec = formSpec.getJSONObject(i);
@@ -40,27 +47,38 @@ public class SubmissionInfo {
 
       String key = spec.getString("key");
       String title = spec.getString("title");
-      String englishFilename = localizationInfo
-          .getJSONObject(title)
-          .getString("en");
-      files.add(new SubmittableFile(key, englishFilename));
+      JSONObject localizedFilenames = localizationInfo.getJSONObject(title);
+
+      Iterable<String> languages = localizedFilenames::keys;
+      for (String language : languages) {
+        List<SubmittableFile> filesForLanguage = files.getOrDefault(language, new ArrayList<>());
+        filesForLanguage.add(new SubmittableFile(key, localizedFilenames.getString(language)));
+        files.putIfAbsent(language, filesForLanguage);
+      }
     }
 
     int submissionLimit = jsonObject.getInt("max_submissions");
 
-    return new SubmissionInfo(submissionLimit, files.toArray(new SubmittableFile[0]));
+    return new SubmissionInfo(submissionLimit, files);
   }
 
   public int getSubmissionsLimit() {
     return submissionsLimit;
   }
 
+  /**
+   * Returns the submittable files corresponding to the given language (or an empty collection if
+   * the language isn't found).
+   */
   @NotNull
-  public SubmittableFile[] getFiles() {
-    return files;
+  public List<SubmittableFile> getFiles(@NotNull String language) {
+    return files.getOrDefault(language, Collections.emptyList());
   }
 
-  public boolean isSubmittable() {
-    return files.length > 0;
+  /**
+   * Returns true if the exercise can be submitted in the given language from the IDE.
+   */
+  public boolean isSubmittable(@NotNull String language) {
+    return getFiles(language).size() > 0;
   }
 }

@@ -35,7 +35,9 @@ public class SubmissionViewModelTest {
     fileMap.put("file1", path);
 
     SubmittableFile file = new SubmittableFile("file1", fileName);
-    SubmittableFile[] files = new SubmittableFile[] { file };
+    String language = "en";
+    Map<String, List<SubmittableFile>> files
+        = Collections.singletonMap(language, Collections.singletonList(file));
     SubmissionInfo submissionInfo = new SubmissionInfo(4, files);
 
     SubmissionHistory history = new SubmissionHistory(4);
@@ -44,7 +46,7 @@ public class SubmissionViewModelTest {
         Collections.emptyList(), 0, 0, 0);
 
     SubmissionViewModel submissionViewModel =
-        new SubmissionViewModel(exercise, submissionInfo, history, groups, fileMap);
+        new SubmissionViewModel(exercise, submissionInfo, history, groups, fileMap, language);
 
     assertNotNull("The validation should fail when no group is yet selected",
         submissionViewModel.selectedGroup.validate());
@@ -54,22 +56,22 @@ public class SubmissionViewModelTest {
   public void testSubmissionNumbers() {
     Exercise exercise = new Exercise(1, "ex", "http://localhost:2000", Collections.emptyList(),
         0, 0, 0);
-    SubmissionInfo info = new SubmissionInfo(5, new SubmittableFile[0]);
+    SubmissionInfo info = new SubmissionInfo(5, Collections.emptyMap());
 
     SubmissionViewModel submissionViewModel1 = new SubmissionViewModel(exercise, info,
-        new SubmissionHistory(3), Collections.emptyList(), Collections.emptyMap());
+        new SubmissionHistory(3), Collections.emptyList(), Collections.emptyMap(), "");
 
     assertEquals(5, submissionViewModel1.getMaxNumberOfSubmissions());
     assertEquals(4, submissionViewModel1.getCurrentSubmissionNumber());
     assertNull(submissionViewModel1.getSubmissionWarning());
 
     SubmissionViewModel submissionViewModel2 = new SubmissionViewModel(exercise, info,
-        new SubmissionHistory(4), Collections.emptyList(), Collections.emptyMap());
+        new SubmissionHistory(4), Collections.emptyList(), Collections.emptyMap(), "");
 
     assertNotNull(submissionViewModel2.getSubmissionWarning());
 
     SubmissionViewModel submissionViewModel3 = new SubmissionViewModel(exercise, info,
-        new SubmissionHistory(5), Collections.emptyList(), Collections.emptyMap());
+        new SubmissionHistory(5), Collections.emptyList(), Collections.emptyMap(), "");
 
     assertNotNull(submissionViewModel3.getSubmissionWarning());
   }

@@ -57,6 +57,7 @@ public class CourseFileManager {
       return;
     }
     this.courseUrl = courseUrl;
+    this.language = language;
     this.modulesMetadata = new HashMap<>();
     writeCourseFile(
         new JSONObject()
@@ -107,6 +108,7 @@ public class CourseFileManager {
 
     JSONObject jsonObject = new JSONObject()
         .put("url", courseUrl.toString())
+        .put("language", language)
         .put("modules", modulesObject);
 
     writeCourseFile(jsonObject);

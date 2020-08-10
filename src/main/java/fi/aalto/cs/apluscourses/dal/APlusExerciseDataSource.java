@@ -160,7 +160,8 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   public String submit(@NotNull Submission submission, @NotNull Authentication authentication)
       throws IOException {
     Map<String, Object> data = new HashMap<>();
-    data.put("__aplus__", "{ \"group\": " + submission.getGroup().getId() + ", \"lang\": \"en\" }");
+    data.put("__aplus__", "{ \"group\": " + submission.getGroup().getId() + ", \"lang\": \""
+        + submission.getLanguage() + "\" }");
     for (Map.Entry<String, Path> entry : submission.getFiles().entrySet()) {
       data.put(entry.getKey(), entry.getValue().toFile());
     }

@@ -71,7 +71,7 @@ public class APlusExerciseDataSourceTest {
   @Test
   public void testGetSubmissionInfo() throws IOException {
     JSONObject response = new JSONObject();
-    SubmissionInfo submissionInfo = new SubmissionInfo(1, new SubmittableFile[0]);
+    SubmissionInfo submissionInfo = new SubmissionInfo(1, Collections.emptyMap());
 
     doReturn(response).when(client).fetch("https://example.com/exercises/55/", authentication);
     doReturn(submissionInfo).when(parser).parseSubmissionInfo(response);
@@ -166,15 +166,15 @@ public class APlusExerciseDataSourceTest {
     paths.put(key0, path0);
     paths.put(key1, path1);
 
-    SubmissionInfo submissionInfo =
-        new SubmissionInfo(1, new SubmittableFile[] { subFile0, subFile1 });
+    SubmissionInfo submissionInfo = new SubmissionInfo(
+        1, Collections.singletonMap("fi", Arrays.asList(subFile0, subFile1)));
 
     Exercise exercise = new Exercise(71, "newex", "https://example.com",
         Collections.emptyList(), 0, 0, 0);
 
     Group group = new Group(435, new ArrayList<>());
 
-    Submission submission = new Submission(exercise, submissionInfo, paths, group);
+    Submission submission = new Submission(exercise, submissionInfo, paths, group, "fi");
 
     exerciseDataSource.submit(submission, authentication);
 
@@ -195,6 +195,6 @@ public class APlusExerciseDataSourceTest {
     JSONObject object = new JSONObject(new JSONTokener(aplusArg));
     assertEquals(2, object.length());
     assertEquals(435, object.getInt("group"));
-    assertEquals("en", object.getString("lang"));
+    assertEquals("fi", object.getString("lang"));
   }
 }

@@ -20,7 +20,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
-import com.intellij.testFramework.LightIdeaTestCase;
+import com.intellij.openapi.util.io.FileUtilRt;
 import fi.aalto.cs.apluscourses.intellij.DialogHelper;
 import fi.aalto.cs.apluscourses.intellij.notifications.ExerciseNotSelectedNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.MissingFileNotification;
@@ -31,6 +31,7 @@ import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.SuccessfulSubmissionNotification;
 import fi.aalto.cs.apluscourses.intellij.services.Dialogs;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
+import fi.aalto.cs.apluscourses.intellij.utils.CourseFileManager;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Exercise;
@@ -51,6 +52,7 @@ import fi.aalto.cs.apluscourses.presentation.ModuleSelectionViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionViewModel;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
@@ -61,7 +63,6 @@ import java.util.Objects;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.internal.stubbing.answers.ThrowsException;
 
 public class SubmitExerciseActionTest {
 
@@ -121,7 +122,9 @@ public class SubmitExerciseActionTest {
     fileName = "some_file.scala";
     fileKey = "file1";
     file = new SubmittableFile(fileKey, fileName);
-    submissionInfo = new SubmissionInfo(1, new SubmittableFile[]{file});
+    String language = "fi";
+    submissionInfo = new SubmissionInfo(
+        1, Collections.singletonMap(language, Collections.singletonList(file)));
     submissionHistory = new SubmissionHistory(0);
 
     mainViewModel = new MainViewModel();
@@ -154,10 +157,15 @@ public class SubmitExerciseActionTest {
     modulePath = Paths.get(moduleName);
     moduleFilePath = modulePath.resolve("MyModule.iml").toString();
     module = mock(Module.class);
+    // Needed because SubmitExerciseAction uses ModuleUtilCore#getModuleDirPath
     doReturn(moduleFilePath).when(module).getModuleFilePath();
     doReturn(moduleName).when(module).getName();
 
     project = mock(Project.class);
+    doReturn(FileUtilRt.getTempDirectory()).when(project).getBasePath();
+    CourseFileManager.getInstance().createAndLoad(
+        project, new URL("http://localhost:8000"), language);
+    assertEquals(language, CourseFileManager.getInstance().getLanguage());
 
     filePath = modulePath.resolve(fileName);
 
@@ -257,7 +265,7 @@ public class SubmitExerciseActionTest {
     String nonexistentModuleName = "nonexistent module";
 
     Map<Long, Map<String, String>> map = Collections.singletonMap(exerciseId,
-        Collections.singletonMap("en", nonexistentModuleName));
+        Collections.singletonMap("fi", nonexistentModuleName));
     doReturn(map).when(course).getExerciseModules();
 
     action.actionPerformed(event);
@@ -279,7 +287,7 @@ public class SubmitExerciseActionTest {
 
   @Test
   public void testNotifiesExerciseNotSubmittable() throws IOException {
-    doReturn(new SubmissionInfo(1, new SubmittableFile[0]))
+    doReturn(new SubmissionInfo(1, Collections.emptyMap()))
         .when(exerciseDataSource)
         .getSubmissionInfo(exercise, authentication);
 
