@@ -216,7 +216,7 @@ public class CourseProjectAction extends AnAction {
   private boolean tryCreateCourseFile(@NotNull Project project, @NotNull URL courseUrl) {
     try {
       if (createCourseFile) {
-        CourseFileManager.getInstance().createAndLoad(project, courseUrl);
+        CourseFileManager.getInstance().createAndLoad(project, courseUrl, "en");
       }
       return true;
     } catch (IOException e) {

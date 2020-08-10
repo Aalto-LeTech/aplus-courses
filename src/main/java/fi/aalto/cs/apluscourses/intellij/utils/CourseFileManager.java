@@ -21,6 +21,7 @@ public class CourseFileManager {
 
   private File courseFile;
   private URL courseUrl;
+  private String language;
   private Map<String, ModuleMetadata> modulesMetadata;
 
   private CourseFileManager() {
@@ -36,15 +37,18 @@ public class CourseFileManager {
   }
 
   /**
-   * Attempts to create a course file and load it for the given project with the given URL. If a
-   * course file for already exists (even with a different URL), this method loads the existing
-   * course file.
+   * Attempts to create a course file and load it for the given project with the given URL and
+   * language. If a course file for already exists (even with a different URL), this method loads
+   * the existing course file instead.
    *
    * @param project   The project for which the course file is created.
    * @param courseUrl The URL that gets added to the course file (if it doesn't exist yet).
+   * @param language  The language string that gets added to the course file.
    * @throws IOException If an IO error occurs.
    */
-  public synchronized void createAndLoad(@NotNull Project project, @NotNull URL courseUrl)
+  public synchronized void createAndLoad(@NotNull Project project,
+                                         @NotNull URL courseUrl,
+                                         @NotNull String language)
       throws IOException {
     courseFile = getCourseFile(project);
     if (courseFile.exists()) {
@@ -54,7 +58,11 @@ public class CourseFileManager {
     }
     this.courseUrl = courseUrl;
     this.modulesMetadata = new HashMap<>();
-    writeCourseFile(new JSONObject().put("url", courseUrl.toString()));
+    writeCourseFile(
+        new JSONObject()
+            .put("url", courseUrl.toString())
+            .put("language", language)
+    );
   }
 
   /**
@@ -118,6 +126,16 @@ public class CourseFileManager {
   }
 
   /**
+   * Returns the language chosen by the user for the course corresponding to the currently loaded
+   * course file. This should only be called after a course file has been successfully loaded.
+   * @return
+   */
+  @NotNull
+  public synchronized String getLanguage() {
+    return language;
+  }
+
+  /**
    * Returns the metadata of modules in the currently loaded course file. This should only be called
    * after a course file has been successfully loaded.
    */
@@ -140,6 +158,7 @@ public class CourseFileManager {
   /*
    * Returns the course file corresponding to the given project.
    */
+  @NotNull
   private File getCourseFile(@NotNull Project project) {
     return Paths
         .get(Objects.requireNonNull(project.getBasePath()),
@@ -166,6 +185,8 @@ public class CourseFileManager {
    */
   private void loadFromJsonObject(@NotNull JSONObject jsonObject) throws IOException {
     this.courseUrl = new URL(jsonObject.getString("url"));
+
+    this.language = jsonObject.getString("language");
 
     this.modulesMetadata = new HashMap<>();
     JSONObject modulesObject = jsonObject.optJSONObject("modules");
