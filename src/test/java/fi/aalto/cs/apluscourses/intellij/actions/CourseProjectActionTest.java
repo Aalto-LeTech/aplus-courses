@@ -49,6 +49,7 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
     public boolean showMainDialog(@NotNull Project project,
                                   @NotNull CourseProjectViewModel courseProjectViewModel) {
       courseProjectViewModel.settingsOptOutProperty.set(doOptOut);
+      courseProjectViewModel.languageProperty.set("fi");
       return !doCancel;
     }
 
