@@ -28,21 +28,32 @@ public class ExerciseViewModelTest {
   @Test
   public void testIsSubmittable() {
     ExerciseViewModel ex1 = new ExerciseViewModel(
-        new Exercise(1, "|en:Assignment 13|fi:Tehtava 13|", "http://localhost:3000",
-            Collections.emptyList(), 0, 0, 0));
+        new Exercise(1, "|en:Assignment 12|fi:Tehtava 12|", "http://localhost:3000",
+            Collections.emptyList(), 0, 10, 5)
+    );
     ExerciseViewModel ex2 = new ExerciseViewModel(
         new Exercise(2, "|en:Assignment 13 (Test)|fi:Tehtava 13 (Test)|", "http://localhost:4000",
-            Collections.emptyList(), 0, 0, 0)
+            Collections.emptyList(), 0, 20, 10)
     );
     ExerciseViewModel ex3 = new ExerciseViewModel(
-        new Exercise(2, "|en:Assignment 1 (Piazza)|fi:Tehtava 1 (Piazza)|", "http://localhost:5000",
+        new Exercise(4, "|en:Assignment 14 (Practice)|fi:Tehtava 14 (Harjoitus)",
+            "http://localhost:5000", Collections.emptyList(), 0, 0, 0)
+    );
+    ExerciseViewModel ex4 = new ExerciseViewModel(
+        new Exercise(4, "|en:Assignment 1 (Piazza)|fi:Tehtava 1 (Piazza)|", "http://localhost:6000",
+            Collections.emptyList(), 0, 5, 10)
+    );
+    ExerciseViewModel ex5 = new ExerciseViewModel(
+        new Exercise(4, "|en:Assignment  debugger|fi:Tehtava  debugger|", "http://localhost:6000",
             Collections.emptyList(), 0, 0, 0)
     );
 
-    Assert.assertFalse("An assignment without a specific name is not submittable",
+    Assert.assertFalse("An assignment that doesn't have 10 or 0 submissions isn't submittable",
         ex1.isSubmittable());
-    Assert.assertTrue("An assignment with a specific name is submittable", ex2.isSubmittable());
-    Assert.assertFalse("The Piazza assignment is not submittable", ex3.isSubmittable());
+    Assert.assertTrue("An assignment with 10 submissions is submittable", ex2.isSubmittable());
+    Assert.assertTrue("A practice assignment is submittable", ex3.isSubmittable());
+    Assert.assertFalse("The Piazza assignment is not submittable", ex4.isSubmittable());
+    Assert.assertFalse("The debugger assignment is not submittable", ex5.isSubmittable());
   }
 
   @Test
