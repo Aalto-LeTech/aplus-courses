@@ -117,10 +117,11 @@ public class CourseProjectAction extends AnAction {
       return;
     }
 
-    if (!tryCreateCourseFile(project, selectedCourseUrl)) {
-      return;
-    }
-
+    // Note:
+    // IntelliJModelFactory uses CourseFileManager#getModulesMetadata, so this temporary course
+    // instance may contain some weird module metadata when switching between course projects (the
+    // local course file of the previous project remains loaded until another one is loaded).
+    // However, as this course instance is never displayed anywhere in the UI, it shouldn't matter.
     Course course = tryGetCourse(project, selectedCourseUrl);
     if (course == null) {
       return;
@@ -129,6 +130,11 @@ public class CourseProjectAction extends AnAction {
     CourseProjectViewModel courseProjectViewModel
         = new CourseProjectViewModel(course, settingsImporter.currentlyImportedIdeSettings());
     if (!dialogs.showMainDialog(project, courseProjectViewModel)) {
+      return;
+    }
+
+    String language = courseProjectViewModel.languageProperty.get();
+    if (!tryCreateCourseFile(project, selectedCourseUrl, language)) {
       return;
     }
 
@@ -210,13 +216,15 @@ public class CourseProjectAction extends AnAction {
 
   /**
    * Creates a file in the project settings directory which contains the given course configuration
-   * file URL.
+   * file URL and language.
    * @return True if the file was successfully created, false otherwise.
    */
-  private boolean tryCreateCourseFile(@NotNull Project project, @NotNull URL courseUrl) {
+  private boolean tryCreateCourseFile(@NotNull Project project,
+                                      @NotNull URL courseUrl,
+                                      @NotNull String language) {
     try {
       if (createCourseFile) {
-        CourseFileManager.getInstance().createAndLoad(project, courseUrl);
+        CourseFileManager.getInstance().createAndLoad(project, courseUrl, language);
       }
       return true;
     } catch (IOException e) {

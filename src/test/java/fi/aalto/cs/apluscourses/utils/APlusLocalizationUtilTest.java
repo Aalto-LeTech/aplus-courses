@@ -1,6 +1,6 @@
 package fi.aalto.cs.apluscourses.utils;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Test;
 
 public class APlusLocalizationUtilTest {
@@ -17,6 +17,13 @@ public class APlusLocalizationUtilTest {
     String name = "abcdefg";
     Assert.assertEquals("Returns the given string when the string doesn't contain localization",
         "abcdefg", APlusLocalizationUtil.getEnglishName(name));
+  }
+
+  @Test
+  public void testLanguageCodeToName() {
+    Assert.assertEquals("Finnish", APlusLocalizationUtil.languageCodeToName("fi"));
+    Assert.assertEquals("English", APlusLocalizationUtil.languageCodeToName("en"));
+    Assert.assertEquals("qwerty", APlusLocalizationUtil.languageCodeToName("qwerty"));
   }
 
 }

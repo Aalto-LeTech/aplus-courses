@@ -22,6 +22,24 @@ public class APlusLocalizationUtil {
     }
   }
 
+  /**
+   * Returns the language name corresponding to the given ISO 639-1 language code. Only a few common
+   * ones are supported, otherwise the given language code is returned.
+   */
+  @NotNull
+  public static String languageCodeToName(@NotNull String languageCode) {
+    // Hard-coded common language codes
+    if ("fi".equals(languageCode)) {
+      return "Finnish";
+    } else if ("sv".equals(languageCode)) {
+      return "Swedish";
+    } else if ("en".equals(languageCode)) {
+      return "English";
+    } else {
+      return languageCode;
+    }
+  }
+
   private APlusLocalizationUtil() {
 
   }

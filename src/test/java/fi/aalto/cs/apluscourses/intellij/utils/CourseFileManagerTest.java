@@ -34,6 +34,7 @@ public class CourseFileManagerTest {
   private static final int NUM_THREADS = 16;
 
   private static final String URL_KEY = "url";
+  private static final String LANGUAGE_KEY = "language";
   private static final String MODULES_KEY = "modules";
   private static final String MODULE_ID_KEY = "id";
   private static final String MODULE_DOWNLOADED_AT_KEY = "downloadedAt";
@@ -65,6 +66,7 @@ public class CourseFileManagerTest {
   @Before
   public void initializeObjects() throws IOException {
     manager = CourseFileManager.getInstance();
+    manager.clear();
     project = mock(Project.class);
     File tempDir = FileUtilRt.createTempDirectory("test", "", true);
     doReturn(tempDir.toString()).when(project).getBasePath();
@@ -78,12 +80,15 @@ public class CourseFileManagerTest {
 
   @Test
   public void testCreateAndLoad() throws IOException, InterruptedException {
+    Assert.assertFalse(courseFile.exists());
+
     URL url = new URL("http://localhost:3000");
+    String language = "fi";
 
     for (int i = 0; i < NUM_THREADS; ++i) {
       threads.add(new Thread(() -> {
         try {
-          manager.createAndLoad(project, url);
+          manager.createAndLoad(project, url, language);
         } catch (IOException e) {
           threadFailed.set(true);
         }
@@ -95,17 +100,25 @@ public class CourseFileManagerTest {
     Assert.assertFalse(threadFailed.get());
 
     Assert.assertEquals("CourseFileManager returns the correct url", url, manager.getCourseUrl());
+    Assert.assertEquals("CourseFileManager returns the correct language",
+        language, manager.getLanguage());
     Assert.assertTrue("CourseFileManager returns an empty map for modules metadata",
         manager.getModulesMetadata().isEmpty());
 
     JSONObject jsonObject = getCourseFileContents();
-    URL jsonUrl = new URL(jsonObject.getString("url"));
+    URL jsonUrl = new URL(jsonObject.getString(URL_KEY));
+    String jsonLanguage = jsonObject.getString(LANGUAGE_KEY);
     Assert.assertEquals("The course file contains JSON with the given URL", url, jsonUrl);
+    Assert.assertEquals("The course file contains JSON with the given language",
+        language, jsonLanguage);
   }
 
   @Test
   public void testCreateAndLoadWithExistingFile() throws IOException {
-    URL url = new URL("https://google.com");
+    URL oldUrl = new URL("https://google.com");
+    URL newUrl = new URL("https://github.com");
+    String oldLanguage = "en";
+    String newLanguage = "fi";
 
     JSONObject modulesObject = new JSONObject().put("awesome module",
         new JSONObject()
@@ -113,15 +126,24 @@ public class CourseFileManagerTest {
             .put(MODULE_DOWNLOADED_AT_KEY, ZonedDateTime.now())
     );
     JSONObject jsonObject = new JSONObject()
-        .put("url", url)
+        .put(URL_KEY, oldUrl)
+        .put(LANGUAGE_KEY, oldLanguage)
         .put(MODULES_KEY, modulesObject);
 
     FileUtils.writeStringToFile(courseFile, jsonObject.toString(), StandardCharsets.UTF_8);
 
-    manager.createAndLoad(project, new URL("https://github.com"));
+    Assert.assertTrue(courseFile.exists());
 
-    Assert.assertEquals("CourseFileManager#createAndLoad gets the URL of the existing course file",
-        url, manager.getCourseUrl());
+    manager.createAndLoad(project, newUrl, newLanguage);
+
+    Assert.assertEquals(
+        "CourseFileManager#createAndLoad overwrites the URL of the existing course file",
+        newUrl, manager.getCourseUrl()
+    );
+    Assert.assertEquals(
+        "CourseFileManager#createAndLoad overwrites the language of the existing course file",
+        newLanguage, manager.getLanguage()
+    );
     Assert.assertEquals("CourseFileManager#createAndLoad gets the existing modules metadata",
         1, manager.getModulesMetadata().size());
     Assert.assertEquals("CourseFileManager#createAndLoad gets the existing modules metadata",
@@ -132,6 +154,7 @@ public class CourseFileManagerTest {
   public void testLoad() throws IOException, InterruptedException {
     JSONObject jsonObject = new JSONObject()
         .put(URL_KEY, new URL("https://example.org"))
+        .put(LANGUAGE_KEY, "de")
         .put(MODULES_KEY, new JSONObject()
             .put("great name", new JSONObject()
                 .put(MODULE_ID_KEY, "123")
@@ -157,6 +180,8 @@ public class CourseFileManagerTest {
 
     Assert.assertEquals("CourseFileManager returns the correct URL",
         new URL("https://example.com"), manager.getCourseUrl());
+    Assert.assertEquals("CourseFileManager returns the correct language",
+        "de", manager.getLanguage());
     Map<String, ModuleMetadata> metadata = manager.getModulesMetadata();
     Assert.assertEquals("CourseFileManager should return the correct number of modules metadata",
         2, metadata.size());
@@ -175,7 +200,7 @@ public class CourseFileManagerTest {
   @Test
   public void testAddEntryForModule() throws IOException, InterruptedException {
     URL url = new URL("http://localhost:8000");
-    manager.createAndLoad(project, url);
+    manager.createAndLoad(project, url, "en");
     for (int i = 0; i < NUM_THREADS; ++i) {
       Module module = new ModelExtensions.TestModule("name" + i, url, "id" + i, "lid" + i,
           ZonedDateTime.now());
@@ -207,6 +232,11 @@ public class CourseFileManagerTest {
 
   @Test
   public void testGetModulesMetadata() throws IOException, InterruptedException {
+    Assert.assertTrue(
+        "Course file manager returns empty metadata map when no course file has been loaded",
+        manager.getModulesMetadata().isEmpty()
+    );
+
     JSONObject modulesObject = new JSONObject();
     for (int i = 0; i < NUM_THREADS; ++i) {
       String moduleName = "module" + i;
@@ -228,7 +258,8 @@ public class CourseFileManagerTest {
 
     JSONObject courseFileJson = new JSONObject()
         .put(MODULES_KEY, modulesObject)
-        .put(URL_KEY, new URL("https://example.com"));
+        .put(URL_KEY, new URL("https://example.com"))
+        .put(LANGUAGE_KEY, "fr");
 
     FileUtils.writeStringToFile(courseFile, courseFileJson.toString(), StandardCharsets.UTF_8);
 
@@ -240,4 +271,5 @@ public class CourseFileManagerTest {
       Assert.fail("CourseFileManager#getModulesMetadata did not return the correct map");
     }
   }
+
 }

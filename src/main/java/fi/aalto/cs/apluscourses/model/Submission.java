@@ -14,6 +14,8 @@ public class Submission {
   private final Map<String, Path> files;
   @NotNull
   private final Group group;
+  @NotNull
+  private final String language;
 
   /**
    * Constructs a new object instance.
@@ -26,11 +28,13 @@ public class Submission {
   public Submission(@NotNull Exercise exercise,
                     @NotNull SubmissionInfo submissionInfo,
                     @NotNull Map<String, Path> files,
-                    @NotNull Group group) {
+                    @NotNull Group group,
+                    @NotNull String language) {
     this.exercise = exercise;
     this.submissionInfo = submissionInfo;
     this.files = files;
     this.group = group;
+    this.language = language;
   }
 
   @NotNull
@@ -51,5 +55,10 @@ public class Submission {
   @NotNull
   public Map<String, Path> getFiles() {
     return files;
+  }
+
+  @NotNull
+  public String getLanguage() {
+    return language;
   }
 }
