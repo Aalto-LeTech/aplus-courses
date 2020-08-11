@@ -15,11 +15,11 @@ public class FailedToLoadPluginsNotificationTest {
 
     assertEquals("Group ID should be 'A+'.", "A+", notification.getGroupId());
     assertEquals("Title should be 'A+ Courses plugin internal error'.",
-        "A+ Courses plugin internal error", notification.getTitle());
+        "Error in the A+ Courses plugin", notification.getTitle());
     assertEquals("Content should inform a user about potential network malfunction.",
-        "A+ Course failed to download a list of available plugins from JetBrains' plugin "
-            + "repository, please ensure Internet connectivity and restart the IDE. If problem "
-            + "persist, please contact the course administration.",
+        "A+ Courses failed to download a list of available IntelliJ plugins from "
+            + "JetBrains'' repository. Please ensure your internet connection is available and "
+            + "restart the IDE. If the problem persists, please contact the course staff.",
         notification.getContent());
     assertEquals("The type of the notification should be 'ERROR'.", notification.getType(),
         NotificationType.ERROR);

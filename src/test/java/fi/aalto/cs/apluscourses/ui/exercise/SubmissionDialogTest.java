@@ -76,7 +76,7 @@ public class SubmissionDialogTest extends LightIdeaTestCase {
   @Test
   public void testSubmissionDialogTitle() {
     TestDialog testDialog = createTestDialog();
-    Assert.assertEquals("The dialog has the correct title", "Submit Exercise",
+    Assert.assertEquals("The dialog has the correct title", "Submit Assignment",
         testDialog.getTitle());
 
   }

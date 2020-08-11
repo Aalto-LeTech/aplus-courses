@@ -4,7 +4,7 @@
     <vendor email="intellij-plugin-letech@aalto.fi"
             url="https://research.cs.aalto.fi/LeTech/">LeTech Group at Aalto University</vendor>
     <!--  this is the range of supported IntelliJ IDEA version the plugin can be used with  -->
-    <idea-version since-build="202.6397.94"/>
+    <idea-version since-build="202.6397"/>
 
     <description><![CDATA[
     This plugin supports the educational use of IntelliJ IDEA (and its Scala plugin) in programming
@@ -33,7 +33,6 @@
     <depends>org.intellij.scala</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <backgroundPostStartupActivity implementation="fi.aalto.cs.apluscourses.intellij.activities.VersionCheckerActivity"/>
         <backgroundPostStartupActivity implementation="fi.aalto.cs.apluscourses.intellij.activities.InitializationActivity"/>
 
         <toolWindow id="A+ Courses"

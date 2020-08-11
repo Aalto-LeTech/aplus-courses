@@ -19,7 +19,7 @@ public class BetaVersionWarningTest {
     assertEquals("Group ID should be 'A+'",
         "A+", notification.getGroupId());
     assertEquals("Title should be 'A+ Courses plugin is under development'.",
-        "A+ Courses plugin is under development", notification.getTitle());
+        "The A+ Courses plugin is under development", notification.getTitle());
     assertThat("Content should contain the version given to the constructor.",
         notification.getContent(), containsString(version.toString()));
   }

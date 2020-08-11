@@ -9,7 +9,7 @@ import org.json.JSONObject;
 public interface Client {
   JSONObject fetch(@NotNull String url, @NotNull Authentication authentication) throws IOException;
 
-  void post(@NotNull String url,
-            @NotNull Authentication authentication,
-            @NotNull Map<String, Object> data) throws IOException;
+  String post(@NotNull String url,
+              @NotNull Authentication authentication,
+              @NotNull Map<String, Object> data) throws IOException;
 }

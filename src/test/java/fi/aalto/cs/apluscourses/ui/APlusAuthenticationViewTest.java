@@ -72,7 +72,7 @@ public class APlusAuthenticationViewTest extends LightIdeaTestCase {
     assertNotNull("The dialog does not accept an empty input field",
         validationInfo);
     assertThat(validationInfo.message,
-        containsString("must not be empty"));
+        containsString("Token must not be empty"));
 
     authenticationView.setInput("not empty");
     Assert.assertNull("The dialog accepts a nonempty input field",

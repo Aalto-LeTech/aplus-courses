@@ -20,7 +20,6 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
-import com.intellij.testFramework.LightIdeaTestCase;
 import fi.aalto.cs.apluscourses.intellij.DialogHelper;
 import fi.aalto.cs.apluscourses.intellij.notifications.ExerciseNotSelectedNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.MissingFileNotification;
@@ -61,7 +60,6 @@ import java.util.Objects;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.internal.stubbing.answers.ThrowsException;
 
 public class SubmitExerciseActionTest {
 
@@ -138,6 +136,9 @@ public class SubmitExerciseActionTest {
     doReturn(points).when(exerciseDataSource).getPoints(course, authentication);
     doReturn(exerciseGroups).when(exerciseDataSource)
         .getExerciseGroups(course, points, authentication);
+    doReturn("http://localhost:1000")
+        .when(exerciseDataSource)
+        .submit(any(Submission.class), any(Authentication.class));
 
     courseViewModel = new CourseViewModel(course);
     mainViewModel.courseViewModel.set(courseViewModel);

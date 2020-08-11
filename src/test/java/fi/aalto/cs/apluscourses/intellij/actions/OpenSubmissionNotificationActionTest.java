@@ -9,25 +9,22 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+import com.intellij.notification.Notification;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.SubmissionRenderingErrorNotification;
-import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import fi.aalto.cs.apluscourses.model.UrlRenderer;
-import fi.aalto.cs.apluscourses.presentation.MainViewModel;
-import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
-import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionResultViewModel;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
-public class OpenSubmissionActionTest {
+public class OpenSubmissionNotificationActionTest {
 
+  private AnActionEvent event;
   private SubmissionResult submissionResult;
-  private AnActionEvent actionEvent;
-  private MainViewModelProvider mainViewModelProvider;
+  private Notification notification;
   private Notifier notifier;
   private UrlRenderer submissionRenderer;
 
@@ -36,32 +33,22 @@ public class OpenSubmissionActionTest {
    */
   @Before
   public void setUp() {
+    event = mock(AnActionEvent.class);
+    doReturn(mock(Project.class)).when(event).getProject();
     submissionResult
         = new SubmissionResult(1, SubmissionResult.Status.GRADED, "http://example.com");
-    SubmissionResultViewModel viewModel = new SubmissionResultViewModel(submissionResult, 1);
-
-    ExercisesTreeViewModel exercisesTree = mock(ExercisesTreeViewModel.class);
-    doReturn(viewModel).when(exercisesTree).getSelectedSubmission();
-
-    MainViewModel mainViewModel = new MainViewModel();
-    mainViewModel.exercisesViewModel.set(exercisesTree);
-
-    mainViewModelProvider = project -> mainViewModel;
-
+    notification = mock(Notification.class);
     notifier = mock(Notifier.class);
     submissionRenderer = mock(UrlRenderer.class);
-    actionEvent = mock(AnActionEvent.class);
-    doReturn(mock(Project.class)).when(actionEvent).getProject();
   }
 
   @Test
-  public void testOpenSubmissionAction() throws Exception {
-    OpenSubmissionAction action = new OpenSubmissionAction(
-        mainViewModelProvider,
+  public void testOpenSubmissionNotificationAction() throws Exception {
+    new OpenSubmissionNotificationAction(
+        submissionResult,
         submissionRenderer,
         notifier
-    );
-    action.actionPerformed(actionEvent);
+    ).actionPerformed(event, notification);
 
     ArgumentCaptor<String> argumentCaptor
         = ArgumentCaptor.forClass(String.class);
@@ -73,12 +60,12 @@ public class OpenSubmissionActionTest {
   public void testErrorNotification() throws Exception {
     Exception exception = new Exception();
     doThrow(exception).when(submissionRenderer).show(anyString());
-    OpenSubmissionAction action = new OpenSubmissionAction(
-        mainViewModelProvider,
+
+    new OpenSubmissionNotificationAction(
+        submissionResult,
         submissionRenderer,
         notifier
-    );
-    action.actionPerformed(actionEvent);
+    ).actionPerformed(event, notification);
 
     ArgumentCaptor<SubmissionRenderingErrorNotification> argumentCaptor
         = ArgumentCaptor.forClass(SubmissionRenderingErrorNotification.class);
