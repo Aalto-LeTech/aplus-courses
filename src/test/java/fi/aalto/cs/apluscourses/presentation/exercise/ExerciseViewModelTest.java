@@ -48,14 +48,19 @@ public class ExerciseViewModelTest {
   @Test
   public void testGetStatus() {
     String htmlUrl = "http://localhost:6000";
+    SubmissionResult.Status resultStatus = SubmissionResult.Status.GRADED;
+    Exercise training = new Exercise(0, "", htmlUrl,
+        Collections.singletonList(new SubmissionResult(1L, resultStatus, htmlUrl)), 0, 0, 0);
     Exercise noSubmissions = new Exercise(0, "", htmlUrl, Collections.emptyList(), 0, 10, 10);
     Exercise noPoints = new Exercise(0, "", htmlUrl,
-        Collections.singletonList(new SubmissionResult(1L, 0, htmlUrl)), 0, 10, 10);
+        Collections.singletonList(new SubmissionResult(1L, resultStatus, htmlUrl)), 0, 10, 10);
     Exercise partialPoints = new Exercise(0, "", htmlUrl,
-        Collections.singletonList(new SubmissionResult(1L, 0, htmlUrl)), 5, 10, 10);
+        Collections.singletonList(new SubmissionResult(1L, resultStatus, htmlUrl)), 5, 10, 10);
     Exercise fullPoints = new Exercise(0, "", htmlUrl,
-        Collections.singletonList(new SubmissionResult(1L, 0, htmlUrl)), 10, 10, 10);
+        Collections.singletonList(new SubmissionResult(1L, resultStatus, htmlUrl)), 10, 10, 10);
 
+    Assert.assertEquals(ExerciseViewModel.Status.OPTIONAL_PRACTICE,
+        new ExerciseViewModel(training).getStatus());
     Assert.assertEquals(ExerciseViewModel.Status.NO_SUBMISSIONS,
         new ExerciseViewModel(noSubmissions).getStatus());
     Assert.assertEquals(ExerciseViewModel.Status.NO_POINTS,
@@ -64,6 +69,20 @@ public class ExerciseViewModelTest {
         new ExerciseViewModel(partialPoints).getStatus());
     Assert.assertEquals(ExerciseViewModel.Status.FULL_POINTS,
         new ExerciseViewModel(fullPoints).getStatus());
+  }
+
+  @Test
+  public void testGetStatusText() {
+    Exercise exercise1 = new Exercise(0, "", "http://localhost:1212", Collections.emptyList(),
+        3, 49, 12);
+    ExerciseViewModel viewModel1 = new ExerciseViewModel(exercise1);
+    Exercise exercise2 = new Exercise(0, "", "http://localhost:2121", Collections.emptyList(),
+        0, 0, 0);
+    ExerciseViewModel viewModel2 = new ExerciseViewModel(exercise2);
+
+    Assert.assertEquals("The status text is correct", "0 of 12, 3/49", viewModel1.getStatusText());
+    Assert.assertEquals("The status text is correct",
+        "optional practice", viewModel2.getStatusText());
   }
 
 }

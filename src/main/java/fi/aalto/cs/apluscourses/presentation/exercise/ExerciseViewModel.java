@@ -1,12 +1,13 @@
 package fi.aalto.cs.apluscourses.presentation.exercise;
 
 import fi.aalto.cs.apluscourses.model.Exercise;
+import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.TreeViewModel;
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
 import java.util.List;
 import java.util.stream.Collectors;
-
+import java.util.stream.IntStream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,10 +21,10 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
    */
   public ExerciseViewModel(@NotNull Exercise exercise) {
     super(exercise);
-    submissionResultViewModels = exercise
-        .getSubmissionResults()
-        .stream()
-        .map(SubmissionResultViewModel::new)
+    List<SubmissionResult> submissionResults = exercise.getSubmissionResults();
+    this.submissionResultViewModels = IntStream
+        .range(0, submissionResults.size())
+        .mapToObj(i -> new SubmissionResultViewModel(submissionResults.get(i), i + 1))
         .collect(Collectors.toList());
   }
 
@@ -41,6 +42,7 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
   }
 
   public enum Status {
+    OPTIONAL_PRACTICE,
     NO_SUBMISSIONS,
     NO_POINTS,
     PARTIAL_POINTS,
@@ -52,7 +54,9 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
    */
   public Status getStatus() {
     Exercise exercise = getModel();
-    if (exercise.getSubmissionResults().isEmpty()) {
+    if (exercise.getMaxSubmissions() == 0 && exercise.getMaxPoints() == 0) {
+      return Status.OPTIONAL_PRACTICE;
+    } else if (exercise.getSubmissionResults().isEmpty()) {
       return Status.NO_SUBMISSIONS;
     } else if (exercise.getUserPoints() == exercise.getMaxPoints()) {
       return Status.FULL_POINTS;
@@ -61,6 +65,19 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
     } else {
       return Status.PARTIAL_POINTS;
     }
+  }
+
+  /**
+   * Returns a text describing the status of the exercise (points and number of submissions).
+   */
+  @NotNull
+  public String getStatusText() {
+    if (getStatus() == Status.OPTIONAL_PRACTICE) {
+      return "optional practice";
+    }
+    Exercise exercise = getModel();
+    return "" + exercise.getSubmissionResults().size() + " of " + exercise.getMaxSubmissions()
+        + ", " + exercise.getUserPoints() + "/" + exercise.getMaxPoints();
   }
 
   public List<SubmissionResultViewModel> getSubmissionResultViewModels() {
