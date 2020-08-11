@@ -66,6 +66,7 @@ public class CourseFileManagerTest {
   @Before
   public void initializeObjects() throws IOException {
     manager = CourseFileManager.getInstance();
+    manager.clear();
     project = mock(Project.class);
     File tempDir = FileUtilRt.createTempDirectory("test", "", true);
     doReturn(tempDir.toString()).when(project).getBasePath();
@@ -79,6 +80,8 @@ public class CourseFileManagerTest {
 
   @Test
   public void testCreateAndLoad() throws IOException, InterruptedException {
+    Assert.assertFalse(courseFile.exists());
+
     URL url = new URL("http://localhost:3000");
     String language = "fi";
 
@@ -112,8 +115,10 @@ public class CourseFileManagerTest {
 
   @Test
   public void testCreateAndLoadWithExistingFile() throws IOException {
-    URL url = new URL("https://google.com");
-    String language = "en";
+    URL oldUrl = new URL("https://google.com");
+    URL newUrl = new URL("https://github.com");
+    String oldLanguage = "en";
+    String newLanguage = "fi";
 
     JSONObject modulesObject = new JSONObject().put("awesome module",
         new JSONObject()
@@ -121,19 +126,23 @@ public class CourseFileManagerTest {
             .put(MODULE_DOWNLOADED_AT_KEY, ZonedDateTime.now())
     );
     JSONObject jsonObject = new JSONObject()
-        .put(URL_KEY, url)
-        .put(LANGUAGE_KEY, language)
+        .put(URL_KEY, oldUrl)
+        .put(LANGUAGE_KEY, oldLanguage)
         .put(MODULES_KEY, modulesObject);
 
     FileUtils.writeStringToFile(courseFile, jsonObject.toString(), StandardCharsets.UTF_8);
 
-    manager.createAndLoad(project, new URL("https://github.com"), "se");
+    Assert.assertTrue(courseFile.exists());
 
-    Assert.assertEquals("CourseFileManager#createAndLoad gets the URL of the existing course file",
-        url, manager.getCourseUrl());
+    manager.createAndLoad(project, newUrl, newLanguage);
+
     Assert.assertEquals(
-        "CourseFileManager#createAndLoad gets the language of the existing course file",
-        language, manager.getLanguage()
+        "CourseFileManager#createAndLoad overwrites the URL of the existing course file",
+        newUrl, manager.getCourseUrl()
+    );
+    Assert.assertEquals(
+        "CourseFileManager#createAndLoad overwrites the language of the existing course file",
+        newLanguage, manager.getLanguage()
     );
     Assert.assertEquals("CourseFileManager#createAndLoad gets the existing modules metadata",
         1, manager.getModulesMetadata().size());
@@ -262,4 +271,5 @@ public class CourseFileManagerTest {
       Assert.fail("CourseFileManager#getModulesMetadata did not return the correct map");
     }
   }
+
 }

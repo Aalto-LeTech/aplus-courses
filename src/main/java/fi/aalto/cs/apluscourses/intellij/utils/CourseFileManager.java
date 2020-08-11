@@ -39,11 +39,11 @@ public class CourseFileManager {
 
   /**
    * Attempts to create a course file and load it for the given project with the given URL and
-   * language. If a course file for already exists (even with a different URL), this method loads
-   * the existing course file instead.
+   * language. If a course file for already exists, then the URL and language is overwritten, but
+   * the existing modules metadata in the course file is preserved.
    *
    * @param project   The project for which the course file is created.
-   * @param courseUrl The URL that gets added to the course file (if it doesn't exist yet).
+   * @param courseUrl The URL that gets added to the course file.
    * @param language  The language string that gets added to the course file.
    * @throws IOException If an IO error occurs.
    */
@@ -53,17 +53,18 @@ public class CourseFileManager {
       throws IOException {
     courseFile = getCourseFile(project);
     if (courseFile.exists()) {
-      // If the course file already exists, then this is equivalent to a load
       load(project);
-      return;
     }
     this.courseUrl = courseUrl;
     this.language = language;
-    this.modulesMetadata = new HashMap<>();
+    if (this.modulesMetadata == null) {
+      this.modulesMetadata = new HashMap<>(); // Don't overwrite existing modules metadata
+    }
     writeCourseFile(
         new JSONObject()
             .put("url", courseUrl.toString())
             .put("language", language)
+            .put("modules", createModulesObject())
     );
   }
 
@@ -146,6 +147,16 @@ public class CourseFileManager {
   public synchronized Map<String, ModuleMetadata> getModulesMetadata() {
     // Return a copy so that later changes to the map aren't visible in the returned map.
     return modulesMetadata != null ? new HashMap<>(modulesMetadata) : Collections.emptyMap();
+  }
+
+  /**
+   * Clears the URL, language, and modules metadata stored in the singleton instance. The course
+   * file itself is not modified.
+   */
+  public synchronized void clear() {
+    this.courseUrl = null;
+    this.language = null;
+    this.modulesMetadata = null;
   }
 
   @NotNull
