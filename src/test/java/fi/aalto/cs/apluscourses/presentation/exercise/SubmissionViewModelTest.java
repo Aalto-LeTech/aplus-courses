@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.presentation.exercise;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -12,6 +13,7 @@ import fi.aalto.cs.apluscourses.model.SubmittableFile;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -74,5 +76,29 @@ public class SubmissionViewModelTest {
         new SubmissionHistory(5), Collections.emptyList(), Collections.emptyMap(), "");
 
     assertNotNull(submissionViewModel3.getSubmissionWarning());
+  }
+
+  @Test
+  public void testGetFiles() {
+    Exercise exercise = new Exercise(324, "cool", "http://localhost:1324",
+        Collections.emptyList(), 0, 0, 0);
+
+    SubmittableFile englishFile1 = new SubmittableFile("file1", "enFile1");
+    SubmittableFile englishFile2 = new SubmittableFile("file2", "enFile2");
+    SubmittableFile finnishFile1 = new SubmittableFile("file1", "fiFile1");
+    SubmittableFile finnishFile2 = new SubmittableFile("file2", "fiFile2");
+    Map<String, List<SubmittableFile>> files = new HashMap<>();
+    files.put("en", Arrays.asList(englishFile1, englishFile2));
+    files.put("fi", Arrays.asList(finnishFile1, finnishFile2));
+    SubmissionInfo info = new SubmissionInfo(10, files);
+
+    SubmissionHistory history = new SubmissionHistory(0);
+
+    SubmissionViewModel submission = new SubmissionViewModel(
+        exercise, info, history, Collections.emptyList(), Collections.emptyMap(), "fi"
+    );
+
+    assertArrayEquals("getFiles returns the files corresponding to the given language",
+        new SubmittableFile[] {finnishFile1, finnishFile2}, submission.getFiles());
   }
 }

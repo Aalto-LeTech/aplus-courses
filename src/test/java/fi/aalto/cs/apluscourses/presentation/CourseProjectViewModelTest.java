@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.presentation;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -55,6 +56,13 @@ public class CourseProjectViewModelTest {
 
     assertTrue("The settings text should mention that settings are already imported",
         courseProjectViewModel.shouldShowCurrentSettings());
+  }
+
+  @Test
+  public void testGetLanguages() {
+    CourseProjectViewModel courseProjectViewModel
+        = new CourseProjectViewModel(emptyCourse, "987");
+    assertArrayEquals(new String[]{"en", "fi"}, courseProjectViewModel.getLanguages());
   }
 
   @Test
