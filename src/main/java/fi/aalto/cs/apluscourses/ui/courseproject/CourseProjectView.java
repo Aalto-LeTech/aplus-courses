@@ -1,12 +1,17 @@
 package fi.aalto.cs.apluscourses.ui.courseproject;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import fi.aalto.cs.apluscourses.presentation.CourseProjectViewModel;
 import fi.aalto.cs.apluscourses.ui.GuiObject;
+import fi.aalto.cs.apluscourses.ui.IconListCellRenderer;
 import fi.aalto.cs.apluscourses.ui.base.CheckBox;
+import fi.aalto.cs.apluscourses.ui.base.OurComboBox;
+import fi.aalto.cs.apluscourses.ui.base.OurDialogWrapper;
 import fi.aalto.cs.apluscourses.ui.base.TemplateLabel;
+import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
 import fi.aalto.cs.apluscourses.utils.PluginResourceBundle;
 import javax.swing.Action;
 import javax.swing.JComponent;
@@ -16,8 +21,10 @@ import javax.swing.SwingConstants;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class CourseProjectView extends DialogWrapper {
+public class CourseProjectView extends OurDialogWrapper {
   private JPanel basePanel;
+  private CourseProjectViewModel viewModel;
+
   @GuiObject
   private TemplateLabel infoText;
   @GuiObject
@@ -28,15 +35,19 @@ public class CourseProjectView extends DialogWrapper {
   private CheckBox settingsOptOutCheckbox;
   @GuiObject
   private JLabel warningText;
+  @GuiObject
+  private OurComboBox<String> languageComboBox;
 
   CourseProjectView(@NotNull Project project,
                     @NotNull CourseProjectViewModel viewModel) {
     super(project);
 
+    this.viewModel = viewModel;
+
     setTitle(PluginResourceBundle.getText("ui.courseProject.view"));
     setButtonsAlignment(SwingConstants.CENTER);
 
-    init();
+    registerValidationItem(languageComboBox.selectedItemBindable);
 
     infoText.setIcon(Messages.getInformationIcon());
 
@@ -51,6 +62,8 @@ public class CourseProjectView extends DialogWrapper {
 
     currentSettingsText.applyTemplate(viewModel.getCourseName());
     currentSettingsText.setVisible(viewModel.shouldShowCurrentSettings());
+
+    init();
   }
 
   @Nullable
@@ -63,5 +76,15 @@ public class CourseProjectView extends DialogWrapper {
   @Override
   protected Action[] createActions() {
     return new Action[] { getOKAction(), getCancelAction() };
+  }
+
+  @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
+  private void createUIComponents() {
+    languageComboBox = new OurComboBox<>(viewModel.getLanguages(), String.class);
+    languageComboBox.setRenderer(new IconListCellRenderer<>(
+        getText("ui.courseProject.view.selectLanguage"),
+        APlusLocalizationUtil::languageCodeToName,
+        null));
+    languageComboBox.selectedItemBindable.bindToSource(viewModel.languageProperty);
   }
 }

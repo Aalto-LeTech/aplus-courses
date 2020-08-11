@@ -1,8 +1,11 @@
 package fi.aalto.cs.apluscourses.presentation;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
+import fi.aalto.cs.apluscourses.utils.observable.ValidationError;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -10,11 +13,15 @@ public class CourseProjectViewModel {
 
   public final ObservableProperty<Boolean> settingsOptOutProperty;
 
+  public final ObservableProperty<String> languageProperty
+      = new ObservableReadWriteProperty<>(null, CourseProjectViewModel::validateLanguage);
+
   @NotNull
   private final Course course;
-  @Nullable
 
   private final boolean currentSettingsDiffer;
+
+
 
   /**
    * Construct a course project view model with the given course and name of the currently imported
@@ -52,7 +59,23 @@ public class CourseProjectViewModel {
     return course.getName();
   }
 
+  public String[] getLanguages() {
+    // O1_SPECIFIC: these should come from the course configuration file
+    return new String[] {"en", "fi"};
+  }
+
   public boolean shouldShowCurrentSettings() {
     return !currentSettingsDiffer;
+  }
+
+  private static ValidationError validateLanguage(@Nullable String language) {
+    return language == null ? new LanguageNotSelectedError() : null;
+  }
+
+  private static class LanguageNotSelectedError implements ValidationError {
+    @Override
+    public @NotNull String getDescription() {
+      return getText("ui.courseProjectViewModel.selectLanguage");
+    }
   }
 }
