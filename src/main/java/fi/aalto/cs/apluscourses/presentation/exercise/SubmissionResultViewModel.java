@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.presentation.exercise;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.TreeViewModel;
@@ -23,7 +25,7 @@ public class SubmissionResultViewModel extends SelectableNodeViewModel<Submissio
 
   @NotNull
   public String getPresentableName() {
-    return "Submission " + submissionNumber;
+    return getText("presentation.submissionResultViewModel.nameStart") + " " + submissionNumber;
   }
 
   @Nullable

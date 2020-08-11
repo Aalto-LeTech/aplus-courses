@@ -18,7 +18,7 @@ public class FailedToLoadPluginsNotificationTest {
         "Error in the A+ Courses plugin", notification.getTitle());
     assertEquals("Content should inform a user about potential network malfunction.",
         "A+ Courses failed to download a list of available IntelliJ plugins from "
-            + "JetBrains'' repository. Please ensure your internet connection is available and "
+            + "JetBrains' repository. Please ensure your internet connection is available and "
             + "restart the IDE. If the problem persists, please contact the course staff.",
         notification.getContent());
     assertEquals("The type of the notification should be 'ERROR'.", notification.getType(),

@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.ui;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.project.Project;
@@ -33,7 +35,7 @@ public class APlusAuthenticationView extends DialogWrapper implements Dialog {
                                  @Nullable Project project) {
     super(project);
     this.authenticationViewModel = authenticationViewModel;
-    setTitle("A+ Token");
+    setTitle(getText("ui.authenticationView.name"));
     setButtonsAlignment(SwingConstants.CENTER);
     init();
   }
@@ -62,7 +64,8 @@ public class APlusAuthenticationView extends DialogWrapper implements Dialog {
   @Override
   protected ValidationInfo doValidate() {
     if (inputField.getPassword().length == 0) {
-      return new ValidationInfo("Token must not be empty", inputField);
+      return new ValidationInfo(getText("ui.authenticationView.noEmptyToken"),
+          inputField);
     }
     return null;
   }
