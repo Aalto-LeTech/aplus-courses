@@ -34,9 +34,20 @@ public class IntelliJCourseTest {
     when(project.getMessageBus()).thenReturn(mock(MessageBus.class));
     CommonLibraryProvider commonLibraryProvider = new CommonLibraryProvider(project);
     IntelliJCourse course = new IntelliJCourse(id, name,
-        Collections.emptyList(), Collections.emptyList(), Collections.emptyMap(),
-        Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList(),
-        Collections.emptyMap(), project, commonLibraryProvider);
+        //  modules
+        Collections.emptyList(),
+        //  libraries
+        Collections.emptyList(),
+        //  exerciseModules
+        Collections.emptyMap(),
+        //  resourceUrls
+        Collections.emptyMap(),
+        //  autoInstallComponentNames
+        Collections.emptyList(),
+        //  replInitialCommands
+        Collections.emptyMap(),
+        project,
+        commonLibraryProvider);
     assertEquals(id, course.getId());
     assertEquals(name, course.getName());
     assertSame(project, course.getProject());
@@ -62,9 +73,20 @@ public class IntelliJCourseTest {
       }
     };
 
-    IntelliJCourse course = new IntelliJCourse("cool id", "testProject",
-        modules, Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap(),
-        Collections.emptyMap(), Collections.emptyList(), Collections.emptyMap(), project,
+    IntelliJCourse course = new IntelliJCourse("cool id",
+        "testProject",
+        modules,
+        //  libraries
+        Collections.emptyList(),
+        //  exerciseModules
+        Collections.emptyMap(),
+        //  resourceUrls
+        Collections.emptyMap(),
+        //  autoInstallComponentNames
+        Collections.emptyList(),
+        //  replInitialCommands
+        Collections.emptyMap(),
+        project,
         commonLibraryProvider);
 
     Collection<Component> components1 = course.getComponents();
@@ -92,10 +114,21 @@ public class IntelliJCourseTest {
     List<Module> modules = new ArrayList<>();
     modules.add(module);
 
-    IntelliJCourse course = new IntelliJCourse("courseId", "testtesttest",
-        modules, Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap(),
-        Collections.emptyMap(), Collections.emptyList(), Collections.emptyMap(),
-        mock(APlusProject.class), mock(CommonLibraryProvider.class));
+    IntelliJCourse course = new IntelliJCourse("courseId",
+        "testtesttest",
+        modules,
+        //  libraries
+        Collections.emptyList(),
+        //  exerciseModules
+        Collections.emptyMap(),
+        //  resourceUrls
+        Collections.emptyMap(),
+        //  autoInstallComponentNames
+        Collections.emptyList(),
+        //  replInitialCommands
+        Collections.emptyMap(),
+        mock(APlusProject.class),
+        mock(CommonLibraryProvider.class));
 
     assertSame(module, course.getComponentIfExists(file));
   }
@@ -111,11 +144,21 @@ public class IntelliJCourseTest {
     when(file2.getName()).thenReturn(moduleName);
     when(file2.getPath()).thenReturn("someOtherPath");
 
-    IntelliJCourse course = new IntelliJCourse("testId", "testProject",
+    IntelliJCourse course = new IntelliJCourse("testId",
+        "testProject",
         Stream.of(new ModelExtensions.TestModule(moduleName)).collect(Collectors.toList()),
-        Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap(),
-        Collections.emptyMap(), Collections.emptyList(), Collections.emptyMap(),
-        mock(APlusProject.class), mock(CommonLibraryProvider.class));
+        //  libraries
+        Collections.emptyList(),
+        //  exerciseModules
+        Collections.emptyMap(),
+        //  resourceUrls
+        Collections.emptyMap(),
+        //  autoInstallComponentNames
+        Collections.emptyList(),
+        //  replInitialCommands
+        Collections.emptyMap(),
+        mock(APlusProject.class),
+        mock(CommonLibraryProvider.class));
 
     assertNull(course.getComponentIfExists(file1));
     assertNull(course.getComponentIfExists(file2));
