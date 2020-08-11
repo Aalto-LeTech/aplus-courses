@@ -79,6 +79,6 @@ public class SubmissionInfo {
    * Returns true if the exercise can be submitted in the given language from the IDE.
    */
   public boolean isSubmittable(@NotNull String language) {
-    return getFiles(language).size() > 0;
+    return !getFiles(language).isEmpty();
   }
 }

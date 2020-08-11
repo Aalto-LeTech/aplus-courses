@@ -77,10 +77,10 @@ public class CourseProjectView extends OurDialogWrapper {
 
   @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
   private void createUIComponents() {
-    languageComboBox = new OurComboBox(viewModel.getLanguages(), String.class);
+    languageComboBox = new OurComboBox<>(viewModel.getLanguages(), String.class);
     languageComboBox.setRenderer(new IconListCellRenderer<>(
-        viewModel.getLanguagePrompt(),
-        languageCode -> APlusLocalizationUtil.languageCodeToName(languageCode),
+        "Select language",
+        APlusLocalizationUtil::languageCodeToName,
         null));
     languageComboBox.selectedItemBindable.bindToSource(viewModel.languageProperty);
   }

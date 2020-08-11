@@ -57,10 +57,6 @@ public class CourseProjectViewModel {
     return course.getName();
   }
 
-  public String getLanguagePrompt() {
-    return "Select language";
-  }
-
   public String[] getLanguages() {
     // O1_SPECIFIC: these should come from the course configuration file
     return new String[] {"en", "fi"};

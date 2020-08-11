@@ -32,6 +32,11 @@ public class CourseFileManager {
   private static final CourseFileManager instance = new CourseFileManager();
 
   private static final String COURSE_FILE_NAME = "a-plus-project.json";
+  private static final String URL_KEY = "url";
+  private static final String LANGUAGE_KEY = "language";
+  private static final String MODULES_KEY = "modules";
+  private static final String MODULE_ID_KEY = "id";
+  private static final String MODULE_DOWNLOADED_AT_KEY = "downloadedAt";
 
   public static CourseFileManager getInstance() {
     return instance;
@@ -62,9 +67,9 @@ public class CourseFileManager {
     }
     writeCourseFile(
         new JSONObject()
-            .put("url", courseUrl.toString())
-            .put("language", language)
-            .put("modules", createModulesObject())
+            .put(URL_KEY, courseUrl.toString())
+            .put(LANGUAGE_KEY, language)
+            .put(MODULES_KEY, createModulesObject())
     );
   }
 
@@ -88,8 +93,7 @@ public class CourseFileManager {
     return false;
   }
 
-  private static final String MODULE_ID_KEY = "id";
-  private static final String MODULE_DOWNLOADED_AT_KEY = "downloadedAt";
+
 
   /**
    * Adds an entry for the given module to the currently loaded course file. If an entry already
@@ -109,9 +113,9 @@ public class CourseFileManager {
     modulesObject.put(module.getName(), newModuleObject);
 
     JSONObject jsonObject = new JSONObject()
-        .put("url", courseUrl.toString())
-        .put("language", language)
-        .put("modules", modulesObject);
+        .put(URL_KEY, courseUrl.toString())
+        .put(LANGUAGE_KEY, language)
+        .put(MODULES_KEY, modulesObject);
 
     writeCourseFile(jsonObject);
 
@@ -198,12 +202,12 @@ public class CourseFileManager {
    * Initializes local variables from the given JSON object.
    */
   private void loadFromJsonObject(@NotNull JSONObject jsonObject) throws IOException {
-    this.courseUrl = new URL(jsonObject.getString("url"));
+    this.courseUrl = new URL(jsonObject.getString(URL_KEY));
 
-    this.language = jsonObject.getString("language");
+    this.language = jsonObject.getString(LANGUAGE_KEY);
 
     this.modulesMetadata = new HashMap<>();
-    JSONObject modulesObject = jsonObject.optJSONObject("modules");
+    JSONObject modulesObject = jsonObject.optJSONObject(MODULES_KEY);
     if (modulesObject == null) {
       return;
     }
