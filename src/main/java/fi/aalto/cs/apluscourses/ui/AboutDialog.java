@@ -33,16 +33,16 @@ public class AboutDialog {
 
   @NotNull
   private static JPanel createAboutInnerContainer() {
-    JPanel jPanel = new JPanel();
-    jPanel.setLayout(new BoxLayout(jPanel, BoxLayout.Y_AXIS));
+    JPanel panel = new JPanel();
+    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
     JBLabel label = createAboutTextLabel();
     LinkLabel<Object> linkLabel = createPluginWebsiteLinkLabel();
-    jPanel.add(label);
-    jPanel.add(Box.createVerticalStrut(linkLabel.getFont().getSize()));
-    jPanel.add(linkLabel);
+    panel.add(label);
+    panel.add(Box.createVerticalStrut(linkLabel.getFont().getSize()));
+    panel.add(linkLabel);
 
-    return jPanel;
+    return panel;
   }
 
   @NotNull
