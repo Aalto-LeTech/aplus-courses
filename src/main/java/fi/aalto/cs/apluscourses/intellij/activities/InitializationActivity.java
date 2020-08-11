@@ -5,15 +5,12 @@ import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.MODULE_R
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.startup.StartupActivity.Background;
-import fi.aalto.cs.apluscourses.intellij.actions.ActionUtil;
-import fi.aalto.cs.apluscourses.intellij.actions.RequiredPluginsCheckerAction;
 import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory;
 import fi.aalto.cs.apluscourses.intellij.notifications.CourseConfigurationError;
 import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.intellij.utils.CourseFileManager;
-import fi.aalto.cs.apluscourses.intellij.utils.ExtendedDataContext;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationFileException;
 import fi.aalto.cs.apluscourses.model.UnexpectedResponseException;
@@ -63,9 +60,6 @@ public class InitializationActivity implements Background {
       return;
     }
     pluginSettings.createUpdatingMainViewModel(project);
-    ActionUtil.launch(RequiredPluginsCheckerAction.ACTION_ID,
-        new ExtendedDataContext().withProject(project));
-    
   }
 
   @Nullable
