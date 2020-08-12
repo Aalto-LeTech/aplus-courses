@@ -1,7 +1,7 @@
 package fi.aalto.cs.apluscourses.model;
 
-import junit.framework.Assert;
 import org.json.JSONObject;
+import org.junit.Assert;
 import org.junit.Test;
 
 public class SubmissionHistoryTest {
