@@ -5,6 +5,7 @@ import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
+import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import org.jetbrains.annotations.NotNull;
 
 public class NetworkErrorNotification extends Notification {
@@ -19,7 +20,7 @@ public class NetworkErrorNotification extends Notification {
   public NetworkErrorNotification(@NotNull Exception exception) {
     // Tell the user to restart for now as a temporary solution.
     super(
-        getText("general.aPlus"),
+        PluginSettings.A_PLUS,
         getText("notification.NetworkErrorNotification.title"),
         getAndReplaceText("notification.NetworkErrorNotification.content",
             exception.getMessage()),

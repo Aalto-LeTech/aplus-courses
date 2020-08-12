@@ -4,6 +4,7 @@ import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
+import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 
 public class ExerciseNotSelectedNotification extends Notification {
 
@@ -13,7 +14,7 @@ public class ExerciseNotSelectedNotification extends Notification {
    */
   public ExerciseNotSelectedNotification() {
     super(
-        getText("general.aPlus"),
+        PluginSettings.A_PLUS,
         getText("notification.ExerciseNotSelectedNotification.title"),
         getText("notification.ExerciseNotSelectedNotification.content"),
         NotificationType.INFORMATION);

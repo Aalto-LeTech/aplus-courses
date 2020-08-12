@@ -4,6 +4,7 @@ import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
+import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 
 public class ApiTokenNotSetNotification extends Notification {
   /**
@@ -11,7 +12,7 @@ public class ApiTokenNotSetNotification extends Notification {
    */
   public ApiTokenNotSetNotification() {
     super(
-        getText("general.aPlus"),
+        PluginSettings.A_PLUS,
         getText("notification.ApiTokenNotSet.title"),
         getText("notification.ApiTokenNotSet.content"),
         NotificationType.INFORMATION);

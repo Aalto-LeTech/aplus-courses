@@ -5,6 +5,7 @@ import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
+import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.Module;
 import java.util.List;
@@ -24,7 +25,7 @@ public class NewModulesVersionsNotification extends Notification {
    */
   public NewModulesVersionsNotification(@NotNull List<Module> modules) {
     super(
-        getText("general.aPlus"),
+        PluginSettings.A_PLUS,
         getText("notification.NewModulesVersionsNotification.title"),
         getAndReplaceText("notification.NewModulesVersionsNotification.content",
             getModuleNameStrings(modules)),

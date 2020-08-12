@@ -5,6 +5,7 @@ import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
+import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import org.jetbrains.annotations.NotNull;
 
 public class CourseConfigurationError extends Notification {
@@ -19,7 +20,7 @@ public class CourseConfigurationError extends Notification {
    */
   public CourseConfigurationError(@NotNull Exception exception) {
     super(
-        getText("general.aPlus"),
+        PluginSettings.A_PLUS,
         getText("notification.CourseConfigurationError.title"),
         getAndReplaceText("notification.CourseConfigurationError.content",
             exception.getMessage()),
