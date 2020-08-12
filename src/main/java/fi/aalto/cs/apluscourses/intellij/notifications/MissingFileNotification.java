@@ -1,7 +1,11 @@
 package fi.aalto.cs.apluscourses.intellij.notifications;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getAndReplaceText;
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
+import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import java.nio.file.Path;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,10 +22,9 @@ public class MissingFileNotification extends Notification {
    */
   public MissingFileNotification(@NotNull Path path, @NotNull String filename) {
     super(
-        "A+",
-        "Could not find file",
-        "A+ Courses plugin couldn't find the file " + filename + " in directory " + path
-            + ". Please double-check from which module you intend to submit.",
+        PluginSettings.A_PLUS,
+        getText("notification.MissingFileNotification.title"),
+        getAndReplaceText("notification.MissingFileNotification.content", filename, path),
         NotificationType.ERROR);
     this.path = path;
     this.filename = filename;

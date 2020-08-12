@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.presentation;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
@@ -73,7 +75,7 @@ public class CourseProjectViewModel {
   private static class LanguageNotSelectedError implements ValidationError {
     @Override
     public @NotNull String getDescription() {
-      return "Select a language";
+      return getText("ui.courseProjectViewModel.selectLanguage");
     }
   }
 }

@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.presentation.exercise;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.Submission;
@@ -92,10 +94,10 @@ public class SubmissionViewModel {
     int submissionsLeft =
         submissionInfo.getSubmissionsLimit() - submissionHistory.getNumberOfSubmissions();
     if (submissionsLeft == 1) {
-      return "Warning! This is your last submission.";
+      return getText("presentation.submissionViewModel.warning.lastSubmission");
     }
     if (submissionsLeft <= 0) {
-      return "Warning! Max. number of submissions exceeded.";
+      return getText("presentation.submissionViewModel.warning.submissionsExceeded");
     }
     return null;
   }
@@ -110,7 +112,7 @@ public class SubmissionViewModel {
     @NotNull
     @Override
     public String getDescription() {
-      return "Select a group";
+      return getText("presentation.submissionViewModel.selectAGroup");
     }
   }
 }

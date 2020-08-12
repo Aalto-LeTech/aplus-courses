@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -142,7 +144,6 @@ public class SubmitExerciseAction extends AnAction {
       return;
     }
 
-
     Exercise exercise = selectedExercise.getModel();
     Course course = courseViewModel.getModel();
     String language = CourseFileManager.getInstance().getLanguage();
@@ -189,7 +190,8 @@ public class SubmitExerciseAction extends AnAction {
     SubmissionHistory history = exerciseDataSource.getSubmissionHistory(exercise, authentication);
 
     List<Group> groups = new ArrayList<>(exerciseDataSource.getGroups(course, authentication));
-    groups.add(0, new Group(0, Collections.singletonList("Submit alone")));
+    groups.add(0, new Group(0, Collections
+        .singletonList(getText("ui.toolWindow.subTab.exercises.submission.submitAlone"))));
 
     SubmissionViewModel submission =
         new SubmissionViewModel(exercise, submissionInfo, history, groups, files, language);
@@ -210,6 +212,7 @@ public class SubmitExerciseAction extends AnAction {
   }
 
   public interface ModuleSource {
+
     @NotNull
     Module[] getModules(@NotNull Project project);
 
@@ -218,6 +221,7 @@ public class SubmitExerciseAction extends AnAction {
   }
 
   private static class DefaultModuleSource implements ModuleSource {
+
     public static final ModuleSource INSTANCE = new DefaultModuleSource();
 
     @Override
@@ -234,6 +238,7 @@ public class SubmitExerciseAction extends AnAction {
   }
 
   private static class ModuleMissingException extends Exception {
+
     @NotNull
     private final String moduleName;
 

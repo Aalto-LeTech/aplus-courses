@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.presentation.module;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.presentation.base.BaseViewModel;
@@ -34,35 +36,35 @@ public class ModuleListElementViewModel extends ListElementViewModel<Module> {
     Module model = getModel();
     switch (model.stateMonitor.get()) {
       case Component.UNRESOLVED:
-        return "Unknown";
+        return getText("presentation.moduleStatuses.unknown");
       case Component.NOT_INSTALLED:
-        return "Double-click to download";
+        return getText("presentation.moduleStatuses.notInstalled");
       case Component.FETCHING:
-        return "Downloading...";
+        return getText("presentation.moduleStatuses.fetching");
       case Component.FETCHED:
-        return "Double-click to install";
+        return getText("presentation.moduleStatuses.fetched");
       case Component.LOADING:
-        return "Installing...";
+        return getText("presentation.moduleStatuses.loading");
       case Component.LOADED:
         break;
       case Component.UNINSTALLING:
-        return "Removing...";
+        return getText("presentation.moduleStatuses.uninstalling");
       case Component.UNINSTALLED:
-        return "Removed";
+        return getText("presentation.moduleStatuses.uninstalled");
       case Component.ACTION_ABORTED:
-        return "Cancelling...";
+        return getText("presentation.moduleStatuses.actionAborted");
       default:
-        return "Error";
+        return getText("presentation.moduleStatuses.error");
     }
     switch (model.dependencyStateMonitor.get()) {
       case Component.DEP_INITIAL:
-        return "Installed, dependencies unknown";
+        return getText("presentation.dependencyStatus.depInitial");
       case Component.DEP_WAITING:
-        return "Waiting for dependencies...";
+        return getText("presentation.dependencyStatus.depWaiting");
       case Component.DEP_LOADED:
-        return "Installed";
+        return getText("presentation.dependencyStatus.depLoaded");
       default:
-        return "Error in dependencies";
+        return getText("presentation.dependencyStatus.depError");
     }
   }
 

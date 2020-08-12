@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.ui.exercise;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.SubmittableFile;
@@ -40,7 +42,7 @@ public class SubmissionDialog extends OurDialogWrapper {
 
     this.viewModel = viewModel;
 
-    setTitle("Submit Exercise");
+    setTitle(getText("ui.toolWindow.subTab.exercises.submission.submitExercise"));
     setButtonsAlignment(SwingConstants.CENTER);
 
     groupComboBox.selectedItemBindable.bindToSource(viewModel.selectedGroup);

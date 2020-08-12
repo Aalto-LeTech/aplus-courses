@@ -1,7 +1,11 @@
 package fi.aalto.cs.apluscourses.intellij.notifications;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getAndReplaceText;
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
+import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import org.jetbrains.annotations.NotNull;
 
 public class MissingModuleNotification extends Notification {
@@ -15,9 +19,9 @@ public class MissingModuleNotification extends Notification {
    */
   public MissingModuleNotification(@NotNull String moduleName) {
     super(
-        "A+",
-        "Could not find module",
-        "A+ Courses plugin couldn't find the module " + moduleName + ".",
+        PluginSettings.A_PLUS,
+        getText("notification.MissingModuleNotification.title"),
+        getAndReplaceText("notification.MissingModuleNotification.content", moduleName),
         NotificationType.ERROR);
     this.moduleName = moduleName;
   }

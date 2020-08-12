@@ -17,6 +17,7 @@ import fi.aalto.cs.apluscourses.intellij.utils.ModuleUtils
 import fi.aalto.cs.apluscourses.intellij.utils.ModuleUtils.initialReplCommandsFileExist
 import fi.aalto.cs.apluscourses.presentation.ReplConfigurationFormModel
 import fi.aalto.cs.apluscourses.ui.repl.{ReplConfigurationDialog, ReplConfigurationForm}
+import fi.aalto.cs.apluscourses.utils.PluginResourceBundle.{getAndReplaceText, getText}
 import org.jetbrains.annotations.NotNull
 import org.jetbrains.plugins.scala.actions.ScalaActionUtil
 import org.jetbrains.plugins.scala.console.actions.RunConsoleAction
@@ -63,7 +64,8 @@ class ReplAction extends RunConsoleAction {
     val selectedModule = getScalaModuleOfEditorFile(project, dataContext)
       .orElse(getScalaModuleOfSelectedFile(project, dataContext)).orElse(getDefaultModule(project))
 
-    val setting = runManagerEx.createConfiguration("Scala REPL", new ReplConfigurationFactory())
+    val setting = runManagerEx.createConfiguration(
+      getText("ui.repl.console.scala.repl"), new ReplConfigurationFactory())
     val configuration = setting.getConfiguration.asInstanceOf[ScalaConsoleRunConfiguration]
 
     selectedModule match {
@@ -78,10 +80,11 @@ class ReplAction extends RunConsoleAction {
 
   private class ReplConfigurationFactory() extends ConfigurationFactory(getMyConfigurationType) {
     override def createTemplateConfiguration(project: Project): ScalaConsoleRunConfiguration = {
-      new ReplConfiguration(project, this, "Scala REPL")
+      new ReplConfiguration(project, this,
+        getText("ui.repl.console.scala.repl"))
     }
 
-    override def getId: String = "A+ extended Scala REPL"
+    override def getId: String = getText("ui.repl.console.scala.repl.extended")
 
     private class ReplConfiguration(project: Project,
                                     configurationFactory: ConfigurationFactory,
@@ -127,7 +130,7 @@ class ReplAction extends RunConsoleAction {
                              @NotNull module: Module): Unit = {
     configuration.setWorkingDirectory(workingDirectory)
     configuration.setModule(module)
-    configuration.setName(s"REPL for ${module.getName}")
+    configuration.setName(getAndReplaceText("ui.repl.console.name", module.getName))
 
     if (initialReplCommandsFileExist(MODULE_REPL_INITIAL_COMMANDS_FILE_NAME,
       module.getModuleFilePath)) {

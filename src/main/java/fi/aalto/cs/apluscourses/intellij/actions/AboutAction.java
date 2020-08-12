@@ -6,6 +6,7 @@ import fi.aalto.cs.apluscourses.ui.AboutDialog;
 import org.jetbrains.annotations.NotNull;
 
 public class AboutAction extends DumbAwareAction {
+
   @Override
   public void actionPerformed(@NotNull AnActionEvent e) {
     AboutDialog.display();

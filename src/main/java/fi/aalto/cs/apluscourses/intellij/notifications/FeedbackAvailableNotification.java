@@ -1,8 +1,12 @@
 package fi.aalto.cs.apluscourses.intellij.notifications;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getAndReplaceText;
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import fi.aalto.cs.apluscourses.intellij.actions.OpenSubmissionNotificationAction;
+import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,10 +19,9 @@ public class FeedbackAvailableNotification extends Notification {
   public FeedbackAvailableNotification(@NotNull SubmissionResult submissionResult,
                                        @NotNull String exerciseName) {
     super(
-        "A+",
-        "Submission feedback available",
-        "Feedback for '" + exerciseName + "' is now available. "
-            + "Click the link below to open the feedback.",
+        PluginSettings.A_PLUS,
+        getText("notification.FeedbackAvailableNotification.title"),
+        getAndReplaceText("notification.FeedbackAvailableNotification.content", exerciseName),
         NotificationType.INFORMATION
     );
     super.addAction(new OpenSubmissionNotificationAction(submissionResult));

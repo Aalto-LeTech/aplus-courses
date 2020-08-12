@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.ui.exercise;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
@@ -33,7 +35,7 @@ public class ModuleSelectionDialog extends DialogWrapper
     this.project = project;
     this.viewModel = viewModel;
     setButtonsAlignment(SwingConstants.CENTER);
-    setTitle("Select Module");
+    setTitle(getText("ui.toolWindow.subTab.exercises.submission.selectModuleShort"));
     init();
   }
 
@@ -46,14 +48,16 @@ public class ModuleSelectionDialog extends DialogWrapper
   @NotNull
   @Override
   protected Action[] createActions() {
-    return new Action[] { getOKAction(), getCancelAction() };
+    return new Action[]{getOKAction(), getCancelAction()};
   }
 
   @Nullable
   @Override
   protected ValidationInfo doValidate() {
     if (modulesComboBox.getSelectedItem() == null) {
-      return new ValidationInfo("Select a module", modulesComboBox);
+      return new ValidationInfo(
+          getText("ui.toolWindow.subTab.exercises.submission.selectAModule"),
+          modulesComboBox);
     }
     return null;
   }
