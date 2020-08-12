@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.presentation;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -17,7 +18,10 @@ public class AuthenticationViewModelTest {
     Project project = mock(Project.class);
     doReturn("hello there").when(project).getBasePath();
 
-    AuthenticationViewModel viewModel = new AuthenticationViewModel(APlusTokenAuthentication::new);
+    AuthenticationViewModel viewModel = new AuthenticationViewModel(
+        APlusTokenAuthentication::new,
+        "https://example.com"
+    );
 
     char[] token = new char[] {'a', 's', 'd'};
     viewModel.setToken(token);
@@ -25,6 +29,8 @@ public class AuthenticationViewModelTest {
     Authentication authentication = viewModel.build();
 
     assertTrue(authentication instanceof APlusTokenAuthentication);
+    assertEquals("The view model has the URL passed to the constructor",
+        "https://example.com", viewModel.getAuthenticationHtmlUrl());
     assertTrue("build() creates a correct object", ((TokenAuthentication)authentication)
         .tokenEquals("asd"));
   }

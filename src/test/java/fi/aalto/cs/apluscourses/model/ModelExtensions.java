@@ -116,7 +116,7 @@ public class ModelExtensions {
       super(
           id,
           name,
-          "https://example.com",
+          "https://example.com/",
           //  modules
           Collections.emptyList(),
           //  libraries

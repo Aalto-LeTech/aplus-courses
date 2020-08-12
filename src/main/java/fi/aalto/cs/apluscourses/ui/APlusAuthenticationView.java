@@ -82,7 +82,7 @@ public class APlusAuthenticationView extends DialogWrapper implements Dialog {
         "What's my token?",
         AllIcons.Ide.External_link_arrow,
         (first, second) ->
-            BrowserUtil.browse(PluginSettings.A_PLUS_BASE_URL + "/accounts/accounts/"));
+            BrowserUtil.browse(authenticationViewModel.getAuthenticationHtmlUrl()));
     tokenPageLink.setIconTextGap(0);
     tokenPageLink.setHorizontalTextPosition(SwingConstants.LEFT);
   }

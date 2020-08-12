@@ -42,7 +42,7 @@ import org.mockito.ArgumentCaptor;
 public class APlusExerciseDataSourceTest {
 
   final Authentication authentication = mock(Authentication.class);
-  final String url = "https://example.com";
+  final String url = "https://example.com/";
 
   Client client;
   Parser parser;
