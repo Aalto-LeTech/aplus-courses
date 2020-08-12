@@ -9,7 +9,7 @@ plugins {
 }
 
 group 'fi.aalto.cs'
-version '0.9'
+version '1.0'
 
 sourceCompatibility = 1.8
 
