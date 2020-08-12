@@ -70,7 +70,7 @@ public class ModuleListElementViewModelTest {
     assertEquals(TextAttribute.WEIGHT_REGULAR, moduleViewModel.getFontWeight(), delta);
 
     module.stateMonitor.set(Component.LOADED);
-    assertEquals("Installed, dependencies unknown", moduleViewModel.getStatus());
+    assertEquals("Installed; dependencies unknown", moduleViewModel.getStatus());
     assertEquals(TextAttribute.WEIGHT_BOLD, moduleViewModel.getFontWeight(), delta);
 
     module.stateMonitor.set(Component.UNINSTALLING);

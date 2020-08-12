@@ -1,7 +1,7 @@
 package fi.aalto.cs.apluscourses.intellij.model;
 
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
@@ -16,8 +16,8 @@ public class APlusProjectTest extends BasePlatformTestCase {
 
   @Test
   public void testGetBasePath() {
-    Project project = spy(getProject());
-    doReturn(".idea").when(project).getBasePath();
+    Project project = mock(Project.class);
+    when(project.getBasePath()).thenReturn(".idea");
 
     APlusProject aplusProject = new APlusProject(project);
 

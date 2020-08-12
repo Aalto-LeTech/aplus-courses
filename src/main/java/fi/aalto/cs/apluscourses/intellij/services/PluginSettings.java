@@ -47,7 +47,9 @@ public class PluginSettings implements MainViewModelProvider {
   public static final String MODULE_REPL_INITIAL_COMMANDS_FILE_NAME
       = ".repl-commands";
 
-  public static final String A_PLUS_API_BASE_URL = "https://minus.cs.aalto.fi/api/v2";
+  public static final String A_PLUS_BASE_URL = "https://minus.cs.aalto.fi";
+  public static final String A_PLUS_API_BASE_URL = A_PLUS_BASE_URL + "/api/v2";
+  public static final String A_PLUS = "A+";
 
   //  15 minutes in milliseconds
   public static final long MAIN_VIEW_MODEL_UPDATE_INTERVAL = 15L * 60L * 1000L;

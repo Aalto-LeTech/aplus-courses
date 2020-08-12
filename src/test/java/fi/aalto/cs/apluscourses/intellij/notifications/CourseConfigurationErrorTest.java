@@ -18,7 +18,7 @@ public class CourseConfigurationErrorTest {
     assertEquals("Group ID should be 'A+'",
         "A+", notification.getGroupId());
     assertEquals("Title should be 'A+ Courses failed to parse the course configuration file'",
-        "A+ Courses plugin failed to parse the course configuration file",
+        "Failed to parse the course configuration file",
         notification.getTitle());
     assertThat("Content should contain the message of the exception given to constructor.",
         notification.getContent(), containsString(errorMessage));

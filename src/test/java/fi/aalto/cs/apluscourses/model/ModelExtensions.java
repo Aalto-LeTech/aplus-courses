@@ -1,8 +1,5 @@
 package fi.aalto.cs.apluscourses.model;
 
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -32,7 +29,7 @@ public class ModelExtensions {
     public SubmissionInfo getSubmissionInfo(@NotNull Exercise exercise,
                                             @NotNull Authentication authentication)
         throws IOException {
-      return new SubmissionInfo(1, new SubmittableFile[0]);
+      return new SubmissionInfo(1, Collections.emptyMap());
     }
 
     @NotNull
@@ -66,10 +63,19 @@ public class ModelExtensions {
       return new Points(Collections.emptyMap(), Collections.emptyMap());
     }
 
+    @NotNull
     @Override
-    public void submit(@NotNull Submission submission, @NotNull Authentication authentication)
+    public SubmissionResult getSubmissionResult(@NotNull String submissionUrl,
+                                                @NotNull Authentication authentication)
+        throws IOException {
+      return new SubmissionResult(0, SubmissionResult.Status.GRADED, "http://localhost:8000");
+    }
+
+    @Override
+    public String submit(@NotNull Submission submission, @NotNull Authentication authentication)
         throws IOException {
       // do nothing
+      return "";
     }
   }
 
@@ -85,12 +91,11 @@ public class ModelExtensions {
                       @NotNull List<Module> modules,
                       @NotNull List<Library> libraries,
                       @NotNull Map<Long, Map<String, String>> exerciseModules,
-                      @NotNull Map<String, String> requiredPlugins,
                       @NotNull Map<String, URL> resourceUrls,
                       @NotNull List<String> autoInstallComponentNames,
                       @NotNull Map<String, String[]> replInitialCommands) {
-      super(id, name, modules, libraries, exerciseModules, requiredPlugins, resourceUrls,
-          autoInstallComponentNames, replInitialCommands);
+      super(id, name, modules, libraries, exerciseModules, resourceUrls, autoInstallComponentNames,
+          replInitialCommands);
       exerciseDataSource = new TestExerciseDataSource();
     }
 
@@ -113,8 +118,6 @@ public class ModelExtensions {
           //  libraries
           Collections.emptyList(),
           //  exerciseModules
-          Collections.emptyMap(),
-          //  requiredPlugins
           Collections.emptyMap(),
           //  resourceUrls
           Collections.emptyMap(),
@@ -297,7 +300,6 @@ public class ModelExtensions {
                                @NotNull List<Module> modules,
                                @NotNull List<Library> libraries,
                                @NotNull Map<Long, Map<String, String>> exerciseModules,
-                               @NotNull Map<String, String> requiredPlugins,
                                @NotNull Map<String, URL> resourceUrls,
                                @NotNull List<String> autoInstallComponentNames,
                                @NotNull Map<String, String[]> replInitialCommands) {
@@ -307,7 +309,6 @@ public class ModelExtensions {
           modules,
           libraries,
           exerciseModules,
-          requiredPlugins,
           resourceUrls,
           autoInstallComponentNames,
           replInitialCommands

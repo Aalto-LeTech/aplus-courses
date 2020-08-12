@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.presentation.exercise;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.Submission;
@@ -27,7 +29,11 @@ public class SubmissionViewModel {
 
   private final List<Group> availableGroups;
 
-  private final Map<String, Path> files;
+  private final Map<String, Path> filePaths;
+
+  private final SubmittableFile[] submittableFiles;
+
+  private final String language;
 
   public final ObservableProperty<Group> selectedGroup =
       new ObservableReadWriteProperty<>(null, SubmissionViewModel::validateGroupSelection);
@@ -44,12 +50,15 @@ public class SubmissionViewModel {
                              @NotNull SubmissionInfo submissionInfo,
                              @NotNull SubmissionHistory submissionHistory,
                              @NotNull List<Group> availableGroups,
-                             @NotNull Map<String, Path> files) {
+                             @NotNull Map<String, Path> filePaths,
+                             @NotNull String language) {
     this.exercise = exercise;
     this.submissionInfo = submissionInfo;
     this.submissionHistory = submissionHistory;
     this.availableGroups = availableGroups;
-    this.files = files;
+    this.filePaths = filePaths;
+    this.language = language;
+    this.submittableFiles = submissionInfo.getFiles(language).toArray(new SubmittableFile[0]);
   }
 
   @NotNull
@@ -64,7 +73,7 @@ public class SubmissionViewModel {
 
   @NotNull
   public SubmittableFile[] getFiles() {
-    return submissionInfo.getFiles();
+    return submittableFiles;
   }
 
   public int getCurrentSubmissionNumber() {
@@ -85,17 +94,17 @@ public class SubmissionViewModel {
     int submissionsLeft =
         submissionInfo.getSubmissionsLimit() - submissionHistory.getNumberOfSubmissions();
     if (submissionsLeft == 1) {
-      return "Warning! This is your last submission.";
+      return getText("presentation.submissionViewModel.warning.lastSubmission");
     }
     if (submissionsLeft <= 0) {
-      return "Warning! Max. number of submissions exceeded.";
+      return getText("presentation.submissionViewModel.warning.submissionsExceeded");
     }
     return null;
   }
 
   public Submission buildSubmission() {
     Group group = Objects.requireNonNull(selectedGroup.get());
-    return new Submission(exercise, submissionInfo, files, group);
+    return new Submission(exercise, submissionInfo, filePaths, group, language);
   }
 
   public static class GroupNotSelectedError implements ValidationError {
@@ -103,7 +112,7 @@ public class SubmissionViewModel {
     @NotNull
     @Override
     public String getDescription() {
-      return "Select a group";
+      return getText("presentation.submissionViewModel.selectAGroup");
     }
   }
 }

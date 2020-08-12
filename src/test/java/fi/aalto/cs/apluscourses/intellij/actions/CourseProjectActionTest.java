@@ -49,6 +49,7 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
     public boolean showMainDialog(@NotNull Project project,
                                   @NotNull CourseProjectViewModel courseProjectViewModel) {
       courseProjectViewModel.settingsOptOutProperty.set(doOptOut);
+      courseProjectViewModel.languageProperty.set("fi");
       return !doCancel;
     }
 
@@ -111,10 +112,20 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
     Project project = getProject();
     when(anActionEvent.getProject()).thenReturn(project);
 
-    emptyCourse = new ModelExtensions.TestCourse("ID", "EMPTY",
-        Collections.emptyList(), Collections.emptyList(),
-        Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap(),
+    emptyCourse = new ModelExtensions.TestCourse("ID",
+        //  name
+        "EMPTY",
+        //  modules
         Collections.emptyList(),
+        //  libraries
+        Collections.emptyList(),
+        //  exerciseModules
+        Collections.emptyMap(),
+        //  resourceUrls
+        Collections.emptyMap(),
+        //  autoInstallComponentNames
+        Collections.emptyList(),
+        //  replInitialCommands
         Collections.emptyMap());
 
     settingsImporter = new DummySettingsImporter();

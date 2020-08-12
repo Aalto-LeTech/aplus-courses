@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
@@ -117,10 +119,11 @@ public class CourseProjectAction extends AnAction {
       return;
     }
 
-    if (!tryCreateCourseFile(project, selectedCourseUrl)) {
-      return;
-    }
-
+    // Note:
+    // IntelliJModelFactory uses CourseFileManager#getModulesMetadata, so this temporary course
+    // instance may contain some weird module metadata when switching between course projects (the
+    // local course file of the previous project remains loaded until another one is loaded).
+    // However, as this course instance is never displayed anywhere in the UI, it shouldn't matter.
     Course course = tryGetCourse(project, selectedCourseUrl);
     if (course == null) {
       return;
@@ -129,6 +132,11 @@ public class CourseProjectAction extends AnAction {
     CourseProjectViewModel courseProjectViewModel
         = new CourseProjectViewModel(course, settingsImporter.currentlyImportedIdeSettings());
     if (!dialogs.showMainDialog(project, courseProjectViewModel)) {
+      return;
+    }
+
+    String language = courseProjectViewModel.languageProperty.get();
+    if (!tryCreateCourseFile(project, selectedCourseUrl, language)) {
       return;
     }
 
@@ -157,6 +165,7 @@ public class CourseProjectAction extends AnAction {
 
   @FunctionalInterface
   public interface CourseFactory {
+
     @NotNull
     Course fromUrl(@NotNull URL courseUrl, @NotNull Project project)
         throws IOException, MalformedCourseConfigurationFileException;
@@ -178,6 +187,7 @@ public class CourseProjectAction extends AnAction {
   /**
    * Returns a course created from the course configuration file at the given URL. The user is
    * notified if the course initialization fails.
+   *
    * @param project   The currently open project.
    * @param courseUrl The URL from which the course configuration file is downloaded.
    * @return The course created from the course configuration file or null in case of an error.
@@ -210,13 +220,16 @@ public class CourseProjectAction extends AnAction {
 
   /**
    * Creates a file in the project settings directory which contains the given course configuration
-   * file URL.
+   * file URL and language.
+   *
    * @return True if the file was successfully created, false otherwise.
    */
-  private boolean tryCreateCourseFile(@NotNull Project project, @NotNull URL courseUrl) {
+  private boolean tryCreateCourseFile(@NotNull Project project,
+                                      @NotNull URL courseUrl,
+                                      @NotNull String language) {
     try {
       if (createCourseFile) {
-        CourseFileManager.getInstance().createAndLoad(project, courseUrl);
+        CourseFileManager.getInstance().createAndLoad(project, courseUrl, language);
       }
       return true;
     } catch (IOException e) {
@@ -228,6 +241,7 @@ public class CourseProjectAction extends AnAction {
   /**
    * Tries importing project settings from the given course. Shows an error dialog to the user if a
    * network error occurs.
+   *
    * @return True if project settings were successfully imported, false otherwise.
    */
   private boolean tryImportProjectSettings(@NotNull Project project, @NotNull Course course) {
@@ -243,6 +257,7 @@ public class CourseProjectAction extends AnAction {
   /**
    * Tries importing IDE settings from the given course. Shows an error dialog to the user if a
    * network error occurs.
+   *
    * @return True if IDE settings were successfully imported, false otherwise.
    */
   private boolean tryImportIdeSettings(@NotNull Course course) {
@@ -256,14 +271,15 @@ public class CourseProjectAction extends AnAction {
   }
 
   private void notifyNetworkError() {
-    dialogs.showErrorDialog("An error occurred while creating a course project. Please check your "
-        + "network connection and try again, or contact the course staff if the issue persists.",
-        "Network Error");
+    dialogs
+        .showErrorDialog(getText("ui.courseProject.dialogs.showErrorDialog.networkError.message"),
+            getText("ui.courseProject.dialogs.showErrorDialog.networkError.title"));
   }
 
   private void notifyMalformedCourseConfiguration() {
-    dialogs.showErrorDialog("An error occurred while reading the course configuration. Please "
-        + "contact the course staff.", "Course Configuration Error");
+    dialogs.showErrorDialog(
+        getText("ui.courseProject.dialogs.showErrorDialog.malformedCourseConfiguration.message"),
+        getText("ui.courseProject.dialogs.showErrorDialog.malformedCourseConfiguration.title"));
   }
 
 }

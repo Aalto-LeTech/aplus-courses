@@ -1,26 +1,38 @@
 <idea-plugin require-restart="true">
     <id>fi.aalto.cs.intellij-plugin</id>
     <name>A+ Courses</name>
-    <vendor email="intellij-plugin-letech@aalto.fi" url="https://research.cs.aalto.fi/LeTech/">LeTech Group at Aalto University</vendor>
+    <vendor email="intellij-plugin-letech@aalto.fi"
+            url="https://research.cs.aalto.fi/LeTech/">LeTech Group at Aalto University</vendor>
+    <!--  this is the range of supported IntelliJ IDEA version the plugin can be used with  -->
+    <idea-version since-build="202.6397"/>
 
     <description><![CDATA[
-    NOTE: This plugin is still under development. Use with caution!
-
-    This plugin supports the educational use of IntelliJ (and its Scala plugin) in programming courses that rely on the
-    A+ course platform, which has been developed at Aalto University. The plugin accesses programming assignments and
-    automated grading services provided by A+ and otherwise enhances the student experience.
+    This plugin supports the educational use of IntelliJ IDEA (and its Scala plugin) in programming
+    courses that rely on the A+ LMS developed at Aalto University. The plugin accesses programming
+    assignments and automated grading services provided by A+ and otherwise enhances the student
+    experience.
+      <br>
+      <br>
+      Available features:
+      <br>
+      <li>loading IDE and project settings for the <a href="https://plus.cs.aalto.fi/o1/2020/user/enroll/">O1 course</a></li>
+      <li>installing learning modules</li>
+      <li>notification of available version updates for modules</li>
+      <li>enhanced Scala REPL (read–eval–print loop)</li>
+      <li>submission of assignments for assessment via the IDE</li>
+      <li>accessing submissions' results via the IDE</li>
     ]]></description>
 
     <change-notes><![CDATA[
-      More functionality: loading modules and IDEs settings from A+ , customized REPL.<br>
+      More functionality: modules' lifecycle, submission from the IDE, seeing results, deeper REPL
+      customization.<br>
     ]]>
     </change-notes>
 
     <depends>com.intellij.modules.java</depends>
-    <depends optional="true" config-file="with-scala.xml">org.intellij.scala</depends>
+    <depends>org.intellij.scala</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <backgroundPostStartupActivity implementation="fi.aalto.cs.apluscourses.intellij.activities.VersionCheckerActivity"/>
         <backgroundPostStartupActivity implementation="fi.aalto.cs.apluscourses.intellij.activities.InitializationActivity"/>
 
         <toolWindow id="A+ Courses"
@@ -36,20 +48,20 @@
             <add-to-group group-id="MainMenu" anchor="last" />
             <action id="fi.aalto.cs.apluscourses.intellij.actions.CourseProjectAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.CourseProjectAction"
-                    text="Turn Project Into A+ Course Project"
-                    description="Turns the currently opened project into a A+ course project." />
+                    text="Turn Project Into A+ Project"
+                    description="Turn the currently open project into an A+ course project." />
             <action id="fi.aalto.cs.apluscourses.intellij.actions.APlusAuthenticationAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.APlusAuthenticationAction"
                     text="Set A+ Token"
-                    description="Set the A+ authentication token" />
+                    description="Set an access token for submitting assignments to A+." />
             <action id="fi.aalto.cs.apluscourses.intellij.actions.ResetSettingsAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.ResetSettingsAction"
                     text="Reset A+ Courses Plugin Settings"
-                    description="Resets all the settings related to the A+ Courses plugin." />
+                    description="Reset all the settings related to the A+ Courses plugin." />
             <action id="fi.aalto.cs.apluscourses.intellij.actions.AboutAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.AboutAction"
-                    text="About A+ Plugin"
-                    description="Information about the A+ plugin for IntelliJ" />
+                    text="About the A+ Courses Plugin"
+                    description="Information about the A+ Courses plugin for IntelliJ" />
         </group>
         <group id="fi.aalto.cs.apluscourses.intellij.actions.ActionGroups.MODULE_ACTIONS"
                text="A+ Module"
@@ -60,15 +72,15 @@
                     icon="PluginIcons.A_PLUS_DOWNLOAD"/>
             <action id="fi.aalto.cs.apluscourses.intellij.actions.ModulesRefreshAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.RefreshAction"
-                    text="Update Modules"
+                    text="Refresh Modules"
                     icon="PluginIcons.A_PLUS_REFRESH" />
         </group>
         <group id="fi.aalto.cs.apluscourses.intellij.actions.ActionGroups.EXERCISE_ACTIONS"
-               text="A+ Exercise"
+               text="A+ Assignment"
                description="Actions for A+ modules">
             <action id="fi.aalto.cs.apluscourses.intellij.actions.SubmitExerciseAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.SubmitExerciseAction"
-                    text="Submit A+ Exercise"
+                    text="Submit A+ Assignment"
                     icon="PluginIcons.A_PLUS_UPLOAD"/>
             <action id="fi.aalto.cs.apluscourses.intellij.actions.OpenSubmissionAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.OpenSubmissionAction"
@@ -76,12 +88,9 @@
                     icon="PluginIcons.A_PLUS_BROWSE" />
             <action id="fi.aalto.cs.apluscourses.intellij.actions.ExercisesRefreshAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.RefreshAction"
-                    text="Update Exercises"
+                    text="Refresh Assignments"
                     icon="PluginIcons.A_PLUS_REFRESH" />
         </group>
-        <action id="fi.aalto.cs.apluscourses.intellij.actions.RequiredPluginsCheckerAction"
-                class="fi.aalto.cs.apluscourses.intellij.actions.RequiredPluginsCheckerAction"
-                text="Check Required Plugins"/>
         <action id="Scala.RunConsole"
                 class="fi.aalto.cs.apluscourses.intellij.actions.ReplAction"
                 overrides="true"

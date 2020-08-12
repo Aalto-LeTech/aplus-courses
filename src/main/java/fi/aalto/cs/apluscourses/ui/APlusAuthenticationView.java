@@ -1,8 +1,14 @@
 package fi.aalto.cs.apluscourses.ui;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
+import com.intellij.icons.AllIcons;
+import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
+import com.intellij.ui.components.labels.LinkLabel;
+import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.presentation.AuthenticationViewModel;
 import java.util.Arrays;
 import javax.swing.Action;
@@ -14,9 +20,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class APlusAuthenticationView extends DialogWrapper implements Dialog {
+
   @GuiObject
   protected JPasswordField inputField;
   private JPanel basePanel;
+  private LinkLabel<Object> tokenPageLink;
 
   AuthenticationViewModel authenticationViewModel;
 
@@ -27,7 +35,7 @@ public class APlusAuthenticationView extends DialogWrapper implements Dialog {
                                  @Nullable Project project) {
     super(project);
     this.authenticationViewModel = authenticationViewModel;
-    setTitle("A+ Token");
+    setTitle(getText("ui.authenticationView.name"));
     setButtonsAlignment(SwingConstants.CENTER);
     init();
   }
@@ -56,7 +64,8 @@ public class APlusAuthenticationView extends DialogWrapper implements Dialog {
   @Override
   protected ValidationInfo doValidate() {
     if (inputField.getPassword().length == 0) {
-      return new ValidationInfo("Token must not be empty", inputField);
+      return new ValidationInfo(getText("ui.authenticationView.noEmptyToken"),
+          inputField);
     }
     return null;
   }
@@ -65,5 +74,16 @@ public class APlusAuthenticationView extends DialogWrapper implements Dialog {
   @Override
   public JComponent getPreferredFocusedComponent() {
     return inputField;
+  }
+
+  @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
+  private void createUIComponents() { //
+    tokenPageLink = new LinkLabel<>(
+        "What's my token?",
+        AllIcons.Ide.External_link_arrow,
+        (first, second) ->
+            BrowserUtil.browse(PluginSettings.A_PLUS_BASE_URL + "/accounts/accounts/"));
+    tokenPageLink.setIconTextGap(0);
+    tokenPageLink.setHorizontalTextPosition(SwingConstants.LEFT);
   }
 }

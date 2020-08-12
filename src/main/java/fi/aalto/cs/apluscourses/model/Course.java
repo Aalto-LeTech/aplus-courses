@@ -44,10 +44,6 @@ public abstract class Course implements ComponentSource {
   @NotNull
   private final Map<Long, Map<String, String>> exerciseModules;
 
-  // Maps ids of required plugins to the names of required plugins.
-  @NotNull
-  private final Map<String, String> requiredPlugins;
-
   @NotNull
   private final Map<String, URL> resourceUrls;
 
@@ -65,8 +61,6 @@ public abstract class Course implements ComponentSource {
    *
    * @param name                The name of the course.
    * @param modules             The list of modules in the course.
-   * @param requiredPlugins     A map containing the required plugins for this course. The keys are
-   *                            the ids of the plugins and the values are the names of the plugins.
    * @param resourceUrls        A map containing URLs to resources related to the course. The keys
    *                            are the names of the resources and the values are the URLs.
    * @param replInitialCommands A {@link Map}, with module name {@link String} as a key and a
@@ -78,14 +72,12 @@ public abstract class Course implements ComponentSource {
                    @NotNull List<Module> modules,
                    @NotNull List<Library> libraries,
                    @NotNull Map<Long, Map<String, String>> exerciseModules,
-                   @NotNull Map<String, String> requiredPlugins,
                    @NotNull Map<String, URL> resourceUrls,
                    @NotNull List<String> autoInstallComponentNames,
                    @NotNull Map<String, String[]> replInitialCommands) {
     this.id = id;
     this.name = name;
     this.modules = modules;
-    this.requiredPlugins = requiredPlugins;
     this.resourceUrls = resourceUrls;
     this.libraries = libraries;
     this.exerciseModules = exerciseModules;
@@ -137,7 +129,6 @@ public abstract class Course implements ComponentSource {
     List<Module> courseModules = getCourseModules(jsonObject, sourcePath, factory);
     Map<Long, Map<String, String>> exerciseModules
         = getCourseExerciseModules(jsonObject, sourcePath);
-    Map<String, String> requiredPlugins = getCourseRequiredPlugins(jsonObject, sourcePath);
     Map<String, URL> resourceUrls = getCourseResourceUrls(jsonObject, sourcePath);
     List<String> autoInstallComponentNames
         = getCourseAutoInstallComponentNames(jsonObject, sourcePath);
@@ -147,7 +138,6 @@ public abstract class Course implements ComponentSource {
         //  libraries
         Collections.emptyList(),
         exerciseModules,
-        requiredPlugins,
         resourceUrls,
         autoInstallComponentNames,
         replInitialCommands);
@@ -224,17 +214,6 @@ public abstract class Course implements ComponentSource {
   @NotNull
   public Map<Long, Map<String, String>> getExerciseModules() {
     return Collections.unmodifiableMap(exerciseModules);
-  }
-
-  /**
-   * Returns a map containing the required plugins for the course. The keys are the ids of the
-   * plugins and the values are the names corresponding to the ids.
-   *
-   * @return A map with the required plugins of the course.
-   */
-  @NotNull
-  public Map<String, String> getRequiredPlugins() {
-    return Collections.unmodifiableMap(requiredPlugins);
   }
 
   /**
@@ -353,31 +332,6 @@ public abstract class Course implements ComponentSource {
       throw new MalformedCourseConfigurationFileException(source,
           "Malformed \"exerciseModules\" object", e);
     }
-  }
-
-  @NotNull
-  private static Map<String, String> getCourseRequiredPlugins(@NotNull JSONObject jsonObject,
-                                                              @NotNull String source)
-      throws MalformedCourseConfigurationFileException {
-    HashMap<String, String> requiredPlugins = new HashMap<>();
-    JSONObject requiredPluginsJson;
-    try {
-      requiredPluginsJson = jsonObject.getJSONObject("requiredPlugins");
-    } catch (JSONException ex) {
-      throw new MalformedCourseConfigurationFileException(source,
-          "Missing or malformed \"requiredPlugins\" key", ex);
-    }
-    Iterable<String> keys = requiredPluginsJson::keys;
-    for (String pluginId : keys) {
-      try {
-        String pluginName = requiredPluginsJson.getString(pluginId);
-        requiredPlugins.put(pluginId, pluginName);
-      } catch (JSONException ex) {
-        throw new MalformedCourseConfigurationFileException(source,
-            "Expected id-name-pairs in requiredPlugins object", ex);
-      }
-    }
-    return requiredPlugins;
   }
 
   @NotNull

@@ -24,7 +24,7 @@
           <component id="a54c3" class="javax.swing.JLabel">
             <constraints/>
             <properties>
-              <text value="Modules"/>
+              <text resource-bundle="resources" key="ui.toolWindow.subTab.modules.name"/>
             </properties>
           </component>
           <component id="2132d" class="javax.swing.JToolBar$Separator">

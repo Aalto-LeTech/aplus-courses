@@ -1,7 +1,11 @@
 package fi.aalto.cs.apluscourses.intellij.notifications;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getAndReplaceText;
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
+import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.Module;
 import java.util.List;
@@ -20,10 +24,11 @@ public class NewModulesVersionsNotification extends Notification {
    * @param modules is a {@link List} {@link Module}s to process.
    */
   public NewModulesVersionsNotification(@NotNull List<Module> modules) {
-    super("A+",
-        "Updates available for A+ Course Modules",
-        "There are newer version(s) for the following A+ Course Modules: "
-            + getModuleNameStrings(modules) + ".",
+    super(
+        PluginSettings.A_PLUS,
+        getText("notification.NewModulesVersionsNotification.title"),
+        getAndReplaceText("notification.NewModulesVersionsNotification.content",
+            getModuleNameStrings(modules)),
         NotificationType.INFORMATION);
   }
 

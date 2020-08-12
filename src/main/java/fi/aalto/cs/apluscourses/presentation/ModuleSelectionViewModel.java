@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.presentation;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import com.intellij.openapi.module.Module;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
@@ -18,6 +20,6 @@ public class ModuleSelectionViewModel {
   }
 
   public String getPrompt() {
-    return "Select module";
+    return getText("presentation.moduleSelectionViewModel.prompt");
   }
 }

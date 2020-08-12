@@ -55,11 +55,15 @@ public class ImportModuleActionTest {
         "id",
         "course",
         modules,
+        //  libraries
         Collections.emptyList(),
+        //  exerciseModules
         Collections.emptyMap(),
+        //  resourceUrls
         Collections.emptyMap(),
-        Collections.emptyMap(),
+        //  autoInstallComponentNames
         Collections.emptyList(),
+        //  replInitialCommands
         Collections.emptyMap());
     mainViewModel.courseViewModel.set(new CourseViewModel(course));
 

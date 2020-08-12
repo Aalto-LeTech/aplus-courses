@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
@@ -65,16 +64,25 @@ public class Exercise {
   public static Exercise fromJsonObject(@NotNull JSONObject jsonObject,
                                         @NotNull Points points) {
     long id = jsonObject.getLong("id");
+
     String name = jsonObject.getString("display_name");
     String htmlUrl = jsonObject.getString("html_url");
-    List<Long> submissionIds = points.getSubmissions().getOrDefault(id, Collections.emptyList());
-    List<SubmissionResult> submissionResults = IntStream
-        .range(0, submissionIds.size())
-        .mapToObj(i -> new SubmissionResult(submissionIds.get(i), i + 1, htmlUrl))
-        .collect(Collectors.toList());
+
     int userPoints = points.getPoints().getOrDefault(id, 0);
     int maxPoints = jsonObject.getInt("max_points");
     int maxSubmissions = jsonObject.getInt("max_submissions");
+
+    List<Long> submissionIds = points.getSubmissions().getOrDefault(id, Collections.emptyList());
+    List<SubmissionResult> submissionResults = IntStream
+        .range(0, submissionIds.size())
+        .mapToObj(i -> {
+          SubmissionResult.Status status = (i + 1 > maxSubmissions)
+              ? SubmissionResult.Status.UNOFFICIAL
+              : SubmissionResult.Status.GRADED;
+          return new SubmissionResult(submissionIds.get(i), status, htmlUrl);
+        })
+        .collect(Collectors.toList());
+
     return new Exercise(id, name, htmlUrl, submissionResults,
         userPoints, maxPoints, maxSubmissions);
   }

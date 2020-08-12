@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -17,6 +19,7 @@ import fi.aalto.cs.apluscourses.intellij.notifications.SuccessfulSubmissionNotif
 import fi.aalto.cs.apluscourses.intellij.services.Dialogs;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
+import fi.aalto.cs.apluscourses.intellij.utils.CourseFileManager;
 import fi.aalto.cs.apluscourses.intellij.utils.VfsUtil;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.Course;
@@ -27,6 +30,7 @@ import fi.aalto.cs.apluscourses.model.FileFinder;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.SubmissionHistory;
 import fi.aalto.cs.apluscourses.model.SubmissionInfo;
+import fi.aalto.cs.apluscourses.model.SubmissionStatusUpdater;
 import fi.aalto.cs.apluscourses.model.SubmittableFile;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
@@ -140,14 +144,13 @@ public class SubmitExerciseAction extends AnAction {
       return;
     }
 
-
     Exercise exercise = selectedExercise.getModel();
-
     Course course = courseViewModel.getModel();
+    String language = CourseFileManager.getInstance().getLanguage();
     ExerciseDataSource exerciseDataSource = course.getExerciseDataSource();
 
     SubmissionInfo submissionInfo = exerciseDataSource.getSubmissionInfo(exercise, authentication);
-    if (!submissionInfo.isSubmittable()) {
+    if (!submissionInfo.isSubmittable(language)) {
       notifier.notify(new NotSubmittableNotification(), project);
       return;
     }
@@ -155,7 +158,9 @@ public class SubmitExerciseAction extends AnAction {
     Map<String, String> exerciseModules =
         courseViewModel.getModel().getExerciseModules().get(exercise.getId());
 
-    Optional<String> moduleName = Optional.ofNullable(exerciseModules).map(self -> self.get("en"));
+    Optional<String> moduleName = Optional
+        .ofNullable(exerciseModules)
+        .map(self -> self.get(language));
 
     Module selectedModule;
     if (moduleName.isPresent()) {
@@ -178,23 +183,27 @@ public class SubmitExerciseAction extends AnAction {
 
     Path modulePath = Paths.get(ModuleUtilCore.getModuleDirPath(selectedModule));
     Map<String, Path> files = new HashMap<>();
-    for (SubmittableFile file : submissionInfo.getFiles()) {
+    for (SubmittableFile file : submissionInfo.getFiles(language)) {
       files.put(file.getKey(), fileFinder.findFile(modulePath, file.getName()));
     }
 
     SubmissionHistory history = exerciseDataSource.getSubmissionHistory(exercise, authentication);
 
     List<Group> groups = new ArrayList<>(exerciseDataSource.getGroups(course, authentication));
-    groups.add(0, new Group(0, Collections.singletonList("Submit alone")));
+    groups.add(0, new Group(0, Collections
+        .singletonList(getText("ui.toolWindow.subTab.exercises.submission.submitAlone"))));
 
     SubmissionViewModel submission =
-        new SubmissionViewModel(exercise, submissionInfo, history, groups, files);
+        new SubmissionViewModel(exercise, submissionInfo, history, groups, files, language);
 
     if (!dialogs.create(submission, project).showAndGet()) {
       return;
     }
 
-    exerciseDataSource.submit(submission.buildSubmission(), authentication);
+    String submissionUrl = exerciseDataSource.submit(submission.buildSubmission(), authentication);
+    new SubmissionStatusUpdater(
+        exerciseDataSource, authentication, submissionUrl, selectedExercise.getPresentableName()
+    ).start();
     notifier.notify(new SuccessfulSubmissionNotification(), project);
   }
 
@@ -203,6 +212,7 @@ public class SubmitExerciseAction extends AnAction {
   }
 
   public interface ModuleSource {
+
     @NotNull
     Module[] getModules(@NotNull Project project);
 
@@ -211,6 +221,7 @@ public class SubmitExerciseAction extends AnAction {
   }
 
   private static class DefaultModuleSource implements ModuleSource {
+
     public static final ModuleSource INSTANCE = new DefaultModuleSource();
 
     @Override
@@ -227,6 +238,7 @@ public class SubmitExerciseAction extends AnAction {
   }
 
   private static class ModuleMissingException extends Exception {
+
     @NotNull
     private final String moduleName;
 

@@ -1,9 +1,10 @@
 package fi.aalto.cs.apluscourses.intellij.notifications;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 import com.intellij.notification.Notification;
-import org.junit.Assert;
 import org.junit.Test;
 
 public class ExerciseNotSelectedNotificationTest {
@@ -11,9 +12,10 @@ public class ExerciseNotSelectedNotificationTest {
   @Test
   public void testExerciseNotSelectedNotification() {
     Notification notification = new ExerciseNotSelectedNotification();
-    Assert.assertEquals("The title is correct", "No exercise is selected", notification.getTitle());
-    Assert.assertEquals("Group ID should be A+", "A+", notification.getGroupId());
-    Assert.assertThat(notification.getContent(), containsString("Select an exercise"));
+    assertEquals("The title is correct", "No assignment is selected", notification.getTitle());
+    assertEquals("Group ID should be A+", "A+", notification.getGroupId());
+    assertThat(notification.getContent(), containsString("To submit an assignment, please "
+        + "select the assignment in the list before clicking the submit button."));
   }
 
 }

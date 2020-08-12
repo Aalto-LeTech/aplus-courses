@@ -5,6 +5,7 @@ import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.Points;
 import fi.aalto.cs.apluscourses.model.SubmissionHistory;
 import fi.aalto.cs.apluscourses.model.SubmissionInfo;
+import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -23,6 +24,8 @@ public interface Parser {
   List<ExerciseGroup> parseExerciseGroups(JSONArray array, Points points);
 
   Points parsePoints(JSONObject object);
+
+  SubmissionResult parseSubmissionResult(JSONObject jsonObject);
 
   /**
    * Parses an JSON array to a list using a given parsing function.
