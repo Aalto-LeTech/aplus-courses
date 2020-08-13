@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.model;
 
+import fi.aalto.cs.apluscourses.presentation.MainViewModelUpdater;
 import fi.aalto.cs.apluscourses.utils.async.TaskManager;
 import java.io.IOException;
 import java.util.List;
@@ -82,6 +83,7 @@ public class ComponentInstallerImpl<T> implements ComponentInstaller {
     }
     
     public void doIt() {
+      MainViewModelUpdater.prevent();
       component.resolveState();
       unloadIfError();
       try {
@@ -91,11 +93,13 @@ public class ComponentInstallerImpl<T> implements ComponentInstaller {
         fetch();
         load();
         waitForDependencies();
+        component.validate(componentSource);
       } catch (IOException | ComponentLoadException | NoSuchComponentException e) {
         logger.info("A component could not be installed", e);
         component.stateMonitor.set(Component.ERROR);
+      } finally {
+        MainViewModelUpdater.enable();
       }
-      component.validate(componentSource);
     }
 
     private void unloadIfError() {
