@@ -34,6 +34,7 @@ public class IntelliJCourseTest {
     when(project.getMessageBus()).thenReturn(mock(MessageBus.class));
     CommonLibraryProvider commonLibraryProvider = new CommonLibraryProvider(project);
     IntelliJCourse course = new IntelliJCourse(id, name,
+        "http://localhost:1355",
         //  modules
         Collections.emptyList(),
         //  libraries
@@ -75,6 +76,7 @@ public class IntelliJCourseTest {
 
     IntelliJCourse course = new IntelliJCourse("cool id",
         "testProject",
+        "https://example.com",
         modules,
         //  libraries
         Collections.emptyList(),
@@ -116,6 +118,7 @@ public class IntelliJCourseTest {
 
     IntelliJCourse course = new IntelliJCourse("courseId",
         "testtesttest",
+        "http://localhost:2000",
         modules,
         //  libraries
         Collections.emptyList(),
@@ -146,6 +149,7 @@ public class IntelliJCourseTest {
 
     IntelliJCourse course = new IntelliJCourse("testId",
         "testProject",
+        "http://localhost:2200",
         Stream.of(new ModelExtensions.TestModule(moduleName)).collect(Collectors.toList()),
         //  libraries
         Collections.emptyList(),

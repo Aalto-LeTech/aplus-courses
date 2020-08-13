@@ -78,9 +78,13 @@ public class APlusAuthenticationAction extends DumbAwareAction {
     }
 
     String apiUrl = course.getApiUrl();
+    String authenticationHtmlUrl = course.getHtmlUrl() + "accounts/accounts/";
+
     PasswordStorage passwordStorage = passwordStorageFactory.create(apiUrl);
-    AuthenticationViewModel authenticationViewModel =
-        new AuthenticationViewModel(APlusTokenAuthentication.getFactoryFor(passwordStorage));
+    AuthenticationViewModel authenticationViewModel = new AuthenticationViewModel(
+        APlusTokenAuthentication.getFactoryFor(passwordStorage),
+        authenticationHtmlUrl
+    );
 
     if (!dialogs.create(authenticationViewModel, project).showAndGet()) {
       return;

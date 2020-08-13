@@ -8,7 +8,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.ui.components.labels.LinkLabel;
-import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.presentation.AuthenticationViewModel;
 import java.util.Arrays;
 import javax.swing.Action;
@@ -79,10 +78,10 @@ public class APlusAuthenticationView extends DialogWrapper implements Dialog {
   @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
   private void createUIComponents() { //
     tokenPageLink = new LinkLabel<>(
-        "What's my token?",
+        getText("ui.authenticationView.tokenLink"),
         AllIcons.Ide.External_link_arrow,
         (first, second) ->
-            BrowserUtil.browse(PluginSettings.A_PLUS_BASE_URL + "/accounts/accounts/"));
+            BrowserUtil.browse(authenticationViewModel.getAuthenticationHtmlUrl()));
     tokenPageLink.setIconTextGap(0);
     tokenPageLink.setHorizontalTextPosition(SwingConstants.LEFT);
   }

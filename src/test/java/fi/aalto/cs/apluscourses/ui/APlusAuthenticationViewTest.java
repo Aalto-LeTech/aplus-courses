@@ -21,7 +21,10 @@ public class APlusAuthenticationViewTest extends LightIdeaTestCase {
   private static class TestAuthenticationView extends APlusAuthenticationView {
 
     public TestAuthenticationView() {
-      super(new AuthenticationViewModel(APlusTokenAuthentication::new), mock(Project.class));
+      super(
+          new AuthenticationViewModel(APlusTokenAuthentication::new, "http://localhost:2000"),
+          mock(Project.class)
+      );
     }
 
     public TestAuthenticationView(AuthenticationViewModel viewModel) {
@@ -49,7 +52,7 @@ public class APlusAuthenticationViewTest extends LightIdeaTestCase {
   @Test
   public void testSetsViewModelAfterOk() {
     AuthenticationViewModel authenticationViewModel =
-        new AuthenticationViewModel(APlusTokenAuthentication::new);
+        new AuthenticationViewModel(APlusTokenAuthentication::new, "http://localhost:1000");
     TestAuthenticationView authenticationView = new TestAuthenticationView(authenticationViewModel);
 
     String tokenString = "wxyz";

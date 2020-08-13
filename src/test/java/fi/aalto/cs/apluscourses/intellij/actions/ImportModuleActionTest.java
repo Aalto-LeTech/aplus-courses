@@ -54,6 +54,7 @@ public class ImportModuleActionTest {
     Course course = new ModelExtensions.TestCourse(
         "id",
         "course",
+        "http://localhost:7766",
         modules,
         //  libraries
         Collections.emptyList(),

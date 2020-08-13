@@ -88,14 +88,15 @@ public class ModelExtensions {
      */
     public TestCourse(@NotNull String id,
                       @NotNull String name,
+                      @NotNull String aplusUrl,
                       @NotNull List<Module> modules,
                       @NotNull List<Library> libraries,
                       @NotNull Map<Long, Map<String, String>> exerciseModules,
                       @NotNull Map<String, URL> resourceUrls,
                       @NotNull List<String> autoInstallComponentNames,
                       @NotNull Map<String, String[]> replInitialCommands) {
-      super(id, name, modules, libraries, exerciseModules, resourceUrls, autoInstallComponentNames,
-          replInitialCommands);
+      super(id, name, aplusUrl, modules, libraries, exerciseModules, resourceUrls,
+          autoInstallComponentNames, replInitialCommands);
       exerciseDataSource = new TestExerciseDataSource();
     }
 
@@ -112,7 +113,10 @@ public class ModelExtensions {
      */
     public TestCourse(@NotNull String id, @NotNull String name,
                       @NotNull ExerciseDataSource exerciseDataSource) {
-      super(id, name,
+      super(
+          id,
+          name,
+          "https://example.com/",
           //  modules
           Collections.emptyList(),
           //  libraries
@@ -297,6 +301,7 @@ public class ModelExtensions {
     @Override
     public Course createCourse(@NotNull String id,
                                @NotNull String name,
+                               @NotNull String aplusUrl,
                                @NotNull List<Module> modules,
                                @NotNull List<Library> libraries,
                                @NotNull Map<Long, Map<String, String>> exerciseModules,
@@ -306,6 +311,7 @@ public class ModelExtensions {
       return new ModelExtensions.TestCourse(
           id,
           name,
+          aplusUrl,
           modules,
           libraries,
           exerciseModules,

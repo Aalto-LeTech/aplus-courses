@@ -112,9 +112,12 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
     Project project = getProject();
     when(anActionEvent.getProject()).thenReturn(project);
 
-    emptyCourse = new ModelExtensions.TestCourse("ID",
+    emptyCourse = new ModelExtensions.TestCourse(
+        "ID",
         //  name
         "EMPTY",
+        // url
+        "http://localhost:1001",
         //  modules
         Collections.emptyList(),
         //  libraries
@@ -126,7 +129,8 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
         //  autoInstallComponentNames
         Collections.emptyList(),
         //  replInitialCommands
-        Collections.emptyMap());
+        Collections.emptyMap()
+    );
 
     settingsImporter = new DummySettingsImporter();
 

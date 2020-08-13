@@ -30,6 +30,7 @@ public class IntelliJModelFactory implements ModelFactory {
   @Override
   public Course createCourse(@NotNull String id,
                              @NotNull String name,
+                             @NotNull String aplusUrl,
                              @NotNull List<Module> modules,
                              @NotNull List<Library> libraries,
                              @NotNull Map<Long, Map<String, String>> exerciseModules,
@@ -38,7 +39,7 @@ public class IntelliJModelFactory implements ModelFactory {
                              @NotNull Map<String, String[]> replInitialCommands) {
 
     IntelliJCourse course =
-        new IntelliJCourse(id, name, modules, libraries, exerciseModules, resourceUrls,
+        new IntelliJCourse(id, name, aplusUrl, modules, libraries, exerciseModules, resourceUrls,
             autoInstallComponentNames, replInitialCommands, project,
             new CommonLibraryProvider(project));
 
