@@ -78,7 +78,7 @@ public class APlusAuthenticationView extends DialogWrapper implements Dialog {
   @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
   private void createUIComponents() { //
     tokenPageLink = new LinkLabel<>(
-        "What's my token?",
+        getText("ui.authenticationView.tokenLink"),
         AllIcons.Ide.External_link_arrow,
         (first, second) ->
             BrowserUtil.browse(authenticationViewModel.getAuthenticationHtmlUrl()));
