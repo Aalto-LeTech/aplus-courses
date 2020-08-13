@@ -45,15 +45,6 @@ public abstract class Component {
     return name;
   }
 
-  /**
-   * A component is active if its state is likely to change soon. For an example, a component in
-   * state {@code FETCHING} is active, as its state is likely to change soon.
-   */
-  public boolean isActive() {
-    int state = stateMonitor.get();
-    return state == FETCHING || state == LOADING || state == UNINSTALLING;
-  }
-
   @NotNull
   public abstract Path getPath();
 

@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory
 
 object ModuleUtils {
 
-  val logger = LoggerFactory.getLogger(ModuleUtils.getClass)
+  val Logger = LoggerFactory.getLogger(ModuleUtils.getClass)
 
   def getModuleDirectory(@NotNull module: Module): String =
     FileUtilRt.toSystemIndependentName(ModuleUtilCore.getModuleDirPath(module))
@@ -126,7 +126,7 @@ object ModuleUtils {
     if (commands.nonEmpty && !file.exists) {
       try FileUtils.writeLines(file, StandardCharsets.UTF_8.name, asJavaCollection(commands))
       catch {
-        case ex: IOException => logger.error("Could not write REPL initial commands file", ex)
+        case ex: IOException => Logger.error("Could not write REPL initial commands file", ex)
       }
     }
   }
