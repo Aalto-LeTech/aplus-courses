@@ -198,8 +198,7 @@ class ModuleUtilsTest extends HeavyPlatformTestCase with TestHelperScala {
   @Test
   def testInitialReplCommandsFileExistIsFalseForNonExistingFile(): Unit = {
     assertFalse("Returns 'false' if the REPL initial commands file does not exist.",
-      initialReplCommandsFileExist(MODULE_REPL_INITIAL_COMMANDS_FILE_NAME,
-        getModule.getModuleFilePath))
+      initialReplCommandsFileExists(getModule))
   }
 
   @Test
@@ -209,8 +208,7 @@ class ModuleUtilsTest extends HeavyPlatformTestCase with TestHelperScala {
     FileUtilRt.createIfNotExists(file)
 
     assertTrue("Returns 'true' if the REPL initial commands file exists.",
-      initialReplCommandsFileExist(MODULE_REPL_INITIAL_COMMANDS_FILE_NAME,
-        getModule.getModuleFilePath))
+      initialReplCommandsFileExists(getModule))
   }
 
   @Test

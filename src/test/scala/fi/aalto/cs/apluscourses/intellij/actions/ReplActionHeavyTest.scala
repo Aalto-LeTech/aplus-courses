@@ -1,23 +1,27 @@
 package fi.aalto.cs.apluscourses.intellij.actions
 
+import com.intellij.openapi.module.Module
+import com.intellij.openapi.project.Project
 import com.intellij.testFramework.HeavyPlatformTestCase
 import fi.aalto.cs.apluscourses.intellij.TestHelperScala
-import fi.aalto.cs.apluscourses.intellij.utils.ModuleUtils
 import org.junit.Assert.{assertEquals, assertSame, assertTrue}
 import org.junit.Test
+import org.mockito.Mockito.{mock, when}
 
 class ReplActionHeavyTest extends HeavyPlatformTestCase with TestHelperScala {
 
   @Test
   def testGetModuleWorkDirWithValidModuleWorks(): Unit = {
     //  given
-    createAndAddModule("fakeModulePath", "fakeModuleId")
-    val modules = getModuleManager.getModules
     val configuration = getConfiguration
-    val module = modules.apply(1)
-    val replTitle = s"REPL for ${module.getName}"
+    val module = mock(classOf[Module])
+    when(module.getProject).thenReturn(mock(classOf[Project]))
+    when(module.getModuleFilePath).thenReturn("directory/module.iml")
+    when(module.getName).thenReturn("mock module")
+
+    val replTitle = s"REPL for mock module"
     val action = new ReplAction
-    val moduleWorkDir = ModuleUtils.getModuleDirectory(modules.head)
+    val moduleWorkDir = "directory"
 
     //  when
     action.setConfigurationFields(configuration, moduleWorkDir, module)

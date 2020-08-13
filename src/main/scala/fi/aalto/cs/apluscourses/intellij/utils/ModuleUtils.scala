@@ -1,7 +1,6 @@
 package fi.aalto.cs.apluscourses.intellij.utils
 
-import java.nio.file.{Files, Path}
-
+import collection.JavaConverters.asJavaCollection
 import com.intellij.openapi.actionSystem.{CommonDataKeys, DataContext}
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.keymap.KeymapManager
@@ -11,9 +10,17 @@ import com.intellij.openapi.roots.OrderEnumerator
 import com.intellij.openapi.util.io.FileUtilRt
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings
 import fi.aalto.cs.apluscourses.utils.PluginResourceBundle.{getAndReplaceText, getText}
+import java.io.IOException
+import java.nio.charset.StandardCharsets
+import java.nio.file.Paths
+
+import org.apache.commons.io.FileUtils
 import org.jetbrains.annotations.NotNull
+import org.slf4j.LoggerFactory
 
 object ModuleUtils {
+
+  val logger = LoggerFactory.getLogger(ModuleUtils.getClass)
 
   def getModuleDirectory(@NotNull module: Module): String =
     FileUtilRt.toSystemIndependentName(ModuleUtilCore.getModuleDirPath(module))
@@ -108,22 +115,39 @@ object ModuleUtils {
     moduleFilePath.substring(0, lastIndexOf + 1) // scalastyle:ignore
   }
 
-  def initialReplCommandsFileExist(@NotNull replCommandsFileName: String,
-                                   @NotNull moduleFilePath: String): Boolean = {
-    val moduleDir = getModuleRoot(moduleFilePath)
-    Files.exists(Path.of(moduleDir + replCommandsFileName))
+  /**
+   * Creates the initial REPL commands file if it does not exist yet, otherwise does nothing.
+   */
+  def createInitialReplCommandsFile(@NotNull module: Module): Unit = {
+    val commands = getInitialReplCommands(module)
+    val file = Paths
+      .get(getModuleDirectory(module), PluginSettings.MODULE_REPL_INITIAL_COMMANDS_FILE_NAME)
+      .toFile
+    if (commands.nonEmpty && !file.exists) {
+      try FileUtils.writeLines(file, StandardCharsets.UTF_8.name, asJavaCollection(commands))
+      catch {
+        case ex: IOException => logger.error("Could not write REPL initial commands file", ex)
+      }
+    }
   }
 
+  def initialReplCommandsFileExists(@NotNull module: Module): Boolean =
+    Paths
+      .get(getModuleDirectory(module), PluginSettings.MODULE_REPL_INITIAL_COMMANDS_FILE_NAME)
+      .toFile
+      .exists
+
   @NotNull
-  def getReplInitialCommandsForModule(module: Module): Array[String] = {
-    PluginSettings
-      .getInstance()
-      .getMainViewModel(module.getProject)
-      .courseViewModel
-      .get()
-      .getModel
-      .getReplInitialCommands
-      .getOrDefault(module.getName, Array.empty)
+  def getInitialReplCommands(module: Module): Array[String] = {
+    Option(
+      PluginSettings
+        .getInstance()
+        .getMainViewModel(module.getProject)
+        .courseViewModel
+        .get())
+      .map(_.getModel.getReplInitialCommands.getOrDefault(module.getName, Array.empty))
+      .getOrElse(Array.empty)
+
   }
 
   def isTopLevelModule(module: Module): Boolean = module.getName.equals(module.getProject.getName)

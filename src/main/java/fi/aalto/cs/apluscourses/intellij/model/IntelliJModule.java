@@ -20,11 +20,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.ArrayUtils;
 import org.jetbrains.annotations.CalledWithReadLock;
 import org.jetbrains.annotations.CalledWithWriteLock;
 import org.jetbrains.annotations.NotNull;
@@ -78,7 +76,6 @@ class IntelliJModule
   @Override
   public void load() throws ComponentLoadException {
     WriteAction.runAndWait(this::loadInternal);
-    writeReplInitialCommandsFile();
   }
 
   @CalledWithWriteLock
@@ -183,40 +180,4 @@ class IntelliJModule
     return ReadAction.compute(() -> VfsUtil.hasDirectoryChanges(fullPath, timeStamp));
   }
 
-  /*
-   * Creates a file with commands to be run on Scala REPL startup (in case commands are listed for
-   * the Module in course configuration file).
-   */
-  // todo: test me!
-  private void writeReplInitialCommandsFile() {
-    String[] commands = getReplInitialCommandsForModule(
-        Objects.requireNonNull(this.getPlatformObject()));
-    if (!ArrayUtils.isEmpty(commands)) {
-
-      File file = new File(getFullPath() + "/"
-          + PluginSettings.MODULE_REPL_INITIAL_COMMANDS_FILE_NAME);
-      try {
-        FileUtils.writeLines(file, StandardCharsets.UTF_8.name(), Arrays.asList(commands));
-      } catch (IOException ex) {
-        logger.error("Could not write REPL initial commands file", ex);
-      }
-      FileUtilRt.createIfNotExists(file);
-    }
-  }
-
-
-  //todo: remove as a duplicate (of a Scala object code that I could not call directly)
-  // ReplUtils.getReplInitialCommandsForModule(...) & test me!
-  @NotNull
-  protected static String[] getReplInitialCommandsForModule(
-      com.intellij.openapi.module.Module module) {
-    return ReadAction.compute(() -> PluginSettings
-        .getInstance()
-        .getMainViewModel(module.getProject())
-        .courseViewModel
-        .get()
-        .getModel()
-        .getReplInitialCommands()
-        .getOrDefault(module.getName(), ArrayUtils.EMPTY_STRING_ARRAY));
-  }
 }
