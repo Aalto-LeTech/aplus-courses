@@ -9,7 +9,7 @@ Marked with a github issue label "manual testing."
 
 + The menus of IntelliJ are bit different on Mac than on Linux/Windows.
   For example, to open settings on Linux, one can navigate to **File > Settings...**
-  but on Mac, the same thing is achieved with **IntelliJ IDEA > Preferences...**.
+  but on Mac, the same result is achieved with **IntelliJ IDEA > Preferences...**.
 
 + Similarly, on Mac one does not use right-click
   but, instead, clicks holding **Ctrl** key down.
@@ -37,7 +37,7 @@ Marked with a github issue label "manual testing."
   uninstall all of them, one by one.
 - Restart IntelliJ IDEA.
 
-### 1 Install **A+ Courses** plugin.
+### 1 Install **A+ Courses** plugin
 
 **1.1** In the startup window, choose **Configure > Plugins**.
 
@@ -99,24 +99,17 @@ Marked with a github issue label "manual testing."
 
 **2.10** Click **OK** to close **Project Structure** window.
 
-### 3 Observe startup notification
-
-**3.1** ASSERTION: The screen shows a notification telling
-        you are using a pre-release version of the plugin.
-
-**3.2** ASSERTION: The version mentioned in the notification is correct.
-
-![Version notification](images/version-notification.png)
-
-- You can check the version of the plugin in **File > Settings... > Plugins > Installed**
-
 ### 4 About window
 
 **4.1** From the main menu, choose **A+ > About A+ Plugin**.
 
 **4.2** The about window is shown.
 
-**4.3** Close the window by clicking **OK**.
+**4.3** Click the highlighted "A+ Courses Plugin website" link.
+
+**4.4** ASSERTION: A+ Courses Plugin page on JetBrains website opens in the browser.
+
+**4.5** Close the window by clicking **OK**.
 
 ### 5 Turn project into A+ project
 
@@ -328,3 +321,35 @@ imported packages: **o1, o1.llama, o1.randomtext**.
 **8.4** Double click **SwingExamples** in **Modules** list.
 
 **8.5** ASSERTION: **SwingExamples** shows up as a module in the project tree.
+
+### 9 Authentication with A+ LMS
+
+**9.1** From the main menu, choose **A+ > Set A+ Token**.
+
+![Set token](images/setToken.png)
+
+**9.2** Click on the highlighted "What's my token?" link.
+
+**9.3** ASSERTION: Browser opens your profile page in A+ LMS (login, if asked).
+
+**9.4** Copy **API Access Token** from the web page and insert it into the prompt, click "OK".
+
+**9.5** ASSERTION: The assignments tab is now populated with Weekly assignments.
+
+![Assignments shown](images/assignments-shown.png)
+
+**9.6** Close the IDE.
+
+**9.7** Open the IDE with the project.
+ 
+**9.8** If [safe password storage](https://jetbrains.org/intellij/sdk/docs/basics/persisting_sensitive_data.html?search=sensitive#storage) 
+is activated in the OS.
+
+**9.9** ASSERTION: Assignments tab is still populated.
+
+### 10 Assignments
+
+
+
+
+
