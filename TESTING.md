@@ -349,9 +349,7 @@ imported packages: **o1, o1.llama, o1.randomtext**.
 **8.8** ASSERTION: Assignments tab is still populated. If [safe password storage](https://jetbrains.org/intellij/sdk/docs/basics/persisting_sensitive_data.html?search=sensitive#storage) 
 is activated in the OS.
 
-### 9 Assignments
-
-#### Part I: Submitting an Assignment.
+### 9 Assignments submission
 
 **9.1** Expand **Week 1** and select **Assignment 2 (GoodStuff)**, and hit 
 **Submit A+ Assignment**.
@@ -373,27 +371,6 @@ module GoodStuff." error is shown.
  feedback is available. (You may also always check any of your submissions on the course website in 
  A+.)** notification is shown.
  
-#### Part II. Checking the submission.
- 
-**9.8** Wait a while.
-
-**9.9** ASSERTION: The **Submission feedback available Feedback for Assignment 2 (Goodstuff) is now 
-available. Click the link below to open the feedback.** notification is shown.
-
-**9.10** ASSERTION: Submission is added under the corresponding Assignment.
-
-![Assignments submission](images/submission_results.png)
-
-**9.11** Click on the hyperlink **Click the link below to open the feedback.**
-
-**9.12** ASSERTION: Browser opens Submission page in A+ LMS (login, if asked).
-
-**9.13** Select a submission and hit the **Open A+ Submission** button.
-
-![Assignments submission view](images/open_browser_button.png)
-
-**9.14** ASSERTION: Browser opens Submission page in A+ LMS (login, if asked).
-
 ### 10 Refreshing Modules and Assignments
 
 **10.1** Hit the **Refresh Assignments** or **Refresh Modules** button.
@@ -401,3 +378,22 @@ available. Click the link below to open the feedback.** notification is shown.
 ![Refresh](images/refresh.png)
 
 **10.2** ASSERTION: Assignments list is collapsed.
+ 
+### 11 Checking the submission
+ 
+**11.1** ASSERTION: The **Submission feedback available Feedback for Assignment 2 (Goodstuff) is now 
+available. Click the link below to open the feedback.** notification is shown.
+
+**11.2** ASSERTION: Submission is added under the corresponding Assignment.
+
+![Assignments submission](images/submission_results.png)
+
+**11.3** Click on the hyperlink **Click the link below to open the feedback.**
+
+**11.4** ASSERTION: Browser opens Submission page in A+ LMS (login, if asked).
+
+**11.5** Select a submission and hit the **Open A+ Submission** button.
+
+![Assignments submission view](images/open_browser_button.png)
+
+**11.6** ASSERTION: Browser opens Submission page in A+ LMS (login, if asked).
