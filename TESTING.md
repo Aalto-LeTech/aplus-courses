@@ -1,10 +1,6 @@
 Manual testing
 ==============
 
-[The complete list](https://github.com/Aalto-LeTech/intellij-plugin/labels/manual%20testing)
-of features that require writing a manual testing manual.
-Marked with a github issue label "manual testing."
-
 ### Notes
 
 + The menus of IntelliJ are bit different on Mac than on Linux/Windows.
@@ -66,9 +62,13 @@ Marked with a github issue label "manual testing."
 - From a popup menu, choose **Install Plugin from Disk...**
 - Select the ZIP file on the popped-up file selector.
 
-**1.3** ASSERTION: IntelliJ IDEA requires a restart.
+**1.3** ASSERTION: IntelliJ IDEA asks to install **Scala Plugin**.
 
-**1.4** Restart IntelliJ IDEA.
+**1.4** ASSERTION: IntelliJ IDEA requires a restart.
+
+**1.5** Install **Scala Plugin** by clicking **OK**.
+
+**1.6** Restart IntelliJ IDEA.
 
 ### 2 Initialize a new project
 
@@ -105,7 +105,7 @@ Marked with a github issue label "manual testing."
 
 **3.2** The about window is shown.
 
-**3.3** Click the highlighted "A+ Courses Plugin website" link.
+**3.3** Click the highlighted **A+ Courses Plugin website** link.
 
 **3.4** ASSERTION: A+ Courses Plugin page on JetBrains website opens in the browser.
 
@@ -356,8 +356,8 @@ is activated in the OS.
 
 ![Submit](images/submit_button.png)
 
-**9.2** ASSERTION: The "Could not find module: The A+ Courses plugin could not find the 
-module GoodStuff." error is shown.
+**9.2** ASSERTION: The **Could not find module: The A+ Courses plugin could not find the 
+module GoodStuff.** error is shown.
 
 **9.3** Go to **Modules** tab and import **GoodStuff** module like described in **6.1**
 
@@ -368,8 +368,7 @@ module GoodStuff." error is shown.
 **9.6** Select **Submit as: > Submit alone**, click **OK**.
 
 **9.7** ASSERTION: The **Assignment successfully sent for assessment: You will be notified here when
- feedback is available. (You may also always check any of your submissions on the course website in 
- A+.)** notification is shown.
+ feedback is available. (You may also always check any ... )** notification is shown.
  
 ### 10 Refreshing Modules and Assignments
 
