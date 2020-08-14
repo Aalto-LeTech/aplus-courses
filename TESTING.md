@@ -17,7 +17,7 @@ Marked with a github issue label "manual testing."
 ### 0 Setup
 
 **0.1** Make sure you are using a clean installment of
-        **IntelliJ IDEA Community** version **2020.1**.
+        **IntelliJ IDEA Community** version **2020.2**.
 - You can download IntelliJ IDEA Community from https://www.jetbrains.com/idea/download.
 - In case you use pre-existing installment of IntelliJ IDEA,
   you can use one of the following ways to restore to the default settings:
@@ -123,25 +123,29 @@ Marked with a github issue label "manual testing."
 
 **4.5** ASSERTION: **Leave IntelliJ settings unchanged** checkbutton is not checked.
 
-**4.6** Check "leave unchanged" checkbox and click OK.
+**4.6** Check "leave unchanged" checkbox.
 
-**4.7** ASSERTION: **O1Library** appears as a module in the project tree.
+**4.7** Select the desired language of assignments submission and click **OK**.
 
-**4.8** ASSERTION: **A+ Courses** tool window shows a list of O1 modules in **Modules** list.
+![turn dialog](images/turn_dialog.png)
 
-**4.9** ASSERTION: **O1Library** is marked **Installed** in **Modules** list.
+**4.8** ASSERTION: **O1Library** appears as a module in the project tree.
 
-**4.10** Once again, navigate to **A+ > Turn project into A+ course project**.
+**4.9** ASSERTION: **A+ Courses** tool window shows a list of O1 modules in **Modules** list.
 
-**4.11** Leave the checkbox unchecked and click **OK**.
+**4.10** ASSERTION: **O1Library** is marked **Installed** in **Modules** list.
 
-**4.12** The screen shows a dialog that tells the IDE will be restarted.
+**4.11** Once again, navigate to **A+ > Turn project into A+ course project**.
 
-**4.13** Click **OK**.
+**4.12** Leave the checkbox unchecked and click **OK**.
 
-**4.14** The IDE restarts.
+**4.13** The screen shows a dialog that tells the IDE will be restarted.
 
-**4.15** ASSERTION: The theme has changed to dark.
+**4.14** Click **OK**.
+
+**4.15** The IDE restarts.
+
+**4.16** ASSERTION: The theme has changed to dark.
 
 ### 5 Importing modules
 
@@ -322,19 +326,19 @@ imported packages: **o1, o1.llama, o1.randomtext**.
 
 **7.5** ASSERTION: **SwingExamples** shows up as a module in the project tree.
 
-### 9 Authentication with A+ LMS
+### 8 Authentication with A+ LMS
 
 **8.1** From the main menu, choose **A+ > Set A+ Token**.
 
 ![Set token](images/setToken.png)
 
-**8.2** Click on the highlighted "What's my token?" link.
+**8.2** Click on the highlighted **What's my token?** link.
 
 **8.3** ASSERTION: Browser opens your profile page in A+ LMS (login, if asked).
 
-**8.4** Copy **API Access Token** from the web page and insert it into the prompt, click "OK".
+**8.4** Copy **API Access Token** from the web page and insert it into the prompt, click **OK**.
 
-**8.5** ASSERTION: The assignments tab is populated with Weekly assignments.
+**8.5** ASSERTION: The assignments tab is populated with weekly assignments.
 
 ![Assignments shown](images/assignments-shown.png)
 
@@ -342,10 +346,8 @@ imported packages: **o1, o1.llama, o1.randomtext**.
 
 **8.7** Open the IDE with the project.
  
-**8.8** If [safe password storage](https://jetbrains.org/intellij/sdk/docs/basics/persisting_sensitive_data.html?search=sensitive#storage) 
+**8.8** ASSERTION: Assignments tab is still populated. If [safe password storage](https://jetbrains.org/intellij/sdk/docs/basics/persisting_sensitive_data.html?search=sensitive#storage) 
 is activated in the OS.
-
-**8.9** ASSERTION: Assignments tab is still populated.
 
 ### 9 Assignments
 
@@ -357,7 +359,7 @@ is activated in the OS.
 ![Submit](images/submit_button.png)
 
 **9.2** ASSERTION: The "Could not find module: The A+ Courses plugin could not find the 
-module GoodStuff." warning is shown.
+module GoodStuff." error is shown.
 
 **9.3** Go to **Modules** tab and import **GoodStuff** module like described in **6.1**
 
@@ -367,16 +369,16 @@ module GoodStuff." warning is shown.
 
 **9.6** Select **Submit as: > Submit alone**, click **OK**.
 
-**9.7** ASSERTION: The "Assignment successfully sent for assessment: You will be notified here when
+**9.7** ASSERTION: The **Assignment successfully sent for assessment: You will be notified here when
  feedback is available. (You may also always check any of your submissions on the course website in 
- A+.)" notification is shown.
+ A+.)** notification is shown.
  
 #### Part II. Checking the submission.
  
 **9.8** Wait a while.
 
-**9.9** ASSERTION: The "Submission feedback available Feedback for Assignment 2 (Goodstuff) is now 
-available. Click the link below to open the feedback." notification is shown.
+**9.9** ASSERTION: The **Submission feedback available Feedback for Assignment 2 (Goodstuff) is now 
+available. Click the link below to open the feedback.** notification is shown.
 
 **9.10** ASSERTION: Submission is added under the corresponding Assignment.
 
