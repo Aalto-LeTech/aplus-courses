@@ -57,14 +57,15 @@ public class CourseFileManager {
                                          @NotNull String language)
       throws IOException {
     courseFile = getCourseFile(project);
+
     if (courseFile.exists()) {
       load(project);
+    } else {
+      // createAndLoad never overwrites modules metadata of an existing course file.
+      this.modulesMetadata = new HashMap<>();
     }
     this.courseUrl = courseUrl;
     this.language = language;
-    if (this.modulesMetadata == null) {
-      this.modulesMetadata = new HashMap<>(); // Don't overwrite existing modules metadata
-    }
     writeCourseFile(
         new JSONObject()
             .put(URL_KEY, courseUrl.toString())
