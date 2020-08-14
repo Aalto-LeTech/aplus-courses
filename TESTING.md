@@ -334,7 +334,7 @@ imported packages: **o1, o1.llama, o1.randomtext**.
 
 **9.4** Copy **API Access Token** from the web page and insert it into the prompt, click "OK".
 
-**9.5** ASSERTION: The assignments tab is now populated with Weekly assignments.
+**9.5** ASSERTION: The assignments tab is populated with Weekly assignments.
 
 ![Assignments shown](images/assignments-shown.png)
 
@@ -349,7 +349,45 @@ is activated in the OS.
 
 ### 10 Assignments
 
+#### Part I: Submitting an Assignment.
 
+**10.1** Expand **Week 1** and select **Assignment 2 (GoodStuff)**, and hit 
+**Submit A+ Assignment**.
 
+![Submit](images/submit_button.png)
 
+**10.2** ASSERTION: The "Could not find module: The A+ Courses plugin could not find the 
+module GoodStuff." warning is shown.
 
+**10.3** Go to **Modules** tab and import **GoodStuff** module like described in **6.1**
+
+**10.4** Repeat **10.1**.
+
+**10.5** ASSERTION: **Submit Assignment** dialog is shown.
+
+**10.6** Select **Submit as: > Submit alone**, click **OK**.
+
+**10.7** ASSERTION: The "Assignment successfully sent for assessment: You will be notified here when
+ feedback is available. (You may also always check any of your submissions on the course website in 
+ A+.)" notification is shown.
+ 
+#### Part II. Checking the submission.
+ 
+**10.8** Wait a while.
+
+**10.9** ASSERTION: The "Submission feedback available Feedback for Assignment 2 (Goodstuff) is now 
+available. Click the link below to open the feedback." notification is shown.
+
+**10.10** ASSERTION: Submission is added under the corresponding Assignment.
+
+![Assignments submission](images/submission_results.png)
+
+**10.11** Click on the hyperlink **Click the link below to open the feedback.**
+
+**10.12** ASSERTION: Browser opens Submission page in A+ LMS (login, if asked).
+
+**10.13** Select a submission and hit the **Open A+ Submission** button.
+
+![Assignments submission view](images/open_browser_button.png)
+
+**10.14** ASSERTION: Browser opens Submission page in A+ LMS (login, if asked).
