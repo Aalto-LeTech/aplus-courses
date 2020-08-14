@@ -189,8 +189,7 @@ Manual testing
 - Read [this](https://confluence.jetbrains.com/pages/viewpage.action?pageId=53326891)
   if you don't know how to open and use REPL.
 
-**6.2** In **REPL configuration** window that opens,
-        uncheck **Don't show this window again** checkbox.
+**6.2** In **REPL configuration** window that opens, uncheck **Don't show this window again** checkbox.
 
 ![REPL dialog](images/repl-dialog.png)
 
@@ -376,7 +375,7 @@ module GoodStuff.** error is shown.
 
 ![Refresh](images/refresh.png)
 
-**10.2** ASSERTION: Assignments list is collapsed.
+**10.2** ASSERTION: Assignments submission has appeared in the list os corresponding submissions.
  
 ### 11 Checking the submission
  
