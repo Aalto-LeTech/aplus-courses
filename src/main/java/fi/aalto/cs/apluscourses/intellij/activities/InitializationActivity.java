@@ -69,9 +69,12 @@ public class InitializationActivity implements Background {
     }
 
     try {
-      boolean isCourseProject = CourseFileManager.getInstance().load(project);
+      boolean isCourseProject = PluginSettings
+          .getInstance()
+          .getCourseFileManager(project)
+          .load();
       if (isCourseProject) {
-        return CourseFileManager.getInstance().getCourseUrl();
+        return PluginSettings.getInstance().getCourseFileManager(project).getCourseUrl();
       } else {
         return null;
       }

@@ -25,9 +25,14 @@ public class APlusProject {
     this.project = project;
   }
 
+  /**
+   * Returns the IntelliJ IDEA project corresponding to this project. Throws {@link
+   * IllegalStateException} if the project is disposed.
+   * @return
+   */
   @CalledWithReadLock
   @NotNull
-  private Project getProject() {
+  public Project getProject() {
     if (project.isDisposed()) {
       throw new IllegalStateException("Project is disposed.");
     }

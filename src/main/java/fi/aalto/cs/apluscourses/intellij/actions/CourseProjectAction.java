@@ -229,7 +229,10 @@ public class CourseProjectAction extends AnAction {
                                       @NotNull String language) {
     try {
       if (createCourseFile) {
-        CourseFileManager.getInstance().createAndLoad(project, courseUrl, language);
+        PluginSettings
+            .getInstance()
+            .getCourseFileManager(project)
+            .createAndLoad(courseUrl, language);
       }
       return true;
     } catch (IOException e) {

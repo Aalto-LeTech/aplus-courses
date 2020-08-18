@@ -65,8 +65,6 @@ public class CourseFileManagerTest {
    */
   @Before
   public void initializeObjects() throws IOException {
-    manager = CourseFileManager.getInstance();
-    manager.clear();
     project = mock(Project.class);
     File tempDir = FileUtilRt.createTempDirectory("test", "", true);
     doReturn(tempDir.toString()).when(project).getBasePath();
@@ -76,6 +74,8 @@ public class CourseFileManagerTest {
         .toFile();
     threads = new ArrayList<>(NUM_THREADS);
     threadFailed = new AtomicBoolean(false);
+
+    manager = new CourseFileManager(project);
   }
 
   @Test
@@ -88,7 +88,7 @@ public class CourseFileManagerTest {
     for (int i = 0; i < NUM_THREADS; ++i) {
       threads.add(new Thread(() -> {
         try {
-          manager.createAndLoad(project, url, language);
+          manager.createAndLoad(url, language);
         } catch (IOException e) {
           threadFailed.set(true);
         }
@@ -134,7 +134,7 @@ public class CourseFileManagerTest {
 
     Assert.assertTrue(courseFile.exists());
 
-    manager.createAndLoad(project, newUrl, newLanguage);
+    manager.createAndLoad(newUrl, newLanguage);
 
     Assert.assertEquals(
         "CourseFileManager#createAndLoad overwrites the URL of the existing course file",
@@ -169,7 +169,7 @@ public class CourseFileManagerTest {
       threads.add(new Thread(() -> {
         try {
           // Load should return true
-          threadFailed.compareAndSet(false, !manager.load(project));
+          threadFailed.compareAndSet(false, !manager.load());
         } catch (IOException e) {
           threadFailed.set(true);
         }
@@ -193,20 +193,20 @@ public class CourseFileManagerTest {
 
   @Test
   public void testLoadWithNoCourseFile() throws IOException {
-    boolean courseFileExists = manager.load(project);
+    boolean courseFileExists = manager.load();
     Assert.assertFalse("Load should return false when no course file exists", courseFileExists);
   }
 
   @Test
   public void testAddEntryForModule() throws IOException, InterruptedException {
     URL url = new URL("http://localhost:8000");
-    manager.createAndLoad(project, url, "en");
+    manager.createAndLoad(url, "en");
     for (int i = 0; i < NUM_THREADS; ++i) {
       Module module = new ModelExtensions.TestModule("name" + i, url, "id" + i, "lid" + i,
           ZonedDateTime.now());
       Runnable runnable = () -> {
         try {
-          manager.addEntryForModule(module);
+          manager.addModuleEntry(module);
         } catch (IOException e) {
           threadFailed.set(true);
         }
@@ -248,9 +248,7 @@ public class CourseFileManagerTest {
       );
 
       threads.add(new Thread(() -> {
-        ModuleMetadata metadata
-            = CourseFileManager.getInstance().getModulesMetadata().get(moduleName);
-
+        ModuleMetadata metadata = manager.getModulesMetadata().get(moduleName);
         threadFailed.compareAndSet(false, !moduleId.equals(metadata.getModuleId()));
         threadFailed.compareAndSet(false, !downloadedAt.equals(metadata.getDownloadedAt()));
       }));
@@ -263,7 +261,7 @@ public class CourseFileManagerTest {
 
     FileUtils.writeStringToFile(courseFile, courseFileJson.toString(), StandardCharsets.UTF_8);
 
-    CourseFileManager.getInstance().load(project);
+    manager.load();
 
     startAndJoinEach(threads);
 

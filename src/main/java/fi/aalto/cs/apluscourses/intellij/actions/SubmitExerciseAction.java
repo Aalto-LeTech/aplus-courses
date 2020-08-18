@@ -146,7 +146,10 @@ public class SubmitExerciseAction extends AnAction {
 
     Exercise exercise = selectedExercise.getModel();
     Course course = courseViewModel.getModel();
-    String language = CourseFileManager.getInstance().getLanguage();
+    String language = PluginSettings
+        .getInstance()
+        .getCourseFileManager(project)
+        .getLanguage();
     ExerciseDataSource exerciseDataSource = course.getExerciseDataSource();
 
     SubmissionInfo submissionInfo = exerciseDataSource.getSubmissionInfo(exercise, authentication);

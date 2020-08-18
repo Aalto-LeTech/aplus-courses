@@ -85,7 +85,10 @@ class IntelliJModule
   private void loadInternal() throws ComponentLoadException {
     try {
       project.getModuleManager().loadModule(getImlFile().toString());
-      CourseFileManager.getInstance().addEntryForModule(this);
+      PluginSettings
+          .getInstance()
+          .getCourseFileManager(project.getProject())
+          .addModuleEntry(this);
     } catch (Exception e) {
       throw new ComponentLoadException(getName(), e);
     }
