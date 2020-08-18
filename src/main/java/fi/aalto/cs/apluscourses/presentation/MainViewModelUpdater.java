@@ -9,7 +9,7 @@ import fi.aalto.cs.apluscourses.dal.TokenAuthentication;
 import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory;
 import fi.aalto.cs.apluscourses.intellij.notifications.NewModulesVersionsNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
-import fi.aalto.cs.apluscourses.intellij.utils.CourseFileManager;
+import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Module;
@@ -64,7 +64,10 @@ public class MainViewModelUpdater {
       if (project.isDisposed() || !project.isOpen()) {
         return null;
       }
-      return CourseFileManager.getInstance().getCourseUrl();
+      return PluginSettings
+          .getInstance()
+          .getCourseFileManager(project)
+          .getCourseUrl();
     });
   }
 
