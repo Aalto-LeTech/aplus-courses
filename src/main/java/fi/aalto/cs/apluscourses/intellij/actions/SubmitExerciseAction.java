@@ -19,7 +19,6 @@ import fi.aalto.cs.apluscourses.intellij.notifications.SuccessfulSubmissionNotif
 import fi.aalto.cs.apluscourses.intellij.services.Dialogs;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
-import fi.aalto.cs.apluscourses.intellij.utils.CourseFileManager;
 import fi.aalto.cs.apluscourses.intellij.utils.VfsUtil;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.Course;
@@ -146,7 +145,10 @@ public class SubmitExerciseAction extends AnAction {
 
     Exercise exercise = selectedExercise.getModel();
     Course course = courseViewModel.getModel();
-    String language = CourseFileManager.getInstance().getLanguage();
+    String language = PluginSettings
+        .getInstance()
+        .getCourseFileManager(project)
+        .getLanguage();
     ExerciseDataSource exerciseDataSource = course.getExerciseDataSource();
 
     SubmissionInfo submissionInfo = exerciseDataSource.getSubmissionInfo(exercise, authentication);

@@ -31,7 +31,7 @@ import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.SuccessfulSubmissionNotification;
 import fi.aalto.cs.apluscourses.intellij.services.Dialogs;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
-import fi.aalto.cs.apluscourses.intellij.utils.CourseFileManager;
+import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Exercise;
@@ -163,9 +163,11 @@ public class SubmitExerciseActionTest {
 
     project = mock(Project.class);
     doReturn(FileUtilRt.getTempDirectory()).when(project).getBasePath();
-    CourseFileManager.getInstance().createAndLoad(
-        project, new URL("http://localhost:8000"), language);
-    assertEquals(language, CourseFileManager.getInstance().getLanguage());
+
+    PluginSettings
+        .getInstance()
+        .getCourseFileManager(project)
+        .createAndLoad(new URL("http://localhost:8000"), language);
 
     filePath = modulePath.resolve(fileName);
 
