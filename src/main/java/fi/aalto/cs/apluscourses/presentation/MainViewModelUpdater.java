@@ -60,6 +60,14 @@ public class MainViewModelUpdater {
   private static int prevents = 0;
   private static final Object preventsLock = new Object();
 
+  /*
+  TODO: the following for methods shouldn't be static. MainViewModelUpdater instances are project
+  specific, however there are some issues with how CourseProjectAction first starts auto-installs
+  and only then creates the main view model updater, which means prevent can't be used by the
+  auto-installs in a project-specific way. This is why these methods are static and prevent all
+  instances of MainViewModelUpdater from running. This should be improved in the future.
+   */
+
   /**
    * Prevents any main view model updater from running until {@link MainViewModelUpdater#enable}
    * gets called. If a main view model update is occurring when this method gets called, then this
@@ -90,6 +98,30 @@ public class MainViewModelUpdater {
       if (prevents == 0) {
         preventsLock.notifyAll();
       }
+    }
+  }
+
+  /**
+   * Waits until there are no prevents, and then disables prevents until {@link
+   * MainViewModelUpdater#updateDone} is called.
+   */
+  private static void beginUpdate() {
+    try {
+      synchronized (preventsLock) {
+        while (prevents != 0) {
+          preventsLock.wait();
+        }
+      }
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+    }
+    prevents = -1;
+  }
+
+  private static void updateDone() {
+    synchronized (preventsLock) {
+      prevents = 0;
+      preventsLock.notifyAll();
     }
   }
 
@@ -165,12 +197,8 @@ public class MainViewModelUpdater {
       // Sonar dislikes infinite loops...
       while (true) { //NOSONAR
 
-        synchronized (preventsLock) {
-          while (prevents != 0) {
-            preventsLock.wait();
-          }
-          prevents = -1;
-        }
+        // Wait until there are no prevents and then disable prevents.
+        beginUpdate();
 
         URL courseUrl = getCourseUrl();
         Course course = getCourse(courseUrl);
@@ -179,10 +207,9 @@ public class MainViewModelUpdater {
         // again after sleeping.
         updateMainViewModel(course);
 
-        synchronized (preventsLock) {
-          prevents = 0;
-          preventsLock.notifyAll();
-        }
+        // Enable prevents again.
+        updateDone();
+
         Thread.sleep(updateInterval); // Good night :)
       }
     } catch (InterruptedException e) {
