@@ -26,14 +26,10 @@ import org.jetbrains.annotations.CalledWithReadLock;
 import org.jetbrains.annotations.CalledWithWriteLock;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class IntelliJModule
     extends Module
     implements IntelliJComponent<com.intellij.openapi.module.Module> {
-
-  private static final Logger logger = LoggerFactory.getLogger(IntelliJModule.class);
 
   @NotNull
   private final APlusProject project;
