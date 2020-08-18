@@ -10,7 +10,6 @@ import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory;
 import fi.aalto.cs.apluscourses.intellij.notifications.NewModulesVersionsNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
-import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Module;
 import java.net.URL;
@@ -58,6 +57,74 @@ public class MainViewModelUpdater {
     this.thread = new Thread(this::run);
   }
 
+  private static int prevents = 0;
+  private static final Object preventsLock = new Object();
+
+  /*
+  TODO: the following for methods shouldn't be static. MainViewModelUpdater instances are project
+  specific, however there are some issues with how CourseProjectAction first starts auto-installs
+  and only then creates the main view model updater, which means prevent can't be used by the
+  auto-installs in a project-specific way. This is why these methods are static and prevent all
+  instances of MainViewModelUpdater from running. This should be improved in the future.
+   */
+
+  /**
+   * Prevents any main view model updater from running until {@link MainViewModelUpdater#enable}
+   * gets called. If a main view model update is occurring when this method gets called, then this
+   * method blocks until the update has completed. If this method is called multiple times, then
+   * each call needs a corresponding call to {@link MainViewModelUpdater#enable} before a main view
+   * model update can occur.
+   */
+  public static void prevent() {
+    synchronized (preventsLock) {
+      try {
+        while (prevents == -1) {
+          preventsLock.wait();
+        }
+        ++prevents;
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+      }
+    }
+  }
+
+  /**
+   * See {@link MainViewModelUpdater#prevent}. This method must never get called unless {@link
+   * MainViewModelUpdater#prevent} has been called at least once.
+   */
+  public static void enable() {
+    synchronized (preventsLock) {
+      --prevents;
+      if (prevents == 0) {
+        preventsLock.notifyAll();
+      }
+    }
+  }
+
+  /**
+   * Waits until there are no prevents, and then disables prevents until {@link
+   * MainViewModelUpdater#updateDone} is called.
+   */
+  private static void beginUpdate() {
+    try {
+      synchronized (preventsLock) {
+        while (prevents != 0) {
+          preventsLock.wait();
+        }
+      }
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+    }
+    prevents = -1;
+  }
+
+  private static void updateDone() {
+    synchronized (preventsLock) {
+      prevents = 0;
+      preventsLock.notifyAll();
+    }
+  }
+
   @NotNull
   private URL getCourseUrl() {
     return ReadAction.compute(() -> {
@@ -93,17 +160,6 @@ public class MainViewModelUpdater {
     CourseViewModel courseViewModel = mainViewModel.courseViewModel.get();
     if (courseViewModel != null) {
       Course current = courseViewModel.getModel();
-      /*
-       * Updating the course view model while modules are installing leads to "Error in
-       * dependencies" in the modules tool window. The installations actually still work, and the
-       * error state disappears on the next update, but it's still bad UI/UX. Therefore we check if
-       * the currently loaded course has any "active" components, and only update the course view
-       * model if it doesn't.
-       */
-      if (current.getComponents().stream().anyMatch(Component::isActive)) {
-        return;
-      }
-
       current.unregister();
     }
 
@@ -140,14 +196,21 @@ public class MainViewModelUpdater {
     try {
       // Sonar dislikes infinite loops...
       while (true) { //NOSONAR
+
+        // Wait until there are no prevents and then disable prevents.
+        beginUpdate();
+
         URL courseUrl = getCourseUrl();
         Course course = getCourse(courseUrl);
         // If parsing the course configuration file fails, then we just silently go back to sleep.
         // For an example, if the internet connection was down, then we may succeed when we try
         // again after sleeping.
         updateMainViewModel(course);
-        Thread.sleep(updateInterval); // Good night :)
 
+        // Enable prevents again.
+        updateDone();
+
+        Thread.sleep(updateInterval); // Good night :)
       }
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
