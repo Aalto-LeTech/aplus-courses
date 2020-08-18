@@ -40,7 +40,6 @@ public class CourseFileManagerTest {
   private static final String MODULE_DOWNLOADED_AT_KEY = "downloadedAt";
 
   private CourseFileManager manager;
-  private Project project;
   private File courseFile;
   private List<Thread> threads;
   private AtomicBoolean threadFailed;
@@ -65,7 +64,7 @@ public class CourseFileManagerTest {
    */
   @Before
   public void initializeObjects() throws IOException {
-    project = mock(Project.class);
+    Project project = mock(Project.class);
     File tempDir = FileUtilRt.createTempDirectory("test", "", true);
     doReturn(tempDir.toString()).when(project).getBasePath();
     FileUtilRt.createTempDirectory(tempDir, Project.DIRECTORY_STORE_FOLDER, "", true);

@@ -5,7 +5,6 @@ import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.util.io.FileUtilRt;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
-import fi.aalto.cs.apluscourses.intellij.utils.CourseFileManager;
 import fi.aalto.cs.apluscourses.intellij.utils.ListDependenciesPolicy;
 import fi.aalto.cs.apluscourses.intellij.utils.VfsUtil;
 import fi.aalto.cs.apluscourses.model.ComponentLoadException;

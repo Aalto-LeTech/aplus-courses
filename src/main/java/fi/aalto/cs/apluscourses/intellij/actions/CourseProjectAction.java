@@ -119,11 +119,6 @@ public class CourseProjectAction extends AnAction {
       return;
     }
 
-    // Note:
-    // IntelliJModelFactory uses CourseFileManager#getModulesMetadata, so this temporary course
-    // instance may contain some weird module metadata when switching between course projects (the
-    // local course file of the previous project remains loaded until another one is loaded).
-    // However, as this course instance is never displayed anywhere in the UI, it shouldn't matter.
     Course course = tryGetCourse(project, selectedCourseUrl);
     if (course == null) {
       return;
