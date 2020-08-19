@@ -375,11 +375,11 @@ module GoodStuff.** error is shown.
 
 ![Refresh](images/refresh.png)
 
-**10.2** ASSERTION: Assignments submission has appeared in the list os corresponding submissions.
+**10.2** ASSERTION: Assignments submission has appeared in the list of corresponding submissions.
  
 ### 11 Checking the submission
  
-**11.1** ASSERTION: The **Submission feedback available Feedback for Assignment 2 (Goodstuff) is now 
+**11.1** ASSERTION: The **Submission feedback available Feedback for Assignment 2 (GoodStuff) is now 
 available. Click the link below to open the feedback.** notification is shown.
 
 **11.2** ASSERTION: Submission is added under the corresponding Assignment.
