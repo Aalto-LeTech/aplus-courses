@@ -61,7 +61,7 @@ public class CourseProjectViewModel {
 
   public String[] getLanguages() {
     // O1_SPECIFIC: these should come from the course configuration file
-    return new String[] {"en", "fi"};
+    return new String[] {"fi", "en"};
   }
 
   public boolean shouldShowCurrentSettings() {
@@ -75,7 +75,7 @@ public class CourseProjectViewModel {
   private static class LanguageNotSelectedError implements ValidationError {
     @Override
     public @NotNull String getDescription() {
-      return getText("ui.courseProjectViewModel.selectLanguage");
+      return getText("ui.courseProjectViewModel.languageNotSelected");
     }
   }
 }
