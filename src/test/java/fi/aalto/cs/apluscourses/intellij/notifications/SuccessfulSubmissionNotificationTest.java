@@ -19,7 +19,7 @@ public class SuccessfulSubmissionNotificationTest {
         notification.getTitle());
     assertEquals("The content is correct",
         "You will be notified here when feedback is available. "
-            + "(You may also always check any of your submissions on the course web site in A+.)",
+            + "(You may also always check any of your submissions on the course website in A+.)",
         notification.getContent()
     );
   }
