@@ -30,3 +30,7 @@ Ideally, the issues are **solved within one working-week time** for ones marked 
 ## Styling
 
 This project uses slightly modified google checkstyle rules from [Checkstyle GitHub](https://github.com/checkstyle/checkstyle/blob/checkstyle-8.12/src/main/resources/google_checks.xml) for code formatting. The particular version applied to this project is stored at: `checkstyle/`. Please note, that the checkstyle file itself is licensed under **GNU LGPL** (stored at that same folder). Scala code is checked using the [default rules from the scalastyle repository](https://github.com/scalastyle/scalastyle/blob/master/src/main/resources/default_config.xml). The configuration file is located in `scalastyle` and it is licensed under the **Apache-2.0** license.  
+
+## Credits
+
+We would like to acknowledge **[@valtonv2](https://github.com/valtonv2)**, **[@xiaoxiaobt](https://github.com/xiaoxiaobt)** and **Ida Iskala** for their help in making this project better, more durable.
