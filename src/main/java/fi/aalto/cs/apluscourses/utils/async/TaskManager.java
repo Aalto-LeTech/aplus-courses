@@ -1,6 +1,8 @@
 package fi.aalto.cs.apluscourses.utils.async;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -53,5 +55,10 @@ public interface TaskManager<T> {
 
   default void joinAll(List<T> tasks) {
     join(all(tasks));
+  }
+
+  default Awaitable run(Runnable runnable) {
+    T task = fork(runnable);
+    return () -> join(task);
   }
 }

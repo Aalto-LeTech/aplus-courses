@@ -2,8 +2,12 @@ package fi.aalto.cs.apluscourses.ui.courseproject;
 
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
+import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationType;
+import com.intellij.notification.Notifications;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
+import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.presentation.CourseProjectViewModel;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,10 +28,4 @@ public class CourseProjectActionDialogsImpl implements CourseProjectActionDialog
         getText("ui.courseProject.dialogs.showRestartDialog.cancelText"),
         Messages.getQuestionIcon()) == Messages.OK;
   }
-
-  @Override
-  public void showErrorDialog(@NotNull String message, @NotNull String title) {
-    Messages.showErrorDialog(message, title);
-  }
-
 }

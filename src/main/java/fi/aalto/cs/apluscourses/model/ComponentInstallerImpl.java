@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.model;
 
 import fi.aalto.cs.apluscourses.presentation.MainViewModelUpdater;
+import fi.aalto.cs.apluscourses.utils.async.Awaitable;
 import fi.aalto.cs.apluscourses.utils.async.TaskManager;
 import java.io.IOException;
 import java.util.List;
@@ -65,8 +66,8 @@ public class ComponentInstallerImpl<T> implements ComponentInstaller {
   }
 
   @Override
-  public void installAsync(@NotNull List<Component> components, @Nullable Runnable callback) {
-    taskManager.fork(() -> {
+  public Awaitable installAsync(@NotNull List<Component> components, @Nullable Runnable callback) {
+    return taskManager.run(() -> {
       install(components);
       if (callback != null) {
         callback.run();
