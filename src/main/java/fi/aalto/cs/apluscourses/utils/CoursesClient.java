@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
@@ -25,6 +27,9 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 
 /**
  * A utility class with methods for getting resources from a remote. For most use cases, the {@link
@@ -198,6 +203,7 @@ public class CoursesClient {
     }
   }
 
+  @NotNull
   private static ContentBody getContentBody(@NotNull Object value) {
     if (value instanceof String) {
       return new StringBody((String) value, ContentType.MULTIPART_FORM_DATA);
@@ -238,18 +244,41 @@ public class CoursesClient {
   }
 
   /**
-   * Throws a {@link InvalidAuthenticationException} if the response status code is 401 or 403.
-   * Throws a {@link UnexpectedResponseException} if the response status code isn't 2xx. Otherwise
-   * does nothing.
+   * Throws a {@link UnexpectedResponseException} if the response status code isn't 2xx. If the
+   * response body includes JSON with an array for the key "errors" or a string for the key
+   * "detail", then those messages are included in the exception message.
    */
-  private static void requireSuccessStatusCode(@NotNull HttpResponse response)
-      throws UnexpectedResponseException {
+  public static void requireSuccessStatusCode(@NotNull HttpResponse response)
+      throws IOException {
     int statusCode = response.getStatusLine().getStatusCode();
-    if (statusCode == 401 || statusCode == 403) { // TODO: should 403 be removed from this check?
-      throw new InvalidAuthenticationException(response, "Invalid authentication");
-    } else if (statusCode < 200 || statusCode >= 300) {
-      throw new UnexpectedResponseException(response, "Status code doesn't indicate success");
+    if (statusCode >= 200 && statusCode < 300) {
+      return;
     }
+
+    String details;
+    try {
+      HttpEntity entity = response.getEntity();
+      if (entity == null) {
+        details = "" + statusCode + " " + response.getStatusLine().getReasonPhrase();
+      } else {
+        // Two possibilities: {"errors": [...]} and {"detail": "..."}
+        JSONObject json = new JSONObject(new JSONTokener(
+            new ByteArrayInputStream(EntityUtils.toByteArray(entity))
+        ));
+        details = json.optString("detail");
+        if (details == null || details.trim().isEmpty()) {
+          details = String.join(", ", json
+              .getJSONArray("errors")
+              .toList()
+              .stream()
+              .map(obj -> obj.toString())
+              .collect(Collectors.toList()));
+        }
+      }
+    } catch (JSONException e) {
+      details = "" + statusCode + " " + response.getStatusLine().getReasonPhrase();
+    }
+    throw new UnexpectedResponseException(response, details);
   }
 
   /**
