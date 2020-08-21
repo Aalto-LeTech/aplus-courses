@@ -17,7 +17,7 @@ public class CourseFileError extends Notification {
   public CourseFileError(Exception e) {
     super(PluginSettings.A_PLUS,
         getText("notification.CourseFileError.title"),
-        getAndReplaceText("notification.CourseFileError.content", e.getMessage()),
+        getAndReplaceText("notification.CourseFileError.content", e.getLocalizedMessage()),
         NotificationType.ERROR);
   }
 }

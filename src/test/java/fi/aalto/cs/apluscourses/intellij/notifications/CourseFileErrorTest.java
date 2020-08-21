@@ -16,7 +16,7 @@ public class CourseFileErrorTest extends TestCase {
     String errorMessage = "This is just a test! :D";
     Exception e = new Exception(errorMessage);
     Notification notification = new CourseFileError(e);
-    assertEquals(PluginSettings.A_PLUS, notification.getGroupId());
+    assertEquals(PluginSettings.A_PLUS, notification.getTitle());
     assertEquals(NotificationType.ERROR, notification.getType());
     assertThat(notification.getContent(), containsString(errorMessage));
   }
