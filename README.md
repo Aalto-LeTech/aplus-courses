@@ -13,6 +13,10 @@ This repository hosts the code for [IntelliJ IDEA](https://www.jetbrains.com/ide
 
 The project is developed under [Aalto Le-Tech research group](https://research.cs.aalto.fi/LeTech/) and is steered by **[@jsorva](https://github.com/jsorva)** and **[@oseppala](https://github.com/oseppala)**.
 
+## Code of Conduct
+
+The team follows Aalto University general [Code of Conduct](https://www.aalto.fi/en/aalto-university/code-of-conduct).
+
 ## Maintenance
 
 If you have discovered an issue you'd like to report, please turn to [Teaching Assistants (TA)](https://plus.cs.aalto.fi/o1/2020/w01/ch01/#course-staff), so they would handle. For (head) TAs, please create issues directly here: [Aalto-LeTech/intellij-plugin/issues](https://github.com/Aalto-LeTech/intellij-plugin/issues).
