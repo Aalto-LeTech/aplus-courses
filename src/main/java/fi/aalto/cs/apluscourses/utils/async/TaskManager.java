@@ -56,9 +56,4 @@ public interface TaskManager<T> {
   default void joinAll(List<T> tasks) {
     join(all(tasks));
   }
-
-  default Awaitable run(Runnable runnable) {
-    T task = fork(runnable);
-    return () -> join(task);
-  }
 }

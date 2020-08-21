@@ -1,7 +1,5 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
-import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
-
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -15,7 +13,6 @@ import fi.aalto.cs.apluscourses.intellij.notifications.CourseFileError;
 import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
-import fi.aalto.cs.apluscourses.intellij.utils.CourseFileManager;
 import fi.aalto.cs.apluscourses.model.ComponentInstaller;
 import fi.aalto.cs.apluscourses.model.ComponentInstallerImpl;
 import fi.aalto.cs.apluscourses.model.Course;
@@ -25,15 +22,11 @@ import fi.aalto.cs.apluscourses.ui.InstallerDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogsImpl;
 import fi.aalto.cs.apluscourses.utils.PostponedRunnable;
-import fi.aalto.cs.apluscourses.utils.async.Awaitable;
 import fi.aalto.cs.apluscourses.utils.async.SimpleAsyncTaskManager;
-import fi.aalto.cs.apluscourses.utils.async.TaskManager;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Objects;
-import java.util.concurrent.Executor;
-import java.util.concurrent.FutureTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -66,8 +59,6 @@ public class CourseProjectAction extends AnAction {
   @NotNull
   private final Notifier notifier;
 
-  private final Executor executor;
-
   /**
    * Construct a course project action with the given parameters.
    *
@@ -96,8 +87,7 @@ public class CourseProjectAction extends AnAction {
                              @NotNull PostponedRunnable ideRestarter,
                              @NotNull CourseProjectActionDialogs dialogs,
                              @NotNull InstallerDialogs.Factory installerDialogsFactory,
-                             @NotNull Notifier notifier,
-                             @NotNull Executor executor) {
+                             @NotNull Notifier notifier) {
     this.courseFactory = courseFactory;
     this.createCourseFile = createCourseFile;
     this.settingsImporter = settingsImporter;
@@ -106,7 +96,6 @@ public class CourseProjectAction extends AnAction {
     this.dialogs = dialogs;
     this.installerDialogsFactory = installerDialogsFactory;
     this.notifier = notifier;
-    this.executor = executor;
   }
 
   /**
@@ -125,7 +114,6 @@ public class CourseProjectAction extends AnAction {
     });
     this.installerDialogsFactory = InstallerDialogs::new;
     this.notifier = Notifications.Bus::notify;
-    this.executor = runnable -> new Thread(runnable).start();
   }
 
   @Override
@@ -157,8 +145,7 @@ public class CourseProjectAction extends AnAction {
       return;
     }
 
-    Awaitable installDone = startAutoInstallsWithRestart(course, project);
-    Objects.requireNonNull(installDone); // because of checkstyle stupidity
+    startAutoInstallsWithRestart(course, !courseProjectViewModel.userOptsOutOfSettings(), project);
 
     if (!tryImportProjectSettings(project, course)) {
       return;
@@ -172,13 +159,6 @@ public class CourseProjectAction extends AnAction {
       // The course file not created in testing.
       PluginSettings.getInstance().createUpdatingMainViewModel(project);
     }
-
-    executor.execute(() -> {
-      installDone.await();
-      if (!courseProjectViewModel.userOptsOutOfSettings()) {
-        ideRestarter.run();
-      }
-    });
   }
 
   @Override
@@ -232,10 +212,17 @@ public class CourseProjectAction extends AnAction {
     }
   }
 
-  private Awaitable startAutoInstallsWithRestart(@NotNull Course course, @NotNull Project project) {
+
+  private void startAutoInstallsWithRestart(@NotNull Course course,
+                                            boolean restartWhenFinished,
+                                            @NotNull Project project) {
     ComponentInstaller.Dialogs installerDialogs = installerDialogsFactory.getDialogs(project);
     ComponentInstaller installer = installerFactory.getInstallerFor(course, installerDialogs);
-    return installer.installAsync(course.getAutoInstallComponents());
+    if (!restartWhenFinished) {
+      installer.installAsync(course.getAutoInstallComponents());
+    } else {
+      installer.installAsync(course.getAutoInstallComponents(), ideRestarter);
+    }
   }
 
   /**
@@ -273,6 +260,7 @@ public class CourseProjectAction extends AnAction {
       settingsImporter.importProjectSettings(project, course);
       return true;
     } catch (IOException e) {
+      logger.error("Failed to import project settings", e);
       notifier.notify(new NetworkErrorNotification(e), project);
       return false;
     }
@@ -289,6 +277,7 @@ public class CourseProjectAction extends AnAction {
       settingsImporter.importIdeSettings(course);
       return true;
     } catch (IOException e) {
+      logger.error("Failed to import IDE settings", e);
       notifier.notify(new NetworkErrorNotification(e), project);
       return false;
     }

@@ -156,8 +156,7 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
         ideRestarter,
         dialogs,
         installerDialogsFactory,
-        notifier,
-        Runnable::run);
+        notifier);
 
     action.actionPerformed(anActionEvent);
 
@@ -187,8 +186,7 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
         ideRestarter,
         dialogs,
         installerDialogsFactory,
-        notifier,
-        Runnable::run);
+        notifier);
 
     action.actionPerformed(anActionEvent);
 
@@ -227,8 +225,7 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
         ideRestarter,
         dialogs,
         installerDialogsFactory,
-        notifier,
-        Runnable::run);
+        notifier);
 
     action.actionPerformed(anActionEvent);
 
@@ -255,8 +252,7 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
         ideRestarter,
         new TestDialogs(false, true, true),
         installerDialogsFactory,
-        notifier,
-        Runnable::run);
+        notifier);
 
     action.actionPerformed(anActionEvent);
 
@@ -277,8 +273,7 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
         ideRestarter,
         new TestDialogs(true, true, true),
         installerDialogsFactory,
-        notifier,
-        Runnable::run);
+        notifier);
 
     action.actionPerformed(anActionEvent);
 
@@ -302,8 +297,7 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
         ideRestarter,
         new TestDialogs(false, false, true),
         installerDialogsFactory,
-        notifier,
-        Runnable::run);
+        notifier);
 
     action.actionPerformed(anActionEvent);
 
