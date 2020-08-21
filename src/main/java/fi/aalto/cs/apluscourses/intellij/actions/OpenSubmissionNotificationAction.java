@@ -8,6 +8,7 @@ import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.SubmissionRenderingErrorNotification;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import fi.aalto.cs.apluscourses.model.UrlRenderer;
+import fi.aalto.cs.apluscourses.utils.PluginResourceBundle;
 import org.jetbrains.annotations.NotNull;
 
 public class OpenSubmissionNotificationAction extends NotificationAction {
@@ -31,7 +32,7 @@ public class OpenSubmissionNotificationAction extends NotificationAction {
   public OpenSubmissionNotificationAction(@NotNull SubmissionResult submissionResult,
                                           @NotNull UrlRenderer submissionRenderer,
                                           @NotNull Notifier notifier) {
-    super("Click here to open the feedback.");
+    super(PluginResourceBundle.getText("notification.OpenSubmissionNotificationAction.content"));
     this.submissionResult = submissionResult;
     this.submissionRenderer = submissionRenderer;
     this.notifier = notifier;
