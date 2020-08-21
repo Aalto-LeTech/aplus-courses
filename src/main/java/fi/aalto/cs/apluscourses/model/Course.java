@@ -1,6 +1,5 @@
 package fi.aalto.cs.apluscourses.model;
 
-import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
 import fi.aalto.cs.apluscourses.utils.ResourceException;
 import fi.aalto.cs.apluscourses.utils.Resources;
@@ -36,6 +35,9 @@ public abstract class Course implements ComponentSource {
   private final String name;
 
   @NotNull
+  private final String aplusUrl;
+
+  @NotNull
   private final List<Module> modules;
 
   @NotNull
@@ -69,6 +71,7 @@ public abstract class Course implements ComponentSource {
    */
   protected Course(@NotNull String id,
                    @NotNull String name,
+                   @NotNull String aplusUrl,
                    @NotNull List<Module> modules,
                    @NotNull List<Library> libraries,
                    @NotNull Map<Long, Map<String, String>> exerciseModules,
@@ -77,6 +80,7 @@ public abstract class Course implements ComponentSource {
                    @NotNull Map<String, String[]> replInitialCommands) {
     this.id = id;
     this.name = name;
+    this.aplusUrl = aplusUrl;
     this.modules = modules;
     this.resourceUrls = resourceUrls;
     this.libraries = libraries;
@@ -126,21 +130,27 @@ public abstract class Course implements ComponentSource {
     JSONObject jsonObject = getCourseJsonObject(reader, sourcePath);
     String courseId = getCourseId(jsonObject, sourcePath);
     String courseName = getCourseName(jsonObject, sourcePath);
+    String aplusUrl = getCourseAPlusUrl(jsonObject, sourcePath);
     List<Module> courseModules = getCourseModules(jsonObject, sourcePath, factory);
     Map<Long, Map<String, String>> exerciseModules
         = getCourseExerciseModules(jsonObject, sourcePath);
     Map<String, URL> resourceUrls = getCourseResourceUrls(jsonObject, sourcePath);
     List<String> autoInstallComponentNames
         = getCourseAutoInstallComponentNames(jsonObject, sourcePath);
-    Map<String, String[]> replInitialCommands = getReplInitialCommands(jsonObject,
-        sourcePath);
-    return factory.createCourse(courseId, courseName, courseModules,
+    Map<String, String[]> replInitialCommands
+        = getCourseReplInitialCommands(jsonObject, sourcePath);
+    return factory.createCourse(
+        courseId,
+        courseName,
+        aplusUrl,
+        courseModules,
         //  libraries
         Collections.emptyList(),
         exerciseModules,
         resourceUrls,
         autoInstallComponentNames,
-        replInitialCommands);
+        replInitialCommands
+    );
   }
 
   /**
@@ -277,6 +287,17 @@ public abstract class Course implements ComponentSource {
   }
 
   @NotNull
+  private static String getCourseAPlusUrl(@NotNull JSONObject jsonObject, @NotNull String source)
+      throws MalformedCourseConfigurationFileException {
+    try {
+      return jsonObject.getString("aPlusUrl");
+    } catch (JSONException ex) {
+      throw new MalformedCourseConfigurationFileException(source,
+          "Missing or malformed \"aPlusUrl\" key", ex);
+    }
+  }
+
+  @NotNull
   private static List<Module> getCourseModules(@NotNull JSONObject jsonObject,
                                                @NotNull String source,
                                                @NotNull ModelFactory factory)
@@ -378,6 +399,36 @@ public abstract class Course implements ComponentSource {
     return autoInstallComponentNames;
   }
 
+  @NotNull
+  private static Map<String, String[]> getCourseReplInitialCommands(
+      @NotNull JSONObject jsonObject,
+      @NotNull String source)
+      throws MalformedCourseConfigurationFileException {
+    Map<String, String[]> replInitialCommands = new HashMap<>();
+    JSONObject replInitialCommandsJsonObject;
+    try {
+      replInitialCommandsJsonObject = jsonObject
+          .getJSONObject("repl").getJSONObject("initialCommands");
+
+      Iterable<String> keys = replInitialCommandsJsonObject::keys;
+      for (String moduleName : keys) {
+        String[] replCommands = replInitialCommandsJsonObject
+            .getJSONArray(moduleName)
+            .toList()
+            .stream()
+            .map(command -> (String) command)
+            .toArray(String[]::new);
+
+        replInitialCommands.put(moduleName, replCommands);
+      }
+    } catch (JSONException ex) {
+      throw new MalformedCourseConfigurationFileException(source,
+          "Expected moduleName-commands-pairs in \"repl\" object", ex);
+    }
+
+    return replInitialCommands;
+  }
+
   @Nullable
   @Override
   public Component getComponentIfExists(@NotNull String name) {
@@ -423,43 +474,17 @@ public abstract class Course implements ComponentSource {
   }
 
   @NotNull
+  public String getHtmlUrl() {
+    return aplusUrl;
+  }
+
+  @NotNull
   public String getApiUrl() {
-    //TODO This should be read from course config file
-    return PluginSettings.A_PLUS_API_BASE_URL;
+    return aplusUrl + "api/v2/";
   }
 
   @NotNull
   public Map<String, String[]> getReplInitialCommands() {
-    return replInitialCommands;
-  }
-
-  @NotNull
-  protected static Map<String, String[]> getReplInitialCommands(
-      @NotNull JSONObject jsonObject,
-      @NotNull String source)
-      throws MalformedCourseConfigurationFileException {
-    Map<String, String[]> replInitialCommands = new HashMap<>();
-    JSONObject replInitialCommandsJsonObject;
-    try {
-      replInitialCommandsJsonObject = jsonObject
-          .getJSONObject("repl").getJSONObject("initialCommands");
-
-      Iterable<String> keys = replInitialCommandsJsonObject::keys;
-      for (String moduleName : keys) {
-        String[] replCommands = replInitialCommandsJsonObject
-            .getJSONArray(moduleName)
-            .toList()
-            .stream()
-            .map(command -> (String) command)
-            .toArray(String[]::new);
-
-        replInitialCommands.put(moduleName, replCommands);
-      }
-    } catch (JSONException ex) {
-      throw new MalformedCourseConfigurationFileException(source,
-          "Expected moduleName-commands-pairs in \"repl\" object", ex);
-    }
-
     return replInitialCommands;
   }
 

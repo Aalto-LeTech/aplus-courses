@@ -1,15 +1,11 @@
 Manual testing
 ==============
 
-[The complete list](https://github.com/Aalto-LeTech/intellij-plugin/labels/manual%20testing)
-of features that require writing a manual testing manual.
-Marked with a github issue label "manual testing."
-
 ### Notes
 
 + The menus of IntelliJ are bit different on Mac than on Linux/Windows.
   For example, to open settings on Linux, one can navigate to **File > Settings...**
-  but on Mac, the same thing is achieved with **IntelliJ IDEA > Preferences...**.
+  but on Mac, the same result is achieved with **IntelliJ IDEA > Preferences...**.
 
 + Similarly, on Mac one does not use right-click
   but, instead, clicks holding **Ctrl** key down.
@@ -17,7 +13,7 @@ Marked with a github issue label "manual testing."
 ### 0 Setup
 
 **0.1** Make sure you are using a clean installment of
-        **IntelliJ IDEA Community** version **2020.1**.
+        **IntelliJ IDEA Community** version **2020.2**.
 - You can download IntelliJ IDEA Community from https://www.jetbrains.com/idea/download.
 - In case you use pre-existing installment of IntelliJ IDEA,
   you can use one of the following ways to restore to the default settings:
@@ -37,7 +33,7 @@ Marked with a github issue label "manual testing."
   uninstall all of them, one by one.
 - Restart IntelliJ IDEA.
 
-### 1 Install **A+ Courses** plugin.
+### 1 Install **A+ Courses** plugin
 
 **1.1** In the startup window, choose **Configure > Plugins**.
 
@@ -66,9 +62,13 @@ Marked with a github issue label "manual testing."
 - From a popup menu, choose **Install Plugin from Disk...**
 - Select the ZIP file on the popped-up file selector.
 
-**1.3** ASSERTION: IntelliJ IDEA requires a restart.
+**1.3** ASSERTION: IntelliJ IDEA asks to install **Scala Plugin**.
 
-**1.4** Restart IntelliJ IDEA.
+**1.4** ASSERTION: IntelliJ IDEA requires a restart.
+
+**1.5** Install **Scala Plugin** by clicking **OK**.
+
+**1.6** Restart IntelliJ IDEA.
 
 ### 2 Initialize a new project
 
@@ -99,232 +99,299 @@ Marked with a github issue label "manual testing."
 
 **2.10** Click **OK** to close **Project Structure** window.
 
-### 3 Observe startup notification
+### 3 About window
 
-**3.1** ASSERTION: The screen shows a notification telling
-        you are using a pre-release version of the plugin.
+**3.1** From the main menu, choose **A+ > About A+ Plugin**.
 
-**3.2** ASSERTION: The version mentioned in the notification is correct.
+**3.2** The about window is shown.
 
-![Version notification](images/version-notification.png)
+**3.3** Click the highlighted **A+ Courses Plugin website** link.
 
-- You can check the version of the plugin in **File > Settings... > Plugins > Installed**
+**3.4** ASSERTION: A+ Courses Plugin page on JetBrains website opens in the browser.
 
-### 4 About window
+**3.5** Close the window by clicking **OK**.
 
-**4.1** From the main menu, choose **A+ > About A+ Plugin**.
+### 4 Turn project into A+ project
 
-**4.2** The about window is shown.
+**4.1** From the main menu, choose **A+ > Turn project into A+ course project**.
 
-**4.3** Close the window by clicking **OK**.
+**4.2** On the dialog that opens, click **Cancel**.
 
-### 5 Turn project into A+ project
+**4.3** ASSERTION: The dialog closes but nothing else seems to happen.
 
-**5.1** From the main menu, choose **A+ > Turn project into A+ course project**.
+**4.4** Open **A+ > Turn project into A+ course project** again.
 
-**5.2** On the dialog that opens, click **Cancel**.
+**4.5** ASSERTION: **Leave IntelliJ settings unchanged** checkbutton is not checked.
 
-**5.3** ASSERTION: The dialog closes but nothing else seems to happen.
+**4.6** Check "leave unchanged" checkbox.
 
-**5.4** Open **A+ > Turn project into A+ course project** again.
+**4.7** Select the desired language of assignments submission and click **OK**.
 
-**5.5** ASSERTION: **Leave IntelliJ settings unchanged** checkbutton is not checked.
+![turn dialog](images/turn_dialog.png)
 
-**5.6** Check "leave unchanged" checkbox and click OK.
+**4.8** ASSERTION: **O1Library** appears as a module in the project tree.
 
-**5.7** ASSERTION: **O1Library** appears as a module in the project tree.
+**4.9** ASSERTION: **A+ Courses** tool window shows a list of O1 modules in **Modules** list.
 
-**5.8** ASSERTION: **A+ Courses** tool window shows a list of O1 modules in **Modules** list.
+**4.10** ASSERTION: **O1Library** is marked **Installed** in **Modules** list.
 
-**5.9** ASSERTION: **O1Library** is marked **Installed** in **Modules** list.
+**4.11** Once again, navigate to **A+ > Turn project into A+ course project**.
 
-**5.10** Once again, navigate to **A+ > Turn project into A+ course project**.
+**4.12** Leave the checkbox unchecked and click **OK**.
 
-**5.11** Leave the checkbox unchecked and click **OK**.
+**4.13** The screen shows a dialog that tells the IDE will be restarted.
 
-**5.12** The screen shows a dialog that tells the IDE will be restarted.
+**4.14** Click **OK**.
 
-**5.13** Click **OK**.
+**4.15** The IDE restarts.
 
-**5.14** The IDE restarts.
+**4.16** ASSERTION: The theme has changed to dark.
 
-**5.15** ASSERTION: The theme has changed to dark.
+### 5 Importing modules
 
-### 6 Importing modules
+**5.1** On **Modules** list  tool window, double-click **RobotTribes**.
 
-**6.1** On **Modules** list  tool window, double-click **RobotTribes**.
+**5.2** ASSERTION: **RobotTribes** and **Robots** appear as modules in the project tree.
 
-**6.2** ASSERTION: **RobotTribes** and **Robots** appear as modules in the project tree.
+**5.3** ASSERTION: **RobotTribes** and **Robots** are marked **Installed** in **Modules** list.
 
-**6.3** ASSERTION: **RobotTribes** and **Robots** are marked **Installed** in **Modules** list.
+**5.4** On **Modules** list, right-click **SwingExamples**.
 
-**6.4** On **Modules** list, right-click **SwingExamples**.
+**5.5** On the context menu that appears, choose **Import A+ module**.
 
-**6.5** On the context menu that appears, choose **Import A+ module**.
-
-**6.6** ASSERTION: **SwingExamples** appears as a module in the project tree.
+**5.6** ASSERTION: **SwingExamples** appears as a module in the project tree.
 
 ![Project tree](images/project-tree.png)
 
-**6.7** ASSERTION: **SwingExamples** is marked **Installed** in the modules list.
+**5.7** ASSERTION: **SwingExamples** is marked **Installed** in the modules list.
 
-**6.8** On **Modules** list, select multiple uninstalled modules.
+**5.8** On **Modules** list, select multiple uninstalled modules.
 - Hold **Ctrl**/**Cmd** key down while clicking to select many items.
 
-**6.9** Click the button with download icon
+**5.9** Click the button with download icon
         on the top of the **Modules** list
         to install all selected modules.
 
-**6.10** ASSERTION: The chosen modules appear in the project tree.
+**5.10** ASSERTION: The chosen modules appear in the project tree.
 
-**6.11** ASSERTION: The chosen modules are marked **Installed** in **Modules** list.
+**5.11** ASSERTION: The chosen modules are marked **Installed** in **Modules** list.
 
-**6.12** ASSERTION: All the installed modules have their dependencies correctly configured.
+**5.12** ASSERTION: All the installed modules have their dependencies correctly configured.
 - To check this, navigate to **File > Project Structure... > Modules**
   and make sure none of the modules is underlined in red.
 - Exit **Project Structure** window by clicking **Cancel**.
 
-### 7 Using Scala REPL
+### 6 Using Scala REPL
 
 #### Part I: Basic case
 
-**7.1** Open REPL by choosing a folder or a file within **SwingExamples** module.
+**6.1** Open REPL by choosing a folder or a file within **SwingExamples** module.
 - Read [this](https://confluence.jetbrains.com/pages/viewpage.action?pageId=53326891)
   if you don't know how to open and use REPL.
 
-**7.2** In **REPL configuration** window that opens,
-        uncheck **Don't show this window again** checkbox.
+**6.2** In **REPL configuration** window that opens, uncheck **Don't show this window again** checkbox.
 
 ![REPL dialog](images/repl-dialog.png)
 
-**7.3** Click **OK**.
+**6.3** Click **OK**.
 
-**7.4** ASSERTION: A REPL opens with **SwingExamples** in its title. 
+**6.4** ASSERTION: A REPL opens with **SwingExamples** in its title. 
 
-**7.5** ASSERTION: Welcome message contains the **SwingExamples** as module name and a list of 
+**6.5** ASSERTION: Welcome message contains the **SwingExamples** as module name and a list of 
 imported packages: **o1, o1.llama, o1.randomtext**.
 
-**7.6** ASSERTION: Welcome message contains `[Ctrl+Enter]` as one of the available commands.
+**6.6** ASSERTION: Welcome message contains `[Ctrl+Enter]` as one of the available commands.
 
 ![REPL welcome](images/repl-welcome.png)
 
-**7.7** Execute the following command in REPL:
+**6.7** Execute the following command in REPL:
 
     val RTA = RandomTextApp
 
-**7.8** ASSERTION: Results of the command has no errors and looks alike the following image.
+**6.8** ASSERTION: Results of the command has no errors and looks alike the following image.
 
 ![REPL RTA](images/repl-rta.png)
 
-**7.9** Execute the following two commands in REPL:
+**6.9** Execute the following two commands in REPL:
 
     sys.props("user.dir")
     sys.props("java.class.path")
 
-**7.10** ASSERTION: The output of the first statement is the directory of **SwingExamples** module.
+**6.10** ASSERTION: The output of the first statement is the directory of **SwingExamples** module.
 
 ![REPL verify](images/repl-verify.png)
 
-**7.11** ASSERTION: The output of the second statement (classpath) contains **SwingExamples**.
+**6.11** ASSERTION: The output of the second statement (classpath) contains **SwingExamples**.
 
-**7.12** Close the REPL by clicking X next to its tab title.
+**6.12** Close the REPL by clicking X next to its tab title.
 
-**7.13** The window opens asking whether REPL should be terminated.
+**6.13** The window opens asking whether REPL should be terminated.
         Check **Remember, don't ask again** checkbox and click **Terminate**.
 
 #### Part II: Changing parameters
 
-**7.14** Reopen REPL by choosing a folder or a file within **SwingExamples** module.
+**6.14** Reopen REPL by choosing a folder or a file within **SwingExamples** module.
 
-**7.15** Again, uncheck **Don't show this window again** checkbox.
+**6.15** Again, uncheck **Don't show this window again** checkbox.
 
-**7.16** Change **Working directory** to be the directory of **O1Library** module.
+**6.16** Change **Working directory** to be the directory of **O1Library** module.
 - Just replacing **SwingExamples** with **O1Library** in the path does the trick.
 
-**7.17** Change value for **Use classpath and SDK of module** dropdown list to be **O1Library**.
+**6.17** Change value for **Use classpath and SDK of module** dropdown list to be **O1Library**.
 
-**7.18** Click **OK**.
+**6.18** Click **OK**.
 
-**7.19** ASSERTION: A REPL opens with **O1Library** in its title.
+**6.19** ASSERTION: A REPL opens with **O1Library** in its title.
 
-**7.20** In REPL, execute the same two commands as in **7.9**.
+**6.20** In REPL, execute the same two commands as in **6.9**.
 
-**7.21** ASSERTION: The output of the first statement is the directory of **O1Library** module.
+**6.21** ASSERTION: The output of the first statement is the directory of **O1Library** module.
 
-**7.22** ASSERTION: The output of the second statement (classpath) contains **O1Library**
+**6.22** ASSERTION: The output of the second statement (classpath) contains **O1Library**
          (but not other modules, such as **SwingExamples**).
 
-**7.23** Close the REPL.
+**6.23** Close the REPL.
 
 #### Part III: Inconsistent parameters
 
-**7.24** Reopen REPL by choosing a folder or a file within **O1Library** module.
+**6.24** Reopen REPL by choosing a folder or a file within **O1Library** module.
 
-**7.25** This time, leave **Don't show this window again** checkbox checked.
+**6.25** This time, leave **Don't show this window again** checkbox checked.
 
-**7.26** Change **Working directory** to be the directory of **SwingExamples** module.
+**6.26** Change **Working directory** to be the directory of **SwingExamples** module.
 
-**7.27** Click **OK**.
+**6.27** Click **OK**.
 
-**7.28** ASSERTION: A REPL opens with **O1Library** in its title.
+**6.28** ASSERTION: A REPL opens with **O1Library** in its title.
 
-**7.29** In REPL, execute the same two commands as in **7.9**.
+**6.29** In REPL, execute the same two commands as in **6.9**.
 
-**7.30** ASSERTION: The output of the first statement is the directory of **SwingExamples** module.
+**6.30** ASSERTION: The output of the first statement is the directory of **SwingExamples** module.
 
-**7.31** ASSERTION: The output of the second statement (classpath) contains **O1Library**
+**6.31** ASSERTION: The output of the second statement (classpath) contains **O1Library**
          (but not other modules, such as **SwingExamples**).
 
-**7.32** Close the REPL.
+**6.32** Close the REPL.
 
 #### Part IV: Persistence of choice
 
-**7.33** Reopen REPL by choosing a folder or a file within **O1Library** module.
+**6.33** Reopen REPL by choosing a folder or a file within **O1Library** module.
 
-**7.34** ASSERTION: **REPL Configuration** window does not show up.
+**6.34** ASSERTION: **REPL Configuration** window does not show up.
 
-**7.35** ASSERTION: A REPL opens with **O1Library** in its title.
+**6.35** ASSERTION: A REPL opens with **O1Library** in its title.
 
-**7.36** Execute the same two commands as in **7.9**.
+**6.36** Execute the same two commands as in **6.9**.
 
-**7.37** ASSERTION: The output of the first statement is the directory of **O1Library** module.
+**6.37** ASSERTION: The output of the first statement is the directory of **O1Library** module.
 
-**7.38** ASSERTION: The output of the second statement (classpath) contains **O1Library**
+**6.38** ASSERTION: The output of the second statement (classpath) contains **O1Library**
          (but not other modules, such as **SwingExamples**).
 
-**7.39** Close the REPL.
+**6.39** Close the REPL.
 
-**7.40** Restart te IDE.
+**6.40** Restart te IDE.
 
-**7.41** Once the IDE has restarted, open the REPL by choosing any file.
+**6.41** Once the IDE has restarted, open the REPL by choosing any file.
 
-**7.42** ASSERTION: **REPL Configuration** window does not show up.
+**6.42** ASSERTION: **REPL Configuration** window does not show up.
 
-**7.43** ASSERTION: A REPL opens.
+**6.43** ASSERTION: A REPL opens.
 
-**7.44** Close the REPL.
+**6.44** Close the REPL.
 
 #### Part V: Settings reset.
 
-**7.45** From the main menu, choose **A+ > Reset A+ Courses Plugin Settings**.
+**6.45** From the main menu, choose **A+ > Reset A+ Courses Plugin Settings**.
 
-**7.46** Open REPL by choosing any file.
+**6.46** Open REPL by choosing any file.
 
-**7.47** ASSERTION: **REPL Configuration** window shows up.
+**6.47** ASSERTION: **REPL Configuration** window shows up.
 
-**7.48** Close the window by clicking **Cancel**.
+**6.48** Close the window by clicking **Cancel**.
 
-**7.49** ASSERTION: No REPL opens.
+**6.49** ASSERTION: No REPL opens.
 
-### 8 Removing a module
+### 7 Removing a module
 
-**8.1** Right-click **SwingExamples** in the project tree
+**7.1** Right-click **SwingExamples** in the project tree
         and choose **Remove Module** from the context menu.
 
-**8.2** Confirm the removal by clicking **Remove** on a popup window.
+**7.2** Confirm the removal by clicking **Remove** on a popup window.
 
-**8.3** ASSERTION: **SwingExamples** no longer shows **Installed** in **Modules** list.
+**7.3** ASSERTION: **SwingExamples** no longer shows **Installed** in **Modules** list.
 
-**8.4** Double click **SwingExamples** in **Modules** list.
+**7.4** Double click **SwingExamples** in **Modules** list.
 
-**8.5** ASSERTION: **SwingExamples** shows up as a module in the project tree.
+**7.5** ASSERTION: **SwingExamples** shows up as a module in the project tree.
+
+### 8 Authentication with A+ LMS
+
+**8.1** From the main menu, choose **A+ > Set A+ Token**.
+
+![Set token](images/setToken.png)
+
+**8.2** Click on the highlighted **What's my token?** link.
+
+**8.3** ASSERTION: Browser opens your profile page in A+ LMS (login, if asked).
+
+**8.4** Copy **API Access Token** from the web page and insert it into the prompt, click **OK**.
+
+**8.5** ASSERTION: The assignments tab is populated with weekly assignments.
+
+![Assignments shown](images/assignments-shown.png)
+
+**8.6** Close the IDE.
+
+**8.7** Open the IDE with the project.
+ 
+**8.8** ASSERTION: Assignments tab is still populated. If [safe password storage](https://jetbrains.org/intellij/sdk/docs/basics/persisting_sensitive_data.html?search=sensitive#storage) 
+is activated in the OS.
+
+### 9 Assignments submission
+
+**9.1** Expand **Week 1** and select **Assignment 2 (GoodStuff)**, and hit 
+**Submit A+ Assignment**.
+
+![Submit](images/submit_button.png)
+
+**9.2** ASSERTION: The **Could not find module: The A+ Courses plugin could not find the 
+module GoodStuff.** error is shown.
+
+**9.3** Go to **Modules** tab and import **GoodStuff** module like described in **6.1**
+
+**9.4** Repeat **9.1**.
+
+**9.5** ASSERTION: **Submit Assignment** dialog is shown.
+
+**9.6** Select **Submit as: > Submit alone**, click **OK**.
+
+**9.7** ASSERTION: The **Assignment successfully sent for assessment: You will be notified here when
+ feedback is available. (You may also always check any ... )** notification is shown.
+ 
+### 10 Refreshing Modules and Assignments
+
+**10.1** Hit the **Refresh Assignments** or **Refresh Modules** button.
+
+![Refresh](images/refresh.png)
+
+**10.2** ASSERTION: Assignments submission has appeared in the list of corresponding submissions.
+ 
+### 11 Checking the submission
+ 
+**11.1** ASSERTION: The **Submission feedback available Feedback for Assignment 2 (GoodStuff) is now 
+available. Click the link below to open the feedback.** notification is shown.
+
+**11.2** ASSERTION: Submission is added under the corresponding Assignment.
+
+![Assignments submission](images/submission_results.png)
+
+**11.3** Click on the hyperlink **Click the link below to open the feedback.**
+
+**11.4** ASSERTION: Browser opens Submission page in A+ LMS (login, if asked).
+
+**11.5** Select a submission and hit the **Open A+ Submission** button.
+
+![Assignments submission view](images/open_browser_button.png)
+
+**11.6** ASSERTION: Browser opens Submission page in A+ LMS (login, if asked).

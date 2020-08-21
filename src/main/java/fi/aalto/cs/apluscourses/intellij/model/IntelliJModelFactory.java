@@ -1,7 +1,7 @@
 package fi.aalto.cs.apluscourses.intellij.model;
 
 import com.intellij.openapi.project.Project;
-import fi.aalto.cs.apluscourses.intellij.utils.CourseFileManager;
+import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Library;
@@ -22,14 +22,21 @@ public class IntelliJModelFactory implements ModelFactory {
   private final Map<String, ModuleMetadata> modulesMetadata;
 
 
+  /**
+   * Construct a factory instance with the given project.
+   */
   public IntelliJModelFactory(@NotNull Project project) {
     this.project = new APlusProject(project);
-    modulesMetadata = CourseFileManager.getInstance().getModulesMetadata();
+    modulesMetadata = PluginSettings
+        .getInstance()
+        .getCourseFileManager(project)
+        .getModulesMetadata();
   }
 
   @Override
   public Course createCourse(@NotNull String id,
                              @NotNull String name,
+                             @NotNull String aplusUrl,
                              @NotNull List<Module> modules,
                              @NotNull List<Library> libraries,
                              @NotNull Map<Long, Map<String, String>> exerciseModules,
@@ -38,7 +45,7 @@ public class IntelliJModelFactory implements ModelFactory {
                              @NotNull Map<String, String[]> replInitialCommands) {
 
     IntelliJCourse course =
-        new IntelliJCourse(id, name, modules, libraries, exerciseModules, resourceUrls,
+        new IntelliJCourse(id, name, aplusUrl, modules, libraries, exerciseModules, resourceUrls,
             autoInstallComponentNames, replInitialCommands, project,
             new CommonLibraryProvider(project));
 

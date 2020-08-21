@@ -10,12 +10,17 @@ public class AuthenticationViewModel {
   @NotNull
   private final TokenAuthentication.Factory authenticationFactory;
 
+  @NotNull
+  private final String authenticationUrl;
+
   @Nullable
   private char[] token;
   private final Object lock = new Object();
 
-  public AuthenticationViewModel(@NotNull TokenAuthentication.Factory authenticationFactory) {
+  public AuthenticationViewModel(@NotNull TokenAuthentication.Factory authenticationFactory,
+                                 @NotNull String authenticationHtmlUrl) {
     this.authenticationFactory = authenticationFactory;
+    this.authenticationUrl = authenticationHtmlUrl;
   }
 
   /**
@@ -48,5 +53,10 @@ public class AuthenticationViewModel {
       Arrays.fill(token, '\0');
       return authentication;
     }
+  }
+
+  @NotNull
+  public String getAuthenticationHtmlUrl() {
+    return authenticationUrl;
   }
 }

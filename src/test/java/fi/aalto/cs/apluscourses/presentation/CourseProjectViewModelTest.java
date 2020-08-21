@@ -16,8 +16,10 @@ import org.junit.Test;
 
 public class CourseProjectViewModelTest {
 
-  private final Course emptyCourse = new ModelExtensions.TestCourse("123",
+  private final Course emptyCourse = new ModelExtensions.TestCourse(
+      "123",
       "NiceCourse",
+      "http://localhost:9999",
       //  modules
       Collections.emptyList(),
       //  libraries
@@ -29,7 +31,8 @@ public class CourseProjectViewModelTest {
       //  autoInstallComponentNames
       Collections.emptyList(),
       //  replInitialCommands
-      Collections.emptyMap());
+      Collections.emptyMap()
+  );
 
   @Test
   public void testInformationTextIncludesCourseName() {
@@ -71,7 +74,7 @@ public class CourseProjectViewModelTest {
   public void testGetLanguages() {
     CourseProjectViewModel courseProjectViewModel
         = new CourseProjectViewModel(emptyCourse, "987");
-    assertArrayEquals(new String[]{"en", "fi"}, courseProjectViewModel.getLanguages());
+    assertArrayEquals(new String[]{"fi", "en"}, courseProjectViewModel.getLanguages());
   }
 
   @Test

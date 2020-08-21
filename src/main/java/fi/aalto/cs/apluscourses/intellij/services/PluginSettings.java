@@ -11,6 +11,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.project.ProjectManagerListener;
 import fi.aalto.cs.apluscourses.intellij.dal.IntelliJPasswordStorage;
+import fi.aalto.cs.apluscourses.intellij.utils.CourseFileManager;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModelUpdater;
 import java.util.Arrays;
@@ -47,8 +48,6 @@ public class PluginSettings implements MainViewModelProvider {
   public static final String MODULE_REPL_INITIAL_COMMANDS_FILE_NAME
       = ".repl-commands";
 
-  public static final String A_PLUS_BASE_URL = "https://minus.cs.aalto.fi";
-  public static final String A_PLUS_API_BASE_URL = A_PLUS_BASE_URL + "/api/v2";
   public static final String A_PLUS = "A+";
 
   //  15 minutes in milliseconds
@@ -66,9 +65,14 @@ public class PluginSettings implements MainViewModelProvider {
   private final ConcurrentMap<Project, MainViewModelUpdater> mainViewModelUpdaters
       = new ConcurrentHashMap<>();
 
+  @NotNull
+  private final ConcurrentMap<Project, CourseFileManager> courseFileManagers
+      = new ConcurrentHashMap<>();
+
   private final ProjectManagerListener projectManagerListener = new ProjectManagerListener() {
     @Override
     public void projectClosed(@NotNull Project project) {
+      courseFileManagers.remove(project);
       MainViewModelUpdater updater = mainViewModelUpdaters.remove(project);
       if (updater != null) {
         updater.interrupt();
@@ -136,6 +140,15 @@ public class PluginSettings implements MainViewModelProvider {
       mainViewModelUpdater.start();
       return mainViewModelUpdater;
     });
+  }
+
+  /**
+   * Returns the {@link CourseFileManager} instance corresponding to the given project. A new
+   * instance is created if no instance exists yet.
+   */
+  @NotNull
+  public CourseFileManager getCourseFileManager(@NotNull Project project) {
+    return courseFileManagers.computeIfAbsent(project, CourseFileManager::new);
   }
 
   @NotNull

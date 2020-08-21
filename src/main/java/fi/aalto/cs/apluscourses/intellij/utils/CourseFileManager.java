@@ -25,12 +25,6 @@ public class CourseFileManager {
   private String language;
   private Map<String, ModuleMetadata> modulesMetadata;
 
-  private CourseFileManager() {
-
-  }
-
-  private static final CourseFileManager instance = new CourseFileManager();
-
   private static final String COURSE_FILE_NAME = "a-plus-project.json";
   private static final String URL_KEY = "url";
   private static final String LANGUAGE_KEY = "language";
@@ -38,8 +32,8 @@ public class CourseFileManager {
   private static final String MODULE_ID_KEY = "id";
   private static final String MODULE_DOWNLOADED_AT_KEY = "downloadedAt";
 
-  public static CourseFileManager getInstance() {
-    return instance;
+  public CourseFileManager(@NotNull Project project) {
+    courseFile = getCourseFile(project);
   }
 
   /**
@@ -47,24 +41,21 @@ public class CourseFileManager {
    * language. If a course file for already exists, then the URL and language is overwritten, but
    * the existing modules metadata in the course file is preserved.
    *
-   * @param project   The project for which the course file is created.
    * @param courseUrl The URL that gets added to the course file.
    * @param language  The language string that gets added to the course file.
    * @throws IOException If an IO error occurs.
    */
-  public synchronized void createAndLoad(@NotNull Project project,
-                                         @NotNull URL courseUrl,
-                                         @NotNull String language)
-      throws IOException {
-    courseFile = getCourseFile(project);
+  public synchronized void createAndLoad(@NotNull URL courseUrl,
+                                         @NotNull String language) throws IOException {
     if (courseFile.exists()) {
-      load(project);
+      load();
+    } else {
+      // createAndLoad never overwrites modules metadata of an existing course file.
+      // Should this be in the constructor?
+      this.modulesMetadata = new HashMap<>();
     }
     this.courseUrl = courseUrl;
     this.language = language;
-    if (this.modulesMetadata == null) {
-      this.modulesMetadata = new HashMap<>(); // Don't overwrite existing modules metadata
-    }
     writeCourseFile(
         new JSONObject()
             .put(URL_KEY, courseUrl.toString())
@@ -77,14 +68,12 @@ public class CourseFileManager {
    * Attempts to load the course file corresponding to the given project. Returns {@code false} if
    * the course file doesn't exist, {@code true} otherwise.
    *
-   * @param project The project from which the course file is loaded.
    * @return {@code true} if the course file was successfully loaded, {@code false} if the course
    *         file doesn't exist.
    * @throws IOException   If an IO error occurs while reading the course file.
    * @throws JSONException If the course file contains malformed JSON.
    */
-  public synchronized boolean load(@NotNull Project project) throws IOException {
-    courseFile = getCourseFile(project);
+  public synchronized boolean load() throws IOException {
     if (courseFile.exists()) {
       JSONObject jsonObject = readCourseFile();
       loadFromJsonObject(jsonObject);
@@ -93,8 +82,6 @@ public class CourseFileManager {
     return false;
   }
 
-
-
   /**
    * Adds an entry for the given module to the currently loaded course file. If an entry already
    * exists for the given module, then it is overwritten with the new entry.
@@ -102,7 +89,7 @@ public class CourseFileManager {
    * @param module The module for which an entry is added.
    * @throws IOException If an IO error occurs while writing to the course file.
    */
-  public synchronized void addEntryForModule(@NotNull Module module) throws IOException {
+  public synchronized void addModuleEntry(@NotNull Module module) throws IOException {
     ModuleMetadata newModuleMetadata = module.getMetadata();
     JSONObject newModuleObject = new JSONObject()
         .put(MODULE_ID_KEY, newModuleMetadata.getModuleId())
@@ -151,16 +138,6 @@ public class CourseFileManager {
   public synchronized Map<String, ModuleMetadata> getModulesMetadata() {
     // Return a copy so that later changes to the map aren't visible in the returned map.
     return modulesMetadata != null ? new HashMap<>(modulesMetadata) : Collections.emptyMap();
-  }
-
-  /**
-   * Clears the URL, language, and modules metadata stored in the singleton instance. The course
-   * file itself is not modified.
-   */
-  public synchronized void clear() {
-    this.courseUrl = null;
-    this.language = null;
-    this.modulesMetadata = null;
   }
 
   @NotNull

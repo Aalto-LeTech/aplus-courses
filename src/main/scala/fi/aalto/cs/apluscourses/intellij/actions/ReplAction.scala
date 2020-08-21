@@ -14,7 +14,6 @@ import fi.aalto.cs.apluscourses.intellij.Repl
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings.MODULE_REPL_INITIAL_COMMANDS_FILE_NAME
 import fi.aalto.cs.apluscourses.intellij.utils.ModuleUtils
-import fi.aalto.cs.apluscourses.intellij.utils.ModuleUtils.initialReplCommandsFileExist
 import fi.aalto.cs.apluscourses.presentation.ReplConfigurationFormModel
 import fi.aalto.cs.apluscourses.ui.repl.{ReplConfigurationDialog, ReplConfigurationForm}
 import fi.aalto.cs.apluscourses.utils.PluginResourceBundle.{getAndReplaceText, getText}
@@ -132,8 +131,8 @@ class ReplAction extends RunConsoleAction {
     configuration.setModule(module)
     configuration.setName(getAndReplaceText("ui.repl.console.name", module.getName))
 
-    if (initialReplCommandsFileExist(MODULE_REPL_INITIAL_COMMANDS_FILE_NAME,
-      module.getModuleFilePath)) {
+    ModuleUtils.createInitialReplCommandsFile(module)
+    if (ModuleUtils.initialReplCommandsFileExists(module)) {
       configuration.setMyConsoleArgs("-usejavacp -i " + MODULE_REPL_INITIAL_COMMANDS_FILE_NAME)
     }
   }

@@ -15,11 +15,10 @@ import fi.aalto.cs.apluscourses.intellij.notifications.MissingModuleNotification
 import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.NotSubmittableNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
-import fi.aalto.cs.apluscourses.intellij.notifications.SuccessfulSubmissionNotification;
+import fi.aalto.cs.apluscourses.intellij.notifications.SubmissionSentNotification;
 import fi.aalto.cs.apluscourses.intellij.services.Dialogs;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
-import fi.aalto.cs.apluscourses.intellij.utils.CourseFileManager;
 import fi.aalto.cs.apluscourses.intellij.utils.VfsUtil;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.Course;
@@ -146,7 +145,10 @@ public class SubmitExerciseAction extends AnAction {
 
     Exercise exercise = selectedExercise.getModel();
     Course course = courseViewModel.getModel();
-    String language = CourseFileManager.getInstance().getLanguage();
+    String language = PluginSettings
+        .getInstance()
+        .getCourseFileManager(project)
+        .getLanguage();
     ExerciseDataSource exerciseDataSource = course.getExerciseDataSource();
 
     SubmissionInfo submissionInfo = exerciseDataSource.getSubmissionInfo(exercise, authentication);
@@ -204,7 +206,7 @@ public class SubmitExerciseAction extends AnAction {
     new SubmissionStatusUpdater(
         exerciseDataSource, authentication, submissionUrl, selectedExercise.getPresentableName()
     ).start();
-    notifier.notify(new SuccessfulSubmissionNotification(), project);
+    notifier.notify(new SubmissionSentNotification(), project);
   }
 
   private void notifyNetworkError(@NotNull IOException exception, @Nullable Project project) {

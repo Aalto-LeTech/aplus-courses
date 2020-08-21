@@ -5,7 +5,6 @@ import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.util.io.FileUtilRt;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
-import fi.aalto.cs.apluscourses.intellij.utils.CourseFileManager;
 import fi.aalto.cs.apluscourses.intellij.utils.ListDependenciesPolicy;
 import fi.aalto.cs.apluscourses.intellij.utils.VfsUtil;
 import fi.aalto.cs.apluscourses.model.ComponentLoadException;
@@ -20,23 +19,17 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.ArrayUtils;
 import org.jetbrains.annotations.CalledWithReadLock;
 import org.jetbrains.annotations.CalledWithWriteLock;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class IntelliJModule
     extends Module
     implements IntelliJComponent<com.intellij.openapi.module.Module> {
-
-  private static final Logger logger = LoggerFactory.getLogger(IntelliJModule.class);
 
   @NotNull
   private final APlusProject project;
@@ -78,14 +71,16 @@ class IntelliJModule
   @Override
   public void load() throws ComponentLoadException {
     WriteAction.runAndWait(this::loadInternal);
-    writeReplInitialCommandsFile();
   }
 
   @CalledWithWriteLock
   private void loadInternal() throws ComponentLoadException {
     try {
       project.getModuleManager().loadModule(getImlFile().toString());
-      CourseFileManager.getInstance().addEntryForModule(this);
+      PluginSettings
+          .getInstance()
+          .getCourseFileManager(project.getProject())
+          .addModuleEntry(this);
     } catch (Exception e) {
       throw new ComponentLoadException(getName(), e);
     }
@@ -183,40 +178,4 @@ class IntelliJModule
     return ReadAction.compute(() -> VfsUtil.hasDirectoryChanges(fullPath, timeStamp));
   }
 
-  /*
-   * Creates a file with commands to be run on Scala REPL startup (in case commands are listed for
-   * the Module in course configuration file).
-   */
-  // todo: test me!
-  private void writeReplInitialCommandsFile() {
-    String[] commands = getReplInitialCommandsForModule(
-        Objects.requireNonNull(this.getPlatformObject()));
-    if (!ArrayUtils.isEmpty(commands)) {
-
-      File file = new File(getFullPath() + "/"
-          + PluginSettings.MODULE_REPL_INITIAL_COMMANDS_FILE_NAME);
-      try {
-        FileUtils.writeLines(file, StandardCharsets.UTF_8.name(), Arrays.asList(commands));
-      } catch (IOException ex) {
-        logger.error("Could not write REPL initial commands file", ex);
-      }
-      FileUtilRt.createIfNotExists(file);
-    }
-  }
-
-
-  //todo: remove as a duplicate (of a Scala object code that I could not call directly)
-  // ReplUtils.getReplInitialCommandsForModule(...) & test me!
-  @NotNull
-  protected static String[] getReplInitialCommandsForModule(
-      com.intellij.openapi.module.Module module) {
-    return ReadAction.compute(() -> PluginSettings
-        .getInstance()
-        .getMainViewModel(module.getProject())
-        .courseViewModel
-        .get()
-        .getModel()
-        .getReplInitialCommands()
-        .getOrDefault(module.getName(), ArrayUtils.EMPTY_STRING_ARRAY));
-  }
 }

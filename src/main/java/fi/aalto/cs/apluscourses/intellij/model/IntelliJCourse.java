@@ -44,6 +44,7 @@ class IntelliJCourse extends Course {
 
   public IntelliJCourse(@NotNull String id,
                         @NotNull String name,
+                        @NotNull String aplusUrl,
                         @NotNull List<Module> modules,
                         @NotNull List<Library> libraries,
                         @NotNull Map<Long, Map<String, String>> exerciseModules,
@@ -55,6 +56,7 @@ class IntelliJCourse extends Course {
     super(
         id,
         name,
+        aplusUrl,
         modules,
         libraries,
         exerciseModules,

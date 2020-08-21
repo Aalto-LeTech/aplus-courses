@@ -3,19 +3,14 @@ package fi.aalto.cs.apluscourses.model;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.io.FileUtils;
-import org.json.JSONObject;
 import org.junit.Test;
 
 public class CourseTest {
@@ -29,8 +24,6 @@ public class CourseTest {
     Module module1 = new ModelExtensions.TestModule(module1name);
     Module module2 = new ModelExtensions.TestModule("Module2");
     final List<Module> modules = Arrays.asList(module1, module2);
-    Map<String, String> requiredPlugins = new HashMap<>();
-    requiredPlugins.put("org.intellij.awesome_plugin", "Awesome Plugin");
     Map<String, URL> resourceUrls = new HashMap<>();
     resourceUrls.put("key", new URL("http://localhost:8000"));
     List<String> autoInstallComponents = Arrays.asList(module1name);
@@ -39,6 +32,7 @@ public class CourseTest {
     Course course = new ModelExtensions.TestCourse(
         "13",
         "Tester Course",
+        "http://localhost:2466/",
         modules,
         //  libraries
         Collections.emptyList(),
@@ -51,6 +45,9 @@ public class CourseTest {
         "13", course.getId());
     assertEquals("The name of the course should be the same as that given to the constructor",
         "Tester Course", course.getName());
+    assertEquals("The A+ URL of the course shoudl be the same as that given to the constructor",
+        "http://localhost:2466/", course.getHtmlUrl());
+    assertEquals("http://localhost:2466/api/v2/", course.getApiUrl());
     assertEquals("The modules of the course should be the same as those given to the constructor",
         module1name, course.getModules().get(0).getName());
     assertEquals("The modules of the course should be the same as those given to the constructor",
@@ -74,6 +71,7 @@ public class CourseTest {
         "",
         //  name
         "",
+        "http://localhost:2736",
         //  modules
         Arrays.asList(module1, module2),
         //  libraries
@@ -102,6 +100,7 @@ public class CourseTest {
         "",
         //  name
         "",
+        "http://localhost:5555",
         //  modules
         Arrays.asList(module),
         //  libraries
@@ -125,6 +124,7 @@ public class CourseTest {
     Course course = new ModelExtensions.TestCourse(
         "Just some ID",
         "Just some course",
+        "http://localhost:1951",
         //  modules
         Collections.emptyList(),
         //  libraries
@@ -142,8 +142,7 @@ public class CourseTest {
 
   private static String idJson = "\"id\":\"1238\"";
   private static String nameJson = "\"name\":\"Awesome Course\"";
-  private static String requiredPluginsJson = "\"requiredPlugins\":{\"org.intellij.scala\":"
-      + "\"Scala\",\"org.test.tester\":\"Tester\"}";
+  private static String urlJson = "\"aPlusUrl\":\"https://example.fi\"";
   private static String modulesJson = "\"modules\":[{\"name\":\"O1Library\",\"url\":"
       + "\"https://wikipedia.org\"},{\"name\":\"GoodStuff\",\"url\":\"https://example.com\"}]";
   private static String exerciseModulesJson = "\"exerciseModules\":{123:{\"en\":\"en_module\"}}";
@@ -155,14 +154,16 @@ public class CourseTest {
 
   @Test
   public void testFromConfigurationFile() throws MalformedCourseConfigurationFileException {
-    StringReader stringReader = new StringReader("{" + idJson + "," + nameJson + ","
-        + modulesJson + "," + exerciseModulesJson + "," + resourcesJson + ","
+    StringReader stringReader = new StringReader("{" + idJson + "," + nameJson + "," + urlJson
+        + "," + modulesJson + "," + exerciseModulesJson + "," + resourcesJson + ","
         + autoInstallJson + "," + replInitialCommands + "}");
     Course course = Course.fromConfigurationData(stringReader, "./path/to/file", MODEL_FACTORY);
     assertEquals("Course should have the same ID as that in the configuration JSON",
         "1238", course.getId());
     assertEquals("Course should have the same name as that in the configuration JSON",
         "Awesome Course", course.getName());
+    assertEquals("Course should have the same URL as that in the configuration JSON",
+        "https://example.fi", course.getHtmlUrl());
     assertEquals("The course should have the modules of the configuration JSON",
         "O1Library", course.getModules().get(0).getName());
     assertEquals("The course should have the modules of the configuration JSON",
@@ -185,7 +186,7 @@ public class CourseTest {
   public void testFromConfigurationFileMissingId()
       throws MalformedCourseConfigurationFileException {
     StringReader stringReader
-        = new StringReader("{" + nameJson + "," + modulesJson + "," + requiredPluginsJson + "}");
+        = new StringReader("{" + nameJson + "," + urlJson + "," + modulesJson + "}");
     Course.fromConfigurationData(stringReader, MODEL_FACTORY);
   }
 
@@ -193,15 +194,15 @@ public class CourseTest {
   public void testFromConfigurationFileMissingName()
       throws MalformedCourseConfigurationFileException {
     StringReader stringReader =
-        new StringReader("{" + requiredPluginsJson + "," + modulesJson + "}");
+        new StringReader("{" + idJson + "," + urlJson + "," + modulesJson + "}");
     Course.fromConfigurationData(stringReader, MODEL_FACTORY);
   }
 
   @Test(expected = MalformedCourseConfigurationFileException.class)
-  public void testFromConfigurationFileMissingRequiredPlugins()
+  public void testFromConfigurationFileMissingUrl()
       throws MalformedCourseConfigurationFileException {
     StringReader stringReader =
-        new StringReader("{" + nameJson + "," + modulesJson + "}");
+        new StringReader("{" + idJson + "," + nameJson + "," + modulesJson + "}");
     Course.fromConfigurationData(stringReader, MODEL_FACTORY);
   }
 
@@ -209,7 +210,7 @@ public class CourseTest {
   public void testFromConfigurationFileMissingModules()
       throws MalformedCourseConfigurationFileException {
     StringReader stringReader =
-        new StringReader("{" + nameJson + "," + requiredPluginsJson + "}");
+        new StringReader("{" + idJson + "," + nameJson + "," + urlJson + "}");
     Course.fromConfigurationData(stringReader, MODEL_FACTORY);
   }
 
@@ -221,20 +222,11 @@ public class CourseTest {
   }
 
   @Test(expected = MalformedCourseConfigurationFileException.class)
-  public void testFromConfigurationFileWithInvalidRequiredPlugins()
-      throws MalformedCourseConfigurationFileException {
-    String requiredPlugins = "\"requiredPlugins\":[1,2,3,4]";
-    StringReader stringReader
-        = new StringReader("{" + nameJson + "," + requiredPlugins + "," + modulesJson + "}");
-    Course.fromConfigurationData(stringReader, MODEL_FACTORY);
-  }
-
-  @Test(expected = MalformedCourseConfigurationFileException.class)
   public void testFromConfigurationFileWithInvalidModules()
       throws MalformedCourseConfigurationFileException {
     String modules = "\"modules\":[1,2,3,4]";
     StringReader stringReader
-        = new StringReader("{" + nameJson + "," + requiredPluginsJson + "," + modules + "}");
+        = new StringReader("{" + idJson + "," + nameJson + "," + urlJson + "," + modules + "}");
     Course.fromConfigurationData(stringReader, MODEL_FACTORY);
   }
 
@@ -242,45 +234,18 @@ public class CourseTest {
   public void testFromConfigurationFileWithInvalidAutoInstalls()
       throws MalformedCourseConfigurationFileException {
     String autoInstalls = "\"autoInstall\":[1,2,3,4]";
-    StringReader stringReader = new StringReader("{" + nameJson + "," + requiredPluginsJson + ","
-        + modulesJson + "," + autoInstalls + "}");
+    StringReader stringReader = new StringReader("{" + idJson + "," + nameJson + "," + urlJson
+        + "," + modulesJson + "," + autoInstalls + "}");
     Course.fromConfigurationData(stringReader, MODEL_FACTORY);
   }
 
-  @Test
-  public void testGetReplInitialCommandsWorksWithValidInput()
-      throws IOException, MalformedCourseConfigurationFileException {
-    //  given
-    File testDataJson = new File("src/test/resources/replInitialCommandsTestData.json");
-    JSONObject replInitialCommandsJson = getJsonObject(testDataJson);
-
-    //  when
-    Map<String, String[]> replInitialCommands = Course
-        .getReplInitialCommands(replInitialCommandsJson, "");
-
-    //  then
-    String[] trainsCommands = replInitialCommands.get("Train");
-    assertEquals("Amount of initial commands for module 'Train' is equal to 2 (two).", 2,
-        trainsCommands.length);
-    assertEquals("The first 'Train' module's command is correct.", "import o1._",
-        trainsCommands[0]);
-    assertEquals("The second 'Train' module's command is correct.", "import o1.train._",
-        trainsCommands[1]);
-    String[] o1sCommands = replInitialCommands.get("O1");
-    assertEquals("Amount of initial commands for module 'O1' is equal to 1 (one).", 1,
-        o1sCommands.length);
-    assertEquals("The 'O1' module's command is correct.", "import o1._", o1sCommands[0]);
-  }
-
   @Test(expected = MalformedCourseConfigurationFileException.class)
-  public void testGetReplInitialCommandsThrowsWhenShould()
+  public void testFromConfigurationWithMalformedReplInitialCommands()
       throws MalformedCourseConfigurationFileException {
-    JSONObject wrongJsonStringJson = new JSONObject("{}");
-
-    Course.getReplInitialCommands(wrongJsonStringJson, "");
+    String replJson = "\"repl\": {\"initialCommands\": []}";
+    StringReader stringReader = new StringReader("{" + idJson + "," + nameJson + "," + urlJson + ","
+        + replJson + "}");
+    Course.fromConfigurationData(stringReader, MODEL_FACTORY);
   }
 
-  public static JSONObject getJsonObject(File file) throws IOException {
-    return new JSONObject(FileUtils.readFileToString(file, StandardCharsets.UTF_8));
-  }
 }

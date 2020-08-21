@@ -37,6 +37,8 @@ public class CourseProjectView extends OurDialogWrapper {
   private JLabel warningText;
   @GuiObject
   private OurComboBox<String> languageComboBox;
+  @GuiObject
+  private JLabel languagePrompt;
 
   CourseProjectView(@NotNull Project project,
                     @NotNull CourseProjectViewModel viewModel) {
@@ -80,9 +82,10 @@ public class CourseProjectView extends OurDialogWrapper {
 
   @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
   private void createUIComponents() {
+    languagePrompt = new JLabel(getText("ui.courseProject.view.languagePrompt"));
     languageComboBox = new OurComboBox<>(viewModel.getLanguages(), String.class);
     languageComboBox.setRenderer(new IconListCellRenderer<>(
-        getText("ui.courseProject.view.selectLanguage"),
+        getText("ui.courseProject.view.languageSelectorDefault"),
         APlusLocalizationUtil::languageCodeToName,
         null));
     languageComboBox.selectedItemBindable.bindToSource(viewModel.languageProperty);

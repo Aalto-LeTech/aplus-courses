@@ -2,7 +2,7 @@ package fi.aalto.cs.apluscourses.intellij
 
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.openapi.module.Module
-import fi.aalto.cs.apluscourses.intellij.utils.ModuleUtils.{getReplInitialCommandsForModule, getUpdatedText}
+import fi.aalto.cs.apluscourses.intellij.utils.ModuleUtils.{getInitialReplCommands, getUpdatedText}
 import org.jetbrains.plugins.scala.console.ScalaLanguageConsole
 
 class Repl(module: Module) extends ScalaLanguageConsole(module: Module) {
@@ -15,7 +15,7 @@ class Repl(module: Module) extends ScalaLanguageConsole(module: Module) {
 
     if (text.equals(initialReplWelcomeMessageToBeReplaced)
       && !initialReplWelcomeMessageHasBeenReplaced) {
-      val commands = getReplInitialCommandsForModule(module)
+      val commands = getInitialReplCommands(module)
       updatedText = getUpdatedText(module, commands, text)
       initialReplWelcomeMessageHasBeenReplaced = true
     }
