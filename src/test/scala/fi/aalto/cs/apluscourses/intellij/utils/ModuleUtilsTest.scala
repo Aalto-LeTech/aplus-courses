@@ -70,7 +70,7 @@ class ModuleUtilsTest extends HeavyPlatformTestCase with TestHelperScala {
     val commands = Array("o1", "o1.train", "o1.bus")
 
     assertEquals("Correct text for imported commands is returned.",
-      "Auto-imported packages o1, o1.train, o1.bus for your convenience.",
+      "Auto-imported packages [o1, o1.train, o1.bus] for your convenience.",
       getCommandsText(commands))
   }
 
@@ -79,7 +79,7 @@ class ModuleUtilsTest extends HeavyPlatformTestCase with TestHelperScala {
     val commands = Array("o1")
 
     assertEquals("Correct text for imported commands is returned.",
-      "Auto-imported package o1 for your convenience.",
+      "Auto-imported package [o1] for your convenience.",
       getCommandsText(commands))
   }
 
@@ -158,8 +158,8 @@ class ModuleUtilsTest extends HeavyPlatformTestCase with TestHelperScala {
     val module = getModuleManager(project).getModules.lift(1).get
     val originalText = "Sample original text."
 
-    val expectedText = "Loaded A+ Courses module light_idea_test_case. Auto-imported packages o1, " +
-      "o1.train for your convenience.\nWrite a line (or more) of Scala and press Enter " +
+    val expectedText = "Loaded A+ Courses module light_idea_test_case. Auto-imported packages [o1, " +
+      "o1.train] for your convenience.\nWrite a line (or more) of Scala and press Enter " +
       "to run it. Use Up and Down to scroll through your earlier inputs.\nChanges to the " +
       "module are not loaded automatically. If you edit the files, restart the REPL with Ctrl+F5 " +
       "or the icon on the left.\nSample original text."
