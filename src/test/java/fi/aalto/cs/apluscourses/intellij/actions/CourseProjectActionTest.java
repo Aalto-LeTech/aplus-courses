@@ -1,13 +1,17 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
-import static org.hamcrest.Matchers.containsString;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import fi.aalto.cs.apluscourses.intellij.model.SettingsImporter;
+import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
+import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.model.ComponentInstaller;
 import fi.aalto.cs.apluscourses.model.ComponentInstallerImpl;
 import fi.aalto.cs.apluscourses.model.Course;
@@ -23,6 +27,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 
 public class CourseProjectActionTest extends BasePlatformTestCase {
 
@@ -32,17 +37,10 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
     private boolean doRestart;
     private boolean doOptOut;
 
-    private String lastErrorMessage = "";
-
     public TestDialogs(boolean doCancel, boolean doRestart, boolean doOptOut) {
       this.doCancel = doCancel;
       this.doRestart = doRestart;
       this.doOptOut = doOptOut;
-    }
-
-    @NotNull
-    public String getLastErrorMessage() {
-      return lastErrorMessage;
     }
 
     @Override
@@ -57,11 +55,6 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
     public boolean showRestartDialog() {
       return doRestart;
     }
-
-    @Override
-    public void showErrorDialog(@NotNull String message, @NotNull String title) {
-      lastErrorMessage = message;
-    }
   }
 
   private AnActionEvent anActionEvent;
@@ -72,6 +65,7 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
   private PostponedRunnable ideRestarter;
   private TestDialogs dialogs;
   private InstallerDialogs.Factory installerDialogsFactory;
+  private Notifier notifier;
 
   class DummySettingsImporter extends SettingsImporter {
 
@@ -143,6 +137,8 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
     dialogs = new TestDialogs(false, true, false);
 
     installerDialogsFactory = proj -> module -> true;
+
+    notifier = mock(Notifier.class);
   }
 
   @Test
@@ -159,7 +155,8 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
         installerFactory,
         ideRestarter,
         dialogs,
-        installerDialogsFactory);
+        installerDialogsFactory,
+        notifier);
 
     action.actionPerformed(anActionEvent);
 
@@ -172,43 +169,51 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
         settingsImporter.getImportIdeSettingsCallCount());
     Assert.assertEquals("The IDE should get restarted", 1, restarterCallCount.get());
 
-    Assert.assertEquals("No error dialogs should be shown", "",
-        dialogs.getLastErrorMessage());
+    verifyNoInteractions(notifier);
   }
 
   @Test
   public void testNotifiesUserOfCourseInitializationError() {
     createMockObjects();
+    IOException exception = new IOException();
     CourseProjectAction action = new CourseProjectAction(
         (url, proj) -> {
-          throw new IOException();
+          throw exception;
         },
         false,
         settingsImporter,
         installerFactory,
         ideRestarter,
         dialogs,
-        installerDialogsFactory);
+        installerDialogsFactory,
+        notifier);
 
     action.actionPerformed(anActionEvent);
 
-    Assert.assertThat("The user is notified of the course initialization error",
-        dialogs.getLastErrorMessage(), containsString("Please check your network connection"));
-    Assert.assertEquals("Project settings are not imported after the error", 0,
+    ArgumentCaptor<NetworkErrorNotification> notificationCaptor =
+        ArgumentCaptor.forClass(NetworkErrorNotification.class);
+    verify(notifier).notify(notificationCaptor.capture(), same(getProject()));
+    NetworkErrorNotification notification = notificationCaptor.getValue();
+
+    assertNotNull(notification);
+    assertSame(exception, notification.getException());
+
+    assertEquals("Project settings are not imported after the error", 0,
         settingsImporter.getImportProjectSettingsCallCount());
-    Assert.assertEquals("IDE settings are not imported after the error", 0,
+    assertEquals("IDE settings are not imported after the error", 0,
         settingsImporter.getImportIdeSettingsCallCount());
   }
 
   @Test
   public void testNotifiesUserOfSettingsImportError() {
     createMockObjects();
+    IOException exception = new IOException();
     DummySettingsImporter failingSettingsImporter = new DummySettingsImporter() {
       @Override
       public void importProjectSettings(@NotNull Project project, @NotNull Course course)
           throws IOException {
         super.importProjectSettings(project, course);
-        throw new IOException();
+        throw exception;
       }
     };
 
@@ -219,14 +224,21 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
         installerFactory,
         ideRestarter,
         dialogs,
-        installerDialogsFactory);
+        installerDialogsFactory,
+        notifier);
 
     action.actionPerformed(anActionEvent);
 
+    ArgumentCaptor<NetworkErrorNotification> notificationCaptor =
+        ArgumentCaptor.forClass(NetworkErrorNotification.class);
+    verify(notifier).notify(notificationCaptor.capture(), same(getProject()));
+    NetworkErrorNotification notification = notificationCaptor.getValue();
+
+    assertNotNull(notification);
+    assertSame(exception, notification.getException());
+
     Assert.assertEquals("The action attempted to import project settings", 1,
         failingSettingsImporter.getImportProjectSettingsCallCount());
-    Assert.assertThat("The user is notified of the project settings error",
-        dialogs.getLastErrorMessage(), containsString("Please check your network connection"));
   }
 
   @Test
@@ -239,7 +251,8 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
         installerFactory,
         ideRestarter,
         new TestDialogs(false, true, true),
-        installerDialogsFactory);
+        installerDialogsFactory,
+        notifier);
 
     action.actionPerformed(anActionEvent);
 
@@ -259,7 +272,8 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
         installerFactory,
         ideRestarter,
         new TestDialogs(true, true, true),
-        installerDialogsFactory);
+        installerDialogsFactory,
+        notifier);
 
     action.actionPerformed(anActionEvent);
 
@@ -282,7 +296,8 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
         installerFactory,
         ideRestarter,
         new TestDialogs(false, false, true),
-        installerDialogsFactory);
+        installerDialogsFactory,
+        notifier);
 
     action.actionPerformed(anActionEvent);
 
