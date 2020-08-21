@@ -1,7 +1,6 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
-import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
-
+import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
@@ -9,8 +8,11 @@ import com.intellij.openapi.application.ex.ApplicationEx;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory;
 import fi.aalto.cs.apluscourses.intellij.model.SettingsImporter;
+import fi.aalto.cs.apluscourses.intellij.notifications.CourseConfigurationError;
+import fi.aalto.cs.apluscourses.intellij.notifications.CourseFileError;
+import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
+import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
-import fi.aalto.cs.apluscourses.intellij.utils.CourseFileManager;
 import fi.aalto.cs.apluscourses.model.ComponentInstaller;
 import fi.aalto.cs.apluscourses.model.ComponentInstallerImpl;
 import fi.aalto.cs.apluscourses.model.Course;
@@ -24,6 +26,7 @@ import fi.aalto.cs.apluscourses.utils.async.SimpleAsyncTaskManager;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -53,6 +56,9 @@ public class CourseProjectAction extends AnAction {
   @NotNull
   private final InstallerDialogs.Factory installerDialogsFactory;
 
+  @NotNull
+  private final Notifier notifier;
+
   /**
    * Construct a course project action with the given parameters.
    *
@@ -72,6 +78,7 @@ public class CourseProjectAction extends AnAction {
    *                         Since the installation of automatically installed components may take
    *                         quite a while, it is advisable for this to show the user a confirmation
    *                         dialog regarding the restart.
+   * @param notifier         Notification bus.
    */
   public CourseProjectAction(@NotNull CourseFactory courseFactory,
                              boolean createCourseFile,
@@ -79,7 +86,8 @@ public class CourseProjectAction extends AnAction {
                              @NotNull ComponentInstaller.Factory installerFactory,
                              @NotNull PostponedRunnable ideRestarter,
                              @NotNull CourseProjectActionDialogs dialogs,
-                             @NotNull InstallerDialogs.Factory installerDialogsFactory) {
+                             @NotNull InstallerDialogs.Factory installerDialogsFactory,
+                             @NotNull Notifier notifier) {
     this.courseFactory = courseFactory;
     this.createCourseFile = createCourseFile;
     this.settingsImporter = settingsImporter;
@@ -87,6 +95,7 @@ public class CourseProjectAction extends AnAction {
     this.ideRestarter = ideRestarter;
     this.dialogs = dialogs;
     this.installerDialogsFactory = installerDialogsFactory;
+    this.notifier = notifier;
   }
 
   /**
@@ -104,6 +113,7 @@ public class CourseProjectAction extends AnAction {
       }
     });
     this.installerDialogsFactory = InstallerDialogs::new;
+    this.notifier = Notifications.Bus::notify;
   }
 
   @Override
@@ -114,7 +124,7 @@ public class CourseProjectAction extends AnAction {
       return;
     }
 
-    URL selectedCourseUrl = getSelectedCourseUrl();
+    URL selectedCourseUrl = getSelectedCourseUrl(project);
     if (selectedCourseUrl == null) {
       return;
     }
@@ -130,7 +140,7 @@ public class CourseProjectAction extends AnAction {
       return;
     }
 
-    String language = courseProjectViewModel.languageProperty.get();
+    String language = Objects.requireNonNull(courseProjectViewModel.languageProperty.get());
     if (!tryCreateCourseFile(project, selectedCourseUrl, language)) {
       return;
     }
@@ -141,8 +151,8 @@ public class CourseProjectAction extends AnAction {
       return;
     }
 
-    if (!courseProjectViewModel.userOptsOutOfSettings()) {
-      tryImportIdeSettings(course);
+    if (!courseProjectViewModel.userOptsOutOfSettings() && !tryImportIdeSettings(project, course)) {
+      return;
     }
 
     if (createCourseFile) {
@@ -167,7 +177,7 @@ public class CourseProjectAction extends AnAction {
   }
 
   @Nullable
-  private URL getSelectedCourseUrl() {
+  private URL getSelectedCourseUrl(@NotNull Project project) {
     // TODO: show a dialog with a list of courses and a URL field for custom courses, from which
     // the user selects a course.
     try {
@@ -175,6 +185,7 @@ public class CourseProjectAction extends AnAction {
     } catch (MalformedURLException e) {
       // User entered an invalid URL (or the default list has an invalid URL, which would be a bug)
       logger.error("Malformed course configuration file URL", e);
+      notifier.notify(new NetworkErrorNotification(e), project);
       return null;
     }
   }
@@ -192,14 +203,15 @@ public class CourseProjectAction extends AnAction {
     try {
       return courseFactory.fromUrl(courseUrl, project);
     } catch (IOException e) {
-      notifyNetworkError();
+      notifier.notify(new NetworkErrorNotification(e), project);
       return null;
     } catch (MalformedCourseConfigurationFileException e) {
       logger.error("Malformed course configuration file", e);
-      notifyMalformedCourseConfiguration();
+      notifier.notify(new CourseConfigurationError(e), project);
       return null;
     }
   }
+
 
   private void startAutoInstallsWithRestart(@NotNull Course course,
                                             boolean restartWhenFinished,
@@ -232,6 +244,7 @@ public class CourseProjectAction extends AnAction {
       return true;
     } catch (IOException e) {
       logger.error("Failed to create course file", e);
+      notifier.notify(new CourseFileError(e), project);
       return false;
     }
   }
@@ -247,7 +260,8 @@ public class CourseProjectAction extends AnAction {
       settingsImporter.importProjectSettings(project, course);
       return true;
     } catch (IOException e) {
-      notifyNetworkError();
+      logger.error("Failed to import project settings", e);
+      notifier.notify(new NetworkErrorNotification(e), project);
       return false;
     }
   }
@@ -258,26 +272,14 @@ public class CourseProjectAction extends AnAction {
    *
    * @return True if IDE settings were successfully imported, false otherwise.
    */
-  private boolean tryImportIdeSettings(@NotNull Course course) {
+  private boolean tryImportIdeSettings(@NotNull Project project, @NotNull Course course) {
     try {
       settingsImporter.importIdeSettings(course);
       return true;
     } catch (IOException e) {
-      notifyNetworkError();
+      logger.error("Failed to import IDE settings", e);
+      notifier.notify(new NetworkErrorNotification(e), project);
       return false;
     }
   }
-
-  private void notifyNetworkError() {
-    dialogs
-        .showErrorDialog(getText("ui.courseProject.dialogs.showErrorDialog.networkError.message"),
-            getText("ui.courseProject.dialogs.showErrorDialog.networkError.title"));
-  }
-
-  private void notifyMalformedCourseConfiguration() {
-    dialogs.showErrorDialog(
-        getText("ui.courseProject.dialogs.showErrorDialog.malformedCourseConfiguration.message"),
-        getText("ui.courseProject.dialogs.showErrorDialog.malformedCourseConfiguration.title"));
-  }
-
 }

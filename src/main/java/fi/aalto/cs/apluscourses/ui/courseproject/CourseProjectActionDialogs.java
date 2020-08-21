@@ -10,7 +10,4 @@ public interface CourseProjectActionDialogs {
                          @NotNull CourseProjectViewModel courseProjectViewModel);
 
   boolean showRestartDialog();
-
-  void showErrorDialog(@NotNull String message, @NotNull String title);
-
 }
