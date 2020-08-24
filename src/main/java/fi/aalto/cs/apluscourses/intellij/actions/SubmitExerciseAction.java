@@ -1,7 +1,9 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getAndReplaceText;
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
+import com.intellij.history.LocalHistory;
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -34,6 +36,7 @@ import fi.aalto.cs.apluscourses.model.SubmittableFile;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import fi.aalto.cs.apluscourses.presentation.ModuleSelectionViewModel;
+import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseGroupViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionViewModel;
@@ -138,7 +141,8 @@ public class SubmitExerciseAction extends AnAction {
     }
 
     ExerciseViewModel selectedExercise = exercisesViewModel.getSelectedExercise();
-    if (selectedExercise == null) {
+    ExerciseGroupViewModel selectedExerciseGroup = exercisesViewModel.getSelectedExerciseGroup();
+    if (selectedExercise == null || selectedExerciseGroup == null) {
       notifier.notify(new ExerciseNotSelectedNotification(), project);
       return;
     }
@@ -207,10 +211,20 @@ public class SubmitExerciseAction extends AnAction {
         exerciseDataSource, authentication, submissionUrl, selectedExercise.getPresentableName()
     ).start();
     notifier.notify(new SubmissionSentNotification(), project);
+
+    String tag = getAndReplaceText("ui.toolWindow.subTab.exercises.submission.tag",
+        selectedExerciseGroup.getPresentableName(),
+        submission.getPresentableExerciseName(),
+        submission.getCurrentSubmissionNumber());
+    dropLocalHistoryTag(project, tag);
   }
 
   private void notifyNetworkError(@NotNull IOException exception, @Nullable Project project) {
     notifier.notify(new NetworkErrorNotification(exception), project);
+  }
+
+  private void dropLocalHistoryTag(@NotNull Project project, @NotNull String tag) {
+    LocalHistory.getInstance().putUserLabel(project, tag);
   }
 
   public interface ModuleSource {

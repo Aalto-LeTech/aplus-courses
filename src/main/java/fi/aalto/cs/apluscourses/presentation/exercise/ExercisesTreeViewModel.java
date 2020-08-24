@@ -30,7 +30,8 @@ public class ExercisesTreeViewModel extends BaseViewModel<List<ExerciseGroup>>
    */
   @Nullable
   public ExerciseViewModel getSelectedExercise() {
-    return getGroupViewModels().stream()
+    return getGroupViewModels()
+        .stream()
         .flatMap(group -> group.getExerciseViewModels().stream())
         .filter(ExerciseViewModel::isSelected)
         .findFirst()
@@ -42,12 +43,29 @@ public class ExercisesTreeViewModel extends BaseViewModel<List<ExerciseGroup>>
    */
   @Nullable
   public SubmissionResultViewModel getSelectedSubmission() {
-    return getGroupViewModels().stream()
+    return getGroupViewModels()
+        .stream()
         .flatMap(group -> group.getExerciseViewModels().stream())
         .flatMap(exercise -> exercise.getSubmissionResultViewModels().stream())
         .filter(SubmissionResultViewModel::isSelected)
         .findFirst()
         .orElse(null);
+  }
+
+  /**
+   * Returns the exercise group where the selected exercise belongs, or null if no exercise is
+   * selected.
+   */
+  @Nullable
+  public ExerciseGroupViewModel getSelectedExerciseGroup() {
+    for (ExerciseGroupViewModel exerciseGroupViewModel : getGroupViewModels()) {
+      for (ExerciseViewModel exerciseViewModel : exerciseGroupViewModel.getExerciseViewModels()) {
+        if (exerciseViewModel.isSelected()) {
+          return exerciseGroupViewModel;
+        }
+      }
+    }
+    return null;
   }
 
   @NotNull
