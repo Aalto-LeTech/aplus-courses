@@ -22,6 +22,7 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtilRt;
 import fi.aalto.cs.apluscourses.intellij.DialogHelper;
+import fi.aalto.cs.apluscourses.intellij.actions.SubmitExerciseAction.Tagger;
 import fi.aalto.cs.apluscourses.intellij.notifications.ExerciseNotSelectedNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.MissingFileNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.MissingModuleNotification;
@@ -102,11 +103,12 @@ public class SubmitExerciseActionTest {
   AnActionEvent event;
   SubmitExerciseAction action;
   Points points;
+  Tagger tagger;
 
   /**
    * Called before each test.
    *
-   * @throws IOException Never.
+   * @throws IOException               Never.
    * @throws FileDoesNotExistException Never.
    */
   @SuppressWarnings("unchecked")
@@ -180,7 +182,7 @@ public class SubmitExerciseActionTest {
     doCallRealMethod().when(fileFinder).findFiles(any(), any());
 
     moduleSource = mock(SubmitExerciseAction.ModuleSource.class);
-    doReturn(new Module[] { module }).when(moduleSource).getModules(project);
+    doReturn(new Module[]{module}).when(moduleSource).getModules(project);
     doReturn(module).when(moduleSource).getModule(project, moduleName);
 
     dialogs = new Dialogs();
@@ -205,7 +207,10 @@ public class SubmitExerciseActionTest {
     submissionDialogFactory = new DialogHelper.Factory<>(submissionDialog, project);
     dialogs.register(SubmissionViewModel.class, submissionDialogFactory);
 
-    action = new SubmitExerciseAction(mainVmProvider, fileFinder, moduleSource, dialogs, notifier);
+    tagger = mock(Tagger.class);
+
+    action = new SubmitExerciseAction(mainVmProvider, fileFinder, moduleSource, dialogs, notifier,
+        tagger);
   }
 
   @Test

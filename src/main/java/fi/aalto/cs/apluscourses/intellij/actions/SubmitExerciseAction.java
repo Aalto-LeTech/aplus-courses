@@ -71,6 +71,9 @@ public class SubmitExerciseAction extends AnAction {
   @NotNull
   private final Notifier notifier;
 
+  @NotNull
+  private final Tagger tagger;
+
   /**
    * Constructor with reasonable defaults.
    */
@@ -80,7 +83,8 @@ public class SubmitExerciseAction extends AnAction {
         VfsUtil::findFileInDirectory,
         DefaultModuleSource.INSTANCE,
         Dialogs.DEFAULT,
-        Notifications.Bus::notify
+        Notifications.Bus::notify,
+        LocalHistory.getInstance()::putUserLabel
     );
   }
 
@@ -92,12 +96,14 @@ public class SubmitExerciseAction extends AnAction {
                               @NotNull FileFinder fileFinder,
                               @NotNull ModuleSource moduleSource,
                               @NotNull Dialogs dialogs,
-                              @NotNull Notifier notifier) {
+                              @NotNull Notifier notifier,
+                              @NotNull Tagger tagger) {
     this.mainViewModelProvider = mainViewModelProvider;
     this.fileFinder = fileFinder;
     this.moduleSource = moduleSource;
     this.dialogs = dialogs;
     this.notifier = notifier;
+    this.tagger = tagger;
   }
 
   @Override
@@ -224,7 +230,7 @@ public class SubmitExerciseAction extends AnAction {
   }
 
   private void dropLocalHistoryTag(@NotNull Project project, @NotNull String tag) {
-    LocalHistory.getInstance().putUserLabel(project, tag);
+    tagger.putUserLabel(project, tag);
   }
 
   public interface ModuleSource {
@@ -266,5 +272,10 @@ public class SubmitExerciseAction extends AnAction {
     public String getModuleName() {
       return moduleName;
     }
+  }
+
+  @FunctionalInterface
+  public interface Tagger {
+    void putUserLabel(@Nullable Project project, @NotNull String tag);
   }
 }
