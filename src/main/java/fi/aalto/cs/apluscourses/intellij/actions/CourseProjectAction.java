@@ -275,6 +275,7 @@ public class CourseProjectAction extends AnAction {
       settingsImporter.importProjectSettings(project, course);
       return true;
     } catch (IOException e) {
+      logger.error("Failed to import project settings", e);
       notifier.notify(new NetworkErrorNotification(e), project);
       return false;
     }
@@ -291,6 +292,7 @@ public class CourseProjectAction extends AnAction {
       settingsImporter.importIdeSettings(course);
       return true;
     } catch (IOException e) {
+      logger.error("Failed to import IDE settings", e);
       notifier.notify(new NetworkErrorNotification(e), project);
       return false;
     }
