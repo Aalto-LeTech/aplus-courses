@@ -24,10 +24,4 @@ public class CourseProjectActionDialogsImpl implements CourseProjectActionDialog
         getText("ui.courseProject.dialogs.showRestartDialog.cancelText"),
         Messages.getQuestionIcon()) == Messages.OK;
   }
-
-  @Override
-  public void showErrorDialog(@NotNull String message, @NotNull String title) {
-    Messages.showErrorDialog(message, title);
-  }
-
 }
