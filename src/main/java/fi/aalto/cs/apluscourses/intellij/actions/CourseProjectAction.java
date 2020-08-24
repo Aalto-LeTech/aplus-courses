@@ -23,14 +23,12 @@ import fi.aalto.cs.apluscourses.ui.InstallerDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogsImpl;
 import fi.aalto.cs.apluscourses.utils.PostponedRunnable;
-import fi.aalto.cs.apluscourses.utils.async.Awaitable;
 import fi.aalto.cs.apluscourses.utils.async.SimpleAsyncTaskManager;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import org.jetbrains.annotations.NotNull;
@@ -156,13 +154,15 @@ public class CourseProjectAction extends AnAction {
       return;
     }
 
+    boolean importIdeSettings = !courseProjectViewModel.userOptsOutOfSettings();
+
     Future<?> autoInstallDone = executor.submit(() -> startAutoInstalls(course, project));
 
-    Future<?> projectSettingsDone =
+    Future<Boolean> projectSettingsImported =
         executor.submit(() -> tryImportProjectSettings(project, course));
 
-    Future<Boolean> ideSettingsDone =
-        executor.submit(() -> tryImportIdeSettings(project, course));
+    Future<Boolean> ideSettingsImported =
+        executor.submit(() -> importIdeSettings && tryImportIdeSettings(project, course));
 
     if (createCourseFile) {
       // The course file not created in testing.
@@ -172,8 +172,7 @@ public class CourseProjectAction extends AnAction {
     executor.execute(() -> {
       try {
         autoInstallDone.get();
-        projectSettingsDone.get();
-        if (!courseProjectViewModel.userOptsOutOfSettings() && ideSettingsDone.get()) {
+        if (projectSettingsImported.get() && importIdeSettings && ideSettingsImported.get()) {
           ideRestarter.run();
         }
       } catch (InterruptedException ex) {
@@ -271,11 +270,13 @@ public class CourseProjectAction extends AnAction {
    *
    * @return True if project settings were successfully imported, false otherwise.
    */
-  private void tryImportProjectSettings(@NotNull Project project, @NotNull Course course) {
+  private boolean tryImportProjectSettings(@NotNull Project project, @NotNull Course course) {
     try {
       settingsImporter.importProjectSettings(project, course);
+      return true;
     } catch (IOException e) {
       notifier.notify(new NetworkErrorNotification(e), project);
+      return false;
     }
   }
 

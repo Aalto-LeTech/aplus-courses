@@ -2,7 +2,6 @@ package fi.aalto.cs.apluscourses.utils;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
-import fi.aalto.cs.apluscourses.utils.async.Awaitable;
 import java.util.concurrent.Executor;
 import org.jetbrains.annotations.NotNull;
 

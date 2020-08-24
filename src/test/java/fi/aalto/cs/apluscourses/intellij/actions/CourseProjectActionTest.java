@@ -23,6 +23,9 @@ import fi.aalto.cs.apluscourses.utils.PostponedRunnable;
 import fi.aalto.cs.apluscourses.utils.async.ImmediateTaskManager;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
@@ -66,6 +69,7 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
   private TestDialogs dialogs;
   private InstallerDialogs.Factory installerDialogsFactory;
   private Notifier notifier;
+  private ExecutorService executor;
 
   class DummySettingsImporter extends SettingsImporter {
 
@@ -139,10 +143,12 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
     installerDialogsFactory = proj -> module -> true;
 
     notifier = mock(Notifier.class);
+
+    executor = Executors.newSingleThreadExecutor();
   }
 
   @Test
-  public void testCreateCourseProject() {
+  public void testCreateCourseProject() throws InterruptedException {
     createMockObjects();
     AtomicInteger courseFactoryCallCount = new AtomicInteger(0);
     CourseProjectAction action = new CourseProjectAction(
@@ -157,9 +163,11 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
         dialogs,
         installerDialogsFactory,
         notifier,
-        Runnable::run);
+        executor);
 
     action.actionPerformed(anActionEvent);
+    executor.shutdown();
+    executor.awaitTermination(5, TimeUnit.SECONDS);
 
     Assert.assertEquals("CourseFactory#fromUrl should get called", 1,
         courseFactoryCallCount.get());
@@ -174,7 +182,7 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
   }
 
   @Test
-  public void testNotifiesUserOfCourseInitializationError() {
+  public void testNotifiesUserOfCourseInitializationError() throws InterruptedException {
     createMockObjects();
     IOException exception = new IOException();
     CourseProjectAction action = new CourseProjectAction(
@@ -188,9 +196,11 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
         dialogs,
         installerDialogsFactory,
         notifier,
-        Runnable::run);
+        executor);
 
     action.actionPerformed(anActionEvent);
+    executor.shutdown();
+    executor.awaitTermination(5, TimeUnit.SECONDS);
 
     ArgumentCaptor<NetworkErrorNotification> notificationCaptor =
         ArgumentCaptor.forClass(NetworkErrorNotification.class);
@@ -207,7 +217,7 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
   }
 
   @Test
-  public void testNotifiesUserOfSettingsImportError() {
+  public void testNotifiesUserOfSettingsImportError() throws InterruptedException {
     createMockObjects();
     IOException exception = new IOException();
     DummySettingsImporter failingSettingsImporter = new DummySettingsImporter() {
@@ -228,9 +238,11 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
         dialogs,
         installerDialogsFactory,
         notifier,
-        Runnable::run);
+        executor);
 
     action.actionPerformed(anActionEvent);
+    executor.shutdown();
+    executor.awaitTermination(5, TimeUnit.SECONDS);
 
     ArgumentCaptor<NetworkErrorNotification> notificationCaptor =
         ArgumentCaptor.forClass(NetworkErrorNotification.class);
@@ -245,7 +257,7 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
   }
 
   @Test
-  public void testDoesNotImportIdeSettingsIfOptOut() {
+  public void testDoesNotImportIdeSettingsIfOptOut() throws InterruptedException {
     createMockObjects();
     CourseProjectAction action = new CourseProjectAction(
         (url, proj) -> emptyCourse,
@@ -256,9 +268,11 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
         new TestDialogs(false, true, true),
         installerDialogsFactory,
         notifier,
-        Runnable::run);
+        executor);
 
     action.actionPerformed(anActionEvent);
+    executor.shutdown();
+    executor.awaitTermination(5, TimeUnit.SECONDS);
 
     Assert.assertEquals("IDE settings are not imported", 0,
         settingsImporter.getImportIdeSettingsCallCount());
@@ -267,7 +281,7 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
   }
 
   @Test
-  public void testLetsUserCancelAction() {
+  public void testLetsUserCancelAction() throws InterruptedException {
     createMockObjects();
     CourseProjectAction action = new CourseProjectAction(
         (url, proj) -> emptyCourse,
@@ -278,9 +292,11 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
         new TestDialogs(true, true, true),
         installerDialogsFactory,
         notifier,
-        Runnable::run);
+        executor);
 
     action.actionPerformed(anActionEvent);
+    executor.shutdown();
+    executor.awaitTermination(5, TimeUnit.SECONDS);
 
     Assert.assertEquals("Project settings are not imported", 0,
         settingsImporter.getImportProjectSettingsCallCount());
@@ -292,7 +308,7 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
 
 
   @Test
-  public void testDoesNotRestartIfSettingsOptOut() {
+  public void testDoesNotRestartIfSettingsOptOut() throws InterruptedException {
     createMockObjects();
     CourseProjectAction action = new CourseProjectAction(
         (url, proj) -> emptyCourse,
@@ -303,9 +319,11 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
         new TestDialogs(false, false, true),
         installerDialogsFactory,
         notifier,
-        Runnable::run);
+        executor);
 
     action.actionPerformed(anActionEvent);
+    executor.shutdown();
+    executor.awaitTermination(5, TimeUnit.SECONDS);
 
     Assert.assertEquals("The IDE is not restarted", 0, restarterCallCount.get());
   }
