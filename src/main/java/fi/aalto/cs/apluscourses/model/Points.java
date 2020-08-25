@@ -16,18 +16,25 @@ public class Points {
   private final Map<Long, List<Long>> submissions;
 
   @NotNull
-  private final Map<Long, Integer> points;
+  private final Map<Long, Integer> exercisePoints;
+
+  @NotNull
+  private final Map<Long, Integer> submissionPoints;
 
   /**
    * Construct an instance with the given maps.
-   * @param submissions A map of exercise IDs to a list of submissions IDs for that exercise. The
-   *                    first element of the list should be the ID of the oldest submission and the
-   *                    last element should be the ID of the latest submission.
-   * @param points      A map of exercise IDs to the best points gotten from that exercise.
+   * @param submissions      A map of exercise IDs to a list of submission IDs for that exercise.
+   *                         The first element of the list should be the ID of the oldest submission
+   *                         and the last element should be the ID of the latest submission.
+   * @param exercisePoints   A map of exercise IDs to the best points gotten from that exercise.
+   * @param submissionPoints A map of submission IDs to the points of that submission.
    */
-  public Points(@NotNull Map<Long, List<Long>> submissions, @NotNull Map<Long, Integer> points) {
+  public Points(@NotNull Map<Long, List<Long>> submissions,
+                @NotNull Map<Long, Integer> exercisePoints,
+                @NotNull Map<Long, Integer> submissionPoints) {
     this.submissions = submissions;
-    this.points = points;
+    this.exercisePoints = exercisePoints;
+    this.submissionPoints = submissionPoints;
   }
 
   @NotNull
@@ -36,18 +43,17 @@ public class Points {
   }
 
   @NotNull
-  public Map<Long, Integer> getPoints() {
-    return Collections.unmodifiableMap(points);
+  public Map<Long, Integer> getExercisePoints() {
+    return Collections.unmodifiableMap(exercisePoints);
+  }
+
+  @NotNull
+  public Map<Long, Integer> getSubmissionPoints() {
+    return Collections.unmodifiableMap(submissionPoints);
   }
 
   /**
-   * Constructs a {@link Points} instance from the given JSON object. The object must contain an
-   * array for the key "modules". Each element of the array should have an "exercises" array, where
-   * each exercise has an id, an array for the key "submissions", and an integer value for the key
-   * "points".
-   * Constructs a {@link Points} from the given JSON object. The object must contain
-   * an long value for the key "id", integer value for the key "points" and an array value for the
-   * key "modules" (containing another array for the key "exercises" in its turn).
+   * Constructs a {@link Points} instance from the given JSON object.
    *
    * @param jsonObject The JSON object from which the {@link Points} instance is constructed.
    */
@@ -55,7 +61,8 @@ public class Points {
   public static Points fromJsonObject(@NotNull JSONObject jsonObject) {
     JSONArray modulesArray = jsonObject.getJSONArray("modules");
     Map<Long, List<Long>> submissions = new HashMap<>();
-    Map<Long, Integer> bestPoints = new HashMap<>();
+    Map<Long, Integer> exercisePoints = new HashMap<>();
+    Map<Long, Integer> submissionPoints = new HashMap<>();
     for (int i = 0; i < modulesArray.length(); ++i) {
       JSONObject module = modulesArray.getJSONObject(i);
       JSONArray exercisesArray = module.getJSONArray("exercises");
@@ -63,31 +70,32 @@ public class Points {
         JSONObject exercise = exercisesArray.getJSONObject(j);
         Long exerciseId = exercise.getLong("id");
 
-        List<Long> submissionIds = getSubmissionIds(exercise);
-        submissions.put(exerciseId, submissionIds);
+        parseSubmissions(exercise, exerciseId, submissions, submissionPoints);
 
         Integer points = exercise.getInt("points");
-        bestPoints.put(exerciseId, points);
+        exercisePoints.put(exerciseId, points);
       }
     }
-    return new Points(submissions, bestPoints);
+    return new Points(submissions, exercisePoints, submissionPoints);
   }
 
+  /*
+   * Parses the submissions (IDs and points) from the given JSON and adds them to the given maps.
+   */
   @NotNull
-  private static List<Long> getSubmissionIds(@NotNull JSONObject exercise) {
-    JSONArray submissionsArray = exercise.getJSONArray("submissions");
+  private static void parseSubmissions(@NotNull JSONObject exerciseJson,
+                                       @NotNull long exerciseId,
+                                       @NotNull Map<Long, List<Long>> submissions,
+                                       @NotNull Map<Long, Integer> submissionPoints) {
+    JSONArray submissionsArray = exerciseJson.getJSONArray("submissions_with_points");
     List<Long> submissionIds = new ArrayList<>(submissionsArray.length());
     for (int i = submissionsArray.length() - 1; i >= 0; --i) {
-      String submissionUrl = submissionsArray.getString(i);
-      submissionIds.add(parseSubmissionId(submissionUrl));
+      JSONObject submission = submissionsArray.getJSONObject(i);
+      long submissionId = submission.getLong("id");
+      submissionIds.add(submissionId);
+      submissionPoints.put(submissionId, submission.getInt("grade"));
     }
-    return submissionIds;
-  }
-
-  private static long parseSubmissionId(@NotNull String submissionUrl) {
-    return Long.parseLong(
-        StringUtils.substringBetween(submissionUrl, "/submissions/", "/")
-    );
+    submissions.put(exerciseId, submissionIds);
   }
 
 }

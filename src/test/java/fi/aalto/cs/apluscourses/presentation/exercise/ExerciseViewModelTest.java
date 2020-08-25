@@ -61,14 +61,14 @@ public class ExerciseViewModelTest {
     String htmlUrl = "http://localhost:6000";
     SubmissionResult.Status resultStatus = SubmissionResult.Status.GRADED;
     Exercise training = new Exercise(0, "", htmlUrl,
-        Collections.singletonList(new SubmissionResult(1L, resultStatus, htmlUrl)), 0, 0, 0);
+        Collections.singletonList(new SubmissionResult(1L, 0, htmlUrl, resultStatus)), 0, 0, 0);
     Exercise noSubmissions = new Exercise(0, "", htmlUrl, Collections.emptyList(), 0, 10, 10);
     Exercise noPoints = new Exercise(0, "", htmlUrl,
-        Collections.singletonList(new SubmissionResult(1L, resultStatus, htmlUrl)), 0, 10, 10);
+        Collections.singletonList(new SubmissionResult(1L, 0, htmlUrl, resultStatus)), 0, 10, 10);
     Exercise partialPoints = new Exercise(0, "", htmlUrl,
-        Collections.singletonList(new SubmissionResult(1L, resultStatus, htmlUrl)), 5, 10, 10);
+        Collections.singletonList(new SubmissionResult(1L, 5, htmlUrl, resultStatus)), 5, 10, 10);
     Exercise fullPoints = new Exercise(0, "", htmlUrl,
-        Collections.singletonList(new SubmissionResult(1L, resultStatus, htmlUrl)), 10, 10, 10);
+        Collections.singletonList(new SubmissionResult(1L, 10, htmlUrl, resultStatus)), 10, 10, 10);
 
     Assert.assertEquals(ExerciseViewModel.Status.OPTIONAL_PRACTICE,
         new ExerciseViewModel(training).getStatus());

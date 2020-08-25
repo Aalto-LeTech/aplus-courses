@@ -9,7 +9,7 @@ public class SubmissionResultViewModelTest {
   @Test
   public void testSubmissionResultViewModel() {
     SubmissionResult submissionResult
-        = new SubmissionResult(123L, SubmissionResult.Status.UNKNOWN, "https://example.com/");
+        = new SubmissionResult(123L, 15,"https://example.com/", SubmissionResult.Status.UNKNOWN);
     SubmissionResultViewModel viewModel = new SubmissionResultViewModel(submissionResult, 34);
 
     Assert.assertEquals("Submission 34", viewModel.getPresentableName());

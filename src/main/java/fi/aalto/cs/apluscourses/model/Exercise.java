@@ -68,7 +68,7 @@ public class Exercise {
     String name = jsonObject.getString("display_name");
     String htmlUrl = jsonObject.getString("html_url");
 
-    int userPoints = points.getPoints().getOrDefault(id, 0);
+    int userPoints = points.getExercisePoints().getOrDefault(id, 0);
     int maxPoints = jsonObject.getInt("max_points");
     int maxSubmissions = jsonObject.getInt("max_submissions");
 
@@ -76,10 +76,12 @@ public class Exercise {
     List<SubmissionResult> submissionResults = IntStream
         .range(0, submissionIds.size())
         .mapToObj(i -> {
+          long submissionId = submissionIds.get(i);
+          int submissionPoints = points.getSubmissionPoints().getOrDefault(submissionId, 0);
           SubmissionResult.Status status = (i + 1 > maxSubmissions)
               ? SubmissionResult.Status.UNOFFICIAL
               : SubmissionResult.Status.GRADED;
-          return new SubmissionResult(submissionIds.get(i), status, htmlUrl);
+          return new SubmissionResult(submissionId, submissionPoints, htmlUrl, status);
         })
         .collect(Collectors.toList());
 

@@ -15,7 +15,7 @@ public class FeedbackAvailableNotificationTest {
   @Test
   public void testFeedbackAvailableNotificationTest() {
     SubmissionResult result
-        = new SubmissionResult(0, SubmissionResult.Status.GRADED, "https://example.com");
+        = new SubmissionResult(0, 0, "https://example.com", SubmissionResult.Status.GRADED);
     Notification notification = new FeedbackAvailableNotification(result, "Test Exercise");
 
     assertEquals("Group ID should be A+", "A+", notification.getGroupId());
