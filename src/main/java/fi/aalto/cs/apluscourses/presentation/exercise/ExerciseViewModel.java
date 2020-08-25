@@ -74,6 +74,9 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
    */
   @NotNull
   public String getStatusText() {
+    if ("Feedback".equals(getPresentableName())) { // O1_SPECIFIC
+      return "";
+    }
     if (getStatus() == Status.OPTIONAL_PRACTICE) {
       return "optional practice";
     }
