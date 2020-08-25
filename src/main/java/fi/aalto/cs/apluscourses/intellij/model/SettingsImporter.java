@@ -77,16 +77,16 @@ public class SettingsImporter {
    * this method does nothing.
    * @throws IOException If an IO error occurs (e.g. network issues).
    */
-  public void importProjectSettings(@NotNull Project project, @NotNull Course course)
+  public void importProjectSettings(@NotNull Path basePath, @NotNull Course course)
       throws IOException {
     URL settingsUrl = course.getResourceUrls().get("projectSettings");
     if (settingsUrl == null) {
       return;
     }
 
-    Path settingsPath = Paths.get(project.getBasePath(), Project.DIRECTORY_STORE_FOLDER);
+    Path settingsPath = basePath.resolve(Project.DIRECTORY_STORE_FOLDER);
 
-    File settingsZip = FileUtilRt.createTempFile(project.getName() + "-settings", ".zip");
+    File settingsZip = FileUtilRt.createTempFile("course-project-settings", ".zip");
     CoursesClient.fetch(settingsUrl, settingsZip);
     ZipFile zipFile = new ZipFile(settingsZip);
 
