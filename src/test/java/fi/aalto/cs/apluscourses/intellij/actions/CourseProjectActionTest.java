@@ -22,6 +22,7 @@ import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogs;
 import fi.aalto.cs.apluscourses.utils.PostponedRunnable;
 import fi.aalto.cs.apluscourses.utils.async.ImmediateTaskManager;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -96,7 +97,8 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
     }
 
     @Override
-    public void importProjectSettings(@NotNull Project project, @NotNull Course course)
+    public void importProjectSettings(@NotNull Path basePath,
+                                      @NotNull Course course)
         throws IOException {
       ++importProjectSettingsCallCount;
     }
@@ -222,9 +224,10 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
     IOException exception = new IOException();
     DummySettingsImporter failingSettingsImporter = new DummySettingsImporter() {
       @Override
-      public void importProjectSettings(@NotNull Project project, @NotNull Course course)
+      public void importProjectSettings(@NotNull Path basePath,
+                                        @NotNull Course course)
           throws IOException {
-        super.importProjectSettings(project, course);
+        super.importProjectSettings(basePath, course);
         throw exception;
       }
     };

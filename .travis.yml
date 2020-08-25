@@ -26,6 +26,3 @@ deploy:
 
 env:
   - CI=true
-
-notifications:
-  slack: $SLACK

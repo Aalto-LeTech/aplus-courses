@@ -27,6 +27,8 @@ import fi.aalto.cs.apluscourses.utils.async.SimpleAsyncTaskManager;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -156,10 +158,16 @@ public class CourseProjectAction extends AnAction {
 
     boolean importIdeSettings = !courseProjectViewModel.userOptsOutOfSettings();
 
+    String basePath = project.getBasePath();
+    if (basePath == null) {
+      logger.error("Settings could not be imported because (default?) project does not have path.");
+      return;
+    }
+
     Future<?> autoInstallDone = executor.submit(() -> startAutoInstalls(course, project));
 
     Future<Boolean> projectSettingsImported =
-        executor.submit(() -> tryImportProjectSettings(project, course));
+        executor.submit(() -> tryImportProjectSettings(project, Paths.get(basePath), course));
 
     Future<Boolean> ideSettingsImported =
         executor.submit(() -> importIdeSettings && tryImportIdeSettings(project, course));
@@ -270,9 +278,11 @@ public class CourseProjectAction extends AnAction {
    *
    * @return True if project settings were successfully imported, false otherwise.
    */
-  private boolean tryImportProjectSettings(@NotNull Project project, @NotNull Course course) {
+  private boolean tryImportProjectSettings(@NotNull Project project,
+                                           @NotNull Path basePath,
+                                           @NotNull Course course) {
     try {
-      settingsImporter.importProjectSettings(project, course);
+      settingsImporter.importProjectSettings(basePath, course);
       return true;
     } catch (IOException e) {
       logger.error("Failed to import project settings", e);
