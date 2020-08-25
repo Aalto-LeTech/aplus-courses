@@ -29,12 +29,13 @@ public class Exercise {
   /**
    * Construct an exercise instance with the given parameters.
    *
-   * @param id                 The ID of the exercise.
-   * @param name               The name of the exercise.
-   * @param submissionResults  A list of submission results corresponding to this exercise.
-   * @param userPoints         The best points that the user has gotten from this exercise.
-   * @param maxPoints          The maximum points available from this exercise.
-   * @param maxSubmissions     The maximum number of submissions allowed for this exercise.
+   * @param id                The ID of the exercise.
+   * @param name              The name of the exercise.
+   * @param htmlUrl           A URL to the HTML page of the exercise.
+   * @param submissionResults A list of submission results corresponding to this exercise.
+   * @param userPoints        The best points that the user has gotten from this exercise.
+   * @param maxPoints         The maximum points available from this exercise.
+   * @param maxSubmissions    The maximum number of submissions allowed for this exercise.
    */
   public Exercise(long id,
                   @NotNull String name,
