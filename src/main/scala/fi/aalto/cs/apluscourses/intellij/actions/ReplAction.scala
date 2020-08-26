@@ -72,7 +72,9 @@ class ReplAction extends RunConsoleAction {
         if (!setConfigurationConditionally(project, module, configuration)) {
           return // scalastyle:ignore
         }
-      case None => // For now, no dialog is shown for a project level REPL
+      case None =>
+        super.actionPerformed(e) // Delegate to the original Scala Plugin REPL
+        return // scalastyle:ignore
     }
     RunConsoleAction.runExisting(setting, runManagerEx, project)
   }
