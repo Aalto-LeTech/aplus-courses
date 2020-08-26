@@ -76,6 +76,10 @@ public class SubmissionViewModel {
     return submittableFiles;
   }
 
+  public int getCurrentSubmissionNumber() {
+    return submissionHistory.getNumberOfSubmissions() + 1;
+  }
+
   /**
    * Returns a string describing which submission the user is about to make and what the submission
    * limit is (if it exists).
@@ -83,7 +87,7 @@ public class SubmissionViewModel {
   @NotNull
   public String getSubmissionCountText() {
     StringBuilder submissionCountText = new StringBuilder("You are about to make submission ");
-    submissionCountText.append(submissionHistory.getNumberOfSubmissions() + 1);
+    submissionCountText.append(getCurrentSubmissionNumber());
     if (submissionInfo.getSubmissionsLimit() != 0) {
       submissionCountText.append(" out of ");
       submissionCountText.append(submissionInfo.getSubmissionsLimit());

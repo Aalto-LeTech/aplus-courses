@@ -63,6 +63,7 @@ public class SubmissionViewModelTest {
     SubmissionViewModel submissionViewModel1 = new SubmissionViewModel(exercise, info,
         new SubmissionHistory(3), Collections.emptyList(), Collections.emptyMap(), "");
 
+    assertEquals(4, submissionViewModel1.getCurrentSubmissionNumber());
     assertEquals("You are about to make submission 4 out of 5.",
         submissionViewModel1.getSubmissionCountText());
     assertNull(submissionViewModel1.getSubmissionWarning());
