@@ -52,8 +52,9 @@ public class SubmissionDialogTest extends LightIdeaTestCase {
     doReturn(exerciseName).when(viewModel).getPresentableExerciseName();
     doReturn(availableGroups).when(viewModel).getAvailableGroups();
     doReturn(files).when(viewModel).getFiles();
-    doReturn(numberOfSubmissions).when(viewModel).getCurrentSubmissionNumber();
-    doReturn(maxNumberOfSubmissions).when(viewModel).getMaxNumberOfSubmissions();
+    doReturn("You are about to make submission 4 out of 10.")
+        .when(viewModel)
+        .getSubmissionCountText();
     return viewModel;
   }
 

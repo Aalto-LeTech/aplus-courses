@@ -57,25 +57,39 @@ public class SubmissionViewModelTest {
   @Test
   public void testSubmissionNumbers() {
     Exercise exercise = new Exercise(1, "ex", "http://localhost:2000", Collections.emptyList(),
-        0, 0, 0);
+        0, 0, 5);
     SubmissionInfo info = new SubmissionInfo(5, Collections.emptyMap());
 
     SubmissionViewModel submissionViewModel1 = new SubmissionViewModel(exercise, info,
         new SubmissionHistory(3), Collections.emptyList(), Collections.emptyMap(), "");
 
-    assertEquals(5, submissionViewModel1.getMaxNumberOfSubmissions());
     assertEquals(4, submissionViewModel1.getCurrentSubmissionNumber());
+    assertEquals("You are about to make submission 4 out of 5.",
+        submissionViewModel1.getSubmissionCountText());
     assertNull(submissionViewModel1.getSubmissionWarning());
 
     SubmissionViewModel submissionViewModel2 = new SubmissionViewModel(exercise, info,
         new SubmissionHistory(4), Collections.emptyList(), Collections.emptyMap(), "");
 
+    assertEquals("You are about to make submission 5 out of 5.",
+        submissionViewModel2.getSubmissionCountText());
     assertNotNull(submissionViewModel2.getSubmissionWarning());
 
     SubmissionViewModel submissionViewModel3 = new SubmissionViewModel(exercise, info,
         new SubmissionHistory(5), Collections.emptyList(), Collections.emptyMap(), "");
 
+    assertEquals("You are about to make submission 6 out of 5.",
+        submissionViewModel3.getSubmissionCountText());
     assertNotNull(submissionViewModel3.getSubmissionWarning());
+
+    // Max submissions 0
+    SubmissionInfo practiceAssignment = new SubmissionInfo(0, Collections.emptyMap());
+    SubmissionViewModel submissionViewModel4 = new SubmissionViewModel(exercise, practiceAssignment,
+        new SubmissionHistory(2), Collections.emptyList(), Collections.emptyMap(), "");
+
+    assertEquals("You are about to make submission 3.",
+        submissionViewModel4.getSubmissionCountText());
+    assertNull(submissionViewModel4.getSubmissionWarning());
   }
 
   @Test

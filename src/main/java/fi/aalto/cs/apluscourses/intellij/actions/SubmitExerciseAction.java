@@ -203,7 +203,7 @@ public class SubmitExerciseAction extends AnAction {
     SubmissionHistory history = exerciseDataSource.getSubmissionHistory(exercise, authentication);
 
     List<Group> groups = new ArrayList<>(exerciseDataSource.getGroups(course, authentication));
-    groups.add(0, new Group(0, Collections
+    groups.add(0, new Group(-1, Collections
         .singletonList(getText("ui.toolWindow.subTab.exercises.submission.submitAlone"))));
 
     SubmissionViewModel submission =

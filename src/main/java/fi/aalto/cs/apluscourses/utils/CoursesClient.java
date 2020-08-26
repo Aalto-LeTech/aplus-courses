@@ -265,7 +265,7 @@ public class CoursesClient {
             new ByteArrayInputStream(EntityUtils.toByteArray(entity))
         ));
         details = json.optString("detail");
-        if (details == null || details.isBlank()) {
+        if (details == null || details.trim().isEmpty()) {
           details = String.join(", ", json
               .getJSONArray("errors")
               .toList()
