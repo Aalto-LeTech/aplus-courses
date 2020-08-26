@@ -24,7 +24,7 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
     List<SubmissionResult> submissionResults = exercise.getSubmissionResults();
     this.submissionResultViewModels = IntStream
         .range(0, submissionResults.size())
-        .mapToObj(i -> new SubmissionResultViewModel(submissionResults.get(i), i + 1))
+        .mapToObj(i -> new SubmissionResultViewModel(this, submissionResults.get(i), i + 1))
         .collect(Collectors.toList());
   }
 

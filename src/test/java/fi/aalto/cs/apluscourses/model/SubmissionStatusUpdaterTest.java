@@ -35,16 +35,17 @@ public class SubmissionStatusUpdaterTest {
 
       if (submissionResultFetchCount.incrementAndGet() >= limit) {
         return new SubmissionResult(
-          123L,
-          SubmissionResult.Status.GRADED,
-          "https://example.org"
+            123L,
+            0,
+            "https://example.org",
+            SubmissionResult.Status.GRADED
         );
       } else {
         return new SubmissionResult(
             123L,
-            SubmissionResult.Status.UNKNOWN,
-            "https://example.com/"
-
+            0,
+            "https://example.com/",
+            SubmissionResult.Status.UNKNOWN
         );
       }
     }

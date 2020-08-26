@@ -134,7 +134,7 @@ public class SubmitExerciseActionTest {
     mainViewModel = new MainViewModel();
 
     authentication = mock(Authentication.class);
-    points = new Points(Collections.emptyMap(), Collections.emptyMap());
+    points = new Points(Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());
 
     exerciseDataSource = mock(ExerciseDataSource.class);
     course = spy(new ModelExtensions.TestCourse("91", "NineOne Course", exerciseDataSource));

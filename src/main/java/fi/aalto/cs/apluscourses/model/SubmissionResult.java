@@ -13,6 +13,8 @@ public class SubmissionResult {
 
   private final long submissionId;
 
+  private final int points;
+
   @NotNull
   private final Status status;
 
@@ -22,8 +24,12 @@ public class SubmissionResult {
   /**
    * Construct an instance with the given ID and exercise URL.
    */
-  public SubmissionResult(long submissionId, @NotNull Status status, @NotNull String exerciseUrl) {
+  public SubmissionResult(long submissionId,
+                          int points,
+                          @NotNull String exerciseUrl,
+                          @NotNull Status status) {
     this.submissionId = submissionId;
+    this.points = points;
     this.status = status;
     this.exerciseUrl = exerciseUrl;
   }
@@ -36,7 +42,7 @@ public class SubmissionResult {
   @NotNull
   public static SubmissionResult fromJsonObject(@NotNull JSONObject jsonObject) {
     long id = jsonObject.getLong("id");
-
+    int points = jsonObject.getInt("grade");
     String exerciseUrl = jsonObject.getJSONObject("exercise").getString("html_url");
 
     Status status = Status.UNKNOWN;
@@ -47,11 +53,15 @@ public class SubmissionResult {
       status = Status.UNOFFICIAL;
     }
 
-    return new SubmissionResult(id, status, exerciseUrl);
+    return new SubmissionResult(id, points, exerciseUrl, status);
   }
 
   public long getId() {
     return submissionId;
+  }
+
+  public int getPoints() {
+    return points;
   }
 
   @NotNull
