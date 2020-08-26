@@ -16,9 +16,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
-public class ImportModuleAction extends DumbAwareAction {
+public class InstallModuleAction extends DumbAwareAction {
 
-  public static final String ACTION_ID = ImportModuleAction.class.getCanonicalName();
+  public static final String ACTION_ID = InstallModuleAction.class.getCanonicalName();
   @NotNull
   private final MainViewModelProvider mainViewModelProvider;
   @NotNull
@@ -31,9 +31,9 @@ public class ImportModuleAction extends DumbAwareAction {
    * @param mainViewModelProvider A main view model provider.
    * @param componentInstallerFactory A component installer factory.
    */
-  public ImportModuleAction(@NotNull MainViewModelProvider mainViewModelProvider,
-                            @NotNull ComponentInstaller.Factory componentInstallerFactory,
-                            @NotNull InstallerDialogs.Factory dialogsFactory) {
+  public InstallModuleAction(@NotNull MainViewModelProvider mainViewModelProvider,
+                             @NotNull ComponentInstaller.Factory componentInstallerFactory,
+                             @NotNull InstallerDialogs.Factory dialogsFactory) {
 
     this.mainViewModelProvider = mainViewModelProvider;
     this.componentInstallerFactory = componentInstallerFactory;
@@ -43,7 +43,7 @@ public class ImportModuleAction extends DumbAwareAction {
   /**
    * Called by the framework.
    */
-  public ImportModuleAction() {
+  public InstallModuleAction() {
     this(PluginSettings.getInstance(),
         new ComponentInstallerImpl.FactoryImpl<>(new SimpleAsyncTaskManager()),
         InstallerDialogs::new);
