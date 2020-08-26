@@ -28,7 +28,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
-public class ImportModuleActionTest {
+public class InstallModuleActionTest {
 
   private Project project;
   private MainViewModel mainViewModel;
@@ -76,7 +76,7 @@ public class ImportModuleActionTest {
   @SuppressWarnings({"ConstantConditions"})
   @Test
   public void testUpdate() {
-    ImportModuleAction action = new ImportModuleAction(p -> mainViewModel, (c, d) -> installer,
+    InstallModuleAction action = new InstallModuleAction(p -> mainViewModel, (c, d) -> installer,
         dialogsFactory);
 
     Presentation presentation = new Presentation();
@@ -103,7 +103,7 @@ public class ImportModuleActionTest {
   @SuppressWarnings({"unchecked", "ConstantConditions"})
   @Test
   public void testActionPerformed() {
-    ImportModuleAction action = new ImportModuleAction(p -> mainViewModel, (c, d) -> installer,
+    InstallModuleAction action = new InstallModuleAction(p -> mainViewModel, (c, d) -> installer,
         dialogsFactory);
 
     AnActionEvent e = mock(AnActionEvent.class);

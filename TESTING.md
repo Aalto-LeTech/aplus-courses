@@ -147,7 +147,7 @@ Manual testing
 
 **4.16** ASSERTION: The theme has changed to dark.
 
-### 5 Importing modules
+### 5 Installing modules
 
 **5.1** On **Modules** list  tool window, double-click **RobotTribes**.
 
@@ -157,7 +157,7 @@ Manual testing
 
 **5.4** On **Modules** list, right-click **SwingExamples**.
 
-**5.5** On the context menu that appears, choose **Import A+ module**.
+**5.5** On the context menu that appears, choose **Install A+ module**.
 
 **5.6** ASSERTION: **SwingExamples** appears as a module in the project tree.
 
@@ -358,7 +358,7 @@ is activated in the OS.
 **9.2** ASSERTION: The **Could not find module: The A+ Courses plugin could not find the 
 module GoodStuff.** error is shown.
 
-**9.3** Go to **Modules** tab and import **GoodStuff** module like described in **6.1**
+**9.3** Go to **Modules** tab and install **GoodStuff** module like described in **6.1**
 
 **9.4** Repeat **9.1**.
 
