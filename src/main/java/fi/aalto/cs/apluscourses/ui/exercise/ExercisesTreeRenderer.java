@@ -53,7 +53,7 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
     if (userObject instanceof ExerciseViewModel) {
       ExerciseViewModel exerciseViewModel = (ExerciseViewModel) userObject;
       append(exerciseViewModel.getPresentableName());
-      if (!exerciseViewModel.getStatusText().isBlank()) {
+      if (!exerciseViewModel.getStatusText().trim().isEmpty()) {
         append(" [" + exerciseViewModel.getStatusText() + "]", STATUS_TEXT_STYLE);
       }
       setEnabled(exerciseViewModel.isSubmittable());
