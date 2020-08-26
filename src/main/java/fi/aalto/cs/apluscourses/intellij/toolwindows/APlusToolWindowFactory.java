@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.intellij.toolwindows;
 
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionPlaces;
@@ -15,6 +16,7 @@ import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import fi.aalto.cs.apluscourses.ui.exercise.ExercisesView;
 import fi.aalto.cs.apluscourses.ui.module.ModulesView;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import org.jetbrains.annotations.NotNull;
 
@@ -42,6 +44,10 @@ public class APlusToolWindowFactory extends BaseToolWindowFactory implements Dum
     ActionToolbar toolbar = actionManager.createActionToolbar(ActionPlaces.TOOLBAR, group, true);
     toolbar.setTargetComponent(modulesView.moduleListView);
     modulesView.toolbarContainer.add(toolbar.getComponent());
+
+    JButton filterButton = new JButton(AllIcons.General.Filter);
+    filterButton.
+    modulesView.toolbarContainer.add(filterButton);
 
     ActionPopupMenu popupMenu =
         actionManager.createActionPopupMenu(ActionPlaces.TOOLWINDOW_POPUP, group);

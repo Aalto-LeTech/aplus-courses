@@ -1,13 +1,21 @@
 package fi.aalto.cs.apluscourses.presentation.base;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class SelectableNodeViewModel<T> extends BaseViewModel<T> {
-  private volatile boolean selected;
+public abstract class SelectableNodeViewModel<T, C> extends BaseViewModel<T>
+    implements TreeViewModel {
 
-  public SelectableNodeViewModel(@NotNull T model) {
+  private volatile boolean visible = true;
+
+  private volatile boolean selected = false;
+
+  public SelectableNodeViewModel(@NotNull T model, @Nullable List<SelectableNodeViewModel<C>>) {
     super(model);
-    selected = false;
+  }
+
+  public void applyFilter(BaseFilter<T> filter) {
+    visible = filter.apply(getModel());
   }
 
   public boolean isSelected() {
@@ -16,5 +24,13 @@ public class SelectableNodeViewModel<T> extends BaseViewModel<T> {
 
   public void setSelected(boolean selected) {
     this.selected = selected;
+  }
+
+  public boolean isVisible() {
+    return visible;
+  }
+
+  public void setVisible(boolean visible) {
+    this.visible = visible;
   }
 }

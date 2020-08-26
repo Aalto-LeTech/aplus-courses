@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.intellij.model;
 
+import com.intellij.configurationStore.ExportSettingsAction;
 import com.intellij.ide.startup.StartupActionScriptManager;
 import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.project.Project;

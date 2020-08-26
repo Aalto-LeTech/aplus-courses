@@ -6,6 +6,7 @@ import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseGroupViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionResultViewModel;
+import fi.aalto.cs.apluscourses.utils.StringUtil;
 import icons.PluginIcons;
 import javax.swing.Icon;
 import javax.swing.JTree;
@@ -50,7 +51,7 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
     if (userObject instanceof ExerciseViewModel) {
       ExerciseViewModel exerciseViewModel = (ExerciseViewModel) userObject;
       append(exerciseViewModel.getPresentableName());
-      if (!exerciseViewModel.getStatusText().isBlank()) {
+      if (!StringUtil.isNullOrBlank(exerciseViewModel.getStatusText())) {
         append(" [" + exerciseViewModel.getStatusText() + "]", new SimpleTextAttributes(
             SimpleTextAttributes.STYLE_ITALIC | SimpleTextAttributes.STYLE_SMALLER, null));
       }
