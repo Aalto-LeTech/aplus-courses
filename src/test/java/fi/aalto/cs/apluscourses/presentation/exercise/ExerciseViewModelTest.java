@@ -61,14 +61,14 @@ public class ExerciseViewModelTest {
     String htmlUrl = "http://localhost:6000";
     SubmissionResult.Status resultStatus = SubmissionResult.Status.GRADED;
     Exercise training = new Exercise(0, "", htmlUrl,
-        Collections.singletonList(new SubmissionResult(1L, resultStatus, htmlUrl)), 0, 0, 0);
+        Collections.singletonList(new SubmissionResult(1L, 0, htmlUrl, resultStatus)), 0, 0, 0);
     Exercise noSubmissions = new Exercise(0, "", htmlUrl, Collections.emptyList(), 0, 10, 10);
     Exercise noPoints = new Exercise(0, "", htmlUrl,
-        Collections.singletonList(new SubmissionResult(1L, resultStatus, htmlUrl)), 0, 10, 10);
+        Collections.singletonList(new SubmissionResult(1L, 0, htmlUrl, resultStatus)), 0, 10, 10);
     Exercise partialPoints = new Exercise(0, "", htmlUrl,
-        Collections.singletonList(new SubmissionResult(1L, resultStatus, htmlUrl)), 5, 10, 10);
+        Collections.singletonList(new SubmissionResult(1L, 5, htmlUrl, resultStatus)), 5, 10, 10);
     Exercise fullPoints = new Exercise(0, "", htmlUrl,
-        Collections.singletonList(new SubmissionResult(1L, resultStatus, htmlUrl)), 10, 10, 10);
+        Collections.singletonList(new SubmissionResult(1L, 10, htmlUrl, resultStatus)), 10, 10, 10);
 
     Assert.assertEquals(ExerciseViewModel.Status.OPTIONAL_PRACTICE,
         new ExerciseViewModel(training).getStatus());
@@ -90,10 +90,15 @@ public class ExerciseViewModelTest {
     Exercise exercise2 = new Exercise(0, "", "http://localhost:2121", Collections.emptyList(),
         0, 0, 0);
     ExerciseViewModel viewModel2 = new ExerciseViewModel(exercise2);
+    Exercise exercise3 = new Exercise(0, "Feedback", "http://localhost:9999",
+        Collections.emptyList(), 0, 0, 0);
+    ExerciseViewModel viewModel3 = new ExerciseViewModel(exercise3);
 
     Assert.assertEquals("The status text is correct", "0 of 12, 3/49", viewModel1.getStatusText());
     Assert.assertEquals("The status text is correct",
         "optional practice", viewModel2.getStatusText());
+    Assert.assertTrue("The status text is empty for a feedback assignment",
+        viewModel3.getStatusText().isEmpty());
   }
 
 }

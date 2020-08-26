@@ -23,11 +23,7 @@
       <li>accessing submissions' results via the IDE</li>
     ]]></description>
 
-    <change-notes><![CDATA[
-      More functionality: modules' lifecycle, submission from the IDE, seeing results, deeper REPL
-      customization.<br>
-    ]]>
-    </change-notes>
+    <change-notes>User interface improvements and bug fixes.</change-notes>
 
     <depends>com.intellij.modules.java</depends>
     <depends>org.intellij.scala</depends>
@@ -66,9 +62,9 @@
         <group id="fi.aalto.cs.apluscourses.intellij.actions.ActionGroups.MODULE_ACTIONS"
                text="A+ Module"
                description="Actions for A+ modules">
-            <action id="fi.aalto.cs.apluscourses.intellij.actions.ImportModuleAction"
-                    class="fi.aalto.cs.apluscourses.intellij.actions.ImportModuleAction"
-                    text="Import A+ Module"
+            <action id="fi.aalto.cs.apluscourses.intellij.actions.InstallModuleAction"
+                    class="fi.aalto.cs.apluscourses.intellij.actions.InstallModuleAction"
+                    text="Install A+ Module"
                     icon="PluginIcons.A_PLUS_DOWNLOAD"/>
             <action id="fi.aalto.cs.apluscourses.intellij.actions.ModulesRefreshAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.RefreshAction"

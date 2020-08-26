@@ -17,6 +17,7 @@ import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import fi.aalto.cs.apluscourses.model.UrlRenderer;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
+import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionResultViewModel;
 import org.junit.Before;
@@ -37,8 +38,9 @@ public class OpenSubmissionActionTest {
   @Before
   public void setUp() {
     submissionResult
-        = new SubmissionResult(1, SubmissionResult.Status.GRADED, "http://example.com");
-    SubmissionResultViewModel viewModel = new SubmissionResultViewModel(submissionResult, 1);
+        = new SubmissionResult(1, 0, "http://example.com", SubmissionResult.Status.GRADED);
+    SubmissionResultViewModel viewModel
+        = new SubmissionResultViewModel(mock(ExerciseViewModel.class), submissionResult, 1);
 
     ExercisesTreeViewModel exercisesTree = mock(ExercisesTreeViewModel.class);
     doReturn(viewModel).when(exercisesTree).getSelectedSubmission();

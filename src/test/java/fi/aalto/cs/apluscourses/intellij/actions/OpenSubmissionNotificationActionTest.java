@@ -36,7 +36,7 @@ public class OpenSubmissionNotificationActionTest {
     event = mock(AnActionEvent.class);
     doReturn(mock(Project.class)).when(event).getProject();
     submissionResult
-        = new SubmissionResult(1, SubmissionResult.Status.GRADED, "http://example.com");
+        = new SubmissionResult(1, 0, "http://example.com", SubmissionResult.Status.GRADED);
     notification = mock(Notification.class);
     notifier = mock(Notifier.class);
     submissionRenderer = mock(UrlRenderer.class);

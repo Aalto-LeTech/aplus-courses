@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
