@@ -90,10 +90,15 @@ public class ExerciseViewModelTest {
     Exercise exercise2 = new Exercise(0, "", "http://localhost:2121", Collections.emptyList(),
         0, 0, 0);
     ExerciseViewModel viewModel2 = new ExerciseViewModel(exercise2);
+    Exercise exercise3 = new Exercise(0, "Feedback", "http://localhost:9999",
+        Collections.emptyList(), 0, 0, 0);
+    ExerciseViewModel viewModel3 = new ExerciseViewModel(exercise3);
 
     Assert.assertEquals("The status text is correct", "0 of 12, 3/49", viewModel1.getStatusText());
     Assert.assertEquals("The status text is correct",
         "optional practice", viewModel2.getStatusText());
+    Assert.assertTrue("The status text is empty for a feedback assignment",
+        viewModel3.getStatusText().isEmpty());
   }
 
 }

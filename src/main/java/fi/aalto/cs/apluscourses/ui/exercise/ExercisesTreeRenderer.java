@@ -53,7 +53,9 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
     if (userObject instanceof ExerciseViewModel) {
       ExerciseViewModel exerciseViewModel = (ExerciseViewModel) userObject;
       append(exerciseViewModel.getPresentableName());
-      append(" [" + exerciseViewModel.getStatusText() + "]", STATUS_TEXT_STYLE);
+      if (!exerciseViewModel.getStatusText().isBlank()) {
+        append(" [" + exerciseViewModel.getStatusText() + "]", STATUS_TEXT_STYLE);
+      }
       setEnabled(exerciseViewModel.isSubmittable());
       setToolTipText(exerciseViewModel.isSubmittable()
           ? "Use the upload button to submit an exercise"

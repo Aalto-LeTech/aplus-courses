@@ -1,7 +1,10 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getAndReplaceText;
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+import static icons.PluginIcons.ACCENT_COLOR;
 
+import com.intellij.history.LocalHistory;
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -34,6 +37,7 @@ import fi.aalto.cs.apluscourses.model.SubmittableFile;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import fi.aalto.cs.apluscourses.presentation.ModuleSelectionViewModel;
+import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseGroupViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionViewModel;
@@ -68,6 +72,9 @@ public class SubmitExerciseAction extends AnAction {
   @NotNull
   private final Notifier notifier;
 
+  @NotNull
+  private final Tagger tagger;
+
   /**
    * Constructor with reasonable defaults.
    */
@@ -77,7 +84,8 @@ public class SubmitExerciseAction extends AnAction {
         VfsUtil::findFileInDirectory,
         DefaultModuleSource.INSTANCE,
         Dialogs.DEFAULT,
-        Notifications.Bus::notify
+        Notifications.Bus::notify,
+        LocalHistory.getInstance()::putSystemLabel
     );
   }
 
@@ -89,12 +97,14 @@ public class SubmitExerciseAction extends AnAction {
                               @NotNull FileFinder fileFinder,
                               @NotNull ModuleSource moduleSource,
                               @NotNull Dialogs dialogs,
-                              @NotNull Notifier notifier) {
+                              @NotNull Notifier notifier,
+                              @NotNull Tagger tagger) {
     this.mainViewModelProvider = mainViewModelProvider;
     this.fileFinder = fileFinder;
     this.moduleSource = moduleSource;
     this.dialogs = dialogs;
     this.notifier = notifier;
+    this.tagger = tagger;
   }
 
   @Override
@@ -138,7 +148,8 @@ public class SubmitExerciseAction extends AnAction {
     }
 
     ExerciseViewModel selectedExercise = exercisesViewModel.getSelectedExercise();
-    if (selectedExercise == null) {
+    ExerciseGroupViewModel selectedExerciseGroup = exercisesViewModel.getGroupOfSelectedExercise();
+    if (selectedExercise == null || selectedExerciseGroup == null) {
       notifier.notify(new ExerciseNotSelectedNotification(), project);
       return;
     }
@@ -207,10 +218,20 @@ public class SubmitExerciseAction extends AnAction {
         exerciseDataSource, authentication, submissionUrl, selectedExercise.getPresentableName()
     ).start();
     notifier.notify(new SubmissionSentNotification(), project);
+
+    String tag = getAndReplaceText("ui.localHistory.submission.tag",
+        selectedExerciseGroup.getPresentableName(),
+        submission.getPresentableExerciseName(),
+        submission.getCurrentSubmissionNumber());
+    addLocalHistoryTag(project, tag);
   }
 
   private void notifyNetworkError(@NotNull IOException exception, @Nullable Project project) {
     notifier.notify(new NetworkErrorNotification(exception), project);
+  }
+
+  private void addLocalHistoryTag(@NotNull Project project, @NotNull String tag) {
+    tagger.putSystemLabel(project, tag, ACCENT_COLOR);
   }
 
   public interface ModuleSource {
@@ -252,5 +273,10 @@ public class SubmitExerciseAction extends AnAction {
     public String getModuleName() {
       return moduleName;
     }
+  }
+
+  @FunctionalInterface
+  public interface Tagger {
+    void putSystemLabel(@Nullable Project project, @NotNull String tag, int color);
   }
 }
