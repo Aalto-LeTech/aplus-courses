@@ -10,7 +10,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.ui.JBSplitter;
 import fi.aalto.cs.apluscourses.intellij.actions.ActionGroups;
 import fi.aalto.cs.apluscourses.intellij.actions.ActionUtil;
-import fi.aalto.cs.apluscourses.intellij.actions.ImportModuleAction;
+import fi.aalto.cs.apluscourses.intellij.actions.InstallModuleAction;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import fi.aalto.cs.apluscourses.ui.exercise.ExercisesView;
@@ -49,7 +49,7 @@ public class APlusToolWindowFactory extends BaseToolWindowFactory implements Dum
     modulesView.moduleListView.setPopupMenu(popupMenu.getComponent());
 
     modulesView.moduleListView.addListActionListener(ActionUtil.createOnEventLauncher(
-        ImportModuleAction.ACTION_ID, modulesView.moduleListView));
+        InstallModuleAction.ACTION_ID, modulesView.moduleListView));
 
     return modulesView;
   }

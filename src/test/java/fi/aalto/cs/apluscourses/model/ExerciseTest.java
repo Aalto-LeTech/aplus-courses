@@ -5,6 +5,10 @@ import static org.junit.Assert.assertNotEquals;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
@@ -35,10 +39,14 @@ public class ExerciseTest {
   @NotNull
   @Contract(" -> new")
   private static Points createTestPoints() {
-    return new Points(
-        Collections.singletonMap(11L, Arrays.asList(1L, 2L)),
-        Collections.singletonMap(11L, 10)
-    );
+    long exerciseId = 11L;
+    List<Long> submissionIds = Arrays.asList(1L, 2L);
+    Map<Long, List<Long>> submissions = Collections.singletonMap(exerciseId, submissionIds);
+    Map<Long, Integer> exercisePoints = Collections.singletonMap(exerciseId, 10);
+    Map<Long, Integer> submissionPoints = new HashMap<>();
+    submissionPoints.put(1L, 33);
+    submissionPoints.put(2L, 44);
+    return new Points(submissions, exercisePoints, submissionPoints);
   }
 
   private static final Points TEST_POINTS = createTestPoints();
@@ -70,6 +78,10 @@ public class ExerciseTest {
         1L, exercise.getSubmissionResults().get(0).getId());
     assertEquals("The submission IDs are read from the points object",
         2L, exercise.getSubmissionResults().get(1).getId());
+    assertEquals("The submission points are read from the points object",
+        33, exercise.getSubmissionResults().get(0).getPoints());
+    assertEquals("The submission points are read from the points object",
+        44, exercise.getSubmissionResults().get(1).getPoints());
     assertEquals("The user points are read from the points object",
         10, exercise.getUserPoints());
     assertEquals("The max points is the same as the one in the JSON object",

@@ -38,13 +38,12 @@ public class ModuleListElementViewModel extends ListElementViewModel<Module> {
       case Component.UNRESOLVED:
         return getText("presentation.moduleStatuses.unknown");
       case Component.NOT_INSTALLED:
-        return getText("presentation.moduleStatuses.notInstalled");
-      case Component.FETCHING:
-        return getText("presentation.moduleStatuses.fetching");
       case Component.FETCHED:
-        return getText("presentation.moduleStatuses.fetched");
+        return getText("presentation.moduleStatuses.doubleClickToInstall");
+      case Component.FETCHING:
+        return getText("presentation.moduleStatuses.downloading");
       case Component.LOADING:
-        return getText("presentation.moduleStatuses.loading");
+        return getText("presentation.moduleStatuses.installing");
       case Component.LOADED:
         break;
       case Component.UNINSTALLING:
@@ -52,19 +51,19 @@ public class ModuleListElementViewModel extends ListElementViewModel<Module> {
       case Component.UNINSTALLED:
         return getText("presentation.moduleStatuses.uninstalled");
       case Component.ACTION_ABORTED:
-        return getText("presentation.moduleStatuses.actionAborted");
+        return getText("presentation.moduleStatuses.cancelling");
       default:
         return getText("presentation.moduleStatuses.error");
     }
     switch (model.dependencyStateMonitor.get()) {
       case Component.DEP_INITIAL:
-        return getText("presentation.dependencyStatus.depInitial");
+        return getText("presentation.dependencyStatus.installedDependenciesUnknown");
       case Component.DEP_WAITING:
-        return getText("presentation.dependencyStatus.depWaiting");
+        return getText("presentation.dependencyStatus.waitingForDependencies");
       case Component.DEP_LOADED:
-        return getText("presentation.dependencyStatus.depLoaded");
+        return getText("presentation.dependencyStatus.installed");
       default:
-        return getText("presentation.dependencyStatus.depError");
+        return getText("presentation.dependencyStatus.errorInDependencies");
     }
   }
 

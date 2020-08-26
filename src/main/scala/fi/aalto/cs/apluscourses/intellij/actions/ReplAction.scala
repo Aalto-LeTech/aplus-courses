@@ -72,7 +72,9 @@ class ReplAction extends RunConsoleAction {
         if (!setConfigurationConditionally(project, module, configuration)) {
           return // scalastyle:ignore
         }
-      case None => // For now, no dialog is shown for a project level REPL
+      case None =>
+        super.actionPerformed(e) // Delegate to the original Scala Plugin REPL
+        return // scalastyle:ignore
     }
     RunConsoleAction.runExisting(setting, runManagerEx, project)
   }
@@ -112,17 +114,18 @@ class ReplAction extends RunConsoleAction {
 
   }
 
-  def getDefaultModule(@NotNull project: Project): Option[Module] =
-    Option(ModuleManager.getInstance(project).findModuleByName(PluginSettings
-      .getInstance()
-      .getMainViewModel(project)
-      .courseViewModel
-      .get()
-      .getModel
-      .getAutoInstallComponentNames
-      //  we, hereby, commonly agree, that the first in the list auto install component (module)
-      //  is ultimately REPL's default module (as it's most likely to exist). sorry :pensive:
-      .head))
+  def getDefaultModule(@NotNull project: Project): Option[Module] = {
+    Option(PluginSettings.getInstance().getMainViewModel(project).courseViewModel.get) match {
+      case Some(courseViewModel) =>
+        Option(ModuleManager.getInstance(project).findModuleByName(courseViewModel
+          .getModel
+          .getAutoInstallComponentNames
+          //  we, hereby, commonly agree, that the first in the list auto install component (module)
+          //  is ultimately REPL's default module (as it's most likely to exist). sorry :pensive:
+          .head))
+      case None => None
+    }
+  }
 
   def setConfigurationFields(@NotNull configuration: ScalaConsoleRunConfiguration,
                              @NotNull workingDirectory: String,

@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
@@ -266,7 +265,7 @@ public class CoursesClient {
             new ByteArrayInputStream(EntityUtils.toByteArray(entity))
         ));
         details = json.optString("detail");
-        if (details == null || details.trim().isEmpty()) {
+        if (details == null || details.isBlank()) {
           details = String.join(", ", json
               .getJSONArray("errors")
               .toList()

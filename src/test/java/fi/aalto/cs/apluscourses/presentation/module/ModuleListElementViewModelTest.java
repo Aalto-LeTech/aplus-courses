@@ -54,7 +54,7 @@ public class ModuleListElementViewModelTest {
     assertEquals(TextAttribute.WEIGHT_REGULAR, moduleViewModel.getFontWeight(), delta);
 
     module.stateMonitor.set(Component.NOT_INSTALLED);
-    assertEquals("Double-click to download", moduleViewModel.getStatus());
+    assertEquals("Double-click to install", moduleViewModel.getStatus());
     assertEquals(TextAttribute.WEIGHT_REGULAR, moduleViewModel.getFontWeight(), delta);
 
     module.stateMonitor.set(Component.FETCHING);

@@ -60,7 +60,7 @@ public class ModelExtensions {
     @Override
     public Points getPoints(@NotNull Course course, @NotNull Authentication authentication)
         throws IOException {
-      return new Points(Collections.emptyMap(), Collections.emptyMap());
+      return new Points(Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());
     }
 
     @NotNull
@@ -68,7 +68,7 @@ public class ModelExtensions {
     public SubmissionResult getSubmissionResult(@NotNull String submissionUrl,
                                                 @NotNull Authentication authentication)
         throws IOException {
-      return new SubmissionResult(0, SubmissionResult.Status.GRADED, "http://localhost:8000");
+      return new SubmissionResult(0, 20,"http://localhost:8000", SubmissionResult.Status.GRADED);
     }
 
     @Override

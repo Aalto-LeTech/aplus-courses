@@ -32,6 +32,9 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
     }
   }
 
+  private static final SimpleTextAttributes STATUS_TEXT_STYLE = new SimpleTextAttributes(
+      SimpleTextAttributes.STYLE_ITALIC | SimpleTextAttributes.STYLE_SMALLER, null);
+
   @Override
   public void customizeCellRenderer(@NotNull JTree tree,
                                     Object value,
@@ -50,8 +53,9 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
     if (userObject instanceof ExerciseViewModel) {
       ExerciseViewModel exerciseViewModel = (ExerciseViewModel) userObject;
       append(exerciseViewModel.getPresentableName());
-      append(" [" + exerciseViewModel.getStatusText() + "]", new SimpleTextAttributes(
-              SimpleTextAttributes.STYLE_ITALIC | SimpleTextAttributes.STYLE_SMALLER, null));
+      if (!exerciseViewModel.getStatusText().isBlank()) {
+        append(" [" + exerciseViewModel.getStatusText() + "]", STATUS_TEXT_STYLE);
+      }
       setEnabled(exerciseViewModel.isSubmittable());
       setToolTipText(exerciseViewModel.isSubmittable()
           ? "Use the upload button to submit an exercise"
@@ -68,6 +72,7 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
       SubmissionResultViewModel submissionResultViewModel = (SubmissionResultViewModel) userObject;
       setEnabled(true);
       append(submissionResultViewModel.getPresentableName());
+      append(" [" + submissionResultViewModel.getStatusText() + "]", STATUS_TEXT_STYLE);
       setToolTipText("Double-click the submission to open it in the browser");
     }
   }
