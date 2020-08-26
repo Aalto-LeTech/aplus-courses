@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.intellij.actions;
 
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getAndReplaceText;
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+import static icons.PluginIcons.ACCENT_COLOR;
 
 import com.intellij.history.LocalHistory;
 import com.intellij.notification.Notifications;
@@ -84,7 +85,7 @@ public class SubmitExerciseAction extends AnAction {
         DefaultModuleSource.INSTANCE,
         Dialogs.DEFAULT,
         Notifications.Bus::notify,
-        LocalHistory.getInstance()::putUserLabel
+        LocalHistory.getInstance()::putSystemLabel
     );
   }
 
@@ -147,7 +148,7 @@ public class SubmitExerciseAction extends AnAction {
     }
 
     ExerciseViewModel selectedExercise = exercisesViewModel.getSelectedExercise();
-    ExerciseGroupViewModel selectedExerciseGroup = exercisesViewModel.getSelectedExerciseGroup();
+    ExerciseGroupViewModel selectedExerciseGroup = exercisesViewModel.getGroupOfSelectedExercise();
     if (selectedExercise == null || selectedExerciseGroup == null) {
       notifier.notify(new ExerciseNotSelectedNotification(), project);
       return;
@@ -218,19 +219,19 @@ public class SubmitExerciseAction extends AnAction {
     ).start();
     notifier.notify(new SubmissionSentNotification(), project);
 
-    String tag = getAndReplaceText("ui.toolWindow.subTab.exercises.submission.tag",
+    String tag = getAndReplaceText("ui.localHistory.submission.tag",
         selectedExerciseGroup.getPresentableName(),
         submission.getPresentableExerciseName(),
         submission.getCurrentSubmissionNumber());
-    dropLocalHistoryTag(project, tag);
+    addLocalHistoryTag(project, tag);
   }
 
   private void notifyNetworkError(@NotNull IOException exception, @Nullable Project project) {
     notifier.notify(new NetworkErrorNotification(exception), project);
   }
 
-  private void dropLocalHistoryTag(@NotNull Project project, @NotNull String tag) {
-    tagger.putUserLabel(project, tag);
+  private void addLocalHistoryTag(@NotNull Project project, @NotNull String tag) {
+    tagger.putSystemLabel(project, tag, ACCENT_COLOR);
   }
 
   public interface ModuleSource {
@@ -276,6 +277,6 @@ public class SubmitExerciseAction extends AnAction {
 
   @FunctionalInterface
   public interface Tagger {
-    void putUserLabel(@Nullable Project project, @NotNull String tag);
+    void putSystemLabel(@Nullable Project project, @NotNull String tag, int color);
   }
 }

@@ -1,16 +1,22 @@
 package icons;
 
 import com.intellij.openapi.util.IconLoader;
+import com.intellij.ui.JBColor;
+import java.awt.Color;
 import javax.swing.Icon;
 
 /**
  * Guide: https://www.jetbrains.org/intellij/sdk/docs/reference_guide/work_with_icons_and_images.html
- * Icons source: https://jetbrains.design/intellij/resources/icons_list/
- * Accent colour: #FF0090(FF) (100% opacity) aka RGB(255, 0, 144)
- * Light schema: #AFB1B3(FF) (100% opacity)
- * Dark schema: #6E6E6E(FF) (100% opacity)
+ * Icons source: https://jetbrains.design/intellij/resources/icons_list/ Accent colour: #FF0090(FF)
+ * (100% opacity) aka RGB(255, 0, 144) Light schema: #AFB1B3(FF) (100% opacity) Dark schema:
+ * #6E6E6E(FF) (100% opacity)
  */
 public interface PluginIcons {
+
+  int ACCENT_COLOR = new JBColor(
+      new Color(255, 0, 144),
+      new Color(255, 0, 144)
+  ).getRGB();
 
   Icon A_PLUS_MODULE = IconLoader.getIcon("/META-INF/icons/module.svg");
   Icon A_PLUS_EXERCISE_GROUP = IconLoader.getIcon("/META-INF/icons/exerciseGroup.svg");

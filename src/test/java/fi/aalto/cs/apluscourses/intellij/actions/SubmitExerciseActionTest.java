@@ -5,6 +5,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.doCallRealMethod;
@@ -232,6 +234,7 @@ public class SubmitExerciseActionTest {
         ArgumentCaptor.forClass(SubmissionSentNotification.class);
 
     verify(notifier).notify(notificationArg.capture(), eq(project));
+    verify(tagger).putSystemLabel(any(), anyString(), anyInt());
   }
 
   @Test

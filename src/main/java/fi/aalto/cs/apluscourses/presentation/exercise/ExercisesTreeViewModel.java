@@ -57,7 +57,7 @@ public class ExercisesTreeViewModel extends BaseViewModel<List<ExerciseGroup>>
    * selected.
    */
   @Nullable
-  public ExerciseGroupViewModel getSelectedExerciseGroup() {
+  public ExerciseGroupViewModel getGroupOfSelectedExercise() {
     for (ExerciseGroupViewModel exerciseGroupViewModel : getGroupViewModels()) {
       for (ExerciseViewModel exerciseViewModel : exerciseGroupViewModel.getExerciseViewModels()) {
         if (exerciseViewModel.isSelected()) {
