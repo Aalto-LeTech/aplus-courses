@@ -1,9 +1,10 @@
 package fi.aalto.cs.apluscourses.presentation.base;
 
 import java.util.List;
-import org.jetbrains.annotations.Nullable;
+import java.util.stream.Stream;
+import org.jetbrains.annotations.NotNull;
 
 public interface TreeViewModel {
-  @Nullable
-  List<? extends TreeViewModel> getSubtrees();
+  @NotNull
+  List<? extends TreeViewModel> getChildren();
 }

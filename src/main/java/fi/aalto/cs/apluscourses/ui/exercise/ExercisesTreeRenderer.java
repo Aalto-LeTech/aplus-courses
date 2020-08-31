@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.ui.exercise;
 
 import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
+import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseGroupViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
@@ -47,6 +48,9 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
       // This is the root node, which is hidden anyways.
       return;
     }
+
+    SelectableNodeViewModel<?> selectableNodeViewModel = (SelectableNodeViewModel<?>) userObject;
+    setVisible(selectableNodeViewModel.isVisible());
 
     if (userObject instanceof ExerciseViewModel) {
       ExerciseViewModel exerciseViewModel = (ExerciseViewModel) userObject;

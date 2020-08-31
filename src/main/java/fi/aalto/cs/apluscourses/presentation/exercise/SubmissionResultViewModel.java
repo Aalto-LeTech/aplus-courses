@@ -9,8 +9,7 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class SubmissionResultViewModel extends SelectableNodeViewModel<SubmissionResult>
-    implements TreeViewModel {
+public class SubmissionResultViewModel extends SelectableNodeViewModel<SubmissionResult> {
 
   private final int submissionNumber;
 
@@ -19,18 +18,12 @@ public class SubmissionResultViewModel extends SelectableNodeViewModel<Submissio
    */
   public SubmissionResultViewModel(@NotNull SubmissionResult submissionResult,
                                    int submissionNumber) {
-    super(submissionResult);
+    super(submissionResult, null);
     this.submissionNumber = submissionNumber;
   }
 
   @NotNull
   public String getPresentableName() {
     return getText("presentation.submissionResultViewModel.nameStart") + " " + submissionNumber;
-  }
-
-  @Nullable
-  @Override
-  public List<? extends TreeViewModel> getSubtrees() {
-    return null;
   }
 }

@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.presentation.exercise;
 
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
 import fi.aalto.cs.apluscourses.presentation.base.BaseViewModel;
+import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.TreeViewModel;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,8 +32,9 @@ public class ExercisesTreeViewModel extends BaseViewModel<List<ExerciseGroup>>
   @Nullable
   public ExerciseViewModel getSelectedExercise() {
     return getGroupViewModels().stream()
-        .flatMap(group -> group.getExerciseViewModels().stream())
-        .filter(ExerciseViewModel::isSelected)
+        .flatMap(ExerciseGroupViewModel::streamChildren)
+        .filter(SelectableNodeViewModel::isSelected)
+        .map(ExerciseViewModel.class::cast)
         .findFirst()
         .orElse(null);
   }
@@ -43,9 +45,10 @@ public class ExercisesTreeViewModel extends BaseViewModel<List<ExerciseGroup>>
   @Nullable
   public SubmissionResultViewModel getSelectedSubmission() {
     return getGroupViewModels().stream()
-        .flatMap(group -> group.getExerciseViewModels().stream())
-        .flatMap(exercise -> exercise.getSubmissionResultViewModels().stream())
-        .filter(SubmissionResultViewModel::isSelected)
+        .flatMap(ExerciseGroupViewModel::streamChildren)
+        .flatMap(SelectableNodeViewModel::streamChildren)
+        .filter(SelectableNodeViewModel::isSelected)
+        .map(SubmissionResultViewModel.class::cast)
         .findFirst()
         .orElse(null);
   }
@@ -55,9 +58,8 @@ public class ExercisesTreeViewModel extends BaseViewModel<List<ExerciseGroup>>
     return groupViewModels;
   }
 
-  @Nullable
   @Override
-  public List<ExerciseGroupViewModel> getSubtrees() {
+  public @NotNull List<ExerciseGroupViewModel> getChildren() {
     return getGroupViewModels();
   }
 }

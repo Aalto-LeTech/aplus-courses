@@ -48,13 +48,10 @@ public class TreeView extends Tree {
 
   @NotNull
   private static DefaultMutableTreeNode createNode(@NotNull TreeViewModel tree) {
-    List<? extends TreeViewModel> subtrees = tree.getSubtrees();
-    boolean allowsChildren = subtrees != null;
-    DefaultMutableTreeNode node = new DefaultMutableTreeNode(tree, allowsChildren);
-    if (allowsChildren) {
-      for (TreeViewModel subtree : subtrees) {
-        node.add(createNode(subtree));
-      }
+    List<? extends TreeViewModel> children = tree.getChildren();
+    DefaultMutableTreeNode node = new DefaultMutableTreeNode(tree, true);
+    for (TreeViewModel subtree : children) {
+      node.add(createNode(subtree));
     }
     return node;
   }

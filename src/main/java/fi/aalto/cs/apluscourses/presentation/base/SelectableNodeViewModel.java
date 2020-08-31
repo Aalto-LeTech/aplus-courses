@@ -1,21 +1,31 @@
 package fi.aalto.cs.apluscourses.presentation.base;
 
+import fi.aalto.cs.apluscourses.presentation.filter.Filter;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class SelectableNodeViewModel<T, C> extends BaseViewModel<T>
+public abstract class SelectableNodeViewModel<T> extends BaseViewModel<T>
     implements TreeViewModel {
 
+  private final List<SelectableNodeViewModel<?>> children;
   private volatile boolean visible = true;
 
   private volatile boolean selected = false;
 
-  public SelectableNodeViewModel(@NotNull T model, @Nullable List<SelectableNodeViewModel<C>>) {
+  public SelectableNodeViewModel(@NotNull T model,
+                                 @Nullable List<SelectableNodeViewModel<?>> children) {
     super(model);
+    this.children = children;
   }
 
-  public void applyFilter(BaseFilter<T> filter) {
-    visible = filter.apply(getModel());
+  public boolean applyFilter(Filter filter) {
+    return visible = children != null
+        && children.parallelStream().anyMatch(child -> child.applyFilter(filter))
+        || filter.apply(getModel());
   }
 
   public boolean isSelected() {
@@ -32,5 +42,16 @@ public abstract class SelectableNodeViewModel<T, C> extends BaseViewModel<T>
 
   public void setVisible(boolean visible) {
     this.visible = visible;
+  }
+
+  @Override
+  @NotNull
+  public List<SelectableNodeViewModel<?>> getChildren() {
+    return Optional.ofNullable(children).orElse(Collections.emptyList());
+  }
+
+  @NotNull
+  public Stream<SelectableNodeViewModel<?>> streamChildren() {
+    return Optional.ofNullable(children).map(List::stream).orElse(Stream.empty());
   }
 }

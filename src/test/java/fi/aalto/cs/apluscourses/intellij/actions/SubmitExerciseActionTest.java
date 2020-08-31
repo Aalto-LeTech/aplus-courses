@@ -151,7 +151,7 @@ public class SubmitExerciseActionTest {
     mainViewModel.authentication.set(authentication);
 
     exercises = Objects.requireNonNull(mainViewModel.exercisesViewModel.get());
-    exercises.getGroupViewModels().get(0).getExerciseViewModels().get(0).setSelected(true);
+    exercises.getGroupViewModels().get(0).getChildren().get(0).setSelected(true);
 
     moduleName = "MyModule";
     modulePath = Paths.get(moduleName);
@@ -231,7 +231,7 @@ public class SubmitExerciseActionTest {
 
   @Test
   public void testNotifiesNoExerciseSelected() {
-    exercises.getGroupViewModels().get(0).getExerciseViewModels().get(0).setSelected(false);
+    exercises.getGroupViewModels().get(0).getChildren().get(0).setSelected(false);
 
     action.actionPerformed(event);
 

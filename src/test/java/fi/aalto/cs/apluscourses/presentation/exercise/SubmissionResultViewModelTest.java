@@ -13,7 +13,7 @@ public class SubmissionResultViewModelTest {
     SubmissionResultViewModel viewModel = new SubmissionResultViewModel(submissionResult, 34);
 
     Assert.assertEquals("Submission 34", viewModel.getPresentableName());
-    Assert.assertNull(viewModel.getSubtrees());
+    Assert.assertNull(viewModel.getChildren());
   }
 
 }
