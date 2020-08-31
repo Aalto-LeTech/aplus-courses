@@ -2,8 +2,11 @@ package fi.aalto.cs.apluscourses.intellij.model;
 
 import com.intellij.openapi.roots.libraries.LibraryProperties;
 import com.intellij.openapi.roots.libraries.PersistentLibraryKind;
+import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.io.FileUtilRt;
+import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VfsUtil;
+import com.intellij.openapi.vfs.VirtualFileManager;
 import fi.aalto.cs.apluscourses.utils.DirAwareZipFile;
 import java.io.File;
 import java.io.IOException;
@@ -14,6 +17,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import org.apache.commons.io.FileUtils;
+import org.jetbrains.annotations.CalledWithReadLock;
 import org.jetbrains.annotations.CalledWithWriteLock;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.plugins.scala.project.ScalaLanguageLevel;
@@ -76,6 +80,7 @@ public class ScalaSdk extends IntelliJLibrary<PersistentLibraryKind<ScalaLibrary
     return "scala-" + scalaVersion;
   }
 
+  @CalledWithReadLock
   @Override
   protected String[] getUris() {
     return getUris(CLASSES, path -> VfsUtil.getUrlForLibraryRoot(path.toFile()));
@@ -96,8 +101,17 @@ public class ScalaSdk extends IntelliJLibrary<PersistentLibraryKind<ScalaLibrary
         .toArray(String[]::new);
   }
 
+  /**
+   * Gets local file system URIs of the given roots.
+   *
+   * @param roots File names for library class roots.
+   * @return An array of URI strings (unescaped).
+   */
+  @CalledWithReadLock
   public String[] getUris(@NotNull String[] roots) {
-    return getUris(roots, path -> path.toUri().toString());
+    String protocol = LocalFileSystem.getInstance().getProtocol();
+    return getUris(roots, path -> VirtualFileManager.constructUrl(protocol,
+        FileUtil.toSystemIndependentName(path.toString())));
   }
 
   @Override
