@@ -172,14 +172,10 @@ public class CourseProjectAction extends AnAction {
     Future<Boolean> ideSettingsImported =
         executor.submit(() -> importIdeSettings && tryImportIdeSettings(project, course));
 
-    if (createCourseFile) {
-      // The course file not created in testing.
-      PluginSettings.getInstance().createUpdatingMainViewModel(project);
-    }
-
     executor.execute(() -> {
       try {
         autoInstallDone.get();
+        PluginSettings.getInstance().createUpdatingMainViewModel(project);
         if (projectSettingsImported.get() && importIdeSettings && ideSettingsImported.get()) {
           ideRestarter.run();
         }
