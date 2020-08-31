@@ -106,6 +106,7 @@ public class SubmitExerciseActionTest {
   SubmitExerciseAction action;
   Points points;
   Tagger tagger;
+  SubmitExerciseAction.DocumentSaver documentSaver;
 
   /**
    * Called before each test.
@@ -211,8 +212,10 @@ public class SubmitExerciseActionTest {
 
     tagger = mock(Tagger.class);
 
+    documentSaver = mock(SubmitExerciseAction.DocumentSaver.class);
+
     action = new SubmitExerciseAction(mainVmProvider, fileFinder, moduleSource, dialogs, notifier,
-        tagger);
+        tagger, documentSaver);
   }
 
   @Test
@@ -235,6 +238,7 @@ public class SubmitExerciseActionTest {
 
     verify(notifier).notify(notificationArg.capture(), eq(project));
     verify(tagger).putSystemLabel(any(), anyString(), anyInt());
+    verify(documentSaver).saveAllDocuments();
   }
 
   @Test
