@@ -8,6 +8,7 @@ import com.intellij.history.LocalHistory;
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.module.ModuleUtilCore;
@@ -74,6 +75,7 @@ public class SubmitExerciseAction extends AnAction {
 
   @NotNull
   private final Tagger tagger;
+  private final DocumentSaver documentSaver;
 
   /**
    * Constructor with reasonable defaults.
@@ -85,7 +87,8 @@ public class SubmitExerciseAction extends AnAction {
         DefaultModuleSource.INSTANCE,
         Dialogs.DEFAULT,
         Notifications.Bus::notify,
-        LocalHistory.getInstance()::putSystemLabel
+        LocalHistory.getInstance()::putSystemLabel,
+        FileDocumentManager.getInstance()::saveAllDocuments
     );
   }
 
@@ -98,13 +101,15 @@ public class SubmitExerciseAction extends AnAction {
                               @NotNull ModuleSource moduleSource,
                               @NotNull Dialogs dialogs,
                               @NotNull Notifier notifier,
-                              @NotNull Tagger tagger) {
+                              @NotNull Tagger tagger,
+                              @NotNull DocumentSaver documentSaver) {
     this.mainViewModelProvider = mainViewModelProvider;
     this.fileFinder = fileFinder;
     this.moduleSource = moduleSource;
     this.dialogs = dialogs;
     this.notifier = notifier;
     this.tagger = tagger;
+    this.documentSaver = documentSaver;
   }
 
   @Override
@@ -194,6 +199,8 @@ public class SubmitExerciseAction extends AnAction {
       return;
     }
 
+    documentSaver.saveAllDocuments();
+
     Path modulePath = Paths.get(ModuleUtilCore.getModuleDirPath(selectedModule));
     Map<String, Path> files = new HashMap<>();
     for (SubmittableFile file : submissionInfo.getFiles(language)) {
@@ -278,5 +285,10 @@ public class SubmitExerciseAction extends AnAction {
   @FunctionalInterface
   public interface Tagger {
     void putSystemLabel(@Nullable Project project, @NotNull String tag, int color);
+  }
+
+  @FunctionalInterface
+  public interface DocumentSaver {
+    void saveAllDocuments();
   }
 }
