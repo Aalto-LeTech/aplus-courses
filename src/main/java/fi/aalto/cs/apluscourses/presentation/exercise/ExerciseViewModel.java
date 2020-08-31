@@ -7,7 +7,7 @@ import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
 import fi.aalto.cs.apluscourses.utils.ListUtil;
 import org.jetbrains.annotations.NotNull;
 
-public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> implements TreeViewModel {
+public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> {
 
   /**
    * Construct a view model corresponding to the given exercise.

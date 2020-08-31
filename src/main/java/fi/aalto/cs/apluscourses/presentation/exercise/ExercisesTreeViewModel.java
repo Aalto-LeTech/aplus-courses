@@ -4,7 +4,11 @@ import fi.aalto.cs.apluscourses.model.ExerciseGroup;
 import fi.aalto.cs.apluscourses.presentation.base.BaseViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.TreeViewModel;
+import fi.aalto.cs.apluscourses.presentation.filter.Option;
+import fi.aalto.cs.apluscourses.presentation.filter.Options;
+import fi.aalto.cs.apluscourses.utils.Event;
 import java.util.List;
+import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -12,18 +16,48 @@ import org.jetbrains.annotations.Nullable;
 public class ExercisesTreeViewModel extends BaseViewModel<List<ExerciseGroup>>
     implements TreeViewModel {
 
+  public final Event filtered = new Event();
+
   @NotNull
   private final List<ExerciseGroupViewModel> groupViewModels;
+
+  @NotNull
+  private final Executor filterExecutor;
+
+  @NotNull
+  private final Options options;
 
   /**
    * Construct an exercises tree view model from the given exercise groups.
    */
-  public ExercisesTreeViewModel(@NotNull List<ExerciseGroup> exerciseGroups) {
+  public ExercisesTreeViewModel(@NotNull List<ExerciseGroup> exerciseGroups,
+                                @NotNull Executor filterExecutor) {
     super(exerciseGroups);
     this.groupViewModels = exerciseGroups
         .stream()
         .map(ExerciseGroupViewModel::new)
         .collect(Collectors.toList());
+    this.filterExecutor = filterExecutor;
+    this.options = new Options(
+        new Option("Non-submittable",
+            null,
+            new ExerciseFilter.NonSubmittableFilter()
+        ),
+        new Option("No more submissions",
+            null,
+            new ExerciseFilter.StatusFilter(ExerciseViewModel.Status.NO_SUBMISSIONS)
+        )
+    );
+    this.options.optionsChanged.addListener(this, ExercisesTreeViewModel::filter);
+  }
+
+  private void filter() {
+    filterExecutor.execute(this::filterInBackground);
+  }
+
+  private void filterInBackground() {
+    getChildren().parallelStream().forEach(group -> group.applyFilter(options));
+    filtered.trigger();
   }
 
   /**
@@ -31,8 +65,9 @@ public class ExercisesTreeViewModel extends BaseViewModel<List<ExerciseGroup>>
    */
   @Nullable
   public ExerciseViewModel getSelectedExercise() {
-    return getGroupViewModels().stream()
-        .flatMap(ExerciseGroupViewModel::streamChildren)
+    return getChildren().parallelStream()
+        .map(ExerciseGroupViewModel::getChildren)
+        .flatMap(List::parallelStream)
         .filter(SelectableNodeViewModel::isSelected)
         .map(ExerciseViewModel.class::cast)
         .findFirst()
@@ -44,22 +79,19 @@ public class ExercisesTreeViewModel extends BaseViewModel<List<ExerciseGroup>>
    */
   @Nullable
   public SubmissionResultViewModel getSelectedSubmission() {
-    return getGroupViewModels().stream()
-        .flatMap(ExerciseGroupViewModel::streamChildren)
-        .flatMap(SelectableNodeViewModel::streamChildren)
+    return getChildren().parallelStream()
+        .map(ExerciseGroupViewModel::getChildren)
+        .flatMap(List::parallelStream)
+        .map(SelectableNodeViewModel::getChildren)
+        .flatMap(List::parallelStream)
         .filter(SelectableNodeViewModel::isSelected)
         .map(SubmissionResultViewModel.class::cast)
         .findFirst()
         .orElse(null);
   }
 
-  @NotNull
-  public List<ExerciseGroupViewModel> getGroupViewModels() {
-    return groupViewModels;
-  }
-
   @Override
   public @NotNull List<ExerciseGroupViewModel> getChildren() {
-    return getGroupViewModels();
+    return groupViewModels;
   }
 }

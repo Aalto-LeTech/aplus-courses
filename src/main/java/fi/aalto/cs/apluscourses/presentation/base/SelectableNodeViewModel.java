@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 public abstract class SelectableNodeViewModel<T> extends BaseViewModel<T>
     implements TreeViewModel {
 
+  @NotNull
   private final List<SelectableNodeViewModel<?>> children;
   private volatile boolean visible = true;
 
@@ -19,7 +20,7 @@ public abstract class SelectableNodeViewModel<T> extends BaseViewModel<T>
   public SelectableNodeViewModel(@NotNull T model,
                                  @Nullable List<SelectableNodeViewModel<?>> children) {
     super(model);
-    this.children = children;
+    this.children = Optional.ofNullable(children).orElse(Collections.emptyList());
   }
 
   public boolean applyFilter(Filter filter) {
@@ -47,11 +48,11 @@ public abstract class SelectableNodeViewModel<T> extends BaseViewModel<T>
   @Override
   @NotNull
   public List<SelectableNodeViewModel<?>> getChildren() {
-    return Optional.ofNullable(children).orElse(Collections.emptyList());
+    return children;
   }
 
   @NotNull
   public Stream<SelectableNodeViewModel<?>> streamChildren() {
-    return Optional.ofNullable(children).map(List::stream).orElse(Stream.empty());
+    return children.stream();
   }
 }
