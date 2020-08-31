@@ -23,7 +23,9 @@
       <li>accessing submissions' results via the IDE</li>
     ]]></description>
 
-    <change-notes>User interface improvements and bug fixes.</change-notes>
+    <change-notes>
+        Fixed bug that made Scala builds fail if the project path contained special characters.
+    </change-notes>
 
     <depends>com.intellij.modules.java</depends>
     <depends>org.intellij.scala</depends>
