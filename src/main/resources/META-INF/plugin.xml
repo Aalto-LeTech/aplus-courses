@@ -90,6 +90,12 @@
                     class="fi.aalto.cs.apluscourses.intellij.actions.RefreshAction"
                     text="Refresh Assignments"
                     icon="PluginIcons.A_PLUS_REFRESH" />
+            <group id="fi.aalto.cs.apluscourses.intellij.actions.ExerciseFilterOptionsActionGroup"
+                   class="fi.aalto.cs.apluscourses.intellij.actions.ExerciseFilterOptionsActionGroup"
+                   popup="true"
+                   text="Filter Exercises"
+                   icon="AllIcons.General.Filter">
+            </group>
         </group>
         <action id="Scala.RunConsole"
                 class="fi.aalto.cs.apluscourses.intellij.actions.ReplAction"

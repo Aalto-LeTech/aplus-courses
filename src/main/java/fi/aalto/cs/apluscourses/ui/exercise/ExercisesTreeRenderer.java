@@ -9,6 +9,7 @@ import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionResultViewModel;
 import fi.aalto.cs.apluscourses.utils.StringUtil;
 import icons.PluginIcons;
+import java.awt.Dimension;
 import javax.swing.Icon;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -48,9 +49,6 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
       // This is the root node, which is hidden anyways.
       return;
     }
-
-    SelectableNodeViewModel<?> selectableNodeViewModel = (SelectableNodeViewModel<?>) userObject;
-    setVisible(selectableNodeViewModel.isVisible());
 
     if (userObject instanceof ExerciseViewModel) {
       ExerciseViewModel exerciseViewModel = (ExerciseViewModel) userObject;

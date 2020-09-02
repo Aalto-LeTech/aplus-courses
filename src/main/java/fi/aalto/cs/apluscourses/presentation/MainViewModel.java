@@ -59,7 +59,7 @@ public class MainViewModel {
     try {
       Points points = dataSource.getPoints(course, auth);
       List<ExerciseGroup> exerciseGroups = dataSource.getExerciseGroups(course, points, auth);
-      exercisesViewModel.set(new ExercisesTreeViewModel(exerciseGroups));
+      exercisesViewModel.set(new ExercisesTreeViewModel(exerciseGroups, Runnable::run));
     } catch (InvalidAuthenticationException e) {
       // TODO: might want to communicate this to the user somehow
     } catch (IOException e) {
@@ -95,5 +95,10 @@ public class MainViewModel {
         .map(PasswordStorage::restorePassword)
         .map(factory::create)
         .ifPresent(this::setAuthentication);
+  }
+
+  @Nullable
+  public ExercisesTreeViewModel getExercises() {
+    return exercisesViewModel.get();
   }
 }

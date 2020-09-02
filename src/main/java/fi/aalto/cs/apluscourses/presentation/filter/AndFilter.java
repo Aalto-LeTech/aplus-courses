@@ -11,6 +11,6 @@ public class AndFilter implements Filter {
 
   @Override
   public boolean apply(Object item) {
-    return filters.parallelStream().allMatch(filter -> filter.apply(item));
+    return filters.stream().allMatch(filter -> filter.apply(item));
   }
 }

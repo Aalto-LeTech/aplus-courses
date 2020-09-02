@@ -2,9 +2,8 @@ package fi.aalto.cs.apluscourses.presentation.exercise;
 
 import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
-import fi.aalto.cs.apluscourses.presentation.base.TreeViewModel;
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
-import fi.aalto.cs.apluscourses.utils.ListUtil;
+import fi.aalto.cs.apluscourses.utils.CollectionUtil;
 import org.jetbrains.annotations.NotNull;
 
 public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> {
@@ -14,7 +13,7 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> {
    */
   public ExerciseViewModel(@NotNull Exercise exercise) {
     super(exercise,
-        ListUtil.mapWithIndex(exercise.getSubmissionResults(), SubmissionResultViewModel::new, 1));
+        CollectionUtil.mapWithIndex(exercise.getSubmissionResults(), SubmissionResultViewModel::new, 1));
   }
 
   public String getPresentableName() {

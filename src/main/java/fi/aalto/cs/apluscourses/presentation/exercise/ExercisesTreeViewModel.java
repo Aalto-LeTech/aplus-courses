@@ -38,16 +38,7 @@ public class ExercisesTreeViewModel extends BaseViewModel<List<ExerciseGroup>>
         .map(ExerciseGroupViewModel::new)
         .collect(Collectors.toList());
     this.filterExecutor = filterExecutor;
-    this.options = new Options(
-        new Option("Non-submittable",
-            null,
-            new ExerciseFilter.NonSubmittableFilter()
-        ),
-        new Option("No more submissions",
-            null,
-            new ExerciseFilter.StatusFilter(ExerciseViewModel.Status.NO_SUBMISSIONS)
-        )
-    );
+    this.options = new ExerciseFilterOptions();
     this.options.optionsChanged.addListener(this, ExercisesTreeViewModel::filter);
   }
 
@@ -56,8 +47,13 @@ public class ExercisesTreeViewModel extends BaseViewModel<List<ExerciseGroup>>
   }
 
   private void filterInBackground() {
-    getChildren().parallelStream().forEach(group -> group.applyFilter(options));
+    getChildren().stream().forEach(group -> group.applyFilter(options));
     filtered.trigger();
+  }
+
+  @NotNull
+  public Options getFilterOptions() {
+    return options;
   }
 
   /**

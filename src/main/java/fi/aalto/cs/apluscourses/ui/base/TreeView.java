@@ -49,7 +49,7 @@ public class TreeView extends Tree {
   @NotNull
   private static DefaultMutableTreeNode createNode(@NotNull TreeViewModel tree) {
     List<? extends TreeViewModel> children = tree.getChildren();
-    DefaultMutableTreeNode node = new DefaultMutableTreeNode(tree, true);
+    DefaultMutableTreeNode node = new DefaultMutableTreeNode(tree);
     for (TreeViewModel subtree : children) {
       node.add(createNode(subtree));
     }

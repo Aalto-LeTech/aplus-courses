@@ -23,6 +23,7 @@ public class Option implements Filter {
     this.filter = filter;
   }
 
+  @Override
   public boolean apply(Object item) {
     return Boolean.TRUE.equals(isSelected.get()) && filter.apply(item);
   }

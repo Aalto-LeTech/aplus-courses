@@ -45,10 +45,6 @@ public class APlusToolWindowFactory extends BaseToolWindowFactory implements Dum
     toolbar.setTargetComponent(modulesView.moduleListView);
     modulesView.toolbarContainer.add(toolbar.getComponent());
 
-    JButton filterButton = new JButton(AllIcons.General.Filter);
-    filterButton.
-    modulesView.toolbarContainer.add(filterButton);
-
     ActionPopupMenu popupMenu =
         actionManager.createActionPopupMenu(ActionPlaces.TOOLWINDOW_POPUP, group);
     popupMenu.setTargetComponent(modulesView.moduleListView);
