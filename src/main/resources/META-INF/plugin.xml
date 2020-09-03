@@ -24,7 +24,7 @@
     ]]></description>
 
     <change-notes>
-        Fixed bug that made Scala builds fail if the project path contained special characters.
+        Log errors related to the assignment list.
     </change-notes>
 
     <depends>com.intellij.modules.java</depends>
