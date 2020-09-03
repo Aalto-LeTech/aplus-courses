@@ -19,8 +19,12 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MainViewModel {
+
+  public static final Logger logger = LoggerFactory.getLogger(MainViewModel.class);
 
   public final Event disposing = new Event();
 
@@ -61,8 +65,10 @@ public class MainViewModel {
       List<ExerciseGroup> exerciseGroups = dataSource.getExerciseGroups(course, points, auth);
       exercisesViewModel.set(new ExercisesTreeViewModel(exerciseGroups));
     } catch (InvalidAuthenticationException e) {
+      logger.error("Failed to fetch exercises", e);
       // TODO: might want to communicate this to the user somehow
     } catch (IOException e) {
+      logger.error("Failed to fetch exercises", e);
       // This too
     }
   }
