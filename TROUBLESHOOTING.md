@@ -41,21 +41,22 @@ Troubleshooting the plugin
 | 1.  | **problem**   | [~~IDE complaining about not able to see the SDK (whitespaces and special characters in naming (path))~~](https://github.com/Aalto-LeTech/intellij-plugin/issues/360)|
 |     | **status**    | solved                                                                                             |
 |     | **solution**  | update to the latest plugin version                                                                |
-| 2.  | **problem**   | [continuously being asked to re-enter the A+ token]()                                                  |
-|     | **status**    | not possible to solve due to the configuration of Aalto Linux on VDI                               |
-|     | **solution**  | none                                                                                               |
-| 3.  | **problem**   | [keymap imported by the plugin interferes with macOS's normal keyboard shortcuts]()                    |
-|     | **status**    | actively worked on                                                                                 |
-|     | **solution**  | (temporary) use [this link](https://www.jetbrains.com/help/idea/configuring-keyboard-and-mouse-shortcuts.html) to the standard macOS keymap for IntelliJ IDEA    |
-| 4.  | **problem**   | [network error about A+ token containing whitespaces](https://github.com/Aalto-LeTech/intellij-plugin/issues/377)                                                |
-|     | **status**    | under investigation                                                                                |
-|     | **solution**  | none                                                                                               |
-| 5.  | **problem**   | [~~assignments are not visible on Aalto Linux (VDI)~~](https://github.com/Aalto-LeTech/intellij-plugin/issues/371)                                                   |
+| 2.  | **problem**   | [~~assignments are not visible on Aalto Linux (VDI)~~](https://github.com/Aalto-LeTech/intellij-plugin/issues/371)                                                   |
 |     | **status**    | solved                                                                      |
 |     | **solution**  | it's an environment configuration issue and was solved by Aalto IT                                               |
+| 3.  | **problem**   | [continuously being asked to re-enter the A+ token]()                                                  |
+|     | **status**    | not possible to solve due to the configuration of Aalto Linux on VDI                               |
+|     | **solution**  | none                                                                                               |
+| 4.  | **problem**   | [keymap imported by the plugin interferes with macOS's normal keyboard shortcuts]()                    |
+|     | **status**    | actively worked on                                                                                 |
+|     | **solution**  | (temporary) use [this link](https://www.jetbrains.com/help/idea/configuring-keyboard-and-mouse-shortcuts.html) to the standard macOS keymap for IntelliJ IDEA    |
+| 5.  | **problem**   | [network error about A+ token containing whitespaces](https://github.com/Aalto-LeTech/intellij-plugin/issues/377)                                                |
+|     | **status**    | under investigation                                                                                |
+|     | **solution**  | none                                                                                               |
 | 6.  | **problem**   | can't run program because of the missing **Run** in right-click menu                               |
 |     | **status**    | under investigation                                                                                |
 |     | **solution**  | none                                                                                               |
 | 7.  | **problem**   | [local course file missing language](https://github.com/Aalto-LeTech/intellij-plugin/issues/315)   |
 |     | **status**    | under investigation                                                                                |
+|     | **affected**  | :angry: :angry: :angry:
 |     | **solution**  | none                                                                                               |
