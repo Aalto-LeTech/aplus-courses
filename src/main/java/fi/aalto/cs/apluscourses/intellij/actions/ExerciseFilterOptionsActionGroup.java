@@ -6,7 +6,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
-import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
+import fi.aalto.cs.apluscourses.presentation.exercise.BaseTreeViewModel;
 import fi.aalto.cs.apluscourses.utils.Streamable;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -31,7 +31,7 @@ public class ExerciseFilterOptionsActionGroup extends ActionGroup {
         .map(AnActionEvent::getProject)
         .map(mainViewModelProvider::getMainViewModel)
         .map(MainViewModel::getExercises)
-        .map(ExercisesTreeViewModel::getFilterOptions)
+        .map(BaseTreeViewModel::getFilterOptions)
         .map(Streamable::stream)
         .orElseGet(Stream::empty)
         .map(FilterOptionAction::new)

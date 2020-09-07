@@ -4,10 +4,7 @@ import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
-import fi.aalto.cs.apluscourses.presentation.base.TreeViewModel;
-import java.util.List;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class SubmissionResultViewModel extends SelectableNodeViewModel<SubmissionResult> {
 

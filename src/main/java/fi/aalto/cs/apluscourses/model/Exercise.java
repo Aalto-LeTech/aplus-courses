@@ -127,4 +127,8 @@ public class Exercise {
   public boolean equals(Object obj) {
     return obj instanceof Exercise && ((Exercise) obj).getId() == getId();
   }
+
+  public boolean hasMaxSubmissionsBeenExceeded() {
+    return submissionResults.size() >= maxSubmissions;
+  }
 }

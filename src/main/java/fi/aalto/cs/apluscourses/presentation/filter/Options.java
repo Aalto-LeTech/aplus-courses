@@ -7,18 +7,18 @@ import java.util.Iterator;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
-public class Options extends AndFilter implements Streamable<Option> {
+public class Options extends LogicalFilter.Conjunction implements Streamable<Option> {
   public final Event optionsChanged = new Event();
-  private final List<Option> options;
+  private final List<Option> optionList;
 
   public Options(Option... options) {
     this(Arrays.asList(options));
   }
 
-  public Options(List<Option> options) {
-    super(options);
-    this.options = options;
-    for (Option option : options) {
+  protected Options(List<Option> optionList) {
+    super(optionList);
+    this.optionList = optionList;
+    for (Option option : optionList) {
       option.isSelected.addValueObserver(this, Options::selectionChanged);
     }
   }
@@ -30,6 +30,6 @@ public class Options extends AndFilter implements Streamable<Option> {
   @NotNull
   @Override
   public Iterator<Option> iterator() {
-    return options.iterator();
+    return optionList.iterator();
   }
 }

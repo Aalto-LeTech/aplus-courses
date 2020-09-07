@@ -39,14 +39,12 @@ public class ObservableReadWriteProperty<T> extends ObservableProperty<T> {
    * value, unless the new value equals the old value, in which case observers are not notified.
    *
    * @param newValue The new value to be set.
-   * @return The new value.
    */
   @Override
-  public synchronized T set(T newValue) {
+  public synchronized void set(T newValue) {
     if (setInternal(newValue)) {
       onValueChanged(newValue);
     }
-    return newValue;
   }
 
   @Nullable

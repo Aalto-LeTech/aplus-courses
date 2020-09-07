@@ -6,15 +6,10 @@ import fi.aalto.cs.apluscourses.presentation.filter.TypedFilter;
 
 public class ExerciseFilterOptions extends Options {
 
+  //TODO UI strings
   public ExerciseFilterOptions() {
-    super(new Option("Non-submittable",
-            null,
-            new ExerciseFilterOptions.NonSubmittableFilter()
-        ),
-        new Option("No more submissions",
-            null,
-            new ExerciseFilterOptions.StatusFilter(ExerciseViewModel.Status.NO_SUBMISSIONS)
-        ));
+    super(new Option("Non-submittable", null, new NonSubmittableFilter()),
+        new Option("No submissions left", null, new NoSubmissionsLeftFilter()));
   }
 
   public abstract static class ExerciseFilter extends TypedFilter<ExerciseViewModel> {
@@ -30,16 +25,10 @@ public class ExerciseFilterOptions extends Options {
     }
   }
 
-  public static class StatusFilter extends ExerciseFilter {
-    private final ExerciseViewModel.Status status;
-
-    public StatusFilter(ExerciseViewModel.Status status) {
-      this.status = status;
-    }
-
+  public static class NoSubmissionsLeftFilter extends ExerciseFilter {
     @Override
     public boolean applyInternal(ExerciseViewModel item) {
-      return item.getStatus() == status;
+      return item.getModel().hasMaxSubmissionsBeenExceeded();
     }
   }
 }

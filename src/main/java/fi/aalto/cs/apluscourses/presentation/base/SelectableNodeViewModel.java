@@ -24,9 +24,23 @@ public abstract class SelectableNodeViewModel<T> extends BaseViewModel<T>
     this.children = Optional.ofNullable(children).orElse(Collections.emptyList());
   }
 
+  /**
+   * Applies a filter to this node, that is, sets the node visible if the filter applies to the node
+   * or one of its descendants, or the filter is not applicable to this node.  Otherwise, sets the
+   * node invisible.
+   *
+   * @param filter A filter.
+   * @return True, if the filter applies to this node or one of its descendants, otherwise false.
+   */
   public boolean applyFilter(Filter filter) {
-    return isVisible.set(
-        children.stream().anyMatch(child -> child.applyFilter(filter)) || filter.apply(this));
+    Optional<Boolean> visible = children.stream()
+        .map(child -> child.applyFilter(filter))
+        .reduce(Boolean::logicalOr) // we don't use anyMatch to avoid short-circuiting
+        .filter(Boolean::booleanValue)
+        .map(Optional::of)
+        .orElseGet(() -> filter.apply(this));
+    isVisible.set(visible.orElse(true));
+    return visible.orElse(false);
   }
 
   public boolean isSelected() {

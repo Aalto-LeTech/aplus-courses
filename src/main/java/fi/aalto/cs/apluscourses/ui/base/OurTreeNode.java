@@ -2,41 +2,52 @@ package fi.aalto.cs.apluscourses.ui.base;
 
 import fi.aalto.cs.apluscourses.presentation.base.Filterable;
 import fi.aalto.cs.apluscourses.utils.CollectionUtil;
+import java.util.Collection;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Stream;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 
 public class OurTreeNode extends DefaultMutableTreeNode implements Filterable.Listener {
 
-  private boolean visible;
+  private final AtomicBoolean visible = new AtomicBoolean();
 
   public OurTreeNode(Object userObject) {
     super(userObject);
-    if (userObject instanceof Filterable) {
-      ((Filterable) userObject).addVisibilityListener(this);
-    }
   }
 
   @Override
   public void visibilityChanged(boolean isVisible) {
-    this.visible = isVisible;
+    this.visible.set(isVisible);
+  }
+
+  private Stream<TreeNode> streamVisibleChildren() {
+    return Optional.ofNullable(children)
+        .map(Collection::stream)
+        .orElseGet(Stream::empty)
+        .filter(OurTreeNode::isNodeVisible);
   }
 
   @Override
   public TreeNode getChildAt(int index) {
-    return (TreeNode) CollectionUtil.getNth(children.iterator(), OurTreeNode::isNodeVisible, index);
+    return streamVisibleChildren()
+        .skip(index)
+        .findFirst()
+        .orElseThrow(ArrayIndexOutOfBoundsException::new);
   }
 
   @Override
   public int getChildCount() {
-    return super.getChildCount();
+    return (int) streamVisibleChildren().count();
   }
 
   @Override
   public int getIndex(TreeNode treeNode) {
-    return super.getIndex(treeNode);
+    return CollectionUtil.indexOf(streamVisibleChildren().iterator(), treeNode);
   }
 
   private static boolean isNodeVisible(Object node) {
-    return !(node instanceof OurTreeNode) || ((OurTreeNode) node).visible;
+    return !(node instanceof OurTreeNode) || ((OurTreeNode) node).visible.get();
   }
 }

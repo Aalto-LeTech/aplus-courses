@@ -5,6 +5,7 @@ import fi.aalto.cs.apluscourses.model.ExerciseGroup;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -35,7 +36,8 @@ public class ExerciseGroupViewModelTest {
 
     ExerciseGroup group = new ExerciseGroup("", Arrays.asList(third, second, first));
     ExerciseGroupViewModel groupViewModel = new ExerciseGroupViewModel(group);
-    List<ExerciseViewModel> exerciseViewModels = groupViewModel.getExerciseViewModels();
+    List<ExerciseViewModel> exerciseViewModels = groupViewModel.getChildren().stream()
+        .map(ExerciseViewModel.class::cast).collect(Collectors.toList());
 
     String message = "The exercises are sorted by IDs";
 

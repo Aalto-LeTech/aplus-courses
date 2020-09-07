@@ -60,7 +60,7 @@ public abstract class ObservableProperty<T> {
   @Nullable
   public abstract T get();
 
-  public T set(T value) {
+  public void set(T value) {
     throw new UnsupportedOperationException();
   }
 

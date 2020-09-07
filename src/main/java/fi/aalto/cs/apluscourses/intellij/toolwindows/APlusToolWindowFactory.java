@@ -1,6 +1,5 @@
 package fi.aalto.cs.apluscourses.intellij.toolwindows;
 
-import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionPlaces;
@@ -16,7 +15,6 @@ import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import fi.aalto.cs.apluscourses.ui.exercise.ExercisesView;
 import fi.aalto.cs.apluscourses.ui.module.ModulesView;
-import javax.swing.JButton;
 import javax.swing.JComponent;
 import org.jetbrains.annotations.NotNull;
 

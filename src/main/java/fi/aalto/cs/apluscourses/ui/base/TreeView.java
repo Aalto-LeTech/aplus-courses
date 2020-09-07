@@ -1,8 +1,10 @@
 package fi.aalto.cs.apluscourses.ui.base;
 
 import com.intellij.ui.treeStructure.Tree;
+import fi.aalto.cs.apluscourses.presentation.base.Filterable;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.TreeViewModel;
+import fi.aalto.cs.apluscourses.presentation.exercise.BaseTreeViewModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -39,9 +41,11 @@ public class TreeView extends Tree {
    * Set the model of the this tree to the given view model, or do nothing if the given view model
    * is {@code null}.
    */
-  public void setViewModel(@Nullable TreeViewModel viewModel) {
+  public void setViewModel(@Nullable BaseTreeViewModel<?> viewModel) {
     if (viewModel != null) {
-      setModel(new DefaultTreeModel(createNode(viewModel)));
+      DefaultTreeModel treeModel = new DefaultTreeModel(createNode(viewModel));
+      viewModel.filtered.addListener(treeModel, DefaultTreeModel::reload);
+      setModel(treeModel);
     }
     selectedItem = null;
   }
@@ -49,7 +53,10 @@ public class TreeView extends Tree {
   @NotNull
   private static DefaultMutableTreeNode createNode(@NotNull TreeViewModel tree) {
     List<? extends TreeViewModel> children = tree.getChildren();
-    DefaultMutableTreeNode node = new DefaultMutableTreeNode(tree);
+    OurTreeNode node = new OurTreeNode(tree);
+    if (tree instanceof Filterable) {
+      ((Filterable) tree).addVisibilityListener(node);
+    }
     for (TreeViewModel subtree : children) {
       node.add(createNode(subtree));
     }

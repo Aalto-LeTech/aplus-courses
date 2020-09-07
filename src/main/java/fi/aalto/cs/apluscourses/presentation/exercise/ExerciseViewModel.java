@@ -12,8 +12,8 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> {
    * Construct a view model corresponding to the given exercise.
    */
   public ExerciseViewModel(@NotNull Exercise exercise) {
-    super(exercise,
-        CollectionUtil.mapWithIndex(exercise.getSubmissionResults(), SubmissionResultViewModel::new, 1));
+    super(exercise, CollectionUtil.mapWithIndex(
+        exercise.getSubmissionResults(), SubmissionResultViewModel::new, 1));
   }
 
   public String getPresentableName() {
