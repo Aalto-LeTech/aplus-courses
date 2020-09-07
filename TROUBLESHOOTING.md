@@ -21,9 +21,9 @@ Troubleshooting the plugin
 ![project](images/ts_project.png)
 
 **Modules**
+![modules 3](images/ts_modules_3.png)
 ![modules 1](images/ts_modules_1.png)
 ![modules 2](images/ts_modules_2.png)
-![modules 3](images/ts_modules_3.png)
 
 **Libraries (Scala SDK)**
 ![libraries](images/ts_libs.png)
