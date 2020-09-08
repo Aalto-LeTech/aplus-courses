@@ -26,22 +26,29 @@ public class ExerciseGroupViewModelTest {
 
   @Test
   public void testSortsExercises() {
-    Exercise first = new Exercise(1, "Assignment 0", "http://localhost:1000",
+    Exercise first = new Exercise(424, "Assignment 3",
+        "http://localhost:1000/w10/ch02/w10_ch02_03/", Collections.emptyList(), 0, 0,0);
+    Exercise second = new Exercise(325, "Feedback",
+        "http://localhost:2000/w10/ch02/w10_ch02_feedback/", Collections.emptyList(), 0, 0,0);
+    Exercise third = new Exercise(195, "Assignment 1", "http://localhost:3000/w10/ch03/w10_ch03_01/",
         Collections.emptyList(), 0, 0,0);
-    Exercise second = new Exercise(2, "Assignment 5", "http://localhost:2000",
-        Collections.emptyList(), 0, 0,0);
-    Exercise third = new Exercise(3, "Assignment 10", "http://localhost:3000",
-        Collections.emptyList(), 0, 0,0);
+    Exercise fourth = new Exercise(908, "Feedback",
+        "http://localhost:3000/w10/ch03/w10_ch03_feedback/", Collections.emptyList(), 0, 0, 0);
+    Exercise fifth = new Exercise(282, "Assignment 1",
+        "http://localhost:3000/w10/ch04/w10_ch04_01/", Collections.emptyList(), 0, 0, 0);
 
-    ExerciseGroup group = new ExerciseGroup("", Arrays.asList(third, second, first));
+    ExerciseGroup group = new ExerciseGroup("", Arrays.asList(third, fifth, first, fourth, second));
     ExerciseGroupViewModel groupViewModel = new ExerciseGroupViewModel(group);
-    List<ExerciseViewModel> exerciseViewModels = groupViewModel.getExerciseViewModels();
 
-    String message = "The exercises are sorted by IDs";
+    Long[] ids = groupViewModel
+        .getExerciseViewModels()
+        .stream()
+        .map(ExerciseViewModel::getModel)
+        .map(Exercise::getId)
+        .toArray(Long[]::new);
 
-    Assert.assertEquals(message, first.getName(), exerciseViewModels.get(0).getPresentableName());
-    Assert.assertEquals(message, second.getName(), exerciseViewModels.get(1).getPresentableName());
-    Assert.assertEquals(message, third.getName(), exerciseViewModels.get(2).getPresentableName());
+    Assert.assertArrayEquals("The exercises are sorted correctly",
+        new Long[] {424L, 325L, 195L, 908L, 282L}, ids);
   }
 
 }
