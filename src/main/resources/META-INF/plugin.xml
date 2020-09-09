@@ -24,7 +24,7 @@
     ]]></description>
 
     <change-notes>
-        Log errors related to the assignment list.
+        Fix ordering of assignments in the assignments tree.
     </change-notes>
 
     <depends>com.intellij.modules.java</depends>
