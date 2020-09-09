@@ -1,10 +1,13 @@
 package fi.aalto.cs.apluscourses.model;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
@@ -135,6 +138,24 @@ public class ExerciseTest {
     assertEquals(exercise.hashCode(), sameExercise.hashCode());
 
     assertNotEquals(exercise, otherExercise);
+  }
+
+  @Test
+  public void testHasMaxSubmissionsBeenExceeded() {
+    List<SubmissionResult> results = Arrays.asList(
+        new SubmissionResult(200, SubmissionResult.Status.UNKNOWN, "http://example.com/200"),
+        new SubmissionResult(201, SubmissionResult.Status.UNKNOWN, "http://example.com/201"),
+        new SubmissionResult(202, SubmissionResult.Status.UNKNOWN, "http://example.com/202")
+    );
+
+    Exercise ex9 = new Exercise(100, "Test9", "http://example.com/100", results, 0, 0, 9);
+    assertFalse(ex9.hasMaxSubmissionsBeenExceeded());
+
+    Exercise ex3 = new Exercise(100, "Test3", "http://example.com/100", results, 0, 0, 3);
+    assertTrue(ex3.hasMaxSubmissionsBeenExceeded());
+
+    Exercise ex2 = new Exercise(100, "Test3", "http://example.com/100", results, 0, 0, 2);
+    assertTrue(ex2.hasMaxSubmissionsBeenExceeded());
   }
 
 }

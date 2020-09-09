@@ -1,15 +1,16 @@
 package fi.aalto.cs.apluscourses.presentation.exercise;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import fi.aalto.cs.apluscourses.presentation.filter.Option;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import fi.aalto.cs.apluscourses.presentation.filter.TypedFilter;
 
 public class ExerciseFilterOptions extends Options {
 
-  //TODO UI strings
   public ExerciseFilterOptions() {
-    super(new Option("Non-submittable", null, new NonSubmittableFilter()),
-        new Option("No submissions left", null, new NoSubmissionsLeftFilter()));
+    super(new Option(getText("presentation.exerciseFilterOptions.nonSubmittable"), null,
+        new NonSubmittableFilter()));
   }
 
   public abstract static class ExerciseFilter extends TypedFilter<ExerciseViewModel> {

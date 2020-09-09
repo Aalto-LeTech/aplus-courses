@@ -50,7 +50,7 @@ public abstract class ObservableProperty<T> {
   }
 
   public <O> void addValueObserver(@NotNull O observer, @NotNull SimpleCallback<O> callback) {
-    addValueObserver(observer, new CallbackWrapper<>(callback));
+    observers.put(observer, new CallbackWrapper<>(callback));
   }
 
   public void declareDependentOn(@NotNull ObservableProperty<?> property) {

@@ -1,10 +1,10 @@
 package fi.aalto.cs.apluscourses.ui.base;
 
 import com.intellij.ui.treeStructure.Tree;
+import fi.aalto.cs.apluscourses.presentation.base.BaseTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.Filterable;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.TreeViewModel;
-import fi.aalto.cs.apluscourses.presentation.exercise.BaseTreeViewModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;

@@ -9,7 +9,7 @@ import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class SelectableNodeViewModel<T> extends BaseViewModel<T>
+public class SelectableNodeViewModel<T> extends BaseViewModel<T>
     implements TreeViewModel, Filterable {
 
   @NotNull
@@ -33,6 +33,9 @@ public abstract class SelectableNodeViewModel<T> extends BaseViewModel<T>
    * @return True, if the filter applies to this node or one of its descendants, otherwise false.
    */
   public boolean applyFilter(Filter filter) {
+    if (Thread.currentThread().isInterrupted()) {
+      return true;
+    }
     Optional<Boolean> visible = children.stream()
         .map(child -> child.applyFilter(filter))
         .reduce(Boolean::logicalOr) // we don't use anyMatch to avoid short-circuiting

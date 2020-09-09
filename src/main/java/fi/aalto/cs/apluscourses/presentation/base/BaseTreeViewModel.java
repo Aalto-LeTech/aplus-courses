@@ -1,11 +1,8 @@
-package fi.aalto.cs.apluscourses.presentation.exercise;
+package fi.aalto.cs.apluscourses.presentation.base;
 
-import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
-import fi.aalto.cs.apluscourses.presentation.base.TreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import fi.aalto.cs.apluscourses.utils.Event;
 import java.util.List;
-import java.util.concurrent.Executor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,34 +12,55 @@ public abstract class BaseTreeViewModel<T>
   @NotNull
   public final Event filtered = new Event();
   @NotNull
-  protected final Executor filterExecutor;
-  @NotNull
   protected final Options options;
+  @Nullable
+  private Thread filterThread = null;
+  @NotNull
+  private final Object filterLock = new Object();
 
   /**
    * Base class for tree view models.
    */
   public BaseTreeViewModel(@NotNull T model,
                            @Nullable List<SelectableNodeViewModel<?>> children,
-                           @NotNull Options options,
-                           @NotNull Executor filterExecutor) {
+                           @NotNull Options options) {
     super(model, children);
-    this.filterExecutor = filterExecutor;
     this.options = options;
     this.options.optionsChanged.addListener(this, BaseTreeViewModel::filter);
   }
 
   protected void filter() {
-    filterExecutor.execute(this::filterInBackground);
-  }
-
-  private void filterInBackground() {
-    applyFilter(options);
-    filtered.trigger();
+    synchronized (filterLock) {
+      filterThread = new FilterThread(filterThread);
+      filterThread.start();
+    }
   }
 
   @NotNull
   public Options getFilterOptions() {
     return options;
+  }
+
+  private class FilterThread extends Thread {
+    @Nullable
+    private final Thread previous;
+
+    public FilterThread(@Nullable Thread previous) {
+      this.previous = previous;
+    }
+
+    @Override
+    public void run() {
+      try {
+        if (previous != null) {
+          previous.interrupt();
+          previous.join();
+        }
+        applyFilter(options);
+        filtered.trigger();
+      } catch (InterruptedException e) {
+        interrupt();
+      }
+    }
   }
 }

@@ -25,4 +25,5 @@ public interface PluginIcons {
   Icon A_PLUS_REFRESH = IconLoader.getIcon("/META-INF/icons/refresh.svg");
   Icon A_PLUS_LOGO = IconLoader.getIcon("/META-INF/icons/aPlusLogo.svg");
   Icon A_PLUS_REPL = IconLoader.getIcon("/META-INF/icons/repl.svg");
+  Icon A_PLUS_FILTER = IconLoader.getIcon("/META-INF/icons/filter.svg");
 }

@@ -38,9 +38,6 @@ public class MainViewModel {
 
   private AtomicBoolean hasTriedToReadAuthenticationFromStorage = new AtomicBoolean(false);
 
-  /**
-   * Instantiates a new view model for the main object.
-   */
   public MainViewModel() {
     courseViewModel.addValueObserver(this, MainViewModel::updateExercises);
     authentication.addValueObserver(this, MainViewModel::updateExercises);
@@ -59,7 +56,7 @@ public class MainViewModel {
     try {
       Points points = dataSource.getPoints(course, auth);
       List<ExerciseGroup> exerciseGroups = dataSource.getExerciseGroups(course, points, auth);
-      exercisesViewModel.set(new ExercisesTreeViewModel(exerciseGroups, Runnable::run));
+      exercisesViewModel.set(new ExercisesTreeViewModel(exerciseGroups));
     } catch (InvalidAuthenticationException e) {
       // TODO: might want to communicate this to the user somehow
     } catch (IOException e) {

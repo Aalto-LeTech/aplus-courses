@@ -395,3 +395,17 @@ available. Click the link below to open the feedback.** notification is shown.
 ![Assignments submission view](images/open_browser_button.png)
 
 **11.6** ASSERTION: Browser opens Submission page in A+ LMS (login, if asked).
+
+### 12 Filtering exercises
+
+**12.1** Click **Filter Assignments** button (pink funnel icon) above the assignments tree.
+
+**12.2** ASSERTION: **Non-submittable** menu item is checked.
+
+**12.3** Uncheck **Non-submittable** menu item.  Note: This makes the exercise tree to collapse.
+
+**12.4** ASSERTION: Non-submittable (that is, grayed out) assignments are no longer in the tree.
+
+**12.5** Check **Non-submittable** menu item again.
+
+**12.6** ASSERTION: Non-submittable assignments are shown again in the tree.

@@ -23,4 +23,8 @@ public class FilterOptionAction extends ToggleAction {
   public void setSelected(@NotNull AnActionEvent e, boolean state) {
     option.isSelected.set(state);
   }
+
+  public Option getOption() {
+    return option;
+  }
 }
