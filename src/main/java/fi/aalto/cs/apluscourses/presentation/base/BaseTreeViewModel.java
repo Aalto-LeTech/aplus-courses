@@ -57,10 +57,22 @@ public abstract class BaseTreeViewModel<T>
           previous.join();
         }
         applyFilter(options);
-        filtered.trigger();
+        if (done()) {
+          filtered.trigger();
+        }
       } catch (InterruptedException e) {
         interrupt();
       }
+    }
+
+    private boolean done() {
+      synchronized (filterLock) {
+        if (filterThread == this) {
+          filterThread = null;
+          return true;
+        }
+      }
+      return false;
     }
   }
 }
