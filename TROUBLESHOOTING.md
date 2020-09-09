@@ -34,7 +34,7 @@ Troubleshooting the plugin
 **7.** start REPL on a **GoodStuff** module by right-clicking **Scala REPL...**
 ![repl](images/REPL.png)
 
-### [Known issues](https://github.com/Aalto-LeTech/intellij-plugin/issues?q=is%3Aissue+label%3Auser-bug)
+### [Known issues](https://github.com/Aalto-LeTech/intellij-plugin/labels/user-bug)
 
 | #   | status    | description                                                                                        |
 |-----|-----------|----------------------------------------------------------------------------------------------------|
@@ -44,7 +44,7 @@ Troubleshooting the plugin
 | 2.  | **problem**   | [~~assignments are not visible on Aalto Linux (VDI)~~](https://github.com/Aalto-LeTech/intellij-plugin/issues/371)                                                   |
 |     | **status**    | solved                                                                      |
 |     | **solution**  | it's an environment configuration issue and was solved by Aalto IT                                               |
-| 3.  | **problem**   | [continuously being asked to re-enter the A+ token](https://plus.cs.aalto.fi/o1/2020/wNN/intellij/#additional-materials-for-special-cases)                                                  |
+| 3.  | **problem**   | [continuously being asked to re-enter the A+ token](https://plus.cs.aalto.fi/o1/2020/wNN/intellij/#additional-materials-for-special-cases)                           |
 |     | **status**    | not possible to solve due to the configuration of Aalto Linux on VDI                               |
 |     | **affected**  | :angry: users who can't remember their very first Aalto password                                   |
 |     | **solution**  | some, but partial                                                                                  |
