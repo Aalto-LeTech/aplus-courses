@@ -40,27 +40,31 @@ Troubleshooting the plugin
 |-----|-----------|----------------------------------------------------------------------------------------------------|
 | 1.  | **problem**   | [~~IDE complaining about not able to see the SDK (whitespaces and special characters in naming (path))~~](https://github.com/Aalto-LeTech/intellij-plugin/issues/360)|
 |     | **status**    | solved                                                                                             |
-|     | **solution**  | update to the latest plugin version                                                                |
+|     | **solution**  | update to at least **1.3** version of the Plugin                                                   |
 | 2.  | **problem**   | [~~assignments are not visible on Aalto Linux (VDI)~~](https://github.com/Aalto-LeTech/intellij-plugin/issues/371)                                                   |
 |     | **status**    | solved                                                                      |
 |     | **solution**  | it's an environment configuration issue and was solved by Aalto IT                                               |
 | 3.  | **problem**   | [continuously being asked to re-enter the A+ token](https://plus.cs.aalto.fi/o1/2020/wNN/intellij/#additional-materials-for-special-cases)                                                  |
 |     | **status**    | not possible to solve due to the configuration of Aalto Linux on VDI                               |
 |     | **affected**  | :angry: users who can't remember their very first Aalto password                                   |
-|     | **solution**  | none                                                                                               |
+|     | **solution**  | some, but partial                                                                                  |
 | 4.  | **problem**   | [~~keymap imported by the plugin interferes with macOS's normal keyboard shortcuts~~](https://github.com/Aalto-LeTech/intellij-plugin/issues/292)                |
 |     | **status**    | solved                                                                                             |
 |     | **affected**  | all the :angry: Mac users                                                                          |
 |     | **solution**  |      |
-| 5.  | **problem**   | [network error about A+ token containing whitespaces](https://github.com/Aalto-LeTech/intellij-plugin/issues/377)                                                |
+| 5.  | **problem**   | [~~yet another NPE in REPL~~](https://github.com/Aalto-LeTech/intellij-plugin/pull/380)            |
+|     | **status**    | solved                                                                                             |
+|     | **affected**  | :angry: < 10                                                                                       |
+|     | **solution**  | since Plugin version **1.5**                                                                       |
+| 6.  | **problem**   | [network error about A+ token containing whitespaces](https://github.com/Aalto-LeTech/intellij-plugin/issues/377)                                                |
 |     | **status**    | under investigation                                                                                |
 |     | **affected**  | :angry: < 10                                                                                       |
 |     | **solution**  | none                                                                                               |
-| 6.  | **problem**   | [can't run program because of the missing **Run** in right-click menu](https://github.com/Aalto-LeTech/intellij-plugin/issues/381)             |
+| 7.  | **problem**   | [can't run program because of the missing **Run** in right-click menu](https://github.com/Aalto-LeTech/intellij-plugin/issues/381)             |
 |     | **status**    | under investigation                                                                                |
 |     | **affected**  | :angry: < 10                                                                                       |
 |     | **solution**  | re-installation of the SDK (remove existing, follow [the guide](https://plus.cs.aalto.fi/o1/2020/wNN/intellij/#step-3-5-fetch-the-jdk-toolkit-into-intellij))                                     |
-| 7.  | **problem**   | [local course file missing language](https://github.com/Aalto-LeTech/intellij-plugin/issues/315)   |
+| 8.  | **problem**   | [local course file missing language](https://github.com/Aalto-LeTech/intellij-plugin/issues/315)   |
 |     | **status**    | under investigation                                                                                |
 |     | **affected**  | :angry: < 10                                                                                       |
 |     | **solution**  | none                                                                                               |
