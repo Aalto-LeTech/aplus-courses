@@ -11,7 +11,7 @@ Troubleshooting the plugin
 
 **3.** Turn project into an A+ Project: [**A+ -> Turn Project Into A+ Project**](https://plus.cs.aalto.fi/o1/2020/w01/ch02/#the-a-courses-plugin) (and choose the rest of the settings asked for in the pop-up dialog).
 
-**4.** check the IDE for not having errors (you **should not** see the blinking red icon as shown). If there are errors, please share the "stacktrace" text with the course stuff.
+**4.** check the IDE for not having errors (you **should not** see the blinking red icon as shown). If there are errors, please share the "stacktrace" text with the course staff.
 ![libraries](images/error_.png)
 
 **5.** review the project structure for correctness: **File -> Project Structure ->** ...
@@ -51,7 +51,7 @@ Troubleshooting the plugin
 | 4.  | **problem**   | [~~keymap imported by the plugin interferes with macOS's normal keyboard shortcuts~~](https://github.com/Aalto-LeTech/intellij-plugin/issues/292)                |
 |     | **status**    | solved                                                                                             |
 |     | **affected**  | all the :angry: Mac users                                                                          |
-|     | **solution**  |      |
+|     | **solution**  | [is described here](https://plus.cs.aalto.fi/o1/2020/wNN/faq/#im-on-a-mac-computer-and-intellij-doesnt-type-characters-such-as-the-dollar-and-square-brackets-what-to-do)   |
 | 5.  | **problem**   | [~~yet another NPE in REPL~~](https://github.com/Aalto-LeTech/intellij-plugin/pull/380)            |
 |     | **status**    | solved                                                                                             |
 |     | **affected**  | :angry: < 10                                                                                       |
