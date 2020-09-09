@@ -27,15 +27,15 @@ object ModuleUtils {
     FileUtilRt.toSystemIndependentName(ModuleUtilCore.getModuleDirPath(module))
 
   def getModuleOfEditorFile(@NotNull project: Project,
-                            @NotNull dataContext: DataContext): Option[Module] = for {
-    editor <- Option(CommonDataKeys.EDITOR.getData(dataContext))
-    openFile <- Option(FileDocumentManager.getInstance.getFile(editor.getDocument))
-  } yield ModuleUtilCore.findModuleForFile(openFile, project)
+                            @NotNull dataContext: DataContext): Option[Module] =
+    Option(CommonDataKeys.EDITOR.getData(dataContext))
+        .flatMap(editor => Option(FileDocumentManager.getInstance.getFile(editor.getDocument)))
+        .flatMap(openFile => Option(ModuleUtilCore.findModuleForFile(openFile, project)))
 
   def getModuleOfSelectedFile(@NotNull project: Project,
                               @NotNull dataContext: DataContext): Option[Module] =
     Option(CommonDataKeys.VIRTUAL_FILE.getData(dataContext))
-      .map(file => ModuleUtilCore.findModuleForFile(file, project))
+      .flatMap(file => Option(ModuleUtilCore.findModuleForFile(file, project)))
 
   def nonEmpty(enumerator: OrderEnumerator): Boolean = {
     var nonEmpty = false
