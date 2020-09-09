@@ -67,4 +67,4 @@ Troubleshooting the plugin
 | 8.  | **problem**   | [local course file missing language](https://github.com/Aalto-LeTech/intellij-plugin/issues/315)   |
 |     | **status**    | under investigation                                                                                |
 |     | **affected**  | :angry: < 10                                                                                       |
-|     | **solution**  | _temporary solution:_ try re-creating the project                                                  |
+|     | **solution**  | _temporary solution:_ [try re-creating the project](https://plus.cs.aalto.fi/o1/2020/w01/ch02/#launching-intellij-for-the-first-time)                                                                            |
