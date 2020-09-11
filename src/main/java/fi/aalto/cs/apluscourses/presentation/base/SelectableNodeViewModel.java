@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.presentation.base;
 
 import fi.aalto.cs.apluscourses.presentation.filter.Filter;
+import fi.aalto.cs.apluscourses.utils.Tree;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
 import java.util.Collections;
@@ -10,7 +11,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class SelectableNodeViewModel<T> extends BaseViewModel<T>
-    implements TreeViewModel, Filterable {
+    implements Tree, Filterable {
+
+  private static final SelectableNodeViewModel<?>[] EMPTY_ARRAY = new SelectableNodeViewModel<?>[0];
 
   @NotNull
   private final List<SelectableNodeViewModel<?>> children;

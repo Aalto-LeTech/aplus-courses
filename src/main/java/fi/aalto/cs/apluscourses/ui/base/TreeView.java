@@ -1,10 +1,9 @@
 package fi.aalto.cs.apluscourses.ui.base;
 
-import com.intellij.ui.treeStructure.Tree;
 import fi.aalto.cs.apluscourses.presentation.base.BaseTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.Filterable;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
-import fi.aalto.cs.apluscourses.presentation.base.TreeViewModel;
+import fi.aalto.cs.apluscourses.utils.Tree;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -21,7 +20,7 @@ import javax.swing.tree.TreeSelectionModel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class TreeView extends Tree {
+public class TreeView extends com.intellij.ui.treeStructure.Tree {
   private final transient Set<ActionListener> nodeAppliedListeners = ConcurrentHashMap.newKeySet();
 
   @Nullable
@@ -51,13 +50,13 @@ public class TreeView extends Tree {
   }
 
   @NotNull
-  private static DefaultMutableTreeNode createNode(@NotNull TreeViewModel tree) {
-    List<? extends TreeViewModel> children = tree.getChildren();
+  private static DefaultMutableTreeNode createNode(@NotNull Tree tree) {
+    List<? extends Tree> children = tree.getChildren();
     OurTreeNode node = new OurTreeNode(tree);
     if (tree instanceof Filterable) {
       ((Filterable) tree).addVisibilityListener(node);
     }
-    for (TreeViewModel subtree : children) {
+    for (Tree subtree : children) {
       node.add(createNode(subtree));
     }
     return node;

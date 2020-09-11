@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
+import sourcecode.Impls;
 
 public class OurTreeNode extends DefaultMutableTreeNode implements Filterable.Listener {
 
@@ -23,9 +24,10 @@ public class OurTreeNode extends DefaultMutableTreeNode implements Filterable.Li
   }
 
   private Stream<TreeNode> streamVisibleChildren() {
-    return Optional.ofNullable(children)
+    return ((Stream<?>) Optional.ofNullable(children)
         .map(Collection::stream)
-        .orElseGet(Stream::empty)
+        .orElseGet(Stream::empty))
+        .map(TreeNode.class::cast)
         .filter(OurTreeNode::isNodeVisible);
   }
 

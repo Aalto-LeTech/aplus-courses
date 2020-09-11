@@ -14,6 +14,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.SubmissionRenderingErrorNotification;
+import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import fi.aalto.cs.apluscourses.model.UrlRenderer;
 import org.junit.Before;
@@ -35,8 +36,8 @@ public class OpenSubmissionNotificationActionTest {
   public void setUp() {
     event = mock(AnActionEvent.class);
     doReturn(mock(Project.class)).when(event).getProject();
-    submissionResult
-        = new SubmissionResult(1, SubmissionResult.Status.GRADED, "http://example.com");
+    submissionResult = new SubmissionResult(1, 0, SubmissionResult.Status.GRADED,
+        new Exercise(1, "Ex", "http://example.com", 0, 5, 10));
     notification = mock(Notification.class);
     notifier = mock(Notifier.class);
     submissionRenderer = mock(UrlRenderer.class);

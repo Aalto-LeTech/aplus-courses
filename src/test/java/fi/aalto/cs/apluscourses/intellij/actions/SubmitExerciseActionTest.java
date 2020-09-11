@@ -5,6 +5,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.doCallRealMethod;
@@ -22,6 +24,7 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtilRt;
 import fi.aalto.cs.apluscourses.intellij.DialogHelper;
+import fi.aalto.cs.apluscourses.intellij.actions.SubmitExerciseAction.Tagger;
 import fi.aalto.cs.apluscourses.intellij.notifications.ExerciseNotSelectedNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.MissingFileNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.MissingModuleNotification;
@@ -102,19 +105,20 @@ public class SubmitExerciseActionTest {
   AnActionEvent event;
   SubmitExerciseAction action;
   Points points;
+  Tagger tagger;
+  SubmitExerciseAction.DocumentSaver documentSaver;
 
   /**
    * Called before each test.
    *
-   * @throws IOException Never.
+   * @throws IOException               Never.
    * @throws FileDoesNotExistException Never.
    */
   @SuppressWarnings("unchecked")
   @Before
   public void setUp() throws IOException, FileDoesNotExistException {
     exerciseId = 12;
-    exercise = new Exercise(exerciseId, "Test exercise", "http://localhost:10000",
-        Collections.emptyList(), 0, 0, 0);
+    exercise = new Exercise(exerciseId, "Test exercise", "http://localhost:10000", 0, 0, 0);
     group = new Group(124, Collections.singletonList("Only you"));
     groups = Collections.singletonList(group);
     exerciseGroup = new ExerciseGroup("Test EG", Collections.singletonList(exercise));
@@ -130,7 +134,7 @@ public class SubmitExerciseActionTest {
     mainViewModel = new MainViewModel();
 
     authentication = mock(Authentication.class);
-    points = new Points(Collections.emptyMap(), Collections.emptyMap());
+    points = new Points(Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());
 
     exerciseDataSource = mock(ExerciseDataSource.class);
     course = spy(new ModelExtensions.TestCourse("91", "NineOne Course", exerciseDataSource));
@@ -180,7 +184,7 @@ public class SubmitExerciseActionTest {
     doCallRealMethod().when(fileFinder).findFiles(any(), any());
 
     moduleSource = mock(SubmitExerciseAction.ModuleSource.class);
-    doReturn(new Module[] { module }).when(moduleSource).getModules(project);
+    doReturn(new Module[]{module}).when(moduleSource).getModules(project);
     doReturn(module).when(moduleSource).getModule(project, moduleName);
 
     dialogs = new Dialogs();
@@ -205,7 +209,12 @@ public class SubmitExerciseActionTest {
     submissionDialogFactory = new DialogHelper.Factory<>(submissionDialog, project);
     dialogs.register(SubmissionViewModel.class, submissionDialogFactory);
 
-    action = new SubmitExerciseAction(mainVmProvider, fileFinder, moduleSource, dialogs, notifier);
+    tagger = mock(Tagger.class);
+
+    documentSaver = mock(SubmitExerciseAction.DocumentSaver.class);
+
+    action = new SubmitExerciseAction(mainVmProvider, fileFinder, moduleSource, dialogs, notifier,
+        tagger, documentSaver);
   }
 
   @Test
@@ -227,6 +236,8 @@ public class SubmitExerciseActionTest {
         ArgumentCaptor.forClass(SubmissionSentNotification.class);
 
     verify(notifier).notify(notificationArg.capture(), eq(project));
+    verify(tagger).putSystemLabel(any(), anyString(), anyInt());
+    verify(documentSaver).saveAllDocuments();
   }
 
   @Test

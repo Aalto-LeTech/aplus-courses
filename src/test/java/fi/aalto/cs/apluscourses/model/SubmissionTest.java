@@ -17,8 +17,7 @@ public class SubmissionTest {
 
   @Test
   public void testCreate() {
-    Exercise exercise = new Exercise(85678, "ex", "http://localhost:1000",
-        Collections.emptyList(), 0, 0, 0);
+    Exercise exercise = new Exercise(85678, "ex", "http://localhost:1000", 0, 0, 0);
     SubmittableFile fileA = new SubmittableFile("keyA", "fileA");
     SubmittableFile fileB = new SubmittableFile("keyB", "fileB");
     String language = "de";

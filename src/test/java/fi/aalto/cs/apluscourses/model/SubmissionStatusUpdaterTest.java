@@ -10,7 +10,6 @@ import static org.mockito.Mockito.verifyNoInteractions;
 
 import fi.aalto.cs.apluscourses.intellij.notifications.FeedbackAvailableNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
-import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
@@ -18,10 +17,10 @@ import org.junit.Test;
 
 public class SubmissionStatusUpdaterTest {
 
-  class TestDataSource extends ModelExtensions.TestExerciseDataSource {
+  static class TestDataSource extends ModelExtensions.TestExerciseDataSource {
 
     private int limit = 3;
-    private AtomicInteger submissionResultFetchCount = new AtomicInteger(0);
+    private final AtomicInteger submissionResultFetchCount = new AtomicInteger(0);
 
     public int getSubmissionResultFetchCount() {
       return submissionResultFetchCount.get();
@@ -30,23 +29,16 @@ public class SubmissionStatusUpdaterTest {
     @NotNull
     @Override
     public SubmissionResult getSubmissionResult(@NotNull String submissionUrl,
-                                                @NotNull Authentication authentication)
-        throws IOException {
+                                                @NotNull Exercise exercise,
+                                                @NotNull Authentication authentication) {
 
-      if (submissionResultFetchCount.incrementAndGet() >= limit) {
-        return new SubmissionResult(
+      return new SubmissionResult(
           123L,
-          SubmissionResult.Status.GRADED,
-          "https://example.org"
-        );
-      } else {
-        return new SubmissionResult(
-            123L,
-            SubmissionResult.Status.UNKNOWN,
-            "https://example.com/"
-
-        );
-      }
+          0,
+          submissionResultFetchCount.incrementAndGet() >= limit
+              ? SubmissionResult.Status.GRADED : SubmissionResult.Status.UNKNOWN,
+          exercise
+      );
     }
   }
 
@@ -66,7 +58,7 @@ public class SubmissionStatusUpdaterTest {
         mock(Authentication.class),
         notifier,
         "http://localhost:1000",
-        "Cool Exercise Name",
+        new Exercise(789, "Cool Exercise Name", "http://example.com", 0, 5, 10),
         25L, // 0.025 second interval
         0L, // don't increment the interval at all
         10000L // 10 second time limit, which shouldn't be reached
@@ -86,7 +78,7 @@ public class SubmissionStatusUpdaterTest {
         mock(Authentication.class),
         notifier,
         "http://localhost:1000",
-        "Cool Exercise Name",
+        new Exercise(789, "Cool Exercise Name", "http://example.com", 0, 5, 10),
         25L, // 0.025 second interval
         0L, // don't increment the interval at all
         200L // 0.2 second time limit, should update at most 8 times

@@ -23,4 +23,9 @@ public class SubmissionResultViewModel extends SelectableNodeViewModel<Submissio
   public String getPresentableName() {
     return getText("presentation.submissionResultViewModel.nameStart") + " " + submissionNumber;
   }
+
+  @NotNull
+  public String getStatusText() {
+    return getModel().getPoints() + "/" + getModel().getExercise().getMaxPoints() + " points";
+  }
 }

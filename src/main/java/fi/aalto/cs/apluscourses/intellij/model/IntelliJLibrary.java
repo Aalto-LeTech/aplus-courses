@@ -90,6 +90,11 @@ public abstract class IntelliJLibrary
     return project.resolveComponentState(this);
   }
 
+  /**
+   * URIs MUST NOT be escaped!  Note that java.net.URI does escaping so avoid using that.
+   *
+   * @return URIs to be included in classes of the library.
+   */
   protected abstract String[] getUris();
 
   protected abstract K getLibraryKind();

@@ -1,9 +1,13 @@
 package fi.aalto.cs.apluscourses.intellij.model;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.assertThat;
+
 import com.intellij.testFramework.HeavyPlatformTestCase;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 public class ScalaSdkTest extends HeavyPlatformTestCase {
@@ -96,5 +100,26 @@ public class ScalaSdkTest extends HeavyPlatformTestCase {
         uris[0].contains("/lib/scala-sdk-2.12.10/scala-compiler.jar"));
     assertTrue("Contains second required .jar",
         uris[1].contains("/lib/scala-sdk-2.12.10/scala-reflect.jar"));
+  }
+
+  @Test
+  public void testGetUrisWithWeirdCharacters() {
+    //  given
+    APlusProject aplusProject = new APlusProject(getProject());
+    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", aplusProject);
+    final String[] allClasses = {
+        "name with a space.jar",
+        "scändinåvian.jör",
+        "💩.emoji"
+    };
+
+    //  when
+    String[] uris = scalaSdk.getUris(allClasses);
+
+    // then
+    assertEquals("Three elements are present", 3, uris.length);
+    assertThat(uris[0], containsString(allClasses[0]));
+    assertThat(uris[1], containsString(allClasses[1]));
+    assertThat(uris[2], containsString(allClasses[2]));
   }
 }

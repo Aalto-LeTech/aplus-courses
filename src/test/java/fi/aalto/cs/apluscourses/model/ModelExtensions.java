@@ -60,15 +60,16 @@ public class ModelExtensions {
     @Override
     public Points getPoints(@NotNull Course course, @NotNull Authentication authentication)
         throws IOException {
-      return new Points(Collections.emptyMap(), Collections.emptyMap());
+      return new Points(Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());
     }
 
     @NotNull
     @Override
     public SubmissionResult getSubmissionResult(@NotNull String submissionUrl,
+                                                @NotNull Exercise exercise,
                                                 @NotNull Authentication authentication)
         throws IOException {
-      return new SubmissionResult(0, SubmissionResult.Status.GRADED, "http://localhost:8000");
+      return new SubmissionResult(0, 20, SubmissionResult.Status.GRADED, exercise);
     }
 
     @Override

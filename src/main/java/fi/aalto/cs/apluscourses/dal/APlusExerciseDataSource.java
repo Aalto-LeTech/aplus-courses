@@ -142,10 +142,11 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   @Override
   @NotNull
   public SubmissionResult getSubmissionResult(@NotNull String submissionUrl,
+                                              @NotNull Exercise exercise,
                                               @NotNull Authentication authentication)
       throws IOException {
     JSONObject response = client.fetch(submissionUrl, authentication);
-    return parser.parseSubmissionResult(response);
+    return parser.parseSubmissionResult(response, exercise);
   }
 
   /**
@@ -215,33 +216,35 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
     }
 
     @Override
-    public SubmissionInfo parseSubmissionInfo(JSONObject object) {
+    public SubmissionInfo parseSubmissionInfo(@NotNull JSONObject object) {
       return SubmissionInfo.fromJsonObject(object);
     }
 
     @Override
-    public SubmissionHistory parseSubmissionHistory(JSONObject object) {
+    public SubmissionHistory parseSubmissionHistory(@NotNull JSONObject object) {
       return SubmissionHistory.fromJsonObject(object);
     }
 
     @Override
-    public Group parseGroup(JSONObject object) {
+    public Group parseGroup(@NotNull JSONObject object) {
       return Group.fromJsonObject(object);
     }
 
     @Override
-    public List<ExerciseGroup> parseExerciseGroups(JSONArray array, Points points) {
+    public List<ExerciseGroup> parseExerciseGroups(@NotNull JSONArray array,
+                                                   @NotNull Points points) {
       return ExerciseGroup.fromJsonArray(array, points);
     }
 
     @Override
-    public Points parsePoints(JSONObject object) {
+    public Points parsePoints(@NotNull JSONObject object) {
       return Points.fromJsonObject(object);
     }
 
     @Override
-    public SubmissionResult parseSubmissionResult(JSONObject object) {
-      return SubmissionResult.fromJsonObject(object);
+    public SubmissionResult parseSubmissionResult(@NotNull JSONObject object,
+                                                  @NotNull Exercise exercise) {
+      return SubmissionResult.fromJsonObject(object, exercise);
     }
 
   }

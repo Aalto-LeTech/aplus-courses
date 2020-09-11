@@ -81,12 +81,7 @@ public class SubmissionDialog extends OurDialogWrapper {
     filenamesHtml.append("</ul></body></html>");
     filenames = new JLabel(filenamesHtml.toString());
 
-    submissionCount = new JLabel(String.format("You are about to make submission %d out of %d.",
-        viewModel.getCurrentSubmissionNumber(), viewModel.getMaxNumberOfSubmissions()));
+    submissionCount = new JLabel(viewModel.getSubmissionCountText());
   }
 
-  @FunctionalInterface
-  public interface Factory {
-    SubmissionDialog createDialog(@NotNull SubmissionViewModel viewModel);
-  }
 }

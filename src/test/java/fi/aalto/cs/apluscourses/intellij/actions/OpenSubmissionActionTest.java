@@ -14,11 +14,17 @@ import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.SubmissionRenderingErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
+import fi.aalto.cs.apluscourses.model.Exercise;
+import fi.aalto.cs.apluscourses.model.ExerciseGroup;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import fi.aalto.cs.apluscourses.model.UrlRenderer;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
+import fi.aalto.cs.apluscourses.presentation.base.BaseTreeViewModel;
+import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseGroupViewModel;
+import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionResultViewModel;
+import java.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -36,12 +42,20 @@ public class OpenSubmissionActionTest {
    */
   @Before
   public void setUp() {
+    Exercise exercise = new Exercise(223, "TestEx", "http://example.com", 0, 1, 10);
     submissionResult
-        = new SubmissionResult(1, SubmissionResult.Status.GRADED, "http://example.com");
-    SubmissionResultViewModel viewModel = new SubmissionResultViewModel(submissionResult, 1);
+        = new SubmissionResult(1, 0, SubmissionResult.Status.GRADED, exercise);
+    SubmissionResultViewModel viewModel
+        = new SubmissionResultViewModel(submissionResult, 1);
 
     ExercisesTreeViewModel exercisesTree = mock(ExercisesTreeViewModel.class);
-    doReturn(viewModel).when(exercisesTree).getSelectedSubmission();
+    BaseTreeViewModel.Selection selection = new BaseTreeViewModel.Selection(
+            exercisesTree,
+            mock(ExerciseGroupViewModel.class),
+            new ExerciseViewModel(exercise),
+            viewModel
+        );
+    doReturn(selection).when(exercisesTree).findSelected();
 
     MainViewModel mainViewModel = new MainViewModel();
     mainViewModel.exercisesViewModel.set(exercisesTree);

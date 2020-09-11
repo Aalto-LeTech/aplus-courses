@@ -6,7 +6,6 @@ import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseGroupViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionResultViewModel;
-import fi.aalto.cs.apluscourses.utils.StringUtil;
 import icons.PluginIcons;
 import javax.swing.Icon;
 import javax.swing.JTree;
@@ -33,6 +32,9 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
     }
   }
 
+  private static final SimpleTextAttributes STATUS_TEXT_STYLE = new SimpleTextAttributes(
+      SimpleTextAttributes.STYLE_ITALIC | SimpleTextAttributes.STYLE_SMALLER, null);
+
   @Override
   public void customizeCellRenderer(@NotNull JTree tree,
                                     Object value,
@@ -51,9 +53,8 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
     if (userObject instanceof ExerciseViewModel) {
       ExerciseViewModel exerciseViewModel = (ExerciseViewModel) userObject;
       append(exerciseViewModel.getPresentableName());
-      if (!StringUtil.isNullOrBlank(exerciseViewModel.getStatusText())) {
-        append(" [" + exerciseViewModel.getStatusText() + "]", new SimpleTextAttributes(
-            SimpleTextAttributes.STYLE_ITALIC | SimpleTextAttributes.STYLE_SMALLER, null));
+      if (!exerciseViewModel.getStatusText().trim().isEmpty()) {
+        append(" [" + exerciseViewModel.getStatusText() + "]", STATUS_TEXT_STYLE);
       }
       setEnabled(exerciseViewModel.isSubmittable());
       setToolTipText(exerciseViewModel.isSubmittable()
@@ -71,6 +72,7 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
       SubmissionResultViewModel submissionResultViewModel = (SubmissionResultViewModel) userObject;
       setEnabled(true);
       append(submissionResultViewModel.getPresentableName());
+      append(" [" + submissionResultViewModel.getStatusText() + "]", STATUS_TEXT_STYLE);
       setToolTipText("Double-click the submission to open it in the browser");
     }
   }

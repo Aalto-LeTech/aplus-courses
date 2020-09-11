@@ -25,11 +25,4 @@ public class ExerciseFilterOptions extends Options {
       return !item.isSubmittable();
     }
   }
-
-  public static class NoSubmissionsLeftFilter extends ExerciseFilter {
-    @Override
-    public boolean applyInternal(ExerciseViewModel item) {
-      return item.getModel().hasMaxSubmissionsBeenExceeded();
-    }
-  }
 }

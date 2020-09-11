@@ -7,7 +7,9 @@ import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import fi.aalto.cs.apluscourses.intellij.actions.OpenSubmissionNotificationAction;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
+import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
+import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
 import org.jetbrains.annotations.NotNull;
 
 public class FeedbackAvailableNotification extends Notification {
@@ -17,11 +19,12 @@ public class FeedbackAvailableNotification extends Notification {
    * The notification contains a link that can be used to open the feedback.
    */
   public FeedbackAvailableNotification(@NotNull SubmissionResult submissionResult,
-                                       @NotNull String exerciseName) {
+                                       @NotNull Exercise exercise) {
     super(
         PluginSettings.A_PLUS,
         getText("notification.FeedbackAvailableNotification.title"),
-        getAndReplaceText("notification.FeedbackAvailableNotification.content", exerciseName),
+        getAndReplaceText("notification.FeedbackAvailableNotification.content",
+            APlusLocalizationUtil.getEnglishName(exercise.getName())),
         NotificationType.INFORMATION
     );
     super.addAction(new OpenSubmissionNotificationAction(submissionResult));

@@ -7,10 +7,14 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collections;
+<<<<<<< HEAD
+import java.util.List;
+=======
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+>>>>>>> test
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
@@ -21,7 +25,8 @@ public class ExerciseTest {
 
   @Test
   public void testExercise() {
-    Exercise exercise = new Exercise(987, "def", "http://localhost:4444", 13, 15, 10);
+    Exercise exercise = new Exercise(987, "def", "http://localhost:4444",
+        Collections.emptyList(), 13, 15, 10);
 
     assertEquals("The ID is the same as the one given to the constructor",
         987L, exercise.getId());
@@ -137,13 +142,35 @@ public class ExerciseTest {
 
   @Test
   public void testEquals() {
-    Exercise exercise = new Exercise(7, "oneEx", "http://localhost:1111", 0, 0, 0);
-    Exercise sameExercise = new Exercise(7, "twoEx", "http://localhost:2222", 2, 3, 4);
-    Exercise otherExercise = new Exercise(4, "oneEx", "http://localhost:2222", 3, 2, 1);
+    Exercise exercise = new Exercise(7, "oneex", "http://localhost:1111",
+        Collections.emptyList(), 0, 0, 0);
+    Exercise sameExercise = new Exercise(7, "twoex", "http://localhost:2222",
+        Collections.emptyList(), 2, 3, 4);
+    Exercise otherExercise = new Exercise(4, "oneex", "http://localhost:2222",
+        Collections.emptyList(), 3, 2, 1);
 
     assertEquals(exercise, sameExercise);
     assertEquals(exercise.hashCode(), sameExercise.hashCode());
 
     assertNotEquals(exercise, otherExercise);
   }
+
+  @Test
+  public void testHasMaxSubmissionsBeenExceeded() {
+    List<SubmissionResult> results = Arrays.asList(
+        new SubmissionResult(200, SubmissionResult.Status.UNKNOWN, "http://example.com/200"),
+        new SubmissionResult(201, SubmissionResult.Status.UNKNOWN, "http://example.com/201"),
+        new SubmissionResult(202, SubmissionResult.Status.UNKNOWN, "http://example.com/202")
+    );
+
+    Exercise ex9 = new Exercise(100, "Test9", "http://example.com/100", results, 0, 0, 9);
+    assertFalse(ex9.hasMaxSubmissionsBeenExceeded());
+
+    Exercise ex3 = new Exercise(100, "Test3", "http://example.com/100", results, 0, 0, 3);
+    assertTrue(ex3.hasMaxSubmissionsBeenExceeded());
+
+    Exercise ex2 = new Exercise(100, "Test3", "http://example.com/100", results, 0, 0, 2);
+    assertTrue(ex2.hasMaxSubmissionsBeenExceeded());
+  }
+
 }
