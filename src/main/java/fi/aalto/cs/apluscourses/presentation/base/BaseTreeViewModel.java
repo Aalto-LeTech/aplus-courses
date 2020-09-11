@@ -8,7 +8,7 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class BaseTreeViewModel<T>
+public class BaseTreeViewModel<T>
     extends SelectableNodeViewModel<T> implements Tree {
 
   @NotNull
@@ -78,6 +78,7 @@ public abstract class BaseTreeViewModel<T>
     }
   }
 
+  @NotNull
   public Selection findSelected() {
     return new Selection(traverseAndFind(SelectableNodeViewModel::isSelected));
   }
@@ -93,6 +94,7 @@ public abstract class BaseTreeViewModel<T>
       path = pathToSelected;
     }
 
+    @Nullable
     public SelectableNodeViewModel<?> getLevel(int level) {
       return path != null && level < path.size() ? path.get(level) : null;
     }
