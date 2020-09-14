@@ -16,16 +16,20 @@ public class Option implements Filter {
   @Nullable
   private final Icon icon;
 
-  public final ObservableProperty<Boolean> isSelected = new ObservableReadWriteProperty<>(true);
+  public final ObservableProperty<Boolean> isSelected;
 
   /**
    * An option, that is, a filter that when not selected, filters out those that match to the filter
    * given to this constructor.
    */
-  public Option(@NotNull String name, @Nullable Icon icon, @NotNull Filter filter) {
+  public Option(@NotNull String name,
+                @Nullable Icon icon,
+                @NotNull Filter filter,
+                boolean initialValue) {
     this.icon = icon;
     this.name = name;
     this.filter = filter;
+    this.isSelected = new ObservableReadWriteProperty<>(initialValue);
   }
 
   @Override
@@ -44,5 +48,10 @@ public class Option implements Filter {
   @Nullable
   public Icon getIcon() {
     return icon;
+  }
+
+  public void preserveValue() {
+    // Subclasses may override this
+    throw new UnsupportedOperationException();
   }
 }

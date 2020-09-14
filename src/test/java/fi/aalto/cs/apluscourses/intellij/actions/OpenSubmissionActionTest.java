@@ -24,6 +24,7 @@ import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseGroupViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionResultViewModel;
+import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import java.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
@@ -57,7 +58,7 @@ public class OpenSubmissionActionTest {
         );
     doReturn(selection).when(exercisesTree).findSelected();
 
-    MainViewModel mainViewModel = new MainViewModel();
+    MainViewModel mainViewModel = new MainViewModel(new Options());
     mainViewModel.exercisesViewModel.set(exercisesTree);
 
     mainViewModelProvider = project -> mainViewModel;

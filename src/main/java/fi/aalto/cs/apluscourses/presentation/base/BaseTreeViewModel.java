@@ -29,6 +29,7 @@ public class BaseTreeViewModel<T>
     super(model, children);
     this.options = options;
     this.options.optionsChanged.addListener(this, BaseTreeViewModel::filter);
+    filter();
   }
 
   protected void filter() {

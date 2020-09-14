@@ -2,15 +2,16 @@ package fi.aalto.cs.apluscourses.intellij.actions;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.ToggleAction;
+import com.intellij.openapi.project.DumbAwareToggleAction;
 import fi.aalto.cs.apluscourses.presentation.filter.Option;
 import org.jetbrains.annotations.NotNull;
 
-public class FilterOptionAction extends ToggleAction {
+public class FilterOptionAction extends DumbAwareToggleAction {
 
   private final Option option;
 
   public FilterOptionAction(Option option) {
-    super(option::getName, option.getIcon());
+    super(option::getName, () -> null, option.getIcon());
     this.option = option;
   }
 

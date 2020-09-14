@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 import sourcecode.Impls;
 
@@ -42,6 +43,15 @@ public class OurTreeNode extends DefaultMutableTreeNode implements Filterable.Li
   @Override
   public int getChildCount() {
     return (int) streamVisibleChildren().count();
+  }
+
+  @Override
+  public void add(MutableTreeNode node) {
+    if (node != null && node.getParent() == this) {
+      insert(node, super.getChildCount() - 1);
+    } else {
+      insert(node, super.getChildCount());
+    }
   }
 
   @Override

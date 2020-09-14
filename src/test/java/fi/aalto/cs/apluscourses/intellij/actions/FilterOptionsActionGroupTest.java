@@ -25,13 +25,13 @@ public class FilterOptionsActionGroupTest {
     AnActionEvent e = mock(AnActionEvent.class);
     when(e.getProject()).thenReturn(project);
 
-    Option filterOption1 = new Option("Just some filter", null, item -> Optional.of(true));
-    Option filterOption2 = new Option("Just another filter", null, item -> Optional.of(false));
+    Option filterOption1 = new Option("Just some filter", null, item -> Optional.of(true), false);
+    Option filterOption2 = new Option("Another filter", null, item -> Optional.of(false), false);
     Options filterOptions = new Options(filterOption1, filterOption2);
 
-    MainViewModel mainViewModel = new MainViewModel();
+    MainViewModel mainViewModel = new MainViewModel(new Options());
     ExercisesTreeViewModel exercisesViewModel =
-        spy(new ExercisesTreeViewModel(Collections.emptyList()));
+        spy(new ExercisesTreeViewModel(Collections.emptyList(), new Options()));
     when(exercisesViewModel.getFilterOptions()).thenReturn(filterOptions);
     mainViewModel.exercisesViewModel.set(exercisesViewModel);
     MainViewModelProvider mainViewModelProvider = mock(MainViewModelProvider.class);
