@@ -5,7 +5,7 @@ Troubleshooting the plugin
 
 **0.** ensure the latest compatible version of IntelliJ IDEA Community Edition is installed (**2020.2.** or later).
 
-**1.** update plugin to the latest version (you can check the latest version on [Plugin's official page](https://plugins.jetbrains.com/plugin/13634-a-courses/versions)), but at least **1.4**.
+**1.** update plugin to the latest version (you can check the latest version on [Plugin's official page](https://plugins.jetbrains.com/plugin/13634-a-courses/versions)), but at least **1.5**.
 
 **2.** create a new project: [**File -> New -> Project...** and then **Empty Project**](https://plus.cs.aalto.fi/o1/2020/w01/ch02/#launch-intellij).
 
