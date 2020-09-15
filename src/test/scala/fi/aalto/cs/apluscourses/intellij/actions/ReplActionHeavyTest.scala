@@ -15,7 +15,9 @@ class ReplActionHeavyTest extends HeavyPlatformTestCase with TestHelperScala {
     //  given
     val configuration = getConfiguration
     val module = mock(classOf[Module])
-    when(module.getProject).thenReturn(mock(classOf[Project]))
+    val project = mock(classOf[Project])
+    when(project.isDefault).thenReturn(true)
+    when(module.getProject).thenReturn(project)
     when(module.getModuleFilePath).thenReturn("directory/module.iml")
     when(module.getName).thenReturn("mock module")
 
@@ -37,7 +39,4 @@ class ReplActionHeavyTest extends HeavyPlatformTestCase with TestHelperScala {
 
   private def getConfiguration = super.getConfiguration(getProject)
 
-  private def getModuleManager = super.getModuleManager(getProject)
-
-  private def createAndAddModule(path: String, id: String): Unit = super.createAndAddModule(getProject, path, id)
 }
