@@ -67,32 +67,27 @@ public class PluginSettings implements MainViewModelProvider {
 
   private static class ProjectKey {
     @NotNull
-    public final Project project;
+    private final String projectPath;
 
     public ProjectKey(@Nullable Project project) {
-      if (project == null) {
-        this.project = ProjectManager.getInstance().getDefaultProject();
+      if (project == null || project.isDefault()) {
+        this.projectPath = "";
       } else {
-        this.project = project;
+        this.projectPath = project.getBasePath();
       }
     }
 
     @Override
     public boolean equals(Object other) {
-      if (other == null || !(other instanceof ProjectKey)) {
+      if (!(other instanceof ProjectKey)) {
         return false;
       }
-      return getPath().equals(((ProjectKey) other).getPath());
+      return projectPath.equals(((ProjectKey) other).projectPath);
     }
 
     @Override
     public int hashCode() {
-      return getPath().hashCode();
-    }
-
-    @NotNull
-    private String getPath() {
-      return project.isDefault() ? "" : project.getBasePath();
+      return projectPath.hashCode();
     }
   }
 
@@ -154,8 +149,8 @@ public class PluginSettings implements MainViewModelProvider {
     return mainViewModels.computeIfAbsent(key, projectKey -> {
       ProjectManager
           .getInstance()
-          .addProjectManagerListener(projectKey.project, projectManagerListener);
-      return new MainViewModel();
+          .addProjectManagerListener(project, projectManagerListener);
+      return new MainViewModel(exerciseFilterOptions);
     });
   }
 
@@ -183,13 +178,13 @@ public class PluginSettings implements MainViewModelProvider {
         -> {
       ProjectManager
           .getInstance()
-          .addProjectManagerListener(projectKey.project, projectManagerListener);
-      return new MainViewModel();
+          .addProjectManagerListener(project, projectManagerListener);
+      return new MainViewModel(exerciseFilterOptions);
     });
 
     mainViewModelUpdaters.computeIfAbsent(key, projectKey -> {
       MainViewModelUpdater mainViewModelUpdater = new MainViewModelUpdater(
-          mainViewModel, projectKey.project, MAIN_VIEW_MODEL_UPDATE_INTERVAL,
+          mainViewModel, project, MAIN_VIEW_MODEL_UPDATE_INTERVAL,
           Notifications.Bus::notify, IntelliJPasswordStorage::new);
       mainViewModelUpdater.start();
       return mainViewModelUpdater;
@@ -204,7 +199,7 @@ public class PluginSettings implements MainViewModelProvider {
   public CourseFileManager getCourseFileManager(@NotNull Project project) {
     return courseFileManagers.computeIfAbsent(
         new ProjectKey(project),
-        key -> new CourseFileManager(key.project)
+        key -> new CourseFileManager(project)
     );
   }
 

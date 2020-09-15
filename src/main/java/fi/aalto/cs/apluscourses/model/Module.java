@@ -71,10 +71,7 @@ public abstract class Module extends Component {
       throws MalformedURLException {
     String name = jsonObject.getString("name");
     URL url = new URL(jsonObject.getString("url"));
-    String versionId = jsonObject.optString("id");
-    if (versionId == null) {
-      versionId = "";
-    }
+    String versionId = jsonObject.optString("id", "");
     return factory.createModule(name, url, versionId);
   }
 
