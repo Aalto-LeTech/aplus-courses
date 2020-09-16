@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.utils;
 
+import com.intellij.openapi.application.ApplicationInfo;
+import com.intellij.openapi.application.ApplicationNamesInfo;
 import fi.aalto.cs.apluscourses.model.InvalidAuthenticationException;
 import fi.aalto.cs.apluscourses.model.UnexpectedResponseException;
 import java.io.ByteArrayInputStream;
@@ -24,6 +26,7 @@ import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.apache.http.util.VersionInfo;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONException;
@@ -195,7 +198,7 @@ public class CoursesClient {
       authentication.addToRequest(request);
     }
 
-    try (CloseableHttpClient client = HttpClients.createDefault();
+    try (CloseableHttpClient client = createClient();
          CloseableHttpResponse response = client.execute(request)) {
       requireSuccessStatusCode(response);
       return mapper.map(response);
@@ -222,7 +225,7 @@ public class CoursesClient {
    */
   private static <T> T mapResponse(@NotNull HttpUriRequest request,
                                    @NotNull ResponseMapper<T> mapper) throws IOException {
-    try (CloseableHttpClient client = HttpClients.createDefault();
+    try (CloseableHttpClient client = createClient();
          CloseableHttpResponse response = client.execute(request)) {
       requireSuccessStatusCode(response);
       return mapper.map(response);
@@ -235,7 +238,7 @@ public class CoursesClient {
    */
   private static void consumeResponse(@NotNull HttpUriRequest request,
                                       @NotNull ResponseConsumer consumer) throws IOException {
-    try (CloseableHttpClient client = HttpClients.createDefault();
+    try (CloseableHttpClient client = createClient();
          CloseableHttpResponse response = client.execute(request)) {
       requireSuccessStatusCode(response);
       consumer.consume(response);
@@ -288,5 +291,31 @@ public class CoursesClient {
     if (response.getEntity() == null) {
       throw new UnexpectedResponseException(response, "Response is missing body");
     }
+  }
+
+  @NotNull
+  private static CloseableHttpClient createClient() {
+    return HttpClients.custom().setUserAgent(getUserAgent()).build();
+  }
+
+  @NotNull
+  private static String getUserAgent() {
+    ApplicationInfo appInfo = ApplicationInfo.getInstance();
+    ApplicationNamesInfo appNamesInfo = ApplicationNamesInfo.getInstance();
+    String intellijVersion = appInfo.getFullVersion();
+    String product = appNamesInfo.getProductName(); // E.g. "IDEA"
+    String edition = appNamesInfo.getEditionName(); // E.g. "Community Edition"
+    String os = System.getProperty("os.name");
+    String pluginVersion = BuildInfo.INSTANCE.version.toString();
+    String apacheUserAgent =
+        VersionInfo.getUserAgent("Apache-HttpClient", "org.apache.http.client", VersionInfo.class);
+    return String.format(
+        "intellij/%s (%s; %s; %s) apluscourses/%s %s",
+        intellijVersion,
+        product,
+        edition,
+        os,
+        pluginVersion,
+        apacheUserAgent);
   }
 }
