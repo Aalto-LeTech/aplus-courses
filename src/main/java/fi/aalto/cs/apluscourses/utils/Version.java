@@ -5,11 +5,10 @@ import org.jetbrains.annotations.Nullable;
 
 public class Version {
 
-  public static final Version EMPTY = new Version(0, 0, 0);
+  public static final Version EMPTY = new Version(0, 0);
 
   public final int major;
   public final int minor;
-  public final int build;
 
   /**
    * Returns a {@link Version} object based on the value of the given string.
@@ -21,18 +20,16 @@ public class Version {
   public static Version fromString(@NotNull String versionString) {
     int major;
     int minor;
-    int build;
 
     String[] parts = versionString.split("\\.");
-    if (parts.length != 3) {
+    if (parts.length != 2) {
       throw new InvalidVersionStringException(versionString, null);
     }
 
     try {
       major = Integer.parseInt(parts[0]);
       minor = Integer.parseInt(parts[1]);
-      build = Integer.parseInt(parts[2]);
-      return new Version(major, minor, build);
+      return new Version(major, minor);
     } catch (NumberFormatException ex) {
       throw new InvalidVersionStringException(versionString, ex);
     }
@@ -58,22 +55,20 @@ public class Version {
    * A constructor for {@link Version} class.
    * @param major Major version number.
    * @param minor Minor version number.
-   * @param build Number of the build.
    * @throws IllegalArgumentException If any of the arguments are negative.
    */
-  public Version(int major, int minor, int build) {
-    if (major < 0 || minor < 0 || build < 0) {
+  public Version(int major, int minor) {
+    if (major < 0 || minor < 0) {
       throw new IllegalArgumentException("All the parts of version number must be non-negative.");
     }
     this.major = major;
     this.minor = minor;
-    this.build = build;
   }
 
   @Override
   @NotNull
   public String toString() {
-    return major + "." + minor + "." + build;
+    return major + "." + minor;
   }
 
   @Override
