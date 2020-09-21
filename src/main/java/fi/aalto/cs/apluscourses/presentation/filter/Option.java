@@ -49,9 +49,4 @@ public class Option implements Filter {
   public Icon getIcon() {
     return icon;
   }
-
-  public void preserveValue() {
-    // Subclasses may override this
-    throw new UnsupportedOperationException();
-  }
 }
