@@ -1,7 +1,6 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.ToggleAction;
 import com.intellij.openapi.project.DumbAwareToggleAction;
 import fi.aalto.cs.apluscourses.presentation.filter.Option;
 import org.jetbrains.annotations.NotNull;

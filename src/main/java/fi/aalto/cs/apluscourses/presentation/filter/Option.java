@@ -24,12 +24,22 @@ public class Option implements Filter {
    */
   public Option(@NotNull String name,
                 @Nullable Icon icon,
-                @NotNull Filter filter,
-                boolean initialValue) {
+                @NotNull Filter filter) {
     this.icon = icon;
     this.name = name;
     this.filter = filter;
-    this.isSelected = new ObservableReadWriteProperty<>(initialValue);
+    isSelected = new ObservableReadWriteProperty<>(null);
+  }
+
+  /**
+   * Should be called before the option is used. Subsequent calls are allowed.
+   * Subclasses may override this.
+   *
+   * @return This instance, for fluency.
+   */
+  public Option init() {
+    isSelected.set(true);
+    return this;
   }
 
   @Override

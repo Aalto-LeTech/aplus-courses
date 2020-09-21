@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 
 import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
-import java.util.Collections;
 import org.junit.Test;
 
 public class SubmissionResultViewModelTest {

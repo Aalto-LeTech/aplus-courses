@@ -21,15 +21,20 @@ public class IntelliJFilterOption extends Option {
                               @NotNull String name,
                               @Nullable Icon icon,
                               @NotNull Filter filter) {
-    super(name, icon, filter, PropertiesComponent.getInstance().getBoolean(setting.getName(),
-        true));
+    super(name, icon, filter);
     this.setting = setting;
-    isSelected.set(PropertiesComponent.getInstance().getBoolean(setting.getName(), true));
     isSelected.addValueObserver(this, IntelliJFilterOption::selectionChanged);
   }
 
+  @Override
+  public IntelliJFilterOption init() {
+    isSelected.set(PropertiesComponent.getInstance().getBoolean(setting.getName(), true), this);
+    return this;
+  }
+
   private void selectionChanged(@Nullable Boolean value) {
-    PropertiesComponent.getInstance()
-        .setValue(setting.getName(), !Boolean.FALSE.equals(value), true);
+    if (value != null) { // if initialized
+      PropertiesComponent.getInstance().setValue(setting.getName(), value, true);
+    }
   }
 }

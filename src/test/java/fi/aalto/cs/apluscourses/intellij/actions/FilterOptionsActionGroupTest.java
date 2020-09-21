@@ -25,8 +25,8 @@ public class FilterOptionsActionGroupTest {
     AnActionEvent e = mock(AnActionEvent.class);
     when(e.getProject()).thenReturn(project);
 
-    Option filterOption1 = new Option("Just some filter", null, item -> Optional.of(true), false);
-    Option filterOption2 = new Option("Another filter", null, item -> Optional.of(false), false);
+    Option filterOption1 = new Option("Just some filter", null, item -> Optional.of(true)).init();
+    Option filterOption2 = new Option("Another filter", null, item -> Optional.of(false)).init();
     Options filterOptions = new Options(filterOption1, filterOption2);
 
     MainViewModel mainViewModel = new MainViewModel(new Options());

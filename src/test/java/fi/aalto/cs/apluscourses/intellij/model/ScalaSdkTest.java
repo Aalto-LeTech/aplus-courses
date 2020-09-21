@@ -7,7 +7,6 @@ import com.intellij.testFramework.HeavyPlatformTestCase;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 public class ScalaSdkTest extends HeavyPlatformTestCase {

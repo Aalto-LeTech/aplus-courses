@@ -9,7 +9,6 @@ import java.util.stream.Stream;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
-import sourcecode.Impls;
 
 public class OurTreeNode extends DefaultMutableTreeNode implements Filterable.Listener {
 

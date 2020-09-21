@@ -409,3 +409,17 @@ available. Click the link below to open the feedback.** notification is shown.
 **12.5** Check **Non-submittable** menu item again.
 
 **12.6** ASSERTION: Non-submittable assignments are shown again in the tree.
+
+**12.7** Uncheck **Non-submittable** menu item again.
+
+**12.8** Restart the IDE.
+
+**12.9** ASSERTION: Non-submittable assignments are still invisible.
+
+**12.10** ASSERTION: **Non-submittable** menu item is unchecked.
+
+**12.11** From the main menu, choose **A+ > Reset A+ Courses Plugin Settings**.
+
+**12.12** ASSERTION: Non-submittable assignments are shown again in the tree.
+
+**12.12** ASSERTION: **Non-submittable** menu item is checked.

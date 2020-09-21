@@ -17,11 +17,9 @@ import fi.aalto.cs.apluscourses.intellij.utils.IntelliJFilterOption;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModelUpdater;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseFilter;
+import fi.aalto.cs.apluscourses.presentation.filter.Option;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import org.jetbrains.annotations.NotNull;
@@ -211,6 +209,7 @@ public class PluginSettings implements MainViewModelProvider {
     if (!applicationPropertiesManager.isValueSet(A_PLUS_IMPORTED_IDE_SETTINGS.getName())) {
       setImportedIdeSettingsId("");
     }
+    exerciseFilterOptions.forEach(Option::init);
   }
 
   /**
