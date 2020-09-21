@@ -20,7 +20,7 @@ public class FilterOptionActionTest {
   public void testConstructor() {
     String name = "Dummy filter";
     Icon icon = new ImageIcon();
-    Option filterOption = new Option(name, icon, item -> Optional.of(true));
+    Option filterOption = new Option(name, icon, item -> Optional.of(true)).init();
 
     AnAction action = new FilterOptionAction(filterOption);
 
@@ -30,7 +30,7 @@ public class FilterOptionActionTest {
 
   @Test
   public void testIsSelected() {
-    Option filterOption = new Option("My filter", null, item -> Optional.of(true));
+    Option filterOption = new Option("My filter", null, item -> Optional.of(true)).init();
 
     ToggleAction action = new FilterOptionAction(filterOption);
 
@@ -48,7 +48,7 @@ public class FilterOptionActionTest {
 
   @Test
   public void testSetSelected() {
-    Option filterOption = new Option("Your filter", null, item -> Optional.of(true));
+    Option filterOption = new Option("Your filter", null, item -> Optional.of(true)).init();
 
     ToggleAction action = new FilterOptionAction(filterOption);
 

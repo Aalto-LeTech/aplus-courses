@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.intellij.services;
 
 import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalIdeSettingsNames.A_PLUS_IMPORTED_IDE_SETTINGS;
 import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalIdeSettingsNames.A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG;
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.notification.Notifications;
@@ -12,8 +13,12 @@ import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.project.ProjectManagerListener;
 import fi.aalto.cs.apluscourses.intellij.dal.IntelliJPasswordStorage;
 import fi.aalto.cs.apluscourses.intellij.utils.CourseFileManager;
+import fi.aalto.cs.apluscourses.intellij.utils.IntelliJFilterOption;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModelUpdater;
+import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseFilter;
+import fi.aalto.cs.apluscourses.presentation.filter.Option;
+import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -30,7 +35,9 @@ public class PluginSettings implements MainViewModelProvider {
 
   public enum LocalIdeSettingsNames {
     A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG("A+.showReplConfigDialog"),
-    A_PLUS_IMPORTED_IDE_SETTINGS("A+.importedIdeSettings");
+    A_PLUS_IMPORTED_IDE_SETTINGS("A+.importedIdeSettings"),
+    A_PLUS_SHOW_NON_SUBMITTABLE("A+.showNonSubmittable");
+
     private final String name;
 
     LocalIdeSettingsNames(String name) {
@@ -68,6 +75,13 @@ public class PluginSettings implements MainViewModelProvider {
   @NotNull
   private final ConcurrentMap<Project, CourseFileManager> courseFileManagers
       = new ConcurrentHashMap<>();
+
+  @NotNull
+  private final Options exerciseFilterOptions = new Options(
+      new IntelliJFilterOption(LocalIdeSettingsNames.A_PLUS_SHOW_NON_SUBMITTABLE,
+          getText("presentation.exerciseFilterOptions.nonSubmittable"),
+          null,
+          new ExerciseFilter.NonSubmittableFilter()));
 
   private final ProjectManagerListener projectManagerListener = new ProjectManagerListener() {
     @Override
@@ -154,7 +168,7 @@ public class PluginSettings implements MainViewModelProvider {
   @NotNull
   private MainViewModel createNewMainViewModel(@NotNull Project project) {
     ProjectManager.getInstance().addProjectManagerListener(project, projectManagerListener);
-    return new MainViewModel();
+    return new MainViewModel(exerciseFilterOptions);
   }
 
   /**
@@ -195,6 +209,7 @@ public class PluginSettings implements MainViewModelProvider {
     if (!applicationPropertiesManager.isValueSet(A_PLUS_IMPORTED_IDE_SETTINGS.getName())) {
       setImportedIdeSettingsId("");
     }
+    exerciseFilterOptions.forEach(Option::init);
   }
 
   /**

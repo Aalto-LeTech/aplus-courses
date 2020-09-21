@@ -22,6 +22,7 @@ import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.presentation.AuthenticationViewModel;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
+import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -50,7 +51,7 @@ public class APlusAuthenticationActionTest {
     actionEvent = mock(AnActionEvent.class);
     doReturn(project).when(actionEvent).getProject();
 
-    mainViewModel = new MainViewModel();
+    mainViewModel = new MainViewModel(new Options());
     mainViewModelProvider = mock(MainViewModelProvider.class);
     doReturn(mainViewModel).when(mainViewModelProvider).getMainViewModel(project);
 

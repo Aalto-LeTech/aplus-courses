@@ -54,6 +54,7 @@ import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import fi.aalto.cs.apluscourses.presentation.ModuleSelectionViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionViewModel;
+import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -131,7 +132,7 @@ public class SubmitExerciseActionTest {
         1, Collections.singletonMap(language, Collections.singletonList(file)));
     submissionHistory = new SubmissionHistory(0);
 
-    mainViewModel = new MainViewModel();
+    mainViewModel = new MainViewModel(new Options());
 
     authentication = mock(Authentication.class);
     points = new Points(Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());

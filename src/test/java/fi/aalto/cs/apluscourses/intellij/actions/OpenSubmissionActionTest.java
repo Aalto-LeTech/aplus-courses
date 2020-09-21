@@ -15,7 +15,6 @@ import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.SubmissionRenderingErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.model.Exercise;
-import fi.aalto.cs.apluscourses.model.ExerciseGroup;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import fi.aalto.cs.apluscourses.model.UrlRenderer;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
@@ -24,7 +23,7 @@ import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseGroupViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionResultViewModel;
-import java.util.Arrays;
+import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -57,7 +56,7 @@ public class OpenSubmissionActionTest {
         );
     doReturn(selection).when(exercisesTree).findSelected();
 
-    MainViewModel mainViewModel = new MainViewModel();
+    MainViewModel mainViewModel = new MainViewModel(new Options());
     mainViewModel.exercisesViewModel.set(exercisesTree);
 
     mainViewModelProvider = project -> mainViewModel;

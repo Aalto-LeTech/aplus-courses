@@ -19,6 +19,7 @@ import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
+import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import fi.aalto.cs.apluscourses.ui.InstallerDialogs;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,7 +43,7 @@ public class InstallModuleActionTest {
   public void createMockObjects()   {
     project = mock(Project.class);
 
-    mainViewModel = new MainViewModel();
+    mainViewModel = new MainViewModel(new Options());
     MainViewModelProvider mainViewModelProvider = mock(MainViewModelProvider.class);
     doReturn(mainViewModel).when(mainViewModelProvider).getMainViewModel(project);
 

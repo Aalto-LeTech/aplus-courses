@@ -16,16 +16,30 @@ public class Option implements Filter {
   @Nullable
   private final Icon icon;
 
-  public final ObservableProperty<Boolean> isSelected = new ObservableReadWriteProperty<>(true);
+  public final ObservableProperty<Boolean> isSelected;
 
   /**
    * An option, that is, a filter that when not selected, filters out those that match to the filter
    * given to this constructor.
    */
-  public Option(@NotNull String name, @Nullable Icon icon, @NotNull Filter filter) {
+  public Option(@NotNull String name,
+                @Nullable Icon icon,
+                @NotNull Filter filter) {
     this.icon = icon;
     this.name = name;
     this.filter = filter;
+    isSelected = new ObservableReadWriteProperty<>(null);
+  }
+
+  /**
+   * Should be called before the option is used. Subsequent calls are allowed.
+   * Subclasses may override this.
+   *
+   * @return This instance, for fluency.
+   */
+  public Option init() {
+    isSelected.set(true);
+    return this;
   }
 
   @Override

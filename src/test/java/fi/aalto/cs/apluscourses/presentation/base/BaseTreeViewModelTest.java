@@ -1,6 +1,5 @@
 package fi.aalto.cs.apluscourses.presentation.base;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 

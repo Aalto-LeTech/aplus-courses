@@ -2,7 +2,6 @@ package fi.aalto.cs.apluscourses.presentation.exercise;
 
 import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
-import java.util.Collections;
 import org.junit.Assert;
 import org.junit.Test;
 

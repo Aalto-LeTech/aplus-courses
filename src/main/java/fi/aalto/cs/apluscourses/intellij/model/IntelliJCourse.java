@@ -111,7 +111,6 @@ class IntelliJCourse extends Course {
   @Override
   public void unregister() {
     ReadAction.run(platformListener::unregisterListeners);
-
   }
 
   @NotNull
@@ -138,7 +137,7 @@ class IntelliJCourse extends Course {
     @CalledWithReadLock
     public synchronized void registerListeners() {
       if (messageBusConnection != null) {
-        throw new IllegalStateException();
+        return;
       }
       messageBusConnection = project.getMessageBus().connect();
       messageBusConnection.subscribe(VirtualFileManager.VFS_CHANGES,
@@ -170,7 +169,7 @@ class IntelliJCourse extends Course {
     @CalledWithReadLock
     public synchronized void unregisterListeners() {
       if (messageBusConnection == null) {
-        throw new IllegalStateException();
+        return;
       }
       messageBusConnection.disconnect();
       messageBusConnection = null;

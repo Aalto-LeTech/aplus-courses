@@ -42,8 +42,13 @@ public class ObservableReadWriteProperty<T> extends ObservableProperty<T> {
    */
   @Override
   public synchronized void set(T newValue) {
+    set(newValue, null);
+  }
+
+  @Override
+  public synchronized void set(T newValue, @Nullable Object source) {
     if (setInternal(newValue)) {
-      onValueChanged(newValue);
+      onValueChanged(newValue, source);
     }
   }
 
