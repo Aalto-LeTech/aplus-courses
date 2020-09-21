@@ -12,7 +12,9 @@ public class AndFilterTest {
   final Filter yes = item -> Optional.of(true);
   final Filter no = item -> Optional.of(false);
   final Filter nil = item -> Optional.empty();
-  final Filter err = item -> { throw new UnsupportedOperationException(); };
+  final Filter err = item -> {
+    throw new UnsupportedOperationException();
+  };
 
   @Test
   public void testAndFilter() {
