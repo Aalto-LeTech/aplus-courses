@@ -1,7 +1,9 @@
 package fi.aalto.cs.apluscourses.model;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -19,8 +21,7 @@ public class ExerciseTest {
 
   @Test
   public void testExercise() {
-    Exercise exercise = new Exercise(987, "def", "http://localhost:4444",
-        Collections.emptyList(), 13, 15, 10);
+    Exercise exercise = new Exercise(987, "def", "http://localhost:4444", 13, 15, 10);
 
     assertEquals("The ID is the same as the one given to the constructor",
         987L, exercise.getId());
@@ -136,17 +137,13 @@ public class ExerciseTest {
 
   @Test
   public void testEquals() {
-    Exercise exercise = new Exercise(7, "oneex", "http://localhost:1111",
-        Collections.emptyList(), 0, 0, 0);
-    Exercise sameExercise = new Exercise(7, "twoex", "http://localhost:2222",
-        Collections.emptyList(), 2, 3, 4);
-    Exercise otherExercise = new Exercise(4, "oneex", "http://localhost:2222",
-        Collections.emptyList(), 3, 2, 1);
+    Exercise exercise = new Exercise(7, "oneEx", "http://localhost:1111", 0, 0, 0);
+    Exercise sameExercise = new Exercise(7, "twoEx", "http://localhost:2222", 2, 3, 4);
+    Exercise otherExercise = new Exercise(4, "oneEx", "http://localhost:2222", 3, 2, 1);
 
     assertEquals(exercise, sameExercise);
     assertEquals(exercise.hashCode(), sameExercise.hashCode());
 
     assertNotEquals(exercise, otherExercise);
   }
-
 }

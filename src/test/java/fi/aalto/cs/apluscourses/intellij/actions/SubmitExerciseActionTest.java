@@ -118,8 +118,7 @@ public class SubmitExerciseActionTest {
   @Before
   public void setUp() throws IOException, FileDoesNotExistException {
     exerciseId = 12;
-    exercise = new Exercise(exerciseId, "Test exercise", "http://localhost:10000",
-        Collections.emptyList(), 0, 0, 0);
+    exercise = new Exercise(exerciseId, "Test exercise", "http://localhost:10000", 0, 0, 0);
     group = new Group(124, Collections.singletonList("Only you"));
     groups = Collections.singletonList(group);
     exerciseGroup = new ExerciseGroup("Test EG", Collections.singletonList(exercise));
@@ -156,7 +155,7 @@ public class SubmitExerciseActionTest {
     mainViewModel.authentication.set(authentication);
 
     exercises = Objects.requireNonNull(mainViewModel.exercisesViewModel.get());
-    exercises.getGroupViewModels().get(0).getExerciseViewModels().get(0).setSelected(true);
+    exercises.getChildren().get(0).getChildren().get(0).setSelected(true);
 
     moduleName = "MyModule";
     modulePath = Paths.get(moduleName);
@@ -243,7 +242,7 @@ public class SubmitExerciseActionTest {
 
   @Test
   public void testNotifiesNoExerciseSelected() {
-    exercises.getGroupViewModels().get(0).getExerciseViewModels().get(0).setSelected(false);
+    exercises.getChildren().get(0).getChildren().get(0).setSelected(false);
 
     action.actionPerformed(event);
 

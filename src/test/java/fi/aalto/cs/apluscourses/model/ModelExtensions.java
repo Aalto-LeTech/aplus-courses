@@ -66,9 +66,10 @@ public class ModelExtensions {
     @NotNull
     @Override
     public SubmissionResult getSubmissionResult(@NotNull String submissionUrl,
+                                                @NotNull Exercise exercise,
                                                 @NotNull Authentication authentication)
         throws IOException {
-      return new SubmissionResult(0, 20,"http://localhost:8000", SubmissionResult.Status.GRADED);
+      return new SubmissionResult(0, 20, SubmissionResult.Status.GRADED, exercise);
     }
 
     @Override

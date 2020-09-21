@@ -1,31 +1,19 @@
 package fi.aalto.cs.apluscourses.presentation.exercise;
 
 import fi.aalto.cs.apluscourses.model.Exercise;
-import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
-import fi.aalto.cs.apluscourses.presentation.base.TreeViewModel;
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import fi.aalto.cs.apluscourses.utils.CollectionUtil;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> implements TreeViewModel {
-
-  @NotNull
-  private final List<SubmissionResultViewModel> submissionResultViewModels;
+public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> {
 
   /**
    * Construct a view model corresponding to the given exercise.
    */
   public ExerciseViewModel(@NotNull Exercise exercise) {
-    super(exercise);
-    List<SubmissionResult> submissionResults = exercise.getSubmissionResults();
-    this.submissionResultViewModels = IntStream
-        .range(0, submissionResults.size())
-        .mapToObj(i -> new SubmissionResultViewModel(this, submissionResults.get(i), i + 1))
-        .collect(Collectors.toList());
+    super(exercise, CollectionUtil.mapWithIndex(
+        exercise.getSubmissionResults(), SubmissionResultViewModel::new, 1));
   }
 
   public String getPresentableName() {
@@ -83,18 +71,5 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
     Exercise exercise = getModel();
     return "" + exercise.getSubmissionResults().size() + " of " + exercise.getMaxSubmissions()
         + ", " + exercise.getUserPoints() + "/" + exercise.getMaxPoints();
-  }
-
-  public List<SubmissionResultViewModel> getSubmissionResultViewModels() {
-    return submissionResultViewModels;
-  }
-
-  @Nullable
-  @Override
-  public List<TreeViewModel> getSubtrees() {
-    return getSubmissionResultViewModels()
-        .stream()
-        .map(viewModel -> (TreeViewModel) viewModel)
-        .collect(Collectors.toList());
   }
 }

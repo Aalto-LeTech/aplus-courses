@@ -42,9 +42,6 @@ public class MainViewModel {
 
   private AtomicBoolean hasTriedToReadAuthenticationFromStorage = new AtomicBoolean(false);
 
-  /**
-   * Instantiates a new view model for the main object.
-   */
   public MainViewModel() {
     courseViewModel.addValueObserver(this, MainViewModel::updateExercises);
     authentication.addValueObserver(this, MainViewModel::updateExercises);
@@ -101,5 +98,10 @@ public class MainViewModel {
         .map(PasswordStorage::restorePassword)
         .map(factory::create)
         .ifPresent(this::setAuthentication);
+  }
+
+  @Nullable
+  public ExercisesTreeViewModel getExercises() {
+    return exercisesViewModel.get();
   }
 }
