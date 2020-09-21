@@ -13,7 +13,7 @@ public class BuildInfoTest {
 
   @Test
   public void testCreateBuildInfoFromProperties() throws PropertyException {
-    String versionString = "1.5.18";
+    String versionString = "1.5";
 
     Properties props = new Properties();
     props.setProperty(BuildInfo.PropertyKeys.VERSION, versionString);

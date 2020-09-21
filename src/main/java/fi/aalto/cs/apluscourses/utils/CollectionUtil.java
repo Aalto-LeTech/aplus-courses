@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.utils;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -44,7 +45,7 @@ public class CollectionUtil {
     int index = 0;
     while (iterator.hasNext()) {
       T current = iterator.next();
-      if (current == itemToFind) {
+      if (Objects.equals(current, itemToFind)) {
         return index;
       }
       index++;

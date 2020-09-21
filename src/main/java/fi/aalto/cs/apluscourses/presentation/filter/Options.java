@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
-public class Options extends LogicalFilter.Conjunction implements Streamable<Option> {
+public class Options extends AndFilter implements Streamable<Option> {
   public final Event optionsChanged = new Event();
   private final List<Option> optionList;
 
