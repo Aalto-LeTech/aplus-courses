@@ -49,7 +49,7 @@ public class CollectionUtil {
     int index = 0;
     while (iterator.hasNext()) {
       T current = iterator.next();
-      if (current == itemToFind) {
+      if (Objects.equals(current, itemToFind)) {
         return index;
       }
       index++;
