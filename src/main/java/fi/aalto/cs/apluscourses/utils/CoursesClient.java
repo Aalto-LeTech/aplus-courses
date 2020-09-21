@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpEntity;
@@ -40,6 +41,8 @@ import org.json.JSONTokener;
  * response is needed.
  */
 public class CoursesClient {
+
+  private static final AtomicReference<String> userAgent = new AtomicReference<>(null);
 
   /**
    * Makes a GET request to the given URL and returns the response body in a
@@ -300,6 +303,11 @@ public class CoursesClient {
 
   @NotNull
   private static String getUserAgent() {
+    String userAgentString = userAgent.get();
+    if (userAgentString != null) {
+      return userAgentString;
+    }
+
     ApplicationInfo appInfo = ApplicationInfo.getInstance();
     ApplicationNamesInfo appNamesInfo = ApplicationNamesInfo.getInstance();
     String intellijVersion = appInfo.getFullVersion();
@@ -309,7 +317,8 @@ public class CoursesClient {
     String pluginVersion = BuildInfo.INSTANCE.version.toString();
     String apacheUserAgent =
         VersionInfo.getUserAgent("Apache-HttpClient", "org.apache.http.client", VersionInfo.class);
-    return String.format(
+
+    userAgentString = String.format(
         "intellij/%s (%s; %s; %s) apluscourses/%s %s",
         intellijVersion,
         product,
@@ -317,5 +326,7 @@ public class CoursesClient {
         os,
         pluginVersion,
         apacheUserAgent);
+
+    return userAgent.compareAndSet(null, userAgentString) ? userAgentString : userAgent.get();
   }
 }
