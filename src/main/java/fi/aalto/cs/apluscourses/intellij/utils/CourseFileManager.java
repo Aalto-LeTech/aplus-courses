@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.HashMap;
@@ -17,8 +19,12 @@ import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CourseFileManager {
+
+  private static final Logger logger = LoggerFactory.getLogger(CourseFileManager.class);
 
   private File courseFile;
   private URL courseUrl;
@@ -181,7 +187,12 @@ public class CourseFileManager {
   private void loadFromJsonObject(@NotNull JSONObject jsonObject) throws IOException {
     this.courseUrl = new URL(jsonObject.getString(URL_KEY));
 
-    this.language = jsonObject.getString(LANGUAGE_KEY);
+    try {
+      this.language = jsonObject.getString(LANGUAGE_KEY);
+    } catch (JSONException e) {
+      logger.error("Course file missing language, defaulting to 'en'", e);
+      language = "en";
+    }
 
     this.modulesMetadata = new HashMap<>();
     JSONObject modulesObject = jsonObject.optJSONObject(MODULES_KEY);
@@ -192,9 +203,17 @@ public class CourseFileManager {
     Iterable<String> moduleNames = modulesObject::keys;
     for (String moduleName : moduleNames) {
       JSONObject moduleObject = modulesObject.getJSONObject(moduleName);
+
       String moduleId = moduleObject.getString(MODULE_ID_KEY);
-      ZonedDateTime downloadedAt
-          = ZonedDateTime.parse(moduleObject.getString(MODULE_DOWNLOADED_AT_KEY));
+
+      ZonedDateTime downloadedAt;
+      try {
+        downloadedAt = ZonedDateTime.parse(moduleObject.getString(MODULE_DOWNLOADED_AT_KEY));
+      } catch (JSONException e) {
+        logger.error("Module " + moduleName + " missing 'downloadedAt' in course file", e);
+        downloadedAt = Instant.EPOCH.atZone(ZoneId.systemDefault());
+      }
+
       this.modulesMetadata.put(moduleName, new ModuleMetadata(moduleId, downloadedAt));
     }
   }
