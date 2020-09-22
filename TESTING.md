@@ -379,14 +379,14 @@ module GoodStuff.** error is shown.
  
 ### 11 Checking the submission
  
-**11.1** ASSERTION: The **Submission feedback available Feedback for Assignment 2 (GoodStuff) is now 
-available. Click the link below to open the feedback.** notification is shown.
+**11.1** ASSERTION: The **Submission feedback available Feedback for Assignment 2 (GoodStuff) [0/5] is now 
+available. Click here to open the feedback.** notification is shown.
 
 **11.2** ASSERTION: Submission is added under the corresponding Assignment.
 
 ![Assignments submission](images/submission_results.png)
 
-**11.3** Click on the hyperlink **Click the link below to open the feedback.**
+**11.3** Click on the hyperlink **Click here to open the feedback.**
 
 **11.4** ASSERTION: Browser opens Submission page in A+ LMS (login, if asked).
 
