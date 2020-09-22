@@ -24,7 +24,7 @@
     ]]></description>
 
     <change-notes>
-        Fix ordering of assignments in the assignments tree.
+        Add filtering of assignments and bug fixes.
     </change-notes>
 
     <depends>com.intellij.modules.java</depends>
