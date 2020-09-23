@@ -50,11 +50,11 @@ public abstract class ObservableProperty<T> {
   }
 
   public <O> void addValueObserver(@NotNull O observer, @NotNull SimpleCallback<O> callback) {
-    addValueObserver(observer, new CallbackWrapper<>(callback));
+    observers.put(observer, new CallbackWrapper<>(callback));
   }
 
   public void declareDependentOn(@NotNull ObservableProperty<?> property) {
-    property.addValueObserver(this, (self, dummy) -> self.onValueChanged(self.get()));
+    property.addValueObserver(this, (self, dummy) -> self.onValueChanged(self.get(), null));
   }
 
   @Nullable
@@ -64,14 +64,28 @@ public abstract class ObservableProperty<T> {
     throw new UnsupportedOperationException();
   }
 
+  /**
+   * Sets the value without notifying the source.
+   *
+   * @param value The new value
+   * @param source The source object who will not be notified of this change.  If source is null,
+   *               or its not an observer of this property, the argument has no effect.
+   */
+  public void set(T value, @Nullable Object source) {
+    throw new UnsupportedOperationException();
+  }
+
   @Nullable
   public T getAndSet(T value) {
     throw new UnsupportedOperationException();
   }
 
-  protected synchronized void onValueChanged(@Nullable T value) {
+  protected synchronized void onValueChanged(@Nullable T value, @Nullable Object source) {
     for (Map.Entry<Object, Callback<?, T>> entry : observers.entrySet()) {
-      entry.getValue().valueChangedUntyped(entry.getKey(), value);
+      Object observer = entry.getKey();
+      if (observer != source) {
+        entry.getValue().valueChangedUntyped(observer, value);
+      }
     }
   }
 

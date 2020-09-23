@@ -58,7 +58,8 @@ public class OpenSubmissionAction extends DumbAwareAction {
       return;
     }
 
-    SubmissionResultViewModel submission = exercisesTree.getSelectedSubmission();
+    SubmissionResultViewModel submission =
+        (SubmissionResultViewModel) exercisesTree.findSelected().getLevel(3);
     if (submission == null) {
       return;
     }

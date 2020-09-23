@@ -1,9 +1,8 @@
 package fi.aalto.cs.apluscourses.model;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
@@ -18,7 +17,8 @@ public class Exercise {
   private final String htmlUrl;
 
   @NotNull
-  private final List<SubmissionResult> submissionResults;
+  private final List<SubmissionResult> submissionResults =
+      Collections.synchronizedList(new ArrayList<>());
 
   private final int userPoints;
 
@@ -32,7 +32,6 @@ public class Exercise {
    * @param id                The ID of the exercise.
    * @param name              The name of the exercise.
    * @param htmlUrl           A URL to the HTML page of the exercise.
-   * @param submissionResults A list of submission results corresponding to this exercise.
    * @param userPoints        The best points that the user has gotten from this exercise.
    * @param maxPoints         The maximum points available from this exercise.
    * @param maxSubmissions    The maximum number of submissions allowed for this exercise.
@@ -40,14 +39,12 @@ public class Exercise {
   public Exercise(long id,
                   @NotNull String name,
                   @NotNull String htmlUrl,
-                  @NotNull List<SubmissionResult> submissionResults,
                   int userPoints,
                   int maxPoints,
                   int maxSubmissions) {
     this.id = id;
     this.name = name;
     this.htmlUrl = htmlUrl;
-    this.submissionResults = submissionResults;
     this.userPoints = userPoints;
     this.maxPoints = maxPoints;
     this.maxSubmissions = maxSubmissions;
@@ -73,21 +70,20 @@ public class Exercise {
     int maxPoints = jsonObject.getInt("max_points");
     int maxSubmissions = jsonObject.getInt("max_submissions");
 
-    List<Long> submissionIds = points.getSubmissions().getOrDefault(id, Collections.emptyList());
-    List<SubmissionResult> submissionResults = IntStream
-        .range(0, submissionIds.size())
-        .mapToObj(i -> {
-          long submissionId = submissionIds.get(i);
-          int submissionPoints = points.getSubmissionPoints().getOrDefault(submissionId, 0);
-          SubmissionResult.Status status = (i + 1 > maxSubmissions)
-              ? SubmissionResult.Status.UNOFFICIAL
-              : SubmissionResult.Status.GRADED;
-          return new SubmissionResult(submissionId, submissionPoints, htmlUrl, status);
-        })
-        .collect(Collectors.toList());
+    Exercise exercise = new Exercise(id, name, htmlUrl, userPoints, maxPoints, maxSubmissions);
 
-    return new Exercise(id, name, htmlUrl, submissionResults,
-        userPoints, maxPoints, maxSubmissions);
+    List<Long> submissionIds = points.getSubmissions().getOrDefault(id, Collections.emptyList());
+    for (int i = 0, length = submissionIds.size(); i < length; i++) {
+      long submissionId = submissionIds.get(i);
+      int submissionPoints = points.getSubmissionPoints().getOrDefault(submissionId, 0);
+      SubmissionResult.Status status = (i + 1 > maxSubmissions)
+          ? SubmissionResult.Status.UNOFFICIAL
+          : SubmissionResult.Status.GRADED;
+      exercise.addSubmissionResult(
+          new SubmissionResult(submissionId, submissionPoints, status, exercise));
+    }
+
+    return exercise;
   }
 
   public long getId() {
@@ -102,6 +98,11 @@ public class Exercise {
   @NotNull
   public String getHtmlUrl() {
     return htmlUrl;
+  }
+
+  @NotNull
+  public void addSubmissionResult(@NotNull SubmissionResult submissionResult) {
+    submissionResults.add(submissionResult);
   }
 
   @NotNull

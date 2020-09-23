@@ -4,26 +4,18 @@ import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
-import fi.aalto.cs.apluscourses.presentation.base.TreeViewModel;
-import java.util.List;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-public class SubmissionResultViewModel extends SelectableNodeViewModel<SubmissionResult>
-    implements TreeViewModel {
-
-  private final ExerciseViewModel parent;
+public class SubmissionResultViewModel extends SelectableNodeViewModel<SubmissionResult> {
 
   private final int submissionNumber;
 
   /**
    * Construct a view model corresponding to the given submission result.
    */
-  public SubmissionResultViewModel(@NotNull ExerciseViewModel parent,
-                                   @NotNull SubmissionResult submissionResult,
+  public SubmissionResultViewModel(@NotNull SubmissionResult submissionResult,
                                    int submissionNumber) {
-    super(submissionResult);
-    this.parent = parent;
+    super(submissionResult, null);
     this.submissionNumber = submissionNumber;
   }
 
@@ -34,12 +26,6 @@ public class SubmissionResultViewModel extends SelectableNodeViewModel<Submissio
 
   @NotNull
   public String getStatusText() {
-    return getModel().getPoints() + "/" + parent.getModel().getMaxPoints() + " points";
-  }
-
-  @Nullable
-  @Override
-  public List<? extends TreeViewModel> getSubtrees() {
-    return null;
+    return getModel().getPoints() + "/" + getModel().getExercise().getMaxPoints() + " points";
   }
 }

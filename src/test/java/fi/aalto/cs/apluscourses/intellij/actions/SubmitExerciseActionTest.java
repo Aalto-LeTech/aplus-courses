@@ -54,6 +54,7 @@ import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import fi.aalto.cs.apluscourses.presentation.ModuleSelectionViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionViewModel;
+import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -118,8 +119,7 @@ public class SubmitExerciseActionTest {
   @Before
   public void setUp() throws IOException, FileDoesNotExistException {
     exerciseId = 12;
-    exercise = new Exercise(exerciseId, "Test exercise", "http://localhost:10000",
-        Collections.emptyList(), 0, 0, 0);
+    exercise = new Exercise(exerciseId, "Test exercise", "http://localhost:10000", 0, 0, 0);
     group = new Group(124, Collections.singletonList("Only you"));
     groups = Collections.singletonList(group);
     exerciseGroup = new ExerciseGroup("Test EG", Collections.singletonList(exercise));
@@ -132,7 +132,7 @@ public class SubmitExerciseActionTest {
         1, Collections.singletonMap(language, Collections.singletonList(file)));
     submissionHistory = new SubmissionHistory(0);
 
-    mainViewModel = new MainViewModel();
+    mainViewModel = new MainViewModel(new Options());
 
     authentication = mock(Authentication.class);
     points = new Points(Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());
@@ -156,7 +156,7 @@ public class SubmitExerciseActionTest {
     mainViewModel.authentication.set(authentication);
 
     exercises = Objects.requireNonNull(mainViewModel.exercisesViewModel.get());
-    exercises.getGroupViewModels().get(0).getExerciseViewModels().get(0).setSelected(true);
+    exercises.getChildren().get(0).getChildren().get(0).setSelected(true);
 
     moduleName = "MyModule";
     modulePath = Paths.get(moduleName);
@@ -243,7 +243,7 @@ public class SubmitExerciseActionTest {
 
   @Test
   public void testNotifiesNoExerciseSelected() {
-    exercises.getGroupViewModels().get(0).getExerciseViewModels().get(0).setSelected(false);
+    exercises.getChildren().get(0).getChildren().get(0).setSelected(false);
 
     action.actionPerformed(event);
 

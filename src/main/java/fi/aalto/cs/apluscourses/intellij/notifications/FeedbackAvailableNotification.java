@@ -7,21 +7,26 @@ import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import fi.aalto.cs.apluscourses.intellij.actions.OpenSubmissionNotificationAction;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
+import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
+import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
 import org.jetbrains.annotations.NotNull;
 
 public class FeedbackAvailableNotification extends Notification {
 
   /**
    * Construct a notification that notifies the user that feedback is available for a submission.
-   * The notification contains a link that can be used to open the feedback.
+   * The notification contains a link that can be used to open the feedback and the amount of
+   * points the submission got.
    */
   public FeedbackAvailableNotification(@NotNull SubmissionResult submissionResult,
-                                       @NotNull String exerciseName) {
+                                       @NotNull Exercise exercise) {
     super(
         PluginSettings.A_PLUS,
         getText("notification.FeedbackAvailableNotification.title"),
-        getAndReplaceText("notification.FeedbackAvailableNotification.content", exerciseName),
+        getAndReplaceText("notification.FeedbackAvailableNotification.content",
+            APlusLocalizationUtil.getEnglishName(exercise.getName()),
+            String.format("%1$d/%2$d", submissionResult.getPoints(), exercise.getMaxPoints())),
         NotificationType.INFORMATION
     );
     super.addAction(new OpenSubmissionNotificationAction(submissionResult));

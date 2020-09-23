@@ -21,7 +21,7 @@ public class SubmissionStatusUpdater {
   private final String submissionUrl;
 
   @NotNull
-  private final String exerciseName;
+  private final Exercise exercise;
 
   private long interval;
 
@@ -49,7 +49,7 @@ public class SubmissionStatusUpdater {
                                  @NotNull Authentication authentication,
                                  @NotNull Notifier notifier,
                                  @NotNull String submissionUrl,
-                                 @NotNull String exerciseName,
+                                 @NotNull Exercise exercise,
                                  long interval,
                                  long increment,
                                  long timeLimit) {
@@ -57,7 +57,7 @@ public class SubmissionStatusUpdater {
     this.authentication = authentication;
     this.notifier = notifier;
     this.submissionUrl = submissionUrl;
-    this.exerciseName = exerciseName;
+    this.exercise = exercise;
     this.interval = interval;
     this.increment = increment;
     this.timeLimit = timeLimit;
@@ -71,13 +71,13 @@ public class SubmissionStatusUpdater {
   public SubmissionStatusUpdater(@NotNull ExerciseDataSource dataSource,
                                  @NotNull Authentication authentication,
                                  @NotNull String submissionUrl,
-                                 @NotNull String exerciseName) {
+                                 @NotNull Exercise exercise) {
     this(
         dataSource,
         authentication,
         Notifications.Bus::notify,
         submissionUrl,
-        exerciseName,
+        exercise,
         DEFAULT_INTERVAL,
         DEFAULT_INCREMENT,
         DEFAULT_TIME_LIMIT
@@ -97,9 +97,10 @@ public class SubmissionStatusUpdater {
 
         SubmissionResult submissionResult;
         try {
-          submissionResult = dataSource.getSubmissionResult(submissionUrl, authentication);
+          submissionResult =
+              dataSource.getSubmissionResult(submissionUrl, exercise, authentication);
           if (submissionResult.getStatus() != SubmissionResult.Status.UNKNOWN) {
-            notifier.notify(new FeedbackAvailableNotification(submissionResult, exerciseName),null);
+            notifier.notify(new FeedbackAvailableNotification(submissionResult, exercise),null);
             return;
           }
         } catch (IOException e) {

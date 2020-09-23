@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.intellij.services;
 
 import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalIdeSettingsNames.A_PLUS_IMPORTED_IDE_SETTINGS;
 import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalIdeSettingsNames.A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG;
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.notification.Notifications;
@@ -12,8 +13,12 @@ import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.project.ProjectManagerListener;
 import fi.aalto.cs.apluscourses.intellij.dal.IntelliJPasswordStorage;
 import fi.aalto.cs.apluscourses.intellij.utils.CourseFileManager;
+import fi.aalto.cs.apluscourses.intellij.utils.IntelliJFilterOption;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModelUpdater;
+import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseFilter;
+import fi.aalto.cs.apluscourses.presentation.filter.Option;
+import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -30,7 +35,9 @@ public class PluginSettings implements MainViewModelProvider {
 
   public enum LocalIdeSettingsNames {
     A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG("A+.showReplConfigDialog"),
-    A_PLUS_IMPORTED_IDE_SETTINGS("A+.importedIdeSettings");
+    A_PLUS_IMPORTED_IDE_SETTINGS("A+.importedIdeSettings"),
+    A_PLUS_SHOW_NON_SUBMITTABLE("A+.showNonSubmittable");
+
     private final String name;
 
     LocalIdeSettingsNames(String name) {
@@ -58,26 +65,60 @@ public class PluginSettings implements MainViewModelProvider {
   private final PropertiesComponent applicationPropertiesManager = PropertiesComponent
       .getInstance();
 
-  @NotNull
-  private final ConcurrentMap<Project, MainViewModel> mainViewModels = new ConcurrentHashMap<>();
+  private static class ProjectKey {
+    @NotNull
+    private final String projectPath;
+
+    public ProjectKey(@Nullable Project project) {
+      if (project == null || project.isDefault()) {
+        this.projectPath = "";
+      } else {
+        this.projectPath = project.getBasePath();
+      }
+    }
+
+    @Override
+    public boolean equals(Object other) {
+      if (!(other instanceof ProjectKey)) {
+        return false;
+      }
+      return projectPath.equals(((ProjectKey) other).projectPath);
+    }
+
+    @Override
+    public int hashCode() {
+      return projectPath.hashCode();
+    }
+  }
 
   @NotNull
-  private final ConcurrentMap<Project, MainViewModelUpdater> mainViewModelUpdaters
+  private final ConcurrentMap<ProjectKey, MainViewModel> mainViewModels = new ConcurrentHashMap<>();
+
+  @NotNull
+  private final ConcurrentMap<ProjectKey, MainViewModelUpdater> mainViewModelUpdaters
       = new ConcurrentHashMap<>();
 
   @NotNull
-  private final ConcurrentMap<Project, CourseFileManager> courseFileManagers
+  private final ConcurrentMap<ProjectKey, CourseFileManager> courseFileManagers
       = new ConcurrentHashMap<>();
+
+  @NotNull
+  private final Options exerciseFilterOptions = new Options(
+      new IntelliJFilterOption(LocalIdeSettingsNames.A_PLUS_SHOW_NON_SUBMITTABLE,
+          getText("presentation.exerciseFilterOptions.nonSubmittable"),
+          null,
+          new ExerciseFilter.NonSubmittableFilter()));
 
   private final ProjectManagerListener projectManagerListener = new ProjectManagerListener() {
     @Override
     public void projectClosed(@NotNull Project project) {
-      courseFileManagers.remove(project);
-      MainViewModelUpdater updater = mainViewModelUpdaters.remove(project);
+      ProjectKey key = new ProjectKey(project);
+      courseFileManagers.remove(key);
+      MainViewModelUpdater updater = mainViewModelUpdaters.remove(key);
       if (updater != null) {
         updater.interrupt();
       }
-      MainViewModel mainViewModel = mainViewModels.remove(project);
+      MainViewModel mainViewModel = mainViewModels.remove(key);
       if (mainViewModel != null) {
         mainViewModel.dispose();
       }
@@ -103,12 +144,14 @@ public class PluginSettings implements MainViewModelProvider {
    */
   @NotNull
   public MainViewModel getMainViewModel(@Nullable Project project) {
-    if (project == null || !project.isOpen()) {
-      // If project is closed, use default project to avoid creation of main view models, that would
-      // never be cleaned up.
-      project = ProjectManager.getInstance().getDefaultProject();
-    }
-    return mainViewModels.computeIfAbsent(project, this::createNewMainViewModel);
+    // ProjectKey takes care or project being null and avoids creating differing keys for null.
+    ProjectKey key = new ProjectKey(project);
+    return mainViewModels.computeIfAbsent(key, projectKey -> {
+      ProjectManager
+          .getInstance()
+          .addProjectManagerListener(project, projectManagerListener);
+      return new MainViewModel(exerciseFilterOptions);
+    });
   }
 
   /**
@@ -116,10 +159,8 @@ public class PluginSettings implements MainViewModelProvider {
    * If the project is null, this method does nothing.
    */
   public void updateMainViewModel(@Nullable Project project) {
-    if (project == null) {
-      return;
-    }
-    MainViewModelUpdater updater = mainViewModelUpdaters.get(project);
+    ProjectKey key = new ProjectKey(project);
+    MainViewModelUpdater updater = mainViewModelUpdaters.get(key);
     if (updater != null) {
       updater.restart();
     }
@@ -131,11 +172,19 @@ public class PluginSettings implements MainViewModelProvider {
    * @param project The project to which the created main view model corresponds.
    */
   public void createUpdatingMainViewModel(@NotNull Project project) {
-    MainViewModel mainViewModel
-        = mainViewModels.computeIfAbsent(project, this::createNewMainViewModel);
-    mainViewModelUpdaters.computeIfAbsent(project, p -> {
-      MainViewModelUpdater mainViewModelUpdater
-          = new MainViewModelUpdater(mainViewModel, p, MAIN_VIEW_MODEL_UPDATE_INTERVAL,
+    ProjectKey key = new ProjectKey(project);
+
+    MainViewModel mainViewModel = mainViewModels.computeIfAbsent(key, projectKey
+        -> {
+      ProjectManager
+          .getInstance()
+          .addProjectManagerListener(project, projectManagerListener);
+      return new MainViewModel(exerciseFilterOptions);
+    });
+
+    mainViewModelUpdaters.computeIfAbsent(key, projectKey -> {
+      MainViewModelUpdater mainViewModelUpdater = new MainViewModelUpdater(
+          mainViewModel, project, MAIN_VIEW_MODEL_UPDATE_INTERVAL,
           Notifications.Bus::notify, IntelliJPasswordStorage::new);
       mainViewModelUpdater.start();
       return mainViewModelUpdater;
@@ -148,13 +197,10 @@ public class PluginSettings implements MainViewModelProvider {
    */
   @NotNull
   public CourseFileManager getCourseFileManager(@NotNull Project project) {
-    return courseFileManagers.computeIfAbsent(project, CourseFileManager::new);
-  }
-
-  @NotNull
-  private MainViewModel createNewMainViewModel(@NotNull Project project) {
-    ProjectManager.getInstance().addProjectManagerListener(project, projectManagerListener);
-    return new MainViewModel();
+    return courseFileManagers.computeIfAbsent(
+        new ProjectKey(project),
+        key -> new CourseFileManager(project)
+    );
   }
 
   /**
@@ -195,6 +241,7 @@ public class PluginSettings implements MainViewModelProvider {
     if (!applicationPropertiesManager.isValueSet(A_PLUS_IMPORTED_IDE_SETTINGS.getName())) {
       setImportedIdeSettingsId("");
     }
+    exerciseFilterOptions.forEach(Option::init);
   }
 
   /**

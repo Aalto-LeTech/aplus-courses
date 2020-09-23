@@ -8,7 +8,7 @@ public class SubmissionResult {
   public enum Status {
     UNKNOWN,
     GRADED,
-    UNOFFICIAL
+    UNOFFICIAL;
   }
 
   private final long submissionId;
@@ -19,31 +19,30 @@ public class SubmissionResult {
   private final Status status;
 
   @NotNull
-  private final String exerciseUrl;
+  private final Exercise exercise;
 
   /**
    * Construct an instance with the given ID and exercise URL.
    */
   public SubmissionResult(long submissionId,
                           int points,
-                          @NotNull String exerciseUrl,
-                          @NotNull Status status) {
+                          @NotNull Status status,
+                          @NotNull Exercise exercise) {
     this.submissionId = submissionId;
     this.points = points;
     this.status = status;
-    this.exerciseUrl = exerciseUrl;
+    this.exercise = exercise;
   }
 
   /**
    * Construct a {@link SubmissionResult} instance from the given JSON object. The JSON object must
-   * contain an integer for the "id" key, a JSON object for the "exercise" key, and optionally a
-   * string value for the "status" key.
+   * contain an integer for the "id" key, and optionally a string value for the "status" key.
    */
   @NotNull
-  public static SubmissionResult fromJsonObject(@NotNull JSONObject jsonObject) {
+  public static SubmissionResult fromJsonObject(@NotNull JSONObject jsonObject,
+                                                @NotNull Exercise exercise) {
     long id = jsonObject.getLong("id");
     int points = jsonObject.getInt("grade");
-    String exerciseUrl = jsonObject.getJSONObject("exercise").getString("html_url");
 
     Status status = Status.UNKNOWN;
     String statusString = jsonObject.optString("status");
@@ -53,7 +52,7 @@ public class SubmissionResult {
       status = Status.UNOFFICIAL;
     }
 
-    return new SubmissionResult(id, points, exerciseUrl, status);
+    return new SubmissionResult(id, points, status, exercise);
   }
 
   public long getId() {
@@ -71,7 +70,10 @@ public class SubmissionResult {
 
   @NotNull
   public String getUrl() {
-    return exerciseUrl + "submissions/" + submissionId + "/";
+    return exercise.getHtmlUrl() + "submissions/" + submissionId + "/";
   }
 
+  public Exercise getExercise() {
+    return exercise;
+  }
 }

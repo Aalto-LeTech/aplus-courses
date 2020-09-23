@@ -2,49 +2,30 @@ package fi.aalto.cs.apluscourses.presentation.exercise;
 
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
-import fi.aalto.cs.apluscourses.presentation.base.TreeViewModel;
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
 import java.util.Comparator;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-public class ExerciseGroupViewModel extends SelectableNodeViewModel<ExerciseGroup>
-    implements TreeViewModel {
-
-  @NotNull
-  private final List<ExerciseViewModel> sortedExercises;
+public class ExerciseGroupViewModel extends SelectableNodeViewModel<ExerciseGroup> {
 
   /**
    * Construct an exercise group view model with the given exercise group.
    */
   public ExerciseGroupViewModel(@NotNull ExerciseGroup exerciseGroup) {
-    super(exerciseGroup);
-    this.sortedExercises = exerciseGroup
+    super(exerciseGroup, exerciseGroup
         .getExercises()
         .values()
         .stream()
         .map(ExerciseViewModel::new)
         .sorted(EXERCISE_COMPARATOR) // O1_SPECIFIC
-        .collect(Collectors.toList());
+        .collect(Collectors.toList()));
   }
 
   public String getPresentableName() {
     return APlusLocalizationUtil.getEnglishName(getModel().getName());
-  }
-
-  @NotNull
-  public List<ExerciseViewModel> getExerciseViewModels() {
-    return sortedExercises;
-  }
-
-  @Nullable
-  @Override
-  public List<ExerciseViewModel> getSubtrees() {
-    return getExerciseViewModels();
   }
 
   // O1_SPECIFIC

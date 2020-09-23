@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.dal;
 
+import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.Points;
@@ -15,17 +16,18 @@ import org.json.JSONObject;
 
 public interface Parser {
 
-  SubmissionInfo parseSubmissionInfo(JSONObject object);
+  SubmissionInfo parseSubmissionInfo(@NotNull JSONObject object);
 
-  SubmissionHistory parseSubmissionHistory(JSONObject object);
+  SubmissionHistory parseSubmissionHistory(@NotNull JSONObject object);
 
-  Group parseGroup(JSONObject object);
+  Group parseGroup(@NotNull JSONObject object);
 
-  List<ExerciseGroup> parseExerciseGroups(JSONArray array, Points points);
+  List<ExerciseGroup> parseExerciseGroups(@NotNull JSONArray array, @NotNull Points points);
 
-  Points parsePoints(JSONObject object);
+  Points parsePoints(@NotNull JSONObject object);
 
-  SubmissionResult parseSubmissionResult(JSONObject jsonObject);
+  SubmissionResult parseSubmissionResult(@NotNull JSONObject jsonObject,
+                                         @NotNull Exercise exercise);
 
   /**
    * Parses an JSON array to a list using a given parsing function.

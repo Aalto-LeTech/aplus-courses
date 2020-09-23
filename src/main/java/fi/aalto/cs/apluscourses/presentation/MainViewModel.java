@@ -10,6 +10,7 @@ import fi.aalto.cs.apluscourses.model.InvalidAuthenticationException;
 import fi.aalto.cs.apluscourses.model.Points;
 import fi.aalto.cs.apluscourses.presentation.base.BaseViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
+import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import fi.aalto.cs.apluscourses.utils.Event;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
@@ -40,12 +41,16 @@ public class MainViewModel {
   public final ObservableProperty<Authentication> authentication =
       new ObservableReadWriteProperty<>(null);
 
+  @NotNull
+  private final Options exerciseFilterOptions;
+
   private AtomicBoolean hasTriedToReadAuthenticationFromStorage = new AtomicBoolean(false);
 
   /**
-   * Instantiates a new view model for the main object.
+   * Instantiates a class representing the whole main view of the plugin.
    */
-  public MainViewModel() {
+  public MainViewModel(@NotNull Options exerciseFilterOptions) {
+    this.exerciseFilterOptions = exerciseFilterOptions;
     courseViewModel.addValueObserver(this, MainViewModel::updateExercises);
     authentication.addValueObserver(this, MainViewModel::updateExercises);
   }
@@ -63,7 +68,7 @@ public class MainViewModel {
     try {
       Points points = dataSource.getPoints(course, auth);
       List<ExerciseGroup> exerciseGroups = dataSource.getExerciseGroups(course, points, auth);
-      exercisesViewModel.set(new ExercisesTreeViewModel(exerciseGroups));
+      exercisesViewModel.set(new ExercisesTreeViewModel(exerciseGroups, exerciseFilterOptions));
     } catch (InvalidAuthenticationException e) {
       logger.error("Failed to fetch exercises", e);
       // TODO: might want to communicate this to the user somehow
@@ -101,5 +106,15 @@ public class MainViewModel {
         .map(PasswordStorage::restorePassword)
         .map(factory::create)
         .ifPresent(this::setAuthentication);
+  }
+
+  @Nullable
+  public ExercisesTreeViewModel getExercises() {
+    return exercisesViewModel.get();
+  }
+
+  @NotNull
+  public Options getExerciseFilterOptions() {
+    return exerciseFilterOptions;
   }
 }

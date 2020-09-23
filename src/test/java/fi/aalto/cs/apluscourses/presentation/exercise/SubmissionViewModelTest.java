@@ -44,8 +44,7 @@ public class SubmissionViewModelTest {
 
     SubmissionHistory history = new SubmissionHistory(4);
 
-    Exercise exercise = new Exercise(100, "Exercise", "http://localhost:1000",
-        Collections.emptyList(), 0, 0, 0);
+    Exercise exercise = new Exercise(100, "Exercise", "http://localhost:1000", 0, 0, 0);
 
     SubmissionViewModel submissionViewModel =
         new SubmissionViewModel(exercise, submissionInfo, history, groups, fileMap, language);
@@ -56,8 +55,7 @@ public class SubmissionViewModelTest {
 
   @Test
   public void testSubmissionNumbers() {
-    Exercise exercise = new Exercise(1, "ex", "http://localhost:2000", Collections.emptyList(),
-        0, 0, 5);
+    Exercise exercise = new Exercise(1, "ex", "http://localhost:2000", 0, 0, 5);
     SubmissionInfo info = new SubmissionInfo(5, Collections.emptyMap());
 
     SubmissionViewModel submissionViewModel1 = new SubmissionViewModel(exercise, info,
@@ -94,8 +92,7 @@ public class SubmissionViewModelTest {
 
   @Test
   public void testGetFiles() {
-    Exercise exercise = new Exercise(324, "cool", "http://localhost:1324",
-        Collections.emptyList(), 0, 0, 0);
+    Exercise exercise = new Exercise(324, "cool", "http://localhost:1324", 0, 0, 0);
 
     SubmittableFile englishFile1 = new SubmittableFile("file1", "enFile1");
     SubmittableFile englishFile2 = new SubmittableFile("file2", "enFile2");

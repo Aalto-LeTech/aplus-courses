@@ -379,14 +379,14 @@ module GoodStuff.** error is shown.
  
 ### 11 Checking the submission
  
-**11.1** ASSERTION: The **Submission feedback available Feedback for Assignment 2 (GoodStuff) is now 
-available. Click the link below to open the feedback.** notification is shown.
+**11.1** ASSERTION: The **Submission feedback available Feedback for Assignment 2 (GoodStuff) [0/5] is now 
+available. Click here to open the feedback.** notification is shown.
 
 **11.2** ASSERTION: Submission is added under the corresponding Assignment.
 
 ![Assignments submission](images/submission_results.png)
 
-**11.3** Click on the hyperlink **Click the link below to open the feedback.**
+**11.3** Click on the hyperlink **Click here to open the feedback.**
 
 **11.4** ASSERTION: Browser opens Submission page in A+ LMS (login, if asked).
 
@@ -395,3 +395,31 @@ available. Click the link below to open the feedback.** notification is shown.
 ![Assignments submission view](images/open_browser_button.png)
 
 **11.6** ASSERTION: Browser opens Submission page in A+ LMS (login, if asked).
+
+### 12 Filtering exercises
+
+**12.1** Click **Filter Assignments** button (pink funnel icon) above the assignments tree.
+
+**12.2** ASSERTION: **Non-submittable** menu item is checked.
+
+**12.3** Uncheck **Non-submittable** menu item.  Note: This makes the exercise tree to collapse.
+
+**12.4** ASSERTION: Non-submittable (that is, grayed out) assignments are no longer in the tree.
+
+**12.5** Check **Non-submittable** menu item again.
+
+**12.6** ASSERTION: Non-submittable assignments are shown again in the tree.
+
+**12.7** Uncheck **Non-submittable** menu item again.
+
+**12.8** Restart the IDE.
+
+**12.9** ASSERTION: Non-submittable assignments are still invisible.
+
+**12.10** ASSERTION: **Non-submittable** menu item is unchecked.
+
+**12.11** From the main menu, choose **A+ > Reset A+ Courses Plugin Settings**.
+
+**12.12** ASSERTION: Non-submittable assignments are shown again in the tree.
+
+**12.12** ASSERTION: **Non-submittable** menu item is checked.

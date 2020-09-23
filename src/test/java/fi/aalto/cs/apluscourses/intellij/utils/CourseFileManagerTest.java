@@ -178,7 +178,7 @@ public class CourseFileManagerTest {
     startAndJoinEach(threads);
 
     Assert.assertEquals("CourseFileManager returns the correct URL",
-        new URL("https://example.com"), manager.getCourseUrl());
+        new URL("https://example.org"), manager.getCourseUrl());
     Assert.assertEquals("CourseFileManager returns the correct language",
         "de", manager.getLanguage());
     Map<String, ModuleMetadata> metadata = manager.getModulesMetadata();

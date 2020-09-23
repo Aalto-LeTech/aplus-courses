@@ -38,6 +38,7 @@ import fi.aalto.cs.apluscourses.model.SubmittableFile;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import fi.aalto.cs.apluscourses.presentation.ModuleSelectionViewModel;
+import fi.aalto.cs.apluscourses.presentation.base.BaseTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseGroupViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
@@ -152,8 +153,9 @@ public class SubmitExerciseAction extends AnAction {
       return;
     }
 
-    ExerciseViewModel selectedExercise = exercisesViewModel.getSelectedExercise();
-    ExerciseGroupViewModel selectedExerciseGroup = exercisesViewModel.getGroupOfSelectedExercise();
+    BaseTreeViewModel.Selection selection = exercisesViewModel.findSelected();
+    ExerciseViewModel selectedExercise = (ExerciseViewModel) selection.getLevel(2);
+    ExerciseGroupViewModel selectedExerciseGroup = (ExerciseGroupViewModel) selection.getLevel(1);
     if (selectedExercise == null || selectedExerciseGroup == null) {
       notifier.notify(new ExerciseNotSelectedNotification(), project);
       return;
@@ -222,7 +224,7 @@ public class SubmitExerciseAction extends AnAction {
 
     String submissionUrl = exerciseDataSource.submit(submission.buildSubmission(), authentication);
     new SubmissionStatusUpdater(
-        exerciseDataSource, authentication, submissionUrl, selectedExercise.getPresentableName()
+        exerciseDataSource, authentication, submissionUrl, selectedExercise.getModel()
     ).start();
     notifier.notify(new SubmissionSentNotification(), project);
 
