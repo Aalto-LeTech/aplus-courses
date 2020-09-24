@@ -19,10 +19,6 @@ deploy:
     script: ./gradlew publishPlugin && ./gradlew publish
     on:
       branch: master
-  - provider: script
-    script: env INTELLIJ_PUBLISH_CHANNEL=test ./gradlew publishPlugin
-    on:
-      branch: test
 
 env:
   - CI=true
