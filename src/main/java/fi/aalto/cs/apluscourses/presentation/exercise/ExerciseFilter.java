@@ -13,4 +13,11 @@ public abstract class ExerciseFilter extends TypedFilter<ExerciseViewModel> {
       return !item.isSubmittable();
     }
   }
+
+  public static class CompletedFilter extends ExerciseFilter {
+    @Override
+    public boolean applyInternal(ExerciseViewModel item) {
+      return item.isCompleted();
+    }
+  }
 }

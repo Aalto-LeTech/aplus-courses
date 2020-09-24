@@ -36,7 +36,8 @@ public class PluginSettings implements MainViewModelProvider {
   public enum LocalIdeSettingsNames {
     A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG("A+.showReplConfigDialog"),
     A_PLUS_IMPORTED_IDE_SETTINGS("A+.importedIdeSettings"),
-    A_PLUS_SHOW_NON_SUBMITTABLE("A+.showNonSubmittable");
+    A_PLUS_SHOW_NON_SUBMITTABLE("A+.showNonSubmittable"),
+    A_PLUS_SHOW_COMPLETED("A+.showCompleted");
 
     private final String name;
 
@@ -107,7 +108,11 @@ public class PluginSettings implements MainViewModelProvider {
       new IntelliJFilterOption(LocalIdeSettingsNames.A_PLUS_SHOW_NON_SUBMITTABLE,
           getText("presentation.exerciseFilterOptions.nonSubmittable"),
           null,
-          new ExerciseFilter.NonSubmittableFilter()));
+          new ExerciseFilter.NonSubmittableFilter()),
+      new IntelliJFilterOption(LocalIdeSettingsNames.A_PLUS_SHOW_COMPLETED,
+          getText("presentation.exerciseFilterOptions.Completed"),
+          null,
+          new ExerciseFilter.CompletedFilter()));
 
   private final ProjectManagerListener projectManagerListener = new ProjectManagerListener() {
     @Override
