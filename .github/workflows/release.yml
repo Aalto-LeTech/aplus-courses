@@ -1,0 +1,27 @@
+name: Release
+
+on:
+  release:
+    types: [prereleased]
+
+jobs:
+  release:
+    name: Publish Plugin
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
+      - name: Fetch Sources
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.release.tag_name }}
+
+      - name: Publish Plugin
+        env:
+          INTELLIJ_PUBLISH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
+          INTELLIJ_PUBLISH_CHANNEL: test
+        run: ./gradlew publishPlugin
+ 
