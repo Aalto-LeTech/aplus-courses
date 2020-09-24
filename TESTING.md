@@ -400,7 +400,7 @@ available. Click here to open the feedback.** notification is shown.
 
 **12.1** Click **Filter Assignments** button (pink funnel icon) above the assignments tree.
 
-**12.2** ASSERTION: **Non-submittable** menu item is checked.
+**12.2** ASSERTION: **Non-submittable** and **Completed** menu items are checked.
 
 **12.3** Uncheck **Non-submittable** menu item.  Note: This makes the exercise tree to collapse.
 
@@ -423,3 +423,5 @@ available. Click here to open the feedback.** notification is shown.
 **12.12** ASSERTION: Non-submittable assignments are shown again in the tree.
 
 **12.12** ASSERTION: **Non-submittable** menu item is checked.
+
+**12.13** Repeat 12.3-12.12 for the **Completed** filter
