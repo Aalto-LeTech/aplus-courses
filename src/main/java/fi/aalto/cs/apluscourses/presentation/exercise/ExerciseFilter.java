@@ -17,7 +17,7 @@ public abstract class ExerciseFilter extends TypedFilter<ExerciseViewModel> {
   public static class CompletedFilter extends ExerciseFilter {
     @Override
     public boolean applyInternal(ExerciseViewModel item) {
-      return item.isCompleted();
+      return item.getModel().isCompleted();
     }
   }
 }

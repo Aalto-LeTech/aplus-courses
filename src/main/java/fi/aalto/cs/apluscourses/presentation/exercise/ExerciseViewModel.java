@@ -31,14 +31,6 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> {
         && !"Assignment  debugger".equals(name) && (maxSubmissions == 10 || maxSubmissions == 0);
   }
 
-  /**
-   * Returns {@code true} if the user has gotten maximum points, {@code false} otherwise.
-   */
-  public boolean isCompleted() {
-    int maxPoints = getModel().getMaxPoints();
-    int userPoints = getModel().getUserPoints();
-    return userPoints == maxPoints;
-  }
 
   public enum Status {
     OPTIONAL_PRACTICE,
