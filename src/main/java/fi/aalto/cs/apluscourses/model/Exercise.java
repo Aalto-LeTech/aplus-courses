@@ -122,6 +122,10 @@ public class Exercise {
     return maxSubmissions;
   }
 
+  public boolean isCompleted() {
+    return userPoints == maxPoints && submissionResults.size() > 0;
+  }
+
   @Override
   public int hashCode() {
     return Long.hashCode(id);

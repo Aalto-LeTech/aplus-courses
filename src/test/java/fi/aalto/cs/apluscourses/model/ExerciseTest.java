@@ -1,7 +1,9 @@
 package fi.aalto.cs.apluscourses.model;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -142,5 +144,35 @@ public class ExerciseTest {
     assertEquals(exercise.hashCode(), sameExercise.hashCode());
 
     assertNotEquals(exercise, otherExercise);
+  }
+
+  @Test
+  public void testIsCompleted() {
+    Exercise optionalNotSubmitted = new Exercise(1, "optionalNotSubmitted", "http://localhost:1111", 0, 0, 0);
+    Exercise optionalSubmitted = new Exercise(2, "optionalSubmitted", "http://localhost:1111", 0, 0, 0);
+    optionalSubmitted.addSubmissionResult(new SubmissionResult(
+            1, 0, SubmissionResult.Status.GRADED, optionalSubmitted));
+
+    assertFalse("Optional assignment with no submissions isn't completed",
+        optionalNotSubmitted.isCompleted());
+    assertTrue("Optional assignment with submissions is completed",
+        optionalSubmitted.isCompleted());
+
+    Exercise noSubmissions = new Exercise(3, "noSubmissions", "http://localhost:1111", 0, 5, 10);
+    Exercise failed = new Exercise(4, "failed", "http://localhost:1111", 3, 5, 10);
+    failed.addSubmissionResult(new SubmissionResult(
+            1, 3, SubmissionResult.Status.GRADED, failed));
+
+    Exercise completed = new Exercise(5, "completed", "http://localhost:1111", 5, 5, 10);
+    completed.addSubmissionResult(new SubmissionResult(
+            1, 5, SubmissionResult.Status.GRADED, completed));
+
+
+    assertFalse("Assignment with no submissions isn't completed",
+        noSubmissions.isCompleted());
+    assertFalse("Assingment with partial user points isn't completed",
+        failed.isCompleted());
+    assertTrue("Assignment with full user points is completed",
+        completed.isCompleted());
   }
 }

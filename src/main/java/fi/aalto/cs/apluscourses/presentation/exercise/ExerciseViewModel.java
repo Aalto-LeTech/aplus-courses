@@ -31,6 +31,7 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> {
         && !"Assignment  debugger".equals(name) && (maxSubmissions == 10 || maxSubmissions == 0);
   }
 
+
   public enum Status {
     OPTIONAL_PRACTICE,
     NO_SUBMISSIONS,
