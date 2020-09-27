@@ -36,18 +36,16 @@ public class SelectableNodeViewModel<T> extends BaseViewModel<T>
    * @return True, if the filter applies to this node or one of its descendants, otherwise false.
    */
   public Optional<Boolean> applyFilter(Filter filter) {
-    Optional<Boolean> childrenResult = Optional.empty();
+    Optional<Boolean> result = filter.apply(this);
     for (SelectableNodeViewModel<?> child : children) {
       if (Thread.currentThread().isInterrupted()) {
         return Optional.empty();
       }
       Optional<Boolean> childResult = child.applyFilter(filter);
       if (childResult.isPresent()) {
-        childrenResult = Optional.of(childrenResult.orElse(false) || childResult.get());
+        result = Optional.of(result.orElse(false) || childResult.get());
       }
     }
-    Optional<Boolean> result =
-        Optional.ofNullable(filter.apply(this).orElse(childrenResult.orElse(null)));
     isVisible.set(result.orElse(true));
     return result;
   }

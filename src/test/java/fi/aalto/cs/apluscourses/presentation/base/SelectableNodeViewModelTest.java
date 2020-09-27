@@ -90,8 +90,6 @@ public class SelectableNodeViewModelTest {
     verify(child0, never()).applyFilter(any());
     verify(child1, never()).applyFilter(any());
     verify(child2, never()).applyFilter(any());
-
-    verifyNoInteractions(filter);
   }
 
   @Test
