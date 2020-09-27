@@ -101,9 +101,11 @@ public class SelectableNodeViewModelTest {
     when(filter.apply(child1)).thenReturn(Optional.of(true));
     when(filter.apply(child2)).thenReturn(Optional.empty());
 
-    assertTrue(node.applyFilter(filter));
+
+    Optional<Boolean> result = node.applyFilter(filter);
+    assertTrue(result.isPresent());
+    assertTrue(result.get());
     assertEquals(true, node.isVisible.get());
-    verify(filter, never()).apply(node);
   }
 
   @Test
@@ -111,7 +113,9 @@ public class SelectableNodeViewModelTest {
     Filter filter = mock(Filter.class, new Returns(Optional.empty()));
     when(filter.apply(node)).thenReturn(Optional.of(false));
 
-    assertFalse(node.applyFilter(filter));
+    Optional<Boolean> result = node.applyFilter(filter);
+    assertTrue(result.isPresent());
+    assertFalse(result.get());
     assertEquals(false, node.isVisible.get());
   }
 
@@ -119,7 +123,8 @@ public class SelectableNodeViewModelTest {
   public void testApplyFilterReturnsEmpty() {
     Filter filter = mock(Filter.class, new Returns(Optional.empty()));
 
-    assertFalse(node.applyFilter(filter));
+    Optional<Boolean> result = node.applyFilter(filter);
+    assertFalse(result.isPresent());
     assertEquals(true, node.isVisible.get());
   }
 }

@@ -35,18 +35,21 @@ public class SelectableNodeViewModel<T> extends BaseViewModel<T>
    * @param filter A filter.
    * @return True, if the filter applies to this node or one of its descendants, otherwise false.
    */
-  public boolean applyFilter(Filter filter) {
-    if (Thread.currentThread().isInterrupted()) {
-      return true;
+  public Optional<Boolean> applyFilter(Filter filter) {
+    Optional<Boolean> childrenResult = Optional.empty();
+    for (SelectableNodeViewModel<?> child : children) {
+      if (Thread.currentThread().isInterrupted()) {
+        return Optional.empty();
+      }
+      Optional<Boolean> childResult = child.applyFilter(filter);
+      if (childResult.isPresent()) {
+        childrenResult = Optional.of(childrenResult.orElse(false) || childResult.get());
+      }
     }
-    Optional<Boolean> visible = children.stream()
-        .map(child -> child.applyFilter(filter))
-        .reduce(Boolean::logicalOr) // we don't use anyMatch to avoid short-circuiting
-        .filter(Boolean::booleanValue)
-        .map(Optional::of)
-        .orElseGet(() -> filter.apply(this));
-    isVisible.set(visible.orElse(true));
-    return visible.orElse(false);
+    Optional<Boolean> result =
+        Optional.ofNullable(filter.apply(this).orElse(childrenResult.orElse(null)));
+    isVisible.set(result.orElse(true));
+    return result;
   }
 
   public boolean isSelected() {
