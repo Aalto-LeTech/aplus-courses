@@ -183,7 +183,7 @@ public class ExerciseTest {
             optional.isOptional());
 
     Exercise notOptional = new Exercise(2, "notOptional", "http://localhost:1111", 0, 5, 10);
-    assertFalse("Assingment isn't optional",
+    assertFalse("Assignment isn't optional",
         notOptional.isOptional());
   }
 }
