@@ -51,11 +51,11 @@ public class InitializationActivity implements Background {
       Course.fromUrl(courseConfigurationFileUrl, new IntelliJModelFactory(project));
     } catch (UnexpectedResponseException | MalformedCourseConfigurationFileException e) {
       logger.error("Error occurred while trying to parse a course configuration file", e);
-      notifier.notify(new CourseConfigurationError(e), null);
+      notifier.notify(new CourseConfigurationError(e), project);
       return;
     } catch (IOException e) {
       logger.info("IOException occurred while using the HTTP client", e);
-      notifier.notify(new NetworkErrorNotification(e), null);
+      notifier.notify(new NetworkErrorNotification(e), project);
       return;
     }
     pluginSettings.createUpdatingMainViewModel(project);
