@@ -6,10 +6,11 @@ import fi.aalto.cs.apluscourses.intellij.notifications.FeedbackAvailableNotifica
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import java.io.IOException;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class SubmissionStatusUpdater {
 
-  @NotNull
+  @Nullable
   private final Project project;
 
   @NotNull
@@ -49,7 +50,7 @@ public class SubmissionStatusUpdater {
   /**
    * Construct a submission status updater with the given parameters.
    */
-  public SubmissionStatusUpdater(@NotNull Project project,
+  public SubmissionStatusUpdater(@Nullable Project project,
                                  @NotNull ExerciseDataSource dataSource,
                                  @NotNull Authentication authentication,
                                  @NotNull Notifier notifier,
@@ -74,7 +75,7 @@ public class SubmissionStatusUpdater {
   /**
    * Construct a submission status updater with reasonable defaults for the time values.
    */
-  public SubmissionStatusUpdater(@NotNull Project project,
+  public SubmissionStatusUpdater(@Nullable Project project,
                                  @NotNull ExerciseDataSource dataSource,
                                  @NotNull Authentication authentication,
                                  @NotNull String submissionUrl,
