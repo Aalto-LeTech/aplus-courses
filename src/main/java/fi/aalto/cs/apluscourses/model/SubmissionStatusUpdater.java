@@ -1,12 +1,17 @@
 package fi.aalto.cs.apluscourses.model;
 
 import com.intellij.notification.Notifications;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import fi.aalto.cs.apluscourses.intellij.notifications.FeedbackAvailableNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import java.io.IOException;
 import org.jetbrains.annotations.NotNull;
 
 public class SubmissionStatusUpdater {
+
+  @NotNull
+  private final Project project;
 
   @NotNull
   private final ExerciseDataSource dataSource;
@@ -45,7 +50,8 @@ public class SubmissionStatusUpdater {
   /**
    * Construct a submission status updater with the given parameters.
    */
-  public SubmissionStatusUpdater(@NotNull ExerciseDataSource dataSource,
+  public SubmissionStatusUpdater(@NotNull Project project,
+                                 @NotNull ExerciseDataSource dataSource,
                                  @NotNull Authentication authentication,
                                  @NotNull Notifier notifier,
                                  @NotNull String submissionUrl,
@@ -53,6 +59,7 @@ public class SubmissionStatusUpdater {
                                  long interval,
                                  long increment,
                                  long timeLimit) {
+    this.project = project;
     this.dataSource = dataSource;
     this.authentication = authentication;
     this.notifier = notifier;
@@ -68,11 +75,13 @@ public class SubmissionStatusUpdater {
   /**
    * Construct a submission status updater with reasonable defaults for the time values.
    */
-  public SubmissionStatusUpdater(@NotNull ExerciseDataSource dataSource,
+  public SubmissionStatusUpdater(@NotNull Project project,
+                                 @NotNull ExerciseDataSource dataSource,
                                  @NotNull Authentication authentication,
                                  @NotNull String submissionUrl,
                                  @NotNull Exercise exercise) {
     this(
+        project,
         dataSource,
         authentication,
         Notifications.Bus::notify,
@@ -100,7 +109,7 @@ public class SubmissionStatusUpdater {
           submissionResult =
               dataSource.getSubmissionResult(submissionUrl, exercise, authentication);
           if (submissionResult.getStatus() != SubmissionResult.Status.UNKNOWN) {
-            notifier.notify(new FeedbackAvailableNotification(submissionResult, exercise),null);
+            notifier.notify(new FeedbackAvailableNotification(submissionResult, exercise), project);
             return;
           }
         } catch (IOException e) {

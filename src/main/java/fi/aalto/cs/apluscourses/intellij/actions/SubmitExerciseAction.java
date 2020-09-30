@@ -224,7 +224,7 @@ public class SubmitExerciseAction extends AnAction {
 
     String submissionUrl = exerciseDataSource.submit(submission.buildSubmission(), authentication);
     new SubmissionStatusUpdater(
-        exerciseDataSource, authentication, submissionUrl, selectedExercise.getModel()
+        project, exerciseDataSource, authentication, submissionUrl, selectedExercise.getModel()
     ).start();
     notifier.notify(new SubmissionSentNotification(), project);
 

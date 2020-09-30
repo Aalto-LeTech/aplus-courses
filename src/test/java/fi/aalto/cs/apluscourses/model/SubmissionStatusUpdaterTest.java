@@ -8,6 +8,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
+import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.notifications.FeedbackAvailableNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -54,6 +55,7 @@ public class SubmissionStatusUpdaterTest {
   @Test
   public void testSubmissionStatusUpdater() throws InterruptedException {
     new SubmissionStatusUpdater(
+        mock(Project.class),
         dataSource,
         mock(Authentication.class),
         notifier,
@@ -67,13 +69,14 @@ public class SubmissionStatusUpdaterTest {
 
     assertEquals("The submission results are not fetched anymore after feedback is available",
         3, dataSource.getSubmissionResultFetchCount());
-    verify(notifier).notify(any(FeedbackAvailableNotification.class), isNull());
+    verify(notifier).notify(any(FeedbackAvailableNotification.class), any(Project.class));
   }
 
   @Test
   public void testSubmissionStatusUpdaterTimeLimit() throws InterruptedException {
     dataSource.limit = 9999;
     new SubmissionStatusUpdater(
+        mock(Project.class),
         dataSource,
         mock(Authentication.class),
         notifier,
