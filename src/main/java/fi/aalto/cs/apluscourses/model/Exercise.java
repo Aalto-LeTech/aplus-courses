@@ -123,7 +123,12 @@ public class Exercise {
   }
 
   public boolean isCompleted() {
-    return userPoints == maxPoints && submissionResults.size() > 0;
+    // Optional assignments are never completed, since they can be filtered separately
+    return userPoints == maxPoints && !isOptional();
+  }
+
+  public boolean isOptional() {
+    return maxSubmissions == 0 && maxPoints == 0;
   }
 
   @Override

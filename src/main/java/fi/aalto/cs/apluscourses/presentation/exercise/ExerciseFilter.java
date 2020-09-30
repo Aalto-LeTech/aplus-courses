@@ -20,4 +20,11 @@ public abstract class ExerciseFilter extends TypedFilter<ExerciseViewModel> {
       return item.getModel().isCompleted();
     }
   }
+
+  public static class OptionalFilter extends ExerciseFilter {
+    @Override
+    public boolean applyInternal(ExerciseViewModel item) {
+      return item.getModel().isOptional();
+    }
+  }
 }

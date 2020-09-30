@@ -400,26 +400,28 @@ available. Click here to open the feedback.** notification is shown.
 
 **12.1** Click **Filter Assignments** button (pink funnel icon) above the assignments tree.
 
-**12.2** ASSERTION: **Non-submittable** menu item is checked.
+**12.2** ASSERTION: **Non-submittable** and **Optional** menu items are checked.
 
 **12.3** Uncheck **Non-submittable** menu item.  Note: This makes the exercise tree to collapse.
 
 **12.4** ASSERTION: Non-submittable (that is, grayed out) assignments are no longer in the tree.
 
-**12.5** Check **Non-submittable** menu item again.
+**12.5** Uncheck **Optional** menu item.
 
-**12.6** ASSERTION: Non-submittable assignments are shown again in the tree.
+**12.6** ASSERTION: Optional assignments are invisible and Non-submittable assignments are still invisible.
 
-**12.7** Uncheck **Non-submittable** menu item again.
+**12.7** Check **Non-submittable** menu item again.
 
-**12.8** Restart the IDE.
+**12.8** ASSERTION: Non-submittable assignments are shown again in the tree and Optional assignments aren't.
 
-**12.9** ASSERTION: Non-submittable assignments are still invisible.
+**12.9** Restart the IDE.
 
-**12.10** ASSERTION: **Non-submittable** menu item is unchecked.
+**12.10** ASSERTION: Optional assignments are still invisible and Non-submittable assignments are visible.
 
-**12.11** From the main menu, choose **A+ > Reset A+ Courses Plugin Settings**.
+**12.11** ASSERTION: **Non-submittable** menu item is checked and **Optional** is unchecked.
 
-**12.12** ASSERTION: Non-submittable assignments are shown again in the tree.
+**12.12** From the main menu, choose **A+ > Reset A+ Courses Plugin Settings**.
 
-**12.12** ASSERTION: **Non-submittable** menu item is checked.
+**12.13** ASSERTION: Non-submittable and Optional assignments are shown again in the tree.
+
+**12.14** ASSERTION: **Non-submittable** and **Optional** menu items are checked.
