@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.intellij.services;
 
+import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalIdeSettingsNames.A_PLUS_DEFAULT_GROUP;
 import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalIdeSettingsNames.A_PLUS_IMPORTED_IDE_SETTINGS;
 import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalIdeSettingsNames.A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG;
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
@@ -20,6 +21,7 @@ import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseFilter;
 import fi.aalto.cs.apluscourses.presentation.filter.Option;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import org.jetbrains.annotations.NotNull;
@@ -36,6 +38,7 @@ public class PluginSettings implements MainViewModelProvider {
   public enum LocalIdeSettingsNames {
     A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG("A+.showReplConfigDialog"),
     A_PLUS_IMPORTED_IDE_SETTINGS("A+.importedIdeSettings"),
+    A_PLUS_DEFAULT_GROUP("A+.defaultGroup"),
     A_PLUS_SHOW_NON_SUBMITTABLE("A+.showNonSubmittable"),
     A_PLUS_SHOW_COMPLETED("A+.showCompleted"),
     A_PLUS_SHOW_OPTIONAL("A+.showOptional");
@@ -239,6 +242,19 @@ public class PluginSettings implements MainViewModelProvider {
 
   public void setImportedIdeSettingsId(@NotNull String courseId) {
     applicationPropertiesManager.setValue(A_PLUS_IMPORTED_IDE_SETTINGS.getName(), courseId);
+  }
+
+  public Optional<Long> getDefaultGroupId() {
+    String id = applicationPropertiesManager.getValue(A_PLUS_DEFAULT_GROUP.getName());
+    return Optional.ofNullable(id).map(Long::parseLong);
+  }
+
+  public void setDefaultGroupId(long groupId) {
+    applicationPropertiesManager.setValue(A_PLUS_DEFAULT_GROUP.getName(), String.valueOf(groupId));
+  }
+
+  public void clearDefaultGroupId() {
+    applicationPropertiesManager.unsetValue(A_PLUS_DEFAULT_GROUP.getName());
   }
 
   /**
