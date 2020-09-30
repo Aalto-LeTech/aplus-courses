@@ -155,7 +155,7 @@ public class ExerciseTest {
 
     assertFalse("Optional assignment with no submissions isn't completed",
         optionalNotSubmitted.isCompleted());
-    assertTrue("Optional assignment with submissions is completed",
+    assertFalse("Optional assignment with submissions isn't completed",
         optionalSubmitted.isCompleted());
 
     Exercise noSubmissions = new Exercise(3, "noSubmissions", "http://localhost:1111", 0, 5, 10);
@@ -174,5 +174,16 @@ public class ExerciseTest {
         failed.isCompleted());
     assertTrue("Assignment with full user points is completed",
         completed.isCompleted());
+  }
+
+  @Test
+  public void testIsOptional() {
+    Exercise optional = new Exercise(1, "optional", "http://localhost:1111", 0, 0, 0);
+    assertTrue("Assignment is optional",
+            optional.isOptional());
+
+    Exercise notOptional = new Exercise(2, "notOptional", "http://localhost:1111", 0, 5, 10);
+    assertFalse("Assignment isn't optional",
+        notOptional.isOptional());
   }
 }

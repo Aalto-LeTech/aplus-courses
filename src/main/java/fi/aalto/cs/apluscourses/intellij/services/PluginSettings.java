@@ -37,7 +37,8 @@ public class PluginSettings implements MainViewModelProvider {
     A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG("A+.showReplConfigDialog"),
     A_PLUS_IMPORTED_IDE_SETTINGS("A+.importedIdeSettings"),
     A_PLUS_SHOW_NON_SUBMITTABLE("A+.showNonSubmittable"),
-    A_PLUS_SHOW_COMPLETED("A+.showCompleted");
+    A_PLUS_SHOW_COMPLETED("A+.showCompleted"),
+    A_PLUS_SHOW_OPTIONAL("A+.showOptional");
 
     private final String name;
 
@@ -112,7 +113,11 @@ public class PluginSettings implements MainViewModelProvider {
       new IntelliJFilterOption(LocalIdeSettingsNames.A_PLUS_SHOW_COMPLETED,
           getText("presentation.exerciseFilterOptions.Completed"),
           null,
-          new ExerciseFilter.CompletedFilter()));
+          new ExerciseFilter.CompletedFilter()),
+      new IntelliJFilterOption(LocalIdeSettingsNames.A_PLUS_SHOW_OPTIONAL,
+          getText("presentation.exerciseFilterOptions.Optional"),
+          null,
+          new ExerciseFilter.OptionalFilter()));
 
   private final ProjectManagerListener projectManagerListener = new ProjectManagerListener() {
     @Override
