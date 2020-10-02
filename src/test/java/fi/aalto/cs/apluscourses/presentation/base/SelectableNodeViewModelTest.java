@@ -10,7 +10,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import fi.aalto.cs.apluscourses.presentation.filter.Filter;
@@ -59,24 +58,6 @@ public class SelectableNodeViewModelTest {
   }
 
   @Test
-  public void testSelection() {
-    assertEquals(true, node.isVisible.get());
-
-    Filterable.Listener listener = mock(Filterable.Listener.class);
-    node.addVisibilityListener(listener);
-    verify(listener).visibilityChanged(true);
-
-    node.isVisible.set(true);
-    assertEquals(true, node.isVisible.get());
-
-    node.isVisible.set(false);
-    assertEquals(false, node.isVisible.get());
-    verify(listener).visibilityChanged(false);
-
-    verifyNoMoreInteractions(listener);
-  }
-
-  @Test
   public void testApplyFilterIsInterrupted() throws InterruptedException {
     Filter filter = mock(Filter.class);
 
@@ -102,7 +83,7 @@ public class SelectableNodeViewModelTest {
     when(filter.apply(child2)).thenReturn(Optional.empty());
 
     assertTrue(node.applyFilter(filter));
-    assertEquals(true, node.isVisible.get());
+    assertTrue(node.isVisible());
     verify(filter, never()).apply(node);
   }
 
@@ -112,7 +93,7 @@ public class SelectableNodeViewModelTest {
     when(filter.apply(node)).thenReturn(Optional.of(false));
 
     assertFalse(node.applyFilter(filter));
-    assertEquals(false, node.isVisible.get());
+    assertFalse(node.isVisible());
   }
 
   @Test
@@ -120,6 +101,6 @@ public class SelectableNodeViewModelTest {
     Filter filter = mock(Filter.class, new Returns(Optional.empty()));
 
     assertFalse(node.applyFilter(filter));
-    assertEquals(true, node.isVisible.get());
+    assertTrue(node.isVisible());
   }
 }

@@ -1,9 +1,6 @@
 package fi.aalto.cs.apluscourses.presentation.base;
 
 import fi.aalto.cs.apluscourses.presentation.filter.Filter;
-import fi.aalto.cs.apluscourses.utils.Tree;
-import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
-import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -11,13 +8,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class SelectableNodeViewModel<T> extends BaseViewModel<T>
-    implements Tree, Filterable {
+    implements FilterableTree {
 
   private static final SelectableNodeViewModel<?>[] EMPTY_ARRAY = new SelectableNodeViewModel<?>[0];
 
   @NotNull
   private final List<SelectableNodeViewModel<?>> children;
-  public final ObservableProperty<Boolean> isVisible = new ObservableReadWriteProperty<>(true);
+  private volatile boolean visibility = true;
 
   private volatile boolean selected = false;
 
@@ -45,8 +42,12 @@ public class SelectableNodeViewModel<T> extends BaseViewModel<T>
         .filter(Boolean::booleanValue)
         .map(Optional::of)
         .orElseGet(() -> filter.apply(this));
-    isVisible.set(visible.orElse(true));
+    visibility = visible.orElse(true);
     return visible.orElse(false);
+  }
+
+  public boolean isVisible() {
+    return visibility;
   }
 
   public boolean isSelected() {
@@ -61,10 +62,5 @@ public class SelectableNodeViewModel<T> extends BaseViewModel<T>
   @NotNull
   public List<SelectableNodeViewModel<?>> getChildren() {
     return children;
-  }
-
-  @Override
-  public void addVisibilityListener(Listener listener) {
-    isVisible.addValueObserver(listener, Listener::visibilityChanged);
   }
 }

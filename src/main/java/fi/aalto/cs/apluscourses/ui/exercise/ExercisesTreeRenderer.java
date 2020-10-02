@@ -4,12 +4,11 @@ import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseGroupViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseViewModel;
-import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionResultViewModel;
+import fi.aalto.cs.apluscourses.ui.base.CompositeTreeNode;
 import icons.PluginIcons;
 import javax.swing.Icon;
 import javax.swing.JTree;
-import javax.swing.tree.DefaultMutableTreeNode;
 import org.jetbrains.annotations.NotNull;
 
 public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
@@ -43,12 +42,8 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
                                     boolean isLeaf,
                                     int row,
                                     boolean hasFocus) {
-    DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+    CompositeTreeNode node = (CompositeTreeNode) value;
     Object userObject = node.getUserObject();
-    if (userObject == null || userObject instanceof ExercisesTreeViewModel) {
-      // This is the root node, which is hidden anyways.
-      return;
-    }
 
     if (userObject instanceof ExerciseViewModel) {
       ExerciseViewModel exerciseViewModel = (ExerciseViewModel) userObject;

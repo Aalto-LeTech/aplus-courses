@@ -30,6 +30,17 @@ public class Event {
   }
 
   /**
+   * Removes an object from the listener.  If the listener is not there, does nothing.
+   *
+   * @param listener A listener object to be removed.
+   */
+  public void removeCallback(@NotNull Object listener) {
+    synchronized (callbacks) {
+      callbacks.remove(listener);
+    }
+  }
+
+  /**
    * Triggers the event, that is, notifies all the registered listeners (who are still alive) by
    * calling their associated callbacks.  Note that the order in which listeners are visited, is
    * arbitrary.  All the callbacks are called synchronously and in the same thread in which this
