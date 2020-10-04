@@ -24,7 +24,7 @@ public abstract class TreeModelBuilder<T> {
   /**
    * Returns the user object of a node created by this builder.
    *
-   * @param node A node that was created by this builder.  The
+   * @param node A node that was created by this builder.
    * @return The user object of the node.
    */
   @NotNull
