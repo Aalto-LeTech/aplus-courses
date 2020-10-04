@@ -2,7 +2,9 @@ package fi.aalto.cs.apluscourses.utils;
 
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.concurrent.Executor;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class Event {
   private final Map<Object, Callback<?>> callbacks = new WeakHashMap<>();
@@ -18,15 +20,24 @@ public class Event {
    * @param listener An object of type {@link T}.
    * @param callback A {@link Callback} which is called when the event is triggered.  The listener
    *                 is given as an argument to the callback.  Note that callbacks should never call
-   *                 {@code addListener()}.
+   *                 methods of this event.
+   * @param executor An executor for callback.  If null, callback is executed in the same thread
+   *                 where {@code trigger} is called.
    * @param <T> A type of the listener.  For the best reliability, should be one whose
    *            {@code equals} function follows the default paradigm, that is, checks the reference
    *            identity.
    */
-  public <T> void addListener(@NotNull T listener, @NotNull Callback<T> callback) {
+  public <T> void addListener(@NotNull T listener,
+                              @NotNull Callback<T> callback,
+                              @Nullable Executor executor) {
     synchronized (callbacks) {
-      callbacks.put(listener, callback);
+      callbacks.put(listener,
+          executor == null ? callback : new CustomExecutorCallbackWrapper<>(executor, callback));
     }
+  }
+
+  public <T> void addListener(@NotNull T listener, @NotNull Callback<T> callback) {
+    addListener(listener, callback, null);
   }
 
   /**
@@ -61,6 +72,24 @@ public class Event {
     @SuppressWarnings("unchecked")
     default void callbackUntyped(@NotNull Object listener) {
       callback((T) listener);
+    }
+  }
+
+  private static class CustomExecutorCallbackWrapper<T> implements Callback<T> {
+    @NotNull
+    private final Executor executor;
+    @NotNull
+    private final Callback<T> callback;
+
+    public CustomExecutorCallbackWrapper(@NotNull Executor executor,
+                                         @NotNull Callback<T> callback) {
+      this.executor = executor;
+      this.callback = callback;
+    }
+
+    @Override
+    public void callback(@NotNull T listener) {
+      executor.execute(() -> callback.callback(listener));
     }
   }
 }

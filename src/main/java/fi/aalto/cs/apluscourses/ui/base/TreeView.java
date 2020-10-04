@@ -10,6 +10,7 @@ import java.awt.event.MouseEvent;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
+import javax.swing.SwingUtilities;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
@@ -77,7 +78,7 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
   private void registerViewModel() {
     synchronized (viewModelLock) {
       if (viewModel != null) {
-        viewModel.filtered.addListener(this, TreeView::update);
+        viewModel.filtered.addListener(this, TreeView::update, SwingUtilities::invokeLater);
       }
     }
   }

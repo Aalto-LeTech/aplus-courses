@@ -1,6 +1,5 @@
 package fi.aalto.cs.apluscourses.ui.utils;
 
-import java.util.function.Function;
 import java.util.stream.Stream;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
