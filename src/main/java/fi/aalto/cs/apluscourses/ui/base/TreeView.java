@@ -2,22 +2,38 @@ package fi.aalto.cs.apluscourses.ui.base;
 
 import fi.aalto.cs.apluscourses.presentation.base.BaseTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
+import fi.aalto.cs.apluscourses.ui.utils.TreeModelBuilder;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Stream;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class TreeView extends com.intellij.ui.treeStructure.Tree {
+
+  private static final TreeModelBuilder<SelectableNodeViewModel<?>> TREE_MODEL_BUILDER =
+      new TreeModelBuilder<SelectableNodeViewModel<?>>() {
+        @Override
+        protected @NotNull Stream<? extends SelectableNodeViewModel<?>> childrenOf(
+            @NotNull SelectableNodeViewModel<?> obj) {
+          return obj.streamVisibleChildren();
+        }
+      };
+
   private final transient Set<ActionListener> nodeAppliedListeners = ConcurrentHashMap.newKeySet();
+
+  @NotNull
+  public static SelectableNodeViewModel<?> getViewModel(Object node) {
+    return (SelectableNodeViewModel<?>) TREE_MODEL_BUILDER.getUserObject(node);
+  }
 
   @Nullable
   protected transient volatile SelectableNodeViewModel<?> selectedItem = null; //NOSONAR
@@ -71,7 +87,7 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
     synchronized (viewModelLock) {
       localViewModel = this.viewModel;
     }
-    setModel(new DefaultTreeModel(CompositeTreeNode.create(localViewModel)));
+    setModel(TREE_MODEL_BUILDER.build(localViewModel));
   }
 
   public void addNodeAppliedListener(ActionListener listener) {
@@ -99,8 +115,7 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
 
     @Nullable
     private SelectableNodeViewModel<?> getViewModelFromPath(@Nullable TreePath treePath) {
-      return (SelectableNodeViewModel<?>) (treePath == null ? null
-          : ((CompositeTreeNode) treePath.getLastPathComponent()).getUserObject());
+      return treePath == null ? null : getViewModel(treePath.getLastPathComponent());
     }
   }
 

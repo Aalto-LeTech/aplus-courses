@@ -1,16 +1,15 @@
 package fi.aalto.cs.apluscourses.presentation.base;
 
 import fi.aalto.cs.apluscourses.presentation.filter.Filter;
+import fi.aalto.cs.apluscourses.utils.Tree;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class SelectableNodeViewModel<T> extends BaseViewModel<T>
-    implements FilterableTree {
-
-  private static final SelectableNodeViewModel<?>[] EMPTY_ARRAY = new SelectableNodeViewModel<?>[0];
+public class SelectableNodeViewModel<T> extends BaseViewModel<T> implements Tree {
 
   @NotNull
   private final List<SelectableNodeViewModel<?>> children;
@@ -62,5 +61,10 @@ public class SelectableNodeViewModel<T> extends BaseViewModel<T>
   @NotNull
   public List<SelectableNodeViewModel<?>> getChildren() {
     return children;
+  }
+
+  @NotNull
+  public Stream<? extends SelectableNodeViewModel<?>> streamVisibleChildren() {
+    return children.stream().filter(SelectableNodeViewModel::isVisible);
   }
 }
