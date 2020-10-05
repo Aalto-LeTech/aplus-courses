@@ -3,6 +3,7 @@ package fi.aalto.cs.apluscourses.presentation.base;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 
+import fi.aalto.cs.apluscourses.presentation.ViewModelExtensions.TestNodeViewModel;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import java.util.Arrays;
 import java.util.Collections;
@@ -20,8 +21,8 @@ public class BaseTreeViewModelTest {
    */
   @Before
   public void setUp() {
-    childViewModel1 = new SelectableNodeViewModel<>(new Object(), Collections.emptyList());
-    childViewModel2 = new SelectableNodeViewModel<>(new Object(), Collections.emptyList());
+    childViewModel1 = new TestNodeViewModel(1, new Object(), Collections.emptyList());
+    childViewModel2 = new TestNodeViewModel(2, new Object(), Collections.emptyList());
     treeViewModel = new BaseTreeViewModel<>(
         new Object(), Arrays.asList(childViewModel1, childViewModel2), new Options());
   }

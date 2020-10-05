@@ -10,9 +10,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import fi.aalto.cs.apluscourses.presentation.ViewModelExtensions.TestNodeViewModel;
 import fi.aalto.cs.apluscourses.presentation.filter.Filter;
 import java.util.Arrays;
 import java.util.Collections;
@@ -37,11 +37,12 @@ public class SelectableNodeViewModelTest {
   @Before
   public void setUp() {
     model = new Object();
-    child0 = spy(new SelectableNodeViewModel<>(new Object(), Collections.emptyList()));
-    child1 = spy(new SelectableNodeViewModel<>(new Object(), Collections.emptyList()));
-    child2 = spy(new SelectableNodeViewModel<>(new Object(), Collections.emptyList()));
+
+    child0 = spy(new TestNodeViewModel(0, new Object(), Collections.emptyList()));
+    child1 = spy(new TestNodeViewModel(1, new Object(), Collections.emptyList()));
+    child2 = spy(new TestNodeViewModel(2, new Object(), Collections.emptyList()));
     children = Arrays.asList(child0, child1, child2);
-    node = new SelectableNodeViewModel<>(model, children);
+    node = new TestNodeViewModel(3, model, children);
   }
 
   @Test
@@ -56,24 +57,6 @@ public class SelectableNodeViewModelTest {
     assertSame(child0, actualChildren.get(0));
     assertSame(child1, actualChildren.get(1));
     assertSame(child2, actualChildren.get(2));
-  }
-
-  @Test
-  public void testSelection() {
-    assertEquals(true, node.isVisible.get());
-
-    Filterable.Listener listener = mock(Filterable.Listener.class);
-    node.addVisibilityListener(listener);
-    verify(listener).visibilityChanged(true);
-
-    node.isVisible.set(true);
-    assertEquals(true, node.isVisible.get());
-
-    node.isVisible.set(false);
-    assertEquals(false, node.isVisible.get());
-    verify(listener).visibilityChanged(false);
-
-    verifyNoMoreInteractions(listener);
   }
 
   @Test
@@ -103,7 +86,7 @@ public class SelectableNodeViewModelTest {
     Optional<Boolean> result = node.applyFilter(filter);
     assertTrue(result.isPresent());
     assertTrue(result.get());
-    assertEquals(true, node.isVisible.get());
+    assertTrue(node.isVisible());
   }
 
   @Test
@@ -114,7 +97,7 @@ public class SelectableNodeViewModelTest {
     Optional<Boolean> result = node.applyFilter(filter);
     assertTrue(result.isPresent());
     assertFalse(result.get());
-    assertEquals(false, node.isVisible.get());
+    assertFalse(node.isVisible());
   }
 
   @Test
@@ -123,6 +106,6 @@ public class SelectableNodeViewModelTest {
 
     Optional<Boolean> result = node.applyFilter(filter);
     assertFalse(result.isPresent());
-    assertEquals(true, node.isVisible.get());
+    assertTrue(node.isVisible());
   }
 }
