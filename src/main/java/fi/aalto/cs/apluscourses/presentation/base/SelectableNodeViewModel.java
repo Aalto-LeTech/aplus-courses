@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class SelectableNodeViewModel<T> extends BaseViewModel<T> implements Tree {
+public abstract class SelectableNodeViewModel<T> extends BaseViewModel<T> implements Tree {
 
   @NotNull
   private final List<SelectableNodeViewModel<?>> children;
@@ -44,6 +44,8 @@ public class SelectableNodeViewModel<T> extends BaseViewModel<T> implements Tree
     visibility = visible.orElse(true);
     return visible.orElse(false);
   }
+
+  public abstract long getId();
 
   public boolean isVisible() {
     return visibility;

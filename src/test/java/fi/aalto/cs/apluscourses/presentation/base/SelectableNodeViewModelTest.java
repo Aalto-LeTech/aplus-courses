@@ -12,6 +12,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import fi.aalto.cs.apluscourses.presentation.ViewModelExtensions.TestNodeViewModel;
 import fi.aalto.cs.apluscourses.presentation.filter.Filter;
 import java.util.Arrays;
 import java.util.Collections;
@@ -36,11 +37,12 @@ public class SelectableNodeViewModelTest {
   @Before
   public void setUp() {
     model = new Object();
-    child0 = spy(new SelectableNodeViewModel<>(new Object(), Collections.emptyList()));
-    child1 = spy(new SelectableNodeViewModel<>(new Object(), Collections.emptyList()));
-    child2 = spy(new SelectableNodeViewModel<>(new Object(), Collections.emptyList()));
+
+    child0 = spy(new TestNodeViewModel(0, new Object(), Collections.emptyList()));
+    child1 = spy(new TestNodeViewModel(1, new Object(), Collections.emptyList()));
+    child2 = spy(new TestNodeViewModel(2, new Object(), Collections.emptyList()));
     children = Arrays.asList(child0, child1, child2);
-    node = new SelectableNodeViewModel<>(model, children);
+    node = new TestNodeViewModel(3, model, children);
   }
 
   @Test

@@ -3,12 +3,15 @@ package fi.aalto.cs.apluscourses.ui.base;
 import fi.aalto.cs.apluscourses.presentation.base.BaseTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
 import fi.aalto.cs.apluscourses.ui.utils.TreeModelBuilder;
+import fi.aalto.cs.apluscourses.ui.utils.TreeModelTraversal;
+import fi.aalto.cs.apluscourses.ui.utils.TreePathCoder;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.swing.SwingUtilities;
 import javax.swing.event.TreeSelectionEvent;
@@ -88,7 +91,9 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
     synchronized (viewModelLock) {
       localViewModel = this.viewModel;
     }
+    Set<String> expandedState = getExpandedState();
     setModel(TREE_MODEL_BUILDER.build(localViewModel));
+    restoreExpandedState(expandedState);
   }
 
   public void addNodeAppliedListener(ActionListener listener) {
@@ -97,6 +102,20 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
 
   public void removeNodeAppliedListener(ActionListener listener) {
     nodeAppliedListeners.remove(listener);
+  }
+
+  private Set<String> getExpandedState() {
+    return new TreeModelTraversal(getModel()).traverse()
+        .filter(this::isExpanded)
+        .map(new MyTreePathCoder()::code)
+        .collect(Collectors.toSet());
+  }
+
+  private void restoreExpandedState(Set<String> expandedState) {
+    MyTreePathCoder coder = new MyTreePathCoder();
+    new TreeModelTraversal(getModel()).traverse()
+        .filter(treePath -> expandedState.contains(coder.code(treePath)))
+        .forEach(treePath -> setExpandedState(treePath, true));
   }
 
   protected class SelectionListener implements TreeSelectionListener {
@@ -128,6 +147,19 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
         ActionEvent actionEvent = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null);
         nodeAppliedListeners.forEach(listener -> listener.actionPerformed(actionEvent));
       }
+    }
+  }
+
+  private class MyTreePathCoder extends TreePathCoder<String> {
+
+    @Override
+    protected String emptyCode() {
+      return "";
+    }
+
+    @Override
+    protected String codeNode(String parentCode, Object node) {
+      return parentCode + "/" + getViewModel(node).getId();
     }
   }
 }

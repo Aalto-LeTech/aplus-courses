@@ -42,6 +42,11 @@ public class BaseTreeViewModel<T> extends SelectableNodeViewModel<T> {
     return options;
   }
 
+  @Override
+  public long getId() {
+    return 0;
+  }
+
   private class FilterThread extends Thread {
     @Nullable
     private final Thread previous;
