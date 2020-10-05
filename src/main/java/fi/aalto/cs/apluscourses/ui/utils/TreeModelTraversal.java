@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.ui.utils;
 
 import fi.aalto.cs.apluscourses.utils.Streamable;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
@@ -46,6 +47,9 @@ public class TreeModelTraversal {
 
     @Override
     public Object next() {
+      if (!hasNext()) {
+        throw new NoSuchElementException();
+      }
       return treeModel.getChild(node, index++);
     }
   }
