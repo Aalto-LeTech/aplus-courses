@@ -9,23 +9,27 @@ import javax.swing.tree.TreePath;
 import org.jetbrains.annotations.NotNull;
 
 public class TreeModelTraversal {
+  @NotNull
   private final TreeModel treeModel;
 
-  public TreeModelTraversal(TreeModel treeModel) {
+  public TreeModelTraversal(@NotNull TreeModel treeModel) {
     this.treeModel = treeModel;
   }
 
+  @NotNull
   public Stream<TreePath> traverse() {
     return traverse(new TreePath(treeModel.getRoot()));
   }
 
-  private Stream<TreePath> traverse(TreePath treePath) {
+  @NotNull
+  private Stream<TreePath> traverse(@NotNull TreePath treePath) {
     return Stream.concat(Stream.of(treePath), // pre-order guaranteed
         getChildNodeStream(treePath.getLastPathComponent())
         .map(treePath::pathByAddingChild)
         .flatMap(this::traverse));
   }
 
+  @NotNull
   public Stream<Object> getChildNodeStream(Object node) {
     return ((Streamable<Object>) () -> new NodeIterator(node)).stream();
   }

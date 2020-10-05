@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -16,6 +17,7 @@ import java.util.stream.Stream;
 import javax.swing.SwingUtilities;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import org.jetbrains.annotations.NotNull;
@@ -104,18 +106,24 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
     nodeAppliedListeners.remove(listener);
   }
 
+  @NotNull
   private Set<String> getExpandedState() {
-    return new TreeModelTraversal(getModel()).traverse()
+    TreeModel treeModel = getModel();
+    return treeModel == null ? Collections.emptySet()
+        : new TreeModelTraversal(treeModel).traverse()
         .filter(this::isExpanded)
         .map(new MyTreePathCoder()::code)
         .collect(Collectors.toSet());
   }
 
-  private void restoreExpandedState(Set<String> expandedState) {
-    MyTreePathCoder coder = new MyTreePathCoder();
-    new TreeModelTraversal(getModel()).traverse()
-        .filter(treePath -> expandedState.contains(coder.code(treePath)))
-        .forEach(treePath -> setExpandedState(treePath, true));
+  private void restoreExpandedState(@NotNull Set<String> expandedState) {
+    TreeModel treeModel = getModel();
+    if (treeModel != null) {
+      MyTreePathCoder coder = new MyTreePathCoder();
+      new TreeModelTraversal(treeModel).traverse()
+          .filter(treePath -> expandedState.contains(coder.code(treePath)))
+          .forEach(treePath -> setExpandedState(treePath, true));
+    }
   }
 
   protected class SelectionListener implements TreeSelectionListener {
@@ -150,7 +158,7 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
     }
   }
 
-  private class MyTreePathCoder extends TreePathCoder<String> {
+  private static class MyTreePathCoder extends TreePathCoder<String> {
 
     @Override
     protected String emptyCode() {
