@@ -2,8 +2,10 @@ package fi.aalto.cs.apluscourses.presentation.exercise;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.Group;
@@ -47,7 +49,7 @@ public class SubmissionViewModelTest {
     Exercise exercise = new Exercise(100, "Exercise", "http://localhost:1000", 0, 0, 0);
 
     SubmissionViewModel submissionViewModel =
-        new SubmissionViewModel(exercise, submissionInfo, history, groups, fileMap, language);
+        new SubmissionViewModel(exercise, submissionInfo, history, groups, null, fileMap, language);
 
     assertNotNull("The validation should fail when no group is yet selected",
         submissionViewModel.selectedGroup.validate());
@@ -59,7 +61,7 @@ public class SubmissionViewModelTest {
     SubmissionInfo info = new SubmissionInfo(5, Collections.emptyMap());
 
     SubmissionViewModel submissionViewModel1 = new SubmissionViewModel(exercise, info,
-        new SubmissionHistory(3), Collections.emptyList(), Collections.emptyMap(), "");
+        new SubmissionHistory(3), Collections.emptyList(), null, Collections.emptyMap(), "");
 
     assertEquals(4, submissionViewModel1.getCurrentSubmissionNumber());
     assertEquals("You are about to make submission 4 out of 5.",
@@ -67,14 +69,14 @@ public class SubmissionViewModelTest {
     assertNull(submissionViewModel1.getSubmissionWarning());
 
     SubmissionViewModel submissionViewModel2 = new SubmissionViewModel(exercise, info,
-        new SubmissionHistory(4), Collections.emptyList(), Collections.emptyMap(), "");
+        new SubmissionHistory(4), Collections.emptyList(), null, Collections.emptyMap(), "");
 
     assertEquals("You are about to make submission 5 out of 5.",
         submissionViewModel2.getSubmissionCountText());
     assertNotNull(submissionViewModel2.getSubmissionWarning());
 
     SubmissionViewModel submissionViewModel3 = new SubmissionViewModel(exercise, info,
-        new SubmissionHistory(5), Collections.emptyList(), Collections.emptyMap(), "");
+        new SubmissionHistory(5), Collections.emptyList(), null, Collections.emptyMap(), "");
 
     assertEquals("You are about to make submission 6 out of 5.",
         submissionViewModel3.getSubmissionCountText());
@@ -83,7 +85,7 @@ public class SubmissionViewModelTest {
     // Max submissions 0
     SubmissionInfo practiceAssignment = new SubmissionInfo(0, Collections.emptyMap());
     SubmissionViewModel submissionViewModel4 = new SubmissionViewModel(exercise, practiceAssignment,
-        new SubmissionHistory(2), Collections.emptyList(), Collections.emptyMap(), "");
+        new SubmissionHistory(2), Collections.emptyList(), null, Collections.emptyMap(), "");
 
     assertEquals("You are about to make submission 3.",
         submissionViewModel4.getSubmissionCountText());
@@ -106,10 +108,34 @@ public class SubmissionViewModelTest {
     SubmissionHistory history = new SubmissionHistory(0);
 
     SubmissionViewModel submission = new SubmissionViewModel(
-        exercise, info, history, Collections.emptyList(), Collections.emptyMap(), "fi"
+        exercise, info, history, Collections.emptyList(), null, Collections.emptyMap(), "fi"
     );
 
     assertArrayEquals("getFiles returns the files corresponding to the given language",
         new SubmittableFile[] {finnishFile1, finnishFile2}, submission.getFiles());
+  }
+
+  @Test
+  public void testDefaultGroup() {
+    Exercise exercise = new Exercise(1000, "wow", "http://www.fi", 0, 0, 0);
+    SubmissionInfo info = new SubmissionInfo(0, Collections.emptyMap());
+    SubmissionHistory history = new SubmissionHistory(0);
+    Group group = new Group(1, Arrays.asList("Jyrki", "Jorma"));
+    List<Group> availableGroups = Collections.singletonList(group);
+
+    SubmissionViewModel viewModel1 = new SubmissionViewModel(
+        exercise, info, history, availableGroups, null, Collections.emptyMap(), "fi"
+    );
+    SubmissionViewModel viewModel2 = new SubmissionViewModel(
+        exercise, info, history, availableGroups, group, Collections.emptyMap(), "fi"
+    );
+
+    assertNull(viewModel1.selectedGroup.get());
+    assertNotNull(viewModel2.selectedGroup.get());
+
+    assertFalse("The default group check box is unchecked when no default group exists",
+        viewModel1.makeDefaultGroup.get());
+    assertTrue("The default group check box is automatically checked if a default group exists",
+        viewModel2.makeDefaultGroup.get());
   }
 }
