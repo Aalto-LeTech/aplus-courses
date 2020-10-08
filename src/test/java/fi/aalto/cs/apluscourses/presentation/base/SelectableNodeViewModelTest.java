@@ -72,8 +72,7 @@ public class SelectableNodeViewModelTest {
 
 
     Optional<Boolean> result = node.applyFilter(filter);
-    assertTrue(result.isPresent());
-    assertTrue(result.get());
+    assertTrue(result.isPresent() && Boolean.TRUE.equals(result.get()));
     assertTrue(node.isVisible());
   }
 
@@ -83,8 +82,7 @@ public class SelectableNodeViewModelTest {
     when(filter.apply(node)).thenReturn(Optional.of(false));
 
     Optional<Boolean> result = node.applyFilter(filter);
-    assertTrue(result.isPresent());
-    assertFalse(result.get());
+    assertTrue(result.isPresent() && Boolean.FALSE.equals(result.get()));
     assertFalse(node.isVisible());
   }
 
