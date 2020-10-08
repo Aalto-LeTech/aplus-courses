@@ -4,12 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import fi.aalto.cs.apluscourses.presentation.ViewModelExtensions.TestNodeViewModel;
@@ -59,24 +55,16 @@ public class SelectableNodeViewModelTest {
     assertSame(child2, actualChildren.get(2));
   }
 
-  @Test
+  @Test(expected = InterruptedException.class)
   public void testApplyFilterIsInterrupted() throws InterruptedException {
     Filter filter = mock(Filter.class);
 
-    Thread thread = new Thread(() -> {
-      Thread.currentThread().interrupt();
-      node.applyFilter(filter);
-    });
-    thread.start();
-    thread.join();
-
-    verify(child0, never()).applyFilter(any());
-    verify(child1, never()).applyFilter(any());
-    verify(child2, never()).applyFilter(any());
+    Thread.currentThread().interrupt();
+    node.applyFilter(filter);
   }
 
   @Test
-  public void testApplyFilterWhenChildReturnsTrue() {
+  public void testApplyFilterWhenChildReturnsTrue() throws InterruptedException {
     Filter filter = mock(Filter.class);
     when(filter.apply(child0)).thenReturn(Optional.of(false));
     when(filter.apply(child1)).thenReturn(Optional.of(true));
@@ -90,7 +78,7 @@ public class SelectableNodeViewModelTest {
   }
 
   @Test
-  public void testApplyFilterReturnsFalse() {
+  public void testApplyFilterReturnsFalse() throws InterruptedException {
     Filter filter = mock(Filter.class, new Returns(Optional.empty()));
     when(filter.apply(node)).thenReturn(Optional.of(false));
 
@@ -101,7 +89,7 @@ public class SelectableNodeViewModelTest {
   }
 
   @Test
-  public void testApplyFilterReturnsEmpty() {
+  public void testApplyFilterReturnsEmpty() throws InterruptedException {
     Filter filter = mock(Filter.class, new Returns(Optional.empty()));
 
     Optional<Boolean> result = node.applyFilter(filter);

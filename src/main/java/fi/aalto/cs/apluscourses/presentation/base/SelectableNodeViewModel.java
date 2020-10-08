@@ -1,7 +1,6 @@
 package fi.aalto.cs.apluscourses.presentation.base;
 
 import fi.aalto.cs.apluscourses.presentation.filter.Filter;
-import fi.aalto.cs.apluscourses.utils.OptionalBooleanLogic;
 import fi.aalto.cs.apluscourses.utils.Tree;
 import java.util.Collections;
 import java.util.List;
@@ -32,16 +31,19 @@ public abstract class SelectableNodeViewModel<T> extends BaseViewModel<T> implem
    * @param filter A filter.
    * @return True, if the filter applies to this node or one of its descendants, otherwise false.
    */
-  public Optional<Boolean> applyFilter(Filter filter) {
-    Optional<Boolean> myResult = filter.apply(this);
-    Optional<Boolean> result = myResult;
-    for (SelectableNodeViewModel<?> child : children) {
-      if (Thread.currentThread().isInterrupted()) {
-        return Optional.empty();
+  public Optional<Boolean> applyFilter(Filter filter) throws InterruptedException {
+    Optional<Boolean> result = filter.apply(this);
+    if (!result.isPresent() || Boolean.TRUE.equals(result.get())) {
+      for (SelectableNodeViewModel<?> child : children) {
+        if (Thread.interrupted()) {
+          throw new InterruptedException();
+        }
+        Optional<Boolean> childResult = child.applyFilter(filter);
+        if (childResult.isPresent()) {
+          result = Optional.of(result.orElse(false) || Boolean.TRUE.equals(childResult.get()));
+        }
       }
-      result = OptionalBooleanLogic.or(result, child.applyFilter(filter));
     }
-    result = OptionalBooleanLogic.and(result, myResult);
     visibility = result.orElse(true);
     return result;
   }
