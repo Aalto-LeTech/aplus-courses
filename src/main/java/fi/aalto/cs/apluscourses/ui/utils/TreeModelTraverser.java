@@ -8,11 +8,11 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import org.jetbrains.annotations.NotNull;
 
-public class TreeModelTraversal {
+public class TreeModelTraverser {
   @NotNull
   private final TreeModel treeModel;
 
-  public TreeModelTraversal(@NotNull TreeModel treeModel) {
+  public TreeModelTraverser(@NotNull TreeModel treeModel) {
     this.treeModel = treeModel;
   }
 
@@ -30,7 +30,7 @@ public class TreeModelTraversal {
   }
 
   @NotNull
-  public Stream<Object> getChildNodeStream(Object node) {
+  private Stream<Object> getChildNodeStream(Object node) {
     return ((Streamable<Object>) () -> new NodeIterator(node)).stream();
   }
 

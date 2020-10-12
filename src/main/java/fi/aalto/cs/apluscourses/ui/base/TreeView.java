@@ -3,8 +3,8 @@ package fi.aalto.cs.apluscourses.ui.base;
 import fi.aalto.cs.apluscourses.presentation.base.BaseTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
 import fi.aalto.cs.apluscourses.ui.utils.TreeModelBuilder;
-import fi.aalto.cs.apluscourses.ui.utils.TreeModelTraversal;
-import fi.aalto.cs.apluscourses.ui.utils.TreePathCoder;
+import fi.aalto.cs.apluscourses.ui.utils.TreeModelTraverser;
+import fi.aalto.cs.apluscourses.ui.utils.TreePathEncoder;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -110,18 +110,18 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
   private Set<String> getExpandedState() {
     TreeModel treeModel = getModel();
     return treeModel == null ? Collections.emptySet()
-        : new TreeModelTraversal(treeModel).traverse()
+        : new TreeModelTraverser(treeModel).traverse()
         .filter(this::isExpanded)
-        .map(new MyTreePathCoder()::code)
+        .map(new TreePathStringEncoder()::encode)
         .collect(Collectors.toSet());
   }
 
   private void restoreExpandedState(@NotNull Set<String> expandedState) {
     TreeModel treeModel = getModel();
     if (treeModel != null) {
-      MyTreePathCoder coder = new MyTreePathCoder();
-      new TreeModelTraversal(treeModel).traverse()
-          .filter(treePath -> expandedState.contains(coder.code(treePath)))
+      TreePathStringEncoder coder = new TreePathStringEncoder();
+      new TreeModelTraverser(treeModel).traverse()
+          .filter(treePath -> expandedState.contains(coder.encode(treePath)))
           .forEach(treePath -> setExpandedState(treePath, true));
     }
   }
@@ -158,7 +158,7 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
     }
   }
 
-  private static class MyTreePathCoder extends TreePathCoder<String> {
+  private static class TreePathStringEncoder extends TreePathEncoder<String> {
 
     @Override
     protected String emptyCode() {
@@ -166,7 +166,7 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
     }
 
     @Override
-    protected String codeNode(String parentCode, Object node) {
+    protected String encodeNode(String parentCode, Object node) {
       return parentCode + "/" + getViewModel(node).getId();
     }
   }
