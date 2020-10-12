@@ -3,16 +3,21 @@ package fi.aalto.cs.apluscourses.ui.base;
 import fi.aalto.cs.apluscourses.presentation.base.BaseTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
 import fi.aalto.cs.apluscourses.ui.utils.TreeModelBuilder;
+import fi.aalto.cs.apluscourses.ui.utils.TreeModelTraverser;
+import fi.aalto.cs.apluscourses.ui.utils.TreePathEncoder;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.swing.SwingUtilities;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import org.jetbrains.annotations.NotNull;
@@ -88,7 +93,9 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
     synchronized (viewModelLock) {
       localViewModel = this.viewModel;
     }
+    Set<String> expandedState = getExpandedState();
     setModel(TREE_MODEL_BUILDER.build(localViewModel));
+    restoreExpandedState(expandedState);
   }
 
   public void addNodeAppliedListener(ActionListener listener) {
@@ -97,6 +104,26 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
 
   public void removeNodeAppliedListener(ActionListener listener) {
     nodeAppliedListeners.remove(listener);
+  }
+
+  @NotNull
+  private Set<String> getExpandedState() {
+    TreeModel treeModel = getModel();
+    return treeModel == null ? Collections.emptySet()
+        : new TreeModelTraverser(treeModel).traverse()
+        .filter(this::isExpanded)
+        .map(new TreePathStringEncoder()::encode)
+        .collect(Collectors.toSet());
+  }
+
+  private void restoreExpandedState(@NotNull Set<String> expandedState) {
+    TreeModel treeModel = getModel();
+    if (treeModel != null) {
+      TreePathStringEncoder coder = new TreePathStringEncoder();
+      new TreeModelTraverser(treeModel).traverse()
+          .filter(treePath -> expandedState.contains(coder.encode(treePath)))
+          .forEach(treePath -> setExpandedState(treePath, true));
+    }
   }
 
   protected class SelectionListener implements TreeSelectionListener {
@@ -128,6 +155,19 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
         ActionEvent actionEvent = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null);
         nodeAppliedListeners.forEach(listener -> listener.actionPerformed(actionEvent));
       }
+    }
+  }
+
+  private static class TreePathStringEncoder extends TreePathEncoder<String> {
+
+    @Override
+    protected String emptyCode() {
+      return "";
+    }
+
+    @Override
+    protected String encodeNode(String parentCode, Object node) {
+      return parentCode + "/" + getViewModel(node).getId();
     }
   }
 }

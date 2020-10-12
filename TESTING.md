@@ -407,7 +407,7 @@ available. Click here to open the feedback.** notification is shown.
 
 **12.2** ASSERTION: **Non-submittable** and **Optional** menu items are checked.
 
-**12.3** Uncheck **Non-submittable** menu item.  Note: This makes the exercise tree to collapse.
+**12.3** Uncheck **Non-submittable** menu item. 
 
 **12.4** ASSERTION: Non-submittable (that is, grayed out) assignments are no longer in the tree.
 

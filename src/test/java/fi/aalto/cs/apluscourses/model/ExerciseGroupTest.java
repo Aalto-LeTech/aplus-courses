@@ -25,8 +25,9 @@ public class ExerciseGroupTest {
     Exercise exercise1 = new Exercise(123, "name1", "https://example.com", 0, 0, 0);
     Exercise exercise2 = new Exercise(456, "name2", "https://example.org", 0, 0, 0);
 
-    ExerciseGroup group = new ExerciseGroup("group", Arrays.asList(exercise1, exercise2));
+    ExerciseGroup group = new ExerciseGroup(22, "group", Arrays.asList(exercise1, exercise2));
 
+    Assert.assertEquals(22, group.getId());
     Assert.assertEquals("The name is the same as the one given to the constructor",
         "group", group.getName());
     Assert.assertEquals("The exercises are the same as those given to the constructor",
@@ -37,13 +38,14 @@ public class ExerciseGroupTest {
 
   @Test(expected = UnsupportedOperationException.class)
   public void testGetExercisesReturnsUnmodifiableMap() {
-    ExerciseGroup group = new ExerciseGroup("", new ArrayList<>());
+    ExerciseGroup group = new ExerciseGroup(10, "", new ArrayList<>());
     group.getExercises().put(999L, null);
   }
 
   @Test
   public void testFromJsonObject() {
     JSONObject json = new JSONObject()
+        .put(ID_KEY, 567)
         .put(NAME_KEY, "group name")
         .put(EXERCISES_KEY, new JSONArray()
             .put(new JSONObject()
@@ -54,6 +56,7 @@ public class ExerciseGroupTest {
                 .put(MAX_SUBMISSIONS_KEY, 10)));
     ExerciseGroup group = ExerciseGroup.fromJsonObject(json, mock(Points.class));
 
+    Assert.assertEquals(567, group.getId());
     Assert.assertEquals("The exercise group has the same name as in the JSON object",
         "group name", group.getName());
     Assert.assertEquals("The exercise group has the same exercises as in the JSON object",
@@ -69,6 +72,7 @@ public class ExerciseGroupTest {
   @Test(expected = JSONException.class)
   public void testFromJsonObjectMissingName() {
     JSONObject json = new JSONObject()
+        .put(ID_KEY, 100)
         .put(EXERCISES_KEY, new JSONArray()
             .put(new JSONObject()
                 .put(ID_KEY, 0)
@@ -85,6 +89,7 @@ public class ExerciseGroupTest {
     for (int i = 0; i < 5; ++i) {
       JSONObject json = new JSONObject()
           .put(NAME_KEY, "group " + i)
+          .put(ID_KEY, i)
           .put(EXERCISES_KEY, new JSONArray()
               .put(new JSONObject()
                   .put(ID_KEY, i)
@@ -98,6 +103,7 @@ public class ExerciseGroupTest {
 
     for (int i = 0; i < 5; ++i) {
       Assert.assertEquals("group " + i, exerciseGroups.get(i).getName());
+      Assert.assertEquals(i, exerciseGroups.get(i).getId());
     }
   }
 
