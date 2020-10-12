@@ -1,8 +1,8 @@
-name: Release
+name: Pre-release
 
 on:
   release:
-    types: [released]
+    types: [prereleased]
 
 jobs:
   release:
@@ -22,5 +22,6 @@ jobs:
       - name: Publish Plugin
         env:
           INTELLIJ_PUBLISH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
+          INTELLIJ_PUBLISH_CHANNEL: test
         run: ./gradlew publishPlugin
  
