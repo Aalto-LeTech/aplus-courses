@@ -215,16 +215,32 @@ public class SubmitExerciseAction extends AnAction {
     groups.add(0, new Group(-1, Collections
         .singletonList(getText("ui.toolWindow.subTab.exercises.submission.submitAlone"))));
 
-    SubmissionViewModel submission =
-        new SubmissionViewModel(exercise, submissionInfo, history, groups, files, language);
+    // Find the group from the available groups that matches the default group ID.
+    // A group could be removed, so this way we check that the default group ID is still valid.
+    Optional<Long> defaultGroupId = PluginSettings.getInstance().getDefaultGroupId();
+    Group defaultGroup = defaultGroupId
+        .flatMap(id -> groups
+            .stream()
+            .filter(group -> group.getId() == id)
+            .findFirst())
+        .orElse(null);
+
+    SubmissionViewModel submission = new SubmissionViewModel(
+        exercise, submissionInfo, history, groups, defaultGroup, files, language);
 
     if (!dialogs.create(submission, project).showAndGet()) {
       return;
     }
 
+    if (Boolean.TRUE.equals(submission.makeDefaultGroup.get())) {
+      PluginSettings.getInstance().setDefaultGroupId(submission.selectedGroup.get().getId());
+    } else {
+      PluginSettings.getInstance().clearDefaultGroupId();
+    }
+
     String submissionUrl = exerciseDataSource.submit(submission.buildSubmission(), authentication);
     new SubmissionStatusUpdater(
-        exerciseDataSource, authentication, submissionUrl, selectedExercise.getModel()
+        project, exerciseDataSource, authentication, submissionUrl, selectedExercise.getModel()
     ).start();
     notifier.notify(new SubmissionSentNotification(), project);
 

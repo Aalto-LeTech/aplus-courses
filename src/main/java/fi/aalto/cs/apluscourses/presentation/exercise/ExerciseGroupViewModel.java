@@ -84,4 +84,9 @@ public class ExerciseGroupViewModel extends SelectableNodeViewModel<ExerciseGrou
       return -1;
     }
   }
+
+  @Override
+  public long getId() {
+    return getModel().getId();
+  }
 }

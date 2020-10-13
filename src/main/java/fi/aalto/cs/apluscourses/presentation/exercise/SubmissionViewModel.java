@@ -38,6 +38,9 @@ public class SubmissionViewModel {
   public final ObservableProperty<Group> selectedGroup =
       new ObservableReadWriteProperty<>(null, SubmissionViewModel::validateGroupSelection);
 
+  public final ObservableProperty<Boolean> makeDefaultGroup =
+      new ObservableReadWriteProperty<>(false);
+
   @Nullable
   private static ValidationError validateGroupSelection(@Nullable Group group) {
     return group == null ? new GroupNotSelectedError() : null;
@@ -50,6 +53,7 @@ public class SubmissionViewModel {
                              @NotNull SubmissionInfo submissionInfo,
                              @NotNull SubmissionHistory submissionHistory,
                              @NotNull List<Group> availableGroups,
+                             @Nullable Group defaultGroup,
                              @NotNull Map<String, Path> filePaths,
                              @NotNull String language) {
     this.exercise = exercise;
@@ -59,6 +63,10 @@ public class SubmissionViewModel {
     this.filePaths = filePaths;
     this.language = language;
     this.submittableFiles = submissionInfo.getFiles(language).toArray(new SubmittableFile[0]);
+    if (defaultGroup != null) {
+      selectedGroup.set(defaultGroup);
+      makeDefaultGroup.set(true);
+    }
   }
 
   @NotNull

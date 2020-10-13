@@ -2,22 +2,18 @@ package fi.aalto.cs.apluscourses.presentation.base;
 
 import fi.aalto.cs.apluscourses.presentation.filter.Filter;
 import fi.aalto.cs.apluscourses.utils.Tree;
-import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
-import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class SelectableNodeViewModel<T> extends BaseViewModel<T>
-    implements Tree, Filterable {
-
-  private static final SelectableNodeViewModel<?>[] EMPTY_ARRAY = new SelectableNodeViewModel<?>[0];
+public abstract class SelectableNodeViewModel<T> extends BaseViewModel<T> implements Tree {
 
   @NotNull
   private final List<SelectableNodeViewModel<?>> children;
-  public final ObservableProperty<Boolean> isVisible = new ObservableReadWriteProperty<>(true);
+  private volatile boolean visibility = true;
 
   private volatile boolean selected = false;
 
@@ -35,18 +31,27 @@ public class SelectableNodeViewModel<T> extends BaseViewModel<T>
    * @param filter A filter.
    * @return True, if the filter applies to this node or one of its descendants, otherwise false.
    */
-  public boolean applyFilter(Filter filter) {
-    if (Thread.currentThread().isInterrupted()) {
-      return true;
+  public Optional<Boolean> applyFilter(Filter filter) throws InterruptedException {
+    Optional<Boolean> result = filter.apply(this);
+    if (!result.isPresent() || Boolean.TRUE.equals(result.get())) {
+      for (SelectableNodeViewModel<?> child : children) {
+        if (Thread.interrupted()) {
+          throw new InterruptedException();
+        }
+        Optional<Boolean> childResult = child.applyFilter(filter);
+        if (childResult.isPresent()) {
+          result = Optional.of(result.orElse(false) || Boolean.TRUE.equals(childResult.get()));
+        }
+      }
     }
-    Optional<Boolean> visible = children.stream()
-        .map(child -> child.applyFilter(filter))
-        .reduce(Boolean::logicalOr) // we don't use anyMatch to avoid short-circuiting
-        .filter(Boolean::booleanValue)
-        .map(Optional::of)
-        .orElseGet(() -> filter.apply(this));
-    isVisible.set(visible.orElse(true));
-    return visible.orElse(false);
+    visibility = result.orElse(true);
+    return result;
+  }
+
+  public abstract long getId();
+
+  public boolean isVisible() {
+    return visibility;
   }
 
   public boolean isSelected() {
@@ -63,8 +68,8 @@ public class SelectableNodeViewModel<T> extends BaseViewModel<T>
     return children;
   }
 
-  @Override
-  public void addVisibilityListener(Listener listener) {
-    isVisible.addValueObserver(listener, Listener::visibilityChanged);
+  @NotNull
+  public Stream<? extends SelectableNodeViewModel<?>> streamVisibleChildren() {
+    return children.stream().filter(SelectableNodeViewModel::isVisible);
   }
 }

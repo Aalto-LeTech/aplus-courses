@@ -122,6 +122,20 @@ public class Exercise {
     return maxSubmissions;
   }
 
+  /**
+   * Returns true if assignment is completed.
+   * @return True if userPoints are the same as maxPoints, otherwise False
+   */
+  public boolean isCompleted() {
+    // Optional assignments are never completed, since they can be filtered separately
+    // and we can't tell from the points whether the submission was correct or not
+    return userPoints == maxPoints && !isOptional();
+  }
+
+  public boolean isOptional() {
+    return maxSubmissions == 0 && maxPoints == 0;
+  }
+
   @Override
   public int hashCode() {
     return Long.hashCode(id);
