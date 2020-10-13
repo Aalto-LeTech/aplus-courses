@@ -25,6 +25,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtilRt;
 import fi.aalto.cs.apluscourses.intellij.DialogHelper;
 import fi.aalto.cs.apluscourses.intellij.actions.SubmitExerciseAction.Tagger;
+import fi.aalto.cs.apluscourses.intellij.model.ProjectModuleSource;
 import fi.aalto.cs.apluscourses.intellij.notifications.ExerciseNotSelectedNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.MissingFileNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.MissingModuleNotification;
@@ -100,7 +101,7 @@ public class SubmitExerciseActionTest {
   Dialogs.Factory<SubmissionViewModel> submissionDialogFactory;
   MainViewModelProvider mainVmProvider;
   FileFinder fileFinder;
-  SubmitExerciseAction.ModuleSource moduleSource;
+  ProjectModuleSource moduleSource;
   Dialogs dialogs;
   Notifier notifier;
   AnActionEvent event;
@@ -184,7 +185,7 @@ public class SubmitExerciseActionTest {
     doCallRealMethod().when(fileFinder).findFile(any(), any());
     doCallRealMethod().when(fileFinder).findFiles(any(), any());
 
-    moduleSource = mock(SubmitExerciseAction.ModuleSource.class);
+    moduleSource = mock(ProjectModuleSource.class);
     doReturn(new Module[]{module}).when(moduleSource).getModules(project);
     doReturn(module).when(moduleSource).getModule(project, moduleName);
 
