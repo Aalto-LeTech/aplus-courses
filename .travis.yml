@@ -14,11 +14,5 @@ addons:
 script:
   - chmod +x start_local_a+_env.sh && ./start_local_a+_env.sh && ./gradlew check && sonar-scanner
 
-deploy:
-  - provider: script
-    script: ./gradlew publishPlugin && ./gradlew publish
-    on:
-      branch: master
-
 env:
   - CI=true
