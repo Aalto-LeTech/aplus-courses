@@ -190,7 +190,8 @@ public class SubmitExerciseAction extends AnAction {
     } else {
       Module[] modules = moduleSource.getModules(project);
 
-      ModuleSelectionViewModel moduleSelectionViewModel = new ModuleSelectionViewModel(modules);
+      ModuleSelectionViewModel moduleSelectionViewModel = new ModuleSelectionViewModel(
+          modules, getText("ui.toolWindow.subTab.exercises.submission.selectModule"));
       if (!dialogs.create(moduleSelectionViewModel, project).showAndGet()) {
         return;
       }
