@@ -13,7 +13,10 @@ import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Module;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,6 +38,8 @@ public class MainViewModelUpdater {
   private Thread thread;
 
   private Notification newModulesVersionsNotification = null;
+
+  private final List<String> notifiedModules = new ArrayList<>();
 
   /**
    * Construct a {@link MainViewModelUpdater} with the given {@link MainViewModel}, project, and
@@ -175,12 +180,21 @@ public class MainViewModelUpdater {
     newCourse.register();
   }
 
+  protected List<Module> filterOldUpdatableModules(List<Module> modules) {
+    List<Module> newUpdatableModules = modules
+            .stream()
+            .filter(module -> !notifiedModules.contains(module.getName()))
+            .collect(Collectors.toList());
+    newUpdatableModules.forEach(module -> notifiedModules.add(module.getName()));
+    return newUpdatableModules;
+  }
+
   private void notifyNewVersions(Course newCourse) {
     if (newModulesVersionsNotification != null) {
       newModulesVersionsNotification.expire();
       newModulesVersionsNotification = null;
     }
-    List<Module> updatableModules = newCourse.getUpdatableModules();
+    List<Module> updatableModules = filterOldUpdatableModules(newCourse.getUpdatableModules());
     if (!updatableModules.isEmpty()) {
       newModulesVersionsNotification = new NewModulesVersionsNotification(updatableModules);
       notifier.notify(newModulesVersionsNotification, project);
