@@ -229,7 +229,7 @@ public class MainViewModelUpdater {
    * Interrupts the updater and starts it again. This can be used to trigger an instant main view
    * model update, skipping the sleep interval.
    */
-  public void restart() {
+  public synchronized void restart() {
     thread.interrupt();
     thread = new Thread(this::run);
     thread.start();
