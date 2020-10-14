@@ -6,29 +6,31 @@ import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
+import java.io.IOException;
 import org.jetbrains.annotations.NotNull;
 
-public class NetworkErrorNotification extends Notification {
+public class IoErrorNotification extends Notification {
 
   @NotNull
-  private final Exception exception;
+  private final IOException exception;
 
   /**
-   * Constructs a notification that notifies the user of an IO error arising from the HTTP client.
-   * @param exception An exception that caused this notification.
+   * Construct an error notification that tells the user of an IO error.
+   * @param exception The exception corresponding to the IO error.
    */
-  public NetworkErrorNotification(@NotNull Exception exception) {
+  public IoErrorNotification(@NotNull IOException exception) {
     super(
         PluginSettings.A_PLUS,
-        getText("notification.NetworkErrorNotification.title"),
-        getAndReplaceText("notification.NetworkErrorNotification.content",
+        getText("notification.IoErrorNotification.title"),
+        getAndReplaceText("notification.IoErrorNotification.content",
             exception.getMessage()),
         NotificationType.ERROR);
     this.exception = exception;
   }
 
   @NotNull
-  public Exception getException() {
+  public IOException getException() {
     return exception;
   }
+
 }
