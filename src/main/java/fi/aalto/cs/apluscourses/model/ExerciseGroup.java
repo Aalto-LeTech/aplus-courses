@@ -11,9 +11,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class ExerciseGroup {
+
+  private final long id;
   @NotNull
   private String name;
-
   @NotNull
   private Map<Long, Exercise> exercises;
 
@@ -23,7 +24,8 @@ public class ExerciseGroup {
    * @param name      The name of the exercise group.
    * @param exercises The exercises of this exercise group.
    */
-  public ExerciseGroup(@NotNull String name, @NotNull List<Exercise> exercises) {
+  public ExerciseGroup(long id, @NotNull String name, @NotNull List<Exercise> exercises) {
+    this.id = id;
     this.name = name;
     this.exercises = exercises
         .stream()
@@ -31,15 +33,16 @@ public class ExerciseGroup {
   }
 
   /**
-   * Construct an exercise group from the given JSON object. The JSON object must contain a string
-   * with the key "display_name" and an array with the key "exercises". Each of the JSON objects
-   * in the exercise array is given to {@link Exercise#fromJsonObject}.
+   * Construct an exercise group from the given JSON object. The JSON object must contain a long
+   * with the key "id", a string with the key "display_name", and an array with the key "exercises".
+   * Each of the JSON objects in the exercise array is given to {@link Exercise#fromJsonObject}.
    *
    * @param jsonObject The JSON object from which the exercise group is constructed.
    */
   @NotNull
   public static ExerciseGroup fromJsonObject(@NotNull JSONObject jsonObject,
                                              @NotNull Points points) {
+    long id = jsonObject.getLong("id");
     String name = jsonObject.getString("display_name");
     JSONArray exercisesArray = jsonObject.getJSONArray("exercises");
     List<Exercise> exercises = new ArrayList<>(exercisesArray.length());
@@ -47,7 +50,7 @@ public class ExerciseGroup {
       JSONObject exerciseObject = exercisesArray.getJSONObject(i);
       exercises.add(Exercise.fromJsonObject(exerciseObject, points));
     }
-    return new ExerciseGroup(name, exercises);
+    return new ExerciseGroup(id, name, exercises);
   }
 
   /**
@@ -62,6 +65,10 @@ public class ExerciseGroup {
       exerciseGroups.add(fromJsonObject(jsonArray.getJSONObject(i), points));
     }
     return exerciseGroups;
+  }
+
+  public long getId() {
+    return id;
   }
 
   public String getName() {

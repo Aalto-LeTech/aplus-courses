@@ -2,14 +2,12 @@ package fi.aalto.cs.apluscourses.presentation.base;
 
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import fi.aalto.cs.apluscourses.utils.Event;
-import fi.aalto.cs.apluscourses.utils.Tree;
 import java.util.Arrays;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class BaseTreeViewModel<T>
-    extends SelectableNodeViewModel<T> implements Tree {
+public class BaseTreeViewModel<T> extends SelectableNodeViewModel<T> {
 
   @NotNull
   public final Event filtered = new Event();
@@ -42,6 +40,11 @@ public class BaseTreeViewModel<T>
   @NotNull
   public Options getFilterOptions() {
     return options;
+  }
+
+  @Override
+  public long getId() {
+    return 0;
   }
 
   private class FilterThread extends Thread {

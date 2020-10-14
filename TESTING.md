@@ -13,9 +13,9 @@ Manual testing
 ### 0 Setup
 
 **0.1** Make sure you are using a clean installment of
-        **IntelliJ IDEA Community** version **2020.2**.
+        **IntelliJ IDEA Community** version **2020.2.2**.
 - You can download IntelliJ IDEA Community from https://www.jetbrains.com/idea/download.
-- In case you use pre-existing installment of IntelliJ IDEA,
+- In case you use an existing install of IntelliJ IDEA,
   you can use one of the following ways to restore to the default settings:
 
 **0.1.A.** In the main window, choose **File > Manage IDE Settings > Restore Default Settings...**
@@ -64,15 +64,15 @@ Manual testing
 
 **1.3** ASSERTION: IntelliJ IDEA asks to install **Scala Plugin**.
 
-**1.4** ASSERTION: IntelliJ IDEA requires a restart.
+**1.4** Install **Scala Plugin** by clicking **OK**.
 
-**1.5** Install **Scala Plugin** by clicking **OK**.
+**1.5** ASSERTION: IntelliJ IDEA requires a restart.
 
 **1.6** Restart IntelliJ IDEA.
 
 ### 2 Initialize a new project
 
-**2.1** In the startup window, click **Create New Project**.
+**2.1** In the startup window, click **New Project**.
 
 **2.2** In **New Project** window, choose **Empty Project** on a left-hand side list.
 
@@ -80,7 +80,7 @@ Manual testing
 
 **2.4** On the next view, click **Finish**.
 
-**2.5** If **Tip of the Day** window is shown,
+**2.5** If the **Tip of the Day** window is shown,
         check **Don't show tips** and click **Close**. 
 
 **2.6** ASSERTION: **Project Structure** window opens with **Modules** tab visible.
@@ -101,9 +101,9 @@ Manual testing
 
 ### 3 About window
 
-**3.1** From the main menu, choose **A+ > About A+ Plugin**.
+**3.1** From the main menu, choose **A+ > About the A+ Courses Plugin**.
 
-**3.2** The about window is shown.
+**3.2** ASSERTION: The information window is shown.
 
 **3.3** Click the highlighted **A+ Courses Plugin website** link.
 
@@ -117,13 +117,13 @@ Manual testing
 
 **4.2** On the dialog that opens, click **Cancel**.
 
-**4.3** ASSERTION: The dialog closes but nothing else seems to happen.
+**4.3** ASSERTION: The dialog closes and nothing else seems to happen.
 
 **4.4** Open **A+ > Turn project into A+ course project** again.
 
-**4.5** ASSERTION: **Leave IntelliJ settings unchanged** checkbutton is not checked.
+**4.5** ASSERTION: **Leave IntelliJ settings unchanged** check box is not checked.
 
-**4.6** Check "leave unchanged" checkbox.
+**4.6** Check the "leave unchanged" check box.
 
 **4.7** Select the desired language of assignments submission and click **OK**.
 
@@ -137,7 +137,7 @@ Manual testing
 
 **4.11** Once again, navigate to **A+ > Turn project into A+ course project**.
 
-**4.12** Leave the checkbox unchecked and click **OK**.
+**4.12** Leave the settings opt-out check box unchecked, select a language, and click **OK**.
 
 **4.13** The screen shows a dialog that tells the IDE will be restarted.
 
@@ -256,15 +256,15 @@ imported packages: **o1, o1.llama, o1.randomtext**.
 
 **6.24** Reopen REPL by choosing a folder or a file within **O1Library** module.
 
-**6.25** This time, leave **Don't show this window again** checkbox checked.
+**6.25** Change **Working directory** to be the directory of **SwingExamples** module.
 
-**6.26** Change **Working directory** to be the directory of **SwingExamples** module.
+**6.26** This time, leave **Don't show this window again** checkbox checked.
 
 **6.27** Click **OK**.
 
-**6.28** ASSERTION: A REPL opens with **O1Library** in its title.
+**6.28** ASSERTION: A Scala REPL opens with **O1Library** in its title.
 
-**6.29** In REPL, execute the same two commands as in **6.9**.
+**6.29** In the REPL, execute the same two commands as in **6.9**.
 
 **6.30** ASSERTION: The output of the first statement is the directory of **SwingExamples** module.
 
@@ -290,13 +290,14 @@ imported packages: **o1, o1.llama, o1.randomtext**.
 
 **6.39** Close the REPL.
 
-**6.40** Restart te IDE.
+**6.40** Restart the IDE.
 
-**6.41** Once the IDE has restarted, open the REPL by choosing any file.
+**6.41** Once the IDE has restarted, open a file from **O1Library** in the editor
+         and start the Scala REPL.
 
 **6.42** ASSERTION: **REPL Configuration** window does not show up.
 
-**6.43** ASSERTION: A REPL opens.
+**6.43** ASSERTION: A Scala REPL for **O1Library** opens.
 
 **6.44** Close the REPL.
 
@@ -304,7 +305,7 @@ imported packages: **o1, o1.llama, o1.randomtext**.
 
 **6.45** From the main menu, choose **A+ > Reset A+ Courses Plugin Settings**.
 
-**6.46** Open REPL by choosing any file.
+**6.46** Open the Scala REPL for **O1Library**.
 
 **6.47** ASSERTION: **REPL Configuration** window shows up.
 
@@ -323,7 +324,8 @@ imported packages: **o1, o1.llama, o1.randomtext**.
 
 **7.4** Double click **SwingExamples** in **Modules** list.
 
-**7.5** ASSERTION: **SwingExamples** shows up as a module in the project tree.
+**7.5** ASSERTION: **SwingExamples** shows up as a module in the project tree
+        and its status changes to **Installed** in the modules list.
 
 ### 8 Authentication with A+ LMS
 
@@ -341,16 +343,15 @@ imported packages: **o1, o1.llama, o1.randomtext**.
 
 ![Assignments shown](images/assignments-shown.png)
 
-**8.6** Close the IDE.
+**8.6** Restart the IDE.
 
-**8.7** Open the IDE with the project.
- 
-**8.8** ASSERTION: Assignments tab is still populated. If [safe password storage](https://jetbrains.org/intellij/sdk/docs/basics/persisting_sensitive_data.html?search=sensitive#storage) 
-is activated in the OS.
+**8.7** ASSERTION: All the assignments are listed in the assignments tab, assuming that the
+        [safe password storage](https://jetbrains.org/intellij/sdk/docs/basics/persisting_sensitive_data.html?search=sensitive#storage) 
+        is enabled in the OS.
 
 ### 9 Assignments submission
 
-**9.1** Expand **Week 1** and select **Assignment 2 (GoodStuff)**, and hit 
+**9.1** Expand **Week 1**, select **Assignment 2 (GoodStuff)**, and hit 
 **Submit A+ Assignment**.
 
 ![Submit](images/submit_button.png)
@@ -358,17 +359,21 @@ is activated in the OS.
 **9.2** ASSERTION: The **Could not find module: The A+ Courses plugin could not find the 
 module GoodStuff.** error is shown.
 
-**9.3** Go to **Modules** tab and install **GoodStuff** module like described in **6.1**
+**9.3** Go to **Modules** tab and install **GoodStuff** module like described in **5.1**
 
 **9.4** Repeat **9.1**.
 
 **9.5** ASSERTION: **Submit Assignment** dialog is shown.
 
-**9.6** Select **Submit as: > Submit alone**, click **OK**.
+**9.6** Select **Submit as: > Submit alone**, check the default group check box, and click **OK**.
 
-**9.7** ASSERTION: The **Assignment successfully sent for assessment: You will be notified here when
+**9.7** ASSERTION: The **Assignment sent for assessment: You will be notified here when
  feedback is available. (You may also always check any ... )** notification is shown.
  
+**9.8** Repeat **9.1**.
+
+**9.9** ASSERTION: The default group check box is checked and the group selection shows **Submit alone**.
+
 ### 10 Refreshing Modules and Assignments
 
 **10.1** Hit the **Refresh Assignments** or **Refresh Modules** button.
@@ -402,7 +407,7 @@ available. Click here to open the feedback.** notification is shown.
 
 **12.2** ASSERTION: **Non-submittable** and **Optional** menu items are checked.
 
-**12.3** Uncheck **Non-submittable** menu item.  Note: This makes the exercise tree to collapse.
+**12.3** Uncheck **Non-submittable** menu item. 
 
 **12.4** ASSERTION: Non-submittable (that is, grayed out) assignments are no longer in the tree.
 

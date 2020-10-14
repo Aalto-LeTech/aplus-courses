@@ -7,6 +7,7 @@ import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.SubmittableFile;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionViewModel;
 import fi.aalto.cs.apluscourses.ui.GuiObject;
+import fi.aalto.cs.apluscourses.ui.base.CheckBox;
 import fi.aalto.cs.apluscourses.ui.base.OurComboBox;
 import fi.aalto.cs.apluscourses.ui.base.OurDialogWrapper;
 import javax.swing.Action;
@@ -28,6 +29,8 @@ public class SubmissionDialog extends OurDialogWrapper {
 
   protected OurComboBox<Group> groupComboBox;
 
+  protected CheckBox defaultGroupCheckBox;
+
   protected JLabel submissionCount;
 
   @GuiObject
@@ -47,6 +50,8 @@ public class SubmissionDialog extends OurDialogWrapper {
 
     groupComboBox.selectedItemBindable.bindToSource(viewModel.selectedGroup);
     registerValidationItem(groupComboBox.selectedItemBindable);
+
+    defaultGroupCheckBox.isCheckedBindable.bindToSource(viewModel.makeDefaultGroup);
 
     warning.setText(viewModel.getSubmissionWarning());
 

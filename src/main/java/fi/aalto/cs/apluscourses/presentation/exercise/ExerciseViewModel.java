@@ -31,6 +31,10 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> {
         && !"Assignment  debugger".equals(name) && (maxSubmissions == 10 || maxSubmissions == 0);
   }
 
+  @Override
+  public long getId() {
+    return getModel().getId();
+  }
 
   public enum Status {
     OPTIONAL_PRACTICE,

@@ -2,14 +2,14 @@ package fi.aalto.cs.apluscourses.ui.exercise;
 
 import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
+import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseGroupViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseViewModel;
-import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionResultViewModel;
+import fi.aalto.cs.apluscourses.ui.base.TreeView;
 import icons.PluginIcons;
 import javax.swing.Icon;
 import javax.swing.JTree;
-import javax.swing.tree.DefaultMutableTreeNode;
 import org.jetbrains.annotations.NotNull;
 
 public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
@@ -43,15 +43,9 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
                                     boolean isLeaf,
                                     int row,
                                     boolean hasFocus) {
-    DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
-    Object userObject = node.getUserObject();
-    if (userObject == null || userObject instanceof ExercisesTreeViewModel) {
-      // This is the root node, which is hidden anyways.
-      return;
-    }
-
-    if (userObject instanceof ExerciseViewModel) {
-      ExerciseViewModel exerciseViewModel = (ExerciseViewModel) userObject;
+    SelectableNodeViewModel<?> viewModel = TreeView.getViewModel(value);
+    if (viewModel instanceof ExerciseViewModel) {
+      ExerciseViewModel exerciseViewModel = (ExerciseViewModel) viewModel;
       append(exerciseViewModel.getPresentableName());
       if (!exerciseViewModel.getStatusText().trim().isEmpty()) {
         append(" [" + exerciseViewModel.getStatusText() + "]", STATUS_TEXT_STYLE);
@@ -61,20 +55,19 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
           ? "Use the upload button to submit an exercise"
           : "This exercise cannot be submitted from the IDE");
       setIcon(statusToIcon(exerciseViewModel.getStatus()));
-    } else if (userObject instanceof ExerciseGroupViewModel) {
+    } else if (viewModel instanceof ExerciseGroupViewModel) {
       setIcon(PluginIcons.A_PLUS_EXERCISE_GROUP);
-      ExerciseGroupViewModel groupViewModel = (ExerciseGroupViewModel) userObject;
+      ExerciseGroupViewModel groupViewModel = (ExerciseGroupViewModel) viewModel;
       append(groupViewModel.getPresentableName());
       setEnabled(true);
       setIcon(PluginIcons.A_PLUS_EXERCISE_GROUP);
       setToolTipText("");
-    } else if (userObject instanceof SubmissionResultViewModel) {
-      SubmissionResultViewModel submissionResultViewModel = (SubmissionResultViewModel) userObject;
+    } else if (viewModel instanceof SubmissionResultViewModel) {
+      SubmissionResultViewModel submissionResultViewModel = (SubmissionResultViewModel) viewModel;
       setEnabled(true);
       append(submissionResultViewModel.getPresentableName());
       append(" [" + submissionResultViewModel.getStatusText() + "]", STATUS_TEXT_STYLE);
       setToolTipText("Double-click the submission to open it in the browser");
     }
   }
-
 }
