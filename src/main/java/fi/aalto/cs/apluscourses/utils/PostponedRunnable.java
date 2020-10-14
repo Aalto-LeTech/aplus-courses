@@ -16,7 +16,7 @@ public class PostponedRunnable implements Runnable {
   private Executor executor;
 
   /**
-   * This constructor allows giving a custom {@invokeLater} method, which is useful mostly for
+   * This constructor allows giving a custom {@code invokeLater} method, which is useful mostly for
    * testing purposes.
    */
   public PostponedRunnable(@NotNull Runnable task, @NotNull Executor executor) {

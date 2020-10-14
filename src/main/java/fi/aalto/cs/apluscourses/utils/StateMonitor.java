@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
  * as different integers, semantics of which can be chosen by the client code with the following
  * rules:
  * <ul>
- *   <li>The initial state is {@code INITIAL}</li>.
+ *   <li>The initial state is {@code INITIAL}</li>
  *   <li>All the states greater than or equal to {@code INITIAL} are considered non-error states.
  *   All the states less than or equal to {@code ERROR} are considered error states.</li>
  *   <li>Normally, the state can only increase, that is, on a single change, a new state can never

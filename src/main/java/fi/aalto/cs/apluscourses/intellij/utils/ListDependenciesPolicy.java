@@ -7,9 +7,9 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * This class is a {@RootPolicy} that builds a list of the names of those {@OrderEntry} objects that
- * represents dependencies of an {@IntelliJComponent} object (that is, modules and non-module-level
- * libraries).
+ * This class is a {@link RootPolicy} that builds a list of the names of those {@code OrderEntry}
+ * objects that represents dependencies of an {@code IntelliJComponent} object (that is, modules
+ * and non-module-level libraries).
  */
 public class ListDependenciesPolicy extends RootPolicy<List<String>> {
 
