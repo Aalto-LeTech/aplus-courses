@@ -13,8 +13,9 @@ import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Module;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
@@ -39,7 +40,7 @@ public class MainViewModelUpdater {
 
   private Notification newModulesVersionsNotification = null;
 
-  private final List<String> notifiedModules = new ArrayList<>();
+  private final Set<String> notifiedModules = ConcurrentHashMap.newKeySet();
 
   /**
    * Construct a {@link MainViewModelUpdater} with the given {@link MainViewModel}, project, and
@@ -181,12 +182,9 @@ public class MainViewModelUpdater {
   }
 
   protected List<Module> filterOldUpdatableModules(List<Module> modules) {
-    List<Module> newUpdatableModules = modules
-            .stream()
-            .filter(module -> !notifiedModules.contains(module.getName()))
+    return modules.stream()
+            .filter(m -> notifiedModules.add(m.getName()))
             .collect(Collectors.toList());
-    newUpdatableModules.forEach(module -> notifiedModules.add(module.getName()));
-    return newUpdatableModules;
   }
 
   private void notifyNewVersions(Course newCourse) {
