@@ -4,12 +4,14 @@ import com.intellij.openapi.roots.LibraryOrderEntry;
 import com.intellij.openapi.roots.ModuleOrderEntry;
 import com.intellij.openapi.roots.RootPolicy;
 import java.util.List;
+
 import org.jetbrains.annotations.NotNull;
 
 /**
- * This class is a {@RootPolicy} that builds a list of the names of those {@OrderEntry} objects that
- * represents dependencies of an {@IntelliJComponent} object (that is, modules and non-module-level
- * libraries).
+ * This class is a {@link RootPolicy} that builds a list of the names of those
+ * {@link com.intellij.openapi.roots.OrderEntry} objects that represents dependencies of an
+ * {@link fi.aalto.cs.apluscourses.intellij.model.IntelliJComponent} object (that is, modules
+ * and non-module-level libraries).
  */
 public class ListDependenciesPolicy extends RootPolicy<List<String>> {
 
