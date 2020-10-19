@@ -13,9 +13,9 @@ import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Module;
 import java.net.URL;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
@@ -40,7 +40,7 @@ public class MainViewModelUpdater {
 
   private Notification newModulesVersionsNotification = null;
 
-  private final Set<String> notifiedModules = new HashSet<>();
+  private final Set<String> notifiedModules = ConcurrentHashMap.newKeySet();
 
   /**
    * Construct a {@link MainViewModelUpdater} with the given {@link MainViewModel}, project, and
