@@ -19,7 +19,7 @@ public class ModuleListView
     elementView.nameLabel.setText(element.getName());
     ComponentUtil.setFont(elementView.nameLabel, TextAttribute.WEIGHT, element.getFontWeight());
     elementView.statusLabel.setText("[" + element.getStatus() + "]");
-    elementView.basePanel.setToolTipText(element.getUrl());
+    elementView.basePanel.setToolTipText(element.getTooltip());
     elementView.updateLabel.setVisible(element.isUpdateAvailable());
   }
 }

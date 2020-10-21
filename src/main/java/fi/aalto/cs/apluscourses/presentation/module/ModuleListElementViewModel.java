@@ -7,6 +7,10 @@ import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.presentation.base.BaseViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.ListElementViewModel;
 import java.awt.font.TextAttribute;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+
 import org.jetbrains.annotations.NotNull;
 
 public class ModuleListElementViewModel extends ListElementViewModel<Module> {
@@ -22,6 +26,20 @@ public class ModuleListElementViewModel extends ListElementViewModel<Module> {
 
   public String getUrl() {
     return getModel().getUrl().toString();
+  }
+
+  /**
+   * Returns the timestamp of the module if it's defined, else the URL.
+   * @return A {@link String} with info about the module.
+   */
+  public String getTooltip() {
+    ZonedDateTime timestamp = getModel().getTimestamp();
+    if (timestamp != null) {
+      return "Installed: " + timestamp.format(
+              DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT));
+    } else {
+      return "Available at " + getUrl();
+    }
   }
 
   public Boolean isUpdateAvailable() {
