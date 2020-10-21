@@ -34,12 +34,10 @@ public class ModuleListElementViewModel extends ListElementViewModel<Module> {
    */
   public String getTooltip() {
     ZonedDateTime timestamp = getModel().getMetadata().getDownloadedAt();
-    if (timestamp != null) {
-      return "Installed: " + timestamp.format(
-              DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT));
-    } else {
-      return "Available at " + getUrl();
-    }
+    return timestamp != null
+        ? "Installed: " + timestamp.format(
+          DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT))
+        : "Available at " + getUrl();
   }
 
   public Boolean isUpdateAvailable() {
