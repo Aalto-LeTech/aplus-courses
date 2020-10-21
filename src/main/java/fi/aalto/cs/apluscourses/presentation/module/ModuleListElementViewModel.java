@@ -38,7 +38,7 @@ public class ModuleListElementViewModel extends ListElementViewModel<Module> {
     return timestamp != null
         ? PluginResourceBundle.getAndReplaceText(
                 "presentation.moduleTooltip.timestamp",
-                DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT))
+                timestamp.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)))
         : PluginResourceBundle.getAndReplaceText(
                 "presentation.moduleTooltip.moduleURL", getUrl());
   }
