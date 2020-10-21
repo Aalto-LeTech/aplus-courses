@@ -114,10 +114,6 @@ public abstract class Module extends Component {
     return url;
   }
 
-  public @Nullable ZonedDateTime getTimestamp() {
-    return downloadedAt;
-  }
-
   /**
    * Tells whether or not the module has local changes.
    *

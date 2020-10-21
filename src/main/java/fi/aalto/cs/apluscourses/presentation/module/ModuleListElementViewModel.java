@@ -33,7 +33,7 @@ public class ModuleListElementViewModel extends ListElementViewModel<Module> {
    * @return A {@link String} with info about the module.
    */
   public String getTooltip() {
-    ZonedDateTime timestamp = getModel().getTimestamp();
+    ZonedDateTime timestamp = getModel().getMetadata().getDownloadedAt();
     if (timestamp != null) {
       return "Installed: " + timestamp.format(
               DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT));
