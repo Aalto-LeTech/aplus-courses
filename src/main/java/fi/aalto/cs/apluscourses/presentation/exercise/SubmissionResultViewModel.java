@@ -26,7 +26,8 @@ public class SubmissionResultViewModel extends SelectableNodeViewModel<Submissio
 
   @NotNull
   public String getStatusText() {
-    return getModel().getPoints() + "/" + getModel().getExercise().getMaxPoints() + " points";
+    String status = getModel().getPoints() + "/" + getModel().getExercise().getMaxPoints() + " points";
+    return (getModel().getStatus() == SubmissionResult.Status.UNKNOWN) ? "In grading" : status;
   }
 
   @Override
