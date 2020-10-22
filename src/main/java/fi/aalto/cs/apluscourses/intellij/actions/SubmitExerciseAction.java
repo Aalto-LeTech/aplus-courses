@@ -10,9 +10,9 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
+import fi.aalto.cs.apluscourses.intellij.model.ProjectModuleSource;
 import fi.aalto.cs.apluscourses.intellij.notifications.ExerciseNotSelectedNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.MissingFileNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.MissingModuleNotification;
@@ -66,7 +66,7 @@ public class SubmitExerciseAction extends AnAction {
   private final FileFinder fileFinder;
 
   @NotNull
-  private final ModuleSource moduleSource;
+  private final ProjectModuleSource moduleSource;
 
   @NotNull
   private final Dialogs dialogs;
@@ -85,7 +85,7 @@ public class SubmitExerciseAction extends AnAction {
     this(
         PluginSettings.getInstance(),
         VfsUtil::findFileInDirectory,
-        DefaultModuleSource.INSTANCE,
+        new ProjectModuleSource(),
         Dialogs.DEFAULT,
         Notifications.Bus::notify,
         LocalHistory.getInstance()::putSystemLabel,
@@ -99,7 +99,7 @@ public class SubmitExerciseAction extends AnAction {
    */
   public SubmitExerciseAction(@NotNull MainViewModelProvider mainViewModelProvider,
                               @NotNull FileFinder fileFinder,
-                              @NotNull ModuleSource moduleSource,
+                              @NotNull ProjectModuleSource moduleSource,
                               @NotNull Dialogs dialogs,
                               @NotNull Notifier notifier,
                               @NotNull Tagger tagger,
@@ -190,7 +190,8 @@ public class SubmitExerciseAction extends AnAction {
     } else {
       Module[] modules = moduleSource.getModules(project);
 
-      ModuleSelectionViewModel moduleSelectionViewModel = new ModuleSelectionViewModel(modules);
+      ModuleSelectionViewModel moduleSelectionViewModel = new ModuleSelectionViewModel(
+          modules, getText("ui.toolWindow.subTab.exercises.submission.selectModule"));
       if (!dialogs.create(moduleSelectionViewModel, project).showAndGet()) {
         return;
       }
@@ -257,32 +258,6 @@ public class SubmitExerciseAction extends AnAction {
 
   private void addLocalHistoryTag(@NotNull Project project, @NotNull String tag) {
     tagger.putSystemLabel(project, tag, ACCENT_COLOR);
-  }
-
-  public interface ModuleSource {
-
-    @NotNull
-    Module[] getModules(@NotNull Project project);
-
-    @Nullable
-    Module getModule(@NotNull Project project, @NotNull String moduleName);
-  }
-
-  private static class DefaultModuleSource implements ModuleSource {
-
-    public static final ModuleSource INSTANCE = new DefaultModuleSource();
-
-    @Override
-    @NotNull
-    public Module[] getModules(@NotNull Project project) {
-      return ModuleManager.getInstance(project).getModules();
-    }
-
-    @Override
-    @Nullable
-    public Module getModule(@NotNull Project project, @NotNull String moduleName) {
-      return ModuleManager.getInstance(project).findModuleByName(moduleName);
-    }
   }
 
   private static class ModuleMissingException extends Exception {

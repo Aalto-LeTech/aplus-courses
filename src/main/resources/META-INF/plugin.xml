@@ -56,6 +56,10 @@
                     class="fi.aalto.cs.apluscourses.intellij.actions.ResetSettingsAction"
                     text="Reset A+ Courses Plugin Settings"
                     description="Reset all the settings related to the A+ Courses plugin." />
+            <action id="fi.aalto.cs.apluscourses.intellij.actions.ExportModuleAction"
+                    class="fi.aalto.cs.apluscourses.intellij.actions.ExportModuleAction"
+                    text="Export Module"
+                    description="Export the contents of a module to a ZIP file." />
             <action id="fi.aalto.cs.apluscourses.intellij.actions.AboutAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.AboutAction"
                     text="About the A+ Courses Plugin"
