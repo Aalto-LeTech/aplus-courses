@@ -24,7 +24,7 @@
     ]]></description>
 
     <change-notes>
-        Add option to remember group selection, improve assignments filtering, and fix bugs.
+        Add functionality for exporting modules.
     </change-notes>
 
     <depends>com.intellij.modules.java</depends>
