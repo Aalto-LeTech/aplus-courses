@@ -26,7 +26,10 @@ public class SubmissionResultViewModel extends SelectableNodeViewModel<Submissio
 
   @NotNull
   public String getStatusText() {
-    return getModel().getPoints() + "/" + getModel().getExercise().getMaxPoints() + " points";
+    String points = getModel().getTestResults().isEmpty()
+            ? " points"
+            : "";
+    return getModel().getFeedbackString() + points;
   }
 
   @Override

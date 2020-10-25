@@ -17,7 +17,7 @@ public class FeedbackAvailableNotification extends Notification {
   /**
    * Construct a notification that notifies the user that feedback is available for a submission.
    * The notification contains a link that can be used to open the feedback and the amount of
-   * points the submission got.
+   * points, or the test results the submission got.
    */
   public FeedbackAvailableNotification(@NotNull SubmissionResult submissionResult,
                                        @NotNull Exercise exercise) {
@@ -26,7 +26,7 @@ public class FeedbackAvailableNotification extends Notification {
         getText("notification.FeedbackAvailableNotification.title"),
         getAndReplaceText("notification.FeedbackAvailableNotification.content",
             APlusLocalizationUtil.getEnglishName(exercise.getName()),
-            String.format("%1$d/%2$d", submissionResult.getPoints(), exercise.getMaxPoints())),
+            submissionResult.getFeedbackString()),
         NotificationType.INFORMATION
     );
     super.addAction(new OpenSubmissionNotificationAction(submissionResult));
