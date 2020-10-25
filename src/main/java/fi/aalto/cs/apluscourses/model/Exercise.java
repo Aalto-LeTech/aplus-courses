@@ -26,6 +26,8 @@ public class Exercise {
 
   private final int maxSubmissions;
 
+  private boolean optionalCompleted = false;
+
   /**
    * Construct an exercise instance with the given parameters.
    *
@@ -122,14 +124,12 @@ public class Exercise {
     return maxSubmissions;
   }
 
-  /**
-   * Returns true if assignment is completed.
-   * @return True if userPoints are the same as maxPoints, otherwise False
-   */
+  public void setCompleted(boolean completed) {
+    this.optionalCompleted = completed;
+  }
+
   public boolean isCompleted() {
-    // Optional assignments are never completed, since they can be filtered separately
-    // and we can't tell from the points whether the submission was correct or not
-    return userPoints == maxPoints && !isOptional();
+    return (userPoints == maxPoints && !isOptional()) || optionalCompleted;
   }
 
   public boolean isOptional() {
