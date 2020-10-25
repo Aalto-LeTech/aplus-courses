@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.model;
 
+import fi.aalto.cs.apluscourses.utils.FeedbackParser;
+import java.util.HashMap;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
@@ -8,12 +10,14 @@ public class SubmissionResult {
   public enum Status {
     UNKNOWN,
     GRADED,
-    UNOFFICIAL;
+    UNOFFICIAL
   }
 
   private final long submissionId;
 
   private final int points;
+
+  private HashMap<String, Integer> testResults = new HashMap<>();
 
   @NotNull
   private final Status status;
@@ -36,7 +40,8 @@ public class SubmissionResult {
 
   /**
    * Construct a {@link SubmissionResult} instance from the given JSON object. The JSON object must
-   * contain an integer for the "id" key, and optionally a string value for the "status" key.
+   * contain an integer for the "id" key, a string for the "feedback" key, and optionally a string
+   * value for the "status" key.
    */
   @NotNull
   public static SubmissionResult fromJsonObject(@NotNull JSONObject jsonObject,
@@ -52,7 +57,46 @@ public class SubmissionResult {
       status = Status.UNOFFICIAL;
     }
 
-    return new SubmissionResult(id, points, status, exercise);
+    SubmissionResult submissionResult = new SubmissionResult(id, points, status, exercise);
+
+    if (exercise.isOptional()) {
+      String feedback = jsonObject.getString("feedback");
+      submissionResult.setTestResults(feedback);
+    }
+
+    return submissionResult;
+  }
+
+  private void setExerciseCompleted() {
+    if (!testResults.isEmpty()
+            && testResults.get("failed") == 0
+            && testResults.get("canceled") == 0) {
+      exercise.setCompleted(true);
+    }
+  }
+
+  public void setTestResults(HashMap<String, Integer> results) {
+    this.testResults = results;
+    setExerciseCompleted();
+  }
+
+  public void setTestResults(String feedback) {
+    this.testResults = FeedbackParser.testResultsMap(feedback).orElse(this.testResults);
+    setExerciseCompleted();
+  }
+
+  public HashMap<String, Integer> getTestResults() {
+    return testResults;
+  }
+
+  /**
+   * Returns a string containing either the points of the submission,
+   * or the test results, if they exist.
+   */
+  public String getFeedbackString() {
+    return testResults.isEmpty()
+        ? String.format("%1$d/%2$d", points, exercise.getMaxPoints())
+        : FeedbackParser.testResultString(testResults);
   }
 
   public long getId() {
