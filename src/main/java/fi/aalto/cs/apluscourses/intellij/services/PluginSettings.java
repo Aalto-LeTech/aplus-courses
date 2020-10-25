@@ -163,7 +163,7 @@ public class PluginSettings implements MainViewModelProvider {
       ProjectManager
           .getInstance()
           .addProjectManagerListener(project, projectManagerListener);
-      return new MainViewModel(exerciseFilterOptions);
+      return new MainViewModel(exerciseFilterOptions, project);
     });
   }
 
@@ -192,7 +192,7 @@ public class PluginSettings implements MainViewModelProvider {
       ProjectManager
           .getInstance()
           .addProjectManagerListener(project, projectManagerListener);
-      return new MainViewModel(exerciseFilterOptions);
+      return new MainViewModel(exerciseFilterOptions, project);
     });
 
     mainViewModelUpdaters.computeIfAbsent(key, projectKey -> {

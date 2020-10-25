@@ -1,13 +1,17 @@
 package fi.aalto.cs.apluscourses.presentation;
 
+import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.dal.PasswordStorage;
 import fi.aalto.cs.apluscourses.dal.TokenAuthentication;
+import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
+import fi.aalto.cs.apluscourses.intellij.utils.CourseFileManager;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.ExerciseDataSource;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
 import fi.aalto.cs.apluscourses.model.InvalidAuthenticationException;
 import fi.aalto.cs.apluscourses.model.Points;
+import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import fi.aalto.cs.apluscourses.presentation.base.BaseViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
@@ -15,6 +19,7 @@ import fi.aalto.cs.apluscourses.utils.Event;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -46,11 +51,21 @@ public class MainViewModel {
 
   private AtomicBoolean hasTriedToReadAuthenticationFromStorage = new AtomicBoolean(false);
 
+  private Project project;
+
   /**
    * Instantiates a class representing the whole main view of the plugin.
    */
   public MainViewModel(@NotNull Options exerciseFilterOptions) {
     this.exerciseFilterOptions = exerciseFilterOptions;
+    courseViewModel.addValueObserver(this, MainViewModel::updateExercises);
+    authentication.addValueObserver(this, MainViewModel::updateExercises);
+  }
+
+
+  public MainViewModel(@NotNull Options exerciseFilterOptions, @NotNull Project project) {
+    this.exerciseFilterOptions = exerciseFilterOptions;
+    this.project = project;
     courseViewModel.addValueObserver(this, MainViewModel::updateExercises);
     authentication.addValueObserver(this, MainViewModel::updateExercises);
   }
@@ -68,6 +83,35 @@ public class MainViewModel {
     try {
       Points points = dataSource.getPoints(course, auth);
       List<ExerciseGroup> exerciseGroups = dataSource.getExerciseGroups(course, points, auth);
+      if (project != null) {
+        for (ExerciseGroup exerciseGroup : exerciseGroups) {
+          CourseFileManager courseFileManager = PluginSettings
+                              .getInstance()
+                              .getCourseFileManager(project);
+          exerciseGroup.getExercises().forEach((exerciseId, exercise) -> {
+            if (exercise.isOptional()) {
+              for (SubmissionResult submissionResult : exercise.getSubmissionResults()) {
+                HashMap<String, Integer> newResults =
+                        (HashMap<String, Integer>) courseFileManager
+                                    .getTestResults(submissionResult.getId());
+                submissionResult.setTestResults(newResults);
+                if (newResults.isEmpty()) {
+                  try {
+                    SubmissionResult newResult = dataSource.getSubmissionResult(
+                            course.getApiUrl() + "/submissions/" + submissionResult.getId(),
+                            exercise,
+                            auth);
+                    submissionResult.setTestResults(newResult.getTestResults());
+                    courseFileManager.addTestResultsEntry(newResult);
+                  } catch (IOException e) {
+                    logger.error("Failed to fetch submission feedback", e);
+                  }
+                }
+              }
+            }
+          });
+        }
+      }
       exercisesViewModel.set(new ExercisesTreeViewModel(exerciseGroups, exerciseFilterOptions));
     } catch (InvalidAuthenticationException e) {
       logger.error("Failed to fetch exercises", e);
