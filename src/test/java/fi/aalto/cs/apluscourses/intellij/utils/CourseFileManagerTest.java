@@ -35,6 +35,9 @@ public class CourseFileManagerTest {
 
   private static final String URL_KEY = "url";
   private static final String LANGUAGE_KEY = "language";
+  private static final String EXERCISES_KEY = "exercises";
+  private static final String SUBMISSIONS_KEY = "submissions";
+  private static final String TEST_RESULTS_KEY = "testResults";
   private static final String MODULES_KEY = "modules";
   private static final String MODULE_ID_KEY = "id";
   private static final String MODULE_DOWNLOADED_AT_KEY = "downloadedAt";
@@ -124,10 +127,23 @@ public class CourseFileManagerTest {
             .put(MODULE_ID_KEY, "abc")
             .put(MODULE_DOWNLOADED_AT_KEY, ZonedDateTime.now())
     );
+    JSONObject exercisesObject = new JSONObject().put("123",
+        new JSONObject().put(SUBMISSIONS_KEY,
+        new JSONObject().put("1",
+        new JSONObject().put(TEST_RESULTS_KEY,
+        new JSONObject()
+              .put("succeeded", 8)
+              .put("failed",    2)
+              .put("canceled",  0)
+          )
+        )
+      )
+    );
     JSONObject jsonObject = new JSONObject()
         .put(URL_KEY, oldUrl)
         .put(LANGUAGE_KEY, oldLanguage)
-        .put(MODULES_KEY, modulesObject);
+        .put(MODULES_KEY, modulesObject)
+        .put(EXERCISES_KEY, exercisesObject);
 
     FileUtils.writeStringToFile(courseFile, jsonObject.toString(), StandardCharsets.UTF_8);
 
@@ -147,6 +163,10 @@ public class CourseFileManagerTest {
         1, manager.getModulesMetadata().size());
     Assert.assertEquals("CourseFileManager#createAndLoad gets the existing modules metadata",
         "abc", manager.getModulesMetadata().get("awesome module").getModuleId());
+    Assert.assertEquals("CourseFileManager#createAndLoad gets the existing exercise test results",
+        3, manager.getTestResults(1L).size());
+    Assert.assertEquals("CourseFileManager#createAndLoad gets the existing exercise test results",
+        8, manager.getTestResults(1L).get("succeeded").intValue());
   }
 
   @Test
