@@ -10,6 +10,7 @@ import fi.aalto.cs.apluscourses.model.Module;
 import java.awt.font.TextAttribute;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.ZonedDateTime;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Test;
 
@@ -41,6 +42,23 @@ public class ModuleListElementViewModelTest {
         name, moduleViewModel.getName());
     assertEquals("getUrl() should return module's URL",
         url, moduleViewModel.getUrl());
+  }
+
+  @Test
+  public void testModuleTooltip() throws MalformedURLException {
+    URL url = new URL("https://example.com/wanda");
+    Module moduleAvailable = new ModelExtensions.TestModule("", url, "", null, null);
+    Module moduleInstalled = new ModelExtensions.TestModule(
+            "", url, "", null, ZonedDateTime.now());
+    ModuleListElementViewModel moduleViewModelAvailable =
+            new ModuleListElementViewModel(moduleAvailable);
+    ModuleListElementViewModel moduleViewModelInstalled =
+            new ModuleListElementViewModel(moduleInstalled);
+
+    assertTrue("The tooltip for a non-downloaded module should contain Available",
+            moduleViewModelAvailable.getTooltip().contains("Available"));
+    assertTrue("The tooltip for a downloaded module should contain Installed",
+            moduleViewModelInstalled.getTooltip().contains("Installed"));
   }
 
   @Test

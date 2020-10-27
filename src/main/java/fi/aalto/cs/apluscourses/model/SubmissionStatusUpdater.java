@@ -4,6 +4,7 @@ import com.intellij.notification.Notifications;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.notifications.FeedbackAvailableNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
+import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import java.io.IOException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -110,6 +111,7 @@ public class SubmissionStatusUpdater {
               dataSource.getSubmissionResult(submissionUrl, exercise, authentication);
           if (submissionResult.getStatus() != SubmissionResult.Status.UNKNOWN) {
             notifier.notify(new FeedbackAvailableNotification(submissionResult, exercise), project);
+            PluginSettings.getInstance().updateMainViewModel(project);
             return;
           }
         } catch (IOException e) {

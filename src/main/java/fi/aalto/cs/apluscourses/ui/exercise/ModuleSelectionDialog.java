@@ -8,11 +8,13 @@ import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
 import fi.aalto.cs.apluscourses.presentation.ModuleSelectionViewModel;
 import fi.aalto.cs.apluscourses.ui.Dialog;
+import fi.aalto.cs.apluscourses.ui.GuiObject;
 import fi.aalto.cs.apluscourses.ui.IconListCellRenderer;
 import fi.aalto.cs.apluscourses.ui.base.OurComboBox;
 import icons.PluginIcons;
 import javax.swing.Action;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import org.jetbrains.annotations.NotNull;
@@ -24,7 +26,8 @@ public class ModuleSelectionDialog extends DialogWrapper
   private final ModuleSelectionViewModel viewModel;
   private JPanel basePanel;
   private OurComboBox<Module> modulesComboBox;
-  private final Project project;
+  @GuiObject
+  private JLabel infoLabel;
 
   /**
    * Construct a module selection dialog with the given view model.
@@ -32,7 +35,6 @@ public class ModuleSelectionDialog extends DialogWrapper
   public ModuleSelectionDialog(@NotNull ModuleSelectionViewModel viewModel,
                                @Nullable Project project) {
     super(project);
-    this.project = project;
     this.viewModel = viewModel;
     setButtonsAlignment(SwingConstants.CENTER);
     setTitle(getText("ui.toolWindow.subTab.exercises.submission.selectModuleShort"));
@@ -64,6 +66,7 @@ public class ModuleSelectionDialog extends DialogWrapper
 
   @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
   private void createUIComponents() {
+    infoLabel = new JLabel(viewModel.getInfoText());
     modulesComboBox = new OurComboBox<>(viewModel.getModules(), Module.class);
     modulesComboBox.setRenderer(new IconListCellRenderer<>(viewModel.getPrompt(),
         Module::getName, PluginIcons.A_PLUS_MODULE));

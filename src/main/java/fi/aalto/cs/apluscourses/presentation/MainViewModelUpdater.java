@@ -14,6 +14,10 @@ import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Module;
 import java.net.URL;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,6 +39,8 @@ public class MainViewModelUpdater {
   private Thread thread;
 
   private Notification newModulesVersionsNotification = null;
+
+  private final Set<String> notifiedModules = ConcurrentHashMap.newKeySet();
 
   /**
    * Construct a {@link MainViewModelUpdater} with the given {@link MainViewModel}, project, and
@@ -175,12 +181,18 @@ public class MainViewModelUpdater {
     newCourse.register();
   }
 
+  protected List<Module> filterOldUpdatableModules(List<Module> modules) {
+    return modules.stream()
+            .filter(m -> notifiedModules.add(m.getName()))
+            .collect(Collectors.toList());
+  }
+
   private void notifyNewVersions(Course newCourse) {
     if (newModulesVersionsNotification != null) {
       newModulesVersionsNotification.expire();
       newModulesVersionsNotification = null;
     }
-    List<Module> updatableModules = newCourse.getUpdatableModules();
+    List<Module> updatableModules = filterOldUpdatableModules(newCourse.getUpdatableModules());
     if (!updatableModules.isEmpty()) {
       newModulesVersionsNotification = new NewModulesVersionsNotification(updatableModules);
       notifier.notify(newModulesVersionsNotification, project);
@@ -229,7 +241,7 @@ public class MainViewModelUpdater {
    * Interrupts the updater and starts it again. This can be used to trigger an instant main view
    * model update, skipping the sleep interval.
    */
-  public void restart() {
+  public synchronized void restart() {
     thread.interrupt();
     thread = new Thread(this::run);
     thread.start();

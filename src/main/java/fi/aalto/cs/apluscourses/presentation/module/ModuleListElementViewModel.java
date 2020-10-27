@@ -6,7 +6,12 @@ import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.presentation.base.BaseViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.ListElementViewModel;
+import fi.aalto.cs.apluscourses.utils.PluginResourceBundle;
 import java.awt.font.TextAttribute;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+
 import org.jetbrains.annotations.NotNull;
 
 public class ModuleListElementViewModel extends ListElementViewModel<Module> {
@@ -22,6 +27,20 @@ public class ModuleListElementViewModel extends ListElementViewModel<Module> {
 
   public String getUrl() {
     return getModel().getUrl().toString();
+  }
+
+  /**
+   * Returns the timestamp of the module if it's defined, else the URL.
+   * @return A {@link String} with info about the module.
+   */
+  public String getTooltip() {
+    ZonedDateTime timestamp = getModel().getMetadata().getDownloadedAt();
+    return timestamp != null
+        ? PluginResourceBundle.getAndReplaceText(
+                "presentation.moduleTooltip.timestamp",
+                timestamp.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)))
+        : PluginResourceBundle.getAndReplaceText(
+                "presentation.moduleTooltip.moduleURL", getUrl());
   }
 
   public Boolean isUpdateAvailable() {
