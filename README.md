@@ -1,10 +1,10 @@
+# ![A+ Courses logo](images/logo_courses.svg)
+
 [![Build Status](https://travis-ci.com/Aalto-LeTech/intellij-plugin.svg?branch=test)](https://travis-ci.com/Aalto-LeTech/intellij-plugin)
 [![Known Vulnerabilities](https://snyk.io/test/github/Aalto-LeTech/intellij-plugin/badge.svg?targetFile=build.gradle)](https://snyk.io/test/github/Aalto-LeTech/intellij-plugin)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FAalto-LeTech%2Fintellij-plugin.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FAalto-LeTech%2Fintellij-plugin)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Aalto-LeTech_intellij-plugin&metric=coverage)](https://sonarcloud.io/dashboard?id=Aalto-LeTech_intellij-plugin)
 [![JetBrains IntelliJ plugins](https://img.shields.io/jetbrains/plugin/d/13634-a-plugin-for-intellij?label=plugin%20downloads)](https://plugins.jetbrains.com/plugin/13634-a-plugin-for-intellij)
-
-# ![Small_Logo](images/small_logo.png) A+ Courses
 
 This repository hosts the code for the A+ Courses [IntelliJ IDEA](https://www.jetbrains.com/idea/) plugin communicating with the [A+ learning management system](https://apluslms.github.io/). It allows users to download code modules, submit assignments, and use the Scala REPL more conveniently among other learning experience improvements. The plugin is currently used in introductory programming courses taught at Aalto University.
 

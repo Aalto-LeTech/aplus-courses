@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="78.331mm" height="29.13mm" version="1.1" viewBox="0 0 78.331 29.13" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+ <metadata>
+  <rdf:RDF>
+   <cc:Work rdf:about="">
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:title/>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <g transform="translate(-99.806 -144.27)">
+  <path d="m117 173.37 5.2917-1e-5v-11.906l11.906 1e-5v-5.2917l-11.906-1e-5v-11.906l-5.2917 1e-5v11.906l-11.906 1e-5v5.2917l11.906-1e-5z" fill="#1b1b1b"/>
+  <path d="m117 144.27-17.198 29.104h5.2917l11.906-20.149z" fill="#ff0090"/>
+  <text x="122.97994" y="173.07538" fill="#1b1b1b" font-family="'Nimbus Sans'" font-size="13.886px" font-weight="bold" stroke-width=".43348" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal" xml:space="preserve"><tspan x="122.97994" y="173.07538" fill="#1b1b1b" font-family="'Nimbus Sans'" font-size="13.886px" font-weight="bold" stroke-width=".43348" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal">Courses</tspan></text>
+ </g>
+</svg>
