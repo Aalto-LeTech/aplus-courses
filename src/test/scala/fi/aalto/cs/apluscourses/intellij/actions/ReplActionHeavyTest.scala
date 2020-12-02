@@ -5,9 +5,10 @@ import com.intellij.openapi.project.Project
 import com.intellij.testFramework.HeavyPlatformTestCase
 import fi.aalto.cs.apluscourses.intellij.TestHelperScala
 import org.junit.Assert.{assertEquals, assertSame, assertTrue}
-import org.junit.Test
+import org.junit.{Ignore, Test}
 import org.mockito.Mockito.{mock, when}
 
+@Ignore
 class ReplActionHeavyTest extends HeavyPlatformTestCase with TestHelperScala {
 
   @Test
