@@ -37,7 +37,7 @@ dependencies {
 intellij {
     //  this is the version of the IntelliJ IDEA API (SDK) used to build the plugin
     version '2020.3'
-    plugins = ['java', 'org.intellij.scala:2020.3.15']
+    plugins = ['java', 'org.intellij.scala:2020.3.16']
 }
 
 publishPlugin {
