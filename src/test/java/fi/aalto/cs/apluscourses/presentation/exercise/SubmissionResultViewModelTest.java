@@ -17,7 +17,7 @@ public class SubmissionResultViewModelTest {
     SubmissionResultViewModel viewModel = new SubmissionResultViewModel(submissionResult, 34);
 
     assertEquals("Submission 34", viewModel.getPresentableName());
-    assertEquals("15/25 points", viewModel.getStatusText());
+    assertEquals("In grading", viewModel.getStatusText());
     assertTrue(viewModel.getChildren().isEmpty());
   }
 
