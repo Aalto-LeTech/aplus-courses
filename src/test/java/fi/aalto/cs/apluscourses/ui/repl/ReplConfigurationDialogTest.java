@@ -9,8 +9,10 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import fi.aalto.cs.apluscourses.TestHelper;
 import javax.swing.JPanel;
 import org.jetbrains.annotations.NotNull;
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore
 public class ReplConfigurationDialogTest extends BasePlatformTestCase implements TestHelper {
 
   @Test
