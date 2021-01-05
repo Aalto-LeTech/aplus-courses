@@ -17,7 +17,7 @@ import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.ComponentInstaller;
 import fi.aalto.cs.apluscourses.model.ComponentInstallerImpl;
 import fi.aalto.cs.apluscourses.model.Course;
-import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationFileException;
+import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationException;
 import fi.aalto.cs.apluscourses.presentation.CourseProjectViewModel;
 import fi.aalto.cs.apluscourses.ui.InstallerDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogs;
@@ -203,7 +203,7 @@ public class CourseProjectAction extends AnAction {
 
     @NotNull
     Course fromUrl(@NotNull URL courseUrl, @NotNull Project project)
-        throws IOException, MalformedCourseConfigurationFileException;
+        throws IOException, MalformedCourseConfigurationException;
   }
 
   @Nullable
@@ -235,7 +235,7 @@ public class CourseProjectAction extends AnAction {
     } catch (IOException e) {
       notifier.notify(new NetworkErrorNotification(e), project);
       return null;
-    } catch (MalformedCourseConfigurationFileException e) {
+    } catch (MalformedCourseConfigurationException e) {
       logger.error("Malformed course configuration file", e);
       notifier.notify(new CourseConfigurationError(e), project);
       return null;

@@ -162,7 +162,7 @@ public class CourseTest {
       + "\"import o1._\",\"import o1.goodstuff._\"]}}";
 
   @Test
-  public void testFromConfigurationFile() throws MalformedCourseConfigurationFileException {
+  public void testFromConfigurationFile() throws MalformedCourseConfigurationException {
     StringReader stringReader = new StringReader("{" + idJson + "," + nameJson + "," + urlJson
         + "," + languagesJson + "," + modulesJson + "," + exerciseModulesJson + "," + resourcesJson
         + "," + autoInstallJson + "," + replInitialCommands + "}");
@@ -195,74 +195,74 @@ public class CourseTest {
         "import o1.goodstuff._", course.getReplInitialCommands().get("GoodStuff")[1]);
   }
 
-  @Test(expected = MalformedCourseConfigurationFileException.class)
+  @Test(expected = MalformedCourseConfigurationException.class)
   public void testFromConfigurationFileMissingId()
-      throws MalformedCourseConfigurationFileException {
+      throws MalformedCourseConfigurationException {
     StringReader stringReader = new StringReader(
         "{" + nameJson + "," + urlJson + "," + languagesJson + "," + modulesJson + "}");
     Course.fromConfigurationData(stringReader, MODEL_FACTORY);
   }
 
-  @Test(expected = MalformedCourseConfigurationFileException.class)
+  @Test(expected = MalformedCourseConfigurationException.class)
   public void testFromConfigurationFileMissingName()
-      throws MalformedCourseConfigurationFileException {
+      throws MalformedCourseConfigurationException {
     StringReader stringReader = new StringReader(
         "{" + idJson + "," + urlJson + "," + languagesJson + "," + modulesJson + "}");
     Course.fromConfigurationData(stringReader, MODEL_FACTORY);
   }
 
-  @Test(expected = MalformedCourseConfigurationFileException.class)
+  @Test(expected = MalformedCourseConfigurationException.class)
   public void testFromConfigurationFileMissingUrl()
-      throws MalformedCourseConfigurationFileException {
+      throws MalformedCourseConfigurationException {
     StringReader stringReader = new StringReader(
         "{" + idJson + "," + nameJson + "," + languagesJson + "," + modulesJson + "}");
     Course.fromConfigurationData(stringReader, MODEL_FACTORY);
   }
 
-  @Test(expected = MalformedCourseConfigurationFileException.class)
+  @Test(expected = MalformedCourseConfigurationException.class)
   public void testFromConfigurationFileMissingLanguages()
-      throws MalformedCourseConfigurationFileException {
+      throws MalformedCourseConfigurationException {
     StringReader stringReader = new StringReader(
         "{" + idJson + "," + nameJson + "," + urlJson + "," + modulesJson + "}");
     Course.fromConfigurationData(stringReader, MODEL_FACTORY);
   }
 
-  @Test(expected = MalformedCourseConfigurationFileException.class)
+  @Test(expected = MalformedCourseConfigurationException.class)
   public void testFromConfigurationFileMissingModules()
-      throws MalformedCourseConfigurationFileException {
+      throws MalformedCourseConfigurationException {
     StringReader stringReader = new StringReader(
         "{" + idJson + "," + nameJson + "," + languagesJson + "," + urlJson + "}");
     Course.fromConfigurationData(stringReader, MODEL_FACTORY);
   }
 
-  @Test(expected = MalformedCourseConfigurationFileException.class)
+  @Test(expected = MalformedCourseConfigurationException.class)
   public void testFromConfigurationFileWithoutJson()
-      throws MalformedCourseConfigurationFileException {
+      throws MalformedCourseConfigurationException {
     StringReader stringReader = new StringReader("random text");
     Course.fromConfigurationData(stringReader, MODEL_FACTORY);
   }
 
-  @Test(expected = MalformedCourseConfigurationFileException.class)
+  @Test(expected = MalformedCourseConfigurationException.class)
   public void testFromConfigurationFileWithInvalidModules()
-      throws MalformedCourseConfigurationFileException {
+      throws MalformedCourseConfigurationException {
     String modules = "\"modules\":[1,2,3,4]";
     StringReader stringReader = new StringReader(
         "{" + idJson + "," + nameJson + "," + urlJson + "," + languagesJson + "," + modules + "}");
     Course.fromConfigurationData(stringReader, MODEL_FACTORY);
   }
 
-  @Test(expected = MalformedCourseConfigurationFileException.class)
+  @Test(expected = MalformedCourseConfigurationException.class)
   public void testFromConfigurationFileWithInvalidAutoInstalls()
-      throws MalformedCourseConfigurationFileException {
+      throws MalformedCourseConfigurationException {
     String autoInstalls = "\"autoInstall\":[1,2,3,4]";
     StringReader stringReader = new StringReader("{" + idJson + "," + nameJson + "," + urlJson
         + "," + languagesJson + "," + modulesJson + "," + autoInstalls + "}");
     Course.fromConfigurationData(stringReader, MODEL_FACTORY);
   }
 
-  @Test(expected = MalformedCourseConfigurationFileException.class)
+  @Test(expected = MalformedCourseConfigurationException.class)
   public void testFromConfigurationWithMalformedReplInitialCommands()
-      throws MalformedCourseConfigurationFileException {
+      throws MalformedCourseConfigurationException {
     String replJson = "\"repl\": {\"initialCommands\": []}";
     StringReader stringReader = new StringReader("{" + idJson + "," + nameJson + "," + urlJson
         + "," + languagesJson + "," + replJson + "}");
