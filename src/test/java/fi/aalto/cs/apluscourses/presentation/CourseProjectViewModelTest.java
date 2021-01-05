@@ -20,7 +20,7 @@ public class CourseProjectViewModelTest {
       "123",
       "NiceCourse",
       "http://localhost:9999",
-      Collections.emptyList(),
+      Collections.singletonList("de"),
       //  modules
       Collections.emptyList(),
       //  libraries
@@ -75,7 +75,7 @@ public class CourseProjectViewModelTest {
   public void testGetLanguages() {
     CourseProjectViewModel courseProjectViewModel
         = new CourseProjectViewModel(emptyCourse, "987");
-    assertArrayEquals(new String[]{"fi", "en"}, courseProjectViewModel.getLanguages());
+    assertArrayEquals(new String[]{"de"}, courseProjectViewModel.getLanguages());
   }
 
   @Test
