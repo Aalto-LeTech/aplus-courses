@@ -33,6 +33,7 @@ public class CourseTest {
         "13",
         "Tester Course",
         "http://localhost:2466/",
+        Arrays.asList("se", "en"),
         modules,
         //  libraries
         Collections.emptyList(),
@@ -45,8 +46,12 @@ public class CourseTest {
         "13", course.getId());
     assertEquals("The name of the course should be the same as that given to the constructor",
         "Tester Course", course.getName());
-    assertEquals("The A+ URL of the course shoudl be the same as that given to the constructor",
+    assertEquals("The A+ URL of the course should be the same as that given to the constructor",
         "http://localhost:2466/", course.getHtmlUrl());
+    assertEquals("The languages of the course should be the ones given to the constructor",
+        "se", course.getLanguages().get(0));
+    assertEquals("The languages of the course should be the ones given to the constructor",
+        "en", course.getLanguages().get(1));
     assertEquals("http://localhost:2466/api/v2/", course.getApiUrl());
     assertEquals("The modules of the course should be the same as those given to the constructor",
         module1name, course.getModules().get(0).getName());
@@ -72,6 +77,7 @@ public class CourseTest {
         //  name
         "",
         "http://localhost:2736",
+        Collections.emptyList(),
         //  modules
         Arrays.asList(module1, module2),
         //  libraries
@@ -101,6 +107,7 @@ public class CourseTest {
         //  name
         "",
         "http://localhost:5555",
+        Collections.emptyList(),
         //  modules
         Arrays.asList(module),
         //  libraries
@@ -125,6 +132,7 @@ public class CourseTest {
         "Just some ID",
         "Just some course",
         "http://localhost:1951",
+        Collections.emptyList(),
         //  modules
         Collections.emptyList(),
         //  libraries
@@ -143,6 +151,7 @@ public class CourseTest {
   private static String idJson = "\"id\":\"1238\"";
   private static String nameJson = "\"name\":\"Awesome Course\"";
   private static String urlJson = "\"aPlusUrl\":\"https://example.fi\"";
+  private static String languagesJson = "\"languages\":[\"fi\",\"en\"]";
   private static String modulesJson = "\"modules\":[{\"name\":\"O1Library\",\"url\":"
       + "\"https://wikipedia.org\"},{\"name\":\"GoodStuff\",\"url\":\"https://example.com\"}]";
   private static String exerciseModulesJson = "\"exerciseModules\":{123:{\"en\":\"en_module\"}}";
@@ -155,8 +164,8 @@ public class CourseTest {
   @Test
   public void testFromConfigurationFile() throws MalformedCourseConfigurationFileException {
     StringReader stringReader = new StringReader("{" + idJson + "," + nameJson + "," + urlJson
-        + "," + modulesJson + "," + exerciseModulesJson + "," + resourcesJson + ","
-        + autoInstallJson + "," + replInitialCommands + "}");
+        + "," + languagesJson + "," + modulesJson + "," + exerciseModulesJson + "," + resourcesJson
+        + "," + autoInstallJson + "," + replInitialCommands + "}");
     Course course = Course.fromConfigurationData(stringReader, "./path/to/file", MODEL_FACTORY);
     assertEquals("Course should have the same ID as that in the configuration JSON",
         "1238", course.getId());
@@ -164,6 +173,10 @@ public class CourseTest {
         "Awesome Course", course.getName());
     assertEquals("Course should have the same URL as that in the configuration JSON",
         "https://example.fi", course.getHtmlUrl());
+    assertEquals("The course should have the languages of the configuration JSON",
+        "fi", course.getLanguages().get(0));
+    assertEquals("The course should have the languages of the configuration JSON",
+        "en", course.getLanguages().get(1));
     assertEquals("The course should have the modules of the configuration JSON",
         "O1Library", course.getModules().get(0).getName());
     assertEquals("The course should have the modules of the configuration JSON",
@@ -185,32 +198,40 @@ public class CourseTest {
   @Test(expected = MalformedCourseConfigurationFileException.class)
   public void testFromConfigurationFileMissingId()
       throws MalformedCourseConfigurationFileException {
-    StringReader stringReader
-        = new StringReader("{" + nameJson + "," + urlJson + "," + modulesJson + "}");
+    StringReader stringReader = new StringReader(
+        "{" + nameJson + "," + urlJson + "," + languagesJson + "," + modulesJson + "}");
     Course.fromConfigurationData(stringReader, MODEL_FACTORY);
   }
 
   @Test(expected = MalformedCourseConfigurationFileException.class)
   public void testFromConfigurationFileMissingName()
       throws MalformedCourseConfigurationFileException {
-    StringReader stringReader =
-        new StringReader("{" + idJson + "," + urlJson + "," + modulesJson + "}");
+    StringReader stringReader = new StringReader(
+        "{" + idJson + "," + urlJson + "," + languagesJson + "," + modulesJson + "}");
     Course.fromConfigurationData(stringReader, MODEL_FACTORY);
   }
 
   @Test(expected = MalformedCourseConfigurationFileException.class)
   public void testFromConfigurationFileMissingUrl()
       throws MalformedCourseConfigurationFileException {
-    StringReader stringReader =
-        new StringReader("{" + idJson + "," + nameJson + "," + modulesJson + "}");
+    StringReader stringReader = new StringReader(
+        "{" + idJson + "," + nameJson + "," + languagesJson + "," + modulesJson + "}");
+    Course.fromConfigurationData(stringReader, MODEL_FACTORY);
+  }
+
+  @Test(expected = MalformedCourseConfigurationFileException.class)
+  public void testFromConfigurationFileMissingLanguages()
+      throws MalformedCourseConfigurationFileException {
+    StringReader stringReader = new StringReader(
+        "{" + idJson + "," + nameJson + "," + urlJson + "," + modulesJson + "}");
     Course.fromConfigurationData(stringReader, MODEL_FACTORY);
   }
 
   @Test(expected = MalformedCourseConfigurationFileException.class)
   public void testFromConfigurationFileMissingModules()
       throws MalformedCourseConfigurationFileException {
-    StringReader stringReader =
-        new StringReader("{" + idJson + "," + nameJson + "," + urlJson + "}");
+    StringReader stringReader = new StringReader(
+        "{" + idJson + "," + nameJson + "," + languagesJson + "," + urlJson + "}");
     Course.fromConfigurationData(stringReader, MODEL_FACTORY);
   }
 
@@ -225,8 +246,8 @@ public class CourseTest {
   public void testFromConfigurationFileWithInvalidModules()
       throws MalformedCourseConfigurationFileException {
     String modules = "\"modules\":[1,2,3,4]";
-    StringReader stringReader
-        = new StringReader("{" + idJson + "," + nameJson + "," + urlJson + "," + modules + "}");
+    StringReader stringReader = new StringReader(
+        "{" + idJson + "," + nameJson + "," + urlJson + "," + languagesJson + "," + modules + "}");
     Course.fromConfigurationData(stringReader, MODEL_FACTORY);
   }
 
@@ -235,7 +256,7 @@ public class CourseTest {
       throws MalformedCourseConfigurationFileException {
     String autoInstalls = "\"autoInstall\":[1,2,3,4]";
     StringReader stringReader = new StringReader("{" + idJson + "," + nameJson + "," + urlJson
-        + "," + modulesJson + "," + autoInstalls + "}");
+        + "," + languagesJson + "," + modulesJson + "," + autoInstalls + "}");
     Course.fromConfigurationData(stringReader, MODEL_FACTORY);
   }
 
@@ -243,8 +264,8 @@ public class CourseTest {
   public void testFromConfigurationWithMalformedReplInitialCommands()
       throws MalformedCourseConfigurationFileException {
     String replJson = "\"repl\": {\"initialCommands\": []}";
-    StringReader stringReader = new StringReader("{" + idJson + "," + nameJson + "," + urlJson + ","
-        + replJson + "}");
+    StringReader stringReader = new StringReader("{" + idJson + "," + nameJson + "," + urlJson
+        + "," + languagesJson + "," + replJson + "}");
     Course.fromConfigurationData(stringReader, MODEL_FACTORY);
   }
 

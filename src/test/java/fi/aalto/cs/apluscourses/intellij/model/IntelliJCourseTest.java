@@ -35,6 +35,7 @@ public class IntelliJCourseTest {
     CommonLibraryProvider commonLibraryProvider = new CommonLibraryProvider(project);
     IntelliJCourse course = new IntelliJCourse(id, name,
         "http://localhost:1355",
+        Collections.emptyList(),
         //  modules
         Collections.emptyList(),
         //  libraries
@@ -77,6 +78,7 @@ public class IntelliJCourseTest {
     IntelliJCourse course = new IntelliJCourse("cool id",
         "testProject",
         "https://example.com",
+        Collections.emptyList(),
         modules,
         //  libraries
         Collections.emptyList(),
@@ -119,6 +121,7 @@ public class IntelliJCourseTest {
     IntelliJCourse course = new IntelliJCourse("courseId",
         "testtesttest",
         "http://localhost:2000",
+        Collections.emptyList(),
         modules,
         //  libraries
         Collections.emptyList(),
@@ -150,6 +153,7 @@ public class IntelliJCourseTest {
     IntelliJCourse course = new IntelliJCourse("testId",
         "testProject",
         "http://localhost:2200",
+        Collections.emptyList(),
         Stream.of(new ModelExtensions.TestModule(moduleName)).collect(Collectors.toList()),
         //  libraries
         Collections.emptyList(),

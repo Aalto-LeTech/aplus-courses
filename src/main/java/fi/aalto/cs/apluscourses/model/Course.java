@@ -38,6 +38,9 @@ public abstract class Course implements ComponentSource {
   private final String aplusUrl;
 
   @NotNull
+  private final List<String> languages;
+
+  @NotNull
   private final List<Module> modules;
 
   @NotNull
@@ -72,6 +75,7 @@ public abstract class Course implements ComponentSource {
   protected Course(@NotNull String id,
                    @NotNull String name,
                    @NotNull String aplusUrl,
+                   @NotNull List<String> languages,
                    @NotNull List<Module> modules,
                    @NotNull List<Library> libraries,
                    @NotNull Map<Long, Map<String, String>> exerciseModules,
@@ -81,6 +85,7 @@ public abstract class Course implements ComponentSource {
     this.id = id;
     this.name = name;
     this.aplusUrl = aplusUrl;
+    this.languages = languages;
     this.modules = modules;
     this.resourceUrls = resourceUrls;
     this.libraries = libraries;
@@ -131,6 +136,7 @@ public abstract class Course implements ComponentSource {
     String courseId = getCourseId(jsonObject, sourcePath);
     String courseName = getCourseName(jsonObject, sourcePath);
     String aplusUrl = getCourseAPlusUrl(jsonObject, sourcePath);
+    List<String> languages = getCourseLanguages(jsonObject, sourcePath);
     List<Module> courseModules = getCourseModules(jsonObject, sourcePath, factory);
     Map<Long, Map<String, String>> exerciseModules
         = getCourseExerciseModules(jsonObject, sourcePath);
@@ -143,9 +149,9 @@ public abstract class Course implements ComponentSource {
         courseId,
         courseName,
         aplusUrl,
+        languages,
         courseModules,
-        //  libraries
-        Collections.emptyList(),
+        Collections.emptyList(), // libraries
         exerciseModules,
         resourceUrls,
         autoInstallComponentNames,
@@ -187,6 +193,17 @@ public abstract class Course implements ComponentSource {
   @NotNull
   public String getName() {
     return name;
+  }
+
+
+  /**
+   * Returns the languages of the course (as ISO 639-1 codes).
+   *
+   * @return A list of language codes.
+   */
+  @NotNull
+  public List<String> getLanguages() {
+    return languages;
   }
 
   /**
@@ -298,6 +315,27 @@ public abstract class Course implements ComponentSource {
   }
 
   @NotNull
+  private static List<String> getCourseLanguages(@NotNull JSONObject jsonObject,
+                                                 @NotNull String source)
+      throws MalformedCourseConfigurationFileException {
+    JSONArray languagesJson = jsonObject.optJSONArray("languages");
+    if (languagesJson == null) {
+      throw new MalformedCourseConfigurationFileException(
+          source, "Missing or malformed \"languages\" key", null);
+    }
+    List<String> languages = new ArrayList<>();
+    for (int i = 0; i < languagesJson.length(); ++i) {
+      try {
+        languages.add(languagesJson.getString(i));
+      } catch (JSONException e) {
+        throw new MalformedCourseConfigurationFileException(
+            source, "\"languages\" array should contain strings", e);
+      }
+    }
+    return languages;
+  }
+
+  @NotNull
   private static List<Module> getCourseModules(@NotNull JSONObject jsonObject,
                                                @NotNull String source,
                                                @NotNull ModelFactory factory)
@@ -400,19 +438,21 @@ public abstract class Course implements ComponentSource {
   }
 
   @NotNull
-  private static Map<String, String[]> getCourseReplInitialCommands(
-      @NotNull JSONObject jsonObject,
-      @NotNull String source)
+  private static Map<String, String[]> getCourseReplInitialCommands(@NotNull JSONObject jsonObject,
+                                                                    @NotNull String source)
       throws MalformedCourseConfigurationFileException {
     Map<String, String[]> replInitialCommands = new HashMap<>();
-    JSONObject replInitialCommandsJsonObject;
+    JSONObject replJson = jsonObject.optJSONObject("repl");
+    if (replJson == null) {
+      return replInitialCommands;
+    }
     try {
-      replInitialCommandsJsonObject = jsonObject
+      JSONObject initialCommandsJsonObject = jsonObject
           .getJSONObject("repl").getJSONObject("initialCommands");
 
-      Iterable<String> keys = replInitialCommandsJsonObject::keys;
+      Iterable<String> keys = initialCommandsJsonObject::keys;
       for (String moduleName : keys) {
-        String[] replCommands = replInitialCommandsJsonObject
+        String[] replCommands = initialCommandsJsonObject
             .getJSONArray(moduleName)
             .toList()
             .stream()

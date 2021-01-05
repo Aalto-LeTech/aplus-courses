@@ -20,6 +20,7 @@ public class CourseProjectViewModelTest {
       "123",
       "NiceCourse",
       "http://localhost:9999",
+      Collections.emptyList(),
       //  modules
       Collections.emptyList(),
       //  libraries

@@ -118,6 +118,7 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
         "EMPTY",
         // url
         "http://localhost:1001",
+        Collections.emptyList(),
         //  modules
         Collections.emptyList(),
         //  libraries
