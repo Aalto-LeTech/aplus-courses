@@ -10,8 +10,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.swing.SwingUtilities;
@@ -34,7 +34,7 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
         }
       };
 
-  private final transient Set<ActionListener> nodeAppliedListeners = ConcurrentHashMap.newKeySet();
+  private final transient HashMap<String, ActionListener> nodeAppliedListeners = new HashMap<>();
 
   @NotNull
   public static SelectableNodeViewModel<?> getViewModel(Object node) {
@@ -98,12 +98,12 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
     restoreExpandedState(expandedState);
   }
 
-  public void addNodeAppliedListener(ActionListener listener) {
-    nodeAppliedListeners.add(listener);
+  public void addNodeAppliedListener(String key, ActionListener listener) {
+    nodeAppliedListeners.put(key, listener);
   }
 
-  public void removeNodeAppliedListener(ActionListener listener) {
-    nodeAppliedListeners.remove(listener);
+  public void removeNodeAppliedListener(String key) {
+    nodeAppliedListeners.remove(key);
   }
 
   @NotNull
@@ -151,9 +151,12 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
 
     @Override
     public void mouseClicked(@NotNull MouseEvent e) {
-      if (e.getClickCount() == 2 && selectedItem != null) {
+      if (e.getClickCount() == 1 && e.isControlDown() && selectedItem != null) {
         ActionEvent actionEvent = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null);
-        nodeAppliedListeners.forEach(listener -> listener.actionPerformed(actionEvent));
+        nodeAppliedListeners.get("submitExercise").actionPerformed(actionEvent);
+      } else if (e.getClickCount() == 2 && selectedItem != null) {
+        ActionEvent actionEvent = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null);
+        nodeAppliedListeners.get("openSubmission").actionPerformed(actionEvent);
       }
     }
   }
