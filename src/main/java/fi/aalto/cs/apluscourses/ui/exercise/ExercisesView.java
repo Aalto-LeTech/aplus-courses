@@ -4,6 +4,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import fi.aalto.cs.apluscourses.intellij.actions.ActionUtil;
 import fi.aalto.cs.apluscourses.intellij.actions.OpenSubmissionAction;
+import fi.aalto.cs.apluscourses.intellij.actions.SubmitExerciseAction;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.ui.GuiObject;
 import fi.aalto.cs.apluscourses.ui.base.TreeView;
@@ -43,7 +44,11 @@ public class ExercisesView {
     exerciseGroupsTree = new TreeView();
     exerciseGroupsTree.setCellRenderer(new ExercisesTreeRenderer());
     exerciseGroupsTree.addNodeAppliedListener(
+        "openSubmission",
         ActionUtil.createOnEventLauncher(OpenSubmissionAction.ACTION_ID, exerciseGroupsTree));
+    exerciseGroupsTree.addNodeAppliedListener(
+        "submitExercise",
+        ActionUtil.createOnEventLauncher(SubmitExerciseAction.ACTION_ID, exerciseGroupsTree));
   }
 
   public TreeView getExerciseGroupsTree() {
