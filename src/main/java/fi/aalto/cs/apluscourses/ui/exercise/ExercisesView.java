@@ -43,11 +43,9 @@ public class ExercisesView {
   private void createUIComponents() {
     exerciseGroupsTree = new TreeView();
     exerciseGroupsTree.setCellRenderer(new ExercisesTreeRenderer());
-    exerciseGroupsTree.addNodeAppliedListener(
-        "openSubmission",
+    exerciseGroupsTree.addDoubleClickListener(
         ActionUtil.createOnEventLauncher(OpenSubmissionAction.ACTION_ID, exerciseGroupsTree));
-    exerciseGroupsTree.addNodeAppliedListener(
-        "submitExercise",
+    exerciseGroupsTree.addCtrlClickListener(
         ActionUtil.createOnEventLauncher(SubmitExerciseAction.ACTION_ID, exerciseGroupsTree));
   }
 
