@@ -118,7 +118,7 @@ public class SubmissionViewModel {
     StringBuilder fileInfoText = new StringBuilder(file.getName());
     try {
       String lastModificationTime = FileDateFormatter.getFileModificationTime(filePaths.get(file.getKey()));
-      fileInfoText.append(" (").append(lastModificationTime).append(")");
+      fileInfoText.append(" (modified ").append(lastModificationTime).append(")");
     } catch (IOException e) {
       // don't print anything about the last modification time if a very unlikely exception happened
     }

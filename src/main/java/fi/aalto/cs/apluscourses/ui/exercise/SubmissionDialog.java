@@ -81,7 +81,7 @@ public class SubmissionDialog extends OurDialogWrapper {
 
     StringBuilder filenamesHtml = new StringBuilder("<html><body>Files:<ul>");
     for (SubmittableFile file : viewModel.getFiles()) {
-      filenamesHtml.append("<li>").append(viewModel.getFileInformationText(file)/*file.getName()*/).append("</li>");
+      filenamesHtml.append("<li>").append(viewModel.getFileInformationText(file)).append("</li>");
     }
     filenamesHtml.append("</ul></body></html>");
     filenames = new JLabel(filenamesHtml.toString());

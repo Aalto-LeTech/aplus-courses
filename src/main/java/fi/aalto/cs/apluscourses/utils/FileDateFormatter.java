@@ -4,13 +4,42 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
-import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 
 public class FileDateFormatter {
-    private static String formatWithLargestTimeUnit(Instant i) {
-        Instant currentTime = Instant.now();
-        return ChronoUnit.SECONDS.between(i, currentTime) + " seconds ago";
+    // the order of time units to check, ordered from most to least precise
+    private static final List<ChronoUnit> timeUnits = Arrays.asList(
+        ChronoUnit.SECONDS,
+        ChronoUnit.MINUTES,
+        ChronoUnit.HOURS,
+        ChronoUnit.DAYS,
+        ChronoUnit.MONTHS,
+        ChronoUnit.YEARS
+    );
+
+    private static String formatWithTimeUnit(ZonedDateTime fileTime, ZonedDateTime currentTime, ChronoUnit timeUnit) {
+        return timeUnit.between(fileTime, currentTime) + " " + timeUnit.toString().toLowerCase(Locale.ROOT) + " ago";
+    }
+
+    private static String formatWithLargestTimeUnit(ZonedDateTime fileTime) {
+        ZonedDateTime currentTime = ZonedDateTime.now(ZoneOffset.UTC);
+
+        if (ChronoUnit.SECONDS.between(fileTime, currentTime) <= 0) {
+            return "just now";
+        }
+
+        for (int i = 1; i < timeUnits.size(); i++) {
+            if (timeUnits.get(i).between(fileTime, currentTime) == 0) {
+                return formatWithTimeUnit(fileTime, currentTime, timeUnits.get(i - 1));
+            }
+        }
+
+        return formatWithTimeUnit(fileTime, currentTime, timeUnits.get(timeUnits.size() - 1));
     }
 
     /**
@@ -20,8 +49,9 @@ public class FileDateFormatter {
      */
     public static String getFileModificationTime(Path filePath) throws IOException {
         FileTime fileTime = Files.getLastModifiedTime(filePath);
+        ZonedDateTime zonedFileTime = ZonedDateTime.ofInstant(fileTime.toInstant(), ZoneOffset.UTC);
 
-        return formatWithLargestTimeUnit(fileTime.toInstant());
+        return formatWithLargestTimeUnit(zonedFileTime);
     }
 
     private FileDateFormatter() {
