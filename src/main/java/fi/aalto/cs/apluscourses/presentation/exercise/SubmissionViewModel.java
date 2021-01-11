@@ -9,9 +9,13 @@ import fi.aalto.cs.apluscourses.model.SubmissionHistory;
 import fi.aalto.cs.apluscourses.model.SubmissionInfo;
 import fi.aalto.cs.apluscourses.model.SubmittableFile;
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
+import fi.aalto.cs.apluscourses.utils.FileDateFormatter;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ValidationError;
+
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
@@ -102,6 +106,23 @@ public class SubmissionViewModel {
     }
     submissionCountText.append('.');
     return submissionCountText.toString();
+  }
+
+  /**
+   * Formats a descriptive string for the submission dialog about a submittable file. The string includes
+   * the file name and its last modification date.
+   * @param file The submittable file in question.
+   */
+  @NotNull
+  public String getFileInformationText(SubmittableFile file) {
+    StringBuilder fileInfoText = new StringBuilder(file.getName());
+    try {
+      String lastModificationTime = FileDateFormatter.getFileModificationTime(filePaths.get(file.getKey()));
+      fileInfoText.append(" (").append(lastModificationTime).append(")");
+    } catch (IOException e) {
+      // don't print anything about the last modification time if a very unlikely exception happened
+    }
+    return fileInfoText.toString();
   }
 
   /**
