@@ -10,6 +10,7 @@ public interface ModelFactory {
   Course createCourse(@NotNull String id,
                       @NotNull String name,
                       @NotNull String aplusUrl,
+                      @NotNull List<String> languages,
                       @NotNull List<Module> modules,
                       @NotNull List<Library> libraries,
                       @NotNull Map<Long, Map<String, String>> exerciseModules,

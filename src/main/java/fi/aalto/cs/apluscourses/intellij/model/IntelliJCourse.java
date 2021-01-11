@@ -45,6 +45,7 @@ class IntelliJCourse extends Course {
   public IntelliJCourse(@NotNull String id,
                         @NotNull String name,
                         @NotNull String aplusUrl,
+                        @NotNull List<String> languages,
                         @NotNull List<Module> modules,
                         @NotNull List<Library> libraries,
                         @NotNull Map<Long, Map<String, String>> exerciseModules,
@@ -57,12 +58,14 @@ class IntelliJCourse extends Course {
         id,
         name,
         aplusUrl,
+        languages,
         modules,
         libraries,
         exerciseModules,
         resourceUrls,
         autoInstallComponentNames,
-        replInitialCommands);
+        replInitialCommands
+    );
 
     this.project = project;
     this.commonLibraryProvider = commonLibraryProvider;

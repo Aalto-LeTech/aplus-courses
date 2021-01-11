@@ -11,7 +11,7 @@ import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Course;
-import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationFileException;
+import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationException;
 import fi.aalto.cs.apluscourses.model.UnexpectedResponseException;
 import java.io.IOException;
 import java.net.URL;
@@ -49,7 +49,7 @@ public class InitializationActivity implements Background {
 
     try {
       Course.fromUrl(courseConfigurationFileUrl, new IntelliJModelFactory(project));
-    } catch (UnexpectedResponseException | MalformedCourseConfigurationFileException e) {
+    } catch (UnexpectedResponseException | MalformedCourseConfigurationException e) {
       logger.error("Error occurred while trying to parse a course configuration file", e);
       notifier.notify(new CourseConfigurationError(e), project);
       return;

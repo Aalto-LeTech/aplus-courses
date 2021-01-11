@@ -90,13 +90,14 @@ public class ModelExtensions {
     public TestCourse(@NotNull String id,
                       @NotNull String name,
                       @NotNull String aplusUrl,
+                      @NotNull List<String> languages,
                       @NotNull List<Module> modules,
                       @NotNull List<Library> libraries,
                       @NotNull Map<Long, Map<String, String>> exerciseModules,
                       @NotNull Map<String, URL> resourceUrls,
                       @NotNull List<String> autoInstallComponentNames,
                       @NotNull Map<String, String[]> replInitialCommands) {
-      super(id, name, aplusUrl, modules, libraries, exerciseModules, resourceUrls,
+      super(id, name, aplusUrl, languages, modules, libraries, exerciseModules, resourceUrls,
           autoInstallComponentNames, replInitialCommands);
       exerciseDataSource = new TestExerciseDataSource();
     }
@@ -118,6 +119,7 @@ public class ModelExtensions {
           id,
           name,
           "https://example.com/",
+          Collections.emptyList(),
           //  modules
           Collections.emptyList(),
           //  libraries
@@ -303,6 +305,7 @@ public class ModelExtensions {
     public Course createCourse(@NotNull String id,
                                @NotNull String name,
                                @NotNull String aplusUrl,
+                               @NotNull List<String> languages,
                                @NotNull List<Module> modules,
                                @NotNull List<Library> libraries,
                                @NotNull Map<Long, Map<String, String>> exerciseModules,
@@ -313,6 +316,7 @@ public class ModelExtensions {
           id,
           name,
           aplusUrl,
+          languages,
           modules,
           libraries,
           exerciseModules,
