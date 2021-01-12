@@ -13,63 +13,68 @@ import java.util.List;
 import java.util.Locale;
 
 public class FileDateFormatter {
-    // the order of time units to check, ordered from most to least precise
-    private static final List<ChronoUnit> TimeUnits = Arrays.asList(
-        ChronoUnit.SECONDS,
-        ChronoUnit.MINUTES,
-        ChronoUnit.HOURS,
-        ChronoUnit.DAYS,
-        ChronoUnit.MONTHS,
-        ChronoUnit.YEARS
-    );
+  // the order of time units to check, ordered from most to least precise
+  private static final List<ChronoUnit> TimeUnits = Arrays.asList(
+          ChronoUnit.SECONDS,
+          ChronoUnit.MINUTES,
+          ChronoUnit.HOURS,
+          ChronoUnit.DAYS,
+          ChronoUnit.MONTHS,
+          ChronoUnit.YEARS
+  );
 
-    private static String formatWithTimeUnit(ZonedDateTime fileTime, ZonedDateTime currentTime, ChronoUnit timeUnit) {
-        return timeUnit.between(fileTime, currentTime) + " " + timeUnit.toString().toLowerCase(Locale.ROOT) + " ago";
+  private static String formatWithTimeUnit(ZonedDateTime fileTime,
+                                           ZonedDateTime currentTime,
+                                           ChronoUnit timeUnit) {
+    return timeUnit.between(fileTime, currentTime) + " "
+            + timeUnit.toString().toLowerCase(Locale.ROOT) + " ago";
+  }
+
+  private static String formatWithLargestTimeUnit(ZonedDateTime fileTime, Clock currentTimeClock) {
+    ZonedDateTime currentTime = ZonedDateTime.now(currentTimeClock);
+
+    if (ChronoUnit.SECONDS.between(fileTime, currentTime) <= 0) {
+      return "just now";
     }
 
-    private static String formatWithLargestTimeUnit(ZonedDateTime fileTime) {
-        ZonedDateTime currentTime = ZonedDateTime.now(Clock.system(ZoneOffset.UTC));
-
-        if (ChronoUnit.SECONDS.between(fileTime, currentTime) <= 0) {
-            return "just now";
-        }
-
-        for (int i = 1; i < TimeUnits.size(); i++) {
-            if (TimeUnits.get(i).between(fileTime, currentTime) == 0) {
-                return formatWithTimeUnit(fileTime, currentTime, TimeUnits.get(i - 1));
-            }
-        }
-
-        return formatWithTimeUnit(fileTime, currentTime, TimeUnits.get(TimeUnits.size() - 1));
+    for (int i = 1; i < TimeUnits.size(); i++) {
+      if (TimeUnits.get(i).between(fileTime, currentTime) == 0) {
+        return formatWithTimeUnit(fileTime, currentTime, TimeUnits.get(i - 1));
+      }
     }
 
-    /**
-     * Same as {@link FileDateFormatter#getFileModificationTime(Path, Clock)} with the clock
-     * being always set to the system's current time.
-     *
-     * @see FileDateFormatter#getFileModificationTime(Path, Clock)
-     */
+    return formatWithTimeUnit(fileTime, currentTime, TimeUnits.get(TimeUnits.size() - 1));
+  }
 
-    public static String getFileModificationTime(Path filePath) throws IOException {
-        return getFileModificationTime(filePath, Clock.system(ZoneOffset.UTC));
-    }
+  /**
+   * Same as {@link FileDateFormatter#getFileModificationTime(Path, Clock)} with the clock
+   * being always set to the system's current time.
+   *
+   * @see FileDateFormatter#getFileModificationTime(Path, Clock)
+   */
 
-    /**
-     * Returns a string containing a formatted number of appropriate time units that have elapsed
-     * since the file's last modification date. The string is formatted in the ways of
-     * "6 seconds ago", "12 minutes ago" or "5 hours ago".
-     * @param filePath The file path which modification date is to be parsed.
-     * @param currentTimeClock A custom clock to use for retrieving the current system time.
-     */
-    public static String getFileModificationTime(Path filePath, Clock currentTimeClock) throws IOException {
-        FileTime fileTime = Files.getLastModifiedTime(filePath);
-        ZonedDateTime zonedFileTime =
-                ZonedDateTime.ofInstant(fileTime.toInstant(), currentTimeClock.getZone());
+  public static String getFileModificationTime(Path filePath) throws IOException {
+    return getFileModificationTime(filePath, Clock.system(ZoneOffset.UTC));
+  }
 
-        return formatWithLargestTimeUnit(zonedFileTime);
-    }
+  /**
+   * Returns a string containing a formatted number of appropriate time units that have elapsed
+   * since the file's last modification date. The string is formatted in the ways of
+   * "6 seconds ago", "12 minutes ago" or "5 hours ago".
+   *
+   * @param filePath The file path which modification date is to be parsed.
+   * @param currentTimeClock A custom clock to use for retrieving the current system time.
+   */
+  public static String getFileModificationTime(Path filePath, Clock currentTimeClock)
+          throws IOException {
+    FileTime fileTime = Files.getLastModifiedTime(filePath);
+    ZonedDateTime zonedFileTime =
+            ZonedDateTime.ofInstant(fileTime.toInstant(), currentTimeClock.getZone());
 
-    private FileDateFormatter() {
+    return formatWithLargestTimeUnit(zonedFileTime, currentTimeClock);
+  }
 
-    }
+  private FileDateFormatter() {
+
+  }
 }

@@ -111,6 +111,7 @@ public class SubmissionViewModel {
   /**
    * Formats a descriptive string for the submission dialog about a submittable file. The string
    * includes the file name and its last modification date.
+   *
    * @param file The submittable file in question.
    */
   @NotNull
