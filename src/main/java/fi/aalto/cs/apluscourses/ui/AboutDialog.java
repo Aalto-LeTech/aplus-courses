@@ -8,12 +8,15 @@ import com.intellij.ide.BrowserUtil;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.labels.LinkLabel;
 
-import javax.swing.*;
-
 import icons.PluginIcons;
 import java.io.IOException;
 import java.util.Properties;
-import java.awt.*;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.Icon;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import org.jetbrains.annotations.NotNull;
 
 public class AboutDialog {
@@ -107,6 +110,7 @@ public class AboutDialog {
 
     return linkLabel;
   }
+
   @NotNull
   private static JBLabel createVersionTextLabel() throws IOException {
     JBLabel label = new JBLabel();
