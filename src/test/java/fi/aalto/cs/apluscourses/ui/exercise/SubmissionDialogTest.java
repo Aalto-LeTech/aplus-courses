@@ -16,7 +16,12 @@ import fi.aalto.cs.apluscourses.ui.base.CheckBox;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.stream.Collectors;
 import javax.swing.Action;
 import javax.swing.ComboBoxModel;
