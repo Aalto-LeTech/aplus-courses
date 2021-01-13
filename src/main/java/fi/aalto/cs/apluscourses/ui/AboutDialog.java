@@ -121,8 +121,6 @@ public class AboutDialog {
   @NotNull
   private static JBLabel createAboutTextLabel() {
     JBLabel label = new JBLabel();
-    label.setHorizontalTextPosition(SwingConstants.CENTER);
-    label.setAllowAutoWrapping(true);
     label.setText(getText("ui.aboutDialog.description"));
     return label;
   }
@@ -130,7 +128,6 @@ public class AboutDialog {
   @NotNull
   private static JBLabel createAuthorsTextLabel() {
     JBLabel label = new JBLabel();
-    label.setHorizontalTextPosition(SwingConstants.CENTER);
     label.setText(getText("ui.aboutDialog.authors"));
     return label;
   }
