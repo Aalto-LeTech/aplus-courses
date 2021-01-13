@@ -11,9 +11,9 @@ import com.intellij.ui.components.labels.LinkLabel;
 import javax.swing.*;
 
 import icons.PluginIcons;
+
 import java.io.IOException;
 import java.util.Properties;
-import java.awt.*;
 import org.jetbrains.annotations.NotNull;
 
 public class AboutDialog {
@@ -66,6 +66,7 @@ public class AboutDialog {
   private static JBLabel createAttributesTextLabel() {
     JBLabel label = new JBLabel();
     label.setText(getText("ui.aboutDialog.attributes"));
+    label.setCopyable(true);
     return label;
   }
 
