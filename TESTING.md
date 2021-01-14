@@ -374,6 +374,12 @@ module GoodStuff.** error is shown.
 
 **9.9** ASSERTION: The default group check box is checked and the group selection shows **Submit alone**.
 
+**9.10** Right-click **Assignment 2 (GoodStuff)**.
+
+**9.11** On the context menu that appears, choose **Submit A+ Assignment**.
+
+**9.12** ASSERTION: A window with **Assignment 2 (GoodStuff)** appears.
+
 ### 10 Refreshing Modules and Assignments
 
 **10.1** Hit the **Refresh Assignments** or **Refresh Modules** button.
