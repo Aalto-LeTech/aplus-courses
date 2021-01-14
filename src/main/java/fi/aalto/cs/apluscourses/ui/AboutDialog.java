@@ -11,6 +11,7 @@ import com.intellij.ui.components.labels.LinkLabel;
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import icons.PluginIcons;
 
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
@@ -35,17 +36,17 @@ public class AboutDialog {
    */
   public static void display() {
 
-    final Icon icon = PluginIcons.A_PLUS_LOGO;
     JOptionPane.showMessageDialog(null,
         createAboutInnerContainer(),
         getText("ui.aboutDialog.title"),
-        JOptionPane.INFORMATION_MESSAGE, icon);
+        JOptionPane.PLAIN_MESSAGE);
   }
 
   @NotNull
   private static JPanel createAboutInnerContainer() {
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+    JBLabel logo = createLogoImageLabel();
     JBLabel version = createVersionTextLabel();
     JBLabel about = createAboutTextLabel();
     JBLabel authors = createAuthorsTextLabel();
@@ -53,6 +54,8 @@ public class AboutDialog {
     LinkLabel<Object> linkLabel = createPluginWebsiteLinkLabel();
     LinkLabel<Object> linkLabelGithub = createGithubWebsiteLinkLabel();
     LinkLabel<Object> linkLabelAPlus = createAPlusWebsiteLinkLabel();
+    panel.add(logo);
+    panel.add(Box.createVerticalStrut(about.getFont().getSize()));
     panel.add(version);
     panel.add(Box.createVerticalStrut(about.getFont().getSize()));
     panel.add(about);
@@ -64,7 +67,13 @@ public class AboutDialog {
     panel.add(authors);
     panel.add(Box.createVerticalStrut(authors.getFont().getSize()));
     panel.add(attributes);
+    panel.setBorder(BorderFactory.createEmptyBorder(0,15,0,15));
     return panel;
+  }
+
+  private static JBLabel createLogoImageLabel() {
+    final Icon icon = PluginIcons.A_PLUS_LOGO;
+    return new JBLabel(icon, SwingConstants.CENTER);
   }
 
   private static JBLabel createAttributesTextLabel() {
