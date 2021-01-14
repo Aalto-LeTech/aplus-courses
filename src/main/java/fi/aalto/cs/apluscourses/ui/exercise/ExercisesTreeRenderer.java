@@ -56,7 +56,6 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
           : "This exercise cannot be submitted from the IDE");
       setIcon(statusToIcon(exerciseViewModel.getStatus()));
     } else if (viewModel instanceof ExerciseGroupViewModel) {
-      setIcon(PluginIcons.A_PLUS_EXERCISE_GROUP);
       ExerciseGroupViewModel groupViewModel = (ExerciseGroupViewModel) viewModel;
       append(groupViewModel.getPresentableName());
       setEnabled(true);

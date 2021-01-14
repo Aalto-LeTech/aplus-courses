@@ -43,4 +43,11 @@ public class BaseTreeViewModelTest {
 
     assertNull(selection.getLevel(0));
   }
+
+  @Test
+  public void setGetSelectedItem() {
+    assertNull(treeViewModel.getSelectedItem());
+    treeViewModel.setSelectedItem(childViewModel1);
+    assertSame(childViewModel1, treeViewModel.getSelectedItem());
+  }
 }

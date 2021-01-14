@@ -69,6 +69,11 @@ public class APlusToolWindowFactory extends BaseToolWindowFactory implements Dum
     toolbar.setTargetComponent(exercisesView.getExerciseGroupsTree());
     exercisesView.toolbarContainer.add(toolbar.getComponent());
 
+    ActionPopupMenu popupMenu =
+        actionManager.createActionPopupMenu(ActionPlaces.TOOLWINDOW_POPUP, group);
+    popupMenu.setTargetComponent(exercisesView.getExerciseGroupsTree());
+    exercisesView.getExerciseGroupsTree().setPopupMenu(popupMenu.getComponent());
+
     return exercisesView;
   }
 
