@@ -8,12 +8,16 @@ import com.intellij.ide.BrowserUtil;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.labels.LinkLabel;
 
-import javax.swing.*;
-
+import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import icons.PluginIcons;
 
-import java.io.IOException;
-import java.util.Properties;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.Icon;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+
 import org.jetbrains.annotations.NotNull;
 
 public class AboutDialog {
@@ -29,7 +33,7 @@ public class AboutDialog {
   /**
    * Displays a small pop up window containing basic information about the plugin.
    */
-  public static void display() throws IOException {
+  public static void display() {
 
     final Icon icon = PluginIcons.A_PLUS_LOGO;
     JOptionPane.showMessageDialog(null,
@@ -39,7 +43,7 @@ public class AboutDialog {
   }
 
   @NotNull
-  private static JPanel createAboutInnerContainer() throws IOException {
+  private static JPanel createAboutInnerContainer() {
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
     JBLabel version = createVersionTextLabel();
@@ -86,10 +90,10 @@ public class AboutDialog {
   @NotNull
   private static LinkLabel<Object> createAPlusWebsiteLinkLabel() {
     LinkLabel<Object> linkLabel = new LinkLabel<>(
-            getText("ui.aboutDialog.APlusWebsite"),
-            AllIcons.Ide.External_link_arrow,
-            (first, second) ->
-                    BrowserUtil.browse(A_PLUS_PAGE));
+        getText("ui.aboutDialog.APlusWebsite"),
+        AllIcons.Ide.External_link_arrow,
+        (first, second) ->
+                BrowserUtil.browse(A_PLUS_PAGE));
     linkLabel.setIconTextGap(0);
     linkLabel.setHorizontalTextPosition(SwingConstants.LEFT);
 
@@ -99,21 +103,20 @@ public class AboutDialog {
   @NotNull
   private static LinkLabel<Object> createGithubWebsiteLinkLabel() {
     LinkLabel<Object> linkLabel = new LinkLabel<>(
-            getText("ui.aboutDialog.GithubWebsite"),
-            AllIcons.Ide.External_link_arrow,
-            (first, second) ->
-                    BrowserUtil.browse(GITHUB_PAGE));
+        getText("ui.aboutDialog.GithubWebsite"),
+        AllIcons.Ide.External_link_arrow,
+        (first, second) ->
+                BrowserUtil.browse(GITHUB_PAGE));
     linkLabel.setIconTextGap(0);
     linkLabel.setHorizontalTextPosition(SwingConstants.LEFT);
 
     return linkLabel;
   }
+
   @NotNull
-  private static JBLabel createVersionTextLabel() throws IOException {
+  private static JBLabel createVersionTextLabel() {
     JBLabel label = new JBLabel();
-    Properties properties = new Properties();
-    properties.load(AboutDialog.class.getResourceAsStream("/build-info.properties"));
-    String version = properties.getProperty("version");
+    String version = BuildInfo.INSTANCE.version.toString();
     label.setText(getAndReplaceText("ui.aboutDialog.version", version));
     return label;
   }
