@@ -29,7 +29,7 @@ public class FileDateFormatterTest {
     assertEquals(FileDateFormatter.getFileModificationTime(
             filePath, Clock.fixed(currentClock1, ZoneOffset.UTC)), "51 seconds ago");
     assertEquals(FileDateFormatter.getFileModificationTime(
-            filePath, Clock.fixed(currentClock2, ZoneOffset.UTC)), "1 years ago");
+            filePath, Clock.fixed(currentClock2, ZoneOffset.UTC)), "1 year ago");
     assertEquals(FileDateFormatter.getFileModificationTime(
             filePath, Clock.fixed(currentClock3, ZoneOffset.UTC)), "11 months ago");
     assertEquals(FileDateFormatter.getFileModificationTime(

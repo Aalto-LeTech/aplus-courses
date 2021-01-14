@@ -26,8 +26,14 @@ public class FileDateFormatter {
   private static String formatWithTimeUnit(ZonedDateTime fileTime,
                                            ZonedDateTime currentTime,
                                            ChronoUnit timeUnit) {
-    return timeUnit.between(fileTime, currentTime) + " "
-            + timeUnit.toString().toLowerCase(Locale.ROOT) + " ago";
+    long timeUnitCount = timeUnit.between(fileTime, currentTime);
+    String timeUnitText = timeUnit.toString().toLowerCase(Locale.ROOT);
+    if (timeUnitCount == 1) {
+      // remove the final pluralizing "s" from the time unit name
+      timeUnitText = timeUnitText.substring(0, timeUnitText.length() - 1);
+    }
+
+    return timeUnitCount + " " + timeUnitText + " ago";
   }
 
   private static String formatWithLargestTimeUnit(ZonedDateTime fileTime, Clock currentTimeClock) {
