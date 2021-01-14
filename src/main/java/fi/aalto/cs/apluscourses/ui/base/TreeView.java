@@ -38,7 +38,7 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
       };
 
   private final transient Set<ActionListener> nodeAppliedListeners = ConcurrentHashMap.newKeySet();
-  private final Object popupMenuLock = new Object();
+  private final transient Object popupMenuLock = new Object();
   private JPopupMenu popupMenu;
 
   @NotNull
