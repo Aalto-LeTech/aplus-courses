@@ -57,6 +57,7 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
     getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
     addTreeSelectionListener(new SelectionListener());
     addMouseListener(new TreeMouseListener());
+    getEmptyText().setText("Turn project into A+ project.");
   }
 
   /**
