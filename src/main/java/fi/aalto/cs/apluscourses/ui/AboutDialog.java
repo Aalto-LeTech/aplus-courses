@@ -55,24 +55,24 @@ public class AboutDialog {
     LinkLabel<Object> linkLabelGithub = createGithubWebsiteLinkLabel();
     LinkLabel<Object> linkLabelAPlus = createAPlusWebsiteLinkLabel();
     panel.add(logo);
-    panel.add(Box.createVerticalStrut(about.getFont().getSize()));
+    panel.add(Box.createVerticalStrut(attributes.getFont().getSize()));
     panel.add(version);
-    panel.add(Box.createVerticalStrut(about.getFont().getSize()));
+    panel.add(Box.createVerticalStrut(attributes.getFont().getSize()));
     panel.add(about);
-    panel.add(Box.createVerticalStrut(linkLabel.getFont().getSize()));
+    panel.add(Box.createVerticalStrut(attributes.getFont().getSize()));
     panel.add(linkLabel);
     panel.add(linkLabelGithub);
     panel.add(linkLabelAPlus);
-    panel.add(Box.createVerticalStrut(authors.getFont().getSize()));
+    panel.add(Box.createVerticalStrut(attributes.getFont().getSize()));
     panel.add(authors);
-    panel.add(Box.createVerticalStrut(authors.getFont().getSize()));
+    panel.add(Box.createVerticalStrut(attributes.getFont().getSize()));
     panel.add(attributes);
     panel.setBorder(BorderFactory.createEmptyBorder(0,15,0,15));
     return panel;
   }
 
   private static JBLabel createLogoImageLabel() {
-    final Icon icon = PluginIcons.A_PLUS_LOGO;
+    final Icon icon = PluginIcons.A_PLUS_COURSES;
     return new JBLabel(icon, SwingConstants.CENTER);
   }
 
