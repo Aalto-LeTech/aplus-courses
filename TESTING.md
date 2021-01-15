@@ -105,11 +105,13 @@ Manual testing
 
 **3.2** ASSERTION: The information window is shown.
 
-**3.3** Click the highlighted **A+ Courses Plugin website** link.
+**3.3** ASSERTION: The plugin's version is visible near the top of the window.
 
-**3.4** ASSERTION: A+ Courses Plugin page on JetBrains website opens in the browser.
+**3.4** Click the highlighted links.
 
-**3.5** Close the window by clicking **OK**.
+**3.5** ASSERTION: Each linked page opens in the browser and is relevant.
+
+**3.6** Close the window by clicking **OK**.
 
 ### 4 Turn project into A+ project
 
