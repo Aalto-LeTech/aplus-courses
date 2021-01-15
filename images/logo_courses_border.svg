@@ -7,9 +7,9 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="210mm"
-   height="297mm"
-   viewBox="0 0 210 297"
+   width="82.345291mm"
+   height="33.119732mm"
+   viewBox="0 0 82.345291 33.119732"
    version="1.1"
    id="svg2913"
    inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07, custom)"
@@ -24,16 +24,16 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.35"
-     inkscape:cx="400"
-     inkscape:cy="560"
+     inkscape:cx="214.80259"
+     inkscape:cy="27.452272"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      inkscape:document-rotation="0"
      showgrid="false"
      inkscape:window-width="1920"
-     inkscape:window-height="986"
+     inkscape:window-height="1030"
      inkscape:window-x="1680"
-     inkscape:window-y="94"
+     inkscape:window-y="50"
      inkscape:window-maximized="1" />
   <metadata
      id="metadata2910">
@@ -50,7 +50,8 @@
   <g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     id="layer1">
+     id="layer1"
+     transform="translate(-49.000149,-140.90325)">
     <g
        aria-label="Courses"
        id="text1319-9-9-9"
