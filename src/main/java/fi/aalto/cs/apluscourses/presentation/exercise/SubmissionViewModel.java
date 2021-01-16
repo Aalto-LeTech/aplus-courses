@@ -22,8 +22,12 @@ import java.util.Map;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SubmissionViewModel {
+
+  private static final Logger logger = LoggerFactory.getLogger(SubmissionViewModel.class);
 
   private final Exercise exercise;
 
@@ -110,19 +114,20 @@ public class SubmissionViewModel {
 
   /**
    * Formats a descriptive string for the submission dialog about a submittable file. The string
-   * includes the file name and its last modification date.
+   * includes the file name and time since file's last modification.
    *
    * @param file The submittable file in question.
    */
   @NotNull
-  public String getFileInformationText(SubmittableFile file) {
+  public String getFileInformationText(@NotNull SubmittableFile file) {
     StringBuilder fileInfoText = new StringBuilder(file.getName());
     try {
       String lastModificationTime =
-              FileDateFormatter.getFileModificationTime(filePaths.get(file.getKey()));
+          FileDateFormatter.getFileModificationTime(filePaths.get(file.getKey()));
       fileInfoText.append(" (modified ").append(lastModificationTime).append(")");
     } catch (IOException e) {
-      // don't print anything about the last modification time if a very unlikely exception happened
+      // in case of an error, don't display the last modification time and continue gracefully
+      logger.error("Failed to retrieve the file's last modification time", e);
     }
     return fileInfoText.toString();
   }

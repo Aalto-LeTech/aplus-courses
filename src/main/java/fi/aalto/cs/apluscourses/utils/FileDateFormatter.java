@@ -60,7 +60,7 @@ public class FileDateFormatter {
    */
 
   public static String getFileModificationTime(Path filePath) throws IOException {
-    return getFileModificationTime(filePath, Clock.system(ZoneOffset.UTC));
+    return getFileModificationTime(filePath, Clock.systemUTC()); // any time zone will work here
   }
 
   /**
