@@ -4,27 +4,17 @@
     <vendor email="intellij-plugin-letech@aalto.fi"
             url="https://research.cs.aalto.fi/LeTech/">LeTech Group at Aalto University</vendor>
     <!--  this is the range of supported IntelliJ IDEA version the plugin can be used with  -->
-    <idea-version since-build="202.6397"/>
+    <idea-version since-build="203"/>
 
     <description><![CDATA[
     This plugin supports the educational use of IntelliJ IDEA (and its Scala plugin) in programming
     courses that rely on the A+ LMS developed at Aalto University. The plugin accesses programming
     assignments and automated grading services provided by A+ and otherwise enhances the student
     experience.
-      <br>
-      <br>
-      Available features:
-      <br>
-      <li>loading IDE and project settings for the <a href="https://plus.cs.aalto.fi/o1/2020/user/enroll/">O1 course</a></li>
-      <li>installing learning modules</li>
-      <li>notification of available version updates for modules</li>
-      <li>enhanced Scala REPL (read–eval–print loop)</li>
-      <li>submission of assignments for assessment via the IDE</li>
-      <li>accessing submissions' results via the IDE</li>
     ]]></description>
 
     <change-notes>
-        Add functionality for exporting modules.
+        Add support for multiple courses and improve the UI.
     </change-notes>
 
     <depends>com.intellij.modules.java</depends>
