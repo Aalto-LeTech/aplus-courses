@@ -18,7 +18,7 @@ public class TwoWayBindable<T extends JComponent, V> extends Bindable<T, V> {
    */
   public synchronized void updateSource() {
     if (sourceProperty != null) {
-      sourceProperty.set(targetGetter.apply(target));
+      sourceProperty.set(targetGetter.apply(target), target);
     }
   }
 }

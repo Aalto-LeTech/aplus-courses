@@ -123,31 +123,37 @@ Manual testing
 
 **4.4** Open **A+ > Turn project into A+ course project** again.
 
-**4.5** ASSERTION: **Leave IntelliJ settings unchanged** check box is not checked.
+**4.5** ASSERTION: You see a course selection dialog.
 
-**4.6** Check the "leave unchanged" check box.
+**4.6** Select the course O1 and press OK.
 
-**4.7** Select the desired language of assignments submission and click **OK**.
+**4.7** ASSERTION: **Leave IntelliJ settings unchanged** check box is not checked.
+
+**4.8** Check the "leave unchanged" check box.
+
+**4.9** Select the desired language of assignments submission and click **OK**.
 
 ![turn dialog](images/turn_dialog.png)
 
-**4.8** ASSERTION: **O1Library** appears as a module in the project tree.
+**4.10** ASSERTION: **O1Library** appears as a module in the project tree.
 
-**4.9** ASSERTION: **A+ Courses** tool window shows a list of O1 modules in **Modules** list.
+**4.11** ASSERTION: **A+ Courses** tool window shows a list of O1 modules in **Modules** list.
 
-**4.10** ASSERTION: **O1Library** is marked **Installed** in **Modules** list.
+**4.12** ASSERTION: **O1Library** is marked **Installed** in **Modules** list.
 
-**4.11** Once again, navigate to **A+ > Turn project into A+ course project**.
+**4.13** Once again, navigate to **A+ > Turn project into A+ course project**.
 
-**4.12** Leave the settings opt-out check box unchecked, select a language, and click **OK**.
+**4.14** ASSERTION: this time the course selection dialog isn't shown, since the project is already a course project.
 
-**4.13** The screen shows a dialog that tells the IDE will be restarted.
+**4.15** Leave the settings opt-out check box unchecked, select a language, and click **OK**.
 
-**4.14** Click **OK**.
+**4.16** The screen shows a dialog that tells the IDE will be restarted.
 
-**4.15** The IDE restarts.
+**4.17** Click **OK**.
 
-**4.16** ASSERTION: The theme has changed to dark.
+**4.18** The IDE restarts.
+
+**4.19** ASSERTION: The theme has changed to dark.
 
 ### 5 Installing modules
 

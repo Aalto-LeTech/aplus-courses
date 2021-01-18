@@ -5,9 +5,17 @@ import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import fi.aalto.cs.apluscourses.presentation.CourseProjectViewModel;
+import fi.aalto.cs.apluscourses.presentation.CourseSelectionViewModel;
 import org.jetbrains.annotations.NotNull;
 
 public class CourseProjectActionDialogsImpl implements CourseProjectActionDialogs {
+
+  @Override
+  public boolean showCourseSelectionDialog(@NotNull Project project,
+                                           @NotNull CourseSelectionViewModel viewModel) {
+    return new CourseSelectionView(project, viewModel).showAndGet();
+  }
+
   @Override
   public boolean showMainDialog(@NotNull Project project,
                                 @NotNull CourseProjectViewModel courseProjectViewModel) {
@@ -24,4 +32,5 @@ public class CourseProjectActionDialogsImpl implements CourseProjectActionDialog
         getText("ui.courseProject.dialogs.showRestartDialog.cancelText"),
         Messages.getQuestionIcon()) == Messages.OK;
   }
+
 }
