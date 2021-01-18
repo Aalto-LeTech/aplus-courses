@@ -5,53 +5,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
 import java.time.Clock;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
 
 public class FileDateFormatter {
-  // the order of time units to check, ordered from most to least precise
-  private static final List<ChronoUnit> TimeUnits = Arrays.asList(
-          ChronoUnit.SECONDS,
-          ChronoUnit.MINUTES,
-          ChronoUnit.HOURS,
-          ChronoUnit.DAYS,
-          ChronoUnit.MONTHS,
-          ChronoUnit.YEARS
-  );
-
-  private static String formatWithTimeUnit(ZonedDateTime fileTime,
-                                           ZonedDateTime currentTime,
-                                           ChronoUnit timeUnit) {
-    long timeUnitCount = timeUnit.between(fileTime, currentTime);
-    String timeUnitText = timeUnit.toString().toLowerCase(Locale.ROOT);
-    if (timeUnitCount == 1) {
-      // remove the final pluralizing "s" from the time unit name
-      timeUnitText = timeUnitText.substring(0, timeUnitText.length() - 1);
-    }
-
-    return timeUnitCount + " " + timeUnitText + " ago";
-  }
-
-  private static String formatWithLargestTimeUnit(ZonedDateTime fileTime, Clock currentTimeClock) {
-    ZonedDateTime currentTime = ZonedDateTime.now(currentTimeClock);
-
-    if (ChronoUnit.SECONDS.between(fileTime, currentTime) <= 0) {
-      return "just now";
-    }
-
-    for (int i = 1; i < TimeUnits.size(); i++) {
-      if (TimeUnits.get(i).between(fileTime, currentTime) == 0) {
-        return formatWithTimeUnit(fileTime, currentTime, TimeUnits.get(i - 1));
-      }
-    }
-
-    return formatWithTimeUnit(fileTime, currentTime, TimeUnits.get(TimeUnits.size() - 1));
-  }
-
   /**
    * Same as {@link FileDateFormatter#getFileModificationTime(Path, Clock)} with the clock
    * being always set to the system's current time.
@@ -76,8 +32,9 @@ public class FileDateFormatter {
     FileTime fileTime = Files.getLastModifiedTime(filePath);
     ZonedDateTime zonedFileTime =
             ZonedDateTime.ofInstant(fileTime.toInstant(), currentTimeClock.getZone());
+    ZonedDateTime currentTime = ZonedDateTime.now(currentTimeClock);
 
-    return formatWithLargestTimeUnit(zonedFileTime, currentTimeClock);
+    return DateDifferenceFormatter.formatWithLargestTimeUnit(zonedFileTime, currentTime);
   }
 
   private FileDateFormatter() {
