@@ -1,9 +1,9 @@
 package fi.aalto.cs.apluscourses.ui.base;
 
 import fi.aalto.cs.apluscourses.ui.utils.TwoWayBindable;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 /**
  * A class deriving from {@link JTextField} that works with the {@link TwoWayBindable} class to
@@ -17,10 +17,19 @@ public class TextField extends JTextField {
    * Construct a TextField.
    */
   public TextField() {
-    addKeyListener(new KeyAdapter() {
+    getDocument().addDocumentListener(new DocumentListener() {
       @Override
-      public void keyReleased(KeyEvent e) {
+      public void insertUpdate(DocumentEvent documentEvent) {
         textBindable.updateSource();
+      }
+
+      @Override
+      public void removeUpdate(DocumentEvent documentEvent) {
+        textBindable.updateSource();
+      }
+
+      @Override
+      public void changedUpdate(DocumentEvent documentEvent) {
       }
     });
   }
