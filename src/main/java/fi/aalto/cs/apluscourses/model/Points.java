@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -20,6 +22,10 @@ public class Points {
   @NotNull
   private final Map<Long, Integer> submissionPoints;
 
+  // TODO: remove
+  @NotNull
+  private Set<Long> submittableExercises;
+
   /**
    * Construct an instance with the given maps.
    * @param submissions      A map of exercise IDs to a list of submission IDs for that exercise.
@@ -34,6 +40,7 @@ public class Points {
     this.submissions = submissions;
     this.exercisePoints = exercisePoints;
     this.submissionPoints = submissionPoints;
+    this.submittableExercises = Collections.emptySet();
   }
 
   @NotNull
@@ -49,6 +56,22 @@ public class Points {
   @NotNull
   public Map<Long, Integer> getSubmissionPoints() {
     return Collections.unmodifiableMap(submissionPoints);
+  }
+
+  /**
+   * DO NOT USE THIS, AS IT IS LIKELY TO BE REMOVED.
+   */
+  @Deprecated
+  public boolean isSubmittable(long exerciseId) {
+    return submittableExercises.contains(exerciseId);
+  }
+
+  /**
+   * DO NOT USE THIS, AS IT IS LIKELY TO BE REMOVED.
+   */
+  @Deprecated
+  public void setSubmittableExercises(@NotNull Set<Long> submittableExercises) {
+    this.submittableExercises = submittableExercises;
   }
 
   /**

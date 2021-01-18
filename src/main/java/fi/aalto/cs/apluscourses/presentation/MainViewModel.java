@@ -67,6 +67,7 @@ public class MainViewModel {
     ExerciseDataSource dataSource = course.getExerciseDataSource();
     try {
       Points points = dataSource.getPoints(course, auth);
+      points.setSubmittableExercises(course.getExerciseModules().keySet()); // TODO: remove
       List<ExerciseGroup> exerciseGroups = dataSource.getExerciseGroups(course, points, auth);
       exercisesViewModel.set(new ExercisesTreeViewModel(exerciseGroups, exerciseFilterOptions));
     } catch (InvalidAuthenticationException e) {
