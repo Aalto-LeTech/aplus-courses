@@ -41,7 +41,7 @@ public class OpenSubmissionActionTest {
    */
   @Before
   public void setUp() {
-    Exercise exercise = new Exercise(223, "TestEx", "http://example.com", 0, 1, 10);
+    Exercise exercise = new Exercise(223, "TestEx", "http://example.com", 0, 1, 10, true);
     submissionResult
         = new SubmissionResult(1, 0, SubmissionResult.Status.GRADED, exercise);
     SubmissionResultViewModel viewModel
