@@ -76,7 +76,7 @@ public class CourseProjectAction extends AnAction {
       new CourseItemViewModel("O1", "Fall 2020",
           "https://grader.cs.aalto.fi/static/O1_2020/projects/o1_course_config.json"),
       new CourseItemViewModel("Ohjelmointistudio 2 / Programming Studio A", "Spring 2021",
-          "https://grader.cs.aalto.fi/static/studio2_k2021dev/projects/s2_course_config.json")
+          "https://grader.cs.aalto.fi/static/studio2_k2021/projects/s2_course_config.json")
   );
 
   /**
