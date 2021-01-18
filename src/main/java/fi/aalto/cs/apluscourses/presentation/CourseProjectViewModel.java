@@ -60,8 +60,7 @@ public class CourseProjectViewModel {
   }
 
   public String[] getLanguages() {
-    // O1_SPECIFIC: these should come from the course configuration file
-    return new String[] {"fi", "en"};
+    return course.getLanguages().toArray(new String[0]);
   }
 
   public boolean shouldShowCurrentSettings() {

@@ -17,6 +17,16 @@ public class BaseTreeViewModel<T> extends SelectableNodeViewModel<T> {
   private Thread filterThread = null;
   @NotNull
   private final Object filterLock = new Object();
+  @Nullable
+  protected transient volatile SelectableNodeViewModel<?> selectedItem = null; //NOSONAR
+
+  public void setSelectedItem(@Nullable SelectableNodeViewModel<?> selectedItem) {
+    this.selectedItem = selectedItem;
+  }
+
+  public @Nullable SelectableNodeViewModel<?> getSelectedItem() {
+    return selectedItem;
+  }
 
   /**
    * Base class for tree view models.

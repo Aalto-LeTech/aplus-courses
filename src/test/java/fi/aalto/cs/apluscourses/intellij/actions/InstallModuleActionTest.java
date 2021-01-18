@@ -56,6 +56,7 @@ public class InstallModuleActionTest {
         "id",
         "course",
         "http://localhost:7766",
+        Collections.emptyList(),
         modules,
         //  libraries
         Collections.emptyList(),

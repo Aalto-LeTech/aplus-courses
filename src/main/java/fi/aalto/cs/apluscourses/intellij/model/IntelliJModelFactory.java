@@ -37,6 +37,7 @@ public class IntelliJModelFactory implements ModelFactory {
   public Course createCourse(@NotNull String id,
                              @NotNull String name,
                              @NotNull String aplusUrl,
+                             @NotNull List<String> languages,
                              @NotNull List<Module> modules,
                              @NotNull List<Library> libraries,
                              @NotNull Map<Long, Map<String, String>> exerciseModules,
@@ -45,8 +46,8 @@ public class IntelliJModelFactory implements ModelFactory {
                              @NotNull Map<String, String[]> replInitialCommands) {
 
     IntelliJCourse course =
-        new IntelliJCourse(id, name, aplusUrl, modules, libraries, exerciseModules, resourceUrls,
-            autoInstallComponentNames, replInitialCommands, project,
+        new IntelliJCourse(id, name, aplusUrl, languages, modules, libraries, exerciseModules,
+            resourceUrls, autoInstallComponentNames, replInitialCommands, project,
             new CommonLibraryProvider(project));
 
     Component.InitializationCallback componentInitializationCallback =

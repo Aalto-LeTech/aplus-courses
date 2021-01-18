@@ -5,6 +5,8 @@ import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
 import fi.aalto.cs.apluscourses.ui.utils.TreeModelBuilder;
 import fi.aalto.cs.apluscourses.ui.utils.TreeModelTraverser;
 import fi.aalto.cs.apluscourses.ui.utils.TreePathEncoder;
+
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -14,6 +16,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -35,14 +38,14 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
       };
 
   private final transient Set<ActionListener> nodeAppliedListeners = ConcurrentHashMap.newKeySet();
+  private final transient Object popupMenuLock = new Object();
+  private JPopupMenu popupMenu;
 
   @NotNull
   public static SelectableNodeViewModel<?> getViewModel(Object node) {
     return (SelectableNodeViewModel<?>) TREE_MODEL_BUILDER.getUserObject(node);
   }
 
-  @Nullable
-  protected transient volatile SelectableNodeViewModel<?> selectedItem = null; //NOSONAR
   private transient BaseTreeViewModel<?> viewModel = null;
   private final transient Object viewModelLock = new Object();
 
@@ -57,6 +60,17 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
   }
 
   /**
+   * Sets the {@link JPopupMenu} that is shown for elements.
+   *
+   * @param popupMenu {@link JPopupMenu}
+   */
+  public void setPopupMenu(JPopupMenu popupMenu) {
+    synchronized (popupMenuLock) {
+      this.popupMenu = popupMenu;
+    }
+  }
+
+  /**
    * Set the model of the this tree to the given view model, or do nothing if the given view model
    * is {@code null}.
    */
@@ -68,8 +82,8 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
         registerViewModel();
       }
       update();
+      viewModel.setSelectedItem(null);
     }
-    selectedItem = null;
   }
 
   private void unregisterViewModel() {
@@ -106,6 +120,14 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
     nodeAppliedListeners.remove(listener);
   }
 
+  protected void showPopupMenu(@NotNull Point location) {
+    synchronized (popupMenuLock) {
+      if (popupMenu != null) {
+        popupMenu.show(this, location.x, location.y);
+      }
+    }
+  }
+
   @NotNull
   private Set<String> getExpandedState() {
     TreeModel treeModel = getModel();
@@ -138,7 +160,7 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
       if (newViewModel != null) {
         newViewModel.setSelected(true);
       }
-      selectedItem = newViewModel;
+      viewModel.setSelectedItem(newViewModel);
     }
 
     @Nullable
@@ -148,10 +170,23 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
   }
 
   protected class TreeMouseListener extends MouseAdapter {
+    @Override
+    public void mouseReleased(MouseEvent mouseEvent) {
+      if (mouseEvent.isPopupTrigger()) {
+        showPopupMenu(mouseEvent.getPoint());
+      }
+    }
+
+    @Override
+    public void mousePressed(MouseEvent mouseEvent) {
+      if (mouseEvent.isPopupTrigger()) {
+        showPopupMenu(mouseEvent.getPoint());
+      }
+    }
 
     @Override
     public void mouseClicked(@NotNull MouseEvent e) {
-      if (e.getClickCount() == 2 && selectedItem != null) {
+      if (e.getClickCount() == 2 && viewModel.getSelectedItem() != null) {
         ActionEvent actionEvent = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null);
         nodeAppliedListeners.forEach(listener -> listener.actionPerformed(actionEvent));
       }

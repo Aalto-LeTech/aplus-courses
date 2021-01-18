@@ -11,13 +11,13 @@ public class SubmissionResultViewModelTest {
 
   @Test
   public void testSubmissionResultViewModel() {
-    Exercise exercise = new Exercise(0, "", "", 15, 25, 10);
+    Exercise exercise = new Exercise(0, "", "", 15, 25, 10, true);
     SubmissionResult submissionResult
         = new SubmissionResult(123L, 15, SubmissionResult.Status.UNKNOWN, exercise);
     SubmissionResultViewModel viewModel = new SubmissionResultViewModel(submissionResult, 34);
 
     assertEquals("Submission 34", viewModel.getPresentableName());
-    assertEquals("15/25 points", viewModel.getStatusText());
+    assertEquals("In grading", viewModel.getStatusText());
     assertTrue(viewModel.getChildren().isEmpty());
   }
 

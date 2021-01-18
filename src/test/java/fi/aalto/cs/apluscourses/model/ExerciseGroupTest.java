@@ -22,8 +22,8 @@ public class ExerciseGroupTest {
 
   @Test
   public void testExerciseGroup() {
-    Exercise exercise1 = new Exercise(123, "name1", "https://example.com", 0, 0, 0);
-    Exercise exercise2 = new Exercise(456, "name2", "https://example.org", 0, 0, 0);
+    Exercise exercise1 = new Exercise(123, "name1", "https://example.com", 0, 0, 0, false);
+    Exercise exercise2 = new Exercise(456, "name2", "https://example.org", 0, 0, 0, true);
 
     ExerciseGroup group = new ExerciseGroup(22, "group", Arrays.asList(exercise1, exercise2));
 

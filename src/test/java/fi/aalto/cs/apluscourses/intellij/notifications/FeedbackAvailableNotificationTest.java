@@ -15,7 +15,7 @@ public class FeedbackAvailableNotificationTest {
 
   @Test
   public void testFeedbackAvailableNotificationTest() {
-    Exercise exercise = new Exercise(123, "Test Exercise", "https://example.com", 3, 5, 10);
+    Exercise exercise = new Exercise(123, "Test Exercise", "https://example.com", 3, 5, 10, true);
     SubmissionResult result
         = new SubmissionResult(0, 0, SubmissionResult.Status.GRADED, exercise);
     Notification notification = new FeedbackAvailableNotification(result, exercise);

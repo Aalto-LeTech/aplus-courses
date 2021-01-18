@@ -42,8 +42,13 @@ public abstract class IntelliJLibrary
     for (String uri : getUris()) {
       library.addRoot(uri, OrderRootType.CLASSES);
     }
+
     //HACK: this is the only way to access properties that I am aware of
-    initializeLibraryProperties(((LibraryEx) library).getProperties());
+    LibraryEx.ModifiableModelEx libraryEx = (LibraryEx.ModifiableModelEx) library;
+    LibraryProperties<S> properties = libraryEx.getProperties();
+    initializeLibraryProperties(properties);
+    libraryEx.setProperties(properties);
+
     library.commit();
     libraryTable.commit();
   }

@@ -9,7 +9,7 @@ plugins {
 }
 
 group 'fi.aalto.cs'
-version '1.8'
+version '2.0'
 
 sourceCompatibility = 1.8
 
@@ -21,14 +21,14 @@ repositories {
 dependencies {
     compile group: 'commons-io', name: 'commons-io', version: '2.6'
     compile group: 'net.lingala.zip4j', name: 'zip4j', version: '2.6.3'
-    compileOnly group: 'org.scala-lang', name: 'scala-library', version: '2.12.10'
+    compileOnly group: 'org.scala-lang', name: 'scala-library', version: '2.13.4'
     implementation group: 'org.json', name: 'json', version: '20190722'
     testCompile group: 'junit', name: 'junit', version: '4.12'
     testCompile group: 'org.hamcrest', name: 'hamcrest', version: '2.2'
     testCompile group: 'org.mockito', name: 'mockito-core', version: '3.2.4'
     testCompile group: 'org.powermock', name: 'powermock-module-junit4', version: '2.0.2'
     testCompile group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.2'
-    testCompile group: 'org.scala-lang', name: 'scala-library', version: '2.12.10'
+    testCompile group: 'org.scala-lang', name: 'scala-library', version: '2.13.4'
     testCompile('io.rest-assured:rest-assured:4.2.0') {
         exclude group:'org.codehaus.groovy', module: 'groovy-xml'
     }
@@ -36,8 +36,8 @@ dependencies {
 
 intellij {
     //  this is the version of the IntelliJ IDEA API (SDK) used to build the plugin
-    version '2020.2'
-    plugins = ['java', 'org.intellij.scala:2020.2.23']
+    version '2020.3'
+    plugins = ['java', 'org.intellij.scala:2020.3.16']
 }
 
 publishPlugin {
@@ -52,7 +52,7 @@ checkstyle {
 
 scalastyle {
     config = file('scalastyle/scalastyle-checks.xml')
-    scalaVersion = '2.12'
+    scalaVersion = '2.13'
     failOnWarning = true
     sourceSets {
         test {

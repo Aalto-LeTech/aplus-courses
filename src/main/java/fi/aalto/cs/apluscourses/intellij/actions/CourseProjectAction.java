@@ -17,8 +17,10 @@ import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.ComponentInstaller;
 import fi.aalto.cs.apluscourses.model.ComponentInstallerImpl;
 import fi.aalto.cs.apluscourses.model.Course;
-import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationFileException;
+import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationException;
+import fi.aalto.cs.apluscourses.presentation.CourseItemViewModel;
 import fi.aalto.cs.apluscourses.presentation.CourseProjectViewModel;
+import fi.aalto.cs.apluscourses.presentation.CourseSelectionViewModel;
 import fi.aalto.cs.apluscourses.ui.InstallerDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogsImpl;
@@ -29,6 +31,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -45,7 +49,7 @@ public class CourseProjectAction extends AnAction {
   @NotNull
   private final CourseFactory courseFactory;
 
-  private final boolean createCourseFile;
+  private final boolean useCourseFile;
 
   @NotNull
   private final SettingsImporter settingsImporter;
@@ -67,13 +71,21 @@ public class CourseProjectAction extends AnAction {
 
   private final ExecutorService executor;
 
+  // TODO: don't hard code this list
+  private static final List<CourseItemViewModel> AVAILABLE_COURSES = Arrays.asList(
+      new CourseItemViewModel("O1", "Fall 2020",
+          "https://grader.cs.aalto.fi/static/O1_2020/projects/o1_course_config.json"),
+      new CourseItemViewModel("Ohjelmointistudio 2 / Programming Studio A", "Spring 2021",
+          "https://grader.cs.aalto.fi/static/studio2_k2021/projects/s2_course_config.json")
+  );
+
   /**
    * Construct a course project action with the given parameters.
    *
    * @param courseFactory    An instance of {@link CourseFactory} that is used to create a course
    *                         instance from a URL.
-   * @param createCourseFile Determines whether a course file is created or not. This is useful
-   *                         mostly for testing purposes.
+   * @param useCourseFile    Determines whether a course file is read/created or not. This is useful
+   *                         only for testing purposes.
    * @param settingsImporter An instance of {@link SettingsImporter} that is used to import IDE and
    *                         project settings.
    * @param installerFactory The factory used to create the component installer. The component
@@ -89,7 +101,7 @@ public class CourseProjectAction extends AnAction {
    * @param notifier         Notification bus.
    */
   public CourseProjectAction(@NotNull CourseFactory courseFactory,
-                             boolean createCourseFile,
+                             boolean useCourseFile,
                              @NotNull SettingsImporter settingsImporter,
                              @NotNull ComponentInstaller.Factory installerFactory,
                              @NotNull PostponedRunnable ideRestarter,
@@ -98,7 +110,7 @@ public class CourseProjectAction extends AnAction {
                              @NotNull Notifier notifier,
                              @NotNull ExecutorService executor) {
     this.courseFactory = courseFactory;
-    this.createCourseFile = createCourseFile;
+    this.useCourseFile = useCourseFile;
     this.settingsImporter = settingsImporter;
     this.installerFactory = installerFactory;
     this.ideRestarter = ideRestarter;
@@ -113,7 +125,7 @@ public class CourseProjectAction extends AnAction {
    */
   public CourseProjectAction() {
     this.courseFactory = (url, project) -> Course.fromUrl(url, new IntelliJModelFactory(project));
-    this.createCourseFile = true;
+    this.useCourseFile = true;
     this.settingsImporter = new SettingsImporter();
     this.installerFactory = new ComponentInstallerImpl.FactoryImpl<>(new SimpleAsyncTaskManager());
     this.dialogs = new CourseProjectActionDialogsImpl();
@@ -135,12 +147,12 @@ public class CourseProjectAction extends AnAction {
       return;
     }
 
-    URL selectedCourseUrl = getSelectedCourseUrl(project);
-    if (selectedCourseUrl == null) {
+    URL courseUrl = tryGetCourseUrl(project);
+    if (courseUrl == null) {
       return;
     }
 
-    Course course = tryGetCourse(project, selectedCourseUrl);
+    Course course = tryGetCourse(project, courseUrl);
     if (course == null) {
       return;
     }
@@ -152,7 +164,7 @@ public class CourseProjectAction extends AnAction {
     }
 
     String language = Objects.requireNonNull(courseProjectViewModel.languageProperty.get());
-    if (!tryCreateCourseFile(project, selectedCourseUrl, language)) {
+    if (!tryCreateCourseFile(project, courseUrl, language)) {
       return;
     }
 
@@ -172,7 +184,7 @@ public class CourseProjectAction extends AnAction {
     Future<Boolean> ideSettingsImported =
         executor.submit(() -> importIdeSettings && tryImportIdeSettings(project, course));
 
-    if (createCourseFile) {
+    if (useCourseFile) {
       // The course file not created in testing.
       PluginSettings.getInstance().createUpdatingMainViewModel(project);
     }
@@ -203,18 +215,25 @@ public class CourseProjectAction extends AnAction {
 
     @NotNull
     Course fromUrl(@NotNull URL courseUrl, @NotNull Project project)
-        throws IOException, MalformedCourseConfigurationFileException;
+        throws IOException, MalformedCourseConfigurationException;
   }
 
   @Nullable
-  private URL getSelectedCourseUrl(@NotNull Project project) {
-    // TODO: show a dialog with a list of courses and a URL field for custom courses, from which
-    // the user selects a course.
+  private URL tryGetCourseUrl(@NotNull Project project) {
     try {
-      return new URL(PluginSettings.COURSE_CONFIGURATION_FILE_URL);
+      if (useCourseFile && PluginSettings.getInstance().getCourseFileManager(project).load()) {
+        return PluginSettings.getInstance().getCourseFileManager(project).getCourseUrl();
+      }
+
+      CourseSelectionViewModel viewModel = new CourseSelectionViewModel(AVAILABLE_COURSES);
+      boolean cancelled = !dialogs.showCourseSelectionDialog(project, viewModel);
+      return cancelled ? null : new URL(viewModel.selectedCourseUrl.get());
     } catch (MalformedURLException e) {
       // User entered an invalid URL (or the default list has an invalid URL, which would be a bug)
       logger.error("Malformed course configuration file URL", e);
+      notifier.notify(new NetworkErrorNotification(e), project);
+      return null;
+    } catch (IOException e) {
       notifier.notify(new NetworkErrorNotification(e), project);
       return null;
     }
@@ -235,7 +254,7 @@ public class CourseProjectAction extends AnAction {
     } catch (IOException e) {
       notifier.notify(new NetworkErrorNotification(e), project);
       return null;
-    } catch (MalformedCourseConfigurationFileException e) {
+    } catch (MalformedCourseConfigurationException e) {
       logger.error("Malformed course configuration file", e);
       notifier.notify(new CourseConfigurationError(e), project);
       return null;
@@ -258,7 +277,7 @@ public class CourseProjectAction extends AnAction {
                                       @NotNull URL courseUrl,
                                       @NotNull String language) {
     try {
-      if (createCourseFile) {
+      if (useCourseFile) {
         PluginSettings
             .getInstance()
             .getCourseFileManager(project)

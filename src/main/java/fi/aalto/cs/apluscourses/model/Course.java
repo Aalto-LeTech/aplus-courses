@@ -38,6 +38,9 @@ public abstract class Course implements ComponentSource {
   private final String aplusUrl;
 
   @NotNull
+  private final List<String> languages;
+
+  @NotNull
   private final List<Module> modules;
 
   @NotNull
@@ -72,6 +75,7 @@ public abstract class Course implements ComponentSource {
   protected Course(@NotNull String id,
                    @NotNull String name,
                    @NotNull String aplusUrl,
+                   @NotNull List<String> languages,
                    @NotNull List<Module> modules,
                    @NotNull List<Library> libraries,
                    @NotNull Map<Long, Map<String, String>> exerciseModules,
@@ -81,6 +85,7 @@ public abstract class Course implements ComponentSource {
     this.id = id;
     this.name = name;
     this.aplusUrl = aplusUrl;
+    this.languages = languages;
     this.modules = modules;
     this.resourceUrls = resourceUrls;
     this.libraries = libraries;
@@ -93,7 +98,7 @@ public abstract class Course implements ComponentSource {
 
   @NotNull
   public static Course fromResource(@NotNull String resourceName, @NotNull ModelFactory factory)
-      throws ResourceException, MalformedCourseConfigurationFileException {
+      throws ResourceException, MalformedCourseConfigurationException {
     Reader reader = new InputStreamReader(Resources.DEFAULT.getStream(resourceName));
     return fromConfigurationData(reader, resourceName, factory);
   }
@@ -103,12 +108,12 @@ public abstract class Course implements ComponentSource {
    *
    * @param reader A reader providing a character stream with the course configuration data.
    * @return A course instance containing the information parsed from the configuration data.
-   * @throws MalformedCourseConfigurationFileException If the configuration data is malformed in any
+   * @throws MalformedCourseConfigurationException If the configuration data is malformed in any
    *                                                   way
    */
   @NotNull
   public static Course fromConfigurationData(@NotNull Reader reader, @NotNull ModelFactory factory)
-      throws MalformedCourseConfigurationFileException {
+      throws MalformedCourseConfigurationException {
     return fromConfigurationData(reader, "", factory);
   }
 
@@ -119,18 +124,19 @@ public abstract class Course implements ComponentSource {
    * @param sourcePath The path to the source of the reader, which is stored in exceptions thrown
    *                   from this method.
    * @return A course instance containing the information parsed from the configuration data.
-   * @throws MalformedCourseConfigurationFileException If the configuration data is malformed in any
+   * @throws MalformedCourseConfigurationException If the configuration data is malformed in any
    *                                                   way
    */
   @NotNull
   public static Course fromConfigurationData(@NotNull Reader reader,
                                              @NotNull String sourcePath,
                                              @NotNull ModelFactory factory)
-      throws MalformedCourseConfigurationFileException {
+      throws MalformedCourseConfigurationException {
     JSONObject jsonObject = getCourseJsonObject(reader, sourcePath);
     String courseId = getCourseId(jsonObject, sourcePath);
     String courseName = getCourseName(jsonObject, sourcePath);
     String aplusUrl = getCourseAPlusUrl(jsonObject, sourcePath);
+    List<String> languages = getCourseLanguages(jsonObject, sourcePath);
     List<Module> courseModules = getCourseModules(jsonObject, sourcePath, factory);
     Map<Long, Map<String, String>> exerciseModules
         = getCourseExerciseModules(jsonObject, sourcePath);
@@ -143,9 +149,9 @@ public abstract class Course implements ComponentSource {
         courseId,
         courseName,
         aplusUrl,
+        languages,
         courseModules,
-        //  libraries
-        Collections.emptyList(),
+        Collections.emptyList(), // libraries
         exerciseModules,
         resourceUrls,
         autoInstallComponentNames,
@@ -160,12 +166,12 @@ public abstract class Course implements ComponentSource {
    * @return A course instance containing the information parsed from the course configuration file.
    * @throws IOException                               If an IO error occurs (network connection
    *                                                   issues for an example).
-   * @throws MalformedCourseConfigurationFileException If the course configuration file is malformed
+   * @throws MalformedCourseConfigurationException If the course configuration file is malformed
    *                                                   in any way.
    */
   @NotNull
   public static Course fromUrl(@NotNull URL url, @NotNull ModelFactory modelFactory)
-      throws IOException, MalformedCourseConfigurationFileException {
+      throws IOException, MalformedCourseConfigurationException {
     InputStream inputStream = CoursesClient.fetch(url);
     return Course.fromConfigurationData(
         new InputStreamReader(inputStream), url.toString(), modelFactory);
@@ -187,6 +193,17 @@ public abstract class Course implements ComponentSource {
   @NotNull
   public String getName() {
     return name;
+  }
+
+
+  /**
+   * Returns the languages of the course (as ISO 639-1 codes).
+   *
+   * @return A list of language codes.
+   */
+  @NotNull
+  public List<String> getLanguages() {
+    return languages;
   }
 
   /**
@@ -254,59 +271,80 @@ public abstract class Course implements ComponentSource {
 
   @NotNull
   private static JSONObject getCourseJsonObject(@NotNull Reader reader, @NotNull String source)
-      throws MalformedCourseConfigurationFileException {
+      throws MalformedCourseConfigurationException {
     JSONTokener tokenizer = new JSONTokener(reader);
     try {
       return new JSONObject(tokenizer);
     } catch (JSONException ex) {
-      throw new MalformedCourseConfigurationFileException(source,
+      throw new MalformedCourseConfigurationException(source,
           "Course configuration file should consist of a valid JSON object", ex);
     }
   }
 
   @NotNull
   private static String getCourseId(@NotNull JSONObject jsonObject, @NotNull String source)
-      throws MalformedCourseConfigurationFileException {
+      throws MalformedCourseConfigurationException {
     try {
       return jsonObject.getString("id");
     } catch (JSONException ex) {
-      throw new MalformedCourseConfigurationFileException(source,
+      throw new MalformedCourseConfigurationException(source,
           "Missing or malformed \"id\" key", ex);
     }
   }
 
   @NotNull
   private static String getCourseName(@NotNull JSONObject jsonObject, @NotNull String source)
-      throws MalformedCourseConfigurationFileException {
+      throws MalformedCourseConfigurationException {
     try {
       return jsonObject.getString("name");
     } catch (JSONException ex) {
-      throw new MalformedCourseConfigurationFileException(source,
+      throw new MalformedCourseConfigurationException(source,
           "Missing or malformed \"name\" key", ex);
     }
   }
 
   @NotNull
   private static String getCourseAPlusUrl(@NotNull JSONObject jsonObject, @NotNull String source)
-      throws MalformedCourseConfigurationFileException {
+      throws MalformedCourseConfigurationException {
     try {
       return jsonObject.getString("aPlusUrl");
     } catch (JSONException ex) {
-      throw new MalformedCourseConfigurationFileException(source,
+      throw new MalformedCourseConfigurationException(source,
           "Missing or malformed \"aPlusUrl\" key", ex);
     }
+  }
+
+  @NotNull
+  private static List<String> getCourseLanguages(@NotNull JSONObject jsonObject,
+                                                 @NotNull String source)
+      throws MalformedCourseConfigurationException {
+    JSONArray languagesJson = jsonObject.optJSONArray("languages");
+    if (languagesJson == null) {
+      throw new MalformedCourseConfigurationException(
+          source, "Missing or malformed \"languages\" key", null);
+    }
+    List<String> languages = new ArrayList<>();
+    for (int i = 0; i < languagesJson.length(); ++i) {
+      try {
+        languages.add(languagesJson.getString(i));
+      } catch (JSONException e) {
+        throw new MalformedCourseConfigurationException(
+            source, "\"languages\" array should contain strings", e);
+      }
+    }
+    return languages;
   }
 
   @NotNull
   private static List<Module> getCourseModules(@NotNull JSONObject jsonObject,
                                                @NotNull String source,
                                                @NotNull ModelFactory factory)
-      throws MalformedCourseConfigurationFileException {
+      throws MalformedCourseConfigurationException {
     JSONArray modulesJsonArray;
     try {
       modulesJsonArray = jsonObject.getJSONArray("modules");
     } catch (JSONException ex) {
-      throw new MalformedCourseConfigurationFileException(source,
+      throw new MalformedCourseConfigurationException(source,
           "Missing or malformed \"modules\" key", ex);
     }
 
@@ -317,10 +355,10 @@ public abstract class Course implements ComponentSource {
         JSONObject moduleObject = modulesJsonArray.getJSONObject(i);
         modules.add(Module.fromJsonObject(moduleObject, factory));
       } catch (JSONException ex) {
-        throw new MalformedCourseConfigurationFileException(source,
+        throw new MalformedCourseConfigurationException(source,
             "\"modules\" value should be an array of objects containing module information", ex);
       } catch (MalformedURLException ex) {
-        throw new MalformedCourseConfigurationFileException(source,
+        throw new MalformedCourseConfigurationException(source,
             "Malformed URL in module object", ex);
       }
     }
@@ -330,7 +368,7 @@ public abstract class Course implements ComponentSource {
   @NotNull
   private static Map<Long, Map<String, String>> getCourseExerciseModules(@NotNull JSONObject object,
                                                                          @NotNull String source)
-      throws MalformedCourseConfigurationFileException {
+      throws MalformedCourseConfigurationException {
     Map<Long, Map<String, String>> exerciseModules = new HashMap<>();
     JSONObject exerciseModulesJson = object.optJSONObject("exerciseModules");
     if (exerciseModulesJson == null) {
@@ -350,7 +388,7 @@ public abstract class Course implements ComponentSource {
       }
       return exerciseModules;
     } catch (JSONException e) {
-      throw new MalformedCourseConfigurationFileException(source,
+      throw new MalformedCourseConfigurationException(source,
           "Malformed \"exerciseModules\" object", e);
     }
   }
@@ -358,7 +396,7 @@ public abstract class Course implements ComponentSource {
   @NotNull
   private static Map<String, URL> getCourseResourceUrls(@NotNull JSONObject jsonObject,
                                                         @NotNull String source)
-      throws MalformedCourseConfigurationFileException {
+      throws MalformedCourseConfigurationException {
     Map<String, URL> resourceUrls = new HashMap<>();
     JSONObject resourceUrlsJsonObject = jsonObject.optJSONObject("resources");
     if (resourceUrlsJsonObject == null) {
@@ -370,7 +408,7 @@ public abstract class Course implements ComponentSource {
         URL resourceUrl = new URL(resourceUrlsJsonObject.getString(resourceName));
         resourceUrls.put(resourceName, resourceUrl);
       } catch (JSONException | MalformedURLException ex) {
-        throw new MalformedCourseConfigurationFileException(source,
+        throw new MalformedCourseConfigurationException(source,
             "Expected name-url-pairs in \"resources\" object", ex);
       }
     }
@@ -380,7 +418,7 @@ public abstract class Course implements ComponentSource {
   @NotNull
   private static List<String> getCourseAutoInstallComponentNames(@NotNull JSONObject jsonObject,
                                                                  @NotNull String source)
-      throws MalformedCourseConfigurationFileException {
+      throws MalformedCourseConfigurationException {
     List<String> autoInstallComponentNames = new ArrayList<>();
     JSONArray autoInstallArray = jsonObject.optJSONArray("autoInstall");
     if (autoInstallArray == null) {
@@ -392,7 +430,7 @@ public abstract class Course implements ComponentSource {
         String autoInstallComponentName = autoInstallArray.getString(i);
         autoInstallComponentNames.add(autoInstallComponentName);
       } catch (JSONException e) {
-        throw new MalformedCourseConfigurationFileException(
+        throw new MalformedCourseConfigurationException(
             source, "Names in \"autoInstall\" array should be course components", e);
       }
     }
@@ -400,19 +438,21 @@ public abstract class Course implements ComponentSource {
   }
 
   @NotNull
-  private static Map<String, String[]> getCourseReplInitialCommands(
-      @NotNull JSONObject jsonObject,
-      @NotNull String source)
-      throws MalformedCourseConfigurationFileException {
+  private static Map<String, String[]> getCourseReplInitialCommands(@NotNull JSONObject jsonObject,
+                                                                    @NotNull String source)
+      throws MalformedCourseConfigurationException {
     Map<String, String[]> replInitialCommands = new HashMap<>();
-    JSONObject replInitialCommandsJsonObject;
+    JSONObject replJson = jsonObject.optJSONObject("repl");
+    if (replJson == null) {
+      return replInitialCommands;
+    }
     try {
-      replInitialCommandsJsonObject = jsonObject
+      JSONObject initialCommandsJsonObject = jsonObject
           .getJSONObject("repl").getJSONObject("initialCommands");
 
-      Iterable<String> keys = replInitialCommandsJsonObject::keys;
+      Iterable<String> keys = initialCommandsJsonObject::keys;
       for (String moduleName : keys) {
-        String[] replCommands = replInitialCommandsJsonObject
+        String[] replCommands = initialCommandsJsonObject
             .getJSONArray(moduleName)
             .toList()
             .stream()
@@ -422,7 +462,7 @@ public abstract class Course implements ComponentSource {
         replInitialCommands.put(moduleName, replCommands);
       }
     } catch (JSONException ex) {
-      throw new MalformedCourseConfigurationFileException(source,
+      throw new MalformedCourseConfigurationException(source,
           "Expected moduleName-commands-pairs in \"repl\" object", ex);
     }
 

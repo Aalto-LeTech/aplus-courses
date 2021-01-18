@@ -105,11 +105,13 @@ Manual testing
 
 **3.2** ASSERTION: The information window is shown.
 
-**3.3** Click the highlighted **A+ Courses Plugin website** link.
+**3.3** ASSERTION: The plugin's version is visible near the top of the window.
 
-**3.4** ASSERTION: A+ Courses Plugin page on JetBrains website opens in the browser.
+**3.4** Click the highlighted links.
 
-**3.5** Close the window by clicking **OK**.
+**3.5** ASSERTION: Each linked page opens in the browser and is relevant.
+
+**3.6** Close the window by clicking **OK**.
 
 ### 4 Turn project into A+ project
 
@@ -121,31 +123,37 @@ Manual testing
 
 **4.4** Open **A+ > Turn project into A+ course project** again.
 
-**4.5** ASSERTION: **Leave IntelliJ settings unchanged** check box is not checked.
+**4.5** ASSERTION: You see a course selection dialog.
 
-**4.6** Check the "leave unchanged" check box.
+**4.6** Select the course O1 and press OK.
 
-**4.7** Select the desired language of assignments submission and click **OK**.
+**4.7** ASSERTION: **Leave IntelliJ settings unchanged** check box is not checked.
+
+**4.8** Check the "leave unchanged" check box.
+
+**4.9** Select the desired language of assignments submission and click **OK**.
 
 ![turn dialog](images/turn_dialog.png)
 
-**4.8** ASSERTION: **O1Library** appears as a module in the project tree.
+**4.10** ASSERTION: **O1Library** appears as a module in the project tree.
 
-**4.9** ASSERTION: **A+ Courses** tool window shows a list of O1 modules in **Modules** list.
+**4.11** ASSERTION: **A+ Courses** tool window shows a list of O1 modules in **Modules** list.
 
-**4.10** ASSERTION: **O1Library** is marked **Installed** in **Modules** list.
+**4.12** ASSERTION: **O1Library** is marked **Installed** in **Modules** list.
 
-**4.11** Once again, navigate to **A+ > Turn project into A+ course project**.
+**4.13** Once again, navigate to **A+ > Turn project into A+ course project**.
 
-**4.12** Leave the settings opt-out check box unchecked, select a language, and click **OK**.
+**4.14** ASSERTION: this time the course selection dialog isn't shown, since the project is already a course project.
 
-**4.13** The screen shows a dialog that tells the IDE will be restarted.
+**4.15** Leave the settings opt-out check box unchecked, select a language, and click **OK**.
 
-**4.14** Click **OK**.
+**4.16** The screen shows a dialog that tells the IDE will be restarted.
 
-**4.15** The IDE restarts.
+**4.17** Click **OK**.
 
-**4.16** ASSERTION: The theme has changed to dark.
+**4.18** The IDE restarts.
+
+**4.19** ASSERTION: The theme has changed to dark.
 
 ### 5 Installing modules
 
@@ -373,6 +381,12 @@ module GoodStuff.** error is shown.
 **9.8** Repeat **9.1**.
 
 **9.9** ASSERTION: The default group check box is checked and the group selection shows **Submit alone**.
+
+**9.10** Right-click **Assignment 2 (GoodStuff)**.
+
+**9.11** On the context menu that appears, choose **Submit A+ Assignment**.
+
+**9.12** ASSERTION: A window with **Assignment 2 (GoodStuff)** appears.
 
 ### 10 Refreshing Modules and Assignments
 

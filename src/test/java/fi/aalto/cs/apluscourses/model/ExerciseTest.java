@@ -20,7 +20,7 @@ public class ExerciseTest {
 
   @Test
   public void testExercise() {
-    Exercise exercise = new Exercise(987, "def", "http://localhost:4444", 13, 15, 10);
+    Exercise exercise = new Exercise(987, "def", "http://localhost:4444", 13, 15, 10, false);
 
     assertEquals("The ID is the same as the one given to the constructor",
         987L, exercise.getId());
@@ -34,6 +34,8 @@ public class ExerciseTest {
         15, exercise.getMaxPoints());
     assertEquals("The maximum submissions are the same as those given to the constructor",
         10, exercise.getMaxSubmissions());
+    assertFalse("The exercise submittability depends on the constructor parameter",
+        exercise.isSubmittable());
   }
 
   @NotNull
@@ -136,9 +138,9 @@ public class ExerciseTest {
 
   @Test
   public void testEquals() {
-    Exercise exercise = new Exercise(7, "oneEx", "http://localhost:1111", 0, 0, 0);
-    Exercise sameExercise = new Exercise(7, "twoEx", "http://localhost:2222", 2, 3, 4);
-    Exercise otherExercise = new Exercise(4, "oneEx", "http://localhost:2222", 3, 2, 1);
+    Exercise exercise = new Exercise(7, "oneEx", "http://localhost:1111", 0, 0, 0, true);
+    Exercise sameExercise = new Exercise(7, "twoEx", "http://localhost:2222", 2, 3, 4, false);
+    Exercise otherExercise = new Exercise(4, "oneEx", "http://localhost:2222", 3, 2, 1, true);
 
     assertEquals(exercise, sameExercise);
     assertEquals(exercise.hashCode(), sameExercise.hashCode());
@@ -148,8 +150,10 @@ public class ExerciseTest {
 
   @Test
   public void testIsCompleted() {
-    Exercise optionalNotSubmitted = new Exercise(1, "optionalNotSubmitted", "http://localhost:1111", 0, 0, 0);
-    Exercise optionalSubmitted = new Exercise(2, "optionalSubmitted", "http://localhost:1111", 0, 0, 0);
+    Exercise optionalNotSubmitted
+        = new Exercise(1, "optionalNotSubmitted", "http://localhost:1111", 0, 0, 0, true);
+    Exercise optionalSubmitted
+        = new Exercise(2, "optionalSubmitted", "http://localhost:1111", 0, 0, 0, true);
     optionalSubmitted.addSubmissionResult(new SubmissionResult(
             1, 0, SubmissionResult.Status.GRADED, optionalSubmitted));
 
@@ -158,19 +162,21 @@ public class ExerciseTest {
     assertFalse("Optional assignment with submissions isn't completed",
         optionalSubmitted.isCompleted());
 
-    Exercise noSubmissions = new Exercise(3, "noSubmissions", "http://localhost:1111", 0, 5, 10);
-    Exercise failed = new Exercise(4, "failed", "http://localhost:1111", 3, 5, 10);
+    Exercise noSubmissions
+        = new Exercise(3, "noSubmissions", "http://localhost:1111", 0, 5, 10, true);
+    Exercise failed
+        = new Exercise(4, "failed", "http://localhost:1111", 3, 5, 10, true);
     failed.addSubmissionResult(new SubmissionResult(
             1, 3, SubmissionResult.Status.GRADED, failed));
 
-    Exercise completed = new Exercise(5, "completed", "http://localhost:1111", 5, 5, 10);
+    Exercise completed = new Exercise(5, "completed", "http://localhost:1111", 5, 5, 10, true);
     completed.addSubmissionResult(new SubmissionResult(
             1, 5, SubmissionResult.Status.GRADED, completed));
 
 
     assertFalse("Assignment with no submissions isn't completed",
         noSubmissions.isCompleted());
-    assertFalse("Assingment with partial user points isn't completed",
+    assertFalse("Assignment with partial user points isn't completed",
         failed.isCompleted());
     assertTrue("Assignment with full user points is completed",
         completed.isCompleted());
@@ -178,11 +184,11 @@ public class ExerciseTest {
 
   @Test
   public void testIsOptional() {
-    Exercise optional = new Exercise(1, "optional", "http://localhost:1111", 0, 0, 0);
+    Exercise optional = new Exercise(1, "optional", "http://localhost:1111", 0, 0, 0, true);
     assertTrue("Assignment is optional",
             optional.isOptional());
 
-    Exercise notOptional = new Exercise(2, "notOptional", "http://localhost:1111", 0, 5, 10);
+    Exercise notOptional = new Exercise(2, "notOptional", "http://localhost:1111", 0, 5, 10, true);
     assertFalse("Assignment isn't optional",
         notOptional.isOptional());
   }
