@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
+import com.intellij.openapi.util.io.FileUtilRt;
 import com.intellij.testFramework.LightIdeaTestCase;
 import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.Group;
@@ -12,9 +13,15 @@ import fi.aalto.cs.apluscourses.model.SubmissionInfo;
 import fi.aalto.cs.apluscourses.model.SubmittableFile;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionViewModel;
 import fi.aalto.cs.apluscourses.ui.base.CheckBox;
+
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import javax.swing.Action;
 import javax.swing.ComboBoxModel;
 import javax.swing.JComboBox;
@@ -56,22 +63,30 @@ public class SubmissionDialogTest extends LightIdeaTestCase {
   private SubmissionViewModel createViewModel(@NotNull String exerciseName,
                                               @NotNull List<Group> availableGroups,
                                               @Nullable Group defaultGroup,
-                                              @NotNull List<SubmittableFile> files,
+                                              @NotNull List<SubmittableFile> submittableFiles,
+                                              @NotNull Map<String, Path> filePaths,
                                               int numberOfSubmissions,
                                               int maxNumberOfSubmissions) {
     return new SubmissionViewModel(
         new Exercise(1, exerciseName, "http://www.fi", 0, 0, maxNumberOfSubmissions),
-        new SubmissionInfo(maxNumberOfSubmissions, Collections.singletonMap("en", files)),
+        new SubmissionInfo(maxNumberOfSubmissions,
+                Collections.singletonMap("en", submittableFiles)),
         new SubmissionHistory(numberOfSubmissions),
         availableGroups,
         defaultGroup,
-        Collections.emptyMap(),
+        filePaths,
         "en"
     );
   }
 
   @NotNull
-  private TestDialog createTestDialog() {
+  private TestDialog createTestDialog() throws IOException {
+    Map<String, Path> submittableFilePaths = new HashMap<>();
+    for (int i = 0; i < 2; i++) {
+      submittableFilePaths.put("file" + i,
+              FileUtilRt.createTempFile("testFile", "", true).toPath());
+    }
+
     return new TestDialog(
         createViewModel(
             "Cool Name",
@@ -80,10 +95,10 @@ public class SubmissionDialogTest extends LightIdeaTestCase {
                 new Group(456, Arrays.asList("Annika", "Katariina"))
             ),
             new Group(456, Arrays.asList("Annika", "Katariina")),
-            Arrays.asList(
-                new SubmittableFile("file1", "main.c"),
-                new SubmittableFile("file2", "main.h")
-            ),
+            submittableFilePaths.entrySet().stream()
+                .map(x -> new SubmittableFile(x.getKey(), x.getValue().getFileName().toString()))
+                .collect(Collectors.toList()),
+            submittableFilePaths,
             4,
             10
         )
@@ -91,7 +106,7 @@ public class SubmissionDialogTest extends LightIdeaTestCase {
   }
 
   @Test
-  public void testSubmissionDialogTitle() {
+  public void testSubmissionDialogTitle() throws IOException {
     TestDialog testDialog = createTestDialog();
     Assert.assertEquals("The dialog has the correct title", "Submit Assignment",
         testDialog.getTitle());
@@ -99,14 +114,14 @@ public class SubmissionDialogTest extends LightIdeaTestCase {
   }
 
   @Test
-  public void testSubmissionDialogHeader() {
+  public void testSubmissionDialogHeader() throws IOException {
     TestDialog testDialog = createTestDialog();
     Assert.assertThat("The header contains the exercise name", testDialog.getHeader(),
         containsString("Cool Name"));
   }
 
   @Test
-  public void testSubmissionDialogGroupSelection() {
+  public void testSubmissionDialogGroupSelection() throws IOException {
     TestDialog testDialog = createTestDialog();
     JComboBox<Group> comboBox = testDialog.getGroupComboBox();
 
@@ -120,7 +135,7 @@ public class SubmissionDialogTest extends LightIdeaTestCase {
   }
 
   @Test
-  public void testSubmissionDialogDefaultGroupCheckBox() {
+  public void testSubmissionDialogDefaultGroupCheckBox() throws IOException {
     TestDialog testDialog = createTestDialog();
     CheckBox checkBox = testDialog.getDefaultGroupCheckBox();
     Assert.assertTrue(
@@ -130,14 +145,14 @@ public class SubmissionDialogTest extends LightIdeaTestCase {
   }
 
   @Test
-  public void testSubmissionDialogSubmissionCountText() {
+  public void testSubmissionDialogSubmissionCountText() throws IOException {
     TestDialog testDialog = createTestDialog();
     Assert.assertEquals("The submission count text is correct",
         "You are about to make submission 5 out of 10.", testDialog.getSubmissionNumberText());
   }
 
   @Test
-  public void testSubmissionDialogActions() {
+  public void testSubmissionDialogActions() throws IOException {
     TestDialog testDialog = createTestDialog();
     Assert.assertEquals("The dialog has OK and Cancel actions", 2, testDialog.getActions().length);
   }
