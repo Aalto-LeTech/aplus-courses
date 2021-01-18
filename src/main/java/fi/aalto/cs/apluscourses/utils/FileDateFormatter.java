@@ -4,20 +4,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
-import java.time.Clock;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
 public class FileDateFormatter {
-  /**
-   * Same as {@link FileDateFormatter#getFileModificationTime(Path, Clock)} with the clock
-   * being always set to the system's current time.
-   *
-   * @see FileDateFormatter#getFileModificationTime(Path, Clock)
-   */
-
-  public static String getFileModificationTime(Path filePath) throws IOException {
-    return getFileModificationTime(filePath, Clock.systemUTC()); // any time zone will work here
-  }
 
   /**
    * Returns a string containing a formatted number of appropriate time units that have elapsed
@@ -25,14 +15,11 @@ public class FileDateFormatter {
    * "6 seconds ago", "12 minutes ago" or "5 hours ago".
    *
    * @param filePath The file path which modification date is to be parsed.
-   * @param currentTimeClock A custom clock to use for retrieving the current system time.
    */
-  public static String getFileModificationTime(Path filePath, Clock currentTimeClock)
-          throws IOException {
+  public static String getFileModificationTime(Path filePath) throws IOException {
     FileTime fileTime = Files.getLastModifiedTime(filePath);
-    ZonedDateTime zonedFileTime =
-            ZonedDateTime.ofInstant(fileTime.toInstant(), currentTimeClock.getZone());
-    ZonedDateTime currentTime = ZonedDateTime.now(currentTimeClock);
+    ZonedDateTime zonedFileTime = ZonedDateTime.ofInstant(fileTime.toInstant(), ZoneOffset.UTC);
+    ZonedDateTime currentTime = ZonedDateTime.now(ZoneOffset.UTC);
 
     return DateDifferenceFormatter.formatWithLargestTimeUnit(zonedFileTime, currentTime);
   }
