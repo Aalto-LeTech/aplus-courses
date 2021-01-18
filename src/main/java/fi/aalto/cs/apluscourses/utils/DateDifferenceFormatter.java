@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Locale;
 
 public class DateDifferenceFormatter {
+  // TODO: in case of plugin localization, strings in this class should be moved into resources
+
   // the order of time units to check, ordered from most to least precise
   private static final List<ChronoUnit> TimeUnits = Arrays.asList(
           ChronoUnit.SECONDS,
