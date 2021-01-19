@@ -1,9 +1,13 @@
 package fi.aalto.cs.apluscourses.ui.module;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import fi.aalto.cs.apluscourses.presentation.module.ModuleListElementViewModel;
 import fi.aalto.cs.apluscourses.ui.ComponentUtil;
 import fi.aalto.cs.apluscourses.ui.base.BaseListView;
+
 import java.awt.font.TextAttribute;
+
 import org.jetbrains.annotations.NotNull;
 
 public class ModuleListView
@@ -11,6 +15,8 @@ public class ModuleListView
 
   public ModuleListView() {
     super(new ModuleListElementView());
+    getEmptyText().appendLine(getText("ui.module.ModuleListView.turnIntoAPlusProject"));
+    getEmptyText().appendLine(getText("ui.module.ModuleListView.directionsAPlusProject"));
   }
 
   @Override
