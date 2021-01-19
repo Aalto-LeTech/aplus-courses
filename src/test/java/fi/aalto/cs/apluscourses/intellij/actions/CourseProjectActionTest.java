@@ -17,6 +17,7 @@ import fi.aalto.cs.apluscourses.model.ComponentInstallerImpl;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.presentation.CourseProjectViewModel;
+import fi.aalto.cs.apluscourses.presentation.CourseSelectionViewModel;
 import fi.aalto.cs.apluscourses.ui.InstallerDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogs;
 import fi.aalto.cs.apluscourses.utils.PostponedRunnable;
@@ -45,6 +46,13 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
       this.doCancel = doCancel;
       this.doRestart = doRestart;
       this.doOptOut = doOptOut;
+    }
+
+    @Override
+    public boolean showCourseSelectionDialog(
+        @NotNull Project project, @NotNull CourseSelectionViewModel courseSelectionViewModel) {
+      courseSelectionViewModel.selectedCourseUrl.set("http://localhost:2358");
+      return !doCancel;
     }
 
     @Override

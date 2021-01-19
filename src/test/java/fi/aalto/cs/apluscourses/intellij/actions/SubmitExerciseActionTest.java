@@ -120,7 +120,7 @@ public class SubmitExerciseActionTest {
   @Before
   public void setUp() throws IOException, FileDoesNotExistException {
     exerciseId = 12;
-    exercise = new Exercise(exerciseId, "Test exercise", "http://localhost:10000", 0, 0, 0);
+    exercise = new Exercise(exerciseId, "Test exercise", "http://localhost:10000", 0, 0, 0, true);
     group = new Group(124, Collections.singletonList("Only you"));
     groups = Collections.singletonList(group);
     exerciseGroup = new ExerciseGroup(0, "Test EG", Collections.singletonList(exercise));

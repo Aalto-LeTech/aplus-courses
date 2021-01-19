@@ -9,17 +9,25 @@ import fi.aalto.cs.apluscourses.model.SubmissionHistory;
 import fi.aalto.cs.apluscourses.model.SubmissionInfo;
 import fi.aalto.cs.apluscourses.model.SubmittableFile;
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
+import fi.aalto.cs.apluscourses.utils.FileDateFormatter;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ValidationError;
+
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SubmissionViewModel {
+
+  private static final Logger logger = LoggerFactory.getLogger(SubmissionViewModel.class);
 
   private final Exercise exercise;
 
@@ -102,6 +110,26 @@ public class SubmissionViewModel {
     }
     submissionCountText.append('.');
     return submissionCountText.toString();
+  }
+
+  /**
+   * Formats a descriptive string for the submission dialog about a submittable file. The string
+   * includes the file name and time since file's last modification.
+   *
+   * @param file The submittable file in question.
+   */
+  @NotNull
+  public String getFileInformationText(@NotNull SubmittableFile file) {
+    StringBuilder fileInfoText = new StringBuilder(file.getName());
+    try {
+      String lastModificationTime =
+          FileDateFormatter.getFileModificationTime(filePaths.get(file.getKey()));
+      fileInfoText.append(" (modified ").append(lastModificationTime).append(")");
+    } catch (IOException e) {
+      // in case of an error, don't display the last modification time and continue gracefully
+      logger.error("Failed to retrieve the file's last modification time", e);
+    }
+    return fileInfoText.toString();
   }
 
   /**

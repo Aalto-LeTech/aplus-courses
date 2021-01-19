@@ -24,11 +24,7 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> {
    * Returns {@code true} if the exercise is submittable from the plugin, {@code false} otherwise.
    */
   public boolean isSubmittable() {
-    // O1_SPECIFIC
-    String name = getPresentableName();
-    int maxSubmissions = getModel().getMaxSubmissions();
-    return name.length() > "Assignment xx (".length() && !"Assignment 1 (Piazza)".equals(name)
-        && !"Assignment  debugger".equals(name) && (maxSubmissions == 10 || maxSubmissions == 0);
+    return getModel().isSubmittable();
   }
 
   @Override

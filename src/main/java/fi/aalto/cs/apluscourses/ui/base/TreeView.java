@@ -175,6 +175,12 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
   }
 
   protected class TreeMouseListener extends MouseAdapter {
+    @Override
+    public void mouseReleased(MouseEvent mouseEvent) {
+      if (mouseEvent.isPopupTrigger()) {
+        showPopupMenu(mouseEvent.getPoint());
+      }
+    }
 
     @Override
     public void mousePressed(MouseEvent mouseEvent) {

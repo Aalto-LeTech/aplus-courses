@@ -26,6 +26,8 @@ public class Exercise {
 
   private final int maxSubmissions;
 
+  private final boolean submittable;
+
   /**
    * Construct an exercise instance with the given parameters.
    *
@@ -41,13 +43,15 @@ public class Exercise {
                   @NotNull String htmlUrl,
                   int userPoints,
                   int maxPoints,
-                  int maxSubmissions) {
+                  int maxSubmissions,
+                  boolean submittable) {
     this.id = id;
     this.name = name;
     this.htmlUrl = htmlUrl;
     this.userPoints = userPoints;
     this.maxPoints = maxPoints;
     this.maxSubmissions = maxSubmissions;
+    this.submittable = submittable;
   }
 
   /**
@@ -70,7 +74,13 @@ public class Exercise {
     int maxPoints = jsonObject.getInt("max_points");
     int maxSubmissions = jsonObject.getInt("max_submissions");
 
-    Exercise exercise = new Exercise(id, name, htmlUrl, userPoints, maxPoints, maxSubmissions);
+    // TODO: submittability should instead be determined by looking at the individual exercise end
+    // point in the A+ API and seeing if the assignment has files to submit. Take a look at
+    // SubmissionInfo and how it is used in SubmitExerciseAction.
+    boolean isSubmittable = points.isSubmittable(id);
+
+    Exercise exercise
+        = new Exercise(id, name, htmlUrl, userPoints, maxPoints, maxSubmissions, isSubmittable);
 
     List<Long> submissionIds = points.getSubmissions().getOrDefault(id, Collections.emptyList());
     for (int i = 0, length = submissionIds.size(); i < length; i++) {
@@ -120,6 +130,10 @@ public class Exercise {
 
   public int getMaxSubmissions() {
     return maxSubmissions;
+  }
+
+  public boolean isSubmittable() {
+    return submittable;
   }
 
   /**
