@@ -2,11 +2,11 @@ package fi.aalto.cs.apluscourses.intellij.activities;
 
 import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.MODULE_REPL_INITIAL_COMMANDS_FILE_NAME;
 
-import com.intellij.notification.Notifications;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.startup.StartupActivity.Background;
 import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory;
 import fi.aalto.cs.apluscourses.intellij.notifications.CourseConfigurationError;
+import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
@@ -29,7 +29,7 @@ public class InitializationActivity implements Background {
   private final Notifier notifier;
 
   public InitializationActivity() {
-    this(Notifications.Bus::notify);
+    this(new DefaultNotifier());
   }
 
   public InitializationActivity(@NotNull Notifier notifier) {

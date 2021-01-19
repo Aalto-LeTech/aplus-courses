@@ -5,7 +5,6 @@ import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 import static icons.PluginIcons.ACCENT_COLOR;
 
 import com.intellij.history.LocalHistory;
-import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
@@ -13,6 +12,7 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.model.ProjectModuleSource;
+import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.ExerciseNotSelectedNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.MissingFileNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.MissingModuleNotification;
@@ -87,7 +87,7 @@ public class SubmitExerciseAction extends AnAction {
         VfsUtil::findFileInDirectory,
         new ProjectModuleSource(),
         Dialogs.DEFAULT,
-        Notifications.Bus::notify,
+        new DefaultNotifier(),
         LocalHistory.getInstance()::putSystemLabel,
         FileDocumentManager.getInstance()::saveAllDocuments
     );
@@ -159,7 +159,7 @@ public class SubmitExerciseAction extends AnAction {
     ExerciseViewModel selectedExercise = (ExerciseViewModel) selection.getLevel(2);
     ExerciseGroupViewModel selectedExerciseGroup = (ExerciseGroupViewModel) selection.getLevel(1);
     if (selectedExercise == null || selectedExerciseGroup == null) {
-      notifier.notify(new ExerciseNotSelectedNotification(), project);
+      notifier.notifyAndHide(new ExerciseNotSelectedNotification(), project);
       return;
     }
 
@@ -245,7 +245,7 @@ public class SubmitExerciseAction extends AnAction {
     new SubmissionStatusUpdater(
         project, exerciseDataSource, authentication, submissionUrl, selectedExercise.getModel()
     ).start();
-    notifier.notify(new SubmissionSentNotification(), project);
+    notifier.notifyAndHide(new SubmissionSentNotification(), project);
 
     String tag = getAndReplaceText("ui.localHistory.submission.tag",
         selectedExerciseGroup.getPresentableName(),

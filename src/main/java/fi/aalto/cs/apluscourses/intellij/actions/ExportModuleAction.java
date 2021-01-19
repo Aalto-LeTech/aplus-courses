@@ -2,13 +2,13 @@ package fi.aalto.cs.apluscourses.intellij.actions;
 
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
-import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import fi.aalto.cs.apluscourses.intellij.model.ProjectModuleSource;
+import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.IoErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.services.Dialogs;
@@ -62,7 +62,7 @@ public class ExportModuleAction extends AnAction {
         project -> project.getProjectFile().getParent().getParent(),
         (zip, directory) -> new ZipFile(zip.toString()).addFolder(directory.toFile()),
         Dialogs.DEFAULT,
-        Notifications.Bus::notify
+        new DefaultNotifier()
     );
   }
 
