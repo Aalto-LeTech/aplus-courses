@@ -1,9 +1,9 @@
 package fi.aalto.cs.apluscourses.model;
 
-import com.intellij.notification.Notifications;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.notifications.FeedbackAvailableNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
+import fi.aalto.cs.apluscourses.intellij.notifications.NotifyAndHide;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import java.io.IOException;
 import org.jetbrains.annotations.NotNull;
@@ -85,7 +85,7 @@ public class SubmissionStatusUpdater {
         project,
         dataSource,
         authentication,
-        Notifications.Bus::notify,
+        NotifyAndHide::notifyAndHide,
         submissionUrl,
         exercise,
         DEFAULT_INTERVAL,
@@ -110,7 +110,7 @@ public class SubmissionStatusUpdater {
           submissionResult =
               dataSource.getSubmissionResult(submissionUrl, exercise, authentication);
           if (submissionResult.getStatus() != SubmissionResult.Status.UNKNOWN) {
-            Notifier.notifyAndHide(new FeedbackAvailableNotification(submissionResult, exercise), project);
+            notifier.notify(new FeedbackAvailableNotification(submissionResult, exercise), project);
             PluginSettings.getInstance().updateMainViewModel(project);
             return;
           }
