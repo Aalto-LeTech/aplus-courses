@@ -110,7 +110,7 @@ public class SubmissionStatusUpdater {
           submissionResult =
               dataSource.getSubmissionResult(submissionUrl, exercise, authentication);
           if (submissionResult.getStatus() != SubmissionResult.Status.UNKNOWN) {
-            notifier.notify(new FeedbackAvailableNotification(submissionResult, exercise), project);
+            Notifier.notifyAndHide(new FeedbackAvailableNotification(submissionResult, exercise), project);
             PluginSettings.getInstance().updateMainViewModel(project);
             return;
           }
