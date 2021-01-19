@@ -3,17 +3,16 @@ package fi.aalto.cs.apluscourses.intellij.notifications;
 import com.intellij.notification.Notification;
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.project.Project;
+import java.util.concurrent.Executors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.Executors;
+public class NotificationUtil {
+  private static final Logger logger = LoggerFactory.getLogger(NotificationUtil.class);
 
-public class NotifyAndHide {
-  private static final Logger logger = LoggerFactory.getLogger(NotifyAndHide.class);
-
-  private NotifyAndHide() {
+  private NotificationUtil() {
   }
 
   /**
@@ -23,6 +22,7 @@ public class NotifyAndHide {
    * @param project      The Project where the Notification is shown.
    */
   public static void notifyAndHide(@NotNull Notification notification, @Nullable Project project) {
+    // IntelliJ implementation of notifyAndHide is missing the project parameter from notify
     Notifications.Bus.notify(notification, project);
     Executors.newSingleThreadExecutor().submit(() -> {
       try {
