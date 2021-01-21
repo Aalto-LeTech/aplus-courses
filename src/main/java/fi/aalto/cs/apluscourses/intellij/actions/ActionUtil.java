@@ -8,6 +8,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
 import java.awt.Component;
 import java.awt.event.ActionListener;
+
 import org.jetbrains.annotations.NotNull;
 
 public class ActionUtil {

@@ -60,8 +60,6 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
     getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
     addTreeSelectionListener(new SelectionListener());
     addMouseListener(new TreeMouseListener());
-    getEmptyText().appendLine(getText("ui.module.ModuleListView.turnIntoAPlusProject"));
-    getEmptyText().appendLine(getText("ui.module.ModuleListView.directionsAPlusProject"));
   }
 
   /**
@@ -131,6 +129,19 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
         popupMenu.show(this, location.x, location.y);
       }
     }
+  }
+
+  public int getChildCount(TreeModel model) {
+    return getChildCount(model, model.getRoot());
+  }
+
+  private int getChildCount(TreeModel model, Object node) {
+    int count = 1; // the node itself
+    int childCount = model.getChildCount(node);
+    for (int i = 0; i < childCount; i++) {
+      count += getChildCount(model, model.getChild(node, i));
+    }
+    return count;
   }
 
   @NotNull

@@ -1,10 +1,17 @@
 package fi.aalto.cs.apluscourses.ui.module;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.ui.GuiObject;
+
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.SwingConstants;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,6 +22,8 @@ public class ModulesView {
   public JPanel toolbarContainer;
   @GuiObject
   private JPanel basePanel;
+  public JLabel emptyText;
+  private JScrollPane pane;
 
   /**
    * A view that holds the content of the Modules tool window.
@@ -36,6 +45,7 @@ public class ModulesView {
     //
     // We use class name as a unique key for the property.
     basePanel.putClientProperty(ModulesView.class.getName(), this);
+    updateComponents();
   }
 
   @NotNull
@@ -47,9 +57,26 @@ public class ModulesView {
    * Update this modules view with the given view model (which may be null).
    */
   public void viewModelChanged(@Nullable CourseViewModel course) {
-    ApplicationManager.getApplication().invokeLater(
-        () -> moduleListView.setModel(course == null ? null : course.getModules()),
+    ApplicationManager.getApplication().invokeLater(() -> {
+      moduleListView.setModel(course == null ? null : course.getModules());
+      updateComponents();
+    },
         ModalityState.any()
     );
+
+  }
+
+  private void updateComponents() {
+    emptyText.setText(getText("ui.module.ModuleListView.turnIntoAPlusProject"));
+    emptyText.setHorizontalAlignment(SwingConstants.CENTER);
+    if (moduleListView.getModel().getSize() == 0) {
+      pane.getViewport().remove(moduleListView);
+      pane.getViewport().add(emptyText);
+    } else {
+      pane.getViewport().remove(emptyText);
+      pane.getViewport().add(moduleListView);
+    }
+    pane.revalidate();
+    basePanel.repaint();
   }
 }
