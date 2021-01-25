@@ -195,7 +195,7 @@ public class MainViewModelUpdater {
     List<Module> updatableModules = filterOldUpdatableModules(newCourse.getUpdatableModules());
     if (!updatableModules.isEmpty()) {
       newModulesVersionsNotification = new NewModulesVersionsNotification(updatableModules);
-      notifier.notify(newModulesVersionsNotification, project);
+      notifier.notifyAndHide(newModulesVersionsNotification, project);
     }
   }
 

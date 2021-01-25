@@ -1,7 +1,6 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
 import com.intellij.concurrency.JobScheduler;
-import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
@@ -11,6 +10,7 @@ import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory;
 import fi.aalto.cs.apluscourses.intellij.model.SettingsImporter;
 import fi.aalto.cs.apluscourses.intellij.notifications.CourseConfigurationError;
 import fi.aalto.cs.apluscourses.intellij.notifications.CourseFileError;
+import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
@@ -135,7 +135,7 @@ public class CourseProjectAction extends AnAction {
       }
     });
     this.installerDialogsFactory = InstallerDialogs::new;
-    this.notifier = Notifications.Bus::notify;
+    this.notifier = new DefaultNotifier();
     this.executor = JobScheduler.getScheduler();
   }
 
