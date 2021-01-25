@@ -91,11 +91,12 @@ public class APlusToolWindowFactory extends BaseToolWindowFactory implements Dum
   private static class ScrollPaneMouseAdapter extends MouseAdapter {
     @Override
     public void mouseClicked(MouseEvent e) {
-      CourseProjectAction action = new CourseProjectAction();
+//      CourseProjectAction action = new CourseProjectAction();
       DataContext context = DataManager.getInstance().getDataContext(e.getComponent());
-      AnActionEvent anActionEvent = new AnActionEvent(e, context, "pane", new Presentation(),
-              ActionManager.getInstance(), 0);
-      action.actionPerformed(anActionEvent);
+//      AnActionEvent anActionEvent = new AnActionEvent(e, context, "pane", new Presentation(),
+//              ActionManager.getInstance(), 0);
+//      action.actionPerformed(anActionEvent);
+      ActionUtil.launch(CourseProjectAction.ACTION_ID, context);
     }
   }
 }

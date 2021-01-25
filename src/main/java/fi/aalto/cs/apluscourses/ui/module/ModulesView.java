@@ -15,6 +15,7 @@ import javax.swing.SwingConstants;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+
 public class ModulesView {
   @GuiObject
   public ModuleListView moduleListView;
@@ -68,15 +69,18 @@ public class ModulesView {
 
   private void updateComponents() {
     emptyText.setText(getText("ui.module.ModuleListView.turnIntoAPlusProject"));
-    emptyText.setHorizontalAlignment(SwingConstants.CENTER);
+    emptyText.setHorizontalAlignment(SwingConstants.LEFT);
+    emptyText.setVerticalAlignment(SwingConstants.TOP);
     if (moduleListView.getModel().getSize() == 0) {
-      pane.getViewport().remove(moduleListView);
-      pane.getViewport().add(emptyText);
+      moduleListView.setVisible(false);
+      pane.getViewport().setVisible(false);
+      emptyText.setVisible(true);
     } else {
-      pane.getViewport().remove(emptyText);
-      pane.getViewport().add(moduleListView);
+      moduleListView.setVisible(true);
+      pane.getViewport().setVisible(true);
+      emptyText.setVisible(false);
     }
-    pane.revalidate();
-    basePanel.repaint();
+//    pane.revalidate();
+//    basePanel.repaint();
   }
 }

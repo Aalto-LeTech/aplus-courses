@@ -18,6 +18,8 @@ import javax.swing.SwingConstants;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.awt.Dimension;
+
 public class ExercisesView {
   private TreeView exerciseGroupsTree;
   private JLabel emptyText;
@@ -52,13 +54,16 @@ public class ExercisesView {
 
   private void updateComponents() {
     emptyText.setText(getText("ui.module.ModuleListView.turnIntoAPlusProject"));
-    emptyText.setHorizontalAlignment(SwingConstants.CENTER);
+    emptyText.setHorizontalAlignment(SwingConstants.LEFT);
+    emptyText.setVerticalAlignment(SwingConstants.TOP);
     if (exerciseGroupsTree.getChildCount(exerciseGroupsTree.getModel()) <= 1) {
-      pane.getViewport().remove(exerciseGroupsTree);
-      pane.getViewport().add(emptyText);
+      exerciseGroupsTree.setVisible(false);
+      pane.setVisible(false);
+      emptyText.setVisible(true);
     } else {
-      pane.getViewport().remove(emptyText);
-      pane.getViewport().add(exerciseGroupsTree);
+      emptyText.setVisible(false);
+      exerciseGroupsTree.setVisible(true);
+      pane.setVisible(true);
     }
     pane.revalidate();
     basePanel.repaint();
