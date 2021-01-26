@@ -122,6 +122,9 @@ public class MainViewModel {
     return exerciseFilterOptions;
   }
 
+  /**
+   * <p>Returns true if a Course object exists and is not null, and false otherwise.</p>
+   */
   public boolean getHasCourse() {
     return Optional.ofNullable(courseViewModel.get())
             .map(BaseViewModel::getModel)

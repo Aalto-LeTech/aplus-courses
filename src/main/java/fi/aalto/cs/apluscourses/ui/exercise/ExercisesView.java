@@ -34,11 +34,9 @@ public class ExercisesView {
   private MainViewModel mainViewModel;
   private boolean hasCourse = false;
 
-  public ExercisesView() {
-    basePanel.putClientProperty(ExercisesView.class.getName(), this);
-    // See ModulesView.java
-  }
-
+  /**
+   * Creates an ExerciseView that uses mainViewModel to dynamically adjust its UI components.
+   */
   public ExercisesView(MainViewModel mainViewModel) {
     this.mainViewModel = mainViewModel;
     mainViewModel.exercisesViewModel
