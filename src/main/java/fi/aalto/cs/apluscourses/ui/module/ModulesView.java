@@ -7,6 +7,8 @@ import com.intellij.openapi.application.ModalityState;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.ui.GuiObject;
 
+import java.awt.CardLayout;
+
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -15,7 +17,6 @@ import javax.swing.SwingConstants;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-
 public class ModulesView {
   @GuiObject
   public ModuleListView moduleListView;
@@ -23,8 +24,10 @@ public class ModulesView {
   public JPanel toolbarContainer;
   @GuiObject
   private JPanel basePanel;
+  private JPanel cardPanel;
   public JLabel emptyText;
   private JScrollPane pane;
+  private CardLayout cl;
 
   /**
    * A view that holds the content of the Modules tool window.
@@ -46,6 +49,7 @@ public class ModulesView {
     //
     // We use class name as a unique key for the property.
     basePanel.putClientProperty(ModulesView.class.getName(), this);
+    cl = (CardLayout) cardPanel.getLayout();
     updateComponents();
   }
 
@@ -69,18 +73,12 @@ public class ModulesView {
 
   private void updateComponents() {
     emptyText.setText(getText("ui.module.ModuleListView.turnIntoAPlusProject"));
-    emptyText.setHorizontalAlignment(SwingConstants.LEFT);
-    emptyText.setVerticalAlignment(SwingConstants.TOP);
+    emptyText.setHorizontalAlignment(SwingConstants.CENTER);
+    emptyText.setVerticalAlignment(SwingConstants.CENTER);
     if (moduleListView.getModel().getSize() == 0) {
-      moduleListView.setVisible(false);
-      pane.getViewport().setVisible(false);
-      emptyText.setVisible(true);
+      cl.show(cardPanel, "LabelCard");
     } else {
-      moduleListView.setVisible(true);
-      pane.getViewport().setVisible(true);
-      emptyText.setVisible(false);
+      cl.show(cardPanel, "TreeCard");
     }
-//    pane.revalidate();
-//    basePanel.repaint();
   }
 }

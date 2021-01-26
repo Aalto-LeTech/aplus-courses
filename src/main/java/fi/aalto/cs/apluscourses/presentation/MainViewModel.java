@@ -15,6 +15,7 @@ import fi.aalto.cs.apluscourses.utils.Event;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -61,7 +62,9 @@ public class MainViewModel {
         .orElse(null);
     Authentication auth = authentication.get();
     if (course == null || auth == null) {
-      exercisesViewModel.set(null);
+      ExercisesTreeViewModel emptyModel = new ExercisesTreeViewModel(new ArrayList<>(),
+              new Options());
+      exercisesViewModel.set(emptyModel);
       return;
     }
     ExerciseDataSource dataSource = course.getExerciseDataSource();
@@ -117,5 +120,11 @@ public class MainViewModel {
   @NotNull
   public Options getExerciseFilterOptions() {
     return exerciseFilterOptions;
+  }
+
+  public boolean getHasCourse() {
+    return Optional.ofNullable(courseViewModel.get())
+            .map(BaseViewModel::getModel)
+            .orElse(null) != null;
   }
 }

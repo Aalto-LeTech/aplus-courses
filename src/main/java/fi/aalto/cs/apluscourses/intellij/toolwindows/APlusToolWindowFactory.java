@@ -66,12 +66,10 @@ public class APlusToolWindowFactory extends BaseToolWindowFactory implements Dum
 
   @NotNull
   private static ExercisesView createExercisesView(@NotNull Project project) {
-    ExercisesView exercisesView = new ExercisesView();
-
-    exercisesView.getEmptyTextLabel().addMouseListener(new ScrollPaneMouseAdapter());
     MainViewModel mainViewModel = PluginSettings.getInstance().getMainViewModel(project);
-    mainViewModel.exercisesViewModel
-        .addValueObserver(exercisesView, ExercisesView::viewModelChanged);
+
+    ExercisesView exercisesView = new ExercisesView(mainViewModel);
+    exercisesView.getEmptyTextLabel().addMouseListener(new ScrollPaneMouseAdapter());
 
     ActionManager actionManager = ActionManager.getInstance();
     ActionGroup group = (ActionGroup) actionManager.getAction(ActionGroups.EXERCISE_ACTIONS);
@@ -91,11 +89,7 @@ public class APlusToolWindowFactory extends BaseToolWindowFactory implements Dum
   private static class ScrollPaneMouseAdapter extends MouseAdapter {
     @Override
     public void mouseClicked(MouseEvent e) {
-//      CourseProjectAction action = new CourseProjectAction();
       DataContext context = DataManager.getInstance().getDataContext(e.getComponent());
-//      AnActionEvent anActionEvent = new AnActionEvent(e, context, "pane", new Presentation(),
-//              ActionManager.getInstance(), 0);
-//      action.actionPerformed(anActionEvent);
       ActionUtil.launch(CourseProjectAction.ACTION_ID, context);
     }
   }
