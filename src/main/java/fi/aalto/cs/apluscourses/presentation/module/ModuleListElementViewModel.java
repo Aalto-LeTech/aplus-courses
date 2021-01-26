@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.presentation.module;
 
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
+import com.intellij.ui.SimpleTextAttributes;
 import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.presentation.base.BaseViewModel;
@@ -87,13 +88,13 @@ public class ModuleListElementViewModel extends ListElementViewModel<Module> {
   }
 
   /**
-   * Returns a font weight in which the module is shown on a list.
-   * @return A {@link Float} that can be set to font weight.
+   * Returns text attributes according to which the module is shown on a list.
+   * @return {@link SimpleTextAttributes} that should be used for displaying the module name.
    */
-  public float getFontWeight() {
+  public int getTextAttribute() {
     Module model = getModel();
     return !model.hasError() && model.stateMonitor.get() == Component.LOADED
-        ? TextAttribute.WEIGHT_BOLD
-        : TextAttribute.WEIGHT_REGULAR;
+        ? SimpleTextAttributes.STYLE_BOLD
+        : SimpleTextAttributes.STYLE_PLAIN;
   }
 }
