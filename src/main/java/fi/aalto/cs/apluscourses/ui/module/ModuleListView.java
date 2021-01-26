@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.ui.module;
 
+import com.intellij.ui.ListSpeedSearch;
 import fi.aalto.cs.apluscourses.presentation.module.ModuleListElementViewModel;
 import fi.aalto.cs.apluscourses.ui.ComponentUtil;
 import fi.aalto.cs.apluscourses.ui.base.BaseListView;
@@ -11,6 +12,7 @@ public class ModuleListView
 
   public ModuleListView() {
     super(new ModuleListElementView());
+    new ListSpeedSearch<>(this, ModuleListElementViewModel::getName);
   }
 
   @Override

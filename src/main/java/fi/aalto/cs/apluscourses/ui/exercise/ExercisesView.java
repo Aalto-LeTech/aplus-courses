@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.ui.exercise;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
+import com.intellij.ui.TreeSpeedSearch;
 import fi.aalto.cs.apluscourses.intellij.actions.ActionUtil;
 import fi.aalto.cs.apluscourses.intellij.actions.OpenSubmissionAction;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
@@ -44,6 +45,9 @@ public class ExercisesView {
     exerciseGroupsTree.setCellRenderer(new ExercisesTreeRenderer());
     exerciseGroupsTree.addNodeAppliedListener(
         ActionUtil.createOnEventLauncher(OpenSubmissionAction.ACTION_ID, exerciseGroupsTree));
+    new TreeSpeedSearch(exerciseGroupsTree, x -> {
+      return String.valueOf(x);
+    });
   }
 
   public TreeView getExerciseGroupsTree() {
