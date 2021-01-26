@@ -18,9 +18,6 @@ import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import fi.aalto.cs.apluscourses.model.UrlRenderer;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
-import fi.aalto.cs.apluscourses.presentation.base.BaseTreeViewModel;
-import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseGroupViewModel;
-import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionResultViewModel;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
@@ -48,13 +45,7 @@ public class OpenItemActionTest {
         = new SubmissionResultViewModel(submissionResult, 1);
 
     ExercisesTreeViewModel exercisesTree = mock(ExercisesTreeViewModel.class);
-    BaseTreeViewModel.Selection selection = new BaseTreeViewModel.Selection(
-            exercisesTree,
-            mock(ExerciseGroupViewModel.class),
-            new ExerciseViewModel(exercise),
-            viewModel
-        );
-    doReturn(selection).when(exercisesTree).findSelected();
+    doReturn(viewModel).when(exercisesTree).getSelectedItem();
 
     MainViewModel mainViewModel = new MainViewModel(new Options());
     mainViewModel.exercisesViewModel.set(exercisesTree);
