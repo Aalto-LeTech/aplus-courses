@@ -28,7 +28,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
-public class OpenSubmissionActionTest {
+public class OpenItemActionTest {
 
   private SubmissionResult submissionResult;
   private AnActionEvent actionEvent;
@@ -68,8 +68,8 @@ public class OpenSubmissionActionTest {
   }
 
   @Test
-  public void testOpenSubmissionAction() throws Exception {
-    OpenSubmissionAction action = new OpenSubmissionAction(
+  public void testOpenItemAction() throws Exception {
+    OpenItemAction action = new OpenItemAction(
         mainViewModelProvider,
         submissionRenderer,
         notifier
@@ -86,7 +86,7 @@ public class OpenSubmissionActionTest {
   public void testErrorNotification() throws Exception {
     Exception exception = new Exception();
     doThrow(exception).when(submissionRenderer).show(anyString());
-    OpenSubmissionAction action = new OpenSubmissionAction(
+    OpenItemAction action = new OpenItemAction(
         mainViewModelProvider,
         submissionRenderer,
         notifier
