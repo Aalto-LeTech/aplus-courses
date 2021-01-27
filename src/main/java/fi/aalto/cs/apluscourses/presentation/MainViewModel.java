@@ -123,11 +123,15 @@ public class MainViewModel {
   }
 
   /**
-   * <p>Returns true if a Course object exists and is not null, and false otherwise.</p>
+   * <p>Returns the name of the Card to be shown based on whether a Course object exists
+   * and is not null.</p>
    */
-  public boolean getHasCourse() {
-    return Optional.ofNullable(courseViewModel.get())
+  public String getCardToBeShown() {
+    if (Optional.ofNullable(courseViewModel.get())
             .map(BaseViewModel::getModel)
-            .orElse(null) != null;
+            .orElse(null) != null) {
+      return "TreeCard";
+    }
+    return "LabelCard";
   }
 }

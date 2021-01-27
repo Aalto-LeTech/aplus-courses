@@ -50,7 +50,9 @@ public class ModulesView {
     // We use class name as a unique key for the property.
     basePanel.putClientProperty(ModulesView.class.getName(), this);
     cl = (CardLayout) cardPanel.getLayout();
-    updateComponents();
+    emptyText.setText(getText("ui.module.ModuleListView.turnIntoAPlusProject"));
+    emptyText.setHorizontalAlignment(SwingConstants.CENTER);
+    emptyText.setVerticalAlignment(SwingConstants.CENTER);
   }
 
   @NotNull
@@ -64,21 +66,10 @@ public class ModulesView {
   public void viewModelChanged(@Nullable CourseViewModel course) {
     ApplicationManager.getApplication().invokeLater(() -> {
       moduleListView.setModel(course == null ? null : course.getModules());
-      updateComponents();
+      cl.show(cardPanel, (course != null) ? "TreeCard" : "LabelCard");
     },
         ModalityState.any()
     );
-
   }
 
-  private void updateComponents() {
-    emptyText.setText(getText("ui.module.ModuleListView.turnIntoAPlusProject"));
-    emptyText.setHorizontalAlignment(SwingConstants.CENTER);
-    emptyText.setVerticalAlignment(SwingConstants.CENTER);
-    if (moduleListView.getModel().getSize() == 0) {
-      cl.show(cardPanel, "LabelCard");
-    } else {
-      cl.show(cardPanel, "TreeCard");
-    }
-  }
 }

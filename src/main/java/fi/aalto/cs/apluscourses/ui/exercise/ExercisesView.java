@@ -32,21 +32,22 @@ public class ExercisesView {
   private JPanel cardPanel;
   private CardLayout cl;
   private MainViewModel mainViewModel;
-  private boolean hasCourse = false;
 
   /**
    * Creates an ExerciseView that uses mainViewModel to dynamically adjust its UI components.
    */
   public ExercisesView(MainViewModel mainViewModel) {
     this.mainViewModel = mainViewModel;
-    mainViewModel.exercisesViewModel
-            .addValueObserver(this, ExercisesView::viewModelChanged);
     basePanel.putClientProperty(ExercisesView.class.getName(), this);
     cl = (CardLayout) cardPanel.getLayout();
     exerciseGroupsTree.getEmptyText().appendLine(getText("ui.exercise.ExercisesView.setToken"));
     exerciseGroupsTree.getEmptyText().appendLine(
             getText("ui.exercise.ExercisesView.setTokenDirections"));
-    updateComponents();
+    emptyText.setText(getText("ui.module.ModuleListView.turnIntoAPlusProject"));
+    emptyText.setHorizontalAlignment(SwingConstants.CENTER);
+    emptyText.setVerticalAlignment(SwingConstants.CENTER);
+    mainViewModel.exercisesViewModel
+            .addValueObserver(this, ExercisesView::viewModelChanged);
   }
 
   @NotNull
@@ -60,22 +61,10 @@ public class ExercisesView {
   public void viewModelChanged(@Nullable ExercisesTreeViewModel viewModel) {
     ApplicationManager.getApplication().invokeLater(() -> {
       exerciseGroupsTree.setViewModel(viewModel);
-      hasCourse = mainViewModel.getHasCourse();
-      updateComponents();
+      cl.show(cardPanel, mainViewModel.getCardToBeShown());
     },
         ModalityState.any()
     );
-  }
-
-  private void updateComponents() {
-    emptyText.setText(getText("ui.module.ModuleListView.turnIntoAPlusProject"));
-    emptyText.setHorizontalAlignment(SwingConstants.CENTER);
-    emptyText.setVerticalAlignment(SwingConstants.CENTER);
-    if (hasCourse) {
-      cl.show(cardPanel,"TreeCard");
-    } else {
-      cl.show(cardPanel, "LabelCard");
-    }
   }
 
   @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
