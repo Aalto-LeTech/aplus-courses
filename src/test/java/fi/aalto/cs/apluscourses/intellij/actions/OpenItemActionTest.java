@@ -42,6 +42,10 @@ public class OpenItemActionTest {
   private Notifier notifier;
   private UrlRenderer urlRenderer;
 
+  /**
+   * Called before each test.
+   * @param viewModelType The type of SelectableNodeViewModel to be tested, as a string
+   */
   public void setUp(String viewModelType) {
     exercise = new Exercise(223, "TestEx", "http://example.com", 0, 1, 10, true);
     submissionResult
