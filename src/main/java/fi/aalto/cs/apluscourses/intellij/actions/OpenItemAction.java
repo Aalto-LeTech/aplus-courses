@@ -1,8 +1,8 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
-import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAwareAction;
+import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.SubmissionRenderingErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
@@ -47,7 +47,7 @@ public class OpenItemAction extends DumbAwareAction {
     this(
         PluginSettings.getInstance(),
         new UrlRenderer(),
-        Notifications.Bus::notify
+        new DefaultNotifier()
     );
   }
 

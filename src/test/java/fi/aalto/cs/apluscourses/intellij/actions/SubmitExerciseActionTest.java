@@ -237,7 +237,7 @@ public class SubmitExerciseActionTest {
     ArgumentCaptor<SubmissionSentNotification> notificationArg =
         ArgumentCaptor.forClass(SubmissionSentNotification.class);
 
-    verify(notifier).notify(notificationArg.capture(), eq(project));
+    verify(notifier).notifyAndHide(notificationArg.capture(), eq(project));
     verify(tagger).putSystemLabel(any(), anyString(), anyInt());
     verify(documentSaver).saveAllDocuments();
   }
@@ -251,7 +251,7 @@ public class SubmitExerciseActionTest {
     ArgumentCaptor<ExerciseNotSelectedNotification> notification
         = ArgumentCaptor.forClass(ExerciseNotSelectedNotification.class);
 
-    verify(notifier).notify(notification.capture(), eq(project));
+    verify(notifier).notifyAndHide(notification.capture(), eq(project));
   }
 
   @Test

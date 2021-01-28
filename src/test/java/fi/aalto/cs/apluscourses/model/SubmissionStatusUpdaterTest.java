@@ -74,7 +74,7 @@ public class SubmissionStatusUpdaterTest {
 
     assertEquals("The submission results are not fetched anymore after feedback is available",
         3, dataSource.getSubmissionResultFetchCount());
-    verify(notifier).notify(any(FeedbackAvailableNotification.class), same(project));
+    verify(notifier).notifyAndHide(any(FeedbackAvailableNotification.class), same(project));
   }
 
   @Test

@@ -1,6 +1,5 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
-import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.openapi.project.Project;
@@ -8,6 +7,7 @@ import fi.aalto.cs.apluscourses.dal.APlusTokenAuthentication;
 import fi.aalto.cs.apluscourses.dal.PasswordStorage;
 import fi.aalto.cs.apluscourses.intellij.dal.IntelliJPasswordStorage;
 import fi.aalto.cs.apluscourses.intellij.notifications.ApiTokenNotSetNotification;
+import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.services.Dialogs;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
@@ -42,7 +42,7 @@ public class APlusAuthenticationAction extends DumbAwareAction {
     this(PluginSettings.getInstance(),
         Dialogs.DEFAULT,
         IntelliJPasswordStorage::new,
-        Notifications.Bus::notify);
+        new DefaultNotifier());
   }
 
   /**

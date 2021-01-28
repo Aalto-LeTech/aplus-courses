@@ -2,8 +2,8 @@ package fi.aalto.cs.apluscourses.intellij.actions;
 
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationAction;
-import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.SubmissionRenderingErrorNotification;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
@@ -23,7 +23,7 @@ public class OpenSubmissionNotificationAction extends NotificationAction {
   private final Notifier notifier;
 
   public OpenSubmissionNotificationAction(@NotNull SubmissionResult submissionResult) {
-    this(submissionResult, new UrlRenderer(), Notifications.Bus::notify);
+    this(submissionResult, new UrlRenderer(), new DefaultNotifier());
   }
 
   /**
