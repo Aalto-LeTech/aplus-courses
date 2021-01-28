@@ -31,12 +31,8 @@ import org.mockito.ArgumentCaptor;
 
 public class OpenItemActionTest {
 
-  private final String submissionString = "submission";
-  private final String exerciseString = "exercise";
-  private final String weekString = "week";
   private Exercise exercise;
   private SubmissionResult submissionResult;
-  private ExerciseGroup exerciseGroup;
   private AnActionEvent actionEvent;
   private MainViewModelProvider mainViewModelProvider;
   private Notifier notifier;
@@ -44,30 +40,11 @@ public class OpenItemActionTest {
 
   /**
    * Called before each test.
-   * @param viewModelType The type of SelectableNodeViewModel to be tested, as a string
+   * @param testableViewModel The SelectableNodeViewModel to be tested
    */
-  public void setUp(String viewModelType) {
-    exercise = new Exercise(223, "TestEx", "http://example.com", 0, 1, 10, true);
-    submissionResult
-        = new SubmissionResult(1, 0, SubmissionResult.Status.GRADED, exercise);
-    exerciseGroup = new ExerciseGroup(0, "", "https://url.com/", Collections.emptyList());
-
-    SubmissionResultViewModel submissionResultViewModel
-        = new SubmissionResultViewModel(submissionResult, 1);
-    ExerciseViewModel exerciseViewModel = new ExerciseViewModel(exercise);
-    ExerciseGroupViewModel exerciseGroupViewModel = new ExerciseGroupViewModel(exerciseGroup);
-
-    SelectableNodeViewModel<?> selectableNodeViewModel;
-    if (viewModelType.equals(submissionString)) {
-      selectableNodeViewModel = submissionResultViewModel;
-    } else if (viewModelType.equals(exerciseString)) {
-      selectableNodeViewModel = exerciseViewModel;
-    } else {
-      selectableNodeViewModel = exerciseGroupViewModel;
-    }
-
+  public void setUp(SelectableNodeViewModel<?> testableViewModel) {
     ExercisesTreeViewModel exercisesTree = mock(ExercisesTreeViewModel.class);
-    doReturn(selectableNodeViewModel).when(exercisesTree).getSelectedItem();
+    doReturn(testableViewModel).when(exercisesTree).getSelectedItem();
 
     MainViewModel mainViewModel = new MainViewModel(new Options());
     mainViewModel.exercisesViewModel.set(exercisesTree);
@@ -82,7 +59,10 @@ public class OpenItemActionTest {
 
   @Test
   public void testOpenItemActionSubmission() throws Exception {
-    setUp(submissionString);
+    exercise = new Exercise(223, "TestEx", "http://example.com", 0, 1, 10, true);
+    submissionResult
+        = new SubmissionResult(1, 0, SubmissionResult.Status.GRADED, exercise);
+    setUp(new SubmissionResultViewModel(submissionResult, 1));
     OpenItemAction action = new OpenItemAction(
         mainViewModelProvider,
         urlRenderer,
@@ -98,7 +78,8 @@ public class OpenItemActionTest {
 
   @Test
   public void testOpenItemActionExercise() throws Exception {
-    setUp(exerciseString);
+    exercise = new Exercise(223, "TestEx", "http://example.com", 0, 1, 10, true);
+    setUp(new ExerciseViewModel(exercise));
     OpenItemAction action = new OpenItemAction(
         mainViewModelProvider,
         urlRenderer,
@@ -114,7 +95,9 @@ public class OpenItemActionTest {
 
   @Test
   public void testOpenItemActionWeek() throws Exception {
-    setUp(weekString);
+    ExerciseGroup exerciseGroup =
+        new ExerciseGroup(0, "", "https://url.com/", Collections.emptyList());
+    setUp(new ExerciseGroupViewModel(exerciseGroup));
     OpenItemAction action = new OpenItemAction(
         mainViewModelProvider,
         urlRenderer,
@@ -130,7 +113,10 @@ public class OpenItemActionTest {
 
   @Test
   public void testErrorNotification() throws Exception {
-    setUp(submissionString);
+    exercise = new Exercise(223, "TestEx", "http://example.com", 0, 1, 10, true);
+    submissionResult
+        = new SubmissionResult(1, 0, SubmissionResult.Status.GRADED, exercise);
+    setUp(new SubmissionResultViewModel(submissionResult, 1));
     Exception exception = new Exception();
     doThrow(exception).when(urlRenderer).show(anyString());
     OpenItemAction action = new OpenItemAction(
