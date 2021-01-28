@@ -7,12 +7,10 @@ import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.SubmissionRenderingErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
+import fi.aalto.cs.apluscourses.model.Browsable;
 import fi.aalto.cs.apluscourses.model.UrlRenderer;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
-import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseGroupViewModel;
-import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
-import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionResultViewModel;
 import org.jetbrains.annotations.NotNull;
 
 public class OpenItemAction extends DumbAwareAction {
@@ -66,19 +64,8 @@ public class OpenItemAction extends DumbAwareAction {
       return;
     }
 
-    String url;
-    if (nodeViewModel instanceof SubmissionResultViewModel) {
-      url = ((SubmissionResultViewModel) nodeViewModel).getModel().getHtmlUrl();
-    } else if (nodeViewModel instanceof ExerciseViewModel) {
-      url = ((ExerciseViewModel) nodeViewModel).getModel().getHtmlUrl();
-    } else if (nodeViewModel instanceof ExerciseGroupViewModel) {
-      url = ((ExerciseGroupViewModel) nodeViewModel).getModel().getHtmlUrl();
-    } else {
-      return;
-    }
-
     try {
-      urlRenderer.show(url);
+      urlRenderer.show(((Browsable) nodeViewModel.getModel()).getHtmlUrl());
     } catch (Exception ex) {
       notifier.notify(new SubmissionRenderingErrorNotification(ex), e.getProject());
     }

@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class ExerciseGroup {
+public class ExerciseGroup implements Browsable {
 
   private final long id;
   @NotNull
@@ -84,7 +84,8 @@ public class ExerciseGroup {
     return name;
   }
 
-  public String getHtmlUrl() {
+  @Override
+  public @NotNull String getHtmlUrl() {
     return htmlUrl;
   }
 
