@@ -12,7 +12,7 @@ import static org.mockito.Mockito.verify;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
-import fi.aalto.cs.apluscourses.intellij.notifications.SubmissionRenderingErrorNotification;
+import fi.aalto.cs.apluscourses.intellij.notifications.UrlRenderingErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
@@ -126,8 +126,8 @@ public class OpenItemActionTest {
     );
     action.actionPerformed(actionEvent);
 
-    ArgumentCaptor<SubmissionRenderingErrorNotification> argumentCaptor
-        = ArgumentCaptor.forClass(SubmissionRenderingErrorNotification.class);
+    ArgumentCaptor<UrlRenderingErrorNotification> argumentCaptor
+        = ArgumentCaptor.forClass(UrlRenderingErrorNotification.class);
     verify(notifier).notify(argumentCaptor.capture(), any(Project.class));
     assertSame(exception, argumentCaptor.getValue().getException());
   }

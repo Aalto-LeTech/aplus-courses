@@ -4,7 +4,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAwareAction;
 import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
-import fi.aalto.cs.apluscourses.intellij.notifications.SubmissionRenderingErrorNotification;
+import fi.aalto.cs.apluscourses.intellij.notifications.UrlRenderingErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Browsable;
@@ -67,7 +67,7 @@ public class OpenItemAction extends DumbAwareAction {
     try {
       urlRenderer.show(((Browsable) nodeViewModel.getModel()).getHtmlUrl());
     } catch (Exception ex) {
-      notifier.notify(new SubmissionRenderingErrorNotification(ex), e.getProject());
+      notifier.notify(new UrlRenderingErrorNotification(ex), e.getProject());
     }
   }
 
