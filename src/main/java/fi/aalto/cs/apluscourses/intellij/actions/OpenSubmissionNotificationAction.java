@@ -41,7 +41,7 @@ public class OpenSubmissionNotificationAction extends NotificationAction {
   @Override
   public void actionPerformed(@NotNull AnActionEvent e, @NotNull Notification notification) {
     try {
-      submissionRenderer.show(submissionResult.getUrl());
+      submissionRenderer.show(submissionResult.getHtmlUrl());
     } catch (Exception ex) {
       notifier.notify(new SubmissionRenderingErrorNotification(ex), e.getProject());
     }

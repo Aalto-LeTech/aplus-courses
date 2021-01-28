@@ -23,7 +23,7 @@ public class OpenItemAction extends DumbAwareAction {
   private final MainViewModelProvider mainViewModelProvider;
 
   @NotNull
-  private final UrlRenderer submissionRenderer;
+  private final UrlRenderer urlRenderer;
 
   @NotNull
   private final Notifier notifier;
@@ -33,10 +33,10 @@ public class OpenItemAction extends DumbAwareAction {
    * is mainly useful for testing purposes.
    */
   public OpenItemAction(@NotNull MainViewModelProvider mainViewModelProvider,
-                        @NotNull UrlRenderer submissionRenderer,
+                        @NotNull UrlRenderer urlRenderer,
                         @NotNull Notifier notifier) {
     this.mainViewModelProvider = mainViewModelProvider;
-    this.submissionRenderer = submissionRenderer;
+    this.urlRenderer = urlRenderer;
     this.notifier = notifier;
   }
 
@@ -68,7 +68,7 @@ public class OpenItemAction extends DumbAwareAction {
 
     String url;
     if (nodeViewModel instanceof SubmissionResultViewModel) {
-      url = ((SubmissionResultViewModel) nodeViewModel).getModel().getUrl();
+      url = ((SubmissionResultViewModel) nodeViewModel).getModel().getHtmlUrl();
     } else if (nodeViewModel instanceof ExerciseViewModel) {
       url = ((ExerciseViewModel) nodeViewModel).getModel().getHtmlUrl();
     } else if (nodeViewModel instanceof ExerciseGroupViewModel) {
@@ -78,7 +78,7 @@ public class OpenItemAction extends DumbAwareAction {
     }
 
     try {
-      submissionRenderer.show(url);
+      urlRenderer.show(url);
     } catch (Exception ex) {
       notifier.notify(new SubmissionRenderingErrorNotification(ex), e.getProject());
     }

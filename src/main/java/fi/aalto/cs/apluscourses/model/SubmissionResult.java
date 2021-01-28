@@ -69,7 +69,7 @@ public class SubmissionResult {
   }
 
   @NotNull
-  public String getUrl() {
+  public String getHtmlUrl() {
     return exercise.getHtmlUrl() + "submissions/" + submissionId + "/";
   }
 

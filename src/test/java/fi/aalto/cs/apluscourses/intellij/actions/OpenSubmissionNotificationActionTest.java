@@ -54,7 +54,7 @@ public class OpenSubmissionNotificationActionTest {
     ArgumentCaptor<String> argumentCaptor
         = ArgumentCaptor.forClass(String.class);
     verify(submissionRenderer).show(argumentCaptor.capture());
-    assertEquals(submissionResult.getUrl(), argumentCaptor.getValue());
+    assertEquals(submissionResult.getHtmlUrl(), argumentCaptor.getValue());
   }
 
   @Test
