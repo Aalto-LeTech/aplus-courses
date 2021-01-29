@@ -3,20 +3,14 @@ package fi.aalto.cs.apluscourses.ui.module;
 import com.intellij.ui.ColoredListCellRenderer;
 import com.intellij.ui.ListSpeedSearch;
 import com.intellij.ui.SimpleTextAttributes;
-import com.intellij.ui.components.JBList;
 import com.intellij.ui.speedSearch.SpeedSearchUtil;
 import fi.aalto.cs.apluscourses.presentation.module.ModuleListElementViewModel;
-import fi.aalto.cs.apluscourses.ui.ComponentUtil;
 import fi.aalto.cs.apluscourses.ui.base.BaseListView;
 
-import java.awt.*;
-import java.awt.font.TextAttribute;
-
 import icons.PluginIcons;
-import org.intellij.lang.annotations.JdkConstants;
+import java.awt.Color;
+import javax.swing.JList;
 import org.jetbrains.annotations.NotNull;
-
-import javax.swing.*;
 
 public class ModuleListView
         extends BaseListView<ModuleListElementViewModel, ModuleListElementView> {
@@ -26,11 +20,16 @@ public class ModuleListView
   private static final SimpleTextAttributes UPDATE_TEXT_STYLE = new SimpleTextAttributes(
           SimpleTextAttributes.STYLE_BOLD, new Color(254, 127, 156));
 
-  private class ColoredModuleListRenderer extends ColoredListCellRenderer<ModuleListElementViewModel> {
+  private static class ColoredModuleListRenderer
+          extends ColoredListCellRenderer<ModuleListElementViewModel> {
 
     @Override
-    protected void customizeCellRenderer(@NotNull JList<? extends ModuleListElementViewModel> list, ModuleListElementViewModel element, int index, boolean selected, boolean hasFocus) {
-      append(element.getName(), new SimpleTextAttributes(element.getTextAttribute(), null), true);
+    protected void customizeCellRenderer(@NotNull JList<? extends ModuleListElementViewModel> list,
+                                         ModuleListElementViewModel element,
+                                         int index,
+                                         boolean selected,
+                                         boolean hasFocus) {
+      append(element.getName(), element.getTextAttribute(), true);
       append("  [" + element.getStatus() + "]", STATUS_TEXT_STYLE);
       setToolTipText(element.getTooltip());
       setIcon(PluginIcons.A_PLUS_MODULE);

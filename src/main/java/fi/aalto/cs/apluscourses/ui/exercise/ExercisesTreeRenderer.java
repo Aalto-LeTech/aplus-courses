@@ -57,7 +57,7 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
       setIcon(statusToIcon(exerciseViewModel.getStatus()));
     } else if (viewModel instanceof ExerciseGroupViewModel) {
       ExerciseGroupViewModel groupViewModel = (ExerciseGroupViewModel) viewModel;
-      append("", SimpleTextAttributes.REGULAR_ATTRIBUTES, true);
+      append("", SimpleTextAttributes.REGULAR_ATTRIBUTES, true); // disable search highlighting
       append(groupViewModel.getPresentableName(), SimpleTextAttributes.REGULAR_ATTRIBUTES, false);
       setEnabled(true);
       setIcon(PluginIcons.A_PLUS_EXERCISE_GROUP);
@@ -65,7 +65,7 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
     } else if (viewModel instanceof SubmissionResultViewModel) {
       SubmissionResultViewModel resultViewModel = (SubmissionResultViewModel) viewModel;
       setEnabled(true);
-      append("", SimpleTextAttributes.REGULAR_ATTRIBUTES, true);
+      append("", SimpleTextAttributes.REGULAR_ATTRIBUTES, true); // disable search highlighting
       append(resultViewModel.getPresentableName(), SimpleTextAttributes.REGULAR_ATTRIBUTES, false);
       append(" [" + resultViewModel.getStatusText() + "]", STATUS_TEXT_STYLE, false);
       setToolTipText("Double-click the submission to open it in the browser");

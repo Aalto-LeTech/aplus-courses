@@ -48,12 +48,13 @@ public class ExercisesView {
     exerciseGroupsTree.setCellRenderer(new ExercisesTreeRenderer());
     exerciseGroupsTree.addNodeAppliedListener(
         ActionUtil.createOnEventLauncher(OpenSubmissionAction.ACTION_ID, exerciseGroupsTree));
+
     new TreeSpeedSearch(exerciseGroupsTree, x -> {
-      Object obj = ((DefaultMutableTreeNode)x.getLastPathComponent()).getUserObject();
-      if (obj instanceof ExerciseViewModel) {
-        return ((ExerciseViewModel)obj).getPresentableName();
+      Object treeObject = ((DefaultMutableTreeNode) x.getLastPathComponent()).getUserObject();
+      if (treeObject instanceof ExerciseViewModel) {
+        return ((ExerciseViewModel) treeObject).getPresentableName();
       }
-      return "";
+      return ""; // disable searching on entries other than assignments
     });
   }
 

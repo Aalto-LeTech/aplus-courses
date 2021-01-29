@@ -91,10 +91,11 @@ public class ModuleListElementViewModel extends ListElementViewModel<Module> {
    * Returns text attributes according to which the module is shown on a list.
    * @return {@link SimpleTextAttributes} that should be used for displaying the module name.
    */
-  public int getTextAttribute() {
+  @NotNull
+  public SimpleTextAttributes getTextAttribute() {
     Module model = getModel();
-    return !model.hasError() && model.stateMonitor.get() == Component.LOADED
-        ? SimpleTextAttributes.STYLE_BOLD
-        : SimpleTextAttributes.STYLE_PLAIN;
+    return new SimpleTextAttributes(
+        !model.hasError() && model.stateMonitor.get() == Component.LOADED
+        ? SimpleTextAttributes.STYLE_BOLD : SimpleTextAttributes.STYLE_PLAIN, null);
   }
 }
