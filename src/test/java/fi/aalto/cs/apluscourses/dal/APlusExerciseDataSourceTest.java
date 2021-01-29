@@ -130,8 +130,8 @@ public class APlusExerciseDataSourceTest {
 
     JSONObject response = new JSONObject().put("results", array);
 
-    ExerciseGroup exGroup0 = new ExerciseGroup(0, "First Week", new ArrayList<>());
-    ExerciseGroup exGroup1 = new ExerciseGroup(1, "Second Week", new ArrayList<>());
+    ExerciseGroup exGroup0 = new ExerciseGroup(0, "First Week", "", new ArrayList<>());
+    ExerciseGroup exGroup1 = new ExerciseGroup(1, "Second Week", "", new ArrayList<>());
 
     doReturn(response).when(client)
         .fetch("https://example.com/courses/99/exercises/", authentication);
