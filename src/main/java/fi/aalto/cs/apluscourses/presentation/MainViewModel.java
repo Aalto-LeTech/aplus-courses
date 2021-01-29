@@ -64,6 +64,9 @@ public class MainViewModel {
     if (course == null || auth == null) {
       ExercisesTreeViewModel emptyModel = new ExercisesTreeViewModel(new ArrayList<>(),
               new Options());
+      if (course == null) {
+        emptyModel.setEmptyTextVisible(true);
+      }
       exercisesViewModel.set(emptyModel);
       return;
     }
@@ -122,16 +125,4 @@ public class MainViewModel {
     return exerciseFilterOptions;
   }
 
-  /**
-   * <p>Returns the name of the Card to be shown based on whether a Course object exists
-   * and is not null.</p>
-   */
-  public String getCardToBeShown() {
-    if (Optional.ofNullable(courseViewModel.get())
-            .map(BaseViewModel::getModel)
-            .orElse(null) != null) {
-      return "TreeCard";
-    }
-    return "LabelCard";
-  }
 }

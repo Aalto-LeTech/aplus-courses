@@ -8,7 +8,6 @@ import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.ui.GuiObject;
 
 import java.awt.CardLayout;
-
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -67,8 +66,7 @@ public class ModulesView {
     ApplicationManager.getApplication().invokeLater(() -> {
       moduleListView.setModel(course == null ? null : course.getModules());
       cl.show(cardPanel, (course != null) ? "TreeCard" : "LabelCard");
-    },
-        ModalityState.any()
+    }, ModalityState.any()
     );
   }
 

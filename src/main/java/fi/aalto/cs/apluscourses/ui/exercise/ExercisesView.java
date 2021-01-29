@@ -12,7 +12,6 @@ import fi.aalto.cs.apluscourses.ui.GuiObject;
 import fi.aalto.cs.apluscourses.ui.base.TreeView;
 
 import java.awt.CardLayout;
-
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -20,7 +19,6 @@ import javax.swing.SwingConstants;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 
 public class ExercisesView {
   private TreeView exerciseGroupsTree;
@@ -46,8 +44,6 @@ public class ExercisesView {
     emptyText.setText(getText("ui.module.ModuleListView.turnIntoAPlusProject"));
     emptyText.setHorizontalAlignment(SwingConstants.CENTER);
     emptyText.setVerticalAlignment(SwingConstants.CENTER);
-    mainViewModel.exercisesViewModel
-            .addValueObserver(this, ExercisesView::viewModelChanged);
   }
 
   @NotNull
@@ -61,9 +57,9 @@ public class ExercisesView {
   public void viewModelChanged(@Nullable ExercisesTreeViewModel viewModel) {
     ApplicationManager.getApplication().invokeLater(() -> {
       exerciseGroupsTree.setViewModel(viewModel);
-      cl.show(cardPanel, mainViewModel.getCardToBeShown());
-    },
-        ModalityState.any()
+      cl.show(cardPanel, viewModel == null || viewModel.isEmptyTextVisible() ? "LabelCard" :
+              "TreeCard");
+    }, ModalityState.any()
     );
   }
 
