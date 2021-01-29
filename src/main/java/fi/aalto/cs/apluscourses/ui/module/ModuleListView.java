@@ -42,6 +42,9 @@ public class ModuleListView
     }
   }
 
+  /**
+   * Constructs a view for the module list.
+   */
   public ModuleListView() {
     super(new ModuleListElementView());
     setFixedCellHeight(26);
