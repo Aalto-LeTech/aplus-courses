@@ -52,8 +52,8 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
       }
       setEnabled(exerciseViewModel.isSubmittable());
       setToolTipText(exerciseViewModel.isSubmittable()
-          ? "Use the upload button to submit an exercise"
-          : "This exercise cannot be submitted from the IDE");
+          ? "Use the upload button to submit an assignment"
+          : "This assignment cannot be submitted from the IDE");
       setIcon(statusToIcon(exerciseViewModel.getStatus()));
     } else if (viewModel instanceof ExerciseGroupViewModel) {
       ExerciseGroupViewModel groupViewModel = (ExerciseGroupViewModel) viewModel;
