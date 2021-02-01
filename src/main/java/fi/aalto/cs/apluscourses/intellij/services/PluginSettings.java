@@ -6,13 +6,13 @@ import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalIde
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 import com.intellij.ide.util.PropertiesComponent;
-import com.intellij.notification.Notifications;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.project.ProjectManagerListener;
 import fi.aalto.cs.apluscourses.intellij.dal.IntelliJPasswordStorage;
+import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.utils.CourseFileManager;
 import fi.aalto.cs.apluscourses.intellij.utils.IntelliJFilterOption;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
@@ -195,7 +195,7 @@ public class PluginSettings implements MainViewModelProvider {
     mainViewModelUpdaters.computeIfAbsent(key, projectKey -> {
       MainViewModelUpdater mainViewModelUpdater = new MainViewModelUpdater(
           mainViewModel, project, MAIN_VIEW_MODEL_UPDATE_INTERVAL,
-          Notifications.Bus::notify, IntelliJPasswordStorage::new);
+          new DefaultNotifier(), IntelliJPasswordStorage::new);
       mainViewModelUpdater.start();
       return mainViewModelUpdater;
     });

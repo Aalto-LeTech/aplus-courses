@@ -2,10 +2,10 @@ package fi.aalto.cs.apluscourses.intellij.actions;
 
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationAction;
-import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
-import fi.aalto.cs.apluscourses.intellij.notifications.SubmissionRenderingErrorNotification;
+import fi.aalto.cs.apluscourses.intellij.notifications.UrlRenderingErrorNotification;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import fi.aalto.cs.apluscourses.model.UrlRenderer;
 import fi.aalto.cs.apluscourses.utils.PluginResourceBundle;
@@ -23,7 +23,7 @@ public class OpenSubmissionNotificationAction extends NotificationAction {
   private final Notifier notifier;
 
   public OpenSubmissionNotificationAction(@NotNull SubmissionResult submissionResult) {
-    this(submissionResult, new UrlRenderer(), Notifications.Bus::notify);
+    this(submissionResult, new UrlRenderer(), new DefaultNotifier());
   }
 
   /**
@@ -41,9 +41,9 @@ public class OpenSubmissionNotificationAction extends NotificationAction {
   @Override
   public void actionPerformed(@NotNull AnActionEvent e, @NotNull Notification notification) {
     try {
-      submissionRenderer.show(submissionResult.getUrl());
+      submissionRenderer.show(submissionResult.getHtmlUrl());
     } catch (Exception ex) {
-      notifier.notify(new SubmissionRenderingErrorNotification(ex), e.getProject());
+      notifier.notify(new UrlRenderingErrorNotification(ex), e.getProject());
     }
   }
 }

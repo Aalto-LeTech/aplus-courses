@@ -123,7 +123,7 @@ public class SubmitExerciseActionTest {
     exercise = new Exercise(exerciseId, "Test exercise", "http://localhost:10000", 0, 0, 0, true);
     group = new Group(124, Collections.singletonList("Only you"));
     groups = Collections.singletonList(group);
-    exerciseGroup = new ExerciseGroup(0, "Test EG", Collections.singletonList(exercise));
+    exerciseGroup = new ExerciseGroup(0, "Test EG", "", Collections.singletonList(exercise));
     exerciseGroups = Collections.singletonList(exerciseGroup);
     fileName = "some_file.scala";
     fileKey = "file1";
@@ -237,7 +237,7 @@ public class SubmitExerciseActionTest {
     ArgumentCaptor<SubmissionSentNotification> notificationArg =
         ArgumentCaptor.forClass(SubmissionSentNotification.class);
 
-    verify(notifier).notify(notificationArg.capture(), eq(project));
+    verify(notifier).notifyAndHide(notificationArg.capture(), eq(project));
     verify(tagger).putSystemLabel(any(), anyString(), anyInt());
     verify(documentSaver).saveAllDocuments();
   }
@@ -251,7 +251,7 @@ public class SubmitExerciseActionTest {
     ArgumentCaptor<ExerciseNotSelectedNotification> notification
         = ArgumentCaptor.forClass(ExerciseNotSelectedNotification.class);
 
-    verify(notifier).notify(notification.capture(), eq(project));
+    verify(notifier).notifyAndHide(notification.capture(), eq(project));
   }
 
   @Test

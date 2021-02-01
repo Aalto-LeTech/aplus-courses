@@ -8,7 +8,7 @@ import com.intellij.notification.NotificationType;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import org.jetbrains.annotations.NotNull;
 
-public class SubmissionRenderingErrorNotification extends Notification {
+public class UrlRenderingErrorNotification extends Notification {
 
   @NotNull
   private final Exception exception;
@@ -17,11 +17,11 @@ public class SubmissionRenderingErrorNotification extends Notification {
    * Construct a notification informing the user that an error occurred while attempting to render
    * a submission.
    */
-  public SubmissionRenderingErrorNotification(@NotNull Exception exception) {
+  public UrlRenderingErrorNotification(@NotNull Exception exception) {
     super(
         PluginSettings.A_PLUS,
-        getText("notification.SubmissionRenderingErrorNotification.title"),
-        getAndReplaceText("notification.SubmissionRenderingErrorNotification.content",
+        getText("notification.UrlRenderingErrorNotification.title"),
+        getAndReplaceText("notification.UrlRenderingErrorNotification.content",
             exception.getMessage()),
         NotificationType.ERROR
     );

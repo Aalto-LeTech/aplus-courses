@@ -6,7 +6,7 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
-public class Exercise {
+public class Exercise implements Browsable {
 
   private final long id;
 
@@ -105,8 +105,8 @@ public class Exercise {
     return name;
   }
 
-  @NotNull
-  public String getHtmlUrl() {
+  @Override
+  public @NotNull String getHtmlUrl() {
     return htmlUrl;
   }
 
