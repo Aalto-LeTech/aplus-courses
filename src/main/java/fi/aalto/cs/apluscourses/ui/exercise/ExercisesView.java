@@ -29,13 +29,11 @@ public class ExercisesView {
   public JPanel toolbarContainer;
   private JPanel cardPanel;
   private CardLayout cl;
-  private MainViewModel mainViewModel;
 
   /**
    * Creates an ExerciseView that uses mainViewModel to dynamically adjust its UI components.
    */
-  public ExercisesView(MainViewModel mainViewModel) {
-    this.mainViewModel = mainViewModel;
+  public ExercisesView() {
     basePanel.putClientProperty(ExercisesView.class.getName(), this);
     cl = (CardLayout) cardPanel.getLayout();
     exerciseGroupsTree.getEmptyText().appendLine(getText("ui.exercise.ExercisesView.setToken"));

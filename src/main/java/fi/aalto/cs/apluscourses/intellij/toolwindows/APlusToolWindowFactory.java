@@ -66,7 +66,7 @@ public class APlusToolWindowFactory extends BaseToolWindowFactory implements Dum
   private static ExercisesView createExercisesView(@NotNull Project project) {
     MainViewModel mainViewModel = PluginSettings.getInstance().getMainViewModel(project);
 
-    ExercisesView exercisesView = new ExercisesView(mainViewModel);
+    ExercisesView exercisesView = new ExercisesView();
     exercisesView.getEmptyTextLabel().addMouseListener(new EmptyLabelMouseAdapter());
 
     mainViewModel.exercisesViewModel
