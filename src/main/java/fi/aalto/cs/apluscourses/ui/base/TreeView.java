@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.ui.base;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import fi.aalto.cs.apluscourses.presentation.base.BaseTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
 import fi.aalto.cs.apluscourses.ui.utils.TreeModelBuilder;
@@ -25,6 +27,7 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 
 public class TreeView extends com.intellij.ui.treeStructure.Tree {
 

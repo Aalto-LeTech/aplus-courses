@@ -1,10 +1,18 @@
 package fi.aalto.cs.apluscourses.ui.module;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.ui.GuiObject;
+
+import java.awt.CardLayout;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.SwingConstants;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,6 +23,10 @@ public class ModulesView {
   public JPanel toolbarContainer;
   @GuiObject
   private JPanel basePanel;
+  private JPanel cardPanel;
+  public JLabel emptyText;
+  private JScrollPane pane;
+  private CardLayout cl;
 
   /**
    * A view that holds the content of the Modules tool window.
@@ -36,6 +48,10 @@ public class ModulesView {
     //
     // We use class name as a unique key for the property.
     basePanel.putClientProperty(ModulesView.class.getName(), this);
+    cl = (CardLayout) cardPanel.getLayout();
+    emptyText.setText(getText("ui.module.ModuleListView.turnIntoAPlusProject"));
+    emptyText.setHorizontalAlignment(SwingConstants.CENTER);
+    emptyText.setVerticalAlignment(SwingConstants.CENTER);
   }
 
   @NotNull
@@ -47,9 +63,11 @@ public class ModulesView {
    * Update this modules view with the given view model (which may be null).
    */
   public void viewModelChanged(@Nullable CourseViewModel course) {
-    ApplicationManager.getApplication().invokeLater(
-        () -> moduleListView.setModel(course == null ? null : course.getModules()),
-        ModalityState.any()
+    ApplicationManager.getApplication().invokeLater(() -> {
+      moduleListView.setModel(course == null ? null : course.getModules());
+      cl.show(cardPanel, (course != null) ? "TreeCard" : "LabelCard");
+    }, ModalityState.any()
     );
   }
+
 }
