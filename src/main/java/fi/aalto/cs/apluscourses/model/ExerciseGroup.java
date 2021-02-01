@@ -10,11 +10,13 @@ import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class ExerciseGroup {
+public class ExerciseGroup implements Browsable {
 
   private final long id;
   @NotNull
   private String name;
+  @NotNull
+  private String htmlUrl;
   @NotNull
   private Map<Long, Exercise> exercises;
 
@@ -24,9 +26,15 @@ public class ExerciseGroup {
    * @param name      The name of the exercise group.
    * @param exercises The exercises of this exercise group.
    */
-  public ExerciseGroup(long id, @NotNull String name, @NotNull List<Exercise> exercises) {
+  public ExerciseGroup(
+      long id,
+      @NotNull String name,
+      @NotNull String htmlUrl,
+      @NotNull List<Exercise> exercises
+  ) {
     this.id = id;
     this.name = name;
+    this.htmlUrl = htmlUrl;
     this.exercises = exercises
         .stream()
         .collect(Collectors.toMap(Exercise::getId, Function.identity()));
@@ -44,13 +52,14 @@ public class ExerciseGroup {
                                              @NotNull Points points) {
     long id = jsonObject.getLong("id");
     String name = jsonObject.getString("display_name");
+    String htmlUrl = jsonObject.getString("html_url");
     JSONArray exercisesArray = jsonObject.getJSONArray("exercises");
     List<Exercise> exercises = new ArrayList<>(exercisesArray.length());
     for (int i = 0; i < exercisesArray.length(); ++i) {
       JSONObject exerciseObject = exercisesArray.getJSONObject(i);
       exercises.add(Exercise.fromJsonObject(exerciseObject, points));
     }
-    return new ExerciseGroup(id, name, exercises);
+    return new ExerciseGroup(id, name, htmlUrl, exercises);
   }
 
   /**
@@ -73,6 +82,11 @@ public class ExerciseGroup {
 
   public String getName() {
     return name;
+  }
+
+  @Override
+  public @NotNull String getHtmlUrl() {
+    return htmlUrl;
   }
 
   /**

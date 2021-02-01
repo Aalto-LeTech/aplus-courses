@@ -3,7 +3,7 @@ package fi.aalto.cs.apluscourses.model;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
-public class SubmissionResult {
+public class SubmissionResult implements Browsable {
 
   public enum Status {
     UNKNOWN,
@@ -68,8 +68,8 @@ public class SubmissionResult {
     return status;
   }
 
-  @NotNull
-  public String getUrl() {
+  @Override
+  public @NotNull String getHtmlUrl() {
     return exercise.getHtmlUrl() + "submissions/" + submissionId + "/";
   }
 

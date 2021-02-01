@@ -4,43 +4,44 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAwareAction;
 import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
-import fi.aalto.cs.apluscourses.intellij.notifications.SubmissionRenderingErrorNotification;
+import fi.aalto.cs.apluscourses.intellij.notifications.UrlRenderingErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
+import fi.aalto.cs.apluscourses.model.Browsable;
 import fi.aalto.cs.apluscourses.model.UrlRenderer;
+import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
-import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionResultViewModel;
 import org.jetbrains.annotations.NotNull;
 
-public class OpenSubmissionAction extends DumbAwareAction {
+public class OpenItemAction extends DumbAwareAction {
 
-  public static final String ACTION_ID = OpenSubmissionAction.class.getCanonicalName();
+  public static final String ACTION_ID = OpenItemAction.class.getCanonicalName();
 
   @NotNull
   private final MainViewModelProvider mainViewModelProvider;
 
   @NotNull
-  private final UrlRenderer submissionRenderer;
+  private final UrlRenderer urlRenderer;
 
   @NotNull
   private final Notifier notifier;
 
   /**
-   * Construct an {@link OpenSubmissionAction} instance with the given parameters. This constructor
+   * Construct an {@link OpenItemAction} instance with the given parameters. This constructor
    * is mainly useful for testing purposes.
    */
-  public OpenSubmissionAction(@NotNull MainViewModelProvider mainViewModelProvider,
-                              @NotNull UrlRenderer submissionRenderer,
-                              @NotNull Notifier notifier) {
+  public OpenItemAction(@NotNull MainViewModelProvider mainViewModelProvider,
+                        @NotNull UrlRenderer urlRenderer,
+                        @NotNull Notifier notifier) {
     this.mainViewModelProvider = mainViewModelProvider;
-    this.submissionRenderer = submissionRenderer;
+    this.urlRenderer = urlRenderer;
     this.notifier = notifier;
   }
 
   /**
-   * Construct an {@link OpenSubmissionAction} instance with reasonable defaults.
+   * Construct an {@link OpenItemAction} instance with reasonable defaults.
    */
-  public OpenSubmissionAction() {
+  public OpenItemAction() {
     this(
         PluginSettings.getInstance(),
         new UrlRenderer(),
@@ -58,16 +59,15 @@ public class OpenSubmissionAction extends DumbAwareAction {
       return;
     }
 
-    SubmissionResultViewModel submission =
-        (SubmissionResultViewModel) exercisesTree.findSelected().getLevel(3);
-    if (submission == null) {
+    SelectableNodeViewModel<?> nodeViewModel = exercisesTree.getSelectedItem();
+    if (nodeViewModel == null) {
       return;
     }
 
     try {
-      submissionRenderer.show(submission.getModel().getUrl());
+      urlRenderer.show(((Browsable) nodeViewModel.getModel()).getHtmlUrl());
     } catch (Exception ex) {
-      notifier.notify(new SubmissionRenderingErrorNotification(ex), e.getProject());
+      notifier.notify(new UrlRenderingErrorNotification(ex), e.getProject());
     }
   }
 

@@ -20,7 +20,7 @@ public class SubmissionResultTest {
     assertEquals("The status is the samme as the one given to the constructor",
         SubmissionResult.Status.GRADED, submissionResult.getStatus());
     assertEquals("The submission URL is correct", "http://example.com/submissions/123/",
-        submissionResult.getUrl());
+        submissionResult.getHtmlUrl());
     assertSame(exercise, submissionResult.getExercise());
   }
 
@@ -42,7 +42,7 @@ public class SubmissionResultTest {
     assertEquals("The status is parsed correctly from the JSON object",
         SubmissionResult.Status.GRADED, submissionResult.getStatus());
     assertEquals("The exercise URL is taken correctly from the JSON object",
-        "https://example.org/submissions/234/", submissionResult.getUrl());
+        "https://example.org/submissions/234/", submissionResult.getHtmlUrl());
   }
 
 }

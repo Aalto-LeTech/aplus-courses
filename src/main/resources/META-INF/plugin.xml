@@ -74,8 +74,8 @@
                     class="fi.aalto.cs.apluscourses.intellij.actions.SubmitExerciseAction"
                     text="Submit A+ Assignment"
                     icon="PluginIcons.A_PLUS_UPLOAD"/>
-            <action id="fi.aalto.cs.apluscourses.intellij.actions.OpenSubmissionAction"
-                    class="fi.aalto.cs.apluscourses.intellij.actions.OpenSubmissionAction"
+            <action id="fi.aalto.cs.apluscourses.intellij.actions.OpenItemAction"
+                    class="fi.aalto.cs.apluscourses.intellij.actions.OpenItemAction"
                     text="Open In Browser"
                     icon="PluginIcons.A_PLUS_BROWSE" />
             <action id="fi.aalto.cs.apluscourses.intellij.actions.ExercisesRefreshAction"

@@ -13,10 +13,10 @@ public class ExerciseGroupViewModelTest {
 
   @Test
   public void testGetPresentableName() {
-    ExerciseGroup group1 = new ExerciseGroup(1, "|fi:Ryhma|en:Group|", Collections.emptyList());
+    ExerciseGroup group1 = new ExerciseGroup(1, "|fi:Ryhma|en:Group|", "", Collections.emptyList());
     ExerciseGroupViewModel viewModel1 = new ExerciseGroupViewModel(group1);
 
-    ExerciseGroup group2 = new ExerciseGroup(2, "group name", Collections.emptyList());
+    ExerciseGroup group2 = new ExerciseGroup(2, "group name", "", Collections.emptyList());
     ExerciseGroupViewModel viewModel2 = new ExerciseGroupViewModel(group2);
 
     Assert.assertEquals("getPresentableName returns the English name",
@@ -40,7 +40,7 @@ public class ExerciseGroupViewModelTest {
 
 
     ExerciseGroup group =
-        new ExerciseGroup(5, "", Arrays.asList(third, fifth, first, fourth, second));
+        new ExerciseGroup(5, "", "", Arrays.asList(third, fifth, first, fourth, second));
     ExerciseGroupViewModel groupViewModel = new ExerciseGroupViewModel(group);
     List<ExerciseViewModel> exerciseViewModels = groupViewModel.getChildren().stream()
         .map(ExerciseViewModel.class::cast).collect(Collectors.toList());
@@ -66,7 +66,7 @@ public class ExerciseGroupViewModelTest {
 
 
     ExerciseGroup group =
-        new ExerciseGroup(5, "", Arrays.asList(third, second, first));
+        new ExerciseGroup(5, "", "", Arrays.asList(third, second, first));
     ExerciseGroupViewModel groupViewModel = new ExerciseGroupViewModel(group);
     List<ExerciseViewModel> exerciseViewModels = groupViewModel.getChildren().stream()
         .map(ExerciseViewModel.class::cast).collect(Collectors.toList());
