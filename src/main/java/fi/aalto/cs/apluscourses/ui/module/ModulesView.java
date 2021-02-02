@@ -4,6 +4,7 @@ import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
+import com.intellij.ui.treeStructure.Tree;
 import com.intellij.util.ui.WrapLayout;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.ui.GuiObject;
@@ -51,6 +52,7 @@ public class ModulesView {
     // We use class name as a unique key for the property.
     basePanel.putClientProperty(ModulesView.class.getName(), this);
     cl = (CardLayout) cardPanel.getLayout();
+    moduleListView.setBackground(new Tree().getBackground());
     emptyText.setText(getText("ui.module.ModuleListView.turnIntoAPlusProject"));
     emptyText.setHorizontalAlignment(SwingConstants.CENTER);
     emptyText.setVerticalAlignment(SwingConstants.CENTER);
