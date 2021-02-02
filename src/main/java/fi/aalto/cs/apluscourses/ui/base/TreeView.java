@@ -14,6 +14,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -189,7 +191,10 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
 
     @Override
     public void mouseClicked(@NotNull MouseEvent e) {
-      if (e.getClickCount() == 2 && viewModel.getSelectedItem() != null) {
+      // Double clicking items with no children
+      if (e.getClickCount() == 2
+          && Optional.ofNullable(viewModel.getSelectedItem())
+          .map(SelectableNodeViewModel::getChildren).map(List::isEmpty).orElse(false)) {
         ActionEvent actionEvent = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null);
         nodeAppliedListeners.forEach(listener -> listener.actionPerformed(actionEvent));
       }
