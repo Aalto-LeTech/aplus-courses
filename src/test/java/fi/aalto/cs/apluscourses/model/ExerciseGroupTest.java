@@ -53,6 +53,7 @@ public class ExerciseGroupTest {
         .put(ID_KEY, 567)
         .put(NAME_KEY, "group name")
         .put(HTML_KEY, "http://example.com/w01")
+        .put(OPEN_KEY, true)
         .put(EXERCISES_KEY, new JSONArray()
             .put(new JSONObject()
                 .put(ID_KEY, 567)
