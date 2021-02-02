@@ -17,6 +17,7 @@ public class ExerciseGroup implements Browsable {
   private String name;
   @NotNull
   private String htmlUrl;
+  private boolean isOpen;
   @NotNull
   private Map<Long, Exercise> exercises;
 
@@ -30,11 +31,13 @@ public class ExerciseGroup implements Browsable {
       long id,
       @NotNull String name,
       @NotNull String htmlUrl,
+      boolean isOpen,
       @NotNull List<Exercise> exercises
   ) {
     this.id = id;
     this.name = name;
     this.htmlUrl = htmlUrl;
+    this.isOpen = isOpen;
     this.exercises = exercises
         .stream()
         .collect(Collectors.toMap(Exercise::getId, Function.identity()));
@@ -53,13 +56,14 @@ public class ExerciseGroup implements Browsable {
     long id = jsonObject.getLong("id");
     String name = jsonObject.getString("display_name");
     String htmlUrl = jsonObject.getString("html_url");
+    boolean isOpen = jsonObject.getBoolean("is_open");
     JSONArray exercisesArray = jsonObject.getJSONArray("exercises");
     List<Exercise> exercises = new ArrayList<>(exercisesArray.length());
     for (int i = 0; i < exercisesArray.length(); ++i) {
       JSONObject exerciseObject = exercisesArray.getJSONObject(i);
       exercises.add(Exercise.fromJsonObject(exerciseObject, points));
     }
-    return new ExerciseGroup(id, name, htmlUrl, exercises);
+    return new ExerciseGroup(id, name, htmlUrl, isOpen, exercises);
   }
 
   /**
@@ -87,6 +91,10 @@ public class ExerciseGroup implements Browsable {
   @Override
   public @NotNull String getHtmlUrl() {
     return htmlUrl;
+  }
+
+  public boolean isOpen() {
+    return isOpen;
   }
 
   /**

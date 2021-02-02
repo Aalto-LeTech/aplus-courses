@@ -17,6 +17,7 @@ public class ExerciseGroupTest {
   private static final String EXERCISES_KEY = "exercises";
   private static final String ID_KEY = "id";
   private static final String HTML_KEY = "html_url";
+  private static final String OPEN_KEY = "is_open";
   private static final String MAX_SUBMISSIONS_KEY = "max_submissions";
   private static final String MAX_POINTS_KEY = "max_points";
 
@@ -25,11 +26,13 @@ public class ExerciseGroupTest {
     Exercise exercise1 = new Exercise(123, "name1", "https://example.com", 0, 0, 0, false);
     Exercise exercise2 = new Exercise(456, "name2", "https://example.org", 0, 0, 0, true);
 
-    ExerciseGroup group = new ExerciseGroup(22, "group", "https://example.fi", Arrays.asList(exercise1, exercise2));
+    ExerciseGroup group = new ExerciseGroup(22, "group", "https://example.fi", true, Arrays.asList(exercise1, exercise2));
 
     Assert.assertEquals(22, group.getId());
     Assert.assertEquals("The url is the same as the one given to the constructor",
         "https://example.fi", group.getHtmlUrl());
+    Assert.assertTrue("The open value is the same as the one given to the constructor",
+        group.isOpen());
     Assert.assertEquals("The name is the same as the one given to the constructor",
         "group", group.getName());
     Assert.assertEquals("The exercises are the same as those given to the constructor",
@@ -40,7 +43,7 @@ public class ExerciseGroupTest {
 
   @Test(expected = UnsupportedOperationException.class)
   public void testGetExercisesReturnsUnmodifiableMap() {
-    ExerciseGroup group = new ExerciseGroup(10, "", "", new ArrayList<>());
+    ExerciseGroup group = new ExerciseGroup(10, "", "", true, new ArrayList<>());
     group.getExercises().put(999L, null);
   }
 
@@ -93,6 +96,7 @@ public class ExerciseGroupTest {
       JSONObject json = new JSONObject()
           .put(NAME_KEY, "group " + i)
           .put(HTML_KEY, "http://example.com/w01")
+          .put(OPEN_KEY, true)
           .put(ID_KEY, i)
           .put(EXERCISES_KEY, new JSONArray()
               .put(new JSONObject()
