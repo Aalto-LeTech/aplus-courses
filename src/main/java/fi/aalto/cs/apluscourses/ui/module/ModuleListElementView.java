@@ -19,7 +19,7 @@ public class ModuleListElementView implements ListElementView {
     private static final SimpleTextAttributes STATUS_TEXT_STYLE = new SimpleTextAttributes(
             SimpleTextAttributes.STYLE_ITALIC | SimpleTextAttributes.STYLE_SMALLER, null);
     private static final SimpleTextAttributes UPDATE_TEXT_STYLE = new SimpleTextAttributes(
-            SimpleTextAttributes.STYLE_BOLD, new Color(254, 127, 156));
+            SimpleTextAttributes.STYLE_BOLD, null);
 
     @Override
     protected void customizeCellRenderer(@NotNull JList<? extends ModuleListElementViewModel> list,
@@ -40,10 +40,10 @@ public class ModuleListElementView implements ListElementView {
     }
   }
 
-  public static final ColoredModuleListRenderer CellRenderer = new ColoredModuleListRenderer();
+  public static final ColoredModuleListRenderer CELL_RENDERER = new ColoredModuleListRenderer();
 
   @Override
   public JComponent getRenderer() {
-    return CellRenderer;
+    return CELL_RENDERER;
   }
 }

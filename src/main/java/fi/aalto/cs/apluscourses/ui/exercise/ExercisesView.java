@@ -4,13 +4,12 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.ui.TreeSpeedSearch;
 import fi.aalto.cs.apluscourses.intellij.actions.ActionUtil;
-import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseViewModel;
 import fi.aalto.cs.apluscourses.intellij.actions.OpenItemAction;
+import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.ui.GuiObject;
 import fi.aalto.cs.apluscourses.ui.base.TreeView;
 import javax.swing.JPanel;
-import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -50,7 +49,7 @@ public class ExercisesView {
         ActionUtil.createOnEventLauncher(OpenItemAction.ACTION_ID, exerciseGroupsTree));
 
     new TreeSpeedSearch(exerciseGroupsTree, x -> {
-      Object treeObject = ((DefaultMutableTreeNode) x.getLastPathComponent()).getUserObject();
+      Object treeObject = TreeView.getViewModel(x.getLastPathComponent());
       if (treeObject instanceof ExerciseViewModel) {
         return ((ExerciseViewModel) treeObject).getPresentableName();
       }

@@ -14,7 +14,7 @@ public class ModuleListView
   public ModuleListView() {
     super(new ModuleListElementView());
     setFixedCellHeight(26);
-    setCellRenderer(ModuleListElementView.CellRenderer);
+    setCellRenderer(ModuleListElementView.CELL_RENDERER);
 
     new ListSpeedSearch<>(this, ModuleListElementViewModel::getName);
   }
