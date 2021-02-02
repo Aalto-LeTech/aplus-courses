@@ -9,6 +9,8 @@ import org.jetbrains.annotations.NotNull;
 
 public class ExercisesTreeViewModel extends BaseTreeViewModel<List<ExerciseGroup>> {
 
+  private boolean isEmptyTextVisible = false;
+
   /**
    * Construct an exercises tree view model from the given exercise groups.
    */
@@ -20,5 +22,13 @@ public class ExercisesTreeViewModel extends BaseTreeViewModel<List<ExerciseGroup
             .map(ExerciseGroupViewModel::new)
             .collect(Collectors.toList()),
         filterOptions);
+  }
+
+  public boolean isEmptyTextVisible() {
+    return isEmptyTextVisible;
+  }
+
+  public void setEmptyTextVisible(boolean emptyTextVisible) {
+    isEmptyTextVisible = emptyTextVisible;
   }
 }

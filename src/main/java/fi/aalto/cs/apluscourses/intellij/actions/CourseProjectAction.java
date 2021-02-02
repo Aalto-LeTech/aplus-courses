@@ -46,6 +46,8 @@ public class CourseProjectAction extends AnAction {
 
   private static final Logger logger = LoggerFactory.getLogger(CourseProjectAction.class);
 
+  public static final String ACTION_ID = CourseProjectAction.class.getCanonicalName();
+
   @NotNull
   private final CourseFactory courseFactory;
 

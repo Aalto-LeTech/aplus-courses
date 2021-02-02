@@ -1,30 +1,48 @@
 package fi.aalto.cs.apluscourses.ui.exercise;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.ui.TreeSpeedSearch;
 import fi.aalto.cs.apluscourses.intellij.actions.ActionUtil;
 import fi.aalto.cs.apluscourses.intellij.actions.OpenItemAction;
 import fi.aalto.cs.apluscourses.presentation.base.SearchableNode;
-import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.ui.GuiObject;
 import fi.aalto.cs.apluscourses.ui.base.TreeView;
+
+import java.awt.CardLayout;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.SwingConstants;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ExercisesView {
   private TreeView exerciseGroupsTree;
+  private JLabel emptyText;
   private JPanel basePanel;
-
+  private JScrollPane pane;
   @GuiObject
   public JPanel toolbarContainer;
+  private JPanel cardPanel;
+  private CardLayout cl;
 
+  /**
+   * Creates an ExerciseView that uses mainViewModel to dynamically adjust its UI components.
+   */
   public ExercisesView() {
-    // See ModulesView.java
     basePanel.putClientProperty(ExercisesView.class.getName(), this);
+    cl = (CardLayout) cardPanel.getLayout();
+    exerciseGroupsTree.getEmptyText().appendLine(getText("ui.exercise.ExercisesView.setToken"));
+    exerciseGroupsTree.getEmptyText().appendLine(
+            getText("ui.exercise.ExercisesView.setTokenDirections"));
+    emptyText.setText(getText("ui.module.ModuleListView.turnIntoAPlusProject"));
+    emptyText.setHorizontalAlignment(SwingConstants.CENTER);
+    emptyText.setVerticalAlignment(SwingConstants.CENTER);
   }
 
   @NotNull
@@ -36,9 +54,11 @@ public class ExercisesView {
    * Sets the view model of this view, or does nothing if the given view model is null.
    */
   public void viewModelChanged(@Nullable ExercisesTreeViewModel viewModel) {
-    ApplicationManager.getApplication().invokeLater(
-        () -> exerciseGroupsTree.setViewModel(viewModel),
-        ModalityState.any()
+    ApplicationManager.getApplication().invokeLater(() -> {
+      exerciseGroupsTree.setViewModel(viewModel);
+      cl.show(cardPanel, viewModel == null || viewModel.isEmptyTextVisible() ? "LabelCard" :
+              "TreeCard");
+    }, ModalityState.any()
     );
   }
 
@@ -58,4 +78,9 @@ public class ExercisesView {
   public TreeView getExerciseGroupsTree() {
     return exerciseGroupsTree;
   }
+
+  public JLabel getEmptyTextLabel() {
+    return emptyText;
+  }
+
 }

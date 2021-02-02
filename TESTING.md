@@ -99,6 +99,10 @@ Manual testing
 
 **2.10** Click **OK** to close **Project Structure** window.
 
+**2.11** Click the **A+ Courses** tab on the right. 
+
+**2.12** ASSERTION: There should be 2 labels that inform the user to turn the project into an A+ Project.
+
 ### 3 About window
 
 **3.1** From the main menu, choose **A+ > About the A+ Courses Plugin**.
@@ -154,6 +158,10 @@ Manual testing
 **4.18** The IDE restarts.
 
 **4.19** ASSERTION: The theme has changed to dark.
+
+**4.20** CLick the **A+ Courses** tab on the right.
+
+**4.21** ASSERTION: There should be one label inside the Assignments view informing the user to set the A+ Token.
 
 ### 5 Installing modules
 
