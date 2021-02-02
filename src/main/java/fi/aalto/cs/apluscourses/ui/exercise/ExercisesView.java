@@ -7,7 +7,7 @@ import com.intellij.openapi.application.ModalityState;
 import com.intellij.ui.TreeSpeedSearch;
 import fi.aalto.cs.apluscourses.intellij.actions.ActionUtil;
 import fi.aalto.cs.apluscourses.intellij.actions.OpenItemAction;
-import fi.aalto.cs.apluscourses.presentation.base.SearchableNode;
+import fi.aalto.cs.apluscourses.presentation.base.Searchable;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.ui.GuiObject;
 import fi.aalto.cs.apluscourses.ui.base.TreeView;
@@ -69,10 +69,10 @@ public class ExercisesView {
     exerciseGroupsTree.addNodeAppliedListener(
         ActionUtil.createOnEventLauncher(OpenItemAction.ACTION_ID, exerciseGroupsTree));
 
-    new TreeSpeedSearch(exerciseGroupsTree, x -> {
-      SearchableNode treeObject = (SearchableNode) TreeView.getViewModel(x.getLastPathComponent());
+    new TreeSpeedSearch(exerciseGroupsTree, treePath -> {
+      Searchable treeObject = (Searchable) TreeView.getViewModel(treePath.getLastPathComponent());
       return treeObject.getSearchableString();
-    });
+    }, true);
   }
 
   public TreeView getExerciseGroupsTree() {

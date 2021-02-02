@@ -3,13 +3,12 @@ package fi.aalto.cs.apluscourses.presentation.exercise;
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
-import fi.aalto.cs.apluscourses.presentation.base.BaseViewModel;
-import fi.aalto.cs.apluscourses.presentation.base.SearchableNode;
+import fi.aalto.cs.apluscourses.presentation.base.Searchable;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
 import org.jetbrains.annotations.NotNull;
 
 public class SubmissionResultViewModel extends SelectableNodeViewModel<SubmissionResult>
-        implements SearchableNode {
+        implements Searchable {
 
   private final int submissionNumber;
 
