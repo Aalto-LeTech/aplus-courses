@@ -5,6 +5,7 @@ import com.intellij.openapi.application.ModalityState;
 import com.intellij.ui.TreeSpeedSearch;
 import fi.aalto.cs.apluscourses.intellij.actions.ActionUtil;
 import fi.aalto.cs.apluscourses.intellij.actions.OpenItemAction;
+import fi.aalto.cs.apluscourses.presentation.base.SearchableNode;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.ui.GuiObject;
@@ -49,11 +50,8 @@ public class ExercisesView {
         ActionUtil.createOnEventLauncher(OpenItemAction.ACTION_ID, exerciseGroupsTree));
 
     new TreeSpeedSearch(exerciseGroupsTree, x -> {
-      Object treeObject = TreeView.getViewModel(x.getLastPathComponent());
-      if (treeObject instanceof ExerciseViewModel) {
-        return ((ExerciseViewModel) treeObject).getPresentableName();
-      }
-      return ""; // disable searching on entries other than assignments
+      SearchableNode treeObject = (SearchableNode) TreeView.getViewModel(x.getLastPathComponent());
+      return treeObject.getSearchableString();
     });
   }
 

@@ -32,7 +32,7 @@ public class ModuleListElementView implements ListElementView {
       setToolTipText(element.getTooltip());
       setIcon(PluginIcons.A_PLUS_MODULE);
       setIconTextGap(4);
-      if (!element.isUpdateAvailable()) {
+      if (element.isUpdateAvailable()) {
         append("  UPDATE AVAILABLE!", UPDATE_TEXT_STYLE);
       }
 

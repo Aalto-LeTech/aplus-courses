@@ -1,12 +1,13 @@
 package fi.aalto.cs.apluscourses.presentation.exercise;
 
 import fi.aalto.cs.apluscourses.model.Exercise;
+import fi.aalto.cs.apluscourses.presentation.base.SearchableNode;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
 import fi.aalto.cs.apluscourses.utils.CollectionUtil;
 import org.jetbrains.annotations.NotNull;
 
-public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> {
+public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> implements SearchableNode {
 
   /**
    * Construct a view model corresponding to the given exercise.
@@ -18,6 +19,11 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> {
 
   public String getPresentableName() {
     return APlusLocalizationUtil.getEnglishName(getModel().getName());
+  }
+
+  @Override
+  public @NotNull String getSearchableString() {
+    return getPresentableName();
   }
 
   /**

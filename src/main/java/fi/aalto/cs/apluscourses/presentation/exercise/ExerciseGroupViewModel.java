@@ -1,13 +1,15 @@
 package fi.aalto.cs.apluscourses.presentation.exercise;
 
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
+import fi.aalto.cs.apluscourses.presentation.base.SearchableNode;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
 import java.util.Comparator;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
-public class ExerciseGroupViewModel extends SelectableNodeViewModel<ExerciseGroup> {
+public class ExerciseGroupViewModel extends SelectableNodeViewModel<ExerciseGroup>
+        implements SearchableNode {
 
   /**
    * Construct an exercise group view model with the given exercise group.
