@@ -13,7 +13,7 @@ Manual testing
 ### 0 Setup
 
 **0.1** Make sure you are using a clean installment of
-        **IntelliJ IDEA Community** version **2020.2.2**.
+        **IntelliJ IDEA Community** version **2020.3.2**.
 - You can download IntelliJ IDEA Community from https://www.jetbrains.com/idea/download.
 - In case you use an existing install of IntelliJ IDEA,
   you can use one of the following ways to restore to the default settings:
@@ -130,6 +130,8 @@ Manual testing
 **4.5** ASSERTION: You see a course selection dialog.
 
 **4.6** Select the course O1 and press OK.
+
+![select_course](images/course_selection.png)
 
 **4.7** ASSERTION: **Leave IntelliJ settings unchanged** check box is not checked.
 
@@ -386,15 +388,21 @@ module GoodStuff.** error is shown.
 **9.7** ASSERTION: The **Assignment sent for assessment: You will be notified here when
  feedback is available. (You may also always check any ... )** notification is shown.
  
-**9.8** Repeat **9.1**.
+**9.8** Check the local history of the **GoodStuff**, do **File > Local History > Show Local History**
 
-**9.9** ASSERTION: The default group check box is checked and the group selection shows **Submit alone**.
+![Tags](images/tags.png)
 
-**9.10** Right-click **Assignment 2 (GoodStuff)**.
+**9.9** ASSERTION: Local history contains accent-colored tag with text **Week 1, Assignment 2 (Goodstuff), Submission...**
 
-**9.11** On the context menu that appears, choose **Submit A+ Assignment**.
+**9.10** Repeat **9.1**.
 
-**9.12** ASSERTION: A window with **Assignment 2 (GoodStuff)** appears.
+**9.11** ASSERTION: The default group check box is checked and the group selection shows **Submit alone**.
+
+**9.12** Right-click **Assignment 2 (GoodStuff)**.
+
+**9.13** On the context menu that appears, choose **Submit A+ Assignment**.
+
+**9.14** ASSERTION: A window with **Assignment 2 (GoodStuff)** appears.
 
 ### 10 Refreshing Modules and Assignments
 
@@ -426,6 +434,8 @@ available. Click here to open the feedback.** notification is shown.
 ### 12 Filtering exercises
 
 **12.1** Click **Filter Assignments** button (pink funnel icon) above the assignments tree.
+
+![Filters](images/filters.png)
 
 **12.2** ASSERTION: **Non-submittable** and **Optional** menu items are checked.
 
