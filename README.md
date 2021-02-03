@@ -12,7 +12,7 @@ The project is developed under the [Aalto Le-Tech research group](https://resear
 
 ## Features and Further Development
 
-Most of the available features are described in the [testing manual](https://github.com/Aalto-LeTech/intellij-plugin/blob/test/TESTING.md), which is also used internally for testing. The roadmap and plans for the future development of the plugin are in the [project wiki](https://github.com/Aalto-LeTech/intellij-plugin/wiki/Requirements). The list of requirements is in no way final and we [welcome all input and ideas](https://github.com/Aalto-LeTech/intellij-plugin/issues/new/choose) on how to make this plugin better.
+Most of the available features are described in the [testing manual](https://github.com/Aalto-LeTech/intellij-plugin/blob/master/TESTING.md), which is also used internally for testing. The roadmap and plans for the future development of the plugin are in the [project wiki](https://github.com/Aalto-LeTech/intellij-plugin/wiki/Requirements). The list of requirements is in no way final and we [welcome all input and ideas](https://github.com/Aalto-LeTech/intellij-plugin/issues/new/choose) on how to make this plugin better.
 
 ## Maintenance
 
