@@ -400,7 +400,7 @@ module GoodStuff.** error is shown.
 
 **9.12** Right-click **Assignment 2 (GoodStuff)**.
 
-**9.13** On the context menu that appears, choose **fSubmit A+ Assignment**.
+**9.13** On the context menu that appears, choose **Submit A+ Assignment**.
 
 **9.14** ASSERTION: A window with **Assignment 2 (GoodStuff)** appears.
 
