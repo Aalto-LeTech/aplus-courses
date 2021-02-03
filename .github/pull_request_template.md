@@ -30,8 +30,8 @@
   </tr>
 </table>  
   
-# Have you updated the [TESTING.md](/TESTING.md) or other relevant documentation?
+# Have you updated the [TESTING.md](https://github.com/Aalto-LeTech/intellij-plugin/blob/master/TESTING.md) or other relevant documentation on _your_ branch?
 
-- [ ] Yes
+- [ ] Yes.
 - [ ] Not yet. I will do it next.
-- [x] Not relevant
+- [x] Not relevant.
