@@ -197,6 +197,16 @@ Manual testing
   and make sure none of the modules is underlined in red.
 - Exit **Project Structure** window by clicking **Cancel**.
 
+**5.13** Click anywhere within the **Modules** list.
+
+**5.14** Type the characters *vii* on your keyboard.
+
+**5.15** ASSERTION: The module **Viinaharava** is automatically selected and the substring **Vii** is highlighted.
+
+**5.16** Click anywhere outside the **Modules** list.
+
+**5.17** ASSERTION: The substring **Vii** should no longer be highlighted.
+
 ### 6 Using Scala REPL
 
 #### Part I: Basic case
@@ -452,3 +462,13 @@ available. Click here to open the feedback.** notification is shown.
 **12.13** ASSERTION: Non-submittable and Optional assignments are shown again in the tree.
 
 **12.14** ASSERTION: **Non-submittable** and **Optional** menu items are checked.
+
+### 13 Searching through assignments
+
+**13.1** Ensure that all weeks in the **Assignments** tree are collapsed.
+
+**13.2** Select **Week 5** in the **Assignments** tree.
+
+**13.3** Type the characters *fl* on your keyboard.
+
+**13.4** ASSERTION: **Week 5** is automatically expanded, **Assignment 4 (FlappyBug 15)** is automatically selected, and the substring **Fl** is highlighted.
