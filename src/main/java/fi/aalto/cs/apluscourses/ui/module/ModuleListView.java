@@ -6,21 +6,14 @@ import fi.aalto.cs.apluscourses.ui.base.BaseListView;
 
 import org.jetbrains.annotations.NotNull;
 
-public class ModuleListView
-        extends BaseListView<ModuleListElementViewModel, ModuleListElementView> {
+public class ModuleListView extends BaseListView<ModuleListElementViewModel> {
   /**
    * Constructs a view for the module list.
    */
   public ModuleListView() {
-    super(new ModuleListElementView());
     setFixedCellHeight(26);
-    setCellRenderer(ModuleListElementView.CELL_RENDERER);
+    setCellRenderer(new ColoredModuleListRenderer());
 
     new ListSpeedSearch<>(this, ModuleListElementViewModel::getName);
-  }
-
-  @Override
-  protected void updateElementView(@NotNull ModuleListElementView elementView,
-                                   @NotNull ModuleListElementViewModel element) {
   }
 }
