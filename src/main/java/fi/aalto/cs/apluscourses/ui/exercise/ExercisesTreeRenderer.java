@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.ui.exercise;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
@@ -28,7 +30,8 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
       case FULL_POINTS:
         return PluginIcons.A_PLUS_FULL_POINTS;
       default:
-        throw new IllegalStateException("Invalid exercise view model status");
+        throw new IllegalStateException(
+                getText("ui.exercise.ExercisesTreeRenderer.invalidViewModelStatus"));
     }
   }
 
@@ -52,8 +55,8 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
       }
       setEnabled(exerciseViewModel.isSubmittable());
       setToolTipText(exerciseViewModel.isSubmittable()
-          ? "Use the upload button to submit an assignment"
-          : "This assignment cannot be submitted from the IDE");
+          ? getText("ui.exercise.ExercisesTreeRenderer.useUploadButton")
+          : getText("ui.exercise.ExercisesTreeRenderer.cannotSubmit"));
       setIcon(statusToIcon(exerciseViewModel.getStatus()));
     } else if (viewModel instanceof ExerciseGroupViewModel) {
       ExerciseGroupViewModel groupViewModel = (ExerciseGroupViewModel) viewModel;
@@ -66,7 +69,7 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
       setEnabled(true);
       append(submissionResultViewModel.getPresentableName());
       append(" [" + submissionResultViewModel.getStatusText() + "]", STATUS_TEXT_STYLE);
-      setToolTipText("Double-click the submission to open it in the browser");
+      setToolTipText(getText("ui.exercise.ExercisesTreeRenderer.doubleClickToOpenBrowser"));
     }
   }
 }
