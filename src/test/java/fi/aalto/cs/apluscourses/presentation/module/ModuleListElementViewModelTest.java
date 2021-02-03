@@ -1,14 +1,13 @@
 package fi.aalto.cs.apluscourses.presentation.module;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import com.intellij.ui.SimpleTextAttributes;
 import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.model.Module;
-import java.awt.font.TextAttribute;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.ZonedDateTime;
@@ -68,52 +67,52 @@ public class ModuleListElementViewModelTest {
     ModuleListElementViewModel moduleViewModel = new ModuleListElementViewModel(module);
 
     assertEquals("Unknown", moduleViewModel.getStatus());
-    assertEquals(SimpleTextAttributes.STYLE_PLAIN, moduleViewModel.getTextAttribute().getStyle());
+    assertFalse(moduleViewModel.isBoldface());
 
     module.stateMonitor.set(Component.NOT_INSTALLED);
     assertEquals("Double-click to install", moduleViewModel.getStatus());
-    assertEquals(SimpleTextAttributes.STYLE_PLAIN, moduleViewModel.getTextAttribute().getStyle());
+    assertFalse(moduleViewModel.isBoldface());
 
     module.stateMonitor.set(Component.FETCHING);
     assertEquals("Downloading...", moduleViewModel.getStatus());
-    assertEquals(SimpleTextAttributes.STYLE_PLAIN, moduleViewModel.getTextAttribute().getStyle());
+    assertFalse(moduleViewModel.isBoldface());
 
     module.stateMonitor.set(Component.FETCHED);
     assertEquals("Double-click to install", moduleViewModel.getStatus());
-    assertEquals(SimpleTextAttributes.STYLE_PLAIN, moduleViewModel.getTextAttribute().getStyle());
+    assertFalse(moduleViewModel.isBoldface());
 
     module.stateMonitor.set(Component.LOADING);
     assertEquals("Installing...", moduleViewModel.getStatus());
-    assertEquals(SimpleTextAttributes.STYLE_PLAIN, moduleViewModel.getTextAttribute().getStyle());
+    assertFalse(moduleViewModel.isBoldface());
 
     module.stateMonitor.set(Component.LOADED);
     assertEquals("Installed; dependencies unknown", moduleViewModel.getStatus());
-    assertEquals(SimpleTextAttributes.STYLE_BOLD, moduleViewModel.getTextAttribute().getStyle());
+    assertTrue(moduleViewModel.isBoldface());
 
     module.stateMonitor.set(Component.UNINSTALLING);
     assertEquals("Removing...", moduleViewModel.getStatus());
-    assertEquals(SimpleTextAttributes.STYLE_PLAIN, moduleViewModel.getTextAttribute().getStyle());
+    assertFalse(moduleViewModel.isBoldface());
 
     module.stateMonitor.set(Component.ERROR);
     assertEquals("Error", moduleViewModel.getStatus());
-    assertEquals(SimpleTextAttributes.STYLE_PLAIN, moduleViewModel.getTextAttribute().getStyle());
+    assertFalse(moduleViewModel.isBoldface());
 
     module.stateMonitor.set(Component.UNINSTALLED);
     assertEquals("Removed", moduleViewModel.getStatus());
-    assertEquals(SimpleTextAttributes.STYLE_PLAIN, moduleViewModel.getTextAttribute().getStyle());
+    assertFalse(moduleViewModel.isBoldface());
 
     module.stateMonitor.set(Component.LOADED);
 
     module.dependencyStateMonitor.set(Component.DEP_WAITING);
     assertEquals("Waiting for dependencies...", moduleViewModel.getStatus());
-    assertEquals(SimpleTextAttributes.STYLE_BOLD, moduleViewModel.getTextAttribute().getStyle());
+    assertTrue(moduleViewModel.isBoldface());
 
     module.dependencyStateMonitor.set(Component.DEP_LOADED);
     assertEquals("Installed", moduleViewModel.getStatus());
-    assertEquals(SimpleTextAttributes.STYLE_BOLD, moduleViewModel.getTextAttribute().getStyle());
+    assertTrue(moduleViewModel.isBoldface());
 
     module.dependencyStateMonitor.set(Component.DEP_ERROR);
     assertEquals("Error in dependencies", moduleViewModel.getStatus());
-    assertEquals(SimpleTextAttributes.STYLE_PLAIN, moduleViewModel.getTextAttribute().getStyle());
+    assertFalse(moduleViewModel.isBoldface());
   }
 }

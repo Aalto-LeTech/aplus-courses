@@ -88,14 +88,11 @@ public class ModuleListElementViewModel extends ListElementViewModel<Module> {
   }
 
   /**
-   * Returns text attributes according to which the module is shown on a list.
-   * @return {@link SimpleTextAttributes} that should be used for displaying the module name.
+   * Indicates whether the module shown on a list should be displayed bold-faced.
    */
   @NotNull
-  public SimpleTextAttributes getTextAttribute() {
+  public Boolean isBoldface() {
     Module model = getModel();
-    return new SimpleTextAttributes(
-        !model.hasError() && model.stateMonitor.get() == Component.LOADED
-        ? SimpleTextAttributes.STYLE_BOLD : SimpleTextAttributes.STYLE_PLAIN, null);
+    return !model.hasError() && model.stateMonitor.get() == Component.LOADED;
   }
 }
