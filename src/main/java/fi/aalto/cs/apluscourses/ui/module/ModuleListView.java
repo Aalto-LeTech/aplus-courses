@@ -14,6 +14,6 @@ public class ModuleListView extends BaseListView<ModuleListElementViewModel> {
     setFixedCellHeight(26);
     setCellRenderer(new ColoredModuleListRenderer());
 
-    new ListSpeedSearch<>(this, ModuleListElementViewModel::getName);
+    new ListSpeedSearch<>(this, ModuleListElementViewModel::getSearchableString);
   }
 }

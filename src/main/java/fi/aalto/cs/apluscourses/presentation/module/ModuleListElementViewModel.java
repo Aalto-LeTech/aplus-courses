@@ -7,6 +7,7 @@ import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.presentation.base.BaseViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.ListElementViewModel;
+import fi.aalto.cs.apluscourses.presentation.base.Searchable;
 import fi.aalto.cs.apluscourses.utils.PluginResourceBundle;
 import java.awt.font.TextAttribute;
 import java.time.ZonedDateTime;
@@ -15,7 +16,8 @@ import java.time.format.FormatStyle;
 
 import org.jetbrains.annotations.NotNull;
 
-public class ModuleListElementViewModel extends ListElementViewModel<Module> {
+public class ModuleListElementViewModel extends ListElementViewModel<Module>
+        implements Searchable {
 
   public ModuleListElementViewModel(@NotNull Module module) {
     super(module);
@@ -28,6 +30,11 @@ public class ModuleListElementViewModel extends ListElementViewModel<Module> {
 
   public String getUrl() {
     return getModel().getUrl().toString();
+  }
+
+  @Override
+  public @NotNull String getSearchableString() {
+    return getName();
   }
 
   /**
