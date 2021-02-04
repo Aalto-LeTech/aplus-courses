@@ -1,6 +1,6 @@
 # ![A+ Courses logo](images/logo_courses_border.svg)
 
-[![GitHub Actions build](https://github.com/actions/Aalto-LeTech/intellij-plugi/workflows/.github/workflows/main.yml/badge.svg)](https://github.com/Aalto-LeTech/intellij-plugin/actions?query=workflow%3ABuild)
+[![GitHub Actions build](https://github.com/actions/Aalto-LeTech/intellij-plugin/workflows/.github/workflows/build.yml/badge.svg)](https://github.com/Aalto-LeTech/intellij-plugin/actions?query=workflow%3ABuild)
 [![Known Vulnerabilities](https://snyk.io/test/github/Aalto-LeTech/intellij-plugin/badge.svg?targetFile=build.gradle)](https://snyk.io/test/github/Aalto-LeTech/intellij-plugin)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FAalto-LeTech%2Fintellij-plugin.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FAalto-LeTech%2Fintellij-plugin)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Aalto-LeTech_intellij-plugin&metric=coverage)](https://sonarcloud.io/dashboard?id=Aalto-LeTech_intellij-plugin)
