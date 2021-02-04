@@ -17,9 +17,7 @@
           </grid>
         </constraints>
         <properties/>
-        <border type="none">
-          <size top="5" left="0" bottom="0" right="0"/>
-        </border>
+        <border type="none"/>
         <children>
           <component id="ce006" class="javax.swing.JToolBar$Separator">
             <constraints/>
