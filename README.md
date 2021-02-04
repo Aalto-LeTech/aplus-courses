@@ -6,7 +6,7 @@
 [![A+ Courses plugin downloads](https://img.shields.io/jetbrains/plugin/d/13634-a-plugin-for-intellij?label=plugin%20downloads)](https://plugins.jetbrains.com/plugin/13634-a-plugin-for-intellij)
 [![A+ Courses plugin version](https://img.shields.io/jetbrains/plugin/v/13634?label=plugin%20version)](https://plugins.jetbrains.com/plugin/13634-a-plugin-for-intellij)
 
-This repository hosts the source code for the A+ Courses [IntelliJ IDEA](https://www.jetbrains.com/idea/) plugin communicating with the [A+ LMS](https://apluslms.github.io/). It allows users to download code modules, submit assignments, and use the Scala REPL more conveniently among other learning experience improvements. The plugin is currently used in introductory programming courses taught at Aalto University ([Programming 1](https://oodi.aalto.fi/a/opintjakstied.jsp?OpinKohd=1125585231&haettuOpas=-1&Kieli=6) and [Programming Studio 2/A](https://oodi.aalto.fi/a/opintjakstied.jsp?OpinKohd=1125591784&haettuOpas=-1&Kieli=6)).
+This repository hosts the source code for the A+ Courses [IntelliJ IDEA](https://www.jetbrains.com/idea/) plugin communicating with the [A+ LMS](https://apluslms.github.io/). It allows users to download code modules, submit assignments, and use the Scala REPL more conveniently among other learning experience improvements. The plugin is currently used in introductory programming courses taught at Aalto University ([Programming 1](https://plus.cs.aalto.fi/o1) and [Programming Studio 2/A](https://oodi.aalto.fi/a/opintjakstied.jsp?OpinKohd=1125591784&haettuOpas=-1&Kieli=6)).
 
 ![Demo](images/image_4_readme.png)
 
