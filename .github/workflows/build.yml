@@ -15,4 +15,4 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build
       - name: Run integration tests
-        run: chmod +x start_local_a+_env.sh && ./start_local_a+_env.sh && ./gradlew check
+        run: printenv && chmod +x start_local_a+_env.sh && ./start_local_a+_env.sh && ./gradlew check
