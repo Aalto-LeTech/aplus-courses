@@ -7,7 +7,7 @@
     </constraints>
     <properties/>
     <border type="empty">
-      <size top="1" left="0" bottom="0" right="0"/>
+      <size top="5" left="0" bottom="0" right="0"/>
     </border>
     <children>
       <grid id="5c051" binding="toolbarContainer" layout-manager="FlowLayout" hgap="0" vgap="0" flow-align="3">
@@ -17,7 +17,7 @@
           </grid>
         </constraints>
         <properties/>
-        <border type="empty">
+        <border type="none">
           <size top="5" left="0" bottom="0" right="0"/>
         </border>
         <children>
