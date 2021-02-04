@@ -12,7 +12,9 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
-#      - name: Build with Gradle
+#      - name: Setup A+ LMS locally
+        run: chmod +x start_local_a+_env.sh && ./start_local_a+_env.sh
+      - name: Build (Check & Test) with Gradle
 #        run: ./gradlew build
       - name: Cache SonarCloud packages
         uses: actions/cache@v1
@@ -31,4 +33,3 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: ./gradlew build sonarqube --info
-
