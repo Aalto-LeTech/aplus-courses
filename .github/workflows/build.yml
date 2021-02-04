@@ -15,4 +15,4 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build
       - name: Sonar It!
-        run: sonar-scanner
+        run: .gradlew sonarqube
