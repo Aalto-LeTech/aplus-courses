@@ -80,12 +80,12 @@ jacocoTestReport {
 
 sonarqube {
     properties {
-        property "sonar.projectKey", "Aalto-LeTech_intellij-plugin"
-        property "sonar.organization", "aalto-letech-intellij-plugin"
-        property "sonar.host.url", "https://sonarcloud.io"
-        property "sonar.analysis.mode", "publish"
-        property "sonar.java.binaries", "build/classes"
-        property "sonar.java.libraries", "build/libs"
-        property "sonar.coverage.exclusions", "src/test/**/*"
+        property 'sonar.projectKey', 'Aalto-LeTech_intellij-plugin'
+        property 'sonar.organization', 'aalto-letech-intellij-plugin'
+        property 'sonar.host.url', 'https://sonarcloud.io'
+        property 'sonar.analysis.mode', 'publish'
+        property 'sonar.java.binaries', 'build/classes'
+        property 'sonar.java.libraries', 'build/libs'
+        property 'sonar.coverage.exclusions', 'src/test/**/*'
     }
 }
