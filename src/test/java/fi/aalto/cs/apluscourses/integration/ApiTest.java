@@ -28,7 +28,6 @@ public class ApiTest {
     given()
         .auth()
         .preemptive()
-            // actually to check whether the tests run
         .basic("zoralst1", "to_fail_explicitly")
         .when()
         .get(url)
