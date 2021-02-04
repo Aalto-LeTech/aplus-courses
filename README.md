@@ -9,6 +9,8 @@
 
 This repository hosts the source code for the A+ Courses [IntelliJ IDEA](https://www.jetbrains.com/idea/) plugin communicating with the [A+ LMS](https://apluslms.github.io/). It allows users to download code modules, submit assignments, and use the Scala REPL more conveniently among other learning experience improvements. The plugin is currently used in introductory programming courses taught at Aalto University ([Programming 1](https://oodi.aalto.fi/a/opintjakstied.jsp?OpinKohd=1125585231&haettuOpas=-1&Kieli=6) and [Programming Studio 2/A](https://oodi.aalto.fi/a/opintjakstied.jsp?OpinKohd=1125591784&haettuOpas=-1&Kieli=6)).
 
+![Demo](images/image_4_readme.png)
+
 The project is developed under the [Aalto Le-Tech research group](https://research.cs.aalto.fi/LeTech/) and is steered by **[Juha Sorva](https://github.com/jsorva)** and **[Otto Seppälä](https://github.com/oseppala)**.
 
 ## Features and Further Development
