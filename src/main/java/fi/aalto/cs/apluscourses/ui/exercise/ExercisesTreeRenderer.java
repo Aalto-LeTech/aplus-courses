@@ -59,7 +59,11 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
       ExerciseGroupViewModel groupViewModel = (ExerciseGroupViewModel) viewModel;
       append(groupViewModel.getPresentableName());
       setEnabled(true);
-      setIcon(PluginIcons.A_PLUS_EXERCISE_GROUP);
+      if (groupViewModel.getModel().isOpen()) {
+        setIcon(PluginIcons.A_PLUS_EXERCISE_GROUP);
+      } else {
+        setIcon(PluginIcons.A_PLUS_EXERCISE_GROUP_CLOSED);
+      }
       setToolTipText("");
     } else if (viewModel instanceof SubmissionResultViewModel) {
       SubmissionResultViewModel submissionResultViewModel = (SubmissionResultViewModel) viewModel;
