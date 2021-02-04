@@ -13,6 +13,6 @@ jobs:
         with:
           java-version: 11
       - name: Start local A+
-        run: chmod +x start_local_a+_env.sh && ./start_local_a+_env.sh && ./gradlew check
+        run: chmod +x start_local_a+_env.sh && ./start_local_a+_env.sh
       - name: Build (check & test) with Gradle
         run: ./gradlew build

@@ -27,7 +27,7 @@ public class ApiTest {
     given()
         .auth()
         .preemptive()
-        .basic("zoralst1", "to_fail_explicitly")
+        .basic("zoralst1", "zoralst1")
         .when()
         .get(url)
         .then()
