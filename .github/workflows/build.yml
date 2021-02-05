@@ -14,5 +14,8 @@ jobs:
           java-version: 11
       - name: Setup A+ LMS locally
         run: chmod +x start_local_a+_env.sh && ./start_local_a+_env.sh
-      - name: Build (Check & Test) with Gradle
-        run: ./gradlew build
+      - name: Build & Analyze
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: ./gradlew build sonarqube
