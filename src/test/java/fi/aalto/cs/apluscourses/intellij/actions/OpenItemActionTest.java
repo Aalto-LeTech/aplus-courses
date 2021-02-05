@@ -96,7 +96,7 @@ public class OpenItemActionTest {
   @Test
   public void testOpenItemActionWeek() throws Exception {
     ExerciseGroup exerciseGroup =
-        new ExerciseGroup(0, "", "https://url.com/", Collections.emptyList());
+        new ExerciseGroup(0, "", "https://url.com/", true, Collections.emptyList());
     setUp(new ExerciseGroupViewModel(exerciseGroup));
     OpenItemAction action = new OpenItemAction(
         mainViewModelProvider,

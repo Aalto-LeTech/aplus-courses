@@ -30,8 +30,7 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
       case FULL_POINTS:
         return PluginIcons.A_PLUS_FULL_POINTS;
       default:
-        throw new IllegalStateException(
-                getText("ui.exercise.ExercisesTreeRenderer.invalidViewModelStatus"));
+        throw new IllegalStateException("Invalid exercise view model status");
     }
   }
 
@@ -49,7 +48,7 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
     SelectableNodeViewModel<?> viewModel = TreeView.getViewModel(value);
     if (viewModel instanceof ExerciseViewModel) {
       ExerciseViewModel exerciseViewModel = (ExerciseViewModel) viewModel;
-      append(exerciseViewModel.getPresentableName());
+      append(exerciseViewModel.getPresentableName(), SimpleTextAttributes.REGULAR_ATTRIBUTES, true);
       if (!exerciseViewModel.getStatusText().trim().isEmpty()) {
         append(" [" + exerciseViewModel.getStatusText() + "]", STATUS_TEXT_STYLE);
       }
@@ -60,15 +59,21 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
       setIcon(statusToIcon(exerciseViewModel.getStatus()));
     } else if (viewModel instanceof ExerciseGroupViewModel) {
       ExerciseGroupViewModel groupViewModel = (ExerciseGroupViewModel) viewModel;
-      append(groupViewModel.getPresentableName());
+      append("", SimpleTextAttributes.REGULAR_ATTRIBUTES, true); // disable search highlighting
+      append(groupViewModel.getPresentableName(), SimpleTextAttributes.REGULAR_ATTRIBUTES, false);
       setEnabled(true);
-      setIcon(PluginIcons.A_PLUS_EXERCISE_GROUP);
+      if (groupViewModel.getModel().isOpen()) {
+        setIcon(PluginIcons.A_PLUS_EXERCISE_GROUP);
+      } else {
+        setIcon(PluginIcons.A_PLUS_EXERCISE_GROUP_CLOSED);
+      }
       setToolTipText("");
     } else if (viewModel instanceof SubmissionResultViewModel) {
-      SubmissionResultViewModel submissionResultViewModel = (SubmissionResultViewModel) viewModel;
+      SubmissionResultViewModel resultViewModel = (SubmissionResultViewModel) viewModel;
       setEnabled(true);
-      append(submissionResultViewModel.getPresentableName());
-      append(" [" + submissionResultViewModel.getStatusText() + "]", STATUS_TEXT_STYLE);
+      append("", SimpleTextAttributes.REGULAR_ATTRIBUTES, true); // disable search highlighting
+      append(resultViewModel.getPresentableName(), SimpleTextAttributes.REGULAR_ATTRIBUTES, false);
+      append(" [" + resultViewModel.getStatusText() + "]", STATUS_TEXT_STYLE, false);
       setToolTipText(getText("ui.exercise.ExercisesTreeRenderer.doubleClickToOpenBrowser"));
     }
   }

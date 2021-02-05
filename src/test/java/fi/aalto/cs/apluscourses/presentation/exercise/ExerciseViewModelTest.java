@@ -75,4 +75,17 @@ public class ExerciseViewModelTest {
         viewModel3.getStatusText().isEmpty());
   }
 
+  @Test
+  public void testGetSearchableString() {
+    String name = "Sample name";
+
+    Exercise exercise1 = new Exercise(0, name, "http://abc.org", 0, 0, 0, true);
+    ExerciseViewModel viewModel1 = new ExerciseViewModel(exercise1);
+    Exercise exercise2 = new Exercise(0, "", "http://abc2.org", 0, 0, 0, false);
+    ExerciseViewModel viewModel2 = new ExerciseViewModel(exercise2);
+
+    Assert.assertEquals(name, viewModel1.getSearchableString());
+    Assert.assertEquals("", viewModel2.getSearchableString());
+  }
+
 }

@@ -123,7 +123,7 @@ public class SubmitExerciseActionTest {
     exercise = new Exercise(exerciseId, "Test exercise", "http://localhost:10000", 0, 0, 0, true);
     group = new Group(124, Collections.singletonList("Only you"));
     groups = Collections.singletonList(group);
-    exerciseGroup = new ExerciseGroup(0, "Test EG", "", Collections.singletonList(exercise));
+    exerciseGroup = new ExerciseGroup(0, "Test EG", "", true, Collections.singletonList(exercise));
     exerciseGroups = Collections.singletonList(exerciseGroup);
     fileName = "some_file.scala";
     fileKey = "file1";

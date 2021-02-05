@@ -9,8 +9,5 @@
    </cc:Work>
   </rdf:RDF>
  </metadata>
- <g fill-rule="evenodd">
-  <polygon points="1 1.5 7 4 7 14 1 12" fill="#9aa7b0" fill-opacity=".8"/>
-  <polygon transform="matrix(-1 0 0 1 22 0)" points="8 1.5 14 4 14 14 8 12" fill="#ff0090"/>
- </g>
+ <path d="m2 1v11l3 3h9v-11h-1v10h-7.6191l-2.0117-2h7.6309v-11z" fill="#9aa7b0" fill-opacity=".8"/>
 </svg>
