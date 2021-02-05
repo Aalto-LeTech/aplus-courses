@@ -115,4 +115,13 @@ public class ModuleListElementViewModelTest {
     assertEquals("Error in dependencies", moduleViewModel.getStatus());
     assertFalse(moduleViewModel.isBoldface());
   }
+
+  @Test
+  public void testGetSearchableString() {
+    String name = "Wanda";
+    Module module = new ModelExtensions.TestModule(name);
+    ModuleListElementViewModel moduleViewModel = new ModuleListElementViewModel(module);
+
+    assertEquals(name, moduleViewModel.getSearchableString());
+  }
 }

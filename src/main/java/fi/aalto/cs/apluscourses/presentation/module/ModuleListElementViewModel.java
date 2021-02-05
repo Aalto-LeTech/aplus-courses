@@ -97,8 +97,7 @@ public class ModuleListElementViewModel extends ListElementViewModel<Module>
   /**
    * Indicates whether the module shown on a list should be displayed bold-faced.
    */
-  @NotNull
-  public Boolean isBoldface() {
+  public boolean isBoldface() {
     Module model = getModel();
     return !model.hasError() && model.stateMonitor.get() == Component.LOADED;
   }
