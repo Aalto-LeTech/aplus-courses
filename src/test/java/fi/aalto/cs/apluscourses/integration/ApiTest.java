@@ -11,7 +11,6 @@ import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Test;
 
-@Ignore
 public class ApiTest {
 
   //  For this to work the 'CI=true' environment variable is added to .travis.yml

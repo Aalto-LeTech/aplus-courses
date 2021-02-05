@@ -12,5 +12,7 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
-      - name: Build with Gradle
+      - name: Setup A+ LMS locally
+        run: chmod +x start_local_a+_env.sh && ./start_local_a+_env.sh
+      - name: Build (Check & Test) with Gradle
         run: ./gradlew build
