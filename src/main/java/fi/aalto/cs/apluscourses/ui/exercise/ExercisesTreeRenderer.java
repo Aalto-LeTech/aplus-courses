@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.ui.exercise;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
@@ -46,18 +48,19 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
     SelectableNodeViewModel<?> viewModel = TreeView.getViewModel(value);
     if (viewModel instanceof ExerciseViewModel) {
       ExerciseViewModel exerciseViewModel = (ExerciseViewModel) viewModel;
-      append(exerciseViewModel.getPresentableName());
+      append(exerciseViewModel.getPresentableName(), SimpleTextAttributes.REGULAR_ATTRIBUTES, true);
       if (!exerciseViewModel.getStatusText().trim().isEmpty()) {
         append(" [" + exerciseViewModel.getStatusText() + "]", STATUS_TEXT_STYLE);
       }
       setEnabled(exerciseViewModel.isSubmittable());
       setToolTipText(exerciseViewModel.isSubmittable()
-          ? "Use the upload button to submit an exercise"
-          : "This exercise cannot be submitted from the IDE");
+          ? getText("ui.exercise.ExercisesTreeRenderer.useUploadButton")
+          : getText("ui.exercise.ExercisesTreeRenderer.cannotSubmit"));
       setIcon(statusToIcon(exerciseViewModel.getStatus()));
     } else if (viewModel instanceof ExerciseGroupViewModel) {
       ExerciseGroupViewModel groupViewModel = (ExerciseGroupViewModel) viewModel;
-      append(groupViewModel.getPresentableName());
+      append("", SimpleTextAttributes.REGULAR_ATTRIBUTES, true); // disable search highlighting
+      append(groupViewModel.getPresentableName(), SimpleTextAttributes.REGULAR_ATTRIBUTES, false);
       setEnabled(true);
       if (groupViewModel.getModel().isOpen()) {
         setIcon(PluginIcons.A_PLUS_EXERCISE_GROUP);
@@ -66,11 +69,12 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
       }
       setToolTipText("");
     } else if (viewModel instanceof SubmissionResultViewModel) {
-      SubmissionResultViewModel submissionResultViewModel = (SubmissionResultViewModel) viewModel;
+      SubmissionResultViewModel resultViewModel = (SubmissionResultViewModel) viewModel;
       setEnabled(true);
-      append(submissionResultViewModel.getPresentableName());
-      append(" [" + submissionResultViewModel.getStatusText() + "]", STATUS_TEXT_STYLE);
-      setToolTipText("Double-click the submission to open it in the browser");
+      append("", SimpleTextAttributes.REGULAR_ATTRIBUTES, true); // disable search highlighting
+      append(resultViewModel.getPresentableName(), SimpleTextAttributes.REGULAR_ATTRIBUTES, false);
+      append(" [" + resultViewModel.getStatusText() + "]", STATUS_TEXT_STYLE, false);
+      setToolTipText(getText("ui.exercise.ExercisesTreeRenderer.doubleClickToOpenBrowser"));
     }
   }
 }

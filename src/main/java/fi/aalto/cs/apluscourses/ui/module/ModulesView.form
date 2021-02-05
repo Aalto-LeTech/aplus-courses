@@ -6,7 +6,9 @@
       <xy x="20" y="20" width="500" height="400"/>
     </constraints>
     <properties/>
-    <border type="none"/>
+    <border type="empty">
+      <size top="5" left="0" bottom="0" right="0"/>
+    </border>
     <children>
       <grid id="5c051" binding="toolbarContainer" layout-manager="FlowLayout" hgap="0" vgap="0" flow-align="3">
         <constraints>
