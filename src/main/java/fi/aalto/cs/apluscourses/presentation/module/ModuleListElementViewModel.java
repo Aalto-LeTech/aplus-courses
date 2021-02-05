@@ -2,10 +2,12 @@ package fi.aalto.cs.apluscourses.presentation.module;
 
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
+import com.intellij.ui.SimpleTextAttributes;
 import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.presentation.base.BaseViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.ListElementViewModel;
+import fi.aalto.cs.apluscourses.presentation.base.Searchable;
 import fi.aalto.cs.apluscourses.utils.PluginResourceBundle;
 import java.awt.font.TextAttribute;
 import java.time.ZonedDateTime;
@@ -14,7 +16,8 @@ import java.time.format.FormatStyle;
 
 import org.jetbrains.annotations.NotNull;
 
-public class ModuleListElementViewModel extends ListElementViewModel<Module> {
+public class ModuleListElementViewModel extends ListElementViewModel<Module>
+        implements Searchable {
 
   public ModuleListElementViewModel(@NotNull Module module) {
     super(module);
@@ -27,6 +30,11 @@ public class ModuleListElementViewModel extends ListElementViewModel<Module> {
 
   public String getUrl() {
     return getModel().getUrl().toString();
+  }
+
+  @Override
+  public @NotNull String getSearchableString() {
+    return getName();
   }
 
   /**
@@ -87,13 +95,10 @@ public class ModuleListElementViewModel extends ListElementViewModel<Module> {
   }
 
   /**
-   * Returns a font weight in which the module is shown on a list.
-   * @return A {@link Float} that can be set to font weight.
+   * Indicates whether the module shown on a list should be displayed bold-faced.
    */
-  public float getFontWeight() {
+  public boolean isBoldface() {
     Module model = getModel();
-    return !model.hasError() && model.stateMonitor.get() == Component.LOADED
-        ? TextAttribute.WEIGHT_BOLD
-        : TextAttribute.WEIGHT_REGULAR;
+    return !model.hasError() && model.stateMonitor.get() == Component.LOADED;
   }
 }

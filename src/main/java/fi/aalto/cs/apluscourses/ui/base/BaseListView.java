@@ -34,9 +34,8 @@ import org.jetbrains.annotations.Nullable;
  *
  * @param <E> Type of the presentation model of the list elements, a subtype of
  *            {@link ListElementViewModel}.
- * @param <V> Type of the view of an list element, a subtype of {@link ListElementView}.
  */
-public abstract class BaseListView<E extends ListElementViewModel<?>, V extends ListElementView>
+public abstract class BaseListView<E extends ListElementViewModel<?>>
     extends JBList<E> {
 
   private static final Object LIST_ACTION = new Object();
@@ -44,15 +43,12 @@ public abstract class BaseListView<E extends ListElementViewModel<?>, V extends 
 
   private final Set<ActionListener> listActionListeners = ConcurrentHashMap.newKeySet();
   private final Object popupMenuLock = new Object();
-  private final V elementView;
   private JPopupMenu popupMenu;
 
   /**
    * A constructor.
-   * @param elementView A list element view object.
    */
-  public BaseListView(V elementView) {
-    this.elementView = elementView;
+  public BaseListView() {
     addMouseListener(new ListMouseListener());
     getInputMap(JComponent.WHEN_FOCUSED).put(ENTER_KEY_STROKE, LIST_ACTION);
     getActionMap().put(LIST_ACTION, new AbstractAction() {
@@ -61,7 +57,6 @@ public abstract class BaseListView<E extends ListElementViewModel<?>, V extends 
         onListActionPerformed();
       }
     });
-    installCellRenderer(this::getRendererForElement);
   }
 
   /**
@@ -116,23 +111,6 @@ public abstract class BaseListView<E extends ListElementViewModel<?>, V extends 
    */
   public void removeListActionListener(ActionListener listener) {
     listActionListeners.remove(listener);
-  }
-
-  /**
-   * When implemented in a subclass, this method should update the element view to represent the
-   * state of the given element.  Please note that this method is called repeatedly by the UI so it
-   * should be fast.
-   *
-   * @param element A presentation model of an element.
-   */
-  protected abstract void updateElementView(@NotNull V elementView, @NotNull E element);
-
-  @NotNull
-  private JComponent getRendererForElement(@Nullable E element) {
-    if (element != null) {
-      updateElementView(elementView, element);
-    }
-    return elementView.getRenderer();
   }
 
   protected void showPopupMenu(@NotNull Point location) {
