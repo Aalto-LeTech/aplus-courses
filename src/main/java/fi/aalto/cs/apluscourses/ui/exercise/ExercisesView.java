@@ -40,6 +40,7 @@ public class ExercisesView {
     exerciseGroupsTree.getEmptyText().appendLine(getText("ui.exercise.ExercisesView.setToken"));
     exerciseGroupsTree.getEmptyText().appendLine(
             getText("ui.exercise.ExercisesView.setTokenDirections"));
+    exerciseGroupsTree.setOpaque(true);
     emptyText.setText(getText("ui.module.ModuleListView.turnIntoAPlusProject"));
     emptyText.setHorizontalAlignment(SwingConstants.CENTER);
     emptyText.setVerticalAlignment(SwingConstants.CENTER);
