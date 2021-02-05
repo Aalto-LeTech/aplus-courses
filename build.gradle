@@ -1,5 +1,6 @@
 plugins {
     id 'scala'
+    id 'org.jetbrains.kotlin.jvm' version '1.3.72'
     id 'checkstyle'
     id 'com.github.alisiikh.scalastyle' version '3.3.1'
     id 'org.jetbrains.intellij' version '0.4.21'
@@ -12,9 +13,17 @@ version '2.0'
 
 sourceCompatibility = 1.8
 
+def remoteRobotVersion = '0.10.3'
+def fixturesVersion = "1.1.18"
+
 repositories {
     mavenCentral()
     jcenter()
+    maven { url = "https://jetbrains.bintray.com/intellij-third-party-dependencies" }
+}
+
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
 }
 
 dependencies {
@@ -31,12 +40,26 @@ dependencies {
     testCompile('io.rest-assured:rest-assured:4.2.0') {
         exclude group:'org.codehaus.groovy', module: 'groovy-xml'
     }
+    testImplementation("com.intellij.remoterobot:remote-robot:$remoteRobotVersion")
+    testImplementation("com.intellij.remoterobot:remote-fixtures:$fixturesVersion")
 }
 
 intellij {
     //  this is the version of the IntelliJ IDEA API (SDK) used to build the plugin
     version '2020.3'
     plugins = ['java', 'org.intellij.scala:2020.3.16']
+    downloadRobotServerPlugin.version = remoteRobotVersion
+}
+
+sourceSets {
+    e2e {
+        kotlin.srcDir "$projectDir/src/e2e/kotlin"
+    }
+}
+
+configurations {
+    e2eImplementation.extendsFrom testImplementation
+    e2eRuntime.extendsFrom testRuntime
 }
 
 publishPlugin {
@@ -58,6 +81,11 @@ scalastyle {
             skip = true
         }
     }
+}
+
+task uiTest(type: Test) {
+    testClassesDirs = sourceSets.e2e.output.classesDirs
+    classpath = sourceSets.e2e.runtimeClasspath
 }
 
 task gatherBuildInfo(dependsOn: processResources) {
