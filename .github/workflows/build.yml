@@ -19,6 +19,7 @@ jobs:
 #          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 #          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 #        run: ./gradlew build sonarqube
-      - name: Run UI tests
+      - name: Setup UI testing env
         uses: GabrielBB/xvfb-action@v1
+      - name: Run UI tests
         run: ./gradlew clean runForIdeTests & uiTest
