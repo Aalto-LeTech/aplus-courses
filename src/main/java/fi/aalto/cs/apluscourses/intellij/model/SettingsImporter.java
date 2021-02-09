@@ -4,6 +4,7 @@ import com.intellij.ide.startup.StartupActionScriptManager;
 import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.updateSettings.impl.UpdateSettings;
+import com.intellij.openapi.util.SystemInfoRt;
 import com.intellij.openapi.util.io.FileUtilRt;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Course;
@@ -42,9 +43,22 @@ public class SettingsImporter {
    * @throws IOException If an IO error occurs (e.g. network issues).
    */
   public void importIdeSettings(@NotNull Course course) throws IOException {
-    URL ideSettingsUrl = course.getResourceUrls().get("ideSettings");
+    URL ideSettingsUrl = null;
+
+    if (SystemInfoRt.isWindows) {
+      ideSettingsUrl = course.getResourceUrls().get("ideSettingsWindows");
+    } else if (SystemInfoRt.isLinux) {
+      ideSettingsUrl = course.getResourceUrls().get("ideSettingsLinux");
+    } else if (SystemInfoRt.isMac) {
+      ideSettingsUrl = course.getResourceUrls().get("ideSettingsMac");
+    }
+
     if (ideSettingsUrl == null) {
-      return;
+      ideSettingsUrl = course.getResourceUrls().get("ideSettings");
+
+      if (ideSettingsUrl == null) {
+        return;
+      }
     }
 
     File file = FileUtilRt.createTempFile("course-ide-settings", ".zip");
