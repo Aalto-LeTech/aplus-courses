@@ -12,10 +12,13 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
-      - name: Setup A+ LMS locally
-        run: chmod +x start_local_a+_env.sh && ./start_local_a+_env.sh
-      - name: Build & Analyze
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew build sonarqube
+#      - name: Setup A+ LMS locally
+#        run: chmod +x start_local_a+_env.sh && ./start_local_a+_env.sh
+#      - name: Build & Analyze
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+#        run: ./gradlew build sonarqube
+      - name: Run UI tests
+        uses: GabrielBB/xvfb-action@v1
+        run: ./gradlew clean runForIdeTests & uiTest

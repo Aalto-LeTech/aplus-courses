@@ -86,6 +86,7 @@ scalastyle {
 task uiTest(type: Test) {
     testClassesDirs = sourceSets.e2e.output.classesDirs
     classpath = sourceSets.e2e.runtimeClasspath
+    systemProperty("jb.consents.confirmation.enabled", "false")
 }
 
 task gatherBuildInfo(dependsOn: processResources) {
