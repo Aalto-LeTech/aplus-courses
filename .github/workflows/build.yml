@@ -21,5 +21,5 @@ jobs:
 #        run: ./gradlew build sonarqube
       - name: Setup UI testing env
         uses: GabrielBB/xvfb-action@v1
-      - name: Run UI tests
-        run: ./gradlew clean runForIdeTests & uiTest
+        with:
+          run: ./gradlew clean runForIdeTests & uiTest
