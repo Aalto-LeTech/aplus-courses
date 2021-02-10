@@ -44,7 +44,7 @@ fun SearchContext.allDialogs() = findAll(DialogFixture::class.java,
     .withClass(JDialog::class.java)
     .build())
 
-fun SearchContext.heavyWeightWindow() = find(HeavyWeightWindow::class.java)
+fun SearchContext.heavyWeightWindow() = find(HeavyWeightWindowFixture::class.java)
 
 @FixtureName("Welcome Frame")
 @DefaultXpath(by = "FlatWelcomeFrame type", xpath = "//div[@class='FlatWelcomeFrame']")
@@ -91,5 +91,5 @@ class ComboBoxFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent
 
 @FixtureName("Heavy Weight Window")
 @DefaultXpath("HeavyWeightWindow type", "//div[@class='HeavyWeightWindow']")
-class HeavyWeightWindow(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent)
+class HeavyWeightWindowFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent)
   : ContainerFixture(remoteRobot, remoteComponent);

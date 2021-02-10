@@ -17,7 +17,7 @@ class LocatorBuilder {
 
   fun withAttr(attr: String, value: String) = withClause("@$attr='$value'")
 
-  private fun toXpath() = clauses.joinToString(" and ", "//div[", "]");
+  private fun toXpath() = clauses.joinToString(" and ", "//div[", "]")
 
   fun build() = byXpath(toXpath());
 }

@@ -6,7 +6,7 @@ import com.intellij.remoterobot.stepsProcessing.StepWorker
 import java.time.Duration
 
 object StepLoggerInitializer {
-  private var initialized = false;
+  private var initialized = false
   fun init() = synchronized(initialized) {
     if (!initialized) {
       StepWorker.registerProcessor(StepLogger())
