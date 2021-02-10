@@ -24,6 +24,5 @@ jobs:
         with:
 #          run: ./gradlew clean && runIdeForUiTests & uiTest
           run: |
-              ./gradlew clean runIdeForUiTests
-              &
+              ./gradlew clean runIdeForUiTests &
               ./gradlew uiTest
