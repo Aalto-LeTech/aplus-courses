@@ -8,59 +8,74 @@ import com.intellij.remoterobot.fixtures.ContainerFixture
 import com.intellij.remoterobot.fixtures.DefaultXpath
 import com.intellij.remoterobot.fixtures.FixtureName
 import com.intellij.remoterobot.search.locators.byXpath
+import fi.aalto.cs.apluscourses.e2e.utils.LocatorBuilder
 import java.time.Duration
 import javax.swing.JButton
 import javax.swing.JComboBox
 import javax.swing.JDialog
 import javax.swing.JMenuItem
 
-fun RemoteRobot.welcomeFrame() = find(WelcomeFrame::class.java, Duration.ofSeconds(60))
+fun RemoteRobot.welcomeFrame() = find(WelcomeFrameFixture::class.java, Duration.ofSeconds(60))
 
-fun RemoteRobot.ideFrame() = find(IdeFrame::class.java, Duration.ofSeconds(20))
+fun RemoteRobot.ideFrame() = find(IdeFrameFixture::class.java, Duration.ofSeconds(20))
 
-fun <T> Class<T>.toXPathExp(): String = "@javaclass='$name' or contains(@classhierarchy, '$name')"
+fun SearchContext.button(name: String) = find(ButtonFixture::class.java,
+  LocatorBuilder()
+    .withAttr("accessiblename", name)
+    .withClass(JButton::class.java)
+    .build())
 
-fun <T> byAttributeAndSwingClass(attr : String, value : String, clazz : Class<T>) =
-    byXpath("//div[@$attr='$value' and (${clazz.toXPathExp()})]")
-
-fun SearchContext.button(name: String) = find(Button::class.java,
-    byAttributeAndSwingClass("accessiblename", name, JButton::class.java))
-
-fun SearchContext.comboBox(name: String) = find(ComboBox::class.java,
-    byAttributeAndSwingClass("accessiblename", name, JComboBox::class.java))
+fun SearchContext.comboBox(name: String) = find(ComboBoxFixture::class.java,
+  LocatorBuilder()
+    .withAttr("accessiblename", name)
+    .withClass(JComboBox::class.java)
+    .build())
 
 fun SearchContext.dialog(title: String, timeout : Duration = Duration.ofSeconds(5)) =
-    find(Dialog::class.java, byAttributeAndSwingClass("title", title, JDialog::class.java), timeout)
+    find(DialogFixture::class.java,
+      LocatorBuilder()
+        .withAttr("title", title)
+        .withClass(JDialog::class.java)
+        .build(),
+      timeout)
+
+fun SearchContext.allDialogs() = findAll(DialogFixture::class.java,
+  LocatorBuilder()
+    .withClass(JDialog::class.java)
+    .build())
 
 fun SearchContext.heavyWeightWindow() = find(HeavyWeightWindow::class.java)
 
 @FixtureName("Welcome Frame")
 @DefaultXpath(by = "FlatWelcomeFrame type", xpath = "//div[@class='FlatWelcomeFrame']")
-class WelcomeFrame(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent)
+class WelcomeFrameFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent)
     : ContainerFixture(remoteRobot, remoteComponent)
 
 @FixtureName("IDE Frame")
 @DefaultXpath("IdeFrameImpl type", "//div[@class='IdeFrameImpl']")
-class IdeFrame(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent)
+class IdeFrameFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent)
     : ContainerFixture(remoteRobot, remoteComponent) {
-  fun menu() = find(MenuItem::class.java)
+  fun menu() = find(MenuItemFixture::class.java)
 }
 
 @FixtureName("Button")
-class Button(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent)
+class ButtonFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent)
     : ComponentFixture(remoteRobot, remoteComponent)
 
 @FixtureName("Menu Item")
 @DefaultXpath("MenuFrameHeader type", "//div[@class='MenuFrameHeader']")
-class MenuItem(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent)
+class MenuItemFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent)
     : ContainerFixture(remoteRobot, remoteComponent) {
-  fun item(text: String) = find(MenuItem::class.java,
-      byAttributeAndSwingClass("text", text, JMenuItem::class.java))
-  fun select(text: String) : MenuItem = with(item(text)) { click(); return@select this }
+  fun item(text: String) = find(MenuItemFixture::class.java,
+    LocatorBuilder()
+      .withAttr("text", text)
+      .withClass(JMenuItem::class.java)
+      .build())
+  fun select(text: String) : MenuItemFixture = with(item(text)) { click(); return@select this }
 }
 
 @FixtureName("Dialog")
-class Dialog(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent)
+class DialogFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent)
     : ContainerFixture(remoteRobot, remoteComponent) {
   fun header() = find(ContainerFixture::class.java, byXpath("//div[@class='DialogHeader']"))
   fun close() = header().button("Close").click()
@@ -69,7 +84,7 @@ class Dialog(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent)
 }
 
 @FixtureName("Combo Box")
-class ComboBox(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent)
+class ComboBoxFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent)
     : ContainerFixture(remoteRobot, remoteComponent) {
   fun dropdown() = click()
 }
