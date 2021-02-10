@@ -22,14 +22,9 @@ jobs:
       - name: Install xvfb
         run: /usr/bin/sudo apt-get install xvfb
       - name: Setup UI testing env
-#        uses: GabrielBB/xvfb-action@v1
-        with:
-#          run: ./gradlew clean && runIdeForUiTests & uiTest
-          run: |
-              ./gradlew clean
-              (/usr/bin/xvfb-run --auto-servernum ./gradlew runIdeForUiTests) &
-              ./gradlew uiTests
-#      - name: Run UI tests
-#        uses: GabrielBB/xvfb-action@v1
+##        uses: GabrielBB/xvfb-action@v1
 #        with:
-#          run: ./gradlew uiTest
+        run: |
+            ./gradlew clean
+            (/usr/bin/xvfb-run --auto-servernum ./gradlew runIdeForUiTests) &
+            ./gradlew uiTests
