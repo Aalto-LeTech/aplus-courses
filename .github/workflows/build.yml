@@ -23,5 +23,5 @@ jobs:
         uses: GabrielBB/xvfb-action@v1
         with:
 #          run: ./gradlew clean && runIdeForUiTests & uiTest
-          run: ./gradlew clean runIdeForUiTests &
+          run: ./gradlew clean runIdeForUiTests&
                ./gradlew uiTest
