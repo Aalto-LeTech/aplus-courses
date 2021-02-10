@@ -120,5 +120,6 @@ sonarqube {
 }
 
 runIdeForUiTests {
-    systemProperty 'robot-server.port', '8580'
+    systemProperty 'robot-server.port', '8020'
+//    systemProperty 'robot-server.port', '8580'
 }

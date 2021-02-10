@@ -14,6 +14,13 @@ class PlaceholderTest {
 
   @Test
   fun simpleTest() = uiTest {
-    println("blaaaah")
+    with(CommonSteps(this)) {
+      println("blah")
+      createProject()
+      downloadAndSetOpenJdk11()
+    }
+    with(ideFrame()) {
+      assertNotNull(menu().select("A+"))
+    }
   }
 }
