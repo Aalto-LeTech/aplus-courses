@@ -1,6 +1,6 @@
 # ![A+ Courses logo](images/logo_courses_border.svg)
 
-[![Build Status](https://travis-ci.com/Aalto-LeTech/intellij-plugin.svg?branch=test)](https://travis-ci.com/Aalto-LeTech/intellij-plugin)
+[![Build](https://github.com/Aalto-LeTech/intellij-plugin/workflows/build/badge.svg)](https://github.com/Aalto-LeTech/intellij-plugin/actions?query=workflow%3Abuild)
 [![Known Vulnerabilities](https://snyk.io/test/github/Aalto-LeTech/intellij-plugin/badge.svg?targetFile=build.gradle)](https://snyk.io/test/github/Aalto-LeTech/intellij-plugin?targetFile=build.gradle)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Aalto-LeTech_intellij-plugin&metric=coverage)](https://sonarcloud.io/dashboard?id=Aalto-LeTech_intellij-plugin)
 [![A+ Courses plugin downloads](https://img.shields.io/jetbrains/plugin/d/13634-a-plugin-for-intellij?label=plugin%20downloads)](https://plugins.jetbrains.com/plugin/13634-a-plugin-for-intellij)
