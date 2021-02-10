@@ -14,12 +14,6 @@ class PlaceholderTest {
 
   @Test
   fun simpleTest() = uiTest {
-    with(CommonSteps(this)) {
-      createProject()
-      downloadAndSetOpenJdk11()
-    }
-    with(ideFrame()) {
-      assertNotNull(menu().select("A+"))
-    }
+    println("blaaaah")
   }
 }
