@@ -47,7 +47,7 @@ public class SubmissionResultTest {
     assertEquals("The exercise URL is taken correctly from the JSON object",
         "https://example.org/submissions/234/", submissionResult.getHtmlUrl());
     assertEquals("The late penalty is the same as the one in the JSON object",
-        0.6, exercise.getLatePenalty(), 0.01);
+        0.6, submissionResult.getLatePenalty(), 0.01);
   }
 
 }
