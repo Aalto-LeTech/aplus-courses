@@ -28,6 +28,8 @@ public class Exercise implements Browsable {
 
   private final boolean submittable;
 
+  private boolean inGrading = false;
+
   /**
    * Construct an exercise instance with the given parameters.
    *
@@ -148,6 +150,14 @@ public class Exercise implements Browsable {
 
   public boolean isOptional() {
     return maxSubmissions == 0 && maxPoints == 0;
+  }
+
+  public boolean isInGrading() {
+    return inGrading;
+  }
+
+  public void setInGrading(boolean isInGrading) {
+    this.inGrading = isInGrading;
   }
 
   @Override

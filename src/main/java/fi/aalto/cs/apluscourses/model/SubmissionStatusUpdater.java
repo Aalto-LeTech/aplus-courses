@@ -114,6 +114,8 @@ public class SubmissionStatusUpdater {
                 new FeedbackAvailableNotification(submissionResult, exercise), project);
             PluginSettings.getInstance().updateMainViewModel(project);
             return;
+          } else if (exercise.isInGrading()) {
+            exercise.setInGrading(true);
           }
         } catch (IOException e) {
           // Fail silently

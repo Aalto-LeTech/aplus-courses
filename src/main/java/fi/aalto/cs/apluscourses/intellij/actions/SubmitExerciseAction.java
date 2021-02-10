@@ -241,6 +241,7 @@ public class SubmitExerciseAction extends AnAction {
       PluginSettings.getInstance().clearDefaultGroupId();
     }
 
+    exercise.setInGrading(true);
     String submissionUrl = exerciseDataSource.submit(submission.buildSubmission(), authentication);
     new SubmissionStatusUpdater(
         project, exerciseDataSource, authentication, submissionUrl, selectedExercise.getModel()
