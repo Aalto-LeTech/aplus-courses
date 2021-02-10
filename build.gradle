@@ -118,3 +118,7 @@ sonarqube {
         property 'sonar.coverage.exclusions', 'src/test/**/*'
     }
 }
+
+runIdeForUiTests {
+    systemProperty 'robot-server.port', '8082'
+}
