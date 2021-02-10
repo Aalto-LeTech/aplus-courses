@@ -11,9 +11,9 @@ public class SubmissionResultViewModelTest {
 
   @Test
   public void testSubmissionResultViewModel() {
-    Exercise exercise = new Exercise(0, "", "", 15, 25, 10, true);
+    Exercise exercise = new Exercise(0, "", "", 15, 25, 10, true, 0.0);
     SubmissionResult submissionResult
-        = new SubmissionResult(123L, 15, SubmissionResult.Status.UNKNOWN, exercise);
+        = new SubmissionResult(123L, 15, SubmissionResult.Status.UNKNOWN, exercise, 0.0);
     SubmissionResultViewModel viewModel = new SubmissionResultViewModel(submissionResult, 34);
 
     assertEquals("Submission 34", viewModel.getPresentableName());

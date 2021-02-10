@@ -22,6 +22,12 @@ public class Points {
   @NotNull
   private final Map<Long, Integer> submissionPoints;
 
+  @NotNull
+  private final Map<Long, String> bestSubmissions;
+
+  @NotNull
+  private final Map<Long, Double> exercisePenalties;
+
   // TODO: remove
   @NotNull
   private Set<Long> submittableExercises;
@@ -33,13 +39,17 @@ public class Points {
    *                         and the last element should be the ID of the latest submission.
    * @param exercisePoints   A map of exercise IDs to the best points gotten from that exercise.
    * @param submissionPoints A map of submission IDs to the points of that submission.
+   * @param bestSubmissions  A map of URLs to the best submissions for each exercise.
    */
   public Points(@NotNull Map<Long, List<Long>> submissions,
                 @NotNull Map<Long, Integer> exercisePoints,
-                @NotNull Map<Long, Integer> submissionPoints) {
+                @NotNull Map<Long, Integer> submissionPoints,
+                @NotNull Map<Long, String> bestSubmissions) {
     this.submissions = submissions;
     this.exercisePoints = exercisePoints;
     this.submissionPoints = submissionPoints;
+    this.bestSubmissions = bestSubmissions;
+    this.exercisePenalties = new HashMap<>();
     this.submittableExercises = Collections.emptySet();
   }
 
@@ -56,6 +66,20 @@ public class Points {
   @NotNull
   public Map<Long, Integer> getSubmissionPoints() {
     return Collections.unmodifiableMap(submissionPoints);
+  }
+
+  @NotNull
+  public Map<Long, String> getBestSubmissions() {
+    return Collections.unmodifiableMap(bestSubmissions);
+  }
+
+  @NotNull
+  public Map<Long, Double> getExercisePenalties() {
+    return Collections.unmodifiableMap(exercisePenalties);
+  }
+
+  public void putExercisePenalty(long id, double penalty) {
+    exercisePenalties.put(id, penalty);
   }
 
   /**
@@ -85,6 +109,7 @@ public class Points {
     Map<Long, List<Long>> submissions = new HashMap<>();
     Map<Long, Integer> exercisePoints = new HashMap<>();
     Map<Long, Integer> submissionPoints = new HashMap<>();
+    Map<Long, String> bestSubmissions = new HashMap<>();
     for (int i = 0; i < modulesArray.length(); ++i) {
       JSONObject module = modulesArray.getJSONObject(i);
       JSONArray exercisesArray = module.getJSONArray("exercises");
@@ -94,11 +119,15 @@ public class Points {
 
         parseSubmissions(exercise, exerciseId, submissions, submissionPoints);
 
+        if (!exercise.isNull("best_submission")) {
+          bestSubmissions.put(exerciseId, exercise.getString("best_submission"));
+        }
+
         Integer points = exercise.getInt("points");
         exercisePoints.put(exerciseId, points);
       }
     }
-    return new Points(submissions, exercisePoints, submissionPoints);
+    return new Points(submissions, exercisePoints, submissionPoints, bestSubmissions);
   }
 
   /*

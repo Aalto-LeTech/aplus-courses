@@ -13,6 +13,7 @@ import fi.aalto.cs.apluscourses.intellij.notifications.FeedbackAvailableNotifica
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -30,7 +31,7 @@ public class SubmissionStatusUpdaterTest {
     @NotNull
     @Override
     public SubmissionResult getSubmissionResult(@NotNull String submissionUrl,
-                                                @NotNull Exercise exercise,
+                                                @Nullable Exercise exercise,
                                                 @NotNull Authentication authentication) {
 
       return new SubmissionResult(
@@ -38,7 +39,8 @@ public class SubmissionStatusUpdaterTest {
           0,
           submissionResultFetchCount.incrementAndGet() >= limit
               ? SubmissionResult.Status.GRADED : SubmissionResult.Status.UNKNOWN,
-          exercise
+          exercise,
+          0.0
       );
     }
   }
@@ -65,7 +67,7 @@ public class SubmissionStatusUpdaterTest {
         mock(Authentication.class),
         notifier,
         "http://localhost:1000",
-        new Exercise(789, "Cool Exercise Name", "http://example.com", 0, 5, 10, true),
+        new Exercise(789, "Cool Exercise Name", "http://example.com", 0, 5, 10, true, 0),
         25L, // 0.025 second interval
         0L, // don't increment the interval at all
         10000L // 10 second time limit, which shouldn't be reached
@@ -86,7 +88,7 @@ public class SubmissionStatusUpdaterTest {
         mock(Authentication.class),
         notifier,
         "http://localhost:1000",
-        new Exercise(789, "Cool Exercise Name", "http://example.com", 0, 5, 10, true),
+        new Exercise(789, "Cool Exercise Name", "http://example.com", 0, 5, 10, true, 0),
         25L, // 0.025 second interval
         0L, // don't increment the interval at all
         200L // 0.2 second time limit, should update at most 8 times

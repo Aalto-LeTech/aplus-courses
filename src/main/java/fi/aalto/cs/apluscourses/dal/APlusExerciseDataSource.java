@@ -142,7 +142,7 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   @Override
   @NotNull
   public SubmissionResult getSubmissionResult(@NotNull String submissionUrl,
-                                              @NotNull Exercise exercise,
+                                              @Nullable Exercise exercise,
                                               @NotNull Authentication authentication)
       throws IOException {
     JSONObject response = client.fetch(submissionUrl, authentication);
@@ -243,7 +243,7 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
 
     @Override
     public SubmissionResult parseSubmissionResult(@NotNull JSONObject object,
-                                                  @NotNull Exercise exercise) {
+                                                  @Nullable Exercise exercise) {
       return SubmissionResult.fromJsonObject(object, exercise);
     }
 

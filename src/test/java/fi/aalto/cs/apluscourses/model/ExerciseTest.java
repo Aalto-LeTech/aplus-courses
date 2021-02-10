@@ -20,7 +20,7 @@ public class ExerciseTest {
 
   @Test
   public void testExercise() {
-    Exercise exercise = new Exercise(987, "def", "http://localhost:4444", 13, 15, 10, false);
+    Exercise exercise = new Exercise(987, "def", "http://localhost:4444", 13, 15, 10, false, 0.1);
 
     assertEquals("The ID is the same as the one given to the constructor",
         987L, exercise.getId());
@@ -36,6 +36,8 @@ public class ExerciseTest {
         10, exercise.getMaxSubmissions());
     assertFalse("The exercise submittability depends on the constructor parameter",
         exercise.isSubmittable());
+    assertEquals("The late penalty is the same as the one given to the constructor",
+        0.1, exercise.getLatePenalty(), 0.01);
   }
 
   @NotNull
@@ -48,7 +50,10 @@ public class ExerciseTest {
     Map<Long, Integer> submissionPoints = new HashMap<>();
     submissionPoints.put(1L, 33);
     submissionPoints.put(2L, 44);
-    return new Points(submissions, exercisePoints, submissionPoints);
+    Map<Long, String> bestSubmissions = Collections.singletonMap(exerciseId, "");
+    Points points = new Points(submissions, exercisePoints, submissionPoints, bestSubmissions);
+    points.putExercisePenalty(exerciseId, 0.3);
+    return points;
   }
 
   private static final Points TEST_POINTS = createTestPoints();
@@ -86,6 +91,8 @@ public class ExerciseTest {
         44, exercise.getSubmissionResults().get(1).getPoints());
     assertEquals("The user points are read from the points object",
         10, exercise.getUserPoints());
+    assertEquals("The late penalty is the same as the one given to the constructor",
+        0.3, exercise.getLatePenalty(), 0.01);
     assertEquals("The max points is the same as the one in the JSON object",
         99, exercise.getMaxPoints());
     assertEquals("The max submissions is the same as the one in the JSON object",
@@ -137,10 +144,24 @@ public class ExerciseTest {
   }
 
   @Test
+  public void testExerciseFromJsonObjectDefaultLatePenalty() {
+    JSONObject json = new JSONObject()
+        .put(ID_KEY, 357)
+        .put(NAME_KEY, "yet another name")
+        .put(HTML_KEY, "localhost:1234")
+        .put(MAX_POINTS_KEY, 4)
+        .put(MAX_SUBMISSIONS_KEY, 4);
+
+
+    assertEquals("The default late penalty is 0.0",
+        0.0, Exercise.fromJsonObject(json, TEST_POINTS).getLatePenalty(), 0.01);
+  }
+
+  @Test
   public void testEquals() {
-    Exercise exercise = new Exercise(7, "oneEx", "http://localhost:1111", 0, 0, 0, true);
-    Exercise sameExercise = new Exercise(7, "twoEx", "http://localhost:2222", 2, 3, 4, false);
-    Exercise otherExercise = new Exercise(4, "oneEx", "http://localhost:2222", 3, 2, 1, true);
+    Exercise exercise = new Exercise(7, "oneEx", "http://localhost:1111", 0, 0, 0, true, 0.0);
+    Exercise sameExercise = new Exercise(7, "twoEx", "http://localhost:2222", 2, 3, 4, false, 0.0);
+    Exercise otherExercise = new Exercise(4, "oneEx", "http://localhost:2222", 3, 2, 1, true, 0.0);
 
     assertEquals(exercise, sameExercise);
     assertEquals(exercise.hashCode(), sameExercise.hashCode());
@@ -151,11 +172,11 @@ public class ExerciseTest {
   @Test
   public void testIsCompleted() {
     Exercise optionalNotSubmitted
-        = new Exercise(1, "optionalNotSubmitted", "http://localhost:1111", 0, 0, 0, true);
+        = new Exercise(1, "optionalNotSubmitted", "http://localhost:1111", 0, 0, 0, true, 0.0);
     Exercise optionalSubmitted
-        = new Exercise(2, "optionalSubmitted", "http://localhost:1111", 0, 0, 0, true);
+        = new Exercise(2, "optionalSubmitted", "http://localhost:1111", 0, 0, 0, true, 0.0);
     optionalSubmitted.addSubmissionResult(new SubmissionResult(
-            1, 0, SubmissionResult.Status.GRADED, optionalSubmitted));
+            1, 0, SubmissionResult.Status.GRADED, optionalSubmitted, 0.0));
 
     assertFalse("Optional assignment with no submissions isn't completed",
         optionalNotSubmitted.isCompleted());
@@ -163,15 +184,15 @@ public class ExerciseTest {
         optionalSubmitted.isCompleted());
 
     Exercise noSubmissions
-        = new Exercise(3, "noSubmissions", "http://localhost:1111", 0, 5, 10, true);
+        = new Exercise(3, "noSubmissions", "http://localhost:1111", 0, 5, 10, true, 0.0);
     Exercise failed
-        = new Exercise(4, "failed", "http://localhost:1111", 3, 5, 10, true);
+        = new Exercise(4, "failed", "http://localhost:1111", 3, 5, 10, true, 0.0);
     failed.addSubmissionResult(new SubmissionResult(
-            1, 3, SubmissionResult.Status.GRADED, failed));
+            1, 3, SubmissionResult.Status.GRADED, failed, 0.0));
 
-    Exercise completed = new Exercise(5, "completed", "http://localhost:1111", 5, 5, 10, true);
+    Exercise completed = new Exercise(5, "completed", "http://localhost:1111", 5, 5, 10, true, 0.0);
     completed.addSubmissionResult(new SubmissionResult(
-            1, 5, SubmissionResult.Status.GRADED, completed));
+            1, 5, SubmissionResult.Status.GRADED, completed, 0.0));
 
 
     assertFalse("Assignment with no submissions isn't completed",
@@ -184,12 +205,28 @@ public class ExerciseTest {
 
   @Test
   public void testIsOptional() {
-    Exercise optional = new Exercise(1, "optional", "http://localhost:1111", 0, 0, 0, true);
+    Exercise optional = new Exercise(1, "optional", "http://localhost:1111", 0, 0, 0, true, 0.0);
     assertTrue("Assignment is optional",
             optional.isOptional());
 
-    Exercise notOptional = new Exercise(2, "notOptional", "http://localhost:1111", 0, 5, 10, true);
+    Exercise notOptional = new Exercise(2, "notOptional", "http://localhost:1111", 0, 5, 10, true,
+        0.0);
     assertFalse("Assignment isn't optional",
         notOptional.isOptional());
+  }
+
+  @Test
+  public void testIsLate() {
+    Exercise late1 = new Exercise(1, "optional", "http://localhost:1111", 0, 0, 0, true, 0.5);
+    Exercise late2 = new Exercise(1, "optional", "http://localhost:1111", 0, 0, 0, true, 1.0);
+    assertTrue("First assignment is late",
+            late1.isLate());
+    assertTrue("Second assignment is late",
+            late2.isLate());
+
+    Exercise notLate =
+        new Exercise(2, "notOptional", "http://localhost:1111", 0, 5, 10, true, 0.0);
+    assertFalse("Assignment isn't late",
+        notLate.isLate());
   }
 }

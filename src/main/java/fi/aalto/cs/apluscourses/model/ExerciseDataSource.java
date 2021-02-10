@@ -30,7 +30,7 @@ public interface ExerciseDataSource {
 
   @NotNull
   SubmissionResult getSubmissionResult(@NotNull String submissionUrl,
-                                       @NotNull Exercise exercise,
+                                       @Nullable Exercise exercise,
                                        @NotNull Authentication authentication) throws IOException;
 
   @Nullable

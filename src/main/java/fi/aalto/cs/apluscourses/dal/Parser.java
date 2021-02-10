@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -27,7 +28,7 @@ public interface Parser {
   Points parsePoints(@NotNull JSONObject object);
 
   SubmissionResult parseSubmissionResult(@NotNull JSONObject jsonObject,
-                                         @NotNull Exercise exercise);
+                                         @Nullable Exercise exercise);
 
   /**
    * Parses an JSON array to a list using a given parsing function.

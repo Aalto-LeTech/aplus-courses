@@ -19,7 +19,8 @@ public class PointsTest {
     Points points = new Points(
         Collections.singletonMap(123L, Arrays.asList(11L, 22L)),
         Collections.singletonMap(123L, 55),
-        submissionPoints
+        submissionPoints,
+        Collections.singletonMap(123L, "")
     );
 
     Assert.assertEquals("The submission ID list is the same as that given to the constructor",

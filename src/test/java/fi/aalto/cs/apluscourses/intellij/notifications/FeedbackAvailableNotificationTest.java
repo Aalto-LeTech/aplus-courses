@@ -15,9 +15,10 @@ public class FeedbackAvailableNotificationTest {
 
   @Test
   public void testFeedbackAvailableNotificationTest() {
-    Exercise exercise = new Exercise(123, "Test Exercise", "https://example.com", 3, 5, 10, true);
+    Exercise exercise = new Exercise(123, "Test Exercise", "https://example.com", 3, 5, 10, true,
+        0.0);
     SubmissionResult result
-        = new SubmissionResult(0, 0, SubmissionResult.Status.GRADED, exercise);
+        = new SubmissionResult(0, 0, SubmissionResult.Status.GRADED, exercise, 0.0);
     Notification notification = new FeedbackAvailableNotification(result, exercise);
 
     assertEquals("Group ID should be A+", "A+", notification.getGroupId());

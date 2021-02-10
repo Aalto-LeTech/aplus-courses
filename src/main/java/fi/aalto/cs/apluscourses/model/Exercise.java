@@ -28,15 +28,17 @@ public class Exercise implements Browsable {
 
   private final boolean submittable;
 
+  private final double latePenalty;
+
   /**
    * Construct an exercise instance with the given parameters.
-   *
-   * @param id                The ID of the exercise.
+   *  @param id                The ID of the exercise.
    * @param name              The name of the exercise.
    * @param htmlUrl           A URL to the HTML page of the exercise.
    * @param userPoints        The best points that the user has gotten from this exercise.
    * @param maxPoints         The maximum points available from this exercise.
    * @param maxSubmissions    The maximum number of submissions allowed for this exercise.
+   * @param latePenalty       The penalty applied if the best submission is late.
    */
   public Exercise(long id,
                   @NotNull String name,
@@ -44,7 +46,8 @@ public class Exercise implements Browsable {
                   int userPoints,
                   int maxPoints,
                   int maxSubmissions,
-                  boolean submittable) {
+                  boolean submittable,
+                  double latePenalty) {
     this.id = id;
     this.name = name;
     this.htmlUrl = htmlUrl;
@@ -52,6 +55,7 @@ public class Exercise implements Browsable {
     this.maxPoints = maxPoints;
     this.maxSubmissions = maxSubmissions;
     this.submittable = submittable;
+    this.latePenalty = latePenalty;
   }
 
   /**
@@ -70,6 +74,7 @@ public class Exercise implements Browsable {
     String name = jsonObject.getString("display_name");
     String htmlUrl = jsonObject.getString("html_url");
 
+    double latePenalty = points.getExercisePenalties().getOrDefault(id, 0.0);
     int userPoints = points.getExercisePoints().getOrDefault(id, 0);
     int maxPoints = jsonObject.getInt("max_points");
     int maxSubmissions = jsonObject.getInt("max_submissions");
@@ -79,8 +84,8 @@ public class Exercise implements Browsable {
     // SubmissionInfo and how it is used in SubmitExerciseAction.
     boolean isSubmittable = points.isSubmittable(id);
 
-    Exercise exercise
-        = new Exercise(id, name, htmlUrl, userPoints, maxPoints, maxSubmissions, isSubmittable);
+    Exercise exercise = new Exercise(
+        id, name, htmlUrl, userPoints, maxPoints, maxSubmissions, isSubmittable, latePenalty);
 
     List<Long> submissionIds = points.getSubmissions().getOrDefault(id, Collections.emptyList());
     for (int i = 0, length = submissionIds.size(); i < length; i++) {
@@ -90,7 +95,7 @@ public class Exercise implements Browsable {
           ? SubmissionResult.Status.UNOFFICIAL
           : SubmissionResult.Status.GRADED;
       exercise.addSubmissionResult(
-          new SubmissionResult(submissionId, submissionPoints, status, exercise));
+          new SubmissionResult(submissionId, submissionPoints, status, exercise, 0));
     }
 
     return exercise;
@@ -130,6 +135,14 @@ public class Exercise implements Browsable {
 
   public int getMaxSubmissions() {
     return maxSubmissions;
+  }
+
+  public double getLatePenalty() {
+    return latePenalty;
+  }
+
+  public boolean isLate() {
+    return this.latePenalty != 0.0;
   }
 
   public boolean isSubmittable() {

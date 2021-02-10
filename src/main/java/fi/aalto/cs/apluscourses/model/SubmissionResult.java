@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.model;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
 public class SubmissionResult implements Browsable {
@@ -18,7 +19,9 @@ public class SubmissionResult implements Browsable {
   @NotNull
   private final Status status;
 
-  @NotNull
+  private final double latePenalty;
+
+  @Nullable
   private final Exercise exercise;
 
   /**
@@ -27,11 +30,13 @@ public class SubmissionResult implements Browsable {
   public SubmissionResult(long submissionId,
                           int points,
                           @NotNull Status status,
-                          @NotNull Exercise exercise) {
+                          @Nullable Exercise exercise,
+                          double latePenalty) {
     this.submissionId = submissionId;
     this.points = points;
     this.status = status;
     this.exercise = exercise;
+    this.latePenalty = latePenalty;
   }
 
   /**
@@ -40,9 +45,10 @@ public class SubmissionResult implements Browsable {
    */
   @NotNull
   public static SubmissionResult fromJsonObject(@NotNull JSONObject jsonObject,
-                                                @NotNull Exercise exercise) {
+                                                @Nullable Exercise exercise) {
     long id = jsonObject.getLong("id");
     int points = jsonObject.getInt("grade");
+    double latePenalty = jsonObject.optDouble("late_penalty_applied", 0.0);
 
     Status status = Status.UNKNOWN;
     String statusString = jsonObject.optString("status");
@@ -52,7 +58,7 @@ public class SubmissionResult implements Browsable {
       status = Status.UNOFFICIAL;
     }
 
-    return new SubmissionResult(id, points, status, exercise);
+    return new SubmissionResult(id, points, status, exercise, latePenalty);
   }
 
   public long getId() {
@@ -66,6 +72,10 @@ public class SubmissionResult implements Browsable {
   @NotNull
   public Status getStatus() {
     return status;
+  }
+
+  public double getLatePenalty() {
+    return latePenalty;
   }
 
   @Override

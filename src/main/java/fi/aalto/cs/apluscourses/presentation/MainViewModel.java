@@ -8,6 +8,7 @@ import fi.aalto.cs.apluscourses.model.ExerciseDataSource;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
 import fi.aalto.cs.apluscourses.model.InvalidAuthenticationException;
 import fi.aalto.cs.apluscourses.model.Points;
+import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import fi.aalto.cs.apluscourses.presentation.base.BaseViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
@@ -73,6 +74,7 @@ public class MainViewModel {
     ExerciseDataSource dataSource = course.getExerciseDataSource();
     try {
       Points points = dataSource.getPoints(course, auth);
+      fetchBestSubmissions(points, dataSource, auth);
       points.setSubmittableExercises(course.getExerciseModules().keySet()); // TODO: remove
       List<ExerciseGroup> exerciseGroups = dataSource.getExerciseGroups(course, points, auth);
       exercisesViewModel.set(new ExercisesTreeViewModel(exerciseGroups, exerciseFilterOptions));
@@ -83,6 +85,20 @@ public class MainViewModel {
       logger.error("Failed to fetch exercises", e);
       // This too
     }
+  }
+
+  private void fetchBestSubmissions(Points points,
+                                    ExerciseDataSource dataSource,
+                                    Authentication auth) {
+    points.getBestSubmissions().forEach((id, submissionUrl) -> {
+      try {
+        SubmissionResult submissionResult =
+            dataSource.getSubmissionResult(submissionUrl, null, auth);
+        points.putExercisePenalty(id, submissionResult.getLatePenalty());
+      } catch (IOException e) {
+        logger.error("Failed to fetch submissions", e);
+      }
+    });
   }
 
   public void dispose() {
