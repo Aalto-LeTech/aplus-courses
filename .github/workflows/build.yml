@@ -22,7 +22,6 @@ jobs:
       - name: Install xvfb
         run: /usr/bin/sudo apt-get install xvfb
       - name: Setup UI testing env
-        uses: jakejarvis/wait-action@master
         run: |
             ./gradlew clean
             (/usr/bin/xvfb-run --auto-servernum ./gradlew runIdeForUiTests) &
