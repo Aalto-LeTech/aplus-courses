@@ -25,8 +25,10 @@ jobs:
         run: /usr/bin/sudo apt-get install xvfb
       - name: Setup UI testing env
         run: |
+            export DISPLAY=:99.0
+            sh -e /etc/init.d/xvfb start
             ./gradlew clean
-            (/usr/bin/xvfb-run --auto-servernum ./gradlew runIdeForUiTests --info) &
+            (./gradlew runIdeForUiTests --info) &
       - name: Sleep for 90 seconds
         uses: jakejarvis/wait-action@master
         with:
