@@ -2,8 +2,8 @@ package fi.aalto.cs.apluscourses.e2e.steps
 
 import com.intellij.remoterobot.RemoteRobot
 import com.intellij.remoterobot.stepsProcessing.step
-import com.intellij.remoterobot.utils.WaitForConditionTimeoutException
 import fi.aalto.cs.apluscourses.e2e.fixtures.*
+import fi.aalto.cs.apluscourses.e2e.utils.wait
 import java.time.Duration
 
 class CommonSteps(val remoteRobot: RemoteRobot) {
@@ -18,17 +18,8 @@ class CommonSteps(val remoteRobot: RemoteRobot) {
           button("Finish").click()
         }
       }
-      ideFrame().dialog("Project Structure", Duration.ofSeconds(20)).close()
-    }
-  }
-
-  fun closeTipOfTheDay() = step("Close Tip of the Day") {
-    with(remoteRobot.ideFrame()) {
-      try {
-        dialog("Tip of the Day").close()
-      } catch (e : WaitForConditionTimeoutException) {
-        print("Tip of the Day not found")
-      }
+      wait(Duration.ofSeconds(10))
+      ideFrame().allDialogs().forEach { it.close() }
     }
   }
 

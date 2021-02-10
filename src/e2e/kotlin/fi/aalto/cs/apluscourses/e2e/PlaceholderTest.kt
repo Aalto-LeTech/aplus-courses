@@ -16,7 +16,6 @@ class PlaceholderTest {
   fun simpleTest() = uiTest {
     with(CommonSteps(this)) {
       createProject()
-      closeTipOfTheDay()
       downloadAndSetOpenJdk11()
     }
     with(ideFrame()) {
