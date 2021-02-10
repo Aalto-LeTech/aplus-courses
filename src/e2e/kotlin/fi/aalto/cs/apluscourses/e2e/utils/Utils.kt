@@ -15,5 +15,5 @@ object StepLoggerInitializer {
 }
 
 fun uiTest(test: RemoteRobot.() -> Unit) {
-  RemoteRobot("http://localhost:8082").test()
+  RemoteRobot("http://localhost:8580").test()
 }
