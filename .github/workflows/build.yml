@@ -25,9 +25,9 @@ jobs:
         run: |
             ./gradlew clean
             (/usr/bin/xvfb-run --auto-servernum ./gradlew runIdeForUiTests) &
-      - name: Sleep for 00 seconds
+      - name: Sleep for 90 seconds
         uses: jakejarvis/wait-action@master
         with:
           time: '90s'
       - name: Run the UI tests
-        run: ./gradlew uiTest
+        run: /usr/bin/xvfb-run --auto-servernum ./gradlew uiTest
