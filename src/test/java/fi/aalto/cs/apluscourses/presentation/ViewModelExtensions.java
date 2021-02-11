@@ -12,12 +12,18 @@ public class ViewModelExtensions {
 
   public static class TestNodeViewModel extends SelectableNodeViewModel<Object> {
     private final long id;
+    private final boolean hiddenIfNoChildren;
 
     public TestNodeViewModel(long id, @NotNull Object model,
-                             @Nullable List<SelectableNodeViewModel<?>> children) {
+                             @Nullable List<SelectableNodeViewModel<?>> children,
+                             boolean hiddenIfNoChildren) {
       super(model, children);
       this.id = id;
+      this.hiddenIfNoChildren = hiddenIfNoChildren;
     }
+
+    @Override
+    protected boolean isHiddenIfNoVisibleChildren() { return hiddenIfNoChildren; }
 
     @Override
     public long getId() {

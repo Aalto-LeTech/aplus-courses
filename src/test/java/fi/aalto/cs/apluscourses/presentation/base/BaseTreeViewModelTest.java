@@ -21,8 +21,8 @@ public class BaseTreeViewModelTest {
    */
   @Before
   public void setUp() {
-    childViewModel1 = new TestNodeViewModel(1, new Object(), Collections.emptyList());
-    childViewModel2 = new TestNodeViewModel(2, new Object(), Collections.emptyList());
+    childViewModel1 = new TestNodeViewModel(1, new Object(), Collections.emptyList(), false);
+    childViewModel2 = new TestNodeViewModel(2, new Object(), Collections.emptyList(), false);
     treeViewModel = new BaseTreeViewModel<>(
         new Object(), Arrays.asList(childViewModel1, childViewModel2), new Options());
   }

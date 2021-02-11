@@ -21,6 +21,7 @@ import org.mockito.internal.stubbing.answers.Returns;
 public class SelectableNodeViewModelTest {
 
   Object model;
+  SelectableNodeViewModel<Object> emptyNode;
   SelectableNodeViewModel<Object> node;
   SelectableNodeViewModel<Object> child0;
   SelectableNodeViewModel<Object> child1;
@@ -34,11 +35,12 @@ public class SelectableNodeViewModelTest {
   public void setUp() {
     model = new Object();
 
-    child0 = spy(new TestNodeViewModel(0, new Object(), Collections.emptyList()));
-    child1 = spy(new TestNodeViewModel(1, new Object(), Collections.emptyList()));
-    child2 = spy(new TestNodeViewModel(2, new Object(), Collections.emptyList()));
+    child0 = spy(new TestNodeViewModel(0, new Object(), Collections.emptyList(), false));
+    child1 = spy(new TestNodeViewModel(1, new Object(), Collections.emptyList(), false));
+    child2 = spy(new TestNodeViewModel(2, new Object(), Collections.emptyList(), false));
     children = Arrays.asList(child0, child1, child2);
-    node = new TestNodeViewModel(3, model, children);
+    node = new TestNodeViewModel(3, model, children, false);
+    emptyNode = new TestNodeViewModel(4, new Object(), Collections.emptyList(), true);
   }
 
   @Test
@@ -93,5 +95,14 @@ public class SelectableNodeViewModelTest {
     Optional<Boolean> result = node.applyFilter(filter);
     assertFalse(result.isPresent());
     assertTrue(node.isVisible());
+  }
+
+  @Test
+  public void testApplyFilterHidesEmptyNodesThatWantToGetHidden() throws InterruptedException {
+    Filter filter = mock(Filter.class, new Returns(Optional.of(false)));
+
+    Optional<Boolean> result = emptyNode.applyFilter(filter);
+    assertTrue(result.isPresent());
+    assertFalse(emptyNode.isVisible());
   }
 }
