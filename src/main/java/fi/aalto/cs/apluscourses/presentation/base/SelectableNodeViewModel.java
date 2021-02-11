@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.presentation.base;
 
+import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseGroupViewModel;
 import fi.aalto.cs.apluscourses.presentation.filter.Filter;
 import fi.aalto.cs.apluscourses.utils.Tree;
 import java.util.Collections;
@@ -45,6 +46,10 @@ public abstract class SelectableNodeViewModel<T> extends BaseViewModel<T> implem
       }
     }
     visibility = result.orElse(true);
+    if (this instanceof ExerciseGroupViewModel
+        && this.getChildren().stream().noneMatch(child -> child.visibility)) {
+      visibility = false;
+    }
     return result;
   }
 
