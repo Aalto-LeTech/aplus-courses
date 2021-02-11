@@ -61,6 +61,9 @@ public class ExerciseGroupViewModel extends SelectableNodeViewModel<ExerciseGrou
   }
 
   @Override
+  protected boolean areAllChildrenHidden() { return this.getChildren().stream().noneMatch(SelectableNodeViewModel::isVisible); }
+
+  @Override
   public long getId() {
     return getModel().getId();
   }

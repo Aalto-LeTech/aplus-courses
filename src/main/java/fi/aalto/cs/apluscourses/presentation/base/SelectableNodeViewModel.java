@@ -45,11 +45,7 @@ public abstract class SelectableNodeViewModel<T> extends BaseViewModel<T> implem
         }
       }
     }
-    visibility = result.orElse(true);
-    if (this instanceof ExerciseGroupViewModel
-        && this.getChildren().stream().noneMatch(child -> child.visibility)) {
-      visibility = false;
-    }
+    visibility = result.orElse(true) && !areAllChildrenHidden();
     return result;
   }
 
@@ -66,6 +62,8 @@ public abstract class SelectableNodeViewModel<T> extends BaseViewModel<T> implem
   public void setSelected(boolean selected) {
     this.selected = selected;
   }
+
+  protected boolean areAllChildrenHidden() { return false; }
 
   @Override
   @NotNull
