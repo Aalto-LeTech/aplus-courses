@@ -34,4 +34,5 @@ public interface PluginIcons {
   Icon A_PLUS_REPL = IconLoader.getIcon("/META-INF/icons/repl.svg");
   Icon A_PLUS_FILTER = IconLoader.getIcon("/META-INF/icons/filter.svg");
   Icon A_PLUS_COURSES = IconLoader.getIcon("/META-INF/icons/logo_courses.svg");
+  Icon A_PLUS_IN_GRADING = IconLoader.getIcon("/META-INF/icons/hourglass.svg");
 }
