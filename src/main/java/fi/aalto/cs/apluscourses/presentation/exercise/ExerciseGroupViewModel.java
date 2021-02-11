@@ -5,6 +5,7 @@ import fi.aalto.cs.apluscourses.presentation.base.Searchable;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
 import java.util.Comparator;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
@@ -61,8 +62,9 @@ public class ExerciseGroupViewModel extends SelectableNodeViewModel<ExerciseGrou
   }
 
   @Override
-  protected boolean isHiddenIfNoVisibleChildren() {
-    return this.getChildren().stream().noneMatch(SelectableNodeViewModel::isVisible);
+  protected void setVisibilityByFilterResult(Optional<Boolean> result) {
+    visibility = result.orElse(true)
+        && this.getChildren().stream().anyMatch(SelectableNodeViewModel::isVisible);
   }
 
   @Override

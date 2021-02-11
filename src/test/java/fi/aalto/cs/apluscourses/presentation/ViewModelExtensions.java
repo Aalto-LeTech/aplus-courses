@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.presentation;
 
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
 import java.util.List;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,8 +27,13 @@ public class ViewModelExtensions {
     }
 
     @Override
-    protected boolean isHiddenIfNoVisibleChildren() {
-      return hiddenIfNoChildren;
+    protected void setVisibilityByFilterResult(Optional<Boolean> result) {
+      if (hiddenIfNoChildren) {
+        visibility = result.orElse(true)
+            && this.getChildren().stream().anyMatch(SelectableNodeViewModel::isVisible);
+      } else {
+        visibility = result.orElse(true);
+      }
     }
 
     @Override

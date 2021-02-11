@@ -13,7 +13,7 @@ public abstract class SelectableNodeViewModel<T> extends BaseViewModel<T> implem
 
   @NotNull
   private final List<SelectableNodeViewModel<?>> children;
-  private volatile boolean visibility = true;
+  protected volatile boolean visibility = true;
 
   private volatile boolean selected = false;
 
@@ -45,8 +45,12 @@ public abstract class SelectableNodeViewModel<T> extends BaseViewModel<T> implem
         }
       }
     }
-    visibility = result.orElse(true) && !isHiddenIfNoVisibleChildren();
+    setVisibilityByFilterResult(result);
     return result;
+  }
+
+  protected void setVisibilityByFilterResult(Optional<Boolean> result) {
+    visibility = result.orElse(true);
   }
 
   public abstract long getId();
@@ -63,9 +67,6 @@ public abstract class SelectableNodeViewModel<T> extends BaseViewModel<T> implem
     this.selected = selected;
   }
 
-  protected boolean isHiddenIfNoVisibleChildren() {
-    return false;
-  }
 
   @Override
   @NotNull
