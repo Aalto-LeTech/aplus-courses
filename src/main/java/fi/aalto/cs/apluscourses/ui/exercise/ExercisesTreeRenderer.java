@@ -85,7 +85,6 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
   /**
    * Sometimes {@code customizeCellRenderer} is called with a value
    * that is just some placeholder object for tree root.
-   *
    * This method recognizes such cases.
    *
    * @param value A parameter passed to {@code customizeCellRenderer}
