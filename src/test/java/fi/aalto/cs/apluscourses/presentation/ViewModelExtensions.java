@@ -14,6 +14,9 @@ public class ViewModelExtensions {
     private final long id;
     private final boolean hiddenIfNoChildren;
 
+    /**
+     * Constructor for a node view model for tests.
+     */
     public TestNodeViewModel(long id, @NotNull Object model,
                              @Nullable List<SelectableNodeViewModel<?>> children,
                              boolean hiddenIfNoChildren) {
@@ -23,7 +26,9 @@ public class ViewModelExtensions {
     }
 
     @Override
-    protected boolean isHiddenIfNoVisibleChildren() { return hiddenIfNoChildren; }
+    protected boolean isHiddenIfNoVisibleChildren() {
+      return hiddenIfNoChildren;
+    }
 
     @Override
     public long getId() {

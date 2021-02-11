@@ -63,7 +63,9 @@ public abstract class SelectableNodeViewModel<T> extends BaseViewModel<T> implem
     this.selected = selected;
   }
 
-  protected boolean isHiddenIfNoVisibleChildren() { return false; }
+  protected boolean isHiddenIfNoVisibleChildren() {
+    return false;
+  }
 
   @Override
   @NotNull
