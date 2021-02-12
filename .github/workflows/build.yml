@@ -50,5 +50,5 @@ jobs:
         run: ./gradlew runIdeForUiTests &
       - name: Run the UI tests
         run: |
-            sleep (180) &&
+            sleep 180 &&
             ./gradlew uiTest --info
