@@ -72,6 +72,7 @@ jobs:
         run: ./gradlew runIdeForUiTests &
       - name: Run the UI tests
         run: |
-          ping
+          netstat -an | find “LISTENING”
+          Test-NetConnection 127.0.0.1 -p 8082
           Start-Sleep -s 240
           ./gradlew uiTest --info
