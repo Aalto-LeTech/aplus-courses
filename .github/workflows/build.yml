@@ -12,8 +12,6 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
-#      - name: Setup tmate session
-#        uses: mxschmitt/action-tmate@v3
 #      - name: Setup A+ LMS locally
 #        run: chmod +x start_local_a+_env.sh && ./start_local_a+_env.sh
 #      - name: Build & Analyze
@@ -30,6 +28,8 @@ jobs:
         uses: jakejarvis/wait-action@master
         with:
           time: '180s'
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
       - name: Run the UI tests
         run: |
             netstat -tulpn | grep LISTEN
