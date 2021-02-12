@@ -2,30 +2,20 @@ package fi.aalto.cs.apluscourses.e2e.fixtures
 
 import com.intellij.remoterobot.RemoteRobot
 import com.intellij.remoterobot.SearchContext
+
 import com.intellij.remoterobot.data.RemoteComponent
-import com.intellij.remoterobot.fixtures.ComponentFixture
-import com.intellij.remoterobot.fixtures.ContainerFixture
-import com.intellij.remoterobot.fixtures.DefaultXpath
-import com.intellij.remoterobot.fixtures.FixtureName
+import com.intellij.remoterobot.fixtures.*
 import com.intellij.remoterobot.search.locators.byXpath
 import fi.aalto.cs.apluscourses.e2e.utils.LocatorBuilder
+import java.awt.Component
 import java.time.Duration
-import javax.swing.JButton
-import javax.swing.JComboBox
-import javax.swing.JDialog
-import javax.swing.JMenuItem
+import javax.swing.*
 
 fun RemoteRobot.welcomeFrame() = find(WelcomeFrameFixture::class.java, Duration.ofSeconds(60))
 
 fun RemoteRobot.ideFrame() = find(IdeFrameFixture::class.java, Duration.ofSeconds(20))
 
-fun SearchContext.button(name: String) = find(ButtonFixture::class.java,
-  LocatorBuilder()
-    .withAttr("accessiblename", name)
-    .withClass(JButton::class.java)
-    .build())
-
-fun SearchContext.comboBox(name: String) = find(ComboBoxFixture::class.java,
+fun SearchContext.customComboBox(name: String) = find(CustomComboBoxFixture::class.java,
   LocatorBuilder()
     .withAttr("accessiblename", name)
     .withClass(JComboBox::class.java)
@@ -39,28 +29,24 @@ fun SearchContext.dialog(title: String, timeout : Duration = Duration.ofSeconds(
         .build(),
       timeout)
 
-fun SearchContext.allDialogs() = findAll(DialogFixture::class.java,
-  LocatorBuilder()
-    .withClass(JDialog::class.java)
-    .build())
-
-fun SearchContext.heavyWeightWindow() = find(HeavyWeightWindowFixture::class.java)
+fun SearchContext.heavyWeightWindow() = find(HeavyWeightWindowFixture::class.java, Duration.ofSeconds(5))
 
 @FixtureName("Welcome Frame")
 @DefaultXpath(by = "FlatWelcomeFrame type", xpath = "//div[@class='FlatWelcomeFrame']")
 class WelcomeFrameFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent)
-    : ContainerFixture(remoteRobot, remoteComponent)
+    : CommonContainerFixture(remoteRobot, remoteComponent) {
+  fun newProjectButton() = button(LocatorBuilder()
+          .withAttr("accessiblename", "New Project")
+          .withClass(JButton::class.java)
+          .build())
+}
 
 @FixtureName("IDE Frame")
 @DefaultXpath("IdeFrameImpl type", "//div[@class='IdeFrameImpl']")
 class IdeFrameFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent)
-    : ContainerFixture(remoteRobot, remoteComponent) {
+    : CommonContainerFixture(remoteRobot, remoteComponent) {
   fun menu() = find(MenuItemFixture::class.java)
 }
-
-@FixtureName("Button")
-class ButtonFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent)
-    : ComponentFixture(remoteRobot, remoteComponent)
 
 @FixtureName("Menu Item")
 @DefaultXpath("MenuFrameHeader type", "//div[@class='MenuFrameHeader']")
@@ -76,20 +62,18 @@ class MenuItemFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent
 
 @FixtureName("Dialog")
 class DialogFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent)
-    : ContainerFixture(remoteRobot, remoteComponent) {
-  fun header() = find(ContainerFixture::class.java, byXpath("//div[@class='DialogHeader']"))
-  fun close() = header().button("Close").click()
+    : CommonContainerFixture(remoteRobot, remoteComponent) {
   fun ContainerFixture.sidePanel() = find(ContainerFixture::class.java,
       byXpath("//div[@class='SidePanel']"))
 }
 
-@FixtureName("Combo Box")
-class ComboBoxFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent)
-    : ContainerFixture(remoteRobot, remoteComponent) {
+@FixtureName("Custom Combo Box")
+class CustomComboBoxFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent) :
+  ComponentFixture(remoteRobot, remoteComponent) {
   fun dropdown() = click()
 }
 
 @FixtureName("Heavy Weight Window")
 @DefaultXpath("HeavyWeightWindow type", "//div[@class='HeavyWeightWindow']")
 class HeavyWeightWindowFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent)
-  : ContainerFixture(remoteRobot, remoteComponent);
+  : CommonContainerFixture(remoteRobot, remoteComponent)
