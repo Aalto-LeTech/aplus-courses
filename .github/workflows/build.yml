@@ -33,7 +33,7 @@ jobs:
 #            netstat -tulpn | grep LISTEN
 #            ./gradlew uiTest --info
 
-  build-macos:
+  build-mac-os:
     runs-on: macos-latest
 
     steps:
@@ -49,4 +49,9 @@ jobs:
       - name: Run integration tests
         run: |
           ./gradlew runIdeForUiTests &
-          ./gradlew uiTest --info
+      - name: Sleep for 180 seconds
+        uses: jakejarvis/wait-action@master
+        with:
+          time: '180s'
+      - name: Run the UI tests
+        run: ./gradlew uiTest --info
