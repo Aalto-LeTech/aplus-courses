@@ -22,10 +22,6 @@ repositories {
     maven { url = "https://jetbrains.bintray.com/intellij-third-party-dependencies" }
 }
 
-compileTestKotlin {
-    kotlinOptions.jvmTarget = "1.8"
-}
-
 dependencies {
     compile group: 'commons-io', name: 'commons-io', version: '2.6'
     compile group: 'net.lingala.zip4j', name: 'zip4j', version: '2.6.3'
@@ -54,6 +50,12 @@ intellij {
 sourceSets {
     e2e {
         kotlin.srcDir "$projectDir/src/e2e/kotlin"
+    }
+}
+
+compileE2eKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
     }
 }
 
@@ -116,4 +118,11 @@ sonarqube {
         property 'sonar.java.libraries', 'build/libs'
         property 'sonar.coverage.exclusions', 'src/test/**/*'
     }
+}
+
+runIdeForUiTests {
+    systemProperty 'robot-server.port', '8082'
+    systemProperty 'jb.consents.confirmation.enabled', 'false'
+    systemProperty 'jb.privacy.policy.text', '<!--999.999-->'
+    systemProperty 'ide.show.tips.on.startup.default.value', 'false'
 }
