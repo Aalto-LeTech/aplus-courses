@@ -45,11 +45,11 @@ class WelcomeFrameFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteCompo
 @DefaultXpath("IdeFrameImpl type", "//div[@class='IdeFrameImpl']")
 class IdeFrameFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent)
     : CommonContainerFixture(remoteRobot, remoteComponent) {
-  fun menu() = find(MenuItemFixture::class.java)
+  fun menu() = find(MenuItemFixture::class.java,
+    LocatorBuilder().withClass(JMenuBar::class.java).build())
 }
 
 @FixtureName("Menu Item")
-@DefaultXpath("MenuFrameHeader type", "//div[@class='MenuFrameHeader']")
 class MenuItemFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent)
     : ContainerFixture(remoteRobot, remoteComponent) {
   fun item(text: String) = find(MenuItemFixture::class.java,
