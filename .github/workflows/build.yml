@@ -48,9 +48,7 @@ jobs:
 #        run: ./gradlew build
       - name: Run integration tests
         run: ./gradlew runIdeForUiTests &
-      - name: Sleep for 180 seconds
-        uses: jakejarvis/wait-action@master
-        with:
-          time: '180s'
       - name: Run the UI tests
-        run: ./gradlew uiTest --info
+        run: |
+            sleep (180)
+            ./gradlew uiTest --info
