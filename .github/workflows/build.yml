@@ -4,7 +4,7 @@ on: [push]
 #on: [push, pull_request]
 
 jobs:
-#  build-linux:
+#  build:
 #    runs-on: ubuntu-latest
 #
 #    steps:
@@ -13,13 +13,23 @@ jobs:
 #        uses: actions/setup-java@v1
 #        with:
 #          java-version: 11
-##      - name: Setup A+ LMS locally
-##        run: chmod +x start_local_a+_env.sh && ./start_local_a+_env.sh
-##      - name: Build & Analyze
-##        env:
-##          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-##          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-##        run: ./gradlew build sonarqube
+#      - name: Setup A+ LMS locally
+#        run: chmod +x start_local_a+_env.sh && ./start_local_a+_env.sh
+#      - name: Build & Analyze
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+#        run: ./gradlew build sonarqube
+#
+#  build-ui-linux:
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - uses: actions/checkout@v2
+#      - name: Setup Java
+#        uses: actions/setup-java@v1
+#        with:
+#          java-version: 11
 #      - name: Install xvfb
 #        run: /usr/bin/sudo apt-get install xvfb
 #      - name: Setup UI testing env
@@ -32,9 +42,25 @@ jobs:
 #        run: |
 #            netstat -tulpn | grep LISTEN
 #            ./gradlew uiTest --info
+#
+#  build-ui-mac-os:
+#    runs-on: macos-latest
+#
+#    steps:
+#      - uses: actions/checkout@v2
+#      - name: Setup Java
+#        uses: actions/setup-java@v1
+#        with:
+#          java-version: 11
+#      - name: Setup UI testing env
+#        run: ./gradlew runIdeForUiTests &
+#      - name: Run the UI tests
+#        run: |
+#            sleep 180
+#            ./gradlew uiTest --info
 
-  build-mac-os:
-    runs-on: macos-latest
+  build-windows:
+    runs-on: windows-latest
 
     steps:
       - uses: actions/checkout@v2
@@ -42,13 +68,9 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-#      - name: Build with Gradle
-#        run: ./gradlew build
-      - name: Run integration tests
-        run: ./gradlew runIdeForUiTests &
+      - name: Setup UI testing env
+        run: START /B ./gradlew runIdeForUiTests
       - name: Run the UI tests
         run: |
-            sleep 180
-            ./gradlew uiTest --info
+          ping -n 180 127.0.0.1
+          ./gradlew uiTest --info
