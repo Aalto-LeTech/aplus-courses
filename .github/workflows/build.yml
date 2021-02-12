@@ -72,5 +72,5 @@ jobs:
         run: ./gradlew runIdeForUiTests &
       - name: Run the UI tests
         run: |
-          ping -n 180 127.0.0.1
+          Start-Sleep -s 180
           ./gradlew uiTest --info
