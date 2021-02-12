@@ -27,7 +27,7 @@ jobs:
       - name: Sleep for 90 seconds
         uses: jakejarvis/wait-action@master
         with:
-          time: '180s'
+          time: '90s'
       - name: Run the UI tests
         run: |
             netstat -tulpn | grep LISTEN
