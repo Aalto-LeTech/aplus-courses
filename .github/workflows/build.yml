@@ -54,10 +54,10 @@ jobs:
           java-version: 11
       - name: Setup UI testing env
         run: ./gradlew runIdeForUiTests &
+      - name: Sleep for 240 seconds
+        run: sleep 240
       - name: Run the UI tests
-        run: |
-            sleep 180
-            ./gradlew uiTest --info
+        run: ./gradlew uiTest --info
 
 #  build-windows:
 #    runs-on: windows-latest
