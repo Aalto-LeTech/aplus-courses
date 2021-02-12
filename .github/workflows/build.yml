@@ -1,6 +1,7 @@
 name: Build
 
-on: [push, pull_request]
+on: [push]
+#on: [push, pull_request]
 
 jobs:
 #  build-linux:
@@ -22,8 +23,7 @@ jobs:
 #      - name: Install xvfb
 #        run: /usr/bin/sudo apt-get install xvfb
 #      - name: Setup UI testing env
-#        run: |
-#            xvfb-run --auto-servernum ./gradlew runIdeForUiTests &
+#        run: xvfb-run --auto-servernum ./gradlew runIdeForUiTests &
 #      - name: Sleep for 180 seconds
 #        uses: jakejarvis/wait-action@master
 #        with:
@@ -47,8 +47,7 @@ jobs:
 #      - name: Build with Gradle
 #        run: ./gradlew build
       - name: Run integration tests
-        run: |
-          ./gradlew runIdeForUiTests &
+        run: ./gradlew runIdeForUiTests &
       - name: Sleep for 180 seconds
         uses: jakejarvis/wait-action@master
         with:
