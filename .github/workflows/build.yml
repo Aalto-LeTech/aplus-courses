@@ -25,14 +25,28 @@ jobs:
 #        run: /usr/bin/sudo apt-get install xvfb
       - name: Setup UI testing env
         run: |
-            export DISPLAY=:99.0
-            Xvfb -ac :99 -screen 0 1920x1080x16 &
-            ./gradlew runIdeForUiTests &
-      - name: Sleep for 90 seconds
-        uses: jakejarvis/wait-action@master
-        with:
-          time: '90s'
-      - name: Run the UI tests
-        run: |
-            netstat -tulpn | grep LISTEN
-            ./gradlew uiTest --scan
+            dir=~/.java/.userPrefs/jetbrains/_\!\(\!\!cg\"p\!\(\}\!\}@\"j\!\(k\!\|w\"w\!\'8\!b\!\"p\!\':\!e@==
+            mkdir -p "$dir"
+            cp .github/workflows/prefs.xml $dir
+            mkdir -p build/idea-sandbox/system/consentOptions
+            cp .github/workflows/accepted build/idea-sandbox/system/consentOptions
+            xvfb-run --auto-servernum ./gradlew runIdeForUiTests &
+            set +e
+            curl -s http://localhost:8082 >/dev/null
+            started=$?
+            echo "started='$started'"
+            while [ $started -ne 0 ]; do
+            curl -s http://localhost:8082 >/dev/null
+            started=$?
+            sleep 1s
+            done
+            date
+            ./gradlew uiTest
+#      - name: Sleep for 90 seconds
+#        uses: jakejarvis/wait-action@master
+#        with:
+#          time: '90s'
+#      - name: Run the UI tests
+#        run: |
+#            netstat -tulpn | grep LISTEN
+#            ./gradlew uiTest --scan

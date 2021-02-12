@@ -84,10 +84,11 @@ scalastyle {
 }
 
 task uiTest(type: Test) {
+    systemProperty("jb.consents.confirmation.enabled", "false")
     testClassesDirs = sourceSets.e2e.output.classesDirs
     classpath = sourceSets.e2e.runtimeClasspath
-    systemProperty("jb.consents.confirmation.enabled", "false")
 }
+
 
 task gatherBuildInfo(dependsOn: processResources) {
     doLast {
@@ -118,8 +119,8 @@ sonarqube {
         property 'sonar.coverage.exclusions', 'src/test/**/*'
     }
 }
-//
-//runIdeForUiTests {
-//    systemProperty 'robot-server.port', '6942'
-////    systemProperty 'robot-server.port', '8580'
-//}
+
+runIdeForUiTests {
+    systemProperty 'robot-server.port', '8082'
+//    systemProperty 'robot-server.port', '8580'
+}
