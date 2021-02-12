@@ -4,23 +4,23 @@ on: [push]
 #on: [push, pull_request]
 
 jobs:
-#  build:
-#    runs-on: ubuntu-latest
-#
-#    steps:
-#      - uses: actions/checkout@v2
-#      - name: Setup Java
-#        uses: actions/setup-java@v1
-#        with:
-#          java-version: 11
-#      - name: Setup A+ LMS locally
-#        run: chmod +x start_local_a+_env.sh && ./start_local_a+_env.sh
-#      - name: Build & Analyze
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-#        run: ./gradlew build sonarqube
-#
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - name: Setup A+ LMS locally
+        run: chmod +x start_local_a+_env.sh && ./start_local_a+_env.sh
+      - name: Build & Analyze
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: ./gradlew build sonarqube
+
   build-ui-linux:
     runs-on: ubuntu-latest
 
