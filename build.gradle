@@ -84,7 +84,6 @@ scalastyle {
 }
 
 task uiTest(type: Test) {
-    systemProperty("jb.consents.confirmation.enabled", "false")
     testClassesDirs = sourceSets.e2e.output.classesDirs
     classpath = sourceSets.e2e.runtimeClasspath
 }
@@ -122,5 +121,6 @@ sonarqube {
 
 runIdeForUiTests {
     systemProperty 'robot-server.port', '8082'
+    systemProperty 'jb.consents.confirmation.enabled', 'false'
 //    systemProperty 'robot-server.port', '8580'
 }
