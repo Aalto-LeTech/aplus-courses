@@ -69,7 +69,7 @@ jobs:
         with:
           java-version: 11
       - name: Setup UI testing env
-        run: START /B ./gradlew runIdeForUiTests
+        run: ./gradlew runIdeForUiTests &
       - name: Run the UI tests
         run: |
           ping -n 180 127.0.0.1
