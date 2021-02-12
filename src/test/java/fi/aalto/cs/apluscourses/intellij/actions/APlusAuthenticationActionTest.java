@@ -9,6 +9,7 @@ import static org.mockito.Mockito.mock;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
+import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import fi.aalto.cs.apluscourses.dal.PasswordStorage;
 import fi.aalto.cs.apluscourses.dal.TokenAuthentication;
 import fi.aalto.cs.apluscourses.intellij.DialogHelper;
@@ -26,7 +27,7 @@ import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import org.junit.Before;
 import org.junit.Test;
 
-public class APlusAuthenticationActionTest {
+public class APlusAuthenticationActionTest extends BasePlatformTestCase {
 
   Project project;
   AnActionEvent actionEvent;
@@ -46,7 +47,8 @@ public class APlusAuthenticationActionTest {
    * Called before each test.
    */
   @Before
-  public void setUp() {
+  public void setUp() throws Exception {
+    super.setUp();
     project = mock(Project.class);
     actionEvent = mock(AnActionEvent.class);
     doReturn(project).when(actionEvent).getProject();
