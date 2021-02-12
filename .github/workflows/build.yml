@@ -21,8 +21,8 @@ jobs:
 #          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 #          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 #        run: ./gradlew build sonarqube
-#      - name: Install xvfb
-#        run: /usr/bin/sudo apt-get install xvfb
+      - name: Install xvfb
+        run: /usr/bin/sudo apt-get install xvfb
       - name: Setup UI testing env
         run: |
             dir=~/.java/.userPrefs/jetbrains/_\!\(\!\!cg\"p\!\(\}\!\}@\"j\!\(k\!\|w\"w\!\'8\!b\!\"p\!\':\!e@==
