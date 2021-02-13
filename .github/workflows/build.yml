@@ -76,6 +76,4 @@ jobs:
         run: |
           Start-Sleep -s 180
           netstat -abno
-#          Test-NetConnection 127.0.0.1 -p 50000
-#          Test-NetConnection 0.0.0.0 -p 50000
           ./gradlew uiTest --info
