@@ -71,7 +71,7 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Setup UI testing env
-        run: gradle runIdeForUiTests --info
+        run: gradle runIdeForUiTests
 #      - name: Run the UI tests
 #        run: |
 #          netstat -an | find “LISTENING”
