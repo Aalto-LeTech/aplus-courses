@@ -16,7 +16,8 @@ object StepLoggerInitializer {
 }
 
 fun uiTest(test: RemoteRobot.() -> Unit) {
-  RemoteRobot("http://localhost:8580").test()
+  RemoteRobot("http://0.0.0.0:8580").test()
+//  RemoteRobot("http://localhost:8580").test()
 }
 
 fun wait(duration: Duration) = Thread.sleep(duration.toMillis())
