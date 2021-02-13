@@ -72,6 +72,8 @@ jobs:
         run: chmod +x gradlew
       - name: Setup UI testing env
         run: ./gradlew runIdeForUiTests
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
 #      - name: Run the UI tests
 #        run: |
 #          netstat -an | find “LISTENING”
