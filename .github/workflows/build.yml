@@ -4,63 +4,47 @@ on: [push]
 #on: [push, pull_request]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-      - name: Setup Java
-        uses: actions/setup-java@v1
-        with:
-          java-version: 11
-      - name: Setup A+ LMS locally
-        run: chmod +x start_local_a+_env.sh && ./start_local_a+_env.sh
-      - name: Build & Analyze
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew build sonarqube
-
-  build-ui-linux:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-      - name: Setup Java
-        uses: actions/setup-java@v1
-        with:
-          java-version: 11
-      - name: Install xvfb
-        run: /usr/bin/sudo apt-get install xvfb
-      - name: Setup UI testing env
-        run: xvfb-run --auto-servernum ./gradlew runIdeForUiTests &
-      - name: Sleep for 180 seconds
-        uses: jakejarvis/wait-action@master
-        with:
-          time: '180s'
-      - name: Run the UI tests
-        run: |
-            netstat -tulpn | grep LISTEN
-            ./gradlew uiTest --info
-
-  build-ui-mac-os:
-    runs-on: macos-latest
-
-    steps:
-      - uses: actions/checkout@v2
-      - name: Setup Java
-        uses: actions/setup-java@v1
-        with:
-          java-version: 11
-      - name: Setup UI testing env
-        run: ./gradlew runIdeForUiTests &
-      - name: Sleep for 240 seconds
-        run: sleep 240
-      - name: Run the UI tests
-        run: ./gradlew uiTest --info
-
-#  build-windows:
-#    runs-on: windows-latest
+#  build:
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - uses: actions/checkout@v2
+#      - name: Setup Java
+#        uses: actions/setup-java@v1
+#        with:
+#          java-version: 11
+#      - name: Setup A+ LMS locally
+#        run: chmod +x start_local_a+_env.sh && ./start_local_a+_env.sh
+#      - name: Build & Analyze
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+#        run: ./gradlew build sonarqube
+#
+#  build-ui-linux:
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - uses: actions/checkout@v2
+#      - name: Setup Java
+#        uses: actions/setup-java@v1
+#        with:
+#          java-version: 11
+#      - name: Install xvfb
+#        run: /usr/bin/sudo apt-get install xvfb
+#      - name: Setup UI testing env
+#        run: xvfb-run --auto-servernum ./gradlew runIdeForUiTests &
+#      - name: Sleep for 180 seconds
+#        uses: jakejarvis/wait-action@master
+#        with:
+#          time: '180s'
+#      - name: Run the UI tests
+#        run: |
+#            netstat -tulpn | grep LISTEN
+#            ./gradlew uiTest --info
+#
+#  build-ui-mac-os:
+#    runs-on: macos-latest
 #
 #    steps:
 #      - uses: actions/checkout@v2
@@ -70,6 +54,22 @@ jobs:
 #          java-version: 11
 #      - name: Setup UI testing env
 #        run: ./gradlew runIdeForUiTests &
+#      - name: Sleep for 240 seconds
+#        run: sleep 240
+#      - name: Run the UI tests
+#        run: ./gradlew uiTest --info
+
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - name: Setup UI testing env
+        run: ./gradlew runIdeForUiTests --info
 #      - name: Run the UI tests
 #        run: |
 #          netstat -an | find “LISTENING”
