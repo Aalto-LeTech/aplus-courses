@@ -75,7 +75,7 @@ jobs:
       - name: Run the UI tests
         run: |
           Start-Sleep -s 180
-          netstat -a
-          Test-NetConnection 127.0.0.1 -p 50000
-          Test-NetConnection 0.0.0.0 -p 50000
+          netstat -abno
+#          Test-NetConnection 127.0.0.1 -p 50000
+#          Test-NetConnection 0.0.0.0 -p 50000
           ./gradlew uiTest --info
