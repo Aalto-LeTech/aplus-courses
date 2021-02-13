@@ -75,5 +75,5 @@ jobs:
       - name: Run the UI tests
         run: |
           Start-Sleep -s 180
-          netstat -abno
+          netstat -abo
           ./gradlew uiTest --info
