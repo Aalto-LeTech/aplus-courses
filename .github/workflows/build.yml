@@ -74,7 +74,7 @@ jobs:
 #        uses: mxschmitt/action-tmate@v3
       - name: Run the UI tests
         run: |
+          Start-Sleep -s 180
           netstat -a
           Test-NetConnection 127.0.0.1 -p 8580
-          Start-Sleep -s 180
           ./gradlew uiTest --info
