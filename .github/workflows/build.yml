@@ -69,7 +69,7 @@ jobs:
         with:
           java-version: 11
       - name: Setup UI testing env
-        run: ./gradlew runIdeForUiTests
+        run: gradle runIdeForUiTests --info
 #      - name: Run the UI tests
 #        run: |
 #          netstat -an | find “LISTENING”
