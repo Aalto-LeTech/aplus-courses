@@ -71,12 +71,12 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Setup UI testing env
-        run: ./gradlew runIdeForUiTests
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-#      - name: Run the UI tests
-#        run: |
-#          netstat -an | find “LISTENING”
-#          Test-NetConnection 127.0.0.1 -p 8082
-#          Start-Sleep -s 180
-#          ./gradlew uiTest --info
+        run: ./gradlew runIdeForUiTests &
+#      - name: Setup tmate session
+#        uses: mxschmitt/action-tmate@v3
+      - name: Run the UI tests
+        run: |
+          netstat -a
+          Test-NetConnection 127.0.0.1 -p 8580
+          Start-Sleep -s 180
+          ./gradlew uiTest --info
