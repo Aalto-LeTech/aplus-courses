@@ -10,7 +10,7 @@ public class SubmissionResultTest {
 
   @Test
   public void testSubmissionResult() {
-    Exercise exercise = new Exercise(444L, "someEx", "http://example.com/", 15, 20, 10, true, 0.0);
+    Exercise exercise = new Exercise(444L, "someEx", "http://example.com/", 15, 20, 10, true, null);
     SubmissionResult submissionResult
         = new SubmissionResult(123L, 13, SubmissionResult.Status.GRADED, exercise, 0.5);
     assertEquals("The ID is the same as the one given to the constructor",
@@ -28,7 +28,7 @@ public class SubmissionResultTest {
 
   @Test
   public void testFromJsonObject() {
-    Exercise exercise = new Exercise(555L, "myEx", "https://example.org/", 15, 20, 10, true, 0.0);
+    Exercise exercise = new Exercise(555L, "myEx", "https://example.org/", 15, 20, 10, true, null);
     JSONObject jsonObject = new JSONObject()
         .put("id", 234)
         .put("grade", 30)

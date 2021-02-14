@@ -59,7 +59,7 @@ public class OpenItemActionTest {
 
   @Test
   public void testOpenItemActionSubmission() throws Exception {
-    exercise = new Exercise(223, "TestEx", "http://example.com", 0, 1, 10, true, 0.0);
+    exercise = new Exercise(223, "TestEx", "http://example.com", 0, 1, 10, true, null);
     submissionResult
         = new SubmissionResult(1, 0, SubmissionResult.Status.GRADED, exercise, 0.0);
     setUp(new SubmissionResultViewModel(submissionResult, 1));
@@ -78,7 +78,7 @@ public class OpenItemActionTest {
 
   @Test
   public void testOpenItemActionExercise() throws Exception {
-    exercise = new Exercise(223, "TestEx", "http://example.com", 0, 1, 10, true, 0.0);
+    exercise = new Exercise(223, "TestEx", "http://example.com", 0, 1, 10, true, null);
     setUp(new ExerciseViewModel(exercise));
     OpenItemAction action = new OpenItemAction(
         mainViewModelProvider,
@@ -113,7 +113,7 @@ public class OpenItemActionTest {
 
   @Test
   public void testErrorNotification() throws Exception {
-    exercise = new Exercise(223, "TestEx", "http://example.com", 0, 1, 10, true, 0.0);
+    exercise = new Exercise(223, "TestEx", "http://example.com", 0, 1, 10, true, null);
     submissionResult
         = new SubmissionResult(1, 0, SubmissionResult.Status.GRADED, exercise, 0.0);
     setUp(new SubmissionResultViewModel(submissionResult, 1));

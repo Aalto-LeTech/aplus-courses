@@ -68,7 +68,7 @@ public class SubmissionDialogTest extends LightIdeaTestCase {
                                               int numberOfSubmissions,
                                               int maxNumberOfSubmissions) {
     return new SubmissionViewModel(
-        new Exercise(1, exerciseName, "http://www.fi", 0, 0, maxNumberOfSubmissions, true, 0.0),
+        new Exercise(1, exerciseName, "http://www.fi", 0, 0, maxNumberOfSubmissions, true, null),
         new SubmissionInfo(maxNumberOfSubmissions,
                 Collections.singletonMap("en", submittableFiles)),
         new SubmissionHistory(numberOfSubmissions),

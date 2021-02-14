@@ -26,7 +26,7 @@ public class Points {
   private final Map<Long, String> bestSubmissions;
 
   @NotNull
-  private final Map<Long, Double> exercisePenalties;
+  private final Map<Long, SubmissionResult> exerciseBestSubmissions;
 
   // TODO: remove
   @NotNull
@@ -49,7 +49,7 @@ public class Points {
     this.exercisePoints = exercisePoints;
     this.submissionPoints = submissionPoints;
     this.bestSubmissions = bestSubmissions;
-    this.exercisePenalties = new HashMap<>();
+    this.exerciseBestSubmissions = new HashMap<>();
     this.submittableExercises = Collections.emptySet();
   }
 
@@ -74,12 +74,12 @@ public class Points {
   }
 
   @NotNull
-  public Map<Long, Double> getExercisePenalties() {
-    return Collections.unmodifiableMap(exercisePenalties);
+  public Map<Long, SubmissionResult> getExerciseBestSubmissions() {
+    return Collections.unmodifiableMap(exerciseBestSubmissions);
   }
 
-  public void putExercisePenalty(long id, double penalty) {
-    exercisePenalties.put(id, penalty);
+  public void putExerciseBestSubmission(long id, SubmissionResult submissionResult) {
+    exerciseBestSubmissions.put(id, submissionResult);
   }
 
   /**

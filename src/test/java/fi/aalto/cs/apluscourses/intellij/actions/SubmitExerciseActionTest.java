@@ -123,7 +123,7 @@ public class SubmitExerciseActionTest extends BasePlatformTestCase {
     super.setUp();
     exerciseId = 12;
     exercise = new Exercise(exerciseId, "Test exercise", "http://localhost:10000", 0, 0, 0, true,
-        0.0);
+        null);
     group = new Group(124, Collections.singletonList("Only you"));
     groups = Collections.singletonList(group);
     exerciseGroup = new ExerciseGroup(0, "Test EG", "", true, Collections.singletonList(exercise));

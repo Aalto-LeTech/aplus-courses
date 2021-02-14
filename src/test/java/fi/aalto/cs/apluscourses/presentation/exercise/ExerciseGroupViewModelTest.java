@@ -29,15 +29,15 @@ public class ExerciseGroupViewModelTest {
   @Test
   public void testSortsExercises1() {
     Exercise first = new Exercise(424, "Assignment 3",
-        "http://localhost:1000/w10/ch02/w10_ch02_03/", 0, 0,0, true, 0.0);
+        "http://localhost:1000/w10/ch02/w10_ch02_03/", 0, 0,0, true, null);
     Exercise second = new Exercise(325, "Feedback",
-        "http://localhost:1000/w10/ch02/w10_ch02_feedback/", 0, 0, 0, true, 0.0);
+        "http://localhost:1000/w10/ch02/w10_ch02_feedback/", 0, 0, 0, true, null);
     Exercise third = new Exercise(195, "Assignment 9",
-        "http://localhost:1000/w10/ch03/w10_ch03_9/", 0, 0, 0, false, 0.0);
+        "http://localhost:1000/w10/ch03/w10_ch03_9/", 0, 0, 0, false, null);
     Exercise fourth = new Exercise(282, "Assignment 10",
-        "http://localhost:1000/w10/ch04/w10_ch03_10/", 0, 0, 0, false, 0.0);
+        "http://localhost:1000/w10/ch04/w10_ch03_10/", 0, 0, 0, false, null);
     Exercise fifth = new Exercise(908, "Assignment 1",
-        "http://localhost:1000/w12/ch01/w12_ch01_1/", 0, 0, 0, true, 0.0);
+        "http://localhost:1000/w12/ch01/w12_ch01_1/", 0, 0, 0, true, null);
 
 
     ExerciseGroup group =
@@ -59,11 +59,11 @@ public class ExerciseGroupViewModelTest {
   @Test
   public void testSortsExercises2() {
     Exercise first = new Exercise(424, "Assignment 3",
-        "http://localhost:1000/studio_2/k2021dev/k15A/osa01/k15A_osa01_1/", 0, 0,0, false, 0.0);
+        "http://localhost:1000/studio_2/k2021dev/k15A/osa01/k15A_osa01_1/", 0, 0,0, false, null);
     Exercise second = new Exercise(325, "Feedback",
-        "http://localhost:1000/studio_2/k2021dev/k15A/osa01/k15A_osa01_10/", 0, 0, 0, true, 0.0);
+        "http://localhost:1000/studio_2/k2021dev/k15A/osa01/k15A_osa01_10/", 0, 0, 0, true, null);
     Exercise third = new Exercise(195, "Assignment 9",
-        "http://localhost:1000/studio_2/k2021dev/k15A/osa01/k15B_osa01_1/", 0, 0, 0, true, 0.0);
+        "http://localhost:1000/studio_2/k2021dev/k15A/osa01/k15B_osa01_1/", 0, 0, 0, true, null);
 
 
     ExerciseGroup group =

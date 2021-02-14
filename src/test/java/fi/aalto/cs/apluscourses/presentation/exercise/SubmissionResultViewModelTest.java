@@ -11,7 +11,7 @@ public class SubmissionResultViewModelTest {
 
   @Test
   public void testSubmissionResultViewModel() {
-    Exercise exercise = new Exercise(0, "", "", 15, 25, 10, true, 0.0);
+    Exercise exercise = new Exercise(0, "", "", 15, 25, 10, true, null);
     SubmissionResult submissionResult
         = new SubmissionResult(123L, 15, SubmissionResult.Status.UNKNOWN, exercise, 0.0);
     SubmissionResultViewModel viewModel = new SubmissionResultViewModel(submissionResult, 34);

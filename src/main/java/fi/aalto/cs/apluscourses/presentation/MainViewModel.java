@@ -94,7 +94,7 @@ public class MainViewModel {
       try {
         SubmissionResult submissionResult =
             dataSource.getSubmissionResult(submissionUrl, null, auth);
-        points.putExercisePenalty(id, submissionResult.getLatePenalty());
+        points.putExerciseBestSubmission(id, submissionResult);
       } catch (IOException e) {
         logger.error("Failed to fetch submissions", e);
       }

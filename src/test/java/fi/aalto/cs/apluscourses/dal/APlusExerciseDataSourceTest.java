@@ -75,7 +75,7 @@ public class APlusExerciseDataSourceTest {
     doReturn(response).when(client).fetch("https://example.com/exercises/55/", authentication);
     doReturn(submissionInfo).when(parser).parseSubmissionInfo(response);
 
-    Exercise exercise = new Exercise(55, "myex", "http://localhost:4321", 0, 0, 0, true, 0.0);
+    Exercise exercise = new Exercise(55, "myex", "http://localhost:4321", 0, 0, 0, true, null);
 
     assertSame(submissionInfo, exerciseDataSource.getSubmissionInfo(exercise, authentication));
   }
@@ -89,7 +89,7 @@ public class APlusExerciseDataSourceTest {
         .fetch("https://example.com/exercises/43/submissions/me/", authentication);
     doReturn(submissionHistory).when(parser).parseSubmissionHistory(response);
 
-    Exercise exercise = new Exercise(43, "someex", "https://example.org", 0, 0, 0, true, 0.0);
+    Exercise exercise = new Exercise(43, "someex", "https://example.org", 0, 0, 0, true, null);
 
     assertSame(submissionHistory,
         exerciseDataSource.getSubmissionHistory(exercise, authentication));
@@ -166,7 +166,7 @@ public class APlusExerciseDataSourceTest {
     SubmissionInfo submissionInfo = new SubmissionInfo(
         1, Collections.singletonMap("fi", Arrays.asList(subFile0, subFile1)));
 
-    Exercise exercise = new Exercise(71, "newex", "https://example.com", 0, 0, 0, true, 0.0);
+    Exercise exercise = new Exercise(71, "newex", "https://example.com", 0, 0, 0, true, null);
 
     Group group = new Group(435, new ArrayList<>());
 
