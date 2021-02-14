@@ -69,7 +69,7 @@ jobs:
       - name: Sleep for 240 seconds
         run: sleep 240
       - name: Run the UI tests
-        run: ./gradlew uiTest --info
+        run: ./gradlew uiTest
 
   build-for-ui-test-windows:
     runs-on: windows-latest
