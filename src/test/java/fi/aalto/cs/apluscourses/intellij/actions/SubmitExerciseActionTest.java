@@ -23,6 +23,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtilRt;
+import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import fi.aalto.cs.apluscourses.intellij.DialogHelper;
 import fi.aalto.cs.apluscourses.intellij.actions.SubmitExerciseAction.Tagger;
 import fi.aalto.cs.apluscourses.intellij.model.ProjectModuleSource;
@@ -69,7 +70,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
-public class SubmitExerciseActionTest {
+public class SubmitExerciseActionTest extends BasePlatformTestCase {
 
   Course course;
   long exerciseId;
@@ -118,7 +119,8 @@ public class SubmitExerciseActionTest {
    */
   @SuppressWarnings("unchecked")
   @Before
-  public void setUp() throws IOException, FileDoesNotExistException {
+  public void setUp() throws Exception {
+    super.setUp();
     exerciseId = 12;
     exercise = new Exercise(exerciseId, "Test exercise", "http://localhost:10000", 0, 0, 0, true,
         0.0);
