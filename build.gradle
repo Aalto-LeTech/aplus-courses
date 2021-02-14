@@ -122,7 +122,7 @@ sonarqube {
 }
 
 runIdeForUiTests {
-//    systemProperty 'robot-server.port', '50000'
+    systemProperty 'robot-server.port', '8082'
     systemProperty 'jb.consents.confirmation.enabled', 'false'
     systemProperty 'jb.privacy.policy.text', '<!--999.999-->'
     systemProperty 'ide.show.tips.on.startup.default.value', 'false'
