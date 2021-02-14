@@ -33,7 +33,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: ./gradlew build sonarqube
 
-  build-ui-linux:
+  build-for-ui-test-linux:
     runs-on: ubuntu-latest
 
     steps:
@@ -55,7 +55,7 @@ jobs:
             netstat -tulpn | grep LISTEN
             ./gradlew uiTest --info
 
-  build-ui-mac-os:
+  build-for-ui-test-mac-os:
     runs-on: macos-latest
 
     steps:
@@ -71,7 +71,7 @@ jobs:
       - name: Run the UI tests
         run: ./gradlew uiTest --info
 
-  build-windows:
+  build-for-ui-test-windows:
     runs-on: windows-latest
 
     steps:
