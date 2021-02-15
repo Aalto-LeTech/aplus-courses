@@ -18,6 +18,7 @@ import fi.aalto.cs.apluscourses.presentation.AuthenticationViewModel;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.BaseViewModel;
+import fi.aalto.cs.apluscourses.ui.LoginDialog;
 import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 
@@ -69,32 +70,10 @@ public class APlusAuthenticationAction extends DumbAwareAction {
   public void actionPerformed(@NotNull AnActionEvent e) {
     Project project = e.getProject();
     MainViewModel mainViewModel = mainViewModelProvider.getMainViewModel(project);
-    Course course = Optional.ofNullable(mainViewModel.courseViewModel.get())
-        .map(BaseViewModel::getModel)
-        .orElse(null);
 
-    if (course == null) {
-      return;
-    }
-
-    String apiUrl = course.getApiUrl();
-    String authenticationHtmlUrl = course.getHtmlUrl() + "accounts/accounts/";
-
-    PasswordStorage passwordStorage = passwordStorageFactory.create(apiUrl);
-    AuthenticationViewModel authenticationViewModel = new AuthenticationViewModel(
-        APlusTokenAuthentication.getFactoryFor(passwordStorage),
-        authenticationHtmlUrl
-    );
-
-    if (!dialogs.create(authenticationViewModel, project).showAndGet()) {
-      return;
-    }
-
-    Authentication authentication = authenticationViewModel.build();
-    if (!authentication.persist()) {
-      notifier.notify(new ApiTokenNotSetNotification(), project);
-    }
-    mainViewModel.setAuthentication(authentication);
+    LoginDialog dialog = new LoginDialog(mainViewModel);
+    dialog.pack();
+    dialog.setVisible(true);
   }
 
   @NotNull
