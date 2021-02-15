@@ -42,8 +42,8 @@ dependencies {
 
 intellij {
     //  this is the version of the IntelliJ IDEA API (SDK) used to build the plugin
-    version '2020.3'
-    plugins = ['java', 'org.intellij.scala:2020.3.16']
+    version '2020.3.2'
+    plugins = ['java', 'org.intellij.scala:2020.3.19']
     downloadRobotServerPlugin.version = remoteRobotVersion
 }
 
@@ -90,6 +90,7 @@ task uiTest(type: Test) {
     classpath = sourceSets.e2e.runtimeClasspath
 }
 
+
 task gatherBuildInfo(dependsOn: processResources) {
     doLast {
         new File("$buildDir/resources/main/build-info.properties").withWriter { writer ->
@@ -125,4 +126,6 @@ runIdeForUiTests {
     systemProperty 'jb.consents.confirmation.enabled', 'false'
     systemProperty 'jb.privacy.policy.text', '<!--999.999-->'
     systemProperty 'ide.show.tips.on.startup.default.value', 'false'
+    systemProperty 'io.netty.tryReflectionSetAccessible', 'false'
+    systemProperty "ide.mac.message.dialogs.as.sheets", "false"
 }
