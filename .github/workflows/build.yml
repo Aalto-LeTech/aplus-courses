@@ -45,7 +45,7 @@ jobs:
       - name: Setup UI testing env
         run: |
           export DISPLAY=:99.0
-          xvfb -ac :99 -screen 0 1920x1080x16 &
+          Xvfb -ac :99 -screen 0 1920x1080x16 &
           ./gradlew runIdeForUiTests &
       - name: Sleep for 180 seconds
         uses: jakejarvis/wait-action@master
