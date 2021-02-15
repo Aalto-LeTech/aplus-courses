@@ -35,10 +35,8 @@ fun SearchContext.heavyWeightWindow() = find(HeavyWeightWindowFixture::class.jav
 @DefaultXpath(by = "FlatWelcomeFrame type", xpath = "//div[@class='FlatWelcomeFrame']")
 class WelcomeFrameFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent)
     : CommonContainerFixture(remoteRobot, remoteComponent) {
-  fun newProjectButton() = button(LocatorBuilder()
-          .withAttr("accessiblename", "New Project")
-          .withClass(JButton::class.java)
-          .build())
+  fun newProjectButton() = button(byXpath("//div[(@class='MainButton' and @text='New Project') "
+      + "or (@accessiblename='New Project' and @class='JButton')]"))
 }
 
 @FixtureName("IDE Frame")
