@@ -46,17 +46,13 @@ jobs:
         run: |
           export DISPLAY=:99.0
           Xvfb -ac :99 -screen 0 1920x1080x16 &
-          ./gradlew runIdeForUiTests --info &
+          ./gradlew runIdeForUiTests &
       - name: Sleep for 180 seconds
         uses: jakejarvis/wait-action@master
         with:
           time: '180s'
       - name: Run the UI tests
-        run: |
-            netstat -tulpn | grep LISTEN
-            ./gradlew uiTest --info
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
+        run: ./gradlew uiTest --info
 
   build-for-ui-test-mac-os:
     runs-on: macos-latest
@@ -92,3 +88,5 @@ jobs:
             Start-Sleep -s 180
             netstat -bona
             ./gradlew uiTest --info
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
