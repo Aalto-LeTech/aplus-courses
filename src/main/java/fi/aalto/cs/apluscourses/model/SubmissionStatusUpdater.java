@@ -109,13 +109,15 @@ public class SubmissionStatusUpdater {
         try {
           submissionResult =
               dataSource.getSubmissionResult(submissionUrl, exercise, authentication);
-          if (submissionResult.getStatus() != SubmissionResult.Status.UNKNOWN) {
+          if (SubmissionResult.Status.WAITING.equals(submissionResult.getStatus())) {
+            PluginSettings.getInstance().getMainViewModel(project).setSubmittedForGrading(exercise);
+            PluginSettings.getInstance().updateMainViewModel(project);
+          } else if (submissionResult.getStatus() != SubmissionResult.Status.UNKNOWN) {
+            PluginSettings.getInstance().getMainViewModel(project).setSubmittedForGrading(null);
             notifier.notifyAndHide(
                 new FeedbackAvailableNotification(submissionResult, exercise), project);
             PluginSettings.getInstance().updateMainViewModel(project);
             return;
-          } else if (exercise.isInGrading()) {
-            exercise.setInGrading(true);
           }
         } catch (IOException e) {
           // Fail silently

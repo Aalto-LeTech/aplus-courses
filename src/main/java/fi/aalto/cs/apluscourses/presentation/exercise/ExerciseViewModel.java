@@ -62,7 +62,7 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
       return Status.FULL_POINTS;
     } else if (exercise.getUserPoints() == 0) {
       return Status.NO_POINTS;
-    }  else {
+    } else {
       return Status.PARTIAL_POINTS;
     }
   }

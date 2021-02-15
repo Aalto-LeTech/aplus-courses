@@ -4,6 +4,7 @@ import fi.aalto.cs.apluscourses.dal.PasswordStorage;
 import fi.aalto.cs.apluscourses.dal.TokenAuthentication;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.Course;
+import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.ExerciseDataSource;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
 import fi.aalto.cs.apluscourses.model.InvalidAuthenticationException;
@@ -16,9 +17,12 @@ import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -46,6 +50,8 @@ public class MainViewModel {
   private final Options exerciseFilterOptions;
 
   private AtomicBoolean hasTriedToReadAuthenticationFromStorage = new AtomicBoolean(false);
+
+  private Exercise submittedForGrading = null;
 
   /**
    * Instantiates a class representing the whole main view of the plugin.
@@ -75,6 +81,9 @@ public class MainViewModel {
       Points points = dataSource.getPoints(course, auth);
       points.setSubmittableExercises(course.getExerciseModules().keySet()); // TODO: remove
       List<ExerciseGroup> exerciseGroups = dataSource.getExerciseGroups(course, points, auth);
+      if (submittedForGrading != null) {
+        setInGrading(exerciseGroups);
+      }
       exercisesViewModel.set(new ExercisesTreeViewModel(exerciseGroups, exerciseFilterOptions));
     } catch (InvalidAuthenticationException e) {
       logger.error("Failed to fetch exercises", e);
@@ -125,4 +134,15 @@ public class MainViewModel {
     return exerciseFilterOptions;
   }
 
+  private void setInGrading(List<ExerciseGroup> exerciseGroups) {
+    Map<Long, Exercise> exercises = new LinkedHashMap<>();
+    exerciseGroups.stream().forEach(group -> exercises.putAll(group.getExercises()));
+    if (exercises.containsKey(submittedForGrading.getId())) {
+      exercises.get(submittedForGrading.getId()).setInGrading(true);
+    }
+  }
+
+  public void setSubmittedForGrading(Exercise submittedForGrading) {
+    this.submittedForGrading = submittedForGrading;
+  }
 }
