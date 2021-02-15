@@ -21,7 +21,9 @@
         <children>
           <component id="ce006" class="javax.swing.JToolBar$Separator">
             <constraints/>
-            <properties/>
+            <properties>
+              <separatorSize width="10" height="0"/>
+            </properties>
           </component>
           <component id="a54c3" class="javax.swing.JLabel">
             <constraints/>
@@ -31,7 +33,9 @@
           </component>
           <component id="2132d" class="javax.swing.JToolBar$Separator">
             <constraints/>
-            <properties/>
+            <properties>
+              <separatorSize width="10" height="0"/>
+            </properties>
           </component>
         </children>
       </grid>
