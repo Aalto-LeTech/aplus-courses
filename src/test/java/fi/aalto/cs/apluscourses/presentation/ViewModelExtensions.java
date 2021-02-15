@@ -27,11 +27,6 @@ public class ViewModelExtensions {
     }
 
     @Override
-    protected void setVisibilityByFilterResult(Optional<Boolean> result) {
-      visibility = result.orElse(!hideByDefault);
-    }
-
-    @Override
     public long getId() {
       return id;
     }

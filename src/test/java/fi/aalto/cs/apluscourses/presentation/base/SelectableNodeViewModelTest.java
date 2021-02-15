@@ -94,23 +94,4 @@ public class SelectableNodeViewModelTest {
     assertFalse(result.isPresent());
     assertTrue(node.isVisible());
   }
-
-  @Test
-  public void testSetVisibilityByFilterResult() throws InterruptedException {
-    Filter filter = mock(Filter.class, new Returns(Optional.empty()));
-
-    TestNodeViewModel nodeHide =
-        new TestNodeViewModel(4, new Object(), Collections.emptyList(), true);
-
-    Optional<Boolean> resultHide = nodeHide.applyFilter(filter);
-    assertFalse(resultHide.isPresent());
-    assertFalse(nodeHide.isVisible());
-
-    TestNodeViewModel nodeShow =
-        new TestNodeViewModel(4, new Object(), Collections.emptyList(), false);
-
-    Optional<Boolean> resultShow = nodeHide.applyFilter(filter);
-    assertFalse(resultShow.isPresent());
-    assertTrue(nodeShow.isVisible());
-  }
 }
