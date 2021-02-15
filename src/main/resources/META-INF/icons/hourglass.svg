@@ -1,1 +1,17 @@
-<svg ti:v="1" width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" xmlns:ti="urn:schemas-jetbrains-com:tisvg"><rect id="frame" width="16" height="16" fill="none"/><g fill-rule="evenodd"><path d="M3 15h11v-3H3v3z" fill="#242424"/><path d="M14 0H3v3h11V0z" fill="#242424"/><path d="M11 7.667v-.333l3-4V3H3v.334l3 4v.333l-3 4V12h11v-.333l-3-4z" fill="#242424"/><path d="M13 1H4v2h9V1z" fill="#C3C3C3"/><path d="M4 14h9v-2H4v2z" fill="#C3C3C3"/><path d="M10 7l3-4H4l3 4v1l-3 4h9l-3-4V7z" fill="#C3C3C3"/><path d="M5 13v-.667l3-4V6.667l-3-4V2h7v.667l-3 4v1.666l3 4V13H5z" fill="#292929"/><path d="M5 3h7V2H5v1z" fill="#C3C3C3"/><path d="M6.75 5L8 6.667V7h1v-.333L10.25 5h-3.5z" fill="#C3C3C3"/><path d="M5 13h7v-1H5v1z" fill="#C3C3C3"/><path d="M8 10l-1.5 2h4L9 10H8z" fill="#C3C3C3"/></g></svg>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16" height="16" ti:v="1" version="1.1" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:ti="urn:schemas-jetbrains-com:tisvg">
+ <metadata>
+  <rdf:RDF>
+   <cc:Work rdf:about="">
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:title/>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <rect id="frame" width="16" height="16" fill="none"/>
+ <g fill="#ff0090" fill-rule="evenodd">
+  <path d="m3 1v3.334l3 3.666-3 3.668v3.332h11v-3.332l-3-3.668 3-3.666v-3.334zm2 2h7v0.66797l-3 3.666v0.99805l3 4v0.66797h-7v-0.66797l3-4v-0.99805l-3-3.666z"/>
+  <path d="M8 10l-1.5 2h4L9 10H8z"/>
+ </g>
+</svg>
