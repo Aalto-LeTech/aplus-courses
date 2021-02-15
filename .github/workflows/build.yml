@@ -52,7 +52,7 @@ jobs:
         with:
           time: '180s'
       - name: Run the UI tests
-        run: gradle uiTest --info
+        run: gradle uiTest
 
   build-for-ui-test-mac-os:
     runs-on: macos-latest
