@@ -80,12 +80,12 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
       - name: Setup UI testing env
         run: |
             netstat -abo
             ./gradlew runIdeForUiTests &
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
       - name: Run the UI tests
         run: |
             Start-Sleep -s 180
