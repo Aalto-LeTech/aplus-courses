@@ -55,6 +55,8 @@ jobs:
         run: |
             netstat -tulpn | grep LISTEN
             ./gradlew uiTest --info
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
 
   build-for-ui-test-mac-os:
     runs-on: macos-latest
@@ -85,8 +87,6 @@ jobs:
         run: |
             netstat -abo
             ./gradlew runIdeForUiTests &
-#      - name: Setup tmate session
-#        uses: mxschmitt/action-tmate@v3
       - name: Run the UI tests
         run: |
             Start-Sleep -s 180
