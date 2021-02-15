@@ -14,6 +14,8 @@ class PlaceholderTest {
 
   @Test
   fun simpleTest() = uiTest {
+    println("blah")
+    fail("should fail")
     CommonSteps(this).createProject()
     with(ideFrame()) {
       assertNotNull(menu().select("A+"))
