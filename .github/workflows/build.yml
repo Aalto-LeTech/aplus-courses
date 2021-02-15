@@ -42,10 +42,12 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
+      - name: Install xvfb
+        run: /usr/bin/sudo apt-get install xvfb
       - name: Setup UI testing env
         run: |
           export DISPLAY=:99.0
-          Xvfb -ac :99 -screen 0 1920x1080x16 &
+          xvfb -ac :99 -screen 0 1920x1080x16 &
           ./gradlew runIdeForUiTests &
       - name: Sleep for 180 seconds
         uses: jakejarvis/wait-action@master
