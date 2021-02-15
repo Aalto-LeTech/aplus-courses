@@ -116,7 +116,7 @@ class ReplAction extends RunConsoleAction {
 
   def getDefaultModule(@NotNull project: Project): Option[Module] = {
     Option(PluginSettings.getInstance().getMainViewModel(project).courseViewModel.get) match {
-      case Some(courseViewModel) => {
+      case Some(courseViewModel) =>
         Option(ModuleManager.getInstance(project).findModuleByName(
           courseViewModel
             .getModel
@@ -125,7 +125,6 @@ class ReplAction extends RunConsoleAction {
             //  we, hereby, commonly agree, that the first in the list auto install component (module)
             //  is ultimately REPL's default module (as it's most likely to exist). sorry :pensive:
             .head))
-      }
       case None => None
     }
   }
