@@ -36,6 +36,7 @@ public class ExerciseTest {
         10, exercise.getMaxSubmissions());
     assertFalse("The exercise submittability depends on the constructor parameter",
         exercise.isSubmittable());
+    assertFalse("The exercise is In Grading (default value)", exercise.isInGrading());
   }
 
   @NotNull
@@ -90,6 +91,7 @@ public class ExerciseTest {
         99, exercise.getMaxPoints());
     assertEquals("The max submissions is the same as the one in the JSON object",
         5, exercise.getMaxSubmissions());
+    assertFalse("The exercise is In Grading (default value)", exercise.isInGrading());
   }
 
   @Test(expected = JSONException.class)

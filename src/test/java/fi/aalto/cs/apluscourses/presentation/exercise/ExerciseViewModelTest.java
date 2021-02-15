@@ -57,6 +57,10 @@ public class ExerciseViewModelTest {
         new ExerciseViewModel(partialPoints).getStatus());
     Assert.assertEquals(ExerciseViewModel.Status.FULL_POINTS,
         new ExerciseViewModel(fullPoints).getStatus());
+
+    training.setInGrading(true);
+    Assert.assertEquals(ExerciseViewModel.Status.IN_GRADING,
+            new ExerciseViewModel(training).getStatus());
   }
 
   @Test
