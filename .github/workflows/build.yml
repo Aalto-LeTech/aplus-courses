@@ -46,9 +46,9 @@ jobs:
           export DISPLAY=:99.0
           Xvfb -ac :99 -screen 0 1920x1080x16 &
           gradle runIdeForUiTests &
-      - name: Sleep for 180 seconds
-        uses: jakejarvis/wait-action@master
-        with:
-          time: '180s'
+#      - name: Sleep for 180 seconds
+#        uses: jakejarvis/wait-action@master
+#        with:
+#          time: '180s'
       - name: Run the UI tests
-        run: gradle uiTest
+        run: sleep 180s && gradle uiTest
