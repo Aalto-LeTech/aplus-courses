@@ -27,7 +27,7 @@ public abstract class SelectableNodeViewModel<T> extends BaseViewModel<T> implem
    * Applies a filter to this node, that is, sets the node visible if the filter applies to the node
    * or one of its descendants, or the filter is not applicable to this node.  Otherwise, sets the
    * node invisible. Some nodes with no visible children become invisible according to
-   * isHiddenIfNoVisibleChildren
+   * setVisibilityByFilterResult
    *
    * @param filter A filter.
    * @return True, if the filter applies to this node or one of its descendants, otherwise false.
