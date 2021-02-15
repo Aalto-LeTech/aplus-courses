@@ -127,4 +127,5 @@ runIdeForUiTests {
     systemProperty 'jb.privacy.policy.text', '<!--999.999-->'
     systemProperty 'ide.show.tips.on.startup.default.value', 'false'
     systemProperty 'io.netty.tryReflectionSetAccessible', 'false'
+    systemProperty "ide.mac.message.dialogs.as.sheets", "false"
 }
