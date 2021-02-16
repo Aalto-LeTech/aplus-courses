@@ -91,10 +91,8 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
    * @return True, if node is irrelevant and should be ignored, otherwise false.
    */
   private boolean isIrrelevantNode(Object value) {
-    // That irrelevant root has no user object
-    // We assume that all relevant nodes that implement DefaultMutableTreeNode
-    // do have user objects.
+    // That irrelevant root has no parent
     return value instanceof DefaultMutableTreeNode
-        && ((DefaultMutableTreeNode) value).getUserObject() == null;
+        && ((DefaultMutableTreeNode) value).getParent() == null;
   }
 }
