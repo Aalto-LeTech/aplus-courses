@@ -23,7 +23,7 @@ import org.jetbrains.plugins.scala.console.actions.RunConsoleAction
 import org.jetbrains.plugins.scala.console.configuration.ScalaConsoleRunConfiguration
 import org.jetbrains.plugins.scala.project.ProjectExt
 
-import scala.collection.convert.ImplicitConversions.`collection AsScalaIterable`
+import scala.jdk.CollectionConverters.ListHasAsScala
 
 /**
  * Custom class that adjusts Scala Plugin's own RunConsoleAction with A+ requirements.
@@ -117,12 +117,14 @@ class ReplAction extends RunConsoleAction {
   def getDefaultModule(@NotNull project: Project): Option[Module] = {
     Option(PluginSettings.getInstance().getMainViewModel(project).courseViewModel.get) match {
       case Some(courseViewModel) =>
-        Option(ModuleManager.getInstance(project).findModuleByName(courseViewModel
-          .getModel
-          .getAutoInstallComponentNames
-          //  we, hereby, commonly agree, that the first in the list auto install component (module)
-          //  is ultimately REPL's default module (as it's most likely to exist). sorry :pensive:
-          .head))
+        Option(ModuleManager.getInstance(project).findModuleByName(
+          courseViewModel
+            .getModel
+            .getAutoInstallComponentNames
+            .asScala
+            //  we, hereby, commonly agree, that the first in the list auto install component (module)
+            //  is ultimately REPL's default module (as it's most likely to exist). sorry :pensive:
+            .head))
       case None => None
     }
   }
