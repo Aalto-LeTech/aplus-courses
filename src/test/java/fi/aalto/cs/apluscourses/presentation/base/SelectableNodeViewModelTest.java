@@ -34,11 +34,11 @@ public class SelectableNodeViewModelTest {
   public void setUp() {
     model = new Object();
 
-    child0 = spy(new TestNodeViewModel(0, new Object(), Collections.emptyList(), false));
-    child1 = spy(new TestNodeViewModel(1, new Object(), Collections.emptyList(), false));
-    child2 = spy(new TestNodeViewModel(2, new Object(), Collections.emptyList(), false));
+    child0 = spy(new TestNodeViewModel(0, new Object(), Collections.emptyList()));
+    child1 = spy(new TestNodeViewModel(1, new Object(), Collections.emptyList()));
+    child2 = spy(new TestNodeViewModel(2, new Object(), Collections.emptyList()));
     children = Arrays.asList(child0, child1, child2);
-    node = new TestNodeViewModel(3, model, children, false);
+    node = new TestNodeViewModel(3, model, children);
   }
 
   @Test
