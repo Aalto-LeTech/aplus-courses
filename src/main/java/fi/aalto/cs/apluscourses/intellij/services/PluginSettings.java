@@ -18,6 +18,7 @@ import fi.aalto.cs.apluscourses.intellij.utils.IntelliJFilterOption;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModelUpdater;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseFilter;
+import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseGroupFilter;
 import fi.aalto.cs.apluscourses.presentation.filter.Option;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import java.util.Arrays;
@@ -41,7 +42,8 @@ public class PluginSettings implements MainViewModelProvider {
     A_PLUS_DEFAULT_GROUP("A+.defaultGroup"),
     A_PLUS_SHOW_NON_SUBMITTABLE("A+.showNonSubmittable"),
     A_PLUS_SHOW_COMPLETED("A+.showCompleted"),
-    A_PLUS_SHOW_OPTIONAL("A+.showOptional");
+    A_PLUS_SHOW_OPTIONAL("A+.showOptional"),
+    A_PLUS_SHOW_CLOSED("A+.showClosed");
 
     private final String name;
 
@@ -117,7 +119,11 @@ public class PluginSettings implements MainViewModelProvider {
       new IntelliJFilterOption(LocalIdeSettingsNames.A_PLUS_SHOW_OPTIONAL,
           getText("presentation.exerciseFilterOptions.Optional"),
           null,
-          new ExerciseFilter.OptionalFilter()));
+          new ExerciseFilter.OptionalFilter()),
+      new IntelliJFilterOption(LocalIdeSettingsNames.A_PLUS_SHOW_CLOSED,
+          getText("presentation.exerciseGroupFilterOptions.Closed"),
+          null,
+          new ExerciseGroupFilter.ClosedFilter()));
 
   private final ProjectManagerListener projectManagerListener = new ProjectManagerListener() {
     @Override
