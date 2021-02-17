@@ -269,6 +269,10 @@ public abstract class Course implements ComponentSource {
         .collect(Collectors.toList());
   }
 
+  /**
+   * Returns a URL containing the appropriate IDE settings for the platform that the user
+   * is currently using. If no IDE settings are available, null is returned.
+   */
   @Nullable
   public URL getAppropriateIdeSettingsUrl() {
     URL ideSettingsUrl = null;

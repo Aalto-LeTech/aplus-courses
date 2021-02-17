@@ -67,6 +67,8 @@ public class CourseProjectView extends OurDialogWrapper {
     currentSettingsText.applyTemplate(viewModel.getCourseName());
     currentSettingsText.setVisible(viewModel.shouldShowCurrentSettings());
 
+    settingsPanel.setVisible(viewModel.shouldShowSettingsSegment());
+
     init();
   }
 
