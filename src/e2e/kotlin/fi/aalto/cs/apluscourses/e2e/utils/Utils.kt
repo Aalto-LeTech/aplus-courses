@@ -4,13 +4,13 @@ import com.intellij.remoterobot.RemoteRobot
 import com.intellij.remoterobot.stepsProcessing.StepLogger
 import com.intellij.remoterobot.stepsProcessing.StepWorker
 import java.time.Duration
+import java.util.concurrent.atomic.AtomicBoolean
 
 object StepLoggerInitializer {
-  private var initialized = false
-  fun init() = synchronized(initialized) {
-    if (!initialized) {
+  private val initialized = AtomicBoolean(false)
+  fun init() {
+    if (!initialized.getAndSet(true)) {
       StepWorker.registerProcessor(StepLogger())
-      initialized = true
     }
   }
 }

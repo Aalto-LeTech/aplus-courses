@@ -1,13 +1,20 @@
 package fi.aalto.cs.apluscourses.presentation.exercise;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+
 import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
+import fi.aalto.cs.apluscourses.presentation.filter.Filter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.internal.stubbing.answers.Returns;
 
 public class ExerciseGroupViewModelTest {
 
@@ -80,6 +87,27 @@ public class ExerciseGroupViewModelTest {
 
     Assert.assertArrayEquals("The exercises are sorted correctly",
         new Long[] {424L, 325L, 195L}, ids);
+  }
+
+  @Test
+  public void testFilterVisibility() throws InterruptedException {
+    Exercise exercise = new Exercise(424, "Assignment 3",
+        "http://localhost:1000/studio_2/k2021dev/k15A/osa01/k15A_osa01_1/", 0, 0, 0, false);
+
+    ExerciseGroup group =
+        new ExerciseGroup(5, "", "", true, Collections.singletonList(exercise));
+    ExerciseGroupViewModel groupViewModel = new ExerciseGroupViewModel(group);
+
+    Filter filter = mock(Filter.class, new Returns(Optional.empty()));
+    groupViewModel.applyFilter(filter);
+    assertTrue("Week with children is visible", groupViewModel.isVisible());
+
+    ExerciseGroup emptyGroup =
+        new ExerciseGroup(6, "", "", true, Collections.emptyList());
+    ExerciseGroupViewModel emptyGroupViewModel = new ExerciseGroupViewModel(emptyGroup);
+
+    emptyGroupViewModel.applyFilter(filter);
+    assertFalse("Week with no children is not visible", emptyGroupViewModel.isVisible());
   }
 
 }
