@@ -1,10 +1,11 @@
 package fi.aalto.cs.apluscourses.utils.observable;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Map;
 import java.util.Optional;
 import java.util.WeakHashMap;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * A property that notifies its registered observers of the changes to its value.

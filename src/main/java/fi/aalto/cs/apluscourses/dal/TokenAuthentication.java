@@ -1,9 +1,10 @@
 package fi.aalto.cs.apluscourses.dal;
 
 import fi.aalto.cs.apluscourses.model.Authentication;
-import java.util.Arrays;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Arrays;
 
 public abstract class TokenAuthentication implements Authentication {
   @NotNull

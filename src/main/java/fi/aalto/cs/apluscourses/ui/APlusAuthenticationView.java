@@ -1,7 +1,5 @@
 package fi.aalto.cs.apluscourses.ui;
 
-import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
-
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.project.Project;
@@ -9,14 +7,13 @@ import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.ui.components.labels.LinkLabel;
 import fi.aalto.cs.apluscourses.presentation.AuthenticationViewModel;
-import java.util.Arrays;
-import javax.swing.Action;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.SwingConstants;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import javax.swing.*;
+import java.util.Arrays;
+
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 public class APlusAuthenticationView extends DialogWrapper implements Dialog {
 

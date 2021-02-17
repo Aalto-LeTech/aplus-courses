@@ -1,16 +1,17 @@
 package fi.aalto.cs.apluscourses.intellij.notifications;
 
-import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getAndReplaceText;
-import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
-
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.Module;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 import java.util.stream.Collectors;
-import org.jetbrains.annotations.NotNull;
+
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getAndReplaceText;
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 /**
  * A {@link Notification} wrapper to let the user know about some A+ Course modules having the new

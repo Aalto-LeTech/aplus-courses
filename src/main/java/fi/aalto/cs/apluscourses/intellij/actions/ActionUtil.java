@@ -1,15 +1,11 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
 import com.intellij.ide.DataManager;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionPlaces;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DataContext;
-import java.awt.Component;
-import java.awt.event.ActionListener;
-
+import com.intellij.openapi.actionSystem.*;
 import org.jetbrains.annotations.NotNull;
+
+import java.awt.*;
+import java.awt.event.ActionListener;
 
 public class ActionUtil {
 

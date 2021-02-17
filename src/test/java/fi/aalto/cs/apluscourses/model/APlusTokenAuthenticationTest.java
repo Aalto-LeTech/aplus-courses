@@ -1,12 +1,12 @@
 package fi.aalto.cs.apluscourses.model;
 
-import static fi.aalto.cs.apluscourses.dal.APlusTokenAuthentication.AUTHORIZATION_HEADER;
-import static org.junit.Assert.assertEquals;
-
 import fi.aalto.cs.apluscourses.dal.APlusTokenAuthentication;
 import org.apache.http.HttpRequest;
 import org.apache.http.client.methods.HttpGet;
 import org.junit.Test;
+
+import static fi.aalto.cs.apluscourses.dal.APlusTokenAuthentication.AUTHORIZATION_HEADER;
+import static org.junit.Assert.assertEquals;
 
 public class APlusTokenAuthenticationTest {
 

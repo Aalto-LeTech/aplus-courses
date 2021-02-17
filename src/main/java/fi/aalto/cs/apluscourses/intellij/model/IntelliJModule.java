@@ -11,6 +11,12 @@ import fi.aalto.cs.apluscourses.model.ComponentLoadException;
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
 import fi.aalto.cs.apluscourses.utils.DirAwareZipFile;
+import org.apache.commons.io.FileUtils;
+import org.jetbrains.annotations.CalledWithReadLock;
+import org.jetbrains.annotations.CalledWithWriteLock;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -21,11 +27,6 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import org.apache.commons.io.FileUtils;
-import org.jetbrains.annotations.CalledWithReadLock;
-import org.jetbrains.annotations.CalledWithWriteLock;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 class IntelliJModule
     extends Module

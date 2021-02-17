@@ -1,25 +1,17 @@
 package fi.aalto.cs.apluscourses.ui;
 
-import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getAndReplaceText;
-import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
-
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.labels.LinkLabel;
-
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import icons.PluginIcons;
-
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.Icon;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-
 import org.jetbrains.annotations.NotNull;
+
+import javax.swing.*;
+
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getAndReplaceText;
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 public class AboutDialog {
 

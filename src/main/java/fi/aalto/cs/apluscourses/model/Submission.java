@@ -1,8 +1,9 @@
 package fi.aalto.cs.apluscourses.model;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.nio.file.Path;
 import java.util.Map;
-import org.jetbrains.annotations.NotNull;
 
 public class Submission {
 

@@ -1,13 +1,14 @@
 package fi.aalto.cs.apluscourses.utils;
 
-import static javax.imageio.ImageIO.read;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import static javax.imageio.ImageIO.read;
 
 /**
  * A class that provides methods to read the resources.

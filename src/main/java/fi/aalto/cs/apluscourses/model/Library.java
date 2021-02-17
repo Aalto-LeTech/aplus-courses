@@ -1,8 +1,9 @@
 package fi.aalto.cs.apluscourses.model;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Collections;
 import java.util.List;
-import org.jetbrains.annotations.NotNull;
 
 public abstract class Library extends Component {
 

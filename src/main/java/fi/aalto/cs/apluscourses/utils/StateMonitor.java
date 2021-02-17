@@ -1,7 +1,8 @@
 package fi.aalto.cs.apluscourses.utils;
 
-import java.util.Arrays;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Arrays;
 
 /**
  * A synchronized implementation of incrementally changing state.  Different states are represented

@@ -1,10 +1,11 @@
 package fi.aalto.cs.apluscourses.model;
 
+import org.jetbrains.annotations.NotNull;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.jetbrains.annotations.NotNull;
-import org.json.JSONObject;
 
 public class Exercise implements Browsable {
 

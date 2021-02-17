@@ -1,8 +1,9 @@
 package fi.aalto.cs.apluscourses.utils;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.AbstractList;
 import java.util.List;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Lisp-like list implementation.

@@ -1,8 +1,9 @@
 package fi.aalto.cs.apluscourses.utils;
 
-import java.util.Properties;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Properties;
 
 /**
  * A class for exceptions related to a certain property.

@@ -1,13 +1,12 @@
 package fi.aalto.cs.apluscourses.ui.utils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-
-import java.util.stream.Stream;
-import javax.swing.tree.TreeModel;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
+
+import javax.swing.tree.TreeModel;
+import java.util.stream.Stream;
+
+import static org.junit.Assert.*;
 
 public class TreeModelBuilderTest {
 

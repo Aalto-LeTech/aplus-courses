@@ -1,9 +1,10 @@
 package fi.aalto.cs.apluscourses.presentation;
 
 import com.intellij.openapi.vfs.VirtualFile;
-import java.nio.file.Path;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.nio.file.Path;
 
 public class FileSaveViewModel {
 

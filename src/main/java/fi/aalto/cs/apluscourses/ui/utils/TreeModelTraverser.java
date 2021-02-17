@@ -1,12 +1,13 @@
 package fi.aalto.cs.apluscourses.ui.utils;
 
 import fi.aalto.cs.apluscourses.utils.Streamable;
+import org.jetbrains.annotations.NotNull;
+
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreePath;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;
-import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreePath;
-import org.jetbrains.annotations.NotNull;
 
 public class TreeModelTraverser {
   @NotNull

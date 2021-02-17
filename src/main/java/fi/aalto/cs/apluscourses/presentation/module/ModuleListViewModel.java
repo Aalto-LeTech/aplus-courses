@@ -2,8 +2,9 @@ package fi.aalto.cs.apluscourses.presentation.module;
 
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.presentation.base.BaseListViewModel;
-import java.util.List;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 public class ModuleListViewModel extends BaseListViewModel<ModuleListElementViewModel> {
 

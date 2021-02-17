@@ -1,9 +1,10 @@
 package fi.aalto.cs.apluscourses.utils;
 
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A class that creates objects using factories that are registered to it.  When {@code create()}

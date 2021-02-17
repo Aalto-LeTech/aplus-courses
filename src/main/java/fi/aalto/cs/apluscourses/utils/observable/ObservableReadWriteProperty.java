@@ -1,7 +1,8 @@
 package fi.aalto.cs.apluscourses.utils.observable;
 
-import java.util.Objects;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
 
 public class ObservableReadWriteProperty<T> extends ObservableProperty<T> {
 

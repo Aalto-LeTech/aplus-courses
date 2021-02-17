@@ -1,10 +1,10 @@
 package fi.aalto.cs.apluscourses.ui;
 
-import java.awt.Font;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.font.TextAttribute;
 import java.util.Collections;
 import java.util.Map;
-import javax.swing.JComponent;
 
 /**
  * A helper class for {@link JComponent} objects.

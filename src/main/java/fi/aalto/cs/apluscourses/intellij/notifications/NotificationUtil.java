@@ -3,11 +3,12 @@ package fi.aalto.cs.apluscourses.intellij.notifications;
 import com.intellij.notification.Notification;
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.project.Project;
-import java.util.concurrent.Executors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.Executors;
 
 public class NotificationUtil {
   private static final Logger logger = LoggerFactory.getLogger(NotificationUtil.class);

@@ -1,11 +1,11 @@
 package fi.aalto.cs.apluscourses.presentation.exercise;
 
-import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
-
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import fi.aalto.cs.apluscourses.presentation.base.Searchable;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
 import org.jetbrains.annotations.NotNull;
+
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 public class SubmissionResultViewModel extends SelectableNodeViewModel<SubmissionResult>
         implements Searchable {

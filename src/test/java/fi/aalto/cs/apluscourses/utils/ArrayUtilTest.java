@@ -1,11 +1,11 @@
 package fi.aalto.cs.apluscourses.utils;
 
+import org.junit.Test;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-
-import org.junit.Test;
 
 public class ArrayUtilTest {
 

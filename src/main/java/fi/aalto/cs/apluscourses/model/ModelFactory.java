@@ -1,9 +1,10 @@
 package fi.aalto.cs.apluscourses.model;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
-import org.jetbrains.annotations.NotNull;
 
 public interface ModelFactory {
 

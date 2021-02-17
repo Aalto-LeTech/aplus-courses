@@ -1,13 +1,6 @@
 package fi.aalto.cs.apluscourses.utils;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-
 import fi.aalto.cs.apluscourses.model.UnexpectedResponseException;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
@@ -15,6 +8,14 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
 public class CoursesClientTest {
 

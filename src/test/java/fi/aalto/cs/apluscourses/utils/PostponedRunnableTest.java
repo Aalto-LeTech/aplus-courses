@@ -1,8 +1,9 @@
 package fi.aalto.cs.apluscourses.utils;
 
-import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class PostponedRunnableTest {
   @Test

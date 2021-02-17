@@ -2,9 +2,10 @@ package fi.aalto.cs.apluscourses.presentation;
 
 import fi.aalto.cs.apluscourses.dal.TokenAuthentication;
 import fi.aalto.cs.apluscourses.model.Authentication;
-import java.util.Arrays;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Arrays;
 
 public class AuthenticationViewModel {
   @NotNull

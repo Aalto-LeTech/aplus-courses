@@ -2,7 +2,8 @@ package fi.aalto.cs.apluscourses.ui.base;
 
 import fi.aalto.cs.apluscourses.ui.utils.Bindable;
 import fi.aalto.cs.apluscourses.ui.utils.TwoWayBindable;
-import javax.swing.JCheckBox;
+
+import javax.swing.*;
 
 /**
  * A class deriving from {@link JCheckBox} that works with the {@link TwoWayBindable} class to

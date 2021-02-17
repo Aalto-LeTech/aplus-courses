@@ -3,23 +3,14 @@ package fi.aalto.cs.apluscourses.ui.base;
 import com.intellij.ui.components.JBList;
 import fi.aalto.cs.apluscourses.presentation.base.ListElementViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableListModel;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import javax.swing.AbstractAction;
-import javax.swing.DefaultListModel;
-import javax.swing.JComponent;
-import javax.swing.JPopupMenu;
-import javax.swing.KeyStroke;
-import javax.swing.ListModel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * An abstract base class that co-operates with {@link ListElementViewModel}s and provides some

@@ -1,7 +1,8 @@
 package fi.aalto.cs.apluscourses.presentation.filter;
 
-import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Optional;
 
 public interface Filter {
   /**

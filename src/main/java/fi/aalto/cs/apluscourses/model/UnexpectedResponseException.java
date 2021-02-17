@@ -1,8 +1,9 @@
 package fi.aalto.cs.apluscourses.model;
 
-import java.io.IOException;
 import org.apache.http.HttpResponse;
 import org.jetbrains.annotations.NotNull;
+
+import java.io.IOException;
 
 public class UnexpectedResponseException extends IOException {
   @NotNull

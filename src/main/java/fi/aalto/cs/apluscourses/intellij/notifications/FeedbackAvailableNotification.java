@@ -1,8 +1,5 @@
 package fi.aalto.cs.apluscourses.intellij.notifications;
 
-import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getAndReplaceText;
-import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
-
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import fi.aalto.cs.apluscourses.intellij.actions.OpenSubmissionNotificationAction;
@@ -11,6 +8,9 @@ import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
 import org.jetbrains.annotations.NotNull;
+
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getAndReplaceText;
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 public class FeedbackAvailableNotification extends Notification {
 

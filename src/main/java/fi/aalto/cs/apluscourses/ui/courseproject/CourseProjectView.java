@@ -1,7 +1,5 @@
 package fi.aalto.cs.apluscourses.ui.courseproject;
 
-import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
-
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import fi.aalto.cs.apluscourses.presentation.CourseProjectViewModel;
@@ -13,13 +11,12 @@ import fi.aalto.cs.apluscourses.ui.base.OurDialogWrapper;
 import fi.aalto.cs.apluscourses.ui.base.TemplateLabel;
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
 import fi.aalto.cs.apluscourses.utils.PluginResourceBundle;
-import javax.swing.Action;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import javax.swing.*;
+
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 public class CourseProjectView extends OurDialogWrapper {
   private JPanel basePanel;

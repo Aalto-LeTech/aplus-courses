@@ -1,9 +1,10 @@
 package fi.aalto.cs.apluscourses.ui.utils;
 
+import org.jetbrains.annotations.Nullable;
+
+import javax.swing.tree.TreePath;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import javax.swing.tree.TreePath;
-import org.jetbrains.annotations.Nullable;
 
 public abstract class TreePathEncoder<T> {
   private final ConcurrentMap<TreePath, T> map = new ConcurrentHashMap<>();

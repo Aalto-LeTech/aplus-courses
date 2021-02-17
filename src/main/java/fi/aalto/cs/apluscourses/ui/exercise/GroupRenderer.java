@@ -3,9 +3,10 @@ package fi.aalto.cs.apluscourses.ui.exercise;
 import com.intellij.ui.SimpleListCellRenderer;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.utils.PluginResourceBundle;
-import javax.swing.JList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import javax.swing.*;
 
 public class GroupRenderer extends SimpleListCellRenderer<Group> {
 

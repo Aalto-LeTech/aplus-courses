@@ -6,9 +6,10 @@ import com.intellij.openapi.ui.ValidationInfo;
 import fi.aalto.cs.apluscourses.ui.Dialog;
 import fi.aalto.cs.apluscourses.ui.utils.ValidationItem;
 import fi.aalto.cs.apluscourses.utils.observable.ValidationError;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
-import org.jetbrains.annotations.Nullable;
 
 public abstract class OurDialogWrapper extends DialogWrapper implements Dialog {
   private final List<ValidationItem> validationItems = new ArrayList<>();

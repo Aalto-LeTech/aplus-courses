@@ -3,12 +3,13 @@ package fi.aalto.cs.apluscourses.intellij.model;
 import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.ComponentSource;
 import fi.aalto.cs.apluscourses.model.Library;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class CommonLibraryProvider implements ComponentSource {
   private final APlusProject project;

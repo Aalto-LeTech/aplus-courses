@@ -1,12 +1,12 @@
 package fi.aalto.cs.apluscourses.ui.repl;
 
-import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
-
 import com.intellij.uiDesigner.core.GridConstraints;
 import fi.aalto.cs.apluscourses.ui.base.DialogBaseHelper;
-import javax.swing.JButton;
-import javax.swing.JPanel;
 import org.jetbrains.annotations.NotNull;
+
+import javax.swing.*;
+
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 public class ReplConfigurationDialog extends DialogBaseHelper {
 

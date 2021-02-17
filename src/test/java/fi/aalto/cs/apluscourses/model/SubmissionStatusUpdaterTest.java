@@ -1,20 +1,19 @@
 package fi.aalto.cs.apluscourses.model;
 
+import com.intellij.openapi.project.Project;
+import fi.aalto.cs.apluscourses.intellij.notifications.FeedbackAvailableNotification;
+import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
+import org.jetbrains.annotations.NotNull;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.concurrent.atomic.AtomicInteger;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.same;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-
-import com.intellij.openapi.project.Project;
-import fi.aalto.cs.apluscourses.intellij.notifications.FeedbackAvailableNotification;
-import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
-import java.util.concurrent.atomic.AtomicInteger;
-import org.jetbrains.annotations.NotNull;
-import org.junit.Before;
-import org.junit.Test;
+import static org.mockito.Mockito.*;
 
 public class SubmissionStatusUpdaterTest {
 

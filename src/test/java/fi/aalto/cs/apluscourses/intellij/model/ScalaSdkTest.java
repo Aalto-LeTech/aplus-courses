@@ -1,13 +1,14 @@
 package fi.aalto.cs.apluscourses.intellij.model;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertThat;
-
 import com.intellij.testFramework.HeavyPlatformTestCase;
+import org.junit.Test;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.assertThat;
 
 public class ScalaSdkTest extends HeavyPlatformTestCase {
 

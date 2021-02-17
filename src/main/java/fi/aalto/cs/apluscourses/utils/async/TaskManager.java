@@ -1,7 +1,8 @@
 package fi.aalto.cs.apluscourses.utils.async;
 
-import java.util.List;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 /**
  * An abstract interface for asynchronous execution following the fork-join model of task

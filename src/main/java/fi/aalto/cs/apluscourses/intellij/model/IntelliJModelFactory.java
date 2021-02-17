@@ -2,17 +2,14 @@ package fi.aalto.cs.apluscourses.intellij.model;
 
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
-import fi.aalto.cs.apluscourses.model.Component;
-import fi.aalto.cs.apluscourses.model.Course;
-import fi.aalto.cs.apluscourses.model.Library;
-import fi.aalto.cs.apluscourses.model.ModelFactory;
 import fi.aalto.cs.apluscourses.model.Module;
-import fi.aalto.cs.apluscourses.model.ModuleMetadata;
+import fi.aalto.cs.apluscourses.model.*;
+import org.jetbrains.annotations.NotNull;
+
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.jetbrains.annotations.NotNull;
 
 public class IntelliJModelFactory implements ModelFactory {
 

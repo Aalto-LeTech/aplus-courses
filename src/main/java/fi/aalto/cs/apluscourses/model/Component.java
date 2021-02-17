@@ -2,10 +2,11 @@ package fi.aalto.cs.apluscourses.model;
 
 import fi.aalto.cs.apluscourses.utils.Event;
 import fi.aalto.cs.apluscourses.utils.StateMonitor;
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
-import org.jetbrains.annotations.NotNull;
 
 public abstract class Component {
   public static final int NOT_INSTALLED = StateMonitor.INITIAL;

@@ -1,7 +1,8 @@
 package fi.aalto.cs.apluscourses.utils;
 
-import java.util.function.IntFunction;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.function.IntFunction;
 
 public class ArrayUtil {
 

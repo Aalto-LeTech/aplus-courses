@@ -1,11 +1,12 @@
 package fi.aalto.cs.apluscourses.model;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class Group {
 

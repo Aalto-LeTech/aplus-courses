@@ -1,11 +1,12 @@
 package fi.aalto.cs.apluscourses.ui.utils;
 
-import java.util.stream.Stream;
+import org.jetbrains.annotations.NotNull;
+
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeModel;
-import org.jetbrains.annotations.NotNull;
+import java.util.stream.Stream;
 
 public abstract class TreeModelBuilder<T> {
   public TreeModel build(@NotNull T obj) {

@@ -3,9 +3,9 @@ package fi.aalto.cs.apluscourses.intellij.utils;
 import com.intellij.openapi.roots.LibraryOrderEntry;
 import com.intellij.openapi.roots.ModuleOrderEntry;
 import com.intellij.openapi.roots.RootPolicy;
-import java.util.List;
-
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 /**
  * This class is a {@link RootPolicy} that builds a list of the names of those

@@ -2,15 +2,16 @@ package fi.aalto.cs.apluscourses.intellij.model;
 
 import com.intellij.openapi.util.io.FileUtilRt;
 import fi.aalto.cs.apluscourses.utils.DomUtil;
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 public class SettingsImporterTest {
 

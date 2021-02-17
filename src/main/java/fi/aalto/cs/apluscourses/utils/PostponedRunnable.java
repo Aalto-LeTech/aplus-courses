@@ -2,8 +2,9 @@ package fi.aalto.cs.apluscourses.utils;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
-import java.util.concurrent.Executor;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.concurrent.Executor;
 
 /**
  * A runnable whose {@code run} method uses some {@code invokeLater} method (by default {@code

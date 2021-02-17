@@ -1,15 +1,16 @@
 package fi.aalto.cs.apluscourses.intellij.utils;
 
+import com.intellij.openapi.roots.LibraryOrderEntry;
+import com.intellij.openapi.roots.ModuleOrderEntry;
+import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
-import com.intellij.openapi.roots.LibraryOrderEntry;
-import com.intellij.openapi.roots.ModuleOrderEntry;
-import java.util.ArrayList;
-import java.util.List;
-import org.junit.Test;
 
 public class ListDependenciesPolicyTest {
 

@@ -2,11 +2,12 @@ package fi.aalto.cs.apluscourses.ui.utils;
 
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ValidationError;
-import java.util.Optional;
-import java.util.function.BiConsumer;
-import javax.swing.JComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import javax.swing.*;
+import java.util.Optional;
+import java.util.function.BiConsumer;
 
 public class Bindable<T extends JComponent, S> implements ValidationItem {
   @NotNull

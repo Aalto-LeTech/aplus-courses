@@ -1,9 +1,10 @@
 package fi.aalto.cs.apluscourses.ui.utils;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 import javax.swing.tree.TreePath;
-import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 public class TreePathEncoderTest {
   private static class TestTreePathEncoder extends TreePathEncoder<String> {

@@ -6,9 +6,10 @@ import com.intellij.credentialStore.Credentials;
 import com.intellij.credentialStore.OneTimeString;
 import com.intellij.ide.passwordSafe.PasswordSafe;
 import fi.aalto.cs.apluscourses.dal.PasswordStorage;
-import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Optional;
 
 public class IntelliJPasswordStorage implements PasswordStorage {
 

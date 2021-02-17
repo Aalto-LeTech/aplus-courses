@@ -1,16 +1,17 @@
 package fi.aalto.cs.apluscourses.intellij.model;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import com.intellij.openapi.project.Project;
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import fi.aalto.cs.apluscourses.model.Component;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class APlusProjectTest extends BasePlatformTestCase {
 

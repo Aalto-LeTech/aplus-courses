@@ -1,7 +1,8 @@
 package fi.aalto.cs.apluscourses.utils;
 
-import java.util.Properties;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Properties;
 
 /**
  * A class that helps reading properties from a {@link Properties} object.

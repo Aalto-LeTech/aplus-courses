@@ -1,9 +1,10 @@
 package fi.aalto.cs.apluscourses.utils;
 
-import java.util.Properties;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Properties;
 
 /**
  * Holds information that was gathered during the build of the program (such as version).

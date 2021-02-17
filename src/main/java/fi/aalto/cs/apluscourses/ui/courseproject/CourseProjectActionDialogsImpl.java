@@ -1,12 +1,12 @@
 package fi.aalto.cs.apluscourses.ui.courseproject;
 
-import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
-
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import fi.aalto.cs.apluscourses.presentation.CourseProjectViewModel;
 import fi.aalto.cs.apluscourses.presentation.CourseSelectionViewModel;
 import org.jetbrains.annotations.NotNull;
+
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 public class CourseProjectActionDialogsImpl implements CourseProjectActionDialogs {
 

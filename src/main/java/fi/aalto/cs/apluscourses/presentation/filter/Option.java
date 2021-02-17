@@ -2,10 +2,11 @@ package fi.aalto.cs.apluscourses.presentation.filter;
 
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
-import java.util.Optional;
-import javax.swing.Icon;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import javax.swing.*;
+import java.util.Optional;
 
 public class Option implements Filter {
 

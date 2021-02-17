@@ -1,8 +1,9 @@
 package fi.aalto.cs.apluscourses.presentation.filter;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 import java.util.Optional;
-import org.jetbrains.annotations.NotNull;
 
 public class AndFilter implements Filter {
   private final List<? extends Filter> filters;

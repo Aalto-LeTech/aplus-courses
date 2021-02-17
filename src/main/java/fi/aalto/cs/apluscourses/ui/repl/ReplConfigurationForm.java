@@ -1,8 +1,5 @@
 package fi.aalto.cs.apluscourses.ui.repl;
 
-import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
-import static java.util.Objects.requireNonNull;
-
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
@@ -12,10 +9,12 @@ import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.presentation.ReplConfigurationFormModel;
 import fi.aalto.cs.apluscourses.ui.IconListCellRenderer;
 import icons.PluginIcons;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 import org.jetbrains.annotations.NotNull;
+
+import javax.swing.*;
+
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+import static java.util.Objects.requireNonNull;
 
 public class ReplConfigurationForm extends JPanel {
 

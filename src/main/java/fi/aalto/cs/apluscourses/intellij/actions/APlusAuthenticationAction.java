@@ -18,8 +18,9 @@ import fi.aalto.cs.apluscourses.presentation.AuthenticationViewModel;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.BaseViewModel;
-import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Optional;
 
 public class APlusAuthenticationAction extends DumbAwareAction {
 

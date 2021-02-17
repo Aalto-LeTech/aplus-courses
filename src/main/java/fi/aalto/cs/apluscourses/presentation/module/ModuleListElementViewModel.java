@@ -1,20 +1,18 @@
 package fi.aalto.cs.apluscourses.presentation.module;
 
-import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
-
-import com.intellij.ui.SimpleTextAttributes;
 import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.presentation.base.BaseViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.ListElementViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.Searchable;
 import fi.aalto.cs.apluscourses.utils.PluginResourceBundle;
-import java.awt.font.TextAttribute;
+import org.jetbrains.annotations.NotNull;
+
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 
-import org.jetbrains.annotations.NotNull;
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 public class ModuleListElementViewModel extends ListElementViewModel<Module>
         implements Searchable {

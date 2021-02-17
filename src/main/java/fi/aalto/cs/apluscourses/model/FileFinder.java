@@ -1,10 +1,11 @@
 package fi.aalto.cs.apluscourses.model;
 
 import fi.aalto.cs.apluscourses.utils.ArrayUtil;
-import java.nio.file.Path;
-import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.nio.file.Path;
+import java.util.Optional;
 
 @FunctionalInterface
 public interface FileFinder {

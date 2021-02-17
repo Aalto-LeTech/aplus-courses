@@ -1,13 +1,11 @@
 package fi.aalto.cs.apluscourses.utils.async;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.Test;
+
+import static org.mockito.Mockito.*;
 
 public class TaskManagerTest {
 

@@ -1,8 +1,9 @@
 package fi.aalto.cs.apluscourses.ui.base;
 
 import fi.aalto.cs.apluscourses.ui.utils.Bindable;
+
+import javax.swing.*;
 import java.text.MessageFormat;
-import javax.swing.JLabel;
 
 public class TemplateLabel extends JLabel {
   public final transient Bindable<TemplateLabel, Object> templateArgumentBindable =

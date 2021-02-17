@@ -2,8 +2,9 @@ package icons;
 
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.ui.JBColor;
-import java.awt.Color;
-import javax.swing.Icon;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * Guide: https://www.jetbrains.org/intellij/sdk/docs/reference_guide/work_with_icons_and_images.html

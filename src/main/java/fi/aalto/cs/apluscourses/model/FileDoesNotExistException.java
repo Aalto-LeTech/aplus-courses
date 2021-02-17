@@ -1,7 +1,8 @@
 package fi.aalto.cs.apluscourses.model;
 
-import java.nio.file.Path;
 import org.jetbrains.annotations.NotNull;
+
+import java.nio.file.Path;
 
 public class FileDoesNotExistException extends Exception {
   @NotNull

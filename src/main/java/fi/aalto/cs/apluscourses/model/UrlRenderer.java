@@ -1,8 +1,9 @@
 package fi.aalto.cs.apluscourses.model;
 
 import com.intellij.ide.BrowserUtil;
-import java.net.URI;
 import org.jetbrains.annotations.NotNull;
+
+import java.net.URI;
 
 public class UrlRenderer {
 

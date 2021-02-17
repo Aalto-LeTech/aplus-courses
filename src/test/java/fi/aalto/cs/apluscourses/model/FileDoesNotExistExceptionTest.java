@@ -1,10 +1,11 @@
 package fi.aalto.cs.apluscourses.model;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 public class FileDoesNotExistExceptionTest {
 

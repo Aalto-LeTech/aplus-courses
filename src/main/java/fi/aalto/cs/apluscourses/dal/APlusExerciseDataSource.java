@@ -1,18 +1,14 @@
 package fi.aalto.cs.apluscourses.dal;
 
-import fi.aalto.cs.apluscourses.model.Authentication;
-import fi.aalto.cs.apluscourses.model.Course;
-import fi.aalto.cs.apluscourses.model.Exercise;
-import fi.aalto.cs.apluscourses.model.ExerciseDataSource;
-import fi.aalto.cs.apluscourses.model.ExerciseGroup;
-import fi.aalto.cs.apluscourses.model.Group;
-import fi.aalto.cs.apluscourses.model.InvalidAuthenticationException;
-import fi.aalto.cs.apluscourses.model.Points;
-import fi.aalto.cs.apluscourses.model.Submission;
-import fi.aalto.cs.apluscourses.model.SubmissionHistory;
-import fi.aalto.cs.apluscourses.model.SubmissionInfo;
-import fi.aalto.cs.apluscourses.model.SubmissionResult;
+import fi.aalto.cs.apluscourses.model.*;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
+import org.apache.http.Header;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -21,12 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.apache.http.Header;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.json.JSONTokener;
 
 public class APlusExerciseDataSource implements ExerciseDataSource {
 

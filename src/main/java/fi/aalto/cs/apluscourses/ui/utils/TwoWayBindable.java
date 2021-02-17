@@ -1,8 +1,8 @@
 package fi.aalto.cs.apluscourses.ui.utils;
 
+import javax.swing.*;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
-import javax.swing.JComponent;
 
 public class TwoWayBindable<T extends JComponent, V> extends Bindable<T, V> {
 

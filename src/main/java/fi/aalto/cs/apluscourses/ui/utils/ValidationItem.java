@@ -1,8 +1,9 @@
 package fi.aalto.cs.apluscourses.ui.utils;
 
 import fi.aalto.cs.apluscourses.utils.observable.ValidationError;
-import javax.swing.JComponent;
 import org.jetbrains.annotations.Nullable;
+
+import javax.swing.*;
 
 public interface ValidationItem {
   @Nullable

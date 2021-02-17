@@ -1,7 +1,5 @@
 package fi.aalto.cs.apluscourses.ui.exercise;
 
-import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
-
 import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
@@ -10,9 +8,11 @@ import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionResultViewModel;
 import fi.aalto.cs.apluscourses.ui.base.TreeView;
 import icons.PluginIcons;
-import javax.swing.Icon;
-import javax.swing.JTree;
 import org.jetbrains.annotations.NotNull;
+
+import javax.swing.*;
+
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
 

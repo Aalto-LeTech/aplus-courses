@@ -2,13 +2,14 @@ package fi.aalto.cs.apluscourses.model;
 
 import fi.aalto.cs.apluscourses.presentation.MainViewModelUpdater;
 import fi.aalto.cs.apluscourses.utils.async.TaskManager;
-import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ComponentInstallerImpl<T> implements ComponentInstaller {
 

@@ -1,16 +1,15 @@
 package fi.aalto.cs.apluscourses.ui.repl;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import fi.aalto.cs.apluscourses.TestHelper;
-import javax.swing.JPanel;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import javax.swing.*;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @Ignore
 public class ReplConfigurationDialogTest extends BasePlatformTestCase implements TestHelper {

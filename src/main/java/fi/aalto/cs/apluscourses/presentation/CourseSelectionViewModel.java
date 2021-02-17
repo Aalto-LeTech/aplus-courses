@@ -3,6 +3,7 @@ package fi.aalto.cs.apluscourses.presentation;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ValidationError;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;

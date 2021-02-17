@@ -1,18 +1,13 @@
 package fi.aalto.cs.apluscourses.dal;
 
-import fi.aalto.cs.apluscourses.model.Exercise;
-import fi.aalto.cs.apluscourses.model.ExerciseGroup;
-import fi.aalto.cs.apluscourses.model.Group;
-import fi.aalto.cs.apluscourses.model.Points;
-import fi.aalto.cs.apluscourses.model.SubmissionHistory;
-import fi.aalto.cs.apluscourses.model.SubmissionInfo;
-import fi.aalto.cs.apluscourses.model.SubmissionResult;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Function;
+import fi.aalto.cs.apluscourses.model.*;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
 
 public interface Parser {
 

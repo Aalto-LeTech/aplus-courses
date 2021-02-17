@@ -3,11 +3,12 @@ package fi.aalto.cs.apluscourses.intellij.utils;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileVisitor;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import org.jetbrains.annotations.CalledWithReadLock;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class VfsUtil {
 

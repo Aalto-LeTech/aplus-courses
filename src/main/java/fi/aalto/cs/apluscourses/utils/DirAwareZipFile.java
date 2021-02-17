@@ -1,12 +1,13 @@
 package fi.aalto.cs.apluscourses.utils;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.Objects;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.FileHeader;
 import org.jetbrains.annotations.NotNull;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Objects;
 
 public class DirAwareZipFile extends ZipFile {
 

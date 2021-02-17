@@ -1,14 +1,15 @@
 package fi.aalto.cs.apluscourses.ui.module;
 
-import static com.intellij.ui.SimpleTextAttributes.REGULAR_ATTRIBUTES;
-
 import com.intellij.ui.ColoredListCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.ui.speedSearch.SpeedSearchUtil;
 import fi.aalto.cs.apluscourses.presentation.module.ModuleListElementViewModel;
 import icons.PluginIcons;
-import javax.swing.JList;
 import org.jetbrains.annotations.NotNull;
+
+import javax.swing.*;
+
+import static com.intellij.ui.SimpleTextAttributes.REGULAR_ATTRIBUTES;
 
 public class ColoredModuleListRenderer
         extends ColoredListCellRenderer<ModuleListElementViewModel> {

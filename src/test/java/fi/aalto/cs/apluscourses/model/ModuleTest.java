@@ -1,6 +1,8 @@
 package fi.aalto.cs.apluscourses.model;
 
-import static org.junit.Assert.assertEquals;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.junit.Test;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -8,9 +10,8 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 public class ModuleTest {
 

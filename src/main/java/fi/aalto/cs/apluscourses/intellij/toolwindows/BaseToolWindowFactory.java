@@ -5,8 +5,9 @@ import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
-import javax.swing.JComponent;
 import org.jetbrains.annotations.NotNull;
+
+import javax.swing.*;
 
 public abstract class BaseToolWindowFactory implements ToolWindowFactory {
   @Override

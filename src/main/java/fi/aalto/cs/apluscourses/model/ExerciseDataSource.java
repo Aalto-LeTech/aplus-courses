@@ -1,9 +1,10 @@
 package fi.aalto.cs.apluscourses.model;
 
-import java.io.IOException;
-import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.io.IOException;
+import java.util.List;
 
 public interface ExerciseDataSource {
 

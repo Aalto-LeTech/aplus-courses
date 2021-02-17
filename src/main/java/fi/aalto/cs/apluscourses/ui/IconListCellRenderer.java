@@ -2,11 +2,11 @@ package fi.aalto.cs.apluscourses.ui;
 
 import com.intellij.ui.SimpleListCellRenderer;
 import com.intellij.util.Function;
-import java.util.Objects;
-import javax.swing.Icon;
-import javax.swing.JList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import javax.swing.*;
+import java.util.Objects;
 
 /**
  * Custom renderer for items stored in {@link javax.swing.JComboBox}.

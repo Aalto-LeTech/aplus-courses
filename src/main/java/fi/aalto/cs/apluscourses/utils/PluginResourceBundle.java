@@ -1,8 +1,9 @@
 package fi.aalto.cs.apluscourses.utils;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
-import org.jetbrains.annotations.NotNull;
 
 public class PluginResourceBundle {
 

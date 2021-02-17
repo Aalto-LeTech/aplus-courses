@@ -1,8 +1,9 @@
 package fi.aalto.cs.apluscourses.utils.observable;
 
-import java.util.function.Supplier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Supplier;
 
 public class ObservableReadOnlyProperty<T> extends ObservableProperty<T> {
 

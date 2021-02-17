@@ -1,8 +1,9 @@
 package fi.aalto.cs.apluscourses.model;
 
-import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public interface ComponentInstaller {
   default void installAsync(@NotNull List<Component> components) {
