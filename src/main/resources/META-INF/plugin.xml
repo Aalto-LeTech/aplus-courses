@@ -4,7 +4,7 @@
     <vendor email="intellij-plugin-letech@aalto.fi"
             url="https://research.cs.aalto.fi/LeTech/">LeTech Group at Aalto University</vendor>
     <!--  this is the range of supported IntelliJ IDEA version the plugin can be used with  -->
-    <idea-version since-build="203"/>
+    <idea-version since-build="203.3645.34"/>
 
     <description><![CDATA[
     This plugin supports the educational use of IntelliJ IDEA (and its Scala plugin) in programming

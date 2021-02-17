@@ -105,18 +105,8 @@ public class SubmissionStatusUpdater {
           return;
         }
 
-        SubmissionResult submissionResult;
-        try {
-          submissionResult =
-              dataSource.getSubmissionResult(submissionUrl, exercise, authentication);
-          if (submissionResult.getStatus() != SubmissionResult.Status.UNKNOWN) {
-            notifier.notifyAndHide(
-                new FeedbackAvailableNotification(submissionResult, exercise), project);
-            PluginSettings.getInstance().updateMainViewModel(project);
-            return;
-          }
-        } catch (IOException e) {
-          // Fail silently
+        if (fetchResultsAndNotify()) {
+          return;
         }
 
         Thread.sleep(interval);
@@ -126,6 +116,23 @@ public class SubmissionStatusUpdater {
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
     }
+  }
+
+  private boolean fetchResultsAndNotify() {
+    SubmissionResult submissionResult;
+    try {
+      submissionResult =
+          dataSource.getSubmissionResult(submissionUrl, exercise, authentication);
+      if (submissionResult.getStatus() != SubmissionResult.Status.UNKNOWN) {
+        notifier.notifyAndHide(
+            new FeedbackAvailableNotification(submissionResult, exercise), project);
+        PluginSettings.getInstance().updateMainViewModel(project);
+        return true;
+      }
+    } catch (IOException e) {
+      // Fail silently
+    }
+    return false;
   }
 
 }

@@ -7,7 +7,7 @@ public abstract class TypedFilter<T> implements Filter {
 
   private final Class<T> klass;
 
-  public TypedFilter(Class<T> klass) {
+  protected TypedFilter(Class<T> klass) {
     this.klass = klass;
   }
 

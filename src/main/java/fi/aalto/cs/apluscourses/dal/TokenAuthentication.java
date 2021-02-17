@@ -8,7 +8,6 @@ import org.jetbrains.annotations.Nullable;
 public abstract class TokenAuthentication implements Authentication {
   @NotNull
   protected final String user;
-  @NotNull
   protected final char[] token;
   @Nullable
   protected final PasswordStorage passwordStorage;
@@ -20,8 +19,8 @@ public abstract class TokenAuthentication implements Authentication {
    * @param token           Token.  The array is cloned and the argument is not cleared.
    * @param passwordStorage Password storage.  If null, the authentication won't be persisted.
    */
-  public TokenAuthentication(@NotNull String user,
-                             @NotNull char[] token,
+  protected TokenAuthentication(@NotNull String user,
+                                char[] token,
                              @Nullable PasswordStorage passwordStorage) {
     this.user = user;
     this.token = token.clone();
@@ -50,6 +49,6 @@ public abstract class TokenAuthentication implements Authentication {
 
   public interface Factory {
     @NotNull
-    TokenAuthentication create(@NotNull char[] token);
+    TokenAuthentication create(char[] token);
   }
 }

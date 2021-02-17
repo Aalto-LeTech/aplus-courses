@@ -21,6 +21,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
+import java.net.URISyntaxException;
+
 public class OpenSubmissionNotificationActionTest {
 
   private AnActionEvent event;
@@ -58,8 +60,8 @@ public class OpenSubmissionNotificationActionTest {
   }
 
   @Test
-  public void testErrorNotification() throws Exception {
-    Exception exception = new Exception();
+  public void testErrorNotification() throws URISyntaxException {
+    URISyntaxException exception = new URISyntaxException("input", "reason");
     doThrow(exception).when(submissionRenderer).show(anyString());
 
     new OpenSubmissionNotificationAction(
