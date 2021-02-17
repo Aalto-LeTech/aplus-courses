@@ -46,12 +46,8 @@ jobs:
           export DISPLAY=:99.0
           Xvfb -ac :99 -screen 0 1920x1080x16 &
           gradle runIdeForUiTests &
-      - name: Sleep for 180 seconds
-        uses: jakejarvis/wait-action@master
-        with:
-          time: '180s'
-      - name: Run the UI tests
-        run: gradle uiTest
+      - name: Sleep 180s & run the UI tests
+        run: sleep 180s && gradle uiTest
 
   build-for-ui-test-mac-os:
     runs-on: macos-latest
@@ -64,10 +60,10 @@ jobs:
           java-version: 11
       - name: Setup UI testing env
         run: ./gradlew runIdeForUiTests &
-      - name: Sleep for 240 seconds
-        run: sleep 240
-      - name: Run the UI tests
-        run: ./gradlew uiTest --info
+      - name: Sleep 240s & run the UI tests
+        run: |
+            sleep 240
+            ./gradlew uiTest --info
 
   build-for-ui-test-windows:
     runs-on: windows-latest
@@ -82,7 +78,7 @@ jobs:
         run: |
           netstat -abo
           ./gradlew runIdeForUiTests &
-      - name: Run the UI tests
+      - name: Sleep 180s & run the UI tests
         run: |
           Start-Sleep -s 180
           netstat -bona
