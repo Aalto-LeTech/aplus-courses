@@ -51,7 +51,7 @@ public class MainViewModel {
 
   private AtomicBoolean hasTriedToReadAuthenticationFromStorage = new AtomicBoolean(false);
 
-  private Exercise submittedForGrading = null;
+  private Exercise submittedForGrading;
 
   /**
    * Instantiates a class representing the whole main view of the plugin.
@@ -135,11 +135,12 @@ public class MainViewModel {
   }
 
   private void setInGrading(List<ExerciseGroup> exerciseGroups) {
-    Map<Long, Exercise> exercises = new LinkedHashMap<>();
-    exerciseGroups.stream().forEach(group -> exercises.putAll(group.getExercises()));
-    if (exercises.containsKey(submittedForGrading.getId())) {
-      exercises.get(submittedForGrading.getId()).setInGrading(true);
-    }
+    final long id = submittedForGrading.getId();
+    exerciseGroups
+        .stream()
+        .map(ExerciseGroup::getExercises)
+        .filter(exercise -> exercise.containsKey(id))
+        .forEach(exercise -> exercise.get(id).setInGrading(true));
   }
 
   public void setSubmittedForGrading(Exercise submittedForGrading) {

@@ -28,7 +28,7 @@ public class Exercise implements Browsable {
 
   private final boolean submittable;
 
-  private boolean inGrading = false;
+  private boolean inGrading;
 
   /**
    * Construct an exercise instance with the given parameters.
