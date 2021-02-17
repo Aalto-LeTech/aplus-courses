@@ -26,6 +26,7 @@ public class CourseTest {
     final List<Module> modules = Arrays.asList(module1, module2);
     Map<String, URL> resourceUrls = new HashMap<>();
     resourceUrls.put("key", new URL("http://localhost:8000"));
+    resourceUrls.put("ideSettings", new URL("http://localhost:23333"));
     List<String> autoInstallComponents = Arrays.asList(module1name);
     Map<String, String[]> replInitialCommands = new HashMap<>();
     replInitialCommands.put("Module1", new String[]{"import o1._"});
@@ -60,6 +61,8 @@ public class CourseTest {
     assertEquals(
         "The resource URLs of the course should the same as those given to the constructor",
         new URL("http://localhost:8000"), course.getResourceUrls().get("key"));
+    assertEquals("The IDE settings path should be the same as the one given to the constructor",
+        new URL("http://localhost:23333"), course.getAppropriateIdeSettingsUrl());
     assertEquals(
         "The auto-install components should be the same as those given to the constructor",
         module1name, course.getAutoInstallComponents().get(0).getName());
