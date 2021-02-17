@@ -1,9 +1,10 @@
 package fi.aalto.cs.apluscourses.presentation;
 
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
-import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class ViewModelExtensions {
   private ViewModelExtensions() {

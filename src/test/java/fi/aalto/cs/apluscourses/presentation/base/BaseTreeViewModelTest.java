@@ -1,14 +1,15 @@
 package fi.aalto.cs.apluscourses.presentation.base;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-
 import fi.aalto.cs.apluscourses.presentation.ViewModelExtensions.TestNodeViewModel;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
-import java.util.Arrays;
-import java.util.Collections;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.Collections;
+
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 
 public class BaseTreeViewModelTest {
 

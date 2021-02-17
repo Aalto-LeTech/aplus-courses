@@ -1,18 +1,16 @@
 package fi.aalto.cs.apluscourses.presentation.module;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.model.Module;
+import org.junit.Test;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.ZonedDateTime;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class ModuleListElementViewModelTest {
 

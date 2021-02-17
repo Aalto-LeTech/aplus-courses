@@ -1,9 +1,10 @@
 package fi.aalto.cs.apluscourses.presentation;
 
-import java.util.Arrays;
-import java.util.Collections;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 public class CourseSelectionViewModelTest {
 

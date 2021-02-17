@@ -1,22 +1,18 @@
 package fi.aalto.cs.apluscourses.presentation.base;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
-
 import fi.aalto.cs.apluscourses.presentation.ViewModelExtensions.TestNodeViewModel;
 import fi.aalto.cs.apluscourses.presentation.filter.Filter;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.internal.stubbing.answers.Returns;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.internal.stubbing.answers.Returns;
+
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 public class SelectableNodeViewModelTest {
 

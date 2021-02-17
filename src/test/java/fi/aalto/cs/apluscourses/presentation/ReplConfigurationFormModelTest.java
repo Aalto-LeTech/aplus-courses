@@ -5,8 +5,9 @@ import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import fi.aalto.cs.apluscourses.TestHelper;
-import java.util.List;
 import org.junit.Test;
+
+import java.util.List;
 
 public class ReplConfigurationFormModelTest extends BasePlatformTestCase implements TestHelper {
 

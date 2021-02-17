@@ -1,10 +1,11 @@
 package fi.aalto.cs.apluscourses.intellij.notifications;
 
-import static org.hamcrest.Matchers.containsString;
-
-import java.io.IOException;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.io.IOException;
+
+import static org.hamcrest.Matchers.containsString;
 
 public class IoErrorNotificationTest {
 

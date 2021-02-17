@@ -1,20 +1,21 @@
 package fi.aalto.cs.apluscourses.presentation.exercise;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-
 import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
 import fi.aalto.cs.apluscourses.presentation.filter.Filter;
+import org.junit.Assert;
+import org.junit.Test;
+import org.mockito.internal.stubbing.answers.Returns;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.junit.Assert;
-import org.junit.Test;
-import org.mockito.internal.stubbing.answers.Returns;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 public class ExerciseGroupViewModelTest {
 

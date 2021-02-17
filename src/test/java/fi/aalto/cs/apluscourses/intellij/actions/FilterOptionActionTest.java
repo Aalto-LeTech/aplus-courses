@@ -1,18 +1,16 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.ToggleAction;
 import fi.aalto.cs.apluscourses.presentation.filter.Option;
-import java.util.Optional;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import org.junit.Test;
+
+import javax.swing.*;
+import java.util.Optional;
+
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 
 public class FilterOptionActionTest {
 

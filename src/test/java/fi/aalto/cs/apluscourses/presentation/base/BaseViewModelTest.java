@@ -1,8 +1,8 @@
 package fi.aalto.cs.apluscourses.presentation.base;
 
-import static org.junit.Assert.assertSame;
-
 import org.junit.Test;
+
+import static org.junit.Assert.assertSame;
 
 public class BaseViewModelTest {
   

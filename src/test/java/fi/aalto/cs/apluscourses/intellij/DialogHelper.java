@@ -3,9 +3,10 @@ package fi.aalto.cs.apluscourses.intellij;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.services.Dialogs;
 import fi.aalto.cs.apluscourses.ui.Dialog;
-import java.util.function.Function;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Function;
 
 public class DialogHelper<T> {
 

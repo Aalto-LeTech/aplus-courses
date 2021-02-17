@@ -1,10 +1,11 @@
 package fi.aalto.cs.apluscourses.intellij.notifications;
 
-import static org.hamcrest.Matchers.containsString;
-
-import java.nio.file.Paths;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.nio.file.Paths;
+
+import static org.hamcrest.Matchers.containsString;
 
 public class MissingFileNotificationTest {
 

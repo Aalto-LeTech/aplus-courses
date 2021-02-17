@@ -1,26 +1,13 @@
 package fi.aalto.cs.apluscourses.presentation.exercise;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import fi.aalto.cs.apluscourses.model.*;
+import org.junit.Test;
 
-import fi.aalto.cs.apluscourses.model.Exercise;
-import fi.aalto.cs.apluscourses.model.Group;
-import fi.aalto.cs.apluscourses.model.SubmissionHistory;
-import fi.aalto.cs.apluscourses.model.SubmissionInfo;
-import fi.aalto.cs.apluscourses.model.SubmittableFile;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import org.junit.Test;
+import java.util.*;
+
+import static org.junit.Assert.*;
 
 public class SubmissionViewModelTest {
 

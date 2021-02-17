@@ -1,15 +1,12 @@
 package fi.aalto.cs.apluscourses.integration;
 
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.hasItems;
-
 import io.restassured.http.ContentType;
 import org.apache.http.HttpStatus;
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Test;
+
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.CoreMatchers.*;
 
 public class ApiTest {
 
