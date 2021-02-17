@@ -43,22 +43,9 @@ public class SettingsImporter {
    * @throws IOException If an IO error occurs (e.g. network issues).
    */
   public void importIdeSettings(@NotNull Course course) throws IOException {
-    URL ideSettingsUrl = null;
-
-    if (SystemInfoRt.isWindows) {
-      ideSettingsUrl = course.getResourceUrls().get("ideSettingsWindows");
-    } else if (SystemInfoRt.isLinux) {
-      ideSettingsUrl = course.getResourceUrls().get("ideSettingsLinux");
-    } else if (SystemInfoRt.isMac) {
-      ideSettingsUrl = course.getResourceUrls().get("ideSettingsMac");
-    }
-
+    URL ideSettingsUrl = course.getAppropriateIdeSettingsUrl();
     if (ideSettingsUrl == null) {
-      ideSettingsUrl = course.getResourceUrls().get("ideSettings");
-
-      if (ideSettingsUrl == null) {
-        return;
-      }
+      return;
     }
 
     File file = FileUtilRt.createTempFile("course-ide-settings", ".zip");
