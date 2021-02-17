@@ -13,7 +13,7 @@ public abstract class SelectableNodeViewModel<T> extends BaseViewModel<T> implem
 
   @NotNull
   private final List<SelectableNodeViewModel<?>> children;
-  private volatile boolean visibility = true;
+  protected volatile boolean visibility = true;
 
   private volatile boolean selected = false;
 
@@ -26,7 +26,8 @@ public abstract class SelectableNodeViewModel<T> extends BaseViewModel<T> implem
   /**
    * Applies a filter to this node, that is, sets the node visible if the filter applies to the node
    * or one of its descendants, or the filter is not applicable to this node.  Otherwise, sets the
-   * node invisible.
+   * node invisible. Some nodes with no visible children become invisible according to
+   * setVisibilityByFilterResult
    *
    * @param filter A filter.
    * @return True, if the filter applies to this node or one of its descendants, otherwise false.
@@ -44,8 +45,12 @@ public abstract class SelectableNodeViewModel<T> extends BaseViewModel<T> implem
         }
       }
     }
-    visibility = result.orElse(true);
+    setVisibilityByFilterResult(result);
     return result;
+  }
+
+  protected void setVisibilityByFilterResult(Optional<Boolean> result) {
+    visibility = result.orElse(true);
   }
 
   public abstract long getId();
@@ -61,6 +66,7 @@ public abstract class SelectableNodeViewModel<T> extends BaseViewModel<T> implem
   public void setSelected(boolean selected) {
     this.selected = selected;
   }
+
 
   @Override
   @NotNull

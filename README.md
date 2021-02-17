@@ -37,7 +37,7 @@ Contains references for the academic research related to or created based on the
 
 1. ["Creating an educational plugin to support online programming learning A case of IntelliJ IDEA plugin for A+ Learning Management System"](https://aaltodoc.aalto.fi/handle/123456789/102499) Master's thesis by Nikolai Denissov
 
-    The most interesting from the techical perspective parts are as follows:
+    The most interesting from the technical perspective parts are as follows:
       * Chapter 4. Methods and Environments - describes how the development team works and deployment envs;
       * Chapter 5. Solution - and tells about the plugin on the higher level;
 

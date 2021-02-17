@@ -1,9 +1,5 @@
 package fi.aalto.cs.apluscourses.intellij.utils
 
-import java.io.IOException
-import java.nio.charset.StandardCharsets
-import java.nio.file.Paths
-
 import com.intellij.openapi.actionSystem.{CommonDataKeys, DataContext}
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.keymap.KeymapManager
@@ -17,7 +13,10 @@ import org.apache.commons.io.FileUtils
 import org.jetbrains.annotations.NotNull
 import org.slf4j.LoggerFactory
 
-import scala.collection.JavaConverters.asJavaCollection
+import java.io.IOException
+import java.nio.charset.StandardCharsets
+import java.nio.file.Paths
+import scala.jdk.javaapi.CollectionConverters.asJava
 
 object ModuleUtils {
 
@@ -125,7 +124,7 @@ object ModuleUtils {
       .get(getModuleDirectory(module), PluginSettings.MODULE_REPL_INITIAL_COMMANDS_FILE_NAME)
       .toFile
     if (commands.nonEmpty && !file.exists) {
-      try FileUtils.writeLines(file, StandardCharsets.UTF_8.name, asJavaCollection(commands))
+      try FileUtils.writeLines(file, StandardCharsets.UTF_8.name, asJava(commands))
       catch {
         case ex: IOException => Logger.error("Could not write REPL initial commands file", ex)
       }
