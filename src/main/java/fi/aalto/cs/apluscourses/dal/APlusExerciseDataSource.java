@@ -169,7 +169,8 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
     for (Map.Entry<String, Path> entry : submission.getFiles().entrySet()) {
       data.put(entry.getKey(), entry.getValue().toFile());
     }
-    String url = apiUrl + EXERCISES + "/" + submission.getExercise().getId() + "/" + SUBMISSIONS + "/submit/";
+    String url = apiUrl + EXERCISES + "/" + submission.getExercise().getId() + "/" +
+            SUBMISSIONS + "/submit/";
     return client.post(url, authentication, data);
   }
 

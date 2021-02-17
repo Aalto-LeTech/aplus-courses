@@ -48,7 +48,7 @@ public abstract class BaseListView<E extends ListElementViewModel<?>>
   /**
    * A constructor.
    */
-  public BaseListView() {
+  protected BaseListView() {
     addMouseListener(new ListMouseListener());
     getInputMap(JComponent.WHEN_FOCUSED).put(ENTER_KEY_STROKE, LIST_ACTION);
     getActionMap().put(LIST_ACTION, new AbstractAction() {

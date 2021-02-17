@@ -23,7 +23,6 @@ public class APlusAuthenticationView extends DialogWrapper implements Dialog {
   @GuiObject
   protected JPasswordField inputField;
   private JPanel basePanel;
-  private LinkLabel<Object> tokenPageLink;
 
   AuthenticationViewModel authenticationViewModel;
 
@@ -76,8 +75,8 @@ public class APlusAuthenticationView extends DialogWrapper implements Dialog {
   }
 
   @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
-  private void createUIComponents() { //
-    tokenPageLink = new LinkLabel<>(
+  private void createUIComponents() {
+    LinkLabel<Object> tokenPageLink = new LinkLabel<>(
         getText("ui.authenticationView.tokenLink"),
         AllIcons.Ide.External_link_arrow,
         (first, second) ->
