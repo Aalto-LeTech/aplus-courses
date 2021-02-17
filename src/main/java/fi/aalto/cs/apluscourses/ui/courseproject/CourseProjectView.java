@@ -39,6 +39,7 @@ public class CourseProjectView extends OurDialogWrapper {
   private OurComboBox<String> languageComboBox;
   @GuiObject
   private JLabel languagePrompt;
+  private JPanel settingsPanel;
 
   CourseProjectView(@NotNull Project project,
                     @NotNull CourseProjectViewModel viewModel) {
