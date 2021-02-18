@@ -18,20 +18,36 @@ public interface PluginIcons {
       new Color(255, 0, 144)
   ).getRGB();
 
-  Icon A_PLUS_MODULE = IconLoader.getIcon("/META-INF/icons/module.svg");
-  Icon A_PLUS_EXERCISE_GROUP = IconLoader.getIcon("/META-INF/icons/exerciseGroup.svg");
-  Icon A_PLUS_EXERCISE_GROUP_CLOSED = IconLoader.getIcon("/META-INF/icons/exerciseGroupClosed.svg");
-  Icon A_PLUS_OPTIONAL_PRACTICE = IconLoader.getIcon("/META-INF/icons/optionalPractice.svg");
-  Icon A_PLUS_NO_SUBMISSIONS = IconLoader.getIcon("/META-INF/icons/noSubmissions.svg");
-  Icon A_PLUS_NO_POINTS = IconLoader.getIcon("/META-INF/icons/noPoints.svg");
-  Icon A_PLUS_PARTIAL_POINTS = IconLoader.getIcon("/META-INF/icons/partialPoints.svg");
-  Icon A_PLUS_FULL_POINTS = IconLoader.getIcon("/META-INF/icons/fullPoints.svg");
-  Icon A_PLUS_DOWNLOAD = IconLoader.getIcon("/META-INF/icons/download.svg");
-  Icon A_PLUS_UPLOAD = IconLoader.getIcon("/META-INF/icons/upload.svg");
-  Icon A_PLUS_BROWSE = IconLoader.getIcon("/META-INF/icons/web.svg");
-  Icon A_PLUS_REFRESH = IconLoader.getIcon("/META-INF/icons/refresh.svg");
-  Icon A_PLUS_LOGO = IconLoader.getIcon("/META-INF/icons/aPlusLogo.svg");
-  Icon A_PLUS_REPL = IconLoader.getIcon("/META-INF/icons/repl.svg");
-  Icon A_PLUS_FILTER = IconLoader.getIcon("/META-INF/icons/filter.svg");
-  Icon A_PLUS_COURSES = IconLoader.getIcon("/META-INF/icons/logo_courses.svg");
+  Icon A_PLUS_MODULE = IconLoader
+      .getIcon("/META-INF/icons/module.svg", PluginIcons.class);
+  Icon A_PLUS_EXERCISE_GROUP = IconLoader
+      .getIcon("/META-INF/icons/exerciseGroup.svg", PluginIcons.class);
+  Icon A_PLUS_EXERCISE_GROUP_CLOSED = IconLoader
+      .getIcon("/META-INF/icons/exerciseGroupClosed.svg", PluginIcons.class);
+  Icon A_PLUS_OPTIONAL_PRACTICE = IconLoader
+      .getIcon("/META-INF/icons/optionalPractice.svg", PluginIcons.class);
+  Icon A_PLUS_NO_SUBMISSIONS = IconLoader
+      .getIcon("/META-INF/icons/noSubmissions.svg", PluginIcons.class);
+  Icon A_PLUS_NO_POINTS = IconLoader
+      .getIcon("/META-INF/icons/noPoints.svg", PluginIcons.class);
+  Icon A_PLUS_PARTIAL_POINTS = IconLoader
+      .getIcon("/META-INF/icons/partialPoints.svg", PluginIcons.class);
+  Icon A_PLUS_FULL_POINTS = IconLoader
+      .getIcon("/META-INF/icons/fullPoints.svg", PluginIcons.class);
+  Icon A_PLUS_DOWNLOAD = IconLoader
+      .getIcon("/META-INF/icons/download.svg", PluginIcons.class);
+  Icon A_PLUS_UPLOAD = IconLoader
+      .getIcon("/META-INF/icons/upload.svg", PluginIcons.class);
+  Icon A_PLUS_BROWSE = IconLoader
+      .getIcon("/META-INF/icons/web.svg", PluginIcons.class);
+  Icon A_PLUS_REFRESH = IconLoader
+      .getIcon("/META-INF/icons/refresh.svg", PluginIcons.class);
+  Icon A_PLUS_LOGO = IconLoader
+      .getIcon("/META-INF/icons/aPlusLogo.svg", PluginIcons.class);
+  Icon A_PLUS_REPL = IconLoader
+      .getIcon("/META-INF/icons/repl.svg", PluginIcons.class);
+  Icon A_PLUS_FILTER = IconLoader
+      .getIcon("/META-INF/icons/filter.svg", PluginIcons.class);
+  Icon A_PLUS_COURSES = IconLoader
+      .getIcon("/META-INF/icons/logo_courses.svg", PluginIcons.class);
 }

@@ -13,7 +13,6 @@ import icons.PluginIcons;
 import java.awt.Font;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import javax.naming.OperationNotSupportedException;
 import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -23,11 +22,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CourseSelectionView extends OurDialogWrapper {
-  private static final Logger logger = LoggerFactory.getLogger(CourseSelectionView.class);
 
   private CourseSelectionViewModel viewModel;
 
