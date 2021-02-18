@@ -1,8 +1,6 @@
 package fi.aalto.cs.apluscourses.ui.exercise;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 
 import com.intellij.openapi.util.io.FileUtilRt;
 import com.intellij.testFramework.LightIdeaTestCase;
@@ -13,7 +11,6 @@ import fi.aalto.cs.apluscourses.model.SubmissionInfo;
 import fi.aalto.cs.apluscourses.model.SubmittableFile;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionViewModel;
 import fi.aalto.cs.apluscourses.ui.base.CheckBox;
-
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Arrays;

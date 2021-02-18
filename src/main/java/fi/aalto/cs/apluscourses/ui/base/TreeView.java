@@ -5,7 +5,6 @@ import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
 import fi.aalto.cs.apluscourses.ui.utils.TreeModelBuilder;
 import fi.aalto.cs.apluscourses.ui.utils.TreeModelTraverser;
 import fi.aalto.cs.apluscourses.ui.utils.TreePathEncoder;
-
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
