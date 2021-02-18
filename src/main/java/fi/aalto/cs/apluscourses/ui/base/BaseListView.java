@@ -42,7 +42,7 @@ public abstract class BaseListView<E extends ListElementViewModel<?>>
   private static final KeyStroke ENTER_KEY_STROKE = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
 
   private final Set<ActionListener> listActionListeners = ConcurrentHashMap.newKeySet();
-  private final Object popupMenuLock = new Object();
+  private final Object popupMenuLock = new Object[0];
   private JPopupMenu popupMenu;
 
   /**
