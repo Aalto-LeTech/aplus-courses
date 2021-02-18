@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 public abstract class TokenAuthentication implements Authentication {
   @NotNull
   protected final String user;
+  @NotNull
   protected final char[] token;
   @Nullable
   protected final PasswordStorage passwordStorage;

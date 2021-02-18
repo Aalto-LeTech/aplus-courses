@@ -30,8 +30,7 @@ public class ColoredModuleListRenderer
     setToolTipText(element.getTooltip());
     setIcon(PluginIcons.A_PLUS_MODULE);
     setIconTextGap(4);
-    var updateAvailable = element.isUpdateAvailable();
-    if (Boolean.TRUE.equals(updateAvailable)) {
+    if (Boolean.TRUE.equals(element.isUpdateAvailable())) {
       append("  UPDATE AVAILABLE!", BOLDED_TEXT_STYLE);
     }
 

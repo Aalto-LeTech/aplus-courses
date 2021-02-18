@@ -87,11 +87,7 @@ public class CourseSelectionView extends OurDialogWrapper {
 
       @Override
       public void focusLost(FocusEvent focusEvent) {
-        try {
-          throw new OperationNotSupportedException();
-        } catch (OperationNotSupportedException e) {
-          logger.info("Operation not supported", e);
-        }
+        //do nothing
       }
     });
     urlField.textBindable.bindToSource(viewModel.selectedCourseUrl);

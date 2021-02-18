@@ -36,11 +36,7 @@ public class TextField extends JTextField {
 
       @Override
       public void changedUpdate(DocumentEvent documentEvent) {
-        try {
-          throw new OperationNotSupportedException();
-        } catch (OperationNotSupportedException e) {
-          logger.info("Operation not supported", e);
-        }
+        // do nothing
       }
     });
   }
