@@ -87,7 +87,7 @@ public class VfsUtilTest {
 
   public static final String JSON = ".json";
 
-  @Ignore
+  @Ignore("Fails for the reason no one can deduct")
   @Test
   public void testHasLocalChangesReturnsTrue() throws IOException {
     //  given

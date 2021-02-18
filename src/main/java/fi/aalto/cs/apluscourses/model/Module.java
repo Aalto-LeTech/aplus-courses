@@ -34,10 +34,10 @@ public abstract class Module extends Component {
    * @param versionId A string that uniquely identifies different versions of the same module.
    */
   protected Module(@NotNull String name,
-                @NotNull URL url,
-                @NotNull String versionId,
-                @Nullable String localVersionId,
-                @Nullable ZonedDateTime downloadedAt) {
+                   @NotNull URL url,
+                   @NotNull String versionId,
+                   @Nullable String localVersionId,
+                   @Nullable ZonedDateTime downloadedAt) {
     super(name);
     this.url = url;
     this.versionId = versionId;

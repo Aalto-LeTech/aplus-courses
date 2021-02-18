@@ -75,7 +75,7 @@ public class CourseFileManager {
    * the course file doesn't exist, {@code true} otherwise.
    *
    * @return {@code true} if the course file was successfully loaded, {@code false} if the course
-  file doesn't exist.
+   *         file doesn't exist.
    * @throws IOException   If an IO error occurs while reading the course file.
    * @throws JSONException If the course file contains malformed JSON.
    */
@@ -152,12 +152,11 @@ public class CourseFileManager {
     return new JSONObject(FileUtils.readFileToString(courseFile, StandardCharsets.UTF_8));
   }
 
-  @NotNull
   private void writeCourseFile(@NotNull JSONObject jsonObject) throws IOException {
     FileUtils.writeStringToFile(courseFile, jsonObject.toString(), StandardCharsets.UTF_8);
   }
 
-  /**
+  /*
    * Returns the course file corresponding to the given project.
    */
   @NotNull
@@ -169,7 +168,7 @@ public class CourseFileManager {
         .toFile();
   }
 
-  /**
+  /*
    * Returns a JSONObject corresponding to the contents of the modulesMetadata map.
    */
   @NotNull
@@ -182,7 +181,7 @@ public class CourseFileManager {
     return modulesObject;
   }
 
-  /**
+  /*
    * Initializes local variables from the given JSON object.
    */
   private void loadFromJsonObject(@NotNull JSONObject jsonObject) throws IOException {

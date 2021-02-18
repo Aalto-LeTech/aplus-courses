@@ -32,7 +32,7 @@ public class ColoredModuleListRenderer
     setToolTipText(element.getTooltip());
     setIcon(PluginIcons.A_PLUS_MODULE);
     setIconTextGap(4);
-    if (Boolean.TRUE.equals(element.isUpdateAvailable())) {
+    if (element.isUpdateAvailable()) {
       append("  " + getText("ui.toolWindow.subTab.modules.module.updateAvailable"),
           BOLDED_TEXT_STYLE);
     }

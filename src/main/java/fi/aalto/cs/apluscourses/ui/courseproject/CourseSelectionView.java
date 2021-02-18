@@ -98,7 +98,7 @@ public class CourseSelectionView extends OurDialogWrapper {
   }
 
   @Override
-  protected @NotNull Action[] createActions() {
+  protected @NotNull Action @NotNull [] createActions() {
     return new Action[]{getOKAction(), getCancelAction()};
   }
 

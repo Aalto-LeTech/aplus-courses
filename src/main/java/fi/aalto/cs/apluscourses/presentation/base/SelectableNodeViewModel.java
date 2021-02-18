@@ -18,7 +18,7 @@ public abstract class SelectableNodeViewModel<T> extends BaseViewModel<T> implem
   private volatile boolean selected = false;
 
   protected SelectableNodeViewModel(@NotNull T model,
-                                 @Nullable List<SelectableNodeViewModel<?>> children) {
+                                    @Nullable List<SelectableNodeViewModel<?>> children) {
     super(model);
     this.children = Optional.ofNullable(children).orElse(Collections.emptyList());
   }

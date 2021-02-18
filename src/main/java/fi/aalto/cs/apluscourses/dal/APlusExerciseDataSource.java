@@ -61,8 +61,8 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
    * @param parser JSON parser.
    */
   public APlusExerciseDataSource(@NotNull String apiUrl,
-      @NotNull Client client,
-      @NotNull Parser parser) {
+                                 @NotNull Client client,
+                                 @NotNull Parser parser) {
     this.client = client;
     this.apiUrl = apiUrl;
     this.parser = parser;
@@ -76,7 +76,7 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   @Override
   @NotNull
   public SubmissionInfo getSubmissionInfo(@NotNull Exercise exercise,
-      @NotNull Authentication authentication)
+                                          @NotNull Authentication authentication)
       throws IOException {
     String url = apiUrl + EXERCISES + "/" + exercise.getId() + "/";
     JSONObject response = client.fetch(url, authentication);
@@ -91,7 +91,7 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   @Override
   @NotNull
   public SubmissionHistory getSubmissionHistory(@NotNull Exercise exercise,
-      @NotNull Authentication authentication)
+                                                @NotNull Authentication authentication)
       throws IOException {
     String url = apiUrl + EXERCISES + "/" + exercise.getId() + "/" + SUBMISSIONS + "/me/";
     JSONObject response = client.fetch(url, authentication);
@@ -122,8 +122,8 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   @Override
   @NotNull
   public List<ExerciseGroup> getExerciseGroups(@NotNull Course course,
-      @NotNull Points points,
-      @NotNull Authentication authentication)
+                                               @NotNull Points points,
+                                               @NotNull Authentication authentication)
       throws IOException {
     String url = apiUrl + COURSES + "/" + course.getId() + "/" + EXERCISES + "/";
     JSONObject response = client.fetch(url, authentication);
@@ -148,8 +148,8 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   @Override
   @NotNull
   public SubmissionResult getSubmissionResult(@NotNull String submissionUrl,
-      @NotNull Exercise exercise,
-      @NotNull Authentication authentication)
+                                              @NotNull Exercise exercise,
+                                              @NotNull Authentication authentication)
       throws IOException {
     JSONObject response = client.fetch(submissionUrl, authentication);
     return parser.parseSubmissionResult(response, exercise);
@@ -209,8 +209,8 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
     @Override
     @Nullable
     public String post(@NotNull String url,
-        @NotNull Authentication authentication,
-        @NotNull Map<String, Object> data) throws IOException {
+                       @NotNull Authentication authentication,
+                       @NotNull Map<String, Object> data) throws IOException {
       return CoursesClient.post(
           new URL(url),
           authentication,
@@ -239,7 +239,7 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
 
     @Override
     public List<ExerciseGroup> parseExerciseGroups(@NotNull JSONArray array,
-        @NotNull Points points) {
+                                                   @NotNull Points points) {
       return ExerciseGroup.fromJsonArray(array, points);
     }
 
@@ -250,7 +250,7 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
 
     @Override
     public SubmissionResult parseSubmissionResult(@NotNull JSONObject object,
-        @NotNull Exercise exercise) {
+                                                  @NotNull Exercise exercise) {
       return SubmissionResult.fromJsonObject(object, exercise);
     }
 
