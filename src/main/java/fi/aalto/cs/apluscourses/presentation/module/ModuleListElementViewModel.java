@@ -48,7 +48,7 @@ public class ModuleListElementViewModel extends ListElementViewModel<Module>
                 "presentation.moduleTooltip.moduleURL", getUrl());
   }
 
-  public Boolean isUpdateAvailable() {
+  public boolean isUpdateAvailable() {
     return getModel().isUpdatable();
   }
 
