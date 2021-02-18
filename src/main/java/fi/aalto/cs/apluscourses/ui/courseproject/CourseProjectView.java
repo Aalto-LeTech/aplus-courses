@@ -23,7 +23,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class CourseProjectView extends OurDialogWrapper {
   private JPanel basePanel;
-  private final CourseProjectViewModel viewModel;
+  private CourseProjectViewModel viewModel;
 
   @GuiObject
   private TemplateLabel infoText;
