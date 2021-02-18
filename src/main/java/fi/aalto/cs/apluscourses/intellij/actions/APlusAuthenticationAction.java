@@ -69,11 +69,11 @@ public class APlusAuthenticationAction extends DumbAwareAction {
   public void actionPerformed(@NotNull AnActionEvent e) {
     Project project = e.getProject();
     MainViewModel mainViewModel = mainViewModelProvider.getMainViewModel(project);
-    Course course = Optional.ofNullable(mainViewModel.courseViewModel.get())
-        .map(BaseViewModel::getModel)
-        .orElse(null);
-
-    if (course == null) {
+    Course course;
+    var courseViewModel = mainViewModel.courseViewModel.get();
+    if (courseViewModel != null) {
+      course = courseViewModel.getModel();
+    } else {
       return;
     }
 

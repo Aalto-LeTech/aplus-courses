@@ -45,7 +45,7 @@ public class MainViewModel {
   @NotNull
   private final Options exerciseFilterOptions;
 
-  private AtomicBoolean hasTriedToReadAuthenticationFromStorage = new AtomicBoolean(false);
+  private final AtomicBoolean hasTriedToReadAuthenticationFromStorage = new AtomicBoolean(false);
 
   /**
    * Instantiates a class representing the whole main view of the plugin.
