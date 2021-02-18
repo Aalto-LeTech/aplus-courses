@@ -58,7 +58,7 @@ public class MainViewModel {
   private void updateExercises() {
     Course course = null;
     var localCourseViewModel = courseViewModel.get();
-    if (localCourseViewModel != null){
+    if (localCourseViewModel != null) {
       course = localCourseViewModel.getModel();
     }
     Authentication auth = authentication.get();
