@@ -37,7 +37,7 @@ public class IntelliJPasswordStorage implements PasswordStorage {
   }
 
   @Override
-  public boolean store(@NotNull String user, char[] password) {
+  public boolean store(@NotNull String user, char @NotNull[] password) {
     Credentials credentials = password == null ? null : new Credentials(user, password);
     passwordSafe.set(credentialAttributes, credentials);
     return !passwordSafe.isPasswordStoredOnlyInMemory(credentialAttributes, credentials);
