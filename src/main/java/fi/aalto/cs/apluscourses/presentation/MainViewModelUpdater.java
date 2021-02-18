@@ -206,7 +206,7 @@ public class MainViewModelUpdater {
   private void run() {
     try {
       // Sonar dislikes infinite loops...
-      while (true) { //NOSONAR
+      while (true) { //  NOSONAR
 
         // Wait until there are no prevents and then disable prevents.
         beginUpdate();

@@ -266,7 +266,7 @@ public class CoursesClient {
       if (entity == null) {
         details = "" + statusCode + " " + response.getStatusLine().getReasonPhrase();
       } else {
-        // Two possibilities: {"errors": [...]} and {"detail": "..."}
+        // Two possibilities: {"errors": [...]} and {"detail": "..."} NOSONAR
         JSONObject json = new JSONObject(new JSONTokener(
             new ByteArrayInputStream(EntityUtils.toByteArray(entity))
         ));

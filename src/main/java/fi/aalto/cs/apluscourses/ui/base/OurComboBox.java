@@ -5,6 +5,8 @@ import fi.aalto.cs.apluscourses.ui.utils.TwoWayBindable;
 import org.jetbrains.annotations.Nullable;
 
 public class OurComboBox<E> extends ComboBox<E> {
+
+  private static final long serialVersionUID = -644617353769353138L;
   private final Class<E> klass;
 
   public final TwoWayBindable<OurComboBox<E>, E> selectedItemBindable = new TwoWayBindable<>(this,

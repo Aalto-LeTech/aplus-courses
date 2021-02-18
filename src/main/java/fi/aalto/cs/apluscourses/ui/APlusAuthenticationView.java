@@ -23,6 +23,7 @@ public class APlusAuthenticationView extends DialogWrapper implements Dialog {
   @GuiObject
   protected JPasswordField inputField;
   private JPanel basePanel;
+  @GuiObject
   private LinkLabel<Object> tokenPageLink;
 
   AuthenticationViewModel authenticationViewModel;

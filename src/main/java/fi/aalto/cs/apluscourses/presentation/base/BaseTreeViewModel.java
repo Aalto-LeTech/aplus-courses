@@ -17,7 +17,7 @@ public class BaseTreeViewModel<T> extends SelectableNodeViewModel<T> {
   @NotNull
   private final Object filterLock = new Object();
   @Nullable
-  protected transient volatile SelectableNodeViewModel<?> selectedItem = null; //NOSONAR
+  protected transient volatile SelectableNodeViewModel<?> selectedItem = null; //  NOSONAR
 
   public void setSelectedItem(@Nullable SelectableNodeViewModel<?> selectedItem) {
     this.selectedItem = selectedItem;

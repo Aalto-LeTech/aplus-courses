@@ -26,6 +26,8 @@ import org.jetbrains.annotations.Nullable;
 public class BaseListViewModel<E extends ListElementViewModel<?>> extends AbstractListModel<E>
     implements SelectableListModel<E> {
 
+  private static final long serialVersionUID = 4599345011218950035L;
+
   @NotNull
   private final transient ListSelectionModel selectionModel;
 
@@ -90,6 +92,8 @@ public class BaseListViewModel<E extends ListElementViewModel<?>> extends Abstra
   }
 
   private class SelectionModel extends DefaultListSelectionModel implements ListSelectionListener {
+
+    private static final long serialVersionUID = 6379169216653339790L;
 
     public SelectionModel() {
       addListSelectionListener(this);

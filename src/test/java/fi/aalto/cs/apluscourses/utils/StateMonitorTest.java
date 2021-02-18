@@ -90,7 +90,8 @@ public class StateMonitorTest {
     });
     thread.start();
 
-    Thread.sleep(20); // Let's go to sleep and give the other thread a possibility to proceed...
+    // Let's go to sleep and give the other thread a possibility to proceed...
+    Thread.sleep(20); // NOSONAR
 
     assertFalse("The other thread should still be waiting", waitOver.get());
 
@@ -106,7 +107,7 @@ public class StateMonitorTest {
     StateMonitor stateMonitor = new StateMonitor(stateListener);
     Thread thread = new Thread(() -> stateMonitor.waitUntil(9999));
 
-    Thread.sleep(20); //NOSONAR
+    Thread.sleep(20); //  NOSONAR
 
     thread.interrupt();
     thread.join();

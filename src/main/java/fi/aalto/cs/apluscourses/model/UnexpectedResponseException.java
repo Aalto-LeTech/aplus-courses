@@ -5,6 +5,9 @@ import org.apache.http.HttpResponse;
 import org.jetbrains.annotations.NotNull;
 
 public class UnexpectedResponseException extends IOException {
+
+  private static final long serialVersionUID = 6375302744410394488L;
+
   @NotNull
   private final HttpResponse response;
 

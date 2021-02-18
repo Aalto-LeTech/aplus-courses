@@ -100,7 +100,7 @@ public class SubmissionStatusUpdater {
 
   private void run() {
     try {
-      while (true) { //NOSONAR
+      while (true) { //  NOSONAR
         if (totalTime >= timeLimit) {
           return;
         }

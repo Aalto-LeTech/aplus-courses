@@ -32,7 +32,7 @@ public class ModulesView {
    * A view that holds the content of the Modules tool window.
    */
   public ModulesView() {
-    // Avoid this instance getting GC'ed before its UI components.
+    // Avoid this instance getting GC'd before its UI components.
     //
     // Here we add a (strong) reference from a UI component to this object, thus ensuring that this
     // object lives at least as long as that UI component.
@@ -40,7 +40,7 @@ public class ModulesView {
     // This makes it possible to use this object as a weakly referred observer for changes that
     // require UI updates.
     //
-    // If UI components are GC'ed, this object can also go.
+    // If UI components are GC'd, this object can also go.
     //
     // It depends on the implementation of IntelliJ's GUI designer whether this "hack"
     // needed (I don't know if these objects of bound classes are strongly referred to from UI or
