@@ -37,6 +37,7 @@ public class Version {
 
   public static class InvalidVersionStringException extends RuntimeException {
 
+    private static final long serialVersionUID = 7347664870081299147L;
     @NotNull
     private final String versionString;
 

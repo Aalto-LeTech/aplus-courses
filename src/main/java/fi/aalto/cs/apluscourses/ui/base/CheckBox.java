@@ -10,6 +10,7 @@ import javax.swing.JCheckBox;
  */
 public class CheckBox extends JCheckBox {
 
+  private static final long serialVersionUID = -9137385682740881530L;
   public final transient TwoWayBindable<CheckBox, Boolean> isCheckedBindable =
       new TwoWayBindable<>(this, CheckBox::setSelected, CheckBox::isSelected);
 

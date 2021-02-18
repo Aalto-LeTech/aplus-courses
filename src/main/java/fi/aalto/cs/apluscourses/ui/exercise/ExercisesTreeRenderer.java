@@ -17,6 +17,8 @@ import org.jetbrains.annotations.NotNull;
 
 public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
 
+  private static final long serialVersionUID = -3577705990573802884L;
+
   @NotNull
   private static Icon statusToIcon(@NotNull ExerciseViewModel.Status exerciseStatus) {
     switch (exerciseStatus) {

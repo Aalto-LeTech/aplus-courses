@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class ReplConfigurationDialog extends DialogBaseHelper {
 
+  private static final long serialVersionUID = -3020392293603814172L;
   private JPanel contentPane;
   private JButton buttonOk;
   private JButton buttonCancel;

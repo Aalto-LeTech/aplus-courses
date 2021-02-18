@@ -18,6 +18,7 @@ public class ColoredModuleListRenderer
           SimpleTextAttributes.STYLE_BOLD, null);
   private static final SimpleTextAttributes STATUS_TEXT_STYLE = new SimpleTextAttributes(
           SimpleTextAttributes.STYLE_ITALIC | SimpleTextAttributes.STYLE_SMALLER, null);
+  private static final long serialVersionUID = -2727735970128640598L;
 
   @Override
   protected void customizeCellRenderer(@NotNull JList<? extends ModuleListElementViewModel> list,

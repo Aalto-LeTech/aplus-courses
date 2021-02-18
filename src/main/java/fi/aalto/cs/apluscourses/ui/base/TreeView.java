@@ -38,6 +38,7 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
           return obj.streamVisibleChildren();
         }
       };
+  private static final long serialVersionUID = 4357973557503445593L;
 
   private final transient Set<ActionListener> nodeAppliedListeners = ConcurrentHashMap.newKeySet();
   private final transient Object popupMenuLock = new Object();

@@ -5,6 +5,9 @@ import fi.aalto.cs.apluscourses.presentation.module.ModuleListElementViewModel;
 import fi.aalto.cs.apluscourses.ui.base.BaseListView;
 
 public class ModuleListView extends BaseListView<ModuleListElementViewModel> {
+
+  private static final long serialVersionUID = 7229585985248403267L;
+
   /**
    * Constructs a view for the module list.
    */

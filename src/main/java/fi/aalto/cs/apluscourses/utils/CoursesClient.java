@@ -272,12 +272,12 @@ public class CoursesClient {
         ));
         details = json.optString("detail");
         if (details == null || details.trim().isEmpty()) {
-          details = String.join(", ", json
+          details = json
               .getJSONArray("errors")
               .toList()
               .stream()
               .map(Object::toString)
-              .collect(Collectors.toList()));
+              .collect(Collectors.joining(", "));
         }
       }
     } catch (JSONException e) {

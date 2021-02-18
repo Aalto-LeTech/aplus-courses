@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class FileDoesNotExistException extends Exception {
 
+  private static final long serialVersionUID = -8726453899914862488L;
   @NotNull
   private final Path path;
   @NotNull

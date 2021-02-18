@@ -145,7 +145,7 @@ public abstract class Component {
   public abstract boolean hasLocalChanges();
 
   @FunctionalInterface
-  public static interface InitializationCallback {
+  public interface InitializationCallback {
     void initialize(Component component);
   }
 }

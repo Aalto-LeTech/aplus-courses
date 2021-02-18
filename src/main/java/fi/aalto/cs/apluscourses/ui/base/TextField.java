@@ -11,6 +11,7 @@ import javax.swing.event.DocumentListener;
  */
 public class TextField extends JTextField {
 
+  private static final long serialVersionUID = -2791614715566063141L;
   public final transient TwoWayBindable<TextField, String> textBindable =
       new TwoWayBindable<>(this, TextField::setText, TextField::getText);
 

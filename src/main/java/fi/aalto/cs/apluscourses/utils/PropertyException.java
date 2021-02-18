@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class PropertyException extends Exception {
 
+  private static final long serialVersionUID = -4775786552242112438L;
   @NotNull
   private final Properties properties;
   @NotNull

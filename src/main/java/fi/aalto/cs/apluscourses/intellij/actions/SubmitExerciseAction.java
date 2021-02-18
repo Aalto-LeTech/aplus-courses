@@ -264,6 +264,7 @@ public class SubmitExerciseAction extends AnAction {
 
   private static class ModuleMissingException extends Exception {
 
+    private static final long serialVersionUID = -7076310586877707380L;
     @NotNull
     private final String moduleName;
 
