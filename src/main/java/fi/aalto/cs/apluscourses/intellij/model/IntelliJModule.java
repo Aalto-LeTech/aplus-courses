@@ -4,6 +4,8 @@ import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.util.io.FileUtilRt;
+import com.intellij.util.concurrency.annotations.RequiresReadLock;
+import com.intellij.util.concurrency.annotations.RequiresWriteLock;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.intellij.utils.ListDependenciesPolicy;
 import fi.aalto.cs.apluscourses.intellij.utils.VfsUtil;
@@ -22,8 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import org.apache.commons.io.FileUtils;
-import org.jetbrains.annotations.CalledWithReadLock;
-import org.jetbrains.annotations.CalledWithWriteLock;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -73,7 +73,7 @@ class IntelliJModule
     WriteAction.runAndWait(this::loadInternal);
   }
 
-  @CalledWithWriteLock
+  @RequiresWriteLock
   private void loadInternal() throws ComponentLoadException {
     try {
       project.getModuleManager().loadModule(getImlFile().toString());
@@ -92,7 +92,7 @@ class IntelliJModule
     WriteAction.runAndWait(this::unloadInternal);
   }
 
-  @CalledWithWriteLock
+  @RequiresWriteLock
   private void unloadInternal() {
     com.intellij.openapi.module.Module module = getPlatformObject();
     if (module != null) {
@@ -164,7 +164,7 @@ class IntelliJModule
   }
 
   @Override
-  @CalledWithReadLock
+  @RequiresReadLock
   @Nullable
   public com.intellij.openapi.module.Module getPlatformObject() {
     return project.getModuleManager().findModuleByName(getName());
