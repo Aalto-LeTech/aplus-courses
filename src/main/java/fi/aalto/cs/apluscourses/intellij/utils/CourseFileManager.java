@@ -152,7 +152,6 @@ public class CourseFileManager {
     return new JSONObject(FileUtils.readFileToString(courseFile, StandardCharsets.UTF_8));
   }
 
-  @NotNull
   private void writeCourseFile(@NotNull JSONObject jsonObject) throws IOException {
     FileUtils.writeStringToFile(courseFile, jsonObject.toString(), StandardCharsets.UTF_8);
   }

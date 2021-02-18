@@ -110,7 +110,6 @@ public class Exercise implements Browsable {
     return htmlUrl;
   }
 
-  @NotNull
   public void addSubmissionResult(@NotNull SubmissionResult submissionResult) {
     submissionResults.add(submissionResult);
   }

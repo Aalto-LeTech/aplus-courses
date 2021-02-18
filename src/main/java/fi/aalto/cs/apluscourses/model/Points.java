@@ -27,6 +27,7 @@ public class Points {
 
   /**
    * Construct an instance with the given maps.
+   *
    * @param submissions      A map of exercise IDs to a list of submission IDs for that exercise.
    *                         The first element of the list should be the ID of the oldest submission
    *                         and the last element should be the ID of the latest submission.
@@ -103,9 +104,8 @@ public class Points {
   /*
    * Parses the submissions (IDs and points) from the given JSON and adds them to the given maps.
    */
-  @NotNull
   private static void parseSubmissions(@NotNull JSONObject exerciseJson,
-                                       @NotNull long exerciseId,
+                                       long exerciseId,
                                        @NotNull Map<Long, List<Long>> submissions,
                                        @NotNull Map<Long, Integer> submissionPoints) {
     JSONArray submissionsArray = exerciseJson.getJSONArray("submissions_with_points");

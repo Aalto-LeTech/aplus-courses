@@ -73,7 +73,7 @@ public class SubmissionResult implements Browsable {
     return exercise.getHtmlUrl() + "submissions/" + submissionId + "/";
   }
 
-  public Exercise getExercise() {
+  public @NotNull Exercise getExercise() {
     return exercise;
   }
 }
