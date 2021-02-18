@@ -25,7 +25,6 @@ import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionResultViewModel;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
-
 import java.net.URISyntaxException;
 import java.util.Collections;
 import org.junit.Test;
