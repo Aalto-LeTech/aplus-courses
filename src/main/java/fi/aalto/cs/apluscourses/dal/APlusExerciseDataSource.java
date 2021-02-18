@@ -76,7 +76,7 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   @Override
   @NotNull
   public SubmissionInfo getSubmissionInfo(@NotNull Exercise exercise,
-      @NotNull Authentication authentication)
+                                          @NotNull Authentication authentication)
       throws IOException {
     String url = apiUrl + EXERCISES + "/" + exercise.getId() + "/";
     JSONObject response = client.fetch(url, authentication);
@@ -91,7 +91,7 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   @Override
   @NotNull
   public SubmissionHistory getSubmissionHistory(@NotNull Exercise exercise,
-      @NotNull Authentication authentication)
+                                                @NotNull Authentication authentication)
       throws IOException {
     String url = apiUrl + EXERCISES + "/" + exercise.getId() + "/" + SUBMISSIONS + "/me/";
     JSONObject response = client.fetch(url, authentication);
@@ -122,8 +122,8 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   @Override
   @NotNull
   public List<ExerciseGroup> getExerciseGroups(@NotNull Course course,
-      @NotNull Points points,
-      @NotNull Authentication authentication)
+                                               @NotNull Points points,
+                                               @NotNull Authentication authentication)
       throws IOException {
     String url = apiUrl + COURSES + "/" + course.getId() + "/" + EXERCISES + "/";
     JSONObject response = client.fetch(url, authentication);
