@@ -192,10 +192,8 @@ public class CourseProjectAction extends AnAction {
     executor.execute(() -> {
       try {
         autoInstallDone.get();
-        var settingsPresent = projectSettingsImported.get()
-                && importIdeSettings
-                && ideSettingsImported.get();
-        if (Boolean.TRUE.equals(settingsPresent)) {
+        if (projectSettingsImported.get() && importIdeSettings //  NOSONAR
+            && ideSettingsImported.get()) { //  NOSONAR
           ideRestarter.run();
         }
       } catch (InterruptedException ex) {
