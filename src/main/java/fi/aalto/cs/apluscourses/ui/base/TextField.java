@@ -1,7 +1,6 @@
 package fi.aalto.cs.apluscourses.ui.base;
 
 import fi.aalto.cs.apluscourses.ui.utils.TwoWayBindable;
-import javax.naming.OperationNotSupportedException;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
