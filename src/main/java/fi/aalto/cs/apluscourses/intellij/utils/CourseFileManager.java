@@ -75,7 +75,7 @@ public class CourseFileManager {
    * the course file doesn't exist, {@code true} otherwise.
    *
    * @return {@code true} if the course file was successfully loaded, {@code false} if the course
-   *         file doesn't exist.
+   * file doesn't exist.
    * @throws IOException   If an IO error occurs while reading the course file.
    * @throws JSONException If the course file contains malformed JSON.
    */
@@ -129,6 +129,7 @@ public class CourseFileManager {
   /**
    * Returns the language chosen by the user for the course corresponding to the currently loaded
    * course file. This should only be called after a course file has been successfully loaded.
+   *
    * @return
    */
   @NotNull
@@ -210,7 +211,8 @@ public class CourseFileManager {
       try {
         downloadedAt = ZonedDateTime.parse(moduleObject.getString(MODULE_DOWNLOADED_AT_KEY));
       } catch (JSONException e) {
-        logger.error("Module " + moduleName + " missing 'downloadedAt' in course file", e);
+        logger
+            .error(String.format("Module %s missing 'downloadedAt' in course file", moduleName), e);
         downloadedAt = Instant.EPOCH.atZone(ZoneId.systemDefault());
       }
 

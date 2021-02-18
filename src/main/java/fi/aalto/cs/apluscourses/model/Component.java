@@ -36,7 +36,7 @@ public abstract class Component {
 
   private List<String> dependencies;
 
-  public Component(@NotNull String name) {
+  protected Component(@NotNull String name) {
     this.name = name;
   }
 

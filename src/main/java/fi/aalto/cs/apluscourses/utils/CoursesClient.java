@@ -276,7 +276,7 @@ public class CoursesClient {
               .getJSONArray("errors")
               .toList()
               .stream()
-              .map(obj -> obj.toString())
+              .map(Object::toString)
               .collect(Collectors.toList()));
         }
       }

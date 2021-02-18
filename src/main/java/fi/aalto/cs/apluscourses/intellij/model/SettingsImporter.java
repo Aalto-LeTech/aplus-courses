@@ -66,8 +66,8 @@ public class SettingsImporter {
     String configPath = FileUtilRt.toSystemIndependentName(PathManager.getConfigPath());
     StartupActionScriptManager.addActionCommands(
         Arrays.asList(
-            new StartupActionScriptManager.UnzipCommand(file, new File(configPath)),
-            new StartupActionScriptManager.DeleteCommand(file)
+            new StartupActionScriptManager.UnzipCommand(file.toPath(), Path.of(configPath)),
+            new StartupActionScriptManager.DeleteCommand(file.toPath())
         )
     );
 

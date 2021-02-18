@@ -77,7 +77,7 @@ public class MainViewModel {
       List<ExerciseGroup> exerciseGroups = dataSource.getExerciseGroups(course, points, auth);
       exercisesViewModel.set(new ExercisesTreeViewModel(exerciseGroups, exerciseFilterOptions));
     } catch (InvalidAuthenticationException e) {
-      logger.error("Failed to fetch exercises", e);
+      logger.error("Failed to fetch exercises due to authentication issues", e);
       // TODO: might want to communicate this to the user somehow
     } catch (IOException e) {
       logger.error("Failed to fetch exercises", e);

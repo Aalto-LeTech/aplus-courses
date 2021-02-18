@@ -76,7 +76,7 @@ class IntelliJModule
   @RequiresWriteLock
   private void loadInternal() throws ComponentLoadException {
     try {
-      project.getModuleManager().loadModule(getImlFile().toString());
+      project.getModuleManager().loadModule(getImlFile().toPath());
       PluginSettings
           .getInstance()
           .getCourseFileManager(project.getProject())

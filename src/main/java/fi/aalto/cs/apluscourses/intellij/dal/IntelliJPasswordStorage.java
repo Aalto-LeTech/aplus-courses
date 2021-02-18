@@ -38,14 +38,13 @@ public class IntelliJPasswordStorage implements PasswordStorage {
   }
 
   @Override
-  public boolean store(@NotNull String user, @Nullable char[] password) {
+  public boolean store(@NotNull String user, char[] password) {
     Credentials credentials = password == null ? null : new Credentials(user, password);
     passwordSafe.set(credentialAttributes, credentials);
     return !passwordSafe.isPasswordStoredOnlyInMemory(credentialAttributes, credentials);
   }
 
   @Override
-  @Nullable
   public char[] restorePassword() {
     return Optional.ofNullable(passwordSafe.get(credentialAttributes))
         .map(Credentials::getPassword)

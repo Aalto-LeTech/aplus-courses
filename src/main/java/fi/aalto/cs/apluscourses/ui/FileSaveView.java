@@ -18,7 +18,7 @@ public class FileSaveView implements Dialog {
   private final Project project;
 
   public FileSaveView(@NotNull FileSaveViewModel viewModel,
-                      @Nullable Project project) {
+                      @NotNull Project project) {
     this.viewModel = viewModel;
     this.project = project;
   }

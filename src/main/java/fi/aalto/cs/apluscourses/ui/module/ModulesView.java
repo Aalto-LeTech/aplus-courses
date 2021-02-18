@@ -25,7 +25,7 @@ public class ModulesView {
   @GuiObject
   private JPanel basePanel;
   private JPanel cardPanel;
-  public JLabel emptyText;
+  private JLabel emptyText;
   private JScrollPane pane;
   private CardLayout cl;
 
@@ -72,4 +72,7 @@ public class ModulesView {
     );
   }
 
+  public JLabel getEmptyText() {
+    return emptyText;
+  }
 }

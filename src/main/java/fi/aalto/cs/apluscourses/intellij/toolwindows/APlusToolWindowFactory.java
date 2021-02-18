@@ -57,7 +57,7 @@ public class APlusToolWindowFactory extends BaseToolWindowFactory implements Dum
 
     modulesView.moduleListView.addListActionListener(ActionUtil.createOnEventLauncher(
         InstallModuleAction.ACTION_ID, modulesView.moduleListView));
-    modulesView.emptyText.addMouseListener(new EmptyLabelMouseAdapter());
+    modulesView.getEmptyText().addMouseListener(new EmptyLabelMouseAdapter());
 
     return modulesView;
   }
