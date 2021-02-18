@@ -1,7 +1,5 @@
 package fi.aalto.cs.apluscourses.ui.base;
 
-import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
-
 import fi.aalto.cs.apluscourses.presentation.base.BaseTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
 import fi.aalto.cs.apluscourses.ui.utils.TreeModelBuilder;
@@ -138,9 +136,9 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
     TreeModel treeModel = getModel();
     return treeModel == null ? Collections.emptySet()
         : new TreeModelTraverser(treeModel).traverse()
-        .filter(this::isExpanded)
-        .map(new TreePathStringEncoder()::encode)
-        .collect(Collectors.toSet());
+            .filter(this::isExpanded)
+            .map(new TreePathStringEncoder()::encode)
+            .collect(Collectors.toSet());
   }
 
   private void restoreExpandedState(@NotNull Set<String> expandedState) {
@@ -175,6 +173,7 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
   }
 
   protected class TreeMouseListener extends MouseAdapter {
+
     @Override
     public void mouseReleased(MouseEvent mouseEvent) {
       if (mouseEvent.isPopupTrigger()) {

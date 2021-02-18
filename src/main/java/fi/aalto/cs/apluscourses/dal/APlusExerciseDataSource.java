@@ -56,13 +56,13 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   /**
    * Constructor for demanding use (e.g. tests).
    *
-   * @param client         Client to fetch and post.
-   * @param apiUrl         The base URL of API.
-   * @param parser         JSON parser.
+   * @param client Client to fetch and post.
+   * @param apiUrl The base URL of API.
+   * @param parser JSON parser.
    */
   public APlusExerciseDataSource(@NotNull String apiUrl,
-                                 @NotNull Client client,
-                                 @NotNull Parser parser) {
+      @NotNull Client client,
+      @NotNull Parser parser) {
     this.client = client;
     this.apiUrl = apiUrl;
     this.parser = parser;
@@ -76,7 +76,7 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   @Override
   @NotNull
   public SubmissionInfo getSubmissionInfo(@NotNull Exercise exercise,
-                                          @NotNull Authentication authentication)
+      @NotNull Authentication authentication)
       throws IOException {
     String url = apiUrl + EXERCISES + "/" + exercise.getId() + "/";
     JSONObject response = client.fetch(url, authentication);
@@ -91,7 +91,7 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   @Override
   @NotNull
   public SubmissionHistory getSubmissionHistory(@NotNull Exercise exercise,
-                                                @NotNull Authentication authentication)
+      @NotNull Authentication authentication)
       throws IOException {
     String url = apiUrl + EXERCISES + "/" + exercise.getId() + "/" + SUBMISSIONS + "/me/";
     JSONObject response = client.fetch(url, authentication);
@@ -99,9 +99,8 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   }
 
   /**
-   * Get all of the groups from the A+ API for the user corresponding to the given authentication.
-   * A group with id 0 and a single member name "Submit alone" is added to the beginning of the
-   * list.
+   * Get all of the groups from the A+ API for the user corresponding to the given authentication. A
+   * group with id 0 and a single member name "Submit alone" is added to the beginning of the list.
    *
    * @return A list of {@link Group}s that the user is a member of in the given course.
    * @throws IOException If an error occurs (e.g. network error).
@@ -116,14 +115,15 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
 
   /**
    * Get all of the exercise groups in the given course by making a request to the A+ API.
+   *
    * @throws IOException If an IO error occurs (for an example a network issue). This is an instance
    *                     of {@link InvalidAuthenticationException} if authentication is invalid.
    */
   @Override
   @NotNull
   public List<ExerciseGroup> getExerciseGroups(@NotNull Course course,
-                                               @NotNull Points points,
-                                               @NotNull Authentication authentication)
+      @NotNull Points points,
+      @NotNull Authentication authentication)
       throws IOException {
     String url = apiUrl + COURSES + "/" + course.getId() + "/" + EXERCISES + "/";
     JSONObject response = client.fetch(url, authentication);
@@ -132,6 +132,7 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
 
   /**
    * Get all of the points for the given course by making a request to the A+ API.
+   *
    * @throws IOException If an IO error occurs (for an example a network issue). This is an instance
    *                     of {@link InvalidAuthenticationException} if authentication is invalid.
    */
@@ -147,8 +148,8 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   @Override
   @NotNull
   public SubmissionResult getSubmissionResult(@NotNull String submissionUrl,
-                                              @NotNull Exercise exercise,
-                                              @NotNull Authentication authentication)
+      @NotNull Exercise exercise,
+      @NotNull Authentication authentication)
       throws IOException {
     JSONObject response = client.fetch(submissionUrl, authentication);
     return parser.parseSubmissionResult(response, exercise);
@@ -169,8 +170,8 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
     for (Map.Entry<String, Path> entry : submission.getFiles().entrySet()) {
       data.put(entry.getKey(), entry.getValue().toFile());
     }
-    String url = apiUrl + EXERCISES + "/" + submission.getExercise().getId() + "/" +
-            SUBMISSIONS + "/submit/";
+    String url = apiUrl + EXERCISES + "/" + submission.getExercise().getId()
+        + "/" + SUBMISSIONS + "/submit/";
     return client.post(url, authentication, data);
   }
 
@@ -208,8 +209,8 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
     @Override
     @Nullable
     public String post(@NotNull String url,
-                       @NotNull Authentication authentication,
-                       @NotNull Map<String, Object> data) throws IOException {
+        @NotNull Authentication authentication,
+        @NotNull Map<String, Object> data) throws IOException {
       return CoursesClient.post(
           new URL(url),
           authentication,
@@ -238,7 +239,7 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
 
     @Override
     public List<ExerciseGroup> parseExerciseGroups(@NotNull JSONArray array,
-                                                   @NotNull Points points) {
+        @NotNull Points points) {
       return ExerciseGroup.fromJsonArray(array, points);
     }
 
@@ -249,7 +250,7 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
 
     @Override
     public SubmissionResult parseSubmissionResult(@NotNull JSONObject object,
-                                                  @NotNull Exercise exercise) {
+        @NotNull Exercise exercise) {
       return SubmissionResult.fromJsonObject(object, exercise);
     }
 

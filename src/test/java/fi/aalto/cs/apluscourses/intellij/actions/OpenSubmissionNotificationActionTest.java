@@ -17,11 +17,10 @@ import fi.aalto.cs.apluscourses.intellij.notifications.UrlRenderingErrorNotifica
 import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import fi.aalto.cs.apluscourses.model.UrlRenderer;
+import java.net.URISyntaxException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-
-import java.net.URISyntaxException;
 
 public class OpenSubmissionNotificationActionTest {
 
