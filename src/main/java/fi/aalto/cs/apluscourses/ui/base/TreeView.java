@@ -31,7 +31,7 @@ import org.jetbrains.annotations.Nullable;
 public class TreeView extends com.intellij.ui.treeStructure.Tree {
 
   private static final TreeModelBuilder<SelectableNodeViewModel<?>> TREE_MODEL_BUILDER =
-      new TreeModelBuilder<SelectableNodeViewModel<?>>() {
+      new TreeModelBuilder<>() {
         @Override
         protected @NotNull Stream<? extends SelectableNodeViewModel<?>> childrenOf(
             @NotNull SelectableNodeViewModel<?> obj) {

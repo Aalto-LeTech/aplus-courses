@@ -5,8 +5,8 @@ import static org.junit.Assert.assertSame;
 
 import fi.aalto.cs.apluscourses.presentation.ViewModelExtensions.TestNodeViewModel;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -24,7 +24,7 @@ public class BaseTreeViewModelTest {
     childViewModel1 = new TestNodeViewModel(1, new Object(), Collections.emptyList());
     childViewModel2 = new TestNodeViewModel(2, new Object(), Collections.emptyList());
     treeViewModel = new BaseTreeViewModel<>(
-        new Object(), Arrays.asList(childViewModel1, childViewModel2), new Options());
+        new Object(), List.of(childViewModel1, childViewModel2), new Options());
   }
 
   @Test

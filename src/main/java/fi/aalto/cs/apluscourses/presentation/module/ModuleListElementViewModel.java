@@ -11,7 +11,6 @@ import fi.aalto.cs.apluscourses.utils.PluginResourceBundle;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-
 import org.jetbrains.annotations.NotNull;
 
 public class ModuleListElementViewModel extends ListElementViewModel<Module>

@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import org.jetbrains.annotations.NotNull;
 
 public class FileDoesNotExistException extends Exception {
+
   @NotNull
   private final Path path;
   @NotNull

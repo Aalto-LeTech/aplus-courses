@@ -14,7 +14,6 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import fi.aalto.cs.apluscourses.utils.Event;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -107,7 +106,7 @@ public class ComponentTest {
 
   @Test
   public void testGetDependencies() {
-    List<String> dependencies = Arrays.asList("dep1", "dep2", "dep3");
+    List<String> dependencies = List.of("dep1", "dep2", "dep3");
     Component component = spy(new ModelExtensions.TestComponent());
     when(component.computeDependencies()).thenReturn(dependencies);
 
@@ -149,7 +148,7 @@ public class ComponentTest {
       @NotNull
       @Override
       protected List<String> computeDependencies() {
-        return Arrays.asList("dependency1", "dependency2");
+        return List.of("dependency1", "dependency2");
       }
     };
     component.stateMonitor.set(Component.LOADED);

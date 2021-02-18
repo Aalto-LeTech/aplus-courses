@@ -55,7 +55,7 @@ public class CourseSelectionView extends OurDialogWrapper {
       }
     });
 
-    courseList.setCellRenderer(new ColoredListCellRenderer<CourseItemViewModel>() {
+    courseList.setCellRenderer(new ColoredListCellRenderer<>() {
       @Override
       protected void customizeCellRenderer(@NotNull JList<? extends CourseItemViewModel> list,
                                            CourseItemViewModel value,

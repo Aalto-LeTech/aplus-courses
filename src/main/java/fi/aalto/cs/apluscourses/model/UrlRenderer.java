@@ -3,7 +3,6 @@ package fi.aalto.cs.apluscourses.model;
 import com.intellij.ide.BrowserUtil;
 import java.net.URI;
 import java.net.URISyntaxException;
-
 import org.jetbrains.annotations.NotNull;
 
 public class UrlRenderer {

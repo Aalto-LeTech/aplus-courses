@@ -8,7 +8,7 @@ public class SubmissionResult implements Browsable {
   public enum Status {
     UNKNOWN,
     GRADED,
-    UNOFFICIAL;
+    UNOFFICIAL
   }
 
   private final long submissionId;

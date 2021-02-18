@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -90,7 +89,7 @@ public class Points {
       JSONArray exercisesArray = module.getJSONArray("exercises");
       for (int j = 0; j < exercisesArray.length(); ++j) {
         JSONObject exercise = exercisesArray.getJSONObject(j);
-        Long exerciseId = exercise.getLong("id");
+        long exerciseId = exercise.getLong("id");
 
         parseSubmissions(exercise, exerciseId, submissions, submissionPoints);
 

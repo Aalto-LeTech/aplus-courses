@@ -106,7 +106,7 @@ public class StateMonitorTest {
     StateMonitor stateMonitor = new StateMonitor(stateListener);
     Thread thread = new Thread(() -> stateMonitor.waitUntil(9999));
 
-    Thread.sleep(20);
+    Thread.sleep(20); //NOSONAR
 
     thread.interrupt();
     thread.join();

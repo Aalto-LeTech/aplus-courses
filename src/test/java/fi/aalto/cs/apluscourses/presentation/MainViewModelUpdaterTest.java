@@ -9,11 +9,8 @@ import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
 import org.junit.Test;
 
 public class MainViewModelUpdaterTest {
@@ -22,7 +19,7 @@ public class MainViewModelUpdaterTest {
   public void testOnlyShowUpdateNotificationOnce() {
     Module module1 = new ModelExtensions.TestModule("Module1");
     Module module2 = new ModelExtensions.TestModule("Module2");
-    List<Module> modules = Arrays.asList(module1, module2);
+    List<Module> modules = List.of(module1, module2);
 
     MainViewModel mainViewModel = new MainViewModel(new Options());
     Project project = mock(Project.class);

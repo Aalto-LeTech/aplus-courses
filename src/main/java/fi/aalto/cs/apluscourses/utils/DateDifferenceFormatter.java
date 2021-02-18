@@ -2,15 +2,13 @@ package fi.aalto.cs.apluscourses.utils;
 
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
 public class DateDifferenceFormatter {
-  // TODO: in case of plugin localization, strings in this class should be moved into resources
 
   // the order of time units to check, ordered from most to least precise
-  private static final List<ChronoUnit> TimeUnits = Arrays.asList(
+  private static final List<ChronoUnit> TimeUnits = List.of(
           ChronoUnit.SECONDS,
           ChronoUnit.MINUTES,
           ChronoUnit.HOURS,

@@ -24,6 +24,7 @@ public class ModulesView {
   private JPanel basePanel;
   private JPanel cardPanel;
   private JLabel emptyText;
+  @GuiObject
   private JScrollPane pane;
   private CardLayout cl;
 

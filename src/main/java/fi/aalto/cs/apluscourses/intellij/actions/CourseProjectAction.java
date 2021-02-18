@@ -31,7 +31,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
@@ -73,7 +72,7 @@ public class CourseProjectAction extends AnAction {
 
   private final ExecutorService executor;
 
-  private static final List<CourseItemViewModel> AVAILABLE_COURSES = Arrays.asList(
+  private static final List<CourseItemViewModel> AVAILABLE_COURSES = List.of(
       new CourseItemViewModel("O1", "Fall 2020",
           "https://grader.cs.aalto.fi/static/O1_2020/projects/o1_course_config.json"),
       new CourseItemViewModel("Ohjelmointistudio 2 / Programming Studio A", "Spring 2021",

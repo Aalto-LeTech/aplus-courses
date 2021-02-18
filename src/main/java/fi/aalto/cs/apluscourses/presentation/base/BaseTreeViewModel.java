@@ -2,7 +2,6 @@ package fi.aalto.cs.apluscourses.presentation.base;
 
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import fi.aalto.cs.apluscourses.utils.Event;
-import java.util.Arrays;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -101,7 +100,7 @@ public class BaseTreeViewModel<T> extends SelectableNodeViewModel<T> {
     private final List<SelectableNodeViewModel<?>> path;
 
     public Selection(SelectableNodeViewModel<?>... pathToSelected) {
-      this(Arrays.asList(pathToSelected));
+      this(List.of(pathToSelected));
     }
 
     public Selection(@Nullable List<SelectableNodeViewModel<?>> pathToSelected) {
