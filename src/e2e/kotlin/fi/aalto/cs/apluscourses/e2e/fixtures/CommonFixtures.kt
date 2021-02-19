@@ -51,7 +51,8 @@ class IdeFrameFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent
     )
     fun modules() = find(
         CommonContainerFixture::class.java,
-        byXpath("//div[@class='ModuleListView']")
+        byXpath("//div[@class='ModuleListView']"),
+        Duration.ofSeconds(20)
     )
 }
 
