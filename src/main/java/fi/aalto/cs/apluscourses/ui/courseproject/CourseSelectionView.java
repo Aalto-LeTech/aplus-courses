@@ -24,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class CourseSelectionView extends OurDialogWrapper {
+
   private CourseSelectionViewModel viewModel;
 
   private JPanel basePanel;
@@ -54,7 +55,8 @@ public class CourseSelectionView extends OurDialogWrapper {
       }
     });
 
-    courseList.setCellRenderer(new ColoredListCellRenderer<CourseItemViewModel>() {
+    courseList.setCellRenderer(new ColoredListCellRenderer<>() {
+
       @Override
       protected void customizeCellRenderer(@NotNull JList<? extends CourseItemViewModel> list,
                                            CourseItemViewModel value,
@@ -82,6 +84,7 @@ public class CourseSelectionView extends OurDialogWrapper {
 
       @Override
       public void focusLost(FocusEvent focusEvent) {
+        //do nothing
       }
     });
     urlField.textBindable.bindToSource(viewModel.selectedCourseUrl);
@@ -94,7 +97,7 @@ public class CourseSelectionView extends OurDialogWrapper {
   }
 
   @Override
-  protected @NotNull Action[] createActions() {
+  protected @NotNull Action @NotNull [] createActions() {
     return new Action[]{getOKAction(), getCancelAction()};
   }
 

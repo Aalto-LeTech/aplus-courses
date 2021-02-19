@@ -84,7 +84,7 @@ public class ExerciseGroup implements Browsable {
     return id;
   }
 
-  public String getName() {
+  public @NotNull String getName() {
     return name;
   }
 

@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -28,6 +27,7 @@ public class Points {
 
   /**
    * Construct an instance with the given maps.
+   *
    * @param submissions      A map of exercise IDs to a list of submission IDs for that exercise.
    *                         The first element of the list should be the ID of the oldest submission
    *                         and the last element should be the ID of the latest submission.
@@ -90,7 +90,7 @@ public class Points {
       JSONArray exercisesArray = module.getJSONArray("exercises");
       for (int j = 0; j < exercisesArray.length(); ++j) {
         JSONObject exercise = exercisesArray.getJSONObject(j);
-        Long exerciseId = exercise.getLong("id");
+        long exerciseId = exercise.getLong("id");
 
         parseSubmissions(exercise, exerciseId, submissions, submissionPoints);
 
@@ -104,9 +104,8 @@ public class Points {
   /*
    * Parses the submissions (IDs and points) from the given JSON and adds them to the given maps.
    */
-  @NotNull
   private static void parseSubmissions(@NotNull JSONObject exerciseJson,
-                                       @NotNull long exerciseId,
+                                       long exerciseId,
                                        @NotNull Map<Long, List<Long>> submissions,
                                        @NotNull Map<Long, Integer> submissionPoints) {
     JSONArray submissionsArray = exerciseJson.getJSONArray("submissions_with_points");

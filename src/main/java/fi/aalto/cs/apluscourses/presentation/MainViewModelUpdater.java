@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -207,7 +206,7 @@ public class MainViewModelUpdater {
   private void run() {
     try {
       // Sonar dislikes infinite loops...
-      while (true) { //NOSONAR
+      while (true) { //  NOSONAR
 
         // Wait until there are no prevents and then disable prevents.
         beginUpdate();

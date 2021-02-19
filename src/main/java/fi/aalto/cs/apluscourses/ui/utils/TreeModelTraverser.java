@@ -34,7 +34,7 @@ public class TreeModelTraverser {
     return ((Streamable<Object>) () -> new NodeIterator(node)).stream();
   }
 
-  private class NodeIterator implements Iterator<Object> {
+  private class NodeIterator implements Iterator<Object> { //  NOSONAR
     private final Object node;
     private int index = 0;
     private final int childCount;

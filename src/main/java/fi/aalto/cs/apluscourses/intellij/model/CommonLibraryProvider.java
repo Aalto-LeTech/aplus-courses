@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 public class CommonLibraryProvider implements ComponentSource {
   private final APlusProject project;
   private final ConcurrentMap<String, Library> commonLibraries;
-  private volatile Component.InitializationCallback initializationCallback; // NOSONAR
+  private volatile Component.InitializationCallback initializationCallback; //  NOSONAR
 
   public CommonLibraryProvider(@NotNull APlusProject project) {
     this.project = project;

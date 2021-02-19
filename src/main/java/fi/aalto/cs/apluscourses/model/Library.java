@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 public abstract class Library extends Component {
 
-  public Library(@NotNull String name) {
+  protected Library(@NotNull String name) {
     super(name);
   }
 

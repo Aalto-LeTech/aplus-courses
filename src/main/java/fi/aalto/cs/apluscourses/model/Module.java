@@ -33,11 +33,11 @@ public abstract class Module extends Component {
    * @param url       The URL from which the module can be downloaded.
    * @param versionId A string that uniquely identifies different versions of the same module.
    */
-  public Module(@NotNull String name,
-                @NotNull URL url,
-                @NotNull String versionId,
-                @Nullable String localVersionId,
-                @Nullable ZonedDateTime downloadedAt) {
+  protected Module(@NotNull String name,
+                   @NotNull URL url,
+                   @NotNull String versionId,
+                   @Nullable String localVersionId,
+                   @Nullable ZonedDateTime downloadedAt) {
     super(name);
     this.url = url;
     this.versionId = versionId;

@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -135,7 +134,7 @@ public class APlusExerciseDataSourceTest {
 
     doReturn(response).when(client)
         .fetch("https://example.com/courses/99/exercises/", authentication);
-    doReturn(Arrays.asList(exGroup0, exGroup1))
+    doReturn(List.of(exGroup0, exGroup1))
         .when(parser)
         .parseExerciseGroups(same(array), any(Points.class));
 
@@ -164,7 +163,7 @@ public class APlusExerciseDataSourceTest {
     paths.put(key1, path1);
 
     SubmissionInfo submissionInfo = new SubmissionInfo(
-        1, Collections.singletonMap("fi", Arrays.asList(subFile0, subFile1)));
+        1, Collections.singletonMap("fi", List.of(subFile0, subFile1)));
 
     Exercise exercise = new Exercise(71, "newex", "https://example.com", 0, 0, 0, true);
 

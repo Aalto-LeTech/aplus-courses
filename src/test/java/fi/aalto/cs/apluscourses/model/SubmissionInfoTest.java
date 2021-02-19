@@ -1,6 +1,5 @@
 package fi.aalto.cs.apluscourses.model;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,8 +18,8 @@ public class SubmissionInfoTest {
     Map<String, List<SubmittableFile>> files = new HashMap<>();
     String langFi = "fi";
     String langSe = "se";
-    files.put(langFi, Arrays.asList(file1, file2));
-    files.put(langSe, Arrays.asList(file1, file2));
+    files.put(langFi, List.of(file1, file2));
+    files.put(langSe, List.of(file1, file2));
 
     SubmissionInfo info = new SubmissionInfo(10, files);
     Assert.assertEquals("The submissions limit is the same as the one given to the constructor",
