@@ -9,8 +9,6 @@ import org.jetbrains.annotations.Nullable;
 
 public class GroupRenderer extends SimpleListCellRenderer<Group> {
 
-  private static final long serialVersionUID = 3192396227281974523L;
-
   @Override
   public void customize(@NotNull JList<? extends Group> list,
                         @Nullable Group group,

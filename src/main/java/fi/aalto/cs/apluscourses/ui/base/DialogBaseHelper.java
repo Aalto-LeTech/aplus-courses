@@ -14,8 +14,6 @@ import javax.swing.KeyStroke;
  */
 public class DialogBaseHelper extends JDialog {
 
-  private static final long serialVersionUID = 1755195292642434393L;
-
   protected void addDefaultListeners(JButton buttonOk, JButton buttonCancel, JPanel contentPane) {
     buttonOk.addActionListener(e -> onOk());
 

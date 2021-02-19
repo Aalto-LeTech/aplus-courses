@@ -13,8 +13,6 @@ import org.jetbrains.annotations.Nullable;
  */
 public class IconListCellRenderer<T> extends SimpleListCellRenderer<T> {
 
-  private static final long serialVersionUID = 1136883770955918127L;
-
   @Nullable
   private final String nullText;
   @Nullable

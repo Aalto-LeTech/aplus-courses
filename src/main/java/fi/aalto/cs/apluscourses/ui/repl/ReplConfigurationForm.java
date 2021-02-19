@@ -19,8 +19,6 @@ import org.jetbrains.annotations.NotNull;
 
 public class ReplConfigurationForm extends JPanel {
 
-  private static final long serialVersionUID = -2537359195687244580L;
-
   public static final String INFOLABEL_TEXT = getText("ui.repl.configuration.form.infoLabel");
 
   private ReplConfigurationFormModel model;

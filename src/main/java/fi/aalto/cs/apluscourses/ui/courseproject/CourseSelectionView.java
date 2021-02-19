@@ -56,7 +56,6 @@ public class CourseSelectionView extends OurDialogWrapper {
     });
 
     courseList.setCellRenderer(new ColoredListCellRenderer<>() {
-      private static final long serialVersionUID = 2751144246642043586L;
 
       @Override
       protected void customizeCellRenderer(@NotNull JList<? extends CourseItemViewModel> list,

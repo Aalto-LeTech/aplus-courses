@@ -5,7 +5,6 @@ import org.jetbrains.annotations.Nullable;
 
 public class ComponentLoadException extends Exception {
 
-  private static final long serialVersionUID = -3674405035175333225L;
   @NotNull
   private final String componentName;
 

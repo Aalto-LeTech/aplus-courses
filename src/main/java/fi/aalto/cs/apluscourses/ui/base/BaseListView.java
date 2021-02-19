@@ -40,7 +40,6 @@ public abstract class BaseListView<E extends ListElementViewModel<?>>
 
   private static final Object LIST_ACTION = new Object();
   private static final KeyStroke ENTER_KEY_STROKE = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
-  private static final long serialVersionUID = 1680002683513761726L;
 
   private final Set<ActionListener> listActionListeners = ConcurrentHashMap.newKeySet();
   private final Object popupMenuLock = new Object[0];

@@ -6,8 +6,7 @@ import javax.swing.JLabel;
 
 public class TemplateLabel extends JLabel {
 
-  private static final long serialVersionUID = -3950596453912717333L;
-  public final transient Bindable<TemplateLabel, Object> templateArgumentBindable =
+  public final Bindable<TemplateLabel, Object> templateArgumentBindable =
       new Bindable<>(this, TemplateLabel::applyTemplate);
 
   private String textTemplate = "{0}";

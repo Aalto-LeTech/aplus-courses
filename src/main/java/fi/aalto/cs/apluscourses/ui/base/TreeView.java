@@ -38,10 +38,9 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
           return obj.streamVisibleChildren();
         }
       };
-  private static final long serialVersionUID = 4357973557503445593L;
 
-  private final transient Set<ActionListener> nodeAppliedListeners = ConcurrentHashMap.newKeySet();
-  private final transient Object popupMenuLock = new Object();
+  private final Set<ActionListener> nodeAppliedListeners = ConcurrentHashMap.newKeySet();
+  private final Object popupMenuLock = new Object();
   private JPopupMenu popupMenu;
 
   @NotNull
@@ -49,8 +48,8 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
     return (SelectableNodeViewModel<?>) TREE_MODEL_BUILDER.getUserObject(node);
   }
 
-  private transient BaseTreeViewModel<?> viewModel = null;
-  private final transient Object viewModelLock = new Object();
+  private BaseTreeViewModel<?> viewModel = null;
+  private final Object viewModelLock = new Object();
 
   /**
    * Construct an empty tree with no nodes and the root set to invisible.

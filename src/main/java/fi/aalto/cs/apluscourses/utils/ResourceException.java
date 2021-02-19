@@ -8,7 +8,6 @@ import org.jetbrains.annotations.Nullable;
  */
 public class ResourceException extends Exception {
 
-  private static final long serialVersionUID = -5919848852777676654L;
   @NotNull
   private final String resourceName;
 
