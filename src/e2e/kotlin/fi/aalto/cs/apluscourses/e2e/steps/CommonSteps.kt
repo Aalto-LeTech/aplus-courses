@@ -3,6 +3,7 @@ package fi.aalto.cs.apluscourses.e2e.steps
 import com.intellij.remoterobot.RemoteRobot
 import com.intellij.remoterobot.stepsProcessing.step
 import fi.aalto.cs.apluscourses.e2e.fixtures.*
+import org.junit.Assert
 import java.time.Duration
 
 class CommonSteps(val remoteRobot: RemoteRobot) {
@@ -36,6 +37,32 @@ class CommonSteps(val remoteRobot: RemoteRobot) {
           }
           button("OK").click()
         }
+      }
+    }
+  }
+
+  fun openAPlusProjectWindow() {
+    with(remoteRobot) {
+      step("Open Turn Project Into A+ Project window") {
+        with(ideFrame()) {
+          menu().select("A+")
+          menu().select("Turn Project Into A+ Project")
+        }
+      }
+    }
+  }
+
+  fun aPlusSettings(settingsUnchanged: Boolean) {
+    with(remoteRobot) {
+      with(dialog("Turn Project Into A+ Project")) {
+        findText("Select language").click()
+        findText("English").click()
+        Assert.assertFalse(
+          "Leave IntelliJ settings unchanged checkbox is unchecked",
+          checkBox("Leave IntelliJ settings unchanged.").isSelected()
+        )
+        checkBox("Leave IntelliJ settings unchanged.").setValue(settingsUnchanged)
+        button("OK").click()
       }
     }
   }

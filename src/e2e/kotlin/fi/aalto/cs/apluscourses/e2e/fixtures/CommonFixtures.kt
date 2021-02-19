@@ -7,7 +7,6 @@ import com.intellij.remoterobot.data.RemoteComponent
 import com.intellij.remoterobot.fixtures.*
 import com.intellij.remoterobot.search.locators.byXpath
 import fi.aalto.cs.apluscourses.e2e.utils.LocatorBuilder
-import java.awt.Component
 import java.time.Duration
 import javax.swing.*
 
@@ -45,6 +44,15 @@ class IdeFrameFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent
     : CommonContainerFixture(remoteRobot, remoteComponent) {
   fun menu() = find(MenuItemFixture::class.java,
     LocatorBuilder().withClass(JMenuBar::class.java).build())
+    fun projectViewTree() = find(CommonContainerFixture::class.java, byXpath("//div[@class='ProjectViewTree']"))
+    fun aPlusStripeButton() = find(
+        CommonContainerFixture::class.java,
+        byXpath("//div[@accessiblename='A+ Courses' and @class='StripeButton' and @text='A+ Courses']")
+    )
+    fun modules() = find(
+        CommonContainerFixture::class.java,
+        byXpath("//div[@class='ModuleListView']")
+    )
 }
 
 @FixtureName("Menu Item")
