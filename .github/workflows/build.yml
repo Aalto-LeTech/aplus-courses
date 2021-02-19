@@ -47,4 +47,4 @@ jobs:
           Xvfb -ac :99 -screen 0 1920x1080x16 &
           gradle runIdeForUiTests &
       - name: Run the UI tests
-        run: sleep 180s && gradle uiTest --stacktrace --debug --info
+        run: sleep 180s && gradle uiTest
