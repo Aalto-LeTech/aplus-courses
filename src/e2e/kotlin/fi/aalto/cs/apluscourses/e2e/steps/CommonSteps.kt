@@ -5,6 +5,7 @@ import com.intellij.remoterobot.stepsProcessing.step
 import fi.aalto.cs.apluscourses.e2e.fixtures.customComboBox
 import fi.aalto.cs.apluscourses.e2e.fixtures.dialog
 import fi.aalto.cs.apluscourses.e2e.fixtures.heavyWeightWindow
+import fi.aalto.cs.apluscourses.e2e.fixtures.ideFrame
 import fi.aalto.cs.apluscourses.e2e.fixtures.welcomeFrame
 import java.time.Duration
 
@@ -59,10 +60,6 @@ class CommonSteps(val remoteRobot: RemoteRobot) {
       with(dialog("Turn Project Into A+ Project")) {
         findText("Select language").click()
         findText("English").click()
-        Assert.assertFalse(
-          "Leave IntelliJ settings unchanged checkbox is unchecked",
-          checkBox("Leave IntelliJ settings unchanged.").isSelected()
-        )
         checkBox("Leave IntelliJ settings unchanged.").setValue(settingsUnchanged)
         button("OK").click()
       }
