@@ -17,8 +17,6 @@ import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.presentation.AuthenticationViewModel;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
-import fi.aalto.cs.apluscourses.presentation.base.BaseViewModel;
-import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 
 public class APlusAuthenticationAction extends DumbAwareAction {
@@ -69,11 +67,11 @@ public class APlusAuthenticationAction extends DumbAwareAction {
   public void actionPerformed(@NotNull AnActionEvent e) {
     Project project = e.getProject();
     MainViewModel mainViewModel = mainViewModelProvider.getMainViewModel(project);
-    Course course = Optional.ofNullable(mainViewModel.courseViewModel.get())
-        .map(BaseViewModel::getModel)
-        .orElse(null);
-
-    if (course == null) {
+    Course course;
+    var courseViewModel = mainViewModel.courseViewModel.get();
+    if (courseViewModel != null) {
+      course = courseViewModel.getModel();
+    } else {
       return;
     }
 

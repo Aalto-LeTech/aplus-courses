@@ -11,13 +11,11 @@ import fi.aalto.cs.apluscourses.presentation.base.Searchable;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.ui.GuiObject;
 import fi.aalto.cs.apluscourses.ui.base.TreeView;
-
 import java.awt.CardLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,6 +23,7 @@ public class ExercisesView {
   private TreeView exerciseGroupsTree;
   private JLabel emptyText;
   private JPanel basePanel;
+  @GuiObject
   private JScrollPane pane;
   @GuiObject
   public JPanel toolbarContainer;

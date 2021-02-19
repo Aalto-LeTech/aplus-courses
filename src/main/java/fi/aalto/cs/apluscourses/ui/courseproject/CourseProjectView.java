@@ -74,9 +74,8 @@ public class CourseProjectView extends OurDialogWrapper {
     return basePanel;
   }
 
-  @NotNull
   @Override
-  protected Action[] createActions() {
+  protected Action @NotNull [] createActions() {
     return new Action[] { getOKAction(), getCancelAction() };
   }
 

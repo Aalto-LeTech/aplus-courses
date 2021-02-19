@@ -6,7 +6,6 @@ import static org.junit.Assert.assertSame;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -23,17 +22,17 @@ public class CourseTest {
     String module1name = "Module1";
     Module module1 = new ModelExtensions.TestModule(module1name);
     Module module2 = new ModelExtensions.TestModule("Module2");
-    final List<Module> modules = Arrays.asList(module1, module2);
+    final List<Module> modules = List.of(module1, module2);
     Map<String, URL> resourceUrls = new HashMap<>();
     resourceUrls.put("key", new URL("http://localhost:8000"));
-    List<String> autoInstallComponents = Arrays.asList(module1name);
+    List<String> autoInstallComponents = List.of(module1name);
     Map<String, String[]> replInitialCommands = new HashMap<>();
     replInitialCommands.put("Module1", new String[]{"import o1._"});
     Course course = new ModelExtensions.TestCourse(
         "13",
         "Tester Course",
         "http://localhost:2466/",
-        Arrays.asList("se", "en"),
+        List.of("se", "en"),
         modules,
         //  libraries
         Collections.emptyList(),
@@ -79,7 +78,7 @@ public class CourseTest {
         "http://localhost:2736",
         Collections.emptyList(),
         //  modules
-        Arrays.asList(module1, module2),
+        List.of(module1, module2),
         //  libraries
         Collections.emptyList(),
         //  exerciseModules
@@ -109,15 +108,15 @@ public class CourseTest {
         "http://localhost:5555",
         Collections.emptyList(),
         //  modules
-        Arrays.asList(module),
+        List.of(module),
         //  libraries
-        Arrays.asList(library),
+        List.of(library),
         //  exerciseModules
         Collections.emptyMap(),
         // resourceUrls
         Collections.emptyMap(),
         //  autoInstallComponentNames
-        Arrays.asList("test-module", "test-library"),
+        List.of("test-module", "test-library"),
         //  replInitialCommands
         Collections.emptyMap());
     List<Component> autoInstalls = course.getAutoInstallComponents();

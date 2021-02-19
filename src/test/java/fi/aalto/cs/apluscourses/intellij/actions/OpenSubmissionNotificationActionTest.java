@@ -17,6 +17,7 @@ import fi.aalto.cs.apluscourses.intellij.notifications.UrlRenderingErrorNotifica
 import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import fi.aalto.cs.apluscourses.model.UrlRenderer;
+import java.net.URISyntaxException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -58,8 +59,8 @@ public class OpenSubmissionNotificationActionTest {
   }
 
   @Test
-  public void testErrorNotification() throws Exception {
-    Exception exception = new Exception();
+  public void testErrorNotification() throws URISyntaxException {
+    URISyntaxException exception = new URISyntaxException("input", "reason");
     doThrow(exception).when(submissionRenderer).show(anyString());
 
     new OpenSubmissionNotificationAction(

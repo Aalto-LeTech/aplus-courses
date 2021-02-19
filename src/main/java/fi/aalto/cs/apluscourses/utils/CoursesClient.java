@@ -266,18 +266,18 @@ public class CoursesClient {
       if (entity == null) {
         details = "" + statusCode + " " + response.getStatusLine().getReasonPhrase();
       } else {
-        // Two possibilities: {"errors": [...]} and {"detail": "..."}
+        // Two possibilities: {"errors": [...]} and {"detail": "..."} NOSONAR
         JSONObject json = new JSONObject(new JSONTokener(
             new ByteArrayInputStream(EntityUtils.toByteArray(entity))
         ));
         details = json.optString("detail");
         if (details == null || details.trim().isEmpty()) {
-          details = String.join(", ", json
+          details = json
               .getJSONArray("errors")
               .toList()
               .stream()
-              .map(obj -> obj.toString())
-              .collect(Collectors.toList()));
+              .map(Object::toString)
+              .collect(Collectors.joining(", "));
         }
       }
     } catch (JSONException e) {

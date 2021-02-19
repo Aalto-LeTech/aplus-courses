@@ -10,7 +10,6 @@ import static org.mockito.Mockito.when;
 
 import fi.aalto.cs.apluscourses.presentation.ViewModelExtensions.TestNodeViewModel;
 import fi.aalto.cs.apluscourses.presentation.filter.Filter;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -37,7 +36,7 @@ public class SelectableNodeViewModelTest {
     child0 = spy(new TestNodeViewModel(0, new Object(), Collections.emptyList()));
     child1 = spy(new TestNodeViewModel(1, new Object(), Collections.emptyList()));
     child2 = spy(new TestNodeViewModel(2, new Object(), Collections.emptyList()));
-    children = Arrays.asList(child0, child1, child2);
+    children = List.of(child0, child1, child2);
     node = new TestNodeViewModel(3, model, children);
   }
 

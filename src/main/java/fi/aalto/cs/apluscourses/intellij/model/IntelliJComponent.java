@@ -1,10 +1,10 @@
 package fi.aalto.cs.apluscourses.intellij.model;
 
-import org.jetbrains.annotations.CalledWithReadLock;
+import com.intellij.util.concurrency.annotations.RequiresReadLock;
 import org.jetbrains.annotations.Nullable;
 
 public interface IntelliJComponent<T> {
-  @CalledWithReadLock
+  @RequiresReadLock
   @Nullable
   T getPlatformObject();
 }

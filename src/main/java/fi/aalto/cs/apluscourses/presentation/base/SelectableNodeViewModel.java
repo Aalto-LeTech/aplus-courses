@@ -17,8 +17,8 @@ public abstract class SelectableNodeViewModel<T> extends BaseViewModel<T> implem
 
   private volatile boolean selected = false;
 
-  public SelectableNodeViewModel(@NotNull T model,
-                                 @Nullable List<SelectableNodeViewModel<?>> children) {
+  protected SelectableNodeViewModel(@NotNull T model,
+                                    @Nullable List<SelectableNodeViewModel<?>> children) {
     super(model);
     this.children = Optional.ofNullable(children).orElse(Collections.emptyList());
   }
@@ -34,7 +34,7 @@ public abstract class SelectableNodeViewModel<T> extends BaseViewModel<T> implem
    */
   public Optional<Boolean> applyFilter(Filter filter) throws InterruptedException {
     Optional<Boolean> result = filter.apply(this);
-    if (!result.isPresent() || Boolean.TRUE.equals(result.get())) {
+    if (result.isEmpty() || Boolean.TRUE.equals(result.get())) {
       for (SelectableNodeViewModel<?> child : children) {
         if (Thread.interrupted()) {
           throw new InterruptedException();

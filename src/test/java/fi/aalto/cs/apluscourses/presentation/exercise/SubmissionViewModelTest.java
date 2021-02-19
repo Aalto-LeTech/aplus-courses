@@ -15,7 +15,6 @@ import fi.aalto.cs.apluscourses.model.SubmittableFile;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -101,8 +100,8 @@ public class SubmissionViewModelTest {
     SubmittableFile finnishFile1 = new SubmittableFile("file1", "fiFile1");
     SubmittableFile finnishFile2 = new SubmittableFile("file2", "fiFile2");
     Map<String, List<SubmittableFile>> files = new HashMap<>();
-    files.put("en", Arrays.asList(englishFile1, englishFile2));
-    files.put("fi", Arrays.asList(finnishFile1, finnishFile2));
+    files.put("en", List.of(englishFile1, englishFile2));
+    files.put("fi", List.of(finnishFile1, finnishFile2));
     SubmissionInfo info = new SubmissionInfo(10, files);
 
     SubmissionHistory history = new SubmissionHistory(0);
@@ -120,7 +119,7 @@ public class SubmissionViewModelTest {
     Exercise exercise = new Exercise(1000, "wow", "http://www.fi", 0, 0, 0, true);
     SubmissionInfo info = new SubmissionInfo(0, Collections.emptyMap());
     SubmissionHistory history = new SubmissionHistory(0);
-    Group group = new Group(1, Arrays.asList("Jyrki", "Jorma"));
+    Group group = new Group(1, List.of("Jyrki", "Jorma"));
     List<Group> availableGroups = Collections.singletonList(group);
 
     SubmissionViewModel viewModel1 = new SubmissionViewModel(

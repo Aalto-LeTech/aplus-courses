@@ -10,6 +10,7 @@ import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.openapi.vfs.newvfs.BulkFileListener;
 import com.intellij.openapi.vfs.newvfs.events.VFileDeleteEvent;
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
+import com.intellij.util.concurrency.annotations.RequiresReadLock;
 import com.intellij.util.messages.MessageBusConnection;
 import fi.aalto.cs.apluscourses.dal.APlusExerciseDataSource;
 import fi.aalto.cs.apluscourses.model.Component;
@@ -27,7 +28,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.jetbrains.annotations.CalledWithReadLock;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -137,7 +137,7 @@ class IntelliJCourse extends Course {
       }
     };
 
-    @CalledWithReadLock
+    @RequiresReadLock
     public synchronized void registerListeners() {
       if (messageBusConnection != null) {
         return;
@@ -169,7 +169,7 @@ class IntelliJCourse extends Course {
       project.getLibraryTable().addListener(libraryTableListener);
     }
 
-    @CalledWithReadLock
+    @RequiresReadLock
     public synchronized void unregisterListeners() {
       if (messageBusConnection == null) {
         return;

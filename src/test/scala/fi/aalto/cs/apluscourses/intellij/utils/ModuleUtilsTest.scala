@@ -1,7 +1,5 @@
 package fi.aalto.cs.apluscourses.intellij.utils
 
-import java.io.File
-
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.project.Project
@@ -16,6 +14,8 @@ import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
 import org.junit.Test
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{mock, when}
+
+import java.io.File
 
 class ModuleUtilsTest extends HeavyPlatformTestCase with TestHelperScala {
 

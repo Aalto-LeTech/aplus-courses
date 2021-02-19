@@ -27,7 +27,7 @@ public class FilterOptionsActionGroup extends ActionGroup implements DumbAware {
 
   // Caution: Array covariance in the return type.
   @Override
-  public @NotNull FilterOptionAction[] getChildren(@Nullable AnActionEvent e) {
+  public @NotNull FilterOptionAction @NotNull [] getChildren(@Nullable AnActionEvent e) {
     return Optional.ofNullable(e)
         .map(AnActionEvent::getProject)
         .map(mainViewModelProvider::getMainViewModel)

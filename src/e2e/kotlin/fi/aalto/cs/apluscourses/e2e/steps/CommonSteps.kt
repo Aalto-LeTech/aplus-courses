@@ -2,8 +2,10 @@ package fi.aalto.cs.apluscourses.e2e.steps
 
 import com.intellij.remoterobot.RemoteRobot
 import com.intellij.remoterobot.stepsProcessing.step
-import fi.aalto.cs.apluscourses.e2e.fixtures.*
-import org.junit.Assert
+import fi.aalto.cs.apluscourses.e2e.fixtures.customComboBox
+import fi.aalto.cs.apluscourses.e2e.fixtures.dialog
+import fi.aalto.cs.apluscourses.e2e.fixtures.heavyWeightWindow
+import fi.aalto.cs.apluscourses.e2e.fixtures.welcomeFrame
 import java.time.Duration
 
 class CommonSteps(val remoteRobot: RemoteRobot) {

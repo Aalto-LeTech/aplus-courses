@@ -6,13 +6,13 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.roots.libraries.LibraryTable;
 import com.intellij.openapi.roots.libraries.LibraryTablesRegistrar;
+import com.intellij.util.concurrency.annotations.RequiresReadLock;
 import com.intellij.util.messages.MessageBus;
 import fi.aalto.cs.apluscourses.model.Component;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.Optional;
-import org.jetbrains.annotations.CalledWithReadLock;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,7 +30,7 @@ public class APlusProject {
    * IllegalStateException} if the project is disposed.
    * @return
    */
-  @CalledWithReadLock
+  @RequiresReadLock
   @NotNull
   public Project getProject() {
     if (project.isDisposed()) {
@@ -44,7 +44,7 @@ public class APlusProject {
     return Paths.get(Objects.requireNonNull(ReadAction.compute(this::getProject).getBasePath()));
   }
 
-  @CalledWithReadLock
+  @RequiresReadLock
   @NotNull
   public ModuleManager getModuleManager() {
     return ModuleManager.getInstance(getProject());
@@ -56,20 +56,20 @@ public class APlusProject {
    * @param moduleName The name of the module.
    * @return The root manager of the module or null, if the module doesn't exist in the project.
    */
-  @CalledWithReadLock
+  @RequiresReadLock
   @Nullable
   public ModuleRootManager getModuleRootManager(@NotNull String moduleName) {
     return Optional.ofNullable(getModuleManager().findModuleByName(moduleName))
         .map(ModuleRootManager::getInstance).orElse(null);
   }
 
-  @CalledWithReadLock
+  @RequiresReadLock
   @NotNull
   public MessageBus getMessageBus() {
     return getProject().getMessageBus();
   }
 
-  @CalledWithReadLock
+  @RequiresReadLock
   @NotNull
   public LibraryTable getLibraryTable() {
     return LibraryTablesRegistrar.getInstance().getLibraryTable(getProject());
@@ -98,7 +98,7 @@ public class APlusProject {
       this.component = component;
     }
 
-    @CalledWithReadLock
+    @RequiresReadLock
     public int resolve() {
       /*
        * Four cases to check for here:

@@ -5,7 +5,8 @@ import java.text.MessageFormat;
 import javax.swing.JLabel;
 
 public class TemplateLabel extends JLabel {
-  public final transient Bindable<TemplateLabel, Object> templateArgumentBindable =
+
+  public final Bindable<TemplateLabel, Object> templateArgumentBindable =
       new Bindable<>(this, TemplateLabel::applyTemplate);
 
   private String textTemplate = "{0}";

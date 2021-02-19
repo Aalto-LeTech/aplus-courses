@@ -2,7 +2,6 @@ package fi.aalto.cs.apluscourses.e2e.fixtures
 
 import com.intellij.remoterobot.RemoteRobot
 import com.intellij.remoterobot.SearchContext
-
 import com.intellij.remoterobot.data.RemoteComponent
 import com.intellij.remoterobot.fixtures.*
 import com.intellij.remoterobot.search.locators.byXpath
