@@ -3,6 +3,8 @@ package fi.aalto.cs.apluscourses.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
@@ -28,7 +30,7 @@ public class Exercise implements Browsable {
 
   private final boolean submittable;
 
-  private boolean inGrading;
+  private AtomicBoolean inGrading = new AtomicBoolean(false);
 
   /**
    * Construct an exercise instance with the given parameters.
@@ -153,11 +155,11 @@ public class Exercise implements Browsable {
   }
 
   public boolean isInGrading() {
-    return inGrading;
+    return inGrading.get();
   }
 
   public void setInGrading(boolean isInGrading) {
-    this.inGrading = isInGrading;
+    this.inGrading.getAndSet(isInGrading);
   }
 
   @Override
