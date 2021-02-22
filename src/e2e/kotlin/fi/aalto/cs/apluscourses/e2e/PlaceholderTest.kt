@@ -17,12 +17,8 @@ class PlaceholderTest {
   }
 
   @Test
-  fun simpleTest() = uiTest {
+  fun mainTest() = uiTest {
     CommonSteps(this).createProject()
-  }
-
-  @Test
-  fun turnProjectIntoAPlusProjectTest() = uiTest {
     CommonSteps(this).openAPlusProjectWindow()
     step("Cancel") {
       with(dialog("Select Course")) {
