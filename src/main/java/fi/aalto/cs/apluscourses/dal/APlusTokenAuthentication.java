@@ -14,7 +14,7 @@ public class APlusTokenAuthentication extends TokenAuthentication {
    * Initializes an instance with the given token. Note, that the given token array is not cleared
    * or overwritten.
    */
-  public APlusTokenAuthentication(@NotNull char[] token,
+  public APlusTokenAuthentication(char @NotNull[] token,
                                   @Nullable PasswordStorage passwordStorage) {
     super(APLUS_USER, token, passwordStorage);
   }

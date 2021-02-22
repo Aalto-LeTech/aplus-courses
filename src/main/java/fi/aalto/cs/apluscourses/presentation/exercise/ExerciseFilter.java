@@ -3,7 +3,7 @@ package fi.aalto.cs.apluscourses.presentation.exercise;
 import fi.aalto.cs.apluscourses.presentation.filter.TypedFilter;
 
 public abstract class ExerciseFilter extends TypedFilter<ExerciseViewModel> {
-  public ExerciseFilter() {
+  protected ExerciseFilter() {
     super(ExerciseViewModel.class);
   }
 

@@ -8,7 +8,7 @@ import com.intellij.openapi.application.ApplicationManager;
  * @param <T> Type of the result.
  */
 public abstract class EdtTask<T> {
-  private volatile T result; // NOSONAR
+  private volatile T result; //  NOSONAR
 
   public T executeAndWait() {
     ApplicationManager.getApplication().invokeAndWait(this::executeInternal);

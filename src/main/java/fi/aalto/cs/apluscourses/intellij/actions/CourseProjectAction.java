@@ -31,7 +31,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
@@ -73,8 +72,7 @@ public class CourseProjectAction extends AnAction {
 
   private final ExecutorService executor;
 
-  // TODO: don't hard code this list
-  private static final List<CourseItemViewModel> AVAILABLE_COURSES = Arrays.asList(
+  private static final List<CourseItemViewModel> AVAILABLE_COURSES = List.of(
       new CourseItemViewModel("O1", "Fall 2020",
           "https://grader.cs.aalto.fi/static/O1_2020/projects/o1_course_config.json"),
       new CourseItemViewModel("Ohjelmointistudio 2 / Programming Studio A", "Spring 2021",
@@ -194,7 +192,8 @@ public class CourseProjectAction extends AnAction {
     executor.execute(() -> {
       try {
         autoInstallDone.get();
-        if (projectSettingsImported.get() && importIdeSettings && ideSettingsImported.get()) {
+        if (projectSettingsImported.get() && importIdeSettings //  NOSONAR
+            && ideSettingsImported.get()) { //  NOSONAR
           ideRestarter.run();
         }
       } catch (InterruptedException ex) {
@@ -229,7 +228,7 @@ public class CourseProjectAction extends AnAction {
 
       CourseSelectionViewModel viewModel = new CourseSelectionViewModel(AVAILABLE_COURSES);
       boolean cancelled = !dialogs.showCourseSelectionDialog(project, viewModel);
-      return cancelled ? null : new URL(viewModel.selectedCourseUrl.get());
+      return cancelled ? null : new URL(Objects.requireNonNull(viewModel.selectedCourseUrl.get()));
     } catch (MalformedURLException e) {
       // User entered an invalid URL (or the default list has an invalid URL, which would be a bug)
       logger.error("Malformed course configuration file URL", e);

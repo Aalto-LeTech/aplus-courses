@@ -19,5 +19,5 @@ class LocatorBuilder {
 
   private fun toXpath() = clauses.joinToString(" and ", "//div[", "]")
 
-  fun build() = byXpath(toXpath());
+  fun build() = byXpath(toXpath())
 }

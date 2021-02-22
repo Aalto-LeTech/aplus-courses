@@ -35,7 +35,6 @@ public class InstallerDialogs implements ComponentInstaller.Dialogs {
   @FunctionalInterface
   public interface Factory {
 
-    @NotNull
-    public ComponentInstaller.Dialogs getDialogs(@Nullable Project project);
+    @NotNull ComponentInstaller.Dialogs getDialogs(@Nullable Project project);
   }
 }

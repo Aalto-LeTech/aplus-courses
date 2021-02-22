@@ -4,7 +4,6 @@ import com.intellij.openapi.roots.LibraryOrderEntry;
 import com.intellij.openapi.roots.ModuleOrderEntry;
 import com.intellij.openapi.roots.RootPolicy;
 import java.util.List;
-
 import org.jetbrains.annotations.NotNull;
 
 /**

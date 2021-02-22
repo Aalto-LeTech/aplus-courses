@@ -25,7 +25,7 @@ public class TreeModelBuilderTest {
 
   @Test
   public void testBuild() {
-    TreeModelBuilder<UserObject> builder = new TreeModelBuilder<UserObject>() {
+    TreeModelBuilder<UserObject> builder = new TreeModelBuilder<>() {
       @Override
       protected @NotNull Stream<UserObject> childrenOf(@NotNull UserObject obj) {
         return obj.streamChildren();

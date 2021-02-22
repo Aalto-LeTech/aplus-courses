@@ -13,8 +13,7 @@ public class AuthenticationViewModel {
   @NotNull
   private final String authenticationUrl;
 
-  @Nullable
-  private char[] token;
+  private char @Nullable [] token;
   private final Object lock = new Object();
 
   public AuthenticationViewModel(@NotNull TokenAuthentication.Factory authenticationFactory,
@@ -28,7 +27,7 @@ public class AuthenticationViewModel {
    *
    * @param tokenToBeCloned A token.
    */
-  public void setToken(@NotNull char[] tokenToBeCloned) {
+  public void setToken(char @NotNull [] tokenToBeCloned) {
     synchronized (lock) {
       if (token != null) {
         throw new IllegalStateException("Token can be set only once");

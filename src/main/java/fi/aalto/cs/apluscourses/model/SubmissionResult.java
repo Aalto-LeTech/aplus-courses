@@ -8,7 +8,7 @@ public class SubmissionResult implements Browsable {
   public enum Status {
     UNKNOWN,
     GRADED,
-    UNOFFICIAL;
+    UNOFFICIAL
   }
 
   private final long submissionId;
@@ -73,7 +73,7 @@ public class SubmissionResult implements Browsable {
     return exercise.getHtmlUrl() + "submissions/" + submissionId + "/";
   }
 
-  public Exercise getExercise() {
+  public @NotNull Exercise getExercise() {
     return exercise;
   }
 }

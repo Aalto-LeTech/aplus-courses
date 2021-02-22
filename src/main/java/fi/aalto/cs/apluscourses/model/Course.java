@@ -479,7 +479,7 @@ public abstract class Course implements ComponentSource {
             .getJSONArray(moduleName)
             .toList()
             .stream()
-            .map(command -> (String) command)
+            .map(String.class::cast)
             .toArray(String[]::new);
 
         replInitialCommands.put(moduleName, replCommands);
