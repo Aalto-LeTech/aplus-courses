@@ -111,11 +111,10 @@ public class SubmissionStatusUpdater {
               dataSource.getSubmissionResult(submissionUrl, exercise, authentication);
           if (SubmissionResult.Status.WAITING.equals(submissionResult.getStatus())) {
             PluginSettings.getInstance().getMainViewModel(project).setSubmittedForGrading(exercise);
-            PluginSettings.getInstance().updateMainViewModel(project);
           } else if (submissionResult.getStatus() != SubmissionResult.Status.UNKNOWN) {
             notifier.notifyAndHide(
                 new FeedbackAvailableNotification(submissionResult, exercise), project);
-            PluginSettings.getInstance().getMainViewModel(project).setSubmittedForGrading(null);
+            PluginSettings.getInstance().getMainViewModel(project).setGradingDone(exercise);
             PluginSettings.getInstance().updateMainViewModel(project);
             return;
           }
