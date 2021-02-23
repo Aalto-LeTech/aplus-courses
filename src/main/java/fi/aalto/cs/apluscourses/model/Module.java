@@ -78,12 +78,8 @@ public abstract class Module extends Component {
   @Override
   public void fetch() throws IOException {
     fetchInternal();
-    String newId = readVersionId();
     synchronized (versionLock) {
       downloadedAt = ZonedDateTime.now();
-      if (newId != null) {
-        versionId = newId;
-      }
       localVersionId = versionId;
     }
   }
@@ -105,9 +101,6 @@ public abstract class Module extends Component {
   }
 
   protected abstract void fetchInternal() throws IOException;
-
-  @Nullable
-  protected abstract String readVersionId();
 
   @NotNull
   public URL getUrl() {
