@@ -123,9 +123,12 @@ public class SubmissionStatusUpdater {
     try {
       submissionResult =
           dataSource.getSubmissionResult(submissionUrl, exercise, authentication);
-      if (submissionResult.getStatus() != SubmissionResult.Status.UNKNOWN) {
+      if (SubmissionResult.Status.WAITING.equals(submissionResult.getStatus())) {
+        PluginSettings.getInstance().getMainViewModel(project).setSubmittedForGrading(exercise);
+      } else if (submissionResult.getStatus() != SubmissionResult.Status.UNKNOWN) {
         notifier.notifyAndHide(
             new FeedbackAvailableNotification(submissionResult, exercise), project);
+        PluginSettings.getInstance().getMainViewModel(project).setGradingDone(exercise);
         PluginSettings.getInstance().updateMainViewModel(project);
         return true;
       }

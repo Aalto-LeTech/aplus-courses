@@ -44,6 +44,7 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
     NO_POINTS,
     PARTIAL_POINTS,
     FULL_POINTS,
+    IN_GRADING
   }
 
   /**
@@ -51,7 +52,9 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
    */
   public Status getStatus() {
     Exercise exercise = getModel();
-    if (exercise.getMaxSubmissions() == 0 && exercise.getMaxPoints() == 0) {
+    if (exercise.isInGrading()) {
+      return Status.IN_GRADING;
+    } else if (exercise.getMaxSubmissions() == 0 && exercise.getMaxPoints() == 0) {
       return Status.OPTIONAL_PRACTICE;
     } else if (exercise.getSubmissionResults().isEmpty()) {
       return Status.NO_SUBMISSIONS;

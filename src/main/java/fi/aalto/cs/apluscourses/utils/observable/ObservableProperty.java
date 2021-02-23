@@ -80,6 +80,14 @@ public abstract class ObservableProperty<T> {
     throw new UnsupportedOperationException();
   }
 
+  /**
+   * Notifies all observers with the current value. Works similarly to {@link
+   * ObservableProperty#set}, but the actual value isn't changed.
+   */
+  public void valueChanged() {
+    onValueChanged(get(), null);
+  }
+
   protected synchronized void onValueChanged(@Nullable T value, @Nullable Object source) {
     for (Map.Entry<Object, Callback<?, T>> entry : observers.entrySet()) {
       Object observer = entry.getKey();
