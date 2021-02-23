@@ -5,6 +5,7 @@ import com.intellij.remoterobot.stepsProcessing.step
 import fi.aalto.cs.apluscourses.e2e.fixtures.customComboBox
 import fi.aalto.cs.apluscourses.e2e.fixtures.dialog
 import fi.aalto.cs.apluscourses.e2e.fixtures.heavyWeightWindow
+import fi.aalto.cs.apluscourses.e2e.fixtures.ideFrame
 import fi.aalto.cs.apluscourses.e2e.fixtures.welcomeFrame
 import java.time.Duration
 
@@ -39,6 +40,28 @@ class CommonSteps(val remoteRobot: RemoteRobot) {
           }
           button("OK").click()
         }
+      }
+    }
+  }
+
+  fun openAPlusProjectWindow() {
+    with(remoteRobot) {
+      step("Open Turn Project Into A+ Project window") {
+        with(ideFrame()) {
+          menu().select("A+")
+          menu().select("Turn Project Into A+ Project")
+        }
+      }
+    }
+  }
+
+  fun aPlusSettings(settingsUnchanged: Boolean) {
+    with(remoteRobot) {
+      with(dialog("Turn Project Into A+ Project")) {
+        findText("Select language").click()
+        findText("English").click()
+        checkBox("Leave IntelliJ settings unchanged.").setValue(settingsUnchanged)
+        button("OK").click()
       }
     }
   }

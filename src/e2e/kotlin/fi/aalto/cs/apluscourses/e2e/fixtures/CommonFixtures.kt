@@ -43,6 +43,16 @@ class IdeFrameFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent
     : CommonContainerFixture(remoteRobot, remoteComponent) {
   fun menu() = find(MenuItemFixture::class.java,
     LocatorBuilder().withClass(JMenuBar::class.java).build())
+    fun projectViewTree() = find(CommonContainerFixture::class.java, byXpath("//div[@class='ProjectViewTree']"))
+    fun aPlusStripeButton() = find(
+        CommonContainerFixture::class.java,
+        byXpath("//div[@accessiblename='A+ Courses' and @class='StripeButton' and @text='A+ Courses']")
+    )
+    fun modules() = find(
+        CommonContainerFixture::class.java,
+        byXpath("//div[@class='ModuleListView']"),
+        Duration.ofSeconds(20)
+    )
 }
 
 @FixtureName("Menu Item")
