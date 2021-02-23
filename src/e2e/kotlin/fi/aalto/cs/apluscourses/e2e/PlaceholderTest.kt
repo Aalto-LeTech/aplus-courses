@@ -18,7 +18,9 @@ class PlaceholderTest {
 
   @Test
   fun mainTest() = uiTest {
+    //step 2
     CommonSteps(this).createProject()
+    //step 4
     CommonSteps(this).openAPlusProjectWindow()
     step("Cancel") {
       with(dialog("Select Course")) {
@@ -52,6 +54,26 @@ class PlaceholderTest {
             "O1Library not found in modules list"
           ) { hasText("O1Library") }
           assertTrue("A module is installed", hasText("  [Installed]"))
+        }
+      }
+    }
+    //step 8
+    step("Authenticate") {
+      with(ideFrame()) {
+        menu().select("A+")
+        menu().select("Set A+ Token")
+      }
+      with(dialog("A+ Token")) {
+        jPasswordField().text = System.getenv("APLUS_TEST_TOKEN")
+        button("OK").click()
+      }
+      with(ideFrame()) {
+        with(assignments()) {
+          waitFor(
+            Duration.ofSeconds(60),
+            Duration.ofSeconds(1),
+            "Week 1 wasn't found in the assignments tree"
+          ) { hasText("Week 1") }
         }
       }
     }

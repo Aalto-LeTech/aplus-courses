@@ -53,6 +53,11 @@ class IdeFrameFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent
         byXpath("//div[@class='ModuleListView']"),
         Duration.ofSeconds(20)
     )
+    fun assignments() = find(
+        CommonContainerFixture::class.java,
+        byXpath("//div[@class='TreeView']"),
+        Duration.ofSeconds(20)
+    )
 }
 
 @FixtureName("Menu Item")
@@ -71,6 +76,8 @@ class DialogFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent)
     : CommonContainerFixture(remoteRobot, remoteComponent) {
   fun ContainerFixture.sidePanel() = find(ContainerFixture::class.java,
       byXpath("//div[@class='SidePanel']"))
+  fun jPasswordField() = find(JTextFieldFixture::class.java,
+      byXpath("//div[@class='JPasswordField']"))
 }
 
 @FixtureName("Custom Combo Box")
