@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.utils;
 
+import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,12 +15,8 @@ public class APlusLocalizationUtil {
   @NotNull
   public static String getEnglishName(@NotNull String name) {
     String englishName = StringUtils.substringBetween(name, "|en:", "|");
-    if (englishName != null) {
-      return englishName;
-    } else {
-      // The name seems to not contain localization
-      return name;
-    }
+    // The name seems to not contain localization
+    return Objects.requireNonNullElse(englishName, name);
   }
 
   /**
@@ -29,14 +26,15 @@ public class APlusLocalizationUtil {
   @NotNull
   public static String languageCodeToName(@NotNull String languageCode) {
     // Hard-coded common language codes
-    if ("fi".equals(languageCode)) {
-      return "Finnish";
-    } else if ("sv".equals(languageCode)) {
-      return "Swedish";
-    } else if ("en".equals(languageCode)) {
-      return "English";
-    } else {
-      return languageCode;
+    switch (languageCode) {
+      case "fi":
+        return "Finnish";
+      case "sv":
+        return "Swedish";
+      case "en":
+        return "English";
+      default:
+        return languageCode;
     }
   }
 

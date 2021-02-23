@@ -1,13 +1,10 @@
 package fi.aalto.cs.apluscourses.ui.base;
 
-import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
-
 import fi.aalto.cs.apluscourses.presentation.base.BaseTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
 import fi.aalto.cs.apluscourses.ui.utils.TreeModelBuilder;
 import fi.aalto.cs.apluscourses.ui.utils.TreeModelTraverser;
 import fi.aalto.cs.apluscourses.ui.utils.TreePathEncoder;
-
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -34,7 +31,7 @@ import org.jetbrains.annotations.Nullable;
 public class TreeView extends com.intellij.ui.treeStructure.Tree {
 
   private static final TreeModelBuilder<SelectableNodeViewModel<?>> TREE_MODEL_BUILDER =
-      new TreeModelBuilder<SelectableNodeViewModel<?>>() {
+      new TreeModelBuilder<>() {
         @Override
         protected @NotNull Stream<? extends SelectableNodeViewModel<?>> childrenOf(
             @NotNull SelectableNodeViewModel<?> obj) {
@@ -42,8 +39,8 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
         }
       };
 
-  private final transient Set<ActionListener> nodeAppliedListeners = ConcurrentHashMap.newKeySet();
-  private final transient Object popupMenuLock = new Object();
+  private final Set<ActionListener> nodeAppliedListeners = ConcurrentHashMap.newKeySet();
+  private final Object popupMenuLock = new Object();
   private JPopupMenu popupMenu;
 
   @NotNull
@@ -51,8 +48,8 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
     return (SelectableNodeViewModel<?>) TREE_MODEL_BUILDER.getUserObject(node);
   }
 
-  private transient BaseTreeViewModel<?> viewModel = null;
-  private final transient Object viewModelLock = new Object();
+  private BaseTreeViewModel<?> viewModel = null;
+  private final Object viewModelLock = new Object();
 
   /**
    * Construct an empty tree with no nodes and the root set to invisible.
@@ -138,9 +135,9 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
     TreeModel treeModel = getModel();
     return treeModel == null ? Collections.emptySet()
         : new TreeModelTraverser(treeModel).traverse()
-        .filter(this::isExpanded)
-        .map(new TreePathStringEncoder()::encode)
-        .collect(Collectors.toSet());
+            .filter(this::isExpanded)
+            .map(new TreePathStringEncoder()::encode)
+            .collect(Collectors.toSet());
   }
 
   private void restoreExpandedState(@NotNull Set<String> expandedState) {
@@ -175,6 +172,7 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
   }
 
   protected class TreeMouseListener extends MouseAdapter {
+
     @Override
     public void mouseReleased(MouseEvent mouseEvent) {
       if (mouseEvent.isPopupTrigger()) {

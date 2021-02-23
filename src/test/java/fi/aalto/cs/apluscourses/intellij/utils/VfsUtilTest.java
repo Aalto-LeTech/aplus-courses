@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.ZonedDateTime;
-
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -88,7 +87,7 @@ public class VfsUtilTest {
 
   public static final String JSON = ".json";
 
-  @Ignore
+  @Ignore("Fails for the reason no one can deduct")
   @Test
   public void testHasLocalChangesReturnsTrue() throws IOException {
     //  given

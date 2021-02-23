@@ -9,7 +9,7 @@ public class SubmissionResult implements Browsable {
     UNKNOWN,
     GRADED,
     UNOFFICIAL,
-    WAITING;
+    WAITING
   }
 
   private final long submissionId;
@@ -76,7 +76,7 @@ public class SubmissionResult implements Browsable {
     return exercise.getHtmlUrl() + "submissions/" + submissionId + "/";
   }
 
-  public Exercise getExercise() {
+  public @NotNull Exercise getExercise() {
     return exercise;
   }
 }

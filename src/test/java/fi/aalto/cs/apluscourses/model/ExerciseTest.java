@@ -5,7 +5,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -43,7 +42,7 @@ public class ExerciseTest {
   @Contract(" -> new")
   private static Points createTestPoints() {
     long exerciseId = 11L;
-    List<Long> submissionIds = Arrays.asList(1L, 2L);
+    List<Long> submissionIds = List.of(1L, 2L);
     Map<Long, List<Long>> submissions = Collections.singletonMap(exerciseId, submissionIds);
     Map<Long, Integer> exercisePoints = Collections.singletonMap(exerciseId, 10);
     Map<Long, Integer> submissionPoints = new HashMap<>();

@@ -7,6 +7,8 @@ import com.intellij.openapi.util.io.FileUtilRt;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFileManager;
+import com.intellij.util.concurrency.annotations.RequiresReadLock;
+import com.intellij.util.concurrency.annotations.RequiresWriteLock;
 import fi.aalto.cs.apluscourses.utils.DirAwareZipFile;
 import java.io.File;
 import java.io.IOException;
@@ -17,8 +19,6 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import org.apache.commons.io.FileUtils;
-import org.jetbrains.annotations.CalledWithReadLock;
-import org.jetbrains.annotations.CalledWithWriteLock;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.plugins.scala.project.ScalaLanguageLevel;
 import org.jetbrains.plugins.scala.project.ScalaLibraryProperties;
@@ -80,7 +80,7 @@ public class ScalaSdk extends IntelliJLibrary<PersistentLibraryKind<ScalaLibrary
     return "scala-" + scalaVersion;
   }
 
-  @CalledWithReadLock
+  @RequiresReadLock
   @Override
   protected String[] getUris() {
     return getUris(CLASSES, path -> VfsUtil.getUrlForLibraryRoot(path.toFile()));
@@ -107,7 +107,7 @@ public class ScalaSdk extends IntelliJLibrary<PersistentLibraryKind<ScalaLibrary
    * @param roots File names for library class roots.
    * @return An array of URI strings (unescaped).
    */
-  @CalledWithReadLock
+  @RequiresReadLock
   public String[] getUris(@NotNull String[] roots) {
     String protocol = LocalFileSystem.getInstance().getProtocol();
     return getUris(roots, path -> VirtualFileManager.constructUrl(protocol,
@@ -128,7 +128,7 @@ public class ScalaSdk extends IntelliJLibrary<PersistentLibraryKind<ScalaLibrary
   }
 
   @Override
-  @CalledWithWriteLock
+  @RequiresWriteLock
   public void initializeLibraryProperties(
       LibraryProperties<ScalaLibraryPropertiesState> properties) {
     properties.loadState(new ScalaLibraryPropertiesState(

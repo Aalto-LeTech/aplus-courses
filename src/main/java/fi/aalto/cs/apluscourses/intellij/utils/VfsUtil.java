@@ -3,9 +3,9 @@ package fi.aalto.cs.apluscourses.intellij.utils;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileVisitor;
+import com.intellij.util.concurrency.annotations.RequiresReadLock;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import org.jetbrains.annotations.CalledWithReadLock;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,7 +22,7 @@ public class VfsUtil {
    * @param filename  The name of the file that is searched for.
    * @return A {@link Path} to the found file, or {@code null} if a file isn't found.
    */
-  @CalledWithReadLock
+  @RequiresReadLock
   @Nullable
   public static Path findFileInDirectory(@NotNull Path directory, @NotNull String filename) {
     VirtualFile virtualFile = com.intellij.openapi.vfs.VfsUtil.findFile(directory, true);
@@ -71,7 +71,7 @@ public class VfsUtil {
    * @param comparisonTime Epoch milli to compare.
    * @return True or false.
    */
-  @CalledWithReadLock
+  @RequiresReadLock
   public static boolean hasDirectoryChanges(Path dirPath, long comparisonTime) {
     VirtualFile virtualFile = com.intellij.openapi.vfs.VfsUtil.findFile(dirPath, true);
     HasChangedVirtualFileVisitor visitor = new HasChangedVirtualFileVisitor(comparisonTime);

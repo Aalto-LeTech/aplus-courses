@@ -1,8 +1,6 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -117,7 +115,6 @@ public class SubmitExerciseActionTest extends BasePlatformTestCase {
    * @throws IOException               Never.
    * @throws FileDoesNotExistException Never.
    */
-  @SuppressWarnings("unchecked")
   @Before
   public void setUp() throws Exception {
     super.setUp();

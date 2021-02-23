@@ -42,13 +42,13 @@ public abstract class BaseListView<E extends ListElementViewModel<?>>
   private static final KeyStroke ENTER_KEY_STROKE = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
 
   private final Set<ActionListener> listActionListeners = ConcurrentHashMap.newKeySet();
-  private final Object popupMenuLock = new Object();
+  private final Object popupMenuLock = new Object[0];
   private JPopupMenu popupMenu;
 
   /**
    * A constructor.
    */
-  public BaseListView() {
+  protected BaseListView() {
     addMouseListener(new ListMouseListener());
     getInputMap(JComponent.WHEN_FOCUSED).put(ENTER_KEY_STROKE, LIST_ACTION);
     getActionMap().put(LIST_ACTION, new AbstractAction() {

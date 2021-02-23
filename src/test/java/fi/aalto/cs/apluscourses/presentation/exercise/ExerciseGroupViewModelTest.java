@@ -7,7 +7,6 @@ import static org.mockito.Mockito.mock;
 import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
 import fi.aalto.cs.apluscourses.presentation.filter.Filter;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -48,7 +47,7 @@ public class ExerciseGroupViewModelTest {
 
 
     ExerciseGroup group =
-        new ExerciseGroup(5, "", "", true, Arrays.asList(third, fifth, first, fourth, second));
+        new ExerciseGroup(5, "", "", true, List.of(third, fifth, first, fourth, second));
     ExerciseGroupViewModel groupViewModel = new ExerciseGroupViewModel(group);
     List<ExerciseViewModel> exerciseViewModels = groupViewModel.getChildren().stream()
         .map(ExerciseViewModel.class::cast).collect(Collectors.toList());
@@ -74,7 +73,7 @@ public class ExerciseGroupViewModelTest {
 
 
     ExerciseGroup group =
-        new ExerciseGroup(5, "", "", true, Arrays.asList(third, second, first));
+        new ExerciseGroup(5, "", "", true, List.of(third, second, first));
     ExerciseGroupViewModel groupViewModel = new ExerciseGroupViewModel(group);
     List<ExerciseViewModel> exerciseViewModels = groupViewModel.getChildren().stream()
         .map(ExerciseViewModel.class::cast).collect(Collectors.toList());

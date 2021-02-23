@@ -15,11 +15,11 @@ public abstract class ObservableProperty<T> {
   @NotNull
   private final Validator<T> validator;
 
-  public ObservableProperty() {
+  protected ObservableProperty() {
     this(null);
   }
 
-  public ObservableProperty(@Nullable Validator<T> validator) {
+  protected ObservableProperty(@Nullable Validator<T> validator) {
     this.validator = Optional.ofNullable(validator).orElse(whatever -> null);
   }
 

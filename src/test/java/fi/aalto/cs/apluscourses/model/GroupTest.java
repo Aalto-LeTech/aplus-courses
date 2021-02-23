@@ -4,8 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,7 +15,7 @@ public class GroupTest {
 
   @Test
   public void testGroup() {
-    Group group = new Group(123, Arrays.asList("John", "Catherine"));
+    Group group = new Group(123, List.of("John", "Catherine"));
     assertEquals("The ID should be equal to the one given to the constructor",
         123, group.getId());
     assertEquals("The member names should be equal to those given to the constructor",

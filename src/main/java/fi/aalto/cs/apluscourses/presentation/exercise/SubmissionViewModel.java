@@ -13,9 +13,7 @@ import fi.aalto.cs.apluscourses.utils.FileDateFormatter;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ValidationError;
-
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;

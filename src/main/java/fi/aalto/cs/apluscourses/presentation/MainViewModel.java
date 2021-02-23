@@ -9,7 +9,6 @@ import fi.aalto.cs.apluscourses.model.ExerciseDataSource;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
 import fi.aalto.cs.apluscourses.model.InvalidAuthenticationException;
 import fi.aalto.cs.apluscourses.model.Points;
-import fi.aalto.cs.apluscourses.presentation.base.BaseViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import fi.aalto.cs.apluscourses.utils.Event;
@@ -49,7 +48,7 @@ public class MainViewModel {
   @NotNull
   private final Options exerciseFilterOptions;
 
-  private AtomicBoolean hasTriedToReadAuthenticationFromStorage = new AtomicBoolean(false);
+  private final AtomicBoolean hasTriedToReadAuthenticationFromStorage = new AtomicBoolean(false);
 
   private Map<Long, Exercise> inGrading = new ConcurrentHashMap<>();
 
@@ -63,13 +62,15 @@ public class MainViewModel {
   }
 
   private void updateExercises() {
-    Course course = Optional.ofNullable(courseViewModel.get())
-        .map(BaseViewModel::getModel)
-        .orElse(null);
+    Course course = null;
+    var localCourseViewModel = courseViewModel.get();
+    if (localCourseViewModel != null) {
+      course = localCourseViewModel.getModel();
+    }
     Authentication auth = authentication.get();
     if (course == null || auth == null) {
-      ExercisesTreeViewModel emptyModel = new ExercisesTreeViewModel(new ArrayList<>(),
-              new Options());
+      ExercisesTreeViewModel emptyModel =
+          new ExercisesTreeViewModel(new ArrayList<>(), new Options());
       if (course == null) {
         emptyModel.setEmptyTextVisible(true);
       }
@@ -84,7 +85,7 @@ public class MainViewModel {
       inGrading.forEach((id, exercise) -> setInGrading(exerciseGroups, id));
       exercisesViewModel.set(new ExercisesTreeViewModel(exerciseGroups, exerciseFilterOptions));
     } catch (InvalidAuthenticationException e) {
-      logger.error("Failed to fetch exercises", e);
+      logger.error("Failed to fetch exercises due to authentication issues", e);
       // TODO: might want to communicate this to the user somehow
     } catch (IOException e) {
       logger.error("Failed to fetch exercises", e);
