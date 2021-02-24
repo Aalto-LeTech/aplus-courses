@@ -55,6 +55,9 @@ public class CourseProjectViewModelTest {
 
     assertTrue("The settings text should mention that IDEA settings will be adjusted",
         courseProjectViewModel.shouldShowSettingsInfo());
+
+    assertFalse("The settings panel in the dialog box should not be shown when there's no URL",
+        courseProjectViewModel.shouldShowSettingsSegment());
   }
 
   @Test

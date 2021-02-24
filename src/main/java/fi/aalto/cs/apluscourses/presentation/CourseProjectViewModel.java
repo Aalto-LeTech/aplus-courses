@@ -51,8 +51,16 @@ public class CourseProjectViewModel {
     return currentSettingsDiffer;
   }
 
+  public boolean shouldShowSettingsSegment() {
+    return course.getAppropriateIdeSettingsUrl() != null;
+  }
+
   public boolean userOptsOutOfSettings() {
     return Boolean.TRUE.equals(settingsOptOutProperty.get());
+  }
+
+  public boolean shouldApplyNewIdeSettings() {
+    return shouldShowSettingsSegment() && !userOptsOutOfSettings();
   }
 
   public String getCourseName() {

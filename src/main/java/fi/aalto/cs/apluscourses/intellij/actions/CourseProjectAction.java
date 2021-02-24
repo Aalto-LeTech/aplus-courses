@@ -168,7 +168,7 @@ public class CourseProjectAction extends AnAction {
       return;
     }
 
-    boolean importIdeSettings = !courseProjectViewModel.userOptsOutOfSettings();
+    boolean importIdeSettings = courseProjectViewModel.shouldApplyNewIdeSettings();
 
     String basePath = project.getBasePath();
     if (basePath == null) {
