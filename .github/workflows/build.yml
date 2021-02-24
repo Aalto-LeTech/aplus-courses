@@ -62,7 +62,7 @@ jobs:
         run: ./gradlew runIdeForUiTests &
       - name: Sleep 240s & run the UI tests
         run: |
-            sleep 240
+            sleep 300
             ./gradlew uiTest --info
 
   build-for-ui-test-windows:
