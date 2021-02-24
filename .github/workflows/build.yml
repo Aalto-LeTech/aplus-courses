@@ -50,7 +50,7 @@ jobs:
         run: sleep 180s && gradle uiTest
 
   build-for-ui-test-mac-os:
-    runs-on: macos-latest
+    runs-on: macos-11.0
 
     steps:
       - uses: actions/checkout@v2
@@ -60,8 +60,8 @@ jobs:
           java-version: 11
       - name: Setup UI testing env
         run: ./gradlew runIdeForUiTests &
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
+#      - name: Setup tmate session
+#        uses: mxschmitt/action-tmate@v3
       - name: Sleep 300s & run the UI tests
         run: |
             sleep 300
