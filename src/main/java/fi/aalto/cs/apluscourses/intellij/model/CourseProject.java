@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.intellij.model;
 
 import com.intellij.openapi.project.Project;
+import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.utils.Event;
@@ -26,7 +27,8 @@ public class CourseProject {
     this.course = course;
     this.courseUpdated = new Event();
     this.courseUpdater = new CourseUpdater(
-        course, project, courseUrl, courseUpdated, PluginSettings.COURSE_UPDATE_INTERVAL);
+        course, project, courseUrl, courseUpdated, new DefaultNotifier(),
+        PluginSettings.COURSE_UPDATE_INTERVAL);
   }
 
   @NotNull

@@ -1,12 +1,17 @@
 package fi.aalto.cs.apluscourses.intellij.model;
 
+import com.intellij.notification.Notification;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.project.Project;
+import fi.aalto.cs.apluscourses.intellij.notifications.NewModulesVersionsNotification;
+import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.utils.Event;
 import java.net.URL;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
@@ -26,9 +31,16 @@ public class CourseUpdater {
   @NotNull
   private final Event eventToTrigger;
 
+  @NotNull
+  private final Notifier notifier;
+
   private final long updateInterval;
 
-  private Thread thread;
+  private Thread thread = null;
+
+  private final Set<String> notifiedModules = new HashSet<>();
+
+  private Notification moduleUpdatesNotification = null;
 
   /**
    * Construct a course updater with the given parameters.
@@ -37,13 +49,14 @@ public class CourseUpdater {
                        @NotNull Project project,
                        @NotNull URL courseUrl,
                        @NotNull Event eventToTrigger,
+                       @NotNull Notifier notifier,
                        long updateInterval) {
     this.course = course;
     this.project = project;
     this.courseUrl = courseUrl;
-    this.updateInterval = updateInterval;
     this.eventToTrigger = eventToTrigger;
-    this.thread = null;
+    this.notifier = notifier;
+    this.updateInterval = updateInterval;
   }
 
   /**
@@ -74,6 +87,14 @@ public class CourseUpdater {
           if (newCourse != null) {
             updateModuleIds(newCourse);
             eventToTrigger.trigger();
+          }
+          var updatableModules = course.getUpdatableModules()
+              .stream()
+              .filter(m -> notifiedModules.add(m.getName()))
+              .collect(Collectors.toList());
+          if (!updatableModules.isEmpty()) {
+            moduleUpdatesNotification = new NewModulesVersionsNotification(updatableModules);
+            notifier.notifyAndHide(moduleUpdatesNotification, project);
           }
           Thread.sleep(updateInterval); // Good night :-)
         } catch (InterruptedException e) {
