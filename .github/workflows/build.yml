@@ -60,12 +60,12 @@ jobs:
           java-version: 11
       - name: Setup UI testing env
         run: ./gradlew runIdeForUiTests &
-      - name: Sleep 240s & run the UI tests
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+      - name: Sleep 300s & run the UI tests
         run: |
             sleep 300
             ./gradlew uiTest --info
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
 
   build-for-ui-test-windows:
     runs-on: windows-latest
