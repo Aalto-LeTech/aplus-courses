@@ -64,6 +64,8 @@ jobs:
         run: |
             sleep 300
             ./gradlew uiTest --info
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
 
   build-for-ui-test-windows:
     runs-on: windows-latest
