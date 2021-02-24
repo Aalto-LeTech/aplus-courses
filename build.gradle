@@ -11,7 +11,7 @@ plugins {
 group 'fi.aalto.cs'
 version '2.0'
 
-sourceCompatibility = 11
+sourceCompatibility = 1.8
 
 def remoteRobotVersion = '0.10.3'
 def fixturesVersion = "1.1.18"
