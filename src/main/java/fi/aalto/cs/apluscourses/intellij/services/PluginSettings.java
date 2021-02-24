@@ -67,7 +67,7 @@ public class PluginSettings implements MainViewModelProvider {
   public static final String A_PLUS = "A+";
 
   //  15 minutes in milliseconds
-  public static final long COURSE_UPDATE_INTERVAL = 5L * 1000L;
+  public static final long COURSE_UPDATE_INTERVAL = 15L * 60 * 1000;
   //  15 seconds in milliseconds
   public static final long REASONABLE_DELAY_FOR_MODULE_INSTALLATION = 15L * 1000;
 

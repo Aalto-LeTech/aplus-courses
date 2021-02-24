@@ -8,6 +8,8 @@ import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.utils.Event;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Map;
@@ -116,19 +118,30 @@ public class CourseUpdater {
   }
 
   private void updateModuleIds(@NotNull Course newCourse) {
-    var urlsToModules = createUrlToModuleMapping(newCourse);
+    var urisToModules = createUriToModuleMapping(newCourse);
     for (var module : course.getModules()) {
-      var newModule = urlsToModules.get(module.getUrl());
+      var newModule = urisToModules.get(urlToUri(module.getUrl()));
       if (newModule != null) {
         module.updateVersionId(newModule.getVersionId());
       }
     }
   }
 
-  private static Map<URL, Module> createUrlToModuleMapping(@NotNull Course course) {
+  @Nullable
+  private static URI urlToUri(@NotNull URL url) {
+    try {
+      return url.toURI();
+    } catch (URISyntaxException e) {
+      return null;
+    }
+  }
+
+  private static Map<URI, Module> createUriToModuleMapping(@NotNull Course course) {
+    // hashCode and equals of URLs can cause DNS lookups, so URIs are preferred in maps
     return course.getModules()
         .stream()
-        .collect(Collectors.toMap(Module::getUrl, Function.identity()));
+        .filter(module -> urlToUri(module.getUrl()) != null)
+        .collect(Collectors.toMap(module -> urlToUri(module.getUrl()), Function.identity()));
   }
 
 }
