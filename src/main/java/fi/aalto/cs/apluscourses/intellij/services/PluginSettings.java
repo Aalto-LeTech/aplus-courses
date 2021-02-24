@@ -19,7 +19,6 @@ import fi.aalto.cs.apluscourses.intellij.utils.CourseFileManager;
 import fi.aalto.cs.apluscourses.intellij.utils.IntelliJFilterOption;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
-import fi.aalto.cs.apluscourses.presentation.MainViewModelUpdater;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseFilter;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseGroupFilter;
 import fi.aalto.cs.apluscourses.presentation.filter.Option;
@@ -106,10 +105,6 @@ public class PluginSettings implements MainViewModelProvider {
 
   @NotNull
   private final ConcurrentMap<ProjectKey, CourseProject> courseProjects = new ConcurrentHashMap<>();
-
-  @NotNull
-  private final ConcurrentMap<ProjectKey, MainViewModelUpdater> mainViewModelUpdaters
-      = new ConcurrentHashMap<>();
 
   @NotNull
   private final ConcurrentMap<ProjectKey, CourseFileManager> courseFileManagers
