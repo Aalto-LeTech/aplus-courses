@@ -9,6 +9,8 @@ import fi.aalto.cs.apluscourses.e2e.fixtures.customComboBox
 import fi.aalto.cs.apluscourses.e2e.fixtures.dialog
 import fi.aalto.cs.apluscourses.e2e.fixtures.heavyWeightWindow
 import fi.aalto.cs.apluscourses.e2e.fixtures.welcomeFrame
+import fi.aalto.cs.apluscourses.e2e.utils.fetchScreenShot
+import fi.aalto.cs.apluscourses.e2e.utils.save
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.awt.image.BufferedImage
@@ -36,6 +38,7 @@ class CommonSteps(val remoteRobot: RemoteRobot) {
                     sidePanel().findText("Project").click()
                     customComboBox("\u001BProject SDK:").dropdown()
                     with(heavyWeightWindow()) {
+                        remoteRobot.fetchScreenShot().save("beforeClick")
                         attempt(2) {
                             findText("Add SDK").click()
                         }

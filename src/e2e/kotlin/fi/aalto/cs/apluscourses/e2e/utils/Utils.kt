@@ -34,7 +34,7 @@ fun uiTest(test: RemoteRobot.() -> Unit) {
 }
 
 
-private fun BufferedImage.save(name: String) {
+fun BufferedImage.save(name: String) {
     val bytes = ByteArrayOutputStream().use { b ->
         ImageIO.write(this, "png", b)
         b.toByteArray()
@@ -42,7 +42,7 @@ private fun BufferedImage.save(name: String) {
     File("build/hierarchy-reports").apply { mkdirs() }.resolve("$name.png").writeBytes(bytes)
 }
 
-private fun RemoteRobot.fetchScreenShot(): BufferedImage {
+fun RemoteRobot.fetchScreenShot(): BufferedImage {
     return callJs<ByteArray>(
         """
             importPackage(java.io)
