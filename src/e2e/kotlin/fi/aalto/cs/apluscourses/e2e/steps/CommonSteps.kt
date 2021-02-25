@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.e2e.steps
 
 import com.intellij.remoterobot.RemoteRobot
+import com.intellij.remoterobot.fixtures.Fixture
 import com.intellij.remoterobot.stepsProcessing.step
 import fi.aalto.cs.apluscourses.e2e.fixtures.customComboBox
 import fi.aalto.cs.apluscourses.e2e.fixtures.dialog
@@ -8,8 +9,11 @@ import fi.aalto.cs.apluscourses.e2e.fixtures.heavyWeightWindow
 import fi.aalto.cs.apluscourses.e2e.fixtures.welcomeFrame
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import java.awt.image.BufferedImage
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.time.Duration
+import javax.imageio.ImageIO
 
 class CommonSteps(val remoteRobot: RemoteRobot) {
 
@@ -32,7 +36,11 @@ class CommonSteps(val remoteRobot: RemoteRobot) {
           with(heavyWeightWindow()) {
             findText("Add SDK").click()
             HierarchyDownloader.catchHierarchy {
-              heavyWeightWindow().findText("Download JDK...").click()
+              try {
+                heavyWeightWindow().findText("Download JDK...").click()
+              } catch (e: Throwable) {
+                remoteRobot.fetchScreenShot().save("error")
+              }
             }
           }
           with(dialog("Download JDK")) {
@@ -46,6 +54,34 @@ class CommonSteps(val remoteRobot: RemoteRobot) {
         }
       }
     }
+  }
+}
+
+fun BufferedImage.save(name: String) {
+  val bytes = ByteArrayOutputStream().use { b ->
+    ImageIO.write(this, "png", b)
+    b.toByteArray()
+  }
+  File("build/hierarchy-reports/$name.png").writeBytes(bytes)
+}
+
+fun RemoteRobot.fetchScreenShot(): BufferedImage {
+  return callJs<ByteArray>("""
+            importPackage(java.io)
+            importPackage(javax.imageio)
+            const screenShot = new java.awt.Robot().createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
+            let pictureBytes;
+            const baos = new ByteArrayOutputStream();
+            try {
+                ImageIO.write(screenShot, "png", baos);
+                pictureBytes = baos.toByteArray();
+            } finally {
+              baos.close();
+            }
+            pictureBytes;
+        """
+  ).inputStream().use {
+    ImageIO.read(it)
   }
 }
 

@@ -65,6 +65,12 @@ jobs:
             sleep 300
             export JAVA_HOME=`/usr/libexec/java_home -v 11`
             ./gradlew uiTest --info
+      - name: Archive logs
+        uses: actions/upload-artifact@v2
+        with:
+          name: hierarchy-report
+          path: |
+            build/hierarchy-reports
 
 #  build-for-ui-test-windows:
 #    runs-on: windows-latest
