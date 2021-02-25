@@ -4,6 +4,7 @@ import com.intellij.remoterobot.RemoteRobot
 import com.intellij.remoterobot.fixtures.Fixture
 import com.intellij.remoterobot.stepsProcessing.step
 import com.intellij.remoterobot.utils.attempt
+import com.intellij.remoterobot.utils.waitFor
 import fi.aalto.cs.apluscourses.e2e.fixtures.customComboBox
 import fi.aalto.cs.apluscourses.e2e.fixtures.dialog
 import fi.aalto.cs.apluscourses.e2e.fixtures.heavyWeightWindow
@@ -35,10 +36,9 @@ class CommonSteps(val remoteRobot: RemoteRobot) {
                     sidePanel().findText("Project").click()
                     customComboBox("\u001BProject SDK:").dropdown()
                     with(heavyWeightWindow()) {
-                        attempt(5) {
-                            findText("Add SDK").click()
-                            heavyWeightWindow().findText("Download JDK...").click()
-                        }
+                        waitFor { hasText("Add SDK") }
+                        findText("Add SDK").click()
+                        heavyWeightWindow().findText("Download JDK...").click()
                     }
                     with(dialog("Download JDK")) {
                         customComboBox("Version:").click()
@@ -50,37 +50,6 @@ class CommonSteps(val remoteRobot: RemoteRobot) {
                     button("OK").click()
                 }
             }
-        }
-    }
-}
-
-object HierarchyDownloader {
-    private val client = OkHttpClient()
-    private const val baseUrl = "http://127.0.0.1:8082"
-
-    fun catchHierarchy(code: () -> Unit) {
-        try {
-            code()
-        } finally {
-            HierarchyDownloader.saveHierarchy()
-        }
-    }
-
-    private fun saveHierarchy() {
-        val hierarchySnapshot =
-            saveFile(baseUrl, "build/hierarchy-reports", "hierarchy-${System.currentTimeMillis()}.html")
-        if (File("build/hierarchy-reports/styles.css").exists().not()) {
-            saveFile("$baseUrl/styles.css", "build/hierarchy-reports", "styles.css")
-        }
-        println("Hierarchy snapshot: ${hierarchySnapshot.absolutePath}")
-    }
-
-    private fun saveFile(url: String, folder: String, name: String): File {
-        val response = client.newCall(Request.Builder().url(url).build()).execute()
-        return File(folder).apply {
-            mkdirs()
-        }.resolve(name).apply {
-            writeText(response.body()?.string() ?: "")
         }
     }
 }

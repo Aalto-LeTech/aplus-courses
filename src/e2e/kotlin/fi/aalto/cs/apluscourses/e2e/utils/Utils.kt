@@ -3,6 +3,8 @@ package fi.aalto.cs.apluscourses.e2e.utils
 import com.intellij.remoterobot.RemoteRobot
 import com.intellij.remoterobot.stepsProcessing.StepLogger
 import com.intellij.remoterobot.stepsProcessing.StepWorker
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -59,3 +61,34 @@ private fun RemoteRobot.fetchScreenShot(): BufferedImage {
 }
 
 fun wait(duration: Duration) = Thread.sleep(duration.toMillis())
+
+object HierarchyDownloader {
+  private val client = OkHttpClient()
+  private const val baseUrl = "http://127.0.0.1:8082"
+
+  fun catchHierarchy(code: () -> Unit) {
+    try {
+      code()
+    } finally {
+      HierarchyDownloader.saveHierarchy()
+    }
+  }
+
+  private fun saveHierarchy() {
+    val hierarchySnapshot =
+      saveFile(baseUrl, "build/hierarchy-reports", "hierarchy-${System.currentTimeMillis()}.html")
+    if (File("build/hierarchy-reports/styles.css").exists().not()) {
+      saveFile("$baseUrl/styles.css", "build/hierarchy-reports", "styles.css")
+    }
+    println("Hierarchy snapshot: ${hierarchySnapshot.absolutePath}")
+  }
+
+  private fun saveFile(url: String, folder: String, name: String): File {
+    val response = client.newCall(Request.Builder().url(url).build()).execute()
+    return File(folder).apply {
+      mkdirs()
+    }.resolve(name).apply {
+      writeText(response.body()?.string() ?: "")
+    }
+  }
+}
