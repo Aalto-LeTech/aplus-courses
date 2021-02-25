@@ -27,7 +27,7 @@ fun uiTest(test: RemoteRobot.() -> Unit) {
         remoteRobot.test()
     } catch (e: Throwable) {
         HierarchyDownloader.catchHierarchy {
-            remoteRobot.fetchScreenShot().save("error")
+            remoteRobot.fetchScreenShot().save("error_${System.currentTimeMillis()}")
         }
         throw e
     }
