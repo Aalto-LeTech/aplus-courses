@@ -29,7 +29,7 @@ fun SearchContext.dialog(title: String, timeout : Duration = Duration.ofSeconds(
         .build(),
       timeout)
 
-fun SearchContext.heavyWeightWindow(timeout: Duration = Duration.ofSeconds(5)) = find(HeavyWeightWindowFixture::class.java, timeout)
+fun SearchContext.heavyWeightWindow() = find(HeavyWeightWindowFixture::class.java, Duration.ofSeconds(5))
 
 @FixtureName("Welcome Frame")
 @DefaultXpath(by = "FlatWelcomeFrame type", xpath = "//div[@class='FlatWelcomeFrame']")

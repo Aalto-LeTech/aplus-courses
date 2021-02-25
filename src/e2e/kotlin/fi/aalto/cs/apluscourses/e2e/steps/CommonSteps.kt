@@ -38,8 +38,10 @@ class CommonSteps(val remoteRobot: RemoteRobot) {
                     sidePanel().findText("Project").click()
                     customComboBox("\u001BProject SDK:").dropdown()
                     with(heavyWeightWindow()) {
-                        findText("Add SDK").click()
-                        heavyWeightWindow(Duration.ofSeconds(30)).findText("Download JDK...").click()
+                        attempt(2) {
+                            findText("Add SDK").click()
+                            heavyWeightWindow().findText("Download JDK...").click()
+                        }
                     }
                     with(dialog("Download JDK")) {
                         customComboBox("Version:").click()
