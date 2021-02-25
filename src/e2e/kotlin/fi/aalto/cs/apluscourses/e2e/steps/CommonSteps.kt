@@ -3,6 +3,7 @@ package fi.aalto.cs.apluscourses.e2e.steps
 import com.intellij.remoterobot.RemoteRobot
 import com.intellij.remoterobot.fixtures.Fixture
 import com.intellij.remoterobot.stepsProcessing.step
+import com.intellij.remoterobot.utils.attempt
 import fi.aalto.cs.apluscourses.e2e.fixtures.customComboBox
 import fi.aalto.cs.apluscourses.e2e.fixtures.dialog
 import fi.aalto.cs.apluscourses.e2e.fixtures.heavyWeightWindow
@@ -34,8 +35,8 @@ class CommonSteps(val remoteRobot: RemoteRobot) {
                     sidePanel().findText("Project").click()
                     customComboBox("\u001BProject SDK:").dropdown()
                     with(heavyWeightWindow()) {
-                        findText("Add SDK").click()
-                        HierarchyDownloader.catchHierarchy {
+                        attempt(5) {
+                            findText("Add SDK").click()
                             heavyWeightWindow().findText("Download JDK...").click()
                         }
                     }
