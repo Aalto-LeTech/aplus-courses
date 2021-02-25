@@ -13,35 +13,38 @@ import java.util.concurrent.atomic.AtomicBoolean
 import javax.imageio.ImageIO
 
 object StepLoggerInitializer {
-  private val initialized = AtomicBoolean(false)
-  fun init() {
-    if (!initialized.getAndSet(true)) {
-      StepWorker.registerProcessor(StepLogger())
+    private val initialized = AtomicBoolean(false)
+    fun init() {
+        if (!initialized.getAndSet(true)) {
+            StepWorker.registerProcessor(StepLogger())
+        }
     }
-  }
 }
 
 fun uiTest(test: RemoteRobot.() -> Unit) {
-  val remoteRobot = RemoteRobot("http://localhost:8082")
-  try {
-    remoteRobot.test()
-  } catch (e: Throwable) {
-    remoteRobot.fetchScreenShot().save("error")
-    throw e
-  }
+    val remoteRobot = RemoteRobot("http://localhost:8082")
+    try {
+        remoteRobot.test()
+    } catch (e: Throwable) {
+        HierarchyDownloader.catchHierarchy {
+            remoteRobot.fetchScreenShot().save("error")
+        }
+        throw e
+    }
 }
 
 
 private fun BufferedImage.save(name: String) {
-  val bytes = ByteArrayOutputStream().use { b ->
-    ImageIO.write(this, "png", b)
-    b.toByteArray()
-  }
-  File("build/hierarchy-reports").apply { mkdirs() }.resolve("$name.png").writeBytes(bytes)
+    val bytes = ByteArrayOutputStream().use { b ->
+        ImageIO.write(this, "png", b)
+        b.toByteArray()
+    }
+    File("build/hierarchy-reports").apply { mkdirs() }.resolve("$name.png").writeBytes(bytes)
 }
 
 private fun RemoteRobot.fetchScreenShot(): BufferedImage {
-  return callJs<ByteArray>("""
+    return callJs<ByteArray>(
+        """
             importPackage(java.io)
             importPackage(javax.imageio)
             const screenShot = new java.awt.Robot().createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
@@ -55,40 +58,40 @@ private fun RemoteRobot.fetchScreenShot(): BufferedImage {
             }
             pictureBytes;
         """
-  ).inputStream().use {
-    ImageIO.read(it)
-  }
+    ).inputStream().use {
+        ImageIO.read(it)
+    }
 }
 
 fun wait(duration: Duration) = Thread.sleep(duration.toMillis())
 
 object HierarchyDownloader {
-  private val client = OkHttpClient()
-  private const val baseUrl = "http://127.0.0.1:8082"
+    private val client = OkHttpClient()
+    private const val baseUrl = "http://127.0.0.1:8082"
 
-  fun catchHierarchy(code: () -> Unit) {
-    try {
-      code()
-    } finally {
-      HierarchyDownloader.saveHierarchy()
+    fun catchHierarchy(code: () -> Unit) {
+        try {
+            code()
+        } finally {
+            HierarchyDownloader.saveHierarchy()
+        }
     }
-  }
 
-  private fun saveHierarchy() {
-    val hierarchySnapshot =
-      saveFile(baseUrl, "build/hierarchy-reports", "hierarchy-${System.currentTimeMillis()}.html")
-    if (File("build/hierarchy-reports/styles.css").exists().not()) {
-      saveFile("$baseUrl/styles.css", "build/hierarchy-reports", "styles.css")
+    private fun saveHierarchy() {
+        val hierarchySnapshot =
+            saveFile(baseUrl, "build/hierarchy-reports", "hierarchy-${System.currentTimeMillis()}.html")
+        if (File("build/hierarchy-reports/styles.css").exists().not()) {
+            saveFile("$baseUrl/styles.css", "build/hierarchy-reports", "styles.css")
+        }
+        println("Hierarchy snapshot: ${hierarchySnapshot.absolutePath}")
     }
-    println("Hierarchy snapshot: ${hierarchySnapshot.absolutePath}")
-  }
 
-  private fun saveFile(url: String, folder: String, name: String): File {
-    val response = client.newCall(Request.Builder().url(url).build()).execute()
-    return File(folder).apply {
-      mkdirs()
-    }.resolve(name).apply {
-      writeText(response.body()?.string() ?: "")
+    private fun saveFile(url: String, folder: String, name: String): File {
+        val response = client.newCall(Request.Builder().url(url).build()).execute()
+        return File(folder).apply {
+            mkdirs()
+        }.resolve(name).apply {
+            writeText(response.body()?.string() ?: "")
+        }
     }
-  }
 }

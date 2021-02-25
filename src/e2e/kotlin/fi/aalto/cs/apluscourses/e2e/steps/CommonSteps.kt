@@ -36,7 +36,7 @@ class CommonSteps(val remoteRobot: RemoteRobot) {
                     sidePanel().findText("Project").click()
                     customComboBox("\u001BProject SDK:").dropdown()
                     with(heavyWeightWindow()) {
-                        waitFor { hasText("Add SDK") }
+                        Thread.sleep(1000)
                         findText("Add SDK").click()
                         heavyWeightWindow().findText("Download JDK...").click()
                     }
