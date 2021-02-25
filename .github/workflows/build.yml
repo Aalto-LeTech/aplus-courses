@@ -66,6 +66,7 @@ jobs:
             export JAVA_HOME=`/usr/libexec/java_home -v 11`
             ./gradlew uiTest --info
       - name: Save screenshot
+        if: ${{ failure() }}
         uses: actions/upload-artifact@v2
         with:
           name: hierarchy-report
