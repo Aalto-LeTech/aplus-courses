@@ -62,7 +62,7 @@ fun BufferedImage.save(name: String) {
     ImageIO.write(this, "png", b)
     b.toByteArray()
   }
-  File("build/hierarchy-reports/$name.png").writeBytes(bytes)
+  File("build/hierarchy-reports").apply { mkdirs() }.resolve("$name.png").writeBytes(bytes)
 }
 
 fun RemoteRobot.fetchScreenShot(): BufferedImage {
