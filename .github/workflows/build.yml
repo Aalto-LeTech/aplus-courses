@@ -86,8 +86,8 @@ jobs:
         with:
           java-version: 11
       - name: Setup UI testing env
-        run: gradle runIdeForUiTests &
+        run: ./gradlew runIdeForUiTests &
       - name: Timeout for 5 minutes
         run: Start-Sleep -s 300
       - name: Run the UI tests
-        run: gradle uiTest --info
+        run: ./gradlew uiTest --info
