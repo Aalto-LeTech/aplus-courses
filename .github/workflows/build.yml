@@ -30,7 +30,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: gradlew build sonarqube
+        run: gradle build sonarqube
 
   build-for-ui-test-linux:
     runs-on: ubuntu-latest
@@ -61,13 +61,13 @@ jobs:
         with:
           java-version: 11
       - name: Setup UI testing env
-        run: gradlew runIdeForUiTests &
+        run: gradle runIdeForUiTests &
       - name: Timeout for 5 minutes
         run: sleep 300
       - name: Run the UI tests
         run: |
           export JAVA_HOME=`/usr/libexec/java_home -v 11`
-          gradlew uiTest --info
+          gradle uiTest --info
       - name: Save screenshot (on failure)
         if: ${{ failure() }}
         uses: actions/upload-artifact@v2
@@ -88,12 +88,12 @@ jobs:
       - name: Setup UI testing env
         run: |
           netstat -abo
-          gradlew runIdeForUiTests &
+          gradle runIdeForUiTests &
       - name: Timeout for 3 minutes
         run: Start-Sleep -s 180
       - name: Run the UI tests
         run: |
           netstat -bona
-          gradlew uiTest --info
+          gradle uiTest --info
 #      - name: Setup tmate session
 #        uses: mxschmitt/action-tmate@v3
