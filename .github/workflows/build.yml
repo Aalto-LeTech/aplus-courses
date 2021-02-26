@@ -86,14 +86,8 @@ jobs:
         with:
           java-version: 11
       - name: Setup UI testing env
-        run: |
-          netstat -abo
-          gradle runIdeForUiTests &
+        run: gradle runIdeForUiTests &
       - name: Timeout for 3 minutes
         run: Start-Sleep -s 180
       - name: Run the UI tests
-        run: |
-          netstat -bona
-          gradle uiTest --info
-#      - name: Setup tmate session
-#        uses: mxschmitt/action-tmate@v3
+        run: gradle uiTest --info
