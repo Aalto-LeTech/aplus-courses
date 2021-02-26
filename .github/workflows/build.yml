@@ -50,6 +50,13 @@ jobs:
         run: sleep 180s
       - name: Run the UI tests
         run: gradle uiTest
+      - name: Save screenshot (on failure)
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: hierarchy-report
+          path: |
+            build/hierarchy-reports
 
   build-for-ui-test-mac-os:
     runs-on: macos-latest
@@ -91,3 +98,10 @@ jobs:
         run: Start-Sleep -s 300
       - name: Run the UI tests
         run: ./gradlew uiTest --info
+      - name: Save screenshot (on failure)
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: hierarchy-report
+          path: |
+            build/hierarchy-reports
