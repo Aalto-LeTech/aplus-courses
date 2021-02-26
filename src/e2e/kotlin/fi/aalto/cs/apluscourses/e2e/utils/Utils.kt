@@ -44,7 +44,7 @@ fun BufferedImage.save(name: String) {
 
 fun RemoteRobot.fetchScreenShot(): BufferedImage {
     return callJs<ByteArray>(
-        """
+            """
             importPackage(java.io)
             importPackage(javax.imageio)
             const screenShot = new java.awt.Robot().createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
@@ -79,7 +79,7 @@ object HierarchyDownloader {
 
     private fun saveHierarchy() {
         val hierarchySnapshot =
-            saveFile(baseUrl, "build/hierarchy-reports", "hierarchy-${System.currentTimeMillis()}.html")
+                saveFile(baseUrl, "build/hierarchy-reports", "hierarchy-${System.currentTimeMillis()}.html")
         if (File("build/hierarchy-reports/styles.css").exists().not()) {
             saveFile("$baseUrl/styles.css", "build/hierarchy-reports", "styles.css")
         }

@@ -1,23 +1,13 @@
 package fi.aalto.cs.apluscourses.e2e.steps
 
 import com.intellij.remoterobot.RemoteRobot
-import com.intellij.remoterobot.fixtures.Fixture
 import com.intellij.remoterobot.stepsProcessing.step
 import com.intellij.remoterobot.utils.attempt
-import com.intellij.remoterobot.utils.waitFor
 import fi.aalto.cs.apluscourses.e2e.fixtures.customComboBox
 import fi.aalto.cs.apluscourses.e2e.fixtures.dialog
 import fi.aalto.cs.apluscourses.e2e.fixtures.heavyWeightWindow
 import fi.aalto.cs.apluscourses.e2e.fixtures.welcomeFrame
-import fi.aalto.cs.apluscourses.e2e.utils.fetchScreenShot
-import fi.aalto.cs.apluscourses.e2e.utils.save
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import java.awt.image.BufferedImage
-import java.io.ByteArrayOutputStream
-import java.io.File
 import java.time.Duration
-import javax.imageio.ImageIO
 
 class CommonSteps(val remoteRobot: RemoteRobot) {
 
