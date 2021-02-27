@@ -46,7 +46,7 @@ class PlaceholderTest {
             "O1Library not found in project view tree"
           ) { hasText("O1Library") }
         }
-        aPlusStripeButton().click()
+        aPlusSideBarButton().click()
         with(modules()) {
           waitFor(
             Duration.ofSeconds(60),
@@ -64,7 +64,7 @@ class PlaceholderTest {
         menu().select("Set A+ Token")
       }
       with(dialog("A+ Token")) {
-        jPasswordField().text = System.getenv("APLUS_TEST_TOKEN")
+        passwordField().text = System.getenv("APLUS_TEST_TOKEN")
         button("OK").click()
       }
       with(ideFrame()) {
