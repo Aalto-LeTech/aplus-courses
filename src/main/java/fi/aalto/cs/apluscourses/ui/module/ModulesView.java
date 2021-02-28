@@ -54,6 +54,7 @@ public class ModulesView {
     emptyText.setHorizontalAlignment(SwingConstants.CENTER);
     emptyText.setVerticalAlignment(SwingConstants.CENTER);
     pane.getVerticalScrollBar().setUnitIncrement(moduleListView.getFixedCellHeight());
+    emptyText.setText("Loading..");
   }
 
   @NotNull
@@ -68,6 +69,9 @@ public class ModulesView {
     ApplicationManager.getApplication().invokeLater(() -> {
       moduleListView.setModel(course == null ? null : course.getModules());
       cl.show(cardPanel, (course != null) ? "TreeCard" : "LabelCard");
+      if (course == null) { //and is ready, but cannot know that with a null model!
+        emptyText.setText(getText("ui.module.ModuleListView.turnIntoAPlusProject"));
+      }
     }, ModalityState.any()
     );
   }

@@ -76,6 +76,7 @@ public class MainViewModel {
       }
       emptyModel.setAuthenticated(auth != null);
       exercisesViewModel.set(emptyModel);
+      exercisesViewModel.get().setProjectReady(hasTriedToReadAuthenticationFromStorage.get());
       return;
     }
     ExerciseDataSource dataSource = course.getExerciseDataSource();
@@ -86,6 +87,7 @@ public class MainViewModel {
       inGrading.forEach((id, exercise) -> setInGrading(exerciseGroups, id));
       exercisesViewModel.set(new ExercisesTreeViewModel(exerciseGroups, exerciseFilterOptions));
       exercisesViewModel.get().setAuthenticated(auth != null);
+      exercisesViewModel.get().setProjectReady(hasTriedToReadAuthenticationFromStorage.get());
     } catch (InvalidAuthenticationException e) {
       logger.error("Failed to fetch exercises due to authentication issues", e);
       // TODO: might want to communicate this to the user somehow
@@ -117,12 +119,22 @@ public class MainViewModel {
   public void readAuthenticationFromStorage(@Nullable PasswordStorage passwordStorage,
                                             @NotNull TokenAuthentication.Factory factory) {
     if (hasTriedToReadAuthenticationFromStorage.getAndSet(true) || authentication.get() != null) {
+      exercisesViewModel.get().setProjectReady(true);
+      //courseViewModel.get().setProjectReady(true);
       return;
     }
     Optional.ofNullable(passwordStorage)
         .map(PasswordStorage::restorePassword)
         .map(factory::create)
         .ifPresent(this::setAuthentication);
+    exercisesViewModel.get().setProjectReady(true);
+    //courseViewModel.get().setProjectReady(true);
+    if (!exercisesViewModel.get().isAuthenticated()) {
+      this.updateExercises(); // When authentication is null mainViewModel is not updated?
+    }
+    // This is what triggers the final update of MainViewModel.
+    // isReady should now be true and the auth details correctly set
+
   }
 
   @Nullable
@@ -166,5 +178,15 @@ public class MainViewModel {
     // We don't call exercisesViewModel.valueChanged() to update the tree here.
     // Once grading is done, the tree is updated anyways by SubmissionStatusUpdater.
     inGrading.remove(submittedForGrading.getId());
+  }
+
+  /**
+   * Triggers updateExercises when the project is not A+.
+   * @param isReady the project has finished loading.
+   */
+  public void setProjectReady(boolean isReady) {
+    if (isReady) {
+      this.updateExercises();
+    }
   }
 }

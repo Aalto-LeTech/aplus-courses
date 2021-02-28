@@ -15,6 +15,8 @@ public class ExercisesTreeViewModel extends BaseTreeViewModel<List<ExerciseGroup
 
   private boolean isAuthenticated;
 
+  private  boolean isProjectReady;
+
   /**
    * Construct an exercises tree view model from the given exercise groups.
    */
@@ -42,5 +44,13 @@ public class ExercisesTreeViewModel extends BaseTreeViewModel<List<ExerciseGroup
 
   public void setAuthenticated(boolean authenticated) {
     isAuthenticated = authenticated;
+  }
+
+  public boolean isProjectReady() {
+    return isProjectReady;
+  }
+
+  public void setProjectReady(boolean projectReady) {
+    isProjectReady = projectReady;
   }
 }
