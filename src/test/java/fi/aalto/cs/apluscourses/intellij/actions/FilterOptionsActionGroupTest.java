@@ -38,7 +38,7 @@ public class FilterOptionsActionGroupTest {
     when(mainViewModelProvider.getMainViewModel(any())).thenReturn(mainViewModel);
 
     FilterOptionsActionGroup actionGroup = new FilterOptionsActionGroup(mainViewModelProvider);
-    FilterOptionAction[] children = actionGroup.getChildren(e);
+    FilterOptionAction[] children = actionGroup.getFilterOptionActions(e);
 
     assertSame(filterOption1, children[0].getOption());
     assertSame(filterOption2, children[1].getOption());

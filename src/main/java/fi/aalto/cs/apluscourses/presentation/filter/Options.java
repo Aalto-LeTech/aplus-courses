@@ -31,4 +31,24 @@ public class Options extends AndFilter implements Streamable<Option> {
   public Iterator<Option> iterator() {
     return optionList.iterator();
   }
+
+  public void toggleAll() {
+    boolean isAnyActive = isAnyActive();
+    optionList.forEach(option -> option.isSelected.set(isAnyActive));
+  }
+
+  /**
+   * If any filter is active, returns true.
+   */
+  public boolean isAnyActive() {
+    return optionList.stream()
+            .anyMatch(option -> {
+              var selected = option.isSelected.get();
+              return selected != null && !selected;
+            });
+  }
+
+  public String getSelectText() {
+    return this.isAnyActive() ? "Select All" : "Deselect All";
+  }
 }
