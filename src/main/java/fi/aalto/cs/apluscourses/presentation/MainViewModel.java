@@ -74,6 +74,7 @@ public class MainViewModel {
       if (course == null) {
         emptyModel.setEmptyTextVisible(true);
       }
+      emptyModel.setAuthenticated(auth != null);
       exercisesViewModel.set(emptyModel);
       return;
     }
@@ -84,6 +85,7 @@ public class MainViewModel {
       List<ExerciseGroup> exerciseGroups = dataSource.getExerciseGroups(course, points, auth);
       inGrading.forEach((id, exercise) -> setInGrading(exerciseGroups, id));
       exercisesViewModel.set(new ExercisesTreeViewModel(exerciseGroups, exerciseFilterOptions));
+      exercisesViewModel.get().setAuthenticated(auth != null);
     } catch (InvalidAuthenticationException e) {
       logger.error("Failed to fetch exercises due to authentication issues", e);
       // TODO: might want to communicate this to the user somehow
