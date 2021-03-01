@@ -9,7 +9,7 @@ public class ListElementViewModel<T> extends BaseViewModel<T> {
   // easily misunderstood by programmers but we know what we are doing here.
   // What is more, Sonar dislikes wildcard type parameters elsewhere than parameters, and that's
   // another thing where Sonar is overly-cautious.
-  private volatile BaseListViewModel<?> listModel; //NOSONAR
+  private volatile BaseListViewModel<?> listModel; //  NOSONAR
   private volatile int index;
 
   public ListElementViewModel(@NotNull T model) {

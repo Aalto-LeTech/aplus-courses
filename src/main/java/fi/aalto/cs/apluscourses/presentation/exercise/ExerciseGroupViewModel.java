@@ -5,6 +5,7 @@ import fi.aalto.cs.apluscourses.presentation.base.Searchable;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
 import java.util.Comparator;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
@@ -58,6 +59,12 @@ public class ExerciseGroupViewModel extends SelectableNodeViewModel<ExerciseGrou
   private static String withoutExerciseNumber(@NotNull String htmlUrl) {
     int index = htmlUrl.lastIndexOf('_');
     return index != -1 ? htmlUrl.substring(0, index) : htmlUrl;
+  }
+
+  @Override
+  protected void setVisibilityByFilterResult(Optional<Boolean> result) {
+    visibility = result.orElse(true)
+        && this.getChildren().stream().anyMatch(SelectableNodeViewModel::isVisible);
   }
 
   @Override

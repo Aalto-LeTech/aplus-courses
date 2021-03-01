@@ -129,6 +129,7 @@ public class CourseFileManager {
   /**
    * Returns the language chosen by the user for the course corresponding to the currently loaded
    * course file. This should only be called after a course file has been successfully loaded.
+   *
    * @return
    */
   @NotNull
@@ -151,7 +152,6 @@ public class CourseFileManager {
     return new JSONObject(FileUtils.readFileToString(courseFile, StandardCharsets.UTF_8));
   }
 
-  @NotNull
   private void writeCourseFile(@NotNull JSONObject jsonObject) throws IOException {
     FileUtils.writeStringToFile(courseFile, jsonObject.toString(), StandardCharsets.UTF_8);
   }
@@ -210,7 +210,8 @@ public class CourseFileManager {
       try {
         downloadedAt = ZonedDateTime.parse(moduleObject.getString(MODULE_DOWNLOADED_AT_KEY));
       } catch (JSONException e) {
-        logger.error("Module " + moduleName + " missing 'downloadedAt' in course file", e);
+        logger
+            .error(String.format("Module %s missing 'downloadedAt' in course file", moduleName), e);
         downloadedAt = Instant.EPOCH.atZone(ZoneId.systemDefault());
       }
 

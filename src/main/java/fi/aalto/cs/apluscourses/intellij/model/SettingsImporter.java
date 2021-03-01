@@ -4,7 +4,6 @@ import com.intellij.ide.startup.StartupActionScriptManager;
 import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.updateSettings.impl.UpdateSettings;
-import com.intellij.openapi.util.SystemInfoRt;
 import com.intellij.openapi.util.io.FileUtilRt;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Course;
@@ -15,7 +14,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import net.lingala.zip4j.ZipFile;
@@ -43,31 +41,18 @@ public class SettingsImporter {
    * @throws IOException If an IO error occurs (e.g. network issues).
    */
   public void importIdeSettings(@NotNull Course course) throws IOException {
-    URL ideSettingsUrl = null;
-
-    if (SystemInfoRt.isWindows) {
-      ideSettingsUrl = course.getResourceUrls().get("ideSettingsWindows");
-    } else if (SystemInfoRt.isLinux) {
-      ideSettingsUrl = course.getResourceUrls().get("ideSettingsLinux");
-    } else if (SystemInfoRt.isMac) {
-      ideSettingsUrl = course.getResourceUrls().get("ideSettingsMac");
-    }
-
+    URL ideSettingsUrl = course.getAppropriateIdeSettingsUrl();
     if (ideSettingsUrl == null) {
-      ideSettingsUrl = course.getResourceUrls().get("ideSettings");
-
-      if (ideSettingsUrl == null) {
-        return;
-      }
+      return;
     }
 
     File file = FileUtilRt.createTempFile("course-ide-settings", ".zip");
     CoursesClient.fetch(ideSettingsUrl, file);
     String configPath = FileUtilRt.toSystemIndependentName(PathManager.getConfigPath());
     StartupActionScriptManager.addActionCommands(
-        Arrays.asList(
-            new StartupActionScriptManager.UnzipCommand(file, new File(configPath)),
-            new StartupActionScriptManager.DeleteCommand(file)
+        List.of(
+            new StartupActionScriptManager.UnzipCommand(file.toPath(), Path.of(configPath)),
+            new StartupActionScriptManager.DeleteCommand(file.toPath())
         )
     );
 

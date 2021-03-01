@@ -10,10 +10,10 @@ import javax.swing.JCheckBox;
  */
 public class CheckBox extends JCheckBox {
 
-  public final transient TwoWayBindable<CheckBox, Boolean> isCheckedBindable =
+  public final TwoWayBindable<CheckBox, Boolean> isCheckedBindable =
       new TwoWayBindable<>(this, CheckBox::setSelected, CheckBox::isSelected);
 
-  public final transient Bindable<CheckBox, Boolean> isEnabledBindable =
+  public final Bindable<CheckBox, Boolean> isEnabledBindable =
       new Bindable<>(this, CheckBox::setEnabled);
 
   public CheckBox() {

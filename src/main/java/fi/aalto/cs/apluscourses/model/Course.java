@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.model;
 
+import com.intellij.openapi.util.SystemInfoRt;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
 import fi.aalto.cs.apluscourses.utils.ResourceException;
 import fi.aalto.cs.apluscourses.utils.Resources;
@@ -268,6 +269,28 @@ public abstract class Course implements ComponentSource {
         .collect(Collectors.toList());
   }
 
+  /**
+   * Returns a URL containing the appropriate IDE settings for the platform that the user
+   * is currently using. If no IDE settings are available, null is returned.
+   */
+  @Nullable
+  public URL getAppropriateIdeSettingsUrl() {
+    URL ideSettingsUrl = null;
+
+    if (SystemInfoRt.isWindows) {
+      ideSettingsUrl = resourceUrls.get("ideSettingsWindows");
+    } else if (SystemInfoRt.isLinux) {
+      ideSettingsUrl = resourceUrls.get("ideSettingsLinux");
+    } else if (SystemInfoRt.isMac) {
+      ideSettingsUrl = resourceUrls.get("ideSettingsMac");
+    }
+
+    if (ideSettingsUrl == null) {
+      ideSettingsUrl = resourceUrls.get("ideSettings");
+    }
+
+    return ideSettingsUrl;
+  }
 
   @NotNull
   private static JSONObject getCourseJsonObject(@NotNull Reader reader, @NotNull String source)
@@ -456,7 +479,7 @@ public abstract class Course implements ComponentSource {
             .getJSONArray(moduleName)
             .toList()
             .stream()
-            .map(command -> (String) command)
+            .map(String.class::cast)
             .toArray(String[]::new);
 
         replInitialCommands.put(moduleName, replCommands);

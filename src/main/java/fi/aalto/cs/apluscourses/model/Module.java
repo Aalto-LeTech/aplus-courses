@@ -33,11 +33,11 @@ public abstract class Module extends Component {
    * @param url       The URL from which the module can be downloaded.
    * @param versionId A string that uniquely identifies different versions of the same module.
    */
-  public Module(@NotNull String name,
-                @NotNull URL url,
-                @NotNull String versionId,
-                @Nullable String localVersionId,
-                @Nullable ZonedDateTime downloadedAt) {
+  protected Module(@NotNull String name,
+                   @NotNull URL url,
+                   @NotNull String versionId,
+                   @Nullable String localVersionId,
+                   @Nullable ZonedDateTime downloadedAt) {
     super(name);
     this.url = url;
     this.versionId = versionId;
@@ -78,12 +78,8 @@ public abstract class Module extends Component {
   @Override
   public void fetch() throws IOException {
     fetchInternal();
-    String newId = readVersionId();
     synchronized (versionLock) {
       downloadedAt = ZonedDateTime.now();
-      if (newId != null) {
-        versionId = newId;
-      }
       localVersionId = versionId;
     }
   }
@@ -105,9 +101,6 @@ public abstract class Module extends Component {
   }
 
   protected abstract void fetchInternal() throws IOException;
-
-  @Nullable
-  protected abstract String readVersionId();
 
   @NotNull
   public URL getUrl() {

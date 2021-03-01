@@ -13,6 +13,9 @@ public class ViewModelExtensions {
   public static class TestNodeViewModel extends SelectableNodeViewModel<Object> {
     private final long id;
 
+    /**
+     * Constructor for a node view model for tests.
+     */
     public TestNodeViewModel(long id, @NotNull Object model,
                              @Nullable List<SelectableNodeViewModel<?>> children) {
       super(model, children);

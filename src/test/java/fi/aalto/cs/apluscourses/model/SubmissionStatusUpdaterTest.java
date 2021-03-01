@@ -70,7 +70,7 @@ public class SubmissionStatusUpdaterTest {
         0L, // don't increment the interval at all
         10000L // 10 second time limit, which shouldn't be reached
     ).start();
-    Thread.sleep(800L);
+    Thread.sleep(800L); //  NOSONAR
 
     assertEquals("The submission results are not fetched anymore after feedback is available",
         3, dataSource.getSubmissionResultFetchCount());
@@ -91,7 +91,7 @@ public class SubmissionStatusUpdaterTest {
         0L, // don't increment the interval at all
         200L // 0.2 second time limit, should update at most 8 times
     ).start();
-    Thread.sleep(800L);
+    Thread.sleep(800L); //  NOSONAR
     assertTrue(dataSource.getSubmissionResultFetchCount() <= 8);
     verifyNoInteractions(notifier);
   }

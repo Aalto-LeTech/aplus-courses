@@ -10,7 +10,8 @@ import javax.swing.event.DocumentListener;
  * reflect its text input to the source property.
  */
 public class TextField extends JTextField {
-  public final transient TwoWayBindable<TextField, String> textBindable =
+
+  public final TwoWayBindable<TextField, String> textBindable =
       new TwoWayBindable<>(this, TextField::setText, TextField::getText);
 
   /**
@@ -30,6 +31,7 @@ public class TextField extends JTextField {
 
       @Override
       public void changedUpdate(DocumentEvent documentEvent) {
+        // do nothing
       }
     });
   }

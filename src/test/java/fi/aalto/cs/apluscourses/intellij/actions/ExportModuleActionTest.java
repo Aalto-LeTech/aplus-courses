@@ -95,9 +95,9 @@ public class ExportModuleActionTest {
         }
     ));
     Dialogs.Factory<FileSaveViewModel> fileSaveDialogFactory
-        = new DialogHelper.Factory(fileSaveDialog, project);
+        = new DialogHelper.Factory<>(fileSaveDialog, project);
     Dialogs.Factory<ModuleSelectionViewModel> moduleSelectionDialogFactory
-        = new DialogHelper.Factory(moduleSelectionDialog, project);
+        = new DialogHelper.Factory<>(moduleSelectionDialog, project);
     dialogs = new Dialogs();
     dialogs.register(ModuleSelectionViewModel.class, moduleSelectionDialogFactory);
     dialogs.register(FileSaveViewModel.class, fileSaveDialogFactory);

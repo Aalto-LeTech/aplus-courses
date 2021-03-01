@@ -2,7 +2,6 @@ package fi.aalto.cs.apluscourses.presentation.filter;
 
 import fi.aalto.cs.apluscourses.utils.Event;
 import fi.aalto.cs.apluscourses.utils.Streamable;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
@@ -12,7 +11,7 @@ public class Options extends AndFilter implements Streamable<Option> {
   private final List<Option> optionList;
 
   public Options(Option... options) {
-    this(Arrays.asList(options));
+    this(List.of(options));
   }
 
   protected Options(List<Option> optionList) {

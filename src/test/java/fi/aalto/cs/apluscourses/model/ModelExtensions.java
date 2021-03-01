@@ -1,6 +1,5 @@
 package fi.aalto.cs.apluscourses.model;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -27,23 +26,20 @@ public class ModelExtensions {
     @NotNull
     @Override
     public SubmissionInfo getSubmissionInfo(@NotNull Exercise exercise,
-                                            @NotNull Authentication authentication)
-        throws IOException {
+                                            @NotNull Authentication authentication) {
       return new SubmissionInfo(1, Collections.emptyMap());
     }
 
     @NotNull
     @Override
     public SubmissionHistory getSubmissionHistory(@NotNull Exercise exercise,
-                                                  @NotNull Authentication authentication)
-        throws IOException {
+                                                  @NotNull Authentication authentication) {
       return new SubmissionHistory(0);
     }
 
     @NotNull
     @Override
-    public List<Group> getGroups(@NotNull Course course, @NotNull Authentication authentication)
-        throws IOException {
+    public List<Group> getGroups(@NotNull Course course, @NotNull Authentication authentication) {
       return Collections.singletonList(new Group(0, Collections.singletonList("Only you")));
     }
 
@@ -51,15 +47,13 @@ public class ModelExtensions {
     @Override
     public List<ExerciseGroup> getExerciseGroups(@NotNull Course course,
                                                  @NotNull Points points,
-                                                 @NotNull Authentication authentication)
-        throws IOException {
+                                                 @NotNull Authentication authentication) {
       return Collections.emptyList();
     }
 
     @NotNull
     @Override
-    public Points getPoints(@NotNull Course course, @NotNull Authentication authentication)
-        throws IOException {
+    public Points getPoints(@NotNull Course course, @NotNull Authentication authentication) {
       return new Points(Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());
     }
 
@@ -67,14 +61,12 @@ public class ModelExtensions {
     @Override
     public SubmissionResult getSubmissionResult(@NotNull String submissionUrl,
                                                 @NotNull Exercise exercise,
-                                                @NotNull Authentication authentication)
-        throws IOException {
+                                                @NotNull Authentication authentication) {
       return new SubmissionResult(0, 20, SubmissionResult.Status.GRADED, exercise);
     }
 
     @Override
-    public String submit(@NotNull Submission submission, @NotNull Authentication authentication)
-        throws IOException {
+    public String submit(@NotNull Submission submission, @NotNull Authentication authentication) {
       // do nothing
       return "";
     }
@@ -227,19 +219,13 @@ public class ModelExtensions {
     }
 
     @Override
-    public void fetchInternal() throws IOException {
+    public void fetchInternal() {
       // do nothing
     }
 
     @Override
     public void load() throws ComponentLoadException {
       // do nothing
-    }
-
-    @Nullable
-    @Override
-    protected String readVersionId() {
-      return null;
     }
 
     @Override
@@ -278,12 +264,12 @@ public class ModelExtensions {
     }
 
     @Override
-    public void fetch() throws IOException {
+    public void fetch() {
       // do nothing
     }
 
     @Override
-    public void load() throws ComponentLoadException {
+    public void load() {
       // do nothing
     }
 
