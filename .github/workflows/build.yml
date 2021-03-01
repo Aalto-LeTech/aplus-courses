@@ -1,6 +1,6 @@
 name: Build
 
-on: [push, pull_request]
+on: [ push, pull_request ]
 
 jobs:
   build:
@@ -30,7 +30,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew build sonarqube
+        run: gradle build sonarqube
 
   build-for-ui-test-linux:
     runs-on: ubuntu-latest
@@ -46,8 +46,17 @@ jobs:
           export DISPLAY=:99.0
           Xvfb -ac :99 -screen 0 1920x1080x16 &
           gradle runIdeForUiTests &
-      - name: Sleep 180s & run the UI tests
-        run: sleep 180s && gradle uiTest
+      - name: Timeout for 3 minutes
+        run: sleep 180s
+      - name: Run the UI tests
+        run: gradle uiTest
+      - name: Save screenshot (on failure)
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: hierarchy-report
+          path: |
+            build/hierarchy-reports
 
   build-for-ui-test-mac-os:
     runs-on: macos-latest
@@ -59,32 +68,44 @@ jobs:
         with:
           java-version: 11
       - name: Setup UI testing env
-        run: ./gradlew runIdeForUiTests &
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-      - name: Sleep 300s & run the UI tests
+        run: gradle runIdeForUiTests &
+      - name: Timeout for 5 minutes
+        run: sleep 300
+      - name: Run the UI tests
         run: |
-            sleep 300
-            export JAVA_HOME=`/usr/libexec/java_home -v 11`
-            ./gradlew uiTest --info
-
-  build-for-ui-test-windows:
-    runs-on: windows-latest
-
-    steps:
-      - uses: actions/checkout@v2
-      - name: Setup Java
-        uses: actions/setup-java@v1
+          export JAVA_HOME=`/usr/libexec/java_home -v 11`
+          gradle uiTest --info
+      - name: Save screenshot (on failure)
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v2
         with:
-          java-version: 11
-      - name: Setup UI testing env
-        run: |
-          netstat -abo
-          ./gradlew runIdeForUiTests &
-      - name: Sleep 180s & run the UI tests
-        run: |
-          Start-Sleep -s 180
-          netstat -bona
-          ./gradlew uiTest --info
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
+          name: hierarchy-report
+          path: |
+            build/hierarchy-reports
+
+#  build-for-ui-test-windows:
+#    runs-on: windows-latest
+#
+#    steps:
+#      - uses: actions/checkout@v2
+#      - name: Setup Java
+#        uses: actions/setup-java@v1
+#        with:
+#          java-version: 11
+#      - name: Setup UI testing env
+#        run: |
+#          netstat -abo
+#          ./gradlew runIdeForUiTests &
+#      - name: Timeout for 5 minutes
+#        run: Start-Sleep -s 300
+#      - name: Run the UI tests
+#        run: |
+#          netstat -bona
+#          ./gradlew uiTest --info
+#      - name: Save screenshot (on failure)
+#        if: ${{ failure() }}
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: hierarchy-report
+#          path: |
+#            build/hierarchy-reports
