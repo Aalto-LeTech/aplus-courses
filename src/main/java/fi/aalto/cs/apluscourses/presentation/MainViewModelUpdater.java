@@ -170,10 +170,10 @@ public class MainViewModelUpdater {
 
     mainViewModel.courseViewModel.set(new CourseViewModel(newCourse));
 
-    PasswordStorage passwordStorage = passwordStorageFactory.create(newCourse.getApiUrl());
-    TokenAuthentication.Factory authenticationFactory =
-        APlusTokenAuthentication.getFactoryFor(passwordStorage);
-    mainViewModel.readAuthenticationFromStorage(passwordStorage, authenticationFactory);
+    //PasswordStorage passwordStorage = passwordStorageFactory.create(newCourse.getApiUrl());
+    //TokenAuthentication.Factory authenticationFactory =
+    //    APlusTokenAuthentication.getFactoryFor(passwordStorage);
+    //mainViewModel.readAuthenticationFromStorage(passwordStorage, authenticationFactory);
 
     notifyNewVersions(newCourse);
 

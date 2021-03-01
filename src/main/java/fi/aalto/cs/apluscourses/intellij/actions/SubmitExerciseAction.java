@@ -54,10 +54,13 @@ import java.util.Map;
 import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SubmitExerciseAction extends AnAction {
 
   public static final String ACTION_ID = SubmitExerciseAction.class.getCanonicalName();
+  private static final Logger LOGGER = LoggerFactory.getLogger(SubmitExerciseAction.class);
 
   @NotNull
   private final MainViewModelProvider mainViewModelProvider;
@@ -255,6 +258,7 @@ public class SubmitExerciseAction extends AnAction {
   }
 
   private void notifyNetworkError(@NotNull IOException exception, @Nullable Project project) {
+    LOGGER.debug("Network error: {}", exception.getMessage());
     notifier.notify(new NetworkErrorNotification(exception), project);
   }
 

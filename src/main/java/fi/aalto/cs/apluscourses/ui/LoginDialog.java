@@ -2,16 +2,18 @@ package fi.aalto.cs.apluscourses.ui;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.ui.jcef.JBCefBrowser;
+import com.intellij.ui.jcef.JBCefCookieManager;
 import fi.aalto.cs.apluscourses.dal.SessionAuthentication;
-import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
+import fi.aalto.cs.apluscourses.utils.Cookie;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Optional;
+import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -19,9 +21,7 @@ import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import org.cef.browser.CefBrowser;
 import org.cef.browser.CefFrame;
-import org.cef.callback.CefCookieVisitor;
 import org.cef.handler.CefLoadHandler;
-import org.cef.misc.BoolRef;
 import org.cef.network.CefCookie;
 import org.cef.network.CefCookieManager;
 import org.cef.network.CefRequest;
@@ -31,10 +31,11 @@ import org.slf4j.LoggerFactory;
 
 public class LoginDialog extends JDialog {
 
-  private final static Logger LOGGER = LoggerFactory.getLogger(LoginDialog.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(LoginDialog.class);
 
   private final MainViewModel mainViewModel;
-  private volatile String sessionid = null;
+  private final SessionAuthentication sessionAuthentication = new SessionAuthentication();
+
 
   private JPanel contentPane;
   private JButton buttonOK;
@@ -47,7 +48,6 @@ public class LoginDialog extends JDialog {
     setModal(true);
 
     buttonOK.setEnabled(false);
-    getRootPane().setDefaultButton(buttonOK);
 
     buttonOK.addActionListener(e -> onOK());
 
@@ -56,6 +56,7 @@ public class LoginDialog extends JDialog {
     // call onCancel() when cross is clicked
     setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
     addWindowListener(new WindowAdapter() {
+      @Override
       public void windowClosing(WindowEvent e) {
         onCancel();
       }
@@ -78,21 +79,17 @@ public class LoginDialog extends JDialog {
 
       @Override
       public void onLoadEnd(CefBrowser browser, CefFrame frame, int httpStatusCode) {
-        System.out.println("onLoadEnd: " + frame.getURL());
+        LOGGER.debug("onLoadEnd: {}", frame.getURL());
         if (!frame.getURL().equals("https://plus.cs.aalto.fi/")) {
           return;
         }
-        System.out.println("Let's look at the cookies...");
+        LOGGER.debug("Let's look at the cookies...");
         // consider using visitUrlCookies instead of visitAllCookies
         CefCookieManager.getGlobalManager().visitAllCookies((cookie, count, total, delete) -> {
-          System.out.println("Cookie " + (count + 1) + "/" + total + " (" + cookie.domain + "):" + cookie.name);
-          if (cookie.domain.equals("plus.cs.aalto.fi")) {
-            if (cookie.name.equals("sessionid")) {
-              System.out.println("Session ID found");
-              sessionid = cookie.value;
-              ApplicationManager.getApplication().invokeLater(() -> buttonOK.setEnabled(true));
-              return false; // do not visit cookies anymore
-            }
+          LOGGER.debug("Cookie {}/{} ({}): {}", count + 1, total, cookie.domain, cookie.name);
+          sessionAuthentication.setCookie(convertCefCookie(cookie));
+          if (count >= total - 1) {
+            ApplicationManager.getApplication().invokeLater(() -> buttonOK.setEnabled(true));
           }
           return true;
         });
@@ -105,13 +102,21 @@ public class LoginDialog extends JDialog {
   }
 
   private void onOK() {
-    // add your code here
-    mainViewModel.setAuthentication(new SessionAuthentication(sessionid));
+    mainViewModel.setAuthentication(sessionAuthentication);
     dispose();
   }
 
   private void onCancel() {
-    // add your code here if necessary
     dispose();
+  }
+
+  @NotNull
+  private static Cookie convertCefCookie(@NotNull CefCookie cefCookie) {
+    Cookie cookie = new Cookie();
+    cookie.name = cefCookie.name;
+    cookie.value = cefCookie.value;
+    cookie.domain = cefCookie.domain;
+    cookie.path = cefCookie.path;
+    return cookie;
   }
 }

@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.utils;
 
 import com.intellij.openapi.application.ApplicationInfo;
 import com.intellij.openapi.application.ApplicationNamesInfo;
+import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.InvalidAuthenticationException;
 import fi.aalto.cs.apluscourses.model.UnexpectedResponseException;
 import java.io.ByteArrayInputStream;
@@ -104,6 +105,24 @@ public class CoursesClient {
   @FunctionalInterface
   public interface HttpAuthentication {
     void addToRequest(HttpRequest request);
+
+    default void handleResponse(HttpResponse response) { }
+
+    @NotNull
+    default <T> ResponseMapper<T> decorateMapper(@NotNull ResponseMapper<T> mapper) {
+      return response -> {
+        handleResponse(response);
+        return mapper.map(response);
+      };
+    }
+
+    @NotNull
+    default ResponseConsumer decorateConsumer(@NotNull ResponseConsumer consumer) {
+      return response -> {
+        handleResponse(response);
+        consumer.consume(response);
+      };
+    }
   }
 
   /**
@@ -144,6 +163,7 @@ public class CoursesClient {
     HttpGet request = new HttpGet(url.toString());
     if (authentication != null) {
       authentication.addToRequest(request);
+      mapper = authentication.decorateMapper(mapper);
     }
     return mapResponse(request, mapper);
   }
@@ -166,6 +186,7 @@ public class CoursesClient {
     HttpGet request = new HttpGet(url.toString());
     if (authentication != null) {
       authentication.addToRequest(request);
+      consumer = authentication.decorateConsumer(consumer);
     }
     consumeResponse(request, consumer);
   }
@@ -199,6 +220,7 @@ public class CoursesClient {
 
     if (authentication != null) {
       authentication.addToRequest(request);
+      mapper = authentication.decorateMapper(mapper);
     }
 
     try (CloseableHttpClient client = createClient();
