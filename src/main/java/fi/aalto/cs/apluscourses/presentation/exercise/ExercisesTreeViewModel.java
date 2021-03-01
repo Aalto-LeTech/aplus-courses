@@ -11,8 +11,6 @@ import org.jetbrains.annotations.NotNull;
 public class ExercisesTreeViewModel extends BaseTreeViewModel<List<ExerciseGroup>>
         implements Searchable {
 
-  private boolean isEmptyTextVisible;
-
   private boolean isAuthenticated;
 
   private  boolean isProjectReady;
@@ -31,11 +29,7 @@ public class ExercisesTreeViewModel extends BaseTreeViewModel<List<ExerciseGroup
   }
 
   public boolean isEmptyTextVisible() {
-    return isEmptyTextVisible;
-  }
-
-  public void setEmptyTextVisible(boolean emptyTextVisible) {
-    isEmptyTextVisible = emptyTextVisible;
+    return false;
   }
 
   public boolean isAuthenticated() {

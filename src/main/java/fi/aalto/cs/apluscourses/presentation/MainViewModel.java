@@ -9,6 +9,7 @@ import fi.aalto.cs.apluscourses.model.ExerciseDataSource;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
 import fi.aalto.cs.apluscourses.model.InvalidAuthenticationException;
 import fi.aalto.cs.apluscourses.model.Points;
+import fi.aalto.cs.apluscourses.presentation.exercise.EmptyExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import fi.aalto.cs.apluscourses.utils.Event;
@@ -69,10 +70,10 @@ public class MainViewModel {
     }
     Authentication auth = authentication.get();
     if (course == null || auth == null) {
-      ExercisesTreeViewModel emptyModel =
-          new ExercisesTreeViewModel(new ArrayList<>(), new Options());
+      ExercisesTreeViewModel emptyModel = new ExercisesTreeViewModel(new ArrayList<>(),
+              new Options());
       if (course == null) {
-        emptyModel.setEmptyTextVisible(true);
+        emptyModel = new EmptyExercisesTreeViewModel(new ArrayList<>(), new Options());
       }
       emptyModel.setAuthenticated(auth != null);
       exercisesViewModel.set(emptyModel);
