@@ -120,7 +120,6 @@ public class MainViewModel {
                                             @NotNull TokenAuthentication.Factory factory) {
     if (hasTriedToReadAuthenticationFromStorage.getAndSet(true) || authentication.get() != null) {
       exercisesViewModel.get().setProjectReady(true);
-      //courseViewModel.get().setProjectReady(true);
       return;
     }
     Optional.ofNullable(passwordStorage)
@@ -128,13 +127,9 @@ public class MainViewModel {
         .map(factory::create)
         .ifPresent(this::setAuthentication);
     exercisesViewModel.get().setProjectReady(true);
-    //courseViewModel.get().setProjectReady(true);
     if (!exercisesViewModel.get().isAuthenticated()) {
-      this.updateExercises(); // When authentication is null mainViewModel is not updated?
+      this.updateExercises();
     }
-    // This is what triggers the final update of MainViewModel.
-    // isReady should now be true and the auth details correctly set
-
   }
 
   @Nullable
@@ -182,11 +177,8 @@ public class MainViewModel {
 
   /**
    * Triggers updateExercises when the project is not A+.
-   * @param isReady the project has finished loading.
    */
-  public void setProjectReady(boolean isReady) {
-    if (isReady) {
-      this.updateExercises();
-    }
+  public void setProjectReady() {
+    this.updateExercises();
   }
 }

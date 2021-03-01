@@ -54,7 +54,7 @@ public class ModulesView {
     emptyText.setHorizontalAlignment(SwingConstants.CENTER);
     emptyText.setVerticalAlignment(SwingConstants.CENTER);
     pane.getVerticalScrollBar().setUnitIncrement(moduleListView.getFixedCellHeight());
-    emptyText.setText("Loading..");
+    emptyText.setText(getText("ui.exercise.ExercisesView.loading"));
   }
 
   @NotNull

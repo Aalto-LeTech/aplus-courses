@@ -44,7 +44,7 @@ public class InitializationActivity implements Background {
 
     URL courseConfigurationFileUrl = getCourseUrlFromProject(project);
     if (courseConfigurationFileUrl == null) {
-      PluginSettings.getInstance().getMainViewModel(project).setProjectReady(true);
+      pluginSettings.getMainViewModel(project).setProjectReady();
       return;
     }
 
