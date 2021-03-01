@@ -8,7 +8,8 @@ public class SubmissionResult implements Browsable {
   public enum Status {
     UNKNOWN,
     GRADED,
-    UNOFFICIAL;
+    UNOFFICIAL,
+    WAITING
   }
 
   private final long submissionId;
@@ -50,6 +51,8 @@ public class SubmissionResult implements Browsable {
       status = Status.GRADED;
     } else if ("unofficial".equals(statusString)) {
       status = Status.UNOFFICIAL;
+    } else if ("waiting".equals(statusString)) {
+      status = Status.WAITING;
     }
 
     return new SubmissionResult(id, points, status, exercise);
@@ -73,7 +76,7 @@ public class SubmissionResult implements Browsable {
     return exercise.getHtmlUrl() + "submissions/" + submissionId + "/";
   }
 
-  public Exercise getExercise() {
+  public @NotNull Exercise getExercise() {
     return exercise;
   }
 }

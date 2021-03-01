@@ -27,7 +27,7 @@ public class BaseListViewModel<E extends ListElementViewModel<?>> extends Abstra
     implements SelectableListModel<E> {
 
   @NotNull
-  private final transient ListSelectionModel selectionModel;
+  private final ListSelectionModel selectionModel;
 
   @NotNull
   private final List<E> elements;

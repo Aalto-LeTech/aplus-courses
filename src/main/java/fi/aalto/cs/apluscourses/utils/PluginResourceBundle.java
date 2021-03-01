@@ -6,6 +6,9 @@ import org.jetbrains.annotations.NotNull;
 
 public class PluginResourceBundle {
 
+  private PluginResourceBundle() {
+  }
+
   private static final ResourceBundle bundle = ResourceBundle.getBundle("resources");
 
   public static String getText(@NotNull String key) {
@@ -13,7 +16,6 @@ public class PluginResourceBundle {
   }
 
   public static String getAndReplaceText(@NotNull String key, @NotNull Object... arguments) {
-    String format = MessageFormat.format(PluginResourceBundle.getText(key), arguments);
-    return format;
+    return MessageFormat.format(PluginResourceBundle.getText(key), arguments);
   }
 }

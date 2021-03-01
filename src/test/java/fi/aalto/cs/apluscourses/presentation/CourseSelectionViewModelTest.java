@@ -1,7 +1,7 @@
 package fi.aalto.cs.apluscourses.presentation;
 
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -9,7 +9,7 @@ public class CourseSelectionViewModelTest {
 
   @Test
   public void testCourseSelectionViewModel() {
-    CourseSelectionViewModel viewModel = new CourseSelectionViewModel(Arrays.asList(
+    CourseSelectionViewModel viewModel = new CourseSelectionViewModel(List.of(
         new CourseItemViewModel("A", "A", "http://example.com"),
         new CourseItemViewModel("B", "B", "http://example.com")
     ));

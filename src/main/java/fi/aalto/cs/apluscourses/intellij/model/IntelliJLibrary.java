@@ -6,13 +6,13 @@ import com.intellij.openapi.roots.impl.libraries.LibraryEx;
 import com.intellij.openapi.roots.libraries.LibraryProperties;
 import com.intellij.openapi.roots.libraries.LibraryTable;
 import com.intellij.openapi.roots.libraries.PersistentLibraryKind;
+import com.intellij.util.concurrency.annotations.RequiresReadLock;
+import com.intellij.util.concurrency.annotations.RequiresWriteLock;
 import fi.aalto.cs.apluscourses.model.Library;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.apache.commons.io.FileUtils;
-import org.jetbrains.annotations.CalledWithReadLock;
-import org.jetbrains.annotations.CalledWithWriteLock;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,7 +24,7 @@ public abstract class IntelliJLibrary
   @NotNull
   protected final APlusProject project;
 
-  public IntelliJLibrary(@NotNull String name, @NotNull APlusProject project) {
+  protected IntelliJLibrary(@NotNull String name, @NotNull APlusProject project) {
     super(name);
     this.project = project;
   }
@@ -32,7 +32,7 @@ public abstract class IntelliJLibrary
   /**
    * Method that adds libraries to SDK root.
    */
-  @CalledWithWriteLock
+  @RequiresWriteLock
   @SuppressWarnings("unchecked")
   protected void loadInternal() {
     LibraryTable.ModifiableModel libraryTable = project.getLibraryTable().getModifiableModel();
@@ -64,7 +64,7 @@ public abstract class IntelliJLibrary
     WriteAction.runAndWait(this::unloadInternal);
   }
 
-  @CalledWithWriteLock
+  @RequiresWriteLock
   private void unloadInternal() {
     LibraryTable libraryTable = project.getLibraryTable();
     com.intellij.openapi.roots.libraries.Library library = getPlatformObject();
@@ -104,11 +104,11 @@ public abstract class IntelliJLibrary
 
   protected abstract K getLibraryKind();
 
-  @CalledWithWriteLock
+  @RequiresWriteLock
   protected abstract void initializeLibraryProperties(LibraryProperties<S> properties);
 
   @Override
-  @CalledWithReadLock
+  @RequiresReadLock
   @Nullable
   public com.intellij.openapi.roots.libraries.Library getPlatformObject() {
     return project.getLibraryTable().getLibraryByName(getName());

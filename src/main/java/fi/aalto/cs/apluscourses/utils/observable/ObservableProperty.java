@@ -15,11 +15,11 @@ public abstract class ObservableProperty<T> {
   @NotNull
   private final Validator<T> validator;
 
-  public ObservableProperty() {
+  protected ObservableProperty() {
     this(null);
   }
 
-  public ObservableProperty(@Nullable Validator<T> validator) {
+  protected ObservableProperty(@Nullable Validator<T> validator) {
     this.validator = Optional.ofNullable(validator).orElse(whatever -> null);
   }
 
@@ -78,6 +78,14 @@ public abstract class ObservableProperty<T> {
   @Nullable
   public T getAndSet(T value) {
     throw new UnsupportedOperationException();
+  }
+
+  /**
+   * Notifies all observers with the current value. Works similarly to {@link
+   * ObservableProperty#set}, but the actual value isn't changed.
+   */
+  public void valueChanged() {
+    onValueChanged(get(), null);
   }
 
   protected synchronized void onValueChanged(@Nullable T value, @Nullable Object source) {
