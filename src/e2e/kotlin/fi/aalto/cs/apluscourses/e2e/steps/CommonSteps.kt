@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.e2e.steps
 
 import com.intellij.remoterobot.RemoteRobot
 import com.intellij.remoterobot.stepsProcessing.step
+import com.intellij.remoterobot.utils.attempt
 import fi.aalto.cs.apluscourses.e2e.fixtures.*
 import java.time.Duration
 
