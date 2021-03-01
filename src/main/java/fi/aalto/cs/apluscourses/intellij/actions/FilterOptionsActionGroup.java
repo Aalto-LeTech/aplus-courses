@@ -51,7 +51,7 @@ public class FilterOptionsActionGroup extends DefaultActionGroup implements Dumb
    * @param e AnActionEvent
    * @return An array of FilterOptionActions
    */
-  public FilterOptionAction @NotNull [] getFilterOptionActions(@Nullable AnActionEvent e) {
+  private FilterOptionAction @NotNull [] getFilterOptionActions(@Nullable AnActionEvent e) {
     return Optional.ofNullable(e)
             .map(AnActionEvent::getProject)
             .map(mainViewModelProvider::getMainViewModel)
@@ -61,6 +61,10 @@ public class FilterOptionsActionGroup extends DefaultActionGroup implements Dumb
             .orElseGet(Stream::empty)
             .map(FilterOptionAction::new)
             .toArray(FilterOptionAction[]::new);
+  }
+
+  public FilterOptionAction @NotNull [] getFilterOptionActions() {
+    return filterOptionActions;
   }
 
   @Override
