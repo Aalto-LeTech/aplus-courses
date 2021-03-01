@@ -47,8 +47,4 @@ public class Options extends AndFilter implements Streamable<Option> {
               return selected != null && !selected;
             });
   }
-
-  public String getSelectText() {
-    return this.isAnyActive() ? "Select All" : "Deselect All";
-  }
 }

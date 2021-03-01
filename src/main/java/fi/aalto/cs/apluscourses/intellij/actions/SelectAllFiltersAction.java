@@ -11,7 +11,7 @@ public class SelectAllFiltersAction extends AnAction {
   private final Options filterOptions;
 
   public SelectAllFiltersAction(@NotNull Options filterOptions) {
-    super(filterOptions::getSelectText, () -> null, null);
+    super(() -> filterOptions.isAnyActive() ? "Select All" : "Deselect All", () -> null, null);
     this.filterOptions = filterOptions;
   }
 
