@@ -82,30 +82,3 @@ jobs:
           name: hierarchy-report
           path: |
             build/hierarchy-reports
-
-#  build-for-ui-test-windows:
-#    runs-on: windows-latest
-#
-#    steps:
-#      - uses: actions/checkout@v2
-#      - name: Setup Java
-#        uses: actions/setup-java@v1
-#        with:
-#          java-version: 11
-#      - name: Setup UI testing env
-#        run: |
-#          netstat -abo
-#          ./gradlew runIdeForUiTests &
-#      - name: Timeout for 5 minutes
-#        run: Start-Sleep -s 300
-#      - name: Run the UI tests
-#        run: |
-#          netstat -bona
-#          ./gradlew uiTest --info
-#      - name: Save screenshot (on failure)
-#        if: ${{ failure() }}
-#        uses: actions/upload-artifact@v2
-#        with:
-#          name: hierarchy-report
-#          path: |
-#            build/hierarchy-reports
