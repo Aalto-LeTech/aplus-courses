@@ -48,7 +48,8 @@ class CommonSteps(val remoteRobot: RemoteRobot) {
             step("Open Turn Project Into A+ Project window") {
                 with(ideFrame()) {
                     attempt(3) {
-                        menu().select("A+")
+//                        menu().select("A+")
+                        menu().findText("A+")
                         menu().select("Turn Project Into A+ Project")
                     }
                 }
