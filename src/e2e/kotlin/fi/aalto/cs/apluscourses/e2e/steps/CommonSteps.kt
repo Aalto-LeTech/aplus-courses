@@ -43,25 +43,27 @@ class CommonSteps(val remoteRobot: RemoteRobot) {
         }
     }
 
-  fun openAPlusProjectWindow() {
-    with(remoteRobot) {
-      step("Open Turn Project Into A+ Project window") {
-        with(ideFrame()) {
-          menu().select("A+")
-          menu().select("Turn Project Into A+ Project")
+    fun openAPlusProjectWindow() {
+        with(remoteRobot) {
+            step("Open Turn Project Into A+ Project window") {
+                with(ideFrame()) {
+                    attempt(2) {
+                        menu().findText("A+").click()
+                        menu().select("Turn Project Into A+ Project")
+                    }
+                }
+            }
         }
-      }
     }
-  }
 
-  fun aPlusSettings(settingsUnchanged: Boolean) {
-    with(remoteRobot) {
-      with(dialog("Turn Project Into A+ Project")) {
-        findText("Select language").click()
-        findText("English").click()
-        checkBox("Leave IntelliJ settings unchanged.").setValue(settingsUnchanged)
-        button("OK").click()
-      }
+    fun aPlusSettings(settingsUnchanged: Boolean) {
+        with(remoteRobot) {
+            with(dialog("Turn Project Into A+ Project")) {
+                findText("Select language").click()
+                findText("English").click()
+                checkBox("Leave IntelliJ settings unchanged.").setValue(settingsUnchanged)
+                button("OK").click()
+            }
+        }
     }
-  }
 }
