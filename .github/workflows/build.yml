@@ -86,7 +86,7 @@ jobs:
       - name: Run the UI tests
         run: |
           export JAVA_HOME=`/usr/libexec/java_home -v 11`
-          gradle uiTest --info
+          gradle uiTest
       - name: Save screenshot (on failure)
         if: ${{ failure() }}
         uses: actions/upload-artifact@v2
@@ -107,9 +107,7 @@ jobs:
       - name: Cleanup
         run: gradle clean
       - name: Setup UI testing env
-        run: |
-          netstat -abo
-          ./gradlew runIdeForUiTests &
+        run: start gradlew.bat runIdeForUiTests
       - name: Wait for the IDE to start
         uses: jtalk/url-health-check-action@v1.4
         with:
@@ -117,7 +115,7 @@ jobs:
           max-attempts: 12
           retry-delay: 30s
       - name: Run the UI tests
-        run: start gradlew.bat :ui-test-example:runIdeForUiTests
+        run: gradle uiTest
       - name: Save screenshot (on failure)
         if: ${{ failure() }}
         uses: actions/upload-artifact@v2
