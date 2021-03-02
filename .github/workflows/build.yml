@@ -30,7 +30,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew build sonarqube
+        run: gradle build sonarqube
 
   build-for-ui-test-linux:
     runs-on: ubuntu-latest
@@ -41,13 +41,19 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
+      - name: Cleanup
+        run: gradle clean
       - name: Setup UI testing env
         run: |
           export DISPLAY=:99.0
           Xvfb -ac :99 -screen 0 1920x1080x16 &
           gradle runIdeForUiTests &
-      - name: Timeout for 3 minutes
-        run: sleep 180s
+      - name: Wait for the IDE to start
+        uses: jtalk/url-health-check-action@v1.4
+        with:
+          url: http://127.0.0.1:8082
+          max-attempts: 12
+          retry-delay: 30s
       - name: Run the UI tests
         run: gradle uiTest
       - name: Save screenshot (on failure)
@@ -67,14 +73,51 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
+      - name: Cleanup
+        run: gradle clean
       - name: Setup UI testing env
         run: gradle runIdeForUiTests &
-      - name: Timeout for 5 minutes
-        run: sleep 300
+      - name: Wait for the IDE to start
+        uses: jtalk/url-health-check-action@v1.4
+        with:
+          url: http://127.0.0.1:8082
+          max-attempts: 12
+          retry-delay: 30s
       - name: Run the UI tests
         run: |
           export JAVA_HOME=`/usr/libexec/java_home -v 11`
           gradle uiTest --info
+      - name: Save screenshot (on failure)
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: hierarchy-report
+          path: |
+            build/hierarchy-reports
+
+  build-for-ui-test-windows:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - name: Cleanup
+        run: gradle clean
+      - name: Setup UI testing env
+        run: |
+          netstat -abo
+          ./gradlew runIdeForUiTests &
+      - name: Wait for the IDE to start
+        uses: jtalk/url-health-check-action@v1.4
+        with:
+          url: http://localhost:8082
+          max-attempts: 12
+          retry-delay: 30s
+      - name: Run the UI tests
+        run: start gradlew.bat :ui-test-example:runIdeForUiTests
       - name: Save screenshot (on failure)
         if: ${{ failure() }}
         uses: actions/upload-artifact@v2
