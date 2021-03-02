@@ -86,7 +86,7 @@ jobs:
       - name: Run the UI tests
         run: |
           export JAVA_HOME=`/usr/libexec/java_home -v 11`
-          gradle uiTest
+          gradle uiTest --info
       - name: Save screenshot (on failure)
         if: ${{ failure() }}
         uses: actions/upload-artifact@v2
@@ -115,7 +115,7 @@ jobs:
           max-attempts: 12
           retry-delay: 30s
       - name: Run the UI tests
-        run: gradle uiTest
+        run: gradle uiTest --info
       - name: Save screenshot (on failure)
         if: ${{ failure() }}
         uses: actions/upload-artifact@v2
