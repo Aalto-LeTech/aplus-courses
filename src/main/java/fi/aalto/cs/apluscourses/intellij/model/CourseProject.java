@@ -6,6 +6,11 @@ import fi.aalto.cs.apluscourses.utils.Event;
 import java.net.URL;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * A {@code CourseProject} instance contains a {@link Course} and {@link Project}. In addition, it
+ * contains a {@link CourseUpdater} that regularly updates the course, and an {@link Event} that is
+ * triggered when an update occurs.
+ */
 public class CourseProject {
 
   @NotNull
@@ -13,6 +18,9 @@ public class CourseProject {
 
   @NotNull
   private final CourseUpdater courseUpdater;
+
+  @NotNull
+  private final Project project;
 
   @NotNull
   public final Event courseUpdated;
@@ -23,6 +31,7 @@ public class CourseProject {
    */
   public CourseProject(@NotNull Course course, @NotNull URL courseUrl, @NotNull Project project) {
     this.course = course;
+    this.project = project;
     this.courseUpdated = new Event();
     this.courseUpdater = new CourseUpdater(course, project, courseUrl, courseUpdated);
   }
@@ -30,6 +39,11 @@ public class CourseProject {
   @NotNull
   public Course getCourse() {
     return course;
+  }
+
+  @NotNull
+  public Project getProject() {
+    return project;
   }
 
   @NotNull

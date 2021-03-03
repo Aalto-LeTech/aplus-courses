@@ -134,7 +134,10 @@ public class PluginSettings implements MainViewModelProvider {
     public void projectClosed(@NotNull Project project) {
       ProjectKey key = new ProjectKey(project);
       courseFileManagers.remove(key);
-      courseProjects.remove(key);
+      var courseProject = courseProjects.remove(key);
+      if (courseProject != null) {
+        courseProject.getCourseUpdater().stop();
+      }
       MainViewModel mainViewModel = mainViewModels.remove(key);
       if (mainViewModel != null) {
         mainViewModel.dispose();
@@ -187,10 +190,9 @@ public class PluginSettings implements MainViewModelProvider {
    * Registers a course project. This creates a main view model. It also starts the updater of the
    * course project. Calling this method again with the same project has no effect.
    */
-  public void registerCourseProject(@NotNull Project project,
-                                    @NotNull CourseProject courseProject) {
-    var key = new ProjectKey(project);
-    var mainViewModel = getMainViewModel(project);
+  public void registerCourseProject(@NotNull CourseProject courseProject) {
+    var key = new ProjectKey(courseProject.getProject());
+    var mainViewModel = getMainViewModel(courseProject.getProject());
     courseProjects.computeIfAbsent(key, projectKey -> {
       courseProject.getCourse().register();
       mainViewModel.courseViewModel.set(new CourseViewModel(courseProject.getCourse()));

@@ -100,6 +100,16 @@ public class CourseUpdater {
     thread.start();
   }
 
+  /**
+   * Requests that the updater stops, or does nothing if the updater isn't running. This method is
+   * thread safe. Note, that the update might not stop immediately.
+   */
+  public synchronized void stop() {
+    if (thread != null) {
+      thread.interrupt();
+    }
+  }
+
   /*
    * The run lock ensures that only one thread executes the 'run' method. The run lock guarantees
    * that a new thread created by 'restart' blocks until the previous thread has received the

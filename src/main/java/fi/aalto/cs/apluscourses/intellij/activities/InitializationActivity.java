@@ -61,7 +61,7 @@ public class InitializationActivity implements Background {
       return;
     }
     var courseProject = new CourseProject(course, courseConfigurationFileUrl, project);
-    PluginSettings.getInstance().registerCourseProject(project, courseProject);
+    PluginSettings.getInstance().registerCourseProject(courseProject);
   }
 
   @Nullable

@@ -180,7 +180,7 @@ public class CourseProjectAction extends AnAction {
     if (useCourseFile) {
       // The course file not created in testing.
       var courseProject = new CourseProject(course, courseUrl, project);
-      PluginSettings.getInstance().registerCourseProject(project, courseProject);
+      PluginSettings.getInstance().registerCourseProject(courseProject);
     }
 
     Future<?> autoInstallDone = executor.submit(() -> startAutoInstalls(course, project));
