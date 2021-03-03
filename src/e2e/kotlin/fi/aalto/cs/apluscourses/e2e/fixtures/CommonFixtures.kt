@@ -58,6 +58,11 @@ class IdeFrameFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent
         byXpath("//div[@class='TreeView']"),
         Duration.ofSeconds(20)
     )
+    fun ideErrorButton() = find(
+        ComponentFixture::class.java,
+        byXpath("//div[@class='IdeErrorsIcon']"),
+        Duration.ofSeconds(20)
+    )
 }
 
 @FixtureName("Menu Item")

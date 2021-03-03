@@ -58,15 +58,19 @@ class PlaceholderTest {
       }
     }
     //step 8
-    step("Authenticate") {
+    step("Authenticate with wrong token") {
+      CommonSteps(this).setAPlusToken("wrong token")
       with(ideFrame()) {
-        menu().select("A+")
-        menu().select("Set A+ Token")
+        ideErrorButton().click()
       }
-      with(dialog("A+ Token")) {
-        jPasswordField().text = System.getenv("APLUS_TEST_TOKEN")
-        button("OK").click()
+      with(dialog("IDE Fatal Errors")) {
+        assertTrue(
+          "IDE Fatal Errors contains text 'Invalid token'",
+          hasText { textData -> textData.text.contains("Invalid token") })
       }
+    }
+    step("Authenticate with right token") {
+      CommonSteps(this).setAPlusToken(System.getenv("APLUS_TEST_TOKEN"))
       with(ideFrame()) {
         with(assignments()) {
           waitFor(
