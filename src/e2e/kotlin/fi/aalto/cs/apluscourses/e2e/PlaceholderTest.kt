@@ -1,6 +1,8 @@
 package fi.aalto.cs.apluscourses.e2e
 
 import com.intellij.remoterobot.stepsProcessing.step
+import com.intellij.remoterobot.utils.attempt
+import com.intellij.remoterobot.utils.keyboard
 import com.intellij.remoterobot.utils.waitFor
 import fi.aalto.cs.apluscourses.e2e.fixtures.dialog
 import fi.aalto.cs.apluscourses.e2e.fixtures.ideFrame
@@ -9,6 +11,8 @@ import fi.aalto.cs.apluscourses.e2e.utils.StepLoggerInitializer
 import fi.aalto.cs.apluscourses.e2e.utils.uiTest
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.awt.event.KeyEvent.VK_ALT
+import java.awt.event.KeyEvent.VK_RIGHT
 import java.time.Duration
 
 class PlaceholderTest {
@@ -65,9 +69,14 @@ class PlaceholderTest {
         ideErrorButton().click()
       }
       with(dialog("IDE Fatal Errors")) {
-        assertTrue(
-          "IDE Fatal Errors contains text 'Invalid token'",
-          hasText { textData -> textData.text.contains("Invalid token") })
+        attempt(5) {
+          val textFound: Boolean = hasText { textData -> textData.text.contains("Invalid token") }
+          keyboard { hotKey(VK_ALT, VK_RIGHT) }
+          assertTrue(
+            "IDE Fatal Errors contains text 'Invalid token'",
+            textFound)
+        }
+        button("Close").click()
       }
     }
     step("Authenticate with right token") {
