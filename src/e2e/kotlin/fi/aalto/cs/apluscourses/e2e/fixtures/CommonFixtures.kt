@@ -44,7 +44,7 @@ class IdeFrameFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent
   fun menu() = find(MenuItemFixture::class.java,
     LocatorBuilder().withClass(JMenuBar::class.java).build())
     fun projectViewTree() = find(CommonContainerFixture::class.java, byXpath("//div[@class='ProjectViewTree']"))
-    fun aPlusStripeButton() = find(
+    fun aPlusSideBarButton() = find(
         CommonContainerFixture::class.java,
         byXpath("//div[@accessiblename='A+ Courses' and @class='StripeButton' and @text='A+ Courses']")
     )
@@ -81,7 +81,7 @@ class DialogFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent)
     : CommonContainerFixture(remoteRobot, remoteComponent) {
   fun ContainerFixture.sidePanel() = find(ContainerFixture::class.java,
       byXpath("//div[@class='SidePanel']"))
-  fun jPasswordField() = find(JTextFieldFixture::class.java,
+  fun passwordField() = find(JTextFieldFixture::class.java,
       byXpath("//div[@class='JPasswordField']"))
 }
 
