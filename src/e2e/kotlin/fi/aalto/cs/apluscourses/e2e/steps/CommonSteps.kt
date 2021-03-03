@@ -69,7 +69,7 @@ class CommonSteps(val remoteRobot: RemoteRobot) {
         menu().select("Set A+ Token")
       }
       with(dialog("A+ Token")) {
-        jPasswordField().text = token
+        passwordField().text = token
         button("OK").click()
       }
     }
