@@ -10,6 +10,7 @@ import fi.aalto.cs.apluscourses.e2e.utils.StepLoggerInitializer
 import fi.aalto.cs.apluscourses.e2e.utils.uiTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Assert.assertFalse
 import org.junit.Test
 import java.time.Duration
 
@@ -76,6 +77,26 @@ class PlaceholderTest {
             enterText("'") // a character that won't match anything
           }
           assertEquals("Nothing should be selected", selectedItems.size, 0)
+        }
+      }
+    }
+    step("Searching assignments") {
+      with(ideFrame()) {
+        with(assignments()) {
+          waitFor(
+            Duration.ofSeconds(60),
+            Duration.ofSeconds(1),
+            "Week 1 not found in assignments list"
+          ) { hasText("Week 1") }
+          assertFalse("'Files' assignment should be collapsed", hasText("Files"))
+          click()
+          keyboard {
+            enterText("files")
+          }
+          assertTrue("'Files' assignment should be visible", hasText("Files"))
+          keyboard {
+            escape()
+          }
         }
       }
     }

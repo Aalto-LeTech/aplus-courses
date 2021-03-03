@@ -53,6 +53,11 @@ class IdeFrameFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent
         byXpath("//div[@class='ModuleListView']"),
         Duration.ofSeconds(20)
     )
+    fun assignments() = find(
+        CommonContainerFixture::class.java,
+        byXpath("//div[@class='TreeView']"),
+        Duration.ofSeconds(20)
+    )
 }
 
 @FixtureName("Menu Item")
