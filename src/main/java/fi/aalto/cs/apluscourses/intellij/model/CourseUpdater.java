@@ -113,6 +113,9 @@ public class CourseUpdater {
       while (true) { //  NOSONAR
         try {
           updateModuleIds(fetchModuleIds());
+          if (Thread.interrupted()) {
+            throw new InterruptedException();
+          }
           notifyUpdatableModules();
           eventToTrigger.trigger();
           Thread.sleep(updateInterval); //  NOSONAR
