@@ -49,4 +49,4 @@ jobs:
       - name: Run the UI tests
         env:
           APLUS_TEST_TOKEN: ${{ secrets.APLUS_TEST_TOKEN }}
-        run: sleep 180s && gradle uiTest
+        run: sleep 180s && gradle uiTest --info --stacktrace
