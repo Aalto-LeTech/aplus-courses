@@ -95,6 +95,9 @@ public class CourseUpdater {
               .filter(m -> notifiedModules.add(m.getName()))
               .collect(Collectors.toList());
           if (!updatableModules.isEmpty()) {
+            if (moduleUpdatesNotification != null) {
+              moduleUpdatesNotification.expire();
+            }
             moduleUpdatesNotification = new NewModulesVersionsNotification(updatableModules);
             notifier.notifyAndHide(moduleUpdatesNotification, project);
           }
