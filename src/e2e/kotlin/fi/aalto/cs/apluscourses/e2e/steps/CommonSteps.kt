@@ -65,4 +65,15 @@ class CommonSteps(val remoteRobot: RemoteRobot) {
       }
     }
   }
+
+  fun openAboutDialog() {
+    with(remoteRobot) {
+      step("Open About dialog") {
+        with(ideFrame()) {
+          menu().select("A+")
+          menu().select("About the A+ Courses Plugin")
+        }
+      }
+    }
+  }
 }
