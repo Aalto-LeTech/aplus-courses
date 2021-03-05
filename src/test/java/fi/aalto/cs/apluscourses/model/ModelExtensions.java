@@ -228,12 +228,6 @@ public class ModelExtensions {
       // do nothing
     }
 
-    @Nullable
-    @Override
-    protected String readVersionId() {
-      return null;
-    }
-
     @Override
     protected boolean hasLocalChanges(@NotNull ZonedDateTime downloadedAt) {
       return false;

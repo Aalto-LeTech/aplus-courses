@@ -43,6 +43,7 @@ public class ExercisesView {
     emptyText.setText(getText("ui.module.ModuleListView.turnIntoAPlusProject"));
     emptyText.setHorizontalAlignment(SwingConstants.CENTER);
     emptyText.setVerticalAlignment(SwingConstants.CENTER);
+    pane.getVerticalScrollBar().setUnitIncrement(exerciseGroupsTree.getRowHeight());
   }
 
   @NotNull

@@ -4,6 +4,7 @@ import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.MODULE_R
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.startup.StartupActivity.Background;
+import fi.aalto.cs.apluscourses.intellij.model.CourseProject;
 import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory;
 import fi.aalto.cs.apluscourses.intellij.notifications.CourseConfigurationError;
 import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
@@ -47,8 +48,9 @@ public class InitializationActivity implements Background {
       return;
     }
 
+    Course course;
     try {
-      Course.fromUrl(courseConfigurationFileUrl, new IntelliJModelFactory(project));
+      course = Course.fromUrl(courseConfigurationFileUrl, new IntelliJModelFactory(project));
     } catch (UnexpectedResponseException | MalformedCourseConfigurationException e) {
       logger.error("Error occurred while trying to parse a course configuration file", e);
       notifier.notify(new CourseConfigurationError(e), project);
@@ -58,7 +60,8 @@ public class InitializationActivity implements Background {
       notifier.notify(new NetworkErrorNotification(e), project);
       return;
     }
-    pluginSettings.createUpdatingMainViewModel(project);
+    var courseProject = new CourseProject(course, courseConfigurationFileUrl, project);
+    PluginSettings.getInstance().registerCourseProject(courseProject);
   }
 
   @Nullable

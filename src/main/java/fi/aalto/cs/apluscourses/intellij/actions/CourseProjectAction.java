@@ -6,6 +6,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ex.ApplicationEx;
 import com.intellij.openapi.project.Project;
+import fi.aalto.cs.apluscourses.intellij.model.CourseProject;
 import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory;
 import fi.aalto.cs.apluscourses.intellij.model.SettingsImporter;
 import fi.aalto.cs.apluscourses.intellij.notifications.CourseConfigurationError;
@@ -168,12 +169,18 @@ public class CourseProjectAction extends AnAction {
       return;
     }
 
-    boolean importIdeSettings = !courseProjectViewModel.userOptsOutOfSettings();
+    boolean importIdeSettings = courseProjectViewModel.shouldApplyNewIdeSettings();
 
     String basePath = project.getBasePath();
     if (basePath == null) {
       logger.error("Settings could not be imported because (default?) project does not have path.");
       return;
+    }
+
+    if (useCourseFile) {
+      // The course file not created in testing.
+      var courseProject = new CourseProject(course, courseUrl, project);
+      PluginSettings.getInstance().registerCourseProject(courseProject);
     }
 
     Future<?> autoInstallDone = executor.submit(() -> startAutoInstalls(course, project));
@@ -183,11 +190,6 @@ public class CourseProjectAction extends AnAction {
 
     Future<Boolean> ideSettingsImported =
         executor.submit(() -> importIdeSettings && tryImportIdeSettings(project, course));
-
-    if (useCourseFile) {
-      // The course file not created in testing.
-      PluginSettings.getInstance().createUpdatingMainViewModel(project);
-    }
 
     executor.execute(() -> {
       try {

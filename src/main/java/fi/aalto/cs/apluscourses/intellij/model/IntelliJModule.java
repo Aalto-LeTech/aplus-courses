@@ -16,7 +16,6 @@ import fi.aalto.cs.apluscourses.utils.DirAwareZipFile;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.ZonedDateTime;
@@ -129,24 +128,6 @@ class IntelliJModule
     // ZIP may contain other dirs (typically, dependency modules) but we only extract the files that
     // belongs to this module.
     new DirAwareZipFile(file).extractDir(getName(), getFullPath().toString());
-  }
-
-  /*
-   * This method looks for a special ID file in the module files root. If the file is found, the
-   * contents of the file are returned. If the file doesn't exist, or any IO error occurs, null is
-   * returned. Differentiating between a missing file and IO errors isn't important here, as we can
-   * always fall back to the ID from the course configuration file, and the ID file is optional.
-   * This method should only be called after extractZip has been called.
-   */
-  @Override
-  @Nullable
-  protected String readVersionId() {
-    File idFile = getFullPath().resolve(".module_id").toFile();
-    try {
-      return FileUtils.readFileToString(idFile, StandardCharsets.UTF_8);
-    } catch (IOException ignored) {
-      return null;
-    }
   }
 
   private void fetchZipTo(File file) throws IOException {
