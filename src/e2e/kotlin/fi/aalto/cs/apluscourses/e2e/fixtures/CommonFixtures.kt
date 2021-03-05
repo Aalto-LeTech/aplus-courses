@@ -58,6 +58,16 @@ class IdeFrameFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent
         byXpath("//div[@class='TreeView']"),
         Duration.ofSeconds(20)
     )
+    fun filterButton() = find(
+        ActionButtonFixture::class.java,
+        byXpath("//div[@accessiblename='Filter Assignments']"),
+        Duration.ofSeconds(20)
+    )
+    fun filterDropDownMenu() = find(
+        JListFixture::class.java,
+        byXpath("//div[@class='MyList']"),
+        Duration.ofSeconds(20)
+    )
 }
 
 @FixtureName("Menu Item")
