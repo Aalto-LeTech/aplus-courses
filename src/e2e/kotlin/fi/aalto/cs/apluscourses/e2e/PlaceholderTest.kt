@@ -10,10 +10,8 @@ import fi.aalto.cs.apluscourses.e2e.utils.getVersion
 import fi.aalto.cs.apluscourses.e2e.utils.uiTest
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import java.io.File
-import java.io.FileInputStream
 import java.time.Duration
-import java.util.Properties
+
 
 class PlaceholderTest {
   init {
