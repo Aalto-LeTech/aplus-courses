@@ -1,8 +1,6 @@
 package fi.aalto.cs.apluscourses.e2e
 
 import com.intellij.remoterobot.stepsProcessing.step
-import com.intellij.remoterobot.utils.attempt
-import com.intellij.remoterobot.utils.keyboard
 import com.intellij.remoterobot.utils.waitFor
 import fi.aalto.cs.apluscourses.e2e.fixtures.dialog
 import fi.aalto.cs.apluscourses.e2e.fixtures.ideFrame
@@ -11,85 +9,74 @@ import fi.aalto.cs.apluscourses.e2e.utils.StepLoggerInitializer
 import fi.aalto.cs.apluscourses.e2e.utils.uiTest
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import java.awt.event.KeyEvent.VK_ALT
-import java.awt.event.KeyEvent.VK_RIGHT
 import java.time.Duration
 
 class PlaceholderTest {
-  init {
-    StepLoggerInitializer.init()
-  }
+    init {
+        StepLoggerInitializer.init()
+    }
 
-  @Test
-  fun mainTest() = uiTest {
-    //step 2
-    CommonSteps(this).createProject()
-    //step 4
-    CommonSteps(this).openAPlusProjectWindow()
-    step("Cancel") {
-      with(dialog("Select Course")) {
-        button("Cancel").click()
-      }
-    }
-    CommonSteps(this).openAPlusProjectWindow()
-    step("Select course") {
-      with(dialog("Select Course")) {
-        findText("O1").click()
-        button("OK").click()
-      }
-    }
-    step("Choose settings") {
-      CommonSteps(this).aPlusSettings(true)
-    }
-    step("Assertions") {
-      with(ideFrame()) {
-        with(projectViewTree()) {
-          waitFor(
-            Duration.ofSeconds(60),
-            Duration.ofSeconds(1),
-            "O1Library not found in project view tree"
-          ) { hasText("O1Library") }
+    @Test
+    fun mainTest() = uiTest {
+        //step 2
+        CommonSteps(this).createProject()
+        //step 4
+        CommonSteps(this).openAPlusProjectWindow()
+        step("Cancel") {
+            with(dialog("Select Course")) {
+                button("Cancel").click()
+            }
         }
-        aPlusSideBarButton().click()
-        with(modules()) {
-          waitFor(
-            Duration.ofSeconds(60),
-            Duration.ofSeconds(1),
-            "O1Library not found in modules list"
-          ) { hasText("O1Library") }
-          assertTrue("A module is installed",
-            hasText { textData -> textData.text.contains("[Double-click") })
+        CommonSteps(this).openAPlusProjectWindow()
+        step("Select course") {
+            with(dialog("Select Course")) {
+                findText("O1").click()
+                button("OK").click()
+            }
         }
-      }
-    }
-    //step 8
-    step("Authenticate with wrong token") {
-      CommonSteps(this).setAPlusToken("wrong token")
-      with(ideFrame()) {
-        ideErrorButton().click()
-      }
-      with(dialog("IDE Fatal Errors")) {
-        attempt(5) {
-          val textFound: Boolean = hasText { textData -> textData.text.contains("Invalid token") }
-          keyboard { hotKey(VK_ALT, VK_RIGHT) }
-          assertTrue(
-            "IDE Fatal Errors contains text 'Invalid token'",
-            textFound)
+        step("Choose settings") {
+            CommonSteps(this).aPlusSettings(true)
         }
-        button("Close").click()
-      }
-    }
-    step("Authenticate with right token") {
-      CommonSteps(this).setAPlusToken(System.getenv("APLUS_TEST_TOKEN"))
-      with(ideFrame()) {
-        with(assignments()) {
-          waitFor(
-            Duration.ofSeconds(60),
-            Duration.ofSeconds(1),
-            "Week 1 wasn't found in the assignments tree"
-          ) { hasText("Week 1") }
+        step("Assertions") {
+            with(ideFrame()) {
+                with(projectViewTree()) {
+                    waitFor(
+                        Duration.ofSeconds(60),
+                        Duration.ofSeconds(1),
+                        "O1Library not found in project view tree"
+                    ) { hasText("O1Library") }
+                }
+                aPlusSideBarButton().click()
+                with(modules()) {
+                    waitFor(
+                        Duration.ofSeconds(60),
+                        Duration.ofSeconds(1),
+                        "O1Library not found in modules list"
+                    ) { hasText("O1Library") }
+                    assertTrue("A module is installed",
+                        hasText { textData -> textData.text.contains("[Double-click") })
+                }
+            }
         }
-      }
+        //step 8
+        step("Authenticate with empty token") {
+            CommonSteps(this).setAPlusToken("")
+            with(dialog("A+ Token")) {
+                assertTrue("Token dialog still showing after clicking OK with empty token", isShowing)
+                button("Cancel").click()
+            }
+        }
+        step("Authenticate with right token") {
+            CommonSteps(this).setAPlusToken(System.getenv("APLUS_TEST_TOKEN"))
+            with(ideFrame()) {
+                with(assignments()) {
+                    waitFor(
+                        Duration.ofSeconds(60),
+                        Duration.ofSeconds(1),
+                        "Week 1 wasn't found in the assignments tree"
+                    ) { hasText("Week 1") }
+                }
+            }
+        }
     }
-  }
 }
