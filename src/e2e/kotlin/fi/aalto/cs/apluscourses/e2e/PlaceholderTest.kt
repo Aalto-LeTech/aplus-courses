@@ -6,6 +6,7 @@ import fi.aalto.cs.apluscourses.e2e.fixtures.dialog
 import fi.aalto.cs.apluscourses.e2e.fixtures.ideFrame
 import fi.aalto.cs.apluscourses.e2e.steps.CommonSteps
 import fi.aalto.cs.apluscourses.e2e.utils.StepLoggerInitializer
+import fi.aalto.cs.apluscourses.e2e.utils.getVersion
 import fi.aalto.cs.apluscourses.e2e.utils.uiTest
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -71,7 +72,6 @@ class PlaceholderTest {
         step("Check the links") {
           assertTrue(hasText("A+ Courses plugin website"))
           assertTrue(hasText("A+ Courses plugin GitHub"))
-
           assertTrue(hasText("A+ website"))
           assertTrue(hasText("Apache Commons IO"))
           assertTrue(hasText("IntelliJ Scala Plugin"))
@@ -82,11 +82,5 @@ class PlaceholderTest {
         button("OK").click()
       }
     }
-  }
-  private fun getVersion(): String {
-    val versionProperties = Properties()
-    val projectDir = File("").absolutePath;
-    versionProperties.load(FileInputStream("$projectDir/build/resources/main/build-info.properties"))
-    return versionProperties.getProperty("version")
   }
 }
