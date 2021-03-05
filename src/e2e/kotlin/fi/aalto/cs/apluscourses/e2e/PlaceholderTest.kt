@@ -54,7 +54,7 @@ class PlaceholderTest {
                         "O1Library not found in modules list"
                     ) { hasText("O1Library") }
                     assertTrue("A module is installed",
-                        hasText { textData -> textData.text.contains("[Double-click") })
+                        hasText { textData -> textData.text.contains("[Installed]") })
                 }
             }
         }
