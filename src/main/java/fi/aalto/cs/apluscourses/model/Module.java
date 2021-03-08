@@ -149,4 +149,18 @@ public abstract class Module extends Component {
       return versionId;
     }
   }
+
+  /**
+   * Updates the non-local version ID. Returns true if the version ID changed, false otherwise.
+   */
+  public boolean updateVersionId(@NotNull String newVersionId) {
+    synchronized (versionLock) {
+      boolean changed = !versionId.equals(newVersionId);
+      if (changed) {
+        versionId = newVersionId;
+      }
+      return changed;
+    }
+  }
+
 }
