@@ -50,3 +50,10 @@ jobs:
         env:
           APLUS_TEST_TOKEN: ${{ secrets.APLUS_TEST_TOKEN }}
         run: sleep 180s && gradle uiTest --info --stacktrace
+      - name: Save screenshot (on failure)
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v2
+        with:
+         name: hierarchy-report
+         path: |
+           build/hierarchy-reports
