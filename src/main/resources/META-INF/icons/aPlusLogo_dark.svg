@@ -1,72 +1,16 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="13"
-   height="13"
-   version="1.1"
-   viewBox="0 0 3.4395562 3.4395562"
-   id="svg1504"
-   sodipodi:docname="aPlusLogo_dark.svg"
-   inkscape:version="1.0.2 (e86c870879, 2021-01-15)">
-  <defs
-     id="defs1508" />
-  <sodipodi:namedview
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1"
-     objecttolerance="10"
-     gridtolerance="10"
-     guidetolerance="10"
-     inkscape:pageopacity="0"
-     inkscape:pageshadow="2"
-     inkscape:window-width="1920"
-     inkscape:window-height="1052"
-     id="namedview1506"
-     showgrid="true"
-     inkscape:zoom="52.4375"
-     inkscape:cx="6.9550079"
-     inkscape:cy="10.02146"
-     inkscape:window-x="1680"
-     inkscape:window-y="28"
-     inkscape:window-maximized="0"
-     inkscape:current-layer="g1502">
-    <inkscape:grid
-       type="xygrid"
-       id="grid2071" />
-  </sodipodi:namedview>
-  <metadata
-     id="metadata1496">
-    <rdf:RDF>
-      <cc:Work
-         rdf:about="">
-        <dc:format>image/svg+xml</dc:format>
-        <dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
-      </cc:Work>
-    </rdf:RDF>
-  </metadata>
-  <g
-     id="g1502"
-     transform="matrix(0.92856828,0,0,0.92856828,-0.24569916,-0.24570845)"
-     style="stroke-width:1.00012;stroke-miterlimit:4;stroke-dasharray:none">
-    <path
-       d="M 1.9742077,3.6838254 H 2.8290115 V 2.5440869 H 3.96875 V 1.6892831 H 2.8290115 V 0.54954461 H 1.9742077 V 1.6892831 l -1.13973848,0 v 0.8548038 l 1.13973848,0 z"
-       fill="#6e6e6e"
-       id="path1498"
-       style="fill:#afb1b3;fill-opacity:1;stroke-width:1.00012;stroke-miterlimit:4;stroke-dasharray:none"
-       sodipodi:nodetypes="ccccccccccccc" />
-    <path
-       d="m 1.9742077,0.54954461 0.8548038,0 L 1.1194038,3.6838254 H 0.26459999 Z"
-       fill="#848484"
-       id="path1500"
-       style="fill:#6e6e6e;fill-opacity:1;stroke-width:1.00012;stroke-miterlimit:4;stroke-dasharray:none"
-       sodipodi:nodetypes="ccccc" />
-  </g>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="13" height="13" version="1.1" viewBox="0 0 3.4396 3.4396" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+ <metadata>
+  <rdf:RDF>
+   <cc:Work rdf:about="">
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:title/>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <g transform="matrix(.92857 0 0 .92857 -.2457 -.24571)" stroke-width="1.0001">
+  <path d="m1.9742 3.6838h0.8548v-1.1397h1.1397v-0.8548h-1.1397v-1.1397h-0.8548v1.1397h-1.1397v0.8548h1.1397z" fill="#afb1b3"/>
+  <path d="m1.9742 0.54954h0.8548l-1.7096 3.1343h-0.8548z" fill="#6e6e6e"/>
+ </g>
 </svg>
