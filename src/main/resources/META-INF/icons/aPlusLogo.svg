@@ -1,16 +1,72 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="16" height="16" version="1.1" viewBox="0 0 4.2333 4.2333" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
- <metadata>
-  <rdf:RDF>
-   <cc:Work rdf:about="">
-    <dc:format>image/svg+xml</dc:format>
-    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:title/>
-   </cc:Work>
-  </rdf:RDF>
- </metadata>
- <g>
-  <path d="m1.9109 3.763h0.82315v-1.2347h1.2347v-0.82315h-1.2347v-1.2347h-0.82315v1.2347h-1.2347v0.82315h1.2347z" fill="#6e6e6e"/>
-  <path d="m1.9109 0.47037h0.82315l-1.6463 3.2926h-0.82315z" fill="#848484"/>
- </g>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="13"
+   height="13"
+   version="1.1"
+   viewBox="0 0 3.4395562 3.4395562"
+   id="svg1504"
+   sodipodi:docname="aPlusLogo.svg"
+   inkscape:version="1.0.2 (e86c870879, 2021-01-15)">
+  <defs
+     id="defs1508" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="938"
+     inkscape:window-height="1024"
+     id="namedview1506"
+     showgrid="true"
+     inkscape:zoom="52.4375"
+     inkscape:cx="3.1402632"
+     inkscape:cy="9.2586468"
+     inkscape:window-x="1694"
+     inkscape:window-y="42"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="g1502">
+    <inkscape:grid
+       type="xygrid"
+       id="grid2071" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata1496">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     id="g1502"
+     transform="matrix(0.92856828,0,0,0.92856828,-0.24569916,-0.24570845)"
+     style="stroke-width:1.00012;stroke-miterlimit:4;stroke-dasharray:none">
+    <path
+       d="M 1.9742077,3.6838254 H 2.8290115 V 2.5440869 H 3.96875 V 1.6892831 H 2.8290115 V 0.54954461 H 1.9742077 V 1.4775117 1.6892831 H 0.83446922 V 2.5440869 H 1.9742077 Z"
+       fill="#6e6e6e"
+       id="path1498"
+       style="fill:#6e6e6e;fill-opacity:1;stroke-width:1.00012;stroke-miterlimit:4;stroke-dasharray:none"
+       sodipodi:nodetypes="cccccccccccccc" />
+    <path
+       d="m 1.9742077,0.54954461 0.8548038,0 L 1.1194038,3.6838254 H 0.26459999 Z"
+       fill="#848484"
+       id="path1500"
+       style="fill:#848484;fill-opacity:1;stroke-width:1.00012;stroke-miterlimit:4;stroke-dasharray:none"
+       sodipodi:nodetypes="ccccc" />
+  </g>
 </svg>
