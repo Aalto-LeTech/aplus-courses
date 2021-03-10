@@ -12,7 +12,9 @@ import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.BaseTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import fi.aalto.cs.apluscourses.utils.Streamable;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
@@ -35,15 +37,14 @@ public class FilterOptionsActionGroup extends DefaultActionGroup implements Dumb
   @Override
   public AnAction @NotNull [] getChildren(@Nullable AnActionEvent e) {
     this.filterOptionActions = getFilterOptionActions(e);
-    AnAction[] actions = new AnAction[this.filterOptionActions.length + 2];
-    System.arraycopy(this.filterOptionActions, 0, actions, 0, this.filterOptionActions.length);
-    actions[this.filterOptionActions.length] = new Separator();
+    List<AnAction> actions = new ArrayList<>(Arrays.asList(this.filterOptionActions));
     if (e != null) {
+      actions.add(new Separator());
       Options filterOptions =
               mainViewModelProvider.getMainViewModel(e.getProject()).getExerciseFilterOptions();
-      actions[this.filterOptionActions.length + 1] = new SelectAllFiltersAction(filterOptions);
+      actions.add(new SelectAllFiltersAction(filterOptions));
     }
-    return actions;
+    return actions.toArray(new AnAction[0]);
   }
 
   /**

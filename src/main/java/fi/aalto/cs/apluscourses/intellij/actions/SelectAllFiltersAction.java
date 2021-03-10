@@ -1,11 +1,11 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.project.DumbAwareAction;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import org.jetbrains.annotations.NotNull;
 
-public class SelectAllFiltersAction extends AnAction {
+public class SelectAllFiltersAction extends DumbAwareAction {
 
   @NotNull
   private final Options filterOptions;
