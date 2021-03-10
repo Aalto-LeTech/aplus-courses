@@ -73,7 +73,7 @@ public class MainViewModel {
       ExercisesTreeViewModel emptyModel = new ExercisesTreeViewModel(new ArrayList<>(),
               new Options());
       if (course == null) {
-        emptyModel = new EmptyExercisesTreeViewModel(new ArrayList<>(), new Options());
+        emptyModel = new EmptyExercisesTreeViewModel();
       }
       emptyModel.setAuthenticated(auth != null);
       exercisesViewModel.set(emptyModel);
@@ -87,7 +87,7 @@ public class MainViewModel {
       List<ExerciseGroup> exerciseGroups = dataSource.getExerciseGroups(course, points, auth);
       inGrading.forEach((id, exercise) -> setInGrading(exerciseGroups, id));
       exercisesViewModel.set(new ExercisesTreeViewModel(exerciseGroups, exerciseFilterOptions));
-      exercisesViewModel.get().setAuthenticated(auth != null);
+      exercisesViewModel.get().setAuthenticated(true);
       exercisesViewModel.get().setProjectReady(hasTriedToReadAuthenticationFromStorage.get());
     } catch (InvalidAuthenticationException e) {
       logger.error("Failed to fetch exercises due to authentication issues", e);

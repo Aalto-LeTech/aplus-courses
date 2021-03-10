@@ -3,10 +3,12 @@ package fi.aalto.cs.apluscourses.intellij.actions;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAware;
+import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.BaseTreeViewModel;
+import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.utils.Streamable;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -37,5 +39,14 @@ public class FilterOptionsActionGroup extends ActionGroup implements DumbAware {
         .orElseGet(Stream::empty)
         .map(FilterOptionAction::new)
         .toArray(FilterOptionAction[]::new);
+  }
+
+  @Override
+  public void update(@NotNull AnActionEvent e) {
+    Project project = e.getProject();
+    ExercisesTreeViewModel exercisesTreeViewModel =
+            mainViewModelProvider.getMainViewModel(project).exercisesViewModel.get();
+    e.getPresentation().setEnabled(exercisesTreeViewModel != null
+            && exercisesTreeViewModel.isAuthenticated());
   }
 }

@@ -61,7 +61,7 @@ public class ExercisesView {
         emptyText.setText(getText("ui.module.ModuleListView.turnIntoAPlusProject"));
       }
       if (viewModel != null && viewModel.isProjectReady()) {
-        if (viewModel != null && viewModel.isAuthenticated()) {
+        if (viewModel.isAuthenticated()) {
           exerciseGroupsTree.getEmptyText().setText(
                   getText("ui.exercise.ExercisesView.allAssignmentsFiltered"));
         } else {
