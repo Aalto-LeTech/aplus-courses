@@ -2,11 +2,7 @@ package fi.aalto.cs.apluscourses.e2e.steps
 
 import com.intellij.remoterobot.RemoteRobot
 import com.intellij.remoterobot.stepsProcessing.step
-import fi.aalto.cs.apluscourses.e2e.fixtures.customComboBox
-import fi.aalto.cs.apluscourses.e2e.fixtures.dialog
-import fi.aalto.cs.apluscourses.e2e.fixtures.heavyWeightWindow
-import fi.aalto.cs.apluscourses.e2e.fixtures.ideFrame
-import fi.aalto.cs.apluscourses.e2e.fixtures.welcomeFrame
+import fi.aalto.cs.apluscourses.e2e.fixtures.*
 import java.time.Duration
 
 class CommonSteps(val remoteRobot: RemoteRobot) {
@@ -73,6 +69,18 @@ class CommonSteps(val remoteRobot: RemoteRobot) {
           menu().select("A+")
           menu().select("About the A+ Courses Plugin")
         }
+      }
+    }
+  }
+  fun setAPlusToken(token: String) {
+    with(remoteRobot) {
+      with(ideFrame()) {
+        menu().select("A+")
+        menu().select("Set A+ Token")
+      }
+      with(dialog("A+ Token")) {
+        passwordField().text = token
+        button("OK").click()
       }
     }
   }
