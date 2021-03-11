@@ -119,16 +119,90 @@ class PlaceholderTest {
                     click()
                     keyboard {
                         enterText("files")
+                        escape()
                     }
-                    assertTrue("'Files' assignment should be visible", hasText("Files"))
+                    assertTrue("'Files' assignment should be visible", hasText("Assignment 6 (Files)"))
                     keyboard {
                         escape()
                     }
                 }
             }
         }
+        // Week 11 is now expanded in the tree view because of the previous test
+        step("Filtering assignments") {
+            with(ideFrame()) {
+                // just check the initial state (nothing is filtered out)
+                filterButton().click()
+                with(filterDropDownMenu()) {
+                    assertTrue("By default, nothing is filtered out", hasText("Deselect all"))
+                }
+                keyboard {
+                    escape() // close the menu without selecting anything
+                }
+
+                with(assignments()) {
+                    assertTrue("'Files' assignment should be visible", hasText("Assignment 6 (Files)"))
+                }
+
+                // filter out optional tasks
+                filterButton().click()
+                filterDropDownMenu().selectItemContains("Optional")
+                filterButton().click()
+                with(filterDropDownMenu()) {
+                    assertTrue("Something should be filtered out", hasText("Select all"))
+                }
+                keyboard {
+                    escape()
+                }
+
+                with(assignments()) {
+                    assertFalse("'Files' assignment should now be hidden", hasText("Assignment 6 (Files)"))
+                    assertTrue("Feedback submissions should be visible", hasText("Feedback"))
+                }
+
+                // filter out non-submittable tasks
+                filterButton().click()
+                filterDropDownMenu().selectItemContains("Non-submittable")
+
+                with(assignments()) {
+                    assertFalse("Feedback submissions should now be hidden", hasText("Feedback"))
+                    assertTrue("Closed Week 1 should be visible", hasText("Week 1"))
+                }
+
+                // filter out closed sections
+                filterButton().click()
+                filterDropDownMenu().selectItemContains("Closed")
+
+                with(assignments()) {
+                    assertFalse("Closed Week 1 should be visible", hasText("Week 1"))
+                }
+
+                // disable filtering altogether
+                filterButton().click()
+                filterDropDownMenu().selectItemContains("Select all")
+                filterButton().click()
+                with(filterDropDownMenu()) {
+                    assertTrue("Nothing is filtered out anymore", hasText("Deselect all"))
+                }
+                keyboard {
+                    escape()
+                }
+
+                assignments().click()
+                keyboard {
+                    enterText("files")
+                    escape()
+                }
+
+                // check that various assignments are visible
+                with(assignments()) {
+                    assertTrue("'Files' assignment should be visible", hasText("Assignment 6 (Files)"))
+                    assertTrue("Feedback submissions should be visible", hasText("Feedback"))
+                    assertTrue("Closed Week 1 should be visible", hasText("Week 1"))
+                }
+            }
+        }
     }
-  
 
     @Test
     fun aboutDialogTest() = uiTest {
