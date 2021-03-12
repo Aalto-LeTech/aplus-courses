@@ -4,6 +4,7 @@ import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.Course;
+import fi.aalto.cs.apluscourses.model.CoursePluginVersion;
 import fi.aalto.cs.apluscourses.model.Library;
 import fi.aalto.cs.apluscourses.model.ModelFactory;
 import fi.aalto.cs.apluscourses.model.Module;
@@ -43,12 +44,13 @@ public class IntelliJModelFactory implements ModelFactory {
                              @NotNull Map<Long, Map<String, String>> exerciseModules,
                              @NotNull Map<String, URL> resourceUrls,
                              @NotNull List<String> autoInstallComponentNames,
-                             @NotNull Map<String, String[]> replInitialCommands) {
+                             @NotNull Map<String, String[]> replInitialCommands,
+                             @NotNull CoursePluginVersion minimumPluginVersion) {
 
     IntelliJCourse course =
         new IntelliJCourse(id, name, aplusUrl, languages, modules, libraries, exerciseModules,
-            resourceUrls, autoInstallComponentNames, replInitialCommands, project,
-            new CommonLibraryProvider(project));
+            resourceUrls, autoInstallComponentNames, replInitialCommands, minimumPluginVersion,
+            project, new CommonLibraryProvider(project));
 
     Component.InitializationCallback componentInitializationCallback =
         component -> registerComponentToCourse(component, course);

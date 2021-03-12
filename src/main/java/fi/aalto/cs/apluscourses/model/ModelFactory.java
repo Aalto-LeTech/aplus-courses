@@ -16,7 +16,8 @@ public interface ModelFactory {
                       @NotNull Map<Long, Map<String, String>> exerciseModules,
                       @NotNull Map<String, URL> resourceUrls,
                       @NotNull List<String> autoInstallComponentNames,
-                      @NotNull Map<String, String[]> replInitialCommands);
+                      @NotNull Map<String, String[]> replInitialCommands,
+                      @NotNull CoursePluginVersion minimumPluginVersion);
 
   Module createModule(@NotNull String name, @NotNull URL url, @NotNull String versionId);
 

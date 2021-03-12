@@ -9,6 +9,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import fi.aalto.cs.apluscourses.model.Course;
+import fi.aalto.cs.apluscourses.model.CoursePluginVersion;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.utils.observable.ValidationError;
 import java.util.Collections;
@@ -32,7 +33,9 @@ public class CourseProjectViewModelTest {
       //  autoInstallComponentNames
       Collections.emptyList(),
       //  replInitialCommands
-      Collections.emptyMap()
+      Collections.emptyMap(),
+      //  minimumPluginVersion
+      CoursePluginVersion.CURRENT_VERSION
   );
 
   @Test

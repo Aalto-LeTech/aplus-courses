@@ -62,6 +62,9 @@ public abstract class Course implements ComponentSource {
   @NotNull
   private final Map<String, String[]> replInitialCommands;
 
+  @NotNull
+  private final CoursePluginVersion minimumPluginVersion;
+
   /**
    * Constructs a course with the given parameters.
    *
@@ -82,7 +85,8 @@ public abstract class Course implements ComponentSource {
                    @NotNull Map<Long, Map<String, String>> exerciseModules,
                    @NotNull Map<String, URL> resourceUrls,
                    @NotNull List<String> autoInstallComponentNames,
-                   @NotNull Map<String, String[]> replInitialCommands) {
+                   @NotNull Map<String, String[]> replInitialCommands,
+                   @NotNull CoursePluginVersion minimumPluginVersion) {
     this.id = id;
     this.name = name;
     this.aplusUrl = aplusUrl;
@@ -95,6 +99,7 @@ public abstract class Course implements ComponentSource {
     this.components = Stream.concat(modules.stream(), libraries.stream())
         .collect(Collectors.toMap(Component::getName, Function.identity()));
     this.replInitialCommands = replInitialCommands;
+    this.minimumPluginVersion = minimumPluginVersion;
   }
 
   @NotNull
@@ -146,6 +151,7 @@ public abstract class Course implements ComponentSource {
         = getCourseAutoInstallComponentNames(jsonObject, sourcePath);
     Map<String, String[]> replInitialCommands
         = getCourseReplInitialCommands(jsonObject, sourcePath);
+    CoursePluginVersion minimumPluginVersion = getMinimumPluginVersion(jsonObject, sourcePath);
     return factory.createCourse(
         courseId,
         courseName,
@@ -156,7 +162,8 @@ public abstract class Course implements ComponentSource {
         exerciseModules,
         resourceUrls,
         autoInstallComponentNames,
-        replInitialCommands
+        replInitialCommands,
+        minimumPluginVersion
     );
   }
 
@@ -490,6 +497,12 @@ public abstract class Course implements ComponentSource {
     }
 
     return replInitialCommands;
+  }
+
+  @NotNull
+  private static CoursePluginVersion getMinimumPluginVersion(@NotNull JSONObject jsonObject,
+                                                             @NotNull String source) {
+    return CoursePluginVersion.CURRENT_VERSION;
   }
 
   @Nullable
