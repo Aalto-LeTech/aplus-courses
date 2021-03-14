@@ -14,7 +14,7 @@ public class CoursePluginVersion {
 
   // the major and minor version of the current plugin build
   private static final int MAJOR_VERSION = 1;
-  private static final int MINOR_VERSION = 1;
+  private static final int MINOR_VERSION = 0;
   public static final CoursePluginVersion CURRENT_VERSION =
           new CoursePluginVersion(MAJOR_VERSION, MINOR_VERSION, "");
 

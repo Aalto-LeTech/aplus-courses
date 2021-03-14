@@ -262,6 +262,11 @@ public abstract class Course implements ComponentSource {
     return Collections.unmodifiableMap(resourceUrls);
   }
 
+  @NotNull
+  public CoursePluginVersion getRequiredPluginVersion() {
+    return minimumPluginVersion;
+  }
+
   /**
    * Returns a list of components that should be installed automatically for this course.
    *

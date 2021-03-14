@@ -18,6 +18,7 @@ import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.ComponentInstaller;
 import fi.aalto.cs.apluscourses.model.ComponentInstallerImpl;
 import fi.aalto.cs.apluscourses.model.Course;
+import fi.aalto.cs.apluscourses.model.CoursePluginVersion;
 import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationException;
 import fi.aalto.cs.apluscourses.presentation.CourseItemViewModel;
 import fi.aalto.cs.apluscourses.presentation.CourseProjectViewModel;
@@ -41,6 +42,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.swing.JOptionPane;
 
 public class CourseProjectAction extends AnAction {
 
@@ -156,6 +159,15 @@ public class CourseProjectAction extends AnAction {
     Course course = tryGetCourse(project, courseUrl);
     if (course == null) {
       return;
+    }
+
+    CoursePluginVersion minVersion = course.getRequiredPluginVersion();
+    CoursePluginVersion.Status versionCheckResult = minVersion.checkVersion();
+    if (versionCheckResult == CoursePluginVersion.Status.UPDATE_REQUIRED) {
+      JOptionPane.showMessageDialog(null, "version error", "test", JOptionPane.ERROR_MESSAGE);
+      return;
+    } else if (versionCheckResult == CoursePluginVersion.Status.UPDATE_OPTIONAL) {
+      JOptionPane.showMessageDialog(null, "version warning", "test", JOptionPane.WARNING_MESSAGE);
     }
 
     CourseProjectViewModel courseProjectViewModel
