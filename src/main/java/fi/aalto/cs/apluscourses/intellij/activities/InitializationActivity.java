@@ -12,10 +12,12 @@ import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Course;
+import fi.aalto.cs.apluscourses.model.CoursePluginVersion;
 import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationException;
 import fi.aalto.cs.apluscourses.model.UnexpectedResponseException;
 import java.io.IOException;
 import java.net.URL;
+import javax.swing.JOptionPane;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONException;
@@ -60,6 +62,16 @@ public class InitializationActivity implements Background {
       notifier.notify(new NetworkErrorNotification(e), project);
       return;
     }
+
+    CoursePluginVersion minVersion = course.getRequiredPluginVersion();
+    CoursePluginVersion.Status versionCheckResult = minVersion.checkVersion();
+    if (versionCheckResult == CoursePluginVersion.Status.UPDATE_REQUIRED) {
+      JOptionPane.showMessageDialog(null, "version error", "test", JOptionPane.ERROR_MESSAGE);
+      return;
+    } else if (versionCheckResult == CoursePluginVersion.Status.UPDATE_OPTIONAL) {
+      JOptionPane.showMessageDialog(null, "version warning", "test", JOptionPane.WARNING_MESSAGE);
+    }
+
     var courseProject = new CourseProject(course, courseConfigurationFileUrl, project);
     PluginSettings.getInstance().registerCourseProject(courseProject);
   }
