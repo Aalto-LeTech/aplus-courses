@@ -57,19 +57,21 @@ public class ExercisesView {
       exerciseGroupsTree.setViewModel(viewModel);
       cl.show(cardPanel, viewModel == null || viewModel.isEmptyTextVisible() ? "LabelCard" :
               "TreeCard");
-      if (viewModel != null && viewModel.isEmptyTextVisible()) {
+      if (viewModel == null) {
+        return;
+      }
+
+      if (viewModel.isProjectReady()) {
         emptyText.setText(getText("ui.module.ModuleListView.turnIntoAPlusProject"));
       }
-      if (viewModel != null && viewModel.isProjectReady()) {
-        if (viewModel.isAuthenticated()) {
-          exerciseGroupsTree.getEmptyText().setText(
-                  getText("ui.exercise.ExercisesView.allAssignmentsFiltered"));
-        } else {
-          exerciseGroupsTree.getEmptyText().setText(
-                  getText("ui.exercise.ExercisesView.setToken"));
-          exerciseGroupsTree.getEmptyText().appendLine(
-                  getText("ui.exercise.ExercisesView.setTokenDirections"));
-        }
+      if (viewModel.isAuthenticated()) {
+        exerciseGroupsTree.getEmptyText().setText(
+            getText("ui.exercise.ExercisesView.allAssignmentsFiltered"));
+      } else {
+        exerciseGroupsTree.getEmptyText().setText(
+            getText("ui.exercise.ExercisesView.setToken"));
+        exerciseGroupsTree.getEmptyText().appendLine(
+            getText("ui.exercise.ExercisesView.setTokenDirections"));
       }
     }, ModalityState.any()
     );

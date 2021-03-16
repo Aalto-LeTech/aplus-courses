@@ -5,6 +5,7 @@ import fi.aalto.cs.apluscourses.presentation.base.BaseTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.Searchable;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,7 +14,7 @@ public class ExercisesTreeViewModel extends BaseTreeViewModel<List<ExerciseGroup
 
   private boolean isAuthenticated;
 
-  private  boolean isProjectReady;
+  private AtomicBoolean isProjectReady = new AtomicBoolean(false);
 
   /**
    * Construct an exercises tree view model from the given exercise groups.
@@ -41,10 +42,13 @@ public class ExercisesTreeViewModel extends BaseTreeViewModel<List<ExerciseGroup
   }
 
   public boolean isProjectReady() {
-    return isProjectReady;
+    return isProjectReady.get();
   }
 
-  public void setProjectReady(boolean projectReady) {
-    isProjectReady = projectReady;
+  /**
+   * Returns true if the value changed, false if the value was already equal to the given value.
+   */
+  public boolean setProjectReady(boolean projectReady) {
+    return isProjectReady.getAndSet(projectReady) != projectReady;
   }
 }

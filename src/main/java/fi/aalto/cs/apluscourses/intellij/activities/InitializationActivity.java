@@ -3,6 +3,8 @@ package fi.aalto.cs.apluscourses.intellij.activities;
 import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.MODULE_REPL_INITIAL_COMMANDS_FILE_NAME;
 
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectManager;
+import com.intellij.openapi.project.ProjectManagerListener;
 import com.intellij.openapi.startup.StartupActivity.Background;
 import fi.aalto.cs.apluscourses.intellij.model.CourseProject;
 import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory;
@@ -11,11 +13,16 @@ import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
+import fi.aalto.cs.apluscourses.intellij.utils.ProjectKey;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationException;
 import fi.aalto.cs.apluscourses.model.UnexpectedResponseException;
+import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
+import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONException;
@@ -28,6 +35,10 @@ public class InitializationActivity implements Background {
 
   @NotNull
   private final Notifier notifier;
+
+  @NotNull
+  private static final Map<ProjectKey, ObservableProperty<Boolean>> initializedProjects
+      = new ConcurrentHashMap<>();
 
   public InitializationActivity() {
     this(new DefaultNotifier());
@@ -45,7 +56,7 @@ public class InitializationActivity implements Background {
 
     URL courseConfigurationFileUrl = getCourseUrlFromProject(project);
     if (courseConfigurationFileUrl == null) {
-      pluginSettings.getMainViewModel(project).setProjectReady();
+      isInitialized(project).set(true);
       return;
     }
 
@@ -61,8 +72,30 @@ public class InitializationActivity implements Background {
       notifier.notify(new NetworkErrorNotification(e), project);
       return;
     }
+
     var courseProject = new CourseProject(course, courseConfigurationFileUrl, project);
     PluginSettings.getInstance().registerCourseProject(courseProject);
+    isInitialized(project).set(true);
+  }
+
+  private static final ProjectManagerListener projectListener = new ProjectManagerListener() {
+    @Override
+    public void projectClosed(@NotNull Project project) {
+      initializedProjects.remove(new ProjectKey(project));
+      ProjectManager.getInstance().removeProjectManagerListener(project, this);
+    }
+  };
+
+  /**
+   * Returns the observable boolean corresponding to whether the initialization activity for the
+   * given project has completed or not.
+   */
+  @NotNull
+  public static ObservableProperty<Boolean> isInitialized(@NotNull Project project) {
+    return initializedProjects.computeIfAbsent(new ProjectKey(project), key -> {
+      ProjectManager.getInstance().addProjectManagerListener(project, projectListener);
+      return new ObservableReadWriteProperty<>(false);
+    });
   }
 
   @Nullable
