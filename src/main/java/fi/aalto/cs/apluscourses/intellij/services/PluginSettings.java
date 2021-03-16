@@ -17,6 +17,7 @@ import fi.aalto.cs.apluscourses.intellij.dal.IntelliJPasswordStorage;
 import fi.aalto.cs.apluscourses.intellij.model.CourseProject;
 import fi.aalto.cs.apluscourses.intellij.utils.CourseFileManager;
 import fi.aalto.cs.apluscourses.intellij.utils.IntelliJFilterOption;
+import fi.aalto.cs.apluscourses.intellij.utils.ProjectKey;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseFilter;
@@ -73,32 +74,6 @@ public class PluginSettings implements MainViewModelProvider {
 
   private final PropertiesComponent applicationPropertiesManager = PropertiesComponent
       .getInstance();
-
-  private static class ProjectKey {
-    @NotNull
-    private final String projectPath;
-
-    public ProjectKey(@Nullable Project project) {
-      if (project == null || project.isDefault()) {
-        this.projectPath = "";
-      } else {
-        this.projectPath = project.getBasePath();
-      }
-    }
-
-    @Override
-    public boolean equals(Object other) {
-      if (!(other instanceof ProjectKey)) {
-        return false;
-      }
-      return projectPath.equals(((ProjectKey) other).projectPath);
-    }
-
-    @Override
-    public int hashCode() {
-      return projectPath.hashCode();
-    }
-  }
 
   @NotNull
   private final ConcurrentMap<ProjectKey, MainViewModel> mainViewModels = new ConcurrentHashMap<>();
