@@ -54,6 +54,10 @@
                     class="fi.aalto.cs.apluscourses.intellij.actions.AboutAction"
                     text="About the A+ Courses Plugin"
                     description="Information about the A+ Courses plugin for IntelliJ" />
+            <action id="fi.aalto.cs.apluscourses.intellij.actions.PocAction"
+                    class="fi.aalto.cs.apluscourses.intellij.actions.PocAction"
+                    text="Start PoC Tutorial"
+                    description="PoC Tutorial" />
         </group>
         <group id="fi.aalto.cs.apluscourses.intellij.actions.ActionGroups.MODULE_ACTIONS"
                text="A+ Module"
