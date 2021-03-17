@@ -24,7 +24,10 @@ public class CoursePluginVersion {
   @Nullable
   private final String prettyVersion;
 
-  private CoursePluginVersion(int major, int minor, @Nullable String prettyVersion) {
+  /**
+   * Constructs a course plugin version directly from arguments.
+   */
+  public CoursePluginVersion(int major, int minor, @Nullable String prettyVersion) {
     this.major = major;
     this.minor = minor;
     this.prettyVersion = prettyVersion;
