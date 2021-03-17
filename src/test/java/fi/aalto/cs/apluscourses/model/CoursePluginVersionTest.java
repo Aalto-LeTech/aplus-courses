@@ -12,10 +12,10 @@ public class CoursePluginVersionTest {
     CoursePluginVersion lowestVersion = new CoursePluginVersion(Integer.MIN_VALUE, 0, null);
 
     assertEquals("Update is correctly marked as mandatory",
-        highestVersion.checkVersion(), CoursePluginVersion.Status.UPDATE_REQUIRED);
+        CoursePluginVersion.Status.UPDATE_REQUIRED, highestVersion.checkVersion());
 
     assertEquals("Version is correctly recognized as up-to-date",
-        lowestVersion.checkVersion(), CoursePluginVersion.Status.VALID);
+        CoursePluginVersion.Status.VALID, lowestVersion.checkVersion());
   }
 
   @Test
@@ -23,6 +23,6 @@ public class CoursePluginVersionTest {
     CoursePluginVersion version = new CoursePluginVersion(0, 0, "v37.11");
 
     assertEquals("Required version has the correct plugin version string",
-        version.getPrettyVersion(), "v37.11");
+        "v37.11", version.getPrettyVersion());
   }
 }
