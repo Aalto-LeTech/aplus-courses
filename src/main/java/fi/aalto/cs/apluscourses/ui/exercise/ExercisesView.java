@@ -63,16 +63,17 @@ public class ExercisesView {
 
       if (viewModel.isProjectReady()) {
         emptyText.setText(getText("ui.module.ModuleListView.turnIntoAPlusProject"));
+        if (viewModel.isAuthenticated()) {
+          exerciseGroupsTree.getEmptyText().setText(
+                  getText("ui.exercise.ExercisesView.allAssignmentsFiltered"));
+        } else {
+          exerciseGroupsTree.getEmptyText().setText(
+                  getText("ui.exercise.ExercisesView.setToken"));
+          exerciseGroupsTree.getEmptyText().appendLine(
+                  getText("ui.exercise.ExercisesView.setTokenDirections"));
+        }
       }
-      if (viewModel.isAuthenticated()) {
-        exerciseGroupsTree.getEmptyText().setText(
-            getText("ui.exercise.ExercisesView.allAssignmentsFiltered"));
-      } else {
-        exerciseGroupsTree.getEmptyText().setText(
-            getText("ui.exercise.ExercisesView.setToken"));
-        exerciseGroupsTree.getEmptyText().appendLine(
-            getText("ui.exercise.ExercisesView.setTokenDirections"));
-      }
+
     }, ModalityState.any()
     );
   }
