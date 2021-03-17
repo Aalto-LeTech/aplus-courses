@@ -40,7 +40,7 @@ public class MainViewModel {
 
   @NotNull
   public final ObservableProperty<ExercisesTreeViewModel> exercisesViewModel =
-      new ObservableReadWriteProperty<>(null);
+      new ObservableReadWriteProperty<>(new EmptyExercisesTreeViewModel());
 
   @NotNull
   public final ObservableProperty<Authentication> authentication =
@@ -58,8 +58,8 @@ public class MainViewModel {
    */
   public MainViewModel(@NotNull Options exerciseFilterOptions) {
     this.exerciseFilterOptions = exerciseFilterOptions;
-    courseViewModel.addValueObserver(this, MainViewModel::updateExercises);
-    authentication.addValueObserver(this, MainViewModel::updateExercises);
+    courseViewModel.addSimpleObserver(this, MainViewModel::updateExercises);
+    authentication.addSimpleObserver(this, MainViewModel::updateExercises);
   }
 
   private void updateExercises() {
@@ -71,13 +71,13 @@ public class MainViewModel {
     Authentication auth = authentication.get();
     if (course == null || auth == null) {
       ExercisesTreeViewModel emptyModel = new ExercisesTreeViewModel(new ArrayList<>(),
-              new Options());
+          new Options());
       if (course == null) {
         emptyModel = new EmptyExercisesTreeViewModel();
       }
       emptyModel.setAuthenticated(auth != null);
+      emptyModel.setProjectReady(exercisesViewModel.get().isProjectReady());
       exercisesViewModel.set(emptyModel);
-      exercisesViewModel.get().setProjectReady(hasTriedToReadAuthenticationFromStorage.get());
       return;
     }
     ExerciseDataSource dataSource = course.getExerciseDataSource();
@@ -86,9 +86,10 @@ public class MainViewModel {
       points.setSubmittableExercises(course.getExerciseModules().keySet()); // TODO: remove
       List<ExerciseGroup> exerciseGroups = dataSource.getExerciseGroups(course, points, auth);
       inGrading.forEach((id, exercise) -> setInGrading(exerciseGroups, id));
-      exercisesViewModel.set(new ExercisesTreeViewModel(exerciseGroups, exerciseFilterOptions));
-      exercisesViewModel.get().setAuthenticated(true);
-      exercisesViewModel.get().setProjectReady(hasTriedToReadAuthenticationFromStorage.get());
+      var viewModel = new ExercisesTreeViewModel(exerciseGroups, exerciseFilterOptions);
+      viewModel.setAuthenticated(true);
+      viewModel.setProjectReady(exercisesViewModel.get().isProjectReady());
+      exercisesViewModel.set(viewModel);
     } catch (InvalidAuthenticationException e) {
       logger.error("Failed to fetch exercises due to authentication issues", e);
       // TODO: might want to communicate this to the user somehow
@@ -120,14 +121,12 @@ public class MainViewModel {
   public void readAuthenticationFromStorage(@Nullable PasswordStorage passwordStorage,
                                             @NotNull TokenAuthentication.Factory factory) {
     if (hasTriedToReadAuthenticationFromStorage.getAndSet(true) || authentication.get() != null) {
-      exercisesViewModel.get().setProjectReady(true);
       return;
     }
     Optional.ofNullable(passwordStorage)
         .map(PasswordStorage::restorePassword)
         .map(factory::create)
         .ifPresent(this::setAuthentication);
-    exercisesViewModel.get().setProjectReady(true);
     if (!exercisesViewModel.get().isAuthenticated()) {
       this.updateExercises();
     }
@@ -177,9 +176,18 @@ public class MainViewModel {
   }
 
   /**
-   * Triggers updateExercises when the project is not A+.
+   * Calling this method informs the main view model that the corresponding project has been
+   * initialized (by InitializationActivity). If needed, this method notifies the listeners of
+   * exercisesViewModel.
    */
-  public void setProjectReady() {
-    this.updateExercises();
+  public void setProjectReady(boolean isReady) {
+    var viewModel = exercisesViewModel.get();
+    if (viewModel == null) {
+      return;
+    }
+    var changed = viewModel.setProjectReady(isReady);
+    if (changed) {
+      exercisesViewModel.valueChanged();
+    }
   }
 }

@@ -21,7 +21,7 @@
     <depends>org.intellij.scala</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <postStartupActivity implementation="fi.aalto.cs.apluscourses.intellij.activities.InitializationActivity"/>
+        <backgroundPostStartupActivity implementation="fi.aalto.cs.apluscourses.intellij.activities.InitializationActivity"/>
 
         <toolWindow id="A+ Courses"
                     anchor="right"

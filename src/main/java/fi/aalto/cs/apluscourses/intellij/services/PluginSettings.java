@@ -11,20 +11,26 @@ import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.project.ProjectManagerListener;
+import fi.aalto.cs.apluscourses.dal.APlusTokenAuthentication;
+import fi.aalto.cs.apluscourses.dal.TokenAuthentication;
 import fi.aalto.cs.apluscourses.intellij.dal.IntelliJPasswordStorage;
-import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
+import fi.aalto.cs.apluscourses.intellij.model.CourseProject;
 import fi.aalto.cs.apluscourses.intellij.utils.CourseFileManager;
 import fi.aalto.cs.apluscourses.intellij.utils.IntelliJFilterOption;
+import fi.aalto.cs.apluscourses.intellij.utils.ProjectKey;
+import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
-import fi.aalto.cs.apluscourses.presentation.MainViewModelUpdater;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseFilter;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseGroupFilter;
 import fi.aalto.cs.apluscourses.presentation.filter.Option;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
+import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
+
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -62,45 +68,18 @@ public class PluginSettings implements MainViewModelProvider {
   public static final String A_PLUS = "A+";
 
   //  15 minutes in milliseconds
-  public static final long MAIN_VIEW_MODEL_UPDATE_INTERVAL = 15L * 60L * 1000L;
+  public static final long COURSE_UPDATE_INTERVAL = 15L * 60 * 1000;
   //  15 seconds in milliseconds
   public static final long REASONABLE_DELAY_FOR_MODULE_INSTALLATION = 15L * 1000;
 
   private final PropertiesComponent applicationPropertiesManager = PropertiesComponent
       .getInstance();
 
-  private static class ProjectKey {
-    @NotNull
-    private final String projectPath;
-
-    public ProjectKey(@Nullable Project project) {
-      if (project == null || project.isDefault()) {
-        this.projectPath = "";
-      } else {
-        this.projectPath = project.getBasePath();
-      }
-    }
-
-    @Override
-    public boolean equals(Object other) {
-      if (!(other instanceof ProjectKey)) {
-        return false;
-      }
-      return projectPath.equals(((ProjectKey) other).projectPath);
-    }
-
-    @Override
-    public int hashCode() {
-      return projectPath.hashCode();
-    }
-  }
-
   @NotNull
   private final ConcurrentMap<ProjectKey, MainViewModel> mainViewModels = new ConcurrentHashMap<>();
 
   @NotNull
-  private final ConcurrentMap<ProjectKey, MainViewModelUpdater> mainViewModelUpdaters
-      = new ConcurrentHashMap<>();
+  private final ConcurrentMap<ProjectKey, CourseProject> courseProjects = new ConcurrentHashMap<>();
 
   @NotNull
   private final ConcurrentMap<ProjectKey, CourseFileManager> courseFileManagers
@@ -130,9 +109,9 @@ public class PluginSettings implements MainViewModelProvider {
     public void projectClosed(@NotNull Project project) {
       ProjectKey key = new ProjectKey(project);
       courseFileManagers.remove(key);
-      MainViewModelUpdater updater = mainViewModelUpdaters.remove(key);
-      if (updater != null) {
-        updater.interrupt();
+      var courseProject = courseProjects.remove(key);
+      if (courseProject != null) {
+        courseProject.getCourseUpdater().stop();
       }
       MainViewModel mainViewModel = mainViewModels.remove(key);
       if (mainViewModel != null) {
@@ -176,35 +155,31 @@ public class PluginSettings implements MainViewModelProvider {
    */
   public void updateMainViewModel(@Nullable Project project) {
     ProjectKey key = new ProjectKey(project);
-    MainViewModelUpdater updater = mainViewModelUpdaters.get(key);
-    if (updater != null) {
-      updater.restart();
+    var courseProject = courseProjects.get(key);
+    if (courseProject != null) {
+      courseProject.getCourseUpdater().restart();
     }
   }
 
   /**
-   * Creates a main view model and launches an updater for it that runs on a background thread.
-   *
-   * @param project The project to which the created main view model corresponds.
+   * Registers a course project. This creates a main view model. It also starts the updater of the
+   * course project. Calling this method again with the same project has no effect.
    */
-  public void createUpdatingMainViewModel(@NotNull Project project) {
-    ProjectKey key = new ProjectKey(project);
-
-    MainViewModel mainViewModel = mainViewModels.computeIfAbsent(key, projectKey
-        -> {
-      ProjectManager
-          .getInstance()
-          .addProjectManagerListener(project, projectManagerListener);
-      return new MainViewModel(exerciseFilterOptions);
+  public void registerCourseProject(@NotNull CourseProject courseProject) {
+    var key = new ProjectKey(courseProject.getProject());
+    var mainViewModel = getMainViewModel(courseProject.getProject());
+    courseProjects.computeIfAbsent(key, projectKey -> {
+      courseProject.getCourse().register();
+      mainViewModel.courseViewModel.set(new CourseViewModel(courseProject.getCourse()));
+      courseProject.courseUpdated.addListener(
+          mainViewModel.courseViewModel, ObservableProperty::valueChanged);
+      courseProject.getCourseUpdater().restart();
+      return courseProject;
     });
-
-    mainViewModelUpdaters.computeIfAbsent(key, projectKey -> {
-      MainViewModelUpdater mainViewModelUpdater = new MainViewModelUpdater(
-          mainViewModel, project, MAIN_VIEW_MODEL_UPDATE_INTERVAL,
-          new DefaultNotifier(), IntelliJPasswordStorage::new);
-      mainViewModelUpdater.start();
-      return mainViewModelUpdater;
-    });
+    var passwordStorage = new IntelliJPasswordStorage(courseProject.getCourse().getApiUrl());
+    TokenAuthentication.Factory authenticationFactory =
+        APlusTokenAuthentication.getFactoryFor(passwordStorage);
+    mainViewModel.readAuthenticationFromStorage(passwordStorage, authenticationFactory);
   }
 
   /**

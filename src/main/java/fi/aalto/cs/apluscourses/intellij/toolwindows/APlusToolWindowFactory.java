@@ -14,6 +14,7 @@ import fi.aalto.cs.apluscourses.intellij.actions.ActionGroups;
 import fi.aalto.cs.apluscourses.intellij.actions.ActionUtil;
 import fi.aalto.cs.apluscourses.intellij.actions.CourseProjectAction;
 import fi.aalto.cs.apluscourses.intellij.actions.InstallModuleAction;
+import fi.aalto.cs.apluscourses.intellij.activities.InitializationActivity;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import fi.aalto.cs.apluscourses.ui.exercise.ExercisesView;
@@ -63,6 +64,10 @@ public class APlusToolWindowFactory extends BaseToolWindowFactory implements Dum
   @NotNull
   private static ExercisesView createExercisesView(@NotNull Project project) {
     MainViewModel mainViewModel = PluginSettings.getInstance().getMainViewModel(project);
+
+    InitializationActivity
+        .isInitialized(project)
+        .addValueObserver(mainViewModel, MainViewModel::setProjectReady);
 
     ExercisesView exercisesView = new ExercisesView();
     exercisesView.getEmptyTextLabel().addMouseListener(new EmptyLabelMouseAdapter());
