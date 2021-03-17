@@ -6,12 +6,23 @@ import com.intellij.openapi.roots.impl.libraries.LibraryEx;
 import com.intellij.openapi.roots.libraries.LibraryProperties;
 import com.intellij.openapi.roots.libraries.LibraryTable;
 import com.intellij.openapi.roots.libraries.PersistentLibraryKind;
+import com.intellij.openapi.util.io.FileUtil;
+import com.intellij.openapi.vfs.LocalFileSystem;
+import com.intellij.openapi.vfs.VfsUtil;
+import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.util.concurrency.annotations.RequiresReadLock;
 import com.intellij.util.concurrency.annotations.RequiresWriteLock;
 import fi.aalto.cs.apluscourses.model.Library;
+import fi.aalto.cs.apluscourses.utils.content.Content;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Stream;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -29,9 +40,14 @@ public abstract class IntelliJLibrary
     this.project = project;
   }
 
-  /**
-   * Method that adds libraries to SDK root.
-   */
+  @Override
+  public void fetch() throws IOException {
+    getContent().copyTo(getFullPath());
+  }
+
+  @NotNull
+  protected abstract Content getContent();
+
   @RequiresWriteLock
   @SuppressWarnings("unchecked")
   protected void loadInternal() {
@@ -39,14 +55,15 @@ public abstract class IntelliJLibrary
     com.intellij.openapi.roots.libraries.Library.ModifiableModel library = libraryTable
         .createLibrary(getName(), getLibraryKind())
         .getModifiableModel();
-    for (String uri : getUris()) {
+    for (String uri : getClassUris()) {
       library.addRoot(uri, OrderRootType.CLASSES);
     }
 
     //HACK: this is the only way to access properties that I am aware of
     LibraryEx.ModifiableModelEx libraryEx = (LibraryEx.ModifiableModelEx) library;
     LibraryProperties<S> properties = libraryEx.getProperties();
-    initializeLibraryProperties(properties);
+    Optional.ofNullable(getPropertiesState(properties.getState()))
+        .ifPresent(properties::loadState);
     libraryEx.setProperties(properties);
 
     library.commit();
@@ -100,12 +117,60 @@ public abstract class IntelliJLibrary
    *
    * @return URIs to be included in classes of the library.
    */
-  protected abstract String[] getUris();
+  @RequiresReadLock
+  protected String[] getClassUris() {
+    return getUris(getClassRoots(), path -> VfsUtil.getUrlForLibraryRoot(path.toFile()));
+  }
 
-  protected abstract K getLibraryKind();
+  public String[] getUris(@NotNull String[] roots, Function<Path, String> pathToUri) {
+    return Arrays.stream(roots)
+        .filter(string -> !string.isEmpty())
+        .map(getFullPath()::resolve)
+        .map(pathToUri)
+        .toArray(String[]::new);
+  }
 
-  @RequiresWriteLock
-  protected abstract void initializeLibraryProperties(LibraryProperties<S> properties);
+  /**
+   * Gets local file system URIs of the given roots.
+   *
+   * @param roots File names for library class roots.
+   * @return An array of URI strings (unescaped).
+   */
+  @RequiresReadLock
+  public String[] getUris(@NotNull String[] roots) {
+    String protocol = LocalFileSystem.getInstance().getProtocol();
+    return getUris(roots, path -> VirtualFileManager.constructUrl(protocol,
+        FileUtil.toSystemIndependentName(path.toString())));
+  }
+
+  @NotNull
+  protected String[] getClassRoots() {
+    return getJarFiles(); // use all JAR files by default
+  }
+
+  @Nullable
+  protected K getLibraryKind() {
+    return null; // default to null ("normal")
+  }
+
+  /**
+   * Helper method that returns all the JAR files in the library path.
+   * @return An array of filenames.
+   */
+  @NotNull
+  protected String[] getJarFiles() {
+    File[] files = Objects.requireNonNull(getFullPath().toFile().listFiles());
+    return Stream.of(files)
+        .map(File::getName)
+        .filter(fileName -> fileName.endsWith(".jar"))
+        .toArray(String[]::new);
+  }
+
+  @Nullable
+  protected S getPropertiesState(@Nullable S currentState) {
+    return currentState;
+  }
+
 
   @Override
   @RequiresReadLock

@@ -4,39 +4,10 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertThat;
 
 import com.intellij.testFramework.HeavyPlatformTestCase;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
 import org.junit.Test;
 
 public class ScalaSdkTest extends HeavyPlatformTestCase {
 
-  @Test
-  public void testCreateTempFile() throws IOException {
-    //  given
-    APlusProject aplusProject = new APlusProject(getProject());
-    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-5.5.5", aplusProject);
-
-    //  when
-    File tempFile = scalaSdk.createTempFile();
-    Path absolutePath = tempFile.toPath();
-
-    //  then
-    assertTrue("Created file path part is correct.", absolutePath.endsWith("scala-5.5.5.zip"));
-  }
-
-  @Test
-  public void testFileName() {
-    //  given
-    APlusProject aplusProject = new APlusProject(getProject());
-    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", aplusProject);
-
-    //  when
-    String fileName = scalaSdk.getFileName();
-
-    //  then
-    assertEquals("The correct file name is returned.", "scala-2.12.10", fileName);
-  }
 
   @Test
   public void testGetUrisNoArguments() {
@@ -45,7 +16,7 @@ public class ScalaSdkTest extends HeavyPlatformTestCase {
     ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", aplusProject);
 
     //  when
-    String[] uris = scalaSdk.getUris();
+    String[] uris = scalaSdk.getClassRoots();
 
     // then
     assertEquals("Two elements are present", 2, uris.length);
