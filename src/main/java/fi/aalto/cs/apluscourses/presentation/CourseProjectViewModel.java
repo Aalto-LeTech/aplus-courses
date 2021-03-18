@@ -3,6 +3,7 @@ package fi.aalto.cs.apluscourses.presentation;
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 import fi.aalto.cs.apluscourses.model.Course;
+import fi.aalto.cs.apluscourses.model.CoursePluginVersion;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ValidationError;
@@ -73,6 +74,11 @@ public class CourseProjectViewModel {
 
   public boolean shouldShowCurrentSettings() {
     return !currentSettingsDiffer;
+  }
+
+  public boolean shouldDisplayVersionWarning() {
+    CoursePluginVersion requiredVersion = course.getRequiredPluginVersion();
+    return requiredVersion.checkVersion() == CoursePluginVersion.Status.UPDATE_OPTIONAL;
   }
 
   private static ValidationError validateLanguage(@Nullable String language) {
