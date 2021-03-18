@@ -10,13 +10,13 @@ public class ScalaSdkTest extends HeavyPlatformTestCase {
 
 
   @Test
-  public void testGetUrisNoArguments() {
+  public void testGetClassUris() {
     //  given
     APlusProject aplusProject = new APlusProject(getProject());
-    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", aplusProject);
+    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", "2.12.10", aplusProject);
 
     //  when
-    String[] uris = scalaSdk.getClassRoots();
+    String[] uris = scalaSdk.getClassUris();
 
     // then
     assertEquals("Two elements are present", 2, uris.length);
@@ -30,7 +30,7 @@ public class ScalaSdkTest extends HeavyPlatformTestCase {
   public void testGetUrisWithValidArguments() {
     //  given
     APlusProject aplusProject = new APlusProject(getProject());
-    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", aplusProject);
+    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", "2.12.10", aplusProject);
     final String[] allClasses = {
         "scala-compiler.jar",
         "scala-library.jar",
@@ -54,7 +54,7 @@ public class ScalaSdkTest extends HeavyPlatformTestCase {
   public void testGetUrisWithInvalidArguments() {
     //  given
     APlusProject aplusProject = new APlusProject(getProject());
-    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", aplusProject);
+    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", "2.12.10", aplusProject);
     final String[] allClasses = {
         "scala-compiler.jar",
         "",
@@ -76,7 +76,7 @@ public class ScalaSdkTest extends HeavyPlatformTestCase {
   public void testGetUrisWithWeirdCharacters() {
     //  given
     APlusProject aplusProject = new APlusProject(getProject());
-    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", aplusProject);
+    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", "2.12.10", aplusProject);
     final String[] allClasses = {
         "name with a space.jar",
         "scändinåvian.jör",

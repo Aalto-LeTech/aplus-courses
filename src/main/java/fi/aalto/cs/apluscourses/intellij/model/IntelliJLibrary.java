@@ -20,7 +20,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import org.apache.commons.io.FileUtils;
@@ -42,17 +41,19 @@ public abstract class IntelliJLibrary
 
   @Override
   public void fetch() throws IOException {
-    getContent().copyTo(getFullPath());
+    for (Content content : getContents()) {
+      content.copyTo(getFullPath());
+    }
   }
 
   @NotNull
-  protected abstract Content getContent();
+  protected abstract Content @NotNull[] getContents();
 
   @RequiresWriteLock
   @SuppressWarnings("unchecked")
   protected void loadInternal() {
     LibraryTable.ModifiableModel libraryTable = project.getLibraryTable().getModifiableModel();
-    com.intellij.openapi.roots.libraries.Library.ModifiableModel library = libraryTable
+    var library = libraryTable
         .createLibrary(getName(), getLibraryKind())
         .getModifiableModel();
     for (String uri : getClassUris()) {
@@ -60,11 +61,15 @@ public abstract class IntelliJLibrary
     }
 
     //HACK: this is the only way to access properties that I am aware of
-    LibraryEx.ModifiableModelEx libraryEx = (LibraryEx.ModifiableModelEx) library;
+    var libraryEx = (LibraryEx.ModifiableModelEx) library;
     LibraryProperties<S> properties = libraryEx.getProperties();
-    Optional.ofNullable(getPropertiesState(properties.getState()))
-        .ifPresent(properties::loadState);
-    libraryEx.setProperties(properties);
+    if (properties != null) {
+      var newState = getPropertiesState(properties.getState());
+      if (newState != null) {
+        properties.loadState(newState);
+        libraryEx.setProperties(properties);
+      }
+    }
 
     library.commit();
     libraryTable.commit();
@@ -122,7 +127,7 @@ public abstract class IntelliJLibrary
     return getUris(getClassRoots(), path -> VfsUtil.getUrlForLibraryRoot(path.toFile()));
   }
 
-  public String[] getUris(@NotNull String[] roots, Function<Path, String> pathToUri) {
+  protected String[] getUris(@NotNull String[] roots, Function<Path, String> pathToUri) {
     return Arrays.stream(roots)
         .filter(string -> !string.isEmpty())
         .map(getFullPath()::resolve)
@@ -137,7 +142,7 @@ public abstract class IntelliJLibrary
    * @return An array of URI strings (unescaped).
    */
   @RequiresReadLock
-  public String[] getUris(@NotNull String[] roots) {
+  protected String[] getUris(@NotNull String[] roots) {
     String protocol = LocalFileSystem.getInstance().getProtocol();
     return getUris(roots, path -> VirtualFileManager.constructUrl(protocol,
         FileUtil.toSystemIndependentName(path.toString())));

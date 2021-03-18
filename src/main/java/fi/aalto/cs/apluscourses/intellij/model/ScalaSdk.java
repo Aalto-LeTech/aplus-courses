@@ -2,7 +2,7 @@ package fi.aalto.cs.apluscourses.intellij.model;
 
 import com.intellij.openapi.roots.libraries.PersistentLibraryKind;
 import fi.aalto.cs.apluscourses.utils.content.Content;
-import fi.aalto.cs.apluscourses.utils.content.RemoteContent;
+import fi.aalto.cs.apluscourses.utils.content.ZippedDir;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.plugins.scala.project.ScalaLanguageLevel;
@@ -10,30 +10,30 @@ import org.jetbrains.plugins.scala.project.ScalaLibraryProperties;
 import org.jetbrains.plugins.scala.project.ScalaLibraryPropertiesState;
 import org.jetbrains.plugins.scala.project.ScalaLibraryType;
 
-public class ScalaSdk extends IntelliJLibrary<PersistentLibraryKind<ScalaLibraryProperties>, ScalaLibraryPropertiesState> {
+public class ScalaSdk extends IntelliJLibrary
+    <PersistentLibraryKind<ScalaLibraryProperties>, ScalaLibraryPropertiesState> {
+
+  @NotNull
+  protected final String scalaVersion;
 
   /**
    * Constructs a new Scala SDK object.
-   *
-   * @param name    Name that must match scala-sdk-0.0.0 pattern.
-   * @param project The IntelliJ project.
    */
-  public ScalaSdk(@NotNull String name, @NotNull APlusProject project) {
+  public ScalaSdk(@NotNull String name,
+                  @NotNull String scalaVersion,
+                  @NotNull APlusProject project) {
     super(name, project);
-  }
-
-  @NotNull
-  public String getScalaVersion() {
-    return getName().replace("scala-sdk-", "");
+    this.scalaVersion = scalaVersion;
   }
 
   @Override
   @NotNull
-  protected Content getContent() {
-    String version = getScalaVersion();
-    return new RemoteContent.Zipped(
-        "https://scala-lang.org/files/archive/scala-" + version + ".zip",
-        "scala-" + version + "/lib/");
+  protected Content @NotNull[] getContents() {
+    return new Content[] {
+        new ZippedDir(
+            "https://scala-lang.org/files/archive/scala-" + scalaVersion + ".zip",
+            "scala-" + scalaVersion + "/lib")
+    };
   }
 
   @Override
@@ -61,7 +61,7 @@ public class ScalaSdk extends IntelliJLibrary<PersistentLibraryKind<ScalaLibrary
   protected ScalaLibraryPropertiesState getPropertiesState(
       @Nullable ScalaLibraryPropertiesState currentState) {
     return new ScalaLibraryPropertiesState(
-        ScalaLanguageLevel.findByVersion(getScalaVersion()).get(),
+        ScalaLanguageLevel.findByVersion(scalaVersion).get(),
         getUris(getCompilerRoots()));
   }
 }

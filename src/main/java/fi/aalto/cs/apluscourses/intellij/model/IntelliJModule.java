@@ -10,7 +10,7 @@ import fi.aalto.cs.apluscourses.intellij.utils.ListDependenciesPolicy;
 import fi.aalto.cs.apluscourses.intellij.utils.VfsUtil;
 import fi.aalto.cs.apluscourses.model.ComponentLoadException;
 import fi.aalto.cs.apluscourses.model.Module;
-import fi.aalto.cs.apluscourses.utils.content.RemoteContent;
+import fi.aalto.cs.apluscourses.utils.content.ZippedDir;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -55,7 +55,7 @@ class IntelliJModule
 
   @Override
   public void fetchInternal() throws IOException {
-    new RemoteContent.Zipped(getUrl().toString(), getName() + "/").copyTo(getFullPath());
+    new ZippedDir(getUrl().toString(), getName()).copyTo(getFullPath());
   }
 
   @Override
