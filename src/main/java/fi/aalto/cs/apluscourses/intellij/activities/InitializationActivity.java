@@ -18,7 +18,6 @@ import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationException;
 import fi.aalto.cs.apluscourses.model.UnexpectedResponseException;
 import java.io.IOException;
 import java.net.URL;
-import javax.swing.JOptionPane;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONException;
@@ -69,7 +68,7 @@ public class InitializationActivity implements Background {
     if (versionCheckResult == CoursePluginVersion.Status.UPDATE_REQUIRED) {
       notifier.notify(new CoursePluginVersionError(true), project);
       return;
-    } else if (versionCheckResult != CoursePluginVersion.Status.UPDATE_OPTIONAL) {
+    } else if (versionCheckResult == CoursePluginVersion.Status.UPDATE_OPTIONAL) {
       notifier.notify(new CoursePluginVersionError(false), project);
     }
 

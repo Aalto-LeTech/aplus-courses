@@ -11,6 +11,7 @@ import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory;
 import fi.aalto.cs.apluscourses.intellij.model.SettingsImporter;
 import fi.aalto.cs.apluscourses.intellij.notifications.CourseConfigurationError;
 import fi.aalto.cs.apluscourses.intellij.notifications.CourseFileError;
+import fi.aalto.cs.apluscourses.intellij.notifications.CoursePluginVersionError;
 import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
@@ -161,12 +162,9 @@ public class CourseProjectAction extends AnAction {
     }
 
     CoursePluginVersion minVersion = course.getRequiredPluginVersion();
-    CoursePluginVersion.Status versionCheckResult = minVersion.checkVersion();
-    if (versionCheckResult == CoursePluginVersion.Status.UPDATE_REQUIRED) {
-      JOptionPane.showMessageDialog(null, "version error", "test", JOptionPane.ERROR_MESSAGE);
+    if (minVersion.checkVersion() == CoursePluginVersion.Status.UPDATE_REQUIRED) {
+      notifier.notify(new CoursePluginVersionError(true), project);
       return;
-    } else if (versionCheckResult == CoursePluginVersion.Status.UPDATE_OPTIONAL) {
-      JOptionPane.showMessageDialog(null, "version warning", "test", JOptionPane.WARNING_MESSAGE);
     }
 
     CourseProjectViewModel courseProjectViewModel
