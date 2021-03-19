@@ -1,7 +1,6 @@
 package fi.aalto.cs.apluscourses.model;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
 public class CoursePluginVersion {
