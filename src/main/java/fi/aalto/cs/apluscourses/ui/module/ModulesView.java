@@ -50,7 +50,6 @@ public class ModulesView {
     basePanel.putClientProperty(ModulesView.class.getName(), this);
     cl = (CardLayout) cardPanel.getLayout();
     moduleListView.setBackground(new Tree().getBackground());
-    emptyText.setText(getText("ui.module.ModuleListView.turnIntoAPlusProject"));
     emptyText.setHorizontalAlignment(SwingConstants.CENTER);
     emptyText.setVerticalAlignment(SwingConstants.CENTER);
     pane.getVerticalScrollBar().setUnitIncrement(moduleListView.getFixedCellHeight());
