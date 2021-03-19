@@ -16,21 +16,17 @@ public class CoursePluginVersion {
   private static final int MAJOR_VERSION = 1;
   private static final int MINOR_VERSION = 0;
   public static final CoursePluginVersion CURRENT_VERSION =
-          new CoursePluginVersion(MAJOR_VERSION, MINOR_VERSION, "");
+      new CoursePluginVersion(MAJOR_VERSION, MINOR_VERSION);
 
   private final int major;
   private final int minor;
 
-  @Nullable
-  private final String prettyVersion;
-
   /**
    * Constructs a course plugin version directly from arguments.
    */
-  public CoursePluginVersion(int major, int minor, @Nullable String prettyVersion) {
+  public CoursePluginVersion(int major, int minor) {
     this.major = major;
     this.minor = minor;
-    this.prettyVersion = prettyVersion;
   }
 
   /**
@@ -38,8 +34,7 @@ public class CoursePluginVersion {
    */
   public CoursePluginVersion(@NotNull JSONObject jsonObject) {
     this(jsonObject.getInt("major"),
-         jsonObject.getInt("minor"),
-         jsonObject.optString("prettyVersion"));
+         jsonObject.getInt("minor"));
   }
 
   /**
@@ -53,9 +48,5 @@ public class CoursePluginVersion {
       return Status.VALID;
     }
     return MINOR_VERSION >= minor ? Status.VALID : Status.UPDATE_OPTIONAL;
-  }
-
-  public @Nullable String getPrettyVersion() {
-    return prettyVersion;
   }
 }
