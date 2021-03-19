@@ -14,6 +14,8 @@ public class CoursePluginVersionError extends Notification {
    */
   public CoursePluginVersionError(boolean isError) {
     super(PluginSettings.A_PLUS, getText("notification.CoursePluginVersionError.title"),
-        "Version error", isError ? NotificationType.ERROR : NotificationType.WARNING);
+          getText(isError ? "notification.CoursePluginVersionError.contentError"
+                          : "notification.CoursePluginVersionError.contentWarning"),
+          isError ? NotificationType.ERROR : NotificationType.WARNING);
   }
 }
