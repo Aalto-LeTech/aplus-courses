@@ -6,7 +6,7 @@ import com.intellij.remoterobot.stepsProcessing.StepWorker
 import java.io.File
 import java.io.FileInputStream
 import java.time.Duration
-import java.util.*
+import java.util.Properties
 import java.util.concurrent.atomic.AtomicBoolean
 
 object StepLoggerInitializer {
