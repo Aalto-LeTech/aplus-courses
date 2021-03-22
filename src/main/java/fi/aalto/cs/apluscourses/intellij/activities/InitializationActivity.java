@@ -63,8 +63,7 @@ public class InitializationActivity implements Background {
       return;
     }
 
-    CoursePluginVersion minVersion = course.getRequiredPluginVersion();
-    CoursePluginVersion.Status versionCheckResult = minVersion.checkVersion();
+    var versionCheckResult = course.getRequiredPluginVersion().checkVersion();
     if (versionCheckResult == CoursePluginVersion.Status.UPDATE_REQUIRED) {
       notifier.notify(new CoursePluginVersionError(true), project);
       return;
