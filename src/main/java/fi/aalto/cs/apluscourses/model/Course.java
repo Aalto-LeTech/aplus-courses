@@ -508,7 +508,7 @@ public abstract class Course implements ComponentSource {
   private static CoursePluginVersion getMinimumPluginVersion(@NotNull JSONObject jsonObject,
                                                              @NotNull String source)
       throws MalformedCourseConfigurationException {
-    JSONObject versionJson = jsonObject.optJSONObject("minPluginVersion");
+    JSONObject versionJson = jsonObject.optJSONObject("version");
     if (versionJson == null) {
       return CoursePluginVersion.CURRENT_VERSION;
     }
@@ -517,7 +517,7 @@ public abstract class Course implements ComponentSource {
       return new CoursePluginVersion(versionJson);
     } catch (JSONException ex) {
       throw new MalformedCourseConfigurationException(source,
-          "Incomplete or invalid \"minPluginVersion\" object", ex);
+          "Incomplete or invalid \"version\" object", ex);
     }
   }
 
