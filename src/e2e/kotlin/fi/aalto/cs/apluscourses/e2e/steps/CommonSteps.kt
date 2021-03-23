@@ -88,4 +88,27 @@ class CommonSteps(val remoteRobot: RemoteRobot) {
             }
         }
     }
+
+  fun openAboutDialog() {
+    with(remoteRobot) {
+      step("Open About dialog") {
+        with(ideFrame()) {
+          menu().select("A+")
+          menu().select("About the A+ Courses Plugin")
+        }
+      }
+    }
+  }
+  fun setAPlusToken(token: String) {
+    with(remoteRobot) {
+      with(ideFrame()) {
+        menu().select("A+")
+        menu().select("Set A+ Token")
+      }
+      with(dialog("A+ Token")) {
+        passwordField().text = token
+        button("OK").click()
+      }
+    }
+  }
 }

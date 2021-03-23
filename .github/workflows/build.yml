@@ -55,6 +55,8 @@ jobs:
           max-attempts: 12
           retry-delay: 30s
       - name: Run the UI tests
+        env:
+          APLUS_TEST_TOKEN: ${{ secrets.APLUS_TEST_TOKEN }}
         run: gradle uiTest --info --stacktrace
       - name: Save screenshot (on failure)
         if: ${{ failure() }}
@@ -84,6 +86,8 @@ jobs:
           max-attempts: 12
           retry-delay: 30s
       - name: Run the UI tests
+        env:
+          APLUS_TEST_TOKEN: ${{ secrets.APLUS_TEST_TOKEN }}
         run: |
           export JAVA_HOME=`/usr/libexec/java_home -v 11`
           gradle uiTest --info --stacktrace
@@ -115,6 +119,8 @@ jobs:
           max-attempts: 12
           retry-delay: 30s
       - name: Run the UI tests
+        env:
+          APLUS_TEST_TOKEN: ${{ secrets.APLUS_TEST_TOKEN }}
         run: gradle uiTest --info
       - name: Save screenshot (on failure)
         if: ${{ failure() }}

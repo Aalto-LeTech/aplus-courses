@@ -8,7 +8,9 @@ import okhttp3.Request
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.FileInputStream
 import java.time.Duration
+import java.util.Properties
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.imageio.ImageIO
 
@@ -65,6 +67,12 @@ fun RemoteRobot.fetchScreenShot(): BufferedImage {
 
 fun wait(duration: Duration) = Thread.sleep(duration.toMillis())
 
+fun getVersion(): String {
+  val versionProperties = Properties()
+  val projectDir = File("").absolutePath;
+  versionProperties.load(FileInputStream("$projectDir/build/resources/main/build-info.properties"))
+  return versionProperties.getProperty("version")
+}
 object HierarchyDownloader {
     private val client = OkHttpClient()
     private const val baseUrl = "http://127.0.0.1:8082"
