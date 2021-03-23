@@ -38,7 +38,7 @@ class CommonSteps(val remoteRobot: RemoteRobot) {
                             heavyWeightWindow().findText("Download JDK...").click()
                         }
                     }
-                    with(dialog("Download JDK")) {
+                    with(dialog("Download JDK", Duration.ofSeconds(20))) {
                         customComboBox("Version:").click()
                         heavyWeightWindow().findText("11").click()
                         customComboBox("Vendor:").click()
@@ -75,7 +75,14 @@ class CommonSteps(val remoteRobot: RemoteRobot) {
         with(remoteRobot) {
             with(dialog("Turn Project Into A+ Project")) {
                 findText("Select language").click()
-                findText("English").click()
+                when {
+                    isMac() -> {
+                        heavyWeightWindow().findText("English").click()
+                    }
+                    else -> {
+                        findText("English").click()
+                    }
+                }
                 checkBox("Leave IntelliJ settings unchanged.").setValue(settingsUnchanged)
                 button("OK").click()
             }
