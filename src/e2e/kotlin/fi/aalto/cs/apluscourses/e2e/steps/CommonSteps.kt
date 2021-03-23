@@ -52,23 +52,7 @@ class CommonSteps(val remoteRobot: RemoteRobot) {
     }
 
     fun openAPlusProjectWindow() {
-        with(remoteRobot) {
-            step("Open Turn Project Into A+ Project window") {
-                with(ideFrame()) {
-                    when {
-                        isMac() -> keyboard {
-                            hotKey(VK_SHIFT, VK_META, VK_A)
-                            enterText("Turn Project Into A+ Project")
-                            enter()
-                        }
-                        else -> {
-                            menu().select("A+")
-                            menu().select("Turn Project Into A+ Project")
-                        }
-                    }
-                }
-            }
-        }
+        openAPlusMenuItem("Turn Project Into A+ Project")
     }
 
     fun aPlusSettings(settingsUnchanged: Boolean) {
@@ -90,33 +74,34 @@ class CommonSteps(val remoteRobot: RemoteRobot) {
     }
 
     fun openAboutDialog() {
-        with(remoteRobot) {
-            step("Open About dialog") {
-                with(ideFrame()) {
-                    menu().select("A+")
-                    menu().select("About the A+ Courses Plugin")
-                }
-            }
-        }
+        openAPlusMenuItem("About the A+ Courses Plugin")
     }
 
     fun setAPlusToken(token: String) {
         with(remoteRobot) {
             with(ideFrame()) {
+                openAPlusMenuItem("Set A+ Token")
+                with(dialog("A+ Token")) {
+                    passwordField().text = token
+                    button("OK").click()
+                }
+            }
+        }
+    }
+
+    private fun openAPlusMenuItem(item: String) {
+        with(remoteRobot) {
+            with(ideFrame()) {
                 when {
                     isMac() -> keyboard {
                         hotKey(VK_SHIFT, VK_META, VK_A)
-                        enterText("Set A+ Token")
+                        enterText(item)
                         enter()
                     }
                     else -> {
                         menu().select("A+")
-                        menu().select("Set A+ Token")
+                        menu().select(item)
                     }
-                }
-                with(dialog("A+ Token")) {
-                    passwordField().text = token
-                    button("OK").click()
                 }
             }
         }
