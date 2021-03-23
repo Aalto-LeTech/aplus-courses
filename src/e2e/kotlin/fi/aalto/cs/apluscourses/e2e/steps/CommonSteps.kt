@@ -51,10 +51,6 @@ class CommonSteps(val remoteRobot: RemoteRobot) {
         }
     }
 
-    fun openAPlusProjectWindow() {
-        openAPlusMenuItem("Turn Project Into A+ Project")
-    }
-
     fun aPlusSettings(settingsUnchanged: Boolean) {
         with(remoteRobot) {
             with(dialog("Turn Project Into A+ Project")) {
@@ -71,10 +67,6 @@ class CommonSteps(val remoteRobot: RemoteRobot) {
                 button("OK").click()
             }
         }
-    }
-
-    fun openAboutDialog() {
-        openAPlusMenuItem("About the A+ Courses Plugin")
     }
 
     fun setAPlusToken(token: String) {
@@ -105,5 +97,13 @@ class CommonSteps(val remoteRobot: RemoteRobot) {
                 }
             }
         }
+    }
+
+    fun openAboutDialog() {
+        openAPlusMenuItem("About the A+ Courses Plugin")
+    }
+
+    fun openAPlusProjectWindow() {
+        openAPlusMenuItem("Turn Project Into A+ Project")
     }
 }

@@ -208,7 +208,7 @@ class PlaceholderTest {
     fun aboutDialogTest() = uiTest {
         step("About dialog") {
             CommonSteps(this).openAboutDialog()
-            with(dialog("A+ Courses")) {
+            with(dialog("A+ Courses", Duration.ofSeconds(20))) {
                 step("Check the version") {
                     assertTrue("Version is correct", hasText("Version: ${getVersion()}"))
                 }
