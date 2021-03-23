@@ -46,7 +46,7 @@ fun BufferedImage.save(name: String) {
 
 fun RemoteRobot.fetchScreenShot(): BufferedImage {
     return callJs<ByteArray>(
-            """
+        """
             importPackage(java.io)
             importPackage(javax.imageio)
             const screenShot = new java.awt.Robot().createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
@@ -68,11 +68,12 @@ fun RemoteRobot.fetchScreenShot(): BufferedImage {
 fun wait(duration: Duration) = Thread.sleep(duration.toMillis())
 
 fun getVersion(): String {
-  val versionProperties = Properties()
-  val projectDir = File("").absolutePath;
-  versionProperties.load(FileInputStream("$projectDir/build/resources/main/build-info.properties"))
-  return versionProperties.getProperty("version")
+    val versionProperties = Properties()
+    val projectDir = File("").absolutePath
+    versionProperties.load(FileInputStream("$projectDir/build/resources/main/build-info.properties"))
+    return versionProperties.getProperty("version")
 }
+
 object HierarchyDownloader {
     private val client = OkHttpClient()
     private const val baseUrl = "http://127.0.0.1:8082"
@@ -81,13 +82,13 @@ object HierarchyDownloader {
         try {
             code()
         } finally {
-            HierarchyDownloader.saveHierarchy()
+            saveHierarchy()
         }
     }
 
     private fun saveHierarchy() {
         val hierarchySnapshot =
-                saveFile(baseUrl, "build/hierarchy-reports", "hierarchy-${System.currentTimeMillis()}.html")
+            saveFile(baseUrl, "build/hierarchy-reports", "hierarchy-${System.currentTimeMillis()}.html")
         if (File("build/hierarchy-reports/styles.css").exists().not()) {
             saveFile("$baseUrl/styles.css", "build/hierarchy-reports", "styles.css")
         }
