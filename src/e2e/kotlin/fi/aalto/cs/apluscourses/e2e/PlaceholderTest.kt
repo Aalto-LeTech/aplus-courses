@@ -12,48 +12,51 @@ import org.junit.Test
 import java.time.Duration
 
 class PlaceholderTest {
-  init {
-    StepLoggerInitializer.init()
-  }
+    init {
+        StepLoggerInitializer.init()
+    }
 
-  @Test
-  fun mainTest() = uiTest {
-    CommonSteps(this).createProject()
-    CommonSteps(this).openAPlusProjectWindow()
-    step("Cancel") {
-      with(dialog("Select Course")) {
-        button("Cancel").click()
-      }
-    }
-    CommonSteps(this).openAPlusProjectWindow()
-    step("Select course") {
-      with(dialog("Select Course")) {
-        findText("O1").click()
-        button("OK").click()
-      }
-    }
-    step("Choose settings") {
-      CommonSteps(this).aPlusSettings(true)
-    }
-    step("Assertions") {
-      with(ideFrame()) {
-        with(projectViewTree()) {
-          waitFor(
-            Duration.ofSeconds(60),
-            Duration.ofSeconds(1),
-            "O1Library not found in project view tree"
-          ) { hasText("O1Library") }
+    @Test
+    fun mainTest() = uiTest {
+        CommonSteps(this).createProject()
+        CommonSteps(this).openAPlusProjectWindow()
+        step("Cancel") {
+            with(dialog("Select Course")) {
+                button("Cancel").click()
+            }
         }
-        aPlusStripeButton().click()
-        with(modules()) {
-          waitFor(
-            Duration.ofSeconds(60),
-            Duration.ofSeconds(1),
-            "O1Library not found in modules list"
-          ) { hasText("O1Library") }
-          assertTrue("A module is installed", hasText("  [Installed]"))
+        CommonSteps(this).openAPlusProjectWindow()
+        step("Select course") {
+            with(dialog("Select Course")) {
+                findText("O1").click()
+                button("OK").click()
+            }
         }
-      }
+        step("Choose settings") {
+            CommonSteps(this).aPlusSettings(true)
+        }
+        step("Assertions") {
+            with(ideFrame()) {
+                with(projectViewTree()) {
+                    waitFor(
+                        Duration.ofSeconds(60),
+                        Duration.ofSeconds(1),
+                        "O1Library not found in project view tree"
+                    ) { hasText("O1Library") }
+                }
+                aPlusStripeButton().click()
+                with(modules()) {
+                    waitFor(
+                        Duration.ofSeconds(60),
+                        Duration.ofSeconds(1),
+                        "No modules installed in modules list"
+                    ) { hasText { textData -> textData.text.contains("[Installed]") } }
+                    assertTrue(
+                        "O1Library is in the modules tree",
+                        hasText("O1Library")
+                    )
+                }
+            }
+        }
     }
-  }
 }
