@@ -54,7 +54,7 @@ class CommonSteps(val remoteRobot: RemoteRobot) {
                     attempt(3) {
 //                        menu().select("A+")
                         menu().findText("A+").click()
-                        menu().select("Turn Project Into A+ Project")
+                        menu().findText("Turn Project Into A+ Project").click()
                     }
                 }
             }
