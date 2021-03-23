@@ -15,7 +15,7 @@ import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.model.ComponentInstaller;
 import fi.aalto.cs.apluscourses.model.ComponentInstallerImpl;
 import fi.aalto.cs.apluscourses.model.Course;
-import fi.aalto.cs.apluscourses.model.CoursePluginVersion;
+import fi.aalto.cs.apluscourses.model.CourseVersion;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.presentation.CourseProjectViewModel;
 import fi.aalto.cs.apluscourses.presentation.CourseSelectionViewModel;
@@ -150,8 +150,8 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
         Collections.emptyList(),
         //  replInitialCommands
         Collections.emptyMap(),
-        //  minimumPluginVersion
-        CoursePluginVersion.CURRENT_VERSION
+        //  courseVersion
+        CourseVersion.DEFAULT_VERSION
     );
 
     settingsImporter = new DummySettingsImporter();

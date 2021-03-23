@@ -7,13 +7,13 @@ import com.intellij.openapi.startup.StartupActivity.Background;
 import fi.aalto.cs.apluscourses.intellij.model.CourseProject;
 import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory;
 import fi.aalto.cs.apluscourses.intellij.notifications.CourseConfigurationError;
-import fi.aalto.cs.apluscourses.intellij.notifications.CoursePluginVersionError;
+import fi.aalto.cs.apluscourses.intellij.notifications.CourseVersionError;
 import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Course;
-import fi.aalto.cs.apluscourses.model.CoursePluginVersion;
+import fi.aalto.cs.apluscourses.model.CourseVersion;
 import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationException;
 import fi.aalto.cs.apluscourses.model.UnexpectedResponseException;
 import java.io.IOException;
@@ -63,12 +63,12 @@ public class InitializationActivity implements Background {
       return;
     }
 
-    var versionCheckResult = course.getRequiredPluginVersion().checkVersion();
-    if (versionCheckResult == CoursePluginVersion.Status.UPDATE_REQUIRED) {
-      notifier.notify(new CoursePluginVersionError(true), project);
+    var versionCheckResult = course.getCourseRequiredVersion().checkVersion();
+    if (versionCheckResult == CourseVersion.Status.UPDATE_REQUIRED) {
+      notifier.notify(new CourseVersionError(true), project);
       return;
-    } else if (versionCheckResult == CoursePluginVersion.Status.UPDATE_OPTIONAL) {
-      notifier.notify(new CoursePluginVersionError(false), project);
+    } else if (versionCheckResult == CourseVersion.Status.UPDATE_OPTIONAL) {
+      notifier.notify(new CourseVersionError(false), project);
     }
 
     var courseProject = new CourseProject(course, courseConfigurationFileUrl, project);

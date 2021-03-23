@@ -15,7 +15,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.notifications.NewModulesVersionsNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
-import fi.aalto.cs.apluscourses.model.CoursePluginVersion;
+import fi.aalto.cs.apluscourses.model.CourseVersion;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.utils.Event;
@@ -60,7 +60,7 @@ public class CourseUpdaterTest {
     var course = new ModelExtensions.TestCourse(
         "1", "O1", "http://example.com", Collections.emptyList(), Collections.singletonList(module),
         Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap(),
-        Collections.emptyList(), Collections.emptyMap(), CoursePluginVersion.CURRENT_VERSION
+        Collections.emptyList(), Collections.emptyMap(), CourseVersion.DEFAULT_VERSION
     );
     updater = new CourseUpdater(
         course, project, courseUrl, configurationFetcher, event, notifier, 50L

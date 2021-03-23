@@ -6,12 +6,12 @@ import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import org.junit.Test;
 
-public class CoursePluginVersionErrorTest {
+public class CourseVersionErrorTest {
 
   @Test
   public void testExerciseNotSelectedNotification() {
-    Notification notificationError = new CoursePluginVersionError(true);
-    Notification notificationWarning = new CoursePluginVersionError(false);
+    Notification notificationError = new CourseVersionError(true);
+    Notification notificationWarning = new CourseVersionError(false);
 
     assertEquals("Group ID should be A+", "A+", notificationError.getGroupId());
     assertEquals("Notification type should be 'error'",

@@ -63,7 +63,7 @@ public abstract class Course implements ComponentSource {
   private final Map<String, String[]> replInitialCommands;
 
   @NotNull
-  private final CoursePluginVersion minimumPluginVersion;
+  private final CourseVersion courseVersion;
 
   /**
    * Constructs a course with the given parameters.
@@ -86,7 +86,7 @@ public abstract class Course implements ComponentSource {
                    @NotNull Map<String, URL> resourceUrls,
                    @NotNull List<String> autoInstallComponentNames,
                    @NotNull Map<String, String[]> replInitialCommands,
-                   @NotNull CoursePluginVersion minimumPluginVersion) {
+                   @NotNull CourseVersion courseVersion) {
     this.id = id;
     this.name = name;
     this.aplusUrl = aplusUrl;
@@ -99,7 +99,7 @@ public abstract class Course implements ComponentSource {
     this.components = Stream.concat(modules.stream(), libraries.stream())
         .collect(Collectors.toMap(Component::getName, Function.identity()));
     this.replInitialCommands = replInitialCommands;
-    this.minimumPluginVersion = minimumPluginVersion;
+    this.courseVersion = courseVersion;
   }
 
   @NotNull
@@ -151,7 +151,7 @@ public abstract class Course implements ComponentSource {
         = getCourseAutoInstallComponentNames(jsonObject, sourcePath);
     Map<String, String[]> replInitialCommands
         = getCourseReplInitialCommands(jsonObject, sourcePath);
-    CoursePluginVersion minimumPluginVersion = getMinimumPluginVersion(jsonObject, sourcePath);
+    CourseVersion courseVersion = getCourseVersion(jsonObject, sourcePath);
     return factory.createCourse(
         courseId,
         courseName,
@@ -163,7 +163,7 @@ public abstract class Course implements ComponentSource {
         resourceUrls,
         autoInstallComponentNames,
         replInitialCommands,
-        minimumPluginVersion
+        courseVersion
     );
   }
 
@@ -263,8 +263,8 @@ public abstract class Course implements ComponentSource {
   }
 
   @NotNull
-  public CoursePluginVersion getRequiredPluginVersion() {
-    return minimumPluginVersion;
+  public CourseVersion getCourseRequiredVersion() {
+    return courseVersion;
   }
 
   /**
@@ -505,16 +505,16 @@ public abstract class Course implements ComponentSource {
   }
 
   @NotNull
-  private static CoursePluginVersion getMinimumPluginVersion(@NotNull JSONObject jsonObject,
-                                                             @NotNull String source)
+  private static CourseVersion getCourseVersion(@NotNull JSONObject jsonObject,
+                                                @NotNull String source)
       throws MalformedCourseConfigurationException {
     JSONObject versionJson = jsonObject.optJSONObject("version");
     if (versionJson == null) {
-      return CoursePluginVersion.CURRENT_VERSION;
+      return CourseVersion.DEFAULT_VERSION;
     }
 
     try {
-      return new CoursePluginVersion(versionJson);
+      return new CourseVersion(versionJson);
     } catch (JSONException ex) {
       throw new MalformedCourseConfigurationException(source,
           "Incomplete or invalid \"version\" object", ex);

@@ -3,7 +3,7 @@ package fi.aalto.cs.apluscourses.model;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
-public class CoursePluginVersion {
+public class CourseVersion {
 
   public enum Status {
     VALID,
@@ -14,8 +14,8 @@ public class CoursePluginVersion {
   // the major and minor version of the current plugin build
   private static final int MAJOR_VERSION = 1;
   private static final int MINOR_VERSION = 0;
-  public static final CoursePluginVersion CURRENT_VERSION =
-      new CoursePluginVersion(MAJOR_VERSION, MINOR_VERSION);
+  public static final CourseVersion DEFAULT_VERSION =
+      new CourseVersion(MAJOR_VERSION, MINOR_VERSION);
 
   private final int major;
   private final int minor;
@@ -23,7 +23,7 @@ public class CoursePluginVersion {
   /**
    * Constructs a course plugin version directly from arguments.
    */
-  public CoursePluginVersion(int major, int minor) {
+  public CourseVersion(int major, int minor) {
     this.major = major;
     this.minor = minor;
   }
@@ -31,7 +31,7 @@ public class CoursePluginVersion {
   /**
    * Constructs a course plugin version from a JSON object.
    */
-  public CoursePluginVersion(@NotNull JSONObject jsonObject) {
+  public CourseVersion(@NotNull JSONObject jsonObject) {
     this(jsonObject.getInt("major"),
          jsonObject.getInt("minor"));
   }

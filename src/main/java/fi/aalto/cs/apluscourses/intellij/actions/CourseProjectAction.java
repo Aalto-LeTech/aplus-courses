@@ -11,7 +11,7 @@ import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory;
 import fi.aalto.cs.apluscourses.intellij.model.SettingsImporter;
 import fi.aalto.cs.apluscourses.intellij.notifications.CourseConfigurationError;
 import fi.aalto.cs.apluscourses.intellij.notifications.CourseFileError;
-import fi.aalto.cs.apluscourses.intellij.notifications.CoursePluginVersionError;
+import fi.aalto.cs.apluscourses.intellij.notifications.CourseVersionError;
 import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
@@ -19,7 +19,7 @@ import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.ComponentInstaller;
 import fi.aalto.cs.apluscourses.model.ComponentInstallerImpl;
 import fi.aalto.cs.apluscourses.model.Course;
-import fi.aalto.cs.apluscourses.model.CoursePluginVersion;
+import fi.aalto.cs.apluscourses.model.CourseVersion;
 import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationException;
 import fi.aalto.cs.apluscourses.presentation.CourseItemViewModel;
 import fi.aalto.cs.apluscourses.presentation.CourseProjectViewModel;
@@ -160,9 +160,9 @@ public class CourseProjectAction extends AnAction {
       return;
     }
 
-    CoursePluginVersion minVersion = course.getRequiredPluginVersion();
-    if (minVersion.checkVersion() == CoursePluginVersion.Status.UPDATE_REQUIRED) {
-      notifier.notify(new CoursePluginVersionError(true), project);
+    CourseVersion requiredVersion = course.getCourseRequiredVersion();
+    if (requiredVersion.checkVersion() == CourseVersion.Status.UPDATE_REQUIRED) {
+      notifier.notify(new CourseVersionError(true), project);
       return;
     }
 

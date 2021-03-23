@@ -15,7 +15,7 @@ import com.intellij.util.messages.MessageBusConnection;
 import fi.aalto.cs.apluscourses.dal.APlusExerciseDataSource;
 import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.Course;
-import fi.aalto.cs.apluscourses.model.CoursePluginVersion;
+import fi.aalto.cs.apluscourses.model.CourseVersion;
 import fi.aalto.cs.apluscourses.model.ExerciseDataSource;
 import fi.aalto.cs.apluscourses.model.Library;
 import fi.aalto.cs.apluscourses.model.Module;
@@ -53,7 +53,7 @@ class IntelliJCourse extends Course {
                         @NotNull Map<String, URL> resourceUrls,
                         @NotNull List<String> autoInstallComponentNames,
                         @NotNull Map<String, String[]> replInitialCommands,
-                        @NotNull CoursePluginVersion minimumPluginVersion,
+                        @NotNull CourseVersion courseVersion,
                         @NotNull APlusProject project,
                         @NotNull CommonLibraryProvider commonLibraryProvider) {
     super(
@@ -67,7 +67,7 @@ class IntelliJCourse extends Course {
         resourceUrls,
         autoInstallComponentNames,
         replInitialCommands,
-        minimumPluginVersion
+        courseVersion
     );
 
     this.project = project;

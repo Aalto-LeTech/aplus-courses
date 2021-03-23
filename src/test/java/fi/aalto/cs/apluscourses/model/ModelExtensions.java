@@ -89,9 +89,9 @@ public class ModelExtensions {
                       @NotNull Map<String, URL> resourceUrls,
                       @NotNull List<String> autoInstallComponentNames,
                       @NotNull Map<String, String[]> replInitialCommands,
-                      @NotNull CoursePluginVersion minimumPluginVersion) {
+                      @NotNull CourseVersion courseVersion) {
       super(id, name, aplusUrl, languages, modules, libraries, exerciseModules, resourceUrls,
-          autoInstallComponentNames, replInitialCommands, minimumPluginVersion);
+          autoInstallComponentNames, replInitialCommands, courseVersion);
       exerciseDataSource = new TestExerciseDataSource();
     }
 
@@ -125,8 +125,8 @@ public class ModelExtensions {
           Collections.emptyList(),
           //  replInitialCommands
           Collections.emptyMap(),
-          //  minimumPluginVersion
-          CoursePluginVersion.CURRENT_VERSION);
+          //  courseVersion
+          CourseVersion.DEFAULT_VERSION);
       this.exerciseDataSource = exerciseDataSource;
     }
 
@@ -301,7 +301,7 @@ public class ModelExtensions {
                                @NotNull Map<String, URL> resourceUrls,
                                @NotNull List<String> autoInstallComponentNames,
                                @NotNull Map<String, String[]> replInitialCommands,
-                               @NotNull CoursePluginVersion minimumPluginVersion) {
+                               @NotNull CourseVersion courseVersion) {
       return new ModelExtensions.TestCourse(
           id,
           name,
@@ -313,7 +313,7 @@ public class ModelExtensions {
           resourceUrls,
           autoInstallComponentNames,
           replInitialCommands,
-          minimumPluginVersion
+          courseVersion
       );
     }
 

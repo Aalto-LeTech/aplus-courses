@@ -10,7 +10,7 @@ import static org.mockito.Mockito.when;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.messages.MessageBus;
 import fi.aalto.cs.apluscourses.model.Component;
-import fi.aalto.cs.apluscourses.model.CoursePluginVersion;
+import fi.aalto.cs.apluscourses.model.CourseVersion;
 import fi.aalto.cs.apluscourses.model.Library;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.model.Module;
@@ -49,8 +49,8 @@ public class IntelliJCourseTest {
         Collections.emptyList(),
         //  replInitialCommands
         Collections.emptyMap(),
-        //  minimumPluginVersion
-        CoursePluginVersion.CURRENT_VERSION,
+        //  courseVersion
+        CourseVersion.DEFAULT_VERSION,
         project,
         commonLibraryProvider);
     assertEquals(id, course.getId());
@@ -93,8 +93,8 @@ public class IntelliJCourseTest {
         Collections.emptyList(),
         //  replInitialCommands
         Collections.emptyMap(),
-        //  minimumPluginVersion
-        CoursePluginVersion.CURRENT_VERSION,
+        //  courseVersion
+        CourseVersion.DEFAULT_VERSION,
         project,
         commonLibraryProvider);
 
@@ -138,8 +138,8 @@ public class IntelliJCourseTest {
         Collections.emptyList(),
         //  replInitialCommands
         Collections.emptyMap(),
-        //  minimumPluginVersion
-        CoursePluginVersion.CURRENT_VERSION,
+        //  courseVersion
+        CourseVersion.DEFAULT_VERSION,
         mock(APlusProject.class),
         mock(CommonLibraryProvider.class));
 
@@ -172,8 +172,8 @@ public class IntelliJCourseTest {
         Collections.emptyList(),
         //  replInitialCommands
         Collections.emptyMap(),
-        //  minimumPluginVersion
-        CoursePluginVersion.CURRENT_VERSION,
+        //  courseVersion
+        CourseVersion.DEFAULT_VERSION,
         mock(APlusProject.class),
         mock(CommonLibraryProvider.class));
 
