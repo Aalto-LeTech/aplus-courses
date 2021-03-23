@@ -39,7 +39,7 @@ class PlaceholderTest {
             with(ideFrame()) {
                 with(projectViewTree()) {
                     waitFor(
-                        Duration.ofSeconds(60),
+                        Duration.ofSeconds(120),
                         Duration.ofSeconds(1),
                         "O1Library not found in project view tree"
                     ) { hasText("O1Library") }
@@ -47,7 +47,7 @@ class PlaceholderTest {
                 aPlusStripeButton().click()
                 with(modules()) {
                     waitFor(
-                        Duration.ofSeconds(60),
+                        Duration.ofSeconds(120),
                         Duration.ofSeconds(1),
                         "No modules installed in modules list"
                     ) { hasText { textData -> textData.text.contains("[Installed]") } }
