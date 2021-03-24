@@ -10,23 +10,23 @@ import java.util.Properties
 import java.util.concurrent.atomic.AtomicBoolean
 
 object StepLoggerInitializer {
-  private val initialized = AtomicBoolean(false)
-  fun init() {
-    if (!initialized.getAndSet(true)) {
-      StepWorker.registerProcessor(StepLogger())
+    private val initialized = AtomicBoolean(false)
+    fun init() {
+        if (!initialized.getAndSet(true)) {
+            StepWorker.registerProcessor(StepLogger())
+        }
     }
-  }
 }
 
 fun uiTest(test: RemoteRobot.() -> Unit) {
-  RemoteRobot("http://localhost:8082").test()
+    RemoteRobot("http://localhost:8082").test()
 }
 
 fun wait(duration: Duration) = Thread.sleep(duration.toMillis())
 
 fun getVersion(): String {
-  val versionProperties = Properties()
-  val projectDir = File("").absolutePath;
-  versionProperties.load(FileInputStream("$projectDir/build/resources/main/build-info.properties"))
-  return versionProperties.getProperty("version")
+    val versionProperties = Properties()
+    val projectDir = File("").absolutePath
+    versionProperties.load(FileInputStream("$projectDir/build/resources/main/build-info.properties"))
+    return versionProperties.getProperty("version")
 }
