@@ -10,11 +10,10 @@ import fi.aalto.cs.apluscourses.e2e.utils.StepLoggerInitializer
 import fi.aalto.cs.apluscourses.e2e.utils.getVersion
 import fi.aalto.cs.apluscourses.e2e.utils.uiTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.time.Duration
-
 
 class PlaceholderTest {
     init {
@@ -23,9 +22,9 @@ class PlaceholderTest {
 
     @Test
     fun mainTest() = uiTest {
-        //step 2
+        // step 2
         CommonSteps(this).createProject()
-        //step 4
+        // step 4
         CommonSteps(this).openAPlusProjectWindow()
         step("Cancel") {
             with(dialog("Select Course")) {
@@ -65,7 +64,7 @@ class PlaceholderTest {
                 }
             }
         }
-        //step 8
+        // step 8
         step("Authenticate with empty token") {
             CommonSteps(this).setAPlusToken("")
             with(dialog("A+ Token")) {
@@ -206,24 +205,24 @@ class PlaceholderTest {
 
     @Test
     fun aboutDialogTest() = uiTest {
-      step("About dialog") {
-        CommonSteps(this).openAboutDialog()
-        with(dialog("A+ Courses")) {
-          step("Check the version") {
-            assertTrue("Version is correct", hasText("Version: ${getVersion()}"))
-          }
-          step("Check the links") {
-            assertTrue(hasText("A+ Courses plugin website"))
-            assertTrue(hasText("A+ Courses plugin GitHub"))
-            assertTrue(hasText("A+ website"))
-            assertTrue(hasText("Apache Commons IO"))
-            assertTrue(hasText("IntelliJ Scala Plugin"))
-            assertTrue(hasText("json.org"))
-            assertTrue(hasText("Scala Standard Library 2.13.4"))
-            assertTrue(hasText("zip4j"))
-          }
-          button("OK").click()
+        step("About dialog") {
+            CommonSteps(this).openAboutDialog()
+            with(dialog("A+ Courses")) {
+                step("Check the version") {
+                    assertTrue("Version is correct", hasText("Version: ${getVersion()}"))
+                }
+                step("Check the links") {
+                    assertTrue(hasText("A+ Courses plugin website"))
+                    assertTrue(hasText("A+ Courses plugin GitHub"))
+                    assertTrue(hasText("A+ website"))
+                    assertTrue(hasText("Apache Commons IO"))
+                    assertTrue(hasText("IntelliJ Scala Plugin"))
+                    assertTrue(hasText("json.org"))
+                    assertTrue(hasText("Scala Standard Library 2.13.4"))
+                    assertTrue(hasText("zip4j"))
+                }
+                button("OK").click()
+            }
         }
-      }
     }
 }
