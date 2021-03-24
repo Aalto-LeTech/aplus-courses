@@ -5,12 +5,14 @@ import fi.aalto.cs.apluscourses.TestHelper;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.presentation.ReplConfigurationFormModel;
 import org.jetbrains.annotations.NotNull;
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore
 public class ReplConfigurationFormTest extends BasePlatformTestCase implements TestHelper {
 
   @Test
-  public void testFormCreationWithValidInputWorks() {
+  public void ignoretestFormCreationWithValidInputWorks() {
     //  given
     ReplConfigurationFormModel model = getDummyReplConfigurationFormModel();
     String workDir = getProject().getProjectFilePath();
@@ -32,7 +34,7 @@ public class ReplConfigurationFormTest extends BasePlatformTestCase implements T
   }
 
   @Test
-  public void testUpdateModel() {
+  public void ignoretestUpdateModel() {
     //  given
     ReplConfigurationFormModel model = getDummyReplConfigurationFormModel();
     ReplConfigurationForm form = new ReplConfigurationForm(model);
