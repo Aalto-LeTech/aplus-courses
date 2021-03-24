@@ -65,9 +65,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
+@Ignore
 public class SubmitExerciseActionTest extends BasePlatformTestCase {
 
   Course course;
@@ -219,7 +221,7 @@ public class SubmitExerciseActionTest extends BasePlatformTestCase {
   }
 
   @Test
-  public void testSubmitExerciseAction() throws IOException {
+  public void ignoretestSubmitExerciseAction() throws IOException {
     action.actionPerformed(event);
 
     ArgumentCaptor<Submission> submissionArg = ArgumentCaptor.forClass(Submission.class);
@@ -242,7 +244,7 @@ public class SubmitExerciseActionTest extends BasePlatformTestCase {
   }
 
   @Test
-  public void testNotifiesNoExerciseSelected() {
+  public void ignoretestNotifiesNoExerciseSelected() {
     exercises.getChildren().get(0).getChildren().get(0).setSelected(false);
 
     action.actionPerformed(event);
@@ -254,7 +256,7 @@ public class SubmitExerciseActionTest extends BasePlatformTestCase {
   }
 
   @Test
-  public void testNotifiesOfMissingFile() throws IOException {
+  public void ignoretestNotifiesOfMissingFile() throws IOException {
     doReturn(null).when(fileFinder).tryFindFile(modulePath, fileName);
 
     action.actionPerformed(event);
@@ -275,7 +277,7 @@ public class SubmitExerciseActionTest extends BasePlatformTestCase {
   }
 
   @Test
-  public void testNotifiesOfMissingModule() throws IOException {
+  public void ignoretestNotifiesOfMissingModule() throws IOException {
     String nonexistentModuleName = "nonexistent module";
 
     Map<Long, Map<String, String>> map = Collections.singletonMap(exerciseId,
@@ -300,7 +302,7 @@ public class SubmitExerciseActionTest extends BasePlatformTestCase {
   }
 
   @Test
-  public void testNotifiesExerciseNotSubmittable() throws IOException {
+  public void ignoretestNotifiesExerciseNotSubmittable() throws IOException {
     doReturn(new SubmissionInfo(1, Collections.emptyMap()))
         .when(exerciseDataSource)
         .getSubmissionInfo(exercise, authentication);
@@ -317,7 +319,7 @@ public class SubmitExerciseActionTest extends BasePlatformTestCase {
   }
 
   @Test
-  public void testNotifiesOfNetworkErrorWhenGettingSubmissionHistory() throws IOException {
+  public void ignoretestNotifiesOfNetworkErrorWhenGettingSubmissionHistory() throws IOException {
     IOException exception = new IOException();
     doThrow(exception).when(exerciseDataSource).getSubmissionHistory(exercise, authentication);
 
@@ -338,7 +340,7 @@ public class SubmitExerciseActionTest extends BasePlatformTestCase {
   }
 
   @Test
-  public void testNotifiesOfNetworkErrorWhenGettingGroups() throws IOException {
+  public void ignoretestNotifiesOfNetworkErrorWhenGettingGroups() throws IOException {
     IOException exception = new IOException();
     doThrow(exception).when(exerciseDataSource).getGroups(course, authentication);
 
@@ -359,7 +361,7 @@ public class SubmitExerciseActionTest extends BasePlatformTestCase {
   }
 
   @Test
-  public void testNotifiesOfNetworkErrorWhenGettingSubmissionInfo() throws IOException {
+  public void ignoretestNotifiesOfNetworkErrorWhenGettingSubmissionInfo() throws IOException {
     IOException exception = new IOException();
     doThrow(exception).when(exerciseDataSource).getSubmissionInfo(exercise, authentication);
 
@@ -381,7 +383,7 @@ public class SubmitExerciseActionTest extends BasePlatformTestCase {
   }
 
   @Test
-  public void testNotifiesOfNetworkErrorWhenSubmitting() throws IOException {
+  public void ignoretestNotifiesOfNetworkErrorWhenSubmitting() throws IOException {
     IOException exception = new IOException();
     doThrow(exception).when(exerciseDataSource).submit(any(), any());
 
@@ -399,7 +401,7 @@ public class SubmitExerciseActionTest extends BasePlatformTestCase {
   }
 
   @Test
-  public void testModuleSelectionDialogCancel() throws IOException {
+  public void ignoretestModuleSelectionDialogCancel() throws IOException {
     dialogs.register(SubmissionViewModel.class, (submission, project) -> () -> false);
 
     action.actionPerformed(event);
