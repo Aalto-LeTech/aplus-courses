@@ -3,7 +3,6 @@ package fi.aalto.cs.apluscourses.intellij.services;
 import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalIdeSettingsNames.A_PLUS_IMPORTED_IDE_SETTINGS;
 import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalIdeSettingsNames.A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG;
 
-
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
