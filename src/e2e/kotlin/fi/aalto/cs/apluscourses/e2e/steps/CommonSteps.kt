@@ -86,6 +86,7 @@ class CommonSteps(val remoteRobot: RemoteRobot) {
             with(ideFrame()) {
                 when {
                     isMac() -> keyboard {
+                        ideFrame().click()
                         hotKey(VK_SHIFT, VK_META, VK_A)
                         enterText(item)
                         enter()
