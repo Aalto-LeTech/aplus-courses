@@ -35,7 +35,6 @@ fun uiTest(test: RemoteRobot.() -> Unit) {
     }
 }
 
-
 fun BufferedImage.save(name: String) {
     val bytes = ByteArrayOutputStream().use { b ->
         ImageIO.write(this, "png", b)

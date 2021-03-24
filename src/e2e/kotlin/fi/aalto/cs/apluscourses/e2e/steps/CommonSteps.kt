@@ -12,11 +12,6 @@ import fi.aalto.cs.apluscourses.e2e.fixtures.welcomeFrame
 import java.awt.event.KeyEvent.VK_A
 import java.awt.event.KeyEvent.VK_META
 import java.awt.event.KeyEvent.VK_SHIFT
-import fi.aalto.cs.apluscourses.e2e.fixtures.customComboBox
-import fi.aalto.cs.apluscourses.e2e.fixtures.dialog
-import fi.aalto.cs.apluscourses.e2e.fixtures.heavyWeightWindow
-import fi.aalto.cs.apluscourses.e2e.fixtures.ideFrame
-import fi.aalto.cs.apluscourses.e2e.fixtures.welcomeFrame
 import java.time.Duration
 
 class CommonSteps(val remoteRobot: RemoteRobot) {

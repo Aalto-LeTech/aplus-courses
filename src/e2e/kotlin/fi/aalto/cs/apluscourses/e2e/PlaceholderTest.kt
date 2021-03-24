@@ -22,9 +22,9 @@ class PlaceholderTest {
 
     @Test
     fun mainTest() = uiTest {
-        //step 2
+        // step 2
         CommonSteps(this).createProject()
-        //step 4
+        // step 4
         CommonSteps(this).openAPlusProjectWindow()
         step("Cancel") {
             with(dialog("Select Course")) {
@@ -64,7 +64,7 @@ class PlaceholderTest {
                 }
             }
         }
-        //step 8
+        // step 8
         step("Authenticate with empty token") {
             CommonSteps(this).setAPlusToken("")
             with(dialog("A+ Token")) {
