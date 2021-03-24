@@ -3,11 +3,21 @@ package fi.aalto.cs.apluscourses.e2e.fixtures
 import com.intellij.remoterobot.RemoteRobot
 import com.intellij.remoterobot.SearchContext
 import com.intellij.remoterobot.data.RemoteComponent
-import com.intellij.remoterobot.fixtures.*
+import com.intellij.remoterobot.fixtures.ActionButtonFixture
+import com.intellij.remoterobot.fixtures.CommonContainerFixture
+import com.intellij.remoterobot.fixtures.ComponentFixture
+import com.intellij.remoterobot.fixtures.ContainerFixture
+import com.intellij.remoterobot.fixtures.DefaultXpath
+import com.intellij.remoterobot.fixtures.FixtureName
+import com.intellij.remoterobot.fixtures.JListFixture
+import com.intellij.remoterobot.fixtures.JTextFieldFixture
 import com.intellij.remoterobot.search.locators.byXpath
 import fi.aalto.cs.apluscourses.e2e.utils.LocatorBuilder
 import java.time.Duration
-import javax.swing.*
+import javax.swing.JComboBox
+import javax.swing.JDialog
+import javax.swing.JMenuBar
+import javax.swing.JMenuItem
 
 fun RemoteRobot.welcomeFrame() = find(WelcomeFrameFixture::class.java, Duration.ofSeconds(60))
 
@@ -59,31 +69,26 @@ class IdeFrameFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent
         CommonContainerFixture::class.java,
         byXpath("//div[@accessiblename='A+ Courses' and @class='StripeButton' and @text='A+ Courses']")
     )
-
     fun modules() = find(
         JListFixture::class.java,
         byXpath("//div[@class='ModuleListView']"),
         Duration.ofSeconds(20)
     )
-
     fun assignments() = find(
         CommonContainerFixture::class.java,
         byXpath("//div[@class='TreeView']"),
         Duration.ofSeconds(20)
     )
-
     fun filterButton() = find(
         ActionButtonFixture::class.java,
         byXpath("//div[@accessiblename='Filter Assignments']"),
         Duration.ofSeconds(20)
     )
-
     fun filterDropDownMenu() = find(
         JListFixture::class.java,
         byXpath("//div[@class='MyList']"),
         Duration.ofSeconds(20)
     )
-
     fun ideErrorButton() = find(
         ComponentFixture::class.java,
         byXpath("//div[@class='IdeErrorsIcon']"),
@@ -101,7 +106,6 @@ class MenuItemFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent
             .withClass(JMenuItem::class.java)
             .build()
     )
-
     fun select(text: String): MenuItemFixture = with(item(text)) { click(); return@select this }
 }
 
@@ -112,7 +116,6 @@ class DialogFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent) 
         ContainerFixture::class.java,
         byXpath("//div[@class='SidePanel']")
     )
-
     fun passwordField() = find(
         JTextFieldFixture::class.java,
         byXpath("//div[@class='JPasswordField']")
