@@ -66,10 +66,12 @@ public class InitializationActivity implements Background {
     } catch (UnexpectedResponseException | MalformedCourseConfigurationException e) {
       logger.error("Error occurred while trying to parse a course configuration file", e);
       notifier.notify(new CourseConfigurationError(e), project);
+      isInitialized(project).set(true);
       return;
     } catch (IOException e) {
       logger.info("IOException occurred while using the HTTP client", e);
       notifier.notify(new NetworkErrorNotification(e), project);
+      isInitialized(project).set(true);
       return;
     }
 
