@@ -1,7 +1,7 @@
 package fi.aalto.cs.apluscourses.intellij.model;
 
 import fi.aalto.cs.apluscourses.utils.content.Content;
-import fi.aalto.cs.apluscourses.utils.content.ZippedDir;
+import fi.aalto.cs.apluscourses.utils.content.RemoteZippedDir;
 import org.jetbrains.annotations.NotNull;
 
 public class Scala3Sdk extends ScalaSdk {
@@ -19,7 +19,7 @@ public class Scala3Sdk extends ScalaSdk {
   @NotNull
   protected Content @NotNull[] getContents() {
     return new Content[] {
-        new ZippedDir(
+        new RemoteZippedDir(
           "https://github.com/lampepfl/dotty/releases/download/"
               + scalaVersion + "/scala3-" + scalaVersion + ".zip",
           "scala3-" + scalaVersion + "/lib")

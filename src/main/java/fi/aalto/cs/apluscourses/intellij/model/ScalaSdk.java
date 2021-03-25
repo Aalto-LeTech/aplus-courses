@@ -2,7 +2,7 @@ package fi.aalto.cs.apluscourses.intellij.model;
 
 import com.intellij.openapi.roots.libraries.PersistentLibraryKind;
 import fi.aalto.cs.apluscourses.utils.content.Content;
-import fi.aalto.cs.apluscourses.utils.content.ZippedDir;
+import fi.aalto.cs.apluscourses.utils.content.RemoteZippedDir;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.plugins.scala.project.ScalaLanguageLevel;
@@ -30,7 +30,7 @@ public class ScalaSdk extends IntelliJLibrary
   @NotNull
   protected Content @NotNull[] getContents() {
     return new Content[] {
-        new ZippedDir(
+        new RemoteZippedDir(
             "https://scala-lang.org/files/archive/scala-" + scalaVersion + ".zip",
             "scala-" + scalaVersion + "/lib")
     };
