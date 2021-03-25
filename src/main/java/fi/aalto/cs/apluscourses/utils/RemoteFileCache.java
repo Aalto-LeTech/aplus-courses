@@ -11,12 +11,33 @@ import org.jetbrains.annotations.NotNull;
 
 public class RemoteFileCache {
 
+  protected static final int DEFAULT_TIMEOUT_MILLIS = 5000;
   private static final RemoteFileCache INSTANCE = new RemoteFileCache();
 
+  protected final int timeout;
   private final Map<String, CacheRecord> cache = new HashMap<>();
 
-  private RemoteFileCache() {
+  protected RemoteFileCache() {
+    this(DEFAULT_TIMEOUT_MILLIS);
+  }
 
+  /**
+   * Instantiates a new remote file cache with a specified connection timeout.
+   *
+   * @param keepAliveTimeout After how many milliseconds, the download is timed out,
+   *                         if a connection cannot be established or
+   *                         if no new bytes cannot be fetched from the server.
+   *
+   *                         Note that downloading a large file can take much longer
+   *                         than the value set here as long as there are
+   *                         no pauses longer than the timeout specified.
+   *
+   *                         Refer to java.net.URLConnection.setConnectionTimeout
+   *                         and java.net.URLConnection.setReadTimeout
+   *                         for exact semantics.
+   */
+  protected RemoteFileCache(int keepAliveTimeout) {
+    timeout = keepAliveTimeout;
   }
 
   public static RemoteFileCache getInstance() {
@@ -43,7 +64,7 @@ public class RemoteFileCache {
     return record.getFile();
   }
 
-  private static class CacheRecord {
+  private class CacheRecord {
     private final @NotNull File file;
     private final @NotNull String url;
     private boolean isDownloaded = false;
@@ -61,7 +82,7 @@ public class RemoteFileCache {
     public File getFile() throws IOException {
       synchronized (lock) {
         if (!isDownloaded) {
-          FileUtils.copyURLToFile(new URL(url), file);
+          FileUtils.copyURLToFile(new URL(url), file, timeout, timeout);
           isDownloaded = true;
         }
         return file;
