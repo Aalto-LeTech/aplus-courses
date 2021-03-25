@@ -49,7 +49,12 @@ public abstract class ObservableProperty<T> {
     callback.valueChanged(observer, get());
   }
 
-  public <O> void addValueObserver(@NotNull O observer, @NotNull SimpleCallback<O> callback) {
+  /**
+   * Beware, unlike {@link ObservableProperty#addValueObserver}, this method does not call the
+   * callback with the current value.
+   */
+  public synchronized <O> void addSimpleObserver(@NotNull O observer,
+                                                 @NotNull SimpleCallback<O> callback) {
     observers.put(observer, new CallbackWrapper<>(callback));
   }
 

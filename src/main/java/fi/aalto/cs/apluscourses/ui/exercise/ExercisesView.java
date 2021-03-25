@@ -36,11 +36,9 @@ public class ExercisesView {
   public ExercisesView() {
     basePanel.putClientProperty(ExercisesView.class.getName(), this);
     cl = (CardLayout) cardPanel.getLayout();
-    exerciseGroupsTree.getEmptyText().appendLine(getText("ui.exercise.ExercisesView.setToken"));
-    exerciseGroupsTree.getEmptyText().appendLine(
-            getText("ui.exercise.ExercisesView.setTokenDirections"));
+    exerciseGroupsTree.getEmptyText().setText("");
     exerciseGroupsTree.setOpaque(true);
-    emptyText.setText(getText("ui.module.ModuleListView.turnIntoAPlusProject"));
+    emptyText.setText(getText("ui.exercise.ExercisesView.loading"));
     emptyText.setHorizontalAlignment(SwingConstants.CENTER);
     emptyText.setVerticalAlignment(SwingConstants.CENTER);
     pane.getVerticalScrollBar().setUnitIncrement(exerciseGroupsTree.getRowHeight());
@@ -59,6 +57,23 @@ public class ExercisesView {
       exerciseGroupsTree.setViewModel(viewModel);
       cl.show(cardPanel, viewModel == null || viewModel.isEmptyTextVisible() ? "LabelCard" :
               "TreeCard");
+      if (viewModel == null) {
+        return;
+      }
+
+      if (viewModel.isProjectReady()) {
+        emptyText.setText(getText("ui.module.ModuleListView.turnIntoAPlusProject"));
+        if (viewModel.isAuthenticated()) {
+          exerciseGroupsTree.getEmptyText().setText(
+                  getText("ui.exercise.ExercisesView.allAssignmentsFiltered"));
+        } else {
+          exerciseGroupsTree.getEmptyText().setText(
+                  getText("ui.exercise.ExercisesView.setToken"));
+          exerciseGroupsTree.getEmptyText().appendLine(
+                  getText("ui.exercise.ExercisesView.setTokenDirections"));
+        }
+      }
+
     }, ModalityState.any()
     );
   }
