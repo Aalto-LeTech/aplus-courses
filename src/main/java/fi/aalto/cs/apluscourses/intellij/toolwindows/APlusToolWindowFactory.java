@@ -42,6 +42,10 @@ public class APlusToolWindowFactory extends BaseToolWindowFactory implements Dum
     PluginSettings.getInstance().getMainViewModel(project).courseViewModel
         .addValueObserver(modulesView, ModulesView::viewModelChanged);
 
+    InitializationActivity
+        .isInitialized(project)
+        .addValueObserver(modulesView, ModulesView::setProjectReady);
+
     ActionManager actionManager = ActionManager.getInstance();
     ActionGroup group = (ActionGroup) actionManager.getAction(ActionGroups.MODULE_ACTIONS);
 

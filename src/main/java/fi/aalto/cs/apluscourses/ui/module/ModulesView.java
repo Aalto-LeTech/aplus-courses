@@ -68,14 +68,21 @@ public class ModulesView {
     ApplicationManager.getApplication().invokeLater(() -> {
       moduleListView.setModel(course == null ? null : course.getModules());
       cl.show(cardPanel, (course != null) ? "TreeCard" : "LabelCard");
-      if (course == null) { //and is ready, but cannot know that with a null model!
-        emptyText.setText(getText("ui.module.ModuleListView.turnIntoAPlusProject"));
-      }
     }, ModalityState.any()
     );
   }
 
   public JLabel getEmptyText() {
     return emptyText;
+  }
+
+  /**
+   * Determines whether the empty text shows that the project is loading or that the user should
+   * turn the project into a course project.
+   */
+  public void setProjectReady(boolean isReady) {
+    ApplicationManager.getApplication().invokeLater(() -> emptyText.setText(isReady
+        ? getText("ui.module.ModuleListView.turnIntoAPlusProject")
+        : getText("ui.exercise.ExercisesView.loading")), ModalityState.any());
   }
 }
