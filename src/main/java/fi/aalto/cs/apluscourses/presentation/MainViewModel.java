@@ -127,9 +127,6 @@ public class MainViewModel {
         .map(PasswordStorage::restorePassword)
         .map(factory::create)
         .ifPresent(this::setAuthentication);
-    if (!exercisesViewModel.get().isAuthenticated()) {
-      this.updateExercises();
-    }
   }
 
   @Nullable

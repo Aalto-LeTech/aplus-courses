@@ -124,8 +124,7 @@ public class SubmitExerciseAction extends AnAction {
             && exercisesViewModel.getSelectedItem() != null
             && !(exercisesViewModel.getSelectedItem() instanceof ExerciseGroupViewModel);
     e.getPresentation().setEnabled(project != null && exercisesViewModel != null
-        && authentication != null && courseViewModel != null && isExerciseSelected
-        && exercisesViewModel.isAuthenticated());
+        && authentication != null && courseViewModel != null && isExerciseSelected);
   }
 
   @Override
