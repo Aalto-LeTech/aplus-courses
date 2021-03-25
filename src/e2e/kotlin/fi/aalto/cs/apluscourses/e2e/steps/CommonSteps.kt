@@ -2,11 +2,16 @@ package fi.aalto.cs.apluscourses.e2e.steps
 
 import com.intellij.remoterobot.RemoteRobot
 import com.intellij.remoterobot.stepsProcessing.step
+import com.intellij.remoterobot.utils.attempt
+import com.intellij.remoterobot.utils.keyboard
 import fi.aalto.cs.apluscourses.e2e.fixtures.customComboBox
 import fi.aalto.cs.apluscourses.e2e.fixtures.dialog
 import fi.aalto.cs.apluscourses.e2e.fixtures.heavyWeightWindow
 import fi.aalto.cs.apluscourses.e2e.fixtures.ideFrame
 import fi.aalto.cs.apluscourses.e2e.fixtures.welcomeFrame
+import java.awt.event.KeyEvent.VK_A
+import java.awt.event.KeyEvent.VK_META
+import java.awt.event.KeyEvent.VK_SHIFT
 import java.time.Duration
 
 class CommonSteps(val remoteRobot: RemoteRobot) {
@@ -28,10 +33,12 @@ class CommonSteps(val remoteRobot: RemoteRobot) {
                     sidePanel().findText("Project").click()
                     customComboBox("\u001BProject SDK:").dropdown()
                     with(heavyWeightWindow()) {
-                        findText("Add SDK").click()
-                        heavyWeightWindow().findText("Download JDK...").click()
+                        attempt(2) {
+                            findText("Add SDK").click()
+                            heavyWeightWindow().findText("Download JDK...").click()
+                        }
                     }
-                    with(dialog("Download JDK")) {
+                    with(dialog("Download JDK", Duration.ofSeconds(20))) {
                         customComboBox("Version:").click()
                         heavyWeightWindow().findText("11").click()
                         customComboBox("Vendor:").click()
@@ -44,48 +51,60 @@ class CommonSteps(val remoteRobot: RemoteRobot) {
         }
     }
 
-    fun openAPlusProjectWindow() {
-        with(remoteRobot) {
-            step("Open Turn Project Into A+ Project window") {
-                with(ideFrame()) {
-                    menu().select("A+")
-                    menu().select("Turn Project Into A+ Project")
-                }
-            }
-        }
-    }
-
     fun aPlusSettings(settingsUnchanged: Boolean) {
         with(remoteRobot) {
             with(dialog("Turn Project Into A+ Project")) {
                 findText("Select language").click()
-                findText("English").click()
+                when {
+                    isMac() -> {
+                        heavyWeightWindow().findText("English").click()
+                    }
+                    else -> {
+                        findText("English").click()
+                    }
+                }
                 checkBox("Leave IntelliJ settings unchanged.").setValue(settingsUnchanged)
                 button("OK").click()
             }
         }
     }
 
-    fun openAboutDialog() {
+    fun setAPlusToken(token: String) {
         with(remoteRobot) {
-            step("Open About dialog") {
-                with(ideFrame()) {
-                    menu().select("A+")
-                    menu().select("About the A+ Courses Plugin")
+            with(ideFrame()) {
+                openAPlusMenuItem("Set A+ Token")
+                with(dialog("A+ Token")) {
+                    passwordField().text = token
+                    button("OK").click()
                 }
             }
         }
     }
-    fun setAPlusToken(token: String) {
+
+    private fun openAPlusMenuItem(item: String) {
         with(remoteRobot) {
             with(ideFrame()) {
-                menu().select("A+")
-                menu().select("Set A+ Token")
-            }
-            with(dialog("A+ Token")) {
-                passwordField().text = token
-                button("OK").click()
+                when {
+                    isMac() -> keyboard {
+                        ideFrame().click()
+                        hotKey(VK_SHIFT, VK_META, VK_A)
+                        enterText(item)
+                        enter()
+                    }
+                    else -> {
+                        menu().select("A+")
+                        menu().select(item)
+                    }
+                }
             }
         }
+    }
+
+    fun openAboutDialog() {
+        openAPlusMenuItem("About the A+ Courses Plugin")
+    }
+
+    fun openAPlusProjectWindow() {
+        openAPlusMenuItem("Turn Project Into A+ Project")
     }
 }
