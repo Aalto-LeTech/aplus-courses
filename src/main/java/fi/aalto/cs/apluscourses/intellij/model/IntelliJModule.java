@@ -3,7 +3,6 @@ package fi.aalto.cs.apluscourses.intellij.model;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.roots.ModuleRootManager;
-import com.intellij.openapi.util.io.FileUtilRt;
 import com.intellij.util.concurrency.annotations.RequiresReadLock;
 import com.intellij.util.concurrency.annotations.RequiresWriteLock;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
@@ -11,8 +10,7 @@ import fi.aalto.cs.apluscourses.intellij.utils.ListDependenciesPolicy;
 import fi.aalto.cs.apluscourses.intellij.utils.VfsUtil;
 import fi.aalto.cs.apluscourses.model.ComponentLoadException;
 import fi.aalto.cs.apluscourses.model.Module;
-import fi.aalto.cs.apluscourses.utils.CoursesClient;
-import fi.aalto.cs.apluscourses.utils.DirAwareZipFile;
+import fi.aalto.cs.apluscourses.utils.content.RemoteZippedDir;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -57,9 +55,7 @@ class IntelliJModule
 
   @Override
   public void fetchInternal() throws IOException {
-    File tempZipFile = createTempFile();
-    fetchZipTo(tempZipFile);
-    extractZip(tempZipFile);
+    new RemoteZippedDir(getUrl().toString(), getName()).copyTo(getFullPath());
   }
 
   @Override
@@ -117,21 +113,6 @@ class IntelliJModule
         .withoutModuleSourceEntries()
         .productionOnly()
         .process(new ListDependenciesPolicy(), new ArrayList<>()));
-  }
-
-  @NotNull
-  private File createTempFile() throws IOException {
-    return FileUtilRt.createTempFile(getName(), ".zip");
-  }
-
-  private void extractZip(File file) throws IOException {
-    // ZIP may contain other dirs (typically, dependency modules) but we only extract the files that
-    // belongs to this module.
-    new DirAwareZipFile(file).extractDir(getName(), getFullPath().toString());
-  }
-
-  private void fetchZipTo(File file) throws IOException {
-    CoursesClient.fetch(getUrl(), file);
   }
 
   @NotNull
