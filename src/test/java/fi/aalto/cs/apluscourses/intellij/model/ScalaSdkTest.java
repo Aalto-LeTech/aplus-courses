@@ -4,48 +4,19 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertThat;
 
 import com.intellij.testFramework.HeavyPlatformTestCase;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
 import org.junit.Test;
 
 public class ScalaSdkTest extends HeavyPlatformTestCase {
 
-  @Test
-  public void testCreateTempFile() throws IOException {
-    //  given
-    APlusProject aplusProject = new APlusProject(getProject());
-    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-5.5.5", aplusProject);
-
-    //  when
-    File tempFile = scalaSdk.createTempFile();
-    Path absolutePath = tempFile.toPath();
-
-    //  then
-    assertTrue("Created file path part is correct.", absolutePath.endsWith("scala-5.5.5.zip"));
-  }
 
   @Test
-  public void testFileName() {
+  public void testGetClassUris() {
     //  given
     APlusProject aplusProject = new APlusProject(getProject());
-    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", aplusProject);
+    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", "2.12.10", aplusProject);
 
     //  when
-    String fileName = scalaSdk.getFileName();
-
-    //  then
-    assertEquals("The correct file name is returned.", "scala-2.12.10", fileName);
-  }
-
-  @Test
-  public void testGetUrisNoArguments() {
-    //  given
-    APlusProject aplusProject = new APlusProject(getProject());
-    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", aplusProject);
-
-    //  when
-    String[] uris = scalaSdk.getUris();
+    String[] uris = scalaSdk.getClassUris();
 
     // then
     assertEquals("Two elements are present", 2, uris.length);
@@ -59,7 +30,7 @@ public class ScalaSdkTest extends HeavyPlatformTestCase {
   public void testGetUrisWithValidArguments() {
     //  given
     APlusProject aplusProject = new APlusProject(getProject());
-    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", aplusProject);
+    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", "2.12.10", aplusProject);
     final String[] allClasses = {
         "scala-compiler.jar",
         "scala-library.jar",
@@ -83,7 +54,7 @@ public class ScalaSdkTest extends HeavyPlatformTestCase {
   public void testGetUrisWithInvalidArguments() {
     //  given
     APlusProject aplusProject = new APlusProject(getProject());
-    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", aplusProject);
+    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", "2.12.10", aplusProject);
     final String[] allClasses = {
         "scala-compiler.jar",
         "",
@@ -105,7 +76,7 @@ public class ScalaSdkTest extends HeavyPlatformTestCase {
   public void testGetUrisWithWeirdCharacters() {
     //  given
     APlusProject aplusProject = new APlusProject(getProject());
-    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", aplusProject);
+    ScalaSdk scalaSdk = new ScalaSdk("scala-sdk-2.12.10", "2.12.10", aplusProject);
     final String[] allClasses = {
         "name with a space.jar",
         "scändinåvian.jör",

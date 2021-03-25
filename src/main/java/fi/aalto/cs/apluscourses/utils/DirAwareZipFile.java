@@ -1,7 +1,6 @@
 package fi.aalto.cs.apluscourses.utils;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.Objects;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
@@ -22,10 +21,9 @@ public class DirAwareZipFile extends ZipFile {
    * @param dirName         The name of the directory without a trailing slash.  Must not be empty.
    * @param destinationPath The destination path.
    * @throws ZipException          If there were errors related to ZIP.
-   * @throws FileNotFoundException If the given directory does not exist in the ZIP.
    */
   public void extractDir(@NotNull String dirName, @NotNull String destinationPath)
-      throws ZipException, FileNotFoundException {
+      throws ZipException {
     // File names in ZIP should always use forward slashes.
     // See section 4.4.17 of the ".ZIP File Format Specification" v6.3.6 FINAL.
     // Available online: https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT
@@ -41,7 +39,7 @@ public class DirAwareZipFile extends ZipFile {
         .toArray(String[]::new);
 
     if (fileNames.length == 0) {
-      throw new FileNotFoundException(dirName);
+      throw new ZipException(dirName, ZipException.Type.FILE_NOT_FOUND);
     }
 
     for (String fileName : fileNames) {
