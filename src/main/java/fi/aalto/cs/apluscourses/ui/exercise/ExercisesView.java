@@ -41,7 +41,9 @@ public class ExercisesView {
     emptyText.setText(getText("ui.exercise.ExercisesView.loading"));
     emptyText.setHorizontalAlignment(SwingConstants.CENTER);
     emptyText.setVerticalAlignment(SwingConstants.CENTER);
-    pane.getVerticalScrollBar().setUnitIncrement(exerciseGroupsTree.getRowHeight());
+    var rowHeight = exerciseGroupsTree.getRowHeight();
+    // Row height returns <= 0 on some platforms, so a default alternative is needed
+    pane.getVerticalScrollBar().setUnitIncrement(rowHeight <= 0 ? 20 : rowHeight);
   }
 
   @NotNull
