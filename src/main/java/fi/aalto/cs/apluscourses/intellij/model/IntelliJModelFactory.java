@@ -8,6 +8,7 @@ import fi.aalto.cs.apluscourses.model.Library;
 import fi.aalto.cs.apluscourses.model.ModelFactory;
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.model.ModuleMetadata;
+import fi.aalto.cs.apluscourses.utils.Version;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
@@ -67,10 +68,11 @@ public class IntelliJModelFactory implements ModelFactory {
   @Override
   public Module createModule(@NotNull String name,
                              @NotNull URL url,
-                             @NotNull String versionId) {
+                             @NotNull Version version,
+                             @NotNull String changelog) {
     ModuleMetadata moduleMetadata = Optional.ofNullable(modulesMetadata.get(name))
         .orElse(new ModuleMetadata(null, null));
-    return new IntelliJModule(name, url, versionId, moduleMetadata.getModuleId(),
+    return new IntelliJModule(name, url, changelog, version, moduleMetadata.getVersion(),
         moduleMetadata.getDownloadedAt(), project);
   }
 

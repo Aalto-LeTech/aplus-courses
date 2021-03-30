@@ -9,6 +9,7 @@ import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
 import fi.aalto.cs.apluscourses.utils.Event;
+import fi.aalto.cs.apluscourses.utils.Version;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -122,7 +123,7 @@ public class CourseUpdater {
     synchronized (runLock) {
       while (true) { //  NOSONAR
         try {
-          updateModuleIds(fetchModuleIds());
+          updateModules(fetchModulesInfo());
           if (Thread.interrupted()) {
             throw new InterruptedException();
           }
@@ -137,7 +138,7 @@ public class CourseUpdater {
     }
   }
 
-  private Map<URI, String> fetchModuleIds() {
+  private Map<URI, JSONObject> fetchModulesInfo() {
     try {
       var inputStream = configurationFetcher.fetch(courseUrl);
       var tokenizer = new JSONTokener(inputStream);
@@ -145,12 +146,11 @@ public class CourseUpdater {
       var array = object.getJSONArray("modules");
       // The equals and hashCode methods of the URL class can cause DNS lookups, so URI instances
       // are preferred in maps.
-      Map<URI, String> mapping = new HashMap<>();
+      Map<URI, JSONObject> mapping = new HashMap<>();
       for (int i = 0; i < array.length(); ++i) {
         var module = array.getJSONObject(i);
         var url = new URL(module.getString("url"));
-        var id = module.getString("id");
-        mapping.put(urlToUri(url), id);
+        mapping.put(urlToUri(url), module);
       }
       return mapping;
     } catch (IOException | JSONException e) {
@@ -158,18 +158,20 @@ public class CourseUpdater {
     }
   }
 
-  private void updateModuleIds(@NotNull Map<URI, String> uriToModuleId) {
+  private void updateModules(@NotNull Map<URI, JSONObject> uriToModuleData) {
     for (var module : course.getModules()) {
-      var id = uriToModuleId.get(urlToUri(module.getUrl()));
-      if (id != null) {
-        module.updateVersionId(id);
-      }
+      var jsonObject = uriToModuleData.get(urlToUri(module.getUrl()));
+      var version = Version.fromString(jsonObject.optString("version", "1.0"));
+      var changelog = jsonObject.optString("changelog", "");
+      module.updateVersion(version);
+      module.updateChangelog(changelog);
     }
   }
 
   private void notifyUpdatableModules() {
     var updatableModules = course.getUpdatableModules()
         .stream()
+        .filter(m -> !m.hasLocalChanges() || m.isMajorUpdate())
         .filter(m -> notifiedModules.add(m.getName()))
         .collect(Collectors.toList());
     if (!updatableModules.isEmpty()) {
