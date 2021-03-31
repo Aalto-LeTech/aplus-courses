@@ -55,6 +55,7 @@ public class PocAction extends DumbAwareAction {
 
   private class APlusActionListener implements AnActionListener {
 
+    @RequiresReadLock
     public void registerListener() {
       MessageBusConnection messageBusConnection = project.getMessageBus().connect();
       messageBusConnection.subscribe(AnActionListener.TOPIC, this);
