@@ -4,6 +4,7 @@ import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
+import com.intellij.ui.ScrollPaneFactory;
 import com.intellij.ui.TreeSpeedSearch;
 import fi.aalto.cs.apluscourses.intellij.actions.ActionUtil;
 import fi.aalto.cs.apluscourses.intellij.actions.OpenItemAction;
@@ -82,6 +83,7 @@ public class ExercisesView {
 
   @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
   private void createUIComponents() {
+    pane = ScrollPaneFactory.createScrollPane(basePanel);
     exerciseGroupsTree = new TreeView();
     exerciseGroupsTree.setCellRenderer(new ExercisesTreeRenderer());
     exerciseGroupsTree.addNodeAppliedListener(
