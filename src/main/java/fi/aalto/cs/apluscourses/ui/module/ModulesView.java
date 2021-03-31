@@ -4,6 +4,7 @@ import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
+import com.intellij.ui.ScrollPaneFactory;
 import com.intellij.ui.treeStructure.Tree;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.ui.GuiObject;
@@ -84,5 +85,10 @@ public class ModulesView {
     ApplicationManager.getApplication().invokeLater(() -> emptyText.setText(isReady
         ? getText("ui.module.ModuleListView.turnIntoAPlusProject")
         : getText("ui.exercise.ExercisesView.loading")), ModalityState.any());
+  }
+
+  @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
+  private void createUIComponents() {
+    pane = ScrollPaneFactory.createScrollPane(basePanel);
   }
 }
