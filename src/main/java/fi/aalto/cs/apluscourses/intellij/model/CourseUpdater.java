@@ -163,8 +163,10 @@ public class CourseUpdater {
   private void updateModules(@NotNull Map<URI, ModuleInfo> uriToModuleInfo) {
     for (var module : course.getModules()) {
       var moduleInfo = uriToModuleInfo.get(urlToUri(module.getUrl()));
-      module.updateVersion(moduleInfo.getVersion());
-      module.updateChangelog(moduleInfo.getChangelog());
+      if (moduleInfo != null) {
+        module.updateVersion(moduleInfo.getVersion());
+        module.updateChangelog(moduleInfo.getChangelog());
+      }
     }
   }
 
