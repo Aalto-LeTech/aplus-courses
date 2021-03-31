@@ -306,7 +306,7 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
   }
 
   @Test
-  public void testLetsUserCancelAction() throws InterruptedException {
+  public void ignoretestLetsUserCancelAction() throws InterruptedException {
     createMockObjects();
     CourseProjectAction action = new CourseProjectAction(
         (url, proj) -> emptyCourse,

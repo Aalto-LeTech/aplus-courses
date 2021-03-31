@@ -14,7 +14,8 @@
     ]]></description>
 
     <change-notes>
-        Add support for multiple courses and improve the UI.
+        Various user interface improvements, including searching for modules and assignments, more descriptive texts for
+        empty modules or assignments windows, pending icon for assignments submitted to grading, and more.
     </change-notes>
 
     <depends>com.intellij.modules.java</depends>

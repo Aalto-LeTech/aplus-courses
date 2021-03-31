@@ -20,7 +20,7 @@ public class Options extends AndFilter implements Streamable<Option> {
     super(optionList);
     this.optionList = optionList;
     for (Option option : optionList) {
-      option.isSelected.addValueObserver(this, Options::selectionChanged);
+      option.isSelected.addSimpleObserver(this, Options::selectionChanged);
     }
   }
 

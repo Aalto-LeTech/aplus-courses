@@ -50,10 +50,10 @@ public class ModulesView {
     basePanel.putClientProperty(ModulesView.class.getName(), this);
     cl = (CardLayout) cardPanel.getLayout();
     moduleListView.setBackground(new Tree().getBackground());
-    emptyText.setText(getText("ui.module.ModuleListView.turnIntoAPlusProject"));
     emptyText.setHorizontalAlignment(SwingConstants.CENTER);
     emptyText.setVerticalAlignment(SwingConstants.CENTER);
     pane.getVerticalScrollBar().setUnitIncrement(moduleListView.getFixedCellHeight());
+    emptyText.setText(getText("ui.exercise.ExercisesView.loading"));
   }
 
   @NotNull
@@ -74,5 +74,15 @@ public class ModulesView {
 
   public JLabel getEmptyText() {
     return emptyText;
+  }
+
+  /**
+   * Determines whether the empty text shows that the project is loading or that the user should
+   * turn the project into a course project.
+   */
+  public void setProjectReady(boolean isReady) {
+    ApplicationManager.getApplication().invokeLater(() -> emptyText.setText(isReady
+        ? getText("ui.module.ModuleListView.turnIntoAPlusProject")
+        : getText("ui.exercise.ExercisesView.loading")), ModalityState.any());
   }
 }

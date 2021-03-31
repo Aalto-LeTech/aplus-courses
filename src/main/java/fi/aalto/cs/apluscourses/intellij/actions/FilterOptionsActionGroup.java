@@ -6,6 +6,7 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.actionSystem.Separator;
 import com.intellij.openapi.actionSystem.Toggleable;
 import com.intellij.openapi.project.DumbAware;
+import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
@@ -70,9 +71,13 @@ public class FilterOptionsActionGroup extends DefaultActionGroup implements Dumb
 
   @Override
   public void update(@NotNull AnActionEvent e) {
+    Project project = e.getProject();
+    var exercisesTreeViewModel =
+            mainViewModelProvider.getMainViewModel(project).exercisesViewModel.get();
+    e.getPresentation().setEnabled(exercisesTreeViewModel != null
+            && exercisesTreeViewModel.isAuthenticated());
     boolean filterActive =
             Arrays.stream(this.filterOptionActions).anyMatch(action -> !action.isSelected(e));
     Toggleable.setSelected(e.getPresentation(), filterActive);
   }
-
 }

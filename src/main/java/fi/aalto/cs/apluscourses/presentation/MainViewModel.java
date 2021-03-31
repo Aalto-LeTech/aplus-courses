@@ -9,6 +9,7 @@ import fi.aalto.cs.apluscourses.model.ExerciseDataSource;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
 import fi.aalto.cs.apluscourses.model.InvalidAuthenticationException;
 import fi.aalto.cs.apluscourses.model.Points;
+import fi.aalto.cs.apluscourses.presentation.exercise.EmptyExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import fi.aalto.cs.apluscourses.utils.Event;
@@ -21,7 +22,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -39,7 +39,7 @@ public class MainViewModel {
 
   @NotNull
   public final ObservableProperty<ExercisesTreeViewModel> exercisesViewModel =
-      new ObservableReadWriteProperty<>(null);
+      new ObservableReadWriteProperty<>(new EmptyExercisesTreeViewModel());
 
   @NotNull
   public final ObservableProperty<Authentication> authentication =
@@ -57,8 +57,8 @@ public class MainViewModel {
    */
   public MainViewModel(@NotNull Options exerciseFilterOptions) {
     this.exerciseFilterOptions = exerciseFilterOptions;
-    courseViewModel.addValueObserver(this, MainViewModel::updateExercises);
-    authentication.addValueObserver(this, MainViewModel::updateExercises);
+    courseViewModel.addSimpleObserver(this, MainViewModel::updateExercises);
+    authentication.addSimpleObserver(this, MainViewModel::updateExercises);
   }
 
   private void updateExercises() {
@@ -69,11 +69,13 @@ public class MainViewModel {
     }
     Authentication auth = authentication.get();
     if (course == null || auth == null) {
-      ExercisesTreeViewModel emptyModel =
-          new ExercisesTreeViewModel(new ArrayList<>(), new Options());
+      ExercisesTreeViewModel emptyModel = new ExercisesTreeViewModel(new ArrayList<>(),
+          new Options());
       if (course == null) {
-        emptyModel.setEmptyTextVisible(true);
+        emptyModel = new EmptyExercisesTreeViewModel();
       }
+      emptyModel.setAuthenticated(auth != null);
+      emptyModel.setProjectReady(exercisesViewModel.get().isProjectReady());
       exercisesViewModel.set(emptyModel);
       return;
     }
@@ -83,7 +85,10 @@ public class MainViewModel {
       points.setSubmittableExercises(course.getExerciseModules().keySet()); // TODO: remove
       List<ExerciseGroup> exerciseGroups = dataSource.getExerciseGroups(course, points, auth);
       inGrading.forEach((id, exercise) -> setInGrading(exerciseGroups, id));
-      exercisesViewModel.set(new ExercisesTreeViewModel(exerciseGroups, exerciseFilterOptions));
+      var viewModel = new ExercisesTreeViewModel(exerciseGroups, exerciseFilterOptions);
+      viewModel.setAuthenticated(true);
+      viewModel.setProjectReady(exercisesViewModel.get().isProjectReady());
+      exercisesViewModel.set(viewModel);
     } catch (InvalidAuthenticationException e) {
       logger.error("Failed to fetch exercises due to authentication issues", e);
       // TODO: might want to communicate this to the user somehow
@@ -164,5 +169,21 @@ public class MainViewModel {
     // We don't call exercisesViewModel.valueChanged() to update the tree here.
     // Once grading is done, the tree is updated anyways by SubmissionStatusUpdater.
     inGrading.remove(submittedForGrading.getId());
+  }
+
+  /**
+   * Calling this method informs the main view model that the corresponding project has been
+   * initialized (by InitializationActivity). If needed, this method notifies the listeners of
+   * exercisesViewModel.
+   */
+  public void setProjectReady(boolean isReady) {
+    var viewModel = exercisesViewModel.get();
+    if (viewModel == null) {
+      return;
+    }
+    var changed = viewModel.setProjectReady(isReady);
+    if (changed) {
+      exercisesViewModel.valueChanged();
+    }
   }
 }
