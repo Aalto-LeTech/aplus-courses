@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.presentation.module;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getAndReplaceText;
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 import fi.aalto.cs.apluscourses.model.Component;
@@ -7,7 +8,6 @@ import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.presentation.base.BaseViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.ListElementViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.Searchable;
-import fi.aalto.cs.apluscourses.utils.PluginResourceBundle;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import org.jetbrains.annotations.NotNull;
@@ -43,12 +43,12 @@ public class ModuleListElementViewModel extends ListElementViewModel<Module>
     var timestamp = getModel().getMetadata().getDownloadedAt();
     var changelog = getModel().getChangelog();
     if (isUpdateAvailable() && !changelog.equals("")) {
-      return "<html>What's new:<br>" + changelog + "</html>";
+      return getAndReplaceText("presentation.moduleTooltip.changelog", changelog);
     } else if (timestamp != null) {
-      return PluginResourceBundle.getAndReplaceText("presentation.moduleTooltip.timestamp",
+      return getAndReplaceText("presentation.moduleTooltip.timestamp",
           timestamp.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)));
     }
-    return PluginResourceBundle.getAndReplaceText("presentation.moduleTooltip.moduleURL", getUrl());
+    return getAndReplaceText("presentation.moduleTooltip.moduleURL", getUrl());
   }
 
   public boolean isUpdateAvailable() {
