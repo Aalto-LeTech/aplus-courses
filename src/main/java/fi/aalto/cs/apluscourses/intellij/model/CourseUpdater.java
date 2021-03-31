@@ -138,7 +138,7 @@ public class CourseUpdater {
     }
   }
 
-  private Map<URI, JSONObject> fetchModulesInfo() {
+  private Map<URI, ModuleInfo> fetchModulesInfo() {
     try {
       var inputStream = configurationFetcher.fetch(courseUrl);
       var tokenizer = new JSONTokener(inputStream);
@@ -146,11 +146,13 @@ public class CourseUpdater {
       var array = object.getJSONArray("modules");
       // The equals and hashCode methods of the URL class can cause DNS lookups, so URI instances
       // are preferred in maps.
-      Map<URI, JSONObject> mapping = new HashMap<>();
+      Map<URI, ModuleInfo> mapping = new HashMap<>();
       for (int i = 0; i < array.length(); ++i) {
         var module = array.getJSONObject(i);
         var url = new URL(module.getString("url"));
-        mapping.put(urlToUri(url), module);
+        var moduleInfo = new ModuleInfo(Version.fromString(module.optString("version", "1.0")),
+            module.optString("changelog", ""));
+        mapping.put(urlToUri(url), moduleInfo);
       }
       return mapping;
     } catch (IOException | JSONException e) {
@@ -158,13 +160,11 @@ public class CourseUpdater {
     }
   }
 
-  private void updateModules(@NotNull Map<URI, JSONObject> uriToModuleData) {
+  private void updateModules(@NotNull Map<URI, ModuleInfo> uriToModuleInfo) {
     for (var module : course.getModules()) {
-      var jsonObject = uriToModuleData.get(urlToUri(module.getUrl()));
-      var version = Version.fromString(jsonObject.optString("version", "1.0"));
-      var changelog = jsonObject.optString("changelog", "");
-      module.updateVersion(version);
-      module.updateChangelog(changelog);
+      var moduleInfo = uriToModuleInfo.get(urlToUri(module.getUrl()));
+      module.updateVersion(moduleInfo.getVersion());
+      module.updateChangelog(moduleInfo.getChangelog());
     }
   }
 
@@ -189,6 +189,30 @@ public class CourseUpdater {
       return url.toURI();
     } catch (URISyntaxException e) {
       return null;
+    }
+  }
+
+  private class ModuleInfo {
+    @NotNull
+    private final Version version;
+
+    @NotNull
+    private final String changelog;
+
+    public ModuleInfo(@NotNull Version version,
+                      @NotNull String changelog) {
+      this.version = version;
+      this.changelog = changelog;
+    }
+
+    @NotNull
+    public Version getVersion() {
+      return version;
+    }
+
+    @NotNull
+    public String getChangelog() {
+      return changelog;
     }
   }
 
