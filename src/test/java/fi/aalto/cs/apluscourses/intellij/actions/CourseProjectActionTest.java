@@ -15,12 +15,12 @@ import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.model.ComponentInstaller;
 import fi.aalto.cs.apluscourses.model.ComponentInstallerImpl;
 import fi.aalto.cs.apluscourses.model.Course;
-import fi.aalto.cs.apluscourses.model.CourseVersion;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.presentation.CourseProjectViewModel;
 import fi.aalto.cs.apluscourses.presentation.CourseSelectionViewModel;
 import fi.aalto.cs.apluscourses.ui.InstallerDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogs;
+import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import fi.aalto.cs.apluscourses.utils.PostponedRunnable;
 import fi.aalto.cs.apluscourses.utils.async.ImmediateTaskManager;
 import java.io.IOException;
@@ -151,7 +151,7 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
         //  replInitialCommands
         Collections.emptyMap(),
         //  courseVersion
-        CourseVersion.DEFAULT_VERSION
+        BuildInfo.INSTANCE.courseVersion
     );
 
     settingsImporter = new DummySettingsImporter();

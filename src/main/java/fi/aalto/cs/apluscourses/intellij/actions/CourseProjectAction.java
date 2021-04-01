@@ -19,7 +19,6 @@ import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.ComponentInstaller;
 import fi.aalto.cs.apluscourses.model.ComponentInstallerImpl;
 import fi.aalto.cs.apluscourses.model.Course;
-import fi.aalto.cs.apluscourses.model.CourseVersion;
 import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationException;
 import fi.aalto.cs.apluscourses.presentation.CourseItemViewModel;
 import fi.aalto.cs.apluscourses.presentation.CourseProjectViewModel;
@@ -27,7 +26,9 @@ import fi.aalto.cs.apluscourses.presentation.CourseSelectionViewModel;
 import fi.aalto.cs.apluscourses.ui.InstallerDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogsImpl;
+import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import fi.aalto.cs.apluscourses.utils.PostponedRunnable;
+import fi.aalto.cs.apluscourses.utils.Version;
 import fi.aalto.cs.apluscourses.utils.async.SimpleAsyncTaskManager;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -160,9 +161,14 @@ public class CourseProjectAction extends AnAction {
       return;
     }
 
-    CourseVersion requiredVersion = course.getCourseRequiredVersion();
-    if (requiredVersion.checkVersion() == CourseVersion.Status.UPDATE_REQUIRED) {
-      notifier.notify(new CourseVersionError(true), project);
+    var versionComparison =
+        BuildInfo.INSTANCE.courseVersion.compareTo(course.getCourseRequiredVersion());
+
+    if (versionComparison == Version.ComparisonStatus.MAJOR_TOO_OLD
+        || versionComparison == Version.ComparisonStatus.MAJOR_TOO_NEW) {
+      notifier.notify(
+          versionComparison == Version.ComparisonStatus.MAJOR_TOO_OLD
+          ? new CourseVersionError(true) : new CourseVersionError(false), project);
       return;
     }
 

@@ -14,14 +14,19 @@ public class BuildInfoTest {
   @Test
   public void testCreateBuildInfoFromProperties() throws PropertyException {
     String versionString = "1.5";
+    String courseVersionString = "3.3";
 
     Properties props = new Properties();
     props.setProperty(BuildInfo.PropertyKeys.VERSION, versionString);
+    props.setProperty(BuildInfo.PropertyKeys.COURSE_VERSION, courseVersionString);
 
     BuildInfo buildInfo = new BuildInfo(props);
 
     assertEquals("Build info should have version given in properties.",
         versionString, buildInfo.version.toString());
+
+    assertEquals("Build info should have course version given in properties.",
+        courseVersionString, buildInfo.courseVersion.toString());
   }
 
   @Test

@@ -20,6 +20,9 @@ public class BuildInfo {
   @NotNull
   public final Version version;
 
+  @NotNull
+  public final Version courseVersion;
+
   static {
     BuildInfo buildInfo = null;
     try {
@@ -38,6 +41,7 @@ public class BuildInfo {
    */
   BuildInfo() {
     version = Version.EMPTY;
+    courseVersion = Version.EMPTY;
   }
 
   /**
@@ -48,10 +52,13 @@ public class BuildInfo {
   BuildInfo(@NotNull Properties properties) throws PropertyException {
     PropertyReader reader = new PropertyReader(properties);
     version = reader.getPropertyAsObject(PropertyKeys.VERSION, Version::fromString);
+    courseVersion = reader.getPropertyAsObject(PropertyKeys.COURSE_VERSION, Version::fromString);
   }
 
   static class PropertyKeys {
     public static final String VERSION = "version";
+
+    public static final String COURSE_VERSION = "courseVersion";
 
     private PropertyKeys() {
 

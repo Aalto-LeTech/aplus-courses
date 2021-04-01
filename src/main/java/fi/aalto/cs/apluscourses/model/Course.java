@@ -1,9 +1,11 @@
 package fi.aalto.cs.apluscourses.model;
 
 import com.intellij.openapi.util.SystemInfoRt;
+import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
 import fi.aalto.cs.apluscourses.utils.ResourceException;
 import fi.aalto.cs.apluscourses.utils.Resources;
+import fi.aalto.cs.apluscourses.utils.Version;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -63,7 +65,7 @@ public abstract class Course implements ComponentSource {
   private final Map<String, String[]> replInitialCommands;
 
   @NotNull
-  private final CourseVersion courseVersion;
+  private final Version courseVersion;
 
   /**
    * Constructs a course with the given parameters.
@@ -86,7 +88,7 @@ public abstract class Course implements ComponentSource {
                    @NotNull Map<String, URL> resourceUrls,
                    @NotNull List<String> autoInstallComponentNames,
                    @NotNull Map<String, String[]> replInitialCommands,
-                   @NotNull CourseVersion courseVersion) {
+                   @NotNull Version courseVersion) {
     this.id = id;
     this.name = name;
     this.aplusUrl = aplusUrl;
@@ -151,7 +153,7 @@ public abstract class Course implements ComponentSource {
         = getCourseAutoInstallComponentNames(jsonObject, sourcePath);
     Map<String, String[]> replInitialCommands
         = getCourseReplInitialCommands(jsonObject, sourcePath);
-    CourseVersion courseVersion = getCourseVersion(jsonObject, sourcePath);
+    Version courseVersion = getCourseVersion(jsonObject, sourcePath);
     return factory.createCourse(
         courseId,
         courseName,
@@ -263,7 +265,7 @@ public abstract class Course implements ComponentSource {
   }
 
   @NotNull
-  public CourseVersion getCourseRequiredVersion() {
+  public Version getCourseRequiredVersion() {
     return courseVersion;
   }
 
@@ -505,17 +507,17 @@ public abstract class Course implements ComponentSource {
   }
 
   @NotNull
-  private static CourseVersion getCourseVersion(@NotNull JSONObject jsonObject,
+  private static Version getCourseVersion(@NotNull JSONObject jsonObject,
                                                 @NotNull String source)
       throws MalformedCourseConfigurationException {
-    JSONObject versionJson = jsonObject.optJSONObject("version");
+    String versionJson = jsonObject.optString("version", null);
     if (versionJson == null) {
-      return CourseVersion.DEFAULT_VERSION;
+      return BuildInfo.INSTANCE.courseVersion;
     }
 
     try {
-      return new CourseVersion(versionJson);
-    } catch (JSONException ex) {
+      return Version.fromString(versionJson);
+    } catch (Version.InvalidVersionStringException ex) {
       throw new MalformedCourseConfigurationException(source,
           "Incomplete or invalid \"version\" object", ex);
     }

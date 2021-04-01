@@ -16,9 +16,10 @@ import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.intellij.utils.ProjectKey;
 import fi.aalto.cs.apluscourses.model.Course;
-import fi.aalto.cs.apluscourses.model.CourseVersion;
 import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationException;
 import fi.aalto.cs.apluscourses.model.UnexpectedResponseException;
+import fi.aalto.cs.apluscourses.utils.BuildInfo;
+import fi.aalto.cs.apluscourses.utils.Version;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
 import java.io.IOException;
@@ -77,11 +78,15 @@ public class InitializationActivity implements Background {
       return;
     }
 
-    var versionCheckResult = course.getCourseRequiredVersion().checkVersion();
-    if (versionCheckResult == CourseVersion.Status.UPDATE_REQUIRED) {
-      notifier.notify(new CourseVersionError(true), project);
+    var versionComparison =
+            BuildInfo.INSTANCE.courseVersion.compareTo(course.getCourseRequiredVersion());
+    if (versionComparison == Version.ComparisonStatus.MAJOR_TOO_OLD
+            || versionComparison == Version.ComparisonStatus.MAJOR_TOO_NEW) {
+      notifier.notify(
+              versionComparison == Version.ComparisonStatus.MAJOR_TOO_OLD
+                      ? new CourseVersionError(true) : new CourseVersionError(false), project);
       return;
-    } else if (versionCheckResult == CourseVersion.Status.UPDATE_OPTIONAL) {
+    } else if (versionComparison == Version.ComparisonStatus.MINOR_TOO_OLD) {
       notifier.notify(new CourseVersionError(false), project);
     }
 

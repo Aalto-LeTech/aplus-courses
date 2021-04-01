@@ -9,8 +9,8 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import fi.aalto.cs.apluscourses.model.Course;
-import fi.aalto.cs.apluscourses.model.CourseVersion;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
+import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import fi.aalto.cs.apluscourses.utils.observable.ValidationError;
 import java.util.Collections;
 import org.junit.Test;
@@ -35,7 +35,7 @@ public class CourseProjectViewModelTest {
       //  replInitialCommands
       Collections.emptyMap(),
       //  courseVersion
-      CourseVersion.DEFAULT_VERSION
+      BuildInfo.INSTANCE.courseVersion
   );
 
   @Test
