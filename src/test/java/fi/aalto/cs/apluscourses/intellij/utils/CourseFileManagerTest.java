@@ -8,6 +8,7 @@ import com.intellij.openapi.util.io.FileUtilRt;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.model.ModuleMetadata;
+import fi.aalto.cs.apluscourses.utils.Version;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -36,7 +37,7 @@ public class CourseFileManagerTest {
   private static final String URL_KEY = "url";
   private static final String LANGUAGE_KEY = "language";
   private static final String MODULES_KEY = "modules";
-  private static final String MODULE_ID_KEY = "id";
+  private static final String MODULE_VERSION_KEY = "version";
   private static final String MODULE_DOWNLOADED_AT_KEY = "downloadedAt";
 
   private CourseFileManager manager;
@@ -121,7 +122,7 @@ public class CourseFileManagerTest {
 
     JSONObject modulesObject = new JSONObject().put("awesome module",
         new JSONObject()
-            .put(MODULE_ID_KEY, "abc")
+            .put(MODULE_VERSION_KEY, "5.4")
             .put(MODULE_DOWNLOADED_AT_KEY, ZonedDateTime.now())
     );
     JSONObject jsonObject = new JSONObject()
@@ -146,7 +147,7 @@ public class CourseFileManagerTest {
     Assert.assertEquals("CourseFileManager#createAndLoad gets the existing modules metadata",
         1, manager.getModulesMetadata().size());
     Assert.assertEquals("CourseFileManager#createAndLoad gets the existing modules metadata",
-        "abc", manager.getModulesMetadata().get("awesome module").getModuleId());
+        new Version(5, 4), manager.getModulesMetadata().get("awesome module").getVersion());
   }
 
   @Test
@@ -156,10 +157,10 @@ public class CourseFileManagerTest {
         .put(LANGUAGE_KEY, "de")
         .put(MODULES_KEY, new JSONObject()
             .put("great name", new JSONObject()
-                .put(MODULE_ID_KEY, "123")
+                .put(MODULE_VERSION_KEY, "1.2")
                 .put(MODULE_DOWNLOADED_AT_KEY, ZonedDateTime.now()))
             .put("also a great name", new JSONObject()
-                .put(MODULE_ID_KEY, "456")
+                .put(MODULE_VERSION_KEY, "3.4")
                 .put(MODULE_DOWNLOADED_AT_KEY, ZonedDateTime.now())));
 
     FileUtils.writeStringToFile(courseFile, jsonObject.toString(), StandardCharsets.UTF_8);
@@ -185,9 +186,9 @@ public class CourseFileManagerTest {
     Assert.assertEquals("CourseFileManager should return the correct number of modules metadata",
         2, metadata.size());
     Assert.assertEquals("CourseFileManager should return the correct modules metadata",
-        "123", metadata.get("great name").getModuleId());
+        new Version(1, 2), metadata.get("great name").getVersion());
     Assert.assertEquals("CourseFileManager should return the correct modules metadata",
-        "456", metadata.get("also a great name").getModuleId());
+        new Version(3, 4), metadata.get("also a great name").getVersion());
   }
 
   @Test
@@ -201,8 +202,9 @@ public class CourseFileManagerTest {
     URL url = new URL("http://localhost:8000");
     manager.createAndLoad(url, "en");
     for (int i = 0; i < NUM_THREADS; ++i) {
-      Module module = new ModelExtensions.TestModule("name" + i, url, "id" + i, "lid" + i,
-          ZonedDateTime.now());
+      Module module =
+          new ModelExtensions.TestModule("name" + i, url, new Version(i, 0), new Version(i, i),
+              "changelog" + i, ZonedDateTime.now());
       Runnable runnable = () -> {
         try {
           manager.addModuleEntry(module);
@@ -224,7 +226,7 @@ public class CourseFileManagerTest {
         NUM_THREADS, keys.size());
     for (String key : keys) {
       // This will throw and fail this test if the JSON format in the file is malformed
-      modulesObject.getJSONObject(key).getString(MODULE_ID_KEY);
+      modulesObject.getJSONObject(key).getString(MODULE_VERSION_KEY);
       modulesObject.getJSONObject(key).getString(MODULE_DOWNLOADED_AT_KEY);
     }
   }
@@ -239,16 +241,16 @@ public class CourseFileManagerTest {
     JSONObject modulesObject = new JSONObject();
     for (int i = 0; i < NUM_THREADS; ++i) {
       String moduleName = "module" + i;
-      String moduleId = "version" + i;
+      Version moduleVersion = new Version(i, 0);
       ZonedDateTime downloadedAt = ZonedDateTime.now();
 
-      modulesObject.put(moduleName,
-          new JSONObject().put(MODULE_ID_KEY, moduleId).put(MODULE_DOWNLOADED_AT_KEY, downloadedAt)
+      modulesObject.put(moduleName, new JSONObject().put(
+          MODULE_VERSION_KEY, moduleVersion.toString()).put(MODULE_DOWNLOADED_AT_KEY, downloadedAt)
       );
 
       threads.add(new Thread(() -> {
         ModuleMetadata metadata = manager.getModulesMetadata().get(moduleName);
-        threadFailed.compareAndSet(false, !moduleId.equals(metadata.getModuleId()));
+        threadFailed.compareAndSet(false, !moduleVersion.equals(metadata.getVersion()));
         threadFailed.compareAndSet(false, !downloadedAt.equals(metadata.getDownloadedAt()));
       }));
     }
