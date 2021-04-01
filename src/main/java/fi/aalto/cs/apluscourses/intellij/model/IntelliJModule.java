@@ -10,6 +10,7 @@ import fi.aalto.cs.apluscourses.intellij.utils.ListDependenciesPolicy;
 import fi.aalto.cs.apluscourses.intellij.utils.VfsUtil;
 import fi.aalto.cs.apluscourses.model.ComponentLoadException;
 import fi.aalto.cs.apluscourses.model.Module;
+import fi.aalto.cs.apluscourses.utils.Version;
 import fi.aalto.cs.apluscourses.utils.content.RemoteZippedDir;
 import java.io.File;
 import java.io.IOException;
@@ -33,11 +34,12 @@ class IntelliJModule
 
   IntelliJModule(@NotNull String name,
                  @NotNull URL url,
-                 @NotNull String versionId,
-                 @Nullable String localVersionId,
+                 @NotNull String changelog,
+                 @NotNull Version version,
+                 @Nullable Version localVersion,
                  @Nullable ZonedDateTime downloadedAt,
                  @NotNull APlusProject project) {
-    super(name, url, versionId, localVersionId, downloadedAt);
+    super(name, url, changelog, version, localVersion, downloadedAt);
     this.project = project;
   }
 

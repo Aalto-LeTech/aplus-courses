@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.presentation.module;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getAndReplaceText;
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 import fi.aalto.cs.apluscourses.model.Component;
@@ -7,8 +8,6 @@ import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.presentation.base.BaseViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.ListElementViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.Searchable;
-import fi.aalto.cs.apluscourses.utils.PluginResourceBundle;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import org.jetbrains.annotations.NotNull;
@@ -35,17 +34,21 @@ public class ModuleListElementViewModel extends ListElementViewModel<Module>
   }
 
   /**
-   * Returns the timestamp of the module if it's defined, else the URL.
+   * Returns the changelog if it's defined and an update is available,
+   * else the timestamp of the module if it's defined, else the URL.
+   *
    * @return A {@link String} with info about the module.
    */
   public String getTooltip() {
-    ZonedDateTime timestamp = getModel().getMetadata().getDownloadedAt();
-    return timestamp != null
-        ? PluginResourceBundle.getAndReplaceText(
-                "presentation.moduleTooltip.timestamp",
-                timestamp.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)))
-        : PluginResourceBundle.getAndReplaceText(
-                "presentation.moduleTooltip.moduleURL", getUrl());
+    var timestamp = getModel().getMetadata().getDownloadedAt();
+    var changelog = getModel().getChangelog();
+    if (isUpdateAvailable() && !changelog.equals("")) {
+      return getAndReplaceText("presentation.moduleTooltip.changelog", changelog);
+    } else if (timestamp != null) {
+      return getAndReplaceText("presentation.moduleTooltip.timestamp",
+          timestamp.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)));
+    }
+    return getAndReplaceText("presentation.moduleTooltip.moduleURL", getUrl());
   }
 
   public boolean isUpdateAvailable() {

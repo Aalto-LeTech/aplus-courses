@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.model;
 
+import fi.aalto.cs.apluscourses.utils.Version;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +20,8 @@ public interface ModelFactory {
                       @NotNull Map<String, String[]> replInitialCommands,
                       @NotNull CourseVersion courseVersion);
 
-  Module createModule(@NotNull String name, @NotNull URL url, @NotNull String versionId);
+  Module createModule(@NotNull String name, @NotNull URL url, @NotNull Version version,
+                      @NotNull String changelog);
 
   Library createLibrary(@NotNull String name);
 }

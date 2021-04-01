@@ -3,6 +3,7 @@ package fi.aalto.cs.apluscourses.model;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
+import fi.aalto.cs.apluscourses.utils.Version;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -104,7 +105,7 @@ public class CourseTest {
     String moduleName = "test-module";
     String libraryName = "test-library";
     Module module = new ModelExtensions.TestModule(
-        moduleName, new URL("http://localhost:3000"), "random", null, null);
+        moduleName, new URL("http://localhost:3000"), new Version(2, 3), null, "changes", null);
     Library library = new ModelExtensions.TestLibrary(libraryName);
     Course course = new ModelExtensions.TestCourse(
         //  id

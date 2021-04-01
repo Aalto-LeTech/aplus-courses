@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.model;
 
+import fi.aalto.cs.apluscourses.utils.Version;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -14,47 +15,54 @@ public abstract class Module extends Component {
   @NotNull
   private final URL url;
 
-  /* A string that uniquely identifies the version of this module. That is, a different version of
-     the same module should return a different version string. */
   @NotNull
-  private String versionId;
+  private Version version;
   @Nullable
-  private String localVersionId;
+  private Version localVersion;
+  @NotNull
+  private String changelog;
   @Nullable
   private ZonedDateTime downloadedAt;
 
   /* synchronize with this when accessing variable fields of this class */
-  private final Object versionLock = new Object();
+  private final Object moduleLock = new Object();
 
   /**
    * Constructs a module with the given name and URL.
    *
-   * @param name      The name of the module.
-   * @param url       The URL from which the module can be downloaded.
-   * @param versionId A string that uniquely identifies different versions of the same module.
+   * @param name         The name of the module.
+   * @param url          The URL from which the module can be downloaded.
+   * @param changelog    A string containing changes for an update.
+   * @param version      A version number that uniquely identifies different versions of the same
+   *                     module.
+   * @param localVersion The current downloaded version number.
+   * @param downloadedAt The time when the module was downloaded.
    */
   protected Module(@NotNull String name,
                    @NotNull URL url,
-                   @NotNull String versionId,
-                   @Nullable String localVersionId,
+                   @NotNull String changelog,
+                   @NotNull Version version,
+                   @Nullable Version localVersion,
                    @Nullable ZonedDateTime downloadedAt) {
     super(name);
     this.url = url;
-    this.versionId = versionId;
-    this.localVersionId = localVersionId;
+    this.version = version;
+    this.localVersion = localVersion;
+    this.changelog = changelog;
     this.downloadedAt = downloadedAt;
   }
 
   /**
    * Returns a module constructed from the given JSON object. The object should contain the name of
    * the module and the URL from which the module can be downloaded. The object may optionally also
-   * contain a version id. Additional members in the object don't cause any errors. Example of a
-   * valid JSON object:
+   * contain a version and a changelog. Additional members in the object don't cause any errors.
+   * Example of a valid JSON object:
    * <pre>
    * {
    *   "name": "My Module",
    *   "url": "https://example.com",
-   *   "id": "abc"
+   *   "version": "2.1",
+   *   "changelog": "changelog here"
    * }
    * </pre>
    *
@@ -71,16 +79,17 @@ public abstract class Module extends Component {
       throws MalformedURLException {
     String name = jsonObject.getString("name");
     URL url = new URL(jsonObject.getString("url"));
-    String versionId = jsonObject.optString("id", "");
-    return factory.createModule(name, url, versionId);
+    Version version = Version.fromString(jsonObject.optString("version", "1.0"));
+    String changelog = jsonObject.optString("changelog", "");
+    return factory.createModule(name, url, version, changelog);
   }
 
   @Override
   public void fetch() throws IOException {
     fetchInternal();
-    synchronized (versionLock) {
+    synchronized (moduleLock) {
       downloadedAt = ZonedDateTime.now();
-      localVersionId = versionId;
+      localVersion = version;
     }
   }
 
@@ -88,15 +97,27 @@ public abstract class Module extends Component {
    * Tells whether or not the module is updatable.
    *
    * @return True, if the module is loaded and the local version is not the newest one; otherwise
-   *        false.
+   *         false.
    */
   @Override
   public boolean isUpdatable() {
     if (stateMonitor.get() != LOADED) {
       return false;
     }
-    synchronized (versionLock) {
-      return !versionId.equals(localVersionId);
+    synchronized (moduleLock) {
+      return !version.equals(localVersion);
+    }
+  }
+
+  /**
+   * Returns true if the major version number has changed.
+   */
+  public boolean isMajorUpdate() {
+    if (stateMonitor.get() != LOADED) {
+      return false;
+    }
+    synchronized (moduleLock) {
+      return version.major != Optional.ofNullable(localVersion).orElse(new Version(1, 0)).major;
     }
   }
 
@@ -115,7 +136,7 @@ public abstract class Module extends Component {
   @Override
   public boolean hasLocalChanges() {
     ZonedDateTime downloadedAtVal;
-    synchronized (versionLock) {
+    synchronized (moduleLock) {
       downloadedAtVal = this.downloadedAt;
     }
     if (downloadedAtVal == null) {
@@ -133,9 +154,8 @@ public abstract class Module extends Component {
    */
   @NotNull
   public ModuleMetadata getMetadata() {
-    synchronized (versionLock) {
-      return new ModuleMetadata(Optional.ofNullable(localVersionId).orElse(versionId),
-          downloadedAt);
+    synchronized (moduleLock) {
+      return new ModuleMetadata(Optional.ofNullable(localVersion).orElse(version), downloadedAt);
     }
   }
 
@@ -144,22 +164,36 @@ public abstract class Module extends Component {
    *
    * @return Version ID.
    */
-  public String getVersionId() {
-    synchronized (versionLock) {
-      return versionId;
+  public Version getVersion() {
+    synchronized (moduleLock) {
+      return version;
+    }
+  }
+
+  @NotNull
+  public String getChangelog() {
+    return changelog;
+  }
+
+  /**
+   * Updates the non-local version. Returns true if the version changed, false otherwise.
+   */
+  public boolean updateVersion(@NotNull Version newVersion) {
+    synchronized (moduleLock) {
+      boolean changed = !version.equals(newVersion);
+      if (changed) {
+        version = newVersion;
+      }
+      return changed;
     }
   }
 
   /**
-   * Updates the non-local version ID. Returns true if the version ID changed, false otherwise.
+   * Updates the changelog.
    */
-  public boolean updateVersionId(@NotNull String newVersionId) {
-    synchronized (versionLock) {
-      boolean changed = !versionId.equals(newVersionId);
-      if (changed) {
-        versionId = newVersionId;
-      }
-      return changed;
+  public void updateChangelog(@NotNull String newChangelog) {
+    synchronized (moduleLock) {
+      changelog = newChangelog;
     }
   }
 

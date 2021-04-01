@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.model;
 
+import fi.aalto.cs.apluscourses.utils.Version;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -204,15 +205,16 @@ public class ModelExtensions {
     }
 
     public TestModule(@NotNull String name) {
-      this(name, testURL, "", null, null);
+      this(name, testURL, new Version(1, 0), null, "changes", null);
     }
 
     public TestModule(@NotNull String name,
                       @NotNull URL url,
-                      @NotNull String versionId,
-                      @Nullable String localVersionId,
+                      @NotNull Version version,
+                      @Nullable Version localVersion,
+                      @NotNull String changelog,
                       @Nullable ZonedDateTime downloadedAt) {
-      super(name, url, versionId, localVersionId, downloadedAt);
+      super(name, url, changelog, version, localVersion, downloadedAt);
     }
 
     @NotNull
@@ -320,8 +322,9 @@ public class ModelExtensions {
     @Override
     public Module createModule(@NotNull String name,
                                @NotNull URL url,
-                               @NotNull String versionId) {
-      return new TestModule(name, url, versionId, null, null);
+                               @NotNull Version version,
+                               @NotNull String changelog) {
+      return new TestModule(name, url, version, null, changelog, null);
     }
 
     @Override
