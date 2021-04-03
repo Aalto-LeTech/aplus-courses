@@ -9,7 +9,9 @@ import com.intellij.openapi.startup.StartupActivity.Background;
 import fi.aalto.cs.apluscourses.intellij.model.CourseProject;
 import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory;
 import fi.aalto.cs.apluscourses.intellij.notifications.CourseConfigurationError;
-import fi.aalto.cs.apluscourses.intellij.notifications.CourseVersionError;
+import fi.aalto.cs.apluscourses.intellij.notifications.CourseVersionOutdatedError;
+import fi.aalto.cs.apluscourses.intellij.notifications.CourseVersionOutdatedWarning;
+import fi.aalto.cs.apluscourses.intellij.notifications.CourseVersionTooNewError;
 import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
@@ -79,15 +81,16 @@ public class InitializationActivity implements Background {
     }
 
     var versionComparison =
-            BuildInfo.INSTANCE.courseVersion.compareTo(course.getCourseRequiredVersion());
+        BuildInfo.INSTANCE.courseVersion.compareTo(course.getCourseRequiredVersion());
+
     if (versionComparison == Version.ComparisonStatus.MAJOR_TOO_OLD
-            || versionComparison == Version.ComparisonStatus.MAJOR_TOO_NEW) {
+        || versionComparison == Version.ComparisonStatus.MAJOR_TOO_NEW) {
       notifier.notify(
-              versionComparison == Version.ComparisonStatus.MAJOR_TOO_OLD
-                      ? new CourseVersionError(true) : new CourseVersionError(false), project);
+          versionComparison == Version.ComparisonStatus.MAJOR_TOO_OLD
+          ? new CourseVersionOutdatedError() : new CourseVersionTooNewError(), project);
       return;
     } else if (versionComparison == Version.ComparisonStatus.MINOR_TOO_OLD) {
-      notifier.notify(new CourseVersionError(false), project);
+      notifier.notify(new CourseVersionOutdatedWarning(), project);
     }
 
     var courseProject = new CourseProject(course, courseConfigurationFileUrl, project);

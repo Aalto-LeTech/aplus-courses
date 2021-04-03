@@ -11,7 +11,8 @@ import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory;
 import fi.aalto.cs.apluscourses.intellij.model.SettingsImporter;
 import fi.aalto.cs.apluscourses.intellij.notifications.CourseConfigurationError;
 import fi.aalto.cs.apluscourses.intellij.notifications.CourseFileError;
-import fi.aalto.cs.apluscourses.intellij.notifications.CourseVersionError;
+import fi.aalto.cs.apluscourses.intellij.notifications.CourseVersionOutdatedError;
+import fi.aalto.cs.apluscourses.intellij.notifications.CourseVersionTooNewError;
 import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
@@ -168,7 +169,7 @@ public class CourseProjectAction extends AnAction {
         || versionComparison == Version.ComparisonStatus.MAJOR_TOO_NEW) {
       notifier.notify(
           versionComparison == Version.ComparisonStatus.MAJOR_TOO_OLD
-          ? new CourseVersionError(true) : new CourseVersionError(false), project);
+          ? new CourseVersionOutdatedError() : new CourseVersionTooNewError(), project);
       return;
     }
 
