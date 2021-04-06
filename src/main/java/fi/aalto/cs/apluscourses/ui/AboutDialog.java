@@ -122,7 +122,7 @@ public class AboutDialog {
   @NotNull
   private static JBLabel createVersionTextLabel() {
     JBLabel label = new JBLabel();
-    String version = BuildInfo.INSTANCE.version.toString();
+    String version = BuildInfo.INSTANCE.pluginVersion.toString();
     label.setText(getAndReplaceText("ui.aboutDialog.version", version));
     return label;
   }

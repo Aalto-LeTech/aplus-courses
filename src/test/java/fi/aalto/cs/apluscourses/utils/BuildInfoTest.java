@@ -23,7 +23,7 @@ public class BuildInfoTest {
     BuildInfo buildInfo = new BuildInfo(props);
 
     assertEquals("Build info should have version given in properties.",
-        versionString, buildInfo.version.toString());
+        versionString, buildInfo.pluginVersion.toString());
 
     assertEquals("Build info should have course version given in properties.",
         courseVersionString, buildInfo.courseVersion.toString());
