@@ -265,7 +265,7 @@ public abstract class Course implements ComponentSource {
   }
 
   @NotNull
-  public Version getCourseRequiredVersion() {
+  public Version getVersion() {
     return courseVersion;
   }
 

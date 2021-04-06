@@ -206,7 +206,7 @@ public class CourseTest {
     assertEquals("The course should have the REPL initial commands of the configuration JSON",
         "import o1.goodstuff._", course.getReplInitialCommands().get("GoodStuff")[1]);
     assertEquals("Course should have the same version as that in the configuration JSON",
-        "5.8", course.getCourseRequiredVersion().toString());
+        "5.8", course.getVersion().toString());
   }
 
   @Test(expected = MalformedCourseConfigurationException.class)

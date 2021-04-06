@@ -163,7 +163,7 @@ public class CourseProjectAction extends AnAction {
     }
 
     var versionComparison =
-        BuildInfo.INSTANCE.courseVersion.compareTo(course.getCourseRequiredVersion());
+        BuildInfo.INSTANCE.courseVersion.compareTo(course.getVersion());
 
     if (versionComparison == Version.ComparisonStatus.MAJOR_TOO_OLD
         || versionComparison == Version.ComparisonStatus.MAJOR_TOO_NEW) {

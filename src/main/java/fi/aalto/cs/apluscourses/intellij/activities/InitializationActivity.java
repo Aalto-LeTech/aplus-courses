@@ -81,7 +81,7 @@ public class InitializationActivity implements Background {
     }
 
     var versionComparison =
-        BuildInfo.INSTANCE.courseVersion.compareTo(course.getCourseRequiredVersion());
+        BuildInfo.INSTANCE.courseVersion.compareTo(course.getVersion());
 
     if (versionComparison == Version.ComparisonStatus.MAJOR_TOO_OLD
         || versionComparison == Version.ComparisonStatus.MAJOR_TOO_NEW) {

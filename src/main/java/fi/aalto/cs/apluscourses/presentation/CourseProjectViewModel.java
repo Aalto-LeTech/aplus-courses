@@ -78,7 +78,7 @@ public class CourseProjectViewModel {
   }
 
   public boolean shouldDisplayVersionWarning() {
-    return BuildInfo.INSTANCE.courseVersion.compareTo(course.getCourseRequiredVersion())
+    return BuildInfo.INSTANCE.courseVersion.compareTo(course.getVersion())
         == Version.ComparisonStatus.MINOR_TOO_OLD;
   }
 
