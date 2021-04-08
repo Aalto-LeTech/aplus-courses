@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.model;
 
+import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import fi.aalto.cs.apluscourses.utils.Version;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -89,9 +90,10 @@ public class ModelExtensions {
                       @NotNull Map<Long, Map<String, String>> exerciseModules,
                       @NotNull Map<String, URL> resourceUrls,
                       @NotNull List<String> autoInstallComponentNames,
-                      @NotNull Map<String, String[]> replInitialCommands) {
+                      @NotNull Map<String, String[]> replInitialCommands,
+                      @NotNull Version courseVersion) {
       super(id, name, aplusUrl, languages, modules, libraries, exerciseModules, resourceUrls,
-          autoInstallComponentNames, replInitialCommands);
+          autoInstallComponentNames, replInitialCommands, courseVersion);
       exerciseDataSource = new TestExerciseDataSource();
     }
 
@@ -124,7 +126,9 @@ public class ModelExtensions {
           //  autoInstallComponentNames
           Collections.emptyList(),
           //  replInitialCommands
-          Collections.emptyMap());
+          Collections.emptyMap(),
+          //  courseVersion
+          BuildInfo.INSTANCE.courseVersion);
       this.exerciseDataSource = exerciseDataSource;
     }
 
@@ -299,7 +303,8 @@ public class ModelExtensions {
                                @NotNull Map<Long, Map<String, String>> exerciseModules,
                                @NotNull Map<String, URL> resourceUrls,
                                @NotNull List<String> autoInstallComponentNames,
-                               @NotNull Map<String, String[]> replInitialCommands) {
+                               @NotNull Map<String, String[]> replInitialCommands,
+                               @NotNull Version courseVersion) {
       return new ModelExtensions.TestCourse(
           id,
           name,
@@ -310,7 +315,8 @@ public class ModelExtensions {
           exerciseModules,
           resourceUrls,
           autoInstallComponentNames,
-          replInitialCommands
+          replInitialCommands,
+          courseVersion
       );
     }
 

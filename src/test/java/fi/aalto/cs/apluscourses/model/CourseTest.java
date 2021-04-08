@@ -3,6 +3,7 @@ package fi.aalto.cs.apluscourses.model;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
+import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import fi.aalto.cs.apluscourses.utils.Version;
 import java.io.StringReader;
 import java.net.MalformedURLException;
@@ -42,7 +43,8 @@ public class CourseTest {
         Collections.emptyMap(),
         resourceUrls,
         autoInstallComponents,
-        replInitialCommands);
+        replInitialCommands,
+        BuildInfo.INSTANCE.courseVersion);
     assertEquals("The ID of the course should be the same as that given to the constructor",
         "13", course.getId());
     assertEquals("The name of the course should be the same as that given to the constructor",
@@ -92,7 +94,9 @@ public class CourseTest {
         //  autoInstallComponentNames
         Collections.emptyList(),
         //  replInitialCommands
-        Collections.emptyMap());
+        Collections.emptyMap(),
+        //  courseVersion
+        BuildInfo.INSTANCE.courseVersion);
     assertSame("Course#getModule should return the correct module",
         module2, course.getComponent("Awesome Module"));
   }
@@ -122,7 +126,9 @@ public class CourseTest {
         //  autoInstallComponentNames
         List.of("test-module", "test-library"),
         //  replInitialCommands
-        Collections.emptyMap());
+        Collections.emptyMap(),
+        //  courseVersion
+        BuildInfo.INSTANCE.courseVersion);
     List<Component> autoInstalls = course.getAutoInstallComponents();
     assertEquals("The course has the correct auto-install components", 2, autoInstalls.size());
     assertEquals(moduleName, autoInstalls.get(0).getName());
@@ -147,7 +153,9 @@ public class CourseTest {
         //  autoInstallComponentNames
         Collections.emptyList(),
         //  replInitialCommands
-        Collections.emptyMap());
+        Collections.emptyMap(),
+        //  courseVersion
+        BuildInfo.INSTANCE.courseVersion);
     course.getComponent("Test Module");
   }
 
@@ -163,12 +171,13 @@ public class CourseTest {
   private static String autoInstallJson = "\"autoInstall\":[\"O1Library\"]";
   private static String replInitialCommands = "\"repl\": {\"initialCommands\": {\"GoodStuff\": ["
       + "\"import o1._\",\"import o1.goodstuff._\"]}}";
+  private static String courseVersion = "\"version\": \"5.8\"";
 
   @Test
   public void testFromConfigurationFile() throws MalformedCourseConfigurationException {
     StringReader stringReader = new StringReader("{" + idJson + "," + nameJson + "," + urlJson
         + "," + languagesJson + "," + modulesJson + "," + exerciseModulesJson + "," + resourcesJson
-        + "," + autoInstallJson + "," + replInitialCommands + "}");
+        + "," + autoInstallJson + "," + replInitialCommands + "," + courseVersion + "}");
     Course course = Course.fromConfigurationData(stringReader, "./path/to/file", MODEL_FACTORY);
     assertEquals("Course should have the same ID as that in the configuration JSON",
         "1238", course.getId());
@@ -196,6 +205,8 @@ public class CourseTest {
         "import o1._", course.getReplInitialCommands().get("GoodStuff")[0]);
     assertEquals("The course should have the REPL initial commands of the configuration JSON",
         "import o1.goodstuff._", course.getReplInitialCommands().get("GoodStuff")[1]);
+    assertEquals("Course should have the same version as that in the configuration JSON",
+        "5.8", course.getVersion().toString());
   }
 
   @Test(expected = MalformedCourseConfigurationException.class)

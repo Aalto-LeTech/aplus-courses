@@ -14,6 +14,7 @@ version '2.1'
 
 sourceCompatibility = 11
 
+def courseVersion = '1.0'
 def remoteRobotVersion = '0.10.3'
 def fixturesVersion = "1.1.18"
 
@@ -95,6 +96,7 @@ task gatherBuildInfo(dependsOn: processResources) {
         new File("$buildDir/resources/main/build-info.properties").withWriter { writer ->
             Properties props = new Properties()
             props['version'] = version
+            props['courseVersion'] = courseVersion
             props.store(writer, null)
         }
     }

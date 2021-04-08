@@ -314,7 +314,7 @@ public class CoursesClient {
     String product = appNamesInfo.getProductName(); // E.g. "IDEA"
     String edition = appNamesInfo.getEditionName(); // E.g. "Community Edition"
     String os = System.getProperty("os.name");
-    String pluginVersion = BuildInfo.INSTANCE.version.toString();
+    String pluginVersion = BuildInfo.INSTANCE.pluginVersion.toString();
     String apacheUserAgent =
         VersionInfo.getUserAgent("Apache-HttpClient", "org.apache.http.client", VersionInfo.class);
 

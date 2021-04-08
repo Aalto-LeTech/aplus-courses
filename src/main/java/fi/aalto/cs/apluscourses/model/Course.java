@@ -1,9 +1,11 @@
 package fi.aalto.cs.apluscourses.model;
 
 import com.intellij.openapi.util.SystemInfoRt;
+import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
 import fi.aalto.cs.apluscourses.utils.ResourceException;
 import fi.aalto.cs.apluscourses.utils.Resources;
+import fi.aalto.cs.apluscourses.utils.Version;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -62,6 +64,9 @@ public abstract class Course implements ComponentSource {
   @NotNull
   private final Map<String, String[]> replInitialCommands;
 
+  @NotNull
+  private final Version courseVersion;
+
   /**
    * Constructs a course with the given parameters.
    *
@@ -82,7 +87,8 @@ public abstract class Course implements ComponentSource {
                    @NotNull Map<Long, Map<String, String>> exerciseModules,
                    @NotNull Map<String, URL> resourceUrls,
                    @NotNull List<String> autoInstallComponentNames,
-                   @NotNull Map<String, String[]> replInitialCommands) {
+                   @NotNull Map<String, String[]> replInitialCommands,
+                   @NotNull Version courseVersion) {
     this.id = id;
     this.name = name;
     this.aplusUrl = aplusUrl;
@@ -95,6 +101,7 @@ public abstract class Course implements ComponentSource {
     this.components = Stream.concat(modules.stream(), libraries.stream())
         .collect(Collectors.toMap(Component::getName, Function.identity()));
     this.replInitialCommands = replInitialCommands;
+    this.courseVersion = courseVersion;
   }
 
   @NotNull
@@ -146,6 +153,7 @@ public abstract class Course implements ComponentSource {
         = getCourseAutoInstallComponentNames(jsonObject, sourcePath);
     Map<String, String[]> replInitialCommands
         = getCourseReplInitialCommands(jsonObject, sourcePath);
+    Version courseVersion = getCourseVersion(jsonObject, sourcePath);
     return factory.createCourse(
         courseId,
         courseName,
@@ -156,7 +164,8 @@ public abstract class Course implements ComponentSource {
         exerciseModules,
         resourceUrls,
         autoInstallComponentNames,
-        replInitialCommands
+        replInitialCommands,
+        courseVersion
     );
   }
 
@@ -253,6 +262,11 @@ public abstract class Course implements ComponentSource {
   @NotNull
   public Map<String, URL> getResourceUrls() {
     return Collections.unmodifiableMap(resourceUrls);
+  }
+
+  @NotNull
+  public Version getVersion() {
+    return courseVersion;
   }
 
   /**
@@ -490,6 +504,23 @@ public abstract class Course implements ComponentSource {
     }
 
     return replInitialCommands;
+  }
+
+  @NotNull
+  private static Version getCourseVersion(@NotNull JSONObject jsonObject,
+                                                @NotNull String source)
+      throws MalformedCourseConfigurationException {
+    String versionJson = jsonObject.optString("version", null);
+    if (versionJson == null) {
+      return BuildInfo.INSTANCE.courseVersion;
+    }
+
+    try {
+      return Version.fromString(versionJson);
+    } catch (Version.InvalidVersionStringException ex) {
+      throw new MalformedCourseConfigurationException(source,
+          "Incomplete or invalid \"version\" object", ex);
+    }
   }
 
   @Nullable

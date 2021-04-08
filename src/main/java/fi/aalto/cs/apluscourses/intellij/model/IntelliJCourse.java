@@ -18,6 +18,7 @@ import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.ExerciseDataSource;
 import fi.aalto.cs.apluscourses.model.Library;
 import fi.aalto.cs.apluscourses.model.Module;
+import fi.aalto.cs.apluscourses.utils.Version;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -28,6 +29,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -52,6 +54,7 @@ class IntelliJCourse extends Course {
                         @NotNull Map<String, URL> resourceUrls,
                         @NotNull List<String> autoInstallComponentNames,
                         @NotNull Map<String, String[]> replInitialCommands,
+                        @NotNull Version courseVersion,
                         @NotNull APlusProject project,
                         @NotNull CommonLibraryProvider commonLibraryProvider) {
     super(
@@ -64,7 +67,8 @@ class IntelliJCourse extends Course {
         exerciseModules,
         resourceUrls,
         autoInstallComponentNames,
-        replInitialCommands
+        replInitialCommands,
+        courseVersion
     );
 
     this.project = project;
