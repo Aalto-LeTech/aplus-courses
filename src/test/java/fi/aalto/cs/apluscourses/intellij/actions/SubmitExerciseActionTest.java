@@ -155,8 +155,6 @@ public class SubmitExerciseActionTest extends BasePlatformTestCase {
     courseViewModel = new CourseViewModel(course);
     mainViewModel.courseViewModel.set(courseViewModel);
 
-    mainViewModel.authentication.set(authentication);
-
     exercises = Objects.requireNonNull(mainViewModel.exercisesViewModel.get());
     exercises.getChildren().get(0).getChildren().get(0).setSelected(true);
 
@@ -180,6 +178,9 @@ public class SubmitExerciseActionTest extends BasePlatformTestCase {
 
     mainVmProvider = mock(MainViewModelProvider.class);
     doReturn(mainViewModel).when(mainVmProvider).getMainViewModel(project);
+    var authProvider = mock(SubmitExerciseAction.AuthenticationProvider.class);
+    doReturn(authentication).when(authProvider).getAuthentication(project);
+
 
     fileFinder = mock(FileFinder.class);
     doReturn(filePath).when(fileFinder).tryFindFile(modulePath, fileName);
@@ -216,8 +217,8 @@ public class SubmitExerciseActionTest extends BasePlatformTestCase {
 
     documentSaver = mock(SubmitExerciseAction.DocumentSaver.class);
 
-    action = new SubmitExerciseAction(mainVmProvider, fileFinder, moduleSource, dialogs, notifier,
-        tagger, documentSaver);
+    action = new SubmitExerciseAction(mainVmProvider, authProvider, fileFinder, moduleSource,
+        dialogs, notifier, tagger, documentSaver);
   }
 
   @Test

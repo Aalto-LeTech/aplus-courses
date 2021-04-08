@@ -129,7 +129,10 @@ public class SubmissionStatusUpdater {
         notifier.notifyAndHide(
             new FeedbackAvailableNotification(submissionResult, exercise), project);
         PluginSettings.getInstance().getMainViewModel(project).setGradingDone(exercise);
-        PluginSettings.getInstance().updateMainViewModel(project);
+        var courseProject = PluginSettings.getInstance().getCourseProject(project);
+        if (courseProject != null) {
+          courseProject.getExercisesUpdater().restart();
+        }
         return true;
       }
     } catch (IOException e) {
