@@ -64,7 +64,7 @@
                     text="Install A+ Module"
                     icon="PluginIcons.A_PLUS_DOWNLOAD"/>
             <action id="fi.aalto.cs.apluscourses.intellij.actions.ModulesRefreshAction"
-                    class="fi.aalto.cs.apluscourses.intellij.actions.RefreshAction"
+                    class="fi.aalto.cs.apluscourses.intellij.actions.RefreshModulesAction"
                     text="Refresh Modules"
                     icon="PluginIcons.A_PLUS_REFRESH" />
         </group>
@@ -80,7 +80,7 @@
                     text="Open In Browser"
                     icon="PluginIcons.A_PLUS_BROWSE" />
             <action id="fi.aalto.cs.apluscourses.intellij.actions.ExercisesRefreshAction"
-                    class="fi.aalto.cs.apluscourses.intellij.actions.RefreshAction"
+                    class="fi.aalto.cs.apluscourses.intellij.actions.RefreshExercisesAction"
                     text="Refresh Assignments"
                     icon="PluginIcons.A_PLUS_REFRESH" />
             <group id="fi.aalto.cs.apluscourses.intellij.actions.FilterOptionsActionGroup"
