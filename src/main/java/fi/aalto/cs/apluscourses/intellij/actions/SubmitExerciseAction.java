@@ -63,6 +63,9 @@ public class SubmitExerciseAction extends AnAction {
   private final MainViewModelProvider mainViewModelProvider;
 
   @NotNull
+  private final AuthenticationProvider authenticationProvider;
+
+  @NotNull
   private final FileFinder fileFinder;
 
   @NotNull
@@ -76,6 +79,7 @@ public class SubmitExerciseAction extends AnAction {
 
   @NotNull
   private final Tagger tagger;
+
   private final DocumentSaver documentSaver;
 
   /**
@@ -84,6 +88,10 @@ public class SubmitExerciseAction extends AnAction {
   public SubmitExerciseAction() {
     this(
         PluginSettings.getInstance(),
+        project -> {
+          var courseProject = PluginSettings.getInstance().getCourseProject(project);
+          return courseProject == null ? null : courseProject.getAuthentication();
+        },
         VfsUtil::findFileInDirectory,
         new ProjectModuleSource(),
         Dialogs.DEFAULT,
@@ -98,6 +106,7 @@ public class SubmitExerciseAction extends AnAction {
    * for testing purposes.
    */
   public SubmitExerciseAction(@NotNull MainViewModelProvider mainViewModelProvider,
+                              @NotNull AuthenticationProvider authenticationProvider,
                               @NotNull FileFinder fileFinder,
                               @NotNull ProjectModuleSource moduleSource,
                               @NotNull Dialogs dialogs,
@@ -105,6 +114,7 @@ public class SubmitExerciseAction extends AnAction {
                               @NotNull Tagger tagger,
                               @NotNull DocumentSaver documentSaver) {
     this.mainViewModelProvider = mainViewModelProvider;
+    this.authenticationProvider = authenticationProvider;
     this.fileFinder = fileFinder;
     this.moduleSource = moduleSource;
     this.dialogs = dialogs;
@@ -119,7 +129,7 @@ public class SubmitExerciseAction extends AnAction {
     MainViewModel mainViewModel = mainViewModelProvider.getMainViewModel(project);
     CourseViewModel courseViewModel = mainViewModel.courseViewModel.get();
     ExercisesTreeViewModel exercisesViewModel = mainViewModel.exercisesViewModel.get();
-    Authentication authentication = mainViewModel.authentication.get();
+    Authentication authentication = authenticationProvider.getAuthentication(project);
     boolean isExerciseSelected = exercisesViewModel != null
             && exercisesViewModel.getSelectedItem() != null
             && !(exercisesViewModel.getSelectedItem() instanceof ExerciseGroupViewModel);
@@ -149,7 +159,7 @@ public class SubmitExerciseAction extends AnAction {
     MainViewModel mainViewModel = mainViewModelProvider.getMainViewModel(project);
     CourseViewModel courseViewModel = mainViewModel.courseViewModel.get();
     ExercisesTreeViewModel exercisesViewModel = mainViewModel.exercisesViewModel.get();
-    Authentication authentication = mainViewModel.authentication.get();
+    Authentication authentication = authenticationProvider.getAuthentication(project);
 
     if (courseViewModel == null || exercisesViewModel == null || authentication == null) {
       return;
@@ -275,6 +285,11 @@ public class SubmitExerciseAction extends AnAction {
     public String getModuleName() {
       return moduleName;
     }
+  }
+
+  @FunctionalInterface
+  public interface AuthenticationProvider {
+    Authentication getAuthentication(@Nullable Project project);
   }
 
   @FunctionalInterface

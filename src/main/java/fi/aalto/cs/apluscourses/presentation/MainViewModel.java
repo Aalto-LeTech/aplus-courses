@@ -57,75 +57,22 @@ public class MainViewModel {
    */
   public MainViewModel(@NotNull Options exerciseFilterOptions) {
     this.exerciseFilterOptions = exerciseFilterOptions;
-    courseViewModel.addSimpleObserver(this, MainViewModel::updateExercises);
-    authentication.addSimpleObserver(this, MainViewModel::updateExercises);
   }
 
-  private void updateExercises() {
-    Course course = null;
-    var localCourseViewModel = courseViewModel.get();
-    if (localCourseViewModel != null) {
-      course = localCourseViewModel.getModel();
-    }
-    Authentication auth = authentication.get();
-    if (course == null || auth == null) {
-      ExercisesTreeViewModel emptyModel = new ExercisesTreeViewModel(new ArrayList<>(),
-          new Options());
-      if (course == null) {
-        emptyModel = new EmptyExercisesTreeViewModel();
-      }
-      emptyModel.setAuthenticated(auth != null);
-      emptyModel.setProjectReady(exercisesViewModel.get().isProjectReady());
-      exercisesViewModel.set(emptyModel);
-      return;
-    }
-    ExerciseDataSource dataSource = course.getExerciseDataSource();
-    try {
-      Points points = dataSource.getPoints(course, auth);
-      points.setSubmittableExercises(course.getExerciseModules().keySet()); // TODO: remove
-      List<ExerciseGroup> exerciseGroups = dataSource.getExerciseGroups(course, points, auth);
-      inGrading.forEach((id, exercise) -> setInGrading(exerciseGroups, id));
-      var viewModel = new ExercisesTreeViewModel(exerciseGroups, exerciseFilterOptions);
-      viewModel.setAuthenticated(true);
-      viewModel.setProjectReady(exercisesViewModel.get().isProjectReady());
-      exercisesViewModel.set(viewModel);
-    } catch (InvalidAuthenticationException e) {
-      logger.error("Failed to fetch exercises due to authentication issues", e);
-      // TODO: might want to communicate this to the user somehow
-    } catch (IOException e) {
-      logger.error("Failed to fetch exercises", e);
-      // This too
-    }
+  /**
+   * Creates a new {@link ExercisesTreeViewModel} with the given exercise groups, which is then set
+   * to {@link MainViewModel#exercisesViewModel}.
+   */
+  public void updateExercisesViewModel(@NotNull List<ExerciseGroup> exerciseGroups) {
+    inGrading.forEach((id, exercise) -> setInGrading(exerciseGroups, id));
+    var viewModel = new ExercisesTreeViewModel(exerciseGroups, exerciseFilterOptions);
+    viewModel.setAuthenticated(exercisesViewModel.get().isAuthenticated());
+    viewModel.setProjectReady(exercisesViewModel.get().isProjectReady());
+    exercisesViewModel.set(viewModel);
   }
 
   public void dispose() {
     disposing.trigger();
-  }
-
-  public void setAuthentication(Authentication auth) {
-    disposing.addListener(auth, Authentication::clear);
-    Optional.ofNullable(authentication.getAndSet(auth)).ifPresent(Authentication::clear);
-  }
-
-  /**
-   * <p>Sets authentication to the one that is read from the password storage and constructed with
-   * the given factory.</p>
-   *
-   * <p>This method does anything only when it's called the first time for an instance. All the
-   * subsequent calls do nothing.</p>
-   *
-   * @param passwordStorage Password storage.
-   * @param factory         Authentication factory.
-   */
-  public void readAuthenticationFromStorage(@Nullable PasswordStorage passwordStorage,
-                                            @NotNull TokenAuthentication.Factory factory) {
-    if (hasTriedToReadAuthenticationFromStorage.getAndSet(true) || authentication.get() != null) {
-      return;
-    }
-    Optional.ofNullable(passwordStorage)
-        .map(PasswordStorage::restorePassword)
-        .map(factory::create)
-        .ifPresent(this::setAuthentication);
   }
 
   @Nullable
