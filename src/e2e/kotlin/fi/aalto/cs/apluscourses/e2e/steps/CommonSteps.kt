@@ -84,6 +84,7 @@ class CommonSteps(val remoteRobot: RemoteRobot) {
                 when {
                     isMac() -> keyboard {
                         searchEverywhereButton().click()
+                        searchEverywhereButton().click()
                         enterText(item)
                         enter()
                     }
