@@ -42,6 +42,9 @@ public class MainViewModel {
       new ObservableReadWriteProperty<>(new EmptyExercisesTreeViewModel());
 
   @NotNull
+  public final ProgressViewModel progressViewModel = new ProgressViewModel();
+
+  @NotNull
   public final ObservableProperty<Authentication> authentication =
       new ObservableReadWriteProperty<>(null);
 
@@ -82,6 +85,7 @@ public class MainViewModel {
     ExerciseDataSource dataSource = course.getExerciseDataSource();
     try {
       Points points = dataSource.getPoints(course, auth);
+      progressViewModel.increment();
       points.setSubmittableExercises(course.getExerciseModules().keySet()); // TODO: remove
       List<ExerciseGroup> exerciseGroups = dataSource.getExerciseGroups(course, points, auth);
       inGrading.forEach((id, exercise) -> setInGrading(exerciseGroups, id));
@@ -89,6 +93,7 @@ public class MainViewModel {
       viewModel.setAuthenticated(true);
       viewModel.setProjectReady(exercisesViewModel.get().isProjectReady());
       exercisesViewModel.set(viewModel);
+      progressViewModel.increment();
     } catch (InvalidAuthenticationException e) {
       logger.error("Failed to fetch exercises due to authentication issues", e);
       // TODO: might want to communicate this to the user somehow

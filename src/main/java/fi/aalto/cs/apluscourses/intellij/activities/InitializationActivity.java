@@ -74,10 +74,15 @@ public class InitializationActivity implements Background {
       isInitialized(project).set(true);
       return;
     }
+    var progressViewModel
+        = PluginSettings.getInstance().getMainViewModel(project).progressViewModel;
+    progressViewModel.indeterminate.set(false);
+    progressViewModel.increment();
 
     var courseProject = new CourseProject(course, courseConfigurationFileUrl, project);
     PluginSettings.getInstance().registerCourseProject(courseProject);
     isInitialized(project).set(true);
+    progressViewModel.increment();
   }
 
   private static final ProjectManagerListener projectListener = new ProjectManagerListener() {

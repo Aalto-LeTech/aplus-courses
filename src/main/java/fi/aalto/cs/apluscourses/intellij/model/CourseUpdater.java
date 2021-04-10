@@ -123,7 +123,11 @@ public class CourseUpdater {
     synchronized (runLock) {
       while (true) { //  NOSONAR
         try {
+          var progressViewModel =
+              PluginSettings.getInstance().getMainViewModel(project).progressViewModel;
+          progressViewModel.start(3, "Refreshing...");
           updateModules(fetchModulesInfo());
+          progressViewModel.increment();
           if (Thread.interrupted()) {
             throw new InterruptedException();
           }

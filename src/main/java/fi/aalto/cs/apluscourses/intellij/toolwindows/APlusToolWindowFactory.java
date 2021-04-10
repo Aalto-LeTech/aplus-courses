@@ -17,11 +17,15 @@ import fi.aalto.cs.apluscourses.intellij.actions.InstallModuleAction;
 import fi.aalto.cs.apluscourses.intellij.activities.InitializationActivity;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
+import fi.aalto.cs.apluscourses.ui.ProgressBarView;
 import fi.aalto.cs.apluscourses.ui.exercise.ExercisesView;
 import fi.aalto.cs.apluscourses.ui.module.ModulesView;
+import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.OverlayLayout;
 import org.jetbrains.annotations.NotNull;
 
 public class APlusToolWindowFactory extends BaseToolWindowFactory implements DumbAware {
@@ -33,7 +37,20 @@ public class APlusToolWindowFactory extends BaseToolWindowFactory implements Dum
     JBSplitter splitter = new JBSplitter(true);
     splitter.setFirstComponent(modulesView.getBasePanel());
     splitter.setSecondComponent(exercisesView.getBasePanel());
-    return splitter;
+
+    var container = new JPanel();
+    container.setLayout(new OverlayLayout(container));
+    var progressBar = createProgressBarView(project).getPanel();
+    progressBar.setAlignmentX(Component.LEFT_ALIGNMENT);
+    progressBar.setAlignmentY(Component.BOTTOM_ALIGNMENT);
+    progressBar.setOpaque(true);
+    splitter.setAlignmentX(Component.LEFT_ALIGNMENT);
+    splitter.setAlignmentY(Component.BOTTOM_ALIGNMENT);
+
+    container.add(progressBar);
+    container.add(splitter);
+
+    return container;
   }
 
   @NotNull
@@ -91,6 +108,24 @@ public class APlusToolWindowFactory extends BaseToolWindowFactory implements Dum
     exercisesView.getExerciseGroupsTree().setPopupMenu(popupMenu.getComponent());
 
     return exercisesView;
+  }
+
+  @NotNull
+  private static ProgressBarView createProgressBarView(@NotNull Project project) {
+    var progressViewModel
+        = PluginSettings.getInstance().getMainViewModel(project).progressViewModel;
+
+    var progressBarView = new ProgressBarView();
+
+    progressBarView.maxBindable.bindToSource(progressViewModel.maxValue);
+    progressBarView.valueBindable.bindToSource(progressViewModel.value);
+    progressBarView.labelBindable.bindToSource(progressViewModel.label);
+    progressBarView.visibilityBindable.bindToSource(progressViewModel.visible);
+    progressBarView.indeterminateBindable.bindToSource(progressViewModel.indeterminate);
+
+    progressViewModel.start(2, "Loading...");
+
+    return progressBarView;
   }
 
   private static class EmptyLabelMouseAdapter extends MouseAdapter {
