@@ -102,6 +102,7 @@ public class ExerciseGroup implements Browsable {
    * and the values are the exercises corresponding to the IDs.
    */
   public Map<Long, Exercise> getExercises() {
-    return Collections.unmodifiableMap(exercises);
+    //return Collections.unmodifiableMap(exercises);
+    return exercises;
   }
 }

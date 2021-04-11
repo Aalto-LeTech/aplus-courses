@@ -2,16 +2,11 @@ package fi.aalto.cs.apluscourses.presentation;
 
 import fi.aalto.cs.apluscourses.dal.PasswordStorage;
 import fi.aalto.cs.apluscourses.dal.TokenAuthentication;
-import fi.aalto.cs.apluscourses.model.Authentication;
-import fi.aalto.cs.apluscourses.model.Course;
-import fi.aalto.cs.apluscourses.model.Exercise;
-import fi.aalto.cs.apluscourses.model.ExerciseDataSource;
-import fi.aalto.cs.apluscourses.model.ExerciseGroup;
-import fi.aalto.cs.apluscourses.model.InvalidAuthenticationException;
-import fi.aalto.cs.apluscourses.model.Points;
+import fi.aalto.cs.apluscourses.model.*;
 import fi.aalto.cs.apluscourses.presentation.exercise.EmptyExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
+import fi.aalto.cs.apluscourses.presentation.ideactivities.TutorialViewModel;
 import fi.aalto.cs.apluscourses.utils.Event;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
@@ -40,6 +35,11 @@ public class MainViewModel {
   @NotNull
   public final ObservableProperty<ExercisesTreeViewModel> exercisesViewModel =
       new ObservableReadWriteProperty<>(new EmptyExercisesTreeViewModel());
+
+  @NotNull
+  public final ObservableProperty<TutorialViewModel> tutorialViewModel =
+      new ObservableReadWriteProperty<>(null);
+
 
   @NotNull
   public final ObservableProperty<Authentication> authentication =
@@ -84,6 +84,8 @@ public class MainViewModel {
       Points points = dataSource.getPoints(course, auth);
       points.setSubmittableExercises(course.getExerciseModules().keySet()); // TODO: remove
       List<ExerciseGroup> exerciseGroups = dataSource.getExerciseGroups(course, points, auth);
+      exerciseGroups.get(0).getExercises().put(123456789L, new TutorialExercise());
+      //TODO structure the loading of the tutorials?
       inGrading.forEach((id, exercise) -> setInGrading(exerciseGroups, id));
       var viewModel = new ExercisesTreeViewModel(exerciseGroups, exerciseFilterOptions);
       viewModel.setAuthenticated(true);
