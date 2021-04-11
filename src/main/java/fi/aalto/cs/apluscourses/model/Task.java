@@ -45,5 +45,9 @@ public class Task {
     taskUpdated.trigger();
   }
 
+  public void resetStatus(boolean isCompleted) {
+    this.isCompleted = isCompleted;
+  }
+
 }
 

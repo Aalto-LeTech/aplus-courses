@@ -103,6 +103,7 @@ public class ExerciseGroup implements Browsable {
    */
   public Map<Long, Exercise> getExercises() {
     //return Collections.unmodifiableMap(exercises);
+    //TODO revert before merging
     return exercises;
   }
 }

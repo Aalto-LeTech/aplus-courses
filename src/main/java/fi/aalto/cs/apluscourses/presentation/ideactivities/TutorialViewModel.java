@@ -15,21 +15,24 @@ import javax.swing.*;
 import java.util.List;
 
 public class TutorialViewModel {
+  //TODO functionality to stop the Tutorial?
 
   @NotNull
   public final ObservableProperty<TaskViewModel> taskViewModel =
       new ObservableReadWriteProperty<>(null);
 
-  private Project project;
+  private final Project project;
   private Task currentTask;
-  private List<Task> tasks;
-  private Tutorial tutorial;
+  private final List<Task> tasks;
+  private final Tutorial tutorial;
 
   public TutorialViewModel(@NotNull Tutorial tutorial, @Nullable Project project) {
     this.tutorial = tutorial;
     this.tasks = tutorial.getTasks();
     if (!tasks.isEmpty()) {
       this.currentTask = tasks.get(0);
+    } else {
+      System.out.println("Tasks were empty and currentTask is null");
     }
     this.project = project;
   }
@@ -46,7 +49,7 @@ public class TutorialViewModel {
       currentTask.taskUpdated.addListener(
           this, TutorialViewModel::currentTaskCompleted);
 
-      ActivitiesListener.createListener(taskViewModel.get().getTask(), project);
+      ActivitiesListener.createListener(currentTask, project);
       System.out.println(currentTask.getAction());
     }
   }
@@ -65,7 +68,7 @@ public class TutorialViewModel {
       //A dialog will summarize what data will be sent, it might be better to separate
       //the logic (gathering that info) into a separate ViewModel initialized here.
       System.out.println("Tutorial is done");
-      //tutorial.setCompleted();
+      tutorial.setCompleted();
       //TODO gather the data here..
     }
   }

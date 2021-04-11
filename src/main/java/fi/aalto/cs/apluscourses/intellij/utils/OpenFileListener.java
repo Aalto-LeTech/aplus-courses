@@ -23,11 +23,11 @@ public class OpenFileListener implements FileEditorManagerListener, ActivitiesLi
   @RequiresReadLock
   @Override
   public synchronized void registerListener(Project project) {
-    //perhaps pass project in the constructor since it is a class field.
     FileEditor[] editors = FileEditorManager.getInstance(project).getAllEditors();
     for (FileEditor editor : editors) {
       if (editor.getFile().getPath().endsWith(filePath)) {
         System.out.println("File is already open");
+        //TODO handle this case better
         task.setCompleted();
         return;
       }
@@ -43,8 +43,6 @@ public class OpenFileListener implements FileEditorManagerListener, ActivitiesLi
       task.setCompleted();
       unregisterListener(messageBusConnection);
     }
-    //if there is no other Task, display sth like Tutorial Completed!
-    // -> handled in TutorialViewModel
   }
 }
 

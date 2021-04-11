@@ -30,6 +30,8 @@ public class TutorialAction extends DumbAwareAction {
 
   private Project project;
 
+  private Tutorial tutorial;
+
   public TutorialAction() {
     this(PluginSettings.getInstance(),
          new DefaultNotifier());
@@ -73,18 +75,17 @@ public class TutorialAction extends DumbAwareAction {
     }
 
     //Display a window asking for confirmation to Start the Tutorial
-    Tutorial tutorial = ((TutorialExercise) selectedExercise.getModel()).getTutorial();
-    //tutorial.tutorialUpdated.addListener(this, TutorialAction::completeTutorial);
+    this.tutorial = ((TutorialExercise) selectedExercise.getModel()).getTutorial();
+    tutorial.tutorialUpdated.addListener(this, TutorialAction::completeTutorial);
     TutorialViewModel viewModel = new TutorialViewModel(tutorial, project);
     mainViewModelProvider.getMainViewModel(project).tutorialViewModel.set(viewModel);
     viewModel.startTutorial();
 
-    //Reset tutorialViewModel to null in MainVIewMOdel
-    //reset also the Tasks to unfinished
     //TODO polish this class a bit
   }
 
   public void completeTutorial() {
     mainViewModelProvider.getMainViewModel(project).tutorialViewModel.set(null);
+    tutorial.getTasks().stream().forEach(task -> task.resetStatus(false));
   }
 }

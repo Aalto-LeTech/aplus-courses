@@ -9,15 +9,14 @@ import java.util.List;
 public class Tutorial {
   private String name;
   private List<Task> tasks = new ArrayList<>();
-  //private boolean isCompleted;
 
   @NotNull
-  //public final Event tutorialUpdated;
+  public final Event tutorialUpdated;
 
   public Tutorial(String name, List<Task> tasks) {
     this.name = name;
-    this.tasks = tasks; //TODO quickly find the next task
-   // this.tutorialUpdated = new Event();
+    this.tasks = tasks;
+    this.tutorialUpdated = new Event();
   }
 
   public Tutorial() { //default constructor for testing purposes
@@ -25,7 +24,7 @@ public class Tutorial {
     tasks.add(new Task());
     Task second = new Task("Second Task", "editor.open", "GoodStuff/o1/goodstuff/gui/GoodStuff.scala");
     tasks.add(second);
-    //this.tutorialUpdated = new Event();
+    this.tutorialUpdated = new Event();
   }
 
   public List<Task> getTasks() {
@@ -40,9 +39,8 @@ public class Tutorial {
     return null;
   }
 
-  /*public void setCompleted() {
-    this.isCompleted = true;
+  public void setCompleted() {
     this.tutorialUpdated.trigger();
-  }*/
+  }
 
 }
