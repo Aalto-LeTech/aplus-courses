@@ -18,28 +18,22 @@ public class ExercisesUpdater extends RepeatedTask {
 
   private final Notifier notifier;
 
-  private final Project project;
-
   /**
    * Construct an updater with the given parameters.
    */
   public ExercisesUpdater(@NotNull CourseProject courseProject,
                           @NotNull Event eventToTrigger,
                           @NotNull Notifier notifier,
-                          @NotNull Project project,
                           long updateInterval) {
     super(updateInterval);
     this.courseProject = courseProject;
     this.eventToTrigger = eventToTrigger;
     this.notifier = notifier;
-    this.project = project;
   }
 
   public ExercisesUpdater(@NotNull CourseProject courseProject,
-                          @NotNull Event eventToTrigger,
-                          @NotNull Project project) {
-    this(courseProject, eventToTrigger, new DefaultNotifier(), project,
-        PluginSettings.UPDATE_INTERVAL);
+                          @NotNull Event eventToTrigger) {
+    this(courseProject, eventToTrigger, new DefaultNotifier(), PluginSettings.UPDATE_INTERVAL);
   }
   
   @Override
@@ -51,7 +45,7 @@ public class ExercisesUpdater extends RepeatedTask {
       return;
     }
     var progressViewModel =
-        PluginSettings.getInstance().getMainViewModel(project).progressViewModel;
+        PluginSettings.getInstance().getMainViewModel(courseProject.getProject()).progressViewModel;
     progressViewModel.start(2, "Refreshing assignments...");
     try {
       var points = dataSource.getPoints(course, authentication);

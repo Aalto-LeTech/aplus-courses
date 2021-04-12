@@ -1,15 +1,19 @@
 package fi.aalto.cs.apluscourses.intellij.model;
 
 import com.intellij.openapi.project.Project;
+import fi.aalto.cs.apluscourses.dal.PasswordStorage;
+import fi.aalto.cs.apluscourses.dal.TokenAuthentication;
+import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.Course;
+import fi.aalto.cs.apluscourses.model.ExerciseGroup;
 import fi.aalto.cs.apluscourses.utils.Event;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A {@code CourseProject} instance contains a {@link Course} and {@link Project}. In addition, it
