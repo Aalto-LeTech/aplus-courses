@@ -1,27 +1,17 @@
 package fi.aalto.cs.apluscourses.presentation;
 
-import fi.aalto.cs.apluscourses.dal.PasswordStorage;
-import fi.aalto.cs.apluscourses.dal.TokenAuthentication;
 import fi.aalto.cs.apluscourses.model.Authentication;
-import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Exercise;
-import fi.aalto.cs.apluscourses.model.ExerciseDataSource;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
-import fi.aalto.cs.apluscourses.model.InvalidAuthenticationException;
-import fi.aalto.cs.apluscourses.model.Points;
 import fi.aalto.cs.apluscourses.presentation.exercise.EmptyExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import fi.aalto.cs.apluscourses.utils.Event;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -47,8 +37,6 @@ public class MainViewModel {
 
   @NotNull
   private final Options exerciseFilterOptions;
-
-  private final AtomicBoolean hasTriedToReadAuthenticationFromStorage = new AtomicBoolean(false);
 
   private Map<Long, Exercise> inGrading = new ConcurrentHashMap<>();
 
