@@ -61,21 +61,23 @@ public class InitializationActivity implements Background {
     }
 
     Course course;
+    var progressViewModel
+        = PluginSettings.getInstance().getMainViewModel(project).progressViewModel;
     try {
       course = Course.fromUrl(courseConfigurationFileUrl, new IntelliJModelFactory(project));
     } catch (UnexpectedResponseException | MalformedCourseConfigurationException e) {
       logger.error("Error occurred while trying to parse a course configuration file", e);
       notifier.notify(new CourseConfigurationError(e), project);
       isInitialized(project).set(true);
+      progressViewModel.stop();
       return;
     } catch (IOException e) {
       logger.info("IOException occurred while using the HTTP client", e);
       notifier.notify(new NetworkErrorNotification(e), project);
       isInitialized(project).set(true);
+      progressViewModel.stop();
       return;
     }
-    var progressViewModel
-        = PluginSettings.getInstance().getMainViewModel(project).progressViewModel;
     progressViewModel.indeterminate.set(false);
     progressViewModel.increment();
 

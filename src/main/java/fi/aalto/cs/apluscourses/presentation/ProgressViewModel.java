@@ -12,7 +12,8 @@ public class ProgressViewModel {
   public final ObservableProperty<Boolean> indeterminate = new ObservableReadWriteProperty<>(true);
 
   public ProgressViewModel() {
-    this.value.addSimpleObserver(this, ProgressViewModel::setVisible);
+    this.value.addSimpleObserver(this, ProgressViewModel::updateVisible);
+    this.indeterminate.addSimpleObserver(this, ProgressViewModel::updateVisible);
   }
 
   /**
@@ -24,12 +25,28 @@ public class ProgressViewModel {
     this.label.set(label);
   }
 
+  public void start(String label) {
+    this.maxValue.set(0);
+    this.value.set(0);
+    this.label.set(label);
+    this.indeterminate.set(true);
+  }
+
+  /**
+   * Sets the values to 0 and indeterminate to false.
+   */
+  public void stop() {
+    this.maxValue.set(0);
+    this.value.set(0);
+    this.indeterminate.set(false);
+  }
+
   public void increment() {
     this.value.set(getValue() + 1);
   }
 
-  public void setVisible() {
-    this.visible.set(getValue() < getMaxValue());
+  public void updateVisible() {
+    this.visible.set(getValue() < getMaxValue() || isIndeterminate());
   }
 
   private int getValue() {
@@ -38,5 +55,9 @@ public class ProgressViewModel {
 
   private int getMaxValue() {
     return Optional.ofNullable(maxValue.get()).orElse(0);
+  }
+
+  private boolean isIndeterminate() {
+    return Optional.ofNullable(this.indeterminate.get()).orElse(false);
   }
 }

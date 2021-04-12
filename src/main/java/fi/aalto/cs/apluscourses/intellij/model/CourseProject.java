@@ -8,7 +8,6 @@ import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
 import fi.aalto.cs.apluscourses.utils.Event;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -58,7 +57,7 @@ public class CourseProject {
     this.courseUpdated = new Event();
     this.exercisesUpdated = new Event();
     this.courseUpdater = new CourseUpdater(course, project, courseUrl, courseUpdated);
-    this.exercisesUpdater = new ExercisesUpdater(this, exercisesUpdated);
+    this.exercisesUpdater = new ExercisesUpdater(this, exercisesUpdated, project);
   }
 
   /**

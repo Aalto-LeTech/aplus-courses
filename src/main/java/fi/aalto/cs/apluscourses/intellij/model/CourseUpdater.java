@@ -88,11 +88,16 @@ public class CourseUpdater extends RepeatedTask {
 
   @Override
   protected synchronized void doTask() {
+    var progressViewModel =
+        PluginSettings.getInstance().getMainViewModel(project).progressViewModel;
+    progressViewModel.start("Refreshing modules...");
     updateModules(fetchModulesInfo());
     if (Thread.interrupted()) {
+      progressViewModel.stop();
       return;
     }
     notifyUpdatableModules();
+    progressViewModel.stop();
     eventToTrigger.trigger();
   }
 

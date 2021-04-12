@@ -32,6 +32,9 @@ public class MainViewModel {
       new ObservableReadWriteProperty<>(new EmptyExercisesTreeViewModel());
 
   @NotNull
+  public final ProgressViewModel progressViewModel = new ProgressViewModel();
+
+  @NotNull
   public final ObservableProperty<Authentication> authentication =
       new ObservableReadWriteProperty<>(null);
 
