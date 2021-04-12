@@ -43,10 +43,8 @@ public class APlusToolWindowFactory extends BaseToolWindowFactory implements Dum
     var progressBar = createProgressBarView(project).getPanel();
     progressBar.setAlignmentX(Component.LEFT_ALIGNMENT);
     progressBar.setAlignmentY(Component.BOTTOM_ALIGNMENT);
-    progressBar.setOpaque(true);
     splitter.setAlignmentX(Component.LEFT_ALIGNMENT);
     splitter.setAlignmentY(Component.BOTTOM_ALIGNMENT);
-    
     container.add(progressBar);
     container.add(splitter);
 

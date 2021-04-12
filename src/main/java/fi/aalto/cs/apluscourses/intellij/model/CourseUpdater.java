@@ -74,7 +74,6 @@ public class CourseUpdater extends RepeatedTask {
     this.configurationFetcher = configurationFetcher;
     this.eventToTrigger = eventToTrigger;
     this.notifier = notifier;
-    this.updateInterval = updateInterval;
   }
 
   /**
