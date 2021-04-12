@@ -41,9 +41,9 @@ public class ExercisesUpdater extends RepeatedTask {
     this(courseProject, eventToTrigger, new DefaultNotifier(), project,
         PluginSettings.UPDATE_INTERVAL);
   }
-
+  
   @Override
-  protected synchronized void doTask() {
+  protected void doTask() {
     var course = courseProject.getCourse();
     var dataSource = course.getExerciseDataSource();
     var authentication = courseProject.getAuthentication();
@@ -56,6 +56,10 @@ public class ExercisesUpdater extends RepeatedTask {
     try {
       var points = dataSource.getPoints(course, authentication);
       progressViewModel.increment();
+      if (Thread.interrupted()) {
+        progressViewModel.stop();
+        return;
+      }
       points.setSubmittableExercises(course.getExerciseModules().keySet()); // TODO: remove
       var exerciseGroups = dataSource.getExerciseGroups(course, points, authentication);
       progressViewModel.increment();

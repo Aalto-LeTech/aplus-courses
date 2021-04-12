@@ -87,7 +87,7 @@ public class CourseUpdater extends RepeatedTask {
   }
 
   @Override
-  protected synchronized void doTask() {
+  protected void doTask() {
     var progressViewModel =
         PluginSettings.getInstance().getMainViewModel(project).progressViewModel;
     progressViewModel.start("Refreshing modules...");

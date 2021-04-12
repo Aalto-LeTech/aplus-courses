@@ -1,10 +1,5 @@
 package fi.aalto.cs.apluscourses.utils.async;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-
 /**
  * Represents a task that gets run repeatedly with a specific time interval between each run.
  * Subclasses need only implement the task and this class takes care of the rest. This class is
@@ -14,10 +9,7 @@ public abstract class RepeatedTask {
 
   private final long updateInterval;
 
-  private final ScheduledExecutorService executorService
-      = Executors.newSingleThreadScheduledExecutor();
-
-  private ScheduledFuture<?> runningTask = null;
+  private Thread thread = null;
 
   public RepeatedTask(long updateInterval) {
     this.updateInterval = updateInterval;
@@ -28,12 +20,11 @@ public abstract class RepeatedTask {
    * the interval is reset. This method is thread safe and can be called from multiple threads.
    */
   public synchronized void restart() {
-    if (runningTask != null) {
-      runningTask.cancel(true);
+    if (thread != null) {
+      thread.interrupt();
     }
-    runningTask = executorService.scheduleAtFixedRate(
-        this::doTask, 0, updateInterval, TimeUnit.MILLISECONDS
-    );
+    thread = new Thread(this::run);
+    thread.start();
   }
 
   /**
@@ -41,7 +32,9 @@ public abstract class RepeatedTask {
    * safe. Note, that the task might not stop immediately.
    */
   public synchronized void stop() {
-    executorService.shutdownNow();
+    if (thread != null) {
+      thread.interrupt();
+    }
   }
 
   /**
@@ -50,5 +43,27 @@ public abstract class RepeatedTask {
    * if it has been interrupted.
    */
   protected abstract void doTask();
+
+  /*
+   * The run lock ensures that only one thread executes the 'run' method. The run lock guarantees
+   * that a new thread created by 'restart' blocks until the previous thread has received the
+   * interrupt and exited. Note, that making the 'run' method 'synchronized' would cause a deadlock,
+   * because 'restart' is synchronized as well.
+   */
+  private final Object runLock = new Object();
+
+  private void run() {
+    synchronized (runLock) {
+      while (true) { //  NOSONAR
+        try {
+          doTask();
+          Thread.sleep(updateInterval); //  NOSONAR
+        } catch (InterruptedException e) {
+          Thread.currentThread().interrupt();
+          return;
+        }
+      }
+    }
+  }
 
 }
