@@ -1,6 +1,5 @@
 package fi.aalto.cs.apluscourses.intellij.model;
 
-import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
@@ -35,7 +34,7 @@ public class ExercisesUpdater extends RepeatedTask {
                           @NotNull Event eventToTrigger) {
     this(courseProject, eventToTrigger, new DefaultNotifier(), PluginSettings.UPDATE_INTERVAL);
   }
-  
+
   @Override
   protected void doTask() {
     var course = courseProject.getCourse();

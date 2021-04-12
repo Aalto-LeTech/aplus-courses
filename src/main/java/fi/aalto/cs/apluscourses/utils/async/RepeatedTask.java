@@ -44,24 +44,14 @@ public abstract class RepeatedTask {
    */
   protected abstract void doTask();
 
-  /*
-   * The run lock ensures that only one thread executes the 'run' method. The run lock guarantees
-   * that a new thread created by 'restart' blocks until the previous thread has received the
-   * interrupt and exited. Note, that making the 'run' method 'synchronized' would cause a deadlock,
-   * because 'restart' is synchronized as well.
-   */
-  private final Object runLock = new Object();
-
   private void run() {
-    synchronized (runLock) {
-      while (true) { //  NOSONAR
-        try {
-          doTask();
-          Thread.sleep(updateInterval); //  NOSONAR
-        } catch (InterruptedException e) {
-          Thread.currentThread().interrupt();
-          return;
-        }
+    while (true) { //  NOSONAR
+      try {
+        doTask();
+        Thread.sleep(updateInterval); //  NOSONAR
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+        return;
       }
     }
   }

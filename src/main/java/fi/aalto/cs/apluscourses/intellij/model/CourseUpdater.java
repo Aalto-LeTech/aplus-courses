@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -52,7 +53,7 @@ public class CourseUpdater extends RepeatedTask {
   @NotNull
   private final Notifier notifier;
 
-  private final Set<String> notifiedModules = new HashSet<>();
+  private final Set<String> notifiedModules = ConcurrentHashMap.newKeySet();
 
   private Notification moduleUpdatesNotification = null;
 
@@ -73,6 +74,7 @@ public class CourseUpdater extends RepeatedTask {
     this.configurationFetcher = configurationFetcher;
     this.eventToTrigger = eventToTrigger;
     this.notifier = notifier;
+    this.updateInterval = updateInterval;
   }
 
   /**
