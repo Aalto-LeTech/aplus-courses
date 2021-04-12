@@ -10,6 +10,7 @@ import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
 import fi.aalto.cs.apluscourses.utils.Event;
 import fi.aalto.cs.apluscourses.utils.Version;
+import fi.aalto.cs.apluscourses.utils.async.RepeatedTask;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -27,7 +28,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-public class CourseUpdater {
+public class CourseUpdater extends RepeatedTask {
 
   public interface CourseConfigurationFetcher {
     InputStream fetch(URL configurationUrl) throws IOException;
@@ -51,10 +52,6 @@ public class CourseUpdater {
   @NotNull
   private final Notifier notifier;
 
-  private final long updateInterval;
-
-  private Thread thread = null;
-
   private final Set<String> notifiedModules = new HashSet<>();
 
   private Notification moduleUpdatesNotification = null;
@@ -69,13 +66,13 @@ public class CourseUpdater {
                        @NotNull Event eventToTrigger,
                        @NotNull Notifier notifier,
                        long updateInterval) {
+    super(updateInterval);
     this.course = course;
     this.project = project;
     this.courseUrl = courseUrl;
     this.configurationFetcher = configurationFetcher;
     this.eventToTrigger = eventToTrigger;
     this.notifier = notifier;
-    this.updateInterval = updateInterval;
   }
 
   /**
@@ -86,60 +83,17 @@ public class CourseUpdater {
                        @NotNull URL courseUrl,
                        @NotNull Event eventToTrigger) {
     this(course, project, courseUrl, CoursesClient::fetch, eventToTrigger, new DefaultNotifier(),
-        PluginSettings.COURSE_UPDATE_INTERVAL);
+        PluginSettings.UPDATE_INTERVAL);
   }
 
-  /**
-   * Starts or restarts this updater. This method is thread safe and can be called from multiple
-   * threads.
-   */
-  public synchronized void restart() {
-    if (thread != null) {
-      thread.interrupt();
+  @Override
+  protected synchronized void doTask() {
+    updateModules(fetchModulesInfo());
+    if (Thread.interrupted()) {
+      return;
     }
-    thread = new Thread(this::run);
-    thread.start();
-  }
-
-  /**
-   * Requests that the updater stops, or does nothing if the updater isn't running. This method is
-   * thread safe. Note, that the update might not stop immediately.
-   */
-  public synchronized void stop() {
-    if (thread != null) {
-      thread.interrupt();
-    }
-  }
-
-  /*
-   * The run lock ensures that only one thread executes the 'run' method. The run lock guarantees
-   * that a new thread created by 'restart' blocks until the previous thread has received the
-   * interrupt and exited. Note, that making the 'run' method 'synchronized' would cause a deadlock,
-   * because 'restart' is synchronized as well.
-   */
-  private final Object runLock = new Object();
-
-  private void run() {
-    synchronized (runLock) {
-      while (true) { //  NOSONAR
-        try {
-          var progressViewModel =
-              PluginSettings.getInstance().getMainViewModel(project).progressViewModel;
-          progressViewModel.start(3, "Refreshing...");
-          updateModules(fetchModulesInfo());
-          progressViewModel.increment();
-          if (Thread.interrupted()) {
-            throw new InterruptedException();
-          }
-          notifyUpdatableModules();
-          eventToTrigger.trigger();
-          Thread.sleep(updateInterval); //  NOSONAR
-        } catch (InterruptedException e) {
-          Thread.currentThread().interrupt();
-          return;
-        }
-      }
-    }
+    notifyUpdatableModules();
+    eventToTrigger.trigger();
   }
 
   private Map<URI, ModuleInfo> fetchModulesInfo() {
