@@ -84,7 +84,7 @@ public class InitializationActivity implements Background {
     var courseProject = new CourseProject(course, courseConfigurationFileUrl, project);
     PluginSettings.getInstance().registerCourseProject(courseProject);
     isInitialized(project).set(true);
-    progressViewModel.increment();
+    progressViewModel.stop();
   }
 
   private static final ProjectManagerListener projectListener = new ProjectManagerListener() {

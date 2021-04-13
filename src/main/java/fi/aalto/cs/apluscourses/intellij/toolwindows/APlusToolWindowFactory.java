@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.intellij.toolwindows;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -38,15 +40,10 @@ public class APlusToolWindowFactory extends BaseToolWindowFactory implements Dum
     splitter.setFirstComponent(modulesView.getBasePanel());
     splitter.setSecondComponent(exercisesView.getBasePanel());
 
-    var container = new JPanel();
-    container.setLayout(new OverlayLayout(container));
-    var progressBar = createProgressBarView(project).getPanel();
-    progressBar.setAlignmentX(Component.LEFT_ALIGNMENT);
-    progressBar.setAlignmentY(Component.BOTTOM_ALIGNMENT);
-    splitter.setAlignmentX(Component.LEFT_ALIGNMENT);
-    splitter.setAlignmentY(Component.BOTTOM_ALIGNMENT);
-    container.add(progressBar);
-    container.add(splitter);
+    var progressViewModel
+        = PluginSettings.getInstance().getMainViewModel(project).progressViewModel;
+    var container = new ProgressBarView(progressViewModel, splitter).getContainer();
+    progressViewModel.start(2, getText("ui.ProgressBarView.loading"));
 
     return container;
   }
@@ -106,24 +103,6 @@ public class APlusToolWindowFactory extends BaseToolWindowFactory implements Dum
     exercisesView.getExerciseGroupsTree().setPopupMenu(popupMenu.getComponent());
 
     return exercisesView;
-  }
-
-  @NotNull
-  private static ProgressBarView createProgressBarView(@NotNull Project project) {
-    var progressViewModel
-        = PluginSettings.getInstance().getMainViewModel(project).progressViewModel;
-
-    var progressBarView = new ProgressBarView();
-
-    progressBarView.maxBindable.bindToSource(progressViewModel.maxValue);
-    progressBarView.valueBindable.bindToSource(progressViewModel.value);
-    progressBarView.labelBindable.bindToSource(progressViewModel.label);
-    progressBarView.visibilityBindable.bindToSource(progressViewModel.visible);
-    progressBarView.indeterminateBindable.bindToSource(progressViewModel.indeterminate);
-
-    progressViewModel.start(2, "Loading...");
-
-    return progressBarView;
   }
 
   private static class EmptyLabelMouseAdapter extends MouseAdapter {

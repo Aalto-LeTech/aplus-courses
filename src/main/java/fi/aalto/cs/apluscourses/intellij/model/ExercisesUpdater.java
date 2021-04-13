@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.intellij.model;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
@@ -45,27 +47,24 @@ public class ExercisesUpdater extends RepeatedTask {
     }
     var progressViewModel =
         PluginSettings.getInstance().getMainViewModel(courseProject.getProject()).progressViewModel;
-    progressViewModel.start(2, "Refreshing assignments...");
+    progressViewModel.start(2, getText("ui.ProgressBarView.refreshingAssignments"));
     try {
       var points = dataSource.getPoints(course, authentication);
       progressViewModel.increment();
       if (Thread.interrupted()) {
-        progressViewModel.stop();
+        progressViewModel.increment();
         return;
       }
       points.setSubmittableExercises(course.getExerciseModules().keySet()); // TODO: remove
       var exerciseGroups = dataSource.getExerciseGroups(course, points, authentication);
       progressViewModel.increment();
       if (Thread.interrupted()) {
-        progressViewModel.stop();
         return;
       }
       courseProject.setExerciseGroups(exerciseGroups);
       eventToTrigger.trigger();
     } catch (IOException e) {
       notifier.notify(new NetworkErrorNotification(e), courseProject.getProject());
-    } finally {
-      progressViewModel.stop();
     }
   }
 
