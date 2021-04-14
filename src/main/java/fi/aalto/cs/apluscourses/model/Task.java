@@ -44,13 +44,11 @@ public class Task {
     return file;
   }
 
-  public void setCompleted() {
-    this.isCompleted = true;
-    taskUpdated.trigger();
-  }
-
   public void setIsCompleted(boolean isCompleted) {
     this.isCompleted = isCompleted;
+    if (isCompleted) {
+      taskUpdated.trigger();
+    }
   }
 
   public boolean isCompleted() {
