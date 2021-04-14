@@ -16,7 +16,7 @@ public class TutorialViewModel {
   private final Project project;
   private Task currentTask;
   private final List<Task> tasks;
-  private AtomicBoolean skipTask = new AtomicBoolean();
+  private final AtomicBoolean skipTask = new AtomicBoolean();
   private final Tutorial tutorial;
   private final TaskCallback callback;
   private final Object lock = new Object();

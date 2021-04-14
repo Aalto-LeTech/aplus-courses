@@ -47,7 +47,6 @@ public class TutorialAction extends DumbAwareAction {
   }
 
   //Similar to SubmitExerciseAction, get the selected Exercise
-  // Make the Action's icon appear conditionally only when a Tutorial is selected?
   @Override
   public void actionPerformed(@NotNull AnActionEvent e) {
     if (e.getProject() == null) {

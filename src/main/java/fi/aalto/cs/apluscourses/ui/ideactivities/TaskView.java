@@ -7,19 +7,22 @@ import fi.aalto.cs.apluscourses.presentation.ideactivities.TaskViewModel;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+
 import org.jetbrains.annotations.NotNull;
 
 
 public class TaskView {
 
   private JPanel main;
-  private JLabel label;
+  protected JLabel label;
   private final TaskViewModel viewModel;
 
 
   public TaskView(@NotNull TaskViewModel viewModel) {
     main = new JPanel();
     label = new JBLabel();
+    label.setText("<html>" + viewModel.getAction() + "<br>"
+          + viewModel.getTask().getFile() + "</html>");
     main.add(label);
     this.viewModel = viewModel;
   }
@@ -32,11 +35,10 @@ public class TaskView {
   public void show() {
     ApplicationManager.getApplication().invokeLater(() -> {
       if (viewModel != null) {
-        label.setText("<html>" + viewModel.getAction() + "<br>"
-                + viewModel.getTask().getFile() + "</html>");
         JOptionPane.showMessageDialog(null, main, "Task Window", JOptionPane.PLAIN_MESSAGE);
       }
     }, ModalityState.any()
     );
   }
+
 }
