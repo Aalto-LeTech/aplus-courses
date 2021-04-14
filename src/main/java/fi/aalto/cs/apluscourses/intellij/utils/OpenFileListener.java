@@ -36,6 +36,11 @@ public class OpenFileListener implements FileEditorManagerListener, ActivitiesLi
     messageBusConnection.subscribe(FileEditorManagerListener.FILE_EDITOR_MANAGER, this);
   }
 
+  @Override
+  public void unregisterListener() {
+    unregisterListener(messageBusConnection);
+  }
+
   @RequiresReadLock
   @Override
   public void fileOpened(@NotNull FileEditorManager source, @NotNull VirtualFile file) {

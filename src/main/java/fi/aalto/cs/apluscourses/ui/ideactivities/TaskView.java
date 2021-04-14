@@ -22,6 +22,7 @@ public class TaskView {
     this.viewModel = viewModel;
   }
 
+  //Also, send termination signal in order to cancel Tutorial and free up resources!
   public static void createAndShow(@NotNull TaskViewModel taskViewModel) {
     new TaskView(taskViewModel).show();
   }

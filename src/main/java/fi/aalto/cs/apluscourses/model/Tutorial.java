@@ -24,6 +24,7 @@ public class Tutorial {
     tasks.add(new Task());
     Task second = new Task("Second Task", "editor.open", "GoodStuff/o1/goodstuff/gui/GoodStuff.scala");
     Task third = new Task("Final Task", "editor.open", "GoodStuff/o1/goodstuff/Category.scala");
+    third.setLastTask(true);
     tasks.add(second);
     tasks.add(third);
     this.tutorialUpdated = new Event();
@@ -34,7 +35,6 @@ public class Tutorial {
   }
 
   public Task getNextTask(@NotNull Task task) {
-    //control which is the currentTask
     if (tasks.indexOf(task) != tasks.size() - 1) {
       return tasks.get(tasks.indexOf(task) + 1);
     }

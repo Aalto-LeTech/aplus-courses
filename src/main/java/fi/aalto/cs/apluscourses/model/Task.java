@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.model;
 
+import fi.aalto.cs.apluscourses.intellij.utils.ActivitiesListener;
 import fi.aalto.cs.apluscourses.utils.Event;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,6 +15,8 @@ public class Task {
   private boolean isCompleted;
   private String oldName;
   private String newName;
+  private ActivitiesListener listener;
+  private boolean isLastTask;
 
   @NotNull
   public final Event taskUpdated;
@@ -45,7 +48,7 @@ public class Task {
     taskUpdated.trigger();
   }
 
-  public void resetStatus(boolean isCompleted) {
+  public void setIsCompleted(boolean isCompleted) {
     this.isCompleted = isCompleted;
   }
 
@@ -53,5 +56,20 @@ public class Task {
     return isCompleted;
   }
 
+  public void setListener(ActivitiesListener listener) {
+    this.listener = listener;
+  }
+
+  public ActivitiesListener getListener() {
+    return this.listener;
+  }
+
+   public boolean isLastTask() {
+    return isLastTask;
+  }
+
+  public void setLastTask(boolean lastTask) {
+    isLastTask = lastTask;
+  }
 }
 

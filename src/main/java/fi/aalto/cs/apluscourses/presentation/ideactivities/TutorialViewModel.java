@@ -1,14 +1,12 @@
 package fi.aalto.cs.apluscourses.presentation.ideactivities;
 
 import com.intellij.openapi.project.Project;
-import fi.aalto.cs.apluscourses.ui.ideactivities.StartTutorialDialog;
 import fi.aalto.cs.apluscourses.model.Task;
 import fi.aalto.cs.apluscourses.model.Tutorial;
 import fi.aalto.cs.apluscourses.intellij.utils.ActivitiesListener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.*;
 import java.util.List;
 
 public class TutorialViewModel {
@@ -30,36 +28,37 @@ public class TutorialViewModel {
     this.callback = taskCallback;
   }
 
-  public void startTutorial() {
+  public void startNextTask() {
     synchronized (lock) {
-      StartTutorialDialog startTutorialDialog = new StartTutorialDialog(this, project);
-      int result = startTutorialDialog.display();
-      if (result == JOptionPane.OK_OPTION) { //Make more UI agnostic
-        callback.show(new TaskViewModel(currentTask));
-
-        currentTask.taskUpdated.addListener(
-            this, TutorialViewModel::currentTaskCompleted);
-
-        ActivitiesListener.createListener(currentTask, project);
-      }
+      callback.show(new TaskViewModel(currentTask));
+      currentTask.taskUpdated.addListener(
+          this, TutorialViewModel::currentTaskCompleted);
+      ActivitiesListener.createListener(currentTask, project);
     }
   }
 
   public void currentTaskCompleted() {
     synchronized (lock) {
       currentTask.taskUpdated.removeCallback(this);
-      currentTask = tutorial.getNextTask(currentTask);
-      if (currentTask != null) { // perhaps refine and use a field like isLastTask and not a null check
-        callback.show(new TaskViewModel(currentTask));
-        currentTask.taskUpdated.addListener(
-            this, TutorialViewModel::currentTaskCompleted);
-        ActivitiesListener.createListener(currentTask, project);
+      if (!currentTask.isLastTask()) {
+        currentTask = tutorial.getNextTask(currentTask);
+        startNextTask();
       } else {
         //A dialog will summarize what data will be sent, it might be better to separate
         //the logic (gathering that info) into a separate ViewModel initialized here.
+        System.out.println("Tutorial is done!");
+
         tutorial.setCompleted();
         // gather the data here..
       }
+    }
+  }
+
+  public void cancelTutorial() {
+    synchronized (lock) {
+      currentTask.getListener().unregisterListener();
+      currentTask.taskUpdated.removeCallback(this);
+      tasks.forEach(task -> task.setIsCompleted(false));
     }
   }
 

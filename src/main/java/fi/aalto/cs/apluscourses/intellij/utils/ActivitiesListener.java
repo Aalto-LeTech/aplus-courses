@@ -10,9 +10,12 @@ public interface ActivitiesListener {
   static void createListener(Task task, Project project) {
     ActivitiesListener listener = ActivitiesListenerFactory.createListener(task);
     listener.registerListener(project);
+    task.setListener(listener);
   }
 
   void registerListener(Project project);
+
+  void unregisterListener();
 
   @RequiresReadLock
   default void unregisterListener(MessageBusConnection messageBusConnection) {
