@@ -4,7 +4,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.ui.components.JBLabel;
 import fi.aalto.cs.apluscourses.presentation.ideactivities.TaskViewModel;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
@@ -12,16 +12,21 @@ public class TaskView {
 
   private JPanel main;
   private JLabel label;
+  private final TaskViewModel viewModel;
 
 
-  public TaskView() {
+  public TaskView(@NotNull TaskViewModel viewModel) {
     main = new JPanel();
     label = new JBLabel();
     main.add(label);
-
+    this.viewModel = viewModel;
   }
 
-  public void viewModelChanged(@Nullable TaskViewModel viewModel) {
+  public static void createAndShow(@NotNull TaskViewModel taskViewModel) {
+    new TaskView(taskViewModel).show();
+  }
+
+  public void show() {
     ApplicationManager.getApplication().invokeLater(() -> {
       if (viewModel != null) {
         label.setText("<html>" + viewModel.getAction()+ "<br>" + viewModel.getTask().getFile() + "</html>");

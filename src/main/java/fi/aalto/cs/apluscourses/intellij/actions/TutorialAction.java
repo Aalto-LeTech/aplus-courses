@@ -18,6 +18,7 @@ import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseGroupViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.ideactivities.TutorialViewModel;
+import fi.aalto.cs.apluscourses.ui.ideactivities.TaskView;
 import org.jetbrains.annotations.NotNull;
 
 public class TutorialAction extends DumbAwareAction {
@@ -76,7 +77,7 @@ public class TutorialAction extends DumbAwareAction {
     //Display a window asking for confirmation to Start the Tutorial
     this.tutorial = ((TutorialExercise) selectedExercise.getModel()).getTutorial();
     tutorial.tutorialUpdated.addListener(this, TutorialAction::completeTutorial);
-    TutorialViewModel viewModel = new TutorialViewModel(tutorial, project);
+    TutorialViewModel viewModel = new TutorialViewModel(tutorial, TaskView::createAndShow, project);
     mainViewModelProvider.getMainViewModel(project).tutorialViewModel.set(viewModel);
     viewModel.startTutorial();
 
