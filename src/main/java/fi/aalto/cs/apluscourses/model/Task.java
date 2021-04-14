@@ -8,12 +8,15 @@ public class Task {
 
   private String action;
   private String file;
-  private boolean isCompleted;
+  private boolean isComplete;
   private ActivitiesListener listener;
   private boolean isLastTask;
 
   @NotNull
   public final Event taskUpdated;
+
+  @NotNull
+  public final Event alreadyComplete;
 
   /**
    * Task constructor. Action and file are Strings
@@ -25,6 +28,7 @@ public class Task {
     this.action = action;
     this.file = file;
     this.taskUpdated = new Event();
+    this.alreadyComplete = new Event();
   }
 
   /**
@@ -34,6 +38,7 @@ public class Task {
     action = "editor.open";
     file = "GoodStuff/o1/goodstuff/gui/CategoryDisplayWindow.scala";
     this.taskUpdated = new Event();
+    this.alreadyComplete = new Event();
   }
 
   public String getAction() {
@@ -44,15 +49,15 @@ public class Task {
     return file;
   }
 
-  public void setIsCompleted(boolean isCompleted) {
-    this.isCompleted = isCompleted;
-    if (isCompleted) {
+  public void setIsComplete(boolean isComplete) {
+    this.isComplete = isComplete;
+    if (isComplete) {
       taskUpdated.trigger();
     }
   }
 
-  public boolean isCompleted() {
-    return isCompleted;
+  public boolean isComplete() {
+    return isComplete;
   }
 
   public void setListener(ActivitiesListener listener) {
@@ -69,6 +74,10 @@ public class Task {
 
   public void setLastTask(boolean lastTask) {
     isLastTask = lastTask;
+  }
+
+  public void isAlreadyComplete() {
+    alreadyComplete.trigger();
   }
 }
 

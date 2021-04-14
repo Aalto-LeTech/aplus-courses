@@ -86,7 +86,7 @@ public class TutorialAction extends DumbAwareAction {
 
   public void completeTutorial() {
     mainViewModelProvider.getMainViewModel(project).tutorialViewModel.set(null);
-    tutorial.getTasks().forEach(task -> task.setIsCompleted(false));
+    tutorial.getTasks().forEach(task -> task.setIsComplete(false));
   }
 
   @Override
