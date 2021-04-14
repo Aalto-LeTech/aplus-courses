@@ -40,7 +40,7 @@ class ReplActionTest extends BasePlatformTestCase with TestHelperScala {
 
     //  then
     assertTrue("REPL's (configuration) working directory has been properly set",
-      configuration.getWorkingDirectory.contains(moduleWorkDir))
+      configuration.getWorkingDirectory().contains(moduleWorkDir))
     assertEquals("REPL's (configuration) title has been properly set",
       replTitle, configuration.getName)
     assertSame("REPL's (configuration) working Module has been properly set",
@@ -61,7 +61,7 @@ class ReplActionTest extends BasePlatformTestCase with TestHelperScala {
 
     //  then
     assertTrue("REPL's (configuration) working directory has been properly set",
-      configuration.getWorkingDirectory.contains(moduleWorkDir))
+      configuration.getWorkingDirectory().contains(moduleWorkDir))
     assertEquals("REPL's (configuration) title has been properly set",
       replTitle, configuration.getName)
     assertSame("REPL's (configuration) working Module has been properly set",
@@ -82,7 +82,7 @@ class ReplActionTest extends BasePlatformTestCase with TestHelperScala {
 
     //  then
     assertTrue("REPL's (configuration) working directory has been properly set",
-      configuration.getWorkingDirectory.contains(moduleWorkDir))
+      configuration.getWorkingDirectory().contains(moduleWorkDir))
     assertEquals("REPL's (configuration) title has been properly set",
       replTitle, configuration.getName)
     assertSame("REPL's (configuration) working Module has been properly set",
@@ -103,7 +103,7 @@ class ReplActionTest extends BasePlatformTestCase with TestHelperScala {
 
     //  then
     assertTrue("REPL's (configuration) working directory has been properly set",
-      configuration.getWorkingDirectory.contains(moduleWorkDir))
+      configuration.getWorkingDirectory().contains(moduleWorkDir))
     assertEquals("REPL's (configuration) title has been properly set",
       replTitle, configuration.getName)
     assertSame("REPL's (configuration) working Module has been properly set",
