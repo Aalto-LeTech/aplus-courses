@@ -44,14 +44,13 @@ public class TutorialAction extends DumbAwareAction {
   }
 
   //Similar to SubmitExerciseAction, get the selected Exercise
-  //TODO Make the Action's icon appear conditionally only when a Tutorial is selected?
+  // Make the Action's icon appear conditionally only when a Tutorial is selected?
   @Override
   public void actionPerformed(@NotNull AnActionEvent e) {
-    Project project = e.getProject();
-    if (project == null) {
+    if (e.getProject() == null) {
       return;
     }
-    this.project = project;
+    this.project = e.getProject();
     confirmStart(project);
   }
 
@@ -81,7 +80,7 @@ public class TutorialAction extends DumbAwareAction {
     mainViewModelProvider.getMainViewModel(project).tutorialViewModel.set(viewModel);
     viewModel.startTutorial();
 
-    //TODO polish this class a bit
+    // polish this class a bit
   }
 
   public void completeTutorial() {

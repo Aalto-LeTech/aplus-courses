@@ -23,7 +23,9 @@ public class Tutorial {
     this.name = "Assignment 1 (Tutorial)";
     tasks.add(new Task());
     Task second = new Task("Second Task", "editor.open", "GoodStuff/o1/goodstuff/gui/GoodStuff.scala");
+    Task third = new Task("Final Task", "editor.open", "GoodStuff/o1/goodstuff/Category.scala");
     tasks.add(second);
+    tasks.add(third);
     this.tutorialUpdated = new Event();
   }
 

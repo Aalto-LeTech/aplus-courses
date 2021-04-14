@@ -49,5 +49,9 @@ public class Task {
     this.isCompleted = isCompleted;
   }
 
+  public boolean isCompleted() {
+    return isCompleted;
+  }
+
 }
 

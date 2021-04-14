@@ -22,7 +22,7 @@ public class OpenFileListener implements FileEditorManagerListener, ActivitiesLi
 
   @RequiresReadLock
   @Override
-  public synchronized void registerListener(Project project) {
+  public void registerListener(Project project) {
     FileEditor[] editors = FileEditorManager.getInstance(project).getAllEditors();
     for (FileEditor editor : editors) {
       if (editor.getFile().getPath().endsWith(filePath)) {
@@ -36,12 +36,13 @@ public class OpenFileListener implements FileEditorManagerListener, ActivitiesLi
     messageBusConnection.subscribe(FileEditorManagerListener.FILE_EDITOR_MANAGER, this);
   }
 
+  @RequiresReadLock
   @Override
   public void fileOpened(@NotNull FileEditorManager source, @NotNull VirtualFile file) {
     if (file.getPath().endsWith(filePath)) {
       System.out.println("File was just opened");
-      task.setCompleted();
       unregisterListener(messageBusConnection);
+      task.setCompleted();
     }
   }
 }
