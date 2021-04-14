@@ -4,6 +4,7 @@ import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
+import com.intellij.ui.ScrollPaneFactory;
 import com.intellij.ui.TreeSpeedSearch;
 import fi.aalto.cs.apluscourses.intellij.actions.ActionUtil;
 import fi.aalto.cs.apluscourses.intellij.actions.OpenItemAction;
@@ -41,7 +42,9 @@ public class ExercisesView {
     emptyText.setText(getText("ui.exercise.ExercisesView.loading"));
     emptyText.setHorizontalAlignment(SwingConstants.CENTER);
     emptyText.setVerticalAlignment(SwingConstants.CENTER);
-    pane.getVerticalScrollBar().setUnitIncrement(exerciseGroupsTree.getRowHeight());
+    var rowHeight = exerciseGroupsTree.getRowHeight();
+    // Row height returns <= 0 on some platforms, so a default alternative is needed
+    pane.getVerticalScrollBar().setUnitIncrement(rowHeight <= 0 ? 20 : rowHeight);
   }
 
   @NotNull
@@ -80,6 +83,7 @@ public class ExercisesView {
 
   @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
   private void createUIComponents() {
+    pane = ScrollPaneFactory.createScrollPane(basePanel);
     exerciseGroupsTree = new TreeView();
     exerciseGroupsTree.setCellRenderer(new ExercisesTreeRenderer());
     exerciseGroupsTree.addNodeAppliedListener(

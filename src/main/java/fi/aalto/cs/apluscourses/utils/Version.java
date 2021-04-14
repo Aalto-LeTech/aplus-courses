@@ -51,6 +51,13 @@ public class Version {
     }
   }
 
+  public enum ComparisonStatus {
+    VALID,
+    MINOR_TOO_OLD,
+    MAJOR_TOO_OLD,
+    MAJOR_TOO_NEW
+  }
+
   /**
    * A constructor for {@link Version} class.
    * @param major Major version number.
@@ -63,6 +70,19 @@ public class Version {
     }
     this.major = major;
     this.minor = minor;
+  }
+
+  /**
+   * Compares a version with another version and returns the comparison result.
+   */
+  public ComparisonStatus compareTo(Version other) {
+    if (this.major < other.major) {
+      return ComparisonStatus.MAJOR_TOO_OLD;
+    }
+    if (this.major > other.major) {
+      return ComparisonStatus.MAJOR_TOO_NEW;
+    }
+    return this.minor >= other.minor ? ComparisonStatus.VALID : ComparisonStatus.MINOR_TOO_OLD;
   }
 
   @Override

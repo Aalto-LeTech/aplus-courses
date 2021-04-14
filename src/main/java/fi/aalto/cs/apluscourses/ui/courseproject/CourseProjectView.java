@@ -41,6 +41,8 @@ public class CourseProjectView extends OurDialogWrapper {
   private JLabel languagePrompt;
   @GuiObject
   private JPanel settingsPanel;
+  @GuiObject
+  private JLabel updateLabel;
 
   CourseProjectView(@NotNull Project project,
                     @NotNull CourseProjectViewModel viewModel) {
@@ -68,6 +70,8 @@ public class CourseProjectView extends OurDialogWrapper {
     currentSettingsText.setVisible(viewModel.shouldShowCurrentSettings());
 
     settingsPanel.setVisible(viewModel.shouldShowSettingsSegment());
+
+    updateLabel.setVisible(viewModel.shouldDisplayVersionWarning());
 
     init();
   }

@@ -17,7 +17,9 @@ import fi.aalto.cs.apluscourses.intellij.notifications.NewModulesVersionsNotific
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.model.Module;
+import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import fi.aalto.cs.apluscourses.utils.Event;
+import fi.aalto.cs.apluscourses.utils.Version;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URL;
@@ -59,7 +61,7 @@ public class CourseUpdaterTest {
     var course = new ModelExtensions.TestCourse(
         "1", "O1", "http://example.com", Collections.emptyList(), Collections.singletonList(module),
         Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap(),
-        Collections.emptyList(), Collections.emptyMap()
+        Collections.emptyList(), Collections.emptyMap(), BuildInfo.INSTANCE.courseVersion
     );
     updater = new CourseUpdater(
         course, project, courseUrl, configurationFetcher, event, notifier, 50L
@@ -80,7 +82,7 @@ public class CourseUpdaterTest {
     updater.restart();
     Thread.sleep(300L);
     updater.stop();
-    verify(module, atLeast(2)).updateVersionId(eq("a"));
+    verify(module, atLeast(2)).updateVersion(eq(new Version(1, 0)));
     verify(configurationFetcher, atLeast(2)).fetch(eq(courseUrl));
     verify(event, atLeast(2)).trigger();
     verifyNoInteractions(notifier);

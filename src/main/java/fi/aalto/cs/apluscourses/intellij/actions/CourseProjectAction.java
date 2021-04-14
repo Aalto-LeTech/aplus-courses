@@ -11,6 +11,8 @@ import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory;
 import fi.aalto.cs.apluscourses.intellij.model.SettingsImporter;
 import fi.aalto.cs.apluscourses.intellij.notifications.CourseConfigurationError;
 import fi.aalto.cs.apluscourses.intellij.notifications.CourseFileError;
+import fi.aalto.cs.apluscourses.intellij.notifications.CourseVersionOutdatedError;
+import fi.aalto.cs.apluscourses.intellij.notifications.CourseVersionTooNewError;
 import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
@@ -25,7 +27,9 @@ import fi.aalto.cs.apluscourses.presentation.CourseSelectionViewModel;
 import fi.aalto.cs.apluscourses.ui.InstallerDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogsImpl;
+import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import fi.aalto.cs.apluscourses.utils.PostponedRunnable;
+import fi.aalto.cs.apluscourses.utils.Version;
 import fi.aalto.cs.apluscourses.utils.async.SimpleAsyncTaskManager;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -155,6 +159,17 @@ public class CourseProjectAction extends AnAction {
 
     Course course = tryGetCourse(project, courseUrl);
     if (course == null) {
+      return;
+    }
+
+    var versionComparison =
+        BuildInfo.INSTANCE.courseVersion.compareTo(course.getVersion());
+
+    if (versionComparison == Version.ComparisonStatus.MAJOR_TOO_OLD
+        || versionComparison == Version.ComparisonStatus.MAJOR_TOO_NEW) {
+      notifier.notify(
+          versionComparison == Version.ComparisonStatus.MAJOR_TOO_OLD
+          ? new CourseVersionOutdatedError() : new CourseVersionTooNewError(), project);
       return;
     }
 
