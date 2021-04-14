@@ -9,9 +9,7 @@ import fi.aalto.cs.apluscourses.e2e.steps.CommonSteps
 import fi.aalto.cs.apluscourses.e2e.utils.StepLoggerInitializer
 import fi.aalto.cs.apluscourses.e2e.utils.getVersion
 import fi.aalto.cs.apluscourses.e2e.utils.uiTest
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
+import org.junit.Assert.*
 import org.junit.Test
 import java.time.Duration
 
@@ -98,11 +96,6 @@ class PlaceholderTest {
                     }
                     assertEquals("Only one item is selected", selectedItems.size, 1)
                     assertTrue("Selected module is correct", selectedItems[0].contains("Viinaharava", true))
-                    keyboard {
-                        escape()
-                        enterText("'") // a character that won't match anything
-                    }
-                    assertEquals("Nothing should be selected", selectedItems.size, 0)
                 }
             }
         }

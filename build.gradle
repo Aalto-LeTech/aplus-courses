@@ -10,7 +10,7 @@ plugins {
 }
 
 group 'fi.aalto.cs'
-version '2.1'
+version '2.2'
 
 sourceCompatibility = 11
 
@@ -42,8 +42,8 @@ dependencies {
 
 intellij {
     //  this is the version of the IntelliJ IDEA API (SDK) used to build the plugin
-    version '2020.3.2'
-    plugins = ['java', 'org.intellij.scala:2020.3.19']
+    version '2021.1'
+    plugins = ['java', 'org.intellij.scala:2021.1.16']
     downloadRobotServerPlugin.version = remoteRobotVersion
 }
 
