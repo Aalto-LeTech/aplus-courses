@@ -15,12 +15,21 @@ public class Task {
   @NotNull
   public final Event taskUpdated;
 
+  /**
+   * Task constructor. Action and file are Strings
+   * read from the configuration file.
+   * @param action the action to be performed
+   * @param file the file the action concerns
+   */
   public Task(String action, String file) {
     this.action = action;
     this.file = file;
     this.taskUpdated = new Event();
   }
 
+  /**
+   * Empty Task constructor.
+   */
   public Task() {
     action = "editor.open";
     file = "GoodStuff/o1/goodstuff/gui/CategoryDisplayWindow.scala";
