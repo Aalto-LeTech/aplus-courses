@@ -4,9 +4,11 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.ui.components.JBLabel;
 import fi.aalto.cs.apluscourses.presentation.ideactivities.TaskViewModel;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
 
 public class TaskView {
 
@@ -30,11 +32,9 @@ public class TaskView {
   public void show() {
     ApplicationManager.getApplication().invokeLater(() -> {
       if (viewModel != null) {
-        label.setText("<html>" + viewModel.getAction()+ "<br>" + viewModel.getTask().getFile() + "</html>");
-        JOptionPane.showMessageDialog(null,
-        main,
-        "Task Window",
-        JOptionPane.PLAIN_MESSAGE);
+        label.setText("<html>" + viewModel.getAction() + "<br>"
+                + viewModel.getTask().getFile() + "</html>");
+        JOptionPane.showMessageDialog(null, main, "Task Window", JOptionPane.PLAIN_MESSAGE);
       }
     }, ModalityState.any()
     );

@@ -40,8 +40,8 @@ public class TutorialAction extends DumbAwareAction {
          new DefaultNotifier());
   }
 
-  public TutorialAction(MainViewModelProvider mainViewModelProvider,
-                        Notifier notifier) {
+  public TutorialAction(@NotNull MainViewModelProvider mainViewModelProvider,
+                        @NotNull Notifier notifier) {
     this.mainViewModelProvider = mainViewModelProvider;
     this.notifier = notifier;
   }
@@ -78,15 +78,15 @@ public class TutorialAction extends DumbAwareAction {
 
     this.tutorial = ((TutorialExercise) selectedExercise.getModel()).getTutorial();
     tutorial.tutorialUpdated.addListener(this, TutorialAction::completeTutorial);
-    TutorialViewModel tutorialViewModel = new TutorialViewModel(tutorial, TaskView::createAndShow, project);
+    TutorialViewModel tutorialViewModel = new TutorialViewModel(tutorial,
+            TaskView::createAndShow, project);
     StartTutorialDialog.createAndShow(tutorialViewModel);
     mainViewModelProvider.getMainViewModel(project).tutorialViewModel.set(tutorialViewModel);
-
   }
 
   public void completeTutorial() {
     mainViewModelProvider.getMainViewModel(project).tutorialViewModel.set(null);
-    tutorial.getTasks().stream().forEach(task -> task.setIsCompleted(false));
+    tutorial.getTasks().forEach(task -> task.setIsCompleted(false));
   }
 
   @Override

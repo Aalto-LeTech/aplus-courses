@@ -1,13 +1,13 @@
 package fi.aalto.cs.apluscourses.presentation.ideactivities;
 
 import com.intellij.openapi.project.Project;
+import fi.aalto.cs.apluscourses.intellij.utils.ActivitiesListener;
 import fi.aalto.cs.apluscourses.model.Task;
 import fi.aalto.cs.apluscourses.model.Tutorial;
-import fi.aalto.cs.apluscourses.intellij.utils.ActivitiesListener;
+import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 
 public class TutorialViewModel {
 
@@ -18,7 +18,8 @@ public class TutorialViewModel {
   private final TaskCallback callback;
   private final Object lock = new Object();
 
-  public TutorialViewModel(@NotNull Tutorial tutorial, @NotNull TaskCallback taskCallback, @Nullable Project project) {
+  public TutorialViewModel(@NotNull Tutorial tutorial,
+                           @NotNull TaskCallback taskCallback, @Nullable Project project) {
     this.tutorial = tutorial;
     this.tasks = tutorial.getTasks();
     if (!tasks.isEmpty()) {
@@ -37,6 +38,10 @@ public class TutorialViewModel {
     }
   }
 
+  //TODO gap in logic if the Task is somehow already performed.
+  //in this case file already open -> Display message that the
+  //condition was already met and to repeat the action?
+
   public void currentTaskCompleted() {
     synchronized (lock) {
       currentTask.taskUpdated.removeCallback(this);
@@ -45,11 +50,10 @@ public class TutorialViewModel {
         startNextTask();
       } else {
         //A dialog will summarize what data will be sent, it might be better to separate
-        //the logic (gathering that info) into a separate ViewModel initialized here.
-        System.out.println("Tutorial is done!");
-
-        tutorial.setCompleted();
+        //the logic into a separate ViewModel initialized here.
         // gather the data here..
+        System.out.println("Tutorial is done!");
+        tutorial.setCompleted();
       }
     }
   }

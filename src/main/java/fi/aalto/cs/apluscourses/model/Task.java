@@ -6,30 +6,22 @@ import org.jetbrains.annotations.NotNull;
 
 public class Task {
 
-  //subclasses with different constructos according to the action?
-  private String instruction;
   private String action;
   private String file;
-  private String content;
-  private String assignmentId;
   private boolean isCompleted;
-  private String oldName;
-  private String newName;
   private ActivitiesListener listener;
   private boolean isLastTask;
 
   @NotNull
   public final Event taskUpdated;
 
-  public Task(String instruction, String action, String file) {
-    this.instruction = instruction;
+  public Task(String action, String file) {
     this.action = action;
     this.file = file;
     this.taskUpdated = new Event();
   }
 
   public Task() {
-    instruction = "Find and open the file called CategoryDisplayWindow.scala";
     action = "editor.open";
     file = "GoodStuff/o1/goodstuff/gui/CategoryDisplayWindow.scala";
     this.taskUpdated = new Event();
@@ -40,7 +32,7 @@ public class Task {
   }
 
   public String getFile() {
-   return file;
+    return file;
   }
 
   public void setCompleted() {
@@ -64,7 +56,7 @@ public class Task {
     return this.listener;
   }
 
-   public boolean isLastTask() {
+  public boolean isLastTask() {
     return isLastTask;
   }
 

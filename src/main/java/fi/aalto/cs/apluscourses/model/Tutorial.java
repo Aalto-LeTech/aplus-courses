@@ -1,29 +1,21 @@
 package fi.aalto.cs.apluscourses.model;
 
 import fi.aalto.cs.apluscourses.utils.Event;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
+
 
 public class Tutorial {
-  private String name;
   private List<Task> tasks = new ArrayList<>();
 
   @NotNull
   public final Event tutorialUpdated;
 
-  public Tutorial(String name, List<Task> tasks) {
-    this.name = name;
-    this.tasks = tasks;
-    this.tutorialUpdated = new Event();
-  }
-
   public Tutorial() { //default constructor for testing purposes
-    this.name = "Assignment 1 (Tutorial)";
     tasks.add(new Task());
-    Task second = new Task("Second Task", "editor.open", "GoodStuff/o1/goodstuff/gui/GoodStuff.scala");
-    Task third = new Task("Final Task", "editor.open", "GoodStuff/o1/goodstuff/Category.scala");
+    Task second = new Task("editor.open", "GoodStuff/o1/goodstuff/gui/GoodStuff.scala");
+    Task third = new Task("editor.open", "GoodStuff/o1/goodstuff/Category.scala");
     third.setLastTask(true);
     tasks.add(second);
     tasks.add(third);

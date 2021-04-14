@@ -11,8 +11,8 @@ import fi.aalto.cs.apluscourses.model.Task;
 import org.jetbrains.annotations.NotNull;
 
 public class OpenFileListener implements FileEditorManagerListener, ActivitiesListener {
-  private String filePath;
-  private Task task;
+  private final String filePath;
+  private final Task task;
   private MessageBusConnection messageBusConnection;
 
   public OpenFileListener(@NotNull Task task) {
@@ -25,7 +25,7 @@ public class OpenFileListener implements FileEditorManagerListener, ActivitiesLi
   public void registerListener(Project project) {
     FileEditor[] editors = FileEditorManager.getInstance(project).getAllEditors();
     for (FileEditor editor : editors) {
-      if (editor.getFile().getPath().endsWith(filePath)) {
+      if (editor.getFile() != null && editor.getFile().getPath().endsWith(filePath)) {
         System.out.println("File is already open");
         //TODO handle this case better
         task.setCompleted();
