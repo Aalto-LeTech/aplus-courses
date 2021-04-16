@@ -35,7 +35,7 @@ public class Task {
    * Empty Task constructor.
    */
   public Task() {
-    action = "editor.open";
+    action = "editorOpen";
     file = "GoodStuff/o1/goodstuff/gui/CategoryDisplayWindow.scala";
     this.taskUpdated = new Event();
     this.alreadyComplete = new Event();

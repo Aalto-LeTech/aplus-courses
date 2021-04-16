@@ -10,9 +10,9 @@ public class ActivitiesListenerFactory {
 
   public static ActivitiesListener createListener(Task task) {
     switch (task.getAction()) {
-      case "editor.open":
+      case "editorOpen":
         return new OpenFileListener(task);
-      case "assignment_tree.submit":
+      case "assignmentTreeSubmit":
         //Listener for submitting assignments?
       default:
         return null;

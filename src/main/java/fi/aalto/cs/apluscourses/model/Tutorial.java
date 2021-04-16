@@ -14,8 +14,8 @@ public class Tutorial {
 
   public Tutorial() { //default constructor for testing purposes
     tasks.add(new Task());
-    Task second = new Task("editor.open", "GoodStuff/o1/goodstuff/gui/GoodStuff.scala");
-    Task third = new Task("editor.open", "GoodStuff/o1/goodstuff/Category.scala");
+    Task second = new Task("editorOpen", "GoodStuff/o1/goodstuff/gui/GoodStuff.scala");
+    Task third = new Task("editorOpen", "GoodStuff/o1/goodstuff/Category.scala");
     third.setLastTask(true);
     tasks.add(second);
     tasks.add(third);
