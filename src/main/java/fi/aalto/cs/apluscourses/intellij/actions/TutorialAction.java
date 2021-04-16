@@ -46,7 +46,6 @@ public class TutorialAction extends DumbAwareAction {
     this.notifier = notifier;
   }
 
-  //Similar to SubmitExerciseAction, get the selected Exercise
   @Override
   public void actionPerformed(@NotNull AnActionEvent e) {
     if (e.getProject() == null) {
@@ -94,16 +93,15 @@ public class TutorialAction extends DumbAwareAction {
     CourseViewModel courseViewModel = mainViewModel.courseViewModel.get();
     Authentication authentication = mainViewModel.authentication.get();
     ExercisesTreeViewModel exercisesViewModel = mainViewModel.exercisesViewModel.get();
-    BaseTreeViewModel.Selection selection = exercisesViewModel.findSelected();
-    ExerciseViewModel selectedExercise = (ExerciseViewModel) selection.getLevel(2);
     boolean isTutorialSelected =
-            exercisesViewModel.getSelectedItem() != null
-            && !(exercisesViewModel.getSelectedItem() instanceof ExerciseGroupViewModel)
-            && selectedExercise != null
+            exercisesViewModel != null
             && authentication != null && courseViewModel != null
-            && ExerciseViewModel.Status.TUTORIAL.equals(selectedExercise.getStatus());
+            && exercisesViewModel.getSelectedItem() != null
+            && !(exercisesViewModel.getSelectedItem() instanceof ExerciseGroupViewModel)
+            && exercisesViewModel.findSelected().getLevel(2) != null
+            && ExerciseViewModel.Status.TUTORIAL.equals(
+               ((ExerciseViewModel) exercisesViewModel.findSelected().getLevel(2)).getStatus());
 
     e.getPresentation().setVisible(e.getProject() != null && isTutorialSelected);
   }
-
 }
