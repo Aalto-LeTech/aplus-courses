@@ -1,13 +1,21 @@
 package fi.aalto.cs.apluscourses.ui.ideactivities;
 
+import com.intellij.ui.JBColor;
+
+import java.awt.AlphaComposite;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.geom.Area;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRootPane;
+import javax.swing.SwingUtilities;
 
 public class OverlayPane extends JPanel {
   private static OverlayPane activeOverlay = null;
@@ -18,6 +26,28 @@ public class OverlayPane extends JPanel {
   private void revalidateFrame() {
     getRootPane().revalidate();
     getRootPane().repaint();
+  }
+
+  @Override
+  protected void paintComponent(Graphics graphics) {
+    super.paintComponent(graphics);
+
+    // use Graphics's copy so as not to influence subsequent calls using the same Graphics object
+    Graphics2D g = (Graphics2D) graphics.create();
+    g.setComposite(AlphaComposite.SrcOver.derive(0.7f));
+    g.setColor(JBColor.BLACK);
+
+    var overlayArea = new Area(new Rectangle(0, 0, getWidth(), getHeight()));
+
+    for (var c : exemptComponents) {
+      // convertPoint is necessary because the component uses a different coordinate origin
+      var windowPos = SwingUtilities.convertPoint(c, c.getX(), c.getY(), this);
+      var componentRect = new Rectangle(windowPos.x, windowPos.y, c.getWidth(), c.getHeight());
+
+      overlayArea.subtract(new Area(componentRect));
+    }
+
+    g.fill(overlayArea);
   }
 
   @Override
