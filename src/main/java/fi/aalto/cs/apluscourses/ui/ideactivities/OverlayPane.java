@@ -1,7 +1,5 @@
 package fi.aalto.cs.apluscourses.ui.ideactivities;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Component;
@@ -17,6 +15,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRootPane;
 import javax.swing.SwingUtilities;
+
+import icons.PluginIcons;
+import org.jetbrains.annotations.NotNull;
 
 public class OverlayPane extends JPanel {
   private static OverlayPane activeOverlay = null;
@@ -130,6 +131,18 @@ public class OverlayPane extends JPanel {
 
     activeOverlay.exemptComponents.add(c);
     activeOverlay.revalidatePane();
+  }
+
+  public static @NotNull BalloonPopup addPopup(@NotNull Component c, @NotNull String title,
+                                               @NotNull String message) {
+    if (!isOverlayInstalled()) {
+      throw new IllegalStateException("No overlay is currently installed");
+    }
+
+    var popup = new BalloonPopup(c, title, message, PluginIcons.A_PLUS_OPTIONAL_PRACTICE);
+    activeOverlay.getRootPane().getLayeredPane().add(popup, 30000);
+
+    return popup;
   }
 
   private OverlayPane() {
