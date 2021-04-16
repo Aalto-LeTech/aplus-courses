@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import java.awt.Component;
 
 public class BalloonPopup extends JPanel {
-  private final Component anchorComponent;
+  private final @NotNull Component anchorComponent;
 
   public BalloonPopup(@NotNull Component anchorComponent, @NotNull String title,
                       @NotNull String message, @Nullable Icon icon) {

@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.ui.ideactivities;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Component;
@@ -98,7 +100,7 @@ public class OverlayPane extends JPanel {
     return activeOverlay != null;
   }
 
-  public static OverlayPane installOverlay() {
+  public static @NotNull OverlayPane installOverlay() {
     if (isOverlayInstalled()) {
       throw new IllegalStateException("An overlay is already installed");
     }
