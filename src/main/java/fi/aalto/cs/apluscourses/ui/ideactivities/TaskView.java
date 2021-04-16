@@ -15,26 +15,37 @@ public class TaskView {
 
   private JPanel main;
   protected JLabel label;
-  private final TaskViewModel viewModel;
+  private final TaskViewModel taskViewModel;
 
-
+  /**
+   * Constructor.
+   * @param viewModel the TaskViewModel used
+   */
   public TaskView(@NotNull TaskViewModel viewModel) {
     main = new JPanel();
     label = new JBLabel();
     label.setText("<html>" + viewModel.getAction() + "<br>"
           + viewModel.getTask().getFile() + "</html>");
     main.add(label);
-    this.viewModel = viewModel;
+    this.taskViewModel = viewModel;
   }
 
+  /**
+   * Method used to generate and display a TaskView
+   * according to the given taskViewModel.
+   * @param taskViewModel the TaskViewModel to be used from the TaskView
+   */
   //Also, send termination signal in order to cancel Tutorial and free up resources!
   public static void createAndShow(@NotNull TaskViewModel taskViewModel) {
     new TaskView(taskViewModel).show();
   }
 
+  /**
+   * Displays and/or modifies the UI of the TaskVIew.
+   */
   public void show() {
     ApplicationManager.getApplication().invokeLater(() -> {
-      if (viewModel != null) {
+      if (taskViewModel != null) {
         JOptionPane.showMessageDialog(null, main, "Task Window", JOptionPane.PLAIN_MESSAGE);
       }
     }, ModalityState.any()

@@ -12,6 +12,10 @@ public class Tutorial {
   @NotNull
   public final Event tutorialUpdated;
 
+  /**
+   * Empty constructor used to initialize
+   * a Tutorial object with default values.
+   */
   public Tutorial() { //default constructor for testing purposes
     tasks.add(new Task());
     Task second = new Task("editorOpen", "GoodStuff/o1/goodstuff/gui/GoodStuff.scala");
@@ -26,6 +30,11 @@ public class Tutorial {
     return tasks;
   }
 
+  /**
+   * Method to get the next Task in row.
+   * @param task the current Task whose successor we are looking for.
+   * @return the next Task to be performed
+   */
   public Task getNextTask(@NotNull Task task) {
     if (tasks.indexOf(task) != tasks.size() - 1) {
       return tasks.get(tasks.indexOf(task) + 1);

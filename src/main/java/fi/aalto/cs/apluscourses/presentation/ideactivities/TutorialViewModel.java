@@ -21,6 +21,12 @@ public class TutorialViewModel {
   private final TaskCallback callback;
   private final Object lock = new Object();
 
+  /**
+   * Constructor.
+   * @param tutorial the Tutorial to be performed
+   * @param taskCallback callback for when the tutorial is done
+   * @param project the Project that the Tutorial will be in
+   */
   public TutorialViewModel(@NotNull Tutorial tutorial,
                            @NotNull TaskCallback taskCallback, @Nullable Project project) {
     this.tutorial = tutorial;
@@ -32,6 +38,9 @@ public class TutorialViewModel {
     this.callback = taskCallback;
   }
 
+  /**
+   * Begins the nextTask which is indicated by the currentTask variable.
+   */
   public void startNextTask() {
     synchronized (lock) {
       currentTask.taskUpdated.addListener(
@@ -52,11 +61,16 @@ public class TutorialViewModel {
     }
   }
 
+  /**
+   * Sets the currentTask as completed and fress up any resources associated with it.
+   * If this task was the last one the Tutorial is completed,
+   * if not, then the currentTask is set to point to the next Task to be done.
+   */
   public void currentTaskCompleted() {
     synchronized (lock) {
       currentTask.taskUpdated.removeCallback(this);
       currentTask.alreadyComplete.removeCallback(this);
-      if (!currentTask.isLastTask()) {
+      if (!currentTask.equals(tasks.get(tasks.size() - 1))) {
         currentTask = tutorial.getNextTask(currentTask);
         startNextTask();
       } else {
@@ -67,6 +81,10 @@ public class TutorialViewModel {
     }
   }
 
+  /**
+   * Functionality for canceling the Tutorial, mainly frees up resources
+   * and resetes the tasks as not completed.
+   */
   public void cancelTutorial() {
     synchronized (lock) {
       currentTask.getListener().unregisterListener();
@@ -76,6 +94,11 @@ public class TutorialViewModel {
     }
   }
 
+  /**
+   * This method is called if the Task's action was already
+   * complete when starting the Task. The Task's instruction window
+   * is not shown (skipped) and we proceed with the rest of the Tutorial.
+   */
   public void alreadyComplete() {
     synchronized (lock) {
       System.out.println("Already Done" + currentTask.getFile());

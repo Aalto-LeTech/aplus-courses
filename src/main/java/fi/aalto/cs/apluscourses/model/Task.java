@@ -10,7 +10,7 @@ public class Task {
   private String file;
   private boolean isComplete;
   private ActivitiesListener listener;
-  private boolean isLastTask;
+  private boolean isLastTask; //doesn't belong here
 
   @NotNull
   public final Event taskUpdated;
@@ -79,5 +79,6 @@ public class Task {
   public void isAlreadyComplete() {
     alreadyComplete.trigger();
   }
+
 }
 

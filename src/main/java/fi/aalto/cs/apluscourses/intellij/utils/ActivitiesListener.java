@@ -7,7 +7,7 @@ import fi.aalto.cs.apluscourses.model.Task;
 
 public interface ActivitiesListener {
 
-  static void createListener(Task task, Project project) {
+  static void createListener(Task task, Project project) { //doesn't belong
     ActivitiesListener listener = ActivitiesListenerFactory.createListener(task);
     if (listener != null) {
       listener.registerListener(project);
@@ -20,7 +20,7 @@ public interface ActivitiesListener {
   void unregisterListener();
 
   @RequiresReadLock
-  default void unregisterListener(MessageBusConnection messageBusConnection) {
+  default void unregisterListener(MessageBusConnection messageBusConnection) { //doesn't belong
     if (messageBusConnection != null) {
       messageBusConnection.disconnect();
     }
