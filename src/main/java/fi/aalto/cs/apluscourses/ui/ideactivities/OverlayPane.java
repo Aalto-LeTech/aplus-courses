@@ -3,14 +3,15 @@ package fi.aalto.cs.apluscourses.ui.ideactivities;
 import com.intellij.ui.JBColor;
 
 import java.awt.AlphaComposite;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.Area;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -21,9 +22,9 @@ public class OverlayPane extends JPanel {
   private static OverlayPane activeOverlay = null;
 
   private final JRootPane associatedRootPane;
-  private final List<Component> exemptComponents;
+  private final Set<Component> exemptComponents;
 
-  private void revalidateFrame() {
+  private void revalidatePane() {
     getRootPane().revalidate();
     getRootPane().repaint();
   }
@@ -35,7 +36,7 @@ public class OverlayPane extends JPanel {
     // use Graphics's copy so as not to influence subsequent calls using the same Graphics object
     Graphics2D g = (Graphics2D) graphics.create();
     g.setComposite(AlphaComposite.SrcOver.derive(0.7f));
-    g.setColor(JBColor.BLACK);
+    g.setColor(Color.BLACK); // using JBColor.BLACK is wrong here
 
     var overlayArea = new Area(new Rectangle(0, 0, getWidth(), getHeight()));
 
@@ -57,12 +58,12 @@ public class OverlayPane extends JPanel {
 
   @Override
   public int getWidth() {
-    return associatedRootPane.getContentPane().getWidth();
+    return associatedRootPane.getLayeredPane().getWidth();
   }
 
   @Override
   public int getHeight() {
-    return associatedRootPane.getContentPane().getHeight();
+    return associatedRootPane.getLayeredPane().getHeight();
   }
 
   @Override
@@ -95,32 +96,47 @@ public class OverlayPane extends JPanel {
     return true;
   }
 
+  public static boolean isOverlayInstalled() {
+    return activeOverlay != null;
+  }
+
   public static OverlayPane installOverlay() {
-    if (activeOverlay != null) {
+    if (isOverlayInstalled()) {
       throw new IllegalStateException("An overlay is already installed");
     }
 
     activeOverlay = new OverlayPane();
-    activeOverlay.getRootPane().getContentPane().add(activeOverlay);
-    activeOverlay.revalidateFrame();
+    activeOverlay.getRootPane().getLayeredPane().add(activeOverlay, 20000);
+    activeOverlay.revalidatePane();
 
     return activeOverlay;
   }
 
   public static void removeOverlay() {
-    if (activeOverlay == null) {
+    if (!isOverlayInstalled()) {
       throw new IllegalStateException("No overlay is currently installed");
     }
 
-    activeOverlay.getRootPane().getContentPane().remove(activeOverlay);
-    activeOverlay.revalidateFrame();
+    activeOverlay.getRootPane().getLayeredPane().remove(activeOverlay);
+    activeOverlay.revalidatePane();
+
+    activeOverlay = null;
+  }
+
+  public static void showComponent(Component c) {
+    if (!isOverlayInstalled()) {
+      throw new IllegalStateException("No overlay is currently installed");
+    }
+
+    activeOverlay.exemptComponents.add(c);
+    activeOverlay.revalidatePane();
   }
 
   private OverlayPane() {
     var rootFrame = (JFrame) JOptionPane.getRootFrame();
 
     associatedRootPane = rootFrame.getRootPane();
-    exemptComponents = new ArrayList<>();
+    exemptComponents = new HashSet<>();
 
     setLayout(null);
   }
