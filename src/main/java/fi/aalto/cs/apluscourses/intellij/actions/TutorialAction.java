@@ -31,10 +31,6 @@ public class TutorialAction extends DumbAwareAction {
   @NotNull
   private final Notifier notifier;
 
-  private Project project;
-
-  private Tutorial tutorial;
-
   public TutorialAction() {
     this(PluginSettings.getInstance(),
          new DefaultNotifier());
@@ -51,8 +47,7 @@ public class TutorialAction extends DumbAwareAction {
     if (e.getProject() == null) {
       return;
     }
-    this.project = e.getProject();
-    confirmStart(project);
+    confirmStart(e.getProject());
   }
 
   private void confirmStart(@NotNull Project project) {
@@ -74,17 +69,13 @@ public class TutorialAction extends DumbAwareAction {
       return;
     }
 
-    this.tutorial = ((TutorialExercise) selectedExercise.getModel()).getTutorial();
-    tutorial.tutorialUpdated.addListener(this, TutorialAction::completeTutorial);
+    Tutorial tutorial = ((TutorialExercise) selectedExercise.getModel()).getTutorial();
+    CompleteTutorial completeTutorial = new CompleteTutorial(mainViewModel, tutorial);
+    tutorial.tutorialUpdated.addListener(completeTutorial, CompleteTutorial::completeTutorial);
     TutorialViewModel tutorialViewModel = new TutorialViewModel(tutorial,
             TaskView::createAndShow, project);
     StartTutorialDialog.createAndShow(tutorialViewModel);
     mainViewModelProvider.getMainViewModel(project).tutorialViewModel.set(tutorialViewModel);
-  }
-
-  public void completeTutorial() {
-    mainViewModelProvider.getMainViewModel(project).tutorialViewModel.set(null);
-    tutorial.getTasks().forEach(task -> task.setIsComplete(false));
   }
 
   @Override
@@ -103,5 +94,20 @@ public class TutorialAction extends DumbAwareAction {
                ((ExerciseViewModel) exercisesViewModel.findSelected().getLevel(2)).getStatus());
 
     e.getPresentation().setVisible(e.getProject() != null && isTutorialSelected);
+  }
+
+  private class CompleteTutorial {
+    private final MainViewModel mainViewModel;
+    private final Tutorial tutorial;
+
+    CompleteTutorial(MainViewModel mainViewModel, Tutorial tutorial) {
+      this.mainViewModel = mainViewModel;
+      this.tutorial = tutorial;
+    }
+
+    public void completeTutorial() {
+      mainViewModel.tutorialViewModel.set(null);
+      tutorial.getTasks().forEach(task -> task.setIsComplete(false));
+    }
   }
 }
