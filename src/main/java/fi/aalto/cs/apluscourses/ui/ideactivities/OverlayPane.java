@@ -1,7 +1,5 @@
 package fi.aalto.cs.apluscourses.ui.ideactivities;
 
-import com.intellij.ui.JBColor;
-
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Component;
