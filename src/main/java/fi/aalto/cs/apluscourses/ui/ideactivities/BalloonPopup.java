@@ -1,6 +1,8 @@
 package fi.aalto.cs.apluscourses.ui.ideactivities;
 
 import com.intellij.util.ui.JBUI;
+import java.awt.Component;
+import java.awt.Dimension;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JLabel;
@@ -9,8 +11,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.awt.Component;
 
 public class BalloonPopup extends JPanel {
   private final @NotNull Component anchorComponent;
@@ -21,6 +21,9 @@ public class BalloonPopup extends JPanel {
 
     setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
     setBorder(new EmptyBorder(JBUI.insets(0, 5, 10, 5)));
+
+    // introduce a limit to the popup's width (so it doesn't take the entire screen width)
+    setMaximumSize(new Dimension(500, 0));
 
     var titleText = new JLabel("<html><h1>" + title + "</h1></html>");
     if (icon != null) {
@@ -40,7 +43,7 @@ public class BalloonPopup extends JPanel {
     recalculateBounds();
   }
 
-  private void recalculateBounds() {
+  public void recalculateBounds() {
     // the origin of the component that this popup is attached to must be converted to the
     // overlay pane's coordinate system, because that overlay uses a null layout and requires
     // that this popup specify its bounds
@@ -48,9 +51,10 @@ public class BalloonPopup extends JPanel {
     var componentWindowPos = SwingUtilities.convertPoint(
         anchorComponent, anchorComponent.getX(), anchorComponent.getY(), getParent());
 
+    var maxSize = getMaximumSize();
     var prefSize = getPreferredSize();
 
-    int popupWidth = prefSize.width;
+    int popupWidth = Integer.min(maxSize.width, prefSize.width);
     int popupHeight = prefSize.height;
 
     int popupX = componentWindowPos.x + anchorComponent.getWidth() + 5;

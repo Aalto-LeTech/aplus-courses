@@ -24,6 +24,7 @@ public class OverlayPane extends JPanel {
 
   private final JRootPane associatedRootPane;
   private final Set<Component> exemptComponents;
+  private final Set<BalloonPopup> popups;
 
   private void revalidatePane() {
     getRootPane().revalidate();
@@ -33,6 +34,10 @@ public class OverlayPane extends JPanel {
   @Override
   protected void paintComponent(Graphics graphics) {
     super.paintComponent(graphics);
+
+    for (var c : popups) {
+      c.recalculateBounds();
+    }
 
     // use Graphics's copy so as not to influence subsequent calls using the same Graphics object
     Graphics2D g = (Graphics2D) graphics.create();
@@ -46,6 +51,12 @@ public class OverlayPane extends JPanel {
       var windowPos = SwingUtilities.convertPoint(c, c.getX(), c.getY(), this);
       var componentRect = new Rectangle(windowPos.x, windowPos.y, c.getWidth(), c.getHeight());
 
+      overlayArea.subtract(new Area(componentRect));
+    }
+
+    for (var c : popups) {
+      // popups are already places in the overlay's coordinate system
+      var componentRect = new Rectangle(c.getX(), c.getY(), c.getWidth(), c.getHeight());
       overlayArea.subtract(new Area(componentRect));
     }
 
@@ -119,6 +130,9 @@ public class OverlayPane extends JPanel {
     }
 
     activeOverlay.getRootPane().getLayeredPane().remove(activeOverlay);
+    for (var c : activeOverlay.popups) {
+      activeOverlay.getRootPane().getLayeredPane().remove(c);
+    }
     activeOverlay.revalidatePane();
 
     activeOverlay = null;
@@ -140,7 +154,9 @@ public class OverlayPane extends JPanel {
     }
 
     var popup = new BalloonPopup(c, title, message, PluginIcons.A_PLUS_OPTIONAL_PRACTICE);
+    activeOverlay.popups.add(popup);
     activeOverlay.getRootPane().getLayeredPane().add(popup, 30000);
+    activeOverlay.revalidatePane();
 
     return popup;
   }
@@ -150,6 +166,7 @@ public class OverlayPane extends JPanel {
 
     associatedRootPane = rootFrame.getRootPane();
     exemptComponents = new HashSet<>();
+    popups = new HashSet<>();
 
     setLayout(null);
   }
