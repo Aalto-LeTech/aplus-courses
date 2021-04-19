@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.ui.ideactivities;
 
+import icons.PluginIcons;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Component;
@@ -15,8 +16,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRootPane;
 import javax.swing.SwingUtilities;
-
-import icons.PluginIcons;
 import org.jetbrains.annotations.NotNull;
 
 public class OverlayPane extends JPanel {

@@ -1,11 +1,10 @@
 package fi.aalto.cs.apluscourses.ui.ideactivities;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import java.awt.Component;
 import java.awt.Container;
 import javax.swing.JOptionPane;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class ComponentLocator {
   public static @Nullable Component getComponentByClass(@NotNull String componentClassSubstring) {
