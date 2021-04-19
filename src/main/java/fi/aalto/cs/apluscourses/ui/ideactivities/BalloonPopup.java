@@ -16,6 +16,11 @@ import org.jetbrains.annotations.Nullable;
 public class BalloonPopup extends JPanel {
   private final @NotNull Component anchorComponent;
 
+  /**
+   * Creates a popup with the given text. The popup is permanently attached to the specified
+   * component. Optionally, an icon can be provided which will be displayed to the left of
+   * the popup's title.
+   */
   public BalloonPopup(@NotNull Component anchorComponent, @NotNull String title,
                       @NotNull String message, @Nullable Icon icon) {
     this.anchorComponent = anchorComponent;
@@ -44,6 +49,10 @@ public class BalloonPopup extends JPanel {
     recalculateBounds();
   }
 
+  /**
+   * Recomputes the popups bounds and triggers a reposition if needed. Should ideally be called
+   * every time anything changes in the parent frame.
+   */
   public void recalculateBounds() {
     // the origin of the component that this popup is attached to must be converted to the
     // overlay pane's coordinate system, because that overlay uses a null layout and requires

@@ -111,7 +111,10 @@ public class OverlayPane extends JPanel {
     return activeOverlay != null;
   }
 
-  public static @NotNull OverlayPane installOverlay() {
+  /**
+   * Installs the overlay.
+   */
+  public static void installOverlay() {
     if (isOverlayInstalled()) {
       throw new IllegalStateException("An overlay is already installed");
     }
@@ -119,10 +122,11 @@ public class OverlayPane extends JPanel {
     activeOverlay = new OverlayPane();
     activeOverlay.getRootPane().getLayeredPane().add(activeOverlay, 20000);
     activeOverlay.revalidatePane();
-
-    return activeOverlay;
   }
 
+  /**
+   * Removes the overlay.
+   */
   public static void removeOverlay() {
     if (!isOverlayInstalled()) {
       throw new IllegalStateException("No overlay is currently installed");
@@ -137,6 +141,9 @@ public class OverlayPane extends JPanel {
     activeOverlay = null;
   }
 
+  /**
+   * Marks a component not to be dimmed.
+   */
   public static void showComponent(Component c) {
     if (!isOverlayInstalled()) {
       throw new IllegalStateException("No overlay is currently installed");
@@ -146,6 +153,9 @@ public class OverlayPane extends JPanel {
     activeOverlay.revalidatePane();
   }
 
+  /**
+   * Adds a popup to a specified component.
+   */
   public static @NotNull BalloonPopup addPopup(@NotNull Component c, @NotNull String title,
                                                @NotNull String message) {
     if (!isOverlayInstalled()) {
