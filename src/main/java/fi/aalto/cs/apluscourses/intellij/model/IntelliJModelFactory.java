@@ -44,12 +44,13 @@ public class IntelliJModelFactory implements ModelFactory {
                              @NotNull Map<Long, Map<String, String>> exerciseModules,
                              @NotNull Map<String, URL> resourceUrls,
                              @NotNull List<String> autoInstallComponentNames,
-                             @NotNull Map<String, String[]> replInitialCommands) {
+                             @NotNull Map<String, String[]> replInitialCommands,
+                             @NotNull Version courseVersion) {
 
     IntelliJCourse course =
         new IntelliJCourse(id, name, aplusUrl, languages, modules, libraries, exerciseModules,
-            resourceUrls, autoInstallComponentNames, replInitialCommands, project,
-            new CommonLibraryProvider(project));
+            resourceUrls, autoInstallComponentNames, replInitialCommands, courseVersion,
+            project, new CommonLibraryProvider(project));
 
     Component.InitializationCallback componentInitializationCallback =
         component -> registerComponentToCourse(component, course);

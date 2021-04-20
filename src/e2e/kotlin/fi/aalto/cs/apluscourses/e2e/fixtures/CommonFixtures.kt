@@ -84,6 +84,11 @@ class IdeFrameFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent
         byXpath("//div[@accessiblename='Filter Assignments']"),
         Duration.ofSeconds(20)
     )
+    fun searchEverywhereButton() = find(
+        ActionButtonFixture::class.java,
+        byXpath("//div[@accessiblename='Search Everywhere' and @class='ActionButton']"),
+        Duration.ofSeconds(20)
+    )
     fun filterDropDownMenu() = find(
         JListFixture::class.java,
         byXpath("//div[@class='MyList']"),

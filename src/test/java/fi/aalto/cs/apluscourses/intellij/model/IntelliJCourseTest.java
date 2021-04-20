@@ -13,6 +13,7 @@ import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.Library;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.model.Module;
+import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,6 +49,8 @@ public class IntelliJCourseTest {
         Collections.emptyList(),
         //  replInitialCommands
         Collections.emptyMap(),
+        //  courseVersion
+        BuildInfo.INSTANCE.courseVersion,
         project,
         commonLibraryProvider);
     assertEquals(id, course.getId());
@@ -90,6 +93,8 @@ public class IntelliJCourseTest {
         Collections.emptyList(),
         //  replInitialCommands
         Collections.emptyMap(),
+        //  courseVersion
+        BuildInfo.INSTANCE.courseVersion,
         project,
         commonLibraryProvider);
 
@@ -133,6 +138,8 @@ public class IntelliJCourseTest {
         Collections.emptyList(),
         //  replInitialCommands
         Collections.emptyMap(),
+        //  courseVersion
+        BuildInfo.INSTANCE.courseVersion,
         mock(APlusProject.class),
         mock(CommonLibraryProvider.class));
 
@@ -165,6 +172,8 @@ public class IntelliJCourseTest {
         Collections.emptyList(),
         //  replInitialCommands
         Collections.emptyMap(),
+        //  courseVersion
+        BuildInfo.INSTANCE.courseVersion,
         mock(APlusProject.class),
         mock(CommonLibraryProvider.class));
 

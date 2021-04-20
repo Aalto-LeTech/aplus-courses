@@ -22,6 +22,7 @@ import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseFilter;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseGroupFilter;
+import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.filter.Option;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
@@ -168,9 +169,9 @@ public class PluginSettings implements MainViewModelProvider {
       // assumes that the project isn't a course project. This means that the user would be
       // instructed to turn the project into a course project for an example when the token is
       // missing.
-      mainViewModel.updateExercisesViewModel(new ArrayList<>());
-      mainViewModel.exercisesViewModel.get()
-          .setAuthenticated(courseProject.getAuthentication() != null);
+      var exercisesViewModel = new ExercisesTreeViewModel(new ArrayList<>(), new Options());
+      exercisesViewModel.setAuthenticated(courseProject.getAuthentication() != null);
+      mainViewModel.exercisesViewModel.set(exercisesViewModel);
       courseProject.courseUpdated.addListener(
           mainViewModel.courseViewModel, ObservableProperty::valueChanged);
       courseProject.exercisesUpdated.addListener(mainViewModel, viewModel ->

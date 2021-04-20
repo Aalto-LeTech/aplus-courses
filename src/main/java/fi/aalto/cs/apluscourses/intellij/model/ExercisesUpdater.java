@@ -64,6 +64,15 @@ public class ExercisesUpdater extends RepeatedTask {
       courseProject.setExerciseGroups(exerciseGroups);
       eventToTrigger.trigger();
     } catch (IOException e) {
+      var observable = PluginSettings
+          .getInstance()
+          .getMainViewModel(courseProject.getProject())
+          .exercisesViewModel;
+      var exercisesViewModel = observable.get();
+      if (exercisesViewModel != null) {
+        exercisesViewModel.setAuthenticated(false);
+        observable.valueChanged();
+      }
       notifier.notify(new NetworkErrorNotification(e), courseProject.getProject());
     }
   }

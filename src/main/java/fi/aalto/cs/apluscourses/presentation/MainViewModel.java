@@ -57,7 +57,7 @@ public class MainViewModel {
   public void updateExercisesViewModel(@NotNull List<ExerciseGroup> exerciseGroups) {
     inGrading.forEach((id, exercise) -> setInGrading(exerciseGroups, id));
     var viewModel = new ExercisesTreeViewModel(exerciseGroups, exerciseFilterOptions);
-    viewModel.setAuthenticated(exercisesViewModel.get().isAuthenticated());
+    viewModel.setAuthenticated(true);
     viewModel.setProjectReady(exercisesViewModel.get().isProjectReady());
     exercisesViewModel.set(viewModel);
   }

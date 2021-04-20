@@ -20,6 +20,7 @@ import fi.aalto.cs.apluscourses.presentation.CourseProjectViewModel;
 import fi.aalto.cs.apluscourses.presentation.CourseSelectionViewModel;
 import fi.aalto.cs.apluscourses.ui.InstallerDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogs;
+import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import fi.aalto.cs.apluscourses.utils.PostponedRunnable;
 import fi.aalto.cs.apluscourses.utils.async.ImmediateTaskManager;
 import java.io.IOException;
@@ -148,7 +149,9 @@ public class CourseProjectActionTest extends BasePlatformTestCase {
         //  autoInstallComponentNames
         Collections.emptyList(),
         //  replInitialCommands
-        Collections.emptyMap()
+        Collections.emptyMap(),
+        //  courseVersion
+        BuildInfo.INSTANCE.courseVersion
     );
 
     settingsImporter = new DummySettingsImporter();
