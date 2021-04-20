@@ -30,9 +30,5 @@ public class StartTutorialDialog {
             JOptionPane.YES_NO_CANCEL_OPTION);
   }
 
-
-  //Find the first uncompleteds Task and display that? ->
-  // Future feature could be to leave and restart tutorials.
-
 }
 

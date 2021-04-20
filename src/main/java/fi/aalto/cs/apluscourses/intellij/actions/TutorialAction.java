@@ -68,14 +68,13 @@ public class TutorialAction extends DumbAwareAction {
       notifier.notifyAndHide(new ExerciseNotSelectedNotification(), project);
       return;
     }
-
     Tutorial tutorial = ((TutorialExercise) selectedExercise.getModel()).getTutorial();
-    CompleteTutorial completeTutorial = new CompleteTutorial(mainViewModel, tutorial);
-    tutorial.tutorialUpdated.addListener(completeTutorial, CompleteTutorial::completeTutorial);
     TutorialViewModel tutorialViewModel = new TutorialViewModel(tutorial,
             TaskView::createAndShow, project);
-    StartTutorialDialog.createAndShow(tutorialViewModel);
     mainViewModelProvider.getMainViewModel(project).tutorialViewModel.set(tutorialViewModel);
+    CompleteTutorial completeTutorial = new CompleteTutorial(mainViewModel);
+    tutorial.tutorialUpdated.addListener(completeTutorial, CompleteTutorial::completeTutorial);
+    StartTutorialDialog.createAndShow(tutorialViewModel);
   }
 
   @Override
@@ -96,18 +95,15 @@ public class TutorialAction extends DumbAwareAction {
     e.getPresentation().setVisible(e.getProject() != null && isTutorialSelected);
   }
 
-  private class CompleteTutorial {
+  private static class CompleteTutorial {
     private final MainViewModel mainViewModel;
-    private final Tutorial tutorial;
 
-    CompleteTutorial(MainViewModel mainViewModel, Tutorial tutorial) {
+    CompleteTutorial(MainViewModel mainViewModel) {
       this.mainViewModel = mainViewModel;
-      this.tutorial = tutorial;
     }
 
     public void completeTutorial() {
       mainViewModel.tutorialViewModel.set(null);
-      tutorial.getTasks().forEach(task -> task.setIsComplete(false));
     }
   }
 }

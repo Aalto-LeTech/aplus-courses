@@ -7,15 +7,19 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.concurrency.annotations.RequiresReadLock;
 import com.intellij.util.messages.MessageBusConnection;
-import fi.aalto.cs.apluscourses.model.Task;
+import fi.aalto.cs.apluscourses.model.task.OpenFileTask;
+import fi.aalto.cs.apluscourses.model.task.Task;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.jetbrains.annotations.NotNull;
+
 
 public class OpenFileListener implements FileEditorManagerListener, ActivitiesListener {
   private final String filePath;
   private final Task task;
   private MessageBusConnection messageBusConnection;
+  private final AtomicBoolean alreadyComplete = new AtomicBoolean();
 
-  public OpenFileListener(@NotNull Task task) {
+  public OpenFileListener(@NotNull OpenFileTask task) {
     this.task = task;
     this.filePath = task.getFile();
   }
@@ -27,7 +31,8 @@ public class OpenFileListener implements FileEditorManagerListener, ActivitiesLi
     for (FileEditor editor : editors) {
       if (editor.getFile() != null && editor.getFile().getPath().endsWith(filePath)) {
         System.out.println("File is already open");
-        task.isAlreadyComplete();
+        alreadyComplete.set(true);
+        task.setIsComplete();
         return;
       }
     }
@@ -35,9 +40,16 @@ public class OpenFileListener implements FileEditorManagerListener, ActivitiesLi
     messageBusConnection.subscribe(FileEditorManagerListener.FILE_EDITOR_MANAGER, this);
   }
 
+  @RequiresReadLock
   @Override
   public void unregisterListener() {
-    unregisterListener(messageBusConnection);
+    if (messageBusConnection != null) {
+      messageBusConnection.disconnect();
+    }
+  }
+
+  public boolean isAlreadyComplete() {
+    return this.alreadyComplete.get();
   }
 
   @RequiresReadLock
@@ -45,8 +57,8 @@ public class OpenFileListener implements FileEditorManagerListener, ActivitiesLi
   public void fileOpened(@NotNull FileEditorManager source, @NotNull VirtualFile file) {
     if (file.getPath().endsWith(filePath)) {
       System.out.println("File was just opened");
-      unregisterListener(messageBusConnection);
-      task.setIsComplete(true);
+      this.unregisterListener();
+      task.setIsComplete();
     }
   }
 }

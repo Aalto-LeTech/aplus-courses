@@ -1,11 +1,9 @@
 package fi.aalto.cs.apluscourses.presentation.ideactivities;
 
 import com.intellij.openapi.project.Project;
-import fi.aalto.cs.apluscourses.intellij.utils.ActivitiesListener;
-import fi.aalto.cs.apluscourses.model.Task;
 import fi.aalto.cs.apluscourses.model.Tutorial;
+import fi.aalto.cs.apluscourses.model.task.Task;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -16,7 +14,6 @@ public class TutorialViewModel {
   private final Project project;
   private Task currentTask;
   private final List<Task> tasks;
-  private final AtomicBoolean skipTask = new AtomicBoolean();
   private final Tutorial tutorial;
   private final TaskCallback callback;
   private final Object lock = new Object();
@@ -45,9 +42,8 @@ public class TutorialViewModel {
     synchronized (lock) {
       currentTask.taskUpdated.addListener(
           this, TutorialViewModel::currentTaskCompleted);
-      currentTask.alreadyComplete.addListener(this, TutorialViewModel::alreadyComplete);
-      ActivitiesListener.createListener(currentTask, project);
-      if (!skipTask.getAndSet(false) && currentTask != null) {
+      boolean alreadyComplete = currentTask.registerListener(project);
+      if (!alreadyComplete) {
         callback.show(new TaskViewModel(currentTask));
       }
       // The Task/Tutorial has been completed prematurely
@@ -56,7 +52,7 @@ public class TutorialViewModel {
       // No need to show the instructions for this Task
       // as we are proceeding directly to the next one.
       // We can instead inform the user that they have already completed it
-      // through the alreadyComplete() method.
+      // through the alreadyComplete boolean.
 
     }
   }
@@ -69,7 +65,6 @@ public class TutorialViewModel {
   public void currentTaskCompleted() {
     synchronized (lock) {
       currentTask.taskUpdated.removeCallback(this);
-      currentTask.alreadyComplete.removeCallback(this);
       if (!currentTask.equals(tasks.get(tasks.size() - 1))) {
         currentTask = tutorial.getNextTask(currentTask);
         startNextTask();
@@ -82,37 +77,17 @@ public class TutorialViewModel {
   }
 
   /**
-   * Functionality for canceling the Tutorial, mainly frees up resources
-   * and resetes the tasks as not completed.
+   * Functionality for canceling the Tutorial, mainly frees up resources.
    */
   public void cancelTutorial() {
     synchronized (lock) {
-      currentTask.getListener().unregisterListener();
-      currentTask.taskUpdated.removeCallback(this);
-      currentTask.alreadyComplete.removeCallback(this);
-      tasks.forEach(task -> task.setIsComplete(false));
+      if (currentTask != null) {
+        currentTask.getListener().unregisterListener();
+        currentTask.taskUpdated.removeCallback(this);
+        currentTask = null;
+        tutorial.setCompleted();
+      }
     }
-  }
-
-  /**
-   * This method is called if the Task's action was already
-   * complete when starting the Task. The Task's instruction window
-   * is not shown (skipped) and we proceed with the rest of the Tutorial.
-   */
-  public void alreadyComplete() {
-    synchronized (lock) {
-      System.out.println("Already Done" + currentTask.getFile());
-      skipTask.set(true);
-      currentTaskCompleted();
-    }
-  }
-
-  public List<Task> getTasks() {
-    return tasks;
-  }
-
-  public Task getCurrentTask() {
-    return this.currentTask;
   }
 
   public interface TaskCallback {

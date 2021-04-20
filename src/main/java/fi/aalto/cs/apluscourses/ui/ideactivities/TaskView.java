@@ -10,7 +10,6 @@ import javax.swing.JPanel;
 
 import org.jetbrains.annotations.NotNull;
 
-
 public class TaskView {
 
   private JPanel main;
@@ -24,8 +23,7 @@ public class TaskView {
   public TaskView(@NotNull TaskViewModel viewModel) {
     main = new JPanel();
     label = new JBLabel();
-    label.setText("<html>" + viewModel.getAction() + "<br>"
-          + viewModel.getTask().getFile() + "</html>");
+    label.setText(viewModel.getTaskDescription());
     main.add(label);
     this.taskViewModel = viewModel;
   }
@@ -51,5 +49,4 @@ public class TaskView {
     }, ModalityState.any()
     );
   }
-
 }

@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.model;
 
+import fi.aalto.cs.apluscourses.model.task.OpenFileTask;
+import fi.aalto.cs.apluscourses.model.task.Task;
 import fi.aalto.cs.apluscourses.utils.Event;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,10 +19,9 @@ public class Tutorial {
    * a Tutorial object with default values.
    */
   public Tutorial() { //default constructor for testing purposes
-    tasks.add(new Task());
-    Task second = new Task("editorOpen", "GoodStuff/o1/goodstuff/gui/GoodStuff.scala");
-    Task third = new Task("editorOpen", "GoodStuff/o1/goodstuff/Category.scala");
-    third.setLastTask(true);
+    tasks.add(new OpenFileTask("GoodStuff/o1/goodstuff/gui/CategoryDisplayWindow.scala"));
+    Task second = new OpenFileTask("GoodStuff/o1/goodstuff/gui/GoodStuff.scala");
+    Task third = new OpenFileTask("GoodStuff/o1/goodstuff/Category.scala");
     tasks.add(second);
     tasks.add(third);
     this.tutorialUpdated = new Event();
@@ -45,5 +46,4 @@ public class Tutorial {
   public void setCompleted() {
     this.tutorialUpdated.trigger();
   }
-
 }
