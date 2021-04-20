@@ -22,12 +22,9 @@ import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import fi.aalto.cs.apluscourses.ui.ProgressBarView;
 import fi.aalto.cs.apluscourses.ui.exercise.ExercisesView;
 import fi.aalto.cs.apluscourses.ui.module.ModulesView;
-import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.OverlayLayout;
 import org.jetbrains.annotations.NotNull;
 
 public class APlusToolWindowFactory extends BaseToolWindowFactory implements DumbAware {

@@ -73,6 +73,7 @@ public class ExercisesUpdater extends RepeatedTask {
         exercisesViewModel.setAuthenticated(false);
         observable.valueChanged();
       }
+      progressViewModel.stop();
       notifier.notify(new NetworkErrorNotification(e), courseProject.getProject());
     }
   }

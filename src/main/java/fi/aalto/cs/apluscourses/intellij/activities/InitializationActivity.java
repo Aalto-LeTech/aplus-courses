@@ -94,6 +94,7 @@ public class InitializationActivity implements Background {
       notifier.notify(
           versionComparison == Version.ComparisonStatus.MAJOR_TOO_OLD
           ? new CourseVersionOutdatedError() : new CourseVersionTooNewError(), project);
+      progressViewModel.increment();
       return;
     } else if (versionComparison == Version.ComparisonStatus.MINOR_TOO_OLD) {
       notifier.notify(new CourseVersionOutdatedWarning(), project);
@@ -102,6 +103,7 @@ public class InitializationActivity implements Background {
     var courseProject = new CourseProject(course, courseConfigurationFileUrl, project);
     PluginSettings.getInstance().registerCourseProject(courseProject);
     isInitialized(project).set(true);
+    progressViewModel.increment();
     progressViewModel.stop();
   }
 
