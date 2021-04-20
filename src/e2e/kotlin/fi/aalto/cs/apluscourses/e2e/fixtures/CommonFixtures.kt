@@ -12,6 +12,7 @@ import com.intellij.remoterobot.fixtures.FixtureName
 import com.intellij.remoterobot.fixtures.JListFixture
 import com.intellij.remoterobot.fixtures.JTextFieldFixture
 import com.intellij.remoterobot.search.locators.byXpath
+import com.intellij.remoterobot.utils.waitFor
 import fi.aalto.cs.apluscourses.e2e.utils.LocatorBuilder
 import java.time.Duration
 import javax.swing.JComboBox
@@ -99,6 +100,12 @@ class IdeFrameFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent
         byXpath("//div[@class='IdeErrorsIcon']"),
         Duration.ofSeconds(20)
     )
+    fun isDumbMode(): Boolean =
+        callJs(
+            "com.intellij.openapi.project.DumbService.isDumb(component.project);",
+            runInEdt = true
+        )
+    fun waitForSmartMode() = waitFor { isDumbMode().not() }
 }
 
 @FixtureName("Menu Item")

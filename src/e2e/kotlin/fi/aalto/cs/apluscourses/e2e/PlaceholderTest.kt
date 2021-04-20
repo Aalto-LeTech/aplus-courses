@@ -26,6 +26,9 @@ class PlaceholderTest {
         CommonSteps(this).createProject()
         // step 4
         CommonSteps(this).openAPlusProjectWindow()
+        step("Wait for indexing being done") {
+            ideFrame().waitForSmartMode()
+        }
         step("Cancel") {
             with(dialog("Select Course")) {
                 button("Cancel").click()
