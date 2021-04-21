@@ -119,7 +119,7 @@ class PlaceholderTest {
                         enterText("files")
                         escape()
                     }
-                    assertTrue("'Files' assignment should be visible", hasText("Assignment 6 (Files)"))
+                    assertTrue("'Files' assignment should be visible", hasText("Files"))
                     keyboard {
                         escape()
                     }
@@ -194,7 +194,7 @@ class PlaceholderTest {
 
                 // check that various assignments are visible
                 with(assignments()) {
-                    assertTrue("'Files' assignment should be visible", hasText("Assignment 6 (Files)"))
+                    assertTrue("'Files' assignment should be visible", hasText("Files"))
                     assertTrue("Feedback submissions should be visible", hasText("Feedback"))
                     assertTrue("Closed Week 1 should be visible", hasText("Week 1"))
                 }
