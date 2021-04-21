@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.e2e
 
 import com.intellij.remoterobot.stepsProcessing.step
+import com.intellij.remoterobot.utils.attempt
 import com.intellij.remoterobot.utils.keyboard
 import com.intellij.remoterobot.utils.waitFor
 import fi.aalto.cs.apluscourses.e2e.fixtures.dialog
@@ -26,12 +27,12 @@ class PlaceholderTest {
         CommonSteps(this).createProject()
         // step 4
         CommonSteps(this).openAPlusProjectWindow()
-        step("Wait for indexing being done") {
-            ideFrame().waitForSmartMode()
-        }
         step("Cancel") {
-            with(dialog("Select Course")) {
-                button("Cancel").click()
+            attempt(2) {
+                ideFrame().waitForSmartMode()
+                with(dialog("Select Course")) {
+                    button("Cancel").click()
+                }
             }
         }
         CommonSteps(this).openAPlusProjectWindow()
@@ -118,7 +119,7 @@ class PlaceholderTest {
                         enterText("files")
                         escape()
                     }
-                    assertTrue("'Files' assignment should be visible", hasText("Files"))
+                    assertTrue("'Files' assignment should be visible", hasText("Assignment 6 (Files)"))
                     keyboard {
                         escape()
                     }
@@ -193,7 +194,7 @@ class PlaceholderTest {
 
                 // check that various assignments are visible
                 with(assignments()) {
-                    assertTrue("'Files' assignment should be visible", hasText("Files"))
+                    assertTrue("'Files' assignment should be visible", hasText("Assignment 6 (Files)"))
                     assertTrue("Feedback submissions should be visible", hasText("Feedback"))
                     assertTrue("Closed Week 1 should be visible", hasText("Week 1"))
                 }

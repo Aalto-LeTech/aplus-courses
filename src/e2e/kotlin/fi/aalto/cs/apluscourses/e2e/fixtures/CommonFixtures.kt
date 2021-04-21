@@ -105,7 +105,15 @@ class IdeFrameFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent
             "com.intellij.openapi.project.DumbService.isDumb(component.project);",
             runInEdt = true
         )
-    fun waitForSmartMode() = waitFor { isDumbMode().not() }
+    fun waitForSmartMode() {
+        waitFor(
+            duration = Duration.ofMinutes(2),
+            interval = Duration.ofSeconds(5),
+            errorMessage = "Indexing takes too long"
+        ) {
+            isDumbMode().not()
+        }
+    }
 }
 
 @FixtureName("Menu Item")
