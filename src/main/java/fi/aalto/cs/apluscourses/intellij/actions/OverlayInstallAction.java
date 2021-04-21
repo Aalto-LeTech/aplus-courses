@@ -5,6 +5,10 @@ import com.intellij.openapi.project.DumbAwareAction;
 import fi.aalto.cs.apluscourses.ui.ideactivities.OverlayPane;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Please ignore this class in potential PR reviews. This class will not make it to the release
+ * since it's only for demoing purposes.
+ */
 public class OverlayInstallAction extends DumbAwareAction {
   @Override
   public void actionPerformed(@NotNull AnActionEvent e) {

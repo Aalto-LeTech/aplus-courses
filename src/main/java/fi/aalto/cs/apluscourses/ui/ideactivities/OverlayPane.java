@@ -4,10 +4,13 @@ import icons.PluginIcons;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Window;
 import java.awt.geom.Area;
 import java.util.HashSet;
 import java.util.Set;
@@ -168,6 +171,22 @@ public class OverlayPane extends JPanel {
     activeOverlay.revalidatePane();
 
     return popup;
+  }
+
+  /**
+   * Resets the overlay to its original state, i.e. removes all popups and dims all components.
+   */
+  public static void resetOverlay() {
+    if (!isOverlayInstalled()) {
+      return;
+    }
+
+    activeOverlay.exemptComponents.clear();
+    for (var c : activeOverlay.popups) {
+      activeOverlay.getRootPane().getLayeredPane().remove(c);
+    }
+    activeOverlay.popups.clear();
+    activeOverlay.revalidatePane();
   }
 
   private OverlayPane() {

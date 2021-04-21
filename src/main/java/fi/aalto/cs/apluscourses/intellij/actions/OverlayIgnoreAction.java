@@ -6,20 +6,52 @@ import fi.aalto.cs.apluscourses.ui.ideactivities.ComponentLocator;
 import fi.aalto.cs.apluscourses.ui.ideactivities.OverlayPane;
 import java.awt.Component;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-
+/**
+ * Please ignore this class in potential PR reviews. This class will not make it to the release
+ * since it's only for demoing purposes.
+ */
 public class OverlayIgnoreAction extends DumbAwareAction {
+  private static int operation = 0;
+
+  private @Nullable Component getComponent() {
+    Component component = null;
+
+    switch (operation) {
+      case 0:
+        component = ComponentLocator.getComponentByClass("ProjectViewPane");
+        return component != null ? component.getParent() : null;
+
+      case 1:
+        component = ComponentLocator.getComponentByClass("ModuleListView");
+        return component != null ? component.getParent().getParent() : null;
+
+      case 2:
+        component = ComponentLocator.getButtonByActionClass("OpenItemAction");
+        return component != null ? component.getParent().getParent() : null;
+
+      case 3:
+        component = ComponentLocator.getComponentByClass("TreeView");
+        return component != null ? component.getParent().getParent() : null;
+
+      default:
+        operation = 0;
+    }
+
+    return null;
+  }
+
   @Override
   public void actionPerformed(@NotNull AnActionEvent e) {
-    var projectPane = ComponentLocator.getComponentByClass("ProjectViewPane");
-    if (projectPane != null) {
-      // ProjectViewPane may extend into an area that is not drawn, because the project pane
-      // may be resized by the user. Its parent is a Viewport class, which represents only the
-      // visible part of the project pane.
-      Component c = projectPane.getParent();
+    OverlayPane.resetOverlay();
 
-      OverlayPane.showComponent(c);
-      OverlayPane.addPopup(c, "Overlay example", "Example text for the popup message ".repeat(15));
+    Component component = getComponent();
+
+    if (component != null) {
+      OverlayPane.showComponent(component);
+      OverlayPane.addPopup(component, "Overlay example", "Example text for the popup message ".repeat(15));
+      operation++;
     }
   }
 }
