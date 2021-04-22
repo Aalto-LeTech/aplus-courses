@@ -6,6 +6,8 @@ import fi.aalto.cs.apluscourses.intellij.notifications.FeedbackAvailableNotifica
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import java.io.IOException;
+import java.time.OffsetDateTime;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -100,23 +102,17 @@ public class SubmissionStatusUpdater {
 
   private void run() {
     try {
-      while (true) { //NOSONAR
+      var courseProject = PluginSettings.getInstance().getCourseProject(project);
+      if (courseProject != null) {
+        courseProject.getExercisesUpdater().restart();
+      }
+      while (true) { //  NOSONAR
         if (totalTime >= timeLimit) {
           return;
         }
 
-        SubmissionResult submissionResult;
-        try {
-          submissionResult =
-              dataSource.getSubmissionResult(submissionUrl, exercise, authentication);
-          if (submissionResult.getStatus() != SubmissionResult.Status.UNKNOWN) {
-            notifier.notifyAndHide(
-                new FeedbackAvailableNotification(submissionResult, exercise), project);
-            PluginSettings.getInstance().updateMainViewModel(project);
-            return;
-          }
-        } catch (IOException e) {
-          // Fail silently
+        if (fetchResultsAndNotify()) {
+          return;
         }
 
         Thread.sleep(interval);
@@ -126,6 +122,27 @@ public class SubmissionStatusUpdater {
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
     }
+  }
+
+  private boolean fetchResultsAndNotify() {
+    SubmissionResult submissionResult;
+    try {
+      submissionResult = dataSource.getSubmissionResult(
+          submissionUrl, exercise, authentication, OffsetDateTime.MAX.toZonedDateTime());
+      var status = submissionResult.getStatus();
+      if (status != SubmissionResult.Status.WAITING && status != SubmissionResult.Status.UNKNOWN) {
+        notifier.notifyAndHide(
+            new FeedbackAvailableNotification(submissionResult, exercise), project);
+        var courseProject = PluginSettings.getInstance().getCourseProject(project);
+        if (courseProject != null) {
+          courseProject.getExercisesUpdater().restart();
+        }
+        return true;
+      }
+    } catch (IOException e) {
+      // Fail silently
+    }
+    return false;
   }
 
 }

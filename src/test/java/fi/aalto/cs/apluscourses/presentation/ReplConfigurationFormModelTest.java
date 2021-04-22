@@ -49,7 +49,7 @@ public class ReplConfigurationFormModelTest extends BasePlatformTestCase impleme
     // well, @NotNull is not always safe :D
     String nullString = "nullString";
     module.setModuleType(nullString);
-    nullString = null;
+    nullString = null;  // NOSONAR
 
     //  when
     List<String> moduleNames = ReplConfigurationFormModel.getScalaModuleNames(modules);

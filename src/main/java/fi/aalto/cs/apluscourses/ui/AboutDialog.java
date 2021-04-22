@@ -7,10 +7,8 @@ import com.intellij.icons.AllIcons;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.labels.LinkLabel;
-
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import icons.PluginIcons;
-
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -18,7 +16,6 @@ import javax.swing.Icon;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-
 import org.jetbrains.annotations.NotNull;
 
 public class AboutDialog {
@@ -125,7 +122,7 @@ public class AboutDialog {
   @NotNull
   private static JBLabel createVersionTextLabel() {
     JBLabel label = new JBLabel();
-    String version = BuildInfo.INSTANCE.version.toString();
+    String version = BuildInfo.INSTANCE.pluginVersion.toString();
     label.setText(getAndReplaceText("ui.aboutDialog.version", version));
     return label;
   }

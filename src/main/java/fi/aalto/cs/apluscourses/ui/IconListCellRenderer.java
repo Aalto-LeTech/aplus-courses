@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
  * Custom renderer for items stored in {@link javax.swing.JComboBox}.
  */
 public class IconListCellRenderer<T> extends SimpleListCellRenderer<T> {
+
   @Nullable
   private final String nullText;
   @Nullable

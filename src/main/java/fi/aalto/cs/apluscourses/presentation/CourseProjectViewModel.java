@@ -3,6 +3,8 @@ package fi.aalto.cs.apluscourses.presentation;
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 import fi.aalto.cs.apluscourses.model.Course;
+import fi.aalto.cs.apluscourses.utils.BuildInfo;
+import fi.aalto.cs.apluscourses.utils.Version;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ValidationError;
@@ -51,8 +53,16 @@ public class CourseProjectViewModel {
     return currentSettingsDiffer;
   }
 
+  public boolean shouldShowSettingsSegment() {
+    return course.getAppropriateIdeSettingsUrl() != null;
+  }
+
   public boolean userOptsOutOfSettings() {
     return Boolean.TRUE.equals(settingsOptOutProperty.get());
+  }
+
+  public boolean shouldApplyNewIdeSettings() {
+    return shouldShowSettingsSegment() && !userOptsOutOfSettings();
   }
 
   public String getCourseName() {
@@ -65,6 +75,11 @@ public class CourseProjectViewModel {
 
   public boolean shouldShowCurrentSettings() {
     return !currentSettingsDiffer;
+  }
+
+  public boolean shouldDisplayVersionWarning() {
+    return BuildInfo.INSTANCE.courseVersion.compareTo(course.getVersion())
+        == Version.ComparisonStatus.MINOR_TOO_OLD;
   }
 
   private static ValidationError validateLanguage(@Nullable String language) {

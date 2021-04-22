@@ -39,6 +39,10 @@ public class CourseProjectView extends OurDialogWrapper {
   private OurComboBox<String> languageComboBox;
   @GuiObject
   private JLabel languagePrompt;
+  @GuiObject
+  private JPanel settingsPanel;
+  @GuiObject
+  private JLabel updateLabel;
 
   CourseProjectView(@NotNull Project project,
                     @NotNull CourseProjectViewModel viewModel) {
@@ -65,6 +69,10 @@ public class CourseProjectView extends OurDialogWrapper {
     currentSettingsText.applyTemplate(viewModel.getCourseName());
     currentSettingsText.setVisible(viewModel.shouldShowCurrentSettings());
 
+    settingsPanel.setVisible(viewModel.shouldShowSettingsSegment());
+
+    updateLabel.setVisible(viewModel.shouldDisplayVersionWarning());
+
     init();
   }
 
@@ -74,9 +82,8 @@ public class CourseProjectView extends OurDialogWrapper {
     return basePanel;
   }
 
-  @NotNull
   @Override
-  protected Action[] createActions() {
+  protected Action @NotNull [] createActions() {
     return new Action[] { getOKAction(), getCancelAction() };
   }
 

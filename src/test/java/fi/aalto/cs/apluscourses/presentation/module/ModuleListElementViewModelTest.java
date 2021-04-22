@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.presentation.module;
 
+import static fi.aalto.cs.apluscourses.model.Component.LOADED;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -8,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.model.Module;
+import fi.aalto.cs.apluscourses.utils.Version;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.ZonedDateTime;
@@ -36,7 +38,8 @@ public class ModuleListElementViewModelTest {
   public void testNameAndUrl() throws MalformedURLException {
     String name = "Wanda";
     String url = "https://example.com/wanda";
-    Module module = new ModelExtensions.TestModule(name, new URL(url), "", null, null);
+    Module module = new ModelExtensions.TestModule(
+        name, new URL(url), new Version(1, 0), null, "", null);
     ModuleListElementViewModel moduleViewModel = new ModuleListElementViewModel(module);
     assertEquals("getName() should return module's name",
         name, moduleViewModel.getName());
@@ -47,18 +50,31 @@ public class ModuleListElementViewModelTest {
   @Test
   public void testModuleTooltip() throws MalformedURLException {
     URL url = new URL("https://example.com/wanda");
-    Module moduleAvailable = new ModelExtensions.TestModule("", url, "", null, null);
-    Module moduleInstalled = new ModelExtensions.TestModule(
-            "", url, "", null, ZonedDateTime.now());
+    Module moduleAvailable = new ModelExtensions.TestModule(
+        "", url, new Version(1, 0), null, "", null);
     ModuleListElementViewModel moduleViewModelAvailable =
-            new ModuleListElementViewModel(moduleAvailable);
-    ModuleListElementViewModel moduleViewModelInstalled =
-            new ModuleListElementViewModel(moduleInstalled);
-
+        new ModuleListElementViewModel(moduleAvailable);
     assertTrue("The tooltip for a non-downloaded module should contain Available",
-            moduleViewModelAvailable.getTooltip().contains("Available"));
+        moduleViewModelAvailable.getTooltip().contains("Available"));
+
+    Module moduleInstalled = new ModelExtensions.TestModule(
+            "", url, new Version(1, 0), null, "don't show this", ZonedDateTime.now());
+    ModuleListElementViewModel moduleViewModelInstalled =
+        new ModuleListElementViewModel(moduleInstalled);
     assertTrue("The tooltip for a downloaded module should contain Installed",
-            moduleViewModelInstalled.getTooltip().contains("Installed"));
+        moduleViewModelInstalled.getTooltip().contains("Installed"));
+
+    Module moduleChangelog = new ModelExtensions.TestModule(
+        "", url, new Version(1, 0), new Version(0, 1), "changes", ZonedDateTime.now());
+    ModuleListElementViewModel moduleViewModelChangelog =
+        new ModuleListElementViewModel(moduleChangelog);
+
+    moduleChangelog.stateMonitor.set(LOADED);
+
+    assertTrue("The tooltip for a module with a changelog should contain What's new",
+        moduleViewModelChangelog.getTooltip().contains("What's new"));
+    assertTrue("The tooltip for a module with a changelog should contain the changelog",
+        moduleViewModelChangelog.getTooltip().contains("changes"));
   }
 
   @Test
@@ -85,7 +101,7 @@ public class ModuleListElementViewModelTest {
     assertEquals("Installing...", moduleViewModel.getStatus());
     assertFalse(moduleViewModel.isBoldface());
 
-    module.stateMonitor.set(Component.LOADED);
+    module.stateMonitor.set(LOADED);
     assertEquals("Installed; dependencies unknown", moduleViewModel.getStatus());
     assertTrue(moduleViewModel.isBoldface());
 
@@ -101,7 +117,7 @@ public class ModuleListElementViewModelTest {
     assertEquals("Removed", moduleViewModel.getStatus());
     assertFalse(moduleViewModel.isBoldface());
 
-    module.stateMonitor.set(Component.LOADED);
+    module.stateMonitor.set(LOADED);
 
     module.dependencyStateMonitor.set(Component.DEP_WAITING);
     assertEquals("Waiting for dependencies...", moduleViewModel.getStatus());

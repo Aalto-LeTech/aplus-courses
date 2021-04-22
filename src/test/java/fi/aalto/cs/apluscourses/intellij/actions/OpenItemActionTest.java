@@ -25,7 +25,10 @@ import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionResultViewModel;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
+import java.net.URISyntaxException;
 import java.util.Collections;
+import java.util.OptionalLong;
+
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -59,9 +62,10 @@ public class OpenItemActionTest {
 
   @Test
   public void testOpenItemActionSubmission() throws Exception {
-    exercise = new Exercise(223, "TestEx", "http://example.com", 0, 1, 10, true, null);
+    exercise = new Exercise(
+        223, "TestEx", "http://example.com", 0, 1, 10, true, OptionalLong.empty());
     submissionResult
-        = new SubmissionResult(1, 0, SubmissionResult.Status.GRADED, exercise, 0.0);
+        = new SubmissionResult(1, 0, 0.0, SubmissionResult.Status.GRADED, exercise);
     setUp(new SubmissionResultViewModel(submissionResult, 1));
     OpenItemAction action = new OpenItemAction(
         mainViewModelProvider,
@@ -78,7 +82,7 @@ public class OpenItemActionTest {
 
   @Test
   public void testOpenItemActionExercise() throws Exception {
-    exercise = new Exercise(223, "TestEx", "http://example.com", 0, 1, 10, true, null);
+    exercise = new Exercise(223, "TestEx", "http://example.com", 0, 1, 10, true, OptionalLong.empty());
     setUp(new ExerciseViewModel(exercise));
     OpenItemAction action = new OpenItemAction(
         mainViewModelProvider,
@@ -112,12 +116,13 @@ public class OpenItemActionTest {
   }
 
   @Test
-  public void testErrorNotification() throws Exception {
-    exercise = new Exercise(223, "TestEx", "http://example.com", 0, 1, 10, true, null);
+  public void testErrorNotification() throws URISyntaxException {
+    exercise = new Exercise(
+        223, "TestEx", "http://example.com", 0, 1, 10, true, OptionalLong.empty());
     submissionResult
-        = new SubmissionResult(1, 0, SubmissionResult.Status.GRADED, exercise, 0.0);
+        = new SubmissionResult(1, 0, 0.0, SubmissionResult.Status.GRADED, exercise);
     setUp(new SubmissionResultViewModel(submissionResult, 1));
-    Exception exception = new Exception();
+    URISyntaxException exception = new URISyntaxException("input", "reason");
     doThrow(exception).when(urlRenderer).show(anyString());
     OpenItemAction action = new OpenItemAction(
         mainViewModelProvider,

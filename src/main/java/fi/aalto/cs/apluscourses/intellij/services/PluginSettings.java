@@ -11,19 +11,28 @@ import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.project.ProjectManagerListener;
+import fi.aalto.cs.apluscourses.dal.APlusTokenAuthentication;
+import fi.aalto.cs.apluscourses.dal.TokenAuthentication;
 import fi.aalto.cs.apluscourses.intellij.dal.IntelliJPasswordStorage;
-import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
+import fi.aalto.cs.apluscourses.intellij.model.CourseProject;
 import fi.aalto.cs.apluscourses.intellij.utils.CourseFileManager;
 import fi.aalto.cs.apluscourses.intellij.utils.IntelliJFilterOption;
+import fi.aalto.cs.apluscourses.intellij.utils.ProjectKey;
+import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
-import fi.aalto.cs.apluscourses.presentation.MainViewModelUpdater;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseFilter;
+import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseGroupFilter;
+import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.filter.Option;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
+import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,7 +50,8 @@ public class PluginSettings implements MainViewModelProvider {
     A_PLUS_DEFAULT_GROUP("A+.defaultGroup"),
     A_PLUS_SHOW_NON_SUBMITTABLE("A+.showNonSubmittable"),
     A_PLUS_SHOW_COMPLETED("A+.showCompleted"),
-    A_PLUS_SHOW_OPTIONAL("A+.showOptional");
+    A_PLUS_SHOW_OPTIONAL("A+.showOptional"),
+    A_PLUS_SHOW_CLOSED("A+.showClosed");
 
     private final String name;
 
@@ -60,45 +70,18 @@ public class PluginSettings implements MainViewModelProvider {
   public static final String A_PLUS = "A+";
 
   //  15 minutes in milliseconds
-  public static final long MAIN_VIEW_MODEL_UPDATE_INTERVAL = 15L * 60L * 1000L;
+  public static final long UPDATE_INTERVAL = 15L * 60 * 1000;
   //  15 seconds in milliseconds
   public static final long REASONABLE_DELAY_FOR_MODULE_INSTALLATION = 15L * 1000;
 
   private final PropertiesComponent applicationPropertiesManager = PropertiesComponent
       .getInstance();
 
-  private static class ProjectKey {
-    @NotNull
-    private final String projectPath;
-
-    public ProjectKey(@Nullable Project project) {
-      if (project == null || project.isDefault()) {
-        this.projectPath = "";
-      } else {
-        this.projectPath = project.getBasePath();
-      }
-    }
-
-    @Override
-    public boolean equals(Object other) {
-      if (!(other instanceof ProjectKey)) {
-        return false;
-      }
-      return projectPath.equals(((ProjectKey) other).projectPath);
-    }
-
-    @Override
-    public int hashCode() {
-      return projectPath.hashCode();
-    }
-  }
-
   @NotNull
   private final ConcurrentMap<ProjectKey, MainViewModel> mainViewModels = new ConcurrentHashMap<>();
 
   @NotNull
-  private final ConcurrentMap<ProjectKey, MainViewModelUpdater> mainViewModelUpdaters
-      = new ConcurrentHashMap<>();
+  private final ConcurrentMap<ProjectKey, CourseProject> courseProjects = new ConcurrentHashMap<>();
 
   @NotNull
   private final ConcurrentMap<ProjectKey, CourseFileManager> courseFileManagers
@@ -117,16 +100,20 @@ public class PluginSettings implements MainViewModelProvider {
       new IntelliJFilterOption(LocalIdeSettingsNames.A_PLUS_SHOW_OPTIONAL,
           getText("presentation.exerciseFilterOptions.Optional"),
           null,
-          new ExerciseFilter.OptionalFilter()));
+          new ExerciseFilter.OptionalFilter()),
+      new IntelliJFilterOption(LocalIdeSettingsNames.A_PLUS_SHOW_CLOSED,
+          getText("presentation.exerciseGroupFilterOptions.Closed"),
+          null,
+          new ExerciseGroupFilter.ClosedFilter()));
 
   private final ProjectManagerListener projectManagerListener = new ProjectManagerListener() {
     @Override
     public void projectClosed(@NotNull Project project) {
       ProjectKey key = new ProjectKey(project);
       courseFileManagers.remove(key);
-      MainViewModelUpdater updater = mainViewModelUpdaters.remove(key);
-      if (updater != null) {
-        updater.interrupt();
+      var courseProject = courseProjects.remove(key);
+      if (courseProject != null) {
+        courseProject.dispose();
       }
       MainViewModel mainViewModel = mainViewModels.remove(key);
       if (mainViewModel != null) {
@@ -165,40 +152,39 @@ public class PluginSettings implements MainViewModelProvider {
   }
 
   /**
-   * Triggers a main view model update for the main view model corresponding to the given project.
-   * If the project is null, this method does nothing.
+   * Registers a course project. This creates a main view model. It also starts the updater of the
+   * course project. Calling this method again with the same project has no effect.
    */
-  public void updateMainViewModel(@Nullable Project project) {
-    ProjectKey key = new ProjectKey(project);
-    MainViewModelUpdater updater = mainViewModelUpdaters.get(key);
-    if (updater != null) {
-      updater.restart();
-    }
+  public void registerCourseProject(@NotNull CourseProject courseProject) {
+    var key = new ProjectKey(courseProject.getProject());
+    var mainViewModel = getMainViewModel(courseProject.getProject());
+    var passwordStorage = new IntelliJPasswordStorage(courseProject.getCourse().getApiUrl());
+    TokenAuthentication.Factory authenticationFactory =
+        APlusTokenAuthentication.getFactoryFor(passwordStorage);
+    courseProjects.computeIfAbsent(key, projectKey -> {
+      courseProject.getCourse().register();
+      courseProject.readAuthenticationFromStorage(passwordStorage, authenticationFactory);
+      mainViewModel.courseViewModel.set(new CourseViewModel(courseProject.getCourse()));
+      // This is needed here, because by default MainViewModel has an ExercisesTreeViewModel that
+      // assumes that the project isn't a course project. This means that the user would be
+      // instructed to turn the project into a course project for an example when the token is
+      // missing.
+      var exercisesViewModel = new ExercisesTreeViewModel(new ArrayList<>(), new Options());
+      exercisesViewModel.setAuthenticated(courseProject.getAuthentication() != null);
+      mainViewModel.exercisesViewModel.set(exercisesViewModel);
+      courseProject.courseUpdated.addListener(
+          mainViewModel.courseViewModel, ObservableProperty::valueChanged);
+      courseProject.exercisesUpdated.addListener(mainViewModel, viewModel ->
+          viewModel.updateExercisesViewModel(courseProject.getExerciseGroups()));
+      courseProject.getCourseUpdater().restart();
+      courseProject.getExercisesUpdater().restart();
+      return courseProject;
+    });
   }
 
-  /**
-   * Creates a main view model and launches an updater for it that runs on a background thread.
-   *
-   * @param project The project to which the created main view model corresponds.
-   */
-  public void createUpdatingMainViewModel(@NotNull Project project) {
-    ProjectKey key = new ProjectKey(project);
-
-    MainViewModel mainViewModel = mainViewModels.computeIfAbsent(key, projectKey
-        -> {
-      ProjectManager
-          .getInstance()
-          .addProjectManagerListener(project, projectManagerListener);
-      return new MainViewModel(exerciseFilterOptions);
-    });
-
-    mainViewModelUpdaters.computeIfAbsent(key, projectKey -> {
-      MainViewModelUpdater mainViewModelUpdater = new MainViewModelUpdater(
-          mainViewModel, project, MAIN_VIEW_MODEL_UPDATE_INTERVAL,
-          new DefaultNotifier(), IntelliJPasswordStorage::new);
-      mainViewModelUpdater.start();
-      return mainViewModelUpdater;
-    });
+  @Nullable
+  public CourseProject getCourseProject(@Nullable Project project) {
+    return courseProjects.get(new ProjectKey(project));
   }
 
   /**

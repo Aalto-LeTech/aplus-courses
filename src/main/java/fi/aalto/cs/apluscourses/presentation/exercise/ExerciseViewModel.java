@@ -44,7 +44,8 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
     NO_POINTS,
     PARTIAL_POINTS,
     FULL_POINTS,
-    LATE,
+    IN_GRADING,
+    LATE
   }
 
   /**
@@ -52,13 +53,17 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
    */
   public Status getStatus() {
     Exercise exercise = getModel();
-    if (exercise.getMaxSubmissions() == 0 && exercise.getMaxPoints() == 0) {
+    var bestSubmission = exercise.getBestSubmission();
+    var isLate = bestSubmission != null && bestSubmission.getLatePenalty() != 0.0;
+    if (exercise.isInGrading()) {
+      return Status.IN_GRADING;
+    } else if (exercise.getMaxSubmissions() == 0 && exercise.getMaxPoints() == 0) {
       return Status.OPTIONAL_PRACTICE;
     } else if (exercise.getSubmissionResults().isEmpty()) {
       return Status.NO_SUBMISSIONS;
     } else if (exercise.getUserPoints() == exercise.getMaxPoints()) {
       return Status.FULL_POINTS;
-    } else if (exercise.isLate()) {
+    } else if (isLate) {
       return Status.LATE;
     } else if (exercise.getUserPoints() == 0) {
       return Status.NO_POINTS;
@@ -79,7 +84,9 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
       return "optional practice";
     }
     Exercise exercise = getModel();
-    String lateString = exercise.isLate() ? "late, " : "";
+    var bestSubmission = exercise.getBestSubmission();
+    var isLate = bestSubmission != null && bestSubmission.getLatePenalty() != 0.0;
+    String lateString = isLate ? "late, " : "";
     return lateString + exercise.getSubmissionResults().size() + " of "
         + exercise.getMaxSubmissions() + ", " + exercise.getUserPoints() + "/"
         + exercise.getMaxPoints();

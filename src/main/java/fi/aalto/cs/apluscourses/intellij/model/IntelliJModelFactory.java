@@ -8,6 +8,7 @@ import fi.aalto.cs.apluscourses.model.Library;
 import fi.aalto.cs.apluscourses.model.ModelFactory;
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.model.ModuleMetadata;
+import fi.aalto.cs.apluscourses.utils.Version;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
@@ -43,12 +44,13 @@ public class IntelliJModelFactory implements ModelFactory {
                              @NotNull Map<Long, Map<String, String>> exerciseModules,
                              @NotNull Map<String, URL> resourceUrls,
                              @NotNull List<String> autoInstallComponentNames,
-                             @NotNull Map<String, String[]> replInitialCommands) {
+                             @NotNull Map<String, String[]> replInitialCommands,
+                             @NotNull Version courseVersion) {
 
     IntelliJCourse course =
         new IntelliJCourse(id, name, aplusUrl, languages, modules, libraries, exerciseModules,
-            resourceUrls, autoInstallComponentNames, replInitialCommands, project,
-            new CommonLibraryProvider(project));
+            resourceUrls, autoInstallComponentNames, replInitialCommands, courseVersion,
+            project, new CommonLibraryProvider(project));
 
     Component.InitializationCallback componentInitializationCallback =
         component -> registerComponentToCourse(component, course);
@@ -67,10 +69,11 @@ public class IntelliJModelFactory implements ModelFactory {
   @Override
   public Module createModule(@NotNull String name,
                              @NotNull URL url,
-                             @NotNull String versionId) {
+                             @NotNull Version version,
+                             @NotNull String changelog) {
     ModuleMetadata moduleMetadata = Optional.ofNullable(modulesMetadata.get(name))
         .orElse(new ModuleMetadata(null, null));
-    return new IntelliJModule(name, url, versionId, moduleMetadata.getModuleId(),
+    return new IntelliJModule(name, url, changelog, version, moduleMetadata.getVersion(),
         moduleMetadata.getDownloadedAt(), project);
   }
 

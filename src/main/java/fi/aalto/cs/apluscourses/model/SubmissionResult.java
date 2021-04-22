@@ -9,7 +9,8 @@ public class SubmissionResult implements Browsable {
   public enum Status {
     UNKNOWN,
     GRADED,
-    UNOFFICIAL;
+    UNOFFICIAL,
+    WAITING
   }
 
   private final long submissionId;
@@ -29,14 +30,14 @@ public class SubmissionResult implements Browsable {
    */
   public SubmissionResult(long submissionId,
                           int points,
+                          double latePenalty,
                           @NotNull Status status,
-                          @Nullable Exercise exercise,
-                          double latePenalty) {
+                          @Nullable Exercise exercise) {
     this.submissionId = submissionId;
     this.points = points;
+    this.latePenalty = latePenalty;
     this.status = status;
     this.exercise = exercise;
-    this.latePenalty = latePenalty;
   }
 
   /**
@@ -56,9 +57,11 @@ public class SubmissionResult implements Browsable {
       status = Status.GRADED;
     } else if ("unofficial".equals(statusString)) {
       status = Status.UNOFFICIAL;
+    } else if ("waiting".equals(statusString)) {
+      status = Status.WAITING;
     }
 
-    return new SubmissionResult(id, points, status, exercise, latePenalty);
+    return new SubmissionResult(id, points, latePenalty, status, exercise);
   }
 
   public long getId() {
@@ -83,7 +86,7 @@ public class SubmissionResult implements Browsable {
     return exercise.getHtmlUrl() + "submissions/" + submissionId + "/";
   }
 
-  public Exercise getExercise() {
+  public @NotNull Exercise getExercise() {
     return exercise;
   }
 }

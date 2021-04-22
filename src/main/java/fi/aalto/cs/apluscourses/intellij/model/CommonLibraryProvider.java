@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 public class CommonLibraryProvider implements ComponentSource {
   private final APlusProject project;
   private final ConcurrentMap<String, Library> commonLibraries;
-  private volatile Component.InitializationCallback initializationCallback; // NOSONAR
+  private volatile Component.InitializationCallback initializationCallback; //  NOSONAR
 
   public CommonLibraryProvider(@NotNull APlusProject project) {
     this.project = project;
@@ -36,7 +36,11 @@ public class CommonLibraryProvider implements ComponentSource {
   @Nullable
   protected Library createLibrary(@NotNull String name) {
     if (name.startsWith("scala-sdk-")) {
-      return new ScalaSdk(name, project);
+      return new ScalaSdk(name, name.replace("scala-sdk-", ""), project);
+    } else if (name.startsWith("scala3-sdk-")) {
+      return new Scala3Sdk(name, name.replace("scala3-sdk-", ""), project);
+    } else if (name.startsWith("scala-library-")) {
+      return new ScalaLibrary(name, name.replace("scala-library-", ""),  project);
     }
     return null;
   }

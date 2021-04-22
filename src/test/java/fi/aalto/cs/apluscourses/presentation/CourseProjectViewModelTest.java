@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
+import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import fi.aalto.cs.apluscourses.utils.observable.ValidationError;
 import java.util.Collections;
 import org.junit.Test;
@@ -32,7 +33,9 @@ public class CourseProjectViewModelTest {
       //  autoInstallComponentNames
       Collections.emptyList(),
       //  replInitialCommands
-      Collections.emptyMap()
+      Collections.emptyMap(),
+      //  courseVersion
+      BuildInfo.INSTANCE.courseVersion
   );
 
   @Test
@@ -55,6 +58,9 @@ public class CourseProjectViewModelTest {
 
     assertTrue("The settings text should mention that IDEA settings will be adjusted",
         courseProjectViewModel.shouldShowSettingsInfo());
+
+    assertFalse("The settings panel in the dialog box should not be shown when there's no URL",
+        courseProjectViewModel.shouldShowSettingsSegment());
   }
 
   @Test

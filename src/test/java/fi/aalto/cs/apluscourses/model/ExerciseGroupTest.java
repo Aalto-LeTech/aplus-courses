@@ -3,8 +3,9 @@ package fi.aalto.cs.apluscourses.model;
 import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.OptionalLong;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,10 +24,10 @@ public class ExerciseGroupTest {
 
   @Test
   public void testExerciseGroup() {
-    Exercise exercise1 = new Exercise(123, "name1", "https://example.com", 0, 0, 0, false, null);
-    Exercise exercise2 = new Exercise(456, "name2", "https://example.org", 0, 0, 0, true, null);
+    Exercise exercise1 = new Exercise(123, "name1", "https://example.com", 0, 0, 0, false, OptionalLong.empty());
+    Exercise exercise2 = new Exercise(456, "name2", "https://example.org", 0, 0, 0, true, OptionalLong.empty());
 
-    ExerciseGroup group = new ExerciseGroup(22, "group", "https://example.fi", true, Arrays.asList(exercise1, exercise2));
+    ExerciseGroup group = new ExerciseGroup(22, "group", "https://example.fi", true, List.of(exercise1, exercise2));
 
     Assert.assertEquals(22, group.getId());
     Assert.assertEquals("The url is the same as the one given to the constructor",

@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.ui.module;
 
 import static com.intellij.ui.SimpleTextAttributes.REGULAR_ATTRIBUTES;
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 import com.intellij.ui.ColoredListCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
@@ -30,8 +31,10 @@ public class ColoredModuleListRenderer
     setToolTipText(element.getTooltip());
     setIcon(PluginIcons.A_PLUS_MODULE);
     setIconTextGap(4);
-    if (element.isUpdateAvailable()) {
-      append("  UPDATE AVAILABLE!", BOLDED_TEXT_STYLE);
+    if (element.isUpdateAvailable() && (!element.getModel().hasLocalChanges()
+        || element.getModel().isMajorUpdate())) {
+      append("  " + getText("ui.toolWindow.subTab.modules.module.updateAvailable"),
+          BOLDED_TEXT_STYLE);
     }
 
     SpeedSearchUtil.applySpeedSearchHighlighting(list, this, true, selected);

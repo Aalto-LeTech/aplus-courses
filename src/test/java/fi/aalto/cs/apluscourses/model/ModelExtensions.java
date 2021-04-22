@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.model;
 
-import java.io.IOException;
+import fi.aalto.cs.apluscourses.utils.BuildInfo;
+import fi.aalto.cs.apluscourses.utils.Version;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -27,23 +28,20 @@ public class ModelExtensions {
     @NotNull
     @Override
     public SubmissionInfo getSubmissionInfo(@NotNull Exercise exercise,
-                                            @NotNull Authentication authentication)
-        throws IOException {
+                                            @NotNull Authentication authentication) {
       return new SubmissionInfo(1, Collections.emptyMap());
     }
 
     @NotNull
     @Override
     public SubmissionHistory getSubmissionHistory(@NotNull Exercise exercise,
-                                                  @NotNull Authentication authentication)
-        throws IOException {
+                                                  @NotNull Authentication authentication) {
       return new SubmissionHistory(0);
     }
 
     @NotNull
     @Override
-    public List<Group> getGroups(@NotNull Course course, @NotNull Authentication authentication)
-        throws IOException {
+    public List<Group> getGroups(@NotNull Course course, @NotNull Authentication authentication) {
       return Collections.singletonList(new Group(0, Collections.singletonList("Only you")));
     }
 
@@ -51,34 +49,32 @@ public class ModelExtensions {
     @Override
     public List<ExerciseGroup> getExerciseGroups(@NotNull Course course,
                                                  @NotNull Points points,
-                                                 @NotNull Authentication authentication)
-        throws IOException {
+                                                 @NotNull Authentication authentication) {
       return Collections.emptyList();
     }
 
     @NotNull
     @Override
-    public Points getPoints(@NotNull Course course, @NotNull Authentication authentication)
-        throws IOException {
+    public Points getPoints(@NotNull Course course, @NotNull Authentication authentication) {
       return new Points(
           Collections.emptyMap(),
           Collections.emptyMap(),
           Collections.emptyMap(),
-          Collections.emptyMap());
+          Collections.emptyMap()
+      );
     }
 
     @NotNull
     @Override
     public SubmissionResult getSubmissionResult(@NotNull String submissionUrl,
-                                                @Nullable Exercise exercise,
-                                                @NotNull Authentication authentication)
-        throws IOException {
-      return new SubmissionResult(0, 20, SubmissionResult.Status.GRADED, exercise, 0.0);
+                                                @NotNull Exercise exercise,
+                                                @NotNull Authentication authentication,
+                                                @NotNull ZonedDateTime minCacheEntryTime) {
+      return new SubmissionResult(0, 20, 0.0, SubmissionResult.Status.GRADED, exercise);
     }
 
     @Override
-    public String submit(@NotNull Submission submission, @NotNull Authentication authentication)
-        throws IOException {
+    public String submit(@NotNull Submission submission, @NotNull Authentication authentication) {
       // do nothing
       return "";
     }
@@ -100,9 +96,10 @@ public class ModelExtensions {
                       @NotNull Map<Long, Map<String, String>> exerciseModules,
                       @NotNull Map<String, URL> resourceUrls,
                       @NotNull List<String> autoInstallComponentNames,
-                      @NotNull Map<String, String[]> replInitialCommands) {
+                      @NotNull Map<String, String[]> replInitialCommands,
+                      @NotNull Version courseVersion) {
       super(id, name, aplusUrl, languages, modules, libraries, exerciseModules, resourceUrls,
-          autoInstallComponentNames, replInitialCommands);
+          autoInstallComponentNames, replInitialCommands, courseVersion);
       exerciseDataSource = new TestExerciseDataSource();
     }
 
@@ -135,7 +132,9 @@ public class ModelExtensions {
           //  autoInstallComponentNames
           Collections.emptyList(),
           //  replInitialCommands
-          Collections.emptyMap());
+          Collections.emptyMap(),
+          //  courseVersion
+          BuildInfo.INSTANCE.courseVersion);
       this.exerciseDataSource = exerciseDataSource;
     }
 
@@ -213,15 +212,16 @@ public class ModelExtensions {
     }
 
     public TestModule(@NotNull String name) {
-      this(name, testURL, "", null, null);
+      this(name, testURL, new Version(1, 0), null, "changes", null);
     }
 
     public TestModule(@NotNull String name,
                       @NotNull URL url,
-                      @NotNull String versionId,
-                      @Nullable String localVersionId,
+                      @NotNull Version version,
+                      @Nullable Version localVersion,
+                      @NotNull String changelog,
                       @Nullable ZonedDateTime downloadedAt) {
-      super(name, url, versionId, localVersionId, downloadedAt);
+      super(name, url, changelog, version, localVersion, downloadedAt);
     }
 
     @NotNull
@@ -231,19 +231,13 @@ public class ModelExtensions {
     }
 
     @Override
-    public void fetchInternal() throws IOException {
+    public void fetchInternal() {
       // do nothing
     }
 
     @Override
     public void load() throws ComponentLoadException {
       // do nothing
-    }
-
-    @Nullable
-    @Override
-    protected String readVersionId() {
-      return null;
     }
 
     @Override
@@ -282,12 +276,12 @@ public class ModelExtensions {
     }
 
     @Override
-    public void fetch() throws IOException {
+    public void fetch() {
       // do nothing
     }
 
     @Override
-    public void load() throws ComponentLoadException {
+    public void load() {
       // do nothing
     }
 
@@ -315,7 +309,8 @@ public class ModelExtensions {
                                @NotNull Map<Long, Map<String, String>> exerciseModules,
                                @NotNull Map<String, URL> resourceUrls,
                                @NotNull List<String> autoInstallComponentNames,
-                               @NotNull Map<String, String[]> replInitialCommands) {
+                               @NotNull Map<String, String[]> replInitialCommands,
+                               @NotNull Version courseVersion) {
       return new ModelExtensions.TestCourse(
           id,
           name,
@@ -326,15 +321,17 @@ public class ModelExtensions {
           exerciseModules,
           resourceUrls,
           autoInstallComponentNames,
-          replInitialCommands
+          replInitialCommands,
+          courseVersion
       );
     }
 
     @Override
     public Module createModule(@NotNull String name,
                                @NotNull URL url,
-                               @NotNull String versionId) {
-      return new TestModule(name, url, versionId, null, null);
+                               @NotNull Version version,
+                               @NotNull String changelog) {
+      return new TestModule(name, url, version, null, changelog, null);
     }
 
     @Override

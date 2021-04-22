@@ -5,15 +5,16 @@ import static org.junit.Assert.assertTrue;
 
 import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
+import java.util.OptionalLong;
 import org.junit.Test;
 
 public class SubmissionResultViewModelTest {
 
   @Test
   public void testSubmissionResultViewModel() {
-    Exercise exercise = new Exercise(0, "", "", 15, 25, 10, true, null);
+    Exercise exercise = new Exercise(0, "", "", 15, 25, 10, true, OptionalLong.empty());
     SubmissionResult submissionResult
-        = new SubmissionResult(123L, 15, SubmissionResult.Status.UNKNOWN, exercise, 0.0);
+        = new SubmissionResult(123L, 15, 0.0, SubmissionResult.Status.UNKNOWN, exercise);
     SubmissionResultViewModel viewModel = new SubmissionResultViewModel(submissionResult, 34);
 
     assertEquals("Submission 34", viewModel.getPresentableName());

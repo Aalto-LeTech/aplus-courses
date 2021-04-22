@@ -15,11 +15,12 @@ import fi.aalto.cs.apluscourses.model.SubmittableFile;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalLong;
+
 import org.junit.Test;
 
 public class SubmissionViewModelTest {
@@ -46,7 +47,7 @@ public class SubmissionViewModelTest {
 
     SubmissionHistory history = new SubmissionHistory(4);
 
-    Exercise exercise = new Exercise(100, "Exercise", "http://localhost:1000", 0, 0, 0, true, null);
+    Exercise exercise = new Exercise(100, "Exercise", "http://localhost:1000", 0, 0, 0, true, OptionalLong.empty());
 
     SubmissionViewModel submissionViewModel =
         new SubmissionViewModel(exercise, submissionInfo, history, groups, null, fileMap, language);
@@ -57,7 +58,7 @@ public class SubmissionViewModelTest {
 
   @Test
   public void testSubmissionNumbers() {
-    Exercise exercise = new Exercise(1, "ex", "http://localhost:2000", 0, 0, 5, true, null);
+    Exercise exercise = new Exercise(1, "ex", "http://localhost:2000", 0, 0, 5, true, OptionalLong.empty());
     SubmissionInfo info = new SubmissionInfo(5, Collections.emptyMap());
 
     SubmissionViewModel submissionViewModel1 = new SubmissionViewModel(exercise, info,
@@ -94,15 +95,15 @@ public class SubmissionViewModelTest {
 
   @Test
   public void testGetFiles() {
-    Exercise exercise = new Exercise(324, "cool", "http://localhost:1324", 0, 0, 0, true, null);
+    Exercise exercise = new Exercise(324, "cool", "http://localhost:1324", 0, 0, 0, true, OptionalLong.empty());
 
     SubmittableFile englishFile1 = new SubmittableFile("file1", "enFile1");
     SubmittableFile englishFile2 = new SubmittableFile("file2", "enFile2");
     SubmittableFile finnishFile1 = new SubmittableFile("file1", "fiFile1");
     SubmittableFile finnishFile2 = new SubmittableFile("file2", "fiFile2");
     Map<String, List<SubmittableFile>> files = new HashMap<>();
-    files.put("en", Arrays.asList(englishFile1, englishFile2));
-    files.put("fi", Arrays.asList(finnishFile1, finnishFile2));
+    files.put("en", List.of(englishFile1, englishFile2));
+    files.put("fi", List.of(finnishFile1, finnishFile2));
     SubmissionInfo info = new SubmissionInfo(10, files);
 
     SubmissionHistory history = new SubmissionHistory(0);
@@ -117,10 +118,10 @@ public class SubmissionViewModelTest {
 
   @Test
   public void testDefaultGroup() {
-    Exercise exercise = new Exercise(1000, "wow", "http://www.fi", 0, 0, 0, true, null);
+    Exercise exercise = new Exercise(1000, "wow", "http://www.fi", 0, 0, 0, true, OptionalLong.empty());
     SubmissionInfo info = new SubmissionInfo(0, Collections.emptyMap());
     SubmissionHistory history = new SubmissionHistory(0);
-    Group group = new Group(1, Arrays.asList("Jyrki", "Jorma"));
+    Group group = new Group(1, List.of("Jyrki", "Jorma"));
     List<Group> availableGroups = Collections.singletonList(group);
 
     SubmissionViewModel viewModel1 = new SubmissionViewModel(

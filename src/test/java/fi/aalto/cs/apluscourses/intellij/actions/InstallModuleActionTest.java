@@ -21,6 +21,7 @@ import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import fi.aalto.cs.apluscourses.ui.InstallerDialogs;
+import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -67,7 +68,9 @@ public class InstallModuleActionTest {
         //  autoInstallComponentNames
         Collections.emptyList(),
         //  replInitialCommands
-        Collections.emptyMap());
+        Collections.emptyMap(),
+        //  courseVersion
+        BuildInfo.INSTANCE.courseVersion);
     mainViewModel.courseViewModel.set(new CourseViewModel(course));
 
     installer = mock(ComponentInstaller.class);

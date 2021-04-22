@@ -4,7 +4,7 @@
     <vendor email="intellij-plugin-letech@aalto.fi"
             url="https://research.cs.aalto.fi/LeTech/">LeTech Group at Aalto University</vendor>
     <!--  this is the range of supported IntelliJ IDEA version the plugin can be used with  -->
-    <idea-version since-build="203"/>
+    <idea-version since-build="203.3645.34"/>
 
     <description><![CDATA[
     This plugin supports the educational use of IntelliJ IDEA (and its Scala plugin) in programming
@@ -14,7 +14,8 @@
     ]]></description>
 
     <change-notes>
-        Add support for multiple courses and improve the UI.
+        Made the plug-in compatible with the new major release of IntelliJ IDEA.
+        Small UI improvements and bugfixes.
     </change-notes>
 
     <depends>com.intellij.modules.java</depends>
@@ -63,7 +64,7 @@
                     text="Install A+ Module"
                     icon="PluginIcons.A_PLUS_DOWNLOAD"/>
             <action id="fi.aalto.cs.apluscourses.intellij.actions.ModulesRefreshAction"
-                    class="fi.aalto.cs.apluscourses.intellij.actions.RefreshAction"
+                    class="fi.aalto.cs.apluscourses.intellij.actions.RefreshModulesAction"
                     text="Refresh Modules"
                     icon="PluginIcons.A_PLUS_REFRESH" />
         </group>
@@ -79,7 +80,7 @@
                     text="Open In Browser"
                     icon="PluginIcons.A_PLUS_BROWSE" />
             <action id="fi.aalto.cs.apluscourses.intellij.actions.ExercisesRefreshAction"
-                    class="fi.aalto.cs.apluscourses.intellij.actions.RefreshAction"
+                    class="fi.aalto.cs.apluscourses.intellij.actions.RefreshExercisesAction"
                     text="Refresh Assignments"
                     icon="PluginIcons.A_PLUS_REFRESH" />
             <group id="fi.aalto.cs.apluscourses.intellij.actions.FilterOptionsActionGroup"

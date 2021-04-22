@@ -3,6 +3,7 @@ package fi.aalto.cs.apluscourses.intellij.utils;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.model.ModuleMetadata;
+import fi.aalto.cs.apluscourses.utils.Version;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -35,7 +36,7 @@ public class CourseFileManager {
   private static final String URL_KEY = "url";
   private static final String LANGUAGE_KEY = "language";
   private static final String MODULES_KEY = "modules";
-  private static final String MODULE_ID_KEY = "id";
+  private static final String MODULE_VERSION_KEY = "version";
   private static final String MODULE_DOWNLOADED_AT_KEY = "downloadedAt";
 
   public CourseFileManager(@NotNull Project project) {
@@ -98,7 +99,7 @@ public class CourseFileManager {
   public synchronized void addModuleEntry(@NotNull Module module) throws IOException {
     ModuleMetadata newModuleMetadata = module.getMetadata();
     JSONObject newModuleObject = new JSONObject()
-        .put(MODULE_ID_KEY, newModuleMetadata.getModuleId())
+        .put(MODULE_VERSION_KEY, newModuleMetadata.getVersion())
         .put(MODULE_DOWNLOADED_AT_KEY, newModuleMetadata.getDownloadedAt());
 
     JSONObject modulesObject = createModulesObject();
@@ -129,7 +130,6 @@ public class CourseFileManager {
   /**
    * Returns the language chosen by the user for the course corresponding to the currently loaded
    * course file. This should only be called after a course file has been successfully loaded.
-   * @return
    */
   @NotNull
   public synchronized String getLanguage() {
@@ -151,7 +151,6 @@ public class CourseFileManager {
     return new JSONObject(FileUtils.readFileToString(courseFile, StandardCharsets.UTF_8));
   }
 
-  @NotNull
   private void writeCourseFile(@NotNull JSONObject jsonObject) throws IOException {
     FileUtils.writeStringToFile(courseFile, jsonObject.toString(), StandardCharsets.UTF_8);
   }
@@ -176,7 +175,7 @@ public class CourseFileManager {
     JSONObject modulesObject = new JSONObject();
     modulesMetadata.forEach((name, metadata) -> modulesObject
         .put(name, new JSONObject()
-            .put(MODULE_ID_KEY, metadata.getModuleId())
+            .put(MODULE_VERSION_KEY, metadata.getVersion())
             .put(MODULE_DOWNLOADED_AT_KEY, metadata.getDownloadedAt())));
     return modulesObject;
   }
@@ -204,17 +203,19 @@ public class CourseFileManager {
     for (String moduleName : moduleNames) {
       JSONObject moduleObject = modulesObject.getJSONObject(moduleName);
 
-      String moduleId = moduleObject.getString(MODULE_ID_KEY);
+      Version moduleVersion = Version.fromString(moduleObject.optString(MODULE_VERSION_KEY, "1.0"));
 
       ZonedDateTime downloadedAt;
       try {
         downloadedAt = ZonedDateTime.parse(moduleObject.getString(MODULE_DOWNLOADED_AT_KEY));
       } catch (JSONException e) {
-        logger.error("Module " + moduleName + " missing 'downloadedAt' in course file", e);
+        logger
+            .error(String.format("Module %s missing 'downloadedAt' in course file", moduleName), e);
         downloadedAt = Instant.EPOCH.atZone(ZoneId.systemDefault());
       }
 
-      this.modulesMetadata.put(moduleName, new ModuleMetadata(moduleId, downloadedAt));
+      this.modulesMetadata
+          .put(moduleName, new ModuleMetadata(moduleVersion, downloadedAt));
     }
   }
 }

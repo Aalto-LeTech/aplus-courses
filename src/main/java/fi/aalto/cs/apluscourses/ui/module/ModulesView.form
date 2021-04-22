@@ -21,7 +21,9 @@
         <children>
           <component id="ce006" class="javax.swing.JToolBar$Separator">
             <constraints/>
-            <properties/>
+            <properties>
+              <separatorSize width="10" height="0"/>
+            </properties>
           </component>
           <component id="a54c3" class="javax.swing.JLabel">
             <constraints/>
@@ -31,11 +33,13 @@
           </component>
           <component id="2132d" class="javax.swing.JToolBar$Separator">
             <constraints/>
-            <properties/>
+            <properties>
+              <separatorSize width="10" height="0"/>
+            </properties>
           </component>
         </children>
       </grid>
-      <scrollpane id="7ffb3" binding="pane">
+      <scrollpane id="7ffb3" binding="pane" custom-create="true">
         <constraints>
           <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
@@ -59,6 +63,7 @@
                 <constraints>
                   <card name="TreeCard"/>
                 </constraints>
+                <properties/>
               </component>
             </children>
           </grid>

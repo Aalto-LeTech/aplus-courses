@@ -12,6 +12,7 @@ import fi.aalto.cs.apluscourses.ui.base.TreeView;
 import icons.PluginIcons;
 import javax.swing.Icon;
 import javax.swing.JTree;
+import javax.swing.tree.DefaultMutableTreeNode;
 import org.jetbrains.annotations.NotNull;
 
 public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
@@ -31,6 +32,8 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
         return PluginIcons.A_PLUS_FULL_POINTS;
       case LATE:
         return PluginIcons.A_PLUS_LATE;
+      case IN_GRADING:
+        return PluginIcons.A_PLUS_IN_GRADING;
       default:
         throw new IllegalStateException("Invalid exercise view model status");
     }
@@ -47,6 +50,9 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
                                     boolean isLeaf,
                                     int row,
                                     boolean hasFocus) {
+    if (isIrrelevantNode(value)) {
+      return;
+    }
     SelectableNodeViewModel<?> viewModel = TreeView.getViewModel(value);
     if (viewModel instanceof ExerciseViewModel) {
       ExerciseViewModel exerciseViewModel = (ExerciseViewModel) viewModel;
@@ -78,5 +84,19 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
       append(" [" + resultViewModel.getStatusText() + "]", STATUS_TEXT_STYLE, false);
       setToolTipText(getText("ui.exercise.ExercisesTreeRenderer.doubleClickToOpenBrowser"));
     }
+  }
+
+  /**
+   * Sometimes {@code customizeCellRenderer} is called with a value
+   * that is just some placeholder object for tree root.
+   * This method recognizes such cases.
+   *
+   * @param value A parameter passed to {@code customizeCellRenderer}
+   * @return True, if node is irrelevant and should be ignored, otherwise false.
+   */
+  private boolean isIrrelevantNode(Object value) {
+    // That irrelevant root has no parent
+    return value instanceof DefaultMutableTreeNode
+        && ((DefaultMutableTreeNode) value).getParent() == null;
   }
 }

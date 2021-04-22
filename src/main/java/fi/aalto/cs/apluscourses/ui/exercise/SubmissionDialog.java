@@ -66,7 +66,7 @@ public class SubmissionDialog extends OurDialogWrapper {
 
   @NotNull
   @Override
-  protected Action[] createActions() {
+  protected Action @NotNull [] createActions() {
     return new Action[] {getOKAction(), getCancelAction()};
   }
 

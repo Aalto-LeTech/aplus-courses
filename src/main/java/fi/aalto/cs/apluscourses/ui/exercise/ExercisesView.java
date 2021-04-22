@@ -4,6 +4,7 @@ import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
+import com.intellij.ui.ScrollPaneFactory;
 import com.intellij.ui.TreeSpeedSearch;
 import fi.aalto.cs.apluscourses.intellij.actions.ActionUtil;
 import fi.aalto.cs.apluscourses.intellij.actions.OpenItemAction;
@@ -11,13 +12,11 @@ import fi.aalto.cs.apluscourses.presentation.base.Searchable;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.ui.GuiObject;
 import fi.aalto.cs.apluscourses.ui.base.TreeView;
-
 import java.awt.CardLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,6 +24,7 @@ public class ExercisesView {
   private TreeView exerciseGroupsTree;
   private JLabel emptyText;
   private JPanel basePanel;
+  @GuiObject
   private JScrollPane pane;
   @GuiObject
   public JPanel toolbarContainer;
@@ -37,13 +37,14 @@ public class ExercisesView {
   public ExercisesView() {
     basePanel.putClientProperty(ExercisesView.class.getName(), this);
     cl = (CardLayout) cardPanel.getLayout();
-    exerciseGroupsTree.getEmptyText().appendLine(getText("ui.exercise.ExercisesView.setToken"));
-    exerciseGroupsTree.getEmptyText().appendLine(
-            getText("ui.exercise.ExercisesView.setTokenDirections"));
+    exerciseGroupsTree.getEmptyText().setText("");
     exerciseGroupsTree.setOpaque(true);
-    emptyText.setText(getText("ui.module.ModuleListView.turnIntoAPlusProject"));
+    emptyText.setText(getText("ui.exercise.ExercisesView.loading"));
     emptyText.setHorizontalAlignment(SwingConstants.CENTER);
     emptyText.setVerticalAlignment(SwingConstants.CENTER);
+    var rowHeight = exerciseGroupsTree.getRowHeight();
+    // Row height returns <= 0 on some platforms, so a default alternative is needed
+    pane.getVerticalScrollBar().setUnitIncrement(rowHeight <= 0 ? 20 : rowHeight);
   }
 
   @NotNull
@@ -59,12 +60,30 @@ public class ExercisesView {
       exerciseGroupsTree.setViewModel(viewModel);
       cl.show(cardPanel, viewModel == null || viewModel.isEmptyTextVisible() ? "LabelCard" :
               "TreeCard");
+      if (viewModel == null) {
+        return;
+      }
+
+      if (viewModel.isProjectReady()) {
+        emptyText.setText(getText("ui.module.ModuleListView.turnIntoAPlusProject"));
+        if (viewModel.isAuthenticated()) {
+          exerciseGroupsTree.getEmptyText().setText(
+                  getText("ui.exercise.ExercisesView.allAssignmentsFiltered"));
+        } else {
+          exerciseGroupsTree.getEmptyText().setText(
+                  getText("ui.exercise.ExercisesView.setToken"));
+          exerciseGroupsTree.getEmptyText().appendLine(
+                  getText("ui.exercise.ExercisesView.setTokenDirections"));
+        }
+      }
+
     }, ModalityState.any()
     );
   }
 
   @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
   private void createUIComponents() {
+    pane = ScrollPaneFactory.createScrollPane(basePanel);
     exerciseGroupsTree = new TreeView();
     exerciseGroupsTree.setCellRenderer(new ExercisesTreeRenderer());
     exerciseGroupsTree.addNodeAppliedListener(

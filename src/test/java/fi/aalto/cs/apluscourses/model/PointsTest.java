@@ -1,8 +1,8 @@
 package fi.aalto.cs.apluscourses.model;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -17,10 +17,10 @@ public class PointsTest {
     submissionPoints.put(11L, 44);
     submissionPoints.put(22L, 55);
     Points points = new Points(
-        Collections.singletonMap(123L, Arrays.asList(11L, 22L)),
+        Collections.singletonMap(123L, List.of(11L, 22L)),
         Collections.singletonMap(123L, 55),
         submissionPoints,
-        Collections.singletonMap(123L, "")
+        Collections.singletonMap(123L, 22L)
     );
 
     Assert.assertEquals("The submission ID list is the same as that given to the constructor",
@@ -33,6 +33,7 @@ public class PointsTest {
         Integer.valueOf(44), points.getSubmissionPoints().get(11L));
     Assert.assertEquals("The submission points are the same as those given to the constructor",
         Integer.valueOf(55), points.getSubmissionPoints().get(22L));
+    Assert.assertEquals(Long.valueOf(22), points.getBestSubmissionIds().get(123L));
   }
 
   @Test

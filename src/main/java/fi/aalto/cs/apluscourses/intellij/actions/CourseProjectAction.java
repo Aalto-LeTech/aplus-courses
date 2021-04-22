@@ -6,10 +6,13 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ex.ApplicationEx;
 import com.intellij.openapi.project.Project;
+import fi.aalto.cs.apluscourses.intellij.model.CourseProject;
 import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory;
 import fi.aalto.cs.apluscourses.intellij.model.SettingsImporter;
 import fi.aalto.cs.apluscourses.intellij.notifications.CourseConfigurationError;
 import fi.aalto.cs.apluscourses.intellij.notifications.CourseFileError;
+import fi.aalto.cs.apluscourses.intellij.notifications.CourseVersionOutdatedError;
+import fi.aalto.cs.apluscourses.intellij.notifications.CourseVersionTooNewError;
 import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
@@ -24,14 +27,15 @@ import fi.aalto.cs.apluscourses.presentation.CourseSelectionViewModel;
 import fi.aalto.cs.apluscourses.ui.InstallerDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogsImpl;
+import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import fi.aalto.cs.apluscourses.utils.PostponedRunnable;
+import fi.aalto.cs.apluscourses.utils.Version;
 import fi.aalto.cs.apluscourses.utils.async.SimpleAsyncTaskManager;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
@@ -73,8 +77,7 @@ public class CourseProjectAction extends AnAction {
 
   private final ExecutorService executor;
 
-  // TODO: don't hard code this list
-  private static final List<CourseItemViewModel> AVAILABLE_COURSES = Arrays.asList(
+  private static final List<CourseItemViewModel> AVAILABLE_COURSES = List.of(
       new CourseItemViewModel("O1", "Fall 2020",
           "https://grader.cs.aalto.fi/static/O1_2020/projects/o1_course_config.json"),
       new CourseItemViewModel("Ohjelmointistudio 2 / Programming Studio A", "Spring 2021",
@@ -159,6 +162,17 @@ public class CourseProjectAction extends AnAction {
       return;
     }
 
+    var versionComparison =
+        BuildInfo.INSTANCE.courseVersion.compareTo(course.getVersion());
+
+    if (versionComparison == Version.ComparisonStatus.MAJOR_TOO_OLD
+        || versionComparison == Version.ComparisonStatus.MAJOR_TOO_NEW) {
+      notifier.notify(
+          versionComparison == Version.ComparisonStatus.MAJOR_TOO_OLD
+          ? new CourseVersionOutdatedError() : new CourseVersionTooNewError(), project);
+      return;
+    }
+
     CourseProjectViewModel courseProjectViewModel
         = new CourseProjectViewModel(course, settingsImporter.currentlyImportedIdeSettings());
     if (!dialogs.showMainDialog(project, courseProjectViewModel)) {
@@ -170,12 +184,18 @@ public class CourseProjectAction extends AnAction {
       return;
     }
 
-    boolean importIdeSettings = !courseProjectViewModel.userOptsOutOfSettings();
+    boolean importIdeSettings = courseProjectViewModel.shouldApplyNewIdeSettings();
 
     String basePath = project.getBasePath();
     if (basePath == null) {
       logger.error("Settings could not be imported because (default?) project does not have path.");
       return;
+    }
+
+    if (useCourseFile) {
+      // The course file not created in testing.
+      var courseProject = new CourseProject(course, courseUrl, project);
+      PluginSettings.getInstance().registerCourseProject(courseProject);
     }
 
     Future<?> autoInstallDone = executor.submit(() -> startAutoInstalls(course, project));
@@ -186,15 +206,11 @@ public class CourseProjectAction extends AnAction {
     Future<Boolean> ideSettingsImported =
         executor.submit(() -> importIdeSettings && tryImportIdeSettings(project, course));
 
-    if (useCourseFile) {
-      // The course file not created in testing.
-      PluginSettings.getInstance().createUpdatingMainViewModel(project);
-    }
-
     executor.execute(() -> {
       try {
         autoInstallDone.get();
-        if (projectSettingsImported.get() && importIdeSettings && ideSettingsImported.get()) {
+        if (projectSettingsImported.get() && importIdeSettings //  NOSONAR
+            && ideSettingsImported.get()) { //  NOSONAR
           ideRestarter.run();
         }
       } catch (InterruptedException ex) {
@@ -229,7 +245,7 @@ public class CourseProjectAction extends AnAction {
 
       CourseSelectionViewModel viewModel = new CourseSelectionViewModel(AVAILABLE_COURSES);
       boolean cancelled = !dialogs.showCourseSelectionDialog(project, viewModel);
-      return cancelled ? null : new URL(viewModel.selectedCourseUrl.get());
+      return cancelled ? null : new URL(Objects.requireNonNull(viewModel.selectedCourseUrl.get()));
     } catch (MalformedURLException e) {
       // User entered an invalid URL (or the default list has an invalid URL, which would be a bug)
       logger.error("Malformed course configuration file URL", e);

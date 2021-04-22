@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.dal;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.same;
@@ -10,6 +11,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+import com.intellij.openapi.util.io.FileUtilRt;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Exercise;
@@ -27,11 +29,12 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalLong;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -61,10 +64,11 @@ public class APlusExerciseDataSourceTest {
 
   @Test
   public void testDefaultConstructor() {
-    APlusExerciseDataSource exerciseDataSource = new APlusExerciseDataSource(url);
+    var exerciseDataSource = new APlusExerciseDataSource(
+        url, Paths.get(FileUtilRt.getTempDirectory()));
     assertEquals(url, exerciseDataSource.getApiUrl());
-    assertSame(APlusExerciseDataSource.DefaultDataAccess.INSTANCE, exerciseDataSource.getClient());
-    assertSame(APlusExerciseDataSource.DefaultDataAccess.INSTANCE, exerciseDataSource.getParser());
+    assertTrue(exerciseDataSource.getClient() instanceof APlusExerciseDataSource.DefaultDataAccess);
+    assertTrue(exerciseDataSource.getParser() instanceof APlusExerciseDataSource.DefaultDataAccess);
   }
 
   @Test
@@ -75,7 +79,7 @@ public class APlusExerciseDataSourceTest {
     doReturn(response).when(client).fetch("https://example.com/exercises/55/", authentication);
     doReturn(submissionInfo).when(parser).parseSubmissionInfo(response);
 
-    Exercise exercise = new Exercise(55, "myex", "http://localhost:4321", 0, 0, 0, true, null);
+    Exercise exercise = new Exercise(55, "myex", "http://localhost:4321", 0, 0, 0, true, OptionalLong.empty());
 
     assertSame(submissionInfo, exerciseDataSource.getSubmissionInfo(exercise, authentication));
   }
@@ -89,7 +93,7 @@ public class APlusExerciseDataSourceTest {
         .fetch("https://example.com/exercises/43/submissions/me/", authentication);
     doReturn(submissionHistory).when(parser).parseSubmissionHistory(response);
 
-    Exercise exercise = new Exercise(43, "someex", "https://example.org", 0, 0, 0, true, null);
+    Exercise exercise = new Exercise(43, "someex", "https://example.org", 0, 0, 0, true, OptionalLong.empty());
 
     assertSame(submissionHistory,
         exerciseDataSource.getSubmissionHistory(exercise, authentication));
@@ -135,7 +139,7 @@ public class APlusExerciseDataSourceTest {
 
     doReturn(response).when(client)
         .fetch("https://example.com/courses/99/exercises/", authentication);
-    doReturn(Arrays.asList(exGroup0, exGroup1))
+    doReturn(List.of(exGroup0, exGroup1))
         .when(parser)
         .parseExerciseGroups(same(array), any(Points.class));
 
@@ -164,9 +168,9 @@ public class APlusExerciseDataSourceTest {
     paths.put(key1, path1);
 
     SubmissionInfo submissionInfo = new SubmissionInfo(
-        1, Collections.singletonMap("fi", Arrays.asList(subFile0, subFile1)));
+        1, Collections.singletonMap("fi", List.of(subFile0, subFile1)));
 
-    Exercise exercise = new Exercise(71, "newex", "https://example.com", 0, 0, 0, true, null);
+    Exercise exercise = new Exercise(71, "newex", "https://example.com", 0, 0, 0, true, OptionalLong.empty());
 
     Group group = new Group(435, new ArrayList<>());
 

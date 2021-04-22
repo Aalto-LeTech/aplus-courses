@@ -9,6 +9,7 @@ import com.intellij.notification.Notification;
 import fi.aalto.cs.apluscourses.intellij.actions.OpenSubmissionNotificationAction;
 import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
+import java.util.OptionalLong;
 import org.junit.Test;
 
 public class FeedbackAvailableNotificationTest {
@@ -16,9 +17,9 @@ public class FeedbackAvailableNotificationTest {
   @Test
   public void testFeedbackAvailableNotificationTest() {
     Exercise exercise = new Exercise(123, "Test Exercise", "https://example.com", 3, 5, 10, true,
-        null);
+        OptionalLong.empty());
     SubmissionResult result
-        = new SubmissionResult(0, 0, SubmissionResult.Status.GRADED, exercise, 0.0);
+        = new SubmissionResult(0, 0, 0.0, SubmissionResult.Status.GRADED, exercise);
     Notification notification = new FeedbackAvailableNotification(result, exercise);
 
     assertEquals("Group ID should be A+", "A+", notification.getGroupId());

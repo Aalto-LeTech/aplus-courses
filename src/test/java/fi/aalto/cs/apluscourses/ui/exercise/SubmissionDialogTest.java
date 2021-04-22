@@ -1,8 +1,6 @@
 package fi.aalto.cs.apluscourses.ui.exercise;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 
 import com.intellij.openapi.util.io.FileUtilRt;
 import com.intellij.testFramework.LightIdeaTestCase;
@@ -13,14 +11,13 @@ import fi.aalto.cs.apluscourses.model.SubmissionInfo;
 import fi.aalto.cs.apluscourses.model.SubmittableFile;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionViewModel;
 import fi.aalto.cs.apluscourses.ui.base.CheckBox;
-
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalLong;
 import java.util.stream.Collectors;
 import javax.swing.Action;
 import javax.swing.ComboBoxModel;
@@ -68,7 +65,7 @@ public class SubmissionDialogTest extends LightIdeaTestCase {
                                               int numberOfSubmissions,
                                               int maxNumberOfSubmissions) {
     return new SubmissionViewModel(
-        new Exercise(1, exerciseName, "http://www.fi", 0, 0, maxNumberOfSubmissions, true, null),
+        new Exercise(1, exerciseName, "http://www.fi", 0, 0, maxNumberOfSubmissions, true, OptionalLong.empty()),
         new SubmissionInfo(maxNumberOfSubmissions,
                 Collections.singletonMap("en", submittableFiles)),
         new SubmissionHistory(numberOfSubmissions),
@@ -90,11 +87,11 @@ public class SubmissionDialogTest extends LightIdeaTestCase {
     return new TestDialog(
         createViewModel(
             "Cool Name",
-            Arrays.asList(
-                new Group(123, Arrays.asList("Jarkko", "Petteri")),
-                new Group(456, Arrays.asList("Annika", "Katariina"))
+            List.of(
+                new Group(123, List.of("Jarkko", "Petteri")),
+                new Group(456, List.of("Annika", "Katariina"))
             ),
-            new Group(456, Arrays.asList("Annika", "Katariina")),
+            new Group(456, List.of("Annika", "Katariina")),
             submittableFilePaths.entrySet().stream()
                 .map(x -> new SubmittableFile(x.getKey(), x.getValue().getFileName().toString()))
                 .collect(Collectors.toList()),

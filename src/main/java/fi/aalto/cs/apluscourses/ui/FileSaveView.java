@@ -7,7 +7,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFileWrapper;
 import fi.aalto.cs.apluscourses.presentation.FileSaveViewModel;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class FileSaveView implements Dialog {
 
@@ -18,7 +17,7 @@ public class FileSaveView implements Dialog {
   private final Project project;
 
   public FileSaveView(@NotNull FileSaveViewModel viewModel,
-                      @Nullable Project project) {
+                      @NotNull Project project) {
     this.viewModel = viewModel;
     this.project = project;
   }

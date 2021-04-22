@@ -70,5 +70,4 @@ public class OpenItemAction extends DumbAwareAction {
       notifier.notify(new UrlRenderingErrorNotification(ex), e.getProject());
     }
   }
-
 }

@@ -7,6 +7,7 @@
   <tr>
     <th>unit</th>
     <th>integration</th>
+    <th>e2e</th>
     <th>manual</th>
   </tr>
   <tr>
@@ -20,6 +21,12 @@
       <ul>
         <li>- [ ] new <b>integration</b> tests created</li>
         <li>- [ ] all <b>integration</b> tests pass</li>
+      </ul>
+    </td>
+    <td>
+      <ul>
+        <li>- [ ] new <b>e2e</b> tests created</li>
+        <li>- [ ] all <b>e2e</b> tests pass</li>
       </ul>
     </td>
     <td>

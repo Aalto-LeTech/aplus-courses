@@ -473,6 +473,10 @@ available. Click here to open the feedback.** notification is shown.
 
 **12.14** ASSERTION: **Non-submittable** and **Optional** menu items are checked.
 
+**12.15** Uncheck **Closed** menu item.
+
+**12.16** ASSERTION: If there are any closed weeks (marked with a closed book icon), they disappear.
+
 ### 13 Searching through assignments
 
 **13.1** Ensure that all weeks in the **Assignments** tree are collapsed.

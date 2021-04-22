@@ -36,7 +36,7 @@ public abstract class Component {
 
   private List<String> dependencies;
 
-  public Component(@NotNull String name) {
+  protected Component(@NotNull String name) {
     this.name = name;
   }
 
@@ -145,7 +145,7 @@ public abstract class Component {
   public abstract boolean hasLocalChanges();
 
   @FunctionalInterface
-  public static interface InitializationCallback {
+  public interface InitializationCallback {
     void initialize(Component component);
   }
 }
