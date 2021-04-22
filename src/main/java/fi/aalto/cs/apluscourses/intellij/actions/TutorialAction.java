@@ -21,6 +21,7 @@ import fi.aalto.cs.apluscourses.presentation.ideactivities.TutorialViewModel;
 import fi.aalto.cs.apluscourses.ui.ideactivities.StartTutorialDialog;
 import fi.aalto.cs.apluscourses.ui.ideactivities.TaskView;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 
 public class TutorialAction extends DumbAwareAction {
@@ -29,17 +30,33 @@ public class TutorialAction extends DumbAwareAction {
   private final MainViewModelProvider mainViewModelProvider;
 
   @NotNull
+  private final TutorialAuthenticationProvider authenticationProvider;
+
+  @NotNull
   private final Notifier notifier;
 
+  /**
+   * Empty Constructor.
+   */
   public TutorialAction() {
-    this(PluginSettings.getInstance(),
-         new DefaultNotifier());
+    this(PluginSettings.getInstance(), new DefaultNotifier(), project -> {
+      var courseProject = PluginSettings.getInstance().getCourseProject(project);
+      return courseProject == null ? null : courseProject.getAuthentication();
+    });
   }
 
+  /**
+   *Constructor.
+   * @param mainViewModelProvider mainViewModelProvider
+   * @param notifier Notifier
+   * @param authenticationProvider1 TutorialAuthenticationProvider
+   */
   public TutorialAction(@NotNull MainViewModelProvider mainViewModelProvider,
-                        @NotNull Notifier notifier) {
+                        @NotNull Notifier notifier,
+                        @NotNull TutorialAuthenticationProvider authenticationProvider1) {
     this.mainViewModelProvider = mainViewModelProvider;
     this.notifier = notifier;
+    this.authenticationProvider = authenticationProvider1;
   }
 
   @Override
@@ -54,7 +71,7 @@ public class TutorialAction extends DumbAwareAction {
     MainViewModel mainViewModel = mainViewModelProvider.getMainViewModel(project);
     CourseViewModel courseViewModel = mainViewModel.courseViewModel.get();
     ExercisesTreeViewModel exercisesViewModel = mainViewModel.exercisesViewModel.get();
-    Authentication authentication = mainViewModel.authentication.get();
+    Authentication authentication = authenticationProvider.getAuthentication(project);
 
     if (courseViewModel == null || exercisesViewModel == null || authentication == null) {
       return;
@@ -69,6 +86,10 @@ public class TutorialAction extends DumbAwareAction {
       return;
     }
     Tutorial tutorial = ((TutorialExercise) selectedExercise.getModel()).getTutorial();
+    if (mainViewModel.tutorialViewModel.get() != null) {
+      mainViewModel.tutorialViewModel.get().cancelTutorial();
+    }
+
     TutorialViewModel tutorialViewModel = new TutorialViewModel(tutorial,
             TaskView::createAndShow, project);
     mainViewModelProvider.getMainViewModel(project).tutorialViewModel.set(tutorialViewModel);
@@ -81,7 +102,7 @@ public class TutorialAction extends DumbAwareAction {
   public void update(@NotNull AnActionEvent e) {
     MainViewModel mainViewModel = mainViewModelProvider.getMainViewModel(e.getProject());
     CourseViewModel courseViewModel = mainViewModel.courseViewModel.get();
-    Authentication authentication = mainViewModel.authentication.get();
+    Authentication authentication = authenticationProvider.getAuthentication(e.getProject());
     ExercisesTreeViewModel exercisesViewModel = mainViewModel.exercisesViewModel.get();
     boolean isTutorialSelected =
             exercisesViewModel != null
@@ -94,6 +115,12 @@ public class TutorialAction extends DumbAwareAction {
 
     e.getPresentation().setVisible(e.getProject() != null && isTutorialSelected);
   }
+
+  @FunctionalInterface
+  public interface TutorialAuthenticationProvider {
+    Authentication getAuthentication(@Nullable Project project);
+  }
+
 
   private static class CompleteTutorial {
     private final MainViewModel mainViewModel;

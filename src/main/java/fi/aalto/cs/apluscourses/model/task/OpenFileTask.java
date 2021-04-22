@@ -18,14 +18,14 @@ public class OpenFileTask extends Task {
   }
 
   @Override
-  public boolean startTask(Project project) {
+  public synchronized boolean startTask(Project project) {
     listener = new OpenFileListener(this);
     listener.registerListener(project);
     return listener.isAlreadyComplete();
   }
 
   @Override
-  public void endTask() {
+  public synchronized void endTask() {
     this.listener.unregisterListener();
   }
 
