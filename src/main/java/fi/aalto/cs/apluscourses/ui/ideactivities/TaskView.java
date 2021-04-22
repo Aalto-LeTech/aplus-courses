@@ -14,6 +14,7 @@ public class TaskView {
 
   private JPanel main;
   protected JLabel label;
+  @NotNull
   private final TaskViewModel taskViewModel;
 
   /**
@@ -43,9 +44,7 @@ public class TaskView {
    */
   public void show() {
     ApplicationManager.getApplication().invokeLater(() -> {
-      if (taskViewModel != null) {
-        JOptionPane.showMessageDialog(null, main, "Task Window", JOptionPane.PLAIN_MESSAGE);
-      }
+      JOptionPane.showMessageDialog(null, main, "Task Window", JOptionPane.PLAIN_MESSAGE);
     }, ModalityState.any()
     );
   }

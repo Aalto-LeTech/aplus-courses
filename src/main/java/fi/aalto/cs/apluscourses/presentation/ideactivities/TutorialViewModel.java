@@ -17,6 +17,7 @@ public class TutorialViewModel {
   private final Tutorial tutorial;
   private final TaskCallback callback;
   private final Object lock = new Object();
+  private final TaskViewModelFactory factory = new TaskViewModelFactory();
 
   /**
    * Constructor.
@@ -42,9 +43,9 @@ public class TutorialViewModel {
     synchronized (lock) {
       currentTask.taskUpdated.addListener(
           this, TutorialViewModel::currentTaskCompleted);
-      boolean alreadyComplete = currentTask.registerListener(project);
+      boolean alreadyComplete = currentTask.startTask(project);
       if (!alreadyComplete) {
-        callback.show(new TaskViewModel(currentTask));
+        callback.show(factory.getTaskViewModel(currentTask));
       }
       // The Task/Tutorial has been completed prematurely
       // becuase the Activity was already performed.
@@ -82,7 +83,7 @@ public class TutorialViewModel {
   public void cancelTutorial() {
     synchronized (lock) {
       if (currentTask != null) {
-        currentTask.getListener().unregisterListener();
+        currentTask.endTask();
         currentTask.taskUpdated.removeCallback(this);
         currentTask = null;
         tutorial.setCompleted();
@@ -93,5 +94,4 @@ public class TutorialViewModel {
   public interface TaskCallback {
     void show(TaskViewModel viewModel);
   }
-
 }

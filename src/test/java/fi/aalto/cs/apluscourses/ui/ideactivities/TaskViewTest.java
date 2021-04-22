@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.ui.ideactivities;
 
 import fi.aalto.cs.apluscourses.model.task.OpenFileTask;
 import fi.aalto.cs.apluscourses.presentation.ideactivities.TaskViewModel;
+import fi.aalto.cs.apluscourses.presentation.ideactivities.TaskViewModelFactory;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
@@ -20,7 +21,8 @@ public class TaskViewTest {
 
   @NotNull
   private TaskViewModel createViewModel() {
-    return new TaskViewModel(new OpenFileTask(
+    TaskViewModelFactory factory = new TaskViewModelFactory();
+    return factory.getTaskViewModel(new OpenFileTask(
             "GoodStuff/o1/goodstuff/gui/CategoryDisplayWindow.scala"));
   }
 

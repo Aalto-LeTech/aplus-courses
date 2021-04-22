@@ -1,13 +1,12 @@
 package fi.aalto.cs.apluscourses.model.task;
 
 import com.intellij.openapi.project.Project;
-import fi.aalto.cs.apluscourses.intellij.utils.ActivitiesListener;
 import fi.aalto.cs.apluscourses.utils.Event;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class Task {
 
-  private String action;
+  private final String action;
 
   @NotNull
   public final Event taskUpdated;
@@ -26,8 +25,7 @@ public abstract class Task {
    * Empty Task constructor.
    */
   protected Task() {
-    action = "editorOpen";
-    this.taskUpdated = new Event();
+    this("editorOpen");
   }
 
   public String getAction() {
@@ -38,14 +36,12 @@ public abstract class Task {
    * Sets the current Task as complete and also triggers an Event
    * that calls the method currentTaskCompleted in TutorialViewModel.
    */
-  public void setIsComplete() {
+  public void setComplete() {
     taskUpdated.trigger();
   }
 
-  public abstract ActivitiesListener getListener();
+  public abstract void endTask();
 
-  public abstract void setListener(ActivitiesListener listener);
-
-  public abstract boolean registerListener(Project project);
+  public abstract boolean startTask(Project project);
 }
 

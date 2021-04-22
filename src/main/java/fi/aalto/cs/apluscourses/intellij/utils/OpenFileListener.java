@@ -32,7 +32,7 @@ public class OpenFileListener implements FileEditorManagerListener, ActivitiesLi
       if (editor.getFile() != null && editor.getFile().getPath().endsWith(filePath)) {
         System.out.println("File is already open");
         alreadyComplete.set(true);
-        task.setIsComplete();
+        task.setComplete();
         return;
       }
     }
@@ -58,7 +58,7 @@ public class OpenFileListener implements FileEditorManagerListener, ActivitiesLi
     if (file.getPath().endsWith(filePath)) {
       System.out.println("File was just opened");
       this.unregisterListener();
-      task.setIsComplete();
+      task.setComplete();
     }
   }
 }
