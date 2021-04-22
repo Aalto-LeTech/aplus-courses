@@ -154,10 +154,11 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   @NotNull
   public SubmissionResult getSubmissionResult(@NotNull String submissionUrl,
                                               @NotNull Exercise exercise,
-                                              @NotNull Authentication authentication)
+                                              @NotNull Authentication authentication,
+                                              @NotNull ZonedDateTime minCacheEntryTime)
       throws IOException {
-    JSONObject response = client.fetch(submissionUrl, authentication);
-    return parser.parseSubmissionResult(response, exercise);
+    JSONObject response = client.fetch(submissionUrl, authentication, minCacheEntryTime);
+    return SubmissionResult.fromJsonObject(response, exercise);
   }
 
   /**
