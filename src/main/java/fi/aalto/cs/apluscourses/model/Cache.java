@@ -69,7 +69,7 @@ public abstract class Cache<KeyT, ValueT> {
    */
   public Cache(@NotNull Path filePath) {
     this.file = filePath.toFile();
-    new Thread(this::initialFileRead).start();
+    new Thread(this::doInitialFileRead).start();
   }
 
   /**
@@ -98,7 +98,7 @@ public abstract class Cache<KeyT, ValueT> {
   protected abstract void toFile(@NotNull File file,
                                  @NotNull Map<KeyT, Entry> entries) throws IOException;
 
-  private void initialFileRead() {
+  private void doInitialFileRead() {
     try {
       entries = fromFile(file);
     } catch (IOException e) {
@@ -141,8 +141,6 @@ public abstract class Cache<KeyT, ValueT> {
    */
   private void queueFileWrite() {
     if (writePending.compareAndSet(false, true)) {
-      // The write delay ensures that multiple writes within a 10 second window (caused by frequent
-      // insertions) get coalesced into a single write.
       writeExecutor.schedule(this::writeFile, 10, TimeUnit.SECONDS);
     }
   }
