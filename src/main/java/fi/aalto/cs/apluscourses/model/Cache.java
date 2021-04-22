@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * A cache is essentially a map backed by a file. For each value, the time of creation is also
  * stored so that clients can determine the age of the cache entry. A subclass needs to implement
- * {@link Cache#toFile} and {@link Cache#fromFile}, which read and write the entries to a file. The
+ * {@link Cache#fromFile} and {@link Cache#toFile}, which read and write the entries to a file. The
  * file format is completely up to the client. The file is read once when the cache is instantiated.
  * Writes occur after each insertion, but bursts of insertions only cause one write. Reading and
  * writing is done in a background thread, so a read or write may take a long time without blocking

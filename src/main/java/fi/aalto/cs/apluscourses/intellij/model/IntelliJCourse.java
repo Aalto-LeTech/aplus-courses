@@ -74,7 +74,8 @@ class IntelliJCourse extends Course {
     this.project = project;
     this.commonLibraryProvider = commonLibraryProvider;
     this.platformListener = new PlatformListener();
-    this.exerciseDataSource = new APlusExerciseDataSource(getApiUrl());
+    this.exerciseDataSource = new APlusExerciseDataSource(getApiUrl(), project.getBasePath()
+        .resolve(Paths.get(Project.DIRECTORY_STORE_FOLDER, "a-plus-cache.json")));
   }
 
   @NotNull
