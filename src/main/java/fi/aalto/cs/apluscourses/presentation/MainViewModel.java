@@ -9,7 +9,6 @@ import fi.aalto.cs.apluscourses.model.ExerciseDataSource;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
 import fi.aalto.cs.apluscourses.model.InvalidAuthenticationException;
 import fi.aalto.cs.apluscourses.model.Points;
-import fi.aalto.cs.apluscourses.model.TutorialExercise;
 import fi.aalto.cs.apluscourses.presentation.exercise.EmptyExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
@@ -91,8 +90,6 @@ public class MainViewModel {
       Points points = dataSource.getPoints(course, auth);
       points.setSubmittableExercises(course.getExerciseModules().keySet()); // TODO: remove
       List<ExerciseGroup> exerciseGroups = dataSource.getExerciseGroups(course, points, auth);
-      exerciseGroups.get(0).getExercises().put(123456789L, new TutorialExercise());
-      //TODO structure the loading of the tutorials?
       inGrading.forEach((id, exercise) -> setInGrading(exerciseGroups, id));
       var viewModel = new ExercisesTreeViewModel(exerciseGroups, exerciseFilterOptions);
       viewModel.setAuthenticated(true);
