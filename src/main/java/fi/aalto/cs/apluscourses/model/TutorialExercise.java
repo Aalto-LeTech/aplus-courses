@@ -13,4 +13,14 @@ public class TutorialExercise extends Exercise {
     return tutorial;
   }
 
+  @Override
+  public int hashCode() {
+    return Long.hashCode(getId());
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    return obj instanceof TutorialExercise && ((TutorialExercise) obj).getId() == getId();
+  }
+
 }
