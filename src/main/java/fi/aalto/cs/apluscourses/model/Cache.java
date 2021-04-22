@@ -101,7 +101,6 @@ public abstract class Cache<KeyT, ValueT> {
   private void initialFileRead() {
     try {
       entries = fromFile(file);
-      System.out.println("File successfully read");
     } catch (IOException e) {
       entries = new HashMap<>();
     } finally {
@@ -115,9 +114,7 @@ public abstract class Cache<KeyT, ValueT> {
       copy = new HashMap<>(entries);
     }
     try {
-      System.out.println("Beginning file write");
       toFile(file, copy);
-      System.out.println("File write complete");
     } catch (IOException e) {
       // Ignore
     } finally {
@@ -144,12 +141,9 @@ public abstract class Cache<KeyT, ValueT> {
    */
   private void queueFileWrite() {
     if (writePending.compareAndSet(false, true)) {
-      System.out.println("Write queued");
       // The write delay ensures that multiple writes within a 10 second window (caused by frequent
       // insertions) get coalesced into a single write.
       writeExecutor.schedule(this::writeFile, 10, TimeUnit.SECONDS);
-    } else {
-      System.out.println("Write already queued");
     }
   }
 
