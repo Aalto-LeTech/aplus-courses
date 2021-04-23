@@ -8,7 +8,9 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.ui.components.labels.LinkLabel;
+import fi.aalto.cs.apluscourses.model.UnexpectedResponseException;
 import fi.aalto.cs.apluscourses.presentation.AuthenticationViewModel;
+import java.io.IOException;
 import java.util.Arrays;
 import javax.swing.Action;
 import javax.swing.JComponent;
@@ -36,7 +38,6 @@ public class APlusAuthenticationView extends DialogWrapper implements Dialog {
     super(project);
     this.authenticationViewModel = authenticationViewModel;
     setTitle(getText("ui.authenticationView.name"));
-    setButtonsAlignment(SwingConstants.CENTER);
     init();
   }
 
@@ -50,7 +51,7 @@ public class APlusAuthenticationView extends DialogWrapper implements Dialog {
 
   @NotNull
   @Override
-  protected Action[] createActions() {
+  protected Action @NotNull [] createActions() {
     return new Action[]{getOKAction(), getCancelAction()};
   }
 
@@ -65,9 +66,27 @@ public class APlusAuthenticationView extends DialogWrapper implements Dialog {
   protected ValidationInfo doValidate() {
     if (inputField.getPassword().length == 0) {
       return new ValidationInfo(getText("ui.authenticationView.noEmptyToken"),
-          inputField);
+          inputField).withOKEnabled();
+    }
+    try {
+      var input = inputField.getPassword();
+      authenticationViewModel.setToken(input);
+      Arrays.fill(input, '\0');
+      var authentication = authenticationViewModel.build();
+      authenticationViewModel.getExerciseDataSource().getUserName(authentication);
+    } catch (UnexpectedResponseException e) {
+      return new ValidationInfo(getText("ui.authenticationView.invalidToken"),
+          inputField).withOKEnabled();
+    } catch (IOException e) {
+      return new ValidationInfo(getText("ui.authenticationView.connectionError"),
+          inputField).withOKEnabled();
     }
     return null;
+  }
+
+  @Override
+  protected boolean continuousValidation() {
+    return false;
   }
 
   @Nullable

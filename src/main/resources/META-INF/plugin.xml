@@ -90,6 +90,22 @@
                    icon="PluginIcons.A_PLUS_FILTER">
             </group>
         </group>
+        <group id="fi.aalto.cs.apluscourses.intellij.actions.ActionGroups.TOOL_WINDOW_ACTIONS"
+               text="A+ Tool Window"
+               description="Actions for A+ tool window">
+            <group id="fi.aalto.cs.apluscourses.intellij.actions.UserActionGroup"
+                   class="fi.aalto.cs.apluscourses.intellij.actions.UserActionGroup"
+                   popup="true"
+                   text="Not Logged In"
+                   icon="PluginIcons.A_PLUS_USER">
+                <action id="fi.aalto.cs.apluscourses.intellij.actions.UserNameAction"
+                        class="fi.aalto.cs.apluscourses.intellij.actions.UserNameAction"
+                        text="Not Logged In"/>
+                <action id="fi.aalto.cs.apluscourses.intellij.actions.LogInOutAction"
+                        class="fi.aalto.cs.apluscourses.intellij.actions.LogInOutAction"
+                        text="Log In"/>
+            </group>
+        </group>
         <action id="Scala.RunConsole"
                 class="fi.aalto.cs.apluscourses.intellij.actions.ReplAction"
                 overrides="true"

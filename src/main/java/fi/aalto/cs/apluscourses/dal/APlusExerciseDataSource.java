@@ -25,6 +25,7 @@ import org.apache.http.Header;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
@@ -34,6 +35,7 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   private static final String SUBMISSIONS = "submissions";
   private static final String COURSES = "courses";
   private static final String POINTS = "points";
+  private static final String USERS = "users";
 
   @NotNull
   private final Client client;
@@ -155,6 +157,14 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
     return parser.parseSubmissionResult(response, exercise);
   }
 
+  @Override
+  @NotNull
+  public String getUserName(@NotNull Authentication authentication) throws IOException {
+    String url = apiUrl + USERS + "/";
+    JSONObject response = client.fetch(url, authentication);
+    return parser.parseUserName(response);
+  }
+
   /**
    * Sends the submission to the server.
    *
@@ -254,5 +264,16 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
       return SubmissionResult.fromJsonObject(object, exercise);
     }
 
+    @Override
+    public String parseUserName(@NotNull JSONObject object) {
+      try {
+        var result = object.getJSONArray("results").getJSONObject(0);
+        var fullName = result.optString("full_name");
+        var username = result.optString("username");
+        return fullName.equals("") ? username : fullName;
+      } catch (JSONException e) {
+        return "";
+      }
+    }
   }
 }

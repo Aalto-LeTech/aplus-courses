@@ -33,6 +33,9 @@ public interface ExerciseDataSource {
                                        @NotNull Exercise exercise,
                                        @NotNull Authentication authentication) throws IOException;
 
+  @NotNull
+  String getUserName(@NotNull Authentication authentication) throws IOException;
+
   @Nullable
   String submit(@NotNull Submission submission, @NotNull Authentication authentication)
       throws IOException;

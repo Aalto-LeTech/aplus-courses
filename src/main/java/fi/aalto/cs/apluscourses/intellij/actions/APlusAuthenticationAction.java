@@ -21,6 +21,8 @@ import org.jetbrains.annotations.NotNull;
 
 public class APlusAuthenticationAction extends DumbAwareAction {
 
+  public static final String ACTION_ID = APlusAuthenticationAction.class.getCanonicalName();
+
   @NotNull
   private final MainViewModelProvider mainViewModelProvider;
 
@@ -81,14 +83,18 @@ public class APlusAuthenticationAction extends DumbAwareAction {
     PasswordStorage passwordStorage = passwordStorageFactory.create(apiUrl);
     AuthenticationViewModel authenticationViewModel = new AuthenticationViewModel(
         APlusTokenAuthentication.getFactoryFor(passwordStorage),
-        authenticationHtmlUrl
+        authenticationHtmlUrl,
+        course.getExerciseDataSource()
     );
 
     if (!dialogs.create(authenticationViewModel, project).showAndGet()) {
       return;
     }
 
-    Authentication authentication = authenticationViewModel.build();
+    Authentication authentication = authenticationViewModel.getAuthentication();
+    if (authentication == null) {
+      return;
+    }
     if (!authentication.persist()) {
       notifier.notify(new ApiTokenNotSetNotification(), project);
     }

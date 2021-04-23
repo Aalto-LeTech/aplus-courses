@@ -1,7 +1,10 @@
 package fi.aalto.cs.apluscourses.presentation;
 
+import static fi.aalto.cs.apluscourses.dal.APlusTokenAuthentication.APLUS_USER;
+
 import fi.aalto.cs.apluscourses.dal.PasswordStorage;
 import fi.aalto.cs.apluscourses.dal.TokenAuthentication;
+import fi.aalto.cs.apluscourses.intellij.dal.IntelliJPasswordStorage;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Exercise;
@@ -46,6 +49,9 @@ public class MainViewModel {
       new ObservableReadWriteProperty<>(null);
 
   @NotNull
+  private String userName = "";
+
+  @NotNull
   private final Options exerciseFilterOptions;
 
   private final AtomicBoolean hasTriedToReadAuthenticationFromStorage = new AtomicBoolean(false);
@@ -59,6 +65,25 @@ public class MainViewModel {
     this.exerciseFilterOptions = exerciseFilterOptions;
     courseViewModel.addSimpleObserver(this, MainViewModel::updateExercises);
     authentication.addSimpleObserver(this, MainViewModel::updateExercises);
+    authentication.addSimpleObserver(this, MainViewModel::updateUserName);
+  }
+
+  private void updateUserName() {
+    Course course = null;
+    var localCourseViewModel = courseViewModel.get();
+    if (localCourseViewModel != null) {
+      course = localCourseViewModel.getModel();
+    }
+    Authentication auth = authentication.get();
+    if (course != null && auth != null) {
+      try {
+        this.userName = course.getExerciseDataSource().getUserName(auth);
+      } catch (IOException e) {
+        logger.error("Failed to fetch user data", e);
+      }
+    } else {
+      this.userName = "";
+    }
   }
 
   private void updateExercises() {
@@ -128,6 +153,11 @@ public class MainViewModel {
         .ifPresent(this::setAuthentication);
   }
 
+  public void removePasswordFromStorage() {
+    var passwordStorage = new IntelliJPasswordStorage(courseViewModel.get().getModel().getApiUrl());
+    passwordStorage.remove(APLUS_USER);
+  }
+
   @Nullable
   public ExercisesTreeViewModel getExercises() {
     return exercisesViewModel.get();
@@ -185,5 +215,10 @@ public class MainViewModel {
     if (changed) {
       exercisesViewModel.valueChanged();
     }
+  }
+
+  @NotNull
+  public String getUserName() {
+    return userName;
   }
 }

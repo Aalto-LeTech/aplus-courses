@@ -55,4 +55,8 @@ public final class PluginIcons {
           .getIcon("/META-INF/icons/logo_courses.svg", PluginIcons.class);
   public static final Icon A_PLUS_IN_GRADING = IconLoader
           .getIcon("/META-INF/icons/hourglass.svg", PluginIcons.class);
+  public static final Icon A_PLUS_USER = IconLoader
+      .getIcon("/META-INF/icons/user.svg", PluginIcons.class);
+  public static final Icon A_PLUS_USER_LOGGED_IN = IconLoader
+      .getIcon("/META-INF/icons/user_pink.svg", PluginIcons.class);
 }
