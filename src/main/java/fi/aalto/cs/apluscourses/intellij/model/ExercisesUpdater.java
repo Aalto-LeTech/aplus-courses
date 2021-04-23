@@ -7,7 +7,6 @@ import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Exercise;
-import fi.aalto.cs.apluscourses.model.ExerciseDataSource;
 import fi.aalto.cs.apluscourses.model.Points;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import fi.aalto.cs.apluscourses.utils.Event;
@@ -63,6 +62,10 @@ public class ExercisesUpdater extends RepeatedTask {
       }
       points.setSubmittableExercises(course.getExerciseModules().keySet()); // TODO: remove
       var exerciseGroups = dataSource.getExerciseGroups(course, points, authentication);
+      if (courseProject.getExerciseGroups() == null) {
+        courseProject.setExerciseGroups(exerciseGroups);
+        eventToTrigger.trigger();
+      }
       for (var exerciseGroup : exerciseGroups) {
         for (var exercise : exerciseGroup.getExercises().values()) {
           if (Thread.interrupted()) {

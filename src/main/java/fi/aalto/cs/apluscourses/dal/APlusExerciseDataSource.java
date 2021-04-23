@@ -158,7 +158,7 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
                                               @NotNull ZonedDateTime minCacheEntryTime)
       throws IOException {
     JSONObject response = client.fetch(submissionUrl, authentication, minCacheEntryTime);
-    return SubmissionResult.fromJsonObject(response, exercise);
+    return parser.parseSubmissionResult(response, exercise);
   }
 
   /**
