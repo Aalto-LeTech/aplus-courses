@@ -2,74 +2,97 @@ package fi.aalto.cs.apluscourses.intellij.services;
 
 import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalIdeSettingsNames.A_PLUS_IMPORTED_IDE_SETTINGS;
 import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalIdeSettingsNames.A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
-import com.intellij.ide.util.PropertiesComponent;
-import com.intellij.openapi.fileTypes.FileTypeManager;
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
-import org.junit.Ignore;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 
-@Ignore
-public class PluginSettingsTest extends BasePlatformTestCase {
+public class PluginSettingsTest {
 
   @Test
-  public void ignoretestInitializeLocalIdeSettings() {
+  public void testInitializeLocalIdeSettings() {
+    PluginSettings.PropertiesManager propertiesManager = new TestPropertiesManager();
+    PluginSettings pluginSettings = new PluginSettings(propertiesManager);
+
     // given
-    PluginSettings.getInstance().unsetLocalIdeSettings();
+    pluginSettings.unsetLocalIdeSettings();
 
     //  when
-    PluginSettings.getInstance().initializeLocalIdeSettings();
+    pluginSettings.initializeLocalIdeSettings();
 
     //  then
     assertTrue("The REPL dialog setting should be set to 'true'",
-        PropertiesComponent.getInstance()
-            .getBoolean(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG.getName()));
+        propertiesManager.getBoolean(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG.getName()));
     assertEquals("The last imported ide settings should be an empty string",
-        "", PropertiesComponent.getInstance().getValue(A_PLUS_IMPORTED_IDE_SETTINGS.getName()));
+        "", propertiesManager.getValue(A_PLUS_IMPORTED_IDE_SETTINGS.getName()));
   }
 
   @Test
-  public void ignoretestResetLocalIdeSettings() {
+  public void testResetLocalIdeSettings() {
+    PluginSettings.PropertiesManager propertiesManager = new TestPropertiesManager();
+    PluginSettings pluginSettings = new PluginSettings(propertiesManager);
+
     // given
-    PluginSettings.getInstance().setShowReplConfigurationDialog(false);
-    PluginSettings.getInstance().setImportedIdeSettingsId("this is not an empty string");
+    pluginSettings.setShowReplConfigurationDialog(false);
+    pluginSettings.setImportedIdeSettingsId("this is not an empty string");
 
     // when
-    PluginSettings.getInstance().resetLocalSettings();
+    pluginSettings.resetLocalSettings();
 
     // then
     assertTrue("The REPL dialog setting should be set to 'true'",
-        PropertiesComponent.getInstance()
-            .getBoolean(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG.getName()));
+        propertiesManager.getBoolean(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG.getName()));
     assertEquals("The last imported ide settings should be an empty string",
-        "", PropertiesComponent.getInstance().getValue(A_PLUS_IMPORTED_IDE_SETTINGS.getName()));
+        "", propertiesManager.getValue(A_PLUS_IMPORTED_IDE_SETTINGS.getName()));
   }
 
   @Test
-  public void ignoretestUnsetLocalIdeSettings() {
+  public void testUnsetLocalIdeSettings() {
+    PluginSettings.PropertiesManager propertiesManager = new TestPropertiesManager();
+    PluginSettings pluginSettings = new PluginSettings(propertiesManager);
+
     //  given
-    PluginSettings.getInstance().initializeLocalIdeSettings();
+    pluginSettings.initializeLocalIdeSettings();
 
     //  when
-    PluginSettings.getInstance().unsetLocalIdeSettings();
+    pluginSettings.unsetLocalIdeSettings();
 
     //  then
     assertNull(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG.getName() + " is successfully removed.",
-        PropertiesComponent.getInstance().getValue(
-            A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG.getName()));
+        propertiesManager.getValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG.getName()));
     assertNull(A_PLUS_IMPORTED_IDE_SETTINGS.getName() + " is successfully removed.",
-        PropertiesComponent.getInstance().getValue(
-            A_PLUS_IMPORTED_IDE_SETTINGS.getName()));
+        propertiesManager.getValue(A_PLUS_IMPORTED_IDE_SETTINGS.getName()));
   }
 
-  @Test
-  public void ignoretestIgnoreFileInProject() {
-    String fileName = ".sampleFileToIgnore";
-    String expected = FileTypeManager.getInstance().getIgnoredFilesList() + fileName + ";";
+  private static class TestPropertiesManager implements PluginSettings.PropertiesManager {
+    private final Map<String, Optional<String>> map = Collections.synchronizedMap(new HashMap<>());
 
-    PluginSettings.getInstance().ignoreFileInProjectView(fileName, getProject());
+    @Override
+    public void setValue(@NotNull String key, @Nullable String value) {
+      map.put(key, Optional.ofNullable(value));
+    }
 
-    String actual = FileTypeManager.getInstance().getIgnoredFilesList();
-    assertEquals("The file is successfully added to the ignored files list.", expected, actual);
+    @Override
+    public @Nullable String getValue(@NotNull String key) {
+      Optional<String> value = map.get(key);
+      return value == null || value.isEmpty() ? null : value.get();
+    }
+
+    @Override
+    public void unsetValue(@NotNull String key) {
+      map.remove(key);
+    }
+
+    @Override
+    public boolean isValueSet(@NotNull String key) {
+      return map.containsKey(key);
+    }
   }
 }
