@@ -3,7 +3,15 @@ package fi.aalto.cs.apluscourses.e2e.fixtures
 import com.intellij.remoterobot.RemoteRobot
 import com.intellij.remoterobot.SearchContext
 import com.intellij.remoterobot.data.RemoteComponent
-import com.intellij.remoterobot.fixtures.*
+import com.intellij.remoterobot.fixtures.ActionButtonFixture
+import com.intellij.remoterobot.fixtures.CommonContainerFixture
+import com.intellij.remoterobot.fixtures.ComponentFixture
+import com.intellij.remoterobot.fixtures.ContainerFixture
+import com.intellij.remoterobot.fixtures.DefaultXpath
+import com.intellij.remoterobot.fixtures.FixtureName
+import com.intellij.remoterobot.fixtures.JButtonFixture
+import com.intellij.remoterobot.fixtures.JListFixture
+import com.intellij.remoterobot.fixtures.JTextFieldFixture
 import com.intellij.remoterobot.search.locators.byXpath
 import com.intellij.remoterobot.utils.waitFor
 import fi.aalto.cs.apluscourses.e2e.utils.LocatorBuilder
