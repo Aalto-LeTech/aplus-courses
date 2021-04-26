@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.e2e.utils
 
 import com.intellij.remoterobot.RemoteRobot
+import com.intellij.remoterobot.fixtures.Fixture
 import com.intellij.remoterobot.stepsProcessing.StepLogger
 import com.intellij.remoterobot.stepsProcessing.StepWorker
 import okhttp3.OkHttpClient
@@ -64,7 +65,9 @@ fun RemoteRobot.fetchScreenShot(): BufferedImage {
     }
 }
 
-fun wait(duration: Duration) = Thread.sleep(duration.toMillis())
+fun Fixture.containsText(text: String): Boolean {
+    return hasText { textData -> textData.text.contains(text) }
+}
 
 fun getVersion(): String {
     val versionProperties = Properties()

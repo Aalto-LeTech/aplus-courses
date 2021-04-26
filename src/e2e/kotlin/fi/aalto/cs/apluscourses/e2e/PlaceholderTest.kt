@@ -8,6 +8,7 @@ import fi.aalto.cs.apluscourses.e2e.fixtures.dialog
 import fi.aalto.cs.apluscourses.e2e.fixtures.ideFrame
 import fi.aalto.cs.apluscourses.e2e.steps.CommonSteps
 import fi.aalto.cs.apluscourses.e2e.utils.StepLoggerInitializer
+import fi.aalto.cs.apluscourses.e2e.utils.containsText
 import fi.aalto.cs.apluscourses.e2e.utils.getVersion
 import fi.aalto.cs.apluscourses.e2e.utils.uiTest
 import org.junit.Assert.assertEquals
@@ -45,6 +46,11 @@ class PlaceholderTest {
         step("Choose settings") {
             CommonSteps(this).aPlusSettings(true)
         }
+        step("Skip the potential \"Code with me\" popup") {
+            with(ideFrame()) {
+                codeWithMeButton()?.click()
+            }
+        }
         step("Assertions") {
             with(ideFrame()) {
                 with(projectViewTree()) {
@@ -60,7 +66,7 @@ class PlaceholderTest {
                         Duration.ofSeconds(60),
                         Duration.ofSeconds(1),
                         "No modules installed in modules list"
-                    ) { hasText { textData -> textData.text.contains("[Installed]") } }
+                    ) { containsText("[Installed]") }
                     assertTrue(
                         "O1Library is in the modules tree",
                         hasText("O1Library")
@@ -113,13 +119,16 @@ class PlaceholderTest {
                         Duration.ofSeconds(1),
                         "Week 1 not found in assignments list"
                     ) { hasText("Week 1") }
-                    assertFalse("'Files' assignment should be collapsed", hasText("Files"))
+
+                    // searching for assignments uses "containsText" rather than "hasText" because of
+                    // platform-dependant quirks such as splitting the assignment number and name into two strings
+                    assertFalse("'Files' assignment should be collapsed", containsText("Files"))
                     click()
                     keyboard {
                         enterText("files")
                         escape()
                     }
-                    assertTrue("'Files' assignment should be visible", hasText("Files"))
+                    assertTrue("'Files' assignment should be visible", containsText("Files"))
                     keyboard {
                         escape()
                     }
@@ -139,7 +148,7 @@ class PlaceholderTest {
                 }
 
                 with(assignments()) {
-                    assertTrue("'Files' assignment should be visible", hasText("Assignment 6 (Files)"))
+                    assertTrue("'Files' assignment should be visible", containsText("Files"))
                 }
 
                 // filter out optional tasks
@@ -154,8 +163,8 @@ class PlaceholderTest {
                 }
 
                 with(assignments()) {
-                    assertFalse("'Files' assignment should now be hidden", hasText("Assignment 6 (Files)"))
-                    assertTrue("Feedback submissions should be visible", hasText("Feedback"))
+                    assertFalse("'Files' assignment should now be hidden", containsText("Files"))
+                    assertTrue("Feedback submissions should be visible", containsText("Feedback"))
                 }
 
                 // filter out non-submittable tasks
@@ -194,8 +203,8 @@ class PlaceholderTest {
 
                 // check that various assignments are visible
                 with(assignments()) {
-                    assertTrue("'Files' assignment should be visible", hasText("Files"))
-                    assertTrue("Feedback submissions should be visible", hasText("Feedback"))
+                    assertTrue("'Files' assignment should be visible", containsText("Files"))
+                    assertTrue("Feedback submissions should be visible", containsText("Feedback"))
                     assertTrue("Closed Week 1 should be visible", hasText("Week 1"))
                 }
             }
