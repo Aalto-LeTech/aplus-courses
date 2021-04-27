@@ -67,7 +67,7 @@ public class ExercisesUpdater extends RepeatedTask {
         eventToTrigger.trigger();
       }
       for (var exerciseGroup : exerciseGroups) {
-        for (var exercise : exerciseGroup.getExercises().values()) {
+        for (var exercise : exerciseGroup.getExercises()) {
           if (Thread.interrupted()) {
             return;
           }

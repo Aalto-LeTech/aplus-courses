@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -14,12 +15,12 @@ public class ExerciseGroup implements Browsable {
 
   private final long id;
   @NotNull
-  private String name;
+  private final String name;
   @NotNull
-  private String htmlUrl;
-  private boolean isOpen;
+  private final String htmlUrl;
+  private final boolean isOpen;
   @NotNull
-  private Map<Long, Exercise> exercises;
+  private final List<Exercise> exercises;
 
   /**
    * Construct an exercise group with the given name and exercises.
@@ -38,9 +39,7 @@ public class ExerciseGroup implements Browsable {
     this.name = name;
     this.htmlUrl = htmlUrl;
     this.isOpen = isOpen;
-    this.exercises = exercises
-        .stream()
-        .collect(Collectors.toMap(Exercise::getId, Function.identity()));
+    this.exercises = exercises;
   }
 
   /**
@@ -97,11 +96,7 @@ public class ExerciseGroup implements Browsable {
     return isOpen;
   }
 
-  /**
-   * Returns a map that contains the exercises of this exercise group. The keys are IDs of exercises
-   * and the values are the exercises corresponding to the IDs.
-   */
-  public Map<Long, Exercise> getExercises() {
-    return Collections.unmodifiableMap(exercises);
+  public List<Exercise> getExercises() {
+    return Collections.unmodifiableList(exercises);
   }
 }

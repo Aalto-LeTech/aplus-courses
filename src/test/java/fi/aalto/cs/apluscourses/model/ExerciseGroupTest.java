@@ -35,15 +35,15 @@ public class ExerciseGroupTest {
     Assert.assertEquals("The name is the same as the one given to the constructor",
         "group", group.getName());
     Assert.assertEquals("The exercises are the same as those given to the constructor",
-        "name1", group.getExercises().get(123L).getName());
+        "name1", group.getExercises().get(0).getName());
     Assert.assertEquals("The exercises are the same as those given to the constructor",
-        "name2", group.getExercises().get(456L).getName());
+        "name2", group.getExercises().get(1).getName());
   }
 
   @Test(expected = UnsupportedOperationException.class)
-  public void testGetExercisesReturnsUnmodifiableMap() {
+  public void testGetExercisesReturnsUnmodifiableList() {
     ExerciseGroup group = new ExerciseGroup(10, "", "", true, new ArrayList<>());
-    group.getExercises().put(999L, null);
+    group.getExercises().add(null);
   }
 
   @Test
@@ -66,7 +66,7 @@ public class ExerciseGroupTest {
     Assert.assertEquals("The exercise group has the same name as in the JSON object",
         "group name", group.getName());
     Assert.assertEquals("The exercise group has the same exercises as in the JSON object",
-        "exercise name", group.getExercises().get(567L).getName());
+        567, group.getExercises().get(0).getId());
   }
 
   @Test(expected = JSONException.class)
