@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.e2e
 
 import com.intellij.remoterobot.stepsProcessing.step
+import com.intellij.remoterobot.utils.attempt
 import com.intellij.remoterobot.utils.keyboard
 import com.intellij.remoterobot.utils.waitFor
 import fi.aalto.cs.apluscourses.e2e.fixtures.dialog
@@ -27,8 +28,11 @@ class PlaceholderTest {
         // step 4
         CommonSteps(this).openAPlusProjectWindow()
         step("Cancel") {
-            with(dialog("Select Course")) {
-                button("Cancel").click()
+            attempt(2) {
+                ideFrame().waitForSmartMode()
+                with(dialog("Select Course")) {
+                    button("Cancel").click()
+                }
             }
         }
         CommonSteps(this).openAPlusProjectWindow()
@@ -98,11 +102,6 @@ class PlaceholderTest {
                     }
                     assertEquals("Only one item is selected", selectedItems.size, 1)
                     assertTrue("Selected module is correct", selectedItems[0].contains("Viinaharava", true))
-                    keyboard {
-                        escape()
-                        enterText("'") // a character that won't match anything
-                    }
-                    assertEquals("Nothing should be selected", selectedItems.size, 0)
                 }
             }
         }
@@ -120,7 +119,7 @@ class PlaceholderTest {
                         enterText("files")
                         escape()
                     }
-                    assertTrue("'Files' assignment should be visible", hasText("Assignment 6 (Files)"))
+                    assertTrue("'Files' assignment should be visible", hasText("Files"))
                     keyboard {
                         escape()
                     }
@@ -195,7 +194,7 @@ class PlaceholderTest {
 
                 // check that various assignments are visible
                 with(assignments()) {
-                    assertTrue("'Files' assignment should be visible", hasText("Assignment 6 (Files)"))
+                    assertTrue("'Files' assignment should be visible", hasText("Files"))
                     assertTrue("Feedback submissions should be visible", hasText("Feedback"))
                     assertTrue("Closed Week 1 should be visible", hasText("Week 1"))
                 }

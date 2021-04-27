@@ -11,6 +11,7 @@ import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
+import fi.aalto.cs.apluscourses.intellij.model.CourseProject;
 import fi.aalto.cs.apluscourses.intellij.model.ProjectModuleSource;
 import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.ExerciseNotSelectedNotification;
@@ -20,6 +21,7 @@ import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.NotSubmittableNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.SubmissionSentNotification;
+import fi.aalto.cs.apluscourses.intellij.services.DefaultGroupIdSetting;
 import fi.aalto.cs.apluscourses.intellij.services.Dialogs;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
@@ -63,6 +65,9 @@ public class SubmitExerciseAction extends AnAction {
   private final MainViewModelProvider mainViewModelProvider;
 
   @NotNull
+  private final AuthenticationProvider authenticationProvider;
+
+  @NotNull
   private final FileFinder fileFinder;
 
   @NotNull
@@ -76,7 +81,13 @@ public class SubmitExerciseAction extends AnAction {
 
   @NotNull
   private final Tagger tagger;
+
   private final DocumentSaver documentSaver;
+
+  // TODO: store language and default group ID in the object model and read them from there
+  private final LanguageSource languageSource;
+
+  private final DefaultGroupIdSetting defaultGroupIdSetting;
 
   /**
    * Constructor with reasonable defaults.
@@ -84,12 +95,16 @@ public class SubmitExerciseAction extends AnAction {
   public SubmitExerciseAction() {
     this(
         PluginSettings.getInstance(),
+        project -> Optional.ofNullable(PluginSettings.getInstance().getCourseProject(project))
+            .map(CourseProject::getAuthentication).orElse(null),
         VfsUtil::findFileInDirectory,
         new ProjectModuleSource(),
         Dialogs.DEFAULT,
         new DefaultNotifier(),
         LocalHistory.getInstance()::putSystemLabel,
-        FileDocumentManager.getInstance()::saveAllDocuments
+        FileDocumentManager.getInstance()::saveAllDocuments,
+        project -> PluginSettings.getInstance().getCourseFileManager(project).getLanguage(),
+        PluginSettings.getInstance()
     );
   }
 
@@ -98,19 +113,25 @@ public class SubmitExerciseAction extends AnAction {
    * for testing purposes.
    */
   public SubmitExerciseAction(@NotNull MainViewModelProvider mainViewModelProvider,
+                              @NotNull AuthenticationProvider authenticationProvider,
                               @NotNull FileFinder fileFinder,
                               @NotNull ProjectModuleSource moduleSource,
                               @NotNull Dialogs dialogs,
                               @NotNull Notifier notifier,
                               @NotNull Tagger tagger,
-                              @NotNull DocumentSaver documentSaver) {
+                              @NotNull DocumentSaver documentSaver,
+                              @NotNull LanguageSource languageSource,
+                              @NotNull DefaultGroupIdSetting defaultGroupIdSetting) {
     this.mainViewModelProvider = mainViewModelProvider;
+    this.authenticationProvider = authenticationProvider;
     this.fileFinder = fileFinder;
     this.moduleSource = moduleSource;
     this.dialogs = dialogs;
     this.notifier = notifier;
     this.tagger = tagger;
     this.documentSaver = documentSaver;
+    this.languageSource = languageSource;
+    this.defaultGroupIdSetting = defaultGroupIdSetting;
   }
 
   @Override
@@ -119,7 +140,7 @@ public class SubmitExerciseAction extends AnAction {
     MainViewModel mainViewModel = mainViewModelProvider.getMainViewModel(project);
     CourseViewModel courseViewModel = mainViewModel.courseViewModel.get();
     ExercisesTreeViewModel exercisesViewModel = mainViewModel.exercisesViewModel.get();
-    Authentication authentication = mainViewModel.authentication.get();
+    Authentication authentication = authenticationProvider.getAuthentication(project);
     boolean isExerciseSelected = exercisesViewModel != null
             && exercisesViewModel.getSelectedItem() != null
             && !(exercisesViewModel.getSelectedItem() instanceof ExerciseGroupViewModel);
@@ -149,7 +170,7 @@ public class SubmitExerciseAction extends AnAction {
     MainViewModel mainViewModel = mainViewModelProvider.getMainViewModel(project);
     CourseViewModel courseViewModel = mainViewModel.courseViewModel.get();
     ExercisesTreeViewModel exercisesViewModel = mainViewModel.exercisesViewModel.get();
-    Authentication authentication = mainViewModel.authentication.get();
+    Authentication authentication = authenticationProvider.getAuthentication(project);
 
     if (courseViewModel == null || exercisesViewModel == null || authentication == null) {
       return;
@@ -165,10 +186,8 @@ public class SubmitExerciseAction extends AnAction {
 
     Exercise exercise = selectedExercise.getModel();
     Course course = courseViewModel.getModel();
-    String language = PluginSettings
-        .getInstance()
-        .getCourseFileManager(project)
-        .getLanguage();
+
+    String language = languageSource.getLanguage(project);
     ExerciseDataSource exerciseDataSource = course.getExerciseDataSource();
 
     SubmissionInfo submissionInfo = exerciseDataSource.getSubmissionInfo(exercise, authentication);
@@ -220,7 +239,7 @@ public class SubmitExerciseAction extends AnAction {
 
     // Find the group from the available groups that matches the default group ID.
     // A group could be removed, so this way we check that the default group ID is still valid.
-    Optional<Long> defaultGroupId = PluginSettings.getInstance().getDefaultGroupId();
+    Optional<Long> defaultGroupId = defaultGroupIdSetting.getDefaultGroupId();
     Group defaultGroup = defaultGroupId
         .flatMap(id -> groups
             .stream()
@@ -236,9 +255,9 @@ public class SubmitExerciseAction extends AnAction {
     }
 
     if (Boolean.TRUE.equals(submission.makeDefaultGroup.get())) {
-      PluginSettings.getInstance().setDefaultGroupId(submission.selectedGroup.get().getId());
+      defaultGroupIdSetting.setDefaultGroupId(submission.selectedGroup.get().getId());
     } else {
-      PluginSettings.getInstance().clearDefaultGroupId();
+      defaultGroupIdSetting.clearDefaultGroupId();
     }
 
     String submissionUrl = exerciseDataSource.submit(submission.buildSubmission(), authentication);
@@ -278,6 +297,11 @@ public class SubmitExerciseAction extends AnAction {
   }
 
   @FunctionalInterface
+  public interface AuthenticationProvider {
+    Authentication getAuthentication(@Nullable Project project);
+  }
+
+  @FunctionalInterface
   public interface Tagger {
     void putSystemLabel(@Nullable Project project, @NotNull String tag, int color);
   }
@@ -285,5 +309,10 @@ public class SubmitExerciseAction extends AnAction {
   @FunctionalInterface
   public interface DocumentSaver {
     void saveAllDocuments();
+  }
+
+  @FunctionalInterface
+  public interface LanguageSource {
+    @NotNull String getLanguage(@NotNull Project project);
   }
 }
