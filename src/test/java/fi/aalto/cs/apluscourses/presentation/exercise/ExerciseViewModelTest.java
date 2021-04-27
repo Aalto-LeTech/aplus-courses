@@ -58,7 +58,8 @@ public class ExerciseViewModelTest {
     Assert.assertEquals(ExerciseViewModel.Status.FULL_POINTS,
         new ExerciseViewModel(fullPoints).getStatus());
 
-    training.setInGrading(true);
+    training.addSubmissionResult(
+        new SubmissionResult(2L, 0, SubmissionResult.Status.WAITING, training));
     Assert.assertEquals(ExerciseViewModel.Status.IN_GRADING,
             new ExerciseViewModel(training).getStatus());
   }

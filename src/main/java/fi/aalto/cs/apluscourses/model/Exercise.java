@@ -3,7 +3,6 @@ package fi.aalto.cs.apluscourses.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
@@ -28,8 +27,6 @@ public class Exercise implements Browsable {
   private final int maxSubmissions;
 
   private final boolean submittable;
-
-  private AtomicBoolean inGrading = new AtomicBoolean(false);
 
   /**
    * Construct an exercise instance with the given parameters.
@@ -82,21 +79,7 @@ public class Exercise implements Browsable {
     // SubmissionInfo and how it is used in SubmitExerciseAction.
     boolean isSubmittable = points.isSubmittable(id);
 
-    Exercise exercise
-        = new Exercise(id, name, htmlUrl, userPoints, maxPoints, maxSubmissions, isSubmittable);
-
-    List<Long> submissionIds = points.getSubmissions().getOrDefault(id, Collections.emptyList());
-    for (int i = 0, length = submissionIds.size(); i < length; i++) {
-      long submissionId = submissionIds.get(i);
-      int submissionPoints = points.getSubmissionPoints().getOrDefault(submissionId, 0);
-      SubmissionResult.Status status = (i + 1 > maxSubmissions)
-          ? SubmissionResult.Status.UNOFFICIAL
-          : SubmissionResult.Status.GRADED;
-      exercise.addSubmissionResult(
-          new SubmissionResult(submissionId, submissionPoints, status, exercise));
-    }
-
-    return exercise;
+    return new Exercise(id, name, htmlUrl, userPoints, maxPoints, maxSubmissions, isSubmittable);
   }
 
   public long getId() {
@@ -152,12 +135,13 @@ public class Exercise implements Browsable {
     return maxSubmissions == 0 && maxPoints == 0;
   }
 
+  /**
+   * Returns true if any of the submissions of this exercise has status WAITING.
+   */
   public boolean isInGrading() {
-    return inGrading.get();
-  }
-
-  public void setInGrading(boolean isInGrading) {
-    this.inGrading.getAndSet(isInGrading);
+    return submissionResults
+        .stream()
+        .anyMatch(submission -> submission.getStatus() == SubmissionResult.Status.WAITING);
   }
 
   @Override

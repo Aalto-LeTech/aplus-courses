@@ -63,7 +63,8 @@ public class ModelExtensions {
     @Override
     public SubmissionResult getSubmissionResult(@NotNull String submissionUrl,
                                                 @NotNull Exercise exercise,
-                                                @NotNull Authentication authentication) {
+                                                @NotNull Authentication authentication,
+                                                @NotNull ZonedDateTime minCacheEntryTime) {
       return new SubmissionResult(0, 20, SubmissionResult.Status.GRADED, exercise);
     }
 
