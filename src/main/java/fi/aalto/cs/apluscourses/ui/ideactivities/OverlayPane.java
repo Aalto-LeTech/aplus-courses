@@ -4,13 +4,10 @@ import icons.PluginIcons;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.Window;
 import java.awt.geom.Area;
 import java.util.HashSet;
 import java.util.Set;
@@ -115,7 +112,7 @@ public class OverlayPane extends JPanel {
   }
 
   /**
-   * Installs the overlay.
+   * Installs the overlay. Must be called from the Swing EDT.
    */
   public static void installOverlay() {
     if (isOverlayInstalled()) {
@@ -128,7 +125,7 @@ public class OverlayPane extends JPanel {
   }
 
   /**
-   * Removes the overlay.
+   * Removes the overlay. Must be called from the Swing EDT.
    */
   public static void removeOverlay() {
     if (!isOverlayInstalled()) {
@@ -157,7 +154,7 @@ public class OverlayPane extends JPanel {
   }
 
   /**
-   * Adds a popup to a specified component.
+   * Adds a popup to a specified component. Must be called from the Swing EDT.
    */
   public static @NotNull BalloonPopup addPopup(@NotNull Component c, @NotNull String title,
                                                @NotNull String message) {
@@ -175,6 +172,7 @@ public class OverlayPane extends JPanel {
 
   /**
    * Resets the overlay to its original state, i.e. removes all popups and dims all components.
+   * Must be called from the Swing EDT.
    */
   public static void resetOverlay() {
     if (!isOverlayInstalled()) {

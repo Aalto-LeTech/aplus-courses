@@ -50,7 +50,7 @@ public class OverlayIgnoreAction extends DumbAwareAction {
 
     if (component != null) {
       OverlayPane.showComponent(component);
-      OverlayPane.addPopup(component, "Overlay example", "Example text for the popup message ".repeat(15));
+      OverlayPane.addPopup(component, "Overlay example", "Example text ".repeat(30));
       operation++;
     }
   }

@@ -32,9 +32,7 @@ public class BalloonPopup extends JPanel {
     setMaximumSize(new Dimension(500, 0));
 
     var titleText = new JLabel("<html><h1>" + title + "</h1></html>");
-    if (icon != null) {
-      titleText.setIcon(icon);
-    }
+    titleText.setIcon(icon);
 
     var titlePanel = new JPanel();
     titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.X_AXIS));
