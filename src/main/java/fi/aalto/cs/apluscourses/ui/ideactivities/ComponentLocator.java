@@ -39,16 +39,6 @@ public class ComponentLocator {
     return getComponentByClass(JOptionPane.getRootFrame(), predicate);
   }
 
-  /**
-   * To be removed.
-   */
-  public static @Nullable Component getButtonByActionClass(@NotNull String actionClassSubstring) {
-    Predicate<Component> predicate = (c) -> c instanceof AnActionHolder
-        && ((AnActionHolder) c).getAction().getClass().toString().contains(actionClassSubstring);
-
-    return getComponentByClass(JOptionPane.getRootFrame(), predicate);
-  }
-
   private ComponentLocator() {
 
   }

@@ -55,19 +55,6 @@
                     class="fi.aalto.cs.apluscourses.intellij.actions.AboutAction"
                     text="About the A+ Courses Plugin"
                     description="Information about the A+ Courses plugin for IntelliJ" />
-            <!-- The actions below should be deleted in release; they are only here for the PoC -->
-            <action id="fi.aalto.cs.apluscourses.intellij.actions.OverlayInstallAction"
-                    class="fi.aalto.cs.apluscourses.intellij.actions.OverlayInstallAction"
-                    text="Install Overlay"
-                    description="Install the IDE overlay for IDE activities" />
-            <action id="fi.aalto.cs.apluscourses.intellij.actions.OverlayIgnoreAction"
-                    class="fi.aalto.cs.apluscourses.intellij.actions.OverlayIgnoreAction"
-                    text="Add an Overlay Pop-up"
-                    description="Add a pop-up for a certain hardcoded component" />
-            <action id="fi.aalto.cs.apluscourses.intellij.actions.OverlayRemoveAction"
-                    class="fi.aalto.cs.apluscourses.intellij.actions.OverlayRemoveAction"
-                    text="Remove Overlay"
-                    description="Remove the IDE overlay for IDE activities" />
         </group>
         <group id="fi.aalto.cs.apluscourses.intellij.actions.ActionGroups.MODULE_ACTIONS"
                text="A+ Module"
