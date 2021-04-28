@@ -20,7 +20,8 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
 
   @Override
   public void highlight() {
-    ApplicationManager.getApplication().invokeLater(this::highlightInternal, ModalityState.NON_MODAL);
+    ApplicationManager.getApplication()
+        .invokeLater(this::highlightInternal,ModalityState.NON_MODAL);
   }
 
   @RequiresEdt

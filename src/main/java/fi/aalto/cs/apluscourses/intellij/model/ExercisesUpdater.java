@@ -61,7 +61,8 @@ public class ExercisesUpdater extends RepeatedTask {
         return;
       }
       points.setSubmittableExercises(course.getExerciseModules().keySet()); // TODO: remove
-      var exerciseGroups = dataSource.getExerciseGroups(course, points, authentication);
+      var exerciseGroups
+          = dataSource.getExerciseGroups(course, points, course.getTutorials(), authentication);
       if (courseProject.getExerciseGroups() == null) {
         courseProject.setExerciseGroups(exerciseGroups);
         eventToTrigger.trigger();

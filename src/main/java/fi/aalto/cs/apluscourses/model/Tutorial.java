@@ -2,9 +2,12 @@ package fi.aalto.cs.apluscourses.model;
 
 import fi.aalto.cs.apluscourses.model.task.Task;
 import fi.aalto.cs.apluscourses.utils.Event;
+import fi.aalto.cs.apluscourses.utils.JsonUtil;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 
 public class Tutorial {
@@ -15,6 +18,12 @@ public class Tutorial {
 
   public Tutorial(Task[] tasks) {
     this.tasks = List.of(tasks);
+  }
+
+  public static Tutorial fromJsonObject(@NotNull JSONObject jsonObject,
+                                        @NotNull ModelFactory factory) {
+    return new Tutorial(JsonUtil.parseArray(jsonObject.getJSONArray("tasks"),
+        JSONArray::getJSONObject, Task::fromJsonObject, Task[]::new));
   }
 
   public List<Task> getTasks() {

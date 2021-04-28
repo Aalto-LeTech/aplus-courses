@@ -1,7 +1,11 @@
 package fi.aalto.cs.apluscourses.model.task;
 
 import fi.aalto.cs.apluscourses.utils.Event;
+import fi.aalto.cs.apluscourses.utils.JsonUtil;
+import java.util.function.Function;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.json.JSONObject;
 
 public class Task {
   public final @NotNull Event taskCompleted = new Event();
@@ -37,6 +41,9 @@ public class Task {
     return action;
   }
 
+  /**
+   * Ends the task.
+   */
   public synchronized void endTask() {
     if (listener != null) {
       listener.unregisterListener();
@@ -48,6 +55,12 @@ public class Task {
     }
   }
 
+  /**
+   * Starts a task.
+   *
+   * @param activityFactory Creator for listener and presenter objects.
+   * @return True, if task was already completed, otherwise false
+   */
   public synchronized boolean startTask(ActivityFactory activityFactory) {
     if (presenter != null || listener != null) {
       throw new IllegalStateException();
@@ -59,6 +72,29 @@ public class Task {
     }
     presenter.highlight();
     return false;
+  }
+
+  /**
+   * Builds a Task object from JSON.
+   *
+   * @param jsonObject JSON.
+   * @return A task.
+   */
+  public static @NotNull Task fromJsonObject(@NotNull JSONObject jsonObject) {
+    return new Task(
+        jsonObject.getString("instruction"),
+        jsonObject.getString("info"),
+        jsonObject.getString("component"),
+        parseArguments(jsonObject.optJSONObject("componentArguments")),
+        jsonObject.getString("action"),
+        parseArguments(jsonObject.optJSONObject("actionArguments"))
+    );
+  }
+
+  protected static @NotNull Arguments parseArguments(@Nullable JSONObject jsonObject) {
+    return jsonObject == null ? Arguments.empty()
+        : JsonUtil.parseObject(jsonObject, JSONObject::getString,
+            Function.identity(), Function.identity())::get;
   }
 }
 

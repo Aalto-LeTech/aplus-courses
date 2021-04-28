@@ -10,8 +10,11 @@ public class TutorialExercise extends Exercise {
                           @NotNull String name,
                           @NotNull String htmlUrl,
                           int userPoints,
+                          int maxPoints,
+                          int maxSubmissions,
+                          boolean isSubmittable,
                           @NotNull Tutorial tutorial) {
-    super(id, name, htmlUrl, userPoints, 1, 1, false /* TODO change to true (submittable) */);
+    super(id, name, htmlUrl, userPoints, maxPoints, maxSubmissions, isSubmittable);
     this.tutorial = tutorial;
   }
 

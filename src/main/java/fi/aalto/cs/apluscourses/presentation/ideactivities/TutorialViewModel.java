@@ -4,6 +4,7 @@ import fi.aalto.cs.apluscourses.model.Tutorial;
 import fi.aalto.cs.apluscourses.model.TutorialExercise;
 import fi.aalto.cs.apluscourses.model.task.ActivityFactory;
 import fi.aalto.cs.apluscourses.model.task.Task;
+import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
@@ -84,7 +85,7 @@ public class TutorialViewModel {
 
 
   public @NotNull String getTitle() {
-    return tutorialExercise.getName();
+    return APlusLocalizationUtil.getEnglishName(tutorialExercise.getName());
   }
 
   public @NotNull Tutorial getTutorial() {

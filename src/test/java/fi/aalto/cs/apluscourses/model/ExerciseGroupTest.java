@@ -60,7 +60,7 @@ public class ExerciseGroupTest {
                 .put(HTML_KEY, "http://localhost:7000")
                 .put(MAX_POINTS_KEY, 50)
                 .put(MAX_SUBMISSIONS_KEY, 10)));
-    ExerciseGroup group = ExerciseGroup.fromJsonObject(json, mock(Points.class));
+    ExerciseGroup group = ExerciseGroup.fromJsonObject(json, mock(Points.class), );
 
     Assert.assertEquals(567, group.getId());
     Assert.assertEquals("The exercise group has the same name as in the JSON object",
@@ -72,7 +72,7 @@ public class ExerciseGroupTest {
   @Test(expected = JSONException.class)
   public void testFromJsonObjectMissingExercises() {
     JSONObject json = new JSONObject().put(NAME_KEY, "group test name");
-    ExerciseGroup.fromJsonObject(json, mock(Points.class));
+    ExerciseGroup.fromJsonObject(json, mock(Points.class), );
   }
 
   @Test(expected = JSONException.class)
@@ -86,7 +86,7 @@ public class ExerciseGroupTest {
                 .put(HTML_KEY, "http://localhost:3000")
                 .put(MAX_POINTS_KEY, 45)
                 .put(MAX_SUBMISSIONS_KEY, 9)));
-    ExerciseGroup.fromJsonObject(json, mock(Points.class));
+    ExerciseGroup.fromJsonObject(json, mock(Points.class), );
   }
 
   @Test
@@ -107,7 +107,7 @@ public class ExerciseGroupTest {
                   .put(MAX_SUBMISSIONS_KEY, 8)));
       array.put(json);
     }
-    List<ExerciseGroup> exerciseGroups = ExerciseGroup.fromJsonArray(array, mock(Points.class));
+    List<ExerciseGroup> exerciseGroups = ExerciseGroup.fromJsonArray(array, mock(Points.class), );
 
     for (int i = 0; i < 5; ++i) {
       Assert.assertEquals("group " + i, exerciseGroups.get(i).getName());

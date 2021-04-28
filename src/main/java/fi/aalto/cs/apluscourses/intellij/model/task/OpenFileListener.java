@@ -15,13 +15,22 @@ import org.jetbrains.annotations.NotNull;
 
 
 public class OpenFileListener implements FileEditorManagerListener, ActivitiesListener {
-  private final ListenerCallback whenDone;
+  private final ListenerCallback callback;
   private final @NotNull String filePath;
   private final Project project;
   private MessageBusConnection messageBusConnection;
 
-  public OpenFileListener(@NotNull ListenerCallback whenDone, @NotNull String filePath, @NotNull Project project) {
-    this.whenDone = whenDone;
+  /**
+   * Instantiates a listener for open file events.
+   *
+   * @param callback Who to call when it happens?
+   * @param filePath Path of the file to be opened.
+   * @param project Project.
+   */
+  public OpenFileListener(@NotNull ListenerCallback callback,
+                          @NotNull String filePath,
+                          @NotNull Project project) {
+    this.callback = callback;
     this.filePath = filePath;
     this.project = project;
   }
@@ -54,7 +63,7 @@ public class OpenFileListener implements FileEditorManagerListener, ActivitiesLi
   @Override
   public void fileOpened(@NotNull FileEditorManager source, @NotNull VirtualFile file) {
     if (checkFile(file)) {
-      whenDone.callback();
+      callback.callback();
     }
   }
 

@@ -54,7 +54,8 @@ public class IntelliJCourseTest {
         //  courseVersion
         BuildInfo.INSTANCE.courseVersion,
         project,
-        commonLibraryProvider);
+        commonLibraryProvider,
+        Collections.emptyMap());
     assertEquals(id, course.getId());
     assertEquals(name, course.getName());
     assertSame(project, course.getProject());
@@ -99,7 +100,8 @@ public class IntelliJCourseTest {
         //  courseVersion
         BuildInfo.INSTANCE.courseVersion,
         project,
-        commonLibraryProvider);
+        commonLibraryProvider,
+        Collections.emptyMap());
 
     Collection<Component> components1 = course.getComponents();
     assertEquals(1, components1.size());
@@ -147,7 +149,8 @@ public class IntelliJCourseTest {
         //  courseVersion
         BuildInfo.INSTANCE.courseVersion,
         project,
-        mock(CommonLibraryProvider.class));
+        mock(CommonLibraryProvider.class),
+        Collections.emptyMap());
 
     assertSame(module, course.getComponentIfExists(file));
   }
@@ -184,7 +187,8 @@ public class IntelliJCourseTest {
         //  courseVersion
         BuildInfo.INSTANCE.courseVersion,
         project,
-        mock(CommonLibraryProvider.class));
+        mock(CommonLibraryProvider.class),
+        Collections.emptyMap());
 
     assertNull(course.getComponentIfExists(file1));
     assertNull(course.getComponentIfExists(file2));

@@ -91,7 +91,8 @@ public class TutorialAction extends AnAction {
         new TutorialViewModel(tutorialExercise, new IntelliJActivityFactory(project));
     mainViewModelProvider.getMainViewModel(project).tutorialViewModel.set(tutorialViewModel);
     if (dialogs.confirmStart(tutorialViewModel)) {
-      tutorialViewModel.getTutorial().tutorialCompleted.addListener(mainViewModel, this::onTutorialComplete);
+      tutorialViewModel.getTutorial().tutorialCompleted
+          .addListener(mainViewModel, this::onTutorialComplete);
       tutorialViewModel.startNextTask();
     }
   }
@@ -120,7 +121,9 @@ public class TutorialAction extends AnAction {
   }
 
   public interface Dialogs {
+
     boolean confirmStart(@NotNull TutorialViewModel tutorialViewModel);
+
     void end(@NotNull TutorialViewModel tutorialViewModel);
   }
 
