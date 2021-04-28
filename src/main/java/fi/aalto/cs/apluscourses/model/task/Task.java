@@ -1,47 +1,64 @@
 package fi.aalto.cs.apluscourses.model.task;
 
-import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.utils.Event;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class Task {
+public class Task {
+  public final @NotNull Event taskCompleted = new Event();
 
-  private final String action;
+  private final @NotNull String instruction;
+  private final @NotNull String info;
+  private final @NotNull String component;
+  private final @NotNull Arguments componentArguments;
+  private final @NotNull String action;
+  private final @NotNull Arguments actionArguments;
 
-  @NotNull
-  public final Event taskUpdated;
+  private ActivitiesListener listener;
+  private ComponentPresenter presenter;
 
   /**
-   * Task constructor. Action and file are Strings
-   * read from the configuration file.
-   * @param action the action to be performed
+   * Task constructor.
    */
-  protected Task(String action) {
+  public Task(@NotNull String instruction,
+              @NotNull String info,
+              @NotNull String component,
+              @NotNull Arguments componentArguments,
+              @NotNull String action,
+              @NotNull Arguments actionArguments) {
+    this.instruction = instruction;
     this.action = action;
-    this.taskUpdated = new Event();
+    this.actionArguments = actionArguments;
+    this.info = info;
+    this.component = component;
+    this.componentArguments = componentArguments;
   }
 
-  /**
-   * Empty Task constructor.
-   */
-  protected Task() {
-    this("editorOpen");
-  }
-
-  public String getAction() {
+  public @NotNull String getAction() {
     return action;
   }
 
-  /**
-   * Sets the current Task as complete and also triggers an Event
-   * that calls the method currentTaskCompleted in TutorialViewModel.
-   */
-  public void setComplete() {
-    taskUpdated.trigger();
+  public synchronized void endTask() {
+    if (listener != null) {
+      listener.unregisterListener();
+      listener = null;
+    }
+    if (presenter != null) {
+      presenter.removeHighlight();
+      presenter = null;
+    }
   }
 
-  public abstract void endTask();
-
-  public abstract boolean startTask(Project project);
+  public synchronized boolean startTask(ActivityFactory activityFactory) {
+    if (presenter != null || listener != null) {
+      throw new IllegalStateException();
+    }
+    presenter = activityFactory.createPresenter(component, instruction, info, componentArguments);
+    listener = activityFactory.createListener(action, actionArguments, taskCompleted::trigger);
+    if (listener.registerListener()) {
+      return true;
+    }
+    presenter.highlight();
+    return false;
+  }
 }
 

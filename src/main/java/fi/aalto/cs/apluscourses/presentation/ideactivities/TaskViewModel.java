@@ -1,6 +1,17 @@
 package fi.aalto.cs.apluscourses.presentation.ideactivities;
 
-public interface TaskViewModel {
+import fi.aalto.cs.apluscourses.model.task.Task;
+import org.jetbrains.annotations.NotNull;
 
-  String getTaskDescription();
+public class TaskViewModel {
+
+  private final @NotNull Task task;
+
+  public TaskViewModel(@NotNull Task task) {
+    this.task = task;
+  }
+
+  public @NotNull String getTaskDescription() {
+    return "<html>" + task.getAction() + "</html>";
+  }
 }

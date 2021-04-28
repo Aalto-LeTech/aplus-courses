@@ -1,39 +1,32 @@
 package fi.aalto.cs.apluscourses.presentation.ideactivities;
 
-import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.model.Tutorial;
+import fi.aalto.cs.apluscourses.model.TutorialExercise;
+import fi.aalto.cs.apluscourses.model.task.ActivityFactory;
 import fi.aalto.cs.apluscourses.model.task.Task;
 import java.util.List;
-
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 
 public class TutorialViewModel {
 
-  private final Project project;
-  private Task currentTask;
-  private final List<Task> tasks;
-  private final Tutorial tutorial;
-  private final TaskCallback callback;
+  private final TutorialExercise tutorialExercise;
+  private final ActivityFactory activityFactory;
+
   private final Object lock = new Object();
-  private final TaskViewModelFactory factory = new TaskViewModelFactory();
+
+  private Task currentTask = null;
 
   /**
    * Constructor.
-   * @param tutorial the Tutorial to be performed
-   * @param taskCallback callback for when the tutorial is done
-   * @param project the Project that the Tutorial will be in
    */
-  public TutorialViewModel(@NotNull Tutorial tutorial,
-                           @NotNull TaskCallback taskCallback, @Nullable Project project) {
-    this.tutorial = tutorial;
-    this.tasks = tutorial.getTasks();
+  public TutorialViewModel(@NotNull TutorialExercise tutorialExercise,
+                           @NotNull ActivityFactory activityFactory) {
+    this.tutorialExercise = tutorialExercise;
+    List<Task> tasks = tutorialExercise.getTutorial().getTasks();
     if (!tasks.isEmpty()) {
       this.currentTask = tasks.get(0);
     }
-    this.project = project;
-    this.callback = taskCallback;
+    this.activityFactory = activityFactory;
   }
 
   /**
@@ -41,11 +34,9 @@ public class TutorialViewModel {
    */
   public void startNextTask() {
     synchronized (lock) {
-      currentTask.taskUpdated.addListener(
-          this, TutorialViewModel::currentTaskCompleted);
-      boolean alreadyComplete = currentTask.startTask(project);
-      if (!alreadyComplete) {
-        callback.show(factory.getTaskViewModel(currentTask));
+      currentTask.taskCompleted.addListener(this, TutorialViewModel::currentTaskCompleted);
+      if (currentTask.startTask(activityFactory)) {
+        currentTaskCompleted();
       }
       // The Task/Tutorial has been completed prematurely
       // becuase the Activity was already performed.
@@ -65,14 +56,14 @@ public class TutorialViewModel {
    */
   public void currentTaskCompleted() {
     synchronized (lock) {
-      currentTask.taskUpdated.removeCallback(this);
-      if (!currentTask.equals(tasks.get(tasks.size() - 1))) {
-        currentTask = tutorial.getNextTask(currentTask);
-        startNextTask();
+      Tutorial tutorial = tutorialExercise.getTutorial();
+      currentTask.endTask();
+      currentTask.taskCompleted.removeCallback(this);
+      currentTask = tutorial.getNextTask(currentTask);
+      if (currentTask == null) {
+        tutorial.onComplete();
       } else {
-        System.out.println("Tutorial is done!");
-        currentTask = null;
-        tutorial.setCompleted();
+        startNextTask();
       }
     }
   }
@@ -84,14 +75,19 @@ public class TutorialViewModel {
     synchronized (lock) {
       if (currentTask != null) {
         currentTask.endTask();
-        currentTask.taskUpdated.removeCallback(this);
+        currentTask.taskCompleted.removeCallback(this);
         currentTask = null;
-        tutorial.setCompleted();
+        tutorialExercise.getTutorial().onComplete();
       }
     }
   }
 
-  public interface TaskCallback {
-    void show(TaskViewModel viewModel);
+
+  public @NotNull String getTitle() {
+    return tutorialExercise.getName();
+  }
+
+  public @NotNull Tutorial getTutorial() {
+    return tutorialExercise.getTutorial();
   }
 }

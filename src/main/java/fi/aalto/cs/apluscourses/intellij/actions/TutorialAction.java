@@ -1,15 +1,15 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
+import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.openapi.project.Project;
+import fi.aalto.cs.apluscourses.intellij.model.task.IntelliJActivityFactory;
 import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.ExerciseNotSelectedNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Authentication;
-import fi.aalto.cs.apluscourses.model.Tutorial;
 import fi.aalto.cs.apluscourses.model.TutorialExercise;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
@@ -18,22 +18,17 @@ import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseGroupViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.ideactivities.TutorialViewModel;
-import fi.aalto.cs.apluscourses.ui.ideactivities.StartTutorialDialog;
-import fi.aalto.cs.apluscourses.ui.ideactivities.TaskView;
+import java.util.Optional;
+import javax.swing.JOptionPane;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 
-public class TutorialAction extends DumbAwareAction {
-
-  @NotNull
-  private final MainViewModelProvider mainViewModelProvider;
-
-  @NotNull
-  private final TutorialAuthenticationProvider authenticationProvider;
-
-  @NotNull
-  private final Notifier notifier;
+public class TutorialAction extends AnAction {
+  private final @NotNull MainViewModelProvider mainViewModelProvider;
+  private final @NotNull TutorialAuthenticationProvider authenticationProvider;
+  private final @NotNull Notifier notifier;
+  private final @NotNull Dialogs dialogs;
 
   /**
    * Empty Constructor.
@@ -42,21 +37,23 @@ public class TutorialAction extends DumbAwareAction {
     this(PluginSettings.getInstance(), new DefaultNotifier(), project -> {
       var courseProject = PluginSettings.getInstance().getCourseProject(project);
       return courseProject == null ? null : courseProject.getAuthentication();
-    });
+    }, new DefaultDialogs());
   }
 
   /**
    *Constructor.
    * @param mainViewModelProvider mainViewModelProvider
    * @param notifier Notifier
-   * @param authenticationProvider1 TutorialAuthenticationProvider
+   * @param authenticationProvider TutorialAuthenticationProvider
    */
   public TutorialAction(@NotNull MainViewModelProvider mainViewModelProvider,
                         @NotNull Notifier notifier,
-                        @NotNull TutorialAuthenticationProvider authenticationProvider1) {
+                        @NotNull TutorialAuthenticationProvider authenticationProvider,
+                        @NotNull Dialogs dialogs) {
     this.mainViewModelProvider = mainViewModelProvider;
     this.notifier = notifier;
-    this.authenticationProvider = authenticationProvider1;
+    this.authenticationProvider = authenticationProvider;
+    this.dialogs = dialogs;
   }
 
   @Override
@@ -64,10 +61,10 @@ public class TutorialAction extends DumbAwareAction {
     if (e.getProject() == null) {
       return;
     }
-    confirmStart(e.getProject());
+    doTutorial(e.getProject());
   }
 
-  private void confirmStart(@NotNull Project project) {
+  private void doTutorial(@NotNull Project project) {
     MainViewModel mainViewModel = mainViewModelProvider.getMainViewModel(project);
     CourseViewModel courseViewModel = mainViewModel.courseViewModel.get();
     ExercisesTreeViewModel exercisesViewModel = mainViewModel.exercisesViewModel.get();
@@ -85,17 +82,18 @@ public class TutorialAction extends DumbAwareAction {
       notifier.notifyAndHide(new ExerciseNotSelectedNotification(), project);
       return;
     }
-    Tutorial tutorial = ((TutorialExercise) selectedExercise.getModel()).getTutorial();
-    if (mainViewModel.tutorialViewModel.get() != null) {
-      mainViewModel.tutorialViewModel.get().cancelTutorial();
-    }
+    TutorialExercise tutorialExercise = (TutorialExercise) selectedExercise.getModel();
 
-    TutorialViewModel tutorialViewModel = new TutorialViewModel(tutorial,
-            TaskView::createAndShow, project);
+    Optional.ofNullable(mainViewModel.tutorialViewModel.get())
+        .ifPresent(TutorialViewModel::cancelTutorial);
+
+    TutorialViewModel tutorialViewModel =
+        new TutorialViewModel(tutorialExercise, new IntelliJActivityFactory(project));
     mainViewModelProvider.getMainViewModel(project).tutorialViewModel.set(tutorialViewModel);
-    CompleteTutorial completeTutorial = new CompleteTutorial(mainViewModel);
-    tutorial.tutorialUpdated.addListener(completeTutorial, CompleteTutorial::completeTutorial);
-    StartTutorialDialog.createAndShow(tutorialViewModel);
+    if (dialogs.confirmStart(tutorialViewModel)) {
+      tutorialViewModel.getTutorial().tutorialCompleted.addListener(mainViewModel, this::onTutorialComplete);
+      tutorialViewModel.startNextTask();
+    }
   }
 
   @Override
@@ -121,16 +119,36 @@ public class TutorialAction extends DumbAwareAction {
     Authentication getAuthentication(@Nullable Project project);
   }
 
+  public interface Dialogs {
+    boolean confirmStart(@NotNull TutorialViewModel tutorialViewModel);
+    void end(@NotNull TutorialViewModel tutorialViewModel);
+  }
 
-  private static class CompleteTutorial {
-    private final MainViewModel mainViewModel;
+  private static class DefaultDialogs implements Dialogs {
 
-    CompleteTutorial(MainViewModel mainViewModel) {
-      this.mainViewModel = mainViewModel;
+    @Override
+    public boolean confirmStart(@NotNull TutorialViewModel tutorialViewModel) {
+      return JOptionPane.showConfirmDialog(null,
+        "A tutorial will start.",
+        tutorialViewModel.getTitle(),
+        JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION;
     }
 
-    public void completeTutorial() {
+    @Override
+    public void end(@NotNull TutorialViewModel tutorialViewModel) {
+      JOptionPane.showMessageDialog(null,
+          "The tutorial has ended.",
+          tutorialViewModel.getTitle(),
+          JOptionPane.INFORMATION_MESSAGE);
+    }
+  }
+
+  private void onTutorialComplete(@NotNull MainViewModel mainViewModel) {
+    TutorialViewModel viewModel = mainViewModel.tutorialViewModel.get();
+    if (viewModel != null) {
+      viewModel.getTutorial().tutorialCompleted.removeCallback(mainViewModel);
       mainViewModel.tutorialViewModel.set(null);
+      dialogs.end(viewModel);
     }
   }
 }
