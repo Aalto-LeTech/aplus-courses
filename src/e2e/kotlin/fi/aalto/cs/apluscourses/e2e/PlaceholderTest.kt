@@ -27,10 +27,10 @@ class PlaceholderTest {
         // step 2
         CommonSteps(this).createProject()
         // step 4
+        ideFrame().waitForSmartMode()
         CommonSteps(this).openAPlusProjectWindow()
         step("Cancel") {
             attempt(2) {
-                ideFrame().waitForSmartMode()
                 with(dialog("Select Course")) {
                     button("Cancel").click()
                 }
