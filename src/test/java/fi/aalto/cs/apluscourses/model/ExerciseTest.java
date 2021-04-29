@@ -76,14 +76,6 @@ public class ExerciseTest {
         "Cool name", exercise.getName());
     assertEquals("The HTML URL is the same as the one in the JSON object",
         "http://localhost:1000", exercise.getHtmlUrl());
-    assertEquals("The submission IDs are read from the points object",
-        1L, exercise.getSubmissionResults().get(0).getId());
-    assertEquals("The submission IDs are read from the points object",
-        2L, exercise.getSubmissionResults().get(1).getId());
-    assertEquals("The submission points are read from the points object",
-        33, exercise.getSubmissionResults().get(0).getPoints());
-    assertEquals("The submission points are read from the points object",
-        44, exercise.getSubmissionResults().get(1).getPoints());
     assertEquals("The user points are read from the points object",
         10, exercise.getUserPoints());
     assertEquals("The max points is the same as the one in the JSON object",
@@ -193,4 +185,26 @@ public class ExerciseTest {
     assertFalse("Assignment isn't optional",
         notOptional.isOptional());
   }
+
+  @Test
+  public void testIsInGrading() {
+    var exercise = new Exercise(1, "", "http://localhost:1", 0, 10, 10, true);
+    exercise.addSubmissionResult(new SubmissionResult(
+        0, 0, SubmissionResult.Status.UNOFFICIAL, exercise
+    ));
+    assertFalse(exercise.isInGrading());
+    exercise.addSubmissionResult(new SubmissionResult(
+        1, 0, SubmissionResult.Status.GRADED, exercise
+    ));
+    assertFalse(exercise.isInGrading());
+    exercise.addSubmissionResult(new SubmissionResult(
+        2, 0, SubmissionResult.Status.UNKNOWN, exercise
+    ));
+    assertFalse(exercise.isInGrading());
+    exercise.addSubmissionResult(new SubmissionResult(
+        3, 0, SubmissionResult.Status.WAITING, exercise
+    ));
+    assertTrue(exercise.isInGrading());
+  }
+
 }

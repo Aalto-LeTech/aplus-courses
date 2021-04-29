@@ -4,9 +4,19 @@ import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
+import fi.aalto.cs.apluscourses.model.Authentication;
+import fi.aalto.cs.apluscourses.model.Course;
+import fi.aalto.cs.apluscourses.model.Exercise;
+import fi.aalto.cs.apluscourses.model.Points;
+import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import fi.aalto.cs.apluscourses.utils.Event;
 import fi.aalto.cs.apluscourses.utils.async.RepeatedTask;
 import java.io.IOException;
+import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.jetbrains.annotations.NotNull;
 
 public class ExercisesUpdater extends RepeatedTask {
@@ -16,6 +26,8 @@ public class ExercisesUpdater extends RepeatedTask {
   private final Event eventToTrigger;
 
   private final Notifier notifier;
+
+  private final Set<Long> submissionsInGrading = ConcurrentHashMap.newKeySet();
 
   /**
    * Construct an updater with the given parameters.
@@ -50,6 +62,18 @@ public class ExercisesUpdater extends RepeatedTask {
       }
       points.setSubmittableExercises(course.getExerciseModules().keySet()); // TODO: remove
       var exerciseGroups = dataSource.getExerciseGroups(course, points, authentication);
+      if (courseProject.getExerciseGroups() == null) {
+        courseProject.setExerciseGroups(exerciseGroups);
+        eventToTrigger.trigger();
+      }
+      for (var exerciseGroup : exerciseGroups) {
+        for (var exercise : exerciseGroup.getExercises().values()) {
+          if (Thread.interrupted()) {
+            return;
+          }
+          addSubmissionResults(course, exercise, points, authentication);
+        }
+      }
       if (Thread.interrupted()) {
         return;
       }
@@ -66,6 +90,31 @@ public class ExercisesUpdater extends RepeatedTask {
         observable.valueChanged();
       }
       notifier.notify(new NetworkErrorNotification(e), courseProject.getProject());
+    }
+  }
+
+  private void addSubmissionResults(@NotNull Course course,
+                                    @NotNull Exercise exercise,
+                                    @NotNull Points points,
+                                    @NotNull Authentication authentication)
+      throws IOException {
+    var dataSource = course.getExerciseDataSource();
+    var baseUrl = course.getApiUrl() + "submissions/";
+    var submissionIds = points.getSubmissions().get(exercise.getId());
+    for (var id : submissionIds) {
+      // Ignore cache for submissions that had the status WAITING
+      var cacheTime = submissionsInGrading.remove(id)
+          ? OffsetDateTime.MAX.toZonedDateTime()
+          : ZonedDateTime.now().minusDays(7);
+      var submission = dataSource.getSubmissionResult(
+          baseUrl + id + "/", exercise, authentication, cacheTime);
+      if (submission.getStatus() == SubmissionResult.Status.WAITING) {
+        submissionsInGrading.add(id);
+      }
+      exercise.addSubmissionResult(submission);
+      if (Thread.interrupted()) {
+        return;
+      }
     }
   }
 

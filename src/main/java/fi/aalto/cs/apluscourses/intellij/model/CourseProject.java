@@ -25,7 +25,6 @@ public class CourseProject {
   @NotNull
   private final Course course;
 
-  @NotNull
   private volatile List<ExerciseGroup> exerciseGroups;
 
   private final AtomicBoolean hasTriedToReadAuthenticationFromStorage = new AtomicBoolean(false);
@@ -98,7 +97,7 @@ public class CourseProject {
     return course;
   }
 
-  @NotNull
+  @Nullable
   public List<ExerciseGroup> getExerciseGroups() {
     return exerciseGroups;
   }
