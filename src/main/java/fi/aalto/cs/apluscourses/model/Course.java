@@ -158,7 +158,7 @@ public abstract class Course implements ComponentSource {
     Map<String, String[]> replInitialCommands
         = getCourseReplInitialCommands(jsonObject, sourcePath);
     Version courseVersion = getCourseVersion(jsonObject, sourcePath);
-    Map<Long, Tutorial> tutorials = getTutorials(jsonObject, sourcePath, factory);
+    Map<Long, Tutorial> tutorials = getTutorials(jsonObject);
     return factory.createCourse(
         courseId,
         courseName,
@@ -529,13 +529,11 @@ public abstract class Course implements ComponentSource {
     }
   }
 
-  private static Map<Long, Tutorial> getTutorials(@NotNull JSONObject jsonObject,
-                                                  @NotNull String source,
-                                                  @NotNull ModelFactory factory) {
+  private static Map<Long, Tutorial> getTutorials(@NotNull JSONObject jsonObject) {
     JSONObject tutorialsJson = jsonObject.optJSONObject("tutorials");
     return tutorialsJson == null ? Collections.emptyMap()
         : JsonUtil.parseObject(tutorialsJson, JSONObject::getJSONObject,
-            obj -> Tutorial.fromJsonObject(obj, factory), Long::valueOf);
+        Tutorial::fromJsonObject, Long::valueOf);
   }
 
   public Map<Long, Tutorial> getTutorials() {

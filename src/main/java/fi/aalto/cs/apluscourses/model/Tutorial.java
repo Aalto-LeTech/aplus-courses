@@ -20,8 +20,7 @@ public class Tutorial {
     this.tasks = List.of(tasks);
   }
 
-  public static Tutorial fromJsonObject(@NotNull JSONObject jsonObject,
-                                        @NotNull ModelFactory factory) {
+  public static Tutorial fromJsonObject(@NotNull JSONObject jsonObject) {
     return new Tutorial(JsonUtil.parseArray(jsonObject.getJSONArray("tasks"),
         JSONArray::getJSONObject, Task::fromJsonObject, Task[]::new));
   }
