@@ -2,14 +2,19 @@ package fi.aalto.cs.apluscourses.presentation;
 
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
+import fi.aalto.cs.apluscourses.model.Progress;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Optional;
 
 public class ProgressViewModel {
+  private final Deque<Progress> progresses = new ArrayDeque<>();
   public final ObservableProperty<Integer> maxValue = new ObservableReadWriteProperty<>(0);
   public final ObservableProperty<Integer> value = new ObservableReadWriteProperty<>(0);
-  public final ObservableProperty<String> label = new ObservableReadWriteProperty<>("");
+  public final ObservableProperty<String> label =
+          new ObservableReadWriteProperty<>(getText("ui.ProgressBarView.loading"));
   public final ObservableProperty<Boolean> visible = new ObservableReadWriteProperty<>(true);
   public final ObservableProperty<Boolean> indeterminate = new ObservableReadWriteProperty<>(true);
 
@@ -19,49 +24,56 @@ public class ProgressViewModel {
   }
 
   /**
-   * Resets the progress and sets a new max value and label. If the progress is visible, then the
-   * label gets set to Loading... and the max value is increased.
+   * Creates a new Progress and returns it.
    */
-  public void start(int maxValue, String label) {
-    if (isVisible() && !label.equals(this.label.get())) {
-      this.maxValue.set(getMaxValue() + maxValue);
-      this.label.set(getText("ui.ProgressBarView.loading"));
-    } else {
-      this.maxValue.set(maxValue);
-      this.value.set(0);
-      this.label.set(label);
-    }
+  public Progress start(int maxValue, String label, boolean indeterminate) {
+    var progress = new Progress(maxValue, label, indeterminate);
+    progresses.add(progress);
+    this.updateValues();
+    return progress;
   }
 
-  /**
-   * Resets the values and sets a label and indeterminate to true.
-   */
-  public void start(String label) {
-    if (isVisible()) {
-      this.label.set(getText("ui.ProgressBarView.loading"));
-    } else {
+  public void stop(Progress progress) {
+    progresses.remove(progress);
+    this.updateValues();
+  }
+
+  public void stopAll() {
+    progresses.clear();
+    this.updateValues();
+  }
+
+  private void updateValues() {
+    if (progresses.isEmpty()) {
       this.maxValue.set(0);
       this.value.set(0);
-      this.label.set(label);
+      this.indeterminate.set(false);
+    } else {
+      var progress = progresses.getLast();
+      this.value.set(progress.getValue());
+      this.maxValue.set(progress.getMaxValue());
+      this.label.set(progress.getLabel());
+      this.indeterminate.set(progress.getIndeterminate());
     }
-    this.indeterminate.set(true);
+    this.updateVisible();
   }
 
-  /**
-   * Sets the values to 0 and indeterminate to false.
-   */
-  public void stop() {
-    this.maxValue.set(0);
-    this.value.set(0);
-    this.indeterminate.set(false);
+  private void updateValue() {
+    var progress = progresses.getLast();
+    this.value.set(progress.getValue());
   }
 
-  public void increment() {
-    this.value.set(getValue() + 1);
+  public void increment(Progress progress) {
+    progress.increment();
+    this.updateValue();
   }
 
   public void updateVisible() {
     this.visible.set(getValue() < getMaxValue() || isIndeterminate());
+  }
+
+  public Progress getCurrentProgress() {
+    return progresses.isEmpty() ? null : progresses.getLast();
   }
 
   private int getValue() {
@@ -74,9 +86,5 @@ public class ProgressViewModel {
 
   private boolean isIndeterminate() {
     return Optional.ofNullable(this.indeterminate.get()).orElse(false);
-  }
-
-  private boolean isVisible() {
-    return Optional.ofNullable(this.visible.get()).orElse(false);
   }
 }

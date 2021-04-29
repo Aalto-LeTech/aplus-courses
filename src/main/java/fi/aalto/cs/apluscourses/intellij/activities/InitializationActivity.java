@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.intellij.activities;
 
 import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.MODULE_REPL_INITIAL_COMMANDS_FILE_NAME;
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
@@ -43,7 +44,7 @@ public class InitializationActivity implements Background {
 
   @NotNull
   private static final Map<ProjectKey, ObservableProperty<Boolean>> initializedProjects
-      = new ConcurrentHashMap<>();
+          = new ConcurrentHashMap<>();
 
   public InitializationActivity() {
     this(new DefaultNotifier());
@@ -65,7 +66,7 @@ public class InitializationActivity implements Background {
     URL courseConfigurationFileUrl = getCourseUrlFromProject(project);
     if (courseConfigurationFileUrl == null) {
       isInitialized(project).set(true);
-      progressViewModel.stop();
+      progressViewModel.stopAll();
       return;
     }
 
@@ -76,27 +77,27 @@ public class InitializationActivity implements Background {
       logger.error("Error occurred while trying to parse a course configuration file", e);
       notifier.notify(new CourseConfigurationError(e), project);
       isInitialized(project).set(true);
-      progressViewModel.stop();
+      progressViewModel.stopAll();
       return;
     } catch (IOException e) {
       logger.info("IOException occurred while using the HTTP client", e);
       notifier.notify(new NetworkErrorNotification(e), project);
       isInitialized(project).set(true);
-      progressViewModel.stop();
+      progressViewModel.stopAll();
       return;
     }
-    progressViewModel.indeterminate.set(false);
-    progressViewModel.increment();
+    var progress = progressViewModel.start(2, getText("ui.ProgressBarView.loading"), false);
+    progressViewModel.increment(progress);
 
     var versionComparison =
-        BuildInfo.INSTANCE.courseVersion.compareTo(course.getVersion());
+            BuildInfo.INSTANCE.courseVersion.compareTo(course.getVersion());
 
     if (versionComparison == Version.ComparisonStatus.MAJOR_TOO_OLD
-        || versionComparison == Version.ComparisonStatus.MAJOR_TOO_NEW) {
+            || versionComparison == Version.ComparisonStatus.MAJOR_TOO_NEW) {
       notifier.notify(
-          versionComparison == Version.ComparisonStatus.MAJOR_TOO_OLD
-          ? new CourseVersionOutdatedError() : new CourseVersionTooNewError(), project);
-      progressViewModel.increment();
+              versionComparison == Version.ComparisonStatus.MAJOR_TOO_OLD
+                      ? new CourseVersionOutdatedError() : new CourseVersionTooNewError(), project);
+      progressViewModel.stop(progress);
       return;
     } else if (versionComparison == Version.ComparisonStatus.MINOR_TOO_OLD) {
       notifier.notify(new CourseVersionOutdatedWarning(), project);
@@ -105,8 +106,7 @@ public class InitializationActivity implements Background {
     var courseProject = new CourseProject(course, courseConfigurationFileUrl, project);
     PluginSettings.getInstance().registerCourseProject(courseProject);
     isInitialized(project).set(true);
-    progressViewModel.increment();
-    progressViewModel.stop();
+    progressViewModel.stop(progress);
   }
 
   private static final ProjectManagerListener projectListener = new ProjectManagerListener() {
@@ -137,9 +137,9 @@ public class InitializationActivity implements Background {
 
     try {
       boolean isCourseProject = PluginSettings
-          .getInstance()
-          .getCourseFileManager(project)
-          .load();
+              .getInstance()
+              .getCourseFileManager(project)
+              .load();
       if (isCourseProject) {
         return PluginSettings.getInstance().getCourseFileManager(project).getCourseUrl();
       } else {

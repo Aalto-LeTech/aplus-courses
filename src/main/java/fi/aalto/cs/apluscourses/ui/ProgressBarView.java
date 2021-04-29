@@ -12,7 +12,6 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.OverlayLayout;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import org.jetbrains.annotations.NotNull;
 
 public class ProgressBarView {
@@ -41,16 +40,11 @@ public class ProgressBarView {
     this.panel = createProgressBarPanel();
     this.container = createContainer();
 
-    this.maxBindable = new Bindable<>(progressBar,
-        (component, value) -> SwingUtilities.invokeLater(() -> component.setMaximum(value)));
-    this.valueBindable = new Bindable<>(progressBar,
-        (component, value) -> SwingUtilities.invokeLater(() -> component.setValue(value)));
-    this.indeterminateBindable = new Bindable<>(progressBar,
-        (component, value) -> SwingUtilities.invokeLater(() -> component.setIndeterminate(value)));
-    this.labelBindable = new Bindable<>(label,
-        (component, value) -> SwingUtilities.invokeLater(() -> component.setText(value)));
-    this.visibilityBindable = new Bindable<>(panel,
-        (component, value) -> SwingUtilities.invokeLater(() -> component.setVisible(value)));
+    this.maxBindable = new Bindable<>(progressBar, JProgressBar::setMaximum, true);
+    this.valueBindable = new Bindable<>(progressBar, JProgressBar::setValue, true);
+    this.indeterminateBindable = new Bindable<>(progressBar, JProgressBar::setIndeterminate, true);
+    this.labelBindable = new Bindable<>(label, JLabel::setText, true);
+    this.visibilityBindable = new Bindable<>(panel, JPanel::setVisible, true);
 
     setBindings();
   }
@@ -69,8 +63,8 @@ public class ProgressBarView {
     progressBar.setBorder(border);
     label.setBorder(border);
     myPanel.setBorder(BorderFactory.createCompoundBorder(
-        BorderFactory.createMatteBorder(1, 0, 0, 0, JBColor.border()),
-        BorderFactory.createEmptyBorder(0, 0, 10, 0))
+            BorderFactory.createMatteBorder(1, 0, 0, 0, JBColor.border()),
+            BorderFactory.createEmptyBorder(0, 0, 10, 0))
     );
 
     progressBar.setAlignmentX(Component.LEFT_ALIGNMENT);

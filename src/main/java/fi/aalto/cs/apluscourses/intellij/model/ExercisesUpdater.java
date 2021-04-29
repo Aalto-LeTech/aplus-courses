@@ -47,17 +47,18 @@ public class ExercisesUpdater extends RepeatedTask {
     }
     var progressViewModel =
         PluginSettings.getInstance().getMainViewModel(courseProject.getProject()).progressViewModel;
-    progressViewModel.start(2, getText("ui.ProgressBarView.refreshingAssignments"));
+    var progress =
+            progressViewModel.start(2, getText("ui.ProgressBarView.refreshingAssignments"), false);
     try {
       var points = dataSource.getPoints(course, authentication);
-      progressViewModel.increment();
+      progressViewModel.increment(progress);
       if (Thread.interrupted()) {
-        progressViewModel.increment();
+        progressViewModel.stop(progress);
         return;
       }
       points.setSubmittableExercises(course.getExerciseModules().keySet()); // TODO: remove
       var exerciseGroups = dataSource.getExerciseGroups(course, points, authentication);
-      progressViewModel.increment();
+      progressViewModel.stop(progress);
       if (Thread.interrupted()) {
         return;
       }
@@ -73,7 +74,7 @@ public class ExercisesUpdater extends RepeatedTask {
         exercisesViewModel.setAuthenticated(false);
         observable.valueChanged();
       }
-      progressViewModel.stop();
+      progressViewModel.stop(progress);
       notifier.notify(new NetworkErrorNotification(e), courseProject.getProject());
     }
   }
