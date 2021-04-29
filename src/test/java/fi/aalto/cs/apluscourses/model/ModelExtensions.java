@@ -49,6 +49,7 @@ public class ModelExtensions {
     @Override
     public List<ExerciseGroup> getExerciseGroups(@NotNull Course course,
                                                  @NotNull Points points,
+                                                 @NotNull Map<Long, Tutorial> tutorials,
                                                  @NotNull Authentication authentication) {
       return Collections.emptyList();
     }
