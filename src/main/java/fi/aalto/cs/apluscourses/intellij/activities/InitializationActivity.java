@@ -59,15 +59,17 @@ public class InitializationActivity implements Background {
     pluginSettings.initializeLocalIdeSettings();
     pluginSettings.ignoreFileInProjectView(MODULE_REPL_INITIAL_COMMANDS_FILE_NAME, project);
 
+    var progressViewModel
+            = PluginSettings.getInstance().getMainViewModel(project).progressViewModel;
+
     URL courseConfigurationFileUrl = getCourseUrlFromProject(project);
     if (courseConfigurationFileUrl == null) {
       isInitialized(project).set(true);
+      progressViewModel.stop();
       return;
     }
 
     Course course;
-    var progressViewModel
-        = PluginSettings.getInstance().getMainViewModel(project).progressViewModel;
     try {
       course = Course.fromUrl(courseConfigurationFileUrl, new IntelliJModelFactory(project));
     } catch (UnexpectedResponseException | MalformedCourseConfigurationException e) {
