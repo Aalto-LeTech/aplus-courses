@@ -28,19 +28,21 @@ class PlaceholderTest {
         CommonSteps(this).createProject()
         // step 4
         ideFrame().waitForSmartMode()
-        CommonSteps(this).openAPlusProjectWindow()
         step("Cancel") {
-            attempt(2) {
+            attempt(5) {
+                CommonSteps(this).openAPlusProjectWindow()
                 with(dialog("Select Course")) {
                     button("Cancel").click()
                 }
             }
         }
-        CommonSteps(this).openAPlusProjectWindow()
         step("Select course") {
-            with(dialog("Select Course")) {
-                findText("O1").click()
-                button("OK").click()
+            attempt(5) {
+                CommonSteps(this).openAPlusProjectWindow()
+                with(dialog("Select Course")) {
+                    findText("O1").click()
+                    button("OK").click()
+                }
             }
         }
         step("Choose settings") {
