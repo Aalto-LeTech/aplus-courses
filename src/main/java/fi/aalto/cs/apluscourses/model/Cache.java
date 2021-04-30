@@ -55,7 +55,7 @@ public abstract class Cache<K, V> {
 
   private final File file;
 
-  private volatile Map<K, Entry> entries;
+  private volatile Map<K, Entry> entries = new HashMap<>();
 
   private final CountDownLatch fileRead = new CountDownLatch(1);
 
