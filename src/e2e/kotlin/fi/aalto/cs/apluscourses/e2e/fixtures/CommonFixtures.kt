@@ -9,6 +9,7 @@ import com.intellij.remoterobot.fixtures.ComponentFixture
 import com.intellij.remoterobot.fixtures.ContainerFixture
 import com.intellij.remoterobot.fixtures.DefaultXpath
 import com.intellij.remoterobot.fixtures.FixtureName
+import com.intellij.remoterobot.fixtures.JButtonFixture
 import com.intellij.remoterobot.fixtures.JListFixture
 import com.intellij.remoterobot.fixtures.JTextFieldFixture
 import com.intellij.remoterobot.search.locators.byXpath
@@ -95,6 +96,10 @@ class IdeFrameFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent
         byXpath("//div[@class='MyList']"),
         Duration.ofSeconds(20)
     )
+    fun codeWithMeButton() = findAll(
+        JButtonFixture::class.java,
+        byXpath("//div[@class='JButton' and @text='Got It']")
+    ).firstOrNull()
     fun ideErrorButton() = find(
         ComponentFixture::class.java,
         byXpath("//div[@class='IdeErrorsIcon']"),
