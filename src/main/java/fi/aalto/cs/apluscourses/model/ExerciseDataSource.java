@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.model;
 
 import java.io.IOException;
+import java.time.ZonedDateTime;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -31,7 +32,8 @@ public interface ExerciseDataSource {
   @NotNull
   SubmissionResult getSubmissionResult(@NotNull String submissionUrl,
                                        @NotNull Exercise exercise,
-                                       @NotNull Authentication authentication) throws IOException;
+                                       @NotNull Authentication authentication,
+                                       @NotNull ZonedDateTime minCacheEntryTime) throws IOException;
 
   @NotNull
   String getUserName(@NotNull Authentication authentication) throws IOException;

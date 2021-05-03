@@ -1,34 +1,33 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import fi.aalto.cs.apluscourses.dal.PasswordStorage;
 import fi.aalto.cs.apluscourses.dal.TokenAuthentication;
 import fi.aalto.cs.apluscourses.intellij.DialogHelper;
+import fi.aalto.cs.apluscourses.intellij.model.CourseProject;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
+import fi.aalto.cs.apluscourses.intellij.services.CourseProjectProvider;
 import fi.aalto.cs.apluscourses.intellij.services.Dialogs;
-import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
-import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
-import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.presentation.AuthenticationViewModel;
-import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
-import fi.aalto.cs.apluscourses.presentation.MainViewModel;
-import fi.aalto.cs.apluscourses.presentation.filter.Options;
+import java.net.URL;
 import org.junit.Before;
 import org.junit.Test;
 
-public class APlusAuthenticationActionTest extends BasePlatformTestCase {
+public class APlusAuthenticationActionTest {
 
   Project project;
   AnActionEvent actionEvent;
-  MainViewModel mainViewModel;
-  MainViewModelProvider mainViewModelProvider;
+  CourseProject courseProject;
+  CourseProjectProvider courseProjectProvider;
   Course course;
   volatile String token;
   Notifier notifier;
@@ -44,18 +43,18 @@ public class APlusAuthenticationActionTest extends BasePlatformTestCase {
    */
   @Before
   public void setUp() throws Exception {
-    super.setUp();
     project = mock(Project.class);
     actionEvent = mock(AnActionEvent.class);
     doReturn(project).when(actionEvent).getProject();
 
-    mainViewModel = new MainViewModel(new Options());
-    mainViewModelProvider = mock(MainViewModelProvider.class);
-    doReturn(mainViewModel).when(mainViewModelProvider).getMainViewModel(project);
+
 
     course = new ModelExtensions.TestCourse("oe1");
-    mainViewModel.courseViewModel.set(new CourseViewModel(course));
     token = "secrets";
+
+    courseProject = new CourseProject(course, new URL("http://localhost:8000"), project);
+    courseProjectProvider = mock(CourseProjectProvider.class);
+    doReturn(courseProject).when(courseProjectProvider).getCourseProject(project);
 
     dialog = new DialogHelper<>(viewModel -> {
       viewModel.setToken(token.toCharArray());
@@ -70,22 +69,14 @@ public class APlusAuthenticationActionTest extends BasePlatformTestCase {
     passwordStorage = mock(PasswordStorage.class);
     doReturn(passwordStorage).when(passwordStorageFactory).create(service);
     action = new APlusAuthenticationAction(
-        mainViewModelProvider, dialogs, passwordStorageFactory, notifier);
-  }
-
-  @Test
-  public void ignoretestDefaultConstructor() {
-    APlusAuthenticationAction action = new APlusAuthenticationAction();
-
-    assertSame(PluginSettings.getInstance(), action.getMainViewModelProvider());
-    assertSame(Dialogs.DEFAULT, action.getDialogs());
+        courseProjectProvider, dialogs, passwordStorageFactory, notifier);
   }
 
   @Test
   public void testActionPerformed() {
     action.actionPerformed(actionEvent);
 
-    Authentication authentication = mainViewModel.authentication.get();
+    var authentication = courseProject.getAuthentication();
     assertNotNull(authentication);
     assertTrue(((TokenAuthentication) authentication).tokenEquals(token));
   }
@@ -96,7 +87,7 @@ public class APlusAuthenticationActionTest extends BasePlatformTestCase {
 
     action.actionPerformed(actionEvent);
 
-    assertNull(mainViewModel.authentication.get());
+    assertNull(courseProject.getAuthentication());
   }
 
 }

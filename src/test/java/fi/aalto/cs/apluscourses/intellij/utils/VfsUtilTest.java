@@ -9,15 +9,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
-import com.intellij.openapi.util.io.FileUtilRt;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.testFramework.LightVirtualFile;
-import java.io.File;
-import java.io.IOException;
 import java.nio.file.Paths;
-import java.time.Instant;
 import java.time.ZonedDateTime;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class VfsUtilTest {
@@ -86,34 +81,4 @@ public class VfsUtilTest {
   }
 
   public static final String JSON = ".json";
-
-  @Ignore("Fails for the reason no one can deduct")
-  @Test
-  public void testHasLocalChangesReturnsTrue() throws IOException {
-    //  given
-    File tempDirectory = FileUtilRt.createTempDirectory("first", "", true);
-    File tempFileOne = FileUtilRt.createTempFile(tempDirectory, "test1", JSON, true);
-    File tempFileTwo = FileUtilRt.createTempFile(tempDirectory, "test2", JSON, true);
-
-    long now = Instant.now().toEpochMilli();
-    assertTrue(tempFileTwo.setLastModified(now));
-    assertTrue(tempFileOne.setLastModified(now + 1000));
-
-    //  when & then
-    assertTrue(VfsUtil.hasDirectoryChanges(tempDirectory.toPath(), now));
-  }
-
-  @Test
-  public void testHasLocalChangesReturnsFalse() throws IOException {
-    //  given
-    File tempDirectory = FileUtilRt.createTempDirectory("second", "", true);
-    File tempFileOne = FileUtilRt.createTempFile(tempDirectory, "test1", JSON, true, true);
-    FileUtilRt.createTempFile(tempDirectory, "test2", JSON, true, true);
-
-    long now = Instant.now().toEpochMilli();
-    assertTrue(tempFileOne.setLastModified(now));
-
-    //  when & then
-    assertFalse(VfsUtil.hasDirectoryChanges(tempDirectory.toPath(), now));
-  }
 }

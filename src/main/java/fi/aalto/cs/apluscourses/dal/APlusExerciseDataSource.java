@@ -1,12 +1,14 @@
 package fi.aalto.cs.apluscourses.dal;
 
 import fi.aalto.cs.apluscourses.model.Authentication;
+import fi.aalto.cs.apluscourses.model.Cache;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.ExerciseDataSource;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.InvalidAuthenticationException;
+import fi.aalto.cs.apluscourses.model.JsonCache;
 import fi.aalto.cs.apluscourses.model.Points;
 import fi.aalto.cs.apluscourses.model.Submission;
 import fi.aalto.cs.apluscourses.model.SubmissionHistory;
@@ -17,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Path;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,13 +49,15 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   @NotNull
   private final Parser parser;
 
+
   /**
    * Default constructor.
    */
-  public APlusExerciseDataSource(@NotNull String apiUrl) {
-    this(apiUrl,
-        DefaultDataAccess.INSTANCE,
-        DefaultDataAccess.INSTANCE);
+  public APlusExerciseDataSource(@NotNull String apiUrl, @NotNull Path cacheFile) {
+    var dataAccess = new DefaultDataAccess(new JsonCache(cacheFile));
+    this.client = dataAccess;
+    this.parser = dataAccess;
+    this.apiUrl = apiUrl;
   }
 
   /**
@@ -151,9 +156,10 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   @NotNull
   public SubmissionResult getSubmissionResult(@NotNull String submissionUrl,
                                               @NotNull Exercise exercise,
-                                              @NotNull Authentication authentication)
+                                              @NotNull Authentication authentication,
+                                              @NotNull ZonedDateTime minCacheEntryTime)
       throws IOException {
-    JSONObject response = client.fetch(submissionUrl, authentication);
+    JSONObject response = client.fetch(submissionUrl, authentication, minCacheEntryTime);
     return parser.parseSubmissionResult(response, exercise);
   }
 
@@ -202,17 +208,25 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
 
   public static class DefaultDataAccess implements Client, Parser {
 
-    public static final DefaultDataAccess INSTANCE = new DefaultDataAccess();
+    @NotNull
+    private final Cache<String, JSONObject> cache;
 
-    private DefaultDataAccess() {
-
+    public DefaultDataAccess(@NotNull Cache<String, JSONObject> cache) {
+      this.cache = cache;
     }
 
     @Override
-    public JSONObject fetch(@NotNull String url, @Nullable Authentication authentication)
-        throws IOException {
+    public JSONObject fetch(@NotNull String url,
+                            @Nullable Authentication authentication,
+                            @NotNull ZonedDateTime minCacheEntryTime) throws IOException {
+      var cacheEntry = cache.getEntry(url);
+      if (cacheEntry != null && cacheEntry.getCreationTime().compareTo(minCacheEntryTime) >= 0) {
+        return cacheEntry.getValue();
+      }
       try (InputStream inputStream = CoursesClient.fetch(new URL(url), authentication)) {
-        return new JSONObject(new JSONTokener(inputStream));
+        var response = new JSONObject(new JSONTokener(inputStream));
+        cache.putValue(url, response);
+        return response;
       }
     }
 

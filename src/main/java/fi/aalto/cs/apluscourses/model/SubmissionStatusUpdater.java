@@ -6,6 +6,8 @@ import fi.aalto.cs.apluscourses.intellij.notifications.FeedbackAvailableNotifica
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import java.io.IOException;
+import java.time.OffsetDateTime;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -100,6 +102,10 @@ public class SubmissionStatusUpdater {
 
   private void run() {
     try {
+      var courseProject = PluginSettings.getInstance().getCourseProject(project);
+      if (courseProject != null) {
+        courseProject.getExercisesUpdater().restart();
+      }
       while (true) { //  NOSONAR
         if (totalTime >= timeLimit) {
           return;
@@ -121,15 +127,16 @@ public class SubmissionStatusUpdater {
   private boolean fetchResultsAndNotify() {
     SubmissionResult submissionResult;
     try {
-      submissionResult =
-          dataSource.getSubmissionResult(submissionUrl, exercise, authentication);
-      if (SubmissionResult.Status.WAITING.equals(submissionResult.getStatus())) {
-        PluginSettings.getInstance().getMainViewModel(project).setSubmittedForGrading(exercise);
-      } else if (submissionResult.getStatus() != SubmissionResult.Status.UNKNOWN) {
+      submissionResult = dataSource.getSubmissionResult(
+          submissionUrl, exercise, authentication, OffsetDateTime.MAX.toZonedDateTime());
+      var status = submissionResult.getStatus();
+      if (status != SubmissionResult.Status.WAITING && status != SubmissionResult.Status.UNKNOWN) {
         notifier.notifyAndHide(
             new FeedbackAvailableNotification(submissionResult, exercise), project);
-        PluginSettings.getInstance().getMainViewModel(project).setGradingDone(exercise);
-        PluginSettings.getInstance().updateMainViewModel(project);
+        var courseProject = PluginSettings.getInstance().getCourseProject(project);
+        if (courseProject != null) {
+          courseProject.getExercisesUpdater().restart();
+        }
         return true;
       }
     } catch (IOException e) {
