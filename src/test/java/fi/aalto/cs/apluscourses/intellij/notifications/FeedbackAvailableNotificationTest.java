@@ -8,14 +8,17 @@ import static org.junit.Assert.assertTrue;
 import com.intellij.notification.Notification;
 import fi.aalto.cs.apluscourses.intellij.actions.OpenSubmissionNotificationAction;
 import fi.aalto.cs.apluscourses.model.Exercise;
+import fi.aalto.cs.apluscourses.model.SubmissionInfo;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
+import java.util.Collections;
 import org.junit.Test;
 
 public class FeedbackAvailableNotificationTest {
 
   @Test
   public void testFeedbackAvailableNotificationTest() {
-    Exercise exercise = new Exercise(123, "Test Exercise", "https://example.com", 3, 5, 10, true);
+    var info = new SubmissionInfo(Collections.emptyMap());
+    var exercise = new Exercise(123, "Test Exercise", "https://example.com", info, 3, 5, 10);
     SubmissionResult result
         = new SubmissionResult(0, 0, SubmissionResult.Status.GRADED, exercise);
     Notification notification = new FeedbackAvailableNotification(result, exercise);
