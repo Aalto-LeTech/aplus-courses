@@ -46,14 +46,16 @@ public class JsonUtil {
    * @param object JSON object.
    * @param getter E.g. JSONObject::getJSONObject, JSONObject::getString, ...
    * @param parser Function that parses an JSON to T object.
+   * @param keyParser Function that parses keys from strings.
    * @param <T> Type of the result items.
    * @param <J> Type of the input elements, e.g. JSONObject.
+   * @param <K> Type of the keys.
    * @return A map whose entries are the properties of the given object.
    */
   public static <T, J, K> Map<K, T> parseObject(@NotNull JSONObject object,
-                                                  @NotNull BiFunction<JSONObject, String, J> getter,
-                                                  @NotNull Function<J, T> parser,
-                                                  @NotNull Function<String, K> keyParser) {
+                                                @NotNull BiFunction<JSONObject, String, J> getter,
+                                                @NotNull Function<J, T> parser,
+                                                @NotNull Function<String, K> keyParser) {
     Map<K, T> result = new HashMap<>(object.length());
     for (String key : object.keySet()) {
       result.put(keyParser.apply(key), getter.andThen(parser).apply(object, key));

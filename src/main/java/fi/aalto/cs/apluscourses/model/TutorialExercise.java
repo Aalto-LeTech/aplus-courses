@@ -18,7 +18,7 @@ public class TutorialExercise extends Exercise {
     this.tutorial = tutorial;
   }
 
-  public Tutorial getTutorial() {
+  public @NotNull Tutorial getTutorial() {
     return tutorial;
   }
 
