@@ -148,7 +148,7 @@ public class SubmitExerciseActionTest {
         .getSubmissionHistory(exercise, authentication);
     doReturn(points).when(exerciseDataSource).getPoints(course, authentication);
     doReturn(exerciseGroups).when(exerciseDataSource)
-        .getExerciseGroups(course, points, authentication);
+        .getExerciseGroups(course, points, Collections.emptyMap(), authentication);
     doReturn("http://localhost:1000")
         .when(exerciseDataSource)
         .submit(any(Submission.class), any(Authentication.class));

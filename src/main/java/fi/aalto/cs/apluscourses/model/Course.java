@@ -3,6 +3,7 @@ package fi.aalto.cs.apluscourses.model;
 import com.intellij.openapi.util.SystemInfoRt;
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
+import fi.aalto.cs.apluscourses.utils.JsonUtil;
 import fi.aalto.cs.apluscourses.utils.ResourceException;
 import fi.aalto.cs.apluscourses.utils.Resources;
 import fi.aalto.cs.apluscourses.utils.Version;
@@ -67,16 +68,17 @@ public abstract class Course implements ComponentSource {
   @NotNull
   private final Version courseVersion;
 
+  @NotNull
+  private final Map<Long, Tutorial> tutorials;
+
   /**
    * Constructs a course with the given parameters.
-   *
-   * @param name                The name of the course.
+   *  @param name                The name of the course.
    * @param modules             The list of modules in the course.
    * @param resourceUrls        A map containing URLs to resources related to the course. The keys
-   *                            are the names of the resources and the values are the URLs.
+ *                            are the names of the resources and the values are the URLs.
    * @param replInitialCommands A {@link Map}, with module name {@link String} as a key and a
-   *                            {@link String} array of the commands to be executed on REPL
-   *                            startup.
+*                            {@link String} array of the commands to be executed on REPL
    */
   protected Course(@NotNull String id,
                    @NotNull String name,
@@ -88,7 +90,8 @@ public abstract class Course implements ComponentSource {
                    @NotNull Map<String, URL> resourceUrls,
                    @NotNull List<String> autoInstallComponentNames,
                    @NotNull Map<String, String[]> replInitialCommands,
-                   @NotNull Version courseVersion) {
+                   @NotNull Version courseVersion,
+                   @NotNull Map<Long, Tutorial> tutorials) {
     this.id = id;
     this.name = name;
     this.aplusUrl = aplusUrl;
@@ -98,6 +101,7 @@ public abstract class Course implements ComponentSource {
     this.libraries = libraries;
     this.exerciseModules = exerciseModules;
     this.autoInstallComponentNames = autoInstallComponentNames;
+    this.tutorials = tutorials;
     this.components = Stream.concat(modules.stream(), libraries.stream())
         .collect(Collectors.toMap(Component::getName, Function.identity()));
     this.replInitialCommands = replInitialCommands;
@@ -154,6 +158,7 @@ public abstract class Course implements ComponentSource {
     Map<String, String[]> replInitialCommands
         = getCourseReplInitialCommands(jsonObject, sourcePath);
     Version courseVersion = getCourseVersion(jsonObject, sourcePath);
+    Map<Long, Tutorial> tutorials = getTutorials(jsonObject);
     return factory.createCourse(
         courseId,
         courseName,
@@ -165,7 +170,8 @@ public abstract class Course implements ComponentSource {
         resourceUrls,
         autoInstallComponentNames,
         replInitialCommands,
-        courseVersion
+        courseVersion,
+        tutorials
     );
   }
 
@@ -521,6 +527,17 @@ public abstract class Course implements ComponentSource {
       throw new MalformedCourseConfigurationException(source,
           "Incomplete or invalid \"version\" object", ex);
     }
+  }
+
+  private static Map<Long, Tutorial> getTutorials(@NotNull JSONObject jsonObject) {
+    JSONObject tutorialsJson = jsonObject.optJSONObject("tutorials");
+    return tutorialsJson == null ? Collections.emptyMap()
+        : JsonUtil.parseObject(tutorialsJson, JSONObject::getJSONObject,
+        Tutorial::fromJsonObject, Long::valueOf);
+  }
+
+  public Map<Long, Tutorial> getTutorials() {
+    return Collections.unmodifiableMap(tutorials);
   }
 
   @Nullable
