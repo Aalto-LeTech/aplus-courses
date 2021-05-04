@@ -113,7 +113,7 @@ public class OverlayPane extends JPanel {
   }
 
   /**
-   * Installs the overlay. Must be called from the Swing EDT.
+   * Installs the overlay.
    */
   @RequiresEdt
   public static void installOverlay() {
@@ -127,7 +127,7 @@ public class OverlayPane extends JPanel {
   }
 
   /**
-   * Removes the overlay. Must be called from the Swing EDT.
+   * Removes the overlay.
    */
   @RequiresEdt
   public static void removeOverlay() {
@@ -157,7 +157,7 @@ public class OverlayPane extends JPanel {
   }
 
   /**
-   * Adds a popup to a specified component. Must be called from the Swing EDT.
+   * Adds a popup to a specified component.
    */
   @RequiresEdt
   public static @NotNull BalloonPopup addPopup(@NotNull Component c, @NotNull String title,
@@ -176,8 +176,8 @@ public class OverlayPane extends JPanel {
 
   /**
    * Resets the overlay to its original state, i.e. removes all popups and dims all components.
-   * Must be called from the Swing EDT.
    */
+  @RequiresEdt
   public static void resetOverlay() {
     if (!isOverlayInstalled()) {
       return;
