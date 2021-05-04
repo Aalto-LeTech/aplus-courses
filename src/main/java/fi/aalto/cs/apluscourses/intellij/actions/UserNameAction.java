@@ -2,19 +2,19 @@ package fi.aalto.cs.apluscourses.intellij.actions;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
+import fi.aalto.cs.apluscourses.intellij.services.CourseProjectProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import org.jetbrains.annotations.NotNull;
 
 public class UserNameAction extends AnAction {
-  private final MainViewModelProvider mainViewModelProvider;
+  private final CourseProjectProvider courseProjectProvider;
 
   public UserNameAction() {
-    this(PluginSettings.getInstance());
+    this(PluginSettings.getInstance()::getCourseProject);
   }
 
-  public UserNameAction(MainViewModelProvider mainViewModelProvider) {
-    this.mainViewModelProvider = mainViewModelProvider;
+  public UserNameAction(CourseProjectProvider courseProjectProvider) {
+    this.courseProjectProvider = courseProjectProvider;
   }
 
   @Override
@@ -25,8 +25,11 @@ public class UserNameAction extends AnAction {
   @Override
   public void update(@NotNull AnActionEvent e) {
     e.getPresentation().setEnabled(false);
-    var userName = mainViewModelProvider.getMainViewModel(e.getProject()).getUserName();
-    userName = userName.equals("") ? "Not Logged In" : userName;
-    e.getPresentation().setText(userName);
+    var project = courseProjectProvider.getCourseProject(e.getProject());
+    if (project != null) {
+      var userName = project.getUserName();
+      userName = userName.equals("") ? "Not Logged In" : userName;
+      e.getPresentation().setText(userName);
+    }
   }
 }

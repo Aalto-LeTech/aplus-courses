@@ -1,12 +1,16 @@
 package fi.aalto.cs.apluscourses.intellij.model;
 
+import static fi.aalto.cs.apluscourses.dal.APlusTokenAuthentication.APLUS_USER;
+
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.dal.PasswordStorage;
 import fi.aalto.cs.apluscourses.dal.TokenAuthentication;
+import fi.aalto.cs.apluscourses.intellij.dal.IntelliJPasswordStorage;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
 import fi.aalto.cs.apluscourses.utils.Event;
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.Optional;
@@ -45,6 +49,9 @@ public class CourseProject {
 
   @NotNull
   public final Event exercisesUpdated;
+
+  @NotNull
+  private String userName = "";
 
   /**
    * Construct a course project from the given course, course configuration URL (used for updating),
@@ -92,6 +99,31 @@ public class CourseProject {
         .ifPresent(this::setAuthentication);
   }
 
+  /**
+   * Updates the user name if authentication is not null.
+   */
+  public void updateUserName() {
+    if (authentication != null) {
+      try {
+        this.userName = course.getExerciseDataSource().getUserName(authentication);
+      } catch (IOException e) {
+        //TODO logger.error("Failed to fetch user data", e);
+      }
+    } else {
+      this.userName = "";
+    }
+  }
+
+  public void removePasswordFromStorage() {
+    var passwordStorage = new IntelliJPasswordStorage(course.getApiUrl());
+    passwordStorage.remove(APLUS_USER);
+  }
+
+  @NotNull
+  public String getUserName() {
+    return userName;
+  }
+
   @NotNull
   public Course getCourse() {
     return course;
@@ -114,7 +146,7 @@ public class CourseProject {
   /**
    * Sets the authentication. Any existing authentication is cleared.
    */
-  public void setAuthentication(@NotNull Authentication authentication) {
+  public void setAuthentication(Authentication authentication) {
     if (this.authentication != null) {
       this.authentication.clear();
     }

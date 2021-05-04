@@ -43,10 +43,7 @@ public class APlusAuthenticationView extends DialogWrapper implements Dialog {
 
   @Override
   protected void doOKAction() {
-    char[] input = inputField.getPassword();
-    authenticationViewModel.setToken(input);
-    Arrays.fill(input, '\0');
-    super.doOKAction();
+    doValidate();
   }
 
   @NotNull
@@ -81,6 +78,7 @@ public class APlusAuthenticationView extends DialogWrapper implements Dialog {
       return new ValidationInfo(getText("ui.authenticationView.connectionError"),
           inputField).withOKEnabled();
     }
+    super.doOKAction();
     return null;
   }
 

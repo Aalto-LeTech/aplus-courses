@@ -2,26 +2,31 @@ package fi.aalto.cs.apluscourses.intellij.actions;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
+import fi.aalto.cs.apluscourses.intellij.services.CourseProjectProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import org.jetbrains.annotations.NotNull;
 
 public class LogInOutAction extends AnAction {
-  private final MainViewModelProvider mainViewModelProvider;
+  private final CourseProjectProvider courseProjectProvider;
 
   public LogInOutAction() {
-    this(PluginSettings.getInstance());
+    this(PluginSettings.getInstance()::getCourseProject);
   }
 
-  public LogInOutAction(MainViewModelProvider mainViewModelProvider) {
-    this.mainViewModelProvider = mainViewModelProvider;
+  public LogInOutAction(CourseProjectProvider courseProjectProvider) {
+    this.courseProjectProvider = courseProjectProvider;
   }
 
   @Override
   public void actionPerformed(@NotNull AnActionEvent e) {
     if (isLoggedIn(e)) {
-      mainViewModelProvider.getMainViewModel(e.getProject()).authentication.set(null);
-      mainViewModelProvider.getMainViewModel(e.getProject()).removePasswordFromStorage();
+      var project = courseProjectProvider.getCourseProject(e.getProject());
+      if (project != null && project.getAuthentication() != null) {
+        project.setAuthentication(null);
+        project.removePasswordFromStorage();
+        project.updateUserName();
+        project.getExercisesUpdater().restart();
+      }
     } else {
       ActionUtil.launch(APlusAuthenticationAction.ACTION_ID, e.getDataContext());
     }
@@ -34,6 +39,11 @@ public class LogInOutAction extends AnAction {
   }
 
   private boolean isLoggedIn(@NotNull AnActionEvent e) {
-    return !mainViewModelProvider.getMainViewModel(e.getProject()).getUserName().equals("");
+    var project = courseProjectProvider.getCourseProject(e.getProject());
+    if (project != null) {
+      return !project.getUserName().equals("");
+    } else {
+      return false;
+    }
   }
 }

@@ -3,29 +3,33 @@ package fi.aalto.cs.apluscourses.intellij.actions;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.project.DumbAware;
+import fi.aalto.cs.apluscourses.intellij.services.CourseProjectProvider;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import icons.PluginIcons;
 import org.jetbrains.annotations.NotNull;
 
 public class UserActionGroup extends DefaultActionGroup implements DumbAware {
-  private final MainViewModelProvider mainViewModelProvider;
+  private final CourseProjectProvider courseProjectProvider;
 
   public UserActionGroup() {
-    this(PluginSettings.getInstance());
+    this(PluginSettings.getInstance()::getCourseProject);
   }
 
-  public UserActionGroup(MainViewModelProvider mainViewModelProvider) {
-    this.mainViewModelProvider = mainViewModelProvider;
+  public UserActionGroup(CourseProjectProvider courseProjectProvider) {
+    this.courseProjectProvider = courseProjectProvider;
   }
 
   @Override
   public void update(@NotNull AnActionEvent e) {
-    var userName = mainViewModelProvider.getMainViewModel(e.getProject()).getUserName();
-    var loggedIn = !userName.equals("");
-    var icon = loggedIn ? PluginIcons.A_PLUS_USER_LOGGED_IN : PluginIcons.A_PLUS_USER;
-    var text = loggedIn ? "Logged in as " + userName : "Not Logged In";
-    e.getPresentation().setIcon(icon);
-    e.getPresentation().setText(text);
+    var project = courseProjectProvider.getCourseProject(e.getProject());
+    if (project != null) {
+      var userName = courseProjectProvider.getCourseProject(e.getProject()).getUserName();
+      var loggedIn = !userName.equals("");
+      var icon = loggedIn ? PluginIcons.A_PLUS_USER_LOGGED_IN : PluginIcons.A_PLUS_USER;
+      var text = loggedIn ? "Logged in as " + userName : "Not Logged In";
+      e.getPresentation().setIcon(icon);
+      e.getPresentation().setText(text);
+    }
   }
 }

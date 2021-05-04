@@ -1,10 +1,5 @@
 package fi.aalto.cs.apluscourses.presentation;
 
-import static fi.aalto.cs.apluscourses.dal.APlusTokenAuthentication.APLUS_USER;
-
-import fi.aalto.cs.apluscourses.dal.PasswordStorage;
-import fi.aalto.cs.apluscourses.dal.TokenAuthentication;
-import fi.aalto.cs.apluscourses.intellij.dal.IntelliJPasswordStorage;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
 import fi.aalto.cs.apluscourses.presentation.exercise.EmptyExercisesTreeViewModel;
@@ -38,14 +33,6 @@ public class MainViewModel {
   public final ObservableProperty<TutorialViewModel> tutorialViewModel =
       new ObservableReadWriteProperty<>(null);
 
-
-  @NotNull
-  public final ObservableProperty<Authentication> authentication =
-      new ObservableReadWriteProperty<>(null);
-
-  @NotNull
-  private String userName = "";
-
   @NotNull
   private final Options exerciseFilterOptions;
 
@@ -54,36 +41,16 @@ public class MainViewModel {
    */
   public MainViewModel(@NotNull Options exerciseFilterOptions) {
     this.exerciseFilterOptions = exerciseFilterOptions;
-    courseViewModel.addSimpleObserver(this, MainViewModel::updateExercises);
-    authentication.addSimpleObserver(this, MainViewModel::updateExercises);
-    authentication.addSimpleObserver(this, MainViewModel::updateUserName);
-  }
-
-  private void updateUserName() {
-    Course course = null;
-    var localCourseViewModel = courseViewModel.get();
-    if (localCourseViewModel != null) {
-      course = localCourseViewModel.getModel();
-    }
-    Authentication auth = authentication.get();
-    if (course != null && auth != null) {
-      try {
-        this.userName = course.getExerciseDataSource().getUserName(auth);
-      } catch (IOException e) {
-        logger.error("Failed to fetch user data", e);
-      }
-    } else {
-      this.userName = "";
-    }
   }
 
   /**
    * Creates a new {@link ExercisesTreeViewModel} with the given exercise groups, which is then set
    * to {@link MainViewModel#exercisesViewModel}.
    */
-  public void updateExercisesViewModel(@NotNull List<ExerciseGroup> exerciseGroups) {
+  public void updateExercisesViewModel(@NotNull List<ExerciseGroup> exerciseGroups,
+                                       Authentication auth) {
     var viewModel = new ExercisesTreeViewModel(exerciseGroups, exerciseFilterOptions);
-    viewModel.setAuthenticated(true);
+    viewModel.setAuthenticated(auth != null);
     viewModel.setProjectReady(exercisesViewModel.get().isProjectReady());
     exercisesViewModel.set(viewModel);
   }
@@ -116,10 +83,5 @@ public class MainViewModel {
     if (changed) {
       exercisesViewModel.valueChanged();
     }
-  }
-
-  @NotNull
-  public String getUserName() {
-    return userName;
   }
 }

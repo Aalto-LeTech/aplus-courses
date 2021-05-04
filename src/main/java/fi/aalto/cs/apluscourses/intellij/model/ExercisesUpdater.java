@@ -14,6 +14,7 @@ import fi.aalto.cs.apluscourses.utils.async.RepeatedTask;
 import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -52,7 +53,11 @@ public class ExercisesUpdater extends RepeatedTask {
     var course = courseProject.getCourse();
     var dataSource = course.getExerciseDataSource();
     var authentication = courseProject.getAuthentication();
-    if (authentication == null) {
+    if (authentication == null && courseProject.getExerciseGroups() != null) {
+      courseProject.setExerciseGroups(List.of());
+      eventToTrigger.trigger();
+      return;
+    } else if (authentication == null) {
       return;
     }
     try {
