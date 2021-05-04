@@ -19,7 +19,6 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListSelectionModel;
-import javax.swing.SwingConstants;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -90,8 +89,6 @@ public class CourseSelectionView extends OurDialogWrapper {
     urlField.textBindable.bindToSource(viewModel.selectedCourseUrl);
 
     registerValidationItem(urlField.textBindable);
-
-    setButtonsAlignment(SwingConstants.CENTER);
 
     init();
   }

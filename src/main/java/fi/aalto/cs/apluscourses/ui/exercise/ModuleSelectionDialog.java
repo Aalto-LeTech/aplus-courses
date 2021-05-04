@@ -16,7 +16,6 @@ import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,7 +35,6 @@ public class ModuleSelectionDialog extends DialogWrapper
                                @Nullable Project project) {
     super(project);
     this.viewModel = viewModel;
-    setButtonsAlignment(SwingConstants.CENTER);
     setTitle(getText("ui.toolWindow.subTab.exercises.submission.selectModuleShort"));
     init();
   }
