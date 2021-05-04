@@ -2,7 +2,7 @@ package fi.aalto.cs.apluscourses.model;
 
 import static org.mockito.Mockito.mock;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -13,19 +13,19 @@ import org.junit.Test;
 public class ExerciseGroupTest {
 
   private static final String NAME_KEY = "display_name";
-  private static final String EXERCISES_KEY = "exercises";
   private static final String ID_KEY = "id";
   private static final String HTML_KEY = "html_url";
   private static final String OPEN_KEY = "is_open";
-  private static final String MAX_SUBMISSIONS_KEY = "max_submissions";
-  private static final String MAX_POINTS_KEY = "max_points";
 
   @Test
   public void testExerciseGroup() {
-    Exercise exercise1 = new Exercise(123, "name1", "https://example.com", 0, 0, 0, false);
-    Exercise exercise2 = new Exercise(456, "name2", "https://example.org", 0, 0, 0, true);
+    var info = new SubmissionInfo(Collections.emptyMap());
+    Exercise exercise1 = new Exercise(123, "name1", "https://example.com", info, 0, 0, 0);
+    Exercise exercise2 = new Exercise(456, "name2", "https://example.org", info, 0, 0, 0);
 
-    ExerciseGroup group = new ExerciseGroup(22, "group", "https://example.fi", true, List.of(exercise1, exercise2));
+    ExerciseGroup group = new ExerciseGroup(22, "group", "https://example.fi", true);
+    group.addExercise(exercise1);
+    group.addExercise(exercise2);
 
     Assert.assertEquals(22, group.getId());
     Assert.assertEquals("The url is the same as the one given to the constructor",
@@ -34,16 +34,16 @@ public class ExerciseGroupTest {
         group.isOpen());
     Assert.assertEquals("The name is the same as the one given to the constructor",
         "group", group.getName());
-    Assert.assertEquals("The exercises are the same as those given to the constructor",
-        "name1", group.getExercises().get(123L).getName());
-    Assert.assertEquals("The exercises are the same as those given to the constructor",
-        "name2", group.getExercises().get(456L).getName());
+    Assert.assertEquals("The exercises are the same as those added to the group",
+        "name1", group.getExercises().get(0).getName());
+    Assert.assertEquals("The exercises are the same as those added to the group",
+        "name2", group.getExercises().get(1).getName());
   }
 
   @Test(expected = UnsupportedOperationException.class)
-  public void testGetExercisesReturnsUnmodifiableMap() {
-    ExerciseGroup group = new ExerciseGroup(10, "", "", true, new ArrayList<>());
-    group.getExercises().put(999L, null);
+  public void testGetExercisesReturnsUnmodifiableList() {
+    ExerciseGroup group = new ExerciseGroup(10, "", "", true);
+    group.getExercises().add(null);
   }
 
   @Test
@@ -52,21 +52,14 @@ public class ExerciseGroupTest {
         .put(ID_KEY, 567)
         .put(NAME_KEY, "group name")
         .put(HTML_KEY, "http://example.com/w01")
-        .put(OPEN_KEY, true)
-        .put(EXERCISES_KEY, new JSONArray()
-            .put(new JSONObject()
-                .put(ID_KEY, 567)
-                .put(NAME_KEY, "exercise name")
-                .put(HTML_KEY, "http://localhost:7000")
-                .put(MAX_POINTS_KEY, 50)
-                .put(MAX_SUBMISSIONS_KEY, 10)));
+        .put(OPEN_KEY, true);
     ExerciseGroup group = ExerciseGroup.fromJsonObject(json, mock(Points.class));
 
     Assert.assertEquals(567, group.getId());
     Assert.assertEquals("The exercise group has the same name as in the JSON object",
         "group name", group.getName());
-    Assert.assertEquals("The exercise group has the same exercises as in the JSON object",
-        "exercise name", group.getExercises().get(567L).getName());
+    Assert.assertEquals("http://example.com/w01", group.getHtmlUrl());
+    Assert.assertTrue(group.isOpen());
   }
 
   @Test(expected = JSONException.class)
@@ -78,14 +71,7 @@ public class ExerciseGroupTest {
   @Test(expected = JSONException.class)
   public void testFromJsonObjectMissingName() {
     JSONObject json = new JSONObject()
-        .put(ID_KEY, 100)
-        .put(EXERCISES_KEY, new JSONArray()
-            .put(new JSONObject()
-                .put(ID_KEY, 0)
-                .put(NAME_KEY, "e")
-                .put(HTML_KEY, "http://localhost:3000")
-                .put(MAX_POINTS_KEY, 45)
-                .put(MAX_SUBMISSIONS_KEY, 9)));
+        .put(ID_KEY, 100);
     ExerciseGroup.fromJsonObject(json, mock(Points.class));
   }
 
@@ -97,14 +83,7 @@ public class ExerciseGroupTest {
           .put(NAME_KEY, "group " + i)
           .put(HTML_KEY, "http://example.com/w01")
           .put(OPEN_KEY, true)
-          .put(ID_KEY, i)
-          .put(EXERCISES_KEY, new JSONArray()
-              .put(new JSONObject()
-                  .put(ID_KEY, i)
-                  .put(NAME_KEY, "exercise in group " + i)
-                  .put(HTML_KEY, "http://localhost:4000")
-                  .put(MAX_POINTS_KEY, 30)
-                  .put(MAX_SUBMISSIONS_KEY, 8)));
+          .put(ID_KEY, i);
       array.put(json);
     }
     List<ExerciseGroup> exerciseGroups = ExerciseGroup.fromJsonArray(array, mock(Points.class));

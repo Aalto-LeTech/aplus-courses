@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -32,6 +33,7 @@ public class IntelliJCourseTest {
     String id = "id";
     String name = "testName";
     APlusProject project = mock(APlusProject.class);
+    doReturn(Paths.get("")).when(project).getBasePath();
     when(project.getMessageBus()).thenReturn(mock(MessageBus.class));
     CommonLibraryProvider commonLibraryProvider = new CommonLibraryProvider(project);
     IntelliJCourse course = new IntelliJCourse(id, name,
@@ -70,6 +72,7 @@ public class IntelliJCourseTest {
     Library library = new ModelExtensions.TestLibrary(libraryName);
 
     APlusProject project = mock(APlusProject.class);
+    doReturn(Paths.get("")).when(project).getBasePath();
     CommonLibraryProvider commonLibraryProvider = new CommonLibraryProvider(project) {
       @Nullable
       @Override
@@ -114,6 +117,9 @@ public class IntelliJCourseTest {
 
   @Test
   public void testGetComponentIfExists() {
+    var project = mock(APlusProject.class);
+    doReturn(Paths.get("")).when(project).getBasePath();
+
     String moduleName = "moominModule";
     VirtualFile file = mock(VirtualFile.class);
     when(file.getName()).thenReturn(moduleName);
@@ -140,7 +146,7 @@ public class IntelliJCourseTest {
         Collections.emptyMap(),
         //  courseVersion
         BuildInfo.INSTANCE.courseVersion,
-        mock(APlusProject.class),
+        project,
         mock(CommonLibraryProvider.class));
 
     assertSame(module, course.getComponentIfExists(file));
@@ -148,6 +154,9 @@ public class IntelliJCourseTest {
 
   @Test
   public void testGetComponentIfExistsReturnsNull() {
+    var project = mock(APlusProject.class);
+    doReturn(Paths.get("")).when(project).getBasePath();
+
     VirtualFile file1 = mock(VirtualFile.class);
     when(file1.getName()).thenReturn("someFile");
     when(file1.getPath()).thenReturn("somePath");
@@ -174,7 +183,7 @@ public class IntelliJCourseTest {
         Collections.emptyMap(),
         //  courseVersion
         BuildInfo.INSTANCE.courseVersion,
-        mock(APlusProject.class),
+        project,
         mock(CommonLibraryProvider.class));
 
     assertNull(course.getComponentIfExists(file1));

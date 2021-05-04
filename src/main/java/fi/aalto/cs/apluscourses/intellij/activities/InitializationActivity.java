@@ -18,6 +18,7 @@ import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.intellij.utils.ProjectKey;
+import fi.aalto.cs.apluscourses.intellij.utils.ProjectViewUtil;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationException;
 import fi.aalto.cs.apluscourses.model.UnexpectedResponseException;
@@ -58,7 +59,8 @@ public class InitializationActivity implements Background {
   public void runActivity(@NotNull Project project) {
     PluginSettings pluginSettings = PluginSettings.getInstance();
     pluginSettings.initializeLocalIdeSettings();
-    pluginSettings.ignoreFileInProjectView(MODULE_REPL_INITIAL_COMMANDS_FILE_NAME, project);
+
+    ProjectViewUtil.ignoreFileInProjectView(MODULE_REPL_INITIAL_COMMANDS_FILE_NAME, project);
 
     var progressViewModel
             = PluginSettings.getInstance().getMainViewModel(project).progressViewModel;

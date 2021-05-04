@@ -3,6 +3,7 @@ package fi.aalto.cs.apluscourses.model;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
+import java.util.Collections;
 import org.json.JSONObject;
 import org.junit.Test;
 
@@ -10,7 +11,8 @@ public class SubmissionResultTest {
 
   @Test
   public void testSubmissionResult() {
-    Exercise exercise = new Exercise(444L, "someEx", "http://example.com/", 15, 20, 10, true);
+    var info = new SubmissionInfo(Collections.emptyMap());
+    Exercise exercise = new Exercise(444L, "someEx", "http://example.com/", info, 15, 20, 10);
     SubmissionResult submissionResult
         = new SubmissionResult(123L, 13, SubmissionResult.Status.GRADED, exercise);
     assertEquals("The ID is the same as the one given to the constructor",
@@ -26,7 +28,8 @@ public class SubmissionResultTest {
 
   @Test
   public void testFromJsonObject() {
-    Exercise exercise = new Exercise(555L, "myEx", "https://example.org/", 15, 20, 10, true);
+    var info = new SubmissionInfo(Collections.emptyMap());
+    Exercise exercise = new Exercise(555L, "myEx", "https://example.org/", info, 15, 20, 10);
     JSONObject jsonObject = new JSONObject()
         .put("id", 234)
         .put("grade", 30)

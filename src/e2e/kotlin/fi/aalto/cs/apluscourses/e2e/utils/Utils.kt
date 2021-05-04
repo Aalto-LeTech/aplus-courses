@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.e2e.utils
 
 import com.intellij.remoterobot.RemoteRobot
+import com.intellij.remoterobot.fixtures.Fixture
 import com.intellij.remoterobot.stepsProcessing.StepLogger
 import com.intellij.remoterobot.stepsProcessing.StepWorker
 import okhttp3.OkHttpClient
@@ -9,7 +10,6 @@ import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileInputStream
-import java.time.Duration
 import java.util.Properties
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.imageio.ImageIO
@@ -64,7 +64,9 @@ fun RemoteRobot.fetchScreenShot(): BufferedImage {
     }
 }
 
-fun wait(duration: Duration) = Thread.sleep(duration.toMillis())
+fun Fixture.containsText(text: String): Boolean {
+    return hasText { textData -> textData.text.contains(text) }
+}
 
 fun getVersion(): String {
     val versionProperties = Properties()
@@ -99,7 +101,7 @@ object HierarchyDownloader {
         return File(folder).apply {
             mkdirs()
         }.resolve(name).apply {
-            writeText(response.body()?.string() ?: "")
+            writeText(response.body?.string() ?: "")
         }
     }
 }

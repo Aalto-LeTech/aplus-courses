@@ -4,14 +4,17 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import fi.aalto.cs.apluscourses.model.Exercise;
+import fi.aalto.cs.apluscourses.model.SubmissionInfo;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
+import java.util.Collections;
 import org.junit.Test;
 
 public class SubmissionResultViewModelTest {
 
   @Test
   public void testSubmissionResultViewModel() {
-    Exercise exercise = new Exercise(0, "", "", 15, 25, 10, true);
+    var info = new SubmissionInfo(Collections.emptyMap());
+    Exercise exercise = new Exercise(0, "", "", info, 15, 25, 10);
     SubmissionResult submissionResult
         = new SubmissionResult(123L, 15, SubmissionResult.Status.UNKNOWN, exercise);
     SubmissionResultViewModel viewModel = new SubmissionResultViewModel(submissionResult, 34);

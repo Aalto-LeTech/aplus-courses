@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.dal;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.same;
@@ -10,6 +11,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+import com.intellij.openapi.util.io.FileUtilRt;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Exercise;
@@ -19,7 +21,6 @@ import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.model.Points;
 import fi.aalto.cs.apluscourses.model.Submission;
-import fi.aalto.cs.apluscourses.model.SubmissionHistory;
 import fi.aalto.cs.apluscourses.model.SubmissionInfo;
 import fi.aalto.cs.apluscourses.model.SubmittableFile;
 import java.io.File;
@@ -60,38 +61,11 @@ public class APlusExerciseDataSourceTest {
 
   @Test
   public void testDefaultConstructor() {
-    APlusExerciseDataSource exerciseDataSource = new APlusExerciseDataSource(url);
+    var exerciseDataSource = new APlusExerciseDataSource(
+        url, Paths.get(FileUtilRt.getTempDirectory()));
     assertEquals(url, exerciseDataSource.getApiUrl());
-    assertSame(APlusExerciseDataSource.DefaultDataAccess.INSTANCE, exerciseDataSource.getClient());
-    assertSame(APlusExerciseDataSource.DefaultDataAccess.INSTANCE, exerciseDataSource.getParser());
-  }
-
-  @Test
-  public void testGetSubmissionInfo() throws IOException {
-    JSONObject response = new JSONObject();
-    SubmissionInfo submissionInfo = new SubmissionInfo(1, Collections.emptyMap());
-
-    doReturn(response).when(client).fetch("https://example.com/exercises/55/", authentication);
-    doReturn(submissionInfo).when(parser).parseSubmissionInfo(response);
-
-    Exercise exercise = new Exercise(55, "myex", "http://localhost:4321", 0, 0, 0, true);
-
-    assertSame(submissionInfo, exerciseDataSource.getSubmissionInfo(exercise, authentication));
-  }
-
-  @Test
-  public void testGetSubmissionHistory() throws IOException {
-    JSONObject response = new JSONObject();
-    SubmissionHistory submissionHistory = new SubmissionHistory(0);
-
-    doReturn(response).when(client)
-        .fetch("https://example.com/exercises/43/submissions/me/", authentication);
-    doReturn(submissionHistory).when(parser).parseSubmissionHistory(response);
-
-    Exercise exercise = new Exercise(43, "someex", "https://example.org", 0, 0, 0, true);
-
-    assertSame(submissionHistory,
-        exerciseDataSource.getSubmissionHistory(exercise, authentication));
+    assertTrue(exerciseDataSource.getClient() instanceof APlusExerciseDataSource.DefaultDataAccess);
+    assertTrue(exerciseDataSource.getParser() instanceof APlusExerciseDataSource.DefaultDataAccess);
   }
 
   @Test
@@ -129,8 +103,8 @@ public class APlusExerciseDataSourceTest {
 
     JSONObject response = new JSONObject().put("results", array);
 
-    ExerciseGroup exGroup0 = new ExerciseGroup(0, "First Week", "", true, new ArrayList<>());
-    ExerciseGroup exGroup1 = new ExerciseGroup(1, "Second Week", "", true, new ArrayList<>());
+    ExerciseGroup exGroup0 = new ExerciseGroup(0, "First Week", "", true);
+    ExerciseGroup exGroup1 = new ExerciseGroup(1, "Second Week", "", true);
 
     doReturn(response).when(client)
         .fetch("https://example.com/courses/99/exercises/", authentication);
@@ -162,14 +136,13 @@ public class APlusExerciseDataSourceTest {
     paths.put(key0, path0);
     paths.put(key1, path1);
 
-    SubmissionInfo submissionInfo = new SubmissionInfo(
-        1, Collections.singletonMap("fi", List.of(subFile0, subFile1)));
+    var info = new SubmissionInfo(Collections.singletonMap("fi", List.of(subFile0, subFile1)));
 
-    Exercise exercise = new Exercise(71, "newex", "https://example.com", 0, 0, 0, true);
+    Exercise exercise = new Exercise(71, "newex", "https://example.com", info, 0, 0, 0);
 
     Group group = new Group(435, new ArrayList<>());
 
-    Submission submission = new Submission(exercise, submissionInfo, paths, group, "fi");
+    Submission submission = new Submission(exercise, paths, group, "fi");
 
     exerciseDataSource.submit(submission, authentication);
 

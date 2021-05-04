@@ -24,21 +24,6 @@ public class ModelExtensions {
   }
 
   public static class TestExerciseDataSource implements ExerciseDataSource {
-
-    @NotNull
-    @Override
-    public SubmissionInfo getSubmissionInfo(@NotNull Exercise exercise,
-                                            @NotNull Authentication authentication) {
-      return new SubmissionInfo(1, Collections.emptyMap());
-    }
-
-    @NotNull
-    @Override
-    public SubmissionHistory getSubmissionHistory(@NotNull Exercise exercise,
-                                                  @NotNull Authentication authentication) {
-      return new SubmissionHistory(0);
-    }
-
     @NotNull
     @Override
     public List<Group> getGroups(@NotNull Course course, @NotNull Authentication authentication) {
@@ -61,9 +46,21 @@ public class ModelExtensions {
 
     @NotNull
     @Override
+    public Exercise getExercise(long exerciseId,
+                                @NotNull Points points,
+                                @NotNull Authentication authentication,
+                                @NotNull ZonedDateTime minCacheEntryTime) {
+      return new Exercise(1, "lol", "http://example.com",
+          new SubmissionInfo(Collections.emptyMap()), 10, 20, 10
+      );
+    }
+
+    @NotNull
+    @Override
     public SubmissionResult getSubmissionResult(@NotNull String submissionUrl,
                                                 @NotNull Exercise exercise,
-                                                @NotNull Authentication authentication) {
+                                                @NotNull Authentication authentication,
+                                                @NotNull ZonedDateTime minCacheEntryTime) {
       return new SubmissionResult(0, 20, SubmissionResult.Status.GRADED, exercise);
     }
 

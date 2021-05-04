@@ -4,8 +4,6 @@ import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.Points;
-import fi.aalto.cs.apluscourses.model.SubmissionHistory;
-import fi.aalto.cs.apluscourses.model.SubmissionInfo;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,15 +14,13 @@ import org.json.JSONObject;
 
 public interface Parser {
 
-  SubmissionInfo parseSubmissionInfo(@NotNull JSONObject object);
-
-  SubmissionHistory parseSubmissionHistory(@NotNull JSONObject object);
-
   Group parseGroup(@NotNull JSONObject object);
 
   List<ExerciseGroup> parseExerciseGroups(@NotNull JSONArray array, @NotNull Points points);
 
   Points parsePoints(@NotNull JSONObject object);
+
+  Exercise parseExercise(@NotNull JSONObject jsonObject, @NotNull Points points);
 
   SubmissionResult parseSubmissionResult(@NotNull JSONObject jsonObject,
                                          @NotNull Exercise exercise);

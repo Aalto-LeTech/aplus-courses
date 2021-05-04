@@ -6,8 +6,8 @@ import com.intellij.openapi.util.io.FileUtilRt;
 import com.intellij.testFramework.LightIdeaTestCase;
 import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.Group;
-import fi.aalto.cs.apluscourses.model.SubmissionHistory;
 import fi.aalto.cs.apluscourses.model.SubmissionInfo;
+import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import fi.aalto.cs.apluscourses.model.SubmittableFile;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionViewModel;
 import fi.aalto.cs.apluscourses.ui.base.CheckBox;
@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import javax.swing.Action;
 import javax.swing.ComboBoxModel;
 import javax.swing.JComboBox;
@@ -63,11 +64,13 @@ public class SubmissionDialogTest extends LightIdeaTestCase {
                                               @NotNull Map<String, Path> filePaths,
                                               int numberOfSubmissions,
                                               int maxNumberOfSubmissions) {
+    var info = new SubmissionInfo(Collections.singletonMap("en", submittableFiles));
+    var exercise = new Exercise(
+        1, exerciseName, "http://www.fi", info, 0, 0, maxNumberOfSubmissions);
+    IntStream.range(0, numberOfSubmissions).forEach(i -> exercise.addSubmissionResult(
+        new SubmissionResult(i,2, SubmissionResult.Status.GRADED, exercise)));
     return new SubmissionViewModel(
-        new Exercise(1, exerciseName, "http://www.fi", 0, 0, maxNumberOfSubmissions, true),
-        new SubmissionInfo(maxNumberOfSubmissions,
-                Collections.singletonMap("en", submittableFiles)),
-        new SubmissionHistory(numberOfSubmissions),
+        exercise,
         availableGroups,
         defaultGroup,
         filePaths,

@@ -3,7 +3,6 @@ package fi.aalto.cs.apluscourses.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
@@ -13,6 +12,9 @@ public class Exercise implements Browsable {
 
   @NotNull
   private final String name;
+
+  @NotNull
+  private final SubmissionInfo submissionInfo;
 
   @NotNull
   private final String htmlUrl;
@@ -27,10 +29,6 @@ public class Exercise implements Browsable {
 
   private final int maxSubmissions;
 
-  private final boolean submittable;
-
-  private AtomicBoolean inGrading = new AtomicBoolean(false);
-
   /**
    * Construct an exercise instance with the given parameters.
    *
@@ -44,17 +42,17 @@ public class Exercise implements Browsable {
   public Exercise(long id,
                   @NotNull String name,
                   @NotNull String htmlUrl,
+                  @NotNull SubmissionInfo submissionInfo,
                   int userPoints,
                   int maxPoints,
-                  int maxSubmissions,
-                  boolean submittable) {
+                  int maxSubmissions) {
     this.id = id;
     this.name = name;
     this.htmlUrl = htmlUrl;
+    this.submissionInfo = submissionInfo;
     this.userPoints = userPoints;
     this.maxPoints = maxPoints;
     this.maxSubmissions = maxSubmissions;
-    this.submittable = submittable;
   }
 
   /**
@@ -73,30 +71,16 @@ public class Exercise implements Browsable {
     String name = jsonObject.getString("display_name");
     String htmlUrl = jsonObject.getString("html_url");
 
-    int userPoints = points.getExercisePoints().getOrDefault(id, 0);
+    // TODO: consider if it would be better to just take points as the max points from all
+    //  submission results, then the "points" parameter could be completely removed from this
+    //  method.
+    int userPoints = points.getExercisePoints(id);
     int maxPoints = jsonObject.getInt("max_points");
     int maxSubmissions = jsonObject.getInt("max_submissions");
 
-    // TODO: submittability should instead be determined by looking at the individual exercise end
-    // point in the A+ API and seeing if the assignment has files to submit. Take a look at
-    // SubmissionInfo and how it is used in SubmitExerciseAction.
-    boolean isSubmittable = points.isSubmittable(id);
+    var submissionInfo = SubmissionInfo.fromJsonObject(jsonObject);
 
-    Exercise exercise
-        = new Exercise(id, name, htmlUrl, userPoints, maxPoints, maxSubmissions, isSubmittable);
-
-    List<Long> submissionIds = points.getSubmissions().getOrDefault(id, Collections.emptyList());
-    for (int i = 0, length = submissionIds.size(); i < length; i++) {
-      long submissionId = submissionIds.get(i);
-      int submissionPoints = points.getSubmissionPoints().getOrDefault(submissionId, 0);
-      SubmissionResult.Status status = (i + 1 > maxSubmissions)
-          ? SubmissionResult.Status.UNOFFICIAL
-          : SubmissionResult.Status.GRADED;
-      exercise.addSubmissionResult(
-          new SubmissionResult(submissionId, submissionPoints, status, exercise));
-    }
-
-    return exercise;
+    return new Exercise(id, name, htmlUrl, submissionInfo, userPoints, maxPoints, maxSubmissions);
   }
 
   public long getId() {
@@ -122,6 +106,11 @@ public class Exercise implements Browsable {
     return Collections.unmodifiableList(submissionResults);
   }
 
+  @NotNull
+  public SubmissionInfo getSubmissionInfo() {
+    return submissionInfo;
+  }
+
   public int getUserPoints() {
     return userPoints;
   }
@@ -135,7 +124,7 @@ public class Exercise implements Browsable {
   }
 
   public boolean isSubmittable() {
-    return submittable;
+    return submissionInfo.isSubmittable();
   }
 
   /**
@@ -152,12 +141,13 @@ public class Exercise implements Browsable {
     return maxSubmissions == 0 && maxPoints == 0;
   }
 
+  /**
+   * Returns true if any of the submissions of this exercise has status WAITING.
+   */
   public boolean isInGrading() {
-    return inGrading.get();
-  }
-
-  public void setInGrading(boolean isInGrading) {
-    this.inGrading.getAndSet(isInGrading);
+    return submissionResults
+        .stream()
+        .anyMatch(submission -> submission.getStatus() == SubmissionResult.Status.WAITING);
   }
 
   @Override

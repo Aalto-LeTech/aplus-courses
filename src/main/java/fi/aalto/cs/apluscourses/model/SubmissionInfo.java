@@ -10,20 +10,16 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class SubmissionInfo {
-
-  private final int submissionsLimit;
-
   @NotNull
   private final Map<String, List<SubmittableFile>> files;
 
   /**
-   * Construct a submission info instance with the given submission limit and files.
+   * Construct a submission info instance with the given files.
    *
    * @param files A map from language codes to list of submittable files corresponding to the
    *              language.
    */
-  public SubmissionInfo(int submissionsLimit, @NotNull Map<String, List<SubmittableFile>> files) {
-    this.submissionsLimit = submissionsLimit;
+  public SubmissionInfo(@NotNull Map<String, List<SubmittableFile>> files) {
     this.files = files;
   }
 
@@ -32,7 +28,13 @@ public class SubmissionInfo {
    */
   @NotNull
   public static SubmissionInfo fromJsonObject(@NotNull JSONObject jsonObject) {
-    JSONObject exerciseInfo = jsonObject.getJSONObject("exercise_info");
+    var exerciseInfo = jsonObject.optJSONObject("exercise_info");
+    if (exerciseInfo == null) {
+      // Some assignments, such as https://plus.cs.aalto.fi/api/v2/exercises/24882/ don't have the
+      // exercise info at all.
+      return new SubmissionInfo(Collections.emptyMap());
+    }
+
     JSONArray formSpec = exerciseInfo.getJSONArray("form_spec");
     JSONObject localizationInfo = exerciseInfo.getJSONObject("form_i18n");
     Map<String, List<SubmittableFile>> files = new HashMap<>();
@@ -55,14 +57,7 @@ public class SubmissionInfo {
         files.putIfAbsent(language, filesForLanguage);
       }
     }
-
-    int submissionLimit = jsonObject.getInt("max_submissions");
-
-    return new SubmissionInfo(submissionLimit, files);
-  }
-
-  public int getSubmissionsLimit() {
-    return submissionsLimit;
+    return new SubmissionInfo(files);
   }
 
   /**
@@ -72,6 +67,13 @@ public class SubmissionInfo {
   @NotNull
   public List<SubmittableFile> getFiles(@NotNull String language) {
     return files.getOrDefault(language, Collections.emptyList());
+  }
+
+  /**
+   * Returns true if there is some language in which the exercise can be submitted from the IDE.
+   */
+  public boolean isSubmittable() {
+    return !files.isEmpty();
   }
 
   /**
