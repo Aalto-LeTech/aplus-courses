@@ -24,6 +24,7 @@ public class UserActionGroup extends DefaultActionGroup implements DumbAware {
   public void update(@NotNull AnActionEvent e) {
     e.getPresentation().putClientProperty(ActionButton.HIDE_DROPDOWN_ICON, Boolean.TRUE);
     var project = courseProjectProvider.getCourseProject(e.getProject());
+    e.getPresentation().setVisible(project != null);
     if (project != null) {
       var userName = project.getUserName();
       var loggedIn = !userName.equals("");

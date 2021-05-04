@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.model;
 
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import fi.aalto.cs.apluscourses.utils.Version;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -66,6 +67,11 @@ public class ModelExtensions {
                                                 @NotNull Authentication authentication,
                                                 @NotNull ZonedDateTime minCacheEntryTime) {
       return new SubmissionResult(0, 20, SubmissionResult.Status.GRADED, exercise);
+    }
+
+    @Override
+    public @NotNull String getUserName(@NotNull Authentication authentication) {
+      return "";
     }
 
     @Override

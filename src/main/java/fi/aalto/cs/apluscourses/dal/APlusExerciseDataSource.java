@@ -166,7 +166,7 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   @Override
   @NotNull
   public String getUserName(@NotNull Authentication authentication) throws IOException {
-    String url = apiUrl + USERS + "/";
+    String url = apiUrl + USERS + "/me/";
     JSONObject response = client.fetch(url, authentication);
     return parser.parseUserName(response);
   }
@@ -281,9 +281,8 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
     @Override
     public String parseUserName(@NotNull JSONObject object) {
       try {
-        var result = object.getJSONArray("results").getJSONObject(0);
-        var fullName = result.optString("full_name");
-        var username = result.optString("username");
+        var fullName = object.optString("full_name");
+        var username = object.optString("username");
         return fullName.equals("") ? username : fullName;
       } catch (JSONException e) {
         return "";

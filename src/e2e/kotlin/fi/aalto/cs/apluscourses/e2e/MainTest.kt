@@ -17,7 +17,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.time.Duration
 
-class PlaceholderTest {
+class MainTest {
     init {
         StepLoggerInitializer.init()
     }
@@ -77,10 +77,13 @@ class PlaceholderTest {
             }
         }
         // step 8
-        step("Authenticate with empty token") {
+        step("Authenticate with wrong token") {
             CommonSteps(this).setAPlusToken("")
             with(dialog("A+ Token")) {
                 assertTrue("Token dialog still showing after clicking OK with empty token", isShowing)
+                passwordField().text = "token"
+                button("OK").click()
+                assertTrue("Token dialog still showing after clicking OK with wrong token", isShowing)
                 button("Cancel").click()
             }
         }

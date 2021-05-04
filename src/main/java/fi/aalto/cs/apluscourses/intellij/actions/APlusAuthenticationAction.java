@@ -33,7 +33,7 @@ public class APlusAuthenticationAction extends DumbAwareAction {
   private final Notifier notifier;
 
   /**
-   * Called by th platform.
+   * Called by the platform.
    */
   public APlusAuthenticationAction() {
     this(
