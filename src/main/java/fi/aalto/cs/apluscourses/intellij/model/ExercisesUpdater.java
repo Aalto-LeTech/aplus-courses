@@ -78,6 +78,7 @@ public class ExercisesUpdater extends RepeatedTask {
       for (var exerciseGroup : exerciseGroups) {
         for (var exercise : exerciseGroup.getExercises().values()) {
           if (Thread.interrupted()) {
+            progressViewModel.stop(progress);
             return;
           }
           addSubmissionResults(course, exercise, points, authentication);

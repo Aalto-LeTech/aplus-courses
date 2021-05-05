@@ -18,8 +18,7 @@ public class Bindable<T extends JComponent, S> implements ValidationItem {
   protected ObservableProperty<S> sourceProperty;
 
   public Bindable(@NotNull T target, @NotNull BiConsumer<T, S> targetSetter) {
-    this.target = target;
-    this.targetSetter = targetSetter;
+    this(target, targetSetter, false);
   }
 
   /**
