@@ -12,6 +12,7 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
 
   private final @NotNull String instruction;
   private final @NotNull String info;
+  private OverlayPane overlayPane;
 
   protected IntelliJComponentPresenterBase(@NotNull String instruction, @NotNull String info) {
     this.instruction = instruction;
@@ -30,9 +31,9 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
     if (component == null) {
       throw new IllegalStateException("Component was not found!");
     }
-    OverlayPane.installOverlay();
-    OverlayPane.showComponent(component);
-    OverlayPane.addPopup(component, instruction, info);
+    overlayPane = OverlayPane.installOverlay();
+    overlayPane.showComponent(component);
+    overlayPane.addPopup(component, instruction, info);
   }
 
   @Override
@@ -42,8 +43,9 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
 
   @RequiresEdt
   private void removeHighlightInternal() {
-    if (OverlayPane.isOverlayInstalled()) {
-      OverlayPane.removeOverlay();
+    if (overlayPane != null) {
+      overlayPane.remove();
+      overlayPane = null;
     }
   }
 

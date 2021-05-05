@@ -20,14 +20,12 @@ import javax.swing.SwingUtilities;
 import org.jetbrains.annotations.NotNull;
 
 public class OverlayPane extends JPanel {
-  private static OverlayPane activeOverlay = null;
-
   // A high value (> 500) allows us to place the overlay pretty much above every other component
   private static final int PANE_Z_ORDER = 20000;
 
   private final JRootPane associatedRootPane;
-  private final Set<Component> exemptComponents;
-  private final Set<BalloonPopup> popups;
+  private final Set<Component> exemptComponents = new HashSet<>();
+  private final Set<BalloonPopup> popups = new HashSet<>();
 
   private void revalidatePane() {
     getRootPane().revalidate();
@@ -111,68 +109,48 @@ public class OverlayPane extends JPanel {
     return true;
   }
 
-  public static boolean isOverlayInstalled() {
-    return activeOverlay != null;
-  }
-
   /**
    * Installs the overlay.
    */
   @RequiresEdt
-  public static void installOverlay() {
-    if (isOverlayInstalled()) {
-      throw new IllegalStateException("An overlay is already installed");
-    }
+  public static OverlayPane installOverlay() {
+    var overlay = new OverlayPane();
+    overlay.getRootPane().getLayeredPane().add(overlay, PANE_Z_ORDER);
+    overlay.revalidatePane();
 
-    activeOverlay = new OverlayPane();
-    activeOverlay.getRootPane().getLayeredPane().add(activeOverlay, PANE_Z_ORDER);
-    activeOverlay.revalidatePane();
+    return overlay;
   }
 
   /**
    * Removes the overlay.
    */
   @RequiresEdt
-  public static void removeOverlay() {
-    if (!isOverlayInstalled()) {
-      throw new IllegalStateException("No overlay is currently installed");
+  public void remove() {
+    this.getRootPane().getLayeredPane().remove(this);
+    for (var c : this.popups) {
+      this.getRootPane().getLayeredPane().remove(c);
     }
-
-    activeOverlay.getRootPane().getLayeredPane().remove(activeOverlay);
-    for (var c : activeOverlay.popups) {
-      activeOverlay.getRootPane().getLayeredPane().remove(c);
-    }
-    activeOverlay.revalidatePane();
-
-    activeOverlay = null;
+    this.revalidatePane();
   }
 
   /**
    * Marks a component not to be dimmed.
    */
-  public static void showComponent(Component c) {
-    if (!isOverlayInstalled()) {
-      throw new IllegalStateException("No overlay is currently installed");
-    }
-
-    activeOverlay.exemptComponents.add(c);
-    activeOverlay.revalidatePane();
+  public void showComponent(Component c) {
+    this.exemptComponents.add(c);
+    this.revalidatePane();
   }
 
   /**
    * Adds a popup to a specified component.
    */
   @RequiresEdt
-  public static @NotNull BalloonPopup addPopup(@NotNull Component c, @NotNull String title,
-                                               @NotNull String message) {
-    if (!isOverlayInstalled()) {
-      throw new IllegalStateException("No overlay is currently installed");
-    }
-
+  public @NotNull BalloonPopup addPopup(@NotNull Component c, @NotNull String title,
+                                        @NotNull String message) {
     var popup = new BalloonPopup(c, title, message, PluginIcons.A_PLUS_OPTIONAL_PRACTICE);
-    activeOverlay.popups.add(popup);
-    activeOverlay.getRootPane().getLayeredPane().add(popup, PANE_Z_ORDER + 1);
-    activeOverlay.revalidatePane();
+    this.popups.add(popup);
+    this.getRootPane().getLayeredPane().add(popup, PANE_Z_ORDER + 1);
+    this.revalidatePane();
 
     return popup;
   }
@@ -181,26 +159,17 @@ public class OverlayPane extends JPanel {
    * Resets the overlay to its original state, i.e. removes all popups and dims all components.
    */
   @RequiresEdt
-  public static void resetOverlay() {
-    if (!isOverlayInstalled()) {
-      return;
+  public void reset() {
+    this.exemptComponents.clear();
+    for (var c : this.popups) {
+      this.getRootPane().getLayeredPane().remove(c);
     }
-
-    activeOverlay.exemptComponents.clear();
-    for (var c : activeOverlay.popups) {
-      activeOverlay.getRootPane().getLayeredPane().remove(c);
-    }
-    activeOverlay.popups.clear();
-    activeOverlay.revalidatePane();
+    this.popups.clear();
+    this.revalidatePane();
   }
 
   private OverlayPane() {
-    var rootFrame = (JFrame) JOptionPane.getRootFrame();
-
-    associatedRootPane = rootFrame.getRootPane();
-    exemptComponents = new HashSet<>();
-    popups = new HashSet<>();
-
+    associatedRootPane = ((JFrame) JOptionPane.getRootFrame()).getRootPane();
     setLayout(null);
   }
 }
