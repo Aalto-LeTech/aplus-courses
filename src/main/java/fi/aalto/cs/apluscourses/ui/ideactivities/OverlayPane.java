@@ -22,6 +22,9 @@ import org.jetbrains.annotations.NotNull;
 public class OverlayPane extends JPanel {
   private static OverlayPane activeOverlay = null;
 
+  // A high value (> 500) allows us to place the overlay pretty much above every other component
+  private static final int PANE_Z_ORDER = 20000;
+
   private final JRootPane associatedRootPane;
   private final Set<Component> exemptComponents;
   private final Set<BalloonPopup> popups;
@@ -122,7 +125,7 @@ public class OverlayPane extends JPanel {
     }
 
     activeOverlay = new OverlayPane();
-    activeOverlay.getRootPane().getLayeredPane().add(activeOverlay, 20000);
+    activeOverlay.getRootPane().getLayeredPane().add(activeOverlay, PANE_Z_ORDER);
     activeOverlay.revalidatePane();
   }
 
@@ -168,7 +171,7 @@ public class OverlayPane extends JPanel {
 
     var popup = new BalloonPopup(c, title, message, PluginIcons.A_PLUS_OPTIONAL_PRACTICE);
     activeOverlay.popups.add(popup);
-    activeOverlay.getRootPane().getLayeredPane().add(popup, 30000);
+    activeOverlay.getRootPane().getLayeredPane().add(popup, PANE_Z_ORDER + 1);
     activeOverlay.revalidatePane();
 
     return popup;
