@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.dal;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.same;
@@ -10,6 +11,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+import com.intellij.openapi.util.io.FileUtilRt;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Exercise;
@@ -60,10 +62,11 @@ public class APlusExerciseDataSourceTest {
 
   @Test
   public void testDefaultConstructor() {
-    APlusExerciseDataSource exerciseDataSource = new APlusExerciseDataSource(url);
+    var exerciseDataSource = new APlusExerciseDataSource(
+        url, Paths.get(FileUtilRt.getTempDirectory()));
     assertEquals(url, exerciseDataSource.getApiUrl());
-    assertSame(APlusExerciseDataSource.DefaultDataAccess.INSTANCE, exerciseDataSource.getClient());
-    assertSame(APlusExerciseDataSource.DefaultDataAccess.INSTANCE, exerciseDataSource.getParser());
+    assertTrue(exerciseDataSource.getClient() instanceof APlusExerciseDataSource.DefaultDataAccess);
+    assertTrue(exerciseDataSource.getParser() instanceof APlusExerciseDataSource.DefaultDataAccess);
   }
 
   @Test
@@ -136,12 +139,12 @@ public class APlusExerciseDataSourceTest {
         .fetch("https://example.com/courses/99/exercises/", authentication);
     doReturn(List.of(exGroup0, exGroup1))
         .when(parser)
-        .parseExerciseGroups(same(array), any(Points.class));
+        .parseExerciseGroups(same(array), any(Points.class), eq(Collections.emptyMap()));
 
     Course course = new ModelExtensions.TestCourse("99");
 
-    List<ExerciseGroup> exGroups =
-        exerciseDataSource.getExerciseGroups(course, mock(Points.class), authentication);
+    List<ExerciseGroup> exGroups = exerciseDataSource.getExerciseGroups(
+        course, mock(Points.class), Collections.emptyMap(), authentication);
 
     assertEquals(2, exGroups.size());
     assertSame(exGroup0, exGroups.get(0));

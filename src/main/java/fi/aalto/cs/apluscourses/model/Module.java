@@ -71,8 +71,6 @@ public abstract class Module extends Component {
    *                   creation.
    * @return A module constructed from the given JSON object.
    * @throws MalformedURLException  If the URL of the module is malformed.
-   * @throws org.json.JSONException If the jsonObject doesn't contain "name" and "url" keys with
-   *                                string values.
    */
   @NotNull
   public static Module fromJsonObject(@NotNull JSONObject jsonObject, @NotNull ModelFactory factory)

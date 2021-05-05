@@ -18,6 +18,7 @@ import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.ExerciseDataSource;
 import fi.aalto.cs.apluscourses.model.Library;
 import fi.aalto.cs.apluscourses.model.Module;
+import fi.aalto.cs.apluscourses.model.Tutorial;
 import fi.aalto.cs.apluscourses.utils.Version;
 import java.net.URL;
 import java.nio.file.Path;
@@ -29,7 +30,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -56,7 +56,8 @@ class IntelliJCourse extends Course {
                         @NotNull Map<String, String[]> replInitialCommands,
                         @NotNull Version courseVersion,
                         @NotNull APlusProject project,
-                        @NotNull CommonLibraryProvider commonLibraryProvider) {
+                        @NotNull CommonLibraryProvider commonLibraryProvider,
+                        @NotNull Map<Long, Tutorial> tutorials) {
     super(
         id,
         name,
@@ -68,13 +69,14 @@ class IntelliJCourse extends Course {
         resourceUrls,
         autoInstallComponentNames,
         replInitialCommands,
-        courseVersion
-    );
+        courseVersion,
+        tutorials);
 
     this.project = project;
     this.commonLibraryProvider = commonLibraryProvider;
     this.platformListener = new PlatformListener();
-    this.exerciseDataSource = new APlusExerciseDataSource(getApiUrl());
+    this.exerciseDataSource = new APlusExerciseDataSource(getApiUrl(), project.getBasePath()
+        .resolve(Paths.get(Project.DIRECTORY_STORE_FOLDER, "a-plus-cache.json")));
   }
 
   @NotNull

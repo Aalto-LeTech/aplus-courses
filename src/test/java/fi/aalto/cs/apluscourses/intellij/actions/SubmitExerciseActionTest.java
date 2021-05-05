@@ -1,6 +1,8 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -21,7 +23,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtilRt;
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import fi.aalto.cs.apluscourses.intellij.DialogHelper;
 import fi.aalto.cs.apluscourses.intellij.actions.SubmitExerciseAction.Tagger;
 import fi.aalto.cs.apluscourses.intellij.model.ProjectModuleSource;
@@ -32,9 +33,9 @@ import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.NotSubmittableNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.SubmissionSentNotification;
+import fi.aalto.cs.apluscourses.intellij.services.DefaultGroupIdSetting;
 import fi.aalto.cs.apluscourses.intellij.services.Dialogs;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
-import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Exercise;
@@ -56,21 +57,20 @@ import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionViewModel;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import java.io.IOException;
-import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Optional;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
-@Ignore
-public class SubmitExerciseActionTest extends BasePlatformTestCase {
+public class SubmitExerciseActionTest {
 
   Course course;
   long exerciseId;
@@ -110,6 +110,8 @@ public class SubmitExerciseActionTest extends BasePlatformTestCase {
   Points points;
   Tagger tagger;
   SubmitExerciseAction.DocumentSaver documentSaver;
+  SubmitExerciseAction.LanguageSource languageSource;
+  DefaultGroupIdSetting defaultGroupIdSetting;
 
   /**
    * Called before each test.
@@ -119,7 +121,6 @@ public class SubmitExerciseActionTest extends BasePlatformTestCase {
    */
   @Before
   public void setUp() throws Exception {
-    super.setUp();
     exerciseId = 12;
     exercise = new Exercise(exerciseId, "Test exercise", "http://localhost:10000", 0, 0, 0, true);
     group = new Group(124, Collections.singletonList("Only you"));
@@ -147,7 +148,7 @@ public class SubmitExerciseActionTest extends BasePlatformTestCase {
         .getSubmissionHistory(exercise, authentication);
     doReturn(points).when(exerciseDataSource).getPoints(course, authentication);
     doReturn(exerciseGroups).when(exerciseDataSource)
-        .getExerciseGroups(course, points, authentication);
+        .getExerciseGroups(course, points, Collections.emptyMap(), authentication);
     doReturn("http://localhost:1000")
         .when(exerciseDataSource)
         .submit(any(Submission.class), any(Authentication.class));
@@ -155,8 +156,9 @@ public class SubmitExerciseActionTest extends BasePlatformTestCase {
     courseViewModel = new CourseViewModel(course);
     mainViewModel.courseViewModel.set(courseViewModel);
 
-    exercises = Objects.requireNonNull(mainViewModel.exercisesViewModel.get());
+    exercises = new ExercisesTreeViewModel(exerciseGroups, new Options());
     exercises.getChildren().get(0).getChildren().get(0).setSelected(true);
+    mainViewModel.exercisesViewModel.set(exercises);
 
     moduleName = "MyModule";
     modulePath = Paths.get(moduleName);
@@ -168,11 +170,6 @@ public class SubmitExerciseActionTest extends BasePlatformTestCase {
 
     project = mock(Project.class);
     doReturn(FileUtilRt.getTempDirectory()).when(project).getBasePath();
-
-    PluginSettings
-        .getInstance()
-        .getCourseFileManager(project)
-        .createAndLoad(new URL("http://localhost:8000"), language);
 
     filePath = modulePath.resolve(fileName);
 
@@ -216,13 +213,18 @@ public class SubmitExerciseActionTest extends BasePlatformTestCase {
     tagger = mock(Tagger.class);
 
     documentSaver = mock(SubmitExerciseAction.DocumentSaver.class);
+    
+    languageSource = mock(SubmitExerciseAction.LanguageSource.class);
+    doReturn(language).when(languageSource).getLanguage(project);
+    
+    defaultGroupIdSetting = new TestDefaultGroupIdSetting();
 
     action = new SubmitExerciseAction(mainVmProvider, authProvider, fileFinder, moduleSource,
-        dialogs, notifier, tagger, documentSaver);
+        dialogs, notifier, tagger, documentSaver, languageSource, defaultGroupIdSetting);
   }
 
   @Test
-  public void ignoretestSubmitExerciseAction() throws IOException {
+  public void testSubmitExerciseAction() throws IOException {
     action.actionPerformed(event);
 
     ArgumentCaptor<Submission> submissionArg = ArgumentCaptor.forClass(Submission.class);
@@ -245,7 +247,7 @@ public class SubmitExerciseActionTest extends BasePlatformTestCase {
   }
 
   @Test
-  public void ignoretestNotifiesNoExerciseSelected() {
+  public void testNotifiesNoExerciseSelected() {
     exercises.getChildren().get(0).getChildren().get(0).setSelected(false);
 
     action.actionPerformed(event);
@@ -257,7 +259,7 @@ public class SubmitExerciseActionTest extends BasePlatformTestCase {
   }
 
   @Test
-  public void ignoretestNotifiesOfMissingFile() throws IOException {
+  public void testNotifiesOfMissingFile() throws IOException {
     doReturn(null).when(fileFinder).tryFindFile(modulePath, fileName);
 
     action.actionPerformed(event);
@@ -278,7 +280,7 @@ public class SubmitExerciseActionTest extends BasePlatformTestCase {
   }
 
   @Test
-  public void ignoretestNotifiesOfMissingModule() throws IOException {
+  public void testNotifiesOfMissingModule() throws IOException {
     String nonexistentModuleName = "nonexistent module";
 
     Map<Long, Map<String, String>> map = Collections.singletonMap(exerciseId,
@@ -303,7 +305,7 @@ public class SubmitExerciseActionTest extends BasePlatformTestCase {
   }
 
   @Test
-  public void ignoretestNotifiesExerciseNotSubmittable() throws IOException {
+  public void testNotifiesExerciseNotSubmittable() throws IOException {
     doReturn(new SubmissionInfo(1, Collections.emptyMap()))
         .when(exerciseDataSource)
         .getSubmissionInfo(exercise, authentication);
@@ -320,7 +322,7 @@ public class SubmitExerciseActionTest extends BasePlatformTestCase {
   }
 
   @Test
-  public void ignoretestNotifiesOfNetworkErrorWhenGettingSubmissionHistory() throws IOException {
+  public void testNotifiesOfNetworkErrorWhenGettingSubmissionHistory() throws IOException {
     IOException exception = new IOException();
     doThrow(exception).when(exerciseDataSource).getSubmissionHistory(exercise, authentication);
 
@@ -341,7 +343,7 @@ public class SubmitExerciseActionTest extends BasePlatformTestCase {
   }
 
   @Test
-  public void ignoretestNotifiesOfNetworkErrorWhenGettingGroups() throws IOException {
+  public void testNotifiesOfNetworkErrorWhenGettingGroups() throws IOException {
     IOException exception = new IOException();
     doThrow(exception).when(exerciseDataSource).getGroups(course, authentication);
 
@@ -362,7 +364,7 @@ public class SubmitExerciseActionTest extends BasePlatformTestCase {
   }
 
   @Test
-  public void ignoretestNotifiesOfNetworkErrorWhenGettingSubmissionInfo() throws IOException {
+  public void testNotifiesOfNetworkErrorWhenGettingSubmissionInfo() throws IOException {
     IOException exception = new IOException();
     doThrow(exception).when(exerciseDataSource).getSubmissionInfo(exercise, authentication);
 
@@ -384,7 +386,7 @@ public class SubmitExerciseActionTest extends BasePlatformTestCase {
   }
 
   @Test
-  public void ignoretestNotifiesOfNetworkErrorWhenSubmitting() throws IOException {
+  public void testNotifiesOfNetworkErrorWhenSubmitting() throws IOException {
     IOException exception = new IOException();
     doThrow(exception).when(exerciseDataSource).submit(any(), any());
 
@@ -402,7 +404,7 @@ public class SubmitExerciseActionTest extends BasePlatformTestCase {
   }
 
   @Test
-  public void ignoretestModuleSelectionDialogCancel() throws IOException {
+  public void testModuleSelectionDialogCancel() throws IOException {
     dialogs.register(SubmissionViewModel.class, (submission, project) -> () -> false);
 
     action.actionPerformed(event);
@@ -410,5 +412,24 @@ public class SubmitExerciseActionTest extends BasePlatformTestCase {
     verify(exerciseDataSource, never()).submit(any(), any());
 
     verifyNoInteractions(notifier);
+  }
+
+  public static class TestDefaultGroupIdSetting implements DefaultGroupIdSetting {
+    private volatile @Nullable Long defaultGroupId = null;
+    
+    @Override
+    public @NotNull Optional<Long> getDefaultGroupId() {
+      return Optional.ofNullable(defaultGroupId);
+    }
+  
+    @Override
+    public void setDefaultGroupId(long groupId) {
+      defaultGroupId = groupId;
+    }
+  
+    @Override
+    public void clearDefaultGroupId() {
+      defaultGroupId = null;
+    }
   }
 }

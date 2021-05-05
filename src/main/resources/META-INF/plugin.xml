@@ -14,8 +14,8 @@
     ]]></description>
 
     <change-notes>
-        Various user interface improvements, including searching for modules and assignments, more descriptive texts for
-        empty modules or assignments windows, pending icon for assignments submitted to grading, and more.
+        Made the plug-in compatible with the new major release of IntelliJ IDEA.
+        Small UI improvements and bugfixes.
     </change-notes>
 
     <depends>com.intellij.modules.java</depends>
@@ -83,6 +83,10 @@
                     class="fi.aalto.cs.apluscourses.intellij.actions.RefreshExercisesAction"
                     text="Refresh Assignments"
                     icon="PluginIcons.A_PLUS_REFRESH" />
+            <action id="fi.aalto.cs.apluscourses.intellij.actions.TutorialAction"
+                    class="fi.aalto.cs.apluscourses.intellij.actions.TutorialAction"
+                    text="Start Tutorial"
+                    icon="PluginIcons.A_PLUS_IN_GRADING" />
             <group id="fi.aalto.cs.apluscourses.intellij.actions.FilterOptionsActionGroup"
                    class="fi.aalto.cs.apluscourses.intellij.actions.FilterOptionsActionGroup"
                    popup="true"

@@ -78,7 +78,6 @@ public class CourseFileManager {
    * @return {@code true} if the course file was successfully loaded, {@code false} if the course
    *         file doesn't exist.
    * @throws IOException   If an IO error occurs while reading the course file.
-   * @throws JSONException If the course file contains malformed JSON.
    */
   public synchronized boolean load() throws IOException {
     if (courseFile.exists()) {

@@ -3,7 +3,7 @@ Manual testing
 
 ### Notes
 
-+ The menus of IntelliJ are bit different on Mac than on Linux/Windows.
++ The menus of IntelliJ are a bit different on Mac than on Linux/Windows.
   For example, to open settings on Linux, one can navigate to **File > Settings...**
   but on Mac, the same result is achieved with **IntelliJ IDEA > Preferences...**.
 
@@ -12,8 +12,8 @@ Manual testing
 
 ### 0 Setup
 
-**0.1** Make sure you are using a clean installment of
-        **IntelliJ IDEA Community** version **2020.3.2**.
+**0.1** Make sure you are using a clean installation of
+        **IntelliJ IDEA Community** version **2021.1**.
 - You can download IntelliJ IDEA Community from https://www.jetbrains.com/idea/download.
 - In case you use an existing install of IntelliJ IDEA,
   you can use one of the following ways to restore to the default settings:
@@ -35,7 +35,7 @@ Manual testing
 
 ### 1 Install **A+ Courses** plugin
 
-**1.1** In the startup window, choose **Configure > Plugins**.
+**1.1** In the startup window, choose **Plugins**.
 
 **1.2** Do one of the following options, depending on whether you are testing
         a pre-publish version of the plugin or a published version.
@@ -64,7 +64,7 @@ Manual testing
 
 **1.3** ASSERTION: IntelliJ IDEA asks to install **Scala Plugin**.
 
-**1.4** Install **Scala Plugin** by clicking **OK**.
+**1.4** Install **Scala Plugin** by clicking **Install**.
 
 **1.5** ASSERTION: IntelliJ IDEA requires a restart.
 
@@ -161,7 +161,7 @@ Manual testing
 
 **4.19** ASSERTION: The theme has changed to dark.
 
-**4.20** CLick the **A+ Courses** tab on the right.
+**4.20** Click the **A+ Courses** tab on the right.
 
 **4.21** ASSERTION: There should be one label inside the Assignments view informing the user to set the A+ Token.
 
@@ -205,7 +205,7 @@ Manual testing
 
 **5.15** ASSERTION: The module **Viinaharava** is automatically selected and the substring **Vii** is highlighted.
 
-**5.16** Click anywhere outside the **Modules** list.
+**5.16** Press **Escape**.
 
 **5.17** ASSERTION: The substring **Vii** should no longer be highlighted.
 
@@ -254,7 +254,7 @@ imported packages: **o1, o1.llama, o1.randomtext**.
 **6.12** Close the REPL by clicking X next to its tab title.
 
 **6.13** The window opens asking whether REPL should be terminated.
-        Check **Remember, don't ask again** checkbox and click **Terminate**.
+        Check **Don't ask again** checkbox and click **Terminate**.
 
 #### Part II: Changing parameters
 
@@ -387,7 +387,7 @@ imported packages: **o1, o1.llama, o1.randomtext**.
 **9.2** ASSERTION: The **Could not find module: The A+ Courses plugin could not find the 
 module GoodStuff.** error is shown.
 
-**9.3** Go to **Modules** tab and install **GoodStuff** module like described in **5.1**
+**9.3** Go to **Modules** list and install **GoodStuff** module like described in **5.1**.
 
 **9.4** Repeat **9.1**.
 
@@ -397,26 +397,34 @@ module GoodStuff.** error is shown.
 
 **9.7** ASSERTION: The **Assignment sent for assessment: You will be notified here when
  feedback is available. (You may also always check any ... )** notification is shown.
- 
-**9.8** Check the local history of the **GoodStuff**, do **File > Local History > Show Local History**
+
+**9.8** ASSERTION: The icon for the assignment changes to an hourglass.
+
+![Hourglass](images/hourglass.png)
+
+**9.9** In the project tree, highlight the module **GoodStuff** and select **File > Local History > Show History**.
 
 ![Tags](images/tags.png)
 
-**9.9** ASSERTION: Local history contains accent-colored tag with text **Week 1, Assignment 2 (Goodstuff), Submission...**
+**9.10** ASSERTION: Local history contains accent-colored tag with text **Week 1, Assignment 2 (Goodstuff), Submission...**
 
-**9.10** Repeat **9.1**.
+**9.11** Repeat **9.1**.
 
-**9.11** ASSERTION: The default group check box is checked and the group selection shows **Submit alone**.
+**9.12** ASSERTION: The default group check box is checked and the group selection shows **Submit alone**.
 
-**9.12** Right-click **Assignment 2 (GoodStuff)**.
+**9.13** Press **Cancel**.
 
-**9.13** On the context menu that appears, choose **Submit A+ Assignment**.
+**9.14** Right-click **Assignment 2 (GoodStuff)**.
 
-**9.14** ASSERTION: A window with **Assignment 2 (GoodStuff)** appears.
+**9.15** On the context menu that appears, choose **Submit A+ Assignment**.
 
-### 10 Refreshing Modules and Assignments
+**9.16** ASSERTION: A window with **Assignment 2 (GoodStuff)** appears.
 
-**10.1** Hit the **Refresh Assignments** or **Refresh Modules** button.
+**9.17** Press **Cancel**.
+
+### 10 Refreshing Assignments
+
+**10.1** Hit the **Refresh Assignments** button.
 
 ![Refresh](images/refresh.png)
 
@@ -435,7 +443,7 @@ available. Click here to open the feedback.** notification is shown.
 
 **11.4** ASSERTION: Browser opens Submission page in A+ LMS (login, if asked).
 
-**11.5** Select a submission and hit the **Open A+ Submission** button.
+**11.5** Select a submission and hit the **Open in Browser** button.
 
 ![Assignments submission view](images/open_browser_button.png)
 
