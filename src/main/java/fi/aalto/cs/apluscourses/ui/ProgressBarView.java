@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.ui;
 
 import com.intellij.ui.JBColor;
+import com.intellij.util.ui.UIUtil;
 import fi.aalto.cs.apluscourses.presentation.ProgressViewModel;
 import fi.aalto.cs.apluscourses.ui.utils.Bindable;
 import java.awt.Component;
@@ -36,6 +37,7 @@ public class ProgressBarView {
     this.viewModel = viewModel;
     this.bottomComponent = bottomComponent;
     this.progressBar = new JProgressBar(SwingConstants.HORIZONTAL);
+    UIUtil.applyStyle(UIUtil.ComponentStyle.REGULAR, progressBar);
     this.label = new JLabel();
     this.panel = createProgressBarPanel();
     this.container = createContainer();
@@ -59,12 +61,10 @@ public class ProgressBarView {
 
   private JPanel createProgressBarPanel() {
     var myPanel = new JPanel();
-    var border = BorderFactory.createEmptyBorder(10, 10, 10, 10);
-    progressBar.setBorder(border);
-    label.setBorder(border);
+    label.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
     myPanel.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createMatteBorder(1, 0, 0, 0, JBColor.border()),
-            BorderFactory.createEmptyBorder(0, 0, 10, 0))
+            BorderFactory.createEmptyBorder(0, 10, 10, 10))
     );
 
     progressBar.setAlignmentX(Component.LEFT_ALIGNMENT);

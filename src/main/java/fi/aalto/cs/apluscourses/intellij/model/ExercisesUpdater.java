@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.intellij.model;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
@@ -8,7 +10,9 @@ import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
 import fi.aalto.cs.apluscourses.model.Points;
+import fi.aalto.cs.apluscourses.model.Progress;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
+import fi.aalto.cs.apluscourses.presentation.ProgressViewModel;
 import fi.aalto.cs.apluscourses.utils.Event;
 import fi.aalto.cs.apluscourses.utils.async.RepeatedTask;
 import java.io.IOException;
@@ -56,31 +60,42 @@ public class ExercisesUpdater extends RepeatedTask {
     if (authentication == null) {
       return;
     }
+    var progressViewModel = PluginSettings.getInstance()
+            .getMainViewModel(courseProject.getProject()).progressViewModel;
+    var progress =
+            progressViewModel.start(3, getText("ui.ProgressBarView.refreshingAssignments"), false);
     try {
       var points = dataSource.getPoints(course, authentication);
+      progressViewModel.increment(progress);
       if (Thread.interrupted()) {
+        progressViewModel.stop(progress);
         return;
       }
       var exerciseGroups = dataSource.getExerciseGroups(course, points, authentication);
+      progressViewModel.increment(progress);
       if (courseProject.getExerciseGroups() == null) {
         courseProject.setExerciseGroups(exerciseGroups);
         eventToTrigger.trigger();
       }
-      addExercises(exerciseGroups, points, authentication);
+      addExercises(exerciseGroups, points, authentication, progressViewModel, progress);
+      progressViewModel.increment(progress);
       for (var exerciseGroup : exerciseGroups) {
         for (var exercise : exerciseGroup.getExercises()) {
           if (Thread.interrupted()) {
+            progressViewModel.stop(progress);
             return;
           }
           addSubmissionResults(exercise, points, authentication);
         }
       }
+      progressViewModel.stop(progress);
       if (Thread.interrupted()) {
         return;
       }
       courseProject.setExerciseGroups(exerciseGroups);
       eventToTrigger.trigger();
     } catch (IOException e) {
+      progressViewModel.stop(progress);
       var observable = PluginSettings
           .getInstance()
           .getMainViewModel(courseProject.getProject())
@@ -96,8 +111,11 @@ public class ExercisesUpdater extends RepeatedTask {
 
   private void addExercises(@NotNull List<ExerciseGroup> exerciseGroups,
                             @NotNull Points points,
-                            @NotNull Authentication authentication) throws IOException {
+                            @NotNull Authentication authentication,
+                            @NotNull ProgressViewModel progressViewModel,
+                            @NotNull Progress progress) throws IOException {
     var dataSource = courseProject.getCourse().getExerciseDataSource();
+    progressViewModel.incrementMaxValue(progress, points.getExercisesAmount());
     for (var exerciseGroup : exerciseGroups) {
       for (var exerciseId : points.getExercises(exerciseGroup.getId())) {
         if (Thread.interrupted()) {
@@ -106,6 +124,7 @@ public class ExercisesUpdater extends RepeatedTask {
         var exercise = dataSource
             .getExercise(exerciseId, points, authentication, ZonedDateTime.now().minusDays(7));
         exerciseGroup.addExercise(exercise);
+        progressViewModel.increment(progress);
       }
       courseProject.setExerciseGroups(exerciseGroups);
       eventToTrigger.trigger();

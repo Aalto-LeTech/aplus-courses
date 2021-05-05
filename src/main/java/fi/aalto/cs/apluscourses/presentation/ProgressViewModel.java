@@ -63,9 +63,19 @@ public class ProgressViewModel {
     this.value.set(progress.getValue());
   }
 
+  private void updateMaxValue() {
+    var progress = progresses.getLast();
+    this.maxValue.set(progress.getMaxValue());
+  }
+
   public void increment(Progress progress) {
     progress.increment();
     this.updateValue();
+  }
+
+  public void incrementMaxValue(Progress progress, int amount) {
+    progress.incrementMaxValue(amount);
+    this.updateMaxValue();
   }
 
   public void updateVisible() {

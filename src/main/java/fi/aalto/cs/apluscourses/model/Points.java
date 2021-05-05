@@ -48,6 +48,10 @@ public class Points {
     return exercises.getOrDefault(exerciseGroupId, Collections.emptyList());
   }
 
+  public int getExercisesAmount() {
+    return exercises.values().stream().mapToInt(List::size).sum();
+  }
+
   /**
    * Returns the points received for the exercise with the given ID.
    */
