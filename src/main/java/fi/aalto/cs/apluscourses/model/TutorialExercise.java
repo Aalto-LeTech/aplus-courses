@@ -1,21 +1,24 @@
 package fi.aalto.cs.apluscourses.model;
 
-import java.util.Map;
+import org.jetbrains.annotations.NotNull;
 
 public class TutorialExercise extends Exercise {
 
-  private final Tutorial tutorial;
+  private final @NotNull Tutorial tutorial;
 
-  /**
-   * Constructor.
-   */
-  public TutorialExercise() {
-    // TODO: what's the submission info for a tutorial exercise?
-    super(342405, "Assignment 1 (Tutorial)", "", new SubmissionInfo(Map.of()), 0, 0, 0);
-    this.tutorial = new Tutorial();
+  public TutorialExercise(long id,
+                          @NotNull String name,
+                          @NotNull String htmlUrl,
+                          @NotNull SubmissionInfo submissionInfo,
+                          int userPoints,
+                          int maxPoints,
+                          int maxSubmissions,
+                          @NotNull Tutorial tutorial) {
+    super(id, name, htmlUrl, submissionInfo, userPoints, maxPoints, maxSubmissions);
+    this.tutorial = tutorial;
   }
 
-  public Tutorial getTutorial() {
+  public @NotNull Tutorial getTutorial() {
     return tutorial;
   }
 
@@ -26,6 +29,8 @@ public class TutorialExercise extends Exercise {
 
   @Override
   public boolean equals(Object obj) {
+    /* Honestly, this could be removed even if linters probably complained.
+     * We want two exercises to be considered equal if their ids match no matter their types.  */
     return obj instanceof TutorialExercise && ((TutorialExercise) obj).getId() == getId();
   }
 

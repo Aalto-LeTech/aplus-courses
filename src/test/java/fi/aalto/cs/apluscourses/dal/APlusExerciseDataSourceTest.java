@@ -19,7 +19,6 @@ import fi.aalto.cs.apluscourses.model.ExerciseDataSource;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
-import fi.aalto.cs.apluscourses.model.Points;
 import fi.aalto.cs.apluscourses.model.Submission;
 import fi.aalto.cs.apluscourses.model.SubmissionInfo;
 import fi.aalto.cs.apluscourses.model.SubmittableFile;
@@ -110,12 +109,11 @@ public class APlusExerciseDataSourceTest {
         .fetch("https://example.com/courses/99/exercises/", authentication);
     doReturn(List.of(exGroup0, exGroup1))
         .when(parser)
-        .parseExerciseGroups(same(array), any(Points.class));
+        .parseExerciseGroups(same(array));
 
     Course course = new ModelExtensions.TestCourse("99");
 
-    List<ExerciseGroup> exGroups =
-        exerciseDataSource.getExerciseGroups(course, mock(Points.class), authentication);
+    var exGroups = exerciseDataSource.getExerciseGroups(course, authentication);
 
     assertEquals(2, exGroups.size());
     assertSame(exGroup0, exGroups.get(0));

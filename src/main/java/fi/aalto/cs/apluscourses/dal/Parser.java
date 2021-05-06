@@ -5,8 +5,10 @@ import fi.aalto.cs.apluscourses.model.ExerciseGroup;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.Points;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
+import fi.aalto.cs.apluscourses.model.Tutorial;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -16,11 +18,13 @@ public interface Parser {
 
   Group parseGroup(@NotNull JSONObject object);
 
-  List<ExerciseGroup> parseExerciseGroups(@NotNull JSONArray array, @NotNull Points points);
+  List<ExerciseGroup> parseExerciseGroups(@NotNull JSONArray array);
 
   Points parsePoints(@NotNull JSONObject object);
 
-  Exercise parseExercise(@NotNull JSONObject jsonObject, @NotNull Points points);
+  Exercise parseExercise(@NotNull JSONObject jsonObject,
+                         @NotNull Points points,
+                         @NotNull Map<Long, Tutorial> tutorials);
 
   SubmissionResult parseSubmissionResult(@NotNull JSONObject jsonObject,
                                          @NotNull Exercise exercise);

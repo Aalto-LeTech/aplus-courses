@@ -12,7 +12,9 @@ import fi.aalto.cs.apluscourses.model.JsonCache;
 import fi.aalto.cs.apluscourses.model.Points;
 import fi.aalto.cs.apluscourses.model.Submission;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
+import fi.aalto.cs.apluscourses.model.Tutorial;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
+import fi.aalto.cs.apluscourses.utils.JsonUtil;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -83,7 +85,10 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
       throws IOException {
     String url = apiUrl + COURSES + "/" + course.getId() + "/mygroups/";
     JSONObject response = client.fetch(url, authentication);
-    return parser.parseArray(response.getJSONArray("results"), parser::parseGroup);
+    return List.of(JsonUtil.parseArray(response.getJSONArray("results"),
+        JSONArray::getJSONObject,
+        parser::parseGroup,
+        Group[]::new));
   }
 
   /**
@@ -95,12 +100,11 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   @Override
   @NotNull
   public List<ExerciseGroup> getExerciseGroups(@NotNull Course course,
-                                               @NotNull Points points,
                                                @NotNull Authentication authentication)
       throws IOException {
     String url = apiUrl + COURSES + "/" + course.getId() + "/" + EXERCISES + "/";
     JSONObject response = client.fetch(url, authentication);
-    return parser.parseExerciseGroups(response.getJSONArray("results"), points);
+    return parser.parseExerciseGroups(response.getJSONArray("results"));
   }
 
   /**
@@ -133,11 +137,12 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   @NotNull
   public Exercise getExercise(long exerciseId,
                               @NotNull Points points,
+                              @NotNull Map<Long, Tutorial> tutorials,
                               @NotNull Authentication authentication,
                               @NotNull ZonedDateTime minCacheEntryTime) throws IOException {
     var url = apiUrl + "exercises/" + exerciseId + "/";
     var response = client.fetch(url, authentication, minCacheEntryTime);
-    return parser.parseExercise(response, points);
+    return parser.parseExercise(response, points, tutorials);
   }
 
   /**
@@ -221,9 +226,8 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
     }
 
     @Override
-    public List<ExerciseGroup> parseExerciseGroups(@NotNull JSONArray array,
-                                                   @NotNull Points points) {
-      return ExerciseGroup.fromJsonArray(array, points);
+    public List<ExerciseGroup> parseExerciseGroups(@NotNull JSONArray array) {
+      return ExerciseGroup.fromJsonArray(array);
     }
 
     @Override
@@ -232,8 +236,10 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
     }
 
     @Override
-    public Exercise parseExercise(@NotNull JSONObject jsonObject, @NotNull Points points) {
-      return Exercise.fromJsonObject(jsonObject, points);
+    public Exercise parseExercise(@NotNull JSONObject jsonObject,
+                                  @NotNull Points points,
+                                  @NotNull Map<Long, Tutorial> tutorials) {
+      return Exercise.fromJsonObject(jsonObject, points, tutorials);
     }
 
     @Override

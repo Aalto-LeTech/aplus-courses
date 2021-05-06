@@ -141,8 +141,7 @@ public class SubmitExerciseActionTest {
     course = spy(new ModelExtensions.TestCourse("91", "NineOne Course", exerciseDataSource));
     doReturn(groups).when(exerciseDataSource).getGroups(course, authentication);
     doReturn(points).when(exerciseDataSource).getPoints(course, authentication);
-    doReturn(exerciseGroups).when(exerciseDataSource)
-        .getExerciseGroups(course, points, authentication);
+    doReturn(exerciseGroups).when(exerciseDataSource).getExerciseGroups(course, authentication);
     doReturn("http://localhost:1000")
         .when(exerciseDataSource)
         .submit(any(Submission.class), any(Authentication.class));
