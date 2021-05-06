@@ -52,14 +52,7 @@ class CommonSteps(val remoteRobot: RemoteRobot) {
         with(remoteRobot) {
             with(dialog("Turn Project Into A+ Project")) {
                 findText("Select language").click()
-                when {
-                    isWin() -> {
-                        findText("English").click()
-                    }
-                    else -> {
-                        heavyWeightWindow().findText("English").click()
-                    }
-                }
+                heavyWeightWindow().findText("English").click()
                 checkBox("Leave IntelliJ settings unchanged.").setValue(settingsUnchanged)
                 button("OK").click()
             }
