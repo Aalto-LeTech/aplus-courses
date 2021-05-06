@@ -4,6 +4,7 @@ import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
+import com.intellij.ui.JBColor;
 import com.intellij.ui.ScrollPaneFactory;
 import com.intellij.ui.TreeSpeedSearch;
 import fi.aalto.cs.apluscourses.intellij.actions.ActionUtil;
@@ -13,6 +14,7 @@ import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.ui.GuiObject;
 import fi.aalto.cs.apluscourses.ui.base.TreeView;
 import java.awt.CardLayout;
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -36,6 +38,7 @@ public class ExercisesView {
    */
   public ExercisesView() {
     basePanel.putClientProperty(ExercisesView.class.getName(), this);
+    pane.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, JBColor.border()));
     cl = (CardLayout) cardPanel.getLayout();
     exerciseGroupsTree.getEmptyText().setText("");
     exerciseGroupsTree.setOpaque(true);
