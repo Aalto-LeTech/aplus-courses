@@ -145,7 +145,7 @@ class MainTest {
             with(ideFrame()) {
                 // just check the initial state (nothing is filtered out)
                 filterButton().click()
-                with(filterDropDownMenu()) {
+                with(dropDownMenu()) {
                     assertTrue("By default, nothing is filtered out", hasText("Deselect all"))
                 }
                 keyboard {
@@ -158,9 +158,9 @@ class MainTest {
 
                 // filter out optional tasks
                 filterButton().click()
-                filterDropDownMenu().selectItemContains("Optional")
+                dropDownMenu().selectItemContains("Optional")
                 filterButton().click()
-                with(filterDropDownMenu()) {
+                with(dropDownMenu()) {
                     assertTrue("Something should be filtered out", hasText("Select all"))
                 }
                 keyboard {
@@ -174,7 +174,7 @@ class MainTest {
 
                 // filter out non-submittable tasks
                 filterButton().click()
-                filterDropDownMenu().selectItemContains("Non-submittable")
+                dropDownMenu().selectItemContains("Non-submittable")
 
                 with(assignments()) {
                     assertFalse("Feedback submissions should now be hidden", hasText("Feedback"))
@@ -183,7 +183,7 @@ class MainTest {
 
                 // filter out closed sections
                 filterButton().click()
-                filterDropDownMenu().selectItemContains("Closed")
+                dropDownMenu().selectItemContains("Closed")
 
                 with(assignments()) {
                     assertFalse("Closed Week 1 should be visible", hasText("Week 1"))
@@ -191,9 +191,9 @@ class MainTest {
 
                 // disable filtering altogether
                 filterButton().click()
-                filterDropDownMenu().selectItemContains("Select all")
+                dropDownMenu().selectItemContains("Select all")
                 filterButton().click()
-                with(filterDropDownMenu()) {
+                with(dropDownMenu()) {
                     assertTrue("Nothing is filtered out anymore", hasText("Deselect all"))
                 }
                 keyboard {
@@ -212,6 +212,31 @@ class MainTest {
                     assertTrue("Feedback submissions should be visible", containsText("Feedback"))
                     assertTrue("Closed Week 1 should be visible", hasText("Week 1"))
                 }
+            }
+        }
+        step("User dropdown") {
+            with(ideFrame()) {
+                userButton().click()
+                with(dropDownMenu()) {
+                    assertTrue(
+                        "The user dropdown contains the user's name",
+                        containsText("TESTI-Opiskelija")
+                    )
+                    selectItemContains("Log Out")
+                }
+                assertTrue(
+                    "The assignments tree gets cleared after logging out",
+                    containsText("Set your A+ token")
+                )
+                userButton().click()
+                with(dropDownMenu()) {
+                    assertTrue(
+                        "The user dropdown shows that the user isn't logged in",
+                        containsText("Not Logged In")
+                    )
+                    selectItemContains("Log In")
+                }
+                dialog("A+ Token").button("Cancel").click()
             }
         }
     }
