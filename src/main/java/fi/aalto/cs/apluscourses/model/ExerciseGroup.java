@@ -52,7 +52,8 @@ public class ExerciseGroup implements Browsable {
    */
   @NotNull
   public static ExerciseGroup fromJsonObject(@NotNull JSONObject jsonObject,
-                                             @NotNull Points points) {
+                                             @NotNull Points points,
+                                             @NotNull Map<Long, Tutorial> tutorials) {
     long id = jsonObject.getLong("id");
     String name = jsonObject.getString("display_name");
     String htmlUrl = jsonObject.getString("html_url");
@@ -61,7 +62,7 @@ public class ExerciseGroup implements Browsable {
     List<Exercise> exercises = new ArrayList<>(exercisesArray.length());
     for (int i = 0; i < exercisesArray.length(); ++i) {
       JSONObject exerciseObject = exercisesArray.getJSONObject(i);
-      exercises.add(Exercise.fromJsonObject(exerciseObject, points));
+      exercises.add(Exercise.fromJsonObject(exerciseObject, points, tutorials));
     }
     return new ExerciseGroup(id, name, htmlUrl, isOpen, exercises);
   }
@@ -72,10 +73,11 @@ public class ExerciseGroup implements Browsable {
    */
   @NotNull
   public static List<ExerciseGroup> fromJsonArray(@NotNull JSONArray jsonArray,
-                                                  @NotNull Points points) {
+                                                  @NotNull Points points,
+                                                  @NotNull Map<Long, Tutorial> tutorials) {
     List<ExerciseGroup> exerciseGroups = new ArrayList<>(jsonArray.length());
     for (int i = 0; i < jsonArray.length(); ++i) {
-      exerciseGroups.add(fromJsonObject(jsonArray.getJSONObject(i), points));
+      exerciseGroups.add(fromJsonObject(jsonArray.getJSONObject(i), points, tutorials));
     }
     return exerciseGroups;
   }

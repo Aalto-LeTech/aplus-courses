@@ -61,7 +61,8 @@ public class CourseUpdaterTest {
     var course = new ModelExtensions.TestCourse(
         "1", "O1", "http://example.com", Collections.emptyList(), Collections.singletonList(module),
         Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap(),
-        Collections.emptyList(), Collections.emptyMap(), BuildInfo.INSTANCE.courseVersion
+        Collections.emptyList(), Collections.emptyMap(), BuildInfo.INSTANCE.courseVersion,
+        Collections.emptyMap()
     );
     updater = new CourseUpdater(
         course, project, courseUrl, configurationFetcher, event, notifier, 50L

@@ -8,6 +8,7 @@ import fi.aalto.cs.apluscourses.model.Library;
 import fi.aalto.cs.apluscourses.model.ModelFactory;
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.model.ModuleMetadata;
+import fi.aalto.cs.apluscourses.model.Tutorial;
 import fi.aalto.cs.apluscourses.utils.Version;
 import java.net.URL;
 import java.util.List;
@@ -45,12 +46,13 @@ public class IntelliJModelFactory implements ModelFactory {
                              @NotNull Map<String, URL> resourceUrls,
                              @NotNull List<String> autoInstallComponentNames,
                              @NotNull Map<String, String[]> replInitialCommands,
-                             @NotNull Version courseVersion) {
+                             @NotNull Version courseVersion,
+                             @NotNull Map<Long, Tutorial> tutorials) {
 
     IntelliJCourse course =
         new IntelliJCourse(id, name, aplusUrl, languages, modules, libraries, exerciseModules,
             resourceUrls, autoInstallComponentNames, replInitialCommands, courseVersion,
-            project, new CommonLibraryProvider(project));
+            project, new CommonLibraryProvider(project), tutorials);
 
     Component.InitializationCallback componentInitializationCallback =
         component -> registerComponentToCourse(component, course);

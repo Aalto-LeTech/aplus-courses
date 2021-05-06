@@ -70,7 +70,9 @@ public class InstallModuleActionTest {
         //  replInitialCommands
         Collections.emptyMap(),
         //  courseVersion
-        BuildInfo.INSTANCE.courseVersion);
+        BuildInfo.INSTANCE.courseVersion,
+        // tutorials
+        Collections.emptyMap());
     mainViewModel.courseViewModel.set(new CourseViewModel(course));
 
     installer = mock(ComponentInstaller.class);

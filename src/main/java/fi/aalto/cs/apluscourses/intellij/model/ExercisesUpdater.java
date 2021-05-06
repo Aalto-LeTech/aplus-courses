@@ -14,10 +14,9 @@ import fi.aalto.cs.apluscourses.utils.async.RepeatedTask;
 import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
-import java.util.List;
+import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-
 import org.jetbrains.annotations.NotNull;
 
 public class ExercisesUpdater extends RepeatedTask {
@@ -54,7 +53,7 @@ public class ExercisesUpdater extends RepeatedTask {
     var dataSource = course.getExerciseDataSource();
     var authentication = courseProject.getAuthentication();
     if (authentication == null && courseProject.getExerciseGroups() != null) {
-      courseProject.setExerciseGroups(List.of());
+      courseProject.setExerciseGroups(Collections.emptyList());
       eventToTrigger.trigger();
       return;
     } else if (authentication == null) {
@@ -66,7 +65,8 @@ public class ExercisesUpdater extends RepeatedTask {
         return;
       }
       points.setSubmittableExercises(course.getExerciseModules().keySet()); // TODO: remove
-      var exerciseGroups = dataSource.getExerciseGroups(course, points, authentication);
+      var exerciseGroups
+          = dataSource.getExerciseGroups(course, points, course.getTutorials(), authentication);
       if (courseProject.getExerciseGroups() == null) {
         courseProject.setExerciseGroups(exerciseGroups);
         eventToTrigger.trigger();
@@ -105,7 +105,8 @@ public class ExercisesUpdater extends RepeatedTask {
       throws IOException {
     var dataSource = course.getExerciseDataSource();
     var baseUrl = course.getApiUrl() + "submissions/";
-    var submissionIds = points.getSubmissions().get(exercise.getId());
+    var submissionIds = points.getSubmissions()
+        .getOrDefault(exercise.getId(), Collections.emptyList());
     for (var id : submissionIds) {
       // Ignore cache for submissions that had the status WAITING
       var cacheTime = submissionsInGrading.remove(id)
