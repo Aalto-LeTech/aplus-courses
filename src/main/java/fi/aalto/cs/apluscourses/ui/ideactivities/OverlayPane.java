@@ -25,7 +25,7 @@ public class OverlayPane extends JPanel {
 
   private final JRootPane associatedRootPane;
   private final Set<Component> exemptComponents = new HashSet<>();
-  private final Set<BalloonPopup> popups = new HashSet<>();
+  private final Set<BalloonPopup> balloonPopups = new HashSet<>();
 
   private void revalidatePane() {
     getRootPane().revalidate();
@@ -36,7 +36,7 @@ public class OverlayPane extends JPanel {
   protected void paintComponent(Graphics graphics) {
     super.paintComponent(graphics);
 
-    for (var c : popups) {
+    for (var c : balloonPopups) {
       c.recalculateBounds();
     }
 
@@ -55,7 +55,7 @@ public class OverlayPane extends JPanel {
       overlayArea.subtract(new Area(componentRect));
     }
 
-    for (var c : popups) {
+    for (var c : balloonPopups) {
       // popups are already places in the overlay's coordinate system
       var componentRect = new Rectangle(c.getX(), c.getY(), c.getWidth(), c.getHeight());
       overlayArea.subtract(new Area(componentRect));
@@ -127,7 +127,7 @@ public class OverlayPane extends JPanel {
   @RequiresEdt
   public void remove() {
     this.getRootPane().getLayeredPane().remove(this);
-    for (var c : this.popups) {
+    for (var c : this.balloonPopups) {
       this.getRootPane().getLayeredPane().remove(c);
     }
     this.revalidatePane();
@@ -148,7 +148,7 @@ public class OverlayPane extends JPanel {
   public @NotNull BalloonPopup addPopup(@NotNull Component c, @NotNull String title,
                                         @NotNull String message) {
     var popup = new BalloonPopup(c, title, message, PluginIcons.A_PLUS_OPTIONAL_PRACTICE);
-    this.popups.add(popup);
+    this.balloonPopups.add(popup);
     this.getRootPane().getLayeredPane().add(popup, PANE_Z_ORDER + 1);
     this.revalidatePane();
 
@@ -161,10 +161,10 @@ public class OverlayPane extends JPanel {
   @RequiresEdt
   public void reset() {
     this.exemptComponents.clear();
-    for (var c : this.popups) {
+    for (var c : this.balloonPopups) {
       this.getRootPane().getLayeredPane().remove(c);
     }
-    this.popups.clear();
+    this.balloonPopups.clear();
     this.revalidatePane();
   }
 
