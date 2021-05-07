@@ -22,6 +22,12 @@ public class IntelliJActivityFactory implements ActivityFactory {
     switch (action) {
       case "openEditor":
         return new OpenFileListener(callback, arguments.getOrThrow("filepath"), project);
+      case "varRename":
+        return new RenameVariableListener(callback, arguments.getOrThrow("filepath"),
+                arguments.getOrThrow("oldName"),
+                arguments.getOrThrow("newName"), project);
+      case "build":
+        return new IdeActionListener(callback, project, arguments.getOrThrow("actionName"));
       default:
         throw new IllegalArgumentException("Unsupported action: " + action);
     }
