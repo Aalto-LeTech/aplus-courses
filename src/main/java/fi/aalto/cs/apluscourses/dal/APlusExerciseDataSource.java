@@ -28,7 +28,6 @@ import org.apache.http.Header;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
@@ -280,13 +279,9 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
 
     @Override
     public String parseUserName(@NotNull JSONObject object) {
-      try {
-        var fullName = object.optString("full_name");
-        var username = object.optString("username");
-        return fullName.equals("") ? username : fullName;
-      } catch (JSONException e) {
-        return "";
-      }
+      var fullName = object.optString("full_name");
+      var username = object.optString("username");
+      return fullName.equals("") ? username : fullName;
     }
   }
 }
