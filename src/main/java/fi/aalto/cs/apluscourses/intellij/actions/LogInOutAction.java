@@ -1,12 +1,12 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.project.DumbAwareAction;
 import fi.aalto.cs.apluscourses.intellij.services.CourseProjectProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import org.jetbrains.annotations.NotNull;
 
-public class LogInOutAction extends AnAction {
+public class LogInOutAction extends DumbAwareAction {
   private final CourseProjectProvider courseProjectProvider;
 
   public LogInOutAction() {

@@ -14,7 +14,9 @@ import fi.aalto.cs.apluscourses.model.Submission;
 import fi.aalto.cs.apluscourses.model.SubmissionHistory;
 import fi.aalto.cs.apluscourses.model.SubmissionInfo;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
+import fi.aalto.cs.apluscourses.model.Tutorial;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
+import fi.aalto.cs.apluscourses.utils.JsonUtil;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -116,7 +118,10 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
       throws IOException {
     String url = apiUrl + COURSES + "/" + course.getId() + "/mygroups/";
     JSONObject response = client.fetch(url, authentication);
-    return parser.parseArray(response.getJSONArray("results"), parser::parseGroup);
+    return List.of(JsonUtil.parseArray(response.getJSONArray("results"),
+        JSONArray::getJSONObject,
+        parser::parseGroup,
+        Group[]::new));
   }
 
   /**
@@ -129,11 +134,12 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   @NotNull
   public List<ExerciseGroup> getExerciseGroups(@NotNull Course course,
                                                @NotNull Points points,
+                                               @NotNull Map<Long, Tutorial> tutorials,
                                                @NotNull Authentication authentication)
       throws IOException {
     String url = apiUrl + COURSES + "/" + course.getId() + "/" + EXERCISES + "/";
     JSONObject response = client.fetch(url, authentication);
-    return parser.parseExerciseGroups(response.getJSONArray("results"), points);
+    return parser.parseExerciseGroups(response.getJSONArray("results"), points, tutorials);
   }
 
   /**
@@ -262,8 +268,9 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
 
     @Override
     public List<ExerciseGroup> parseExerciseGroups(@NotNull JSONArray array,
-                                                   @NotNull Points points) {
-      return ExerciseGroup.fromJsonArray(array, points);
+                                                   @NotNull Points points,
+                                                   @NotNull Map<Long, Tutorial> tutorials) {
+      return ExerciseGroup.fromJsonArray(array, points, tutorials);
     }
 
     @Override

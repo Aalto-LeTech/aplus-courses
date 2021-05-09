@@ -22,7 +22,7 @@ The roadmap and plans for the future development of the plugin are in the [proje
 
 If you are a student in a course and you have discovered an issue you'd like to report, please turn to the teaching assistants. You can also create an issue directly here: [Aalto-LeTech/intellij-plugin/issues](https://github.com/Aalto-LeTech/intellij-plugin/issues).
 
-Once the bug report is made, the development team (**[@jaakkonarhi](https://github.com/jaakkonarhi)**, **[@nikke234](https://github.com/nikke234)**, **[@OlliKiljunen](https://github.com/OlliKiljunen)**, **[@stellatsv](https://github.com/stellatsv)**, **[@Taikelenn](https://github.com/Taikelenn)**) will handle it on a **best-effort basis:**
+Once the bug report is made, the development team (**[@jaakkonarhi](https://github.com/jaakkonarhi)**, **[@OlliKiljunen](https://github.com/OlliKiljunen)**, **[@stellatsv](https://github.com/stellatsv)**, **[@Taikelenn](https://github.com/Taikelenn)**) will handle it on a **best-effort basis:**
 
 1. The issue will be confirmed and prioritized within **two working days**.
 2. An estimation of when the issue could be fixed is made within **three working days**.
@@ -55,4 +55,4 @@ The team follows general principles of Aalto University's [code of conduct](http
 
 ## Credits
 
-We would like to acknowledge **[@superseacat](https://github.com/superseacat)**, **[@valtonv2](https://github.com/valtonv2)**, **[@xiaoxiaobt](https://github.com/xiaoxiaobt)**, **Ida Iskala**, and **[@StanislavFranko](https://github.com/StanislavFranko)** for their help in testing and improving this project.
+We would like to acknowledge **[Nikolas Drosdek](https://github.com/nikke234)**, **[@superseacat](https://github.com/superseacat)**, **[@valtonv2](https://github.com/valtonv2)**, **[@xiaoxiaobt](https://github.com/xiaoxiaobt)**, **Ida Iskala**, and **[@StanislavFranko](https://github.com/StanislavFranko)** for their help in testing and improving this project.

@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.ui.ideactivities;
 
+import com.intellij.util.concurrency.annotations.RequiresEdt;
 import icons.PluginIcons;
 import java.awt.AlphaComposite;
 import java.awt.Color;
@@ -114,6 +115,7 @@ public class OverlayPane extends JPanel {
   /**
    * Installs the overlay. Must be called from the Swing EDT.
    */
+  @RequiresEdt
   public static void installOverlay() {
     if (isOverlayInstalled()) {
       throw new IllegalStateException("An overlay is already installed");
@@ -127,6 +129,7 @@ public class OverlayPane extends JPanel {
   /**
    * Removes the overlay. Must be called from the Swing EDT.
    */
+  @RequiresEdt
   public static void removeOverlay() {
     if (!isOverlayInstalled()) {
       throw new IllegalStateException("No overlay is currently installed");
@@ -156,6 +159,7 @@ public class OverlayPane extends JPanel {
   /**
    * Adds a popup to a specified component. Must be called from the Swing EDT.
    */
+  @RequiresEdt
   public static @NotNull BalloonPopup addPopup(@NotNull Component c, @NotNull String title,
                                                @NotNull String message) {
     if (!isOverlayInstalled()) {

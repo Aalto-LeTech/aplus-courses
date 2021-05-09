@@ -1,30 +1,28 @@
 package fi.aalto.cs.apluscourses.model;
 
-import fi.aalto.cs.apluscourses.model.task.OpenFileTask;
 import fi.aalto.cs.apluscourses.model.task.Task;
 import fi.aalto.cs.apluscourses.utils.Event;
-import java.util.ArrayList;
+import fi.aalto.cs.apluscourses.utils.JsonUtil;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 
 public class Tutorial {
-  private List<Task> tasks = new ArrayList<>();
+  private final List<Task> tasks;
 
   @NotNull
-  public final Event tutorialUpdated;
+  public final Event tutorialCompleted = new Event();
 
-  /**
-   * Empty constructor used to initialize
-   * a Tutorial object with default values.
-   */
-  public Tutorial() { //default constructor for testing purposes
-    tasks.add(new OpenFileTask("GoodStuff/o1/goodstuff/gui/CategoryDisplayWindow.scala"));
-    Task second = new OpenFileTask("GoodStuff/o1/goodstuff/gui/GoodStuff.scala");
-    Task third = new OpenFileTask("GoodStuff/o1/goodstuff/Category.scala");
-    tasks.add(second);
-    tasks.add(third);
-    this.tutorialUpdated = new Event();
+  public Tutorial(Task[] tasks) {
+    this.tasks = List.of(tasks);
+  }
+
+  public static Tutorial fromJsonObject(@NotNull JSONObject jsonObject) {
+    return new Tutorial(JsonUtil.parseArray(jsonObject.getJSONArray("tasks"),
+        JSONArray::getJSONObject, Task::fromJsonObject, Task[]::new));
   }
 
   public List<Task> getTasks() {
@@ -36,14 +34,15 @@ public class Tutorial {
    * @param task the current Task whose successor we are looking for.
    * @return the next Task to be performed
    */
-  public Task getNextTask(@NotNull Task task) {
-    if (tasks.indexOf(task) != tasks.size() - 1) {
-      return tasks.get(tasks.indexOf(task) + 1);
+  public @Nullable Task getNextTask(@NotNull Task task) {
+    int index = tasks.indexOf(task);
+    if (index != tasks.size() - 1) {
+      return tasks.get(index + 1);
     }
     return null;
   }
 
-  public void setCompleted() {
-    this.tutorialUpdated.trigger();
+  public void onComplete() {
+    this.tutorialCompleted.trigger();
   }
 }

@@ -3,6 +3,7 @@ package fi.aalto.cs.apluscourses.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
@@ -64,7 +65,8 @@ public class Exercise implements Browsable {
    */
   @NotNull
   public static Exercise fromJsonObject(@NotNull JSONObject jsonObject,
-                                        @NotNull Points points) {
+                                        @NotNull Points points,
+                                        @NotNull Map<Long, Tutorial> tutorials) {
     long id = jsonObject.getLong("id");
 
     String name = jsonObject.getString("display_name");
@@ -79,7 +81,13 @@ public class Exercise implements Browsable {
     // SubmissionInfo and how it is used in SubmitExerciseAction.
     boolean isSubmittable = points.isSubmittable(id);
 
-    return new Exercise(id, name, htmlUrl, userPoints, maxPoints, maxSubmissions, isSubmittable);
+    Tutorial tutorial = tutorials.get(id);
+    if (tutorial == null) {
+      return new Exercise(id, name, htmlUrl, userPoints, maxPoints, maxSubmissions, isSubmittable);
+    } else {
+      return new TutorialExercise(
+          id, name, htmlUrl, userPoints, maxPoints, maxSubmissions, isSubmittable, tutorial);
+    }
   }
 
   public long getId() {
