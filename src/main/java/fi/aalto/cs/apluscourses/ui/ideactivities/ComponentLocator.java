@@ -1,6 +1,6 @@
 package fi.aalto.cs.apluscourses.ui.ideactivities;
 
-import com.intellij.openapi.actionSystem.AnActionHolder;
+import com.intellij.util.concurrency.annotations.RequiresEdt;
 import java.awt.Component;
 import java.awt.Container;
 import java.util.function.Predicate;
@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ComponentLocator {
+  @RequiresEdt
   private static @Nullable Component getComponentByClass(@NotNull Container parentComponent,
                                                          @NotNull Predicate<Component> predicate) {
     for (var component : parentComponent.getComponents()) {
@@ -32,6 +33,7 @@ public class ComponentLocator {
    * Scans through all components and locates the first one which class name matches a substring.
    * @param componentClassSubstring A case-sensitive substring of the component's desired class.
    */
+  @RequiresEdt
   public static @Nullable Component getComponentByClass(@NotNull String componentClassSubstring) {
     Predicate<Component> predicate =
         (c) -> c.getClass().toString().contains(componentClassSubstring);
