@@ -28,6 +28,9 @@ public class IntelliJActivityFactory implements ActivityFactory {
                 arguments.getOrThrow("newName"), project);
       case "build":
         return new IdeActionListener(callback, project, arguments.getOrThrow("actionName"));
+      case "classDeclScala":
+        return new ClassDeclarationListener(callback, project, arguments.getOrThrow("className"),
+                arguments.getOrThrow("classArguments"));
       default:
         throw new IllegalArgumentException("Unsupported action: " + action);
     }
