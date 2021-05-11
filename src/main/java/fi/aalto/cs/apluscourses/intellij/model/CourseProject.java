@@ -9,8 +9,8 @@ import fi.aalto.cs.apluscourses.intellij.dal.IntelliJPasswordStorage;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
+import fi.aalto.cs.apluscourses.model.User;
 import fi.aalto.cs.apluscourses.utils.Event;
-import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.Optional;
@@ -33,8 +33,6 @@ public class CourseProject {
 
   private final AtomicBoolean hasTriedToReadAuthenticationFromStorage = new AtomicBoolean(false);
 
-  private volatile Authentication authentication = null;
-
   @NotNull
   private final CourseUpdater courseUpdater;
 
@@ -49,9 +47,8 @@ public class CourseProject {
 
   @NotNull
   public final Event exercisesUpdated;
-
-  @NotNull
-  private String userName = "";
+  
+  private volatile User user;
 
   /**
    * Construct a course project from the given course, course configuration URL (used for updating),
@@ -71,8 +68,8 @@ public class CourseProject {
    * authentication. This should be called when a course project is no longer used.
    */
   public void dispose() {
-    if (authentication != null) {
-      authentication.clear();
+    if (user != null) {
+      user.getAuthentication().clear();
     }
     courseUpdater.stop();
     exercisesUpdater.stop();
@@ -90,28 +87,13 @@ public class CourseProject {
    */
   public void readAuthenticationFromStorage(@Nullable PasswordStorage passwordStorage,
                                             @NotNull TokenAuthentication.Factory factory) {
-    if (hasTriedToReadAuthenticationFromStorage.getAndSet(true) || authentication != null) {
+    if (hasTriedToReadAuthenticationFromStorage.getAndSet(true) || user != null) {
       return;
     }
     Optional.ofNullable(passwordStorage)
         .map(PasswordStorage::restorePassword)
         .map(factory::create)
         .ifPresent(this::setAuthentication);
-  }
-
-  /**
-   * Updates the user name if authentication is not null.
-   */
-  public void updateUserName() {
-    if (authentication != null) {
-      try {
-        this.userName = course.getExerciseDataSource().getUserName(authentication);
-      } catch (IOException e) {
-        //TODO logger.error("Failed to fetch user data", e);
-      }
-    } else {
-      this.userName = "";
-    }
   }
 
   public void removePasswordFromStorage() {
@@ -121,7 +103,7 @@ public class CourseProject {
 
   @NotNull
   public String getUserName() {
-    return userName;
+    return user == null ? "" : user.getUserName();
   }
 
   @NotNull
@@ -140,17 +122,21 @@ public class CourseProject {
 
   @Nullable
   public Authentication getAuthentication() {
-    return authentication;
+    return user == null ? null : user.getAuthentication();
   }
 
   /**
    * Sets the authentication. Any existing authentication is cleared.
    */
   public void setAuthentication(Authentication authentication) {
-    if (this.authentication != null) {
-      this.authentication.clear();
+    if (this.user != null) {
+      this.user.getAuthentication().clear();
     }
-    this.authentication = authentication;
+    if (authentication == null) {
+      this.user = null;
+    } else {
+      this.user = new User(authentication, course.getExerciseDataSource());
+    }
   }
 
   @NotNull

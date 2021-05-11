@@ -93,7 +93,6 @@ public class APlusAuthenticationAction extends DumbAwareAction {
       notifier.notify(new ApiTokenNotSetNotification(), project);
     }
     courseProject.setAuthentication(authentication);
-    courseProject.updateUserName();
     courseProject.getExercisesUpdater().restart();
   }
 

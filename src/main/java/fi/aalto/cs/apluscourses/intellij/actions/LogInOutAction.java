@@ -24,7 +24,6 @@ public class LogInOutAction extends DumbAwareAction {
       if (project != null && project.getAuthentication() != null) {
         project.setAuthentication(null);
         project.removePasswordFromStorage();
-        project.updateUserName();
         project.getExercisesUpdater().restart();
       }
     } else {

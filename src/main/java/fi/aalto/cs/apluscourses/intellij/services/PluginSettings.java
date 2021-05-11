@@ -178,7 +178,6 @@ public class PluginSettings implements MainViewModelProvider, DefaultGroupIdSett
                   courseProject.getExerciseGroups(),courseProject.getAuthentication()));
       courseProject.getCourseUpdater().restart();
       courseProject.getExercisesUpdater().restart();
-      courseProject.updateUserName();
       return courseProject;
     });
   }
