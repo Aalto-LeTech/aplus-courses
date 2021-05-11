@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.ui.ideactivities;
 
 import com.intellij.util.concurrency.annotations.RequiresEdt;
 import icons.PluginIcons;
+import java.awt.AWTEvent;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Component;
@@ -9,6 +10,9 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
+import java.awt.event.AWTEventListener;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Area;
 import java.util.HashSet;
 import java.util.Set;
@@ -19,7 +23,7 @@ import javax.swing.JRootPane;
 import javax.swing.SwingUtilities;
 import org.jetbrains.annotations.NotNull;
 
-public class OverlayPane extends JPanel {
+public class OverlayPane extends JPanel implements AWTEventListener {
   // A high value (> 500) allows us to place the overlay pretty much above every other component
   private static final int PANE_Z_ORDER = 20000;
 
@@ -118,6 +122,8 @@ public class OverlayPane extends JPanel {
     overlay.getRootPane().getLayeredPane().add(overlay, PANE_Z_ORDER);
     overlay.revalidatePane();
 
+    Toolkit.getDefaultToolkit().addAWTEventListener(overlay, AWTEvent.MOUSE_EVENT_MASK);
+
     return overlay;
   }
 
@@ -126,6 +132,8 @@ public class OverlayPane extends JPanel {
    */
   @RequiresEdt
   public void remove() {
+    Toolkit.getDefaultToolkit().removeAWTEventListener(this);
+
     this.getRootPane().getLayeredPane().remove(this);
     for (var c : this.balloonPopups) {
       this.getRootPane().getLayeredPane().remove(c);
@@ -171,5 +179,11 @@ public class OverlayPane extends JPanel {
   private OverlayPane() {
     associatedRootPane = ((JFrame) JOptionPane.getRootFrame()).getRootPane();
     setLayout(null);
+  }
+
+  @Override
+  public void eventDispatched(AWTEvent event) {
+    var mouseEvent = (MouseEvent) event;
+    mouseEvent.consume();
   }
 }
