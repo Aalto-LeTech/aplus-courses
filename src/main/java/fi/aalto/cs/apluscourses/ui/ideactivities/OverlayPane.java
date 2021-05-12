@@ -13,7 +13,6 @@ import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.AWTEventListener;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
 import java.awt.geom.Area;
 import java.util.HashSet;
 import java.util.Set;
@@ -201,7 +200,7 @@ public class OverlayPane extends JPanel implements AWTEventListener {
     var windowEventPos = SwingUtilities.convertPoint(source, source.getX(), source.getY(), this);
     if (getDimmedArea().contains(windowEventPos)) {
       // the mouse event is inside dimmed area, do something with it
-      // use mouseEvent.consume() to block the event from reaching any component
+      // for example, use mouseEvent.consume() to block the event from reaching any component
     }
   }
 }
