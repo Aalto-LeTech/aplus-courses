@@ -13,6 +13,7 @@ import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.AWTEventListener;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import java.awt.geom.Area;
 import java.util.HashSet;
 import java.util.Set;
@@ -126,7 +127,9 @@ public class OverlayPane extends JPanel implements AWTEventListener {
     overlay.getRootPane().getLayeredPane().add(overlay, PANE_Z_ORDER);
     overlay.revalidatePane();
 
-    Toolkit.getDefaultToolkit().addAWTEventListener(overlay, AWTEvent.MOUSE_EVENT_MASK);
+    Toolkit.getDefaultToolkit().addAWTEventListener(overlay,
+        AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK
+        | AWTEvent.MOUSE_WHEEL_EVENT_MASK);
 
     return overlay;
   }
@@ -189,10 +192,16 @@ public class OverlayPane extends JPanel implements AWTEventListener {
   public void eventDispatched(AWTEvent event) {
     var mouseEvent = (MouseEvent) event;
     var source = (Component) mouseEvent.getSource();
+    if (!getRootPane().getContentPane().isAncestorOf(source)) {
+      // don't process events from context menus, pop-up windows etc.
+      // these are not subject to dimming in the first place - only the main content pane is dimmed
+      return;
+    }
+
     var windowEventPos = SwingUtilities.convertPoint(source, source.getX(), source.getY(), this);
     if (getDimmedArea().contains(windowEventPos)) {
       // the mouse event is inside dimmed area, do something with it
-      mouseEvent.consume();
+      // use mouseEvent.consume() to block the event from reaching any component
     }
   }
 }
