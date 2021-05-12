@@ -1,5 +1,8 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getAndReplaceText;
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.actionSystem.impl.ActionButton;
@@ -29,7 +32,9 @@ public class UserActionGroup extends DefaultActionGroup implements DumbAware {
       var userName = project.getUserName();
       var loggedIn = !userName.equals("");
       var icon = loggedIn ? PluginIcons.A_PLUS_USER_LOGGED_IN : PluginIcons.A_PLUS_USER;
-      var text = loggedIn ? "Logged in as " + userName : "Not Logged In";
+      var text = loggedIn
+              ? getAndReplaceText("presentation.userDropdown.loggedInAs", userName)
+              : getText("presentation.userDropdown.notLoggedIn");
       e.getPresentation().setIcon(icon);
       e.getPresentation().setText(text);
     }

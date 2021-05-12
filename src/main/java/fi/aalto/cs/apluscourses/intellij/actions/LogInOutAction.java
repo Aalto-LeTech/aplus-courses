@@ -1,20 +1,33 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
+import static fi.aalto.cs.apluscourses.dal.APlusTokenAuthentication.APLUS_USER;
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAwareAction;
+import fi.aalto.cs.apluscourses.dal.PasswordStorage;
+import fi.aalto.cs.apluscourses.intellij.dal.IntelliJPasswordStorage;
 import fi.aalto.cs.apluscourses.intellij.services.CourseProjectProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import org.jetbrains.annotations.NotNull;
 
 public class LogInOutAction extends DumbAwareAction {
+  @NotNull
   private final CourseProjectProvider courseProjectProvider;
 
+  @NotNull
+  private final PasswordStorage.Factory passwordStorageFactory;
+
+
   public LogInOutAction() {
-    this(PluginSettings.getInstance()::getCourseProject);
+    this(PluginSettings.getInstance()::getCourseProject,
+            IntelliJPasswordStorage::new);
   }
 
-  public LogInOutAction(CourseProjectProvider courseProjectProvider) {
+  public LogInOutAction(@NotNull CourseProjectProvider courseProjectProvider,
+                        @NotNull PasswordStorage.Factory passwordStorageFactory) {
     this.courseProjectProvider = courseProjectProvider;
+    this.passwordStorageFactory = passwordStorageFactory;
   }
 
   @Override
@@ -23,7 +36,7 @@ public class LogInOutAction extends DumbAwareAction {
       var project = courseProjectProvider.getCourseProject(e.getProject());
       if (project != null && project.getAuthentication() != null) {
         project.setAuthentication(null);
-        project.removePasswordFromStorage();
+        project.removePasswordFromStorage(passwordStorageFactory, APLUS_USER);
         project.getExercisesUpdater().restart();
       }
     } else {
@@ -33,7 +46,9 @@ public class LogInOutAction extends DumbAwareAction {
 
   @Override
   public void update(@NotNull AnActionEvent e) {
-    var text = isLoggedIn(e) ? "Log Out" : "Log In";
+    var text = isLoggedIn(e)
+            ? getText("presentation.userDropdown.logOut")
+            : getText("presentation.userDropdown.logIn");
     e.getPresentation().setText(text);
   }
 

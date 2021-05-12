@@ -72,7 +72,7 @@ public class ModelExtensions {
 
     @Override
     public @NotNull String getUserName(@NotNull Authentication authentication) {
-      return "";
+      return "test";
     }
 
     @Override

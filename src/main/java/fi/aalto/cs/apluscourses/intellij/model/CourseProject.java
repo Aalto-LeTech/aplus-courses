@@ -1,11 +1,8 @@
 package fi.aalto.cs.apluscourses.intellij.model;
 
-import static fi.aalto.cs.apluscourses.dal.APlusTokenAuthentication.APLUS_USER;
-
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.dal.PasswordStorage;
 import fi.aalto.cs.apluscourses.dal.TokenAuthentication;
-import fi.aalto.cs.apluscourses.intellij.dal.IntelliJPasswordStorage;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
@@ -96,9 +93,15 @@ public class CourseProject {
         .ifPresent(this::setAuthentication);
   }
 
-  public void removePasswordFromStorage() {
-    var passwordStorage = new IntelliJPasswordStorage(course.getApiUrl());
-    passwordStorage.remove(APLUS_USER);
+  /**
+   * Removes user from password storage.
+   */
+  public void removePasswordFromStorage(@NotNull PasswordStorage.Factory passwordStorageFactory,
+                                        @NotNull String user) {
+    var passwordStorage = passwordStorageFactory.create(course.getApiUrl());
+    if (passwordStorage != null) {
+      passwordStorage.remove(user);
+    }
   }
 
   @NotNull
