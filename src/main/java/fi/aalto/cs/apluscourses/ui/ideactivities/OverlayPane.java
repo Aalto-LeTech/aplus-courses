@@ -36,19 +36,8 @@ public class OverlayPane extends JPanel implements AWTEventListener {
     getRootPane().repaint();
   }
 
-  @Override
-  protected void paintComponent(Graphics graphics) {
-    super.paintComponent(graphics);
-
-    for (var c : balloonPopups) {
-      c.recalculateBounds();
-    }
-
-    // use Graphics's copy so as not to influence subsequent calls using the same Graphics object
-    Graphics2D g = (Graphics2D) graphics.create();
-    g.setComposite(AlphaComposite.SrcOver.derive(0.7f));
-    g.setColor(Color.BLACK); // using JBColor.BLACK is wrong here
-
+  @RequiresEdt
+  private Area getDimmedArea() {
     var overlayArea = new Area(new Rectangle(0, 0, getWidth(), getHeight()));
 
     for (var c : exemptComponents) {
@@ -65,7 +54,22 @@ public class OverlayPane extends JPanel implements AWTEventListener {
       overlayArea.subtract(new Area(componentRect));
     }
 
-    g.fill(overlayArea);
+    return overlayArea;
+  }
+
+  @Override
+  protected void paintComponent(Graphics graphics) {
+    super.paintComponent(graphics);
+
+    for (var c : balloonPopups) {
+      c.recalculateBounds();
+    }
+
+    // use Graphics's copy so as not to influence subsequent calls using the same Graphics object
+    Graphics2D g = (Graphics2D) graphics.create();
+    g.setComposite(AlphaComposite.SrcOver.derive(0.7f));
+    g.setColor(Color.BLACK); // using JBColor.BLACK is wrong here
+    g.fill(getDimmedArea());
   }
 
   @Override
@@ -184,6 +188,11 @@ public class OverlayPane extends JPanel implements AWTEventListener {
   @Override
   public void eventDispatched(AWTEvent event) {
     var mouseEvent = (MouseEvent) event;
-    mouseEvent.consume();
+    var source = (Component) mouseEvent.getSource();
+    var windowEventPos = SwingUtilities.convertPoint(source, source.getX(), source.getY(), this);
+    if (getDimmedArea().contains(windowEventPos)) {
+      // the mouse event is inside dimmed area, do something with it
+      mouseEvent.consume();
+    }
   }
 }
