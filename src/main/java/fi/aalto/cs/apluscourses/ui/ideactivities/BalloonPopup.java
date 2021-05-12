@@ -66,26 +66,42 @@ public class BalloonPopup extends JPanel {
     var maxSize = getMaximumSize();
     var prefSize = getPreferredSize();
 
-    int popupWidth = Integer.min(maxSize.width, prefSize.width);
-    int popupHeight = prefSize.height;
+    var popupWidth = Integer.min(maxSize.width, prefSize.width);
+    var popupHeight = prefSize.height;
 
     var windowSize = JOptionPane.getRootFrame().getSize();
     var componentSize = anchorComponent.getSize();
 
-    var availableSizeRight = windowSize.width - (componentWindowPos.x + componentSize.width);
     var availableSizeLeft = componentWindowPos.x;
+    var availableSizeRight = windowSize.width - (componentWindowPos.x + componentSize.width);
+    var availableSizeTop = componentWindowPos.y;
+    var availableSizeBottom = windowSize.height - (componentWindowPos.y + componentSize.height);
+
+    var mostHorizontalSpace = Integer.max(availableSizeLeft, availableSizeRight);
+    var mostVerticalSpace = Integer.max(availableSizeTop, availableSizeBottom);
+
+    boolean positionHorizontally = mostHorizontalSpace > mostVerticalSpace;
 
     int popupX = 0;
     int popupY = 0;
 
-    if (availableSizeRight > availableSizeLeft) {
-      popupX = componentWindowPos.x + anchorComponent.getWidth() + 5;
-    } else {
-      popupX = componentWindowPos.x - popupWidth - 5;
-    }
+    if (positionHorizontally) {
+      if (availableSizeRight > availableSizeLeft) {
+        popupX = componentWindowPos.x + anchorComponent.getWidth() + 5;
+      } else {
+        popupX = componentWindowPos.x - popupWidth - 5;
+      }
 
-    // common for horizontal popups
-    popupY = componentWindowPos.y + (anchorComponent.getHeight() - popupHeight) / 2;
+      popupY = componentWindowPos.y + (anchorComponent.getHeight() - popupHeight) / 2;
+    } else {
+      if (availableSizeBottom > availableSizeTop) {
+        popupY = componentWindowPos.y + anchorComponent.getHeight() + 5;
+      } else {
+        popupY = componentWindowPos.y - popupHeight - 5;
+      }
+
+      popupX = componentWindowPos.x + (anchorComponent.getWidth() - popupWidth) / 2;
+    }
 
     setBounds(popupX, popupY, popupWidth, popupHeight);
   }
