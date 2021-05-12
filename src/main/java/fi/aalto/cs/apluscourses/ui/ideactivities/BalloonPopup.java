@@ -47,6 +47,11 @@ public class BalloonPopup extends JPanel {
     recalculateBounds();
   }
 
+  @Override
+  public boolean isVisible() {
+    return anchorComponent.isShowing();
+  }
+
   /**
    * Recomputes the popups bounds and triggers a reposition if needed. Should ideally be called
    * every time anything changes in the parent frame.

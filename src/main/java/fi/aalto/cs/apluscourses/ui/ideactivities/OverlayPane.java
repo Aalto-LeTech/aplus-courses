@@ -42,16 +42,20 @@ public class OverlayPane extends JPanel implements AWTEventListener {
 
     for (var c : exemptComponents) {
       // convertPoint is necessary because the component uses a different coordinate origin
-      var windowPos = SwingUtilities.convertPoint(c, c.getX(), c.getY(), this);
-      var componentRect = new Rectangle(windowPos.x, windowPos.y, c.getWidth(), c.getHeight());
+      if (c.isShowing()) {
+        var windowPos = SwingUtilities.convertPoint(c, c.getX(), c.getY(), this);
+        var componentRect = new Rectangle(windowPos.x, windowPos.y, c.getWidth(), c.getHeight());
 
-      overlayArea.subtract(new Area(componentRect));
+        overlayArea.subtract(new Area(componentRect));
+      }
     }
 
     for (var c : balloonPopups) {
       // popups are already places in the overlay's coordinate system
-      var componentRect = new Rectangle(c.getX(), c.getY(), c.getWidth(), c.getHeight());
-      overlayArea.subtract(new Area(componentRect));
+      if (c.isVisible()) {
+        var componentRect = new Rectangle(c.getX(), c.getY(), c.getWidth(), c.getHeight());
+        overlayArea.subtract(new Area(componentRect));
+      }
     }
 
     return overlayArea;
