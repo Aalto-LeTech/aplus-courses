@@ -9,6 +9,7 @@ import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.dal.APlusTokenAuthentication;
 import fi.aalto.cs.apluscourses.dal.TokenAuthentication;
 import fi.aalto.cs.apluscourses.model.Authentication;
+import fi.aalto.cs.apluscourses.model.ExerciseDataSource;
 import org.junit.Test;
 
 public class AuthenticationViewModelTest {
@@ -17,10 +18,12 @@ public class AuthenticationViewModelTest {
   public void testAPlusAuthenticationViewModel() {
     Project project = mock(Project.class);
     doReturn("hello there").when(project).getBasePath();
+    ExerciseDataSource dataSource = mock(ExerciseDataSource.class);
 
     AuthenticationViewModel viewModel = new AuthenticationViewModel(
         APlusTokenAuthentication::new,
-        "https://example.com"
+        "https://example.com",
+        dataSource
     );
 
     char[] token = new char[] {'a', 's', 'd'};

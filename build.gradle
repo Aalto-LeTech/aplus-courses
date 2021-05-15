@@ -3,7 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.4.31'
     id 'checkstyle'
     id 'com.github.alisiikh.scalastyle' version '3.3.1'
-    id 'org.jetbrains.intellij' version '0.4.21'
+    id 'org.jetbrains.intellij' version '0.7.2'
     id 'org.sonarqube' version '3.1.1'
     id 'jacoco'
     id "org.jmailen.kotlinter" version "3.3.0"

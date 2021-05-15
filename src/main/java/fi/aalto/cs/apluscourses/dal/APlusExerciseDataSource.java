@@ -39,6 +39,7 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   private static final String SUBMISSIONS = "submissions";
   private static final String COURSES = "courses";
   private static final String POINTS = "points";
+  private static final String USERS = "users";
 
   @NotNull
   private final Client client;
@@ -167,6 +168,14 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
     return parser.parseSubmissionResult(response, exercise);
   }
 
+  @Override
+  @NotNull
+  public String getUserName(@NotNull Authentication authentication) throws IOException {
+    String url = apiUrl + USERS + "/me/";
+    JSONObject response = client.fetch(url, authentication);
+    return parser.parseUserName(response);
+  }
+
   /**
    * Sends the submission to the server.
    *
@@ -275,5 +284,11 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
       return SubmissionResult.fromJsonObject(object, exercise);
     }
 
+    @Override
+    public String parseUserName(@NotNull JSONObject object) {
+      var fullName = object.optString("full_name");
+      var username = object.optString("username");
+      return fullName.equals("") ? username : fullName;
+    }
   }
 }

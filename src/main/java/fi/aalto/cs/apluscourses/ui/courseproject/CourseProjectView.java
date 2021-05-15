@@ -17,7 +17,6 @@ import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -51,7 +50,6 @@ public class CourseProjectView extends OurDialogWrapper {
     this.viewModel = viewModel;
 
     setTitle(PluginResourceBundle.getText("ui.courseProject.view"));
-    setButtonsAlignment(SwingConstants.CENTER);
 
     registerValidationItem(languageComboBox.selectedItemBindable);
 
