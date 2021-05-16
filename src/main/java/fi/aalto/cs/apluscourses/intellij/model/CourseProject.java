@@ -3,6 +3,7 @@ package fi.aalto.cs.apluscourses.intellij.model;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.dal.PasswordStorage;
 import fi.aalto.cs.apluscourses.dal.TokenAuthentication;
+import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
@@ -44,7 +45,7 @@ public class CourseProject {
 
   @NotNull
   public final Event exercisesUpdated;
-  
+
   private volatile User user;
 
   /**
@@ -139,6 +140,11 @@ public class CourseProject {
       this.user = null;
     } else {
       this.user = new User(authentication, course.getExerciseDataSource());
+      var bannerViewModel = PluginSettings.getInstance().getMainViewModel(project)
+              .bannerViewModel.get();
+      if (bannerViewModel != null) {
+        bannerViewModel.update();
+      }
     }
   }
 

@@ -176,6 +176,16 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
     return parser.parseUserName(response);
   }
 
+  @Override
+  @NotNull
+  public ZonedDateTime getEndingTime(@NotNull Course course,
+                                     @NotNull Authentication authentication)
+          throws IOException {
+    String url = apiUrl + COURSES + "/" + course.getId() + "/";
+    JSONObject response = client.fetch(url, authentication);
+    return parser.parseEndingTime(response);
+  }
+
   /**
    * Sends the submission to the server.
    *
@@ -289,6 +299,11 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
       var fullName = object.optString("full_name");
       var username = object.optString("username");
       return fullName.equals("") ? username : fullName;
+    }
+
+    @Override
+    public ZonedDateTime parseEndingTime(@NotNull JSONObject object) {
+      return ZonedDateTime.parse(object.getString("ending_time"));
     }
   }
 }

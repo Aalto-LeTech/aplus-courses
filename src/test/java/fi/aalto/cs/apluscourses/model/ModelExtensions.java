@@ -7,6 +7,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -73,6 +74,12 @@ public class ModelExtensions {
     @Override
     public @NotNull String getUserName(@NotNull Authentication authentication) {
       return "test";
+    }
+
+    @Override
+    public @NotNull ZonedDateTime getEndingTime(@NotNull Course course, @NotNull Authentication authentication) {
+      return ZonedDateTime.of(2020, 1, 2, 0, 0, 0, 0,
+              ZoneId.systemDefault());
     }
 
     @Override

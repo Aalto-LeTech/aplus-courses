@@ -40,6 +40,10 @@ public interface ExerciseDataSource {
   @NotNull
   String getUserName(@NotNull Authentication authentication) throws IOException;
 
+  @NotNull
+  ZonedDateTime getEndingTime(@NotNull Course course,
+                              @NotNull Authentication authentication) throws IOException;
+
   @Nullable
   String submit(@NotNull Submission submission, @NotNull Authentication authentication)
       throws IOException;
