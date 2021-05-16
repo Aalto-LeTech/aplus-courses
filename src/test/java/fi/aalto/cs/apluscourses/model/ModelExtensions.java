@@ -77,7 +77,8 @@ public class ModelExtensions {
     }
 
     @Override
-    public @NotNull ZonedDateTime getEndingTime(@NotNull Course course, @NotNull Authentication authentication) {
+    public @NotNull ZonedDateTime getEndingTime(@NotNull Course course,
+                                                @NotNull Authentication authentication) {
       return ZonedDateTime.of(2020, 1, 2, 0, 0, 0, 0,
               ZoneId.systemDefault());
     }
