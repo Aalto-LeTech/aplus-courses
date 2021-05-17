@@ -22,8 +22,9 @@ public class RefreshExercisesAction extends DumbAwareAction {
   @Override
   public void update(@NotNull AnActionEvent e) {
     var project = e.getProject();
+    var courseProject = courseProjectProvider.getCourseProject(project);
     e.getPresentation().setEnabled(
-        project != null && courseProjectProvider.getCourseProject(project) != null);
+        project != null && courseProject != null && courseProject.getAuthentication() != null);
   }
 
   @Override

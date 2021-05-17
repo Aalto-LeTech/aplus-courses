@@ -70,4 +70,13 @@ public class OpenItemAction extends DumbAwareAction {
       notifier.notify(new UrlRenderingErrorNotification(ex), e.getProject());
     }
   }
+
+  @Override
+  public void update(@NotNull AnActionEvent e) {
+    var project = e.getProject();
+    var exercisesTreeViewModel =
+            mainViewModelProvider.getMainViewModel(project).exercisesViewModel.get();
+    e.getPresentation().setEnabled(exercisesTreeViewModel != null
+            && exercisesTreeViewModel.isAuthenticated());
+  }
 }
