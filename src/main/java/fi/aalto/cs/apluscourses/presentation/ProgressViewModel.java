@@ -11,6 +11,7 @@ import java.util.Optional;
 
 public class ProgressViewModel {
   private final Deque<Progress> progresses = new ArrayDeque<>();
+  private final Object lock = new Object();
   public final ObservableProperty<Integer> maxValue = new ObservableReadWriteProperty<>(0);
   public final ObservableProperty<Integer> value = new ObservableReadWriteProperty<>(0);
   public final ObservableProperty<String> label =
@@ -28,43 +29,64 @@ public class ProgressViewModel {
    */
   public Progress start(int maxValue, String label, boolean indeterminate) {
     var progress = new Progress(maxValue, label, indeterminate);
-    progresses.add(progress);
+    synchronized (lock) {
+      progresses.add(progress);
+    }
     this.updateValues();
     return progress;
   }
 
+  /**
+   * Stops a Progress.
+   */
   public void stop(Progress progress) {
-    progresses.remove(progress);
+    synchronized (lock) {
+      progresses.remove(progress);
+    }
     this.updateValues();
   }
 
+  /**
+   * Stops all Progresses.
+   */
   public void stopAll() {
-    progresses.clear();
+    synchronized (lock) {
+      progresses.clear();
+    }
     this.updateValues();
   }
 
   private void updateValues() {
-    if (progresses.isEmpty()) {
-      this.maxValue.set(0);
-      this.value.set(0);
-      this.indeterminate.set(false);
-    } else {
-      var progress = progresses.getLast();
-      this.value.set(progress.getValue());
-      this.maxValue.set(progress.getMaxValue());
-      this.label.set(progress.getLabel());
-      this.indeterminate.set(progress.getIndeterminate());
+    synchronized (lock) {
+      if (progresses.isEmpty()) {
+        this.maxValue.set(0);
+        this.value.set(0);
+        this.indeterminate.set(false);
+      } else {
+        var progress = progresses.getLast();
+        this.value.set(progress.getValue());
+        this.maxValue.set(progress.getMaxValue());
+        this.label.set(progress.getLabel());
+        this.indeterminate.set(progress.getIndeterminate());
+      }
     }
     this.updateVisible();
   }
 
   private void updateValue() {
-    var progress = progresses.getLast();
-    this.value.set(progress.getValue());
+    synchronized (lock) {
+      var progress = progresses.getLast();
+      this.value.set(progress.getValue());
+    }
   }
 
+  /**
+   * Increments a Progress and updates the value of the visible progress.
+   */
   public void increment(Progress progress) {
-    progress.increment();
+    synchronized (lock) {
+      progress.increment();
+    }
     this.updateValue();
   }
 
