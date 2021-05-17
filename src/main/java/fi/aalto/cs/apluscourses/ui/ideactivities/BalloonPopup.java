@@ -66,24 +66,24 @@ public class BalloonPopup extends JPanel {
     var maxSize = getMaximumSize();
     var prefSize = getPreferredSize();
 
-    var popupWidth = Integer.min(maxSize.width, prefSize.width);
-    var popupHeight = prefSize.height;
-
     var windowSize = JOptionPane.getRootFrame().getSize();
     var componentSize = anchorComponent.getSize();
 
-    var availableSizeLeft = componentWindowPos.x;
-    var availableSizeRight = windowSize.width - (componentWindowPos.x + componentSize.width);
-    var availableSizeTop = componentWindowPos.y;
-    var availableSizeBottom = windowSize.height - (componentWindowPos.y + componentSize.height);
+    int popupWidth = Integer.min(maxSize.width, prefSize.width);
+    int popupHeight = prefSize.height;
 
-    var mostHorizontalSpace = Integer.max(availableSizeLeft, availableSizeRight);
-    var mostVerticalSpace = Integer.max(availableSizeTop, availableSizeBottom);
+    int availableSizeLeft = componentWindowPos.x;
+    int availableSizeRight = windowSize.width - (componentWindowPos.x + componentSize.width);
+    int availableSizeTop = componentWindowPos.y;
+    int availableSizeBottom = windowSize.height - (componentWindowPos.y + componentSize.height);
+
+    int mostHorizontalSpace = Integer.max(availableSizeLeft, availableSizeRight);
+    int mostVerticalSpace = Integer.max(availableSizeTop, availableSizeBottom);
 
     boolean positionHorizontally = mostHorizontalSpace > mostVerticalSpace;
 
-    int popupX = 0;
-    int popupY = 0;
+    int popupX;
+    int popupY;
 
     if (positionHorizontally) {
       if (availableSizeRight > availableSizeLeft) {
