@@ -47,6 +47,11 @@ public class BalloonPopup extends JPanel {
     recalculateBounds();
   }
 
+  @Override
+  public boolean isVisible() {
+    return anchorComponent.isShowing();
+  }
+
   /**
    * Recomputes the popups bounds and triggers a reposition if needed. Should ideally be called
    * every time anything changes in the parent frame.
@@ -61,26 +66,42 @@ public class BalloonPopup extends JPanel {
     var maxSize = getMaximumSize();
     var prefSize = getPreferredSize();
 
-    int popupWidth = Integer.min(maxSize.width, prefSize.width);
-    int popupHeight = prefSize.height;
-
     var windowSize = JOptionPane.getRootFrame().getSize();
     var componentSize = anchorComponent.getSize();
 
-    var availableSizeRight = windowSize.width - (componentWindowPos.x + componentSize.width);
-    var availableSizeLeft = componentWindowPos.x;
+    int popupWidth = Integer.min(maxSize.width, prefSize.width);
+    int popupHeight = prefSize.height;
 
-    int popupX = 0;
-    int popupY = 0;
+    int availableSizeLeft = componentWindowPos.x;
+    int availableSizeRight = windowSize.width - (componentWindowPos.x + componentSize.width);
+    int availableSizeTop = componentWindowPos.y;
+    int availableSizeBottom = windowSize.height - (componentWindowPos.y + componentSize.height);
 
-    if (availableSizeRight > availableSizeLeft) {
-      popupX = componentWindowPos.x + anchorComponent.getWidth() + 5;
+    int mostHorizontalSpace = Integer.max(availableSizeLeft, availableSizeRight);
+    int mostVerticalSpace = Integer.max(availableSizeTop, availableSizeBottom);
+
+    boolean positionHorizontally = mostHorizontalSpace > mostVerticalSpace;
+
+    int popupX;
+    int popupY;
+
+    if (positionHorizontally) {
+      if (availableSizeRight > availableSizeLeft) {
+        popupX = componentWindowPos.x + anchorComponent.getWidth() + 5;
+      } else {
+        popupX = componentWindowPos.x - popupWidth - 5;
+      }
+
+      popupY = componentWindowPos.y + (anchorComponent.getHeight() - popupHeight) / 2;
     } else {
-      popupX = componentWindowPos.x - popupWidth - 5;
-    }
+      if (availableSizeBottom > availableSizeTop) {
+        popupY = componentWindowPos.y + anchorComponent.getHeight() + 5;
+      } else {
+        popupY = componentWindowPos.y - popupHeight - 5;
+      }
 
-    // common for horizontal popups
-    popupY = componentWindowPos.y + (anchorComponent.getHeight() - popupHeight) / 2;
+      popupX = componentWindowPos.x + (anchorComponent.getWidth() - popupWidth) / 2;
+    }
 
     setBounds(popupX, popupY, popupWidth, popupHeight);
   }
