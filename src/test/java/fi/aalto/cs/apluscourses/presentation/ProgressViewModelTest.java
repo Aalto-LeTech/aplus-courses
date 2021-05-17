@@ -25,13 +25,12 @@ public class ProgressViewModelTest {
     assertEquals("The progress is visible when start is called",
         true, viewModel.visible.get());
 
-    viewModel.increment(progress);
-    viewModel.increment(progress);
+    progress.increment();
 
     assertEquals("The value is changed when incremented",
-        Optional.of(maxValue), Optional.ofNullable(viewModel.value.get()));
+        Optional.of(1), Optional.ofNullable(viewModel.value.get()));
 
-    viewModel.stop(progress);
+    progress.finish();
     assertEquals("The progress is not visible after stopping",
         false, viewModel.visible.get());
 
@@ -54,14 +53,14 @@ public class ProgressViewModelTest {
             viewModel.getCurrentProgress(), progress2);
     assertEquals("The value is correct when start is called",
             Optional.of(0), Optional.ofNullable(viewModel.value.get()));
-    viewModel.increment(progress1);
-    viewModel.increment(progress1);
+    progress1.increment();
+    progress1.increment();
     assertEquals("The value doesn't change if the incremented progress isn't the current one",
             Optional.of(0), Optional.ofNullable(viewModel.value.get()));
-    viewModel.increment(progress2);
+    progress2.increment();
     assertEquals("The value changes when the current progress is incremented",
             Optional.of(1), Optional.ofNullable(viewModel.value.get()));
-    viewModel.stop(progress2);
+    progress2.finish();
     assertEquals("The value changes when the current progress is changed",
             Optional.of(2), Optional.ofNullable(viewModel.value.get()));
   }

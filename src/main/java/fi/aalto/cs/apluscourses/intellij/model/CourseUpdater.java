@@ -96,11 +96,11 @@ public class CourseUpdater extends RepeatedTask {
             progressViewModel.start(1, getText("ui.ProgressBarView.refreshingModules"), false);
     updateModules(fetchModulesInfo());
     if (Thread.interrupted()) {
-      progressViewModel.stop(progress);
+      progress.finish();
       return;
     }
     notifyUpdatableModules();
-    progressViewModel.stop(progress);
+    progress.finish();
     eventToTrigger.trigger();
   }
 

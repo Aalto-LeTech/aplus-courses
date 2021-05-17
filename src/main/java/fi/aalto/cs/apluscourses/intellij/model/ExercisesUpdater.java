@@ -63,9 +63,9 @@ public class ExercisesUpdater extends RepeatedTask {
             progressViewModel.start(2, getText("ui.ProgressBarView.refreshingAssignments"), false);
     try {
       var points = dataSource.getPoints(course, authentication);
-      progressViewModel.increment(progress);
+      progress.increment();
       if (Thread.interrupted()) {
-        progressViewModel.stop(progress);
+        progress.finish();
         return;
       }
       points.setSubmittableExercises(course.getExerciseModules().keySet()); // TODO: remove
@@ -78,13 +78,13 @@ public class ExercisesUpdater extends RepeatedTask {
       for (var exerciseGroup : exerciseGroups) {
         for (var exercise : exerciseGroup.getExercises().values()) {
           if (Thread.interrupted()) {
-            progressViewModel.stop(progress);
+            progress.finish();
             return;
           }
           addSubmissionResults(course, exercise, points, authentication);
         }
       }
-      progressViewModel.stop(progress);
+      progress.finish();
       if (Thread.interrupted()) {
         return;
       }
@@ -100,7 +100,7 @@ public class ExercisesUpdater extends RepeatedTask {
         exercisesViewModel.setAuthenticated(false);
         observable.valueChanged();
       }
-      progressViewModel.stop(progress);
+      progress.finish();
       notifier.notify(new NetworkErrorNotification(e), courseProject.getProject());
     }
   }

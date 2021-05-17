@@ -6,7 +6,9 @@ import fi.aalto.cs.apluscourses.model.Progress;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
+import java.util.List;
 import java.util.Optional;
 
 public class ProgressViewModel {
@@ -33,17 +35,8 @@ public class ProgressViewModel {
       progresses.add(progress);
     }
     this.updateValues();
+    progress.updated.addListener(this, ProgressViewModel::updateValues);
     return progress;
-  }
-
-  /**
-   * Stops a Progress.
-   */
-  public void stop(Progress progress) {
-    synchronized (lock) {
-      progresses.remove(progress);
-    }
-    this.updateValues();
   }
 
   /**
@@ -58,6 +51,14 @@ public class ProgressViewModel {
 
   private void updateValues() {
     synchronized (lock) {
+      List<Progress> toBeRemoved = new ArrayList<>();
+      for (var progress : progresses) {
+        if (progress.getValue() >= progress.getMaxValue()) {
+          progress.updated.removeCallback(this);
+          toBeRemoved.add(progress);
+        }
+      }
+      toBeRemoved.forEach(progresses::remove);
       if (progresses.isEmpty()) {
         this.maxValue.set(0);
         this.value.set(0);
@@ -71,23 +72,6 @@ public class ProgressViewModel {
       }
     }
     this.updateVisible();
-  }
-
-  private void updateValue() {
-    synchronized (lock) {
-      var progress = progresses.getLast();
-      this.value.set(progress.getValue());
-    }
-  }
-
-  /**
-   * Increments a Progress and updates the value of the visible progress.
-   */
-  public void increment(Progress progress) {
-    synchronized (lock) {
-      progress.increment();
-    }
-    this.updateValue();
   }
 
   public void updateVisible() {
