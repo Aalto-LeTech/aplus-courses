@@ -18,6 +18,7 @@ public class CourseEndedBannerViewModel extends BannerViewModel {
 
   public CourseEndedBannerViewModel(@NotNull CourseProject courseProject) {
     this.courseProject = courseProject;
+    courseProject.getUser().addSimpleObserver(this, CourseEndedBannerViewModel::update);
   }
 
   /**

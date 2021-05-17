@@ -7,6 +7,8 @@ import static org.mockito.Mockito.when;
 import fi.aalto.cs.apluscourses.intellij.model.CourseProject;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
+import fi.aalto.cs.apluscourses.model.User;
+import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
 import org.junit.Test;
 
 public class CourseEndedBannerViewModelTest {
@@ -14,7 +16,10 @@ public class CourseEndedBannerViewModelTest {
   public void testBanner() {
     var courseProject = mock(CourseProject.class);
     var authentication = mock(Authentication.class);
+    var user = new ObservableReadWriteProperty<>(new User(authentication,
+            new ModelExtensions.TestExerciseDataSource()));
     when(courseProject.getAuthentication()).thenReturn(authentication);
+    when(courseProject.getUser()).thenReturn(user);
     var course = new ModelExtensions.TestCourse("a");
     when(courseProject.getCourse()).thenReturn(course);
 

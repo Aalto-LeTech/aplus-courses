@@ -3,14 +3,16 @@ package fi.aalto.cs.apluscourses.intellij.model;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.dal.PasswordStorage;
 import fi.aalto.cs.apluscourses.dal.TokenAuthentication;
-import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
 import fi.aalto.cs.apluscourses.model.User;
 import fi.aalto.cs.apluscourses.utils.Event;
+import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
+import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
 import java.net.URL;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -46,7 +48,8 @@ public class CourseProject {
   @NotNull
   public final Event exercisesUpdated;
 
-  private volatile User user;
+  @NotNull
+  private final ObservableProperty<User> user = new ObservableReadWriteProperty<>(null);
 
   /**
    * Construct a course project from the given course, course configuration URL (used for updating),
@@ -66,8 +69,9 @@ public class CourseProject {
    * authentication. This should be called when a course project is no longer used.
    */
   public void dispose() {
-    if (user != null) {
-      user.getAuthentication().clear();
+    var myUser = this.user.get();
+    if (myUser != null) {
+      myUser.getAuthentication().clear();
     }
     courseUpdater.stop();
     exercisesUpdater.stop();
@@ -85,7 +89,7 @@ public class CourseProject {
    */
   public void readAuthenticationFromStorage(@Nullable PasswordStorage passwordStorage,
                                             @NotNull TokenAuthentication.Factory factory) {
-    if (hasTriedToReadAuthenticationFromStorage.getAndSet(true) || user != null) {
+    if (hasTriedToReadAuthenticationFromStorage.getAndSet(true) || user.get() != null) {
       return;
     }
     Optional.ofNullable(passwordStorage)
@@ -107,7 +111,12 @@ public class CourseProject {
 
   @NotNull
   public String getUserName() {
-    return user == null ? "" : user.getUserName();
+    return user.get() == null ? "" : Objects.requireNonNull(user.get()).getUserName();
+  }
+
+  @NotNull
+  public ObservableProperty<User> getUser() {
+    return user;
   }
 
   @NotNull
@@ -126,25 +135,21 @@ public class CourseProject {
 
   @Nullable
   public Authentication getAuthentication() {
-    return user == null ? null : user.getAuthentication();
+    return user.get() == null ? null : Objects.requireNonNull(user.get()).getAuthentication();
   }
 
   /**
    * Sets the authentication. Any existing authentication is cleared.
    */
   public void setAuthentication(Authentication authentication) {
-    if (this.user != null) {
-      this.user.getAuthentication().clear();
+    var myUser = user.get();
+    if (myUser != null) {
+      myUser.getAuthentication().clear();
     }
     if (authentication == null) {
-      this.user = null;
+      this.user.set(null);
     } else {
-      this.user = new User(authentication, course.getExerciseDataSource());
-      var bannerViewModel = PluginSettings.getInstance().getMainViewModel(project)
-              .bannerViewModel.get();
-      if (bannerViewModel != null) {
-        bannerViewModel.update();
-      }
+      this.user.set(new User(authentication, course.getExerciseDataSource()));
     }
   }
 
