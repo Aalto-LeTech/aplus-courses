@@ -49,7 +49,7 @@ public class CourseProject {
   public final Event exercisesUpdated;
 
   @NotNull
-  private final ObservableProperty<User> user = new ObservableReadWriteProperty<>(null);
+  public final ObservableProperty<User> user = new ObservableReadWriteProperty<>(null);
 
   /**
    * Construct a course project from the given course, course configuration URL (used for updating),
@@ -111,12 +111,7 @@ public class CourseProject {
 
   @NotNull
   public String getUserName() {
-    return user.get() == null ? "" : Objects.requireNonNull(user.get()).getUserName();
-  }
-
-  @NotNull
-  public ObservableProperty<User> getUser() {
-    return user;
+    return Optional.ofNullable(user.get()).map(User::getUserName).orElse("");
   }
 
   @NotNull
@@ -142,14 +137,11 @@ public class CourseProject {
    * Sets the authentication. Any existing authentication is cleared.
    */
   public void setAuthentication(Authentication authentication) {
-    var myUser = user.get();
-    if (myUser != null) {
-      myUser.getAuthentication().clear();
-    }
-    if (authentication == null) {
-      this.user.set(null);
-    } else {
-      this.user.set(new User(authentication, course.getExerciseDataSource()));
+    var newUser = authentication == null
+            ? null : new User(authentication, course.getExerciseDataSource());
+    var oldUser = this.user.getAndSet(newUser);
+    if (oldUser != null) {
+      oldUser.getAuthentication().clear();
     }
   }
 

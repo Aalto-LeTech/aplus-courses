@@ -2,26 +2,23 @@ package fi.aalto.cs.apluscourses.presentation;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
+import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.model.CourseProject;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
-import fi.aalto.cs.apluscourses.model.User;
-import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
+import java.net.MalformedURLException;
+import java.net.URL;
 import org.junit.Test;
 
 public class CourseEndedBannerViewModelTest {
   @Test
-  public void testBanner() {
-    var courseProject = mock(CourseProject.class);
-    var authentication = mock(Authentication.class);
-    var user = new ObservableReadWriteProperty<>(new User(authentication,
-            new ModelExtensions.TestExerciseDataSource()));
-    when(courseProject.getAuthentication()).thenReturn(authentication);
-    when(courseProject.getUser()).thenReturn(user);
+  public void testBanner() throws MalformedURLException {
     var course = new ModelExtensions.TestCourse("a");
-    when(courseProject.getCourse()).thenReturn(course);
+    var url = new URL("https://example.com");
+    var courseProject = new CourseProject(course, url, mock(Project.class));
+    var authentication = mock(Authentication.class);
+    courseProject.setAuthentication(authentication);
 
     var banner = new CourseEndedBannerViewModel(courseProject);
 
