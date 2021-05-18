@@ -3,12 +3,11 @@ package fi.aalto.cs.apluscourses.presentation;
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 import fi.aalto.cs.apluscourses.model.Progress;
+import fi.aalto.cs.apluscourses.utils.CollectionUtil;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Deque;
-import java.util.List;
 import java.util.Optional;
 
 public class ProgressViewModel {
@@ -44,21 +43,14 @@ public class ProgressViewModel {
    */
   public void stopAll() {
     synchronized (lock) {
-      progresses.clear();
+      progresses.forEach(Progress::finish);
     }
     this.updateValues();
   }
 
   private void updateValues() {
     synchronized (lock) {
-      List<Progress> toBeRemoved = new ArrayList<>();
-      for (var progress : progresses) {
-        if (progress.getValue() >= progress.getMaxValue()) {
-          progress.updated.removeCallback(this);
-          toBeRemoved.add(progress);
-        }
-      }
-      toBeRemoved.forEach(progresses::remove);
+      CollectionUtil.removeIf(progresses, Progress::isFinished, this::unregisterProgress);
       if (progresses.isEmpty()) {
         this.maxValue.set(0);
         this.value.set(0);
@@ -92,5 +84,9 @@ public class ProgressViewModel {
 
   private boolean isIndeterminate() {
     return Optional.ofNullable(this.indeterminate.get()).orElse(false);
+  }
+
+  private void unregisterProgress(Progress progress) {
+    progress.updated.removeCallback(this);
   }
 }

@@ -35,6 +35,10 @@ public class Progress {
     return this.indeterminate;
   }
 
+  public boolean isFinished() {
+    return this.value >= this.maxValue;
+  }
+
   public void increment() {
     this.value++;
     updated.trigger();

@@ -1,9 +1,13 @@
 package fi.aalto.cs.apluscourses.utils;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.jetbrains.annotations.NotNull;
@@ -51,5 +55,25 @@ public class CollectionUtil {
       index++;
     }
     return -1;
+  }
+
+  /**
+   * Removes items for which the predicate is true.
+   * @param collection A collection.
+   * @param predicate A predicate that decides if an item is removed.
+   * @param callbackForRemoved A callback that is called when an item is removed.
+   * @param <T> Type of items.
+   */
+  public static <T> void removeIf(Collection<T> collection,
+                                  Predicate<T> predicate,
+                                  Consumer<T> callbackForRemoved) {
+    List<T> toBeRemoved = new ArrayList<>();
+    for (var item : collection) {
+      if (predicate.test(item)) {
+        callbackForRemoved.accept(item);
+        toBeRemoved.add(item);
+      }
+    }
+    toBeRemoved.forEach(collection::remove);
   }
 }
