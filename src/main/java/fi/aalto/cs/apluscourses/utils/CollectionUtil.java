@@ -64,9 +64,9 @@ public class CollectionUtil {
    * @param callbackForRemoved A callback that is called when an item is removed.
    * @param <T> Type of items.
    */
-  public static <T> void removeIf(Collection<T> collection,
-                                  Predicate<T> predicate,
-                                  Consumer<T> callbackForRemoved) {
+  public static <T> void removeIf(@NotNull Collection<T> collection,
+                                  @NotNull Predicate<T> predicate,
+                                  @NotNull Consumer<T> callbackForRemoved) {
     List<T> toBeRemoved = new ArrayList<>();
     for (var item : collection) {
       if (predicate.test(item)) {
