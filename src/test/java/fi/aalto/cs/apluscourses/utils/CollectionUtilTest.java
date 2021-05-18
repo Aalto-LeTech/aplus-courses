@@ -47,11 +47,7 @@ public class CollectionUtilTest {
     collection.add("Chrysler");
     collection.add("Dodge");
 
-    CollectionUtil.removeIf(collection, s -> s.startsWith("C"), callback);
-
-    verify(callback).accept("Chevrolet");
-    verify(callback).accept("Chrysler");
-    verifyNoMoreInteractions(callback);
+    CollectionUtil.removeIf(collection, s -> s.startsWith("C"));
 
     assertEquals(6, collection.size());
     assertThat(collection, hasItem("Audi"));

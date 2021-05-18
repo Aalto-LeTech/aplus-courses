@@ -8,6 +8,7 @@ import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.List;
 import java.util.Optional;
 
 public class ProgressViewModel {
@@ -49,8 +50,9 @@ public class ProgressViewModel {
   }
 
   private void updateValues() {
+    List<Progress> removed;
     synchronized (lock) {
-      CollectionUtil.removeIf(progresses, Progress::isFinished, this::unregisterProgress);
+      removed = CollectionUtil.removeIf(progresses, Progress::isFinished);
       if (progresses.isEmpty()) {
         this.maxValue.set(0);
         this.value.set(0);
@@ -63,6 +65,7 @@ public class ProgressViewModel {
         this.indeterminate.set(progress.getIndeterminate());
       }
     }
+    removed.forEach(this::unregisterProgress);
     this.updateVisible();
   }
 

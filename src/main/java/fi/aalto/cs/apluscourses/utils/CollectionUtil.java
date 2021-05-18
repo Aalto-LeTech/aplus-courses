@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -61,19 +60,17 @@ public class CollectionUtil {
    * Removes items for which the predicate is true.
    * @param collection A collection.
    * @param predicate A predicate that decides if an item is removed.
-   * @param callbackForRemoved A callback that is called when an item is removed.
    * @param <T> Type of items.
    */
-  public static <T> void removeIf(@NotNull Collection<T> collection,
-                                  @NotNull Predicate<T> predicate,
-                                  @NotNull Consumer<T> callbackForRemoved) {
+  public static <T> List<T> removeIf(@NotNull Collection<T> collection,
+                                     @NotNull Predicate<T> predicate) {
     List<T> toBeRemoved = new ArrayList<>();
     for (var item : collection) {
       if (predicate.test(item)) {
-        callbackForRemoved.accept(item);
         toBeRemoved.add(item);
       }
     }
-    toBeRemoved.forEach(collection::remove);
+    collection.removeAll(toBeRemoved);
+    return toBeRemoved;
   }
 }
