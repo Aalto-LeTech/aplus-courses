@@ -47,7 +47,9 @@ public class CollectionUtilTest {
     collection.add("Chrysler");
     collection.add("Dodge");
 
-    CollectionUtil.removeIf(collection, s -> s.startsWith("C"));
+    var removed = CollectionUtil.removeIf(collection, s -> s.startsWith("C"));
+    assertThat(removed, hasItem("Chevrolet"));
+    assertThat(removed, hasItem("Chrysler"));
 
     assertEquals(6, collection.size());
     assertThat(collection, hasItem("Audi"));

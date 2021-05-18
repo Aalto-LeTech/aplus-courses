@@ -62,7 +62,7 @@ public class CollectionUtil {
    * @param predicate A predicate that decides if an item is removed.
    * @param <T> Type of items.
    */
-  public static <T> List<T> removeIf(@NotNull Collection<T> collection,
+  public static <T> Collection<T> removeIf(@NotNull Collection<T> collection,
                                      @NotNull Predicate<T> predicate) {
     List<T> toBeRemoved = new ArrayList<>();
     for (var item : collection) {

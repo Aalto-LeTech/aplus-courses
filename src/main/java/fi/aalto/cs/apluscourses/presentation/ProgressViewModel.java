@@ -7,8 +7,8 @@ import fi.aalto.cs.apluscourses.utils.CollectionUtil;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
 import java.util.ArrayDeque;
+import java.util.Collection;
 import java.util.Deque;
-import java.util.List;
 import java.util.Optional;
 
 public class ProgressViewModel {
@@ -50,7 +50,7 @@ public class ProgressViewModel {
   }
 
   private void updateValues() {
-    List<Progress> removed;
+    Collection<Progress> removed;
     synchronized (lock) {
       removed = CollectionUtil.removeIf(progresses, Progress::isFinished);
       if (progresses.isEmpty()) {
