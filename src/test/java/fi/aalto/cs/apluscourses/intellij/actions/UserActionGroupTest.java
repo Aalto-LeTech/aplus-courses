@@ -46,6 +46,6 @@ public class UserActionGroupTest {
     var authentication = mock(Authentication.class);
     courseProject.setAuthentication(authentication);
     action.update(event);
-    assertEquals("Logged In As test", event.getPresentation().getText());
+    assertEquals("Logged In As: test", event.getPresentation().getText());
   }
 }

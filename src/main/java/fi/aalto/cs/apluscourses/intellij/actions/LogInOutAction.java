@@ -1,6 +1,5 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
-import static fi.aalto.cs.apluscourses.dal.APlusTokenAuthentication.APLUS_USER;
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -36,7 +35,7 @@ public class LogInOutAction extends DumbAwareAction {
       var project = courseProjectProvider.getCourseProject(e.getProject());
       if (project != null && project.getAuthentication() != null) {
         project.setAuthentication(null);
-        project.removePasswordFromStorage(passwordStorageFactory, APLUS_USER);
+        project.removePasswordFromStorage(passwordStorageFactory);
         project.getExercisesUpdater().restart();
       }
     } else {

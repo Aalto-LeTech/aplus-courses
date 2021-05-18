@@ -96,11 +96,10 @@ public class CourseProject {
   /**
    * Removes user from password storage.
    */
-  public void removePasswordFromStorage(@NotNull PasswordStorage.Factory passwordStorageFactory,
-                                        @NotNull String user) {
+  public void removePasswordFromStorage(@NotNull PasswordStorage.Factory passwordStorageFactory) {
     var passwordStorage = passwordStorageFactory.create(course.getApiUrl());
     if (passwordStorage != null) {
-      passwordStorage.remove(user);
+      passwordStorage.remove();
     }
   }
 

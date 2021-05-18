@@ -3,6 +3,7 @@ package fi.aalto.cs.apluscourses.presentation;
 import fi.aalto.cs.apluscourses.dal.TokenAuthentication;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.ExerciseDataSource;
+import java.io.IOException;
 import java.util.Arrays;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -69,8 +70,8 @@ public class AuthenticationViewModel {
   }
 
   @NotNull
-  public ExerciseDataSource getExerciseDataSource() {
-    return exerciseDataSource;
+  public String getUserName(Authentication authentication) throws IOException {
+    return exerciseDataSource.getUserName(authentication);
   }
 
   @Nullable
