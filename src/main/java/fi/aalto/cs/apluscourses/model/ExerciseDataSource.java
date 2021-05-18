@@ -38,7 +38,7 @@ public interface ExerciseDataSource {
                                        @NotNull ZonedDateTime minCacheEntryTime) throws IOException;
 
   @NotNull
-  String getUserName(@NotNull Authentication authentication) throws IOException;
+  User getUser(@NotNull Authentication authentication) throws IOException;
 
   @Nullable
   String submit(@NotNull Submission submission, @NotNull Authentication authentication)

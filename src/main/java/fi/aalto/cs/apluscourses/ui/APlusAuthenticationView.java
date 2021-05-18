@@ -69,8 +69,8 @@ public class APlusAuthenticationView extends DialogWrapper implements Dialog {
       var input = inputField.getPassword();
       authenticationViewModel.setToken(input);
       Arrays.fill(input, '\0');
-      var authentication = authenticationViewModel.build();
-      authenticationViewModel.getUserName(authentication);
+      authenticationViewModel.build();
+      authenticationViewModel.tryGetUser(authenticationViewModel.getAuthentication());
     } catch (UnexpectedResponseException e) {
       return new ValidationInfo(getText("ui.authenticationView.invalidToken"),
           inputField).withOKEnabled();

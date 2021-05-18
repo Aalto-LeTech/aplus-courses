@@ -8,6 +8,7 @@ import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
 import fi.aalto.cs.apluscourses.model.User;
 import fi.aalto.cs.apluscourses.utils.Event;
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.Optional;
@@ -15,6 +16,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A {@code CourseProject} instance contains a {@link Course} and {@link Project}. In addition, it
@@ -22,6 +25,8 @@ import org.jetbrains.annotations.Nullable;
  * triggered when an update occurs.
  */
 public class CourseProject {
+
+  private static final Logger logger = LoggerFactory.getLogger(CourseProject.class);
 
   @NotNull
   private final Course course;
@@ -137,7 +142,11 @@ public class CourseProject {
     if (authentication == null) {
       this.user = null;
     } else {
-      this.user = new User(authentication, course.getExerciseDataSource());
+      try {
+        this.user = course.getExerciseDataSource().getUser(authentication);
+      } catch (IOException e) {
+        logger.error("Failed to fetch user data", e);
+      }
     }
   }
 

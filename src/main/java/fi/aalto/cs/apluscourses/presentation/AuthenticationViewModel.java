@@ -49,18 +49,14 @@ public class AuthenticationViewModel {
   /**
    * Builds an authentication object based on the data given to this view model and clears that
    * data from memory.
-   *
-   * @return A new {@link Authentication} object.
    */
-  @NotNull
-  public Authentication build() {
+  public void build() {
     synchronized (lock) {
       if (token == null) {
         throw new IllegalStateException("Token is not set");
       }
       this.authentication = authenticationFactory.create(token);
       Arrays.fill(token, '\0');
-      return this.authentication;
     }
   }
 
@@ -69,9 +65,8 @@ public class AuthenticationViewModel {
     return authenticationUrl;
   }
 
-  @NotNull
-  public String getUserName(Authentication authentication) throws IOException {
-    return exerciseDataSource.getUserName(authentication);
+  public void tryGetUser(Authentication authentication) throws IOException {
+    exerciseDataSource.getUser(authentication);
   }
 
   @Nullable

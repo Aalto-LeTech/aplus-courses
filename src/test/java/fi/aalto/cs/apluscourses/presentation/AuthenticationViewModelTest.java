@@ -29,7 +29,8 @@ public class AuthenticationViewModelTest {
     char[] token = new char[] {'a', 's', 'd'};
     viewModel.setToken(token);
 
-    Authentication authentication = viewModel.build();
+    viewModel.build();
+    Authentication authentication = viewModel.getAuthentication();
 
     assertTrue(authentication instanceof APlusTokenAuthentication);
     assertEquals("The view model has the URL passed to the constructor",
