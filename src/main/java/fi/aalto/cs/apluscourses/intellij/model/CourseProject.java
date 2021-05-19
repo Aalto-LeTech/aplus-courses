@@ -10,8 +10,10 @@ import fi.aalto.cs.apluscourses.model.User;
 import fi.aalto.cs.apluscourses.utils.Event;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -139,11 +141,18 @@ public class CourseProject {
    * Sets the authentication. Any existing authentication is cleared.
    */
   public void setAuthentication(Authentication authentication) {
-    var newUser = authentication == null
-            ? null : new User(authentication, course.getExerciseDataSource());
-    var oldUser = this.user.getAndSet(newUser);
-    if (oldUser != null) {
-      oldUser.getAuthentication().clear();
+    var myUser = this.user.get();
+    if (myUser != null) {
+      myUser.getAuthentication().clear();
+    }
+    if (authentication == null) {
+      this.user.set(null);
+    } else {
+      try {
+        this.user.set(course.getExerciseDataSource().getUser(authentication));
+      } catch (IOException e) {
+        logger.error("Failed to fetch user data", e);
+      }
     }
   }
 
