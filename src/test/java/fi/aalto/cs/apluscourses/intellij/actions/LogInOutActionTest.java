@@ -54,11 +54,11 @@ public class LogInOutActionTest {
   @Test
   public void testLogInOutAction() {
     action.update(event);
-    assertEquals("Log Out", event.getPresentation().getText());
+    assertEquals("Log out", event.getPresentation().getText());
     assertNotNull(courseProject.getAuthentication());
     action.actionPerformed(event);
     action.update(event);
-    assertEquals("Log In", event.getPresentation().getText());
+    assertEquals("Log in", event.getPresentation().getText());
     assertNull(courseProject.getAuthentication());
   }
 }
