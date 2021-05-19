@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -141,18 +140,15 @@ public class CourseProject {
    * Sets the authentication. Any existing authentication is cleared.
    */
   public void setAuthentication(Authentication authentication) {
-    var myUser = this.user.get();
-    if (myUser != null) {
-      myUser.getAuthentication().clear();
-    }
-    if (authentication == null) {
-      this.user.set(null);
-    } else {
-      try {
-        this.user.set(course.getExerciseDataSource().getUser(authentication));
-      } catch (IOException e) {
-        logger.error("Failed to fetch user data", e);
+    try {
+      var newUser = authentication == null
+              ? null : course.getExerciseDataSource().getUser(authentication);
+      var oldUser = this.user.getAndSet(newUser);
+      if (oldUser != null) {
+        oldUser.getAuthentication().clear();
       }
+    } catch (IOException e) {
+      logger.error("Failed to fetch user data", e);
     }
   }
 
