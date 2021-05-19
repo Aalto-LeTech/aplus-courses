@@ -3,6 +3,7 @@ package fi.aalto.cs.apluscourses.presentation;
 import fi.aalto.cs.apluscourses.dal.TokenAuthentication;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.ExerciseDataSource;
+import java.io.IOException;
 import java.util.Arrays;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -48,18 +49,14 @@ public class AuthenticationViewModel {
   /**
    * Builds an authentication object based on the data given to this view model and clears that
    * data from memory.
-   *
-   * @return A new {@link Authentication} object.
    */
-  @NotNull
-  public Authentication build() {
+  public void build() {
     synchronized (lock) {
       if (token == null) {
         throw new IllegalStateException("Token is not set");
       }
       this.authentication = authenticationFactory.create(token);
       Arrays.fill(token, '\0');
-      return this.authentication;
     }
   }
 
@@ -68,9 +65,8 @@ public class AuthenticationViewModel {
     return authenticationUrl;
   }
 
-  @NotNull
-  public ExerciseDataSource getExerciseDataSource() {
-    return exerciseDataSource;
+  public void tryGetUser(Authentication authentication) throws IOException {
+    exerciseDataSource.getUser(authentication);
   }
 
   @Nullable

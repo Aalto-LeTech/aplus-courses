@@ -72,8 +72,8 @@ public class ModelExtensions {
     }
 
     @Override
-    public @NotNull String getUserName(@NotNull Authentication authentication) {
-      return "test";
+    public @NotNull User getUser(@NotNull Authentication authentication) {
+      return new User(authentication, "test");
     }
 
     @Override

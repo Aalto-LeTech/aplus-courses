@@ -222,7 +222,7 @@ class MainTest {
                         "The user dropdown contains the user's name",
                         containsText("TESTI-Opiskelija")
                     )
-                    selectItemContains("Log Out")
+                    selectItemContains("Log out")
                 }
                 assertTrue(
                     "The assignments tree gets cleared after logging out",
@@ -232,9 +232,9 @@ class MainTest {
                 with(dropDownMenu()) {
                     assertTrue(
                         "The user dropdown shows that the user isn't logged in",
-                        containsText("Not Logged In")
+                        containsText("Not logged in")
                     )
-                    selectItemContains("Log In")
+                    selectItemContains("Log in")
                 }
                 dialog("A+ Token").button("Cancel").click()
             }

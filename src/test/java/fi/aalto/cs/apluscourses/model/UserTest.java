@@ -11,7 +11,7 @@ public class UserTest {
   public void testUser() {
     var auth = mock(Authentication.class);
     var exerciseDataSource = new ModelExtensions.TestExerciseDataSource();
-    var user = new User(auth, exerciseDataSource);
+    var user = exerciseDataSource.getUser(auth);
     assertSame("test", user.getUserName());
     assertSame(auth, user.getAuthentication());
   }

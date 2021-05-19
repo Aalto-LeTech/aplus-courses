@@ -54,11 +54,11 @@ public class ExercisesUpdater extends RepeatedTask {
     var course = courseProject.getCourse();
     var dataSource = course.getExerciseDataSource();
     var authentication = courseProject.getAuthentication();
-    if (authentication == null && courseProject.getExerciseGroups() != null) {
-      courseProject.setExerciseGroups(Collections.emptyList());
-      eventToTrigger.trigger();
-      return;
-    } else if (authentication == null) {
+    if (authentication == null) {
+      if (courseProject.getExerciseGroups() != null) {
+        courseProject.setExerciseGroups(Collections.emptyList());
+        eventToTrigger.trigger();
+      }
       return;
     }
     var progressViewModel =

@@ -100,14 +100,14 @@
             <group id="fi.aalto.cs.apluscourses.intellij.actions.UserActionGroup"
                    class="fi.aalto.cs.apluscourses.intellij.actions.UserActionGroup"
                    popup="true"
-                   text="Not Logged In"
+                   text="Not logged in"
                    icon="PluginIcons.A_PLUS_USER">
                 <action id="fi.aalto.cs.apluscourses.intellij.actions.UserNameAction"
                         class="fi.aalto.cs.apluscourses.intellij.actions.UserNameAction"
-                        text="Not Logged In"/>
+                        text="Not logged in"/>
                 <action id="fi.aalto.cs.apluscourses.intellij.actions.LogInOutAction"
                         class="fi.aalto.cs.apluscourses.intellij.actions.LogInOutAction"
-                        text="Log In"/>
+                        text="Log in"/>
             </group>
         </group>
         <action id="Scala.RunConsole"

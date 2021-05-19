@@ -45,7 +45,7 @@ public class IntelliJPasswordStorage implements PasswordStorage {
   }
 
   @Override
-  public void remove(@NotNull String user) {
+  public void remove() {
     passwordSafe.set(credentialAttributes, null);
   }
 

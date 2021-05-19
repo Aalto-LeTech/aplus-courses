@@ -15,6 +15,7 @@ import fi.aalto.cs.apluscourses.model.SubmissionHistory;
 import fi.aalto.cs.apluscourses.model.SubmissionInfo;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import fi.aalto.cs.apluscourses.model.Tutorial;
+import fi.aalto.cs.apluscourses.model.User;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
 import fi.aalto.cs.apluscourses.utils.JsonUtil;
 import java.io.IOException;
@@ -170,10 +171,10 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
 
   @Override
   @NotNull
-  public String getUserName(@NotNull Authentication authentication) throws IOException {
+  public User getUser(@NotNull Authentication authentication) throws IOException {
     String url = apiUrl + USERS + "/me/";
     JSONObject response = client.fetch(url, authentication);
-    return parser.parseUserName(response);
+    return new User(authentication, parser.parseUserName(response));
   }
 
   @Override

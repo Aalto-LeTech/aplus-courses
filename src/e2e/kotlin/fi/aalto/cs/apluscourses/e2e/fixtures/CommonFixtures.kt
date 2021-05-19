@@ -88,7 +88,7 @@ class IdeFrameFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent
     )
     fun userButton() = find(
         ActionButtonFixture::class.java,
-        byXpath("//div[@class='ActionButton' and @myaction='Not Logged In (null)']"),
+        byXpath("//div[@class='ActionButton' and @myaction='Not logged in (null)']"),
         Duration.ofSeconds(20)
     )
     fun searchEverywhereButton() = find(

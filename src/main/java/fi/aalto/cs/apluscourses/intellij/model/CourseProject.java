@@ -12,12 +12,13 @@ import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
 import java.net.URL;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A {@code CourseProject} instance contains a {@link Course} and {@link Project}. In addition, it
@@ -25,6 +26,8 @@ import org.jetbrains.annotations.Nullable;
  * triggered when an update occurs.
  */
 public class CourseProject {
+
+  private static final Logger logger = LoggerFactory.getLogger(CourseProject.class);
 
   @NotNull
   private final Course course;
@@ -101,11 +104,10 @@ public class CourseProject {
   /**
    * Removes user from password storage.
    */
-  public void removePasswordFromStorage(@NotNull PasswordStorage.Factory passwordStorageFactory,
-                                        @NotNull String user) {
+  public void removePasswordFromStorage(@NotNull PasswordStorage.Factory passwordStorageFactory) {
     var passwordStorage = passwordStorageFactory.create(course.getApiUrl());
     if (passwordStorage != null) {
-      passwordStorage.remove(user);
+      passwordStorage.remove();
     }
   }
 
