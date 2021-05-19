@@ -45,6 +45,11 @@ public class IntelliJPasswordStorage implements PasswordStorage {
   }
 
   @Override
+  public void remove() {
+    passwordSafe.set(credentialAttributes, null);
+  }
+
+  @Override
   public char[] restorePassword() {
     return Optional.ofNullable(passwordSafe.get(credentialAttributes))
         .map(Credentials::getPassword)

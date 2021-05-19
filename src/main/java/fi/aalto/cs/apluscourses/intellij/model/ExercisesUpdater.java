@@ -55,6 +55,10 @@ public class ExercisesUpdater extends RepeatedTask {
     var dataSource = course.getExerciseDataSource();
     var authentication = courseProject.getAuthentication();
     if (authentication == null) {
+      if (courseProject.getExerciseGroups() != null) {
+        courseProject.setExerciseGroups(Collections.emptyList());
+        eventToTrigger.trigger();
+      }
       return;
     }
     var progressViewModel =

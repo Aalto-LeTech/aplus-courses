@@ -36,11 +36,6 @@ public class MainViewModel {
   public final ObservableProperty<TutorialViewModel> tutorialViewModel =
       new ObservableReadWriteProperty<>(null);
 
-
-  @NotNull
-  public final ObservableProperty<Authentication> authentication =
-      new ObservableReadWriteProperty<>(null);
-
   @NotNull
   private final Options exerciseFilterOptions;
 
@@ -55,9 +50,10 @@ public class MainViewModel {
    * Creates a new {@link ExercisesTreeViewModel} with the given exercise groups, which is then set
    * to {@link MainViewModel#exercisesViewModel}.
    */
-  public void updateExercisesViewModel(@NotNull List<ExerciseGroup> exerciseGroups) {
+  public void updateExercisesViewModel(@NotNull List<ExerciseGroup> exerciseGroups,
+                                       Authentication auth) {
     var viewModel = new ExercisesTreeViewModel(exerciseGroups, exerciseFilterOptions);
-    viewModel.setAuthenticated(true);
+    viewModel.setAuthenticated(auth != null);
     viewModel.setProjectReady(exercisesViewModel.get().isProjectReady());
     exercisesViewModel.set(viewModel);
   }

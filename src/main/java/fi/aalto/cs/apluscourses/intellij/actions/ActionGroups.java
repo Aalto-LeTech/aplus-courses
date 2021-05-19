@@ -8,6 +8,8 @@ public class ActionGroups {
       "fi.aalto.cs.apluscourses.intellij.actions.ActionGroups.EXERCISE_ACTIONS";
   public static final String MENU_ACTIONS =
       "fi.aalto.cs.apluscourses.intellij.actions.ActionGroups.MENU_ACTIONS";
+  public static final String TOOL_WINDOW_ACTIONS =
+      "fi.aalto.cs.apluscourses.intellij.actions.ActionGroups.TOOL_WINDOW_ACTIONS";
 
   private ActionGroups() {
 

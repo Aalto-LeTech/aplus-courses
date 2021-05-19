@@ -174,7 +174,8 @@ public class PluginSettings implements MainViewModelProvider, DefaultGroupIdSett
       courseProject.courseUpdated.addListener(
           mainViewModel.courseViewModel, ObservableProperty::valueChanged);
       courseProject.exercisesUpdated.addListener(mainViewModel, viewModel ->
-          viewModel.updateExercisesViewModel(courseProject.getExerciseGroups()));
+          viewModel.updateExercisesViewModel(
+              courseProject.getExerciseGroups(), courseProject.getAuthentication()));
       courseProject.getCourseUpdater().restart();
       courseProject.getExercisesUpdater().restart();
       return courseProject;

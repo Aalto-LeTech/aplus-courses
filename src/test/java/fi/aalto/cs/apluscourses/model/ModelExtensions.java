@@ -70,6 +70,11 @@ public class ModelExtensions {
     }
 
     @Override
+    public @NotNull User getUser(@NotNull Authentication authentication) {
+      return new User(authentication, "test");
+    }
+
+    @Override
     public String submit(@NotNull Submission submission, @NotNull Authentication authentication) {
       // do nothing
       return "";

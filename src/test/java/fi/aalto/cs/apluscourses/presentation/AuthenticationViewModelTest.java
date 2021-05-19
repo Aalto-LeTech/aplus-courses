@@ -9,6 +9,7 @@ import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.dal.APlusTokenAuthentication;
 import fi.aalto.cs.apluscourses.dal.TokenAuthentication;
 import fi.aalto.cs.apluscourses.model.Authentication;
+import fi.aalto.cs.apluscourses.model.ExerciseDataSource;
 import org.junit.Test;
 
 public class AuthenticationViewModelTest {
@@ -17,16 +18,19 @@ public class AuthenticationViewModelTest {
   public void testAPlusAuthenticationViewModel() {
     Project project = mock(Project.class);
     doReturn("hello there").when(project).getBasePath();
+    ExerciseDataSource dataSource = mock(ExerciseDataSource.class);
 
     AuthenticationViewModel viewModel = new AuthenticationViewModel(
         APlusTokenAuthentication::new,
-        "https://example.com"
+        "https://example.com",
+        dataSource
     );
 
     char[] token = new char[] {'a', 's', 'd'};
     viewModel.setToken(token);
 
-    Authentication authentication = viewModel.build();
+    viewModel.build();
+    Authentication authentication = viewModel.getAuthentication();
 
     assertTrue(authentication instanceof APlusTokenAuthentication);
     assertEquals("The view model has the URL passed to the constructor",

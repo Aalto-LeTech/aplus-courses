@@ -33,6 +33,8 @@ public interface Parser {
   SubmissionResult parseSubmissionResult(@NotNull JSONObject jsonObject,
                                          @NotNull Exercise exercise);
 
+  String parseUserName(@NotNull JSONObject object);
+
   /**
    * Parses an JSON array to a list using a given parsing function.
    *
