@@ -12,4 +12,8 @@ public class ComponentDatabase {
   public static @Nullable Component getEditorWindow() {
     return ComponentLocator.getComponentByClass("EditorWindow");
   }
+
+  private ComponentDatabase() {
+
+  }
 }
