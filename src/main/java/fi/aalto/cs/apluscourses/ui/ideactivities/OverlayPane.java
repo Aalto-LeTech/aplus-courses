@@ -43,7 +43,7 @@ public class OverlayPane extends JPanel implements AWTEventListener {
     for (var c : exemptComponents) {
       // convertPoint is necessary because the component uses a different coordinate origin
       if (c.isShowing()) {
-        var windowPos = SwingUtilities.convertPoint(c, c.getX(), c.getY(), this);
+        var windowPos = SwingUtilities.convertPoint(c, 0, 0, this);
         var componentRect = new Rectangle(windowPos.x, windowPos.y, c.getWidth(), c.getHeight());
 
         overlayArea.subtract(new Area(componentRect));
