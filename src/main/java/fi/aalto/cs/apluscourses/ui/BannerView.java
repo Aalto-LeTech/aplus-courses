@@ -36,7 +36,7 @@ public class BannerView {
     this.container.add(BorderLayout.NORTH, banner);
 
     this.bindable = new Bindable<>(banner, (panel, text) -> {
-      panel.setVisible(!text.equals(""));
+      panel.setVisible(!("").equals(text));
       panel.setText(text);
     }, true);
   }
