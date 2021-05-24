@@ -5,13 +5,13 @@ import java.awt.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class ProjectTreePresenter extends IntelliJComponentPresenterBase {
-  public ProjectTreePresenter(@NotNull String instruction, @NotNull String info) {
+public class EditorPresenter extends IntelliJComponentPresenterBase {
+  public EditorPresenter(@NotNull String instruction, @NotNull String info) {
     super(instruction, info);
   }
 
   @Override
   protected @Nullable Component getComponent() {
-    return ComponentDatabase.getProjectPane();
+    return ComponentDatabase.getEditorWindow();
   }
 }
