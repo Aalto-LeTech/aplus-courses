@@ -17,6 +17,10 @@ public class TutorialViewModel {
 
   private Task currentTask = null;
 
+  private int currentTaskIndex;
+
+  private final int tasksAmount;
+
   /**
    * Constructor.
    */
@@ -27,6 +31,8 @@ public class TutorialViewModel {
     if (!tasks.isEmpty()) {
       this.currentTask = tasks.get(0);
     }
+    currentTaskIndex = 0;
+    tasksAmount = tasks.size();
     this.activityFactory = activityFactory;
   }
 
@@ -38,6 +44,7 @@ public class TutorialViewModel {
       currentTask.taskCompleted.addListener(this, TutorialViewModel::currentTaskCompleted);
       if (currentTask.startTask(activityFactory)) {
         currentTaskCompleted();
+        currentTaskIndex++;
       }
       // The Task/Tutorial has been completed prematurely
       // becuase the Activity was already performed.
@@ -90,5 +97,13 @@ public class TutorialViewModel {
 
   public @NotNull Tutorial getTutorial() {
     return tutorialExercise.getTutorial();
+  }
+
+  public int getCurrentTaskIndex() {
+    return currentTaskIndex;
+  }
+
+  public int getTasksAmount() {
+    return tasksAmount;
   }
 }
