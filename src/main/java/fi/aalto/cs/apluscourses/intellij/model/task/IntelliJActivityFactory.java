@@ -30,7 +30,14 @@ public class IntelliJActivityFactory implements ActivityFactory {
         return new IdeActionListener(callback, project, arguments.getOrThrow("actionName"));
       case "classDeclScala":
         return new ClassDeclarationListener(callback, project, arguments.getOrThrow("className"),
-                arguments.getOrThrow("classArguments"));
+                arguments.getArrayOrThrow("classArguments"), arguments.getArrayOrThrow("classHierarchy"), arguments.getOrThrow("filepath"));
+      case "functionDefinition":
+        return new FunctionDefinitionListener(callback, project,
+                arguments.get("methodName"),
+                arguments.getArrayOrThrow("arguments"),
+                arguments.getArrayOrThrow("body"),
+                arguments.getOrThrow("returnType"),
+                arguments.getOrThrow("filepath"));
       default:
         throw new IllegalArgumentException("Unsupported action: " + action);
     }

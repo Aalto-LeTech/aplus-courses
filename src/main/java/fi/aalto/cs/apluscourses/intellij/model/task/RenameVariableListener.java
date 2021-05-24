@@ -1,8 +1,7 @@
 package fi.aalto.cs.apluscourses.intellij.model.task;
 
 import com.intellij.openapi.Disposable;
-import com.intellij.openapi.editor.CaretModel;
-import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.editor.event.CaretEvent;
 import com.intellij.openapi.editor.event.CaretListener;
@@ -19,6 +18,7 @@ import fi.aalto.cs.apluscourses.model.task.ListenerCallback;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaRecursiveElementVisitor;
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScVariable;
+
 
 public class RenameVariableListener implements DocumentListener, ActivitiesListener {
 
@@ -49,7 +49,7 @@ public class RenameVariableListener implements DocumentListener, ActivitiesListe
                                 Project project) {
     this.project = project;
     this.callback = callback;
-    this.filePath = filePath; //TODO establish that the correct file is open! Different issue?
+    this.filePath = filePath;
     this.oldName = oldName;
     this.newName = newName;
     caretListener = new CaretListener() {
@@ -68,28 +68,26 @@ public class RenameVariableListener implements DocumentListener, ActivitiesListe
   public void documentChanged(@NotNull DocumentEvent event) {
     PsiFile psiFile = PsiDocumentManager.getInstance(project).getPsiFile(event.getDocument());
     LeafPsiElement element = (LeafPsiElement) psiFile.findElementAt(event.getOffset());
-    System.out.println("element: " + element.getText()); //the new value
     elementName = getElementName(element.getText());
     psiFile.accept(new ScalaRecursiveElementVisitor() {
       @Override
       public void visitVariable(ScVariable variable) {
         super.visitVariable(variable);
         if (correctVariable && newName.equals(elementName)) {
-          callback.callback();
+          ApplicationManager.getApplication().invokeLater(callback::callback);
           return;
         }
         if (!correctVariable && element.getText().trim().isEmpty()) {
           currentVariable = variable.toString().substring(22);
           correctVariable = currentVariable.equals(oldName);
         }
-        System.out.println("Found a variable at offset " + variable.toString());
         //gets the variable that is being changed in the form of
-        // "ScVariableDefinition: isInTestModeas"
-
-        //handle the case that the caret changes line! -> reset current and correct variable!
-        //What would be a use case for that? Is it necessary?
+        // "ScVariableDefinition:isInTestModes"
       }
     });
+  }
+
+  public void checkPsiFile(PsiFile psiFile) {
 
   }
 
@@ -99,7 +97,8 @@ public class RenameVariableListener implements DocumentListener, ActivitiesListe
     disposable = Disposer.newDisposable();
     multicaster.addCaretListener(caretListener, disposable);
     multicaster.addDocumentListener(this, disposable);
-    return false; //TODO check if there is already a var with that name in the file!
+    return false;
+    //TODO check if there is already a var with that name in the file!
   }
 
   @Override
@@ -118,7 +117,6 @@ public class RenameVariableListener implements DocumentListener, ActivitiesListe
   }
 
   //TODO perhaps a final check make sure that there are no occurencies of the old name
-  // (could be with regex)
 
 }
 
