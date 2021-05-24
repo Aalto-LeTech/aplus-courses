@@ -5,6 +5,7 @@ import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 import static icons.PluginIcons.ACCENT_COLOR;
 
 import com.intellij.history.LocalHistory;
+import com.intellij.openapi.actionSystem.ActionPlaces;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
@@ -154,6 +155,9 @@ public class SubmitExerciseAction extends AnAction {
       e.getPresentation().setEnabled(project != null
               && authentication != null && courseViewModel != null
               && (isSubmittableExerciseSelected || isSubmittableSubmissionSelected));
+    }
+    if ((ActionPlaces.TOOLWINDOW_POPUP).equals(e.getPlace()) && !e.getPresentation().isEnabled()) {
+      e.getPresentation().setVisible(false);
     }
   }
 
