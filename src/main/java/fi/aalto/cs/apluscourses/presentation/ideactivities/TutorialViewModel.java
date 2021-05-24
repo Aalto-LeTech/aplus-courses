@@ -42,9 +42,9 @@ public class TutorialViewModel {
   public void startNextTask() {
     synchronized (lock) {
       currentTask.taskCompleted.addListener(this, TutorialViewModel::currentTaskCompleted);
+      incrementIndex();
       if (currentTask.startTask(activityFactory)) {
         currentTaskCompleted();
-        currentTaskIndex++;
       }
       // The Task/Tutorial has been completed prematurely
       // becuase the Activity was already performed.
@@ -101,6 +101,10 @@ public class TutorialViewModel {
 
   public int getCurrentTaskIndex() {
     return currentTaskIndex;
+  }
+
+  private void incrementIndex() {
+    currentTaskIndex++;
   }
 
   public int getTasksAmount() {

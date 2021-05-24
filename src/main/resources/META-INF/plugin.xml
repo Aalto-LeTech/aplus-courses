@@ -122,7 +122,7 @@
         <action id="Scala.RunConsole"
                 class="fi.aalto.cs.apluscourses.intellij.actions.ReplAction"
                 overrides="true"
-                icon="PluginIcons.A_PLUS_REPL">
+                icon="PluginIcons.A_PLUS_INFO">
             <keyboard-shortcut first-keystroke="control shift D" keymap="$default"/>
         </action>
     </actions>
