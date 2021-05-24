@@ -55,6 +55,10 @@
                     class="fi.aalto.cs.apluscourses.intellij.actions.AboutAction"
                     text="About the A+ Courses Plugin"
                     description="Information about the A+ Courses plugin for IntelliJ" />
+            <action id="fi.aalto.cs.apluscourses.intellij.actions.FailAction"
+                    class="fi.aalto.cs.apluscourses.intellij.actions.FailAction"
+                    text="Throw an Exception"
+                    description="Test error reporting by throwing an exception" />
         </group>
         <group id="fi.aalto.cs.apluscourses.intellij.actions.ActionGroups.MODULE_ACTIONS"
                text="A+ Module"
