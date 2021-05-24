@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 
 import com.intellij.openapi.project.Project;
+import com.intellij.ui.LightColors;
 import fi.aalto.cs.apluscourses.intellij.model.CourseProject;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
@@ -21,6 +22,7 @@ public class CourseEndedBannerViewModelTest {
     courseProject.setAuthentication(authentication);
 
     var banner = new CourseEndedBannerViewModel(courseProject);
+    assertEquals(LightColors.RED, banner.color.get());
 
     assertEquals("", banner.text.get());
     banner.update();

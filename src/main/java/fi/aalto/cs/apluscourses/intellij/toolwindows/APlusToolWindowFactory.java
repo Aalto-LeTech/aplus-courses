@@ -10,7 +10,6 @@ import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.JBSplitter;
-import com.intellij.ui.LightColors;
 import fi.aalto.cs.apluscourses.intellij.actions.ActionGroups;
 import fi.aalto.cs.apluscourses.intellij.actions.ActionUtil;
 import fi.aalto.cs.apluscourses.intellij.actions.CourseProjectAction;
@@ -102,8 +101,8 @@ public class APlusToolWindowFactory extends BaseToolWindowFactory implements Dum
 
   @NotNull
   private static BannerView createBannerView(@NotNull Project project,
-                                            @NotNull JComponent bottomComponent) {
-    var bannerView = new BannerView(bottomComponent, LightColors.RED);
+                                             @NotNull JComponent bottomComponent) {
+    var bannerView = new BannerView(bottomComponent);
 
     PluginSettings.getInstance()
             .getMainViewModel(project)

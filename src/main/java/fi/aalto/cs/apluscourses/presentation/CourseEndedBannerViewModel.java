@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.presentation;
 
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
+import com.intellij.ui.LightColors;
 import fi.aalto.cs.apluscourses.BannerViewModel;
 import fi.aalto.cs.apluscourses.intellij.model.CourseProject;
 import java.io.IOException;
@@ -16,7 +17,11 @@ public class CourseEndedBannerViewModel extends BannerViewModel {
   @NotNull
   private final CourseProject courseProject;
 
+  /**
+   * Creates a red banner view model and adds an observer to the user of courseProject.
+   */
   public CourseEndedBannerViewModel(@NotNull CourseProject courseProject) {
+    super(LightColors.RED);
     this.courseProject = courseProject;
     courseProject.user.addSimpleObserver(this, CourseEndedBannerViewModel::update);
   }
