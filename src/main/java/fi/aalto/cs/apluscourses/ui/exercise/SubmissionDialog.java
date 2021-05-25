@@ -14,7 +14,6 @@ import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,7 +45,6 @@ public class SubmissionDialog extends OurDialogWrapper {
     this.viewModel = viewModel;
 
     setTitle(getText("ui.toolWindow.subTab.exercises.submission.submitExercise"));
-    setButtonsAlignment(SwingConstants.CENTER);
 
     groupComboBox.selectedItemBindable.bindToSource(viewModel.selectedGroup);
     registerValidationItem(groupComboBox.selectedItemBindable);

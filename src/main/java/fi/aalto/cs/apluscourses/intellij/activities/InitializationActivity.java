@@ -89,7 +89,7 @@ public class InitializationActivity implements Background {
       return;
     }
     var progress = progressViewModel.start(2, getText("ui.ProgressBarView.loading"), false);
-    progressViewModel.increment(progress);
+    progress.increment();
 
     var versionComparison =
             BuildInfo.INSTANCE.courseVersion.compareTo(course.getVersion());
@@ -99,7 +99,7 @@ public class InitializationActivity implements Background {
       notifier.notify(
               versionComparison == Version.ComparisonStatus.MAJOR_TOO_OLD
                       ? new CourseVersionOutdatedError() : new CourseVersionTooNewError(), project);
-      progressViewModel.stop(progress);
+      progress.finish();
       return;
     } else if (versionComparison == Version.ComparisonStatus.MINOR_TOO_OLD) {
       notifier.notify(new CourseVersionOutdatedWarning(), project);
@@ -108,7 +108,7 @@ public class InitializationActivity implements Background {
     var courseProject = new CourseProject(course, courseConfigurationFileUrl, project);
     PluginSettings.getInstance().registerCourseProject(courseProject);
     isInitialized(project).set(true);
-    progressViewModel.stop(progress);
+    progress.finish();
   }
 
   private static final ProjectManagerListener projectListener = new ProjectManagerListener() {

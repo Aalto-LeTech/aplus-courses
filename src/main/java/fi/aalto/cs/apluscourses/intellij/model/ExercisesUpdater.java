@@ -16,6 +16,7 @@ import fi.aalto.cs.apluscourses.utils.async.RepeatedTask;
 import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -55,6 +56,10 @@ public class ExercisesUpdater extends RepeatedTask {
     var dataSource = course.getExerciseDataSource();
     var authentication = courseProject.getAuthentication();
     if (authentication == null) {
+      if (courseProject.getExerciseGroups() != null) {
+        courseProject.setExerciseGroups(Collections.emptyList());
+        eventToTrigger.trigger();
+      }
       return;
     }
     var progressViewModel =
@@ -62,9 +67,9 @@ public class ExercisesUpdater extends RepeatedTask {
     var progress =
             progressViewModel.start(2, getText("ui.ProgressBarView.refreshingAssignments"), false);
     try {
-      progressViewModel.increment(progress);
+      progress.increment();
       if (Thread.interrupted()) {
-        progressViewModel.stop(progress);
+        progress.finish();
         return;
       }
       var exerciseGroups
@@ -78,13 +83,13 @@ public class ExercisesUpdater extends RepeatedTask {
       for (var exerciseGroup : exerciseGroups) {
         for (var exercise : exerciseGroup.getExercises()) {
           if (Thread.interrupted()) {
-            progressViewModel.stop(progress);
+            progress.finish();
             return;
           }
           addSubmissionResults(exercise, points, authentication);
         }
       }
-      progressViewModel.stop(progress);
+      progress.finish();
       if (Thread.interrupted()) {
         return;
       }
@@ -100,7 +105,7 @@ public class ExercisesUpdater extends RepeatedTask {
         exercisesViewModel.setAuthenticated(false);
         observable.valueChanged();
       }
-      progressViewModel.stop(progress);
+      progress.finish();
       notifier.notify(new NetworkErrorNotification(e), courseProject.getProject());
     }
   }

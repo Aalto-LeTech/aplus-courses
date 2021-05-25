@@ -58,6 +58,7 @@ public class APlusAuthenticationActionTest {
 
     dialog = new DialogHelper<>(viewModel -> {
       viewModel.setToken(token.toCharArray());
+      viewModel.build();
       return true;
     });
 

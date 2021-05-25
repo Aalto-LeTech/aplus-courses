@@ -6,7 +6,9 @@ import fi.aalto.cs.apluscourses.dal.TokenAuthentication;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
+import fi.aalto.cs.apluscourses.model.User;
 import fi.aalto.cs.apluscourses.utils.Event;
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.Optional;
@@ -14,6 +16,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A {@code CourseProject} instance contains a {@link Course} and {@link Project}. In addition, it
@@ -22,14 +26,14 @@ import org.jetbrains.annotations.Nullable;
  */
 public class CourseProject {
 
+  private static final Logger logger = LoggerFactory.getLogger(CourseProject.class);
+
   @NotNull
   private final Course course;
 
   private volatile List<ExerciseGroup> exerciseGroups;
 
   private final AtomicBoolean hasTriedToReadAuthenticationFromStorage = new AtomicBoolean(false);
-
-  private volatile Authentication authentication = null;
 
   @NotNull
   private final CourseUpdater courseUpdater;
@@ -45,6 +49,8 @@ public class CourseProject {
 
   @NotNull
   public final Event exercisesUpdated;
+  
+  private volatile User user;
 
   /**
    * Construct a course project from the given course, course configuration URL (used for updating),
@@ -64,8 +70,8 @@ public class CourseProject {
    * authentication. This should be called when a course project is no longer used.
    */
   public void dispose() {
-    if (authentication != null) {
-      authentication.clear();
+    if (user != null) {
+      user.getAuthentication().clear();
     }
     courseUpdater.stop();
     exercisesUpdater.stop();
@@ -83,13 +89,28 @@ public class CourseProject {
    */
   public void readAuthenticationFromStorage(@Nullable PasswordStorage passwordStorage,
                                             @NotNull TokenAuthentication.Factory factory) {
-    if (hasTriedToReadAuthenticationFromStorage.getAndSet(true) || authentication != null) {
+    if (hasTriedToReadAuthenticationFromStorage.getAndSet(true) || user != null) {
       return;
     }
     Optional.ofNullable(passwordStorage)
         .map(PasswordStorage::restorePassword)
         .map(factory::create)
         .ifPresent(this::setAuthentication);
+  }
+
+  /**
+   * Removes user from password storage.
+   */
+  public void removePasswordFromStorage(@NotNull PasswordStorage.Factory passwordStorageFactory) {
+    var passwordStorage = passwordStorageFactory.create(course.getApiUrl());
+    if (passwordStorage != null) {
+      passwordStorage.remove();
+    }
+  }
+
+  @NotNull
+  public String getUserName() {
+    return user == null ? "" : user.getUserName();
   }
 
   @NotNull
@@ -108,17 +129,25 @@ public class CourseProject {
 
   @Nullable
   public Authentication getAuthentication() {
-    return authentication;
+    return user == null ? null : user.getAuthentication();
   }
 
   /**
    * Sets the authentication. Any existing authentication is cleared.
    */
-  public void setAuthentication(@NotNull Authentication authentication) {
-    if (this.authentication != null) {
-      this.authentication.clear();
+  public void setAuthentication(Authentication authentication) {
+    if (this.user != null) {
+      this.user.getAuthentication().clear();
     }
-    this.authentication = authentication;
+    if (authentication == null) {
+      this.user = null;
+    } else {
+      try {
+        this.user = course.getExerciseDataSource().getUser(authentication);
+      } catch (IOException e) {
+        logger.error("Failed to fetch user data", e);
+      }
+    }
   }
 
   @NotNull
