@@ -6,6 +6,8 @@ import org.jetbrains.annotations.Nullable;
 public interface PasswordStorage {
   boolean store(@NotNull String user, char @Nullable [] password);
 
+  void remove();
+
   char @Nullable [] restorePassword();
 
   interface Factory {

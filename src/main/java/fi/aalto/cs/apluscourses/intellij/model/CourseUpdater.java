@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.intellij.model;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import com.intellij.notification.Notification;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
@@ -88,11 +90,17 @@ public class CourseUpdater extends RepeatedTask {
 
   @Override
   protected void doTask() {
+    var progressViewModel =
+        PluginSettings.getInstance().getMainViewModel(project).progressViewModel;
+    var progress =
+            progressViewModel.start(1, getText("ui.ProgressBarView.refreshingModules"), false);
     updateModules(fetchModulesInfo());
     if (Thread.interrupted()) {
+      progress.finish();
       return;
     }
     notifyUpdatableModules();
+    progress.finish();
     eventToTrigger.trigger();
   }
 

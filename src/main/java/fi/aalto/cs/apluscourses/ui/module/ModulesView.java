@@ -4,11 +4,13 @@ import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
+import com.intellij.ui.JBColor;
 import com.intellij.ui.ScrollPaneFactory;
 import com.intellij.ui.treeStructure.Tree;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.ui.GuiObject;
 import java.awt.CardLayout;
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -49,6 +51,7 @@ public class ModulesView {
     //
     // We use class name as a unique key for the property.
     basePanel.putClientProperty(ModulesView.class.getName(), this);
+    pane.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, JBColor.border()));
     cl = (CardLayout) cardPanel.getLayout();
     moduleListView.setBackground(new Tree().getBackground());
     emptyText.setHorizontalAlignment(SwingConstants.CENTER);

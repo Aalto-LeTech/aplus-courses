@@ -86,16 +86,23 @@ class IdeFrameFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent
         byXpath("//div[@accessiblename='Filter Assignments']"),
         Duration.ofSeconds(20)
     )
+    fun userButton() = find(
+        ActionButtonFixture::class.java,
+        byXpath("//div[@class='ActionButton' and @myaction='Not logged in (null)']"),
+        Duration.ofSeconds(20)
+    )
     fun searchEverywhereButton() = find(
         ActionButtonFixture::class.java,
         byXpath("//div[@accessiblename='Search Everywhere' and @class='ActionButton']"),
         Duration.ofSeconds(20)
     )
-    fun filterDropDownMenu() = find(
-        JListFixture::class.java,
-        byXpath("//div[@class='MyList']"),
-        Duration.ofSeconds(20)
-    )
+    fun dropDownMenu() = with(heavyWeightWindow()) {
+        find(
+            JListFixture::class.java,
+            byXpath("//div[@class='MyList']"),
+            Duration.ofSeconds(20)
+        )
+    }
     fun codeWithMeButton() = findAll(
         JButtonFixture::class.java,
         byXpath("//div[@class='JButton' and @text='Got It']")

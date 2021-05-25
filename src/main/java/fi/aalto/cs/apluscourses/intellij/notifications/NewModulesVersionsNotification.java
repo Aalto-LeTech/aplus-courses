@@ -26,8 +26,12 @@ public class NewModulesVersionsNotification extends Notification {
   public NewModulesVersionsNotification(@NotNull List<Module> modules) {
     super(
         PluginSettings.A_PLUS,
-        getText("notification.NewModulesVersionsNotification.title"),
-        getAndReplaceText("notification.NewModulesVersionsNotification.content",
+        getText(modules.size() == 1
+                ? "notification.NewModulesVersionsNotification.titleSingle"
+                : "notification.NewModulesVersionsNotification.title"),
+        getAndReplaceText(modules.size() == 1
+                ? "notification.NewModulesVersionsNotification.contentSingle"
+                : "notification.NewModulesVersionsNotification.content",
             getModuleNameStrings(modules)),
         NotificationType.INFORMATION);
   }

@@ -1,9 +1,12 @@
 package fi.aalto.cs.apluscourses.utils;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BiFunction;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.jetbrains.annotations.NotNull;
@@ -51,5 +54,23 @@ public class CollectionUtil {
       index++;
     }
     return -1;
+  }
+
+  /**
+   * Removes items for which the predicate is true.
+   * @param collection A collection.
+   * @param predicate A predicate that decides if an item is removed.
+   * @param <T> Type of items.
+   */
+  public static <T> Collection<T> removeIf(@NotNull Collection<T> collection,
+                                     @NotNull Predicate<T> predicate) {
+    List<T> toBeRemoved = new ArrayList<>();
+    for (var item : collection) {
+      if (predicate.test(item)) {
+        toBeRemoved.add(item);
+      }
+    }
+    collection.removeAll(toBeRemoved);
+    return toBeRemoved;
   }
 }

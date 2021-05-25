@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.intellij.model;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
@@ -53,11 +55,21 @@ public class ExercisesUpdater extends RepeatedTask {
     var dataSource = course.getExerciseDataSource();
     var authentication = courseProject.getAuthentication();
     if (authentication == null) {
+      if (courseProject.getExerciseGroups() != null) {
+        courseProject.setExerciseGroups(Collections.emptyList());
+        eventToTrigger.trigger();
+      }
       return;
     }
+    var progressViewModel =
+        PluginSettings.getInstance().getMainViewModel(courseProject.getProject()).progressViewModel;
+    var progress =
+            progressViewModel.start(2, getText("ui.ProgressBarView.refreshingAssignments"), false);
     try {
       var points = dataSource.getPoints(course, authentication);
+      progress.increment();
       if (Thread.interrupted()) {
+        progress.finish();
         return;
       }
       points.setSubmittableExercises(course.getExerciseModules().keySet()); // TODO: remove
@@ -70,11 +82,13 @@ public class ExercisesUpdater extends RepeatedTask {
       for (var exerciseGroup : exerciseGroups) {
         for (var exercise : exerciseGroup.getExercises().values()) {
           if (Thread.interrupted()) {
+            progress.finish();
             return;
           }
           addSubmissionResults(course, exercise, points, authentication);
         }
       }
+      progress.finish();
       if (Thread.interrupted()) {
         return;
       }
@@ -90,6 +104,7 @@ public class ExercisesUpdater extends RepeatedTask {
         exercisesViewModel.setAuthenticated(false);
         observable.valueChanged();
       }
+      progress.finish();
       notifier.notify(new NetworkErrorNotification(e), courseProject.getProject());
     }
   }

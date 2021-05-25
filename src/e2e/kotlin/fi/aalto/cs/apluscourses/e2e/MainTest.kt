@@ -17,7 +17,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.time.Duration
 
-class PlaceholderTest {
+class MainTest {
     init {
         StepLoggerInitializer.init()
     }
@@ -77,10 +77,13 @@ class PlaceholderTest {
             }
         }
         // step 8
-        step("Authenticate with empty token") {
+        step("Authenticate with wrong token") {
             CommonSteps(this).setAPlusToken("")
             with(dialog("A+ Token")) {
                 assertTrue("Token dialog still showing after clicking OK with empty token", isShowing)
+                passwordField().text = "token"
+                button("OK").click()
+                assertTrue("Token dialog still showing after clicking OK with wrong token", isShowing)
                 button("Cancel").click()
             }
         }
@@ -142,7 +145,7 @@ class PlaceholderTest {
             with(ideFrame()) {
                 // just check the initial state (nothing is filtered out)
                 filterButton().click()
-                with(filterDropDownMenu()) {
+                with(dropDownMenu()) {
                     assertTrue("By default, nothing is filtered out", hasText("Deselect all"))
                 }
                 keyboard {
@@ -155,9 +158,9 @@ class PlaceholderTest {
 
                 // filter out optional tasks
                 filterButton().click()
-                filterDropDownMenu().selectItemContains("Optional")
+                dropDownMenu().selectItemContains("Optional")
                 filterButton().click()
-                with(filterDropDownMenu()) {
+                with(dropDownMenu()) {
                     assertTrue("Something should be filtered out", hasText("Select all"))
                 }
                 keyboard {
@@ -171,7 +174,7 @@ class PlaceholderTest {
 
                 // filter out non-submittable tasks
                 filterButton().click()
-                filterDropDownMenu().selectItemContains("Non-submittable")
+                dropDownMenu().selectItemContains("Non-submittable")
 
                 with(assignments()) {
                     assertFalse("Feedback submissions should now be hidden", hasText("Feedback"))
@@ -180,7 +183,7 @@ class PlaceholderTest {
 
                 // filter out closed sections
                 filterButton().click()
-                filterDropDownMenu().selectItemContains("Closed")
+                dropDownMenu().selectItemContains("Closed")
 
                 with(assignments()) {
                     assertFalse("Closed Week 1 should be visible", hasText("Week 1"))
@@ -188,9 +191,9 @@ class PlaceholderTest {
 
                 // disable filtering altogether
                 filterButton().click()
-                filterDropDownMenu().selectItemContains("Select all")
+                dropDownMenu().selectItemContains("Select all")
                 filterButton().click()
-                with(filterDropDownMenu()) {
+                with(dropDownMenu()) {
                     assertTrue("Nothing is filtered out anymore", hasText("Deselect all"))
                 }
                 keyboard {
@@ -209,6 +212,31 @@ class PlaceholderTest {
                     assertTrue("Feedback submissions should be visible", containsText("Feedback"))
                     assertTrue("Closed Week 1 should be visible", hasText("Week 1"))
                 }
+            }
+        }
+        step("User dropdown") {
+            with(ideFrame()) {
+                userButton().click()
+                with(dropDownMenu()) {
+                    assertTrue(
+                        "The user dropdown contains the user's name",
+                        containsText("TESTI-Opiskelija")
+                    )
+                    selectItemContains("Log out")
+                }
+                assertTrue(
+                    "The assignments tree gets cleared after logging out",
+                    containsText("Set your A+ token")
+                )
+                userButton().click()
+                with(dropDownMenu()) {
+                    assertTrue(
+                        "The user dropdown shows that the user isn't logged in",
+                        containsText("Not logged in")
+                    )
+                    selectItemContains("Log in")
+                }
+                dialog("A+ Token").button("Cancel").click()
             }
         }
     }

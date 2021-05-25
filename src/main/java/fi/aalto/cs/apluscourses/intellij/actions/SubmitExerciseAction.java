@@ -5,6 +5,7 @@ import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 import static icons.PluginIcons.ACCENT_COLOR;
 
 import com.intellij.history.LocalHistory;
+import com.intellij.openapi.actionSystem.ActionPlaces;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
@@ -44,6 +45,7 @@ import fi.aalto.cs.apluscourses.presentation.base.BaseTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseGroupViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
+import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionResultViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionViewModel;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -141,11 +143,22 @@ public class SubmitExerciseAction extends AnAction {
     CourseViewModel courseViewModel = mainViewModel.courseViewModel.get();
     ExercisesTreeViewModel exercisesViewModel = mainViewModel.exercisesViewModel.get();
     Authentication authentication = authenticationProvider.getAuthentication(project);
-    boolean isExerciseSelected = exercisesViewModel != null
-            && exercisesViewModel.getSelectedItem() != null
-            && !(exercisesViewModel.getSelectedItem() instanceof ExerciseGroupViewModel);
-    e.getPresentation().setEnabled(project != null && exercisesViewModel != null
-        && authentication != null && courseViewModel != null && isExerciseSelected);
+    if (exercisesViewModel == null) {
+      e.getPresentation().setEnabled(false);
+    } else {
+      var selectedItem = exercisesViewModel.getSelectedItem();
+      var isSubmittableExerciseSelected = selectedItem instanceof ExerciseViewModel
+              && ((ExerciseViewModel) selectedItem).isSubmittable();
+      var isSubmittableSubmissionSelected = selectedItem instanceof SubmissionResultViewModel
+              && ((SubmissionResultViewModel) selectedItem).getModel().getExercise()
+              .isSubmittable();
+      e.getPresentation().setEnabled(project != null
+              && authentication != null && courseViewModel != null
+              && (isSubmittableExerciseSelected || isSubmittableSubmissionSelected));
+    }
+    if ((ActionPlaces.TOOLWINDOW_POPUP).equals(e.getPlace()) && !e.getPresentation().isEnabled()) {
+      e.getPresentation().setVisible(false);
+    }
   }
 
   @Override

@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.ui.ideactivities;
 
 import com.intellij.util.concurrency.annotations.RequiresEdt;
 import icons.PluginIcons;
+import java.awt.AWTEvent;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Component;
@@ -9,6 +10,9 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
+import java.awt.event.AWTEventListener;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Area;
 import java.util.HashSet;
 import java.util.Set;
@@ -19,23 +23,49 @@ import javax.swing.JRootPane;
 import javax.swing.SwingUtilities;
 import org.jetbrains.annotations.NotNull;
 
-public class OverlayPane extends JPanel {
-  private static OverlayPane activeOverlay = null;
+public class OverlayPane extends JPanel implements AWTEventListener {
+  // A high value (> 500) allows us to place the overlay pretty much above every other component
+  private static final int PANE_Z_ORDER = 20000;
 
   private final JRootPane associatedRootPane;
-  private final Set<Component> exemptComponents;
-  private final Set<BalloonPopup> popups;
+  private final Set<Component> exemptComponents = new HashSet<>();
+  private final Set<BalloonPopup> balloonPopups = new HashSet<>();
 
   private void revalidatePane() {
     getRootPane().revalidate();
     getRootPane().repaint();
   }
 
+  @RequiresEdt
+  private Area getDimmedArea() {
+    var overlayArea = new Area(new Rectangle(0, 0, getWidth(), getHeight()));
+
+    for (var c : exemptComponents) {
+      // convertPoint is necessary because the component uses a different coordinate origin
+      if (c.isShowing()) {
+        var windowPos = SwingUtilities.convertPoint(c, 0, 0, this);
+        var componentRect = new Rectangle(windowPos.x, windowPos.y, c.getWidth(), c.getHeight());
+
+        overlayArea.subtract(new Area(componentRect));
+      }
+    }
+
+    for (var c : balloonPopups) {
+      // popups are already places in the overlay's coordinate system
+      if (c.isVisible()) {
+        var componentRect = new Rectangle(c.getX(), c.getY(), c.getWidth(), c.getHeight());
+        overlayArea.subtract(new Area(componentRect));
+      }
+    }
+
+    return overlayArea;
+  }
+
   @Override
   protected void paintComponent(Graphics graphics) {
     super.paintComponent(graphics);
 
-    for (var c : popups) {
+    for (var c : balloonPopups) {
       c.recalculateBounds();
     }
 
@@ -43,24 +73,7 @@ public class OverlayPane extends JPanel {
     Graphics2D g = (Graphics2D) graphics.create();
     g.setComposite(AlphaComposite.SrcOver.derive(0.7f));
     g.setColor(Color.BLACK); // using JBColor.BLACK is wrong here
-
-    var overlayArea = new Area(new Rectangle(0, 0, getWidth(), getHeight()));
-
-    for (var c : exemptComponents) {
-      // convertPoint is necessary because the component uses a different coordinate origin
-      var windowPos = SwingUtilities.convertPoint(c, c.getX(), c.getY(), this);
-      var componentRect = new Rectangle(windowPos.x, windowPos.y, c.getWidth(), c.getHeight());
-
-      overlayArea.subtract(new Area(componentRect));
-    }
-
-    for (var c : popups) {
-      // popups are already places in the overlay's coordinate system
-      var componentRect = new Rectangle(c.getX(), c.getY(), c.getWidth(), c.getHeight());
-      overlayArea.subtract(new Area(componentRect));
-    }
-
-    g.fill(overlayArea);
+    g.fill(getDimmedArea());
   }
 
   @Override
@@ -108,96 +121,90 @@ public class OverlayPane extends JPanel {
     return true;
   }
 
-  public static boolean isOverlayInstalled() {
-    return activeOverlay != null;
+  /**
+   * Installs the overlay.
+   */
+  @RequiresEdt
+  public static OverlayPane installOverlay() {
+    var overlay = new OverlayPane();
+    overlay.getRootPane().getLayeredPane().add(overlay, PANE_Z_ORDER);
+    overlay.revalidatePane();
+
+    Toolkit.getDefaultToolkit().addAWTEventListener(overlay,
+        AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK
+        | AWTEvent.MOUSE_WHEEL_EVENT_MASK);
+
+    return overlay;
   }
 
   /**
-   * Installs the overlay. Must be called from the Swing EDT.
+   * Removes the overlay.
    */
   @RequiresEdt
-  public static void installOverlay() {
-    if (isOverlayInstalled()) {
-      throw new IllegalStateException("An overlay is already installed");
+  public void remove() {
+    Toolkit.getDefaultToolkit().removeAWTEventListener(this);
+
+    this.getRootPane().getLayeredPane().remove(this);
+    for (var c : this.balloonPopups) {
+      this.getRootPane().getLayeredPane().remove(c);
     }
-
-    activeOverlay = new OverlayPane();
-    activeOverlay.getRootPane().getLayeredPane().add(activeOverlay, 20000);
-    activeOverlay.revalidatePane();
-  }
-
-  /**
-   * Removes the overlay. Must be called from the Swing EDT.
-   */
-  @RequiresEdt
-  public static void removeOverlay() {
-    if (!isOverlayInstalled()) {
-      throw new IllegalStateException("No overlay is currently installed");
-    }
-
-    activeOverlay.getRootPane().getLayeredPane().remove(activeOverlay);
-    for (var c : activeOverlay.popups) {
-      activeOverlay.getRootPane().getLayeredPane().remove(c);
-    }
-    activeOverlay.revalidatePane();
-
-    activeOverlay = null;
+    this.revalidatePane();
   }
 
   /**
    * Marks a component not to be dimmed.
    */
-  public static void showComponent(Component c) {
-    if (!isOverlayInstalled()) {
-      throw new IllegalStateException("No overlay is currently installed");
-    }
-
-    activeOverlay.exemptComponents.add(c);
-    activeOverlay.revalidatePane();
+  public void showComponent(Component c) {
+    this.exemptComponents.add(c);
+    this.revalidatePane();
   }
 
   /**
-   * Adds a popup to a specified component. Must be called from the Swing EDT.
+   * Adds a popup to a specified component.
    */
   @RequiresEdt
-  public static @NotNull BalloonPopup addPopup(@NotNull Component c, @NotNull String title,
-                                               @NotNull String message) {
-    if (!isOverlayInstalled()) {
-      throw new IllegalStateException("No overlay is currently installed");
-    }
-
+  public @NotNull BalloonPopup addPopup(@NotNull Component c, @NotNull String title,
+                                        @NotNull String message) {
     var popup = new BalloonPopup(c, title, message, PluginIcons.A_PLUS_OPTIONAL_PRACTICE);
-    activeOverlay.popups.add(popup);
-    activeOverlay.getRootPane().getLayeredPane().add(popup, 30000);
-    activeOverlay.revalidatePane();
+    this.balloonPopups.add(popup);
+    this.getRootPane().getLayeredPane().add(popup, PANE_Z_ORDER + 1);
+    this.revalidatePane();
 
     return popup;
   }
 
   /**
    * Resets the overlay to its original state, i.e. removes all popups and dims all components.
-   * Must be called from the Swing EDT.
    */
-  public static void resetOverlay() {
-    if (!isOverlayInstalled()) {
-      return;
+  @RequiresEdt
+  public void reset() {
+    this.exemptComponents.clear();
+    for (var c : this.balloonPopups) {
+      this.getRootPane().getLayeredPane().remove(c);
     }
-
-    activeOverlay.exemptComponents.clear();
-    for (var c : activeOverlay.popups) {
-      activeOverlay.getRootPane().getLayeredPane().remove(c);
-    }
-    activeOverlay.popups.clear();
-    activeOverlay.revalidatePane();
+    this.balloonPopups.clear();
+    this.revalidatePane();
   }
 
   private OverlayPane() {
-    var rootFrame = (JFrame) JOptionPane.getRootFrame();
-
-    associatedRootPane = rootFrame.getRootPane();
-    exemptComponents = new HashSet<>();
-    popups = new HashSet<>();
-
+    associatedRootPane = ((JFrame) JOptionPane.getRootFrame()).getRootPane();
     setLayout(null);
+  }
+
+  @Override
+  public void eventDispatched(AWTEvent event) {
+    var mouseEvent = (MouseEvent) event;
+    var source = (Component) mouseEvent.getSource();
+    if (!getRootPane().getContentPane().isAncestorOf(source)) {
+      // don't process events from context menus, pop-up windows etc.
+      // these are not subject to dimming in the first place - only the main content pane is dimmed
+      return;
+    }
+
+    var windowEventPos = SwingUtilities.convertPoint(source, source.getX(), source.getY(), this);
+    if (getDimmedArea().contains(windowEventPos)) {
+      // the mouse event is inside dimmed area, do something with it
+      // for example, use mouseEvent.consume() to block the event from reaching any component
+    }
   }
 }
