@@ -34,8 +34,6 @@ public class ClassDeclarationListener implements ActivitiesListener, DocumentLis
   private String[] arguments;
   private String[] hierarchy;
   private Disposable disposable;
-  private PsiFile psiFile;
-  private boolean complete = true;
 
   /**
    * Constructor.
@@ -57,9 +55,7 @@ public class ClassDeclarationListener implements ActivitiesListener, DocumentLis
     this.hierarchy = hierarchy;
     Path modulePath = Paths.get(project.getBasePath() + fileName);
     VirtualFile vf = LocalFileSystem.getInstance().findFileByIoFile(modulePath.toFile());
-    psiFile = PsiManager.getInstance(project).findFile(vf);
-    checkPsiFile(psiFile);
-    //TODO check if the conditinos are already met!
+    checkPsiFile(PsiManager.getInstance(project).findFile(vf));
   }
 
   @Override
@@ -81,22 +77,31 @@ public class ClassDeclarationListener implements ActivitiesListener, DocumentLis
   @Override
   public void documentChanged(@NotNull DocumentEvent event) {
     PsiDocumentManager.getInstance(project).commitDocument(event.getDocument());
-    complete = true;
     PsiFile psiFile = PsiDocumentManager.getInstance(project).getPsiFile(event.getDocument());
     checkPsiFile(psiFile);
   }
 
-  private void checkPsiFile(PsiFile file) {
+  private void checkPsiFile(PsiFile psiFile) {
     psiFile.accept(new ScalaRecursiveElementVisitor() {
       @Override
       public void visitScalaElement(ScalaPsiElement element) {
         super.visitScalaElement(element);
-        checkPsiElement(element);
+        if ((element instanceof ScClass && checkScClass((ScClass) element))) {
+          PsiElement[] children = element.getChildren();
+          Optional<PsiElement> constructor = Arrays.stream(children).filter(
+              child -> child instanceof ScPrimaryConstructor).findFirst();
+          if (constructor.isPresent()
+                  && checkScPrimaryConstructor((ScPrimaryConstructor) constructor.get())) {
+            Optional<PsiElement> extendsBlock = Arrays.stream(children).filter(
+                child -> child instanceof ScExtendsBlockImpl).findFirst();
+            if (extendsBlock.isPresent()
+                    && checkExtendsBlock((ScExtendsBlockImpl) extendsBlock.get())) {
+              ApplicationManager.getApplication().invokeLater(callback::callback);
+            }
+          }
+        }
       }
     });
-    if (complete) {
-      ApplicationManager.getApplication().invokeLater(callback::callback);
-    }
   }
 
   private boolean checkScClass(ScClass element) {
@@ -125,24 +130,22 @@ public class ClassDeclarationListener implements ActivitiesListener, DocumentLis
   private boolean checkExtendsBlock(ScExtendsBlockImpl element) {
     List<String> hierarchies = new ArrayList<>();
     PsiElement[] children = element.getChildren();
-    Optional<PsiElement> parent = Arrays.stream(children).filter(
+    Optional<PsiElement> extendsElement = Arrays.stream(children).filter(
         child -> child instanceof ScTemplateParentsImpl).findFirst();
-    if (parent.isPresent()) {
-      children = parent.get().getChildren();
-      Arrays.stream(children).forEach(child -> hierarchies.add(child.getText()));
-      return hierarchies.equals(Arrays.asList(hierarchy));
+    if (extendsElement.isPresent()) {
+      if (hierarchy.length != 0) {
+        children = extendsElement.get().getChildren();
+        Arrays.stream(children).forEach(child -> hierarchies.add(child.getText()));
+        return hierarchies.equals(Arrays.asList(hierarchy));
+      } else {
+        return false;
+      }
+    } else if (hierarchy.length == 0) {
+      // If 'extends' is written without specifying a class name
+      // it is considered correct by Scala
+      // (the keyword extends is not visible when traversing the Psi tree)
+      return true;
     }
     return false;
-  }
-
-  private boolean checkPsiElement(ScalaPsiElement element) {
-    if ((element instanceof ScClass && !checkScClass((ScClass) element))
-        || (element instanceof ScPrimaryConstructor
-            && !checkScPrimaryConstructor((ScPrimaryConstructor) element))
-        || (element instanceof ScExtendsBlockImpl
-        && !checkExtendsBlock((ScExtendsBlockImpl) element))) {
-      complete = false;
-    }
-    return complete;
   }
 }

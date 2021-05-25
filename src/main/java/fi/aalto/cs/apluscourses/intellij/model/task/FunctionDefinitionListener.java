@@ -32,16 +32,14 @@ public class FunctionDefinitionListener implements ActivitiesListener, DocumentL
   private Disposable disposable;
   private final String[] arguments;
   private final String[] methodBody;
-  private final String returnType;
 
   public FunctionDefinitionListener(ListenerCallback callback,
-                                    Project project, String methodName, String[] arguments, String[] body, String returnType, String filePath) {
+                                    Project project, String methodName, String[] arguments, String[] body, String filePath) {
     this.callback = callback;
     this.project = project;
     this.methodName = methodName;
     this.arguments = arguments;
     this.methodBody = body;
-    this.returnType = returnType;
     Path modulePath = Paths.get(project.getBasePath() + filePath);
     VirtualFile vf = LocalFileSystem.getInstance().findFileByIoFile(modulePath.toFile());
     PsiFile psiFile = PsiManager.getInstance(project).findFile(vf);
@@ -68,7 +66,6 @@ public class FunctionDefinitionListener implements ActivitiesListener, DocumentL
   public void documentChanged(@NotNull DocumentEvent event) {
     PsiDocumentManager.getInstance(project).commitDocument(event.getDocument());
     PsiFile psiFile = PsiDocumentManager.getInstance(project).getPsiFile(event.getDocument());
-    psiFile.clearCaches();
     checkPsiFile(psiFile);
   }
 
@@ -79,18 +76,15 @@ public class FunctionDefinitionListener implements ActivitiesListener, DocumentL
         super.visitScalaElement(element);
         if (element instanceof ScFunctionDefinition
                 && methodName.equals(((ScFunctionDefinition) element).getName())) {
-          System.out.println(((ScFunctionDefinition) element).getReturnType().getPresentableText());
-          if (returnType.equals(((ScFunctionDefinition) element).getReturnType().getPresentableText())) {
-            PsiElement[] children = element.getChildren();
-            Optional<PsiElement> opt = Arrays.stream(children).filter(
-                c -> c instanceof ScParametersImpl).findFirst();
-            if (opt.isPresent() && checkParameters(((ScParametersImpl) opt.get()).getParameters())) {
-              opt = Optional.ofNullable(children[children.length - 1]);
-              if (opt.isPresent()) {
-                children = opt.get().getChildren();
-                if (checkMethodBody(children)) {
-                  ApplicationManager.getApplication().invokeLater(callback::callback);
-                }
+          PsiElement[] children = element.getChildren();
+          Optional<PsiElement> opt = Arrays.stream(children).filter(
+              c -> c instanceof ScParametersImpl).findFirst();
+          if (opt.isPresent() && checkParameters(((ScParametersImpl) opt.get()).getParameters())) {
+            opt = Optional.ofNullable(children[children.length - 1]);
+            if (opt.isPresent()) {
+              children = opt.get().getChildren();
+              if (checkMethodBody(children)) {
+                ApplicationManager.getApplication().invokeLater(callback::callback);
               }
             }
           }

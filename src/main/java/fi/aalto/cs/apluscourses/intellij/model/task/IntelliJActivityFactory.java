@@ -36,7 +36,6 @@ public class IntelliJActivityFactory implements ActivityFactory {
                 arguments.get("methodName"),
                 arguments.getArrayOrThrow("arguments"),
                 arguments.getArrayOrThrow("body"),
-                arguments.getOrThrow("returnType"),
                 arguments.getOrThrow("filepath"));
       default:
         throw new IllegalArgumentException("Unsupported action: " + action);
