@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.ui.ideactivities;
 
+import com.intellij.openapi.editor.impl.EditorComponentImpl;
 import com.intellij.util.concurrency.annotations.RequiresEdt;
 import icons.PluginIcons;
 import java.awt.AWTEvent;
@@ -15,6 +16,7 @@ import java.awt.event.AWTEventListener;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Area;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -157,6 +159,18 @@ public class OverlayPane extends JPanel implements AWTEventListener {
   public void showComponent(@NotNull Component c) {
     this.highlighters.add(new GenericHighlighter(c));
     this.revalidatePane();
+  }
+
+  /**
+   * Marks a particular editor not to be dimmed.
+   * @return An instance of {@link EditorHighlighter} that can be used to highlight particular lines.
+   */
+  public @NotNull EditorHighlighter showComponent(@NotNull EditorComponentImpl editor) {
+    var highlighter = new EditorHighlighter(editor);
+    this.highlighters.add(highlighter);
+    this.revalidatePane();
+
+    return highlighter;
   }
 
   /**
