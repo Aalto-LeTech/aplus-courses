@@ -28,7 +28,7 @@ public class OverlayPane extends JPanel implements AWTEventListener {
   private static final int PANE_Z_ORDER = 20000;
 
   private final JRootPane associatedRootPane;
-  private final Set<Component> exemptComponents = new HashSet<>();
+  private final Set<GenericHighlighter> highlighters = new HashSet<>();
   private final Set<BalloonPopup> balloonPopups = new HashSet<>();
 
   private void revalidatePane() {
@@ -40,13 +40,13 @@ public class OverlayPane extends JPanel implements AWTEventListener {
   private Area getDimmedArea() {
     var overlayArea = new Area(new Rectangle(0, 0, getWidth(), getHeight()));
 
-    for (var c : exemptComponents) {
+    for (var c : highlighters) {
       // convertPoint is necessary because the component uses a different coordinate origin
-      if (c.isShowing()) {
-        var windowPos = SwingUtilities.convertPoint(c, 0, 0, this);
-        var componentRect = new Rectangle(windowPos.x, windowPos.y, c.getWidth(), c.getHeight());
-
-        overlayArea.subtract(new Area(componentRect));
+      if (c.getComponent().isShowing()) {
+        for (var rectangle : c.getArea()) {
+          var windowRect = SwingUtilities.convertRectangle(c.getComponent(), rectangle, this);
+          overlayArea.subtract(new Area(windowRect));
+        }
       }
     }
 
@@ -154,8 +154,8 @@ public class OverlayPane extends JPanel implements AWTEventListener {
   /**
    * Marks a component not to be dimmed.
    */
-  public void showComponent(Component c) {
-    this.exemptComponents.add(c);
+  public void showComponent(@NotNull Component c) {
+    this.highlighters.add(new GenericHighlighter(c));
     this.revalidatePane();
   }
 
@@ -163,14 +163,12 @@ public class OverlayPane extends JPanel implements AWTEventListener {
    * Adds a popup to a specified component.
    */
   @RequiresEdt
-  public @NotNull BalloonPopup addPopup(@NotNull Component c, @NotNull String title,
+  public void addPopup(@NotNull Component c, @NotNull String title,
                                         @NotNull String message) {
     var popup = new BalloonPopup(c, title, message, PluginIcons.A_PLUS_OPTIONAL_PRACTICE);
     this.balloonPopups.add(popup);
     this.getRootPane().getLayeredPane().add(popup, PANE_Z_ORDER + 1);
     this.revalidatePane();
-
-    return popup;
   }
 
   /**
@@ -178,7 +176,7 @@ public class OverlayPane extends JPanel implements AWTEventListener {
    */
   @RequiresEdt
   public void reset() {
-    this.exemptComponents.clear();
+    this.highlighters.clear();
     for (var c : this.balloonPopups) {
       this.getRootPane().getLayeredPane().remove(c);
     }
