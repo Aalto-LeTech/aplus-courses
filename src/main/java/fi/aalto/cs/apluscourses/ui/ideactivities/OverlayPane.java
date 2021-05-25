@@ -163,7 +163,7 @@ public class OverlayPane extends JPanel implements AWTEventListener {
 
   /**
    * Marks a particular editor not to be dimmed.
-   * @return An instance of {@link EditorHighlighter} that can be used to highlight particular lines.
+   * @return Instance of {@link EditorHighlighter} that can be used to highlight particular lines.
    */
   public @NotNull EditorHighlighter showComponent(@NotNull EditorComponentImpl editor) {
     var highlighter = new EditorHighlighter(editor);
