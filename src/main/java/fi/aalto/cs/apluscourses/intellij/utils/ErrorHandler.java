@@ -62,7 +62,8 @@ public class ErrorHandler extends ErrorReportSubmitter {
         System.err.println(serializedData.toString().length());
 
         ApplicationManager.getApplication().invokeLater(() -> {
-          Messages.showInfoMessage(parentComponent, "Thank you for submitting the report.", "Error Report");
+          Messages.showInfoMessage(parentComponent,
+              "Thank you for submitting the report.", "Error Report");
           consumer.consume(new SubmittedReportInfo(SubmittedReportInfo.SubmissionStatus.NEW_ISSUE));
         });
       }
