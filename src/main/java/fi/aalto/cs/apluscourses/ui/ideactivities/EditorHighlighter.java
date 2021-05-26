@@ -2,13 +2,16 @@ package fi.aalto.cs.apluscourses.ui.ideactivities;
 
 import com.intellij.openapi.editor.LogicalPosition;
 import com.intellij.openapi.editor.impl.EditorComponentImpl;
+import com.intellij.openapi.editor.impl.EditorImpl;
+import java.awt.Component;
 import java.awt.Rectangle;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 public class EditorHighlighter extends GenericHighlighter {
+  private final @NotNull EditorImpl editor;
+
   private final List<Integer> highlightedLines = new ArrayList<>();
   private boolean highlightEverything = false;
 
@@ -38,24 +41,21 @@ public class EditorHighlighter extends GenericHighlighter {
   }
 
   @Override
-  public @NotNull EditorComponentImpl getComponent() {
-    return (EditorComponentImpl) super.getComponent();
+  public @NotNull Component getComponent() {
+    return highlightEverything ? super.getComponent().getParent() : super.getComponent();
   }
 
   @Override
   public List<Rectangle> getArea() {
+    if (highlightEverything) {
+      return super.getArea();
+    }
 
-    var editor = getComponent().getEditor();
     var lineHeight = editor.getLineHeight();
     var rectangles = new ArrayList<Rectangle>();
 
     // the parent of the editor is JBViewport, which controls the visible region of the component
     var editorWidth = getComponent().getParent().getWidth();
-
-    if (highlightEverything) {
-      return Collections.singletonList(
-          new Rectangle(0, 0, editorWidth, getComponent().getHeight()));
-    }
 
     for (int line : highlightedLines) {
       var startPos = new LogicalPosition(line, 0);
@@ -68,5 +68,6 @@ public class EditorHighlighter extends GenericHighlighter {
 
   public EditorHighlighter(@NotNull EditorComponentImpl component) {
     super(component);
+    editor = component.getEditor();
   }
 }

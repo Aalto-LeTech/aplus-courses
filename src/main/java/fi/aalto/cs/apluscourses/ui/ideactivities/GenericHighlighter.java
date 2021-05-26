@@ -19,7 +19,7 @@ public class GenericHighlighter {
 
   public List<Rectangle> getArea() {
     return Collections.singletonList(
-        new Rectangle(0, 0, component.getWidth(), component.getHeight()));
+        new Rectangle(0, 0, getComponent().getWidth(), getComponent().getHeight()));
   }
 
   public GenericHighlighter(@NotNull Component component) {
