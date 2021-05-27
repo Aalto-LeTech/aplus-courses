@@ -90,7 +90,6 @@ task uiTest(type: Test) {
     classpath = sourceSets.e2e.runtimeClasspath
 }
 
-
 task gatherBuildInfo(dependsOn: processResources) {
     doLast {
         new File("$buildDir/resources/main/build-info.properties").withWriter { writer ->
@@ -129,4 +128,8 @@ runIdeForUiTests {
     systemProperty 'ide.show.tips.on.startup.default.value', 'false'
     systemProperty 'io.netty.tryReflectionSetAccessible', 'false'
     systemProperty "ide.mac.message.dialogs.as.sheets", "false"
+}
+
+configure(uiTest) {
+    group = 'verification'
 }

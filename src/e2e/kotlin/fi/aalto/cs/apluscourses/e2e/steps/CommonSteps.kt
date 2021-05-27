@@ -4,9 +4,9 @@ import com.intellij.remoterobot.RemoteRobot
 import com.intellij.remoterobot.stepsProcessing.step
 import com.intellij.remoterobot.utils.attempt
 import com.intellij.remoterobot.utils.keyboard
+import fi.aalto.cs.apluscourses.e2e.fixtures.comboBoxList
 import fi.aalto.cs.apluscourses.e2e.fixtures.customComboBox
 import fi.aalto.cs.apluscourses.e2e.fixtures.dialog
-import fi.aalto.cs.apluscourses.e2e.fixtures.heavyWeightWindow
 import fi.aalto.cs.apluscourses.e2e.fixtures.ideFrame
 import fi.aalto.cs.apluscourses.e2e.fixtures.welcomeFrame
 import java.time.Duration
@@ -29,17 +29,17 @@ class CommonSteps(val remoteRobot: RemoteRobot) {
                 with(dialog("Project Structure", Duration.ofSeconds(20))) {
                     sidePanel().findText("Project").click()
                     customComboBox("\u001BProject SDK:").dropdown()
-                    with(heavyWeightWindow()) {
+                    with(comboBoxList()) {
                         attempt(2) {
                             findText("Add SDK").click()
-                            heavyWeightWindow().findText("Download JDK...").click()
+                            comboBoxList().findText("Download JDK...").click()
                         }
                     }
                     with(dialog("Download JDK", Duration.ofSeconds(20))) {
                         customComboBox("Version:").click()
-                        heavyWeightWindow().findText("11").click()
+                        comboBoxList().findText("11").click()
                         customComboBox("Vendor:").click()
-                        heavyWeightWindow().findText("AdoptOpenJDK (HotSpot)").click()
+                        comboBoxList().findText("AdoptOpenJDK (HotSpot)").click()
                         button("Download").click()
                     }
                     button("OK").click()
@@ -52,7 +52,7 @@ class CommonSteps(val remoteRobot: RemoteRobot) {
         with(remoteRobot) {
             with(dialog("Turn Project Into A+ Project")) {
                 findText("Select language").click()
-                heavyWeightWindow().findText("English").click()
+                comboBoxList().findText("English").click()
                 checkBox("Leave IntelliJ settings unchanged.").setValue(settingsUnchanged)
                 button("OK").click()
             }
