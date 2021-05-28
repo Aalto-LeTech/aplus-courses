@@ -60,7 +60,7 @@ public class EditorHighlighter extends GenericHighlighter {
     for (int line : highlightedLines) {
       var startPos = new LogicalPosition(line, 0);
       var startPoint = editor.logicalPositionToXY(startPos);
-      rectangles.add(new Rectangle(startPoint.x, startPoint.y, editorWidth, lineHeight));
+      rectangles.add(new Rectangle(-getComponent().getX(), startPoint.y, editorWidth, lineHeight));
     }
 
     return rectangles;
