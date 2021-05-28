@@ -43,8 +43,7 @@ fun SearchContext.dialog(title: String, timeout: Duration = Duration.ofSeconds(5
         timeout
     )
 
-fun SearchContext.comboBoxList() =
-    find(ComboBoxListFixture::class.java, Duration.ofSeconds(5))
+fun SearchContext.heavyWeightWindow() = find(HeavyWeightWindowFixture::class.java, Duration.ofSeconds(5))
 
 @FixtureName("Welcome Frame")
 @DefaultXpath(by = "FlatWelcomeFrame type", xpath = "//div[@class='FlatWelcomeFrame']")
@@ -97,7 +96,7 @@ class IdeFrameFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent
         byXpath("//div[@accessiblename='Search Everywhere' and @class='ActionButton']"),
         Duration.ofSeconds(20)
     )
-    fun dropDownMenu() = with(comboBoxList()) {
+    fun dropDownMenu() = with(heavyWeightWindow()) {
         find(
             JListFixture::class.java,
             byXpath("//div[@class='MyList']"),
@@ -161,10 +160,7 @@ class CustomComboBoxFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteCom
     fun dropdown() = click()
 }
 
-@FixtureName("Combo Box List")
-@DefaultXpath(
-    "HeavyWeightWindow or CustomComboPopup type",
-    "//div[@class='HeavyWeightWindow' or @class='CustomComboPopup']"
-)
-class ComboBoxListFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent) :
+@FixtureName("Heavy Weight Window")
+@DefaultXpath("HeavyWeightWindow type", "//div[@class='HeavyWeightWindow']")
+class HeavyWeightWindowFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent) :
     CommonContainerFixture(remoteRobot, remoteComponent)
