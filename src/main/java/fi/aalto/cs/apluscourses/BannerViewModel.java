@@ -6,13 +6,13 @@ import java.awt.Color;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class BannerViewModel {
-  public final ObservableProperty<String> text = new ObservableReadWriteProperty<>("");
+  public final ObservableProperty<String> text;
 
   public final ObservableProperty<Color> color;
 
-  protected BannerViewModel(@NotNull Color color) {
+  protected BannerViewModel(@NotNull ObservableProperty<String> text,
+                            @NotNull Color color) {
+    this.text = text;
     this.color = new ObservableReadWriteProperty<>(color);
   }
-
-  public abstract void update();
 }
