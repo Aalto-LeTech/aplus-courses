@@ -117,12 +117,12 @@
             <action id="fi.aalto.cs.apluscourses.intellij.actions.ProgressAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.ProgressAction"
                     text="Progress"
-                    icon="PluginIcons.A_PLUS_BROWSE"/>
+                    icon="PluginIcons.A_PLUS_INFO"/>
         </group>
         <action id="Scala.RunConsole"
                 class="fi.aalto.cs.apluscourses.intellij.actions.ReplAction"
                 overrides="true"
-                icon="PluginIcons.A_PLUS_INFO">
+                icon="PluginIcons.A_PLUS_REPL">
             <keyboard-shortcut first-keystroke="control shift D" keymap="$default"/>
         </action>
     </actions>
