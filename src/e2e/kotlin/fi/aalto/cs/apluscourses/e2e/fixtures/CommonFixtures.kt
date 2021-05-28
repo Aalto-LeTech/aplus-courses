@@ -162,7 +162,9 @@ class CustomComboBoxFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteCom
 }
 
 @FixtureName("Combo Box List")
-@DefaultXpath("HeavyWeightWindow or CustomComboPopup type",
-    "//div[@class='HeavyWeightWindow' or @class='CustomComboPopup']")
+@DefaultXpath(
+    "HeavyWeightWindow or CustomComboPopup type",
+    "//div[@class='HeavyWeightWindow' or @class='CustomComboPopup']"
+)
 class ComboBoxListFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent) :
     CommonContainerFixture(remoteRobot, remoteComponent)
