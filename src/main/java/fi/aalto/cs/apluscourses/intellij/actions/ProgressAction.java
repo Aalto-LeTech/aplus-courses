@@ -41,7 +41,7 @@ public class ProgressAction extends JButtonAction {
       e.getPresentation().setVisible(false);
     } else {
       e.getPresentation().setText(getAndReplaceText("presentation.navbar.progress",
-              tutorialViewModel.getCurrentTaskIndex() - 1, tutorialViewModel.getTasksAmount()));
+              tutorialViewModel.getCurrentTaskIndex(), tutorialViewModel.getTasksAmount()));
     }
     updateButtonFromPresentation(e);
   }
