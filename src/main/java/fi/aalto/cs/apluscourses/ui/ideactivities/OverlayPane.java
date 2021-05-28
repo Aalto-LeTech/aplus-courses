@@ -155,21 +155,9 @@ public class OverlayPane extends JPanel implements AWTEventListener {
   /**
    * Marks a component not to be dimmed.
    */
-  public void showComponent(@NotNull Component c) {
-    this.highlighters.add(new GenericHighlighter(c));
-    this.revalidatePane();
-  }
-
-  /**
-   * Marks a particular editor not to be dimmed.
-   * @return Instance of {@link EditorHighlighter} that can be used to highlight particular lines.
-   */
-  public @NotNull EditorHighlighter showComponent(@NotNull EditorComponentImpl editor) {
-    var highlighter = new EditorHighlighter(editor);
+  public void addHighlighter(@NotNull GenericHighlighter highlighter) {
     this.highlighters.add(highlighter);
     this.revalidatePane();
-
-    return highlighter;
   }
 
   /**

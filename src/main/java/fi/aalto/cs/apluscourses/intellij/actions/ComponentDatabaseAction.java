@@ -4,6 +4,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.openapi.ui.Messages;
 import fi.aalto.cs.apluscourses.ui.ideactivities.ComponentDatabase;
+import fi.aalto.cs.apluscourses.ui.ideactivities.EditorHighlighter;
 import fi.aalto.cs.apluscourses.ui.ideactivities.OverlayPane;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,10 +31,12 @@ public class ComponentDatabaseAction extends DumbAwareAction {
       return;
     }
 
-    var goodStuff = overlay.showComponent(goodStuffEditor);
+    var goodStuff = new EditorHighlighter(goodStuffEditor);
     goodStuff.highlightAllLines();
+    overlay.addHighlighter(goodStuff);
 
-    var catDisplay = overlay.showComponent(catDisplayEditor);
+    var catDisplay = new EditorHighlighter(catDisplayEditor);
     catDisplay.highlightLines(1, 2, 3, 5, 7, 8, 9, 55, 56, 88);
+    overlay.addHighlighter(catDisplay);
   }
 }
