@@ -47,7 +47,7 @@ public class TutorialViewModel {
         currentTaskCompleted();
       }
       // The Task/Tutorial has been completed prematurely
-      // becuase the Activity was already performed.
+      // because the Activity was already performed.
       // E.g. the file was open already, variable renamed etc.
       // No need to show the instructions for this Task
       // as we are proceeding directly to the next one.
