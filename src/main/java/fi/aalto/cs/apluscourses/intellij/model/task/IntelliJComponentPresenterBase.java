@@ -4,6 +4,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.util.concurrency.annotations.RequiresEdt;
 import fi.aalto.cs.apluscourses.model.task.ComponentPresenter;
+import fi.aalto.cs.apluscourses.ui.ideactivities.ComponentDatabase;
 import fi.aalto.cs.apluscourses.ui.ideactivities.OverlayPane;
 import java.awt.Component;
 import org.jetbrains.annotations.NotNull;
@@ -34,6 +35,11 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
     overlayPane = OverlayPane.installOverlay();
     overlayPane.showComponent(component);
     overlayPane.addPopup(component, instruction, info);
+
+    var progressButton = ComponentDatabase.getProgressButton();
+    if (progressButton != null) {
+      overlayPane.showComponent(progressButton);
+    }
   }
 
   @Override
