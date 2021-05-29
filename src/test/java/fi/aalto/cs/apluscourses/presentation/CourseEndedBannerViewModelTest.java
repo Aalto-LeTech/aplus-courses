@@ -24,8 +24,6 @@ public class CourseEndedBannerViewModelTest {
     var banner = new CourseEndedBannerViewModel(courseProject);
     assertEquals(LightColors.RED, banner.color.get());
 
-    assertEquals("", banner.text.get());
-    banner.update();
     assertEquals("The course has ended.", banner.text.get());
   }
 }
