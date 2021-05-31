@@ -1,8 +1,13 @@
 package fi.aalto.cs.apluscourses.ui.ideactivities;
 
 import com.intellij.util.ui.JBUI;
+
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JLabel;
@@ -25,6 +30,7 @@ public class BalloonPopup extends JPanel {
                       @NotNull String message, @Nullable Icon icon) {
     this.anchorComponent = anchorComponent;
 
+    setOpaque(false);
     setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
     setBorder(new EmptyBorder(JBUI.insets(0, 5, 10, 5)));
 
@@ -35,6 +41,7 @@ public class BalloonPopup extends JPanel {
     titleText.setIcon(icon);
 
     var titlePanel = new JPanel();
+    titlePanel.setOpaque(false);
     titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.X_AXIS));
     titlePanel.setAlignmentX(LEFT_ALIGNMENT);
     titlePanel.add(titleText);
@@ -50,6 +57,16 @@ public class BalloonPopup extends JPanel {
   @Override
   public boolean isVisible() {
     return anchorComponent.isShowing();
+  }
+
+  @Override
+  protected void paintComponent(Graphics graphics) {
+    super.paintComponent(graphics);
+
+    Graphics g = graphics.create();
+    g.setColor(getBackground());
+    Rectangle drawBounds = g.getClipBounds();
+    g.fillRect(drawBounds.x, drawBounds.y, drawBounds.width, drawBounds.height);
   }
 
   /**
