@@ -1,0 +1,31 @@
+package fi.aalto.cs.apluscourses.ui.ideactivities;
+
+import java.awt.AlphaComposite;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import javax.swing.JLabel;
+
+public class BalloonLabel extends JLabel {
+  private float transparencyCoefficient;
+
+  public BalloonLabel(String text) {
+    super(text);
+    transparencyCoefficient = 1.0f;
+
+    setOpaque(false);
+  }
+
+  public void setTransparencyCoefficient(float coefficient) {
+    transparencyCoefficient = coefficient;
+  }
+
+  @Override
+  protected void paintComponent(Graphics g) {
+    Graphics2D g2 = (Graphics2D) g.create();
+    g2.setComposite(AlphaComposite.SrcOver.derive(transparencyCoefficient));
+
+    // let Swing do the text drawing using the customized Graphics object
+    super.paintComponent(g2);
+    g2.dispose();
+  }
+}
