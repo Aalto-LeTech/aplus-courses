@@ -83,7 +83,7 @@ public class BalloonPopup extends JPanel {
     var newColor = new Color(
         bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue(),
         (int) (transparencyCoefficient * 255));
-    
+
     g2.setColor(newColor);
     Rectangle drawBounds = g2.getClipBounds();
     g2.fillRect(drawBounds.x, drawBounds.y, drawBounds.width, drawBounds.height);
@@ -91,6 +91,11 @@ public class BalloonPopup extends JPanel {
     g2.dispose();
   }
 
+  /**
+   * Sets the popup transparency level.
+   * @param coefficient The transparency coefficient - a value between 0.0f and 1.0f.
+   *                    0.0f means completely transparent, 1.0f means completely opaque.
+   */
   public void setTransparencyCoefficient(float coefficient) {
     transparencyCoefficient = coefficient;
     titleLabel.setTransparencyCoefficient(coefficient);
@@ -107,14 +112,13 @@ public class BalloonPopup extends JPanel {
     // that this popup specify its bounds
     var componentWindowPos = SwingUtilities.convertPoint(anchorComponent, 0, 0, getParent());
 
-    var maxSize = getMaximumSize();
-    var prefSize = getPreferredSize();
+    var minSize = getMinimumSize();
 
     var windowSize = JOptionPane.getRootFrame().getSize();
     var componentSize = anchorComponent.getSize();
 
-    int popupWidth = Integer.min(maxSize.width, prefSize.width);
-    int popupHeight = prefSize.height;
+    int popupWidth = minSize.width + 20;
+    int popupHeight = minSize.height;
 
     int availableSizeLeft = componentWindowPos.x;
     int availableSizeRight = windowSize.width - (componentWindowPos.x + componentSize.width);
