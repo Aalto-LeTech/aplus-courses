@@ -1,7 +1,7 @@
 package fi.aalto.cs.apluscourses.intellij.model.task;
 
 import fi.aalto.cs.apluscourses.ui.ideactivities.ComponentDatabase;
-import java.awt.Component;
+import fi.aalto.cs.apluscourses.ui.ideactivities.EditorHighlighter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -11,7 +11,7 @@ public class EditorPresenter extends IntelliJComponentPresenterBase {
   }
 
   @Override
-  protected @Nullable Component getComponent() {
-    return ComponentDatabase.getEditorWindow();
+  protected @Nullable EditorHighlighter getHighlighter() {
+    return new EditorHighlighter(ComponentDatabase.getEditorWindow());
   }
 }
