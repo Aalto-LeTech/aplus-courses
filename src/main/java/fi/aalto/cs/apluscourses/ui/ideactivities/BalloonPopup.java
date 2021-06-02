@@ -128,27 +128,36 @@ public class BalloonPopup extends JPanel {
     int mostHorizontalSpace = Integer.max(availableSizeLeft, availableSizeRight);
     int mostVerticalSpace = Integer.max(availableSizeTop, availableSizeBottom);
 
-    boolean positionHorizontally = mostHorizontalSpace > mostVerticalSpace;
-
     int popupX;
     int popupY;
 
-    if (positionHorizontally) {
-      if (availableSizeRight > availableSizeLeft) {
-        popupX = componentWindowPos.x + anchorComponent.getWidth() + 5;
-      } else {
-        popupX = componentWindowPos.x - popupWidth - 5;
-      }
+    if (mostHorizontalSpace < popupWidth && mostVerticalSpace < popupHeight) {
+      popupX = componentWindowPos.x + componentSize.width - popupWidth - 20;
+      popupY = componentWindowPos.y + 20;
 
-      popupY = componentWindowPos.y + (anchorComponent.getHeight() - popupHeight) / 2;
+      setTransparencyCoefficient(0.4f);
     } else {
-      if (availableSizeBottom > availableSizeTop) {
-        popupY = componentWindowPos.y + anchorComponent.getHeight() + 5;
+      boolean positionHorizontally = mostHorizontalSpace > mostVerticalSpace;
+
+      if (positionHorizontally) {
+        if (availableSizeRight > availableSizeLeft) {
+          popupX = componentWindowPos.x + anchorComponent.getWidth() + 5;
+        } else {
+          popupX = componentWindowPos.x - popupWidth - 5;
+        }
+
+        popupY = componentWindowPos.y + (anchorComponent.getHeight() - popupHeight) / 2;
       } else {
-        popupY = componentWindowPos.y - popupHeight - 5;
+        if (availableSizeBottom > availableSizeTop) {
+          popupY = componentWindowPos.y + anchorComponent.getHeight() + 5;
+        } else {
+          popupY = componentWindowPos.y - popupHeight - 5;
+        }
+
+        popupX = componentWindowPos.x + (anchorComponent.getWidth() - popupWidth) / 2;
       }
 
-      popupX = componentWindowPos.x + (anchorComponent.getWidth() - popupWidth) / 2;
+      setTransparencyCoefficient(1.0f);
     }
 
     setBounds(popupX, popupY, popupWidth, popupHeight);
