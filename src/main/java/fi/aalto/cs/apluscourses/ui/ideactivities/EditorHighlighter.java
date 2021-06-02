@@ -13,7 +13,10 @@ public class EditorHighlighter extends GenericHighlighter {
   private final @NotNull EditorImpl editor;
 
   private final List<Integer> highlightedLines = new ArrayList<>();
-  private boolean highlightEverything = false;
+
+  private boolean highlightEverything() {
+    return highlightedLines.isEmpty();
+  }
 
   /**
    * Adds particular lines in the editor to the highlight list. The lines are indexed from 1, not 0.
@@ -36,18 +39,14 @@ public class EditorHighlighter extends GenericHighlighter {
     }
   }
 
-  public void highlightAllLines() {
-    highlightEverything = true;
-  }
-
   @Override
   public @NotNull Component getComponent() {
-    return highlightEverything ? super.getComponent().getParent() : super.getComponent();
+    return highlightEverything() ? super.getComponent().getParent() : super.getComponent();
   }
 
   @Override
   public List<Rectangle> getArea() {
-    if (highlightEverything) {
+    if (highlightEverything()) {
       return super.getArea();
     }
 
@@ -68,6 +67,7 @@ public class EditorHighlighter extends GenericHighlighter {
 
   public EditorHighlighter(@NotNull EditorComponentImpl component) {
     super(component);
+
     editor = component.getEditor();
   }
 }

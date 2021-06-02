@@ -55,11 +55,6 @@
                     class="fi.aalto.cs.apluscourses.intellij.actions.AboutAction"
                     text="About the A+ Courses Plugin"
                     description="Information about the A+ Courses plugin for IntelliJ" />
-            <!-- When reviewing, please ignore the change below - this will be removed before merging -->
-            <action id="fi.aalto.cs.apluscourses.intellij.actions.ComponentDatabaseAction"
-                    class="fi.aalto.cs.apluscourses.intellij.actions.ComponentDatabaseAction"
-                    text="Test Component Dimming"
-                    description="Dims the next component" />
         </group>
         <group id="fi.aalto.cs.apluscourses.intellij.actions.ActionGroups.MODULE_ACTIONS"
                text="A+ Module"
