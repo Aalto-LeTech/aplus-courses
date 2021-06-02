@@ -3,6 +3,7 @@ package fi.aalto.cs.apluscourses.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.OptionalLong;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -30,7 +31,7 @@ public class Exercise implements Browsable {
 
   private final boolean submittable;
 
-  @Nullable
+  @NotNull
   private final OptionalLong bestSubmissionId;
 
   /**
@@ -88,13 +89,16 @@ public class Exercise implements Browsable {
     // SubmissionInfo and how it is used in SubmitExerciseAction.
     boolean isSubmittable = points.isSubmittable(id);
 
-    Tutorial tutorial = tutorials.get(id);
+    var tutorial = tutorials.get(id);
+    var optionalBestSubmission = bestSubmissionId == null ? OptionalLong.empty()
+            : OptionalLong.of(bestSubmissionId);
     if (tutorial == null) {
       return new Exercise(id, name, htmlUrl, userPoints, maxPoints, maxSubmissions, isSubmittable,
-        bestSubmissionId == null ? OptionalLong.empty() : OptionalLong.of(bestSubmissionId));
+          optionalBestSubmission);
     } else {
       return new TutorialExercise(
-          id, name, htmlUrl, userPoints, maxPoints, maxSubmissions, isSubmittable, tutorial);
+          id, name, htmlUrl, userPoints, maxPoints, maxSubmissions, isSubmittable,
+          optionalBestSubmission, tutorial);
     }
   }
 
