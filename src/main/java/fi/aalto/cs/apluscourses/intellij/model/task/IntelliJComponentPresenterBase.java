@@ -7,7 +7,6 @@ import fi.aalto.cs.apluscourses.model.task.ComponentPresenter;
 import fi.aalto.cs.apluscourses.ui.ideactivities.ComponentDatabase;
 import fi.aalto.cs.apluscourses.ui.ideactivities.GenericHighlighter;
 import fi.aalto.cs.apluscourses.ui.ideactivities.OverlayPane;
-import java.awt.Component;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class IntelliJComponentPresenterBase implements ComponentPresenter {
@@ -39,7 +38,7 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
 
     var progressButton = ComponentDatabase.getProgressButton();
     if (progressButton != null) {
-      overlayPane.showComponent(progressButton);
+      overlayPane.addHighlighter(new GenericHighlighter(progressButton));
     }
   }
 
