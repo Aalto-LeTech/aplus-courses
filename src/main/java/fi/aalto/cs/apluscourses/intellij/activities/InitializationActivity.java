@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.intellij.activities;
 
 import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.MODULE_REPL_INITIAL_COMMANDS_FILE_NAME;
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
@@ -17,6 +18,7 @@ import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.intellij.utils.ProjectKey;
+import fi.aalto.cs.apluscourses.intellij.utils.ProjectViewUtil;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationException;
 import fi.aalto.cs.apluscourses.model.UnexpectedResponseException;
@@ -43,7 +45,7 @@ public class InitializationActivity implements Background {
 
   @NotNull
   private static final Map<ProjectKey, ObservableProperty<Boolean>> initializedProjects
-      = new ConcurrentHashMap<>();
+          = new ConcurrentHashMap<>();
 
   public InitializationActivity() {
     this(new DefaultNotifier());
@@ -57,11 +59,16 @@ public class InitializationActivity implements Background {
   public void runActivity(@NotNull Project project) {
     PluginSettings pluginSettings = PluginSettings.getInstance();
     pluginSettings.initializeLocalIdeSettings();
-    pluginSettings.ignoreFileInProjectView(MODULE_REPL_INITIAL_COMMANDS_FILE_NAME, project);
+
+    ProjectViewUtil.ignoreFileInProjectView(MODULE_REPL_INITIAL_COMMANDS_FILE_NAME, project);
+
+    var progressViewModel
+            = PluginSettings.getInstance().getMainViewModel(project).progressViewModel;
 
     URL courseConfigurationFileUrl = getCourseUrlFromProject(project);
     if (courseConfigurationFileUrl == null) {
       isInitialized(project).set(true);
+      progressViewModel.stopAll();
       return;
     }
 
@@ -72,22 +79,27 @@ public class InitializationActivity implements Background {
       logger.error("Error occurred while trying to parse a course configuration file", e);
       notifier.notify(new CourseConfigurationError(e), project);
       isInitialized(project).set(true);
+      progressViewModel.stopAll();
       return;
     } catch (IOException e) {
       logger.info("IOException occurred while using the HTTP client", e);
       notifier.notify(new NetworkErrorNotification(e), project);
       isInitialized(project).set(true);
+      progressViewModel.stopAll();
       return;
     }
+    var progress = progressViewModel.start(2, getText("ui.ProgressBarView.loading"), false);
+    progress.increment();
 
     var versionComparison =
-        BuildInfo.INSTANCE.courseVersion.compareTo(course.getVersion());
+            BuildInfo.INSTANCE.courseVersion.compareTo(course.getVersion());
 
     if (versionComparison == Version.ComparisonStatus.MAJOR_TOO_OLD
-        || versionComparison == Version.ComparisonStatus.MAJOR_TOO_NEW) {
+            || versionComparison == Version.ComparisonStatus.MAJOR_TOO_NEW) {
       notifier.notify(
-          versionComparison == Version.ComparisonStatus.MAJOR_TOO_OLD
-          ? new CourseVersionOutdatedError() : new CourseVersionTooNewError(), project);
+              versionComparison == Version.ComparisonStatus.MAJOR_TOO_OLD
+                      ? new CourseVersionOutdatedError() : new CourseVersionTooNewError(), project);
+      progress.finish();
       return;
     } else if (versionComparison == Version.ComparisonStatus.MINOR_TOO_OLD) {
       notifier.notify(new CourseVersionOutdatedWarning(), project);
@@ -96,6 +108,7 @@ public class InitializationActivity implements Background {
     var courseProject = new CourseProject(course, courseConfigurationFileUrl, project);
     PluginSettings.getInstance().registerCourseProject(courseProject);
     isInitialized(project).set(true);
+    progress.finish();
   }
 
   private static final ProjectManagerListener projectListener = new ProjectManagerListener() {
@@ -126,9 +139,9 @@ public class InitializationActivity implements Background {
 
     try {
       boolean isCourseProject = PluginSettings
-          .getInstance()
-          .getCourseFileManager(project)
-          .load();
+              .getInstance()
+              .getCourseFileManager(project)
+              .load();
       if (isCourseProject) {
         return PluginSettings.getInstance().getCourseFileManager(project).getCourseUrl();
       } else {

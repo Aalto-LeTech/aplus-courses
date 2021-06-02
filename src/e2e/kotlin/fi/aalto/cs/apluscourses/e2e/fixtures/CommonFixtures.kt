@@ -9,6 +9,7 @@ import com.intellij.remoterobot.fixtures.ComponentFixture
 import com.intellij.remoterobot.fixtures.ContainerFixture
 import com.intellij.remoterobot.fixtures.DefaultXpath
 import com.intellij.remoterobot.fixtures.FixtureName
+import com.intellij.remoterobot.fixtures.JButtonFixture
 import com.intellij.remoterobot.fixtures.JListFixture
 import com.intellij.remoterobot.fixtures.JTextFieldFixture
 import com.intellij.remoterobot.search.locators.byXpath
@@ -85,16 +86,27 @@ class IdeFrameFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent
         byXpath("//div[@accessiblename='Filter Assignments']"),
         Duration.ofSeconds(20)
     )
+    fun userButton() = find(
+        ActionButtonFixture::class.java,
+        byXpath("//div[@class='ActionButton' and @myaction='Not logged in (null)']"),
+        Duration.ofSeconds(20)
+    )
     fun searchEverywhereButton() = find(
         ActionButtonFixture::class.java,
         byXpath("//div[@accessiblename='Search Everywhere' and @class='ActionButton']"),
         Duration.ofSeconds(20)
     )
-    fun filterDropDownMenu() = find(
-        JListFixture::class.java,
-        byXpath("//div[@class='MyList']"),
-        Duration.ofSeconds(20)
-    )
+    fun dropDownMenu() = with(heavyWeightWindow()) {
+        find(
+            JListFixture::class.java,
+            byXpath("//div[@class='MyList']"),
+            Duration.ofSeconds(20)
+        )
+    }
+    fun codeWithMeButton() = findAll(
+        JButtonFixture::class.java,
+        byXpath("//div[@class='JButton' and @text='Got It']")
+    ).firstOrNull()
     fun ideErrorButton() = find(
         ComponentFixture::class.java,
         byXpath("//div[@class='IdeErrorsIcon']"),

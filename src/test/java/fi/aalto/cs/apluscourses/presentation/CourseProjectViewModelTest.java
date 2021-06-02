@@ -35,7 +35,9 @@ public class CourseProjectViewModelTest {
       //  replInitialCommands
       Collections.emptyMap(),
       //  courseVersion
-      BuildInfo.INSTANCE.courseVersion
+      BuildInfo.INSTANCE.courseVersion,
+      // tutorials
+      Collections.emptyMap()
   );
 
   @Test

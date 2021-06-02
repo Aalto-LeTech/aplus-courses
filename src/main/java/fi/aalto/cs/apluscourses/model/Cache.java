@@ -24,26 +24,26 @@ import org.jetbrains.annotations.Nullable;
  * other code. Note, that the cache makes no guarantee that every entry inserted is also written to
  * the file.
  */
-public abstract class Cache<KeyT, ValueT> {
+public abstract class Cache<K, V> {
 
   public class Entry {
     @NotNull
-    private final ValueT value;
+    private final V value;
 
     @NotNull
     private final ZonedDateTime createdAt;
 
-    public Entry(@NotNull ValueT value, @NotNull ZonedDateTime createdAt) {
+    public Entry(@NotNull V value, @NotNull ZonedDateTime createdAt) {
       this.value = value;
       this.createdAt = createdAt;
     }
 
-    public Entry(@NotNull ValueT value) {
+    public Entry(@NotNull V value) {
       this(value, ZonedDateTime.now());
     }
 
     @NotNull
-    public ValueT getValue() {
+    public V getValue() {
       return value;
     }
 
@@ -55,7 +55,7 @@ public abstract class Cache<KeyT, ValueT> {
 
   private final File file;
 
-  private Map<KeyT, Entry> entries;
+  private volatile Map<K, Entry> entries = new HashMap<>();
 
   private final CountDownLatch fileRead = new CountDownLatch(1);
 
@@ -67,7 +67,7 @@ public abstract class Cache<KeyT, ValueT> {
   /**
    * Construct an instance with the given underlying file.
    */
-  public Cache(@NotNull Path filePath) {
+  protected Cache(@NotNull Path filePath) {
     this.file = filePath.toFile();
     new Thread(this::doInitialFileRead).start();
   }
@@ -76,7 +76,7 @@ public abstract class Cache<KeyT, ValueT> {
    * Returns the entry corresponding to the given key, or null if no such entry exists.
    */
   @Nullable
-  public synchronized Entry getEntry(@NotNull KeyT key) {
+  public synchronized Entry getEntry(@NotNull K key) {
     ensureFileIsRead();
     return entries.get(key);
   }
@@ -85,18 +85,18 @@ public abstract class Cache<KeyT, ValueT> {
    * Adds the given key and value to the cache. The creation time is determined by
    * {@link ZonedDateTime#now}. If an entry exists with the given key, it is replaced.
    */
-  public synchronized void putValue(@NotNull KeyT key, @NotNull ValueT value) {
+  public synchronized void putValue(@NotNull K key, @NotNull V value) {
     ensureFileIsRead();
     entries.put(key, new Entry(value));
     queueFileWrite();
   }
 
   @NotNull
-  protected abstract Map<KeyT, Entry> fromFile(@NotNull File file) throws IOException;
+  protected abstract Map<K, Entry> fromFile(@NotNull File file) throws IOException;
 
   @NotNull
   protected abstract void toFile(@NotNull File file,
-                                 @NotNull Map<KeyT, Entry> entries) throws IOException;
+                                 @NotNull Map<K, Entry> entries) throws IOException;
 
   private void doInitialFileRead() {
     try {
@@ -109,7 +109,7 @@ public abstract class Cache<KeyT, ValueT> {
   }
 
   private void writeFile() {
-    Map<KeyT, Entry> copy;
+    Map<K, Entry> copy;
     synchronized (this) {
       copy = new HashMap<>(entries);
     }

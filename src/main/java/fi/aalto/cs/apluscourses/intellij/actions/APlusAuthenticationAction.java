@@ -18,6 +18,8 @@ import org.jetbrains.annotations.NotNull;
 
 public class APlusAuthenticationAction extends DumbAwareAction {
 
+  public static final String ACTION_ID = APlusAuthenticationAction.class.getCanonicalName();
+
   @NotNull
   private final CourseProjectProvider courseProjectProvider;
 
@@ -31,7 +33,7 @@ public class APlusAuthenticationAction extends DumbAwareAction {
   private final Notifier notifier;
 
   /**
-   * Called by th platform.
+   * Called by the platform.
    */
   public APlusAuthenticationAction() {
     this(
@@ -75,14 +77,18 @@ public class APlusAuthenticationAction extends DumbAwareAction {
     PasswordStorage passwordStorage = passwordStorageFactory.create(apiUrl);
     AuthenticationViewModel authenticationViewModel = new AuthenticationViewModel(
         APlusTokenAuthentication.getFactoryFor(passwordStorage),
-        authenticationHtmlUrl
+        authenticationHtmlUrl,
+        course.getExerciseDataSource()
     );
 
     if (!dialogs.create(authenticationViewModel, project).showAndGet()) {
       return;
     }
 
-    Authentication authentication = authenticationViewModel.build();
+    Authentication authentication = authenticationViewModel.getAuthentication();
+    if (authentication == null) {
+      return;
+    }
     if (!authentication.persist()) {
       notifier.notify(new ApiTokenNotSetNotification(), project);
     }

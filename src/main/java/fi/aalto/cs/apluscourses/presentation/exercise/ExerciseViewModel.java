@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.presentation.exercise;
 
 import fi.aalto.cs.apluscourses.model.Exercise;
+import fi.aalto.cs.apluscourses.model.TutorialExercise;
 import fi.aalto.cs.apluscourses.presentation.base.Searchable;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
@@ -45,7 +46,8 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
     PARTIAL_POINTS,
     FULL_POINTS,
     IN_GRADING,
-    LATE
+    LATE,
+    TUTORIAL
   }
 
   /**
@@ -55,7 +57,9 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
     Exercise exercise = getModel();
     var bestSubmission = exercise.getBestSubmission();
     var isLate = bestSubmission != null && bestSubmission.getLatePenalty() != 0.0;
-    if (exercise.isInGrading()) {
+    if (exercise instanceof TutorialExercise) {
+      return Status.TUTORIAL;
+    } else if (exercise.isInGrading()) {
       return Status.IN_GRADING;
     } else if (exercise.getMaxSubmissions() == 0 && exercise.getMaxPoints() == 0) {
       return Status.OPTIONAL_PRACTICE;

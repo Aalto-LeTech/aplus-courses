@@ -8,6 +8,7 @@ import fi.aalto.cs.apluscourses.e2e.fixtures.dialog
 import fi.aalto.cs.apluscourses.e2e.fixtures.ideFrame
 import fi.aalto.cs.apluscourses.e2e.steps.CommonSteps
 import fi.aalto.cs.apluscourses.e2e.utils.StepLoggerInitializer
+import fi.aalto.cs.apluscourses.e2e.utils.containsText
 import fi.aalto.cs.apluscourses.e2e.utils.getVersion
 import fi.aalto.cs.apluscourses.e2e.utils.uiTest
 import org.junit.Assert.assertEquals
@@ -16,7 +17,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.time.Duration
 
-class PlaceholderTest {
+class MainTest {
     init {
         StepLoggerInitializer.init()
     }
@@ -26,24 +27,31 @@ class PlaceholderTest {
         // step 2
         CommonSteps(this).createProject()
         // step 4
-        CommonSteps(this).openAPlusProjectWindow()
+        ideFrame().waitForSmartMode()
         step("Cancel") {
-            attempt(2) {
-                ideFrame().waitForSmartMode()
+            attempt(5) {
+                CommonSteps(this).openAPlusProjectWindow()
                 with(dialog("Select Course")) {
                     button("Cancel").click()
                 }
             }
         }
-        CommonSteps(this).openAPlusProjectWindow()
         step("Select course") {
-            with(dialog("Select Course")) {
-                findText("O1").click()
-                button("OK").click()
+            attempt(5) {
+                CommonSteps(this).openAPlusProjectWindow()
+                with(dialog("Select Course")) {
+                    findText("O1").click()
+                    button("OK").click()
+                }
             }
         }
         step("Choose settings") {
             CommonSteps(this).aPlusSettings(true)
+        }
+        step("Skip the potential \"Code with me\" popup") {
+            with(ideFrame()) {
+                codeWithMeButton()?.click()
+            }
         }
         step("Assertions") {
             with(ideFrame()) {
@@ -60,7 +68,7 @@ class PlaceholderTest {
                         Duration.ofSeconds(60),
                         Duration.ofSeconds(1),
                         "No modules installed in modules list"
-                    ) { hasText { textData -> textData.text.contains("[Installed]") } }
+                    ) { containsText("[Installed]") }
                     assertTrue(
                         "O1Library is in the modules tree",
                         hasText("O1Library")
@@ -69,10 +77,13 @@ class PlaceholderTest {
             }
         }
         // step 8
-        step("Authenticate with empty token") {
+        step("Authenticate with wrong token") {
             CommonSteps(this).setAPlusToken("")
             with(dialog("A+ Token")) {
                 assertTrue("Token dialog still showing after clicking OK with empty token", isShowing)
+                passwordField().text = "token"
+                button("OK").click()
+                assertTrue("Token dialog still showing after clicking OK with wrong token", isShowing)
                 button("Cancel").click()
             }
         }
@@ -113,13 +124,16 @@ class PlaceholderTest {
                         Duration.ofSeconds(1),
                         "Week 1 not found in assignments list"
                     ) { hasText("Week 1") }
-                    assertFalse("'Files' assignment should be collapsed", hasText("Files"))
+
+                    // searching for assignments uses "containsText" rather than "hasText" because of
+                    // platform-dependant quirks such as splitting the assignment number and name into two strings
+                    assertFalse("'Files' assignment should be collapsed", containsText("Files"))
                     click()
                     keyboard {
                         enterText("files")
                         escape()
                     }
-                    assertTrue("'Files' assignment should be visible", hasText("Files"))
+                    assertTrue("'Files' assignment should be visible", containsText("Files"))
                     keyboard {
                         escape()
                     }
@@ -131,7 +145,7 @@ class PlaceholderTest {
             with(ideFrame()) {
                 // just check the initial state (nothing is filtered out)
                 filterButton().click()
-                with(filterDropDownMenu()) {
+                with(dropDownMenu()) {
                     assertTrue("By default, nothing is filtered out", hasText("Deselect all"))
                 }
                 keyboard {
@@ -139,14 +153,14 @@ class PlaceholderTest {
                 }
 
                 with(assignments()) {
-                    assertTrue("'Files' assignment should be visible", hasText("Assignment 6 (Files)"))
+                    assertTrue("'Files' assignment should be visible", containsText("Files"))
                 }
 
                 // filter out optional tasks
                 filterButton().click()
-                filterDropDownMenu().selectItemContains("Optional")
+                dropDownMenu().selectItemContains("Optional")
                 filterButton().click()
-                with(filterDropDownMenu()) {
+                with(dropDownMenu()) {
                     assertTrue("Something should be filtered out", hasText("Select all"))
                 }
                 keyboard {
@@ -154,13 +168,13 @@ class PlaceholderTest {
                 }
 
                 with(assignments()) {
-                    assertFalse("'Files' assignment should now be hidden", hasText("Assignment 6 (Files)"))
-                    assertTrue("Feedback submissions should be visible", hasText("Feedback"))
+                    assertFalse("'Files' assignment should now be hidden", containsText("Files"))
+                    assertTrue("Feedback submissions should be visible", containsText("Feedback"))
                 }
 
                 // filter out non-submittable tasks
                 filterButton().click()
-                filterDropDownMenu().selectItemContains("Non-submittable")
+                dropDownMenu().selectItemContains("Non-submittable")
 
                 with(assignments()) {
                     assertFalse("Feedback submissions should now be hidden", hasText("Feedback"))
@@ -169,7 +183,7 @@ class PlaceholderTest {
 
                 // filter out closed sections
                 filterButton().click()
-                filterDropDownMenu().selectItemContains("Closed")
+                dropDownMenu().selectItemContains("Closed")
 
                 with(assignments()) {
                     assertFalse("Closed Week 1 should be visible", hasText("Week 1"))
@@ -177,9 +191,9 @@ class PlaceholderTest {
 
                 // disable filtering altogether
                 filterButton().click()
-                filterDropDownMenu().selectItemContains("Select all")
+                dropDownMenu().selectItemContains("Select all")
                 filterButton().click()
-                with(filterDropDownMenu()) {
+                with(dropDownMenu()) {
                     assertTrue("Nothing is filtered out anymore", hasText("Deselect all"))
                 }
                 keyboard {
@@ -194,10 +208,35 @@ class PlaceholderTest {
 
                 // check that various assignments are visible
                 with(assignments()) {
-                    assertTrue("'Files' assignment should be visible", hasText("Files"))
-                    assertTrue("Feedback submissions should be visible", hasText("Feedback"))
+                    assertTrue("'Files' assignment should be visible", containsText("Files"))
+                    assertTrue("Feedback submissions should be visible", containsText("Feedback"))
                     assertTrue("Closed Week 1 should be visible", hasText("Week 1"))
                 }
+            }
+        }
+        step("User dropdown") {
+            with(ideFrame()) {
+                userButton().click()
+                with(dropDownMenu()) {
+                    assertTrue(
+                        "The user dropdown contains the user's name",
+                        containsText("TESTI-Opiskelija")
+                    )
+                    selectItemContains("Log out")
+                }
+                assertTrue(
+                    "The assignments tree gets cleared after logging out",
+                    containsText("Set your A+ token")
+                )
+                userButton().click()
+                with(dropDownMenu()) {
+                    assertTrue(
+                        "The user dropdown shows that the user isn't logged in",
+                        containsText("Not logged in")
+                    )
+                    selectItemContains("Log in")
+                }
+                dialog("A+ Token").button("Cancel").click()
             }
         }
     }

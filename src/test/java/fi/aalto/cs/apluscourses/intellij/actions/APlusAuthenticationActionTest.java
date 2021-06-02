@@ -1,11 +1,13 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import fi.aalto.cs.apluscourses.dal.PasswordStorage;
 import fi.aalto.cs.apluscourses.dal.TokenAuthentication;
 import fi.aalto.cs.apluscourses.intellij.DialogHelper;
@@ -20,7 +22,7 @@ import java.net.URL;
 import org.junit.Before;
 import org.junit.Test;
 
-public class APlusAuthenticationActionTest extends BasePlatformTestCase {
+public class APlusAuthenticationActionTest {
 
   Project project;
   AnActionEvent actionEvent;
@@ -41,7 +43,6 @@ public class APlusAuthenticationActionTest extends BasePlatformTestCase {
    */
   @Before
   public void setUp() throws Exception {
-    super.setUp();
     project = mock(Project.class);
     actionEvent = mock(AnActionEvent.class);
     doReturn(project).when(actionEvent).getProject();
@@ -57,6 +58,7 @@ public class APlusAuthenticationActionTest extends BasePlatformTestCase {
 
     dialog = new DialogHelper<>(viewModel -> {
       viewModel.setToken(token.toCharArray());
+      viewModel.build();
       return true;
     });
 

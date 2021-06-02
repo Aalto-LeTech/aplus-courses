@@ -76,7 +76,7 @@ public class ExerciseTest {
         .put(MAX_SUBMISSIONS_KEY, 5)
         .put("additional key", "which shouldn't cause errors");
 
-    Exercise exercise = Exercise.fromJsonObject(json, TEST_POINTS);
+    Exercise exercise = Exercise.fromJsonObject(json, TEST_POINTS, Collections.emptyMap());
     exercise.addSubmissionResult(
         new SubmissionResult(2, 0, 0.0, SubmissionResult.Status.GRADED, exercise));
 
@@ -105,7 +105,7 @@ public class ExerciseTest {
         .put(MAX_POINTS_KEY, 55)
         .put(MAX_SUBMISSIONS_KEY, 3);
 
-    Exercise.fromJsonObject(json, TEST_POINTS);
+    Exercise.fromJsonObject(json, TEST_POINTS, Collections.emptyMap());
   }
 
   @Test(expected = JSONException.class)
@@ -116,7 +116,7 @@ public class ExerciseTest {
         .put(MAX_POINTS_KEY, 44)
         .put(MAX_SUBMISSIONS_KEY, 4);
 
-    Exercise.fromJsonObject(json, TEST_POINTS);
+    Exercise.fromJsonObject(json, TEST_POINTS, Collections.emptyMap());
   }
 
   @Test(expected = JSONException.class)
@@ -127,7 +127,7 @@ public class ExerciseTest {
         .put(HTML_KEY, "http://localhost:4567")
         .put(MAX_SUBMISSIONS_KEY, 4);
 
-    Exercise.fromJsonObject(json, TEST_POINTS);
+    Exercise.fromJsonObject(json, TEST_POINTS, Collections.emptyMap());
   }
 
   @Test(expected = JSONException.class)
@@ -138,7 +138,7 @@ public class ExerciseTest {
         .put(HTML_KEY, "localhost:1234")
         .put(MAX_POINTS_KEY, 4);
 
-    Exercise.fromJsonObject(json, TEST_POINTS);
+    Exercise.fromJsonObject(json, TEST_POINTS, Collections.emptyMap());
   }
 
   @Test

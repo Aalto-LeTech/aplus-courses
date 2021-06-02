@@ -5,6 +5,7 @@ import fi.aalto.cs.apluscourses.model.ExerciseGroup;
 import fi.aalto.cs.apluscourses.presentation.exercise.EmptyExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
+import fi.aalto.cs.apluscourses.presentation.ideactivities.TutorialViewModel;
 import fi.aalto.cs.apluscourses.utils.Event;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
@@ -29,7 +30,10 @@ public class MainViewModel {
       new ObservableReadWriteProperty<>(new EmptyExercisesTreeViewModel());
 
   @NotNull
-  public final ObservableProperty<Authentication> authentication =
+  public final ProgressViewModel progressViewModel = new ProgressViewModel();
+
+  @NotNull
+  public final ObservableProperty<TutorialViewModel> tutorialViewModel =
       new ObservableReadWriteProperty<>(null);
 
   @NotNull
@@ -46,9 +50,10 @@ public class MainViewModel {
    * Creates a new {@link ExercisesTreeViewModel} with the given exercise groups, which is then set
    * to {@link MainViewModel#exercisesViewModel}.
    */
-  public void updateExercisesViewModel(@NotNull List<ExerciseGroup> exerciseGroups) {
+  public void updateExercisesViewModel(@NotNull List<ExerciseGroup> exerciseGroups,
+                                       Authentication auth) {
     var viewModel = new ExercisesTreeViewModel(exerciseGroups, exerciseFilterOptions);
-    viewModel.setAuthenticated(true);
+    viewModel.setAuthenticated(auth != null);
     viewModel.setProjectReady(exercisesViewModel.get().isProjectReady());
     exercisesViewModel.set(viewModel);
   }

@@ -141,12 +141,12 @@ public class APlusExerciseDataSourceTest {
         .fetch("https://example.com/courses/99/exercises/", authentication);
     doReturn(List.of(exGroup0, exGroup1))
         .when(parser)
-        .parseExerciseGroups(same(array), any(Points.class));
+        .parseExerciseGroups(same(array), any(Points.class), eq(Collections.emptyMap()));
 
     Course course = new ModelExtensions.TestCourse("99");
 
-    List<ExerciseGroup> exGroups =
-        exerciseDataSource.getExerciseGroups(course, mock(Points.class), authentication);
+    List<ExerciseGroup> exGroups = exerciseDataSource.getExerciseGroups(
+        course, mock(Points.class), Collections.emptyMap(), authentication);
 
     assertEquals(2, exGroups.size());
     assertSame(exGroup0, exGroups.get(0));
