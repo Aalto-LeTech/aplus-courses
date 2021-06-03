@@ -30,13 +30,11 @@ public class ObservableCachedReadOnlyProperty<T> extends ObservableReadOnlyPrope
 
   @Nullable
   @Override
-  public T get() {
-    synchronized (this) {
-      if (!isInitialized) {
-        cached = getter.get();
-        isInitialized = true;
-      }
-      return cached;
+  public synchronized T get() {
+    if (!isInitialized) {
+      cached = getter.get();
+      isInitialized = true;
     }
+    return cached;
   }
 }
