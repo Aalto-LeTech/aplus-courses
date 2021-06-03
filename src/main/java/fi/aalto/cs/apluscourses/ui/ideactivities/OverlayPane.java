@@ -9,11 +9,14 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.AWTEventListener;
 import java.awt.event.MouseEvent;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
+import java.awt.geom.RoundRectangle2D;
 import java.util.HashSet;
 import java.util.Set;
 import javax.swing.JFrame;
@@ -41,11 +44,15 @@ public class OverlayPane extends JPanel implements AWTEventListener {
     var overlayArea = new Area(new Rectangle(0, 0, getWidth(), getHeight()));
 
     for (var c : highlighters) {
-      // convertPoint is necessary because the component uses a different coordinate origin
+      var posDiff = SwingUtilities.convertPoint(c.getComponent(), 0, 0, this);
+      var translation = AffineTransform.getTranslateInstance(posDiff.x, posDiff.y);
+      
       if (c.getComponent().isShowing()) {
         for (var rectangle : c.getArea()) {
-          var windowRect = SwingUtilities.convertRectangle(c.getComponent(), rectangle, this);
-          overlayArea.subtract(new Area(windowRect));
+          var rectangleArea = new Area(rectangle);
+          rectangleArea.transform(translation);
+
+          overlayArea.subtract(rectangleArea);
         }
       }
     }

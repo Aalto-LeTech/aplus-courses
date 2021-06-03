@@ -5,6 +5,7 @@ import com.intellij.openapi.editor.impl.EditorComponentImpl;
 import com.intellij.openapi.editor.impl.EditorImpl;
 import java.awt.Component;
 import java.awt.Rectangle;
+import java.awt.geom.RectangularShape;
 import java.util.ArrayList;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
@@ -46,13 +47,13 @@ public class EditorHighlighter extends GenericHighlighter {
   }
 
   @Override
-  public List<Rectangle> getArea() {
+  public List<RectangularShape> getArea() {
     if (highlightEverything()) {
       return super.getArea();
     }
 
     var lineHeight = editor.getLineHeight();
-    var rectangles = new ArrayList<Rectangle>();
+    var rectangles = new ArrayList<RectangularShape>();
 
     // the parent of the editor is JBViewport, which controls the visible region of the component
     var editorWidth = getComponent().getParent().getWidth();
