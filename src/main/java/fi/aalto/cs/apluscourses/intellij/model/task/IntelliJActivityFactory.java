@@ -11,6 +11,8 @@ import org.jetbrains.annotations.NotNull;
 public class IntelliJActivityFactory implements ActivityFactory {
   private final @NotNull Project project;
 
+  private static final String FILE_PATH = "filePath";
+
   public IntelliJActivityFactory(@NotNull Project project) {
     this.project = project;
   }
@@ -21,22 +23,26 @@ public class IntelliJActivityFactory implements ActivityFactory {
                                                     @NotNull ListenerCallback callback) {
     switch (action) {
       case "openEditor":
-        return new OpenFileListener(callback, arguments.getOrThrow("filepath"), project);
+        return new OpenFileListener(callback, arguments.getOrThrow(FILE_PATH), project);
       case "varRename":
-        return new RenameVariableListener(callback, arguments.getOrThrow("filepath"),
+        return new RenameVariableListener(callback, arguments.getOrThrow(FILE_PATH),
                 arguments.getOrThrow("oldName"),
                 arguments.getOrThrow("newName"), project);
       case "build":
-        return new IdeActionListener(callback, project, arguments.getOrThrow("actionName"));
+        return new IdeActionListener(callback, project, arguments.getOrThrow("actionName"), null);
+      case "test":
+        return new IdeActionListener(callback, project,
+                arguments.getOrThrow("actionName"), arguments.getOrThrow(FILE_PATH));
       case "classDeclScala":
         return new ClassDeclarationListener(callback, project, arguments.getOrThrow("className"),
-                arguments.getArrayOrThrow("classArguments"), arguments.getArrayOrThrow("classHierarchy"), arguments.getOrThrow("filepath"));
+                arguments.getArrayOrThrow("classArguments"),
+                arguments.getArrayOrThrow("classHierarchy"), arguments.getOrThrow(FILE_PATH));
       case "functionDefinition":
         return new FunctionDefinitionListener(callback, project,
-                arguments.get("methodName"),
-                arguments.getArrayOrThrow("arguments"),
-                arguments.getArrayOrThrow("body"),
-                arguments.getOrThrow("filepath"));
+                arguments.getOrThrow("methodName"),
+                arguments.getArrayOrThrow("methodArguments"),
+                arguments.getArrayOrThrow("methodBody"),
+                arguments.getOrThrow(FILE_PATH));
       default:
         throw new IllegalArgumentException("Unsupported action: " + action);
     }

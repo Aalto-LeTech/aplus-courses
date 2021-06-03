@@ -37,7 +37,7 @@ public class ClassDeclarationListener implements ActivitiesListener, DocumentLis
 
   /**
    * Constructor.
-   * @param callback the callback for when the task is complete
+   * @param callback The callback for when the task is complete
    * @param project The project where the Tutorial is happening
    * @param className The class name
    * @param arguments The arguments of the class
@@ -132,6 +132,9 @@ public class ClassDeclarationListener implements ActivitiesListener, DocumentLis
     PsiElement[] children = element.getChildren();
     Optional<PsiElement> extendsElement = Arrays.stream(children).filter(
         child -> child instanceof ScTemplateParentsImpl).findFirst();
+    // Peculirarity: If 'extends' is written without specifying a class name
+    // it is considered correct by Scala
+    // (the keyword extends is not visible when traversing the Psi tree)
     if (extendsElement.isPresent()) {
       if (hierarchy.length != 0) {
         children = extendsElement.get().getChildren();
@@ -140,12 +143,6 @@ public class ClassDeclarationListener implements ActivitiesListener, DocumentLis
       } else {
         return false;
       }
-    } else if (hierarchy.length == 0) {
-      // If 'extends' is written without specifying a class name
-      // it is considered correct by Scala
-      // (the keyword extends is not visible when traversing the Psi tree)
-      return true;
-    }
-    return false;
+    } else return !element.getText().startsWith("extends") && hierarchy.length == 0;
   }
 }

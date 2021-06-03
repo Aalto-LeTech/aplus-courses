@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.intellij.model.task;
 
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.compiler.*;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
@@ -13,18 +14,21 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
 import fi.aalto.cs.apluscourses.model.task.ActivitiesListener;
 import fi.aalto.cs.apluscourses.model.task.ListenerCallback;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement;
-import org.jetbrains.plugins.scala.lang.psi.api.ScalaRecursiveElementVisitor;
-import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunctionDefinition;
-import org.jetbrains.plugins.scala.lang.psi.impl.expr.ScReferenceExpressionImpl;
-import org.jetbrains.plugins.scala.lang.psi.impl.statements.params.ScParametersImpl;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class FunctionDefinitionListener implements ActivitiesListener, DocumentListener {
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement;
+import org.jetbrains.plugins.scala.lang.psi.api.ScalaRecursiveElementVisitor;
+import org.jetbrains.plugins.scala.lang.psi.api.expr.ScAssignment;
+import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunctionDefinition;
+import org.jetbrains.plugins.scala.lang.psi.impl.expr.ScReferenceExpressionImpl;
+import org.jetbrains.plugins.scala.lang.psi.impl.statements.params.ScParametersImpl;
+
+
+public class FunctionDefinitionListener implements ActivitiesListener,
+        DocumentListener, CompilationStatusListener {
 
   private final ListenerCallback callback;
   private final Project project;
@@ -33,8 +37,18 @@ public class FunctionDefinitionListener implements ActivitiesListener, DocumentL
   private final String[] arguments;
   private final String[] methodBody;
 
+  /**
+   * Constructor.
+   * @param callback The callback the callback for when the task is complete
+   * @param project The project where the Tutorial is happening
+   * @param methodName The method's name
+   * @param arguments The method's arguments
+   * @param body The method's body
+   * @param filePath The file's path.
+   */
   public FunctionDefinitionListener(ListenerCallback callback,
-                                    Project project, String methodName, String[] arguments, String[] body, String filePath) {
+                                    Project project, String methodName, String[] arguments,
+                                    String[] body, String filePath) {
     this.callback = callback;
     this.project = project;
     this.methodName = methodName;
@@ -51,7 +65,6 @@ public class FunctionDefinitionListener implements ActivitiesListener, DocumentL
     EditorEventMulticaster multicaster = EditorFactory.getInstance().getEventMulticaster();
     disposable = Disposer.newDisposable();
     multicaster.addDocumentListener(this, disposable);
-    //and then check if the method is already in the desired condition
     return false;
   }
 
@@ -66,7 +79,9 @@ public class FunctionDefinitionListener implements ActivitiesListener, DocumentL
   public void documentChanged(@NotNull DocumentEvent event) {
     PsiDocumentManager.getInstance(project).commitDocument(event.getDocument());
     PsiFile psiFile = PsiDocumentManager.getInstance(project).getPsiFile(event.getDocument());
-    checkPsiFile(psiFile);
+    if (psiFile != null) {
+      checkPsiFile(psiFile);
+    }
   }
 
   private void checkPsiFile(PsiFile psiFile) {
@@ -126,7 +141,8 @@ public class FunctionDefinitionListener implements ActivitiesListener, DocumentL
       if (element instanceof PsiWhiteSpace) {
         continue;
       }
-      if (element.getChildren().length == 0 || element instanceof ScReferenceExpressionImpl) {
+      if (element.getChildren().length == 0 || element instanceof ScReferenceExpressionImpl
+          || element instanceof ScAssignment) {
         elements.add(element);
       } else {
         elements.addAll(getMethodBodyPsiElements(element.getChildren()));
