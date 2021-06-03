@@ -1,7 +1,6 @@
 package fi.aalto.cs.apluscourses.model;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
 public class SubmissionResult implements Browsable {
@@ -22,7 +21,7 @@ public class SubmissionResult implements Browsable {
 
   private final double latePenalty;
 
-  @Nullable
+  @NotNull
   private final Exercise exercise;
 
   /**
@@ -32,7 +31,7 @@ public class SubmissionResult implements Browsable {
                           int points,
                           double latePenalty,
                           @NotNull Status status,
-                          @Nullable Exercise exercise) {
+                          @NotNull Exercise exercise) {
     this.submissionId = submissionId;
     this.points = points;
     this.latePenalty = latePenalty;
@@ -46,7 +45,7 @@ public class SubmissionResult implements Browsable {
    */
   @NotNull
   public static SubmissionResult fromJsonObject(@NotNull JSONObject jsonObject,
-                                                @Nullable Exercise exercise) {
+                                                @NotNull Exercise exercise) {
     long id = jsonObject.getLong("id");
     int points = jsonObject.getInt("grade");
     double latePenalty = jsonObject.optDouble("late_penalty_applied", 0.0);

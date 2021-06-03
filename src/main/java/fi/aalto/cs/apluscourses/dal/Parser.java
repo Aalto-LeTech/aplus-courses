@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -28,7 +27,7 @@ public interface Parser {
                          @NotNull Map<Long, Tutorial> tutorials);
 
   SubmissionResult parseSubmissionResult(@NotNull JSONObject jsonObject,
-                                         @Nullable Exercise exercise);
+                                         @NotNull Exercise exercise);
 
   String parseUserName(@NotNull JSONObject object);
 

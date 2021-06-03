@@ -254,7 +254,7 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
 
     @Override
     public SubmissionResult parseSubmissionResult(@NotNull JSONObject object,
-                                                  @Nullable Exercise exercise) {
+                                                  @NotNull Exercise exercise) {
       return SubmissionResult.fromJsonObject(object, exercise);
     }
 
