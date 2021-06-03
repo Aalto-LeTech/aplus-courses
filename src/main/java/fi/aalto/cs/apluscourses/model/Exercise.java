@@ -17,6 +17,9 @@ public class Exercise implements Browsable {
   private final String name;
 
   @NotNull
+  private final SubmissionInfo submissionInfo;
+
+  @NotNull
   private final String htmlUrl;
 
   @NotNull
@@ -28,8 +31,6 @@ public class Exercise implements Browsable {
   private final int maxPoints;
 
   private final int maxSubmissions;
-
-  private final boolean submittable;
 
   @NotNull
   private final OptionalLong bestSubmissionId;
@@ -47,18 +48,18 @@ public class Exercise implements Browsable {
   public Exercise(long id,
                   @NotNull String name,
                   @NotNull String htmlUrl,
+                  @NotNull SubmissionInfo submissionInfo,
                   int userPoints,
                   int maxPoints,
                   int maxSubmissions,
-                  boolean submittable,
                   @NotNull OptionalLong bestSubmissionId) {
     this.id = id;
     this.name = name;
     this.htmlUrl = htmlUrl;
+    this.submissionInfo = submissionInfo;
     this.userPoints = userPoints;
     this.maxPoints = maxPoints;
     this.maxSubmissions = maxSubmissions;
-    this.submittable = submittable;
     this.bestSubmissionId = bestSubmissionId;
   }
 
@@ -80,24 +81,24 @@ public class Exercise implements Browsable {
     String htmlUrl = jsonObject.getString("html_url");
 
     var bestSubmissionId = points.getBestSubmissionIds().get(id);
-    int userPoints = points.getExercisePoints().getOrDefault(id, 0);
+    // TODO: consider if it would be better to just take points as the max points from all
+    //  submission results, then the "points" parameter could be completely removed from this
+    //  method.
+    int userPoints = points.getExercisePoints(id);
     int maxPoints = jsonObject.getInt("max_points");
     int maxSubmissions = jsonObject.getInt("max_submissions");
 
-    // TODO: submittability should instead be determined by looking at the individual exercise end
-    // point in the A+ API and seeing if the assignment has files to submit. Take a look at
-    // SubmissionInfo and how it is used in SubmitExerciseAction.
-    boolean isSubmittable = points.isSubmittable(id);
+    var submissionInfo = SubmissionInfo.fromJsonObject(jsonObject);
 
     var tutorial = tutorials.get(id);
     var optionalBestSubmission = bestSubmissionId == null ? OptionalLong.empty()
             : OptionalLong.of(bestSubmissionId);
     if (tutorial == null) {
-      return new Exercise(id, name, htmlUrl, userPoints, maxPoints, maxSubmissions, isSubmittable,
+      return new Exercise(id, name, htmlUrl, submissionInfo, userPoints, maxPoints, maxSubmissions,
           optionalBestSubmission);
     } else {
       return new TutorialExercise(
-          id, name, htmlUrl, userPoints, maxPoints, maxSubmissions, isSubmittable,
+          id, name, htmlUrl, submissionInfo, userPoints, maxPoints, maxSubmissions,
           optionalBestSubmission, tutorial);
     }
   }
@@ -125,6 +126,11 @@ public class Exercise implements Browsable {
     return Collections.unmodifiableList(submissionResults);
   }
 
+  @NotNull
+  public SubmissionInfo getSubmissionInfo() {
+    return submissionInfo;
+  }
+
   public int getUserPoints() {
     return userPoints;
   }
@@ -150,7 +156,7 @@ public class Exercise implements Browsable {
   }
 
   public boolean isSubmittable() {
-    return submittable;
+    return submissionInfo.isSubmittable();
   }
 
   /**

@@ -1,9 +1,7 @@
 package fi.aalto.cs.apluscourses.model;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
@@ -13,27 +11,23 @@ public class PointsTest {
 
   @Test
   public void testPoints() {
-    Map<Long, Integer> submissionPoints = new HashMap<>();
-    submissionPoints.put(11L, 44);
-    submissionPoints.put(22L, 55);
     Points points = new Points(
+        Collections.singletonMap(51L, List.of(0L, 123L)),
         Collections.singletonMap(123L, List.of(11L, 22L)),
         Collections.singletonMap(123L, 55),
-        submissionPoints,
         Collections.singletonMap(123L, 22L)
     );
 
+    Assert.assertEquals("The exercise ID list is the same as that given to the constructor",
+        Long.valueOf(0L), points.getExercises(51L).get(0));
+    Assert.assertEquals("The exercise ID list is the same as that given to the constructor",
+        Long.valueOf(123L), points.getExercises(51L).get(1));
     Assert.assertEquals("The submission ID list is the same as that given to the constructor",
-        Long.valueOf(11L), points.getSubmissions().get(123L).get(0));
+        Long.valueOf(11L), points.getSubmissions(123L).get(0));
     Assert.assertEquals("The submission ID list is the same as that given to the constructor",
-        Long.valueOf(22L), points.getSubmissions().get(123L).get(1));
+        Long.valueOf(22L), points.getSubmissions(123L).get(1));
     Assert.assertEquals("The points for an exercise is the same as that given to the constructor",
-        Integer.valueOf(55), points.getExercisePoints().get(123L));
-    Assert.assertEquals("The submission points are the same as those given to the constructor",
-        Integer.valueOf(44), points.getSubmissionPoints().get(11L));
-    Assert.assertEquals("The submission points are the same as those given to the constructor",
-        Integer.valueOf(55), points.getSubmissionPoints().get(22L));
-    Assert.assertEquals(Long.valueOf(22), points.getBestSubmissionIds().get(123L));
+        55, points.getExercisePoints(123L));
   }
 
   @Test
@@ -56,33 +50,29 @@ public class PointsTest {
             .put("submissions_with_points", submissionsWithPoints2));
 
     JSONArray modules = new JSONArray()
-        .put(new JSONObject().put("exercises", exercises));
+        .put(new JSONObject()
+            .put("id", 0L)
+            .put("exercises", exercises));
 
     JSONObject json = new JSONObject().put("modules", modules);
 
     Points points = Points.fromJsonObject(json);
 
+    Assert.assertEquals("The exercise IDs are parsed from the JSON",
+        List.of(100L, 200L), points.getExercises(0));
+
     Assert.assertEquals("The exercise points are parsed from the JSON",
-        Integer.valueOf(20), points.getExercisePoints().get(100L));
+        20, points.getExercisePoints(100L));
     Assert.assertEquals("The exercise points are parsed from the JSON",
-        Integer.valueOf(40), points.getExercisePoints().get(200L));
+        40, points.getExercisePoints(200L));
 
     Assert.assertEquals("The submission IDs are parsed from the JSON (in reverse order)",
-        Long.valueOf(2L), points.getSubmissions().get(100L).get(0));
+        Long.valueOf(2L), points.getSubmissions(100L).get(0));
     Assert.assertEquals("The submission IDs are parsed from the JSON (in reverse order)",
-        Long.valueOf(1L), points.getSubmissions().get(100L).get(1));
+        Long.valueOf(1L), points.getSubmissions(100L).get(1));
     Assert.assertEquals("The submission IDs are parsed from the JSON (in reverse order)",
-        Long.valueOf(4L), points.getSubmissions().get(200L).get(0));
+        Long.valueOf(4L), points.getSubmissions(200L).get(0));
     Assert.assertEquals("The submission IDs are parsed from the JSON (in reverse order)",
-        Long.valueOf(3L), points.getSubmissions().get(200L).get(1));
-
-    Assert.assertEquals("The submission points are parsed from the JSON",
-        Integer.valueOf(10), points.getSubmissionPoints().get(1L));
-    Assert.assertEquals("The submission points are parsed from the JSON",
-        Integer.valueOf(20), points.getSubmissionPoints().get(2L));
-    Assert.assertEquals("The submission points are parsed from the JSON",
-        Integer.valueOf(30), points.getSubmissionPoints().get(3L));
-    Assert.assertEquals("The submission points are parsed from the JSON",
-        Integer.valueOf(40), points.getSubmissionPoints().get(4L));
+        Long.valueOf(3L), points.getSubmissions(200L).get(1));
   }
 }

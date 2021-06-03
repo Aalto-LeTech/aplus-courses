@@ -11,8 +11,6 @@ import fi.aalto.cs.apluscourses.model.InvalidAuthenticationException;
 import fi.aalto.cs.apluscourses.model.JsonCache;
 import fi.aalto.cs.apluscourses.model.Points;
 import fi.aalto.cs.apluscourses.model.Submission;
-import fi.aalto.cs.apluscourses.model.SubmissionHistory;
-import fi.aalto.cs.apluscourses.model.SubmissionInfo;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import fi.aalto.cs.apluscourses.model.Tutorial;
 import fi.aalto.cs.apluscourses.model.User;
@@ -78,36 +76,6 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   }
 
   /**
-   * Makes a request to the A+ API to get the details of the given exercise.
-   *
-   * @throws IOException If an IO error occurs (e.g. network error).
-   */
-  @Override
-  @NotNull
-  public SubmissionInfo getSubmissionInfo(@NotNull Exercise exercise,
-                                          @NotNull Authentication authentication)
-      throws IOException {
-    String url = apiUrl + EXERCISES + "/" + exercise.getId() + "/";
-    JSONObject response = client.fetch(url, authentication);
-    return parser.parseSubmissionInfo(response);
-  }
-
-  /**
-   * Get the submission history for the given exercise from the A+ API.
-   *
-   * @throws IOException If an IO error occurs (e.g. network error).
-   */
-  @Override
-  @NotNull
-  public SubmissionHistory getSubmissionHistory(@NotNull Exercise exercise,
-                                                @NotNull Authentication authentication)
-      throws IOException {
-    String url = apiUrl + EXERCISES + "/" + exercise.getId() + "/" + SUBMISSIONS + "/me/";
-    JSONObject response = client.fetch(url, authentication);
-    return parser.parseSubmissionHistory(response);
-  }
-
-  /**
    * Get all of the groups from the A+ API for the user corresponding to the given authentication. A
    * group with id 0 and a single member name "Submit alone" is added to the beginning of the list.
    *
@@ -134,13 +102,11 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   @Override
   @NotNull
   public List<ExerciseGroup> getExerciseGroups(@NotNull Course course,
-                                               @NotNull Points points,
-                                               @NotNull Map<Long, Tutorial> tutorials,
                                                @NotNull Authentication authentication)
       throws IOException {
     String url = apiUrl + COURSES + "/" + course.getId() + "/" + EXERCISES + "/";
     JSONObject response = client.fetch(url, authentication);
-    return parser.parseExerciseGroups(response.getJSONArray("results"), points, tutorials);
+    return parser.parseExerciseGroups(response.getJSONArray("results"));
   }
 
   /**
@@ -167,6 +133,18 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
       throws IOException {
     JSONObject response = client.fetch(submissionUrl, authentication, minCacheEntryTime);
     return parser.parseSubmissionResult(response, exercise);
+  }
+
+  @Override
+  @NotNull
+  public Exercise getExercise(long exerciseId,
+                              @NotNull Points points,
+                              @NotNull Map<Long, Tutorial> tutorials,
+                              @NotNull Authentication authentication,
+                              @NotNull ZonedDateTime minCacheEntryTime) throws IOException {
+    var url = apiUrl + "exercises/" + exerciseId + "/";
+    var response = client.fetch(url, authentication, minCacheEntryTime);
+    return parser.parseExercise(response, points, tutorials);
   }
 
   @Override
@@ -253,30 +231,25 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
     }
 
     @Override
-    public SubmissionInfo parseSubmissionInfo(@NotNull JSONObject object) {
-      return SubmissionInfo.fromJsonObject(object);
-    }
-
-    @Override
-    public SubmissionHistory parseSubmissionHistory(@NotNull JSONObject object) {
-      return SubmissionHistory.fromJsonObject(object);
-    }
-
-    @Override
     public Group parseGroup(@NotNull JSONObject object) {
       return Group.fromJsonObject(object);
     }
 
     @Override
-    public List<ExerciseGroup> parseExerciseGroups(@NotNull JSONArray array,
-                                                   @NotNull Points points,
-                                                   @NotNull Map<Long, Tutorial> tutorials) {
-      return ExerciseGroup.fromJsonArray(array, points, tutorials);
+    public List<ExerciseGroup> parseExerciseGroups(@NotNull JSONArray array) {
+      return ExerciseGroup.fromJsonArray(array);
     }
 
     @Override
     public Points parsePoints(@NotNull JSONObject object) {
       return Points.fromJsonObject(object);
+    }
+
+    @Override
+    public Exercise parseExercise(@NotNull JSONObject jsonObject,
+                                  @NotNull Points points,
+                                  @NotNull Map<Long, Tutorial> tutorials) {
+      return Exercise.fromJsonObject(jsonObject, points, tutorials);
     }
 
     @Override

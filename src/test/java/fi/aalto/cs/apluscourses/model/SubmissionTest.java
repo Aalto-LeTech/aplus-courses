@@ -19,21 +19,19 @@ public class SubmissionTest {
 
   @Test
   public void testCreate() {
-    Exercise exercise = new Exercise(85678, "ex", "http://localhost:1000", 0, 0, 0, true, OptionalLong.empty());
-    SubmittableFile fileA = new SubmittableFile("keyA", "fileA");
-    SubmittableFile fileB = new SubmittableFile("keyB", "fileB");
-    String language = "de";
-    SubmissionInfo info = new SubmissionInfo(
-        10, Collections.singletonMap(language, List.of(fileA, fileB)));
+    var fileA = new SubmittableFile("keyA", "fileA");
+    var fileB = new SubmittableFile("keyB", "fileB");
+    var language = "de";
+    var info = new SubmissionInfo(Collections.singletonMap(language, List.of(fileA, fileB)));
+    Exercise exercise = new Exercise(85678, "ex", "http://localhost:1000", info, 0, 0, 0, OptionalLong.empty());
     Map<String, Path> files = new HashMap<>();
     files.put("fileA", Paths.get("some.file"));
     files.put("fileB", Paths.get("other.file"));
     Group group = new Group(0, Collections.singletonList("Only me"));
 
-    Submission submission = new Submission(exercise, info, files, group, language);
+    Submission submission = new Submission(exercise, files, group, language);
 
     assertSame(exercise, submission.getExercise());
-    assertSame(info, submission.getSubmissionInfo());
     assertThat(files, is(files));
     assertSame(group, submission.getGroup());
     assertEquals(language, submission.getLanguage());
