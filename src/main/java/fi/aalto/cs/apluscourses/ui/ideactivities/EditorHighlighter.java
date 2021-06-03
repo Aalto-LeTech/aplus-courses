@@ -43,7 +43,7 @@ public class EditorHighlighter extends GenericHighlighter {
 
   @Override
   public @NotNull Component getComponent() {
-    return highlightEverything() ? super.getComponent().getParent() : super.getComponent();
+    return highlightEverything() ? super.getComponent().getParent().getParent() : super.getComponent();
   }
 
   @Override
@@ -56,7 +56,8 @@ public class EditorHighlighter extends GenericHighlighter {
     var rectangles = new ArrayList<RectangularShape>();
 
     // the parent of the editor is JBViewport, which controls the visible region of the component
-    var editorWidth = getComponent().getParent().getWidth();
+    // and the parent of JBViewport is another component that includes the line numbers
+    var editorWidth = getComponent().getParent().getParent().getWidth();
 
     for (int line : highlightedLines) {
       var startPos = new LogicalPosition(line, 0);

@@ -46,7 +46,7 @@ public class OverlayPane extends JPanel implements AWTEventListener {
     for (var c : highlighters) {
       var posDiff = SwingUtilities.convertPoint(c.getComponent(), 0, 0, this);
       var translation = AffineTransform.getTranslateInstance(posDiff.x, posDiff.y);
-      
+
       if (c.getComponent().isShowing()) {
         for (var rectangle : c.getArea()) {
           var rectangleArea = new Area(rectangle);
