@@ -61,7 +61,6 @@ public class IdeActionListener implements AnActionListener, ActivitiesListener {
     if (filePath != null) {
       this.filePath = project.getBasePath() + filePath;
       VirtualFile file = event.getDataContext().getData(PlatformDataKeys.VIRTUAL_FILE);
-      //compare with file to be run (if specified)
       complete = file != null && filePath.equals(file.getPath());
     }
     if (complete && actionName.equals(action.getTemplateText())) {

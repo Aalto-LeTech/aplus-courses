@@ -24,10 +24,6 @@ public class IntelliJActivityFactory implements ActivityFactory {
     switch (action) {
       case "openEditor":
         return new OpenFileListener(callback, arguments.getOrThrow(FILE_PATH), project);
-      case "varRename":
-        return new RenameVariableListener(callback, arguments.getOrThrow(FILE_PATH),
-                arguments.getOrThrow("oldName"),
-                arguments.getOrThrow("newName"), project);
       case "build":
         return new IdeActionListener(callback, project, arguments.getOrThrow("actionName"), null);
       case "test":

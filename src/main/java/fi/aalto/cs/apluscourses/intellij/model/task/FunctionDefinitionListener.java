@@ -95,9 +95,9 @@ public class FunctionDefinitionListener implements ActivitiesListener,
           Optional<PsiElement> opt = Arrays.stream(children).filter(
               c -> c instanceof ScParametersImpl).findFirst();
           if (opt.isPresent() && checkParameters(((ScParametersImpl) opt.get()).getParameters())) {
-            opt = Optional.ofNullable(children[children.length - 1]);
-            if (opt.isPresent()) {
-              children = opt.get().getChildren();
+            PsiElement methodBodyParent = children[children.length - 1];
+            if (methodBodyParent != null) {
+              children = methodBodyParent.getChildren();
               if (checkMethodBody(children)) {
                 ApplicationManager.getApplication().invokeLater(callback::callback);
               }
