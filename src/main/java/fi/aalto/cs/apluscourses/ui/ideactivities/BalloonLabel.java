@@ -5,7 +5,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import javax.swing.JLabel;
 
-public class BalloonLabel extends JLabel {
+public class BalloonLabel extends JLabel implements TransparentComponent {
   private float transparencyCoefficient;
 
   public BalloonLabel(String text) {
@@ -15,6 +15,12 @@ public class BalloonLabel extends JLabel {
     setOpaque(false);
   }
 
+  @Override
+  public float getTransparencyCoefficient() {
+    return transparencyCoefficient;
+  }
+
+  @Override
   public void setTransparencyCoefficient(float coefficient) {
     transparencyCoefficient = coefficient;
   }

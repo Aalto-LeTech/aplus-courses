@@ -1,13 +1,12 @@
 package fi.aalto.cs.apluscourses.ui.ideactivities;
 
 import com.intellij.util.ui.JBUI;
-
-import java.awt.AlphaComposite;
+import fi.aalto.cs.apluscourses.ui.GuiObject;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
+import java.awt.MouseInfo;
 import java.awt.Rectangle;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
@@ -15,12 +14,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
-
-import fi.aalto.cs.apluscourses.ui.GuiObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class BalloonPopup extends JPanel {
+public class BalloonPopup extends JPanel implements TransparentComponent {
   private final @NotNull Component anchorComponent;
 
   @GuiObject
@@ -32,6 +29,8 @@ public class BalloonPopup extends JPanel {
   @GuiObject
   private final BalloonLabel messageLabel;
 
+  private PopupTransparencyHandler transparencyHandler;
+
   private float transparencyCoefficient;
 
   /**
@@ -42,6 +41,7 @@ public class BalloonPopup extends JPanel {
   public BalloonPopup(@NotNull Component anchorComponent, @NotNull String title,
                       @NotNull String message, @Nullable Icon icon) {
     this.anchorComponent = anchorComponent;
+    transparencyHandler = new PopupTransparencyHandler(this);
 
     setOpaque(false);
     setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -91,6 +91,11 @@ public class BalloonPopup extends JPanel {
     g2.dispose();
   }
 
+  @Override
+  public float getTransparencyCoefficient() {
+    return transparencyCoefficient;
+  }
+
   /**
    * Sets the popup transparency level.
    * @param coefficient The transparency coefficient - a value between 0.0f and 1.0f.
@@ -135,7 +140,12 @@ public class BalloonPopup extends JPanel {
       popupX = componentWindowPos.x + componentSize.width - popupWidth - 20;
       popupY = componentWindowPos.y + 20;
 
-      setTransparencyCoefficient(0.4f);
+      var popupBounds = new Rectangle(0, 0, popupWidth, popupHeight);
+      var mousePos = getMousePosition();
+
+      transparencyHandler.update(mousePos != null && popupBounds.contains(mousePos));
+      revalidate();
+      repaint();
     } else {
       boolean positionHorizontally = mostHorizontalSpace > mostVerticalSpace;
 
