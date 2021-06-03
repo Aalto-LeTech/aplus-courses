@@ -58,8 +58,8 @@ public class IdeActionListener implements AnActionListener, ActivitiesListener {
             + " ActionEvent: " + event.getPlace());
     //perhaps create subclasses?
     boolean complete = true;
-    if (filePath != null) {
-      this.filePath = project.getBasePath() + filePath;
+    if (filePath != null && !filePath.isEmpty()) {
+      this.filePath = project.getBasePath() + "/" + filePath;
       VirtualFile file = event.getDataContext().getData(PlatformDataKeys.VIRTUAL_FILE);
       complete = file != null && filePath.equals(file.getPath());
     }
