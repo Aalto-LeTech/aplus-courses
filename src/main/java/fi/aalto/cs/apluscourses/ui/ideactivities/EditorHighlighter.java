@@ -67,7 +67,6 @@ public class EditorHighlighter extends GenericHighlighter {
 
   public EditorHighlighter(@NotNull EditorComponentImpl component) {
     super(component);
-
     editor = component.getEditor();
   }
 }
