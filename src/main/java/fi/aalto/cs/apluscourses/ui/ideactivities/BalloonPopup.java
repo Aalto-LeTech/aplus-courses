@@ -6,7 +6,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.MouseInfo;
 import java.awt.Rectangle;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
@@ -29,7 +28,7 @@ public class BalloonPopup extends JPanel implements TransparentComponent {
   @GuiObject
   private final BalloonLabel messageLabel;
 
-  private PopupTransparencyHandler transparencyHandler;
+  private final PopupTransparencyHandler transparencyHandler;
 
   private float transparencyCoefficient;
 
@@ -98,9 +97,11 @@ public class BalloonPopup extends JPanel implements TransparentComponent {
 
   /**
    * Sets the popup transparency level.
+   *
    * @param coefficient The transparency coefficient - a value between 0.0f and 1.0f.
    *                    0.0f means completely transparent, 1.0f means completely opaque.
    */
+  @Override
   public void setTransparencyCoefficient(float coefficient) {
     transparencyCoefficient = coefficient;
     titleLabel.setTransparencyCoefficient(coefficient);

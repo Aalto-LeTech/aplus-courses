@@ -8,6 +8,11 @@ import javax.swing.JLabel;
 public class BalloonLabel extends JLabel implements TransparentComponent {
   private float transparencyCoefficient;
 
+  /**
+   * Constructs a transparent label for the balloon popup.
+   *
+   * @param text Text of the label.
+   */
   public BalloonLabel(String text) {
     super(text);
     transparencyCoefficient = 1.0f;

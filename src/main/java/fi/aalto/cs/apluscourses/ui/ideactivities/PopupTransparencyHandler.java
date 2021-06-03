@@ -14,6 +14,11 @@ public class PopupTransparencyHandler {
     this.component = component;
   }
 
+  /**
+   * Updates the status of transparency fading animation.
+   *
+   * @param isMouseOnPopup If true, the mouse cursor is currently on the popup.
+   */
   public void update(boolean isMouseOnPopup) {
     if (lastTransitionUpdate == 0) {
       lastTransitionUpdate = System.currentTimeMillis();

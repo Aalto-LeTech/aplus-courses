@@ -1,6 +1,5 @@
 package fi.aalto.cs.apluscourses.ui.ideactivities;
 
-import com.intellij.openapi.editor.impl.EditorComponentImpl;
 import com.intellij.util.concurrency.annotations.RequiresEdt;
 import icons.PluginIcons;
 import java.awt.AWTEvent;

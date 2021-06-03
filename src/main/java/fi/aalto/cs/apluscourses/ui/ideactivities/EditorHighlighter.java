@@ -30,6 +30,7 @@ public class EditorHighlighter extends GenericHighlighter {
   /**
    * Adds a continuous range of lines in the editor to the highlight list.
    * The lines are indexed from 1, not 0.
+   *
    * @param lineBegin The beginning of the intervals of lines, inclusive.
    * @param lineEnd The ending of the intervals of lines, inclusive.
    */
