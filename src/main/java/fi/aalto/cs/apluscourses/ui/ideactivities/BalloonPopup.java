@@ -32,6 +32,8 @@ public class BalloonPopup extends JPanel implements TransparentComponent {
 
   private float transparencyCoefficient;
 
+  private static final int POPUP_MARGIN = 20;
+
   /**
    * Creates a popup with the given text. The popup is permanently attached to the specified
    * component. Optionally, an icon can be provided which will be displayed to the left of
@@ -79,8 +81,7 @@ public class BalloonPopup extends JPanel implements TransparentComponent {
     Graphics g2 = g.create();
 
     var bgColor = getBackground();
-    var newColor = new Color(
-        bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue(),
+    var newColor = new Color(bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue(),
         (int) (transparencyCoefficient * 255));
 
     g2.setColor(newColor);
@@ -123,23 +124,23 @@ public class BalloonPopup extends JPanel implements TransparentComponent {
     var windowSize = JOptionPane.getRootFrame().getSize();
     var componentSize = anchorComponent.getSize();
 
-    int popupWidth = minSize.width + 20;
-    int popupHeight = minSize.height;
+    final int popupWidth = minSize.width + 20;
+    final int popupHeight = minSize.height;
 
-    int availableSizeLeft = componentWindowPos.x;
-    int availableSizeRight = windowSize.width - (componentWindowPos.x + componentSize.width);
-    int availableSizeTop = componentWindowPos.y;
-    int availableSizeBottom = windowSize.height - (componentWindowPos.y + componentSize.height);
+    final int availableSizeLeft = componentWindowPos.x;
+    final int availableSizeRight = windowSize.width - (componentWindowPos.x + componentSize.width);
+    final int availableSizeTop = componentWindowPos.y;
+    final int availableSizeBottom = windowSize.height - (componentWindowPos.y + componentSize.height);
 
-    int mostHorizontalSpace = Integer.max(availableSizeLeft, availableSizeRight);
-    int mostVerticalSpace = Integer.max(availableSizeTop, availableSizeBottom);
+    final int mostHorizontalSpace = Integer.max(availableSizeLeft, availableSizeRight);
+    final int mostVerticalSpace = Integer.max(availableSizeTop, availableSizeBottom);
 
     int popupX;
     int popupY;
 
     if (mostHorizontalSpace < popupWidth && mostVerticalSpace < popupHeight) {
-      popupX = componentWindowPos.x + componentSize.width - popupWidth - 20;
-      popupY = componentWindowPos.y + 20;
+      popupX = componentWindowPos.x + componentSize.width - popupWidth - POPUP_MARGIN;
+      popupY = componentWindowPos.y + POPUP_MARGIN;
 
       var popupBounds = new Rectangle(0, 0, popupWidth, popupHeight);
       var mousePos = getMousePosition();
