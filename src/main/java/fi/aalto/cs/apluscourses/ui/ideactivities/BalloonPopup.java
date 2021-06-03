@@ -60,8 +60,7 @@ public class BalloonPopup extends JPanel {
     // the origin of the component that this popup is attached to must be converted to the
     // overlay pane's coordinate system, because that overlay uses a null layout and requires
     // that this popup specify its bounds
-    var componentWindowPos = SwingUtilities.convertPoint(
-        anchorComponent, anchorComponent.getX(), anchorComponent.getY(), getParent());
+    var componentWindowPos = SwingUtilities.convertPoint(anchorComponent, 0, 0, getParent());
 
     var maxSize = getMaximumSize();
     var prefSize = getPreferredSize();

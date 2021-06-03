@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.model;
 
+import fi.aalto.cs.apluscourses.utils.Event;
 import org.jetbrains.annotations.NotNull;
 
 public class Progress {
@@ -7,6 +8,7 @@ public class Progress {
   private final int maxValue;
   private final String label;
   private final boolean indeterminate;
+  public final Event updated = new Event();
 
   /**
    * Constructor for Progress.
@@ -33,8 +35,18 @@ public class Progress {
     return this.indeterminate;
   }
 
+  public boolean isFinished() {
+    return this.value >= this.maxValue;
+  }
+
   public void increment() {
     this.value++;
+    updated.trigger();
+  }
+
+  public void finish() {
+    this.value = this.maxValue;
+    updated.trigger();
   }
 
 }
