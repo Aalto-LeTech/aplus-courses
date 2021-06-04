@@ -104,7 +104,7 @@ public class FunctionDefinitionListener implements ActivitiesListener,
                 && methodName.equals(((ScFunctionDefinition) element).getName())) {
           PsiElement[] children = element.getChildren();
           Optional<PsiElement> opt = Arrays.stream(children).filter(
-              c -> c instanceof ScParametersImpl).findFirst();
+              ScParametersImpl.class::isInstance).findFirst();
           if (opt.isPresent() && checkParameters(((ScParametersImpl) opt.get()).getParameters())) {
             PsiElement methodBodyParent = children[children.length - 1];
             if (methodBodyParent != null) {
