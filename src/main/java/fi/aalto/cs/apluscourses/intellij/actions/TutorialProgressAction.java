@@ -75,6 +75,11 @@ public class TutorialProgressAction extends ComboBoxAction implements DumbAware,
   }
 
   @Override
+  protected boolean shouldShowDisabledActions() {
+    return true;
+  }
+
+  @Override
   protected @NotNull DefaultActionGroup createPopupActionGroup(JComponent button) {
     return new TutorialActionGroup();
   }

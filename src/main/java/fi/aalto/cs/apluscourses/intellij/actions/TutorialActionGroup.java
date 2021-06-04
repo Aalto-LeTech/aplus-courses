@@ -24,23 +24,9 @@ public class TutorialActionGroup extends DefaultActionGroup implements DumbAware
 
   public TutorialActionGroup(@NotNull MainViewModelProvider mainViewModelProvider) {
     this.mainViewModelProvider = mainViewModelProvider;
-  }
-
-  @Override
-  public AnAction @NotNull [] getChildren(@Nullable AnActionEvent e) {
-    var actions = new AnAction[]{new Separator(), new CancelAction()};
-    if (e == null) {
-      return actions;
-    }
-    var tutorial = mainViewModelProvider.getMainViewModel(e.getProject()).tutorialViewModel.get();
-    if (tutorial == null) {
-      return actions;
-    }
-    var steps = IntStream.range(1, tutorial.getTasksAmount() + 1).mapToObj(StepAction::new).toArray(AnAction[]::new);
-    var both = new AnAction[steps.length + 2];
-    System.arraycopy(steps, 0, both, 0, steps.length);
-    System.arraycopy(actions, 0, both, steps.length, 2);
-    return both;
+    this.addAll(new StepGroup(),
+        new Separator(),
+        new CancelAction());
   }
 
   private class CancelAction extends DumbAwareAction {
@@ -54,6 +40,20 @@ public class TutorialActionGroup extends DefaultActionGroup implements DumbAware
       if (tutorial != null) {
         tutorial.confirmCancel();
       }
+    }
+  }
+
+  private class StepGroup extends DefaultActionGroup implements DumbAware, Toggleable {
+    @Override
+    public AnAction @NotNull [] getChildren(@Nullable AnActionEvent e) {
+      if (e == null) {
+        return new AnAction[0];
+      }
+      var tutorial = mainViewModelProvider.getMainViewModel(e.getProject()).tutorialViewModel.get();
+      if (tutorial == null) {
+        return new AnAction[0];
+      }
+      return IntStream.range(1, tutorial.getTasksAmount() + 1).mapToObj(StepAction::new).toArray(AnAction[]::new);
     }
   }
 
@@ -84,9 +84,8 @@ public class TutorialActionGroup extends DefaultActionGroup implements DumbAware
       var tutorial = mainViewModelProvider.getMainViewModel(e.getProject()).tutorialViewModel.get();
       if (tutorial != null) {
         e.getPresentation().setEnabled(tutorial.getCurrentTaskIndex() >= index);
-        e.getPresentation().setVisible(true);
-        setSelected(e, tutorial.getCurrentTaskIndex() == index);
       }
+      super.update(e);
     }
   }
 }
