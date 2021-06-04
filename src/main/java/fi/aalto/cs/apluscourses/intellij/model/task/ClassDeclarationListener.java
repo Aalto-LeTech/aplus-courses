@@ -92,26 +92,28 @@ public class ClassDeclarationListener implements ActivitiesListener, DocumentLis
   }
 
   private void checkPsiFile(PsiFile psiFile) {
-    psiFile.accept(new ScalaRecursiveElementVisitor() {
-      @Override
-      public void visitScalaElement(ScalaPsiElement element) {
-        super.visitScalaElement(element);
-        if ((element instanceof ScClass && checkScClass((ScClass) element))) {
-          PsiElement[] children = element.getChildren();
-          Optional<PsiElement> constructor = Arrays.stream(children).filter(
-              child -> child instanceof ScPrimaryConstructor).findFirst();
-          if (constructor.isPresent()
-                  && checkScPrimaryConstructor((ScPrimaryConstructor) constructor.get())) {
-            Optional<PsiElement> extendsBlock = Arrays.stream(children).filter(
-                child -> child instanceof ScExtendsBlockImpl).findFirst();
-            if (extendsBlock.isPresent()
-                    && checkExtendsBlock((ScExtendsBlockImpl) extendsBlock.get())) {
-              ApplicationManager.getApplication().invokeLater(callback::callback);
+    if (psiFile != null) {
+      psiFile.accept(new ScalaRecursiveElementVisitor() {
+        @Override
+        public void visitScalaElement(ScalaPsiElement element) {
+          super.visitScalaElement(element);
+          if ((element instanceof ScClass && checkScClass((ScClass) element))) {
+            PsiElement[] children = element.getChildren();
+            Optional<PsiElement> constructor = Arrays.stream(children).filter(
+                child -> child instanceof ScPrimaryConstructor).findFirst();
+            if (constructor.isPresent()
+                    && checkScPrimaryConstructor((ScPrimaryConstructor) constructor.get())) {
+              Optional<PsiElement> extendsBlock = Arrays.stream(children).filter(
+                  child -> child instanceof ScExtendsBlockImpl).findFirst();
+              if (extendsBlock.isPresent()
+                      && checkExtendsBlock((ScExtendsBlockImpl) extendsBlock.get())) {
+                ApplicationManager.getApplication().invokeLater(callback::callback);
+              }
             }
           }
         }
-      }
-    });
+      });
+    }
   }
 
   private boolean checkScClass(ScClass element) {
