@@ -93,7 +93,7 @@ public class Task {
 
   protected static @NotNull Arguments parseArguments(@Nullable JSONObject jsonObject) {
     return jsonObject == null ? Arguments.empty()
-        : JsonUtil.parseObject(jsonObject, JSONObject::getString,
+        : JsonUtil.parseObject(jsonObject, JSONObject::get,
             Function.identity(), Function.identity())::get;
   }
 }
