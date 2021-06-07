@@ -7,6 +7,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JOptionPane;
@@ -16,7 +18,7 @@ import javax.swing.border.EmptyBorder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class BalloonPopup extends JPanel implements TransparentComponent {
+public class BalloonPopup extends JPanel implements TransparentComponent, MouseListener {
   private final @NotNull Component anchorComponent;
 
   @GuiObject
@@ -43,6 +45,8 @@ public class BalloonPopup extends JPanel implements TransparentComponent {
                       @NotNull String message, @Nullable Icon icon) {
     this.anchorComponent = anchorComponent;
     transparencyHandler = new PopupTransparencyHandler(this);
+
+    addMouseListener(this);
 
     setOpaque(false);
     setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -146,8 +150,10 @@ public class BalloonPopup extends JPanel implements TransparentComponent {
       var mousePos = getMousePosition();
 
       transparencyHandler.update(mousePos != null && popupBounds.contains(mousePos));
-      revalidate();
-      repaint();
+      if (transparencyHandler.isInAnimation()) {
+        revalidate();
+        repaint();
+      }
     } else {
       boolean positionHorizontally = mostHorizontalSpace > mostVerticalSpace;
 
@@ -173,5 +179,38 @@ public class BalloonPopup extends JPanel implements TransparentComponent {
     }
 
     setBounds(popupX, popupY, popupWidth, popupHeight);
+  }
+
+  @Override
+  public void mouseClicked(MouseEvent e) {
+
+  }
+
+  @Override
+  public void mousePressed(MouseEvent e) {
+
+  }
+
+  @Override
+  public void mouseReleased(MouseEvent e) {
+
+  }
+
+  @Override
+  public void mouseEntered(MouseEvent e) {
+    transparencyHandler.resetAnimationProgress();
+    transparencyHandler.update(true);
+
+    revalidate();
+    repaint();
+  }
+
+  @Override
+  public void mouseExited(MouseEvent e) {
+    transparencyHandler.resetAnimationProgress();
+    transparencyHandler.update(false);
+
+    revalidate();
+    repaint();
   }
 }

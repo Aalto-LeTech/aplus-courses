@@ -14,15 +14,24 @@ public class PopupTransparencyHandler {
     this.component = component;
   }
 
+  public boolean isInAnimation() {
+    var coefficient = component.getTransparencyCoefficient();
+    return !(coefficient == MIN_TRANSPARENCY || coefficient == MAX_TRANSPARENCY);
+  }
+
+  public void resetAnimationProgress() {
+    lastTransitionUpdate = 0;
+  }
+
   /**
    * Updates the status of transparency fading animation.
    *
    * @param isMouseOnPopup If true, the mouse cursor is currently on the popup.
    */
-  public void update(boolean isMouseOnPopup) {
+  public boolean update(boolean isMouseOnPopup) {
     if (lastTransitionUpdate == 0) {
       lastTransitionUpdate = System.currentTimeMillis();
-      return;
+      return true;
     }
 
     float transitionStep = isMouseOnPopup ? TRANSITION_STEP : -TRANSITION_STEP;
@@ -30,17 +39,27 @@ public class PopupTransparencyHandler {
     long timeSinceLastUpdate = System.currentTimeMillis() - lastTransitionUpdate;
     float currentCoefficient = component.getTransparencyCoefficient();
 
+    boolean shouldRedraw = true;
+
     currentCoefficient += transitionStep * timeSinceLastUpdate;
 
     if (currentCoefficient < MIN_TRANSPARENCY) {
       currentCoefficient = MIN_TRANSPARENCY;
+      resetAnimationProgress();
+
+      shouldRedraw = false;
     }
 
     if (currentCoefficient > MAX_TRANSPARENCY) {
       currentCoefficient = MAX_TRANSPARENCY;
+      resetAnimationProgress();
+
+      shouldRedraw = false;
     }
 
     component.setTransparencyCoefficient(currentCoefficient);
     lastTransitionUpdate = System.currentTimeMillis();
+
+    return shouldRedraw;
   }
 }
