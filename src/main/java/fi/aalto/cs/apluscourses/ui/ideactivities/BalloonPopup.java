@@ -125,10 +125,10 @@ public class BalloonPopup extends JPanel implements TransparentComponent, MouseL
 
     var minSize = getMinimumSize();
 
-    var windowSize = JOptionPane.getRootFrame().getSize();
-    var componentSize = anchorComponent.getSize();
+    final var windowSize = JOptionPane.getRootFrame().getSize();
+    final var componentSize = anchorComponent.getSize();
 
-    final int popupWidth = minSize.width + 20;
+    final int popupWidth = titleLabel.getPreferredSize().width + 20;
     final int popupHeight = minSize.height;
 
     final int availableSizeLeft = componentWindowPos.x;
@@ -142,7 +142,7 @@ public class BalloonPopup extends JPanel implements TransparentComponent, MouseL
     int popupX;
     int popupY;
 
-    if (mostHorizontalSpace < popupWidth && mostVerticalSpace < popupHeight) {
+    if (mostHorizontalSpace < popupWidth + 2 * POPUP_MARGIN && mostVerticalSpace < popupHeight + 2 * POPUP_MARGIN) {
       popupX = componentWindowPos.x + componentSize.width - popupWidth - POPUP_MARGIN;
       popupY = componentWindowPos.y + POPUP_MARGIN;
 
