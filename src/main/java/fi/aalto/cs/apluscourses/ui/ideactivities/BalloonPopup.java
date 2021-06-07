@@ -123,13 +123,11 @@ public class BalloonPopup extends JPanel implements TransparentComponent, MouseL
     // that this popup specify its bounds
     var componentWindowPos = SwingUtilities.convertPoint(anchorComponent, 0, 0, getParent());
 
-    var minSize = getMinimumSize();
-
     final var windowSize = JOptionPane.getRootFrame().getSize();
     final var componentSize = anchorComponent.getSize();
 
     final int popupWidth = titleLabel.getPreferredSize().width + 20;
-    final int popupHeight = minSize.height;
+    final int popupHeight = getMinimumSize().height;
 
     final int availableSizeLeft = componentWindowPos.x;
     final int availableSizeRight = windowSize.width - (componentWindowPos.x + componentSize.width);
@@ -146,8 +144,8 @@ public class BalloonPopup extends JPanel implements TransparentComponent, MouseL
       popupX = componentWindowPos.x + componentSize.width - popupWidth - POPUP_MARGIN;
       popupY = componentWindowPos.y + POPUP_MARGIN;
 
-      var popupBounds = new Rectangle(0, 0, popupWidth, popupHeight);
-      var mousePos = getMousePosition();
+      final var popupBounds = new Rectangle(0, 0, popupWidth, popupHeight);
+      final var mousePos = getMousePosition();
 
       transparencyHandler.update(mousePos != null && popupBounds.contains(mousePos));
       if (transparencyHandler.isInAnimation()) {
@@ -155,9 +153,7 @@ public class BalloonPopup extends JPanel implements TransparentComponent, MouseL
         repaint();
       }
     } else {
-      boolean positionHorizontally = mostHorizontalSpace > mostVerticalSpace;
-
-      if (positionHorizontally) {
+      if (mostHorizontalSpace > mostVerticalSpace) {
         if (availableSizeRight > availableSizeLeft) {
           popupX = componentWindowPos.x + anchorComponent.getWidth() + 5;
         } else {
@@ -183,17 +179,17 @@ public class BalloonPopup extends JPanel implements TransparentComponent, MouseL
 
   @Override
   public void mouseClicked(MouseEvent e) {
-
+    // not used
   }
 
   @Override
   public void mousePressed(MouseEvent e) {
-
+    // not used
   }
 
   @Override
   public void mouseReleased(MouseEvent e) {
-
+    // not used
   }
 
   @Override
