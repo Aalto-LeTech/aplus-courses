@@ -8,6 +8,7 @@ import fi.aalto.cs.apluscourses.model.SubmissionHistory;
 import fi.aalto.cs.apluscourses.model.SubmissionInfo;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import fi.aalto.cs.apluscourses.model.Tutorial;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,8 @@ public interface Parser {
                                          @NotNull Exercise exercise);
 
   String parseUserName(@NotNull JSONObject object);
+
+  ZonedDateTime parseEndingTime(@NotNull JSONObject object);
 
   /**
    * Parses an JSON array to a list using a given parsing function.
