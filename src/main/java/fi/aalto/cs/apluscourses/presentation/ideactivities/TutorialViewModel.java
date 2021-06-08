@@ -68,10 +68,10 @@ public class TutorialViewModel {
    */
   public void currentTaskCompleted() {
     synchronized (lock) {
-      Tutorial tutorial = tutorialExercise.getTutorial();
       currentTask.endTask();
       currentTask.taskCompleted.removeCallback(this);
       currentTask.taskCanceled.removeCallback(this);
+      Tutorial tutorial = tutorialExercise.getTutorial();
       currentTask = tutorial.getNextTask(currentTask);
       if (currentTask == null) {
         tutorial.onComplete();

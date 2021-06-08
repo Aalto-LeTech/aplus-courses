@@ -22,6 +22,9 @@ public class TutorialActionGroup extends DefaultActionGroup implements DumbAware
     this(PluginSettings.getInstance());
   }
 
+  /**
+   * Constructor.
+   */
   public TutorialActionGroup(@NotNull MainViewModelProvider mainViewModelProvider) {
     this.mainViewModelProvider = mainViewModelProvider;
     this.addAll(new StepGroup(),
@@ -53,7 +56,8 @@ public class TutorialActionGroup extends DefaultActionGroup implements DumbAware
       if (tutorial == null) {
         return new AnAction[0];
       }
-      return IntStream.range(1, tutorial.getTasksAmount() + 1).mapToObj(StepAction::new).toArray(AnAction[]::new);
+      return IntStream.range(1, tutorial.getTasksAmount() + 1).mapToObj(StepAction::new)
+              .toArray(AnAction[]::new);
     }
   }
 
