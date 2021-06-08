@@ -22,7 +22,8 @@ public class Scala3Sdk extends ScalaSdk {
         new RemoteZippedDir(
           "https://github.com/lampepfl/dotty/releases/download/"
               + scalaVersion + "/scala3-" + scalaVersion + ".zip",
-          "scala3-" + scalaVersion + "/lib")
+          "scala3-" + scalaVersion + "/lib",
+            project.getProject())
     };
   }
 

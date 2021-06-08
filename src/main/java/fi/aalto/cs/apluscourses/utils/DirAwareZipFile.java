@@ -1,5 +1,10 @@
 package fi.aalto.cs.apluscourses.utils;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getAndReplaceText;
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
+import com.intellij.openapi.project.Project;
+import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import java.io.File;
 import java.util.Objects;
 import net.lingala.zip4j.ZipFile;
@@ -22,7 +27,9 @@ public class DirAwareZipFile extends ZipFile {
    * @param destinationPath The destination path.
    * @throws ZipException          If there were errors related to ZIP.
    */
-  public void extractDir(@NotNull String dirName, @NotNull String destinationPath)
+  public void extractDir(@NotNull String dirName,
+                         @NotNull String destinationPath,
+                         @NotNull Project project)
       throws ZipException {
     // File names in ZIP should always use forward slashes.
     // See section 4.4.17 of the ".ZIP File Format Specification" v6.3.6 FINAL.
@@ -41,11 +48,18 @@ public class DirAwareZipFile extends ZipFile {
     if (fileNames.length == 0) {
       throw new ZipException(dirName, ZipException.Type.FILE_NOT_FOUND);
     }
+    var progressViewModel =
+        PluginSettings.getInstance().getMainViewModel(project).progressViewModel;
+    var progress = progressViewModel.start(fileNames.length,
+        getText("ui.ProgressBarView.downloading"), false);
 
     for (String fileName : fileNames) {
       if (!fileName.isEmpty()) {
+        progress.setLabel(getAndReplaceText("ui.ProgressBarView.downloadingText", fileName));
         extractFile(prefix + fileName, destinationPath, fileName);
       }
+      progress.increment();
     }
+    progress.finish();
   }
 }

@@ -57,7 +57,7 @@ class IntelliJModule
 
   @Override
   public void fetchInternal() throws IOException {
-    new RemoteZippedDir(getUrl().toString(), getName()).copyTo(getFullPath());
+    new RemoteZippedDir(getUrl().toString(), getName(), project.getProject()).copyTo(getFullPath());
   }
 
   @Override
