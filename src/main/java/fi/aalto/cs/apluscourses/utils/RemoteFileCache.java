@@ -90,7 +90,7 @@ public class RemoteFileCache {
     public File getFile(@NotNull Project project) throws IOException {
       synchronized (lock) {
         if (!isDownloaded) {
-          copyURLToFile(new URL(url), file, timeout, timeout, project);
+          copyUrlToFile(new URL(url), file, timeout, timeout, project);
           isDownloaded = true;
         }
         return file;
@@ -98,7 +98,7 @@ public class RemoteFileCache {
     }
   }
 
-  private static void copyURLToFile(@NotNull URL source,
+  private static void copyUrlToFile(@NotNull URL source,
                                     @NotNull File destination,
                                     int connectionTimeout,
                                     final int readTimeout,

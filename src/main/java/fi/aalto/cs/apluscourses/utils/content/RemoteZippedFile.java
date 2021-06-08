@@ -13,6 +13,9 @@ public class RemoteZippedFile implements Content {
   private final RemoteFileCache remoteFileCache = RemoteFileCache.getInstance();
   private final Project project;
 
+  /**
+   * Constructor.
+   */
   public RemoteZippedFile(@NotNull String url, @NotNull String path, @NotNull Project project) {
     this.url = url;
     this.path = path;
