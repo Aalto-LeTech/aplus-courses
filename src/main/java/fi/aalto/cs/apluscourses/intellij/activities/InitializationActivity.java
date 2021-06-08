@@ -105,7 +105,8 @@ public class InitializationActivity implements Background {
       notifier.notify(new CourseVersionOutdatedWarning(), project);
     }
 
-    var courseProject = new CourseProject(course, courseConfigurationFileUrl, project);
+    var courseProject = new CourseProject(course, courseConfigurationFileUrl, project,
+        new DefaultNotifier());
     PluginSettings.getInstance().registerCourseProject(courseProject);
     isInitialized(project).set(true);
     progress.finish();
