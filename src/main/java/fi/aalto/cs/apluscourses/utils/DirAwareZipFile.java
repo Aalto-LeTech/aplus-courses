@@ -51,11 +51,11 @@ public class DirAwareZipFile extends ZipFile {
     var progressViewModel =
         PluginSettings.getInstance().getMainViewModel(project).progressViewModel;
     var progress = progressViewModel.start(fileNames.length,
-        getText("ui.ProgressBarView.downloading"), false);
+        getText("ui.ProgressBarView.unpacking"), false);
 
     for (String fileName : fileNames) {
       if (!fileName.isEmpty()) {
-        progress.setLabel(getAndReplaceText("ui.ProgressBarView.downloadingText", fileName));
+        progress.setLabel(getAndReplaceText("ui.ProgressBarView.unpackingFile", fileName));
         extractFile(prefix + fileName, destinationPath, fileName);
       }
       progress.increment();

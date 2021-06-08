@@ -24,7 +24,7 @@ public class RemoteZippedDir implements Content {
 
   @Override
   public void copyTo(@NotNull Path destinationPath) throws IOException {
-    new DirAwareZipFile(remoteFileCache.getCachedFile(url))
+    new DirAwareZipFile(remoteFileCache.getCachedFile(url, project))
         .extractDir(path, destinationPath.toString(), project);
   }
 }

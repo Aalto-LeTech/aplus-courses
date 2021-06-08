@@ -44,6 +44,11 @@ public class Progress {
     updated.trigger();
   }
 
+  public void incrementBy(int amount) {
+    this.value += amount;
+    updated.trigger();
+  }
+
   public void finish() {
     this.value = this.maxValue;
     updated.trigger();

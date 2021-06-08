@@ -1,12 +1,20 @@
 package fi.aalto.cs.apluscourses.utils;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getAndReplaceText;
+import static org.apache.commons.io.FileUtils.openOutputStream;
+import static org.apache.commons.io.IOUtils.DEFAULT_BUFFER_SIZE;
+import static org.apache.commons.io.IOUtils.EOF;
+
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtilRt;
+import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 
 public class RemoteFileCache {
@@ -27,11 +35,11 @@ public class RemoteFileCache {
    * @param keepAliveTimeout After how many milliseconds, the download is timed out,
    *                         if a connection cannot be established or
    *                         if no new bytes cannot be fetched from the server.
-   *
+   *                         <p>
    *                         Note that downloading a large file can take much longer
    *                         than the value set here as long as there are
    *                         no pauses longer than the timeout specified.
-   *
+   *                         <p>
    *                         Refer to java.net.URLConnection.setConnectionTimeout
    *                         and java.net.URLConnection.setReadTimeout
    *                         for exact semantics.
@@ -52,7 +60,7 @@ public class RemoteFileCache {
    * @throws IOException If there were errors related to IO.
    */
   @NotNull
-  public File getCachedFile(String url) throws IOException {
+  public File getCachedFile(String url, @NotNull Project project) throws IOException {
     CacheRecord record;
     synchronized (cache) {
       record = cache.get(url);
@@ -61,7 +69,7 @@ public class RemoteFileCache {
         cache.put(url, record);
       }
     }
-    return record.getFile();
+    return record.getFile(project);
   }
 
   private class CacheRecord {
@@ -79,14 +87,49 @@ public class RemoteFileCache {
       return !file.exists();
     }
 
-    public File getFile() throws IOException {
+    public File getFile(@NotNull Project project) throws IOException {
       synchronized (lock) {
         if (!isDownloaded) {
-          FileUtils.copyURLToFile(new URL(url), file, timeout, timeout);
+          copyURLToFile(new URL(url), file, timeout, timeout, project);
           isDownloaded = true;
         }
         return file;
       }
     }
+  }
+
+  private static void copyURLToFile(@NotNull URL source,
+                                    @NotNull File destination,
+                                    int connectionTimeout,
+                                    final int readTimeout,
+                                    @NotNull Project project) throws IOException {
+    var connection = source.openConnection();
+    connection.setConnectTimeout(connectionTimeout);
+    connection.setReadTimeout(readTimeout);
+    var length = connection.getContentLengthLong();
+    var stream = connection.getInputStream();
+    var out = openOutputStream(destination);
+    copyLarge(stream, out, new byte[DEFAULT_BUFFER_SIZE], length, source, project);
+  }
+
+  private static void copyLarge(@NotNull InputStream input,
+                                @NotNull OutputStream output,
+                                byte @NotNull [] buffer,
+                                long length,
+                                @NotNull URL url,
+                                @NotNull Project project)
+      throws IOException {
+    var progress = PluginSettings
+        .getInstance()
+        .getMainViewModel(project)
+        .progressViewModel
+        .start((int) length / 1024,
+            getAndReplaceText("ui.ProgressBarView.downloading", url.getFile()), false);
+    int n;
+    while (EOF != (n = input.read(buffer))) {
+      output.write(buffer, 0, n);
+      progress.incrementBy(n / 1024);
+    }
+    progress.finish();
   }
 }
