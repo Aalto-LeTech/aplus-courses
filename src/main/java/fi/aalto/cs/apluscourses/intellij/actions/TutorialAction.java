@@ -125,6 +125,8 @@ public class TutorialAction extends AnAction {
     boolean confirmStart(@NotNull TutorialViewModel tutorialViewModel);
 
     void end(@NotNull TutorialViewModel tutorialViewModel);
+
+    void confirmEndTask(@NotNull TutorialViewModel tutorialViewModel);
   }
 
   private static class DefaultDialogs implements Dialogs {
@@ -135,6 +137,14 @@ public class TutorialAction extends AnAction {
         "A tutorial will start.",
         tutorialViewModel.getTitle(),
         JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION;
+    }
+
+    @Override
+    public void confirmEndTask(@NotNull TutorialViewModel tutorialViewModel) {
+      JOptionPane.showMessageDialog(null,
+          "The task is complete.",
+          tutorialViewModel.getTitle(),
+          JOptionPane.INFORMATION_MESSAGE);
     }
 
     @Override

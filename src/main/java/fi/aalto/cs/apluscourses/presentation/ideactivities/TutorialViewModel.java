@@ -38,6 +38,7 @@ public class TutorialViewModel {
       currentTask.taskCompleted.addListener(this, TutorialViewModel::currentTaskCompleted);
       if (currentTask.startTask(activityFactory)) {
         currentTaskCompleted();
+        //notify the user! With differen text
       }
       // The Task/Tutorial has been completed prematurely
       // because the Activity was already performed.

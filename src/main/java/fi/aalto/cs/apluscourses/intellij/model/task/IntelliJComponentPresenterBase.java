@@ -50,4 +50,9 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
   }
 
   protected abstract Component getComponent();
+
+ /* @Override
+  private void notifyEndOfTask(Project project) {
+    new DefaultNotifier().notifyAndHide(new Notification(PluginSettings.A_PLUS, null, NotificationType.INFORMATION), project);
+  }*/
 }

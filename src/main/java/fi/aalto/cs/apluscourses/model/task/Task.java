@@ -45,11 +45,13 @@ public class Task {
    * Ends the task.
    */
   public synchronized void endTask() {
+    //here show a notification
     if (listener != null) {
       listener.unregisterListener();
       listener = null;
     }
     if (presenter != null) {
+     // presenter.notifyCompletionOfTask();
       presenter.removeHighlight();
       presenter = null;
     }
