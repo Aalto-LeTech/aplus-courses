@@ -32,8 +32,7 @@ public class ScalaSdk extends IntelliJLibrary
     return new Content[] {
         new RemoteZippedDir(
             "https://scala-lang.org/files/archive/scala-" + scalaVersion + ".zip",
-            "scala-" + scalaVersion + "/lib",
-            project.getProject())
+            "scala-" + scalaVersion + "/lib")
     };
   }
 

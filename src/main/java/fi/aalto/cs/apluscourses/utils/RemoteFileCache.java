@@ -107,9 +107,11 @@ public class RemoteFileCache {
     connection.setConnectTimeout(connectionTimeout);
     connection.setReadTimeout(readTimeout);
     var length = connection.getContentLengthLong();
-    var stream = connection.getInputStream();
-    var out = openOutputStream(destination);
-    copyLarge(stream, out, new byte[DEFAULT_BUFFER_SIZE], length, source, project);
+
+    try (var stream = connection.getInputStream();
+         var out = openOutputStream(destination)) {
+      copyLarge(stream, out, new byte[DEFAULT_BUFFER_SIZE], length, source, project);
+    }
   }
 
   private static void copyLarge(@NotNull InputStream input,
@@ -123,12 +125,14 @@ public class RemoteFileCache {
         .getInstance()
         .getMainViewModel(project)
         .progressViewModel
-        .start((int) length / 1024,
+        .start((int) (length / 1024),
             getAndReplaceText("ui.ProgressBarView.downloading", url.getFile()), false);
     int n;
+    long total = 0;
     while (EOF != (n = input.read(buffer))) {
       output.write(buffer, 0, n);
-      progress.incrementBy(n / 1024);
+      total += n;
+      progress.setValue((int) (total / 1024));
     }
     progress.finish();
   }

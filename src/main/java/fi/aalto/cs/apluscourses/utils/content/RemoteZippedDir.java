@@ -11,19 +11,18 @@ public class RemoteZippedDir implements Content {
   private final String url;
   private final String path;
   private final RemoteFileCache remoteFileCache = RemoteFileCache.getInstance();
-  private final Project project;
 
   /**
    * Constructor.
    */
-  public RemoteZippedDir(@NotNull String url, @NotNull String path, @NotNull Project project) {
+  public RemoteZippedDir(@NotNull String url, @NotNull String path) {
     this.url = url;
     this.path = path;
-    this.project = project;
   }
 
   @Override
-  public void copyTo(@NotNull Path destinationPath) throws IOException {
+  public void copyTo(@NotNull Path destinationPath,
+                     @NotNull Project project) throws IOException {
     new DirAwareZipFile(remoteFileCache.getCachedFile(url, project))
         .extractDir(path, destinationPath.toString(), project);
   }

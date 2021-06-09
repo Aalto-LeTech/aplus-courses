@@ -23,8 +23,7 @@ public class ScalaLibrary extends IntelliJLibrary<UnknownLibraryKind, Element> {
     return new Content[] {
         new RemoteZippedFile(
           "https://scala-lang.org/files/archive/scala-" + scalaVersion + ".zip",
-          "scala-" + scalaVersion + "/lib/scala-library.jar",
-            project.getProject())
+          "scala-" + scalaVersion + "/lib/scala-library.jar")
     };
   }
 }

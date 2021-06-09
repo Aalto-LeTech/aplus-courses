@@ -44,11 +44,6 @@ public class Progress {
     updated.trigger();
   }
 
-  public void incrementBy(int amount) {
-    this.value += amount;
-    updated.trigger();
-  }
-
   public void finish() {
     this.value = this.maxValue;
     updated.trigger();
@@ -56,6 +51,11 @@ public class Progress {
 
   public void setLabel(@NotNull String label) {
     this.label = label;
+    updated.trigger();
+  }
+
+  public void setValue(int value) {
+    this.value = value;
     updated.trigger();
   }
 
