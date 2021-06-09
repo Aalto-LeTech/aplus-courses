@@ -35,11 +35,11 @@ public class RemoteFileCache {
    * @param keepAliveTimeout After how many milliseconds, the download is timed out,
    *                         if a connection cannot be established or
    *                         if no new bytes cannot be fetched from the server.
-   *                         <p>
+   *
    *                         Note that downloading a large file can take much longer
    *                         than the value set here as long as there are
    *                         no pauses longer than the timeout specified.
-   *                         <p>
+   *
    *                         Refer to java.net.URLConnection.setConnectionTimeout
    *                         and java.net.URLConnection.setReadTimeout
    *                         for exact semantics.
