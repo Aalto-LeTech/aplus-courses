@@ -194,7 +194,7 @@ public class CourseProjectAction extends AnAction {
 
     if (useCourseFile) {
       // The course file not created in testing.
-      var courseProject = new CourseProject(course, courseUrl, project);
+      var courseProject = new CourseProject(course, courseUrl, project, notifier);
       PluginSettings.getInstance().registerCourseProject(courseProject);
     }
 

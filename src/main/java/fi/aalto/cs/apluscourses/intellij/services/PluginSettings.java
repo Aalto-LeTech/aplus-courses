@@ -13,6 +13,7 @@ import fi.aalto.cs.apluscourses.dal.APlusTokenAuthentication;
 import fi.aalto.cs.apluscourses.dal.TokenAuthentication;
 import fi.aalto.cs.apluscourses.intellij.dal.IntelliJPasswordStorage;
 import fi.aalto.cs.apluscourses.intellij.model.CourseProject;
+import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.utils.CourseFileManager;
 import fi.aalto.cs.apluscourses.intellij.utils.IntelliJFilterOption;
 import fi.aalto.cs.apluscourses.intellij.utils.ProjectKey;
@@ -158,7 +159,8 @@ public class PluginSettings implements MainViewModelProvider, DefaultGroupIdSett
   public void registerCourseProject(@NotNull CourseProject courseProject) {
     var key = new ProjectKey(courseProject.getProject());
     var mainViewModel = getMainViewModel(courseProject.getProject());
-    mainViewModel.bannerViewModel.set(new CourseEndedBannerViewModel(courseProject));
+    mainViewModel.bannerViewModel.set(new CourseEndedBannerViewModel(courseProject,
+        new DefaultNotifier()));
     var passwordStorage = new IntelliJPasswordStorage(courseProject.getCourse().getApiUrl());
     TokenAuthentication.Factory authenticationFactory =
         APlusTokenAuthentication.getFactoryFor(passwordStorage);
