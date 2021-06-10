@@ -77,6 +77,9 @@ public class ExercisesUpdater extends RepeatedTask {
         courseProject.setExerciseGroups(exerciseGroups);
         eventToTrigger.trigger();
       }
+
+      prefetchExercises(exerciseGroups, points, authentication);
+
       addExercises(exerciseGroups, points, authentication, progressViewModel, progress);
       progressViewModel.increment(progress);
       for (var exerciseGroup : exerciseGroups) {
@@ -106,6 +109,18 @@ public class ExercisesUpdater extends RepeatedTask {
         observable.valueChanged();
       }
       notifier.notify(new NetworkErrorNotification(e), courseProject.getProject());
+    }
+  }
+
+  private void prefetchExercises(@NotNull List<ExerciseGroup> exerciseGroups,
+                                 @NotNull Points points,
+                                 @NotNull Authentication authentication) {
+    var dataSource = courseProject.getCourse().getExerciseDataSource();
+
+    for (var exerciseGroup : exerciseGroups) {
+      for (var exerciseId : points.getExercises(exerciseGroup.getId())) {
+        dataSource.prefetchExercise(exerciseId, authentication);
+      }
     }
   }
 

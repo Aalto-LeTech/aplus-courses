@@ -24,6 +24,11 @@ public class ModelExtensions {
   }
 
   public static class TestExerciseDataSource implements ExerciseDataSource {
+    @Override
+    public @NotNull String getApiUrl() {
+      return "";
+    }
+
     @NotNull
     @Override
     public List<Group> getGroups(@NotNull Course course, @NotNull Authentication authentication) {
@@ -42,6 +47,11 @@ public class ModelExtensions {
     @Override
     public Points getPoints(@NotNull Course course, @NotNull Authentication authentication) {
       return new Points(Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());
+    }
+
+    @Override
+    public void prefetchExercise(long exerciseId, @NotNull Authentication authentication) {
+      // not used
     }
 
     @NotNull

@@ -8,6 +8,9 @@ import org.jetbrains.annotations.Nullable;
 
 public interface ExerciseDataSource {
   @NotNull
+  String getApiUrl();
+
+  @NotNull
   List<Group> getGroups(@NotNull Course course, @NotNull Authentication authentication)
       throws IOException;
 
@@ -19,6 +22,8 @@ public interface ExerciseDataSource {
   @NotNull
   Points getPoints(@NotNull Course course, @NotNull Authentication authentication)
       throws IOException;
+
+  void prefetchExercise(long exerciseId, @NotNull Authentication authentication);
 
   @NotNull
   Exercise getExercise(long exerciseId,

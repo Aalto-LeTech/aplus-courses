@@ -13,6 +13,7 @@ import fi.aalto.cs.apluscourses.model.Points;
 import fi.aalto.cs.apluscourses.model.Submission;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
+import fi.aalto.cs.apluscourses.utils.ParallelDownloader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -130,6 +131,12 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   }
 
   @Override
+  public void prefetchExercise(long exerciseId, @NotNull Authentication authentication) {
+    var url = apiUrl + "exercises/" + exerciseId + "/";
+    ParallelDownloader.addUrlToQueue(url, authentication);
+  }
+
+  @Override
   @NotNull
   public Exercise getExercise(long exerciseId,
                               @NotNull Points points,
@@ -192,7 +199,7 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
       if (cacheEntry != null && cacheEntry.getCreationTime().compareTo(minCacheEntryTime) >= 0) {
         return cacheEntry.getValue();
       }
-      try (InputStream inputStream = CoursesClient.fetch(new URL(url), authentication)) {
+      try (InputStream inputStream = ParallelDownloader.getResponse(url, authentication)) {
         var response = new JSONObject(new JSONTokener(inputStream));
         cache.putValue(url, response);
         return response;
