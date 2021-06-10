@@ -119,6 +119,7 @@ public class RemoteFileCache {
     } catch (IOException e) {
       new DefaultNotifier().notify(new NetworkErrorNotification(e), project);
       progress.finish();
+      throw e;
     }
   }
 
