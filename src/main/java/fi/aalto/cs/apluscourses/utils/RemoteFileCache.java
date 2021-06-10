@@ -7,7 +7,10 @@ import static org.apache.commons.io.IOUtils.EOF;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtilRt;
+import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
+import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
+import fi.aalto.cs.apluscourses.model.Progress;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -107,26 +110,23 @@ public class RemoteFileCache {
     connection.setConnectTimeout(connectionTimeout);
     connection.setReadTimeout(readTimeout);
     var length = connection.getContentLengthLong();
-
+    var progress = PluginSettings.getInstance().getMainViewModel(project).progressViewModel
+        .start((int) (length / 1024),
+            getAndReplaceText("ui.ProgressBarView.downloading", source.getFile()), false);
     try (var stream = connection.getInputStream();
          var out = openOutputStream(destination)) {
-      copyLarge(stream, out, new byte[DEFAULT_BUFFER_SIZE], length, source, project);
+      copyLarge(stream, out, new byte[DEFAULT_BUFFER_SIZE], progress);
+    } catch (IOException e) {
+      new DefaultNotifier().notify(new NetworkErrorNotification(e), project);
+      progress.finish();
     }
   }
 
   private static void copyLarge(@NotNull InputStream input,
                                 @NotNull OutputStream output,
                                 byte @NotNull [] buffer,
-                                long length,
-                                @NotNull URL url,
-                                @NotNull Project project)
+                                @NotNull Progress progress)
       throws IOException {
-    var progress = PluginSettings
-        .getInstance()
-        .getMainViewModel(project)
-        .progressViewModel
-        .start((int) (length / 1024),
-            getAndReplaceText("ui.ProgressBarView.downloading", url.getFile()), false);
     int n;
     long total = 0;
     while (EOF != (n = input.read(buffer))) {
