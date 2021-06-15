@@ -1,6 +1,10 @@
 package fi.aalto.cs.apluscourses.intellij.utils;
 
+import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.roots.ModuleRootManager;
+import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
+import fi.aalto.cs.apluscourses.intellij.notifications.MissingModuleNotification;
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.model.ModuleMetadata;
 import fi.aalto.cs.apluscourses.utils.Version;
@@ -12,12 +16,18 @@ import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -31,6 +41,8 @@ public class CourseFileManager {
   private URL courseUrl;
   private String language;
   private Map<String, ModuleMetadata> modulesMetadata;
+  private final Map<String, String[]> moduleDependencies;
+  private final Project project;
 
   private static final String COURSE_FILE_NAME = "a-plus-project.json";
   private static final String URL_KEY = "url";
@@ -38,9 +50,12 @@ public class CourseFileManager {
   private static final String MODULES_KEY = "modules";
   private static final String MODULE_VERSION_KEY = "version";
   private static final String MODULE_DOWNLOADED_AT_KEY = "downloadedAt";
+  private static final String MODULE_DEPENDENCIES_KEY = "dependencies";
 
   public CourseFileManager(@NotNull Project project) {
     courseFile = getCourseFile(project);
+    this.project = project;
+    this.moduleDependencies = new HashMap<>();
   }
 
   /**
@@ -68,6 +83,7 @@ public class CourseFileManager {
             .put(URL_KEY, courseUrl.toString())
             .put(LANGUAGE_KEY, language)
             .put(MODULES_KEY, createModulesObject())
+            .put(MODULE_DEPENDENCIES_KEY, createDependenciesObject())
     );
   }
 
@@ -76,8 +92,8 @@ public class CourseFileManager {
    * the course file doesn't exist, {@code true} otherwise.
    *
    * @return {@code true} if the course file was successfully loaded, {@code false} if the course
-   *         file doesn't exist.
-   * @throws IOException   If an IO error occurs while reading the course file.
+   * file doesn't exist.
+   * @throws IOException If an IO error occurs while reading the course file.
    */
   public synchronized boolean load() throws IOException {
     if (courseFile.exists()) {
@@ -105,16 +121,78 @@ public class CourseFileManager {
 
     modulesObject.put(module.getName(), newModuleObject);
 
+    addAllDependencies();
+    fixDependencies();
+
     JSONObject jsonObject = new JSONObject()
         .put(URL_KEY, courseUrl.toString())
         .put(LANGUAGE_KEY, language)
-        .put(MODULES_KEY, modulesObject);
+        .put(MODULES_KEY, modulesObject)
+        .put(MODULE_DEPENDENCIES_KEY, createDependenciesObject());
 
     writeCourseFile(jsonObject);
 
     // Only add the entry to the map after writing to the file, so that if the write fails, the map
     // is still in the correct state.
     modulesMetadata.put(module.getName(), newModuleMetadata);
+  }
+
+  private void addModuleDependencies(@NotNull String moduleName) {
+    var module = ModuleManager.getInstance(project).findModuleByName(moduleName);
+    if (module == null) {
+      return;
+    }
+    var deps = Arrays.stream(ModuleRootManager.getInstance(module).getDependencies())
+        .map(com.intellij.openapi.module.Module::getName)
+        .toArray(String[]::new);
+
+    moduleDependencies.computeIfAbsent(moduleName, m -> deps);
+    if (moduleDependencies.get(moduleName).length < deps.length) {
+      moduleDependencies.put(moduleName, deps);
+    }
+  }
+
+  private void addAllDependencies() {
+    var modules = Arrays.stream(ModuleManager.getInstance(project).getModules())
+        .map(com.intellij.openapi.module.Module::getName)
+        .toArray(String[]::new);
+    for (String moduleName : modules) {
+      addModuleDependencies(moduleName);
+    }
+  }
+
+  private void fixDependencies() {
+    var moduleManager = ModuleManager.getInstance(project);
+    var modules = Arrays.stream(moduleManager.getModules())
+        .map(com.intellij.openapi.module.Module::getName)
+        .toArray(String[]::new);
+    var missingModules = new HashSet<String>();
+    for (String moduleName : modules) {
+      var module = moduleManager.findModuleByName(moduleName);
+      if (module == null) {
+        continue;
+      }
+      var moduleRootManager = ModuleRootManager.getInstance(module);
+      var depsInIml = Arrays.stream(moduleRootManager.getDependencies())
+          .map(com.intellij.openapi.module.Module::getName).collect(Collectors.toCollection(HashSet::new));
+      var depsInJson = new HashSet<>(Arrays.asList(moduleDependencies.get(moduleName)));
+      depsInJson.removeAll(depsInIml);
+      if (!depsInJson.isEmpty()) {
+        var model = moduleRootManager.getModifiableModel();
+        for (var missingModelName : depsInJson) {
+          var missingModule = moduleManager.findModuleByName(missingModelName);
+          if (missingModule != null) {
+            model.addModuleOrderEntry(missingModule);
+            model.commit();
+          } else {
+            missingModules.add(missingModelName);
+          }
+        }
+      }
+    }
+    if (!missingModules.isEmpty()) {
+      new DefaultNotifier().notify(new MissingModuleNotification(String.join(", ", missingModules)), project);
+    }
   }
 
   /**
@@ -179,6 +257,13 @@ public class CourseFileManager {
     return modulesObject;
   }
 
+  @NotNull
+  private JSONObject createDependenciesObject() {
+    var dependenciesObject = new JSONObject();
+    moduleDependencies.forEach(dependenciesObject::put);
+    return dependenciesObject;
+  }
+
   /*
    * Initializes local variables from the given JSON object.
    */
@@ -216,5 +301,31 @@ public class CourseFileManager {
       this.modulesMetadata
           .put(moduleName, new ModuleMetadata(moduleVersion, downloadedAt));
     }
+
+
+    JSONObject dependenciesObject = jsonObject.optJSONObject(MODULE_DEPENDENCIES_KEY);
+    if (dependenciesObject == null) {
+      return;
+    }
+
+    Iterable<String> depModuleNames = dependenciesObject::keys;
+
+    for (String moduleName : depModuleNames) {
+      List<String> dependencies = new ArrayList<>();
+      JSONArray jsonDependencies = dependenciesObject.getJSONArray(moduleName);
+      for (int i = 0; i < jsonDependencies.length(); i++) {
+        dependencies.add(jsonDependencies.getString(i));
+      }
+
+      moduleDependencies.put(moduleName, dependencies.toArray(String[]::new));
+    }
+    addAllDependencies();
+    fixDependencies();
+
+    writeCourseFile(new JSONObject()
+        .put(URL_KEY, courseUrl.toString())
+        .put(LANGUAGE_KEY, language)
+        .put(MODULES_KEY, modulesObject)
+        .put(MODULE_DEPENDENCIES_KEY, createDependenciesObject()));
   }
 }
