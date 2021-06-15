@@ -4,7 +4,9 @@ import com.intellij.ide.DataManager;
 import com.intellij.idea.IdeaLogger;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.DataContext;
+import com.intellij.openapi.application.ApplicationInfo;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ApplicationNamesInfo;
 import com.intellij.openapi.diagnostic.ErrorReportSubmitter;
 import com.intellij.openapi.diagnostic.IdeaLoggingEvent;
 import com.intellij.openapi.diagnostic.SubmittedReportInfo;
@@ -13,6 +15,7 @@ import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.util.Consumer;
+import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,6 +31,11 @@ public class ErrorHandler extends ErrorReportSubmitter {
                                         @Nullable String lastActionId,
                                         @NotNull List<String> stackTraces) {
     return new JSONObject()
+        .put("ideVersion", ApplicationInfo.getInstance().getFullVersion())
+        .put("ideProduct", ApplicationNamesInfo.getInstance().getFullProductNameWithEdition())
+        .put("osName", System.getProperty("os.name"))
+        .put("osVersion", System.getProperty("os.version"))
+        .put("pluginVersion", BuildInfo.INSTANCE.pluginVersion.toString())
         .put("errorInfo", errorInfo)
         .put("lastAction", lastActionId)
         .put("stackTraces", stackTraces);
@@ -35,7 +43,7 @@ public class ErrorHandler extends ErrorReportSubmitter {
 
   @Override
   public @NotNull String getPrivacyNoticeText() {
-    return "By submitting a report, you agree to the <a href=\"\">privacy policy</a>.";
+    return "The privacy policy is <a href=\"\">available here</a>.";
   }
 
   @Override
@@ -59,6 +67,7 @@ public class ErrorHandler extends ErrorReportSubmitter {
                 .collect(Collectors.toList()));
 
         // TODO: send the JSON object to a remote server
+        System.err.println(serializedData.toString());
         System.err.println(serializedData.toString().length());
 
         ApplicationManager.getApplication().invokeLater(() -> {
