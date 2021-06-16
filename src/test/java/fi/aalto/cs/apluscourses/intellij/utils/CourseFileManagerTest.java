@@ -5,6 +5,7 @@ import static org.mockito.Mockito.mock;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtilRt;
+import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.model.ModuleMetadata;
@@ -74,8 +75,9 @@ public class CourseFileManagerTest {
         .toFile();
     threads = new ArrayList<>(NUM_THREADS);
     threadFailed = new AtomicBoolean(false);
+    var notifier = mock(Notifier.class);
 
-    manager = new CourseFileManager(project);
+    manager = new CourseFileManager(project, notifier);
   }
 
   @Test
@@ -207,7 +209,7 @@ public class CourseFileManagerTest {
               "changelog" + i, ZonedDateTime.now());
       Runnable runnable = () -> {
         try {
-          manager.addModuleEntry(module);
+          manager.addModuleEntry(module, false);
         } catch (IOException e) {
           threadFailed.set(true);
         }
