@@ -187,7 +187,8 @@ public class CourseFileManager {
       }
     }
     if (!missingModules.isEmpty()) {
-      notifier.notify(new MissingDependencyNotification(String.join(", ", missingModules)), project);
+      notifier.notify(new MissingDependencyNotification(String.join(", ", missingModules)),
+          project);
     }
   }
 
