@@ -3,7 +3,7 @@ package fi.aalto.cs.apluscourses.intellij.utils;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ModuleRootManager;
-import fi.aalto.cs.apluscourses.intellij.notifications.MissingModuleNotification;
+import fi.aalto.cs.apluscourses.intellij.notifications.MissingDependencyNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.model.ModuleMetadata;
@@ -187,7 +187,7 @@ public class CourseFileManager {
       }
     }
     if (!missingModules.isEmpty()) {
-      notifier.notify(new MissingModuleNotification(String.join(", ", missingModules)), project);
+      notifier.notify(new MissingDependencyNotification(String.join(", ", missingModules)), project);
     }
   }
 
@@ -306,20 +306,18 @@ public class CourseFileManager {
 
 
     JSONObject dependenciesObject = jsonObject.optJSONObject(MODULE_DEPENDENCIES_KEY);
-    if (dependenciesObject == null) {
-      return;
-    }
+    if (dependenciesObject != null) {
+      Iterable<String> depModuleNames = dependenciesObject::keys;
 
-    Iterable<String> depModuleNames = dependenciesObject::keys;
+      for (String moduleName : depModuleNames) {
+        Set<String> dependencies = new HashSet<>();
+        JSONArray jsonDependencies = dependenciesObject.getJSONArray(moduleName);
+        for (int i = 0; i < jsonDependencies.length(); i++) {
+          dependencies.add(jsonDependencies.getString(i));
+        }
 
-    for (String moduleName : depModuleNames) {
-      Set<String> dependencies = new HashSet<>();
-      JSONArray jsonDependencies = dependenciesObject.getJSONArray(moduleName);
-      for (int i = 0; i < jsonDependencies.length(); i++) {
-        dependencies.add(jsonDependencies.getString(i));
+        moduleDependencies.put(moduleName, dependencies);
       }
-
-      moduleDependencies.put(moduleName, dependencies);
     }
     addAllDependencies();
     fixDependencies();
