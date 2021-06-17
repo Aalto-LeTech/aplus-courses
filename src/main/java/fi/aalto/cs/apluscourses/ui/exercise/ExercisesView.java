@@ -48,6 +48,7 @@ public class ExercisesView {
     cl = (CardLayout) cardPanel.getLayout();
     exerciseGroupsTree.getEmptyText().setText("");
     exerciseGroupsTree.setOpaque(true);
+    exerciseGroupsTree.addMouseListener(mouseAdapter);
     emptyText.setText(getText("ui.exercise.ExercisesView.loading"));
     emptyText.setHorizontalAlignment(SwingConstants.CENTER);
     emptyText.setVerticalAlignment(SwingConstants.CENTER);
@@ -73,14 +74,12 @@ public class ExercisesView {
         return;
       }
 
-      exerciseGroupsTree.removeMouseListener(mouseAdapter);
       if (viewModel.isProjectReady()) {
         emptyText.setText(getText("ui.module.ModuleListView.turnIntoAPlusProject"));
         if (viewModel.isAuthenticated()) {
           exerciseGroupsTree.getEmptyText().setText(
                   getText("ui.exercise.ExercisesView.allAssignmentsFiltered"));
         } else {
-          exerciseGroupsTree.addMouseListener(mouseAdapter);
           exerciseGroupsTree.getEmptyText().setText(
                   getText("ui.exercise.ExercisesView.setToken"));
           exerciseGroupsTree.getEmptyText().appendLine(
