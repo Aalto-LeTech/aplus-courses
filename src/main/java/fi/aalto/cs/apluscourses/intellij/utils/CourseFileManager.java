@@ -7,6 +7,7 @@ import fi.aalto.cs.apluscourses.intellij.notifications.MissingDependencyNotifica
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.model.ModuleMetadata;
+import fi.aalto.cs.apluscourses.utils.JsonUtil;
 import fi.aalto.cs.apluscourses.utils.Version;
 import java.io.File;
 import java.io.IOException;
@@ -23,6 +24,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
@@ -116,7 +118,7 @@ public class CourseFileManager {
    * @param module The module for which an entry is added.
    * @throws IOException If an IO error occurs while writing to the course file.
    */
-  public synchronized void addModuleEntry(@NotNull Module module, boolean addDeps)
+  public synchronized void addModuleEntry(@NotNull Module module)
       throws IOException {
     ModuleMetadata newModuleMetadata = module.getMetadata();
     JSONObject newModuleObject = new JSONObject()
@@ -127,25 +129,21 @@ public class CourseFileManager {
 
     modulesObject.put(module.getName(), newModuleObject);
 
-    if (addDeps) {
-      addAllDependencies();
-      fixDependencies();
-    }
+    addAllDependencies();
+    fixDependencies();
 
-    JSONObject jsonObject = new JSONObject()
-        .put(URL_KEY, courseUrl.toString())
-        .put(LANGUAGE_KEY, language)
-        .put(MODULES_KEY, modulesObject)
-        .put(MODULE_DEPENDENCIES_KEY, createDependenciesObject());
-
-    writeCourseFile(jsonObject);
+    writeCourseFileWithModulesObject(modulesObject);
 
     // Only add the entry to the map after writing to the file, so that if the write fails, the map
     // is still in the correct state.
     modulesMetadata.put(module.getName(), newModuleMetadata);
   }
 
-  private void addModuleDependencies(@NotNull com.intellij.openapi.module.Module module) {
+  /**
+   * Only supports adding new modules, not removing them.
+   */
+  private synchronized void addModuleDependencies(
+      @NotNull com.intellij.openapi.module.Module module) {
     var deps = getDependencies(module);
     var oldDeps = moduleDependencies.computeIfAbsent(module.getName(), m -> deps);
     if (oldDeps.size() < deps.size()) {
@@ -153,14 +151,14 @@ public class CourseFileManager {
     }
   }
 
-  private void addAllDependencies() {
+  private synchronized void addAllDependencies() {
     var modules = ModuleManager.getInstance(project).getModules();
     for (var module : modules) {
       addModuleDependencies(module);
     }
   }
 
-  private void fixDependencies() {
+  private synchronized void fixDependencies() {
     var moduleManager = ModuleManager.getInstance(project);
     var modules = moduleManager.getModules();
     var missingModules = new HashSet<String>();
@@ -178,12 +176,11 @@ public class CourseFileManager {
 
           if (missingModule != null) {
             model.addModuleOrderEntry(missingModule);
-            model.commit();
           } else {
             missingModules.add(missingModelName);
           }
-
         }
+        model.commit();
       }
     }
     if (!missingModules.isEmpty()) {
@@ -192,7 +189,8 @@ public class CourseFileManager {
     }
   }
 
-  private Set<String> getDependencies(@NotNull com.intellij.openapi.module.Module module) {
+  private synchronized Set<String> getDependencies(
+      @NotNull com.intellij.openapi.module.Module module) {
     return Arrays.stream(ModuleRootManager.getInstance(module).getDependencies())
         .map(com.intellij.openapi.module.Module::getName)
         .collect(Collectors.toCollection(HashSet::new));
@@ -233,6 +231,15 @@ public class CourseFileManager {
 
   private void writeCourseFile(@NotNull JSONObject jsonObject) throws IOException {
     FileUtils.writeStringToFile(courseFile, jsonObject.toString(), StandardCharsets.UTF_8);
+  }
+
+  private void writeCourseFileWithModulesObject(@NotNull JSONObject modulesObject)
+      throws IOException {
+    writeCourseFile(new JSONObject()
+        .put(URL_KEY, courseUrl.toString())
+        .put(LANGUAGE_KEY, language)
+        .put(MODULES_KEY, modulesObject)
+        .put(MODULE_DEPENDENCIES_KEY, createDependenciesObject()));
   }
 
   /*
@@ -311,11 +318,11 @@ public class CourseFileManager {
       Iterable<String> depModuleNames = dependenciesObject::keys;
 
       for (String moduleName : depModuleNames) {
-        Set<String> dependencies = new HashSet<>();
         JSONArray jsonDependencies = dependenciesObject.getJSONArray(moduleName);
-        for (int i = 0; i < jsonDependencies.length(); i++) {
-          dependencies.add(jsonDependencies.getString(i));
-        }
+        Set<String> dependencies = new HashSet<>(Arrays.asList(
+            JsonUtil.parseArray(
+                jsonDependencies, JSONArray::getString, Function.identity(), String[]::new)
+        ));
 
         moduleDependencies.put(moduleName, dependencies);
       }
@@ -323,10 +330,6 @@ public class CourseFileManager {
     addAllDependencies();
     fixDependencies();
 
-    writeCourseFile(new JSONObject()
-        .put(URL_KEY, courseUrl.toString())
-        .put(LANGUAGE_KEY, language)
-        .put(MODULES_KEY, modulesObject)
-        .put(MODULE_DEPENDENCIES_KEY, createDependenciesObject()));
+    writeCourseFileWithModulesObject(modulesObject);
   }
 }

@@ -78,7 +78,7 @@ class IntelliJModule
       PluginSettings
           .getInstance()
           .getCourseFileManager(project.getProject())
-          .addModuleEntry(this, true);
+          .addModuleEntry(this);
     } catch (Exception e) {
       throw new ComponentLoadException(getName(), e);
     }
