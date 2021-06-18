@@ -158,7 +158,7 @@ public class CourseFileManager {
     }
   }
 
-  private synchronized void fixDependencies() {
+  private synchronized Set<String> fixDependencies() {
     var moduleManager = ModuleManager.getInstance(project);
     var modules = moduleManager.getModules();
     var missingModules = new HashSet<String>();
@@ -183,10 +183,7 @@ public class CourseFileManager {
         model.commit();
       }
     }
-    if (!missingModules.isEmpty()) {
-      notifier.notify(new MissingDependencyNotification(String.join(", ", missingModules)),
-          project);
-    }
+    return missingModules;
   }
 
   private synchronized Set<String> getDependencies(
@@ -328,7 +325,12 @@ public class CourseFileManager {
       }
     }
     addAllDependencies();
-    fixDependencies();
+    var missingModules = fixDependencies();
+
+    if (!missingModules.isEmpty()) {
+      notifier.notify(new MissingDependencyNotification(String.join(", ", missingModules)),
+          project);
+    }
 
     writeCourseFileWithModulesObject(modulesObject);
   }
