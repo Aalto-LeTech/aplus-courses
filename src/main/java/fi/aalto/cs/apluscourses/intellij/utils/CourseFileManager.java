@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -215,6 +216,14 @@ public class CourseFileManager {
 
       this.modulesMetadata
           .put(moduleName, new ModuleMetadata(moduleVersion, downloadedAt));
+    }
+  }
+
+  public void delete() {
+    try {
+      Files.delete(courseFile.toPath());
+    } catch (IOException e) {
+      // Ignore
     }
   }
 }

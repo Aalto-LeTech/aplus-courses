@@ -277,6 +277,10 @@ public class PluginSettings implements MainViewModelProvider, DefaultGroupIdSett
         .forEach(applicationPropertiesManager::unsetValue);
   }
 
+  public void removeMainViewModel(@NotNull Project project) {
+    mainViewModels.remove(new ProjectKey(project));
+  }
+
   public interface PropertiesManager {
     @Nullable String getValue(@NotNull String key);
 
