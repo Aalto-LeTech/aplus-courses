@@ -9,6 +9,7 @@ import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
 import fi.aalto.cs.apluscourses.utils.DomUtil;
+import fi.aalto.cs.apluscourses.utils.PluginResourceBundle;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -94,6 +95,21 @@ public class SettingsImporter {
     Path workspaceXmlPath = settingsPath.resolve("workspace.xml");
     Document workspaceXml = createCustomWorkspaceXml(workspaceXmlPath);
     DomUtil.writeDocumentToFile(workspaceXml, workspaceXmlPath.toFile());
+  }
+
+  public void importCustomProperties(@NotNull Path basePath, @NotNull Course course, @NotNull Project project)
+      throws IOException {
+    URL settingsUrl = course.getResourceUrls().get("customProperties");
+    if (settingsUrl == null) {
+      return;
+    }
+
+    Path settingsPath = basePath.resolve(Project.DIRECTORY_STORE_FOLDER);
+
+    File file = new File(settingsPath + "/customResources.properties");
+    CoursesClient.fetch(settingsUrl, file);
+
+    PluginResourceBundle.setCustomBundle(file, project);
   }
 
   private static void extractZipTo(@NotNull ZipFile zipFile, @NotNull Path target)
