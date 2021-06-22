@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.intellij.utils;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ModuleRootManager;
@@ -180,7 +181,7 @@ public class CourseFileManager {
             missingModules.add(missingModelName);
           }
         }
-        model.commit();
+        ApplicationManager.getApplication().runWriteAction(model::commit);
       }
     }
     return missingModules;
