@@ -1,12 +1,12 @@
 package fi.aalto.cs.apluscourses.ui.ideactivities;
 
 import com.intellij.openapi.editor.impl.EditorComponentImpl;
+import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.wm.ToolWindowManager;
 import java.awt.Component;
-import javax.swing.JButton;
 import java.nio.file.Paths;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -68,6 +68,36 @@ public class ComponentDatabase {
     if (toolWindow != null) {
       try {
         toolWindow.activate(null);
+        return true;
+      } catch (IllegalStateException e) {
+        return false;
+      }
+    }
+    return false;
+  }
+
+  public static void closeFile(@NotNull String path, @NotNull Project project) {
+    var modulePath = Paths.get(project.getBasePath() + path);
+    var vf = LocalFileSystem.getInstance().findFileByIoFile(modulePath.toFile());
+    if (vf == null) {
+      return;
+    }
+    FileEditorManager.getInstance(project).closeFile(vf);
+  }
+
+  public static boolean hideProjectToolWindow(@NotNull Project project) {
+    return hideToolWindow("Project", project);
+  }
+
+  public static boolean hideAPlusToolWindow(@NotNull Project project) {
+    return hideToolWindow("A+ Courses", project);
+  }
+
+  private static boolean hideToolWindow(@NotNull String id, @NotNull Project project) {
+    var toolWindow = ToolWindowManager.getInstance(project).getToolWindow(id);
+    if (toolWindow != null) {
+      try {
+        toolWindow.hide();
         return true;
       } catch (IllegalStateException e) {
         return false;

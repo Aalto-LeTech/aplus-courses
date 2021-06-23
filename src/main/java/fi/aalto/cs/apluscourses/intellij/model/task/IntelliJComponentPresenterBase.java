@@ -9,7 +9,6 @@ import fi.aalto.cs.apluscourses.model.task.ComponentPresenter;
 import fi.aalto.cs.apluscourses.ui.ideactivities.ComponentDatabase;
 import fi.aalto.cs.apluscourses.ui.ideactivities.GenericHighlighter;
 import fi.aalto.cs.apluscourses.ui.ideactivities.OverlayPane;
-import java.awt.Component;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class IntelliJComponentPresenterBase implements ComponentPresenter {
@@ -74,13 +73,12 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
   }
 
   protected abstract GenericHighlighter getHighlighter();
-  protected abstract Component getComponent();
 
   protected abstract boolean tryToShow();
 
   @Override
   public boolean isVisible() {
-    return getComponent() != null && getComponent().isShowing();
+    return getHighlighter() != null && getHighlighter().getComponent().isShowing();
   }
 
   @Override
