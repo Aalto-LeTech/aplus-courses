@@ -55,9 +55,11 @@ public class IntelliJActivityFactory implements ActivityFactory {
     for (var closedComponent : assertClosed) {
       switch (closedComponent.split("\\|")[0]) {
         case "projectTree":
-          ComponentDatabase.hideProjectToolWindow(project); break;
+          ComponentDatabase.hideProjectToolWindow(project);
+          break;
         case "aPlusCourses":
-          ComponentDatabase.hideAPlusToolWindow(project); break;
+          ComponentDatabase.hideAPlusToolWindow(project);
+          break;
         case "editor":
           ComponentDatabase.closeFile(closedComponent.replaceFirst("editor\\|", ""), project);
           break;

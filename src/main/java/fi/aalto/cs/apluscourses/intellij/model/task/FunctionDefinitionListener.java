@@ -29,15 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.StringTokenizer;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.StringTokenizer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement;
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaRecursiveElementVisitor;

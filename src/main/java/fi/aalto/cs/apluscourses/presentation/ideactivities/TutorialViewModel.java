@@ -83,6 +83,10 @@ public class TutorialViewModel {
     }
   }
 
+  /**
+   * Sets the currentTask as completed and frees up any resources associated with it.
+   * CurrentTask is set to the task with the given index.
+   */
   public void changeTask(int newTaskIndex) {
     synchronized (lock) {
       Tutorial tutorial = tutorialExercise.getTutorial();
@@ -135,6 +139,9 @@ public class TutorialViewModel {
     return tasksAmount;
   }
 
+  /**
+   * Cancels the tutorial after the user confirms it.
+   */
   public void confirmCancel() {
     if (dialogs.confirmCancel(this)) {
       cancelTutorial();

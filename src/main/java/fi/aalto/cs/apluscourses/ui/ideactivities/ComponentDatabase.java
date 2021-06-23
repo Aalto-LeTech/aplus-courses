@@ -76,6 +76,9 @@ public class ComponentDatabase {
     return false;
   }
 
+  /**
+   * Closes file in the editor for a given project.
+   */
   public static void closeFile(@NotNull String path, @NotNull Project project) {
     var modulePath = Paths.get(project.getBasePath() + path);
     var vf = LocalFileSystem.getInstance().findFileByIoFile(modulePath.toFile());
