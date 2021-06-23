@@ -14,27 +14,21 @@ import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
-import com.intellij.psi.PsiParameter;
-import com.intellij.psi.PsiWhiteSpace;
+import fi.aalto.cs.apluscourses.intellij.psi.ScalaFunctionDefinition;
 import fi.aalto.cs.apluscourses.model.task.ActivitiesListener;
 import fi.aalto.cs.apluscourses.model.task.ListenerCallback;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.StringTokenizer;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement;
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaRecursiveElementVisitor;
-import org.jetbrains.plugins.scala.lang.psi.api.expr.ScAssignment;
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunctionDefinition;
-import org.jetbrains.plugins.scala.lang.psi.impl.expr.ScReferenceExpressionImpl;
+import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScTypeParamClause;
 import org.jetbrains.plugins.scala.lang.psi.impl.statements.params.ScParametersImpl;
 
 
@@ -43,32 +37,22 @@ public class FunctionDefinitionListener implements ActivitiesListener,
 
   private final ListenerCallback callback;
   private final Project project;
-  private final String methodName;
+  private final String filePath;
   private Disposable disposable;
-  private final String[] arguments;
-  private final String[] methodBody;
+  private ScalaFunctionDefinition scalaFunctionDefinition;
+  private AtomicBoolean isCorrect = new AtomicBoolean(false);
 
   /**
    * Constructor.
-   * @param callback The callback the callback for when the task is complete
-   * @param project The project where the Tutorial is happening
-   * @param methodName The method's name
-   * @param arguments The method's arguments
-   * @param body The method's body
-   * @param filePath The file's path.
    */
   public FunctionDefinitionListener(ListenerCallback callback,
                                     Project project, String methodName, String[] arguments,
-                                    String[] body, String filePath) {
+                                    String[] body, String[] typeParameters, String filePath) {
     this.callback = callback;
     this.project = project;
-    this.methodName = methodName;
-    this.arguments = arguments;
-    this.methodBody = body;
-    Path modulePath = Paths.get(project.getBasePath() + filePath);
-    VirtualFile vf = LocalFileSystem.getInstance().findFileByIoFile(modulePath.toFile());
-    PsiFile psiFile = PsiManager.getInstance(project).findFile(vf);
-    checkPsiFile(psiFile);
+    this.scalaFunctionDefinition = new ScalaFunctionDefinition(methodName,
+        arguments, body, typeParameters);
+    this.filePath = filePath;
   }
 
   @Override
@@ -76,7 +60,16 @@ public class FunctionDefinitionListener implements ActivitiesListener,
     EditorEventMulticaster multicaster = EditorFactory.getInstance().getEventMulticaster();
     disposable = Disposer.newDisposable();
     multicaster.addDocumentListener(this, disposable);
-    return false;
+    return checkFile();
+  }
+
+  private boolean checkFile() {
+    Path modulePath = Paths.get(project.getBasePath() + filePath);
+    VirtualFile vf = LocalFileSystem.getInstance().findFileByIoFile(modulePath.toFile());
+    if (vf != null) {
+      checkPsiFile(PsiManager.getInstance(project).findFile(vf));
+    }
+    return isCorrect.get();
   }
 
   @Override
@@ -95,70 +88,30 @@ public class FunctionDefinitionListener implements ActivitiesListener,
     }
   }
 
-  private void checkPsiFile(PsiFile psiFile) {
+  private void checkPsiFile(@Nullable PsiFile psiFile) {
+    if (psiFile == null) {
+      return;
+    }
     psiFile.accept(new ScalaRecursiveElementVisitor() {
       @Override
       public void visitScalaElement(ScalaPsiElement element) {
         super.visitScalaElement(element);
         if (element instanceof ScFunctionDefinition
-                && methodName.equals(((ScFunctionDefinition) element).getName())) {
+                && scalaFunctionDefinition.checkMethodName((ScFunctionDefinition) element)) {
           PsiElement[] children = element.getChildren();
-          Optional<PsiElement> opt = Arrays.stream(children).filter(
+          Optional<PsiElement> optTypeParameters = Arrays.stream(children).filter(
+              ScTypeParamClause.class::isInstance).findFirst();
+          Optional<PsiElement> optParameters = Arrays.stream(children).filter(
               ScParametersImpl.class::isInstance).findFirst();
-          if (opt.isPresent() && checkParameters(((ScParametersImpl) opt.get()).getParameters())) {
-            PsiElement methodBodyParent = children[children.length - 1];
-            if (methodBodyParent != null) {
-              children = methodBodyParent.getChildren();
-              if (checkMethodBody(children)) {
-                ApplicationManager.getApplication().invokeLater(callback::callback);
-              }
-            }
+          if (scalaFunctionDefinition.checkScTypeParametersClause(optTypeParameters)
+               && scalaFunctionDefinition.checkParameters(optParameters)
+                && scalaFunctionDefinition.checkFunctionBody(children)) {
+            ApplicationManager.getApplication().invokeLater(callback::callback);
+            isCorrect.set(true);
           }
         }
       }
     });
   }
 
-  private boolean checkParameters(PsiParameter[] parameters) {
-    Map<String, String> args = new HashMap<>();
-    for (String a: arguments) {
-      StringTokenizer tokenizer = new StringTokenizer(a, ":", false);
-      String key = tokenizer.nextToken();
-      String value = tokenizer.nextToken();
-      args.put(key, value);
-    }
-    boolean complete = true;
-    for (PsiParameter param: parameters) {
-      if (!args.containsKey(param.getName())
-          || !args.get(param.getName()).equals(param.getType().getPresentableText())) {
-        complete = false;
-      }
-    }
-
-    return complete && parameters.length == args.size();
-  }
-
-  private boolean checkMethodBody(PsiElement[] method) {
-    Collection<PsiElement> totalElements = getMethodBodyPsiElements(method);
-    List<String> args = Arrays.asList(methodBody.clone());
-    List<String> body = new ArrayList<>();
-    totalElements.forEach(element -> body.add(element.getText()));
-    return args.equals(body);
-  }
-
-  private Collection<PsiElement> getMethodBodyPsiElements(PsiElement[] methodElements) {
-    List<PsiElement> elements = new ArrayList<>();
-    for (PsiElement element: methodElements) {
-      if (element instanceof PsiWhiteSpace) {
-        continue;
-      }
-      if (element.getChildren().length == 0 || element instanceof ScReferenceExpressionImpl
-          || element instanceof ScAssignment) {
-        elements.add(element);
-      } else {
-        elements.addAll(getMethodBodyPsiElements(element.getChildren()));
-      }
-    }
-    return elements;
-  }
 }
