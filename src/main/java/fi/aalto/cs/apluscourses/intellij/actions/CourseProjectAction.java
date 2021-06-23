@@ -348,12 +348,13 @@ public class CourseProjectAction extends AnAction {
     }
   }
 
-  private boolean tryImportCustomProperties(@NotNull Project project, @NotNull Path basePath, @NotNull Course course) {
+  private boolean tryImportCustomProperties(@NotNull Project project, @NotNull Path basePath,
+                                            @NotNull Course course) {
     try {
       settingsImporter.importCustomProperties(basePath, course, project);
       return true;
     } catch (IOException e) {
-      logger.error("Failed to import IDE settings", e);
+      logger.error("Failed to import custom properties", e);
       notifier.notify(new NetworkErrorNotification(e), project);
       return false;
     }

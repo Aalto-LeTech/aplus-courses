@@ -97,7 +97,13 @@ public class SettingsImporter {
     DomUtil.writeDocumentToFile(workspaceXml, workspaceXmlPath.toFile());
   }
 
-  public void importCustomProperties(@NotNull Path basePath, @NotNull Course course, @NotNull Project project)
+  /**
+   * Downloads a custom properties file if it exists, and saves it to the project's
+   * .idea directory.
+   * @throws IOException If an IO error occurs (e.g. network issues).
+   */
+  public void importCustomProperties(@NotNull Path basePath, @NotNull Course course,
+                                     @NotNull Project project)
       throws IOException {
     URL settingsUrl = course.getResourceUrls().get("customProperties");
     if (settingsUrl == null) {
@@ -106,7 +112,7 @@ public class SettingsImporter {
 
     Path settingsPath = basePath.resolve(Project.DIRECTORY_STORE_FOLDER);
 
-    File file = new File(settingsPath + "/customResources.properties");
+    File file = settingsPath.resolve("customResources.properties").toFile();
     CoursesClient.fetch(settingsUrl, file);
 
     PluginResourceBundle.setCustomBundle(file, project);

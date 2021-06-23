@@ -23,11 +23,13 @@ import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationException;
 import fi.aalto.cs.apluscourses.model.UnexpectedResponseException;
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
+import fi.aalto.cs.apluscourses.utils.PluginResourceBundle;
 import fi.aalto.cs.apluscourses.utils.Version;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.jetbrains.annotations.NotNull;
@@ -57,6 +59,7 @@ public class InitializationActivity implements Background {
 
   @Override
   public void runActivity(@NotNull Project project) {
+    setCustomResources(project);
     PluginSettings pluginSettings = PluginSettings.getInstance();
     pluginSettings.initializeLocalIdeSettings();
 
@@ -151,6 +154,19 @@ public class InitializationActivity implements Background {
     } catch (IOException | JSONException e) {
       logger.error("Malformed project course tag file", e);
       return null;
+    }
+  }
+
+  private void setCustomResources(@NotNull Project project) {
+    var basePath = project.getBasePath();
+    if (basePath != null) {
+      try {
+        PluginResourceBundle.setCustomBundle(Paths.get(basePath,
+            Project.DIRECTORY_STORE_FOLDER,
+            PluginResourceBundle.CUSTOM_RESOURCES_FILENAME).toFile(), project);
+      } catch (IOException e) {
+        // No custom resources.
+      }
     }
   }
 }
