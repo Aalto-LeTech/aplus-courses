@@ -10,9 +10,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
-public class Task {
+public class Task implements CancelHandler {
   public static final int REFRESH_INTERVAL = 1000;
   public final @NotNull Event taskCompleted = new Event();
+  public final @NotNull Event taskCanceled = new Event();
 
   private final @NotNull String instruction;
   private final @NotNull String info;
@@ -73,6 +74,7 @@ public class Task {
     }
     presenter = activityFactory.createPresenter(component, instruction, info, componentArguments,
         actionArguments);
+    presenter.setCancelHandler(this);
     this.timer = new Timer();
     startTimer();
     listener = activityFactory.createListener(action, actionArguments, taskCompleted::trigger);
@@ -123,6 +125,11 @@ public class Task {
         }
       });
     }
+  }
+
+  @Override
+  public void onCancel() {
+    taskCanceled.trigger();
   }
 }
 

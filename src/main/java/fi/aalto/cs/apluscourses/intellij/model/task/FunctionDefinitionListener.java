@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.intellij.model.task;
 
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.compiler.CompilationStatusListener;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
@@ -29,6 +30,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.StringTokenizer;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.StringTokenizer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement;
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaRecursiveElementVisitor;
@@ -39,7 +48,7 @@ import org.jetbrains.plugins.scala.lang.psi.impl.statements.params.ScParametersI
 
 
 public class FunctionDefinitionListener implements ActivitiesListener,
-        DocumentListener {
+        DocumentListener, CompilationStatusListener {
 
   private final ListenerCallback callback;
   private final Project project;

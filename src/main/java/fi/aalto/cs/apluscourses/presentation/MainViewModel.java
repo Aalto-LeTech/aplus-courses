@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.presentation;
 
+import fi.aalto.cs.apluscourses.BannerViewModel;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
 import fi.aalto.cs.apluscourses.presentation.exercise.EmptyExercisesTreeViewModel;
@@ -31,6 +32,10 @@ public class MainViewModel {
 
   @NotNull
   public final ProgressViewModel progressViewModel = new ProgressViewModel();
+
+  @NotNull
+  public final ObservableProperty<BannerViewModel> bannerViewModel =
+      new ObservableReadWriteProperty<>(null);
 
   @NotNull
   public final ObservableProperty<TutorialViewModel> tutorialViewModel =

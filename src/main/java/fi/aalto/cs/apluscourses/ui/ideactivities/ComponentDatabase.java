@@ -39,10 +39,7 @@ public class ComponentDatabase {
   }
 
   public static @Nullable Component getProgressButton() {
-    return ComponentLocator.getComponentsByClass("JButton")
-        .stream().filter(c -> c instanceof JButton)
-        .filter(c -> ComponentLocator.hasActionOfClass((JButton) c, "ProgressAction"))
-        .findFirst().orElse(null);
+    return ComponentLocator.getComponentByClass("TutorialProgressAction");
   }
 
   /**

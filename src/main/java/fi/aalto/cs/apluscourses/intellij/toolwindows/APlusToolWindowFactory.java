@@ -17,6 +17,7 @@ import fi.aalto.cs.apluscourses.intellij.actions.InstallModuleAction;
 import fi.aalto.cs.apluscourses.intellij.activities.InitializationActivity;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
+import fi.aalto.cs.apluscourses.ui.BannerView;
 import fi.aalto.cs.apluscourses.ui.ProgressBarView;
 import fi.aalto.cs.apluscourses.ui.exercise.ExercisesView;
 import fi.aalto.cs.apluscourses.ui.module.ModulesView;
@@ -37,7 +38,8 @@ public class APlusToolWindowFactory extends BaseToolWindowFactory implements Dum
 
     var progressViewModel
             = PluginSettings.getInstance().getMainViewModel(project).progressViewModel;
-    return new ProgressBarView(progressViewModel, splitter).getContainer();
+    var progressBarView = new ProgressBarView(progressViewModel, splitter).getContainer();
+    return createBannerView(project, progressBarView).getContainer();
   }
 
   @NotNull
@@ -95,6 +97,19 @@ public class APlusToolWindowFactory extends BaseToolWindowFactory implements Dum
     exercisesView.getExerciseGroupsTree().setPopupMenu(popupMenu.getComponent());
 
     return exercisesView;
+  }
+
+  @NotNull
+  private static BannerView createBannerView(@NotNull Project project,
+                                             @NotNull JComponent bottomComponent) {
+    var bannerView = new BannerView(bottomComponent);
+
+    PluginSettings.getInstance()
+            .getMainViewModel(project)
+            .bannerViewModel
+            .addValueObserver(bannerView, BannerView::viewModelChanged);
+
+    return bannerView;
   }
 
   private static class EmptyLabelMouseAdapter extends MouseAdapter {
