@@ -10,21 +10,36 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.*;
+import com.intellij.psi.PsiDocumentManager;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiManager;
+import com.intellij.psi.PsiParameter;
+import com.intellij.psi.PsiWhiteSpace;
 import fi.aalto.cs.apluscourses.model.task.ActivitiesListener;
 import fi.aalto.cs.apluscourses.model.task.ListenerCallback;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.StringTokenizer;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement;
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaRecursiveElementVisitor;
+import org.jetbrains.plugins.scala.lang.psi.api.expr.ScAssignment;
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunctionDefinition;
 import org.jetbrains.plugins.scala.lang.psi.impl.expr.ScReferenceExpressionImpl;
 import org.jetbrains.plugins.scala.lang.psi.impl.statements.params.ScParametersImpl;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
 
-public class FunctionDefinitionListener implements ActivitiesListener, DocumentListener {
+public class FunctionDefinitionListener implements ActivitiesListener,
+        DocumentListener {
 
   private final ListenerCallback callback;
   private final Project project;
@@ -33,8 +48,18 @@ public class FunctionDefinitionListener implements ActivitiesListener, DocumentL
   private final String[] arguments;
   private final String[] methodBody;
 
+  /**
+   * Constructor.
+   * @param callback The callback the callback for when the task is complete
+   * @param project The project where the Tutorial is happening
+   * @param methodName The method's name
+   * @param arguments The method's arguments
+   * @param body The method's body
+   * @param filePath The file's path.
+   */
   public FunctionDefinitionListener(ListenerCallback callback,
-                                    Project project, String methodName, String[] arguments, String[] body, String filePath) {
+                                    Project project, String methodName, String[] arguments,
+                                    String[] body, String filePath) {
     this.callback = callback;
     this.project = project;
     this.methodName = methodName;
@@ -51,7 +76,6 @@ public class FunctionDefinitionListener implements ActivitiesListener, DocumentL
     EditorEventMulticaster multicaster = EditorFactory.getInstance().getEventMulticaster();
     disposable = Disposer.newDisposable();
     multicaster.addDocumentListener(this, disposable);
-    //and then check if the method is already in the desired condition
     return false;
   }
 
@@ -66,7 +90,9 @@ public class FunctionDefinitionListener implements ActivitiesListener, DocumentL
   public void documentChanged(@NotNull DocumentEvent event) {
     PsiDocumentManager.getInstance(project).commitDocument(event.getDocument());
     PsiFile psiFile = PsiDocumentManager.getInstance(project).getPsiFile(event.getDocument());
-    checkPsiFile(psiFile);
+    if (psiFile != null) {
+      checkPsiFile(psiFile);
+    }
   }
 
   private void checkPsiFile(PsiFile psiFile) {
@@ -78,11 +104,11 @@ public class FunctionDefinitionListener implements ActivitiesListener, DocumentL
                 && methodName.equals(((ScFunctionDefinition) element).getName())) {
           PsiElement[] children = element.getChildren();
           Optional<PsiElement> opt = Arrays.stream(children).filter(
-              c -> c instanceof ScParametersImpl).findFirst();
+              ScParametersImpl.class::isInstance).findFirst();
           if (opt.isPresent() && checkParameters(((ScParametersImpl) opt.get()).getParameters())) {
-            opt = Optional.ofNullable(children[children.length - 1]);
-            if (opt.isPresent()) {
-              children = opt.get().getChildren();
+            PsiElement methodBodyParent = children[children.length - 1];
+            if (methodBodyParent != null) {
+              children = methodBodyParent.getChildren();
               if (checkMethodBody(children)) {
                 ApplicationManager.getApplication().invokeLater(callback::callback);
               }
@@ -126,7 +152,8 @@ public class FunctionDefinitionListener implements ActivitiesListener, DocumentL
       if (element instanceof PsiWhiteSpace) {
         continue;
       }
-      if (element.getChildren().length == 0 || element instanceof ScReferenceExpressionImpl) {
+      if (element.getChildren().length == 0 || element instanceof ScReferenceExpressionImpl
+          || element instanceof ScAssignment) {
         elements.add(element);
       } else {
         elements.addAll(getMethodBodyPsiElements(element.getChildren()));

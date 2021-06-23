@@ -2,22 +2,28 @@ package fi.aalto.cs.apluscourses.intellij.model.task;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
+import com.intellij.openapi.project.Project;
 import com.intellij.util.concurrency.annotations.RequiresEdt;
 import fi.aalto.cs.apluscourses.model.task.ComponentPresenter;
 import fi.aalto.cs.apluscourses.ui.ideactivities.ComponentDatabase;
 import fi.aalto.cs.apluscourses.ui.ideactivities.GenericHighlighter;
 import fi.aalto.cs.apluscourses.ui.ideactivities.OverlayPane;
+import java.awt.Component;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class IntelliJComponentPresenterBase implements ComponentPresenter {
 
   private final @NotNull String instruction;
   private final @NotNull String info;
+  protected final @NotNull Project project;
   private OverlayPane overlayPane;
 
-  protected IntelliJComponentPresenterBase(@NotNull String instruction, @NotNull String info) {
+  protected IntelliJComponentPresenterBase(@NotNull String instruction,
+                                           @NotNull String info,
+                                           @NotNull Project project) {
     this.instruction = instruction;
     this.info = info;
+    this.project = project;
   }
 
   @Override
@@ -28,8 +34,17 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
 
   @RequiresEdt
   private void highlightInternal() {
-    GenericHighlighter highlighter = getHighlighter();
+    if (overlayPane != null) {
+      overlayPane.remove();
+    }
+
+    var highlighter = getHighlighter();
+
     if (highlighter == null) {
+      if (tryToShow()) {
+        highlightInternal();
+        return;
+      }
       throw new IllegalStateException("Component was not found!");
     }
     overlayPane = OverlayPane.installOverlay();
@@ -56,4 +71,12 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
   }
 
   protected abstract GenericHighlighter getHighlighter();
+  protected abstract Component getComponent();
+
+  protected abstract boolean tryToShow();
+
+  @Override
+  public boolean isVisible() {
+    return getComponent() != null && getComponent().isShowing();
+  }
 }

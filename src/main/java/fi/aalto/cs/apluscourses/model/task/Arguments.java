@@ -2,14 +2,15 @@ package fi.aalto.cs.apluscourses.model.task;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.json.JSONArray;
 
 
 @FunctionalInterface
 public interface Arguments {
-  @Nullable String get(@NotNull String key);
+  @Nullable Object get(@NotNull String key);
 
   /**
    * Gets an argument or throws a runtime exception if the argument is missing.
@@ -17,7 +18,10 @@ public interface Arguments {
    * @return The (non-null) value of the argument.
    */
   default @NotNull String getOrThrow(@NotNull String key) {
-    String value = get(key);
+    if (!(get(key) instanceof String)) {
+      throw new IllegalArgumentException("Argument is not a String: " + key);
+    }
+    String value = (String) get(key);
     if (value == null) {
       throw new IllegalArgumentException("Argument missing: " + key);
     }
@@ -30,14 +34,18 @@ public interface Arguments {
    * @return The (non-null) array values of the argument.
    */
   default @NotNull String[] getArrayOrThrow(@NotNull String key) {
-    String value = get(key);
-    if (value == null) {
+    if (! (get(key) instanceof JSONArray)) {
+      throw new IllegalArgumentException("Argument is not a JSONArray: " + key);
+    }
+    JSONArray jsonArray = (JSONArray) get(key);
+    if (jsonArray == null) {
       throw new IllegalArgumentException("Argument missing: " + key);
     }
+
     List<String> array = new ArrayList<>();
-    StringTokenizer tokenizer = new StringTokenizer(value, ",", false);
-    while (tokenizer.hasMoreTokens()) {
-      array.add(tokenizer.nextToken());
+    int length = jsonArray.length();
+    for (int i = 0; i < length; i++) {
+      array.add(jsonArray.getString(i));
     }
     return array.toArray(new String[]{});
   }
