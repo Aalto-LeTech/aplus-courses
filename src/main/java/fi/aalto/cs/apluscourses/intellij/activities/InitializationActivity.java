@@ -9,6 +9,7 @@ import com.intellij.openapi.project.ProjectManagerListener;
 import com.intellij.openapi.startup.StartupActivity.Background;
 import fi.aalto.cs.apluscourses.intellij.model.CourseProject;
 import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory;
+import fi.aalto.cs.apluscourses.intellij.model.SettingsImporter;
 import fi.aalto.cs.apluscourses.intellij.notifications.CourseConfigurationError;
 import fi.aalto.cs.apluscourses.intellij.notifications.CourseVersionOutdatedError;
 import fi.aalto.cs.apluscourses.intellij.notifications.CourseVersionOutdatedWarning;
@@ -23,7 +24,6 @@ import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationException;
 import fi.aalto.cs.apluscourses.model.UnexpectedResponseException;
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
-import fi.aalto.cs.apluscourses.utils.PluginResourceBundle;
 import fi.aalto.cs.apluscourses.utils.Version;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
@@ -59,7 +59,6 @@ public class InitializationActivity implements Background {
 
   @Override
   public void runActivity(@NotNull Project project) {
-    setCustomResources(project);
     PluginSettings pluginSettings = PluginSettings.getInstance();
     pluginSettings.initializeLocalIdeSettings();
 
@@ -91,7 +90,10 @@ public class InitializationActivity implements Background {
       progressViewModel.stopAll();
       return;
     }
-    var progress = progressViewModel.start(2, getText("ui.ProgressBarView.loading"), false);
+    var progress = progressViewModel.start(3, getText("ui.ProgressBarView.loading"), false);
+    progress.increment();
+
+    setCustomResources(project, course);
     progress.increment();
 
     var versionComparison =
@@ -157,13 +159,13 @@ public class InitializationActivity implements Background {
     }
   }
 
-  private void setCustomResources(@NotNull Project project) {
+  private void setCustomResources(@NotNull Project project, @NotNull Course course) {
     var basePath = project.getBasePath();
     if (basePath != null) {
       try {
-        PluginResourceBundle.setCustomBundle(Paths.get(basePath,
-            Project.DIRECTORY_STORE_FOLDER,
-            PluginResourceBundle.CUSTOM_RESOURCES_FILENAME).toFile(), project);
+        new SettingsImporter().importCustomProperties(Paths.get(project.getBasePath()),
+            course,
+            project);
       } catch (IOException e) {
         // No custom resources.
       }
