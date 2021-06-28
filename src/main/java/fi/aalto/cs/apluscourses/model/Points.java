@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
@@ -125,17 +126,12 @@ public class Points {
 
   @Nullable
   private static Long parseSubmissionId(String submissionUrl) {
-    if (submissionUrl.isEmpty()) {
+    var pattern = Pattern.compile("(\\d+)(?!.*\\d)");
+    var matcher = pattern.matcher(submissionUrl);
+    if (!matcher.find()) {
       return null;
     }
-    if (submissionUrl.endsWith("/")) {
-      submissionUrl = submissionUrl.substring(0, submissionUrl.length() - 1);
-    }
-    try {
-      return Long.parseLong(submissionUrl.substring(submissionUrl.lastIndexOf("/") + 1));
-    } catch (Exception e) {
-      return null;
-    }
+    return Long.parseLong(matcher.group(0));
   }
 
 }

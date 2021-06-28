@@ -182,6 +182,10 @@ public class Exercise implements Browsable {
         .anyMatch(submission -> submission.getStatus() == SubmissionResult.Status.WAITING);
   }
 
+  public boolean isLate() {
+    return getBestSubmission() != null && getBestSubmission().getLatePenalty() != 0.0;
+  }
+
   @Override
   public int hashCode() {
     return Long.hashCode(id);

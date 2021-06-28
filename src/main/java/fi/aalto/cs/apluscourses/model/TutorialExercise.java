@@ -8,7 +8,7 @@ public class TutorialExercise extends Exercise {
   private final @NotNull Tutorial tutorial;
 
   /**
-   * A.
+   * A constructor.
    */
   public TutorialExercise(long id,
                           @NotNull String name,
