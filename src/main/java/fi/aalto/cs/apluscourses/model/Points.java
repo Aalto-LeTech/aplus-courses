@@ -14,6 +14,9 @@ import org.json.JSONObject;
 public class Points {
 
   @NotNull
+  private static final Pattern submissionIdPattern = Pattern.compile("/submissions/(\\d+)/?$");
+
+  @NotNull
   private final Map<Long, List<Long>> exercises;
 
   @NotNull
@@ -126,12 +129,11 @@ public class Points {
 
   @Nullable
   private static Long parseSubmissionId(String submissionUrl) {
-    var pattern = Pattern.compile("(\\d+)(?!.*\\d)");
-    var matcher = pattern.matcher(submissionUrl);
+    var matcher = submissionIdPattern.matcher(submissionUrl);
     if (!matcher.find()) {
       return null;
     }
-    return Long.parseLong(matcher.group(0));
+    return Long.parseLong(matcher.group(1));
   }
 
 }
