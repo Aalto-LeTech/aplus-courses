@@ -10,6 +10,7 @@ import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
 import fi.aalto.cs.apluscourses.model.Points;
+import fi.aalto.cs.apluscourses.model.Progress;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import fi.aalto.cs.apluscourses.utils.Event;
 import fi.aalto.cs.apluscourses.utils.async.RepeatedTask;
@@ -65,7 +66,7 @@ public class ExercisesUpdater extends RepeatedTask {
     var progressViewModel =
         PluginSettings.getInstance().getMainViewModel(courseProject.getProject()).progressViewModel;
     var progress =
-            progressViewModel.start(2, getText("ui.ProgressBarView.refreshingAssignments"), false);
+            progressViewModel.start(3, getText("ui.ProgressBarView.refreshingAssignments"), false);
     try {
       progress.increment();
       if (Thread.interrupted()) {
@@ -74,12 +75,14 @@ public class ExercisesUpdater extends RepeatedTask {
       }
       var exerciseGroups
           = dataSource.getExerciseGroups(course, authentication);
+      progress.increment();
       if (courseProject.getExerciseGroups() == null) {
         courseProject.setExerciseGroups(exerciseGroups);
         eventToTrigger.trigger();
       }
       var points = dataSource.getPoints(course, authentication);
-      addExercises(exerciseGroups, points, authentication);
+      addExercises(exerciseGroups, points, authentication, progress);
+      progress.increment();
       for (var exerciseGroup : exerciseGroups) {
         for (var exercise : exerciseGroup.getExercises()) {
           if (Thread.interrupted()) {
@@ -112,9 +115,11 @@ public class ExercisesUpdater extends RepeatedTask {
 
   private void addExercises(@NotNull List<ExerciseGroup> exerciseGroups,
                             @NotNull Points points,
-                            @NotNull Authentication authentication) throws IOException {
+                            @NotNull Authentication authentication,
+                            @NotNull Progress progress) throws IOException {
     var course = courseProject.getCourse();
     var dataSource = course.getExerciseDataSource();
+    progress.incrementMaxValue(points.getExercisesAmount());
     for (var exerciseGroup : exerciseGroups) {
       for (var exerciseId : points.getExercises(exerciseGroup.getId())) {
         if (Thread.interrupted()) {
@@ -123,6 +128,7 @@ public class ExercisesUpdater extends RepeatedTask {
         var exercise = dataSource.getExercise(exerciseId, points, course.getTutorials(),
             authentication, ZonedDateTime.now().minusDays(7));
         exerciseGroup.addExercise(exercise);
+        progress.increment();
       }
       courseProject.setExerciseGroups(exerciseGroups);
       eventToTrigger.trigger();
