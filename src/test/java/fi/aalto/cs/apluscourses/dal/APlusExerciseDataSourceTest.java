@@ -19,6 +19,7 @@ import fi.aalto.cs.apluscourses.model.ExerciseDataSource;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
+import fi.aalto.cs.apluscourses.model.Points;
 import fi.aalto.cs.apluscourses.model.Submission;
 import fi.aalto.cs.apluscourses.model.SubmissionInfo;
 import fi.aalto.cs.apluscourses.model.SubmittableFile;
@@ -31,6 +32,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalLong;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -136,7 +138,7 @@ public class APlusExerciseDataSourceTest {
 
     var info = new SubmissionInfo(Collections.singletonMap("fi", List.of(subFile0, subFile1)));
 
-    Exercise exercise = new Exercise(71, "newex", "https://example.com", info, 0, 0, 0);
+    Exercise exercise = new Exercise(71, "newex", "https://example.com", info, 0, 0, 0, OptionalLong.empty());
 
     Group group = new Group(435, new ArrayList<>());
 

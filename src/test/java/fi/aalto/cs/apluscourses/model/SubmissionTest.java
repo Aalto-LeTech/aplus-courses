@@ -11,6 +11,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalLong;
+
 import org.junit.Test;
 
 public class SubmissionTest {
@@ -21,7 +23,7 @@ public class SubmissionTest {
     var fileB = new SubmittableFile("keyB", "fileB");
     var language = "de";
     var info = new SubmissionInfo(Collections.singletonMap(language, List.of(fileA, fileB)));
-    Exercise exercise = new Exercise(85678, "ex", "http://localhost:1000", info, 0, 0, 0);
+    Exercise exercise = new Exercise(85678, "ex", "http://localhost:1000", info, 0, 0, 0, OptionalLong.empty());
     Map<String, Path> files = new HashMap<>();
     files.put("fileA", Paths.get("some.file"));
     files.put("fileB", Paths.get("other.file"));

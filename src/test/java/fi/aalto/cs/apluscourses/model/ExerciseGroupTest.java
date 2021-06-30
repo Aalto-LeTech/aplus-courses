@@ -1,9 +1,8 @@
 package fi.aalto.cs.apluscourses.model;
 
-import static org.mockito.Mockito.mock;
-
 import java.util.Collections;
 import java.util.List;
+import java.util.OptionalLong;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,8 +19,8 @@ public class ExerciseGroupTest {
   @Test
   public void testExerciseGroup() {
     var info = new SubmissionInfo(Collections.emptyMap());
-    Exercise exercise1 = new Exercise(123, "name1", "https://example.com", info, 0, 0, 0);
-    Exercise exercise2 = new Exercise(456, "name2", "https://example.org", info, 0, 0, 0);
+    Exercise exercise1 = new Exercise(123, "name1", "https://example.com", info, 0, 0, 0, OptionalLong.empty());
+    Exercise exercise2 = new Exercise(456, "name2", "https://example.org", info, 0, 0, 0, OptionalLong.empty());
 
     ExerciseGroup group = new ExerciseGroup(22, "group", "https://example.fi", true);
     group.addExercise(exercise1);

@@ -13,8 +13,10 @@ import fi.aalto.cs.apluscourses.intellij.notifications.FeedbackAvailableNotifica
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import java.time.ZonedDateTime;
 import java.util.Collections;
+import java.util.OptionalLong;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -37,10 +39,10 @@ public class SubmissionStatusUpdaterTest {
                                                 @NotNull Exercise exercise,
                                                 @NotNull Authentication authentication,
                                                 @NotNull ZonedDateTime minCacheEntryTime) {
-
       return new SubmissionResult(
           123L,
           0,
+          0.0,
           submissionResultFetchCount.incrementAndGet() >= limit
               ? SubmissionResult.Status.GRADED : SubmissionResult.Status.UNKNOWN,
           exercise
@@ -71,7 +73,7 @@ public class SubmissionStatusUpdaterTest {
         mock(Authentication.class),
         notifier,
         "http://localhost:1000",
-        new Exercise(789, "Cool Exercise Name", "http://example.com", info, 0, 5, 10),
+        new Exercise(789, "Cool Exercise Name", "http://example.com", info, 0, 5, 10, OptionalLong.empty()),
         25L, // 0.025 second interval
         0L, // don't increment the interval at all
         10000L // 10 second time limit, which shouldn't be reached
@@ -93,7 +95,7 @@ public class SubmissionStatusUpdaterTest {
         mock(Authentication.class),
         notifier,
         "http://localhost:1000",
-        new Exercise(789, "Cool Exercise Name", "http://example.com", info, 0, 5, 10),
+        new Exercise(789, "Cool Exercise Name", "http://example.com", info, 0, 5, 10, OptionalLong.empty()),
         25L, // 0.025 second interval
         0L, // don't increment the interval at all
         200L // 0.2 second time limit, should update at most 8 times

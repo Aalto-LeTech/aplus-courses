@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalLong;
 import java.util.stream.IntStream;
 import org.junit.Test;
 
@@ -44,7 +45,7 @@ public class SubmissionViewModelTest {
         = Collections.singletonMap(language, Collections.singletonList(file));
     var submissionInfo = new SubmissionInfo(files);
     Exercise exercise = new Exercise(
-        100, "Exercise", "http://localhost:1000", submissionInfo, 0, 0, 0);
+        100, "Exercise", "http://localhost:1000", submissionInfo, 0, 0, 0, OptionalLong.empty());
 
     SubmissionViewModel submissionViewModel =
         new SubmissionViewModel(exercise, groups, null, fileMap, language);
@@ -56,9 +57,9 @@ public class SubmissionViewModelTest {
   @Test
   public void testSubmissionNumbers() {
     var info = new SubmissionInfo(Collections.emptyMap());
-    Exercise exercise = new Exercise(1, "ex", "http://localhost:2000", info, 0, 0, 5);
+    Exercise exercise = new Exercise(1, "ex", "http://localhost:2000", info, 0, 0, 5, OptionalLong.empty());
     IntStream.range(0, 3).forEach(i -> exercise.addSubmissionResult(
-        new SubmissionResult(i, 10, SubmissionResult.Status.GRADED, exercise)));
+        new SubmissionResult(i, 10, 0.0, SubmissionResult.Status.GRADED, exercise)));
 
     SubmissionViewModel submissionViewModel1 = new SubmissionViewModel(
         exercise, Collections.emptyList(), null, Collections.emptyMap(), "");
@@ -69,7 +70,7 @@ public class SubmissionViewModelTest {
     assertNull(submissionViewModel1.getSubmissionWarning());
 
     exercise.addSubmissionResult(
-        new SubmissionResult(3, 10, SubmissionResult.Status.GRADED, exercise));
+        new SubmissionResult(3, 10, 0.0, SubmissionResult.Status.GRADED, exercise));
     SubmissionViewModel submissionViewModel2 = new SubmissionViewModel(
         exercise, Collections.emptyList(), null, Collections.emptyMap(), "");
 
@@ -81,14 +82,14 @@ public class SubmissionViewModelTest {
         exercise, Collections.emptyList(), null, Collections.emptyMap(), "");
 
     exercise.addSubmissionResult(
-        new SubmissionResult(4, 10, SubmissionResult.Status.GRADED, exercise));
+        new SubmissionResult(4, 10, 0.0, SubmissionResult.Status.GRADED, exercise));
     assertEquals("You are about to make submission 6 out of 5.",
         submissionViewModel3.getSubmissionCountText());
     assertNotNull(submissionViewModel3.getSubmissionWarning());
 
     // Max submissions 0
     SubmissionViewModel submissionViewModel4 = new SubmissionViewModel(
-        new Exercise(0, "", "", info, 0, 0, 0),
+        new Exercise(0, "", "", info, 0, 0, 0, OptionalLong.empty()),
         Collections.emptyList(), null, Collections.emptyMap(), "");
     assertEquals("You are about to make submission 1.",
         submissionViewModel4.getSubmissionCountText());
@@ -105,20 +106,20 @@ public class SubmissionViewModelTest {
     files.put("en", List.of(englishFile1, englishFile2));
     files.put("fi", List.of(finnishFile1, finnishFile2));
     var exercise = new Exercise(
-        324, "cool", "http://localhost:1324", new SubmissionInfo(files), 0, 0, 0);
+        324, "cool", "http://localhost:1324", new SubmissionInfo(files), 0, 0, 0, OptionalLong.empty());
 
     SubmissionViewModel submission = new SubmissionViewModel(
         exercise, Collections.emptyList(), null, Collections.emptyMap(), "fi"
     );
 
     assertArrayEquals("getFiles returns the files corresponding to the given language",
-        new SubmittableFile[] {finnishFile1, finnishFile2}, submission.getFiles());
+        new SubmittableFile[]{finnishFile1, finnishFile2}, submission.getFiles());
   }
 
   @Test
   public void testDefaultGroup() {
     Exercise exercise = new Exercise(
-        1000, "wow", "http://www.fi", new SubmissionInfo(Collections.emptyMap()), 0, 0, 0);
+        1000, "wow", "http://www.fi", new SubmissionInfo(Collections.emptyMap()), 0, 0, 0, OptionalLong.empty());
     Group group = new Group(1, List.of("Jyrki", "Jorma"));
     List<Group> availableGroups = Collections.singletonList(group);
 

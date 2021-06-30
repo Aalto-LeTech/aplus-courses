@@ -14,7 +14,8 @@ public class PointsTest {
     Points points = new Points(
         Collections.singletonMap(51L, List.of(0L, 123L)),
         Collections.singletonMap(123L, List.of(11L, 22L)),
-        Collections.singletonMap(123L, 55)
+        Collections.singletonMap(123L, 55),
+        Collections.singletonMap(123L, 22L)
     );
 
     Assert.assertEquals("The exercise ID list is the same as that given to the constructor",
@@ -37,7 +38,6 @@ public class PointsTest {
     JSONArray submissionsWithPoints2 = new JSONArray()
         .put(new JSONObject().put("id", 3L).put("grade", 30))
         .put(new JSONObject().put("id", 4L).put("grade", 40));
-
 
     JSONArray exercises = new JSONArray()
         .put(new JSONObject()

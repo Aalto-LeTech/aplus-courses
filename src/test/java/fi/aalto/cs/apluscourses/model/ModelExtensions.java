@@ -10,6 +10,7 @@ import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalLong;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -40,7 +41,12 @@ public class ModelExtensions {
     @NotNull
     @Override
     public Points getPoints(@NotNull Course course, @NotNull Authentication authentication) {
-      return new Points(Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());
+      return new Points(
+          Collections.emptyMap(),
+          Collections.emptyMap(),
+          Collections.emptyMap(),
+          Collections.emptyMap()
+      );
     }
 
     @NotNull
@@ -51,7 +57,7 @@ public class ModelExtensions {
                                 @NotNull Authentication authentication,
                                 @NotNull ZonedDateTime minCacheEntryTime) {
       return new Exercise(1, "lol", "http://example.com",
-          new SubmissionInfo(Collections.emptyMap()), 10, 20, 10
+          new SubmissionInfo(Collections.emptyMap()), 10, 20, 10, OptionalLong.empty()
       );
     }
 
@@ -61,7 +67,7 @@ public class ModelExtensions {
                                                 @NotNull Exercise exercise,
                                                 @NotNull Authentication authentication,
                                                 @NotNull ZonedDateTime minCacheEntryTime) {
-      return new SubmissionResult(0, 20, SubmissionResult.Status.GRADED, exercise);
+      return new SubmissionResult(0, 20, 0.0, SubmissionResult.Status.GRADED, exercise);
     }
 
     @Override

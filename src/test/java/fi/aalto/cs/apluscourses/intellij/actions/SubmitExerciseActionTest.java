@@ -63,6 +63,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.OptionalLong;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Before;
@@ -125,7 +126,7 @@ public class SubmitExerciseActionTest {
     String language = "fi";
     submissionInfo = new SubmissionInfo(Map.of(language, Collections.singletonList(file)));
     exercise = new Exercise(
-        exerciseId, "Test exercise", "http://localhost:10000", submissionInfo, 0, 0, 0);
+        exerciseId, "Test exercise", "http://localhost:10000", submissionInfo, 0, 0, 0, OptionalLong.empty());
     group = new Group(124, Collections.singletonList("Only you"));
     groups = Collections.singletonList(group);
     exerciseGroup = new ExerciseGroup(0, "Test EG", "", true);
@@ -135,7 +136,11 @@ public class SubmitExerciseActionTest {
     mainViewModel = new MainViewModel(new Options());
 
     authentication = mock(Authentication.class);
-    points = new Points(Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());
+    points = new Points(
+        Collections.emptyMap(),
+        Collections.emptyMap(),
+        Collections.emptyMap(),
+        Collections.emptyMap());
 
     exerciseDataSource = mock(ExerciseDataSource.class);
     course = spy(new ModelExtensions.TestCourse("91", "NineOne Course", exerciseDataSource));
@@ -299,7 +304,8 @@ public class SubmitExerciseActionTest {
 
   @Test
   public void testNotifiesExerciseNotSubmittable() throws IOException {
-    var exercise = new Exercise(0, "", "", new SubmissionInfo(Map.of()), 0, 0, 0);
+    var exercise = new Exercise(0, "", "", new SubmissionInfo(Map.of()), 0, 0, 0,
+        OptionalLong.empty());
     var exerciseGroup = new ExerciseGroup(0, "", "", true);
     exerciseGroup.addExercise(exercise);
     mainViewModel.exercisesViewModel.set(

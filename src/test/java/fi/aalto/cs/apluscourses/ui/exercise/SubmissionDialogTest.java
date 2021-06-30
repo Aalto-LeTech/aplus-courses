@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalLong;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javax.swing.Action;
@@ -66,9 +67,9 @@ public class SubmissionDialogTest extends LightIdeaTestCase {
                                               int maxNumberOfSubmissions) {
     var info = new SubmissionInfo(Collections.singletonMap("en", submittableFiles));
     var exercise = new Exercise(
-        1, exerciseName, "http://www.fi", info, 0, 0, maxNumberOfSubmissions);
+        1, exerciseName, "http://www.fi", info, 0, 0, maxNumberOfSubmissions, OptionalLong.empty());
     IntStream.range(0, numberOfSubmissions).forEach(i -> exercise.addSubmissionResult(
-        new SubmissionResult(i,2, SubmissionResult.Status.GRADED, exercise)));
+        new SubmissionResult(i,2, 0.0, SubmissionResult.Status.GRADED, exercise)));
     return new SubmissionViewModel(
         exercise,
         availableGroups,

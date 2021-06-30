@@ -5,11 +5,16 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class Points {
+
+  @NotNull
+  private static final Pattern submissionIdPattern = Pattern.compile("/submissions/(\\d+)/?$");
 
   @NotNull
   private final Map<Long, List<Long>> exercises;
@@ -20,6 +25,9 @@ public class Points {
   @NotNull
   private final Map<Long, Integer> exercisePoints;
 
+  @NotNull
+  private final Map<Long, Long> bestSubmissions;
+
   /**
    * Construct an instance with the given maps.
    *
@@ -29,13 +37,17 @@ public class Points {
    *                       The first element of the list should be the ID of the oldest submission
    *                       and the last element should be the ID of the latest submission.
    * @param exercisePoints A map of exercise IDs to the best points gotten from that exercise.
+   * @param bestSubmissions  A map of exercise IDs to the IDs of the best submission for each
+   *                         exercise.
    */
   public Points(@NotNull Map<Long, List<Long>> exercises,
                 @NotNull Map<Long, List<Long>> submissions,
-                @NotNull Map<Long, Integer> exercisePoints) {
+                @NotNull Map<Long, Integer> exercisePoints,
+                @NotNull Map<Long, Long> bestSubmissions) {
     this.exercises = exercises;
     this.submissions = submissions;
     this.exercisePoints = exercisePoints;
+    this.bestSubmissions = bestSubmissions;
   }
 
   @NotNull
@@ -58,6 +70,11 @@ public class Points {
     return exercisePoints.getOrDefault(exerciseId, 0);
   }
 
+  @NotNull
+  public Map<Long, Long> getBestSubmissionIds() {
+    return Collections.unmodifiableMap(bestSubmissions);
+  }
+
   /**
    * Constructs a {@link Points} instance from the given JSON object.
    *
@@ -69,6 +86,7 @@ public class Points {
     Map<Long, List<Long>> exercises = new HashMap<>();
     Map<Long, List<Long>> submissions = new HashMap<>();
     Map<Long, Integer> exercisePoints = new HashMap<>();
+    Map<Long, Long> bestSubmissions = new HashMap<>();
     for (int i = 0; i < modulesArray.length(); ++i) {
       JSONObject module = modulesArray.getJSONObject(i);
       var exerciseGroupId = module.getLong("id");
@@ -79,12 +97,18 @@ public class Points {
         long exerciseId = exercise.getLong("id");
         exerciseIds.add(exerciseId);
         parseSubmissions(exercise, exerciseId, submissions);
+
+        var bestSubmissionId = parseSubmissionId(exercise.optString("best_submission"));
+        if (bestSubmissionId != null) {
+          bestSubmissions.put(exerciseId, bestSubmissionId);
+        }
+
         Integer points = exercise.getInt("points");
         exercisePoints.put(exerciseId, points);
       }
       exercises.put(exerciseGroupId, exerciseIds);
     }
-    return new Points(exercises, submissions, exercisePoints);
+    return new Points(exercises, submissions, exercisePoints, bestSubmissions);
   }
 
   /*
@@ -101,6 +125,15 @@ public class Points {
       submissionIds.add(submissionId);
     }
     submissions.put(exerciseId, submissionIds);
+  }
+
+  @Nullable
+  private static Long parseSubmissionId(String submissionUrl) {
+    var matcher = submissionIdPattern.matcher(submissionUrl);
+    if (!matcher.find()) {
+      return null;
+    }
+    return Long.parseLong(matcher.group(1));
   }
 
 }

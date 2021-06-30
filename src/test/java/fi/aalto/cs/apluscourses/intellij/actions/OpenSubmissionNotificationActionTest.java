@@ -20,7 +20,7 @@ import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import fi.aalto.cs.apluscourses.model.UrlRenderer;
 import java.net.URISyntaxException;
 import java.util.Collections;
-
+import java.util.OptionalLong;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -41,8 +41,8 @@ public class OpenSubmissionNotificationActionTest {
     event = mock(AnActionEvent.class);
     doReturn(mock(Project.class)).when(event).getProject();
     var info = new SubmissionInfo(Collections.emptyMap());
-    submissionResult = new SubmissionResult(1, 0, SubmissionResult.Status.GRADED,
-        new Exercise(1, "Ex", "http://example.com", info, 0, 5, 10));
+    submissionResult = new SubmissionResult(1, 0, 0.0, SubmissionResult.Status.GRADED,
+        new Exercise(1, "Ex", "http://example.com", info, 0, 5, 10, OptionalLong.empty()));
     notification = mock(Notification.class);
     notifier = mock(Notifier.class);
     submissionRenderer = mock(UrlRenderer.class);

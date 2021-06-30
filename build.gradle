@@ -90,6 +90,7 @@ task uiTest(type: Test) {
     classpath = sourceSets.e2e.runtimeClasspath
 }
 
+
 task gatherBuildInfo(dependsOn: processResources) {
     doLast {
         new File("$buildDir/resources/main/build-info.properties").withWriter { writer ->

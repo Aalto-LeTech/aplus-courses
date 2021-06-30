@@ -11,6 +11,7 @@ import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.SubmissionInfo;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import java.util.Collections;
+import java.util.OptionalLong;
 import org.junit.Test;
 
 public class FeedbackAvailableNotificationTest {
@@ -18,9 +19,9 @@ public class FeedbackAvailableNotificationTest {
   @Test
   public void testFeedbackAvailableNotificationTest() {
     var info = new SubmissionInfo(Collections.emptyMap());
-    var exercise = new Exercise(123, "Test Exercise", "https://example.com", info, 3, 5, 10);
+    var exercise = new Exercise(123, "Test Exercise", "https://example.com", info, 3, 5, 10, OptionalLong.empty());
     SubmissionResult result
-        = new SubmissionResult(0, 0, SubmissionResult.Status.GRADED, exercise);
+        = new SubmissionResult(0, 0, 0.0, SubmissionResult.Status.GRADED, exercise);
     Notification notification = new FeedbackAvailableNotification(result, exercise);
 
     assertEquals("Group ID should be A+", "A+", notification.getGroupId());
