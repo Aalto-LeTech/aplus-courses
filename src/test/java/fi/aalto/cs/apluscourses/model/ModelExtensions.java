@@ -77,6 +77,16 @@ public class ModelExtensions {
     }
 
     @Override
+    public @Nullable Student getStudent(@NotNull Course course, @NotNull Authentication authentication, long id) {
+      return null;
+    }
+
+    @Override
+    public @Nullable Student getStudent(@NotNull Authentication authentication, @NotNull String url, long id) {
+      return null;
+    }
+
+    @Override
     public @NotNull ZonedDateTime getEndingTime(@NotNull Course course,
                                                 @NotNull Authentication authentication) {
       return ZonedDateTime.of(2020, 1, 2, 0, 0, 0, 0,

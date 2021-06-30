@@ -10,6 +10,7 @@ import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.InvalidAuthenticationException;
 import fi.aalto.cs.apluscourses.model.JsonCache;
 import fi.aalto.cs.apluscourses.model.Points;
+import fi.aalto.cs.apluscourses.model.Student;
 import fi.aalto.cs.apluscourses.model.Submission;
 import fi.aalto.cs.apluscourses.model.SubmissionHistory;
 import fi.aalto.cs.apluscourses.model.SubmissionInfo;
@@ -41,6 +42,7 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   private static final String COURSES = "courses";
   private static final String POINTS = "points";
   private static final String USERS = "users";
+  private static final String STUDENTS = "students";
 
   @NotNull
   private final Client client;
@@ -178,6 +180,24 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   }
 
   @Override
+  @Nullable
+  public Student getStudent(@NotNull Course course,
+                            @NotNull Authentication authentication,
+                            long id) throws IOException {
+    String url = apiUrl + COURSES + "/" + course.getId() + "/" + STUDENTS + "/";
+    JSONObject response = client.fetch(url, authentication);
+    return parser.parseStudent(response, this, authentication, id);
+  }
+
+  @Override
+  @Nullable
+  public Student getStudent(@NotNull Authentication authentication,
+                            @NotNull String url,
+                            long id) throws IOException {
+    return parser.parseStudent(client.fetch(url, authentication), this, authentication, id);
+  }
+
+  @Override
   @NotNull
   public ZonedDateTime getEndingTime(@NotNull Course course,
                                      @NotNull Authentication authentication)
@@ -300,6 +320,26 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
       var fullName = object.optString("full_name");
       var username = object.optString("username");
       return fullName.equals("") ? username : fullName;
+    }
+
+    @Override
+    public Student parseStudent(@NotNull JSONObject object,
+                                @NotNull ExerciseDataSource dataSource,
+                                @NotNull Authentication authentication,
+                                long id) throws IOException {
+      var results = object.getJSONArray("results");
+      for (int i = 0; i < results.length(); i++) {
+        var student = results.getJSONObject(i);
+        var studentId = student.getLong("id");
+        if (studentId == id) {
+          return Student.fromJsonObject(student);
+        }
+      }
+      var nextPage = object.optString("next");
+      if ("".equals(nextPage)) {
+        return null;
+      }
+      return dataSource.getStudent(authentication, nextPage, id);
     }
 
     @Override

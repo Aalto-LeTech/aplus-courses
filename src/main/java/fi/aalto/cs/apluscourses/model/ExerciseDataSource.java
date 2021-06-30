@@ -40,6 +40,16 @@ public interface ExerciseDataSource {
   @NotNull
   User getUser(@NotNull Authentication authentication) throws IOException;
 
+  @Nullable
+  Student getStudent(@NotNull Course course,
+                     @NotNull Authentication authentication,
+                     long id) throws IOException;
+
+  @Nullable
+  Student getStudent(@NotNull Authentication authentication,
+                     @NotNull String url,
+                     long id) throws IOException;
+
   @NotNull
   ZonedDateTime getEndingTime(@NotNull Course course,
                               @NotNull Authentication authentication) throws IOException;

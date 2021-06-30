@@ -30,6 +30,8 @@ public class ExercisesView {
   private JScrollPane pane;
   @GuiObject
   public JPanel toolbarContainer;
+  @GuiObject
+  private JLabel title;
   private JPanel cardPanel;
   private CardLayout cl;
 
@@ -78,6 +80,11 @@ public class ExercisesView {
           exerciseGroupsTree.getEmptyText().appendLine(
                   getText("ui.exercise.ExercisesView.setTokenDirections"));
         }
+        if (viewModel.getName() != null) {
+          title.setText("Assignments: " + viewModel.getName());
+        } else {
+          title.setText("Assignments");
+        }
       }
 
     }, ModalityState.any()
@@ -87,6 +94,7 @@ public class ExercisesView {
   @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
   private void createUIComponents() {
     pane = ScrollPaneFactory.createScrollPane(basePanel);
+    title = new JLabel();
     exerciseGroupsTree = new TreeView();
     exerciseGroupsTree.setCellRenderer(new ExercisesTreeRenderer());
     exerciseGroupsTree.addNodeAppliedListener(

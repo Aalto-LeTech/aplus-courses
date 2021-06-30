@@ -14,6 +14,8 @@ public class ExercisesTreeViewModel extends BaseTreeViewModel<List<ExerciseGroup
 
   private boolean isAuthenticated;
 
+  private String name = "";
+
   private AtomicBoolean isProjectReady = new AtomicBoolean(false);
 
   /**
@@ -50,5 +52,13 @@ public class ExercisesTreeViewModel extends BaseTreeViewModel<List<ExerciseGroup
    */
   public boolean setProjectReady(boolean projectReady) {
     return isProjectReady.getAndSet(projectReady) != projectReady;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 }

@@ -1,13 +1,17 @@
 package fi.aalto.cs.apluscourses.dal;
 
+import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.Exercise;
+import fi.aalto.cs.apluscourses.model.ExerciseDataSource;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.Points;
+import fi.aalto.cs.apluscourses.model.Student;
 import fi.aalto.cs.apluscourses.model.SubmissionHistory;
 import fi.aalto.cs.apluscourses.model.SubmissionInfo;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import fi.aalto.cs.apluscourses.model.Tutorial;
+import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +39,11 @@ public interface Parser {
                                          @NotNull Exercise exercise);
 
   String parseUserName(@NotNull JSONObject object);
+
+  Student parseStudent(@NotNull JSONObject object,
+                       @NotNull ExerciseDataSource dataSource,
+                       @NotNull Authentication authentication,
+                       long id) throws IOException;
 
   ZonedDateTime parseEndingTime(@NotNull JSONObject object);
 
