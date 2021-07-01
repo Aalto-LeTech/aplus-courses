@@ -1,25 +1,24 @@
 package fi.aalto.cs.apluscourses.intellij.model.task;
 
-import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.editor.EditorFactory;
-import com.intellij.openapi.editor.event.DocumentEvent;
-import com.intellij.openapi.editor.event.DocumentListener;
-import com.intellij.openapi.editor.event.EditorEventMulticaster;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiDocumentManager;
+import com.intellij.openapi.vfs.VirtualFileManager;
+import com.intellij.openapi.vfs.newvfs.BulkFileListener;
+import com.intellij.openapi.vfs.newvfs.events.VFileContentChangeEvent;
+import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
+import com.intellij.util.messages.MessageBusConnection;
 import fi.aalto.cs.apluscourses.intellij.psi.ScalaFunctionDefinition;
 import fi.aalto.cs.apluscourses.model.task.ActivitiesListener;
 import fi.aalto.cs.apluscourses.model.task.ListenerCallback;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -33,14 +32,14 @@ import org.jetbrains.plugins.scala.lang.psi.impl.statements.params.ScParametersI
 
 
 public class FunctionDefinitionListener implements ActivitiesListener,
-        DocumentListener {
+    BulkFileListener {
 
   private final ListenerCallback callback;
   private final Project project;
   private final String filePath;
-  private Disposable disposable;
-  private ScalaFunctionDefinition scalaFunctionDefinition;
-  private AtomicBoolean isCorrect = new AtomicBoolean(false);
+  private MessageBusConnection messageBusConnection;
+  private final ScalaFunctionDefinition scalaFunctionDefinition;
+  private final AtomicBoolean isCorrect = new AtomicBoolean(false);
 
   /**
    * Constructor.
@@ -56,10 +55,20 @@ public class FunctionDefinitionListener implements ActivitiesListener,
   }
 
   @Override
+  public void after(@NotNull List<? extends VFileEvent> events) {
+    events.forEach(event -> {
+      if (event instanceof VFileContentChangeEvent
+          && ((VFileContentChangeEvent) event).getFile().getPath().equals(
+              project.getBasePath() + filePath)) {
+        checkFile();
+      }
+    });
+  }
+
+  @Override
   public boolean registerListener() {
-    EditorEventMulticaster multicaster = EditorFactory.getInstance().getEventMulticaster();
-    disposable = Disposer.newDisposable();
-    multicaster.addDocumentListener(this, disposable);
+    messageBusConnection = project.getMessageBus().connect();
+    messageBusConnection.subscribe(VirtualFileManager.VFS_CHANGES, this);
     return checkFile();
   }
 
@@ -74,17 +83,9 @@ public class FunctionDefinitionListener implements ActivitiesListener,
 
   @Override
   public void unregisterListener() {
-    EditorEventMulticaster multicaster = EditorFactory.getInstance().getEventMulticaster();
-    multicaster.removeDocumentListener(this);
-    disposable.dispose();
-  }
-
-  @Override
-  public void documentChanged(@NotNull DocumentEvent event) {
-    PsiDocumentManager.getInstance(project).commitDocument(event.getDocument());
-    PsiFile psiFile = PsiDocumentManager.getInstance(project).getPsiFile(event.getDocument());
-    if (psiFile != null) {
-      checkPsiFile(psiFile);
+    if (messageBusConnection != null) {
+      messageBusConnection.disconnect();
+      messageBusConnection = null;
     }
   }
 

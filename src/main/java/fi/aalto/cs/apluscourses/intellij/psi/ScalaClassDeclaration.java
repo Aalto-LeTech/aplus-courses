@@ -5,10 +5,13 @@ import com.intellij.psi.PsiParameter;
 import fi.aalto.cs.apluscourses.utils.IdeActivitiesUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScAnnotations;
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScPrimaryConstructor;
+import org.jetbrains.plugins.scala.lang.psi.api.base.types.ScSimpleTypeElement;
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScTypeParamClause;
 import org.jetbrains.plugins.scala.lang.psi.impl.base.ScModifierListImpl;
 import org.jetbrains.plugins.scala.lang.psi.impl.toplevel.templates.ScTemplateParentsImpl;
@@ -17,7 +20,8 @@ public class ScalaClassDeclaration {
 
   private final String className;
   private final String[] arguments;
-  private final String[] hierarchy;
+  private final String hierarchy;
+  private final String[] traits;
   private final List<String> parameterModifiers;
   private final List<String> parameterAnnotations;
   private final String[] typeParameters;
@@ -26,13 +30,14 @@ public class ScalaClassDeclaration {
    * Constructor.
    */
   public ScalaClassDeclaration(String className, String[] arguments,
-                               String[] hierarchy, String[] typeParameters,
+                               String hierarchy, String[] traitHierarchy, String[] typeParameters,
                                String[] parameterModifiers, String[] parameterAnnotations) {
     this.className = className;
     this.arguments = arguments;
     this.parameterModifiers = Arrays.asList(parameterModifiers);
     this.parameterAnnotations = Arrays.asList(parameterAnnotations);
     this.hierarchy = hierarchy;
+    this.traits = traitHierarchy;
     this.typeParameters = typeParameters;
   }
 
@@ -92,7 +97,7 @@ public class ScalaClassDeclaration {
    */
   public boolean checkExtendsBlock(Optional<PsiElement> element) {
     if (element.isPresent()) {
-      List<String> hierarchies = new ArrayList<>();
+      Set<String> hierarchies = new HashSet<>();
       PsiElement[] children = element.get().getChildren();
       Optional<PsiElement> extendsElement = Arrays.stream(children).filter(
           ScTemplateParentsImpl.class::isInstance).findFirst();
@@ -100,15 +105,25 @@ public class ScalaClassDeclaration {
       // it is considered correct by Scala
       // (the keyword extends is not visible when traversing the Psi tree)
       if (extendsElement.isPresent()) {
-        if (hierarchy.length != 0) {
+        if (hierarchy != null && !hierarchy.isEmpty()) {
+          //traits may not be present!
           children = extendsElement.get().getChildren();
-          Arrays.stream(children).forEach(child -> hierarchies.add(child.getText()));
-          return hierarchies.equals(Arrays.asList(hierarchy));
+          if (children.length > 0 && hierarchy.equals(children[0].getText())) {
+            Arrays.stream(children).filter(
+                child -> child instanceof ScSimpleTypeElement).forEach(
+                    child -> hierarchies.add(child.getText()));
+            return traits.length == 0 || hierarchies.equals(new HashSet<>(Arrays.asList(traits)));
+          }
+          //The order does not matter?!!
+          //The first one should be present first - ScConstructorInvocationImpl -> class hierarchy
+          // The with order does not matter ScSimpleTypeElementImpl
+          // -> trait hierarchy compare Sets since the order does not matter?
         } else {
           return false;
         }
       } else {
-        return !element.get().getText().startsWith("extends") && hierarchy.length == 0;
+        return !element.get().getText().startsWith("extends")
+            && hierarchy.isEmpty() && traits.length == 0;
       }
     }
     return false;

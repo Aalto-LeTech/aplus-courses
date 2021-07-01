@@ -77,7 +77,6 @@ public class ScalaFunctionDefinition {
    * @return true if the body is correct, false otherwise
    */
   public boolean checkFunctionBody(PsiElement[] children) {
-    //TODO fix the bug that Jaakko found
     PsiElement methodBodyParent = children[children.length - 1];
     if (methodBodyParent != null) {
       children = methodBodyParent.getChildren();
