@@ -110,7 +110,7 @@ public class ScalaClassDeclaration {
           children = extendsElement.get().getChildren();
           if (children.length > 0 && hierarchy.equals(children[0].getText())) {
             Arrays.stream(children).filter(
-                child -> child instanceof ScSimpleTypeElement).forEach(
+                ScSimpleTypeElement.class::isInstance).forEach(
                     child -> hierarchies.add(child.getText()));
             return traits.length == 0 || hierarchies.equals(new HashSet<>(Arrays.asList(traits)));
           }
