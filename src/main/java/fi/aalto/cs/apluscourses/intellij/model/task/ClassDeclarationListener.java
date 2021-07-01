@@ -68,7 +68,8 @@ public class ClassDeclarationListener implements ActivitiesListener, BulkFileLis
       if (event instanceof VFileContentChangeEvent
           && ((VFileContentChangeEvent) event).getFile().getPath().equals(
               project.getBasePath() + fileName)) {
-        checkFile();
+        checkPsiFile(PsiManager.getInstance(project).findFile(
+            ((VFileContentChangeEvent) event).getFile()));
       }
     });
   }

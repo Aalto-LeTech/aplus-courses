@@ -60,7 +60,8 @@ public class FunctionDefinitionListener implements ActivitiesListener,
       if (event instanceof VFileContentChangeEvent
           && ((VFileContentChangeEvent) event).getFile().getPath().equals(
               project.getBasePath() + filePath)) {
-        checkFile();
+        checkPsiFile(PsiManager.getInstance(project).findFile(
+            ((VFileContentChangeEvent) event).getFile()));
       }
     });
   }
