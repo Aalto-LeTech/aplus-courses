@@ -32,6 +32,10 @@ public interface ExerciseDataSource {
       throws IOException;
 
   @NotNull
+  Points getPoints(@NotNull Course course, @NotNull Authentication authentication, @Nullable Student student)
+      throws IOException;
+
+  @NotNull
   SubmissionResult getSubmissionResult(@NotNull String submissionUrl,
                                        @NotNull Exercise exercise,
                                        @NotNull Authentication authentication,

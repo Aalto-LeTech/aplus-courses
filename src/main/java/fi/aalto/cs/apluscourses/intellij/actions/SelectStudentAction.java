@@ -4,18 +4,22 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.ui.Messages;
 import fi.aalto.cs.apluscourses.intellij.services.CourseProjectProvider;
+import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import java.io.IOException;
 import org.jetbrains.annotations.NotNull;
 
 public class SelectStudentAction extends AnAction {
+  private final MainViewModelProvider mainViewModelProvider;
   private final CourseProjectProvider courseProjectProvider;
 
   public SelectStudentAction() {
-    this(PluginSettings.getInstance()::getCourseProject);
+    this(PluginSettings.getInstance(), PluginSettings.getInstance()::getCourseProject);
   }
 
-  public SelectStudentAction(CourseProjectProvider courseProjectProvider) {
+  public SelectStudentAction(MainViewModelProvider mainViewModelProvider,
+                             CourseProjectProvider courseProjectProvider) {
+    this.mainViewModelProvider = mainViewModelProvider;
     this.courseProjectProvider = courseProjectProvider;
   }
 
@@ -34,10 +38,13 @@ public class SelectStudentAction extends AnAction {
     if (auth == null) {
       return;
     }
+    var mainViewModel = mainViewModelProvider.getMainViewModel(e.getProject());
     try {
       var student = course.getExerciseDataSource().getStudent(course, auth, Long.parseLong(id));
-      PluginSettings.getInstance().getMainViewModel(e.getProject()).exercisesViewModel.get().setName(student == null ? null : student.getFullName());
-      PluginSettings.getInstance().getMainViewModel(e.getProject()).exercisesViewModel.valueChanged();
+      courseProject.selectedStudent.set(student);
+      courseProject.getExercisesUpdater().restart();
+      mainViewModel.exercisesViewModel.get().studentChanged(student);
+      mainViewModel.exercisesViewModel.valueChanged();
       System.out.println(student == null ? "not found" : student.getFullName());
     } catch (IOException ioException) {
       ioException.printStackTrace();

@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.ui.exercise;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getAndReplaceText;
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 import com.intellij.openapi.application.ApplicationManager;
@@ -9,10 +10,12 @@ import com.intellij.ui.ScrollPaneFactory;
 import com.intellij.ui.TreeSpeedSearch;
 import fi.aalto.cs.apluscourses.intellij.actions.ActionUtil;
 import fi.aalto.cs.apluscourses.intellij.actions.OpenItemAction;
+import fi.aalto.cs.apluscourses.model.Student;
 import fi.aalto.cs.apluscourses.presentation.base.Searchable;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.ui.GuiObject;
 import fi.aalto.cs.apluscourses.ui.base.TreeView;
+import fi.aalto.cs.apluscourses.ui.utils.Bindable;
 import java.awt.CardLayout;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -80,11 +83,8 @@ public class ExercisesView {
           exerciseGroupsTree.getEmptyText().appendLine(
                   getText("ui.exercise.ExercisesView.setTokenDirections"));
         }
-        if (viewModel.getName() != null) {
-          title.setText("Assignments: " + viewModel.getName());
-        } else {
-          title.setText("Assignments");
-        }
+        title.setText(viewModel.getName() == null ? getText("ui.toolWindow.subTab.exercises.name")
+            : getAndReplaceText("ui.toolWindow.subTab.exercises.nameStudent", viewModel.getName()));
       }
 
     }, ModalityState.any()

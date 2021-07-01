@@ -8,6 +8,7 @@ import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
+import fi.aalto.cs.apluscourses.model.Student;
 import fi.aalto.cs.apluscourses.model.User;
 import fi.aalto.cs.apluscourses.utils.Event;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
@@ -55,6 +56,9 @@ public class CourseProject {
 
   @NotNull
   public final ObservableProperty<User> user = new ObservableReadWriteProperty<>(null);
+
+  @NotNull
+  public final ObservableProperty<Student> selectedStudent = new ObservableReadWriteProperty<>(null);
 
   /**
    * Construct a course project from the given course, course configuration URL (used for updating),

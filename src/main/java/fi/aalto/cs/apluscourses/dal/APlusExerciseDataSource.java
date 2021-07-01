@@ -155,7 +155,15 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   @NotNull
   public Points getPoints(@NotNull Course course, @NotNull Authentication authentication)
       throws IOException {
-    String url = apiUrl + COURSES + "/" + course.getId() + "/" + POINTS + "/me/";
+    return getPoints(course, authentication, null);
+  }
+
+  @Override
+  @NotNull
+  public Points getPoints(@NotNull Course course, @NotNull Authentication authentication,
+                                   @Nullable Student student) throws IOException {
+    String url = apiUrl + COURSES + "/" + course.getId() + "/" + POINTS + "/"
+        + (student == null ? "me" : student.getId()) + "/";
     JSONObject response = client.fetch(url, authentication);
     return parser.parsePoints(response);
   }

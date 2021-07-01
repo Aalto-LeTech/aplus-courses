@@ -15,6 +15,7 @@ import fi.aalto.cs.apluscourses.intellij.actions.ActionUtil;
 import fi.aalto.cs.apluscourses.intellij.actions.CourseProjectAction;
 import fi.aalto.cs.apluscourses.intellij.actions.InstallModuleAction;
 import fi.aalto.cs.apluscourses.intellij.activities.InitializationActivity;
+import fi.aalto.cs.apluscourses.intellij.model.CourseProject;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import fi.aalto.cs.apluscourses.ui.BannerView;

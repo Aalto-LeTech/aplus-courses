@@ -38,15 +38,26 @@ class IntelliJModule
                  @NotNull Version version,
                  @Nullable Version localVersion,
                  @Nullable ZonedDateTime downloadedAt,
-                 @NotNull APlusProject project) {
-    super(name, url, changelog, version, localVersion, downloadedAt);
+                 @NotNull APlusProject project,
+                 @NotNull String dirName) {
+    super(name, url, changelog, version, localVersion, downloadedAt, dirName);
     this.project = project;
+  }
+
+  IntelliJModule(@NotNull String name,
+                 @NotNull URL url,
+                 @NotNull String changelog,
+                 @NotNull Version version,
+                 @Nullable Version localVersion,
+                 @Nullable ZonedDateTime downloadedAt,
+                 @NotNull APlusProject project) {
+    this(name, url, changelog, version, localVersion, downloadedAt, project, name);
   }
 
   @NotNull
   @Override
   public Path getPath() {
-    return Paths.get(name);
+    return Paths.get(dirName);
   }
 
   @NotNull
@@ -143,4 +154,8 @@ class IntelliJModule
     return ReadAction.compute(() -> VfsUtil.hasDirectoryChanges(fullPath, timeStamp));
   }
 
+  @Override
+  public Module copy(@NotNull String dirName) {
+    return new IntelliJModule(name, url, changelog, version, localVersion, downloadedAt, project, dirName);
+  }
 }

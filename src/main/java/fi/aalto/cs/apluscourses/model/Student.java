@@ -35,4 +35,8 @@ public class Student {
   public String getFullName() {
     return fullName;
   }
+
+  public long getId() {
+    return id;
+  }
 }

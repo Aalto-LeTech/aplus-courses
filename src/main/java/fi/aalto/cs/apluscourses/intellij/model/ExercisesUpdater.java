@@ -66,7 +66,8 @@ public class ExercisesUpdater extends RepeatedTask {
     var progress =
             progressViewModel.start(2, getText("ui.ProgressBarView.refreshingAssignments"), false);
     try {
-      var points = dataSource.getPoints(course, authentication);
+      var selectedStudent = courseProject.selectedStudent.get();
+      var points = dataSource.getPoints(course, authentication, selectedStudent);
       progress.increment();
       if (Thread.interrupted()) {
         progress.finish();

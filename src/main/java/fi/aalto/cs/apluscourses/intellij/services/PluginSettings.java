@@ -62,6 +62,14 @@ public class PluginSettings implements MainViewModelProvider, DefaultGroupIdSett
           new ExerciseGroupFilter.ClosedFilter()));
   }
 
+  public boolean isAssistantMode() {
+    return isAssistantMode;
+  }
+
+  public void setAssistantMode(boolean assistantMode) {
+    isAssistantMode = assistantMode;
+  }
+
   public enum LocalIdeSettingsNames {
     A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG("A+.showReplConfigDialog"),
     A_PLUS_IMPORTED_IDE_SETTINGS("A+.importedIdeSettings"),
@@ -106,6 +114,8 @@ public class PluginSettings implements MainViewModelProvider, DefaultGroupIdSett
 
   @NotNull
   private final Options exerciseFilterOptions;
+
+  private boolean isAssistantMode = false;
 
   private final ProjectManagerListener projectManagerListener = new ProjectManagerListener() {
     @Override

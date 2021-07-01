@@ -1,13 +1,17 @@
 package fi.aalto.cs.apluscourses.presentation.exercise;
 
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
+import fi.aalto.cs.apluscourses.model.Student;
 import fi.aalto.cs.apluscourses.presentation.base.BaseTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.Searchable;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
+import fi.aalto.cs.apluscourses.ui.utils.Bindable;
+import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class ExercisesTreeViewModel extends BaseTreeViewModel<List<ExerciseGroup>>
         implements Searchable {
@@ -58,7 +62,7 @@ public class ExercisesTreeViewModel extends BaseTreeViewModel<List<ExerciseGroup
     return name;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public void studentChanged(@Nullable Student student) {
+    this.name = (student == null ? null : student.getFullName());
   }
 }
