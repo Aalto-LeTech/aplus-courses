@@ -103,6 +103,11 @@ class IntelliJModule
     FileUtils.deleteDirectory(getFullPath().toFile());
   }
 
+  @Override
+  public @NotNull String getErrorCause() {
+    return this.getImlFile().exists() ? "Exists" : "Nope";
+  }
+
   @NotNull
   @Override
   protected List<String> computeDependencies() {

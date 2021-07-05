@@ -91,6 +91,9 @@ public abstract class Component {
   }
 
   @NotNull
+  public abstract String getErrorCause();
+
+  @NotNull
   public abstract Path getFullPath();
 
   protected abstract int resolveStateInternal();

@@ -80,7 +80,7 @@ public class ModuleListElementViewModel extends ListElementViewModel<Module>
       case Component.ACTION_ABORTED:
         return getText("presentation.moduleStatuses.cancelling");
       default:
-        return getText("presentation.moduleStatuses.error");
+        return getText("presentation.moduleStatuses.error") + getModel().getErrorCause();
     }
     switch (model.dependencyStateMonitor.get()) {
       case Component.DEP_INITIAL:
