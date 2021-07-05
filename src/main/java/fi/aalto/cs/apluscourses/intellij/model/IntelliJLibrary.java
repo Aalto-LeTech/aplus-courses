@@ -149,8 +149,8 @@ public abstract class IntelliJLibrary
   }
 
   @Override
-  public @NotNull String getErrorCause() {
-    return "";
+  public int getErrorCause() {
+    return ERR_UNKNOWN;
   }
 
   @NotNull

@@ -24,6 +24,9 @@ public abstract class Component {
   public static final int DEP_LOADED = DEP_WAITING + 1;
   public static final int DEP_ERROR = StateMonitor.ERROR;
 
+  public static final int ERR_FILES_MISSING = StateMonitor.INITIAL;
+  public static final int ERR_UNKNOWN = ERR_FILES_MISSING + 1;
+
   public final Event stateChanged = new Event();
   public final Event onError = new Event();
 
@@ -90,8 +93,7 @@ public abstract class Component {
     return dependencies;
   }
 
-  @NotNull
-  public abstract String getErrorCause();
+  public abstract int getErrorCause();
 
   @NotNull
   public abstract Path getFullPath();

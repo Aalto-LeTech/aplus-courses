@@ -104,8 +104,8 @@ class IntelliJModule
   }
 
   @Override
-  public @NotNull String getErrorCause() {
-    return this.getImlFile().exists() ? "Exists" : "Nope";
+  public int getErrorCause() {
+    return !this.getImlFile().exists() ? ERR_FILES_MISSING : ERR_UNKNOWN;
   }
 
   @NotNull
