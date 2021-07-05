@@ -28,7 +28,7 @@ public class CourseEndedBannerViewModel extends BannerViewModel {
       try {
         var endingTime = course.getExerciseDataSource().getEndingTime(course, authentication);
         if (endingTime.compareTo(ZonedDateTime.now()) < 0) {
-          text = getText("ui.BannerView.courseEnded");
+          text = getText("ui.BannerView.courseEnded", courseProject.getProject());
         }
       } catch (IOException e) {
         notifier.notify(new NetworkErrorNotification(e), courseProject.getProject());

@@ -199,7 +199,7 @@ public class PluginSettings implements MainViewModelProvider, DefaultGroupIdSett
   public CourseFileManager getCourseFileManager(@NotNull Project project) {
     return courseFileManagers.computeIfAbsent(
         new ProjectKey(project),
-        key -> new CourseFileManager(project)
+        key -> new CourseFileManager(project, new DefaultNotifier())
     );
   }
 

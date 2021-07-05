@@ -206,11 +206,14 @@ public class CourseProjectAction extends AnAction {
     Future<Boolean> ideSettingsImported =
         executor.submit(() -> importIdeSettings && tryImportIdeSettings(project, course));
 
+    Future<Boolean> customPropertiesImported =
+        executor.submit(() -> tryImportCustomProperties(project, Paths.get(basePath), course));
+
     executor.execute(() -> {
       try {
         autoInstallDone.get();
-        if (projectSettingsImported.get() && importIdeSettings //  NOSONAR
-            && ideSettingsImported.get()) { //  NOSONAR
+        if (projectSettingsImported.get() && customPropertiesImported.get() //  NOSONAR
+            && importIdeSettings && ideSettingsImported.get()) { //  NOSONAR
           ideRestarter.run();
         }
       } catch (InterruptedException ex) {
@@ -340,6 +343,18 @@ public class CourseProjectAction extends AnAction {
       return true;
     } catch (IOException e) {
       logger.error("Failed to import IDE settings", e);
+      notifier.notify(new NetworkErrorNotification(e), project);
+      return false;
+    }
+  }
+
+  private boolean tryImportCustomProperties(@NotNull Project project, @NotNull Path basePath,
+                                            @NotNull Course course) {
+    try {
+      settingsImporter.importCustomProperties(basePath, course, project);
+      return true;
+    } catch (IOException e) {
+      logger.error("Failed to import custom properties", e);
       notifier.notify(new NetworkErrorNotification(e), project);
       return false;
     }
