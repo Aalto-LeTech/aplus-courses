@@ -149,7 +149,7 @@ public class DownloadSubmissionAction extends AnAction {
 
     Module selectedModule = moduleName.map(course::getModuleByName).orElse(null);
 
-    var downloadSubmissionViewModel = new DownloadSubmissionViewModel(course, selectedModule, submissionId);
+    var downloadSubmissionViewModel = new DownloadSubmissionViewModel(course, selectedModule, submissionId, project);
     if (!dialogs.create(downloadSubmissionViewModel, project).showAndGet()) {
       return;
     }
