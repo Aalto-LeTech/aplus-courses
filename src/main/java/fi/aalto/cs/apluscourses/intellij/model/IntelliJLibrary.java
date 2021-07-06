@@ -148,11 +148,6 @@ public abstract class IntelliJLibrary
         FileUtil.toSystemIndependentName(path.toString())));
   }
 
-  @Override
-  public int getErrorCause() {
-    return ERR_UNKNOWN;
-  }
-
   @NotNull
   protected String[] getClassRoots() {
     return getJarFiles(); // use all JAR files by default

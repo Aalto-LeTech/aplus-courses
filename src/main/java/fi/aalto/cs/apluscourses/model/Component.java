@@ -93,7 +93,9 @@ public abstract class Component {
     return dependencies;
   }
 
-  public abstract int getErrorCause();
+  public int getErrorCause() {
+    return ERR_UNKNOWN;
+  }
 
   @NotNull
   public abstract Path getFullPath();

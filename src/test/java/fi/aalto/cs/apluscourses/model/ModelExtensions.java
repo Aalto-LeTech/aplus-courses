@@ -184,11 +184,6 @@ public class ModelExtensions {
       // do nothing
     }
 
-    @Override
-    public int getErrorCause() {
-      return ERR_UNKNOWN;
-    }
-
     @NotNull
     @Override
     public Path getFullPath() {
@@ -259,11 +254,6 @@ public class ModelExtensions {
     }
 
     @Override
-    public int getErrorCause() {
-      return ERR_UNKNOWN;
-    }
-
-    @Override
     protected boolean hasLocalChanges(@NotNull ZonedDateTime downloadedAt) {
       return false;
     }
@@ -306,11 +296,6 @@ public class ModelExtensions {
     @Override
     public void load() {
       // do nothing
-    }
-
-    @Override
-    public int getErrorCause() {
-      return ERR_UNKNOWN;
     }
 
     @NotNull

@@ -105,7 +105,7 @@ class IntelliJModule
 
   @Override
   public int getErrorCause() {
-    return !this.getImlFile().exists() ? ERR_FILES_MISSING : ERR_UNKNOWN;
+    return !this.getImlFile().exists() ? ERR_FILES_MISSING : super.getErrorCause();
   }
 
   @NotNull
