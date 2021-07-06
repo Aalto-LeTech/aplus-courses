@@ -12,6 +12,9 @@ public class Student {
   @NotNull
   private final String pointsUrl;
 
+  /**
+   * A constructor.
+   */
   public Student(long id,
                  @NotNull String fullName,
                  @NotNull String studentId,
@@ -23,12 +26,15 @@ public class Student {
     this.pointsUrl = pointsUrl;
   }
 
+  /**
+   * Constructs a Student from JSON.
+   */
   public static Student fromJsonObject(@NotNull JSONObject jsonObject) {
-    var sId = jsonObject.getLong("id");
-    var sFullName = jsonObject.getString("full_name");
-    var sStudentId = jsonObject.getString("student_id");
-    var sPointsUrl = jsonObject.getString("points");
-    return new Student(sId, sFullName, sStudentId, sPointsUrl);
+    var myId = jsonObject.getLong("id");
+    var myFullName = jsonObject.getString("full_name");
+    var myStudentId = jsonObject.optString("student_id");
+    var myPointsUrl = jsonObject.getString("points");
+    return new Student(myId, myFullName, myStudentId, myPointsUrl);
   }
 
   @NotNull
@@ -38,5 +44,15 @@ public class Student {
 
   public long getId() {
     return id;
+  }
+
+  @NotNull
+  public String getStudentId() {
+    return studentId;
+  }
+
+  @NotNull
+  public String getPresentableName() {
+    return fullName + " " + studentId;
   }
 }

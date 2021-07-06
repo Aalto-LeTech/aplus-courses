@@ -40,10 +40,10 @@ public interface Parser {
 
   String parseUserName(@NotNull JSONObject object);
 
-  Student parseStudent(@NotNull JSONObject object,
-                       @NotNull ExerciseDataSource dataSource,
-                       @NotNull Authentication authentication,
-                       long id) throws IOException;
+  List<Student> parseStudents(@NotNull List<Student> students,
+                              @NotNull JSONObject object,
+                              @NotNull ExerciseDataSource dataSource,
+                              @NotNull Authentication authentication) throws IOException;
 
   ZonedDateTime parseEndingTime(@NotNull JSONObject object);
 

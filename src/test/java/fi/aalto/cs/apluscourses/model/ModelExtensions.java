@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -62,6 +63,13 @@ public class ModelExtensions {
       return new Points(Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());
     }
 
+    @Override
+    public @NotNull Points getPoints(@NotNull Course course,
+                                     @NotNull Authentication authentication,
+                                     @Nullable Student student) {
+      return new Points(Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());
+    }
+
     @NotNull
     @Override
     public SubmissionResult getSubmissionResult(@NotNull String submissionUrl,
@@ -77,13 +85,17 @@ public class ModelExtensions {
     }
 
     @Override
-    public @Nullable Student getStudent(@NotNull Course course, @NotNull Authentication authentication, long id) {
-      return null;
+    @NotNull
+    public List<Student> getStudents(@NotNull Course course, @NotNull Authentication authentication) {
+      return new ArrayList<>();
     }
 
     @Override
-    public @Nullable Student getStudent(@NotNull Authentication authentication, @NotNull String url, long id) {
-      return null;
+    @NotNull
+    public List<Student> getStudents(@NotNull Authentication authentication,
+                                     @NotNull String url,
+                                     @NotNull List<Student> students, @NotNull ZonedDateTime minCacheEntryTime) {
+      return new ArrayList<>();
     }
 
     @Override
@@ -178,6 +190,11 @@ public class ModelExtensions {
       super(name);
     }
 
+    @Override
+    public @NotNull String getOriginalName() {
+      return name;
+    }
+
     @NotNull
     @Override
     public Path getPath() {
@@ -268,6 +285,11 @@ public class ModelExtensions {
       return false;
     }
 
+    @Override
+    public Module copy(@NotNull String newName) {
+      return new TestModule(newName, url, version, localVersion, changelog, downloadedAt);
+    }
+
     @NotNull
     @Override
     public Path getFullPath() {
@@ -290,6 +312,11 @@ public class ModelExtensions {
 
     public TestLibrary(@NotNull String name) {
       super(name);
+    }
+
+    @Override
+    public @NotNull String getOriginalName() {
+      return name;
     }
 
     @NotNull

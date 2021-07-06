@@ -100,7 +100,7 @@
             <action id="fi.aalto.cs.apluscourses.intellij.actions.SelectStudentAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.SelectStudentAction"
                     text="Select Student"
-                    icon="PluginIcons.A_PLUS_USER_LOGGED_IN" />
+                    icon="PluginIcons.A_PLUS_USER_ACTIVE" />
             <action id="fi.aalto.cs.apluscourses.intellij.actions.DownloadSubmissionAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.DownloadSubmissionAction"
                     text="Download Submission"

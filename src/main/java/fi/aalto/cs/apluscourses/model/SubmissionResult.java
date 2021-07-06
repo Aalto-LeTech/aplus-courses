@@ -1,9 +1,15 @@
 package fi.aalto.cs.apluscourses.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
 public class SubmissionResult implements Browsable {
+
+  public SubmissionFileInfo[] getFilesInfo() {
+    return filesInfo;
+  }
 
   public enum Status {
     UNKNOWN,
@@ -22,6 +28,8 @@ public class SubmissionResult implements Browsable {
   @NotNull
   private final Exercise exercise;
 
+  private final SubmissionFileInfo @NotNull [] filesInfo;
+
   /**
    * Construct an instance with the given ID and exercise URL.
    */
@@ -29,10 +37,22 @@ public class SubmissionResult implements Browsable {
                           int points,
                           @NotNull Status status,
                           @NotNull Exercise exercise) {
+    this(submissionId, points, status, exercise, new SubmissionFileInfo[0]);
+  }
+
+  /**
+   * Construct an instance with the given ID and exercise URL.
+   */
+  public SubmissionResult(long submissionId,
+                          int points,
+                          @NotNull Status status,
+                          @NotNull Exercise exercise,
+                          SubmissionFileInfo @NotNull [] filesInfo) {
     this.submissionId = submissionId;
     this.points = points;
     this.status = status;
     this.exercise = exercise;
+    this.filesInfo = filesInfo;
   }
 
   /**
@@ -55,7 +75,13 @@ public class SubmissionResult implements Browsable {
       status = Status.WAITING;
     }
 
-    return new SubmissionResult(id, points, status, exercise);
+    var files = jsonObject.getJSONArray("files");
+    List<SubmissionFileInfo> filesInfo = new ArrayList<>();
+    for (int i = 0; i < files.length(); i++) {
+      filesInfo.add(SubmissionFileInfo.fromJsonObject(files.getJSONObject(i)));
+    }
+
+    return new SubmissionResult(id, points, status, exercise, new SubmissionFileInfo[0]);
   }
 
   public long getId() {
@@ -79,4 +105,6 @@ public class SubmissionResult implements Browsable {
   public @NotNull Exercise getExercise() {
     return exercise;
   }
+
+
 }

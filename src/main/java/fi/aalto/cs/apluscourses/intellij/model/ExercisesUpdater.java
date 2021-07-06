@@ -9,6 +9,7 @@ import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Exercise;
+import fi.aalto.cs.apluscourses.model.ExercisesTree;
 import fi.aalto.cs.apluscourses.model.Points;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import fi.aalto.cs.apluscourses.utils.Event;
@@ -55,8 +56,8 @@ public class ExercisesUpdater extends RepeatedTask {
     var dataSource = course.getExerciseDataSource();
     var authentication = courseProject.getAuthentication();
     if (authentication == null) {
-      if (courseProject.getExerciseGroups() != null) {
-        courseProject.setExerciseGroups(Collections.emptyList());
+      if (courseProject.getExerciseTree() != null) {
+        courseProject.setExerciseTree(new ExercisesTree());
         eventToTrigger.trigger();
       }
       return;
@@ -66,7 +67,7 @@ public class ExercisesUpdater extends RepeatedTask {
     var progress =
             progressViewModel.start(2, getText("ui.ProgressBarView.refreshingAssignments"), false);
     try {
-      var selectedStudent = courseProject.selectedStudent.get();
+      var selectedStudent = courseProject.getSelectedStudent();
       var points = dataSource.getPoints(course, authentication, selectedStudent);
       progress.increment();
       if (Thread.interrupted()) {
@@ -76,8 +77,9 @@ public class ExercisesUpdater extends RepeatedTask {
       points.setSubmittableExercises(course.getExerciseModules().keySet()); // TODO: remove
       var exerciseGroups
           = dataSource.getExerciseGroups(course, points, course.getTutorials(), authentication);
-      if (courseProject.getExerciseGroups() == null) {
-        courseProject.setExerciseGroups(exerciseGroups);
+      var exerciseTree = new ExercisesTree(exerciseGroups, selectedStudent);
+      if (courseProject.getExerciseTree() == null) {
+        courseProject.setExerciseTree(exerciseTree);
         eventToTrigger.trigger();
       }
       for (var exerciseGroup : exerciseGroups) {
@@ -93,7 +95,7 @@ public class ExercisesUpdater extends RepeatedTask {
       if (Thread.interrupted()) {
         return;
       }
-      courseProject.setExerciseGroups(exerciseGroups);
+      courseProject.setExerciseTree(exerciseTree);
       eventToTrigger.trigger();
     } catch (IOException e) {
       var observable = PluginSettings

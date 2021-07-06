@@ -39,8 +39,8 @@ class IntelliJModule
                  @Nullable Version localVersion,
                  @Nullable ZonedDateTime downloadedAt,
                  @NotNull APlusProject project,
-                 @NotNull String dirName) {
-    super(name, url, changelog, version, localVersion, downloadedAt, dirName);
+                 @NotNull String originalName) {
+    super(name, url, changelog, version, localVersion, downloadedAt, originalName);
     this.project = project;
   }
 
@@ -57,7 +57,7 @@ class IntelliJModule
   @NotNull
   @Override
   public Path getPath() {
-    return Paths.get(dirName);
+    return Paths.get(name);
   }
 
   @NotNull
@@ -68,8 +68,11 @@ class IntelliJModule
 
   @Override
   public void fetchInternal() throws IOException {
-    new RemoteZippedDir(getUrl().toString(), getName())
+    new RemoteZippedDir(getUrl().toString(), getOriginalName())
         .copyTo(getFullPath(), project.getProject());
+    if (!getFullPath().resolve(getOriginalName() + ".iml").toFile().renameTo(getImlFile())) {
+      throw new IOException("Could not rename iml file.");
+    }
   }
 
   @Override
@@ -117,7 +120,7 @@ class IntelliJModule
   @NotNull
   @Override
   protected List<String> computeDependencies() {
-    ModuleRootManager moduleRootManager = project.getModuleRootManager(getName());
+    ModuleRootManager moduleRootManager = project.getModuleRootManager(name);
     if (moduleRootManager == null) {
       throw new IllegalStateException();
     }
@@ -131,7 +134,7 @@ class IntelliJModule
 
   @NotNull
   private File getImlFile() {
-    return getFullPath().resolve(getName() + ".iml").toFile();
+    return getFullPath().resolve(name + ".iml").toFile();
   }
 
   @NotNull
@@ -155,7 +158,7 @@ class IntelliJModule
   }
 
   @Override
-  public Module copy(@NotNull String dirName) {
-    return new IntelliJModule(name, url, changelog, version, localVersion, downloadedAt, project, dirName);
+  public Module copy(@NotNull String newName) {
+    return new IntelliJModule(newName, url, changelog, version, localVersion, downloadedAt, project, name);
   }
 }

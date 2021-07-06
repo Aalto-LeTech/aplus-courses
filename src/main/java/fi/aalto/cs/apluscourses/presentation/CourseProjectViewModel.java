@@ -11,7 +11,7 @@ import fi.aalto.cs.apluscourses.utils.observable.ValidationError;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class CourseProjectViewModel {
+public class  CourseProjectViewModel {
 
   public final ObservableProperty<Boolean> settingsOptOutProperty;
 

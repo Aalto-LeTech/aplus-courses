@@ -183,4 +183,9 @@ public abstract class IntelliJLibrary
   public com.intellij.openapi.roots.libraries.Library getPlatformObject() {
     return project.getLibraryTable().getLibraryByName(getName());
   }
+
+  @Override
+  public @NotNull String getOriginalName() {
+    return name;
+  }
 }

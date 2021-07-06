@@ -3,6 +3,7 @@ package fi.aalto.cs.apluscourses.model;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
+import net.minidev.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
 
@@ -32,7 +33,8 @@ public class SubmissionResultTest {
         .put("grade", 30)
         .put("exercise", new JSONObject()
             .put("html_url", "https://example.com/"))
-        .put("status", "ready");
+        .put("status", "ready")
+        .put("files", new JSONArray());
     SubmissionResult submissionResult = SubmissionResult.fromJsonObject(jsonObject, exercise);
 
     assertEquals("The ID is the same as the one in the JSON object",

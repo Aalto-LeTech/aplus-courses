@@ -1,34 +1,27 @@
 package fi.aalto.cs.apluscourses.presentation.exercise;
 
-import fi.aalto.cs.apluscourses.model.ExerciseGroup;
-import fi.aalto.cs.apluscourses.model.Student;
+import fi.aalto.cs.apluscourses.model.ExercisesTree;
 import fi.aalto.cs.apluscourses.presentation.base.BaseTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.Searchable;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
-import fi.aalto.cs.apluscourses.ui.utils.Bindable;
-import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-public class ExercisesTreeViewModel extends BaseTreeViewModel<List<ExerciseGroup>>
+public class ExercisesTreeViewModel extends BaseTreeViewModel<ExercisesTree>
         implements Searchable {
 
   private boolean isAuthenticated;
-
-  private String name = "";
 
   private AtomicBoolean isProjectReady = new AtomicBoolean(false);
 
   /**
    * Construct an exercises tree view model from the given exercise groups.
    */
-  public ExercisesTreeViewModel(@NotNull List<ExerciseGroup> exerciseGroups,
+  public ExercisesTreeViewModel(@NotNull ExercisesTree exercisesTree,
                                 @NotNull Options filterOptions) {
-    super(exerciseGroups,
-        exerciseGroups
+    super(exercisesTree,
+        exercisesTree.getExerciseGroups()
             .stream()
             .map(ExerciseGroupViewModel::new)
             .collect(Collectors.toList()),
@@ -59,10 +52,7 @@ public class ExercisesTreeViewModel extends BaseTreeViewModel<List<ExerciseGroup
   }
 
   public String getName() {
-    return name;
-  }
-
-  public void studentChanged(@Nullable Student student) {
-    this.name = (student == null ? null : student.getFullName());
+    var student = getModel().getSelectedStudent();
+    return student == null ? null : student.getFullName();
   }
 }

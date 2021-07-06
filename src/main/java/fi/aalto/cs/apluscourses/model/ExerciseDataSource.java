@@ -44,15 +44,15 @@ public interface ExerciseDataSource {
   @NotNull
   User getUser(@NotNull Authentication authentication) throws IOException;
 
-  @Nullable
-  Student getStudent(@NotNull Course course,
-                     @NotNull Authentication authentication,
-                     long id) throws IOException;
+  @NotNull
+  List<Student> getStudents(@NotNull Course course,
+                            @NotNull Authentication authentication) throws IOException;
 
-  @Nullable
-  Student getStudent(@NotNull Authentication authentication,
-                     @NotNull String url,
-                     long id) throws IOException;
+  @NotNull
+  List<Student> getStudents(@NotNull Authentication authentication,
+                            @NotNull String url,
+                            @NotNull List<Student> students,
+                            @NotNull ZonedDateTime minCacheEntryTime) throws IOException;
 
   @NotNull
   ZonedDateTime getEndingTime(@NotNull Course course,

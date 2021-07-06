@@ -24,7 +24,7 @@ public abstract class Module extends Component {
   @Nullable
   protected ZonedDateTime downloadedAt;
   @NotNull
-  protected String dirName;
+  protected String originalName;
 
   /* synchronize with this when accessing variable fields of this class */
   private final Object moduleLock = new Object();
@@ -46,14 +46,14 @@ public abstract class Module extends Component {
                    @NotNull Version version,
                    @Nullable Version localVersion,
                    @Nullable ZonedDateTime downloadedAt,
-                   @NotNull String dirName) {
+                   @NotNull String originalName) {
     super(name);
     this.url = url;
     this.version = version;
     this.localVersion = localVersion;
     this.changelog = changelog;
     this.downloadedAt = downloadedAt;
-    this.dirName = dirName;
+    this.originalName = originalName;
   }
 
   protected Module(@NotNull String name,
@@ -209,5 +209,10 @@ public abstract class Module extends Component {
   }
 
   public abstract Module copy(@NotNull String newName);
+
+  @Override
+  public @NotNull String getOriginalName() {
+    return originalName;
+  }
 
 }

@@ -23,7 +23,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Path;
+import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +45,7 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   private static final String POINTS = "points";
   private static final String USERS = "users";
   private static final String STUDENTS = "students";
+  public static final String RESULTS = "results";
 
   @NotNull
   private final Client client;
@@ -121,7 +124,7 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
       throws IOException {
     String url = apiUrl + COURSES + "/" + course.getId() + "/mygroups/";
     JSONObject response = client.fetch(url, authentication);
-    return List.of(JsonUtil.parseArray(response.getJSONArray("results"),
+    return List.of(JsonUtil.parseArray(response.getJSONArray(RESULTS),
         JSONArray::getJSONObject,
         parser::parseGroup,
         Group[]::new));
@@ -142,7 +145,7 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
       throws IOException {
     String url = apiUrl + COURSES + "/" + course.getId() + "/" + EXERCISES + "/";
     JSONObject response = client.fetch(url, authentication);
-    return parser.parseExerciseGroups(response.getJSONArray("results"), points, tutorials);
+    return parser.parseExerciseGroups(response.getJSONArray(RESULTS), points, tutorials);
   }
 
   /**
@@ -188,21 +191,21 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   }
 
   @Override
-  @Nullable
-  public Student getStudent(@NotNull Course course,
-                            @NotNull Authentication authentication,
-                            long id) throws IOException {
+  @NotNull
+  public List<Student> getStudents(@NotNull Course course,
+                                   @NotNull Authentication authentication) throws IOException {
     String url = apiUrl + COURSES + "/" + course.getId() + "/" + STUDENTS + "/";
     JSONObject response = client.fetch(url, authentication);
-    return parser.parseStudent(response, this, authentication, id);
+    return parser.parseStudents(new ArrayList<>(), response, this, authentication);
   }
 
   @Override
-  @Nullable
-  public Student getStudent(@NotNull Authentication authentication,
-                            @NotNull String url,
-                            long id) throws IOException {
-    return parser.parseStudent(client.fetch(url, authentication), this, authentication, id);
+  @NotNull
+  public List<Student> getStudents(@NotNull Authentication authentication,
+                                   @NotNull String url,
+                                   @NotNull List<Student> students,
+                                   @NotNull ZonedDateTime minCacheEntryTime) throws IOException {
+    return parser.parseStudents(students, client.fetch(url, authentication, minCacheEntryTime), this, authentication);
   }
 
   @Override
@@ -290,6 +293,12 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
       );
     }
 
+    @Nullable
+    public JSONObject getFromCache(@NotNull String key) {
+      var entry = cache.getEntry(key);
+      return entry == null ? null : entry.getValue();
+    }
+
     @Override
     public SubmissionInfo parseSubmissionInfo(@NotNull JSONObject object) {
       return SubmissionInfo.fromJsonObject(object);
@@ -331,23 +340,32 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
     }
 
     @Override
-    public Student parseStudent(@NotNull JSONObject object,
-                                @NotNull ExerciseDataSource dataSource,
-                                @NotNull Authentication authentication,
-                                long id) throws IOException {
-      var results = object.getJSONArray("results");
+    public List<Student> parseStudents(@NotNull List<Student> students,
+                                       @NotNull JSONObject object,
+                                       @NotNull ExerciseDataSource dataSource,
+                                       @NotNull Authentication authentication) throws IOException {
+      var results = object.getJSONArray(RESULTS);
       for (int i = 0; i < results.length(); i++) {
         var student = results.getJSONObject(i);
-        var studentId = student.getLong("id");
-        if (studentId == id) {
-          return Student.fromJsonObject(student);
-        }
+        students.add(Student.fromJsonObject(student));
       }
       var nextPage = object.optString("next");
       if ("".equals(nextPage)) {
-        return null;
+        return students;
       }
-      return dataSource.getStudent(authentication, nextPage, id);
+
+      var studentCount = object.getInt("count");
+      var cacheObject = getFromCache(STUDENTS);
+      var oldCount = cacheObject == null ? 0 : cacheObject.getInt("count");
+      var isCountDifferent = studentCount != oldCount;
+      var cacheTime = isCountDifferent
+          ? OffsetDateTime.MAX.toZonedDateTime()
+          : ZonedDateTime.now().minusDays(7);
+      if (isCountDifferent) {
+        cache.putValue(STUDENTS, object);
+      }
+
+      return dataSource.getStudents(authentication, nextPage, students, cacheTime);
     }
 
     @Override
