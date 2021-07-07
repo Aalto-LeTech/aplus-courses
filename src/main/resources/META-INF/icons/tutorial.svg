@@ -9,6 +9,6 @@
    </cc:Work>
   </rdf:RDF>
  </metadata>
- <path d="m8 1a7 7 0 0 0-7 7 7 7 0 0 0 7 7 7 7 0 0 0 7-7 7 7 0 0 0-7-7zm-2 3.4004 6 3.5996-6 3.5996v-7.1992z" fill="#b33490"/>
+ <path d="m8 1a7 7 0 0 0-7 7 7 7 0 0 0 7 7 7 7 0 0 0 7-7 7 7 0 0 0-7-7zm-2 3.4004 6 3.5996-6 3.5996v-7.1992z" fill="#ff0099"/>
  <rect id="frame" x="-.5" y="-.5" width="17" height="17" fill="none" stroke-width="1.0625"/>
 </svg>
