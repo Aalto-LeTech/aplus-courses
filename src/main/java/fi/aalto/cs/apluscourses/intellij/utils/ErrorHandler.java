@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.intellij.utils;
 
 import com.intellij.ide.DataManager;
+import com.intellij.ide.plugins.PluginManager;
 import com.intellij.idea.IdeaLogger;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.DataContext;
@@ -30,12 +31,27 @@ public class ErrorHandler extends ErrorReportSubmitter {
   private JSONObject serializeErrorData(@Nullable String errorInfo,
                                         @Nullable String lastActionId,
                                         @NotNull List<String> stackTraces) {
+    var loadedPlugins = new ArrayList<JSONObject>();
+
+    try {
+      for (var p : PluginManager.getLoadedPlugins()) {
+        var pluginInfo = new JSONObject()
+            .put("id", p.getPluginId() == null ? "" : p.getPluginId().getIdString())
+            .put("name", p.getName());
+
+        loadedPlugins.add(pluginInfo);
+      }
+    } catch (Exception e) {
+      // ignore all exceptions here
+    }
+
     return new JSONObject()
         .put("ideVersion", ApplicationInfo.getInstance().getFullVersion())
         .put("ideProduct", ApplicationNamesInfo.getInstance().getFullProductNameWithEdition())
         .put("osName", System.getProperty("os.name"))
         .put("osVersion", System.getProperty("os.version"))
         .put("pluginVersion", BuildInfo.INSTANCE.pluginVersion.toString())
+        .put("loadedPlugins", loadedPlugins)
         .put("errorInfo", errorInfo)
         .put("lastAction", lastActionId)
         .put("stackTraces", stackTraces);
