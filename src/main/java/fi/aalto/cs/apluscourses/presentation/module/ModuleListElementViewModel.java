@@ -55,6 +55,16 @@ public class ModuleListElementViewModel extends ListElementViewModel<Module>
     return getModel().isUpdatable();
   }
 
+  @NotNull
+  private String getErrorStatus() {
+    switch (getModel().getErrorCause()) {
+      case Component.ERR_FILES_MISSING:
+        return getText("presentation.moduleStatuses.errorFilesMissing");
+      default:
+        return getText("presentation.moduleStatuses.errorUnknown");
+    }
+  }
+
   /**
    * Returns a textual representation of the status of the module.
    * @return A {@link String} describing the status.
@@ -80,7 +90,7 @@ public class ModuleListElementViewModel extends ListElementViewModel<Module>
       case Component.ACTION_ABORTED:
         return getText("presentation.moduleStatuses.cancelling");
       default:
-        return getText("presentation.moduleStatuses.error");
+        return getErrorStatus();
     }
     switch (model.dependencyStateMonitor.get()) {
       case Component.DEP_INITIAL:

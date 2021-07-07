@@ -3,6 +3,8 @@ package fi.aalto.cs.apluscourses.intellij.model;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.dal.PasswordStorage;
 import fi.aalto.cs.apluscourses.dal.TokenAuthentication;
+import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
+import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
@@ -18,8 +20,6 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A {@code CourseProject} instance contains a {@link Course} and {@link Project}. In addition, it
@@ -28,7 +28,8 @@ import org.slf4j.LoggerFactory;
  */
 public class CourseProject {
 
-  private static final Logger logger = LoggerFactory.getLogger(CourseProject.class);
+  @NotNull
+  private final Notifier notifier;
 
   @NotNull
   private final Course course;
@@ -59,7 +60,11 @@ public class CourseProject {
    * Construct a course project from the given course, course configuration URL (used for updating),
    * and project.
    */
-  public CourseProject(@NotNull Course course, @NotNull URL courseUrl, @NotNull Project project) {
+  public CourseProject(@NotNull Course course,
+                       @NotNull URL courseUrl,
+                       @NotNull Project project,
+                       @NotNull Notifier notifier) {
+    this.notifier = notifier;
     this.course = course;
     this.project = project;
     this.courseUpdated = new Event();
@@ -148,7 +153,7 @@ public class CourseProject {
         oldUser.getAuthentication().clear();
       }
     } catch (IOException e) {
-      logger.error("Failed to fetch user data", e);
+      notifier.notify(new NetworkErrorNotification(e), project);
     }
   }
 

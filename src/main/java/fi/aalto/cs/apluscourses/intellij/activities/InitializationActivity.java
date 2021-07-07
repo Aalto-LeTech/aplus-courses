@@ -9,6 +9,7 @@ import com.intellij.openapi.project.ProjectManagerListener;
 import com.intellij.openapi.startup.StartupActivity.Background;
 import fi.aalto.cs.apluscourses.intellij.model.CourseProject;
 import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory;
+import fi.aalto.cs.apluscourses.intellij.model.SettingsImporter;
 import fi.aalto.cs.apluscourses.intellij.notifications.CourseConfigurationError;
 import fi.aalto.cs.apluscourses.intellij.notifications.CourseVersionOutdatedError;
 import fi.aalto.cs.apluscourses.intellij.notifications.CourseVersionOutdatedWarning;
@@ -28,6 +29,7 @@ import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.jetbrains.annotations.NotNull;
@@ -88,7 +90,10 @@ public class InitializationActivity implements Background {
       progressViewModel.stopAll();
       return;
     }
-    var progress = progressViewModel.start(2, getText("ui.ProgressBarView.loading"), false);
+    var progress = progressViewModel.start(3, getText("ui.ProgressBarView.loading"), false);
+    progress.increment();
+
+    setCustomResources(project, course);
     progress.increment();
 
     var versionComparison =
@@ -105,7 +110,8 @@ public class InitializationActivity implements Background {
       notifier.notify(new CourseVersionOutdatedWarning(), project);
     }
 
-    var courseProject = new CourseProject(course, courseConfigurationFileUrl, project);
+    var courseProject = new CourseProject(course, courseConfigurationFileUrl, project,
+        new DefaultNotifier());
     PluginSettings.getInstance().registerCourseProject(courseProject);
     isInitialized(project).set(true);
     progress.finish();
@@ -150,6 +156,19 @@ public class InitializationActivity implements Background {
     } catch (IOException | JSONException e) {
       logger.error("Malformed project course tag file", e);
       return null;
+    }
+  }
+
+  private void setCustomResources(@NotNull Project project, @NotNull Course course) {
+    var basePath = project.getBasePath();
+    if (basePath != null) {
+      try {
+        new SettingsImporter().importCustomProperties(Paths.get(project.getBasePath()),
+            course,
+            project);
+      } catch (IOException e) {
+        // No custom resources.
+      }
     }
   }
 }
