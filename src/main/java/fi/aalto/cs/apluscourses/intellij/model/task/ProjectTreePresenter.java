@@ -1,7 +1,7 @@
 package fi.aalto.cs.apluscourses.intellij.model.task;
 
-import fi.aalto.cs.apluscourses.ui.ideactivities.ComponentLocator;
-import java.awt.Component;
+import fi.aalto.cs.apluscourses.ui.ideactivities.ComponentDatabase;
+import fi.aalto.cs.apluscourses.ui.ideactivities.GenericHighlighter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -11,8 +11,7 @@ public class ProjectTreePresenter extends IntelliJComponentPresenterBase {
   }
 
   @Override
-  protected @Nullable Component getComponent() {
-    Component component = ComponentLocator.getComponentByClass("ProjectViewPane");
-    return component == null ? null : component.getParent();
+  protected @Nullable GenericHighlighter getHighlighter() {
+    return new GenericHighlighter(ComponentDatabase.getProjectPane());
   }
 }
