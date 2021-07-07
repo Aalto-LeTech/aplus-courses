@@ -234,7 +234,7 @@ class MainTest {
                 }
                 assertTrue(
                     "The assignments tree gets cleared after logging out",
-                    containsText("Set your A+ token")
+                    containsText("Click here to set your A+ token")
                 )
                 userButton().click()
                 with(dropDownMenu()) {

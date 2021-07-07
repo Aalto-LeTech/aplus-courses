@@ -65,12 +65,8 @@ public class EditorHighlighter extends GenericHighlighter {
     return rectangles;
   }
 
-  /**
-   * A.
-   */
   public EditorHighlighter(@NotNull EditorComponentImpl component) {
     super(component);
-
     editor = component.getEditor();
   }
 }
