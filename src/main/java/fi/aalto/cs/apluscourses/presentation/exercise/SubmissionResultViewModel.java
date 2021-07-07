@@ -49,6 +49,11 @@ public class SubmissionResultViewModel extends SelectableNodeViewModel<Submissio
   }
 
   @Override
+  public @NotNull String getSearchableString() {
+    return getPresentableName();
+  }
+
+  @Override
   public long getId() {
     return getModel().getId();
   }
