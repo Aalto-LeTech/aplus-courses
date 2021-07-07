@@ -50,6 +50,8 @@ public class ErrorHandler extends ErrorReportSubmitter {
         .put("ideProduct", ApplicationNamesInfo.getInstance().getFullProductNameWithEdition())
         .put("osName", System.getProperty("os.name"))
         .put("osVersion", System.getProperty("os.version"))
+        .put("jvmName", System.getProperty("java.vm.name"))
+        .put("jvmVersion", System.getProperty("java.vm.version"))
         .put("pluginVersion", BuildInfo.INSTANCE.pluginVersion.toString())
         .put("loadedPlugins", loadedPlugins)
         .put("errorInfo", errorInfo)
