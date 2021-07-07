@@ -18,11 +18,17 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.util.Consumer;
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import java.awt.Component;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
@@ -80,19 +86,26 @@ public class ErrorHandler extends ErrorReportSubmitter {
     new Task.Backgroundable(project, "Sending error report") {
       @Override
       public void run(@NotNull ProgressIndicator indicator) {
-        var serializedData = serializeErrorData(additionalInfo, IdeaLogger.ourLastActionId,
-            Arrays.stream(events).map(IdeaLoggingEvent::getThrowableText)
-                .collect(Collectors.toList()));
-
-        // TODO: send the JSON object to a remote server
-        System.err.println(serializedData.toString());
-        System.err.println(serializedData.toString().length());
-
         ApplicationManager.getApplication().invokeLater(() -> {
           Messages.showInfoMessage(parentComponent,
               "Thank you for submitting the report.", "Error Report");
           consumer.consume(new SubmittedReportInfo(SubmittedReportInfo.SubmissionStatus.NEW_ISSUE));
         });
+
+        var serializedData = serializeErrorData(additionalInfo, IdeaLogger.ourLastActionId,
+            Arrays.stream(events).map(IdeaLoggingEvent::getThrowableText)
+                .collect(Collectors.toList()));
+
+        HttpPost request = new HttpPost("http://127.0.0.1/report");
+        request.setHeader("Content-Type", "application/json");
+        request.setHeader("Connection", "close");
+        request.setEntity(new StringEntity(serializedData.toString(), StandardCharsets.UTF_8));
+
+        try (CloseableHttpClient client = HttpClients.createDefault()) {
+          client.execute(request).close();
+        } catch (Exception ex) {
+          // silently ignore all errors
+        }
       }
     }.queue();
     return true;
