@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 public class Progress {
   private int value = 0;
   private int maxValue;
-  private final String label;
+  private String label;
   private final boolean indeterminate;
   public final Event updated = new Event();
 
@@ -51,6 +51,16 @@ public class Progress {
 
   public void finish() {
     this.value = this.maxValue;
+    updated.trigger();
+  }
+
+  public void setLabel(@NotNull String label) {
+    this.label = label;
+    updated.trigger();
+  }
+
+  public void setValue(int value) {
+    this.value = value;
     updated.trigger();
   }
 
