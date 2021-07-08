@@ -21,10 +21,6 @@ public interface ExerciseDataSource {
                                    @NotNull Authentication authentication) throws IOException;
 
   @NotNull
-  SubmissionHistory getSubmissionHistory(@NotNull Exercise exercise,
-                                         @NotNull Authentication authentication) throws IOException;
-
-  @NotNull
   List<Group> getGroups(@NotNull Course course, @NotNull Authentication authentication)
       throws IOException;
 

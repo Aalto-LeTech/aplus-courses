@@ -14,6 +14,7 @@ import fi.aalto.cs.apluscourses.model.JsonCache;
 import fi.aalto.cs.apluscourses.model.Points;
 import fi.aalto.cs.apluscourses.model.Student;
 import fi.aalto.cs.apluscourses.model.Submission;
+import fi.aalto.cs.apluscourses.model.SubmissionInfo;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import fi.aalto.cs.apluscourses.model.Tutorial;
 import fi.aalto.cs.apluscourses.model.User;
@@ -111,21 +112,6 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
     String url = apiUrl + EXERCISES + "/" + exercise.getId() + "/";
     JSONObject response = client.fetch(url, authentication);
     return parser.parseSubmissionInfo(response);
-  }
-
-  /**
-   * Get the submission history for the given exercise from the A+ API.
-   *
-   * @throws IOException If an IO error occurs (e.g. network error).
-   */
-  @Override
-  @NotNull
-  public SubmissionHistory getSubmissionHistory(@NotNull Exercise exercise,
-                                                @NotNull Authentication authentication)
-      throws IOException {
-    String url = apiUrl + EXERCISES + "/" + exercise.getId() + "/" + SUBMISSIONS + "/" + ME + "/";
-    JSONObject response = client.fetch(url, authentication);
-    return parser.parseSubmissionHistory(response);
   }
 
   /**
@@ -335,11 +321,6 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
     @Override
     public SubmissionInfo parseSubmissionInfo(@NotNull JSONObject object) {
       return SubmissionInfo.fromJsonObject(object);
-    }
-
-    @Override
-    public SubmissionHistory parseSubmissionHistory(@NotNull JSONObject object) {
-      return SubmissionHistory.fromJsonObject(object);
     }
 
     @Override

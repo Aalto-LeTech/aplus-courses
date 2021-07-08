@@ -8,8 +8,8 @@ import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.Exercise;
-import fi.aalto.cs.apluscourses.model.ExercisesTree;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
+import fi.aalto.cs.apluscourses.model.ExercisesTree;
 import fi.aalto.cs.apluscourses.model.Points;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import fi.aalto.cs.apluscourses.utils.Event;
@@ -17,7 +17,6 @@ import fi.aalto.cs.apluscourses.utils.async.RepeatedTask;
 import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -82,7 +81,6 @@ public class ExercisesUpdater extends RepeatedTask {
         courseProject.setExerciseTree(exerciseTree);
         eventToTrigger.trigger();
       }
-      var points = dataSource.getPoints(course, authentication);
       addExercises(exerciseGroups, points, authentication);
       for (var exerciseGroup : exerciseGroups) {
         for (var exercise : exerciseGroup.getExercises()) {
@@ -128,7 +126,8 @@ public class ExercisesUpdater extends RepeatedTask {
             authentication, ZonedDateTime.now().minusDays(7));
         exerciseGroup.addExercise(exercise);
       }
-      courseProject.setExerciseGroups(exerciseGroups);
+      var selectedStudent = courseProject.getSelectedStudent();
+      courseProject.setExerciseTree(new ExercisesTree(exerciseGroups, selectedStudent));
       eventToTrigger.trigger();
     }
   }
