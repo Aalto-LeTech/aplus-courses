@@ -30,8 +30,6 @@ public interface ExerciseDataSource {
 
   @NotNull
   List<ExerciseGroup> getExerciseGroups(@NotNull Course course,
-                                        @NotNull Points points,
-                                        @NotNull Map<Long, Tutorial> tutorials,
                                         @NotNull Authentication authentication) throws IOException;
 
   @NotNull
@@ -41,6 +39,13 @@ public interface ExerciseDataSource {
   @NotNull
   Points getPoints(@NotNull Course course, @NotNull Authentication authentication, @Nullable Student student)
       throws IOException;
+
+  @NotNull
+  Exercise getExercise(long exerciseId,
+                       @NotNull Points points,
+                       @NotNull Map<Long, Tutorial> tutorials,
+                       @NotNull Authentication authentication,
+                       @NotNull ZonedDateTime minCacheEntryTime) throws IOException;
 
   @NotNull
   SubmissionResult getSubmissionResult(@NotNull String submissionUrl,

@@ -25,6 +25,8 @@ public class SubmissionResult implements Browsable {
   @NotNull
   private final Status status;
 
+  private final double latePenalty;
+
   @NotNull
   private final Exercise exercise;
 
@@ -35,9 +37,10 @@ public class SubmissionResult implements Browsable {
    */
   public SubmissionResult(long submissionId,
                           int points,
+                          double latePenalty,
                           @NotNull Status status,
                           @NotNull Exercise exercise) {
-    this(submissionId, points, status, exercise, new SubmissionFileInfo[0]);
+    this(submissionId, points, latePenalty, status, exercise, new SubmissionFileInfo[0]);
   }
 
   /**
@@ -45,11 +48,13 @@ public class SubmissionResult implements Browsable {
    */
   public SubmissionResult(long submissionId,
                           int points,
+                          double latePenalty,
                           @NotNull Status status,
                           @NotNull Exercise exercise,
                           SubmissionFileInfo @NotNull [] filesInfo) {
     this.submissionId = submissionId;
     this.points = points;
+    this.latePenalty = latePenalty;
     this.status = status;
     this.exercise = exercise;
     this.filesInfo = filesInfo;
@@ -64,6 +69,7 @@ public class SubmissionResult implements Browsable {
                                                 @NotNull Exercise exercise) {
     long id = jsonObject.getLong("id");
     int points = jsonObject.getInt("grade");
+    double latePenalty = jsonObject.optDouble("late_penalty_applied", 0.0);
 
     Status status = Status.UNKNOWN;
     String statusString = jsonObject.optString("status");
@@ -82,7 +88,7 @@ public class SubmissionResult implements Browsable {
         SubmissionFileInfo[]::new
     );
 
-    return new SubmissionResult(id, points, status, exercise, filesInfo);
+    return new SubmissionResult(id, points, latePenalty, status, exercise, filesInfo);
   }
 
   public long getId() {
@@ -98,6 +104,10 @@ public class SubmissionResult implements Browsable {
     return status;
   }
 
+  public double getLatePenalty() {
+    return latePenalty;
+  }
+
   @Override
   public @NotNull String getHtmlUrl() {
     return exercise.getHtmlUrl() + "submissions/" + submissionId + "/";
@@ -106,5 +116,4 @@ public class SubmissionResult implements Browsable {
   public @NotNull Exercise getExercise() {
     return exercise;
   }
-
 }

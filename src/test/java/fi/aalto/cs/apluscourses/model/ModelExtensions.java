@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.OptionalLong;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
@@ -60,8 +61,6 @@ public class ModelExtensions {
     @NotNull
     @Override
     public List<ExerciseGroup> getExerciseGroups(@NotNull Course course,
-                                                 @NotNull Points points,
-                                                 @NotNull Map<Long, Tutorial> tutorials,
                                                  @NotNull Authentication authentication) {
       return Collections.emptyList();
     }
@@ -69,7 +68,24 @@ public class ModelExtensions {
     @NotNull
     @Override
     public Points getPoints(@NotNull Course course, @NotNull Authentication authentication) {
-      return new Points(Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());
+      return new Points(
+          Collections.emptyMap(),
+          Collections.emptyMap(),
+          Collections.emptyMap(),
+          Collections.emptyMap()
+      );
+    }
+
+    @NotNull
+    @Override
+    public Exercise getExercise(long exerciseId,
+                                @NotNull Points points,
+                                @NotNull Map<Long, Tutorial> tutorials,
+                                @NotNull Authentication authentication,
+                                @NotNull ZonedDateTime minCacheEntryTime) {
+      return new Exercise(1, "lol", "http://example.com",
+          new SubmissionInfo(Collections.emptyMap()), 10, 20, 10, OptionalLong.empty()
+      );
     }
 
     @Override
@@ -85,7 +101,7 @@ public class ModelExtensions {
                                                 @NotNull Exercise exercise,
                                                 @NotNull Authentication authentication,
                                                 @NotNull ZonedDateTime minCacheEntryTime) {
-      return new SubmissionResult(0, 20, SubmissionResult.Status.GRADED, exercise);
+      return new SubmissionResult(0, 20, 0.0, SubmissionResult.Status.GRADED, exercise);
     }
 
     @Override

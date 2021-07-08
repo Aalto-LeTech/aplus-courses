@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalLong;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
 public class Exercise implements Browsable {
@@ -13,6 +15,9 @@ public class Exercise implements Browsable {
 
   @NotNull
   private final String name;
+
+  @NotNull
+  private final SubmissionInfo submissionInfo;
 
   @NotNull
   private final String htmlUrl;
@@ -27,32 +32,35 @@ public class Exercise implements Browsable {
 
   private final int maxSubmissions;
 
-  private final boolean submittable;
+  @NotNull
+  private final OptionalLong bestSubmissionId;
 
   /**
    * Construct an exercise instance with the given parameters.
-   *
    * @param id                The ID of the exercise.
    * @param name              The name of the exercise.
    * @param htmlUrl           A URL to the HTML page of the exercise.
    * @param userPoints        The best points that the user has gotten from this exercise.
    * @param maxPoints         The maximum points available from this exercise.
    * @param maxSubmissions    The maximum number of submissions allowed for this exercise.
+   * @param bestSubmissionId  The ID of the best submission for the exercise if one exists.
    */
   public Exercise(long id,
                   @NotNull String name,
                   @NotNull String htmlUrl,
+                  @NotNull SubmissionInfo submissionInfo,
                   int userPoints,
                   int maxPoints,
                   int maxSubmissions,
-                  boolean submittable) {
+                  @NotNull OptionalLong bestSubmissionId) {
     this.id = id;
     this.name = name;
     this.htmlUrl = htmlUrl;
+    this.submissionInfo = submissionInfo;
     this.userPoints = userPoints;
     this.maxPoints = maxPoints;
     this.maxSubmissions = maxSubmissions;
-    this.submittable = submittable;
+    this.bestSubmissionId = bestSubmissionId;
   }
 
   /**
@@ -72,21 +80,26 @@ public class Exercise implements Browsable {
     String name = jsonObject.getString("display_name");
     String htmlUrl = jsonObject.getString("html_url");
 
-    int userPoints = points.getExercisePoints().getOrDefault(id, 0);
+    var bestSubmissionId = points.getBestSubmissionIds().get(id);
+    // TODO: consider if it would be better to just take points as the max points from all
+    //  submission results, then the "points" parameter could be completely removed from this
+    //  method.
+    int userPoints = points.getExercisePoints(id);
     int maxPoints = jsonObject.getInt("max_points");
     int maxSubmissions = jsonObject.getInt("max_submissions");
 
-    // TODO: submittability should instead be determined by looking at the individual exercise end
-    // point in the A+ API and seeing if the assignment has files to submit. Take a look at
-    // SubmissionInfo and how it is used in SubmitExerciseAction.
-    boolean isSubmittable = points.isSubmittable(id);
+    var submissionInfo = SubmissionInfo.fromJsonObject(jsonObject);
 
-    Tutorial tutorial = tutorials.get(id);
+    var tutorial = tutorials.get(id);
+    var optionalBestSubmission = bestSubmissionId == null ? OptionalLong.empty()
+            : OptionalLong.of(bestSubmissionId);
     if (tutorial == null) {
-      return new Exercise(id, name, htmlUrl, userPoints, maxPoints, maxSubmissions, isSubmittable);
+      return new Exercise(id, name, htmlUrl, submissionInfo, userPoints, maxPoints, maxSubmissions,
+          optionalBestSubmission);
     } else {
       return new TutorialExercise(
-          id, name, htmlUrl, userPoints, maxPoints, maxSubmissions, isSubmittable, tutorial);
+          id, name, htmlUrl, submissionInfo, userPoints, maxPoints, maxSubmissions,
+          optionalBestSubmission, tutorial);
     }
   }
 
@@ -113,6 +126,11 @@ public class Exercise implements Browsable {
     return Collections.unmodifiableList(submissionResults);
   }
 
+  @NotNull
+  public SubmissionInfo getSubmissionInfo() {
+    return submissionInfo;
+  }
+
   public int getUserPoints() {
     return userPoints;
   }
@@ -125,8 +143,20 @@ public class Exercise implements Browsable {
     return maxSubmissions;
   }
 
+  /**
+   * Returns the best submission of this exercise (if one exists).
+   */
+  @Nullable
+  public SubmissionResult getBestSubmission() {
+    return submissionResults
+        .stream()
+        .filter(submission -> OptionalLong.of(submission.getId()).equals(bestSubmissionId))
+        .findFirst()
+        .orElse(null);
+  }
+
   public boolean isSubmittable() {
-    return submittable;
+    return submissionInfo.isSubmittable();
   }
 
   /**
@@ -150,6 +180,10 @@ public class Exercise implements Browsable {
     return submissionResults
         .stream()
         .anyMatch(submission -> submission.getStatus() == SubmissionResult.Status.WAITING);
+  }
+
+  public boolean isLate() {
+    return getBestSubmission() != null && getBestSubmission().getLatePenalty() != 0.0;
   }
 
   @Override

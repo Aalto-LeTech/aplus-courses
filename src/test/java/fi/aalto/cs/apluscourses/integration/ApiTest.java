@@ -39,6 +39,8 @@ public class ApiTest {
         .body(firstExercise + ".submission_count", equalTo(3))
         .body(firstExercise + ".points", equalTo(60))
         .body(firstExercise + ".passed", equalTo(true))
+        .body(firstExercise + ".best_submission",
+            equalTo("http://localhost:8000/api/v2/submissions/401/"))
         .body(firstExercise + ".submissions[0]", containsString("402"))
         .body(firstExercise + ".submissions[1]", containsString("401"))
         .body(firstExercise + ".submissions[2]", containsString("400"));
@@ -125,6 +127,7 @@ public class ApiTest {
             "exercise.html_url",
             equalTo("http://localhost:8000/test-course/test-instance/first-module/easy-exercise/")
         )
+        .body("late_penalty_applied", equalTo(null))
         .body("status", equalTo("ready"));
   }
 }
