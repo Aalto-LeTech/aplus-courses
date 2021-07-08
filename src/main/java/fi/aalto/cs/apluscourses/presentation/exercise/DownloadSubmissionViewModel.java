@@ -2,15 +2,13 @@ package fi.aalto.cs.apluscourses.presentation.exercise;
 
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
-import com.intellij.openapi.module.ModuleManager;
-import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
-import java.util.Arrays;
+import fi.aalto.cs.apluscourses.utils.observable.ValidationError;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,6 +22,7 @@ public class DownloadSubmissionViewModel {
   @NotNull
   public final ObservableProperty<String> moduleName;
 
+  private final long submissionId;
   @NotNull
   private final List<String> installedModules;
 
@@ -33,20 +32,13 @@ public class DownloadSubmissionViewModel {
   public DownloadSubmissionViewModel(@NotNull Course course,
                                      @Nullable Module currentSelectedModule,
                                      long submissionId,
-                                     @NotNull Project project) {
+                                     @NotNull List<String> installedModules) {
     this.modules = course.getModules();
-    this.installedModules = Arrays
-        .stream(ModuleManager.getInstance(project).getModules())
-        .map(com.intellij.openapi.module.Module::getName)
-        .collect(Collectors.toList());
+    this.submissionId = submissionId;
+    this.installedModules = installedModules;
     this.selectedModule = new ObservableReadWriteProperty<>(currentSelectedModule);
-    this.moduleName = new ObservableReadWriteProperty<>(submissionId + "_"
-        + (currentSelectedModule == null ? "" : currentSelectedModule.getName()));
-    selectedModule.addValueObserver(selectedModule, (m, dummy) -> {
-      var module = m.get();
-      moduleName.set(submissionId + "_"
-          + (module == null ? "" : module.getName()));
-    });
+    this.moduleName = new ObservableReadWriteProperty<>(getModuleName(), this::validateName);
+    this.selectedModule.addSimpleObserver(this, a -> moduleName.set(getModuleName()));
   }
 
   @NotNull
@@ -61,5 +53,29 @@ public class DownloadSubmissionViewModel {
   @NotNull
   public List<String> getInstalledModules() {
     return installedModules;
+  }
+
+  @NotNull
+  private String getModuleName() {
+    return submissionId + "_" + Optional.ofNullable(selectedModule.get()).map(Module::getName).orElse("");
+  }
+
+  /**
+   * Checks if the name is taken.
+   */
+  @Nullable
+  public ValidationError validateName(@Nullable String name) {
+    if (getInstalledModules().contains(name)) {
+      return new NameAlreadyTakenError();
+    } else {
+      return null;
+    }
+  }
+
+  private static class NameAlreadyTakenError implements ValidationError {
+    @Override
+    public @NotNull String getDescription() {
+      return getText("ui.toolWindow.subTab.exercises.submission.nameTaken");
+    }
   }
 }

@@ -234,11 +234,6 @@ public abstract class Course implements ComponentSource {
     return Collections.unmodifiableList(modules);
   }
 
-  @Nullable
-  public Module getModuleByName(@NotNull String name) {
-    return modules.stream().filter(module -> name.equals(module.getName())).findFirst().orElse(null);
-  }
-
   /**
    * Returns the list of libraries (not including common libraries) of the course.
    *

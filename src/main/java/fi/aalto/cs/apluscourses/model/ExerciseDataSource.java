@@ -4,10 +4,17 @@ import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.json.JSONObject;
 
 public interface ExerciseDataSource {
+
+  <T> List<T> getPaginatedResults(@NotNull String url,
+                                  @NotNull Authentication authentication,
+                                  @Nullable ZonedDateTime zonedDateTime,
+                                  @NotNull Function<JSONObject, T> parseFunction) throws IOException;
 
   @NotNull
   SubmissionInfo getSubmissionInfo(@NotNull Exercise exercise,
@@ -46,12 +53,7 @@ public interface ExerciseDataSource {
 
   @NotNull
   List<Student> getStudents(@NotNull Course course,
-                            @NotNull Authentication authentication) throws IOException;
-
-  @NotNull
-  List<Student> getStudents(@NotNull Authentication authentication,
-                            @NotNull String url,
-                            @NotNull List<Student> students,
+                            @NotNull Authentication authentication,
                             @NotNull ZonedDateTime minCacheEntryTime) throws IOException;
 
   @NotNull

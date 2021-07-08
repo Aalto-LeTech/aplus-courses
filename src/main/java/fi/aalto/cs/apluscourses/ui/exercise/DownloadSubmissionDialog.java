@@ -12,7 +12,6 @@ import fi.aalto.cs.apluscourses.ui.base.OurComboBox;
 import fi.aalto.cs.apluscourses.ui.base.OurDialogWrapper;
 import fi.aalto.cs.apluscourses.ui.base.TextField;
 import icons.PluginIcons;
-import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import org.jetbrains.annotations.NotNull;
@@ -34,6 +33,7 @@ public class DownloadSubmissionDialog extends OurDialogWrapper {
     super(project);
     this.viewModel = viewModel;
     setTitle(getText("ui.toolWindow.subTab.exercises.submission.download"));
+    registerValidationItem(nameField.textBindable);
     init();
   }
 
@@ -43,18 +43,10 @@ public class DownloadSubmissionDialog extends OurDialogWrapper {
     return basePanel;
   }
 
-  @NotNull
-  @Override
-  protected Action @NotNull [] createActions() {
-    return new Action[]{getOKAction(), getCancelAction()};
-  }
-
   @Nullable
   @Override
   protected ValidationInfo doValidate() {
-    if (viewModel.getInstalledModules().contains(viewModel.moduleName.get())) {
-      return new ValidationInfo(getText("ui.toolWindow.subTab.exercises.submission.nameTaken"), nameField);
-    }
+
     return null;
   }
 

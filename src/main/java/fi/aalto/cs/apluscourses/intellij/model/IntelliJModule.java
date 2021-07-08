@@ -120,7 +120,7 @@ class IntelliJModule
   @NotNull
   @Override
   protected List<String> computeDependencies() {
-    ModuleRootManager moduleRootManager = project.getModuleRootManager(name);
+    ModuleRootManager moduleRootManager = project.getModuleRootManager(getName());
     if (moduleRootManager == null) {
       throw new IllegalStateException();
     }
@@ -134,7 +134,7 @@ class IntelliJModule
 
   @NotNull
   private File getImlFile() {
-    return getFullPath().resolve(name + ".iml").toFile();
+    return getFullPath().resolve(getName() + ".iml").toFile();
   }
 
   @NotNull
@@ -159,6 +159,6 @@ class IntelliJModule
 
   @Override
   public Module copy(@NotNull String newName) {
-    return new IntelliJModule(newName, url, changelog, version, localVersion, downloadedAt, project, name);
+    return new IntelliJModule(newName, url, changelog, version, localVersion, downloadedAt, project, originalName);
   }
 }

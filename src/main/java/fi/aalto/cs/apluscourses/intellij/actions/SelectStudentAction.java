@@ -9,14 +9,13 @@ import fi.aalto.cs.apluscourses.intellij.services.CourseProjectProvider;
 import fi.aalto.cs.apluscourses.intellij.services.Dialogs;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.intellij.utils.Interfaces;
-import fi.aalto.cs.apluscourses.model.Student;
 import fi.aalto.cs.apluscourses.presentation.SelectStudentViewModel;
 import java.io.IOException;
-import java.util.Comparator;
-import java.util.stream.Collectors;
+import java.time.ZonedDateTime;
 import org.jetbrains.annotations.NotNull;
 
 public class SelectStudentAction extends AnAction {
+  public static final String ACTION_ID = SelectStudentAction.class.getCanonicalName();
   private final CourseProjectProvider courseProjectProvider;
   private final Interfaces.AssistantModeProvider assistantModeProvider;
   private final Notifier notifier;
@@ -57,12 +56,9 @@ public class SelectStudentAction extends AnAction {
       return;
     }
     try {
-      var students = course.getExerciseDataSource().getStudents(course, auth);
-      var sortedStudents = students
-          .stream()
-          .sorted(Comparator.comparing(Student::getFullName))
-          .collect(Collectors.toList());
-      var studentListViewModel = new SelectStudentViewModel(sortedStudents);
+      var students = course.getExerciseDataSource()
+          .getStudents(course, auth, ZonedDateTime.now().minusDays(7));
+      var studentListViewModel = new SelectStudentViewModel(students, course, auth);
       if (!dialogs.create(studentListViewModel, e.getProject()).showAndGet()) {
         return;
       }

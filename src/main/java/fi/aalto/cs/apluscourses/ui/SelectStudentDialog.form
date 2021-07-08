@@ -15,7 +15,7 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="bedba" class="javax.swing.JList" binding="studentList" custom-create="true">
+          <component id="bedba" class="fi.aalto.cs.apluscourses.ui.base.SingleSelectionList" binding="studentList" custom-create="true">
             <constraints/>
             <properties/>
           </component>

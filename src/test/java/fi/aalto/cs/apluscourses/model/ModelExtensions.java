@@ -2,7 +2,6 @@ package fi.aalto.cs.apluscourses.model;
 
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import fi.aalto.cs.apluscourses.utils.Version;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -13,8 +12,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +28,14 @@ public class ModelExtensions {
   }
 
   public static class TestExerciseDataSource implements ExerciseDataSource {
+
+    @Override
+    public <T> List<T> getPaginatedResults(@NotNull String url,
+                                           @NotNull Authentication authentication,
+                                           @Nullable ZonedDateTime zonedDateTime,
+                                           @NotNull Function<JSONObject, T> parseFunction) {
+      return null;
+    }
 
     @NotNull
     @Override
@@ -86,15 +95,9 @@ public class ModelExtensions {
 
     @Override
     @NotNull
-    public List<Student> getStudents(@NotNull Course course, @NotNull Authentication authentication) {
-      return new ArrayList<>();
-    }
-
-    @Override
-    @NotNull
-    public List<Student> getStudents(@NotNull Authentication authentication,
-                                     @NotNull String url,
-                                     @NotNull List<Student> students, @NotNull ZonedDateTime minCacheEntryTime) {
+    public List<Student> getStudents(@NotNull Course course,
+                                     @NotNull Authentication authentication,
+                                     @NotNull ZonedDateTime minCacheEntryTime) {
       return new ArrayList<>();
     }
 
@@ -188,11 +191,6 @@ public class ModelExtensions {
 
     public TestComponent(@NotNull String name) {
       super(name);
-    }
-
-    @Override
-    public @NotNull String getOriginalName() {
-      return name;
     }
 
     @NotNull
@@ -312,11 +310,6 @@ public class ModelExtensions {
 
     public TestLibrary(@NotNull String name) {
       super(name);
-    }
-
-    @Override
-    public @NotNull String getOriginalName() {
-      return name;
     }
 
     @NotNull

@@ -46,7 +46,9 @@ public abstract class Component {
   }
 
   @NotNull
-  public abstract String getOriginalName();
+  public String getOriginalName() {
+    return getName();
+  }
 
   @NotNull
   public abstract Path getPath();

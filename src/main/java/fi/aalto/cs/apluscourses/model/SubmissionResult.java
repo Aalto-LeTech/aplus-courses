@@ -1,8 +1,8 @@
 package fi.aalto.cs.apluscourses.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import fi.aalto.cs.apluscourses.utils.JsonUtil;
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class SubmissionResult implements Browsable {
@@ -75,13 +75,14 @@ public class SubmissionResult implements Browsable {
       status = Status.WAITING;
     }
 
-    var files = jsonObject.getJSONArray("files");
-    List<SubmissionFileInfo> filesInfo = new ArrayList<>();
-    for (int i = 0; i < files.length(); i++) {
-      filesInfo.add(SubmissionFileInfo.fromJsonObject(files.getJSONObject(i)));
-    }
+    var filesInfo = JsonUtil.parseArray(
+        jsonObject.getJSONArray("files"),
+        JSONArray::getJSONObject,
+        SubmissionFileInfo::fromJsonObject,
+        SubmissionFileInfo[]::new
+    );
 
-    return new SubmissionResult(id, points, status, exercise, new SubmissionFileInfo[0]);
+    return new SubmissionResult(id, points, status, exercise, filesInfo);
   }
 
   public long getId() {
@@ -105,6 +106,5 @@ public class SubmissionResult implements Browsable {
   public @NotNull Exercise getExercise() {
     return exercise;
   }
-
 
 }

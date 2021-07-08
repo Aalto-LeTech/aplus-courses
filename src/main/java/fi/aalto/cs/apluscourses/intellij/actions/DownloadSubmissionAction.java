@@ -2,9 +2,9 @@ package fi.aalto.cs.apluscourses.intellij.actions;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.fileEditor.OpenFileDescriptor;
+import com.intellij.openapi.module.ModuleManager;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.LocalFileSystem;
-import com.intellij.openapi.vfs.newvfs.RefreshQueue;
 import fi.aalto.cs.apluscourses.intellij.model.CourseProject;
 import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.ExerciseNotSelectedNotification;
@@ -16,6 +16,7 @@ import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.intellij.utils.Interfaces;
 import fi.aalto.cs.apluscourses.intellij.utils.VfsUtil;
+import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.ComponentInstaller;
 import fi.aalto.cs.apluscourses.model.ComponentInstallerImpl;
 import fi.aalto.cs.apluscourses.model.Course;
@@ -35,10 +36,13 @@ import fi.aalto.cs.apluscourses.utils.CoursesClient;
 import fi.aalto.cs.apluscourses.utils.async.SimpleAsyncTaskManager;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class DownloadSubmissionAction extends AnAction {
   @NotNull
@@ -67,6 +71,8 @@ public class DownloadSubmissionAction extends AnAction {
 
   @NotNull
   private final InstallerDialogs.Factory dialogsFactory;
+  private final Interfaces.FileRefresher fileRefresher;
+  private final Interfaces.FileBrowser fileBrowser;
 
 
   /**
@@ -83,7 +89,9 @@ public class DownloadSubmissionAction extends AnAction {
         project -> PluginSettings.getInstance().getCourseFileManager(project).getLanguage(),
         () -> PluginSettings.getInstance().isAssistantMode(),
         new ComponentInstallerImpl.FactoryImpl<>(new SimpleAsyncTaskManager()),
-        InstallerDialogs::new
+        InstallerDialogs::new,
+        Interfaces.FileRefresherImpl::refreshPath,
+        Interfaces.FileBrowserImpl::navigateTo
     );
   }
 
@@ -100,7 +108,9 @@ public class DownloadSubmissionAction extends AnAction {
                                   @NotNull Interfaces.LanguageSource languageSource,
                                   @NotNull Interfaces.AssistantModeProvider assistantModeProvider,
                                   @NotNull ComponentInstaller.Factory componentInstallerFactory,
-                                  @NotNull InstallerDialogs.Factory dialogsFactory) {
+                                  @NotNull InstallerDialogs.Factory dialogsFactory,
+                                  @NotNull Interfaces.FileRefresher fileRefresher,
+                                  @NotNull Interfaces.FileBrowser fileBrowser) {
     this.mainViewModelProvider = mainViewModelProvider;
     this.authenticationProvider = authenticationProvider;
     this.fileFinder = fileFinder;
@@ -110,13 +120,16 @@ public class DownloadSubmissionAction extends AnAction {
     this.assistantModeProvider = assistantModeProvider;
     this.componentInstallerFactory = componentInstallerFactory;
     this.dialogsFactory = dialogsFactory;
+    this.fileRefresher = fileRefresher;
+    this.fileBrowser = fileBrowser;
   }
 
   @Override
   public void actionPerformed(@NotNull AnActionEvent e) {
     var project = e.getProject();
-    var courseViewModel = mainViewModelProvider.getMainViewModel(project).courseViewModel.get();
-    var exercisesTreeViewModel = mainViewModelProvider.getMainViewModel(project).exercisesViewModel.get();
+    var mainViewModel = mainViewModelProvider.getMainViewModel(project);
+    var courseViewModel = mainViewModel.courseViewModel.get();
+    var exercisesTreeViewModel = mainViewModel.exercisesViewModel.get();
     if (project == null || courseViewModel == null || exercisesTreeViewModel == null) {
       return;
     }
@@ -147,9 +160,19 @@ public class DownloadSubmissionAction extends AnAction {
         .map(self -> self.get(language));
 
 
-    Module selectedModule = moduleName.map(course::getModuleByName).orElse(null);
+    Component selectedComponent = moduleName.map(course::getComponentIfExists).orElse(null);
+    Module selectedModule = null;
+    if (selectedComponent instanceof Module) {
+      selectedModule = (Module) selectedComponent;
+    }
 
-    var downloadSubmissionViewModel = new DownloadSubmissionViewModel(course, selectedModule, submissionId, project);
+    var installedModules = Arrays
+        .stream(ModuleManager.getInstance(project).getModules())
+        .map(com.intellij.openapi.module.Module::getName)
+        .collect(Collectors.toList());
+
+    var downloadSubmissionViewModel = new DownloadSubmissionViewModel(course, selectedModule, submissionId,
+        installedModules);
     if (!dialogs.create(downloadSubmissionViewModel, project).showAndGet()) {
       return;
     }
@@ -162,20 +185,20 @@ public class DownloadSubmissionAction extends AnAction {
     }
 
     var moduleCopy = module.copy(newName);
-    var refresher = RefreshQueue.getInstance().createSession(true, true,
-        () -> downloadFiles(e, ((SubmissionResult) selectedItem.getModel()).getFilesInfo(), moduleCopy));
+
     var moduleVf = LocalFileSystem.getInstance().findFileByIoFile(moduleCopy.getFullPath().toFile());
-    if (moduleVf != null) {
-      refresher.addFile(moduleVf);
-    }
+
     componentInstallerFactory.getInstallerFor(course, dialogsFactory.getDialogs(e.getProject()))
-        .installAsync(List.of(moduleCopy), refresher::launch);
+        .installAsync(List.of(moduleCopy),
+            () -> fileRefresher.refreshPath(moduleVf,
+                () -> downloadFiles(project,
+                    ((SubmissionResult) selectedItem.getModel()).getFilesInfo(),
+                    moduleCopy)));
   }
 
-  private void downloadFiles(@NotNull AnActionEvent e,
+  private void downloadFiles(@Nullable Project project,
                              SubmissionFileInfo @NotNull [] submissionFilesInfo,
                              @NotNull Module module) {
-    var project = e.getProject();
     var courseViewModel = mainViewModelProvider.getMainViewModel(project).courseViewModel.get();
     if (courseViewModel == null || project == null) {
       return;
@@ -188,10 +211,7 @@ public class DownloadSubmissionAction extends AnAction {
         var file = fileFinder.findFile(module.getFullPath(), info.getFileName()).toFile();
         var auth = authenticationProvider.getAuthentication(project);
         CoursesClient.fetch(new URL(info.getUrl()), file, auth);
-        var vf = LocalFileSystem.getInstance().findFileByIoFile(file);
-        if (vf != null) {
-          new OpenFileDescriptor(project, vf).navigate(true);
-        }
+        fileBrowser.navigateTo(file, project);
       } catch (FileDoesNotExistException ex) {
         notifier.notifyAndHide(new MissingFileNotification(module.getPath(), info.getFileName(), true), project);
       } catch (IOException ex) {
@@ -205,8 +225,9 @@ public class DownloadSubmissionAction extends AnAction {
   public void update(@NotNull AnActionEvent e) {
     e.getPresentation().setVisible(assistantModeProvider.isAssistantMode());
     e.getPresentation().setEnabled(false);
-    var courseViewModel = mainViewModelProvider.getMainViewModel(e.getProject()).courseViewModel.get();
-    var exercisesTreeViewModel = mainViewModelProvider.getMainViewModel(e.getProject()).exercisesViewModel.get();
+    var mainViewModel = mainViewModelProvider.getMainViewModel(e.getProject());
+    var courseViewModel = mainViewModel.courseViewModel.get();
+    var exercisesTreeViewModel = mainViewModel.exercisesViewModel.get();
     if (courseViewModel != null && exercisesTreeViewModel != null) {
       BaseTreeViewModel.Selection selection = exercisesTreeViewModel.findSelected();
       ExerciseViewModel selectedExercise = (ExerciseViewModel) selection.getLevel(2);
