@@ -8,12 +8,14 @@ import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
 import fi.aalto.cs.apluscourses.model.User;
 import fi.aalto.cs.apluscourses.utils.Event;
+import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
+import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -49,8 +51,9 @@ public class CourseProject {
 
   @NotNull
   public final Event exercisesUpdated;
-  
-  private volatile User user;
+
+  @NotNull
+  public final ObservableProperty<User> user = new ObservableReadWriteProperty<>(null);
 
   /**
    * Construct a course project from the given course, course configuration URL (used for updating),
@@ -70,8 +73,9 @@ public class CourseProject {
    * authentication. This should be called when a course project is no longer used.
    */
   public void dispose() {
-    if (user != null) {
-      user.getAuthentication().clear();
+    var myUser = this.user.get();
+    if (myUser != null) {
+      myUser.getAuthentication().clear();
     }
     courseUpdater.stop();
     exercisesUpdater.stop();
@@ -89,7 +93,7 @@ public class CourseProject {
    */
   public void readAuthenticationFromStorage(@Nullable PasswordStorage passwordStorage,
                                             @NotNull TokenAuthentication.Factory factory) {
-    if (hasTriedToReadAuthenticationFromStorage.getAndSet(true) || user != null) {
+    if (hasTriedToReadAuthenticationFromStorage.getAndSet(true) || user.get() != null) {
       return;
     }
     Optional.ofNullable(passwordStorage)
@@ -110,7 +114,7 @@ public class CourseProject {
 
   @NotNull
   public String getUserName() {
-    return user == null ? "" : user.getUserName();
+    return Optional.ofNullable(user.get()).map(User::getUserName).orElse("");
   }
 
   @NotNull
@@ -129,24 +133,22 @@ public class CourseProject {
 
   @Nullable
   public Authentication getAuthentication() {
-    return user == null ? null : user.getAuthentication();
+    return user.get() == null ? null : Objects.requireNonNull(user.get()).getAuthentication();
   }
 
   /**
    * Sets the authentication. Any existing authentication is cleared.
    */
   public void setAuthentication(Authentication authentication) {
-    if (this.user != null) {
-      this.user.getAuthentication().clear();
-    }
-    if (authentication == null) {
-      this.user = null;
-    } else {
-      try {
-        this.user = course.getExerciseDataSource().getUser(authentication);
-      } catch (IOException e) {
-        logger.error("Failed to fetch user data", e);
+    try {
+      var newUser = authentication == null
+              ? null : course.getExerciseDataSource().getUser(authentication);
+      var oldUser = this.user.getAndSet(newUser);
+      if (oldUser != null) {
+        oldUser.getAuthentication().clear();
       }
+    } catch (IOException e) {
+      logger.error("Failed to fetch user data", e);
     }
   }
 

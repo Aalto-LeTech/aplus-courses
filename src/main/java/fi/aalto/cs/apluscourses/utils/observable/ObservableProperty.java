@@ -59,7 +59,7 @@ public abstract class ObservableProperty<T> {
   }
 
   public void declareDependentOn(@NotNull ObservableProperty<?> property) {
-    property.addValueObserver(this, (self, dummy) -> self.onValueChanged(self.get(), null));
+    property.addValueObserver(this, (self, dummy) -> self.onValueChanged(null));
   }
 
   @Nullable
@@ -90,7 +90,7 @@ public abstract class ObservableProperty<T> {
    * ObservableProperty#set}, but the actual value isn't changed.
    */
   public void valueChanged() {
-    onValueChanged(get(), null);
+    onValueChanged(null);
   }
 
   protected synchronized void onValueChanged(@Nullable T value, @Nullable Object source) {
@@ -100,6 +100,10 @@ public abstract class ObservableProperty<T> {
         entry.getValue().valueChangedUntyped(observer, value);
       }
     }
+  }
+
+  protected synchronized void onValueChanged(@Nullable Object source) {
+    onValueChanged(get(), source);
   }
 
   public synchronized void removeValueObserver(Object observer) {

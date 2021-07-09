@@ -11,5 +11,6 @@ public interface ActivityFactory {
                                               @NotNull String instruction,
                                               @NotNull String info,
                                               @NotNull Arguments componentArguments,
-                                              @NotNull Arguments actionArguments);
+                                              @NotNull Arguments actionArguments,
+                                              String @NotNull [] assertClosed);
 }
