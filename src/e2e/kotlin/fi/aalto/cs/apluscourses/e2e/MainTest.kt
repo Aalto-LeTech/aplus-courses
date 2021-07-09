@@ -116,6 +116,14 @@ class MainTest {
                 }
             }
         }
+        step("Make sure the assignments have been loaded") {
+            with(ideFrame()) {
+                waitFor(
+                    Duration.ofSeconds(180),
+                    Duration.ofSeconds(5)
+                ) { !hasText("Refreshing assignments...") }
+            }
+        }
         step("Searching assignments") {
             with(ideFrame()) {
                 with(assignments()) {
