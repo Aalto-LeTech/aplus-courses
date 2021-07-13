@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.presentation.ideactivities;
 
+import fi.aalto.cs.apluscourses.intellij.actions.TutorialAction;
 import fi.aalto.cs.apluscourses.model.Tutorial;
 import fi.aalto.cs.apluscourses.model.TutorialExercise;
 import fi.aalto.cs.apluscourses.model.task.ActivityFactory;
@@ -12,6 +13,7 @@ public class TutorialViewModel {
 
   private final TutorialExercise tutorialExercise;
   private final ActivityFactory activityFactory;
+  private final @NotNull TutorialAction.Dialogs dialogs;
 
   private final Object lock = new Object();
 
@@ -21,8 +23,9 @@ public class TutorialViewModel {
    * Constructor.
    */
   public TutorialViewModel(@NotNull TutorialExercise tutorialExercise,
-                           @NotNull ActivityFactory activityFactory) {
+                           @NotNull ActivityFactory activityFactory, TutorialAction.Dialogs dialogs) {
     this.tutorialExercise = tutorialExercise;
+    this.dialogs = dialogs;
     List<Task> tasks = tutorialExercise.getTutorial().getTasks();
     if (!tasks.isEmpty()) {
       this.currentTask = tasks.get(0);
@@ -58,14 +61,17 @@ public class TutorialViewModel {
    */
   public void currentTaskCompleted() {
     synchronized (lock) {
-      Tutorial tutorial = tutorialExercise.getTutorial();
       currentTask.endTask();
       currentTask.taskCompleted.removeCallback(this);
-      currentTask = tutorial.getNextTask(currentTask);
-      if (currentTask == null) {
-        tutorial.onComplete();
-      } else {
-        startNextTask();
+
+      if (dialogs.confirmEndTask(this) && currentTask != null) {
+        Tutorial tutorial = tutorialExercise.getTutorial();
+        currentTask = tutorial.getNextTask(currentTask);
+        if (currentTask == null) {
+          tutorial.onComplete();
+        } else {
+          startNextTask();
+        }
       }
     }
   }
