@@ -11,15 +11,15 @@ import fi.aalto.cs.apluscourses.model.task.ListenerCallback;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class TestActionListener extends IdeActionListener {
+public class RunActionListener extends IdeActionListener {
 
   private final String fileName;
 
   /**
    * Constructor.
    */
-  public TestActionListener(ListenerCallback callback, Project project,
-                            String[] action, @Nullable String fileName) {
+  public RunActionListener(ListenerCallback callback, Project project,
+                           String[] action, @Nullable String fileName) {
     super(callback, project, action);
     this.fileName = fileName;
   }
@@ -27,9 +27,9 @@ public class TestActionListener extends IdeActionListener {
   /**
    * Creates an instance of ClassDeclarationListener based on the provided arguments.
    */
-  public static TestActionListener create(ListenerCallback callback, Project project,
-                                          Arguments arguments) {
-    return new TestActionListener(callback, project,
+  public static RunActionListener create(ListenerCallback callback, Project project,
+                                         Arguments arguments) {
+    return new RunActionListener(callback, project,
                 arguments.getArrayOrThrow("actionNames"), arguments.getOrThrow("filePath"));
   }
 

@@ -24,8 +24,8 @@ public class IntelliJActivityFactory implements ActivityFactory {
         return OpenFileListener.create(callback, project, arguments);
       case "build":
         return BuildActionListener.create(callback, project,arguments);
-      case "test":
-        return TestActionListener.create(callback, project, arguments);
+      case "run":
+        return RunActionListener.create(callback, project, arguments);
       case "classDeclScala":
         return ClassDeclarationListener.create(callback, project, arguments);
       case "functionDefinition":
