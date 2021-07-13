@@ -23,30 +23,24 @@ public class Points {
   private final Map<Long, List<Long>> submissions;
 
   @NotNull
-  private final Map<Long, Integer> exercisePoints;
-
-  @NotNull
   private final Map<Long, Long> bestSubmissions;
 
   /**
    * Construct an instance with the given maps.
    *
-   * @param exercises      A map of exercise group IDs to a list of exercises for that exercise
-   *                       group.
-   * @param submissions    A map of exercise IDs to a list of submission IDs for that exercise.
-   *                       The first element of the list should be the ID of the oldest submission
-   *                       and the last element should be the ID of the latest submission.
-   * @param exercisePoints A map of exercise IDs to the best points gotten from that exercise.
-   * @param bestSubmissions  A map of exercise IDs to the IDs of the best submission for each
-   *                         exercise.
+   * @param exercises       A map of exercise group IDs to a list of exercises for that exercise
+   *                        group.
+   * @param submissions     A map of exercise IDs to a list of submission IDs for that exercise.
+   *                        The first element of the list should be the ID of the oldest submission
+   *                        and the last element should be the ID of the latest submission.
+   * @param bestSubmissions A map of exercise IDs to the IDs of the best submission for each
+   *                        exercise.
    */
   public Points(@NotNull Map<Long, List<Long>> exercises,
                 @NotNull Map<Long, List<Long>> submissions,
-                @NotNull Map<Long, Integer> exercisePoints,
                 @NotNull Map<Long, Long> bestSubmissions) {
     this.exercises = exercises;
     this.submissions = submissions;
-    this.exercisePoints = exercisePoints;
     this.bestSubmissions = bestSubmissions;
   }
 
@@ -58,16 +52,6 @@ public class Points {
   @NotNull
   public List<Long> getExercises(long exerciseGroupId) {
     return exercises.getOrDefault(exerciseGroupId, Collections.emptyList());
-  }
-
-  /**
-   * Returns the points received for the exercise with the given ID.
-   */
-  public int getExercisePoints(long exerciseId) {
-    // TODO: consider instead just using the max points of all submission results for the exercise.
-    // It should be even easier once Jaakko's PR #521 is merged, which adds knowledge of the best
-    // submission to each exercise.
-    return exercisePoints.getOrDefault(exerciseId, 0);
   }
 
   @NotNull
@@ -85,7 +69,6 @@ public class Points {
     JSONArray modulesArray = jsonObject.getJSONArray("modules");
     Map<Long, List<Long>> exercises = new HashMap<>();
     Map<Long, List<Long>> submissions = new HashMap<>();
-    Map<Long, Integer> exercisePoints = new HashMap<>();
     Map<Long, Long> bestSubmissions = new HashMap<>();
     for (int i = 0; i < modulesArray.length(); ++i) {
       JSONObject module = modulesArray.getJSONObject(i);
@@ -102,13 +85,10 @@ public class Points {
         if (bestSubmissionId != null) {
           bestSubmissions.put(exerciseId, bestSubmissionId);
         }
-
-        Integer points = exercise.getInt("points");
-        exercisePoints.put(exerciseId, points);
       }
       exercises.put(exerciseGroupId, exerciseIds);
     }
-    return new Points(exercises, submissions, exercisePoints, bestSubmissions);
+    return new Points(exercises, submissions, bestSubmissions);
   }
 
   /*

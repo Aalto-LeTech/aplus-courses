@@ -2,7 +2,6 @@ package fi.aalto.cs.apluscourses.model;
 
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import fi.aalto.cs.apluscourses.utils.Version;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -46,7 +45,6 @@ public class ModelExtensions {
       return new Points(
           Collections.emptyMap(),
           Collections.emptyMap(),
-          Collections.emptyMap(),
           Collections.emptyMap()
       );
     }
@@ -59,7 +57,7 @@ public class ModelExtensions {
                                 @NotNull Authentication authentication,
                                 @NotNull ZonedDateTime minCacheEntryTime) {
       return new Exercise(1, "lol", "http://example.com",
-          new SubmissionInfo(Collections.emptyMap()), 10, 20, 10, OptionalLong.empty()
+          new SubmissionInfo(Collections.emptyMap()), 20, 10, OptionalLong.empty()
       );
     }
 
