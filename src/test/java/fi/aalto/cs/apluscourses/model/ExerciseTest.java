@@ -10,7 +10,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.OptionalLong;
-
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
@@ -22,7 +21,7 @@ public class ExerciseTest {
   @Test
   public void testExercise() {
     var info = new SubmissionInfo(Map.of("de", List.of(new SubmittableFile("f1", "a"))));
-    Exercise exercise = new Exercise(987, "def", "http://localhost:4444", info, 13, 15, 10, OptionalLong.empty());
+    Exercise exercise = new Exercise(987, "def", "http://localhost:4444", info, 15, 10, OptionalLong.empty());
 
     assertEquals("The ID is the same as the one given to the constructor",
         987L, exercise.getId());
@@ -30,8 +29,6 @@ public class ExerciseTest {
         "def", exercise.getName());
     assertEquals("The HTML URL is the same as the one given to the constructor",
         "http://localhost:4444", exercise.getHtmlUrl());
-    assertEquals("The user points are the same as those given to the constructor",
-        13, exercise.getUserPoints());
     assertEquals("The maximum points are the same as those given to the constructor",
         15, exercise.getMaxPoints());
     assertEquals("The maximum submissions are the same as those given to the constructor",
@@ -49,9 +46,8 @@ public class ExerciseTest {
     long exerciseId = 11L;
     List<Long> submissionIds = List.of(1L, 2L);
     var submissions = Collections.singletonMap(11L, submissionIds);
-    var exercisePoints = Collections.singletonMap(11L, 10);
     var bestSubmissions = Collections.singletonMap(exerciseId, 2L);
-    return new Points(Collections.emptyMap(), submissions, exercisePoints, bestSubmissions);
+    return new Points(Collections.emptyMap(), submissions, bestSubmissions);
   }
 
   private static final Points TEST_POINTS = createTestPoints();
@@ -81,8 +77,6 @@ public class ExerciseTest {
         "Cool name", exercise.getName());
     assertEquals("The HTML URL is the same as the one in the JSON object",
         "http://localhost:1000", exercise.getHtmlUrl());
-    assertEquals("The user points are read from the points object",
-        10, exercise.getUserPoints());
     assertEquals("The best submission is read from the points object",
         2L, exercise.getBestSubmission().getId());
     assertEquals("The max points is the same as the one in the JSON object",
@@ -141,9 +135,9 @@ public class ExerciseTest {
   @Test
   public void testEquals() {
     var info = new SubmissionInfo(Collections.emptyMap());
-    var exercise = new Exercise(7, "oneEx", "http://localhost:1111", info, 0, 0, 0, OptionalLong.empty());
-    var sameExercise = new Exercise(7, "twoEx", "http://localhost:2222", info, 2, 3, 4, OptionalLong.empty());
-    var otherExercise = new Exercise(4, "oneEx", "http://localhost:2222", info, 3, 2, 1, OptionalLong.empty());
+    var exercise = new Exercise(7, "oneEx", "http://localhost:1111", info, 0, 0, OptionalLong.empty());
+    var sameExercise = new Exercise(7, "twoEx", "http://localhost:2222", info, 3, 4, OptionalLong.empty());
+    var otherExercise = new Exercise(4, "oneEx", "http://localhost:2222", info, 2, 1, OptionalLong.empty());
 
     assertEquals(exercise, sameExercise);
     assertEquals(exercise.hashCode(), sameExercise.hashCode());
@@ -155,9 +149,9 @@ public class ExerciseTest {
   public void testIsCompleted() {
     var info = new SubmissionInfo(Collections.emptyMap());
     Exercise optionalNotSubmitted
-        = new Exercise(1, "optionalNotSubmitted", "http://localhost:1111", info, 0, 0, 0, OptionalLong.empty());
+        = new Exercise(1, "optionalNotSubmitted", "http://localhost:1111", info, 0, 0, OptionalLong.empty());
     Exercise optionalSubmitted
-        = new Exercise(2, "optionalSubmitted", "http://localhost:1111", info, 0, 0, 0, OptionalLong.empty());
+        = new Exercise(2, "optionalSubmitted", "http://localhost:1111", info, 0, 0, OptionalLong.empty());
     optionalSubmitted.addSubmissionResult(new SubmissionResult(
             1, 0, 0.0, SubmissionResult.Status.GRADED, optionalSubmitted));
 
@@ -167,13 +161,13 @@ public class ExerciseTest {
         optionalSubmitted.isCompleted());
 
     Exercise noSubmissions
-        = new Exercise(3, "noSubmissions", "http://localhost:1111", info, 0, 5, 10, OptionalLong.empty());
+        = new Exercise(3, "noSubmissions", "http://localhost:1111", info, 5, 10, OptionalLong.empty());
     Exercise failed
-        = new Exercise(4, "failed", "http://localhost:1111", info, 3, 5, 10, OptionalLong.empty());
+        = new Exercise(4, "failed", "http://localhost:1111", info, 5, 10, OptionalLong.of(1));
     failed.addSubmissionResult(new SubmissionResult(
             1, 3, 0.0, SubmissionResult.Status.GRADED, failed));
 
-    Exercise completed = new Exercise(5, "completed", "http://localhost:1111", info, 5, 5, 10, OptionalLong.empty());
+    Exercise completed = new Exercise(5, "completed", "http://localhost:1111", info, 5, 10, OptionalLong.of(1));
     completed.addSubmissionResult(new SubmissionResult(
             1, 5, 0.0, SubmissionResult.Status.GRADED, completed));
 
@@ -189,11 +183,11 @@ public class ExerciseTest {
   @Test
   public void testIsOptional() {
     var info = new SubmissionInfo(Collections.emptyMap());
-    Exercise optional = new Exercise(1, "optional", "http://localhost:1111", info, 0, 0, 0, OptionalLong.empty());
+    Exercise optional = new Exercise(1, "optional", "http://localhost:1111", info, 0, 0, OptionalLong.empty());
     assertTrue("Assignment is optional",
             optional.isOptional());
 
-    Exercise notOptional = new Exercise(2, "notOptional", "http://localhost:1111", info, 0, 5, 10, OptionalLong.empty());
+    Exercise notOptional = new Exercise(2, "notOptional", "http://localhost:1111", info, 5, 10, OptionalLong.empty());
     assertFalse("Assignment isn't optional",
         notOptional.isOptional());
   }
@@ -201,7 +195,7 @@ public class ExerciseTest {
   @Test
   public void testIsInGrading() {
     var exercise = new Exercise(
-        1, "", "http://localhost:1", new SubmissionInfo(Collections.emptyMap()), 0, 10, 10, OptionalLong.empty());
+        1, "", "http://localhost:1", new SubmissionInfo(Collections.emptyMap()), 10, 10, OptionalLong.empty());
     exercise.addSubmissionResult(new SubmissionResult(
         0, 0, 0.0, SubmissionResult.Status.UNOFFICIAL, exercise
     ));

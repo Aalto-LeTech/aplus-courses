@@ -14,7 +14,6 @@ public class PointsTest {
     Points points = new Points(
         Collections.singletonMap(51L, List.of(0L, 123L)),
         Collections.singletonMap(123L, List.of(11L, 22L)),
-        Collections.singletonMap(123L, 55),
         Collections.singletonMap(123L, 22L)
     );
 
@@ -26,8 +25,6 @@ public class PointsTest {
         Long.valueOf(11L), points.getSubmissions(123L).get(0));
     Assert.assertEquals("The submission ID list is the same as that given to the constructor",
         Long.valueOf(22L), points.getSubmissions(123L).get(1));
-    Assert.assertEquals("The points for an exercise is the same as that given to the constructor",
-        55, points.getExercisePoints(123L));
   }
 
   @Test
@@ -42,11 +39,9 @@ public class PointsTest {
     JSONArray exercises = new JSONArray()
         .put(new JSONObject()
             .put("id", 100L)
-            .put("points", 20)
             .put("submissions_with_points", submissionsWithPoints1))
         .put(new JSONObject()
             .put("id", 200L)
-            .put("points", 40)
             .put("submissions_with_points", submissionsWithPoints2));
 
     JSONArray modules = new JSONArray()
@@ -60,11 +55,6 @@ public class PointsTest {
 
     Assert.assertEquals("The exercise IDs are parsed from the JSON",
         List.of(100L, 200L), points.getExercises(0));
-
-    Assert.assertEquals("The exercise points are parsed from the JSON",
-        20, points.getExercisePoints(100L));
-    Assert.assertEquals("The exercise points are parsed from the JSON",
-        40, points.getExercisePoints(200L));
 
     Assert.assertEquals("The submission IDs are parsed from the JSON (in reverse order)",
         Long.valueOf(2L), points.getSubmissions(100L).get(0));
