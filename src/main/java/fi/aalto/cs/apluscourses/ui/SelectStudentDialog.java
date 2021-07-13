@@ -7,6 +7,8 @@ import com.intellij.ui.ColoredListCellRenderer;
 import com.intellij.ui.ListSpeedSearch;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.speedSearch.SpeedSearchUtil;
+import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
+import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.model.Student;
 import fi.aalto.cs.apluscourses.presentation.SelectStudentViewModel;
 import fi.aalto.cs.apluscourses.ui.base.OurDialogWrapper;
@@ -27,6 +29,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class SelectStudentDialog extends OurDialogWrapper {
   private final SelectStudentViewModel viewModel;
+  private final Project project;
   private JPanel basePanel;
   @GuiObject
   private SingleSelectionList<Student> studentList;
@@ -39,6 +42,7 @@ public class SelectStudentDialog extends OurDialogWrapper {
   public SelectStudentDialog(@NotNull SelectStudentViewModel viewModel, @NotNull Project project) {
     super(project);
     this.viewModel = viewModel;
+    this.project = project;
     setTitle(getText("ui.selectStudentDialog.title"));
     init();
   }
@@ -104,8 +108,8 @@ public class SelectStudentDialog extends OurDialogWrapper {
             studentList.setListData(viewModel.getStudents().toArray(Student[]::new));
             studentList.setPaintBusy(false);
           });
-        } catch (IOException ioException) {
-          ioException.printStackTrace();
+        } catch (IOException ex) {
+          new DefaultNotifier().notify(new NetworkErrorNotification(ex), project);
         }
         return null;
       });
