@@ -71,7 +71,6 @@ public class ModelExtensions {
       return new Points(
           Collections.emptyMap(),
           Collections.emptyMap(),
-          Collections.emptyMap(),
           Collections.emptyMap()
       );
     }
@@ -84,7 +83,7 @@ public class ModelExtensions {
                                 @NotNull Authentication authentication,
                                 @NotNull ZonedDateTime minCacheEntryTime) {
       return new Exercise(1, "lol", "http://example.com",
-          new SubmissionInfo(Collections.emptyMap()), 10, 20, 10, OptionalLong.empty()
+          new SubmissionInfo(Collections.emptyMap()), 20, 10, OptionalLong.empty()
       );
     }
 

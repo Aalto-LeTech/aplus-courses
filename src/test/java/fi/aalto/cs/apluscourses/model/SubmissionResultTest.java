@@ -14,13 +14,16 @@ public class SubmissionResultTest {
   @Test
   public void testSubmissionResult() {
     var info = new SubmissionInfo(Collections.emptyMap());
-    Exercise exercise = new Exercise(444L, "someEx", "http://example.com/", info, 15, 20, 10, OptionalLong.empty());
+    Exercise exercise = new Exercise(444L, "someEx", "http://example.com/", info, 20, 10, OptionalLong.of(123L));
     SubmissionResult submissionResult
         = new SubmissionResult(123L, 13, 0.5, SubmissionResult.Status.GRADED, exercise);
+    exercise.addSubmissionResult(submissionResult);
     assertEquals("The ID is the same as the one given to the constructor",
         123L, submissionResult.getId());
     assertEquals("The grade is the same as the one given to the constructor",
         13, submissionResult.getPoints());
+    assertEquals("The result points are the same as the exercise points",
+        exercise.getUserPoints(), submissionResult.getPoints());
     assertEquals("The status is the same as the one given to the constructor",
         SubmissionResult.Status.GRADED, submissionResult.getStatus());
     assertEquals("The late penalty is the same as the one given to the constructor",
@@ -33,7 +36,7 @@ public class SubmissionResultTest {
   @Test
   public void testFromJsonObject() {
     var info = new SubmissionInfo(Collections.emptyMap());
-    Exercise exercise = new Exercise(555L, "myEx", "https://example.org/", info, 15, 20, 10, OptionalLong.empty());
+    Exercise exercise = new Exercise(555L, "myEx", "https://example.org/", info, 20, 10, OptionalLong.of(234));
     JSONObject jsonObject = new JSONObject()
         .put("id", 234)
         .put("grade", 30)
@@ -43,6 +46,7 @@ public class SubmissionResultTest {
         .put("late_penalty_applied", 0.6);
         .put("files", new JSONArray());
     SubmissionResult submissionResult = SubmissionResult.fromJsonObject(jsonObject, exercise);
+    exercise.addSubmissionResult(submissionResult);
 
     assertEquals("The ID is the same as the one in the JSON object",
         234L, submissionResult.getId());
