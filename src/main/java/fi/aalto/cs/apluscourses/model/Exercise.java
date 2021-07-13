@@ -26,8 +26,6 @@ public class Exercise implements Browsable {
   private final List<SubmissionResult> submissionResults =
       Collections.synchronizedList(new ArrayList<>());
 
-  private final int userPoints;
-
   private final int maxPoints;
 
   private final int maxSubmissions;
@@ -40,7 +38,6 @@ public class Exercise implements Browsable {
    * @param id                The ID of the exercise.
    * @param name              The name of the exercise.
    * @param htmlUrl           A URL to the HTML page of the exercise.
-   * @param userPoints        The best points that the user has gotten from this exercise.
    * @param maxPoints         The maximum points available from this exercise.
    * @param maxSubmissions    The maximum number of submissions allowed for this exercise.
    * @param bestSubmissionId  The ID of the best submission for the exercise if one exists.
@@ -49,7 +46,6 @@ public class Exercise implements Browsable {
                   @NotNull String name,
                   @NotNull String htmlUrl,
                   @NotNull SubmissionInfo submissionInfo,
-                  int userPoints,
                   int maxPoints,
                   int maxSubmissions,
                   @NotNull OptionalLong bestSubmissionId) {
@@ -57,7 +53,6 @@ public class Exercise implements Browsable {
     this.name = name;
     this.htmlUrl = htmlUrl;
     this.submissionInfo = submissionInfo;
-    this.userPoints = userPoints;
     this.maxPoints = maxPoints;
     this.maxSubmissions = maxSubmissions;
     this.bestSubmissionId = bestSubmissionId;
@@ -81,10 +76,6 @@ public class Exercise implements Browsable {
     String htmlUrl = jsonObject.getString("html_url");
 
     var bestSubmissionId = points.getBestSubmissionIds().get(id);
-    // TODO: consider if it would be better to just take points as the max points from all
-    //  submission results, then the "points" parameter could be completely removed from this
-    //  method.
-    int userPoints = points.getExercisePoints(id);
     int maxPoints = jsonObject.getInt("max_points");
     int maxSubmissions = jsonObject.getInt("max_submissions");
 
@@ -94,12 +85,10 @@ public class Exercise implements Browsable {
     var optionalBestSubmission = bestSubmissionId == null ? OptionalLong.empty()
             : OptionalLong.of(bestSubmissionId);
     if (tutorial == null) {
-      return new Exercise(id, name, htmlUrl, submissionInfo, userPoints, maxPoints, maxSubmissions,
-          optionalBestSubmission);
+      return new Exercise(id, name, htmlUrl, submissionInfo, maxPoints, maxSubmissions, optionalBestSubmission);
     } else {
       return new TutorialExercise(
-          id, name, htmlUrl, submissionInfo, userPoints, maxPoints, maxSubmissions,
-          optionalBestSubmission, tutorial);
+          id, name, htmlUrl, submissionInfo, maxPoints, maxSubmissions, optionalBestSubmission, tutorial);
     }
   }
 
@@ -132,7 +121,7 @@ public class Exercise implements Browsable {
   }
 
   public int getUserPoints() {
-    return userPoints;
+    return getBestSubmission() != null ? getBestSubmission().getPoints() : 0;
   }
 
   public int getMaxPoints() {
@@ -166,7 +155,7 @@ public class Exercise implements Browsable {
   public boolean isCompleted() {
     // Optional assignments are never completed, since they can be filtered separately
     // and we can't tell from the points whether the submission was correct or not
-    return userPoints == maxPoints && !isOptional();
+    return getUserPoints() == maxPoints && !isOptional();
   }
 
   public boolean isOptional() {

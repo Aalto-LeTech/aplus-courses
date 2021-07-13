@@ -17,10 +17,10 @@ public class ExerciseViewModelTest {
     var info = new SubmissionInfo(Collections.emptyMap());
 
     Exercise exercise1
-        = new Exercise(123, "|en:Assignment|fi:Tehtava|", "http://localhost:1000", info, 0, 0, 0, OptionalLong.empty());
+        = new Exercise(123, "|en:Assignment|fi:Tehtava|", "http://localhost:1000", info, 0, 0, OptionalLong.empty());
     ExerciseViewModel viewModel1 = new ExerciseViewModel(exercise1);
 
-    Exercise exercise2 = new Exercise(234, "Just a name", "http://localhost:2000", info, 0, 0, 0, OptionalLong.empty());
+    Exercise exercise2 = new Exercise(234, "Just a name", "http://localhost:2000", info, 0, 0, OptionalLong.empty());
     ExerciseViewModel viewModel2 = new ExerciseViewModel(exercise2);
 
     Assert.assertEquals("getPresentableName returns the English name of the exercise",
@@ -35,8 +35,8 @@ public class ExerciseViewModelTest {
         Collections.singletonMap("fi", List.of(new SubmittableFile("file1", "abc")))
     );
     var info2 = new SubmissionInfo(Collections.emptyMap());
-    Exercise submittable = new Exercise(0, "", "http://abc.org", info1, 0, 0, 0, OptionalLong.empty());
-    Exercise notSubmittable = new Exercise(0, "", "http://def.org", info2, 0, 0, 0, OptionalLong.empty());
+    Exercise submittable = new Exercise(0, "", "http://abc.org", info1, 0, 0, OptionalLong.empty());
+    Exercise notSubmittable = new Exercise(0, "", "http://def.org", info2, 0, 0, OptionalLong.empty());
     ExerciseViewModel viewModel1 = new ExerciseViewModel(submittable);
     ExerciseViewModel viewModel2 = new ExerciseViewModel(notSubmittable);
 
@@ -49,15 +49,19 @@ public class ExerciseViewModelTest {
     var info = new SubmissionInfo(Collections.emptyMap());
     String htmlUrl = "http://localhost:6000";
     SubmissionResult.Status resultStatus = SubmissionResult.Status.GRADED;
-    Exercise training = new Exercise(0, "", htmlUrl, info, 0, 0, 0, OptionalLong.empty());
+    Exercise training = new Exercise(0, "", htmlUrl, info, 0, 0, OptionalLong.empty());
     training.addSubmissionResult(new SubmissionResult(1L, 0, 0.0, resultStatus, training));
-    Exercise noPoints = new Exercise(0, "", htmlUrl, info, 0, 10, 10, OptionalLong.empty());
+    Exercise noPoints = new Exercise(0, "", htmlUrl, info, 10, 10, OptionalLong.empty());
     noPoints.addSubmissionResult(new SubmissionResult(1L, 0, 0.0, resultStatus, noPoints));
-    Exercise partialPoints = new Exercise(0, "", htmlUrl, info, 5, 10, 10, OptionalLong.empty());
+    Exercise partialPoints = new Exercise(0, "", htmlUrl, info, 10, 10, OptionalLong.of(1L));
+    var partialPointsSubmissionRes = new SubmissionResult(1L, 5, 0.0, SubmissionResult.Status.GRADED, partialPoints);
+    partialPoints.addSubmissionResult(partialPointsSubmissionRes);
     partialPoints.addSubmissionResult(new SubmissionResult(1L,5,0.0,resultStatus,partialPoints));
-    Exercise fullPoints = new Exercise(0, "", htmlUrl, info, 10, 10, 10, OptionalLong.empty());
+    Exercise fullPoints = new Exercise(0, "", htmlUrl, info, 10, 10, OptionalLong.of(2L));
+    var fullPointsSubmissionRes = new SubmissionResult(2L, 10, 0.0, SubmissionResult.Status.GRADED, fullPoints);
+    fullPoints.addSubmissionResult(fullPointsSubmissionRes);
     fullPoints.addSubmissionResult(new SubmissionResult(1L, 10, 0.0, resultStatus, fullPoints));
-    Exercise noSubmissions = new Exercise(0, "", htmlUrl, info, 0, 10, 10, OptionalLong.empty());
+    Exercise noSubmissions = new Exercise(0, "", htmlUrl, info, 10, 10, OptionalLong.empty());
 
     Assert.assertEquals(ExerciseViewModel.Status.OPTIONAL_PRACTICE,
         new ExerciseViewModel(training).getStatus());
@@ -79,14 +83,16 @@ public class ExerciseViewModelTest {
   @Test
   public void testGetStatusText() {
     var info = new SubmissionInfo(Collections.emptyMap());
-    Exercise exercise1 = new Exercise(0, "", "http://localhost:1212", info, 3, 49, 12, OptionalLong.empty());
+    Exercise exercise1 = new Exercise(0, "", "http://localhost:1212", info, 49, 12, OptionalLong.of(1L));
+    var ex1SubmissionRes = new SubmissionResult(1L, 3, 0.0, SubmissionResult.Status.GRADED, exercise1);
+    exercise1.addSubmissionResult(ex1SubmissionRes);
     ExerciseViewModel viewModel1 = new ExerciseViewModel(exercise1);
-    Exercise exercise2 = new Exercise(0, "", "http://localhost:2121", info, 0, 0, 0, OptionalLong.empty());
+    Exercise exercise2 = new Exercise(0, "", "http://localhost:2121", info, 0, 0, OptionalLong.empty());
     ExerciseViewModel viewModel2 = new ExerciseViewModel(exercise2);
-    Exercise exercise3 = new Exercise(0, "Feedback", "http://localhost:9999", info, 0, 0, 0, OptionalLong.empty());
+    Exercise exercise3 = new Exercise(0, "Feedback", "http://localhost:9999", info, 0, 0, OptionalLong.empty());
     ExerciseViewModel viewModel3 = new ExerciseViewModel(exercise3);
 
-    Assert.assertEquals("The status text is correct", "0 of 12, 3/49", viewModel1.getStatusText());
+    Assert.assertEquals("The status text is correct", "1 of 12, 3/49", viewModel1.getStatusText());
     Assert.assertEquals("The status text is correct",
         "optional practice", viewModel2.getStatusText());
     Assert.assertTrue("The status text is empty for a feedback assignment",
@@ -97,9 +103,9 @@ public class ExerciseViewModelTest {
   public void testGetSearchableString() {
     String name = "Sample name";
     var info = new SubmissionInfo(Collections.emptyMap());
-    Exercise exercise1 = new Exercise(0, name, "http://abc.org", info, 0, 0, 0, OptionalLong.empty());
+    Exercise exercise1 = new Exercise(0, name, "http://abc.org", info, 0, 0, OptionalLong.empty());
     ExerciseViewModel viewModel1 = new ExerciseViewModel(exercise1);
-    Exercise exercise2 = new Exercise(0, "", "http://abc2.org", info, 0, 0, 0, OptionalLong.empty());
+    Exercise exercise2 = new Exercise(0, "", "http://abc2.org", info, 0, 0, OptionalLong.empty());
     ExerciseViewModel viewModel2 = new ExerciseViewModel(exercise2);
 
     Assert.assertEquals(name, viewModel1.getSearchableString());

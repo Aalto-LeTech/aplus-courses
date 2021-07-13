@@ -19,7 +19,7 @@ public class FeedbackAvailableNotificationTest {
   @Test
   public void testFeedbackAvailableNotificationTest() {
     var info = new SubmissionInfo(Collections.emptyMap());
-    var exercise = new Exercise(123, "Test Exercise", "https://example.com", info, 3, 5, 10, OptionalLong.empty());
+    var exercise = new Exercise(123, "Test Exercise", "https://example.com", info, 5, 10, OptionalLong.empty());
     SubmissionResult result
         = new SubmissionResult(0, 0, 0.0, SubmissionResult.Status.GRADED, exercise);
     Notification notification = new FeedbackAvailableNotification(result, exercise);
