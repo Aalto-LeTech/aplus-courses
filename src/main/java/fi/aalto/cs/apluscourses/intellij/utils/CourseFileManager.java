@@ -181,7 +181,8 @@ public class CourseFileManager {
             missingModules.add(missingModelName);
           }
         }
-        ApplicationManager.getApplication().runWriteAction(model::commit);
+        ApplicationManager.getApplication().invokeLater(() ->
+            ApplicationManager.getApplication().runWriteAction(model::commit));
       }
     }
     return missingModules;

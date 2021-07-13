@@ -19,6 +19,8 @@ public class SubmissionResult implements Browsable {
   @NotNull
   private final Status status;
 
+  private final double latePenalty;
+
   @NotNull
   private final Exercise exercise;
 
@@ -27,10 +29,12 @@ public class SubmissionResult implements Browsable {
    */
   public SubmissionResult(long submissionId,
                           int points,
+                          double latePenalty,
                           @NotNull Status status,
                           @NotNull Exercise exercise) {
     this.submissionId = submissionId;
     this.points = points;
+    this.latePenalty = latePenalty;
     this.status = status;
     this.exercise = exercise;
   }
@@ -44,6 +48,7 @@ public class SubmissionResult implements Browsable {
                                                 @NotNull Exercise exercise) {
     long id = jsonObject.getLong("id");
     int points = jsonObject.getInt("grade");
+    double latePenalty = jsonObject.optDouble("late_penalty_applied", 0.0);
 
     Status status = Status.UNKNOWN;
     String statusString = jsonObject.optString("status");
@@ -55,7 +60,7 @@ public class SubmissionResult implements Browsable {
       status = Status.WAITING;
     }
 
-    return new SubmissionResult(id, points, status, exercise);
+    return new SubmissionResult(id, points, latePenalty, status, exercise);
   }
 
   public long getId() {
@@ -69,6 +74,10 @@ public class SubmissionResult implements Browsable {
   @NotNull
   public Status getStatus() {
     return status;
+  }
+
+  public double getLatePenalty() {
+    return latePenalty;
   }
 
   @Override

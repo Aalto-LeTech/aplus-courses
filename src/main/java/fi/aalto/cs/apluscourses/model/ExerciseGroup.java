@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -14,33 +12,21 @@ public class ExerciseGroup implements Browsable {
 
   private final long id;
   @NotNull
-  private String name;
+  private final String name;
   @NotNull
-  private String htmlUrl;
-  private boolean isOpen;
+  private final String htmlUrl;
+  private final boolean isOpen;
   @NotNull
-  private Map<Long, Exercise> exercises;
+  private final List<Exercise> exercises = Collections.synchronizedList(new ArrayList<>());
 
   /**
    * Construct an exercise group with the given name and exercises.
-   *
-   * @param name      The name of the exercise group.
-   * @param exercises The exercises of this exercise group.
    */
-  public ExerciseGroup(
-      long id,
-      @NotNull String name,
-      @NotNull String htmlUrl,
-      boolean isOpen,
-      @NotNull List<Exercise> exercises
-  ) {
+  public ExerciseGroup(long id, @NotNull String name, @NotNull String htmlUrl, boolean isOpen) {
     this.id = id;
     this.name = name;
     this.htmlUrl = htmlUrl;
     this.isOpen = isOpen;
-    this.exercises = exercises
-        .stream()
-        .collect(Collectors.toMap(Exercise::getId, Function.identity()));
   }
 
   /**
@@ -51,20 +37,12 @@ public class ExerciseGroup implements Browsable {
    * @param jsonObject The JSON object from which the exercise group is constructed.
    */
   @NotNull
-  public static ExerciseGroup fromJsonObject(@NotNull JSONObject jsonObject,
-                                             @NotNull Points points,
-                                             @NotNull Map<Long, Tutorial> tutorials) {
+  public static ExerciseGroup fromJsonObject(@NotNull JSONObject jsonObject) {
     long id = jsonObject.getLong("id");
     String name = jsonObject.getString("display_name");
     String htmlUrl = jsonObject.getString("html_url");
     boolean isOpen = jsonObject.getBoolean("is_open");
-    JSONArray exercisesArray = jsonObject.getJSONArray("exercises");
-    List<Exercise> exercises = new ArrayList<>(exercisesArray.length());
-    for (int i = 0; i < exercisesArray.length(); ++i) {
-      JSONObject exerciseObject = exercisesArray.getJSONObject(i);
-      exercises.add(Exercise.fromJsonObject(exerciseObject, points, tutorials));
-    }
-    return new ExerciseGroup(id, name, htmlUrl, isOpen, exercises);
+    return new ExerciseGroup(id, name, htmlUrl, isOpen);
   }
 
   /**
@@ -72,12 +50,10 @@ public class ExerciseGroup implements Browsable {
    * should be a JSON object that works with {@link ExerciseGroup#fromJsonObject}.
    */
   @NotNull
-  public static List<ExerciseGroup> fromJsonArray(@NotNull JSONArray jsonArray,
-                                                  @NotNull Points points,
-                                                  @NotNull Map<Long, Tutorial> tutorials) {
+  public static List<ExerciseGroup> fromJsonArray(@NotNull JSONArray jsonArray) {
     List<ExerciseGroup> exerciseGroups = new ArrayList<>(jsonArray.length());
     for (int i = 0; i < jsonArray.length(); ++i) {
-      exerciseGroups.add(fromJsonObject(jsonArray.getJSONObject(i), points, tutorials));
+      exerciseGroups.add(fromJsonObject(jsonArray.getJSONObject(i)));
     }
     return exerciseGroups;
   }
@@ -99,11 +75,12 @@ public class ExerciseGroup implements Browsable {
     return isOpen;
   }
 
-  /**
-   * Returns a map that contains the exercises of this exercise group. The keys are IDs of exercises
-   * and the values are the exercises corresponding to the IDs.
-   */
-  public Map<Long, Exercise> getExercises() {
-    return Collections.unmodifiableMap(exercises);
+  public List<Exercise> getExercises() {
+    return Collections.unmodifiableList(exercises);
   }
+
+  public void addExercise(@NotNull Exercise exercise) {
+    exercises.add(exercise);
+  }
+
 }

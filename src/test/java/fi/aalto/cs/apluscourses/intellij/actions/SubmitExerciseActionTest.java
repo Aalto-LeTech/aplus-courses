@@ -47,7 +47,6 @@ import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.model.Points;
 import fi.aalto.cs.apluscourses.model.Submission;
-import fi.aalto.cs.apluscourses.model.SubmissionHistory;
 import fi.aalto.cs.apluscourses.model.SubmissionInfo;
 import fi.aalto.cs.apluscourses.model.SubmittableFile;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
@@ -64,6 +63,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.OptionalLong;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Before;
@@ -83,10 +83,8 @@ public class SubmitExerciseActionTest {
   String fileName;
   SubmittableFile file;
   SubmissionInfo submissionInfo;
-  SubmissionHistory submissionHistory;
   MainViewModel mainViewModel;
   CourseViewModel courseViewModel;
-  String token;
   Authentication authentication;
   ExerciseDataSource exerciseDataSource;
   ExercisesTreeViewModel exercises;
@@ -122,33 +120,33 @@ public class SubmitExerciseActionTest {
   @Before
   public void setUp() throws Exception {
     exerciseId = 12;
-    exercise = new Exercise(exerciseId, "Test exercise", "http://localhost:10000", 0, 0, 0, true);
-    group = new Group(124, Collections.singletonList("Only you"));
-    groups = Collections.singletonList(group);
-    exerciseGroup = new ExerciseGroup(0, "Test EG", "", true, Collections.singletonList(exercise));
-    exerciseGroups = Collections.singletonList(exerciseGroup);
     fileName = "some_file.scala";
     fileKey = "file1";
     file = new SubmittableFile(fileKey, fileName);
     String language = "fi";
-    submissionInfo = new SubmissionInfo(
-        1, Collections.singletonMap(language, Collections.singletonList(file)));
-    submissionHistory = new SubmissionHistory(0);
+    submissionInfo = new SubmissionInfo(Map.of(language, Collections.singletonList(file)));
+    exercise = new Exercise(
+        exerciseId, "Test exercise", "http://localhost:10000", submissionInfo, 0, 0, 0, OptionalLong.empty());
+    group = new Group(124, Collections.singletonList("Only you"));
+    groups = Collections.singletonList(group);
+    exerciseGroup = new ExerciseGroup(0, "Test EG", "", true);
+    exerciseGroup.addExercise(exercise);
+    exerciseGroups = Collections.singletonList(exerciseGroup);
 
     mainViewModel = new MainViewModel(new Options());
 
     authentication = mock(Authentication.class);
-    points = new Points(Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());
+    points = new Points(
+        Collections.emptyMap(),
+        Collections.emptyMap(),
+        Collections.emptyMap(),
+        Collections.emptyMap());
 
     exerciseDataSource = mock(ExerciseDataSource.class);
     course = spy(new ModelExtensions.TestCourse("91", "NineOne Course", exerciseDataSource));
     doReturn(groups).when(exerciseDataSource).getGroups(course, authentication);
-    doReturn(submissionInfo).when(exerciseDataSource).getSubmissionInfo(exercise, authentication);
-    doReturn(submissionHistory).when(exerciseDataSource)
-        .getSubmissionHistory(exercise, authentication);
     doReturn(points).when(exerciseDataSource).getPoints(course, authentication);
-    doReturn(exerciseGroups).when(exerciseDataSource)
-        .getExerciseGroups(course, points, Collections.emptyMap(), authentication);
+    doReturn(exerciseGroups).when(exerciseDataSource).getExerciseGroups(course, authentication);
     doReturn("http://localhost:1000")
         .when(exerciseDataSource)
         .submit(any(Submission.class), any(Authentication.class));
@@ -306,9 +304,14 @@ public class SubmitExerciseActionTest {
 
   @Test
   public void testNotifiesExerciseNotSubmittable() throws IOException {
-    doReturn(new SubmissionInfo(1, Collections.emptyMap()))
-        .when(exerciseDataSource)
-        .getSubmissionInfo(exercise, authentication);
+    var exercise = new Exercise(0, "", "", new SubmissionInfo(Map.of()), 0, 0, 0,
+        OptionalLong.empty());
+    var exerciseGroup = new ExerciseGroup(0, "", "", true);
+    exerciseGroup.addExercise(exercise);
+    mainViewModel.exercisesViewModel.set(
+        new ExercisesTreeViewModel(List.of(exerciseGroup), new Options()));
+    mainViewModel.exercisesViewModel
+        .get().getChildren().get(0).getChildren().get(0).setSelected(true);
 
     action.actionPerformed(event);
 
@@ -322,55 +325,12 @@ public class SubmitExerciseActionTest {
   }
 
   @Test
-  public void testNotifiesOfNetworkErrorWhenGettingSubmissionHistory() throws IOException {
-    IOException exception = new IOException();
-    doThrow(exception).when(exerciseDataSource).getSubmissionHistory(exercise, authentication);
-
-    action.actionPerformed(event);
-
-    verifyNoInteractions(submissionDialog);
-    verify(exerciseDataSource, never()).submit(any(), any());
-
-    ArgumentCaptor<NetworkErrorNotification> notificationArg =
-        ArgumentCaptor.forClass(NetworkErrorNotification.class);
-
-    verify(notifier).notify(notificationArg.capture(), eq(project));
-
-    NetworkErrorNotification notification = notificationArg.getValue();
-    assertSame(exception, notification.getException());
-
-    verifyNoMoreInteractions(notifier);
-  }
-
-  @Test
   public void testNotifiesOfNetworkErrorWhenGettingGroups() throws IOException {
     IOException exception = new IOException();
     doThrow(exception).when(exerciseDataSource).getGroups(course, authentication);
 
     action.actionPerformed(event);
 
-    verifyNoInteractions(submissionDialog);
-    verify(exerciseDataSource, never()).submit(any(), any());
-
-    ArgumentCaptor<NetworkErrorNotification> notificationArg =
-        ArgumentCaptor.forClass(NetworkErrorNotification.class);
-
-    verify(notifier).notify(notificationArg.capture(), eq(project));
-
-    NetworkErrorNotification notification = notificationArg.getValue();
-    assertSame(exception, notification.getException());
-
-    verifyNoMoreInteractions(notifier);
-  }
-
-  @Test
-  public void testNotifiesOfNetworkErrorWhenGettingSubmissionInfo() throws IOException {
-    IOException exception = new IOException();
-    doThrow(exception).when(exerciseDataSource).getSubmissionInfo(exercise, authentication);
-
-    action.actionPerformed(event);
-
-    verifyNoInteractions(moduleSelectionDialog);
     verifyNoInteractions(submissionDialog);
     verify(exerciseDataSource, never()).submit(any(), any());
 
