@@ -82,7 +82,7 @@ public class ExercisesUpdater extends RepeatedTask {
         courseProject.setExerciseTree(exerciseTree);
         eventToTrigger.trigger();
       }
-      var points = dataSource.getPoints(course, authentication);
+      var points = dataSource.getPoints(course, authentication, selectedStudent);
       addExercises(exerciseGroups, points, authentication, progress);
       progress.increment();
       for (var exerciseGroup : exerciseGroups) {
