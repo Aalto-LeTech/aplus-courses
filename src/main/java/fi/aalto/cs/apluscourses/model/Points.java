@@ -28,6 +28,8 @@ public class Points {
   @NotNull
   private final Map<Long, Long> bestSubmissions;
 
+  private Integer exercisesAmount;
+
   /**
    * Construct an instance with the given maps.
    *
@@ -58,6 +60,13 @@ public class Points {
   @NotNull
   public List<Long> getExercises(long exerciseGroupId) {
     return exercises.getOrDefault(exerciseGroupId, Collections.emptyList());
+  }
+
+  public int getExercisesAmount() {
+    if (exercisesAmount == null) {
+      exercisesAmount = exercises.values().stream().mapToInt(List::size).sum();
+    }
+    return exercisesAmount;
   }
 
   /**
