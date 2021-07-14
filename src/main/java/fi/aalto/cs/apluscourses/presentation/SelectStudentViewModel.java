@@ -1,18 +1,14 @@
 package fi.aalto.cs.apluscourses.presentation;
 
-import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
-
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Student;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
-import fi.aalto.cs.apluscourses.utils.observable.ValidationError;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class SelectStudentViewModel {
   @NotNull
@@ -23,8 +19,7 @@ public class SelectStudentViewModel {
   private final Authentication authentication;
 
   @NotNull
-  public final ObservableProperty<Student> selectedStudent
-      = new ObservableReadWriteProperty<>(null, SelectStudentViewModel::validateSelectedStudent);
+  public final ObservableProperty<Student> selectedStudent = new ObservableReadWriteProperty<>(null);
 
   /**
    * A constructor.
@@ -65,17 +60,5 @@ public class SelectStudentViewModel {
   @NotNull
   public Authentication getAuthentication() {
     return authentication;
-  }
-
-  private static @Nullable ValidationError validateSelectedStudent(@Nullable Student student) {
-    return student == null ? new StudentNotSelected() : null;
-  }
-
-  public static class StudentNotSelected implements ValidationError {
-
-    @Override
-    public @NotNull String getDescription() {
-      return getText("ui.selectStudentDialog.studentNotSelected");
-    }
   }
 }
