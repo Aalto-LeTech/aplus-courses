@@ -14,13 +14,11 @@ public class TutorialExercise extends Exercise {
                           @NotNull String name,
                           @NotNull String htmlUrl,
                           @NotNull SubmissionInfo submissionInfo,
-                          int userPoints,
                           int maxPoints,
                           int maxSubmissions,
                           @NotNull OptionalLong bestSubmissionId,
                           @NotNull Tutorial tutorial) {
-    super(id, name, htmlUrl, submissionInfo, userPoints, maxPoints, maxSubmissions,
-        bestSubmissionId);
+    super(id, name, htmlUrl, submissionInfo, maxPoints, maxSubmissions, bestSubmissionId);
     this.tutorial = tutorial;
   }
 

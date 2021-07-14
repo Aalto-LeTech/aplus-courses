@@ -19,7 +19,6 @@ import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import fi.aalto.cs.apluscourses.model.Tutorial;
 import fi.aalto.cs.apluscourses.model.User;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
-import fi.aalto.cs.apluscourses.utils.JsonUtil;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -99,19 +98,12 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
         : appendTwoLists(results, getPaginatedResults(nextPage, authentication, zonedDateTime, parseFunction));
   }
 
-  /**
-   * Makes a request to the A+ API to get the details of the given exercise.
-   *
-   * @throws IOException If an IO error occurs (e.g. network error).
-   */
   @Override
-  @NotNull
-  public SubmissionInfo getSubmissionInfo(@NotNull Exercise exercise,
-                                          @NotNull Authentication authentication)
+  public <T> List<T> getPaginatedResults(@NotNull String url,
+                                         @NotNull Authentication authentication,
+                                         @NotNull Function<JSONObject, T> parseFunction)
       throws IOException {
-    String url = apiUrl + EXERCISES + "/" + exercise.getId() + "/";
-    JSONObject response = client.fetch(url, authentication);
-    return parser.parseSubmissionInfo(response);
+    return getPaginatedResults(url, authentication, null, parseFunction);
   }
 
   /**
@@ -125,11 +117,7 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   public List<Group> getGroups(@NotNull Course course, @NotNull Authentication authentication)
       throws IOException {
     String url = apiUrl + COURSES + "/" + course.getId() + "/mygroups/";
-    JSONObject response = client.fetch(url, authentication);
-    return List.of(JsonUtil.parseArray(response.getJSONArray(RESULTS),
-        JSONArray::getJSONObject,
-        parser::parseGroup,
-        Group[]::new));
+    return getPaginatedResults(url, authentication, Group::fromJsonObject);
   }
 
   /**
@@ -144,8 +132,7 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
                                                @NotNull Authentication authentication)
       throws IOException {
     String url = apiUrl + COURSES + "/" + course.getId() + "/" + EXERCISES + "/";
-    JSONObject response = client.fetch(url, authentication);
-    return parser.parseExerciseGroups(response.getJSONArray(RESULTS));
+    return getPaginatedResults(url, authentication, ExerciseGroup::fromJsonObject);
   }
 
   /**
