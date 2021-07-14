@@ -40,6 +40,7 @@ public class SelectStudentDialog extends OurDialogWrapper {
     super(project);
     this.viewModel = viewModel;
     setTitle(getText("ui.selectStudentDialog.title"));
+    registerValidationItem(studentList.selectionBindable);
     init();
   }
 
