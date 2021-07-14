@@ -3,7 +3,6 @@ package fi.aalto.cs.apluscourses.ui.exercise;
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.ValidationInfo;
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.presentation.exercise.DownloadSubmissionViewModel;
 import fi.aalto.cs.apluscourses.ui.GuiObject;
@@ -41,13 +40,6 @@ public class DownloadSubmissionDialog extends OurDialogWrapper {
   @Override
   protected JComponent createCenterPanel() {
     return basePanel;
-  }
-
-  @Nullable
-  @Override
-  protected ValidationInfo doValidate() {
-
-    return null;
   }
 
   @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
