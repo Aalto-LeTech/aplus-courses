@@ -41,10 +41,7 @@ public class TutorialAction extends AnAction {
   }
 
   /**
-   *Constructor.
-   * @param mainViewModelProvider mainViewModelProvider
-   * @param notifier Notifier
-   * @param authenticationProvider TutorialAuthenticationProvider
+   * Constructor.
    */
   public TutorialAction(@NotNull MainViewModelProvider mainViewModelProvider,
                         @NotNull Notifier notifier,
