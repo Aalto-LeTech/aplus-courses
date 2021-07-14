@@ -30,6 +30,8 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
         return PluginIcons.A_PLUS_PARTIAL_POINTS;
       case FULL_POINTS:
         return PluginIcons.A_PLUS_FULL_POINTS;
+      case LATE:
+        return PluginIcons.A_PLUS_LATE;
       case IN_GRADING:
         return PluginIcons.A_PLUS_IN_GRADING;
       case TUTORIAL:

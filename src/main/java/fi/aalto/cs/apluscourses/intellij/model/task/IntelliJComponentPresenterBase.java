@@ -4,6 +4,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.util.concurrency.annotations.RequiresEdt;
 import fi.aalto.cs.apluscourses.model.task.ComponentPresenter;
+import fi.aalto.cs.apluscourses.ui.ideactivities.GenericHighlighter;
 import fi.aalto.cs.apluscourses.ui.ideactivities.OverlayPane;
 import java.awt.Component;
 import org.jetbrains.annotations.NotNull;
@@ -22,18 +23,18 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
   @Override
   public void highlight() {
     ApplicationManager.getApplication()
-        .invokeLater(this::highlightInternal,ModalityState.NON_MODAL);
+        .invokeLater(this::highlightInternal, ModalityState.NON_MODAL);
   }
 
   @RequiresEdt
   private void highlightInternal() {
-    Component component = getComponent();
-    if (component == null) {
+    GenericHighlighter highlighter = getHighlighter();
+    if (highlighter == null) {
       throw new IllegalStateException("Component was not found!");
     }
     overlayPane = OverlayPane.installOverlay();
-    overlayPane.showComponent(component);
-    overlayPane.addPopup(component, instruction, info);
+    overlayPane.addHighlighter(highlighter);
+    overlayPane.addPopup(highlighter.getComponent(), instruction, info);
   }
 
   @Override
@@ -49,10 +50,5 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
     }
   }
 
-  protected abstract Component getComponent();
-
- /* @Override
-  private void notifyEndOfTask(Project project) {
-    new DefaultNotifier().notifyAndHide(new Notification(PluginSettings.A_PLUS, null, NotificationType.INFORMATION), project);
-  }*/
+  protected abstract GenericHighlighter getHighlighter();
 }

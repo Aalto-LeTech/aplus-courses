@@ -37,6 +37,8 @@ public final class PluginIcons {
           .getIcon("/META-INF/icons/partialPoints.svg", PluginIcons.class);
   public static final Icon A_PLUS_FULL_POINTS = IconLoader
           .getIcon("/META-INF/icons/fullPoints.svg", PluginIcons.class);
+  public static final Icon A_PLUS_LATE = IconLoader
+          .getIcon("/META-INF/icons/late.svg", PluginIcons.class);
   public static final Icon A_PLUS_DOWNLOAD = IconLoader
           .getIcon("/META-INF/icons/download.svg", PluginIcons.class);
   public static final Icon A_PLUS_UPLOAD = IconLoader

@@ -57,7 +57,8 @@ class IntelliJModule
 
   @Override
   public void fetchInternal() throws IOException {
-    new RemoteZippedDir(getUrl().toString(), getName()).copyTo(getFullPath());
+    new RemoteZippedDir(getUrl().toString(), getName())
+        .copyTo(getFullPath(), project.getProject());
   }
 
   @Override
@@ -100,6 +101,11 @@ class IntelliJModule
   @Override
   public void remove() throws IOException {
     FileUtils.deleteDirectory(getFullPath().toFile());
+  }
+
+  @Override
+  public int getErrorCause() {
+    return !this.getImlFile().exists() ? ERR_FILES_MISSING : super.getErrorCause();
   }
 
   @NotNull

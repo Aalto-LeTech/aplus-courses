@@ -19,9 +19,7 @@ import fi.aalto.cs.apluscourses.model.ExerciseDataSource;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
-import fi.aalto.cs.apluscourses.model.Points;
 import fi.aalto.cs.apluscourses.model.Submission;
-import fi.aalto.cs.apluscourses.model.SubmissionHistory;
 import fi.aalto.cs.apluscourses.model.SubmissionInfo;
 import fi.aalto.cs.apluscourses.model.SubmittableFile;
 import java.io.File;
@@ -33,6 +31,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalLong;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -70,34 +69,6 @@ public class APlusExerciseDataSourceTest {
   }
 
   @Test
-  public void testGetSubmissionInfo() throws IOException {
-    JSONObject response = new JSONObject();
-    SubmissionInfo submissionInfo = new SubmissionInfo(1, Collections.emptyMap());
-
-    doReturn(response).when(client).fetch("https://example.com/exercises/55/", authentication);
-    doReturn(submissionInfo).when(parser).parseSubmissionInfo(response);
-
-    Exercise exercise = new Exercise(55, "myex", "http://localhost:4321", 0, 0, 0, true);
-
-    assertSame(submissionInfo, exerciseDataSource.getSubmissionInfo(exercise, authentication));
-  }
-
-  @Test
-  public void testGetSubmissionHistory() throws IOException {
-    JSONObject response = new JSONObject();
-    SubmissionHistory submissionHistory = new SubmissionHistory(0);
-
-    doReturn(response).when(client)
-        .fetch("https://example.com/exercises/43/submissions/me/", authentication);
-    doReturn(submissionHistory).when(parser).parseSubmissionHistory(response);
-
-    Exercise exercise = new Exercise(43, "someex", "https://example.org", 0, 0, 0, true);
-
-    assertSame(submissionHistory,
-        exerciseDataSource.getSubmissionHistory(exercise, authentication));
-  }
-
-  @Test
   public void testGetGroups() throws IOException {
     JSONObject object0 = new JSONObject();
     JSONObject object1 = new JSONObject();
@@ -132,19 +103,18 @@ public class APlusExerciseDataSourceTest {
 
     JSONObject response = new JSONObject().put("results", array);
 
-    ExerciseGroup exGroup0 = new ExerciseGroup(0, "First Week", "", true, new ArrayList<>());
-    ExerciseGroup exGroup1 = new ExerciseGroup(1, "Second Week", "", true, new ArrayList<>());
+    ExerciseGroup exGroup0 = new ExerciseGroup(0, "First Week", "", true);
+    ExerciseGroup exGroup1 = new ExerciseGroup(1, "Second Week", "", true);
 
     doReturn(response).when(client)
         .fetch("https://example.com/courses/99/exercises/", authentication);
     doReturn(List.of(exGroup0, exGroup1))
         .when(parser)
-        .parseExerciseGroups(same(array), any(Points.class), eq(Collections.emptyMap()));
+        .parseExerciseGroups(same(array));
 
     Course course = new ModelExtensions.TestCourse("99");
 
-    List<ExerciseGroup> exGroups = exerciseDataSource.getExerciseGroups(
-        course, mock(Points.class), Collections.emptyMap(), authentication);
+    var exGroups = exerciseDataSource.getExerciseGroups(course, authentication);
 
     assertEquals(2, exGroups.size());
     assertSame(exGroup0, exGroups.get(0));
@@ -165,14 +135,13 @@ public class APlusExerciseDataSourceTest {
     paths.put(key0, path0);
     paths.put(key1, path1);
 
-    SubmissionInfo submissionInfo = new SubmissionInfo(
-        1, Collections.singletonMap("fi", List.of(subFile0, subFile1)));
+    var info = new SubmissionInfo(Collections.singletonMap("fi", List.of(subFile0, subFile1)));
 
-    Exercise exercise = new Exercise(71, "newex", "https://example.com", 0, 0, 0, true);
+    Exercise exercise = new Exercise(71, "newex", "https://example.com", info, 0, 0, OptionalLong.empty());
 
     Group group = new Group(435, new ArrayList<>());
 
-    Submission submission = new Submission(exercise, submissionInfo, paths, group, "fi");
+    Submission submission = new Submission(exercise, paths, group, "fi");
 
     exerciseDataSource.submit(submission, authentication);
 

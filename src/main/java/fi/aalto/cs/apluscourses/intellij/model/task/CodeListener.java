@@ -19,9 +19,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-public abstract class ScalaCodeListener implements DocumentListener, ActivitiesListener {
+public abstract class CodeListener implements DocumentListener, ActivitiesListener {
 
 
   protected final ListenerCallback callback;
@@ -30,7 +29,7 @@ public abstract class ScalaCodeListener implements DocumentListener, ActivitiesL
   protected final String filePath;
   protected final AtomicBoolean isCorrect = new AtomicBoolean(false);
 
-  protected ScalaCodeListener(ListenerCallback callback, Project project, String filePath) {
+  protected CodeListener(ListenerCallback callback, Project project, String filePath) {
     this.callback = callback;
     this.project = project;
     this.filePath = filePath;
@@ -58,7 +57,10 @@ public abstract class ScalaCodeListener implements DocumentListener, ActivitiesL
       modulePath = Paths.get(PathUtil.toSystemDependentName(modulePath.toString()));
       VirtualFile vf = LocalFileSystem.getInstance().findFileByIoFile(modulePath.toFile());
       if (vf != null) {
-        checkPsiFile(PsiManager.getInstance(project).findFile(vf));
+        PsiFile psiFile = PsiManager.getInstance(project).findFile(vf);
+        if (psiFile != null) {
+          checkPsiFile(psiFile);
+        }
       }
     }
     return isCorrect.get();
@@ -73,6 +75,6 @@ public abstract class ScalaCodeListener implements DocumentListener, ActivitiesL
     }
   }
 
-  protected abstract void checkPsiFile(@Nullable PsiFile file);
+  protected abstract void checkPsiFile(@NotNull PsiFile file);
 
 }

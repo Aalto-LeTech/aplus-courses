@@ -11,7 +11,7 @@ import fi.aalto.cs.apluscourses.model.task.ListenerCallback;
 import java.util.Arrays;
 import java.util.Optional;
 
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement;
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaRecursiveElementVisitor;
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScPrimaryConstructor;
@@ -19,23 +19,23 @@ import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScTypeParamCla
 import org.jetbrains.plugins.scala.lang.psi.api.toplevel.typedef.ScClass;
 import org.jetbrains.plugins.scala.lang.psi.impl.toplevel.templates.ScExtendsBlockImpl;
 
-public class ClassDeclarationListener extends ScalaCodeListener {
+public class ClassDeclarationListener extends CodeListener {
 
   private final ScalaClassDeclaration modelScalaClass;
 
   /**
    * Constructor.
    */
-  public ClassDeclarationListener(ListenerCallback callback,
-                                  Project project,
-                                  String className,
-                                  String[] arguments,
-                                  String hierarchy,
-                                  String[] traitHierarchy,
-                                  String typeParameters,
-                                  String[] parameterModifiers,
-                                  String[] parameterAnnotations,
-                                  String fileName) {
+  public ClassDeclarationListener(@NotNull ListenerCallback callback,
+                                  @NotNull Project project,
+                                  @NotNull String className,
+                                  @NotNull String[] arguments,
+                                  @NotNull String hierarchy,
+                                  @NotNull String[] traitHierarchy,
+                                  @NotNull String typeParameters,
+                                  @NotNull String[] parameterModifiers,
+                                  @NotNull String[] parameterAnnotations,
+                                  @NotNull String fileName) {
     super(callback, project, fileName);
     this.modelScalaClass = new ScalaClassDeclaration(className,arguments, hierarchy,
         traitHierarchy, typeParameters, parameterModifiers, parameterAnnotations);
@@ -48,22 +48,19 @@ public class ClassDeclarationListener extends ScalaCodeListener {
                                                 Project project, Arguments arguments) {
     return new ClassDeclarationListener(
       callback, project,
-      arguments.getOrThrow("className"),
-      arguments.getArrayOrThrow("classArguments"),
-      arguments.getOrThrow("classHierarchy"),
-      arguments.getArrayOrThrow("traitHierarchy"),
-      arguments.getOrThrow("typeParamClause"),
-      arguments.getArrayOrThrow("modifiers"),
-      arguments.getArrayOrThrow("annotations"),
-      arguments.getOrThrow("filePath")
+      arguments.getString("className"),
+      arguments.getArray("classArguments"),
+      arguments.getString("classHierarchy"),
+      arguments.getArray("traitHierarchy"),
+      arguments.getString("typeParamClause"),
+      arguments.getArray("modifiers"),
+      arguments.getArray("annotations"),
+      arguments.getString("filePath")
     );
   }
 
   @Override
-  protected void checkPsiFile(@Nullable PsiFile psiFile) {
-    if (psiFile == null) {
-      return;
-    }
+  protected void checkPsiFile(@NotNull PsiFile psiFile) {
     psiFile.accept(new ScalaRecursiveElementVisitor() {
       @Override
       public void visitScalaElement(ScalaPsiElement element) {
