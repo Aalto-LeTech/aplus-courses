@@ -130,3 +130,7 @@ runIdeForUiTests {
     systemProperty 'io.netty.tryReflectionSetAccessible', 'false'
     systemProperty "ide.mac.message.dialogs.as.sheets", "false"
 }
+
+configure(uiTest) {
+    group = 'verification'
+}

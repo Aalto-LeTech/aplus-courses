@@ -1,5 +1,8 @@
 package fi.aalto.cs.apluscourses.utils;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.IntFunction;
 import org.jetbrains.annotations.NotNull;
 
@@ -35,5 +38,9 @@ public class ArrayUtil {
   public interface ThrowingFunction<T, R, E extends Exception> {
     @NotNull
     R apply(T arg) throws E;
+  }
+
+  public static <T> Set<T> toSet(T[] array) {
+    return new HashSet<>(Arrays.asList(array));
   }
 }
