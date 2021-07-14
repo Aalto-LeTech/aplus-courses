@@ -309,7 +309,7 @@ public class SubmitExerciseActionTest {
     var exerciseGroup = new ExerciseGroup(0, "", "", true);
     exerciseGroup.addExercise(exercise);
     mainViewModel.exercisesViewModel.set(
-        new ExercisesTreeViewModel(List.of(exerciseGroup), new Options()));
+        new ExercisesTreeViewModel(new ExercisesTree(List.of(exerciseGroup)), new Options()));
     mainViewModel.exercisesViewModel
         .get().getChildren().get(0).getChildren().get(0).setSelected(true);
 

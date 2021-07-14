@@ -56,6 +56,9 @@ public class Points {
     return exercises.getOrDefault(exerciseGroupId, Collections.emptyList());
   }
 
+  /**
+   * Returns the amount of exercises.
+   */
   public int getExercisesAmount() {
     if (exercisesAmount == null) {
       exercisesAmount = exercises.values().stream().mapToInt(List::size).sum();

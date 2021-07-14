@@ -16,9 +16,9 @@ public interface ExerciseDataSource {
                                   @Nullable ZonedDateTime zonedDateTime,
                                   @NotNull Function<JSONObject, T> parseFunction) throws IOException;
 
-  @NotNull
-  SubmissionInfo getSubmissionInfo(@NotNull Exercise exercise,
-                                   @NotNull Authentication authentication) throws IOException;
+  <T> List<T> getPaginatedResults(@NotNull String url,
+                                  @NotNull Authentication authentication,
+                                  @NotNull Function<JSONObject, T> parseFunction) throws IOException;
 
   @NotNull
   List<Group> getGroups(@NotNull Course course, @NotNull Authentication authentication)
