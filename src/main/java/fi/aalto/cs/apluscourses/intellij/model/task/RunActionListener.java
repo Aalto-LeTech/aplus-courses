@@ -9,7 +9,6 @@ import com.intellij.openapi.vfs.VirtualFile;
 import fi.aalto.cs.apluscourses.model.task.Arguments;
 import fi.aalto.cs.apluscourses.model.task.ListenerCallback;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class RunActionListener extends IdeActionListener {
 
@@ -18,9 +17,11 @@ public class RunActionListener extends IdeActionListener {
   /**
    * Constructor.
    */
-  public RunActionListener(ListenerCallback callback, Project project,
-                           String[] action, @Nullable String fileName) {
-    super(callback, project, action);
+  public RunActionListener(@NotNull ListenerCallback callback,
+                           @NotNull Project project,
+                           @NotNull String[] actionNames,
+                           @NotNull String fileName) {
+    super(callback, project, actionNames);
     this.fileName = fileName;
   }
 
@@ -30,7 +31,7 @@ public class RunActionListener extends IdeActionListener {
   public static RunActionListener create(ListenerCallback callback, Project project,
                                          Arguments arguments) {
     return new RunActionListener(callback, project,
-                arguments.getArrayOrThrow("actionNames"), arguments.getOrThrow("filePath"));
+                arguments.getArray("actionNames"), arguments.getString("filePath"));
   }
 
 
@@ -38,7 +39,7 @@ public class RunActionListener extends IdeActionListener {
   public void beforeActionPerformed(@NotNull AnAction action, @NotNull DataContext dataContext,
                                     @NotNull AnActionEvent event) {
     boolean complete = true;
-    if (fileName != null && !fileName.isEmpty()) {
+    if (!fileName.isEmpty()) {
       String filePath = project.getBasePath() + fileName;
       VirtualFile file = event.getDataContext().getData(PlatformDataKeys.VIRTUAL_FILE);
       complete = file != null && filePath.equals(file.getPath());
