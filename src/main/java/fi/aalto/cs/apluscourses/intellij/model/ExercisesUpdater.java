@@ -84,14 +84,14 @@ public class ExercisesUpdater extends RepeatedTask {
       }
       var points = dataSource.getPoints(course, authentication, selectedStudent);
       addExercises(exerciseGroups, points, authentication, progress);
-      progress.increment();
+      progress.incrementMaxValue(points.getSubmissionsAmount());
       for (var exerciseGroup : exerciseGroups) {
         for (var exercise : exerciseGroup.getExercises()) {
           if (Thread.interrupted()) {
             progress.finish();
             return;
           }
-          addSubmissionResults(exercise, points, authentication);
+          addSubmissionResults(exercise, points, authentication, progress);
         }
       }
       progress.finish();
@@ -140,13 +140,15 @@ public class ExercisesUpdater extends RepeatedTask {
 
   private void addSubmissionResults(@NotNull Exercise exercise,
                                     @NotNull Points points,
-                                    @NotNull Authentication authentication)
+                                    @NotNull Authentication authentication,
+                                    @NotNull Progress progress)
       throws IOException {
     var dataSource = courseProject.getCourse().getExerciseDataSource();
     var baseUrl = courseProject.getCourse().getApiUrl() + "submissions/";
     var submissionIds = points.getSubmissions(exercise.getId());
     for (var id : submissionIds) {
       if (Thread.interrupted()) {
+        progress.finish();
         return;
       }
       // Ignore cache for submissions that had the status WAITING
@@ -159,6 +161,7 @@ public class ExercisesUpdater extends RepeatedTask {
         submissionsInGrading.add(id);
       }
       exercise.addSubmissionResult(submission);
+      progress.increment();
     }
   }
 

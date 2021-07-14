@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.model;
 
+import static fi.aalto.cs.apluscourses.utils.MapUtil.mapValueListsSize;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,6 +28,7 @@ public class Points {
   private final Map<Long, Long> bestSubmissions;
 
   private Integer exercisesAmount;
+  private Integer submissionsAmount;
 
   /**
    * Construct an instance with the given maps.
@@ -51,6 +54,16 @@ public class Points {
     return submissions.getOrDefault(exerciseId, Collections.emptyList());
   }
 
+  /**
+   * Returns the amount of exercises.
+   */
+  public int getSubmissionsAmount() {
+    if (submissionsAmount == null) {
+      submissionsAmount = mapValueListsSize(submissions);
+    }
+    return submissionsAmount;
+  }
+
   @NotNull
   public List<Long> getExercises(long exerciseGroupId) {
     return exercises.getOrDefault(exerciseGroupId, Collections.emptyList());
@@ -61,7 +74,7 @@ public class Points {
    */
   public int getExercisesAmount() {
     if (exercisesAmount == null) {
-      exercisesAmount = exercises.values().stream().mapToInt(List::size).sum();
+      exercisesAmount = mapValueListsSize(exercises);
     }
     return exercisesAmount;
   }
