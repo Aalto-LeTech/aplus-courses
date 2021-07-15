@@ -8,28 +8,24 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public interface ExerciseDataSource {
-
-  @NotNull
-  SubmissionInfo getSubmissionInfo(@NotNull Exercise exercise,
-                                   @NotNull Authentication authentication) throws IOException;
-
-  @NotNull
-  SubmissionHistory getSubmissionHistory(@NotNull Exercise exercise,
-                                         @NotNull Authentication authentication) throws IOException;
-
   @NotNull
   List<Group> getGroups(@NotNull Course course, @NotNull Authentication authentication)
       throws IOException;
 
   @NotNull
   List<ExerciseGroup> getExerciseGroups(@NotNull Course course,
-                                        @NotNull Points points,
-                                        @NotNull Map<Long, Tutorial> tutorials,
                                         @NotNull Authentication authentication) throws IOException;
 
   @NotNull
   Points getPoints(@NotNull Course course, @NotNull Authentication authentication)
       throws IOException;
+
+  @NotNull
+  Exercise getExercise(long exerciseId,
+                       @NotNull Points points,
+                       @NotNull Map<Long, Tutorial> tutorials,
+                       @NotNull Authentication authentication,
+                       @NotNull ZonedDateTime minCacheEntryTime) throws IOException;
 
   @NotNull
   SubmissionResult getSubmissionResult(@NotNull String submissionUrl,

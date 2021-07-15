@@ -52,7 +52,8 @@ public class APlusAuthenticationActionTest {
     course = new ModelExtensions.TestCourse("oe1");
     token = "secrets";
 
-    courseProject = new CourseProject(course, new URL("http://localhost:8000"), project);
+    courseProject = new CourseProject(course, new URL("http://localhost:8000"), project,
+        mock(Notifier.class));
     courseProjectProvider = mock(CourseProjectProvider.class);
     doReturn(courseProject).when(courseProjectProvider).getCourseProject(project);
 

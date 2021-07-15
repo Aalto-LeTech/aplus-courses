@@ -28,14 +28,10 @@ import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.intellij.utils.VfsUtil;
 import fi.aalto.cs.apluscourses.model.Authentication;
-import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Exercise;
-import fi.aalto.cs.apluscourses.model.ExerciseDataSource;
 import fi.aalto.cs.apluscourses.model.FileDoesNotExistException;
 import fi.aalto.cs.apluscourses.model.FileFinder;
 import fi.aalto.cs.apluscourses.model.Group;
-import fi.aalto.cs.apluscourses.model.SubmissionHistory;
-import fi.aalto.cs.apluscourses.model.SubmissionInfo;
 import fi.aalto.cs.apluscourses.model.SubmissionStatusUpdater;
 import fi.aalto.cs.apluscourses.model.SubmittableFile;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
@@ -155,6 +151,10 @@ public class SubmitExerciseAction extends AnAction {
       e.getPresentation().setEnabled(project != null
               && authentication != null && courseViewModel != null
               && (isSubmittableExerciseSelected || isSubmittableSubmissionSelected));
+      var selectedEx = exercisesViewModel.findSelected().getLevel(2);
+      var isTutorial = selectedEx instanceof ExerciseViewModel
+          && ExerciseViewModel.Status.TUTORIAL.equals(((ExerciseViewModel) selectedEx).getStatus());
+      e.getPresentation().setVisible(!isTutorial);
     }
     if ((ActionPlaces.TOOLWINDOW_POPUP).equals(e.getPlace()) && !e.getPresentation().isEnabled()) {
       e.getPresentation().setVisible(false);
@@ -198,12 +198,9 @@ public class SubmitExerciseAction extends AnAction {
     }
 
     Exercise exercise = selectedExercise.getModel();
-    Course course = courseViewModel.getModel();
-
+    var submissionInfo = exercise.getSubmissionInfo();
     String language = languageSource.getLanguage(project);
-    ExerciseDataSource exerciseDataSource = course.getExerciseDataSource();
 
-    SubmissionInfo submissionInfo = exerciseDataSource.getSubmissionInfo(exercise, authentication);
     if (!submissionInfo.isSubmittable(language)) {
       notifier.notify(new NotSubmittableNotification(), project);
       return;
@@ -244,7 +241,8 @@ public class SubmitExerciseAction extends AnAction {
       files.put(file.getKey(), fileFinder.findFile(modulePath, file.getName()));
     }
 
-    SubmissionHistory history = exerciseDataSource.getSubmissionHistory(exercise, authentication);
+    var course = courseViewModel.getModel();
+    var exerciseDataSource = course.getExerciseDataSource();
 
     List<Group> groups = new ArrayList<>(exerciseDataSource.getGroups(course, authentication));
     groups.add(0, new Group(-1, Collections
@@ -261,7 +259,7 @@ public class SubmitExerciseAction extends AnAction {
         .orElse(null);
 
     SubmissionViewModel submission = new SubmissionViewModel(
-        exercise, submissionInfo, history, groups, defaultGroup, files, language);
+        exercise, groups, defaultGroup, files, language);
 
     if (!dialogs.create(submission, project).showAndGet()) {
       return;

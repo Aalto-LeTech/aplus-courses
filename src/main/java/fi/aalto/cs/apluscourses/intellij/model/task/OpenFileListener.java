@@ -8,6 +8,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.concurrency.annotations.RequiresReadLock;
 import com.intellij.util.messages.MessageBusConnection;
 import fi.aalto.cs.apluscourses.model.task.ActivitiesListener;
+import fi.aalto.cs.apluscourses.model.task.Arguments;
 import fi.aalto.cs.apluscourses.model.task.ListenerCallback;
 import java.util.Arrays;
 import java.util.Objects;
@@ -28,11 +29,16 @@ public class OpenFileListener implements FileEditorManagerListener, ActivitiesLi
    * @param project Project.
    */
   public OpenFileListener(@NotNull ListenerCallback callback,
-                          @NotNull String filePath,
-                          @NotNull Project project) {
+                          @NotNull Project project,
+                          @NotNull String filePath) {
     this.callback = callback;
     this.filePath = filePath;
     this.project = project;
+  }
+
+  public static OpenFileListener create(ListenerCallback callback, Project project,
+                                        Arguments arguments) {
+    return new OpenFileListener(callback, project, arguments.getString("filePath"));
   }
 
   @RequiresReadLock
