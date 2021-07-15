@@ -15,10 +15,16 @@ import java.time.ZonedDateTime;
 import org.jetbrains.annotations.NotNull;
 
 public class SelectStudentAction extends AnAction {
-  public static final String ACTION_ID = SelectStudentAction.class.getCanonicalName();
+  @NotNull
   private final CourseProjectProvider courseProjectProvider;
+
+  @NotNull
   private final Interfaces.AssistantModeProvider assistantModeProvider;
+
+  @NotNull
   private final Notifier notifier;
+
+  @NotNull
   private final Dialogs dialogs;
 
   /**
@@ -34,8 +40,8 @@ public class SelectStudentAction extends AnAction {
   /**
    * A constructor.
    */
-  public SelectStudentAction(CourseProjectProvider courseProjectProvider,
-                             Interfaces.AssistantModeProvider assistantModeProvider,
+  public SelectStudentAction(@NotNull CourseProjectProvider courseProjectProvider,
+                             @NotNull Interfaces.AssistantModeProvider assistantModeProvider,
                              @NotNull Notifier notifier,
                              @NotNull Dialogs dialogs) {
     this.courseProjectProvider = courseProjectProvider;

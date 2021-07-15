@@ -38,7 +38,6 @@ import fi.aalto.cs.apluscourses.model.SubmittableFile;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import fi.aalto.cs.apluscourses.presentation.ModuleSelectionViewModel;
-import fi.aalto.cs.apluscourses.presentation.base.BaseTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseGroupViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
@@ -186,9 +185,9 @@ public class SubmitExerciseAction extends AnAction {
       return;
     }
 
-    BaseTreeViewModel.Selection selection = exercisesViewModel.findSelected();
-    ExerciseViewModel selectedExercise = (ExerciseViewModel) selection.getLevel(2);
-    ExerciseGroupViewModel selectedExerciseGroup = (ExerciseGroupViewModel) selection.getLevel(1);
+    var selection = (ExercisesTreeViewModel.ExerciseTreeSelection) exercisesViewModel.findSelected();
+    ExerciseViewModel selectedExercise = selection.getExercise();
+    ExerciseGroupViewModel selectedExerciseGroup = selection.getExerciseGroup();
     if (selectedExercise == null || selectedExerciseGroup == null) {
       notifier.notifyAndHide(new ExerciseNotSelectedNotification(), project);
       return;

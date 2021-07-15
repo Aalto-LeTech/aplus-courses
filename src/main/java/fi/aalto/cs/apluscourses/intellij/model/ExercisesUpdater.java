@@ -84,7 +84,7 @@ public class ExercisesUpdater extends RepeatedTask {
       }
       var points = dataSource.getPoints(course, authentication, selectedStudent);
       addExercises(exerciseGroups, points, authentication, progress);
-      progress.incrementMaxValue(points.getSubmissionsAmount());
+      progress.incrementMaxValue(points.getSubmissionsCount());
       for (var exerciseGroup : exerciseGroups) {
         for (var exercise : exerciseGroup.getExercises()) {
           if (Thread.interrupted()) {
@@ -121,7 +121,7 @@ public class ExercisesUpdater extends RepeatedTask {
                             @NotNull Progress progress) throws IOException {
     var course = courseProject.getCourse();
     var dataSource = course.getExerciseDataSource();
-    progress.incrementMaxValue(points.getExercisesAmount());
+    progress.incrementMaxValue(points.getExercisesCount());
     for (var exerciseGroup : exerciseGroups) {
       for (var exerciseId : points.getExercises(exerciseGroup.getId())) {
         if (Thread.interrupted()) {

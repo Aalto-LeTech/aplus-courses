@@ -27,8 +27,8 @@ public class Points {
   @NotNull
   private final Map<Long, Long> bestSubmissions;
 
-  private Integer exercisesAmount;
-  private Integer submissionsAmount;
+  private Integer exercisesCount;
+  private Integer submissionsCount;
 
   /**
    * Construct an instance with the given maps.
@@ -57,11 +57,11 @@ public class Points {
   /**
    * Returns the amount of exercises.
    */
-  public int getSubmissionsAmount() {
-    if (submissionsAmount == null) {
-      submissionsAmount = mapValueListsSize(submissions);
+  public int getSubmissionsCount() {
+    if (submissionsCount == null) {
+      submissionsCount = mapValueListsSize(submissions);
     }
-    return submissionsAmount;
+    return submissionsCount;
   }
 
   @NotNull
@@ -72,11 +72,11 @@ public class Points {
   /**
    * Returns the amount of exercises.
    */
-  public int getExercisesAmount() {
-    if (exercisesAmount == null) {
-      exercisesAmount = mapValueListsSize(exercises);
+  public int getExercisesCount() {
+    if (exercisesCount == null) {
+      exercisesCount = mapValueListsSize(exercises);
     }
-    return exercisesAmount;
+    return exercisesCount;
   }
 
   @NotNull

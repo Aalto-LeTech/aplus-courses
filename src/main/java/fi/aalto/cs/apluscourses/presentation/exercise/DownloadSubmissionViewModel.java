@@ -23,6 +23,7 @@ public class DownloadSubmissionViewModel {
   public final ObservableProperty<String> moduleName;
 
   private final long submissionId;
+
   @NotNull
   private final List<String> installedModules;
 
