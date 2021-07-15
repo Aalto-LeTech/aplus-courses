@@ -3,21 +3,23 @@ package fi.aalto.cs.apluscourses.intellij.model;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.dal.PasswordStorage;
 import fi.aalto.cs.apluscourses.dal.TokenAuthentication;
+import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
+import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
 import fi.aalto.cs.apluscourses.model.User;
 import fi.aalto.cs.apluscourses.utils.Event;
+import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
+import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A {@code CourseProject} instance contains a {@link Course} and {@link Project}. In addition, it
@@ -26,7 +28,8 @@ import org.slf4j.LoggerFactory;
  */
 public class CourseProject {
 
-  private static final Logger logger = LoggerFactory.getLogger(CourseProject.class);
+  @NotNull
+  private final Notifier notifier;
 
   @NotNull
   private final Course course;
@@ -49,14 +52,19 @@ public class CourseProject {
 
   @NotNull
   public final Event exercisesUpdated;
-  
-  private volatile User user;
+
+  @NotNull
+  public final ObservableProperty<User> user = new ObservableReadWriteProperty<>(null);
 
   /**
    * Construct a course project from the given course, course configuration URL (used for updating),
    * and project.
    */
-  public CourseProject(@NotNull Course course, @NotNull URL courseUrl, @NotNull Project project) {
+  public CourseProject(@NotNull Course course,
+                       @NotNull URL courseUrl,
+                       @NotNull Project project,
+                       @NotNull Notifier notifier) {
+    this.notifier = notifier;
     this.course = course;
     this.project = project;
     this.courseUpdated = new Event();
@@ -70,8 +78,9 @@ public class CourseProject {
    * authentication. This should be called when a course project is no longer used.
    */
   public void dispose() {
-    if (user != null) {
-      user.getAuthentication().clear();
+    var myUser = this.user.get();
+    if (myUser != null) {
+      myUser.getAuthentication().clear();
     }
     courseUpdater.stop();
     exercisesUpdater.stop();
@@ -89,7 +98,7 @@ public class CourseProject {
    */
   public void readAuthenticationFromStorage(@Nullable PasswordStorage passwordStorage,
                                             @NotNull TokenAuthentication.Factory factory) {
-    if (hasTriedToReadAuthenticationFromStorage.getAndSet(true) || user != null) {
+    if (hasTriedToReadAuthenticationFromStorage.getAndSet(true) || user.get() != null) {
       return;
     }
     Optional.ofNullable(passwordStorage)
@@ -110,7 +119,7 @@ public class CourseProject {
 
   @NotNull
   public String getUserName() {
-    return user == null ? "" : user.getUserName();
+    return Optional.ofNullable(user.get()).map(User::getUserName).orElse("");
   }
 
   @NotNull
@@ -129,24 +138,22 @@ public class CourseProject {
 
   @Nullable
   public Authentication getAuthentication() {
-    return user == null ? null : user.getAuthentication();
+    return user.get() == null ? null : Objects.requireNonNull(user.get()).getAuthentication();
   }
 
   /**
    * Sets the authentication. Any existing authentication is cleared.
    */
   public void setAuthentication(Authentication authentication) {
-    if (this.user != null) {
-      this.user.getAuthentication().clear();
-    }
-    if (authentication == null) {
-      this.user = null;
-    } else {
-      try {
-        this.user = course.getExerciseDataSource().getUser(authentication);
-      } catch (IOException e) {
-        logger.error("Failed to fetch user data", e);
+    try {
+      var newUser = authentication == null
+              ? null : course.getExerciseDataSource().getUser(authentication);
+      var oldUser = this.user.getAndSet(newUser);
+      if (oldUser != null) {
+        oldUser.getAuthentication().clear();
       }
+    } catch (IOException e) {
+      notifier.notify(new NetworkErrorNotification(e), project);
     }
   }
 
