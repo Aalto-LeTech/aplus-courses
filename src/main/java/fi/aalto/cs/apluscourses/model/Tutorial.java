@@ -45,6 +45,4 @@ public class Tutorial {
   public void onComplete() {
     this.tutorialCompleted.trigger();
   }
-
-  public void onTaskComplete() {}
 }
