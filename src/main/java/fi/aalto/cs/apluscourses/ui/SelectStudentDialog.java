@@ -71,7 +71,7 @@ public class SelectStudentDialog extends OurDialogWrapper {
   private void createUIComponents() {
     scrollPane = new JBScrollPane();
 
-    studentList = new SingleSelectionList<>(viewModel.getStudents()) {
+    studentList = new SingleSelectionList<>() {
       @Override
       protected void processMouseEvent(MouseEvent e) {
         super.processMouseEvent(e);
@@ -93,6 +93,7 @@ public class SelectStudentDialog extends OurDialogWrapper {
       }
     };
     studentList.selectionBindable.bindToSource(viewModel.selectedStudent);
+    studentList.listDataBindable.bindToSource(viewModel.students);
     new ListSpeedSearch<>(studentList, Student::getPresentableName);
 
     studentList.setCellRenderer(new ColoredListCellRenderer<>() {
@@ -130,7 +131,6 @@ public class SelectStudentDialog extends OurDialogWrapper {
               .getStudents(course, auth, OffsetDateTime.MAX.toZonedDateTime());
           SwingUtilities.invokeLater(() -> {
             viewModel.setStudents(students);
-            studentList.setListData(viewModel.getStudents().toArray(Student[]::new));
             studentList.setPaintBusy(false);
           });
         } catch (IOException ex) {
