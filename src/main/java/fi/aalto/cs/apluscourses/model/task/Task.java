@@ -21,7 +21,7 @@ public class Task {
   private ActivitiesListener listener;
   private ComponentPresenter presenter;
 
-  private AtomicBoolean alreadyComplete = new AtomicBoolean();
+  private final AtomicBoolean alreadyComplete = new AtomicBoolean();
 
   /**
    * Task constructor.
@@ -48,7 +48,6 @@ public class Task {
    * Ends the task.
    */
   public synchronized void endTask() {
-    //here show a notification
     alreadyComplete.set(false);
     if (listener != null) {
       listener.unregisterListener();
