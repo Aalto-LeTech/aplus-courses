@@ -21,11 +21,11 @@ public class TaskCompleteNotification extends Notification {
   }
 
   public static TaskCompleteNotification createTaskCompleteNotification(int index) {
-    return new TaskCompleteNotification("notification.TaskCompleteNotification.content", index);
+    return new TaskCompleteNotification("notification.TaskCompleteNotification.content", index + 1);
   }
 
   public static TaskCompleteNotification createTaskAlreadyCompleteNotification(int index) {
-    return new TaskCompleteNotification("notification.TaskCompleteNotification.contentAlready", index);
+    return new TaskCompleteNotification("notification.TaskCompleteNotification.contentAlready", index + 1);
   }
 
 

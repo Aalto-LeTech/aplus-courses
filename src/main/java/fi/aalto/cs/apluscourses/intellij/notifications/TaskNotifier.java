@@ -13,10 +13,10 @@ public class TaskNotifier {
   }
 
   public void notifyAlreadyEndTask(int index) {
-    notifier.notify(TaskCompleteNotification.createTaskAlreadyCompleteNotification(index + 1), project);
+    notifier.notify(TaskCompleteNotification.createTaskAlreadyCompleteNotification(index), project);
   }
 
   public void notifyEndTask(int index) {
-    notifier.notify(TaskCompleteNotification.createTaskCompleteNotification(index + 1), project);
+    notifier.notify(TaskCompleteNotification.createTaskCompleteNotification(index), project);
   }
 }
