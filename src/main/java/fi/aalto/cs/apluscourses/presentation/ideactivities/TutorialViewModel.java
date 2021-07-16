@@ -1,6 +1,6 @@
 package fi.aalto.cs.apluscourses.presentation.ideactivities;
 
-import fi.aalto.cs.apluscourses.intellij.actions.TutorialAction;
+import fi.aalto.cs.apluscourses.intellij.notifications.TaskNotifier;
 import fi.aalto.cs.apluscourses.model.Tutorial;
 import fi.aalto.cs.apluscourses.model.TutorialExercise;
 import fi.aalto.cs.apluscourses.model.task.ActivityFactory;
@@ -13,8 +13,7 @@ public class TutorialViewModel {
 
   private final TutorialExercise tutorialExercise;
   private final ActivityFactory activityFactory;
-  private final @NotNull TutorialAction.Dialogs dialogs;
-
+  private final TaskNotifier taskNotifier;
   private final Object lock = new Object();
 
   private Task currentTask = null;
@@ -23,14 +22,15 @@ public class TutorialViewModel {
    * Constructor.
    */
   public TutorialViewModel(@NotNull TutorialExercise tutorialExercise,
-                           @NotNull ActivityFactory activityFactory, TutorialAction.Dialogs dialogs) {
+                           @NotNull ActivityFactory activityFactory,
+                           @NotNull TaskNotifier taskNotifier) {
     this.tutorialExercise = tutorialExercise;
-    this.dialogs = dialogs;
     List<Task> tasks = tutorialExercise.getTutorial().getTasks();
     if (!tasks.isEmpty()) {
       this.currentTask = tasks.get(0);
     }
     this.activityFactory = activityFactory;
+    this.taskNotifier = taskNotifier;
   }
 
   /**
@@ -40,8 +40,9 @@ public class TutorialViewModel {
     synchronized (lock) {
       currentTask.taskCompleted.addListener(this, TutorialViewModel::currentTaskCompleted);
       if (currentTask.startTask(activityFactory)) {
+        taskNotifier.notifyAlreadyEndTask(tutorialExercise.getTutorial().getTasks().indexOf(currentTask));
+        currentTask.setAlreadyComplete(true);
         currentTaskCompleted();
-        //notify the user! With differen text
       }
       // The Task/Tutorial has been completed prematurely
       // because the Activity was already performed.
@@ -49,8 +50,6 @@ public class TutorialViewModel {
       // No need to show the instructions for this Task
       // as we are proceeding directly to the next one.
       // We can instead inform the user that they have already completed it
-      // through the alreadyComplete boolean.
-
     }
   }
 
@@ -61,17 +60,18 @@ public class TutorialViewModel {
    */
   public void currentTaskCompleted() {
     synchronized (lock) {
+      if (!currentTask.getAlreadyComplete()) {
+        taskNotifier.notifyEndTask(tutorialExercise.getTutorial().getTasks().indexOf(currentTask));
+      }
+
+      Tutorial tutorial = tutorialExercise.getTutorial();
       currentTask.endTask();
       currentTask.taskCompleted.removeCallback(this);
-
-      if (dialogs.confirmEndTask(this) && currentTask != null) {
-        Tutorial tutorial = tutorialExercise.getTutorial();
-        currentTask = tutorial.getNextTask(currentTask);
-        if (currentTask == null) {
-          tutorial.onComplete();
-        } else {
-          startNextTask();
-        }
+      currentTask = tutorial.getNextTask(currentTask);
+      if (currentTask == null) {
+        tutorial.onComplete();
+      } else {
+        startNextTask();
       }
     }
   }

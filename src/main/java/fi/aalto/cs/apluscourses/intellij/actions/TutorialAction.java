@@ -7,7 +7,7 @@ import fi.aalto.cs.apluscourses.intellij.model.task.IntelliJActivityFactory;
 import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.ExerciseNotSelectedNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
-import fi.aalto.cs.apluscourses.intellij.notifications.TaskCompleteNotification;
+import fi.aalto.cs.apluscourses.intellij.notifications.TaskNotifier;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Authentication;
@@ -54,10 +54,6 @@ public class TutorialAction extends AnAction {
     this.dialogs = dialogs;
   }
 
-  public void notifyEndTask(@NotNull TutorialViewModel tutorialViewModel) {
-   // notifier.notify(new TaskCompleteNotification("name"), );
-  }
-
   @Override
   public void actionPerformed(@NotNull AnActionEvent e) {
     if (e.getProject() == null) {
@@ -90,7 +86,8 @@ public class TutorialAction extends AnAction {
         .ifPresent(TutorialViewModel::cancelTutorial);
 
     TutorialViewModel tutorialViewModel =
-        new TutorialViewModel(tutorialExercise, new IntelliJActivityFactory(project), dialogs);
+        new TutorialViewModel(tutorialExercise, new IntelliJActivityFactory(project),
+            new TaskNotifier(notifier, project));
     mainViewModelProvider.getMainViewModel(project).tutorialViewModel.set(tutorialViewModel);
     if (dialogs.confirmStart(tutorialViewModel)) {
       tutorialViewModel.getTutorial().tutorialCompleted
@@ -127,8 +124,6 @@ public class TutorialAction extends AnAction {
     boolean confirmStart(@NotNull TutorialViewModel tutorialViewModel);
 
     void end(@NotNull TutorialViewModel tutorialViewModel);
-
-    boolean confirmEndTask(@NotNull TutorialViewModel tutorialViewModel);
   }
 
   private static class DefaultDialogs implements Dialogs {
@@ -139,17 +134,6 @@ public class TutorialAction extends AnAction {
         "A tutorial will start.",
         tutorialViewModel.getTitle(),
         JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION;
-    }
-
-    @Override
-    public boolean confirmEndTask(@NotNull TutorialViewModel tutorialViewModel) {
-
-      Object[] buttons = {"OK"};
-      return JOptionPane.showOptionDialog(null,
-          "The task is complete.", tutorialViewModel.getTitle(),
-          JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE,
-          null, buttons, buttons[0]) == JOptionPane.OK_OPTION;
-      //notifier.notify(new TaskCompleteNotification("name"), );
     }
 
     @Override
