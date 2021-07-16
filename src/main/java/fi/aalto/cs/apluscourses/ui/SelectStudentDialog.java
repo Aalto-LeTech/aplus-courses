@@ -7,6 +7,7 @@ import com.intellij.ui.ColoredListCellRenderer;
 import com.intellij.ui.ListSpeedSearch;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.speedSearch.SpeedSearchUtil;
+import com.intellij.util.ui.UIUtil;
 import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.model.Student;
@@ -15,6 +16,8 @@ import fi.aalto.cs.apluscourses.ui.base.OurDialogWrapper;
 import fi.aalto.cs.apluscourses.ui.base.SingleSelectionList;
 import icons.PluginIcons;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.concurrent.Executors;
@@ -44,7 +47,6 @@ public class SelectStudentDialog extends OurDialogWrapper {
     this.viewModel = viewModel;
     this.project = project;
     setTitle(getText("ui.selectStudentDialog.title"));
-    registerValidationItem(studentList.selectionBindable);
     init();
   }
 
@@ -69,7 +71,27 @@ public class SelectStudentDialog extends OurDialogWrapper {
   private void createUIComponents() {
     scrollPane = new JBScrollPane();
 
-    studentList = new SingleSelectionList<>(viewModel.getStudents());
+    studentList = new SingleSelectionList<>(viewModel.getStudents()) {
+      @Override
+      protected void processMouseEvent(MouseEvent e) {
+        super.processMouseEvent(e);
+        if (e.getClickCount() == 2) {
+          performOkAction();
+        }
+      }
+
+      @Override
+      protected void processKeyEvent(KeyEvent e) {
+        super.processKeyEvent(e);
+        if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+          performOkAction();
+        }
+      }
+
+      private void performOkAction() {
+        getOKAction().actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null));
+      }
+    };
     studentList.selectionBindable.bindToSource(viewModel.selectedStudent);
     new ListSpeedSearch<>(studentList, Student::getPresentableName);
 
@@ -83,6 +105,9 @@ public class SelectStudentDialog extends OurDialogWrapper {
         setIcon(PluginIcons.A_PLUS_USER_ACTIVE);
         append(value.getPresentableName());
         SpeedSearchUtil.applySpeedSearchHighlighting(list, this, true, selected);
+        if (!selected && index % 2 == 0) {
+          setBackground(UIUtil.getDecoratedRowColor());
+        }
       }
     });
   }
@@ -105,7 +130,6 @@ public class SelectStudentDialog extends OurDialogWrapper {
               .getStudents(course, auth, OffsetDateTime.MAX.toZonedDateTime());
           SwingUtilities.invokeLater(() -> {
             viewModel.setStudents(students);
-            viewModel.sortStudents();
             studentList.setListData(viewModel.getStudents().toArray(Student[]::new));
             studentList.setPaintBusy(false);
           });

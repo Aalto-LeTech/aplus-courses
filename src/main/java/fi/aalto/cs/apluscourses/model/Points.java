@@ -1,8 +1,7 @@
 package fi.aalto.cs.apluscourses.model;
 
-import static fi.aalto.cs.apluscourses.utils.MapUtil.mapValueListsSize;
-
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -59,7 +58,7 @@ public class Points {
    */
   public int getSubmissionsCount() {
     if (submissionsCount == null) {
-      submissionsCount = mapValueListsSize(submissions);
+      submissionsCount = submissions.values().stream().mapToInt(Collection::size).sum();
     }
     return submissionsCount;
   }
@@ -74,7 +73,7 @@ public class Points {
    */
   public int getExercisesCount() {
     if (exercisesCount == null) {
-      exercisesCount = mapValueListsSize(exercises);
+      exercisesCount = exercises.values().stream().mapToInt(Collection::size).sum();
     }
     return exercisesCount;
   }

@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
 public class SelectStudentViewModel {
-  @NotNull
   private List<Student> students;
   @NotNull
   private final Course course;
@@ -27,21 +26,13 @@ public class SelectStudentViewModel {
   public SelectStudentViewModel(@NotNull List<Student> students,
                                 @NotNull Course course,
                                 @NotNull Authentication authentication) {
-    this.students = students;
+    setStudents(students);
     this.course = course;
     this.authentication = authentication;
-    sortStudents();
   }
 
   public void setStudents(@NotNull List<Student> newStudents) {
-    students = newStudents;
-  }
-
-  /**
-   * Sorts the students alphabetically.
-   */
-  public void sortStudents() {
-    students = students
+    students = newStudents
         .stream()
         .sorted(Comparator.comparing(Student::getFullName))
         .collect(Collectors.toList());
