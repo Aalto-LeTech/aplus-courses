@@ -2,9 +2,12 @@ package fi.aalto.cs.apluscourses.intellij.utils;
 
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtilRt;
+import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.model.ModuleMetadata;
@@ -74,8 +77,12 @@ public class CourseFileManagerTest {
         .toFile();
     threads = new ArrayList<>(NUM_THREADS);
     threadFailed = new AtomicBoolean(false);
+    var notifier = mock(Notifier.class);
 
-    manager = new CourseFileManager(project);
+    ModuleManager moduleManager = mock(ModuleManager.class);
+    when(project.getComponent(ModuleManager.class)).thenReturn(moduleManager);
+    when(moduleManager.getModules()).thenReturn(new com.intellij.openapi.module.Module[0]);
+    manager = new CourseFileManager(project, notifier);
   }
 
   @Test

@@ -13,7 +13,6 @@ import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.TutorialExercise;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
-import fi.aalto.cs.apluscourses.presentation.base.BaseTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseGroupViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
@@ -41,10 +40,7 @@ public class TutorialAction extends AnAction {
   }
 
   /**
-   *Constructor.
-   * @param mainViewModelProvider mainViewModelProvider
-   * @param notifier Notifier
-   * @param authenticationProvider TutorialAuthenticationProvider
+   * Constructor.
    */
   public TutorialAction(@NotNull MainViewModelProvider mainViewModelProvider,
                         @NotNull Notifier notifier,
@@ -74,9 +70,9 @@ public class TutorialAction extends AnAction {
       return;
     }
 
-    BaseTreeViewModel.Selection selection = exercisesViewModel.findSelected();
-    ExerciseViewModel selectedExercise = (ExerciseViewModel) selection.getLevel(2);
-    ExerciseGroupViewModel selectedExerciseGroup = (ExerciseGroupViewModel) selection.getLevel(1);
+    var selection = (ExercisesTreeViewModel.ExerciseTreeSelection) exercisesViewModel.findSelected();
+    ExerciseViewModel selectedExercise = selection.getExercise();
+    ExerciseGroupViewModel selectedExerciseGroup = selection.getExerciseGroup();
     if (selectedExercise == null || selectedExerciseGroup == null
             || !ExerciseViewModel.Status.TUTORIAL.equals(selectedExercise.getStatus())) {
       notifier.notifyAndHide(new ExerciseNotSelectedNotification(), project);
@@ -89,8 +85,8 @@ public class TutorialAction extends AnAction {
 
     TutorialViewModel tutorialViewModel =
         new TutorialViewModel(tutorialExercise, new IntelliJActivityFactory(project));
-    mainViewModelProvider.getMainViewModel(project).tutorialViewModel.set(tutorialViewModel);
     if (dialogs.confirmStart(tutorialViewModel)) {
+      mainViewModelProvider.getMainViewModel(project).tutorialViewModel.set(tutorialViewModel);
       tutorialViewModel.getTutorial().tutorialCompleted
           .addListener(mainViewModel, this::onTutorialComplete);
       tutorialViewModel.startNextTask();
@@ -103,14 +99,15 @@ public class TutorialAction extends AnAction {
     CourseViewModel courseViewModel = mainViewModel.courseViewModel.get();
     Authentication authentication = authenticationProvider.getAuthentication(e.getProject());
     ExercisesTreeViewModel exercisesViewModel = mainViewModel.exercisesViewModel.get();
+    var selection = exercisesViewModel == null ? null
+        : (ExercisesTreeViewModel.ExerciseTreeSelection) exercisesViewModel.findSelected();
     boolean isTutorialSelected =
             exercisesViewModel != null
             && authentication != null && courseViewModel != null
             && exercisesViewModel.getSelectedItem() != null
             && !(exercisesViewModel.getSelectedItem() instanceof ExerciseGroupViewModel)
-            && exercisesViewModel.findSelected().getLevel(2) != null
-            && ExerciseViewModel.Status.TUTORIAL.equals(
-               ((ExerciseViewModel) exercisesViewModel.findSelected().getLevel(2)).getStatus());
+            && selection.getExercise() != null
+            && ExerciseViewModel.Status.TUTORIAL.equals(selection.getExercise().getStatus());
 
     e.getPresentation().setVisible(e.getProject() != null && isTutorialSelected);
   }

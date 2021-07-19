@@ -42,7 +42,7 @@ public abstract class IntelliJLibrary
   @Override
   public void fetch() throws IOException {
     for (Content content : getContents()) {
-      content.copyTo(getFullPath());
+      content.copyTo(getFullPath(), project.getProject());
     }
   }
 
