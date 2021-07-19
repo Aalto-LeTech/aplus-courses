@@ -42,7 +42,7 @@ public class TutorialViewModel {
   public void startNextTask() {
     synchronized (lock) {
       currentTask.taskCompleted.addListener(this, TutorialViewModel::currentTaskCompleted);
-      incrementIndex();
+      incrementTaskIndex();
       if (currentTask.startTask(activityFactory)) {
         currentTaskCompleted();
       }
@@ -103,7 +103,7 @@ public class TutorialViewModel {
     return currentTaskIndex;
   }
 
-  private void incrementIndex() {
+  private void incrementTaskIndex() {
     currentTaskIndex++;
   }
 
