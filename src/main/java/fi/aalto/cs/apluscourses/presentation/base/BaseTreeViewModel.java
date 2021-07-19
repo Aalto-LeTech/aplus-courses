@@ -3,10 +3,12 @@ package fi.aalto.cs.apluscourses.presentation.base;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import fi.aalto.cs.apluscourses.utils.Event;
 import java.util.List;
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeWillExpandListener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class BaseTreeViewModel<T> extends SelectableNodeViewModel<T> {
+public class BaseTreeViewModel<T> extends SelectableNodeViewModel<T> implements TreeWillExpandListener {
 
   @NotNull
   public final Event filtered = new Event();
@@ -54,6 +56,16 @@ public class BaseTreeViewModel<T> extends SelectableNodeViewModel<T> {
   @Override
   public long getId() {
     return 0;
+  }
+
+  @Override
+  public void treeWillExpand(TreeExpansionEvent treeExpansionEvent) {
+
+  }
+
+  @Override
+  public void treeWillCollapse(TreeExpansionEvent treeExpansionEvent) {
+
   }
 
   private class FilterThread extends Thread {

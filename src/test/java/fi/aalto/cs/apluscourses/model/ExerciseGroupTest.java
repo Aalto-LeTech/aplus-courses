@@ -12,9 +12,12 @@ import org.junit.Test;
 public class ExerciseGroupTest {
 
   private static final String NAME_KEY = "display_name";
+  private static final String EXERCISES_KEY = "exercises";
   private static final String ID_KEY = "id";
   private static final String HTML_KEY = "html_url";
   private static final String OPEN_KEY = "is_open";
+  private static final String MAX_SUBMISSIONS_KEY = "max_submissions";
+  private static final String MAX_POINTS_KEY = "max_points";
 
   @Test
   public void testExerciseGroup() {
@@ -22,7 +25,7 @@ public class ExerciseGroupTest {
     Exercise exercise1 = new Exercise(123, "name1", "https://example.com", info, 0, 0, OptionalLong.empty());
     Exercise exercise2 = new Exercise(456, "name2", "https://example.org", info, 0, 0, OptionalLong.empty());
 
-    ExerciseGroup group = new ExerciseGroup(22, "group", "https://example.fi", true);
+    ExerciseGroup group = new ExerciseGroup(22, "group", "https://example.fi", true, List.of());
     group.addExercise(exercise1);
     group.addExercise(exercise2);
 
@@ -41,7 +44,7 @@ public class ExerciseGroupTest {
 
   @Test(expected = UnsupportedOperationException.class)
   public void testGetExercisesReturnsUnmodifiableList() {
-    ExerciseGroup group = new ExerciseGroup(10, "", "", true);
+    ExerciseGroup group = new ExerciseGroup(10, "", "", true, List.of());
     group.getExercises().add(null);
   }
 
@@ -51,7 +54,14 @@ public class ExerciseGroupTest {
         .put(ID_KEY, 567)
         .put(NAME_KEY, "group name")
         .put(HTML_KEY, "http://example.com/w01")
-        .put(OPEN_KEY, true);
+        .put(OPEN_KEY, true)
+        .put(EXERCISES_KEY, new JSONArray()
+            .put(new JSONObject()
+                .put(ID_KEY, 567)
+                .put(NAME_KEY, "exercise name")
+                .put(HTML_KEY, "http://localhost:7000")
+                .put(MAX_POINTS_KEY, 50)
+                .put(MAX_SUBMISSIONS_KEY, 10)));
     ExerciseGroup group = ExerciseGroup.fromJsonObject(json);
 
     Assert.assertEquals(567, group.getId());
@@ -59,6 +69,8 @@ public class ExerciseGroupTest {
         "group name", group.getName());
     Assert.assertEquals("http://example.com/w01", group.getHtmlUrl());
     Assert.assertTrue(group.isOpen());
+    Assert.assertEquals("The exercise group has the same exercises as in the JSON object",
+        "exercise name", group.getExercises().get(0).getName());
   }
 
   @Test(expected = JSONException.class)
@@ -82,7 +94,14 @@ public class ExerciseGroupTest {
           .put(NAME_KEY, "group " + i)
           .put(HTML_KEY, "http://example.com/w01")
           .put(OPEN_KEY, true)
-          .put(ID_KEY, i);
+          .put(ID_KEY, i)
+          .put(EXERCISES_KEY, new JSONArray()
+              .put(new JSONObject()
+                  .put(ID_KEY, i)
+                  .put(NAME_KEY, "exercise in group " + i)
+                  .put(HTML_KEY, "http://localhost:4000")
+                  .put(MAX_POINTS_KEY, 30)
+                  .put(MAX_SUBMISSIONS_KEY, 8)));
       array.put(json);
     }
     List<ExerciseGroup> exerciseGroups =

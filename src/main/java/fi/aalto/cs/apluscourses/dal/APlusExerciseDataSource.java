@@ -33,7 +33,6 @@ import java.util.function.Function;
 import org.apache.http.Header;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
@@ -311,34 +310,8 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
     }
 
     @Override
-    public <T> List<T> parsePaginatedResults(@NotNull JSONObject object,
-                                             @NotNull Function<JSONObject, T> parseFunction) {
-      var jsonResults = object.getJSONArray(RESULTS);
-      var results = new ArrayList<T>();
-      for (int i = 0; i < jsonResults.length(); i++) {
-        results.add(parseFunction.apply(jsonResults.getJSONObject(i)));
-      }
-      return results;
-    }
-
-    @Override
-    public String parseNextPageUrl(@NotNull JSONObject object) {
-      return object.optString("next", null);
-    }
-
-    @Override
-    public SubmissionInfo parseSubmissionInfo(@NotNull JSONObject object) {
-      return SubmissionInfo.fromJsonObject(object);
-    }
-
-    @Override
     public Group parseGroup(@NotNull JSONObject object) {
       return Group.fromJsonObject(object);
-    }
-
-    @Override
-    public List<ExerciseGroup> parseExerciseGroups(@NotNull JSONArray array) {
-      return ExerciseGroup.fromJsonArray(array);
     }
 
     @Override

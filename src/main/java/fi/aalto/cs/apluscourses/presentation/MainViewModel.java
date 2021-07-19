@@ -1,8 +1,7 @@
 package fi.aalto.cs.apluscourses.presentation;
 
 import fi.aalto.cs.apluscourses.BannerViewModel;
-import fi.aalto.cs.apluscourses.model.Authentication;
-import fi.aalto.cs.apluscourses.model.ExercisesTree;
+import fi.aalto.cs.apluscourses.intellij.model.CourseProject;
 import fi.aalto.cs.apluscourses.presentation.exercise.EmptyExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
@@ -54,10 +53,9 @@ public class MainViewModel {
    * Creates a new {@link ExercisesTreeViewModel} with the given exercise groups, which is then set
    * to {@link MainViewModel#exercisesViewModel}.
    */
-  public void updateExercisesViewModel(@NotNull ExercisesTree exercisesTree,
-                                       Authentication auth) {
-    var viewModel = new ExercisesTreeViewModel(exercisesTree, exerciseFilterOptions);
-    viewModel.setAuthenticated(auth != null);
+  public void updateExercisesViewModel(@NotNull CourseProject courseProject) {
+    var viewModel = new ExercisesTreeViewModel(courseProject.getExerciseTree(), exerciseFilterOptions, courseProject);
+    viewModel.setAuthenticated(courseProject.getAuthentication() != null);
     viewModel.setProjectReady(exercisesViewModel.get().isProjectReady());
     exercisesViewModel.set(viewModel);
   }

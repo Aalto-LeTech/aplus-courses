@@ -48,7 +48,7 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
     return (SelectableNodeViewModel<?>) TREE_MODEL_BUILDER.getUserObject(node);
   }
 
-  private BaseTreeViewModel<?> viewModel = null;
+  protected BaseTreeViewModel<?> viewModel = null;
   private final Object viewModelLock = new Object();
 
   /**
@@ -83,6 +83,7 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
         this.viewModel = viewModel;
         registerViewModel();
       }
+      addTreeWillExpandListener(viewModel);
       update();
       viewModel.setSelectedItem(null);
     }

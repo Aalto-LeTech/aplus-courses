@@ -3,6 +3,7 @@ package fi.aalto.cs.apluscourses.presentation.exercise;
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getAndReplaceText;
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
+import fi.aalto.cs.apluscourses.model.DummySubmissionResult;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import fi.aalto.cs.apluscourses.presentation.base.Searchable;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
@@ -44,7 +45,8 @@ public class SubmissionResultViewModel extends SelectableNodeViewModel<Submissio
   }
 
   private String getStatus(SubmissionResult model) {
-    return getAndReplaceText("presentation.submissionResultViewModel.points",
+    return getModel() instanceof DummySubmissionResult ? "???"
+        : getAndReplaceText("presentation.submissionResultViewModel.points",
         model.getPoints(), model.getExercise().getMaxPoints());
   }
 

@@ -15,8 +15,11 @@ import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -58,6 +61,9 @@ public class CourseProject {
 
   @Nullable
   private volatile Student selectedStudent = null;
+
+  @NotNull
+  private final Set<Long> lazyLoaded = Collections.synchronizedSet(new HashSet<>());
 
   /**
    * Construct a course project from the given course, course configuration URL (used for updating),
@@ -182,5 +188,19 @@ public class CourseProject {
 
   public void setSelectedStudent(@Nullable Student selectedStudent) {
     this.selectedStudent = selectedStudent;
+    lazyLoaded.clear();
+  }
+
+  public void addLazyLoaded(@NotNull Long id) {
+    lazyLoaded.add(id);
+  }
+
+  @NotNull
+  public Set<Long> getLazyLoaded() {
+    return lazyLoaded;
+  }
+
+  public boolean isLazyLoaded(@NotNull Long id) {
+    return lazyLoaded.contains(id);
   }
 }
