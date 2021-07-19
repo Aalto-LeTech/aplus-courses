@@ -11,7 +11,9 @@ import org.jetbrains.annotations.NotNull;
 public class TutorialViewModel {
 
   private final TutorialExercise tutorialExercise;
+
   private final TutorialDialogs dialogs;
+
   private final ActivityFactory activityFactory;
 
   private final Object lock = new Object();
@@ -46,7 +48,7 @@ public class TutorialViewModel {
     synchronized (lock) {
       currentTask.taskCompleted.addListener(this, TutorialViewModel::currentTaskCompleted);
       currentTask.taskCanceled.addListener(this, TutorialViewModel::confirmCancel);
-      incrementIndex();
+      incrementTaskIndex();
       if (currentTask.startTask(activityFactory)) {
         currentTaskCompleted();
       }
@@ -109,7 +111,7 @@ public class TutorialViewModel {
     return currentTaskIndex;
   }
 
-  private void incrementIndex() {
+  private void incrementTaskIndex() {
     currentTaskIndex++;
   }
 
