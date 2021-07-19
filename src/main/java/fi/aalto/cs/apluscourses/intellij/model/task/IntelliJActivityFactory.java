@@ -21,7 +21,15 @@ public class IntelliJActivityFactory implements ActivityFactory {
                                                     @NotNull ListenerCallback callback) {
     switch (action) {
       case "openEditor":
-        return new OpenFileListener(callback, arguments.getOrThrow("filepath"), project);
+        return OpenFileListener.create(callback, project, arguments);
+      case "build":
+        return BuildActionListener.create(callback, project);
+      case "run":
+        return RunActionListener.create(callback, project, arguments);
+      case "classDeclScala":
+        return ClassDeclarationListener.create(callback, project, arguments);
+      case "functionDefinition":
+        return FunctionDefinitionListener.create(callback, project, arguments);
       default:
         throw new IllegalArgumentException("Unsupported action: " + action);
     }

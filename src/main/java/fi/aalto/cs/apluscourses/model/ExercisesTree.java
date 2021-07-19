@@ -6,7 +6,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ExercisesTree {
+  @NotNull
   private final List<ExerciseGroup> exerciseGroups;
+
+  @Nullable
   private final Student selectedStudent;
 
   public ExercisesTree() {

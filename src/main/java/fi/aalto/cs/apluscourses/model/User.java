@@ -10,7 +10,7 @@ public class User {
   private final String userName;
 
   /**
-   * A Constructor.
+   * A constructor.
    */
   public User(@NotNull Authentication authentication,
               @NotNull String userName) {

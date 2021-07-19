@@ -61,4 +61,8 @@ public final class PluginIcons {
       .getIcon("/META-INF/icons/user.svg", PluginIcons.class);
   public static final Icon A_PLUS_USER_ACTIVE = IconLoader
       .getIcon("/META-INF/icons/user_pink.svg", PluginIcons.class);
+  public static final Icon A_PLUS_START = IconLoader
+      .getIcon("/META-INF/icons/start.svg", PluginIcons.class);
+  public static final Icon A_PLUS_TUTORIAL = IconLoader
+      .getIcon("/META-INF/icons/tutorial.svg", PluginIcons.class);
 }

@@ -16,7 +16,6 @@ import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.intellij.utils.Interfaces;
 import fi.aalto.cs.apluscourses.intellij.utils.VfsUtil;
-import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.ComponentInstaller;
 import fi.aalto.cs.apluscourses.model.ComponentInstallerImpl;
 import fi.aalto.cs.apluscourses.model.Course;
@@ -26,10 +25,9 @@ import fi.aalto.cs.apluscourses.model.FileFinder;
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.model.SubmissionFileInfo;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
-import fi.aalto.cs.apluscourses.presentation.base.BaseTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.DownloadSubmissionViewModel;
-import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseGroupViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseViewModel;
+import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionResultViewModel;
 import fi.aalto.cs.apluscourses.ui.InstallerDialogs;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
@@ -38,7 +36,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
@@ -139,32 +136,18 @@ public class DownloadSubmissionAction extends AnAction {
     }
     var submissionId = selectedItem.getId();
 
-    BaseTreeViewModel.Selection selection = exercisesTreeViewModel.findSelected();
-    ExerciseViewModel selectedExercise = (ExerciseViewModel) selection.getLevel(2);
-    ExerciseGroupViewModel selectedExerciseGroup = (ExerciseGroupViewModel) selection.getLevel(1);
+    var selection = (ExercisesTreeViewModel.ExerciseTreeSelection) exercisesTreeViewModel.findSelected();
+    var selectedExercise = selection.getExercise();
+    var selectedExerciseGroup = selection.getExerciseGroup();
     if (selectedExercise == null || selectedExerciseGroup == null) {
       notifier.notifyAndHide(new ExerciseNotSelectedNotification(), project);
       return;
     }
 
-    Exercise exercise = selectedExercise.getModel();
-    Course course = courseViewModel.getModel();
+    var exercise = selectedExercise.getModel();
+    var course = courseViewModel.getModel();
 
-    String language = languageSource.getLanguage(project);
-
-    Map<String, String> exerciseModules =
-        courseViewModel.getModel().getExerciseModules().get(exercise.getId());
-
-    Optional<String> moduleName = Optional
-        .ofNullable(exerciseModules)
-        .map(self -> self.get(language));
-
-
-    Component selectedComponent = moduleName.map(course::getComponentIfExists).orElse(null);
-    Module selectedModule = null;
-    if (selectedComponent instanceof Module) {
-      selectedModule = (Module) selectedComponent;
-    }
+    var selectedModule = getSelectedModule(project, course, exercise);
 
     var installedModules = Arrays
         .stream(ModuleManager.getInstance(project).getModules())
@@ -196,6 +179,26 @@ public class DownloadSubmissionAction extends AnAction {
                     moduleCopy)));
   }
 
+  @Nullable
+  private Module getSelectedModule(@NotNull Project project,
+                                   @NotNull Course course,
+                                   @NotNull Exercise exercise) {
+    var language = languageSource.getLanguage(project);
+
+    var exerciseModules = course.getExerciseModules().get(exercise.getId());
+
+    var moduleName = Optional
+        .ofNullable(exerciseModules)
+        .map(self -> self.get(language));
+
+    var selectedComponent = moduleName.map(course::getComponentIfExists).orElse(null);
+    Module selectedModule = null;
+    if (selectedComponent instanceof Module) {
+      selectedModule = (Module) selectedComponent;
+    }
+    return selectedModule;
+  }
+
   private void downloadFiles(@Nullable Project project,
                              SubmissionFileInfo @NotNull [] submissionFilesInfo,
                              @NotNull Module module) {
@@ -206,10 +209,11 @@ public class DownloadSubmissionAction extends AnAction {
     var course = courseViewModel.getModel();
     course.validate();
 
+    var auth = authenticationProvider.getAuthentication(project);
+
     for (var info : submissionFilesInfo) {
       try {
         var file = fileFinder.findFile(module.getFullPath(), info.getFileName()).toFile();
-        var auth = authenticationProvider.getAuthentication(project);
         CoursesClient.fetch(new URL(info.getUrl()), file, auth);
         fileBrowser.navigateTo(file, project);
       } catch (FileDoesNotExistException ex) {
@@ -229,8 +233,8 @@ public class DownloadSubmissionAction extends AnAction {
     var courseViewModel = mainViewModel.courseViewModel.get();
     var exercisesTreeViewModel = mainViewModel.exercisesViewModel.get();
     if (courseViewModel != null && exercisesTreeViewModel != null) {
-      BaseTreeViewModel.Selection selection = exercisesTreeViewModel.findSelected();
-      ExerciseViewModel selectedExercise = (ExerciseViewModel) selection.getLevel(2);
+      var selection = (ExercisesTreeViewModel.ExerciseTreeSelection) exercisesTreeViewModel.findSelected();
+      ExerciseViewModel selectedExercise = selection.getExercise();
       var selectedItem = exercisesTreeViewModel.getSelectedItem();
       e.getPresentation().setEnabled(selectedItem instanceof SubmissionResultViewModel
           && exercisesTreeViewModel.isAuthenticated()

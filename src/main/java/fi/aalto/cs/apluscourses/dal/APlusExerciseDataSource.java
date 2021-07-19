@@ -311,6 +311,27 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
     }
 
     @Override
+    public <T> List<T> parsePaginatedResults(@NotNull JSONObject object,
+                                             @NotNull Function<JSONObject, T> parseFunction) {
+      var jsonResults = object.getJSONArray(RESULTS);
+      var results = new ArrayList<T>();
+      for (int i = 0; i < jsonResults.length(); i++) {
+        results.add(parseFunction.apply(jsonResults.getJSONObject(i)));
+      }
+      return results;
+    }
+
+    @Override
+    public String parseNextPageUrl(@NotNull JSONObject object) {
+      return object.optString("next", null);
+    }
+
+    @Override
+    public SubmissionInfo parseSubmissionInfo(@NotNull JSONObject object) {
+      return SubmissionInfo.fromJsonObject(object);
+    }
+
+    @Override
     public Group parseGroup(@NotNull JSONObject object) {
       return Group.fromJsonObject(object);
     }
