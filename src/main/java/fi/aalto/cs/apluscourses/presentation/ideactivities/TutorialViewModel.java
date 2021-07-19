@@ -40,7 +40,8 @@ public class TutorialViewModel {
     synchronized (lock) {
       currentTask.taskCompleted.addListener(this, TutorialViewModel::currentTaskCompleted);
       if (currentTask.startTask(activityFactory)) {
-        taskNotifier.notifyAlreadyEndTask(tutorialExercise.getTutorial().getTasks().indexOf(currentTask));
+        taskNotifier.notifyAlreadyEndTask(tutorialExercise.getTutorial().getTasks().indexOf(currentTask),
+            currentTask.getInstruction());
         currentTask.setAlreadyComplete(true);
         currentTaskCompleted();
       }

@@ -108,5 +108,9 @@ public class Task {
   public void setAlreadyComplete(boolean alreadyComplete) {
     this.alreadyComplete.set(alreadyComplete);
   }
+
+  public String getInstruction() {
+    return instruction;
+  }
 }
 

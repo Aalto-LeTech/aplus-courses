@@ -12,20 +12,30 @@ public class TaskCompleteNotification extends Notification {
   /**
    * Constructor.
    */
-  public TaskCompleteNotification(String contentKey, int index) {
+  private TaskCompleteNotification(String contentKey, int index) {
     super(PluginSettings.A_PLUS,
         getText("notification.TaskCompleteNotification.title"),
         getAndReplaceText(contentKey, index),
         NotificationType.INFORMATION);
+  }
 
+  /**
+   * Constructor.
+   */
+  private TaskCompleteNotification(String contentKey, int index, String instructions) {
+    super(PluginSettings.A_PLUS,
+        getText("notification.TaskCompleteNotification.title"),
+        getAndReplaceText(contentKey, index) + "\n(" + instructions + ")",
+        NotificationType.INFORMATION);
   }
 
   public static TaskCompleteNotification createTaskCompleteNotification(int index) {
     return new TaskCompleteNotification("notification.TaskCompleteNotification.content", index + 1);
   }
 
-  public static TaskCompleteNotification createTaskAlreadyCompleteNotification(int index) {
-    return new TaskCompleteNotification("notification.TaskCompleteNotification.contentAlready", index + 1);
+  public static TaskCompleteNotification createTaskAlreadyCompleteNotification(int index, String instructions) {
+    return new TaskCompleteNotification("notification.TaskCompleteNotification.contentAlready",
+        index + 1, instructions);
   }
 
 
