@@ -84,17 +84,16 @@ public class ExercisesUpdater extends RepeatedTask {
         eventToTrigger.trigger();
       }
       var points = dataSource.getPoints(course, authentication, selectedStudent);
-      progress.incrementMaxValue(submissionsAmount(exerciseGroups, points));
+
+      addDummySubmissionResults(exerciseGroups, points);
+      if (Thread.interrupted()) {
+        progress.finish();
+        return;
+      }
+
+      progress.incrementMaxValue(submissionsAmount(exerciseGroups, points) + exercisesAmount(exerciseGroups));
       addExercises(exerciseGroups, points, authentication, progress);
-//      for (var exerciseGroup : exerciseGroups) {
-//        for (var exercise : exerciseGroup.getExercises()) {
-//          if (Thread.interrupted()) {
-//            progress.finish();
-//            return;
-//          }
-//          addSubmissionResults(exercise, points, authentication, progress);
-//        }
-//      }
+
       progress.finish();
       if (Thread.interrupted()) {
         return;
@@ -122,28 +121,44 @@ public class ExercisesUpdater extends RepeatedTask {
                             @NotNull Progress progress) throws IOException {
     var course = courseProject.getCourse();
     var dataSource = course.getExerciseDataSource();
-    progress.incrementMaxValue(exercisesAmount(exerciseGroups));
+    var selectedStudent = courseProject.getSelectedStudent();
+    var exercisesTree = new ExercisesTree(exerciseGroups, selectedStudent);
     for (var exerciseGroup : exerciseGroups) {
 
+      if (courseProject.getLazyLoaded().contains(exerciseGroup.getId())) {
         for (var exerciseId : points.getExercises(exerciseGroup.getId())) {
           if (Thread.interrupted()) {
             return;
           }
-          if (courseProject.getLazyLoaded().contains(exerciseGroup.getId())) {
-            var exercise = dataSource.getExercise(exerciseId, points, course.getTutorials(),
-                authentication, ZonedDateTime.now().minusDays(7));
-            exerciseGroup.addExercise(exercise);
-          }
-          progress.increment();
-          var exercise = exerciseGroup.getExerciseById(exerciseId);
-          if (exercise != null) {
-            addSubmissionResults(exercise, points, authentication, progress);
-          }
-        }
-        var selectedStudent = courseProject.getSelectedStudent();
-        courseProject.setExerciseTree(new ExercisesTree(exerciseGroups, selectedStudent));
-        eventToTrigger.trigger();
+          var exercise = dataSource.getExercise(exerciseId, points, course.getTutorials(),
+              authentication, ZonedDateTime.now().minusDays(7));
+          exerciseGroup.addExercise(exercise);
 
+          progress.increment();
+
+          addSubmissionResults(exercise, points, authentication, progress);
+
+          courseProject.setExerciseTree(exercisesTree);
+          eventToTrigger.trigger();
+        }
+
+      }
+
+    }
+  }
+
+  private void addDummySubmissionResults(@NotNull List<ExerciseGroup> exerciseGroups,
+                                         @NotNull Points points) {
+    for (var exerciseGroup : exerciseGroups) {
+      for (var exercise : exerciseGroup.getExercises()) {
+        var submissionIds = points.getSubmissions(exercise.getId());
+        for (var id : submissionIds) {
+          if (Thread.interrupted()) {
+            return;
+          }
+          exercise.addSubmissionResult(new DummySubmissionResult(id, exercise));
+        }
+      }
     }
   }
 
@@ -157,7 +172,6 @@ public class ExercisesUpdater extends RepeatedTask {
     var submissionIds = points.getSubmissions(exercise.getId());
     for (var id : submissionIds) {
       if (Thread.interrupted()) {
-        progress.finish();
         return;
       }
       SubmissionResult submission;
@@ -175,7 +189,6 @@ public class ExercisesUpdater extends RepeatedTask {
         }
       }
       exercise.addSubmissionResult(submission);
-      eventToTrigger.trigger();
       progress.increment();
     }
   }

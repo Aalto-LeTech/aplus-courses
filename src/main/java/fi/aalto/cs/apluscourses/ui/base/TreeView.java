@@ -78,6 +78,7 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
    */
   public void setViewModel(@Nullable BaseTreeViewModel<?> viewModel) {
     if (viewModel != null) {
+      removeTreeWillExpandListener(this.viewModel);
       synchronized (viewModelLock) {
         unregisterViewModel();
         this.viewModel = viewModel;
