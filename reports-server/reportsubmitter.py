@@ -51,6 +51,6 @@ def report_submitter_thread():
     logging.info("Starting the report submitter thread")
     while True:
         _send_pending_reports()
-        if exit_event.wait(5): # sleep for 15 minutes
+        if exit_event.wait(15 * 60): # sleep for 15 minutes
             logging.info("Report submitter thread stopped")
             return
