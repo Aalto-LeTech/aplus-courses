@@ -3,14 +3,12 @@ package fi.aalto.cs.apluscourses.dal;
 import static fi.aalto.cs.apluscourses.utils.ListUtil.appendTwoLists;
 
 import fi.aalto.cs.apluscourses.model.Authentication;
-import fi.aalto.cs.apluscourses.model.Cache;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.ExerciseDataSource;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.InvalidAuthenticationException;
-import fi.aalto.cs.apluscourses.model.JsonCache;
 import fi.aalto.cs.apluscourses.model.Points;
 import fi.aalto.cs.apluscourses.model.Student;
 import fi.aalto.cs.apluscourses.model.Submission;
@@ -19,6 +17,11 @@ import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import fi.aalto.cs.apluscourses.model.Tutorial;
 import fi.aalto.cs.apluscourses.model.User;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
+import fi.aalto.cs.apluscourses.utils.cache.Cache;
+import fi.aalto.cs.apluscourses.utils.cache.CachePreference;
+import fi.aalto.cs.apluscourses.utils.cache.CachePreferences;
+import fi.aalto.cs.apluscourses.utils.cache.DualCache;
+import fi.aalto.cs.apluscourses.utils.cache.JsonFileCache;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -62,7 +65,7 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
    * Default constructor.
    */
   public APlusExerciseDataSource(@NotNull String apiUrl, @NotNull Path cacheFile) {
-    var dataAccess = new DefaultDataAccess(new JsonCache(cacheFile));
+    var dataAccess = new DefaultDataAccess(new DualCache<>(new JsonFileCache(cacheFile)));
     this.client = dataAccess;
     this.parser = dataAccess;
     this.apiUrl = apiUrl;
@@ -83,27 +86,24 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
     this.parser = parser;
   }
 
-  @Override
-  public <T> List<T> getPaginatedResults(@NotNull String url,
-                                         @NotNull Authentication authentication,
-                                         @Nullable ZonedDateTime zonedDateTime,
-                                         @NotNull Function<JSONObject, T> parseFunction)
+  private <T> List<T> getPaginatedResults(@NotNull String url,
+                                          @NotNull Authentication authentication,
+                                          @NotNull CachePreference cachePreference,
+                                          @NotNull Function<JSONObject, T> parseFunction)
       throws IOException {
-    JSONObject response = zonedDateTime == null ? client.fetch(url, authentication)
-        : client.fetch(url, authentication, zonedDateTime);
+    JSONObject response = client.fetch(url, authentication, cachePreference);
     var results = parser.parsePaginatedResults(response, parseFunction);
     var nextPage = parser.parseNextPageUrl(response);
 
     return nextPage == null ? results
-        : appendTwoLists(results, getPaginatedResults(nextPage, authentication, zonedDateTime, parseFunction));
+        : appendTwoLists(results, getPaginatedResults(nextPage, authentication, cachePreference, parseFunction));
   }
 
-  @Override
-  public <T> List<T> getPaginatedResults(@NotNull String url,
-                                         @NotNull Authentication authentication,
-                                         @NotNull Function<JSONObject, T> parseFunction)
+  private  <T> List<T> getPaginatedResults(@NotNull String url,
+                                           @NotNull Authentication authentication,
+                                           @NotNull Function<JSONObject, T> parseFunction)
       throws IOException {
-    return getPaginatedResults(url, authentication, null, parseFunction);
+    return getPaginatedResults(url, authentication, CachePreferences.GET_NEW_AND_FORGET, parseFunction);
   }
 
   /**
@@ -163,9 +163,9 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   public SubmissionResult getSubmissionResult(@NotNull String submissionUrl,
                                               @NotNull Exercise exercise,
                                               @NotNull Authentication authentication,
-                                              @NotNull ZonedDateTime minCacheEntryTime)
+                                              @NotNull CachePreference cachePreference)
       throws IOException {
-    JSONObject response = client.fetch(submissionUrl, authentication, minCacheEntryTime);
+    JSONObject response = client.fetch(submissionUrl, authentication, cachePreference);
     return parser.parseSubmissionResult(response, exercise);
   }
 
@@ -175,9 +175,9 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
                               @NotNull Points points,
                               @NotNull Map<Long, Tutorial> tutorials,
                               @NotNull Authentication authentication,
-                              @NotNull ZonedDateTime minCacheEntryTime) throws IOException {
+                              @NotNull CachePreference cachePreference) throws IOException {
     var url = apiUrl + "exercises/" + exerciseId + "/";
-    var response = client.fetch(url, authentication, minCacheEntryTime);
+    var response = client.fetch(url, authentication, cachePreference);
     return parser.parseExercise(response, points, tutorials);
   }
 
@@ -193,9 +193,9 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   @NotNull
   public List<Student> getStudents(@NotNull Course course,
                                    @NotNull Authentication authentication,
-                                   @NotNull ZonedDateTime minCacheEntryTime) throws IOException {
+                                   @NotNull CachePreference cachePreference) throws IOException {
     String url = apiUrl + COURSES + "/" + course.getId() + "/" + STUDENTS + "/";
-    return getPaginatedResults(url, authentication, minCacheEntryTime, Student::fromJsonObject);
+    return getPaginatedResults(url, authentication, cachePreference, Student::fromJsonObject);
   }
 
   @Override
@@ -255,14 +255,14 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
     @Override
     public JSONObject fetch(@NotNull String url,
                             @Nullable Authentication authentication,
-                            @NotNull ZonedDateTime minCacheEntryTime) throws IOException {
-      var cacheEntry = cache.getEntry(url);
-      if (cacheEntry != null && cacheEntry.getCreationTime().compareTo(minCacheEntryTime) >= 0) {
-        return cacheEntry.getValue();
+                            @NotNull CachePreference cachePreference) throws IOException {
+      var value = cache.getValue(url, cachePreference);
+      if (value != null) {
+        return value;
       }
       try (InputStream inputStream = CoursesClient.fetch(new URL(url), authentication)) {
         var response = new JSONObject(new JSONTokener(inputStream));
-        cache.putValue(url, response);
+        cache.putValue(url, response, cachePreference);
         return response;
       }
     }

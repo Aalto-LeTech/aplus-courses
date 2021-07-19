@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.model;
 
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import fi.aalto.cs.apluscourses.utils.Version;
+import fi.aalto.cs.apluscourses.utils.cache.CachePreference;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -13,10 +14,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.OptionalLong;
-import java.util.function.Function;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,21 +28,6 @@ public class ModelExtensions {
   }
 
   public static class TestExerciseDataSource implements ExerciseDataSource {
-
-    @Override
-    public <T> List<T> getPaginatedResults(@NotNull String url,
-                                           @NotNull Authentication authentication,
-                                           @Nullable ZonedDateTime zonedDateTime,
-                                           @NotNull Function<JSONObject, T> parseFunction) {
-      return null;
-    }
-
-    @Override
-    public <T> List<T> getPaginatedResults(@NotNull String url,
-                                           @NotNull Authentication authentication,
-                                           @NotNull Function<JSONObject, T> parseFunction) {
-      return null;
-    }
 
     @NotNull
     @Override
@@ -84,7 +68,7 @@ public class ModelExtensions {
                                 @NotNull Points points,
                                 @NotNull Map<Long, Tutorial> tutorials,
                                 @NotNull Authentication authentication,
-                                @NotNull ZonedDateTime minCacheEntryTime) {
+                                @NotNull CachePreference cachePreference) {
       return new Exercise(1, "lol", "http://example.com",
           new SubmissionInfo(Collections.emptyMap()), 20, 10, OptionalLong.empty()
       );
@@ -95,7 +79,7 @@ public class ModelExtensions {
     public SubmissionResult getSubmissionResult(@NotNull String submissionUrl,
                                                 @NotNull Exercise exercise,
                                                 @NotNull Authentication authentication,
-                                                @NotNull ZonedDateTime minCacheEntryTime) {
+                                                @NotNull CachePreference cachePreference) {
       return new SubmissionResult(0, 20, 0.0, SubmissionResult.Status.GRADED, exercise);
     }
 
@@ -108,7 +92,7 @@ public class ModelExtensions {
     @NotNull
     public List<Student> getStudents(@NotNull Course course,
                                      @NotNull Authentication authentication,
-                                     @NotNull ZonedDateTime minCacheEntryTime) {
+                                     @NotNull CachePreference cachePreference) {
       return new ArrayList<>();
     }
 
