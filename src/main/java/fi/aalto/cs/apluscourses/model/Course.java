@@ -13,6 +13,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -190,7 +191,7 @@ public abstract class Course implements ComponentSource {
       throws IOException, MalformedCourseConfigurationException {
     InputStream inputStream = CoursesClient.fetch(url);
     return Course.fromConfigurationData(
-        new InputStreamReader(inputStream), url.toString(), modelFactory);
+        new InputStreamReader(inputStream, StandardCharsets.UTF_8), url.toString(), modelFactory);
   }
 
   /**

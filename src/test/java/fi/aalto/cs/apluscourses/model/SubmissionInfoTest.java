@@ -21,9 +21,7 @@ public class SubmissionInfoTest {
     files.put(langFi, List.of(file1, file2));
     files.put(langSe, List.of(file1, file2));
 
-    SubmissionInfo info = new SubmissionInfo(10, files);
-    Assert.assertEquals("The submissions limit is the same as the one given to the constructor",
-        10, info.getSubmissionsLimit());
+    SubmissionInfo info = new SubmissionInfo(files);
     String message = "The filenames are the same as those given to the constructor";
     Assert.assertEquals(message, file1.getName(), info.getFiles(langFi).get(0).getName());
     Assert.assertEquals(message, file2.getName(), info.getFiles(langFi).get(1).getName());
@@ -55,13 +53,10 @@ public class SubmissionInfoTest {
     JSONObject json = new JSONObject()
         .put("id", 321)
         .put("name", "test exercise")
-        .put("exercise_info", exerciseInfo)
-        .put("max_submissions", 13);
+        .put("exercise_info", exerciseInfo);
 
     SubmissionInfo info = SubmissionInfo.fromJsonObject(json);
 
-    Assert.assertEquals("The submissions limit is the same as that in the JSON",
-        13, info.getSubmissionsLimit());
     Assert.assertEquals("The filenames are parsed from the JSON",
         "coolEnglishFilename.scala", info.getFiles("en").get(0).getName());
     Assert.assertEquals("The filenames are parsed from the JSON",

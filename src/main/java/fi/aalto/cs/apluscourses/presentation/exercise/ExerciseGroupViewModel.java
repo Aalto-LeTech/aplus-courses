@@ -18,7 +18,6 @@ public class ExerciseGroupViewModel extends SelectableNodeViewModel<ExerciseGrou
   public ExerciseGroupViewModel(@NotNull ExerciseGroup exerciseGroup) {
     super(exerciseGroup, exerciseGroup
         .getExercises()
-        .values()
         .stream()
         .map(ExerciseViewModel::new)
         .sorted(EXERCISE_COMPARATOR)

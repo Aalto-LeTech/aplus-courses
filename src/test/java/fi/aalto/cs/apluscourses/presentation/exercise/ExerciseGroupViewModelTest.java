@@ -6,10 +6,12 @@ import static org.mockito.Mockito.mock;
 
 import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
+import fi.aalto.cs.apluscourses.model.SubmissionInfo;
 import fi.aalto.cs.apluscourses.presentation.filter.Filter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalLong;
 import java.util.stream.Collectors;
 import org.junit.Assert;
 import org.junit.Test;
@@ -19,11 +21,10 @@ public class ExerciseGroupViewModelTest {
 
   @Test
   public void testGetPresentableName() {
-    ExerciseGroup group1 = new ExerciseGroup(
-        1, "|fi:Ryhma|en:Group|", "", true, Collections.emptyList());
+    var group1 = new ExerciseGroup(1, "|fi:Ryhma|en:Group|", "", true);
     ExerciseGroupViewModel viewModel1 = new ExerciseGroupViewModel(group1);
 
-    ExerciseGroup group2 = new ExerciseGroup(2, "group name", "", true, Collections.emptyList());
+    var group2 = new ExerciseGroup(2, "group name", "", true);
     ExerciseGroupViewModel viewModel2 = new ExerciseGroupViewModel(group2);
 
     Assert.assertEquals("getPresentableName returns the English name",
@@ -34,20 +35,21 @@ public class ExerciseGroupViewModelTest {
 
   @Test
   public void testSortsExercises1() {
+    var info = new SubmissionInfo(Collections.emptyMap());
     Exercise first = new Exercise(424, "Assignment 3",
-        "http://localhost:1000/w10/ch02/w10_ch02_03/", 0, 0,0, true);
+        "http://localhost:1000/w10/ch02/w10_ch02_03/", info, 0, 0, OptionalLong.empty());
     Exercise second = new Exercise(325, "Feedback",
-        "http://localhost:1000/w10/ch02/w10_ch02_feedback/", 0, 0, 0, true);
+        "http://localhost:1000/w10/ch02/w10_ch02_feedback/", info, 0, 0, OptionalLong.empty());
     Exercise third = new Exercise(195, "Assignment 9",
-        "http://localhost:1000/w10/ch03/w10_ch03_9/", 0, 0, 0, false);
+        "http://localhost:1000/w10/ch03/w10_ch03_9/", info, 0, 0, OptionalLong.empty());
     Exercise fourth = new Exercise(282, "Assignment 10",
-        "http://localhost:1000/w10/ch04/w10_ch03_10/", 0, 0, 0, false);
+        "http://localhost:1000/w10/ch04/w10_ch03_10/", info, 0, 0, OptionalLong.empty());
     Exercise fifth = new Exercise(908, "Assignment 1",
-        "http://localhost:1000/w12/ch01/w12_ch01_1/", 0, 0, 0, true);
+        "http://localhost:1000/w12/ch01/w12_ch01_1/", info, 0, 0, OptionalLong.empty());
 
 
-    ExerciseGroup group =
-        new ExerciseGroup(5, "", "", true, List.of(third, fifth, first, fourth, second));
+    ExerciseGroup group = new ExerciseGroup(5, "", "", true);
+    List.of(third, fifth, first, fourth, second).forEach(group::addExercise);
     ExerciseGroupViewModel groupViewModel = new ExerciseGroupViewModel(group);
     List<ExerciseViewModel> exerciseViewModels = groupViewModel.getChildren().stream()
         .map(ExerciseViewModel.class::cast).collect(Collectors.toList());
@@ -64,16 +66,17 @@ public class ExerciseGroupViewModelTest {
 
   @Test
   public void testSortsExercises2() {
+    var info = new SubmissionInfo(Collections.emptyMap());
     Exercise first = new Exercise(424, "Assignment 3",
-        "http://localhost:1000/studio_2/k2021dev/k15A/osa01/k15A_osa01_1/", 0, 0,0, false);
+        "http://localhost:1000/studio_2/k2021dev/k15A/osa01/k15A_osa01_1/", info, 0, 0, OptionalLong.empty());
     Exercise second = new Exercise(325, "Feedback",
-        "http://localhost:1000/studio_2/k2021dev/k15A/osa01/k15A_osa01_10/", 0, 0, 0, true);
+        "http://localhost:1000/studio_2/k2021dev/k15A/osa01/k15A_osa01_10/", info, 0, 0, OptionalLong.empty());
     Exercise third = new Exercise(195, "Assignment 9",
-        "http://localhost:1000/studio_2/k2021dev/k15A/osa01/k15B_osa01_1/", 0, 0, 0, true);
+        "http://localhost:1000/studio_2/k2021dev/k15A/osa01/k15B_osa01_1/", info, 0, 0, OptionalLong.empty());
 
 
-    ExerciseGroup group =
-        new ExerciseGroup(5, "", "", true, List.of(third, second, first));
+    ExerciseGroup group = new ExerciseGroup(5, "", "", true);
+    List.of(third, second, first).forEach(group::addExercise);
     ExerciseGroupViewModel groupViewModel = new ExerciseGroupViewModel(group);
     List<ExerciseViewModel> exerciseViewModels = groupViewModel.getChildren().stream()
         .map(ExerciseViewModel.class::cast).collect(Collectors.toList());
@@ -90,19 +93,19 @@ public class ExerciseGroupViewModelTest {
 
   @Test
   public void testFilterVisibility() throws InterruptedException {
+    var info = new SubmissionInfo(Collections.emptyMap());
     Exercise exercise = new Exercise(424, "Assignment 3",
-        "http://localhost:1000/studio_2/k2021dev/k15A/osa01/k15A_osa01_1/", 0, 0, 0, false);
+        "http://localhost:1000/studio_2/k2021dev/k15A/osa01/k15A_osa01_1/", info, 0, 0, OptionalLong.empty());
 
-    ExerciseGroup group =
-        new ExerciseGroup(5, "", "", true, Collections.singletonList(exercise));
+    ExerciseGroup group = new ExerciseGroup(5, "", "", true);
+    group.addExercise(exercise);
     ExerciseGroupViewModel groupViewModel = new ExerciseGroupViewModel(group);
 
     Filter filter = mock(Filter.class, new Returns(Optional.empty()));
     groupViewModel.applyFilter(filter);
     assertTrue("Week with children is visible", groupViewModel.isVisible());
 
-    ExerciseGroup emptyGroup =
-        new ExerciseGroup(6, "", "", true, Collections.emptyList());
+    ExerciseGroup emptyGroup = new ExerciseGroup(6, "", "", true);
     ExerciseGroupViewModel emptyGroupViewModel = new ExerciseGroupViewModel(emptyGroup);
 
     emptyGroupViewModel.applyFilter(filter);

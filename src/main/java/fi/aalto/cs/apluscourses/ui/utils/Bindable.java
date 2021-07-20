@@ -1,11 +1,11 @@
 package fi.aalto.cs.apluscourses.ui.utils;
 
+import com.intellij.openapi.application.ApplicationManager;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ValidationError;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import javax.swing.JComponent;
-import javax.swing.SwingUtilities;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,8 +26,8 @@ public class Bindable<T extends JComponent, S> implements ValidationItem {
    */
   public Bindable(@NotNull T target, @NotNull BiConsumer<T, S> targetSetter, boolean lateInvoke) {
     this.target = target;
-    this.targetSetter = lateInvoke
-            ? (t, s) -> SwingUtilities.invokeLater(() -> targetSetter.accept(t, s)) : targetSetter;
+    this.targetSetter = lateInvoke ? (t, s) -> ApplicationManager.getApplication()
+        .invokeLater(() -> targetSetter.accept(t, s)) : targetSetter;
   }
 
   /**

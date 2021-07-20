@@ -16,6 +16,7 @@ import fi.aalto.cs.apluscourses.intellij.notifications.UrlRenderingErrorNotifica
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
+import fi.aalto.cs.apluscourses.model.SubmissionInfo;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import fi.aalto.cs.apluscourses.model.UrlRenderer;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
@@ -27,6 +28,7 @@ import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionResultViewModel;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import java.net.URISyntaxException;
 import java.util.Collections;
+import java.util.OptionalLong;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -60,9 +62,10 @@ public class OpenItemActionTest {
 
   @Test
   public void testOpenItemActionSubmission() throws Exception {
-    exercise = new Exercise(223, "TestEx", "http://example.com", 0, 1, 10, true);
+    var info = new SubmissionInfo(Collections.emptyMap());
+    exercise = new Exercise(223, "TestEx", "http://example.com", info, 1, 10, OptionalLong.empty());
     submissionResult
-        = new SubmissionResult(1, 0, SubmissionResult.Status.GRADED, exercise);
+        = new SubmissionResult(1, 0, 0.0, SubmissionResult.Status.GRADED, exercise);
     setUp(new SubmissionResultViewModel(submissionResult, 1));
     OpenItemAction action = new OpenItemAction(
         mainViewModelProvider,
@@ -79,7 +82,8 @@ public class OpenItemActionTest {
 
   @Test
   public void testOpenItemActionExercise() throws Exception {
-    exercise = new Exercise(223, "TestEx", "http://example.com", 0, 1, 10, true);
+    var info = new SubmissionInfo(Collections.emptyMap());
+    exercise = new Exercise(223, "TestEx", "http://example.com", info, 1, 10, OptionalLong.empty());
     setUp(new ExerciseViewModel(exercise));
     OpenItemAction action = new OpenItemAction(
         mainViewModelProvider,
@@ -96,8 +100,7 @@ public class OpenItemActionTest {
 
   @Test
   public void testOpenItemActionWeek() throws Exception {
-    ExerciseGroup exerciseGroup =
-        new ExerciseGroup(0, "", "https://url.com/", true, Collections.emptyList());
+    var exerciseGroup = new ExerciseGroup(0, "", "https://url.com/", true);
     setUp(new ExerciseGroupViewModel(exerciseGroup));
     OpenItemAction action = new OpenItemAction(
         mainViewModelProvider,
@@ -114,9 +117,10 @@ public class OpenItemActionTest {
 
   @Test
   public void testErrorNotification() throws URISyntaxException {
-    exercise = new Exercise(223, "TestEx", "http://example.com", 0, 1, 10, true);
+    var info = new SubmissionInfo(Collections.emptyMap());
+    exercise = new Exercise(223, "TestEx", "http://example.com", info, 1, 10, OptionalLong.empty());
     submissionResult
-        = new SubmissionResult(1, 0, SubmissionResult.Status.GRADED, exercise);
+        = new SubmissionResult(1, 0, 0.0, SubmissionResult.Status.GRADED, exercise);
     setUp(new SubmissionResultViewModel(submissionResult, 1));
     URISyntaxException exception = new URISyntaxException("input", "reason");
     doThrow(exception).when(urlRenderer).show(anyString());

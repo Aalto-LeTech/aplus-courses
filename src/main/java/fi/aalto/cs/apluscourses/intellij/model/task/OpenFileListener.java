@@ -38,7 +38,7 @@ public class OpenFileListener implements FileEditorManagerListener, ActivitiesLi
 
   public static OpenFileListener create(ListenerCallback callback, Project project,
                                         Arguments arguments) {
-    return new OpenFileListener(callback, project, arguments.getOrThrow("filePath"));
+    return new OpenFileListener(callback, project, arguments.getString("filePath"));
   }
 
   @RequiresReadLock

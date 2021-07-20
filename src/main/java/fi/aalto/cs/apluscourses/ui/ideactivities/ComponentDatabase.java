@@ -1,6 +1,8 @@
 package fi.aalto.cs.apluscourses.ui.ideactivities;
 
+import com.intellij.openapi.editor.impl.EditorComponentImpl;
 import java.awt.Component;
+import javax.swing.JButton;
 import org.jetbrains.annotations.Nullable;
 
 public class ComponentDatabase {
@@ -9,8 +11,32 @@ public class ComponentDatabase {
     return component == null ? null : component.getParent();
   }
 
-  public static @Nullable Component getEditorWindow() {
-    return ComponentLocator.getComponentByClass("EditorWindow");
+  /**
+   * Returns any of the open editors - it is not deterministic which one will be returned.
+   */
+  public static @Nullable EditorComponentImpl getEditorWindow() {
+    return (EditorComponentImpl) ComponentLocator.getComponentByClass("EditorComponentImpl");
+  }
+
+  /**
+   * Out of all open editors, retrieves the one with a specific file open.
+   */
+  public static @Nullable EditorComponentImpl getEditorWindow(String fileNameSubstring) {
+    var editors = ComponentLocator.getComponentsByClass("EditorComponentImpl");
+    for (var editorComponent : editors) {
+      var editor = (EditorComponentImpl) editorComponent;
+      if (editor.getEditor().getVirtualFile().getName().contains(fileNameSubstring)) {
+        return editor;
+      }
+    }
+    return null;
+  }
+
+  public static @Nullable Component getProgressButton() {
+    return ComponentLocator.getComponentsByClass("JButton")
+        .stream().filter(c -> c instanceof JButton)
+        .filter(c -> ComponentLocator.hasActionOfClass((JButton) c, "ProgressAction"))
+        .findFirst().orElse(null);
   }
 
   private ComponentDatabase() {

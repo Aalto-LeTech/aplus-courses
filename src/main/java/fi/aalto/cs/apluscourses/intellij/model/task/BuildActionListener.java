@@ -4,7 +4,6 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.project.Project;
-import fi.aalto.cs.apluscourses.model.task.Arguments;
 import fi.aalto.cs.apluscourses.model.task.ListenerCallback;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,15 +12,12 @@ public class BuildActionListener extends IdeActionListener {
   /**
    * Constructor.
    */
-  public BuildActionListener(ListenerCallback callback, Project project,
-                             String[] action) {
-    super(callback, project, action);
+  public BuildActionListener(ListenerCallback callback, Project project) {
+    super(callback, project, new String[]{"Build Project"});
   }
 
-  public static BuildActionListener create(ListenerCallback callback, Project project,
-                                         Arguments arguments) {
-    return new BuildActionListener(callback, project,
-                arguments.getArrayOrThrow("actionNames"));
+  public static BuildActionListener create(ListenerCallback callback, Project project) {
+    return new BuildActionListener(callback, project);
   }
 
   @Override

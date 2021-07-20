@@ -1,8 +1,8 @@
 package fi.aalto.cs.apluscourses.model.task;
 
-import java.util.ArrayList;
-import java.util.List;
+import fi.aalto.cs.apluscourses.utils.JsonUtil;
 
+import java.util.function.Function;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
@@ -10,18 +10,18 @@ import org.json.JSONArray;
 
 @FunctionalInterface
 public interface Arguments {
-  @Nullable Object get(@NotNull String key);
+  @Nullable Object opt(@NotNull String key);
 
   /**
    * Gets an argument or throws a runtime exception if the argument is missing.
    * @param key Key
    * @return The (non-null) value of the argument.
    */
-  default @NotNull String getOrThrow(@NotNull String key) {
-    if (!(get(key) instanceof String)) {
+  default @NotNull String getString(@NotNull String key) {
+    if (!(opt(key) instanceof String)) {
       throw new IllegalArgumentException("Argument is not a String: " + key);
     }
-    String value = (String) get(key);
+    String value = (String) opt(key);
     if (value == null) {
       throw new IllegalArgumentException("Argument missing: " + key);
     }
@@ -33,21 +33,16 @@ public interface Arguments {
    * @param key Key
    * @return The (non-null) array values of the argument.
    */
-  default @NotNull String[] getArrayOrThrow(@NotNull String key) {
-    if (! (get(key) instanceof JSONArray)) {
+  default @NotNull String[] getArray(@NotNull String key) {
+    if (! (opt(key) instanceof JSONArray)) {
       throw new IllegalArgumentException("Argument is not a JSONArray: " + key);
     }
-    JSONArray jsonArray = (JSONArray) get(key);
+    JSONArray jsonArray = (JSONArray) opt(key);
     if (jsonArray == null) {
       throw new IllegalArgumentException("Argument missing: " + key);
     }
 
-    List<String> array = new ArrayList<>();
-    int length = jsonArray.length();
-    for (int i = 0; i < length; i++) {
-      array.add(jsonArray.getString(i));
-    }
-    return array.toArray(new String[]{});
+    return JsonUtil.parseArray(jsonArray, JSONArray::getString, Function.identity(), String[]::new);
   }
 
   static @NotNull Arguments empty() {
