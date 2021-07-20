@@ -3,6 +3,7 @@ package fi.aalto.cs.apluscourses.intellij.model.task;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.ui.ideactivities.ComponentDatabase;
 import fi.aalto.cs.apluscourses.ui.ideactivities.EditorHighlighter;
+import java.nio.file.Path;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,8 +21,12 @@ public class EditorPresenter extends IntelliJComponentPresenterBase {
 
   @Override
   protected @Nullable EditorHighlighter getHighlighter() {
-    return ComponentDatabase.getEditorWindow() == null ? null
-        : new EditorHighlighter(ComponentDatabase.getEditorWindow());
+    var basePath = project.getBasePath();
+    if (basePath == null) {
+      return null;
+    }
+    var component = ComponentDatabase.getEditorWindow(Path.of(basePath, path));
+    return component != null ? new EditorHighlighter(component) : null;
   }
 
   @Override
