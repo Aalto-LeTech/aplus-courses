@@ -59,10 +59,12 @@ public final class PluginIcons {
           .getIcon("/META-INF/icons/hourglass.svg", PluginIcons.class);
   public static final Icon A_PLUS_USER = IconLoader
       .getIcon("/META-INF/icons/user.svg", PluginIcons.class);
-  public static final Icon A_PLUS_USER_LOGGED_IN = IconLoader
+  public static final Icon A_PLUS_USER_ACTIVE = IconLoader
       .getIcon("/META-INF/icons/user_pink.svg", PluginIcons.class);
   public static final Icon A_PLUS_START = IconLoader
       .getIcon("/META-INF/icons/start.svg", PluginIcons.class);
   public static final Icon A_PLUS_TUTORIAL = IconLoader
       .getIcon("/META-INF/icons/tutorial.svg", PluginIcons.class);
+  public static final Icon A_PLUS_INFO = IconLoader
+          .getIcon("/META-INF/icons/info.svg", PluginIcons.class);
 }
