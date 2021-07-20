@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.model.task;
 
 import fi.aalto.cs.apluscourses.utils.Event;
 import fi.aalto.cs.apluscourses.utils.JsonUtil;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -20,6 +21,8 @@ public class Task implements CancelHandler {
 
   private ActivitiesListener listener;
   private ComponentPresenter presenter;
+
+  private final AtomicBoolean alreadyComplete = new AtomicBoolean();
 
   /**
    * Task constructor.
@@ -46,6 +49,7 @@ public class Task implements CancelHandler {
    * Ends the task.
    */
   public synchronized void endTask() {
+    alreadyComplete.set(false);
     if (listener != null) {
       listener.unregisterListener();
       listener = null;
@@ -97,6 +101,19 @@ public class Task implements CancelHandler {
     return jsonObject == null ? Arguments.empty()
         : JsonUtil.parseObject(jsonObject, JSONObject::get,
             Function.identity(), Function.identity())::get;
+  }
+
+  public boolean getAlreadyComplete() {
+    return alreadyComplete.get();
+  }
+
+  public void setAlreadyComplete(boolean alreadyComplete) {
+    this.alreadyComplete.set(alreadyComplete);
+  }
+
+  @NotNull
+  public String getInstruction() {
+    return instruction;
   }
 
   @Override
