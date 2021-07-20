@@ -50,8 +50,13 @@ public class IntelliJActivityFactory implements ActivityFactory {
         return new RunReplListener(callback, project,
             arguments.getOrThrow("module"));
       case "replInput":
-        return new ReplInputListener(callback, project,
-            arguments.getOrThrow("input"));
+        return new SingleLineReplListener(callback, project,
+            arguments.getOrThrow("input"),
+            arguments.getOrThrow("output"));
+      case "replInputContains":
+        return new ReplContainsListener(callback, project,
+            arguments.getArrayOrThrow("inputs"),
+            arguments.getOrThrow("output"));
       default:
         throw new IllegalArgumentException("Unsupported action: '" + action + "'");
     }

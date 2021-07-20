@@ -11,23 +11,24 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.plugins.scala.console.ScalaConsoleInfo;
 import org.jetbrains.plugins.scala.console.ScalaLanguageConsole;
 
-public class ReplInputListener implements ActivitiesListener, ProcessListener {
-
+public abstract class ReplListener implements ActivitiesListener, ProcessListener {
+  @NotNull
   private final ListenerCallback callback;
+
+  @NotNull
   private final Project project;
-  private final String input;
+
   private ProcessHandler processHandler;
+
   private ScalaLanguageConsole console;
 
   /**
-   * A constructor with the wanted input as a string.
+   * A constructor.
    */
-  public ReplInputListener(ListenerCallback callback,
-                           Project project,
-                           String input) {
+  protected ReplListener(@NotNull ListenerCallback callback,
+                         @NotNull Project project) {
     this.callback = callback;
     this.project = project;
-    this.input = input;
   }
 
   @Override
@@ -60,14 +61,26 @@ public class ReplInputListener implements ActivitiesListener, ProcessListener {
 
   @Override
   public void onTextAvailable(@NotNull ProcessEvent event, @NotNull Key outputType) {
-    if (input.equals(getLastLine())) {
+    if (isCorrect(event)) {
       callback.callback();
     }
   }
 
-  private String getLastLine() {
+  protected abstract boolean isCorrect(@NotNull ProcessEvent event);
+
+  protected String getLastLine() {
     var lines = console.getHistory().split("\n");
-    return lines[lines.length - 1].trim();
+    var lastLine = lines[lines.length - 1];
+    var index = lastLine.indexOf("null");
+    if (index != -1) {
+      lastLine = lastLine.substring(index + 4);
+    }
+    return lastLine.replaceAll("\\s", "");
+  }
+
+  protected String getEventText(@NotNull ProcessEvent event) {
+    var text = event.getText();
+    return text.substring(text.indexOf(" ") + 1);
   }
 
 }
