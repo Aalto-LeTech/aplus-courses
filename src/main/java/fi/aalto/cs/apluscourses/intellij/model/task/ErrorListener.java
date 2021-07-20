@@ -8,7 +8,7 @@ import fi.aalto.cs.apluscourses.model.task.ListenerCallback;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class ErrorListener extends ScalaCodeListener {
+public class ErrorListener extends CodeListener {
 
   public ErrorListener(@NotNull ListenerCallback callback,
                        @NotNull Project project,
@@ -19,12 +19,10 @@ public class ErrorListener extends ScalaCodeListener {
   /**
    * Creates an instance of ErrorListener based on the provided arguments.
    */
-  public static ErrorListener create(ListenerCallback callback,
-                                     Project project, Arguments arguments) {
-    return new ErrorListener(
-        callback, project,
-        arguments.getOrThrow("filePath")
-    );
+  public static ErrorListener create(@NotNull ListenerCallback callback,
+                                     @NotNull Project project,
+                                     @NotNull Arguments arguments) {
+    return new ErrorListener(callback, project, arguments.getString("filePath"));
   }
 
 
