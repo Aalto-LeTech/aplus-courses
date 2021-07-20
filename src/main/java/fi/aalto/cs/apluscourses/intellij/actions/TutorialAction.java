@@ -7,6 +7,7 @@ import fi.aalto.cs.apluscourses.intellij.model.task.IntelliJActivityFactory;
 import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.ExerciseNotSelectedNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
+import fi.aalto.cs.apluscourses.intellij.notifications.TaskNotifier;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Authentication;
@@ -84,7 +85,8 @@ public class TutorialAction extends AnAction {
         .ifPresent(TutorialViewModel::cancelTutorial);
 
     TutorialViewModel tutorialViewModel =
-        new TutorialViewModel(tutorialExercise, new IntelliJActivityFactory(project));
+        new TutorialViewModel(tutorialExercise, new IntelliJActivityFactory(project),
+            new TaskNotifier(notifier, project));
     if (dialogs.confirmStart(tutorialViewModel)) {
       mainViewModelProvider.getMainViewModel(project).tutorialViewModel.set(tutorialViewModel);
       tutorialViewModel.getTutorial().tutorialCompleted
