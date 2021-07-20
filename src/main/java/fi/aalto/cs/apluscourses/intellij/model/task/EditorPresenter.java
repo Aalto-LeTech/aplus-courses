@@ -11,10 +11,10 @@ public class EditorPresenter extends IntelliJComponentPresenterBase {
   @NotNull
   private final String path;
 
-  public EditorPresenter(@NotNull String instruction,
-                         @NotNull String info,
-                         @NotNull Project project,
-                         @NotNull String path) {
+  private EditorPresenter(@NotNull String instruction,
+                          @NotNull String info,
+                          @NotNull Project project,
+                          @NotNull String path) {
     super(instruction, info, project);
     this.path = path;
   }
