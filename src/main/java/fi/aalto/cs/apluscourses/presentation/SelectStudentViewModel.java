@@ -33,6 +33,9 @@ public class SelectStudentViewModel {
     this.authentication = authentication;
   }
 
+  /**
+   * Sets the students and sorts them.
+   */
   public void setStudents(@NotNull List<Student> newStudents) {
     students.set(newStudents
         .stream()

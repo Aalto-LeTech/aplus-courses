@@ -128,6 +128,9 @@ public class TutorialViewModel {
     return tasksAmount;
   }
 
+  /**
+   * Cancels the tutorial if the user confirms it.
+   */
   public void confirmCancel() {
     if (dialogs.confirmCancel(this)) {
       cancelTutorial();
