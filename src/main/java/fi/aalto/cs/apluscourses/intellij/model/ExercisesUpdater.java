@@ -76,6 +76,10 @@ public class ExercisesUpdater extends RepeatedTask {
         return;
       }
       var exerciseGroups = dataSource.getExerciseGroups(course, authentication);
+      if (Thread.interrupted()) {
+        progress.finish();
+        return;
+      }
       progress.increment();
       var selectedStudent = courseProject.getSelectedStudent();
       var exerciseTree = new ExercisesTree(exerciseGroups, selectedStudent);
