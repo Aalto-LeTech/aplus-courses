@@ -6,6 +6,7 @@ import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.wm.ToolWindowManager;
+import fi.aalto.cs.apluscourses.model.task.Arguments;
 import java.awt.Component;
 import java.nio.file.Paths;
 import org.jetbrains.annotations.NotNull;
@@ -79,8 +80,8 @@ public class ComponentDatabase {
   /**
    * Closes file in the editor for a given project.
    */
-  public static void closeFile(@NotNull String path, @NotNull Project project) {
-    var modulePath = Paths.get(project.getBasePath() + path);
+  public static void closeFile(@NotNull Arguments actionArguments, @NotNull Project project) {
+    var modulePath = Paths.get(project.getBasePath() + actionArguments.getOrThrow("filePath"));
     var vf = LocalFileSystem.getInstance().findFileByIoFile(modulePath.toFile());
     if (vf == null) {
       return;

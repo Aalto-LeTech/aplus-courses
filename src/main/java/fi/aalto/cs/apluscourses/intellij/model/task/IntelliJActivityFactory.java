@@ -53,7 +53,7 @@ public class IntelliJActivityFactory implements ActivityFactory {
                                                      @NotNull Arguments actionArguments,
                                                      String @NotNull [] assertClosed) {
     for (var closedComponent : assertClosed) {
-      switch (closedComponent.split("\\|")[0]) {
+      switch (closedComponent) {
         case "projectTree":
           ComponentDatabase.hideProjectToolWindow(project);
           break;
@@ -61,7 +61,7 @@ public class IntelliJActivityFactory implements ActivityFactory {
           ComponentDatabase.hideAPlusToolWindow(project);
           break;
         case "editor":
-          ComponentDatabase.closeFile(closedComponent.replaceFirst("editor\\|", ""), project);
+          ComponentDatabase.closeFile(actionArguments, project);
           break;
         default:
           throw new IllegalArgumentException("Unsupported component: " + component);
