@@ -45,7 +45,10 @@ public class ComponentDatabase {
    * Opens a file in the editor, return true if successful.
    */
   public static boolean showFile(@NotNull String path, @NotNull Project project) {
-    var modulePath = Paths.get(project.getBasePath() + path);
+    if (project.getBasePath() == null) {
+      return false;
+    }
+    var modulePath = Paths.get(project.getBasePath()).resolve(path);
     var vf = LocalFileSystem.getInstance().findFileByIoFile(modulePath.toFile());
     if (vf == null) {
       return false;

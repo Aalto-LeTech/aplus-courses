@@ -45,8 +45,7 @@ public class IntelliJActivityFactory implements ActivityFactory {
       case "projectTree":
         return new ProjectTreePresenter(instruction, info, project);
       case "editor":
-        return new EditorPresenter(instruction, info, actionArguments.getOrThrow(FILE_PATH),
-            project);
+        return EditorPresenter.create(instruction, info, project, actionArguments);
       default:
         throw new IllegalArgumentException("Unsupported component: " + component);
     }

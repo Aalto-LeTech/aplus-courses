@@ -33,6 +33,10 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
 
   @RequiresEdt
   private void highlightInternal() {
+    if (overlayPane != null) {
+      overlayPane.remove();
+    }
+
     GenericHighlighter highlighter = getHighlighter();
     if (highlighter == null) {
       if (tryToShow()) {
@@ -70,6 +74,6 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
 
   @Override
   public boolean isVisible() {
-    return getComponent() != null && getComponent().isShowing();
+    return getHighlighter() != null && getHighlighter().getComponent().isVisible();
   }
 }
