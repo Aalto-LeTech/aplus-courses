@@ -285,12 +285,6 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
       );
     }
 
-    @Nullable
-    public JSONObject getFromCache(@NotNull String key) {
-      var entry = cache.getEntry(key);
-      return entry == null ? null : entry.getValue();
-    }
-
     @Override
     public <T> List<T> parsePaginatedResults(@NotNull JSONObject object,
                                              @NotNull Function<JSONObject, T> parseFunction) {
