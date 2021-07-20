@@ -8,6 +8,7 @@ import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.ExercisesTree;
+import fi.aalto.cs.apluscourses.model.LazyLoader;
 import fi.aalto.cs.apluscourses.model.Student;
 import fi.aalto.cs.apluscourses.model.User;
 import fi.aalto.cs.apluscourses.utils.Event;
@@ -29,7 +30,7 @@ import org.jetbrains.annotations.Nullable;
  * contains a {@link CourseUpdater} that regularly updates the course, and an {@link Event} that is
  * triggered when an update occurs.
  */
-public class CourseProject {
+public class CourseProject implements LazyLoader {
 
   @NotNull
   private final Notifier notifier;
@@ -191,16 +192,15 @@ public class CourseProject {
     lazyLoaded.clear();
   }
 
-  public void addLazyLoaded(@NotNull Long id) {
-    lazyLoaded.add(id);
+  @Override
+  public void addLazyLoaded(long id) {
+    if (lazyLoaded.add(id)) {
+      getExercisesUpdater().restart();
+    }
   }
 
-  @NotNull
-  public Set<Long> getLazyLoaded() {
-    return lazyLoaded;
-  }
-
-  public boolean isLazyLoaded(@NotNull Long id) {
+  @Override
+  public boolean isLazyLoaded(long id) {
     return lazyLoaded.contains(id);
   }
 }

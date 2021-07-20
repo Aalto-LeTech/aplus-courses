@@ -19,8 +19,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
+import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.event.TreeWillExpandListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
@@ -59,6 +61,7 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
     getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
     addTreeSelectionListener(new SelectionListener());
     addMouseListener(new TreeMouseListener());
+    addTreeWillExpandListener(new MyTreeWillExpandListener());
   }
 
   /**
@@ -78,13 +81,11 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
    */
   public void setViewModel(@Nullable BaseTreeViewModel<?> viewModel) {
     if (viewModel != null) {
-      removeTreeWillExpandListener(this.viewModel);
       synchronized (viewModelLock) {
         unregisterViewModel();
         this.viewModel = viewModel;
         registerViewModel();
       }
-      addTreeWillExpandListener(viewModel);
       update();
       viewModel.setSelectedItem(null);
     }
@@ -211,6 +212,23 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
     @Override
     protected String encodeNode(String parentCode, Object node) {
       return parentCode + "/" + getViewModel(node).getId();
+    }
+  }
+
+  private static class MyTreeWillExpandListener implements TreeWillExpandListener {
+
+    @Override
+    public void treeWillExpand(TreeExpansionEvent event) {
+      getViewModel(event).willExpand();
+    }
+
+    @Override
+    public void treeWillCollapse(TreeExpansionEvent event) {
+      getViewModel(event).willCollapse();
+    }
+
+    private SelectableNodeViewModel<?> getViewModel(TreeExpansionEvent event) {
+      return TreeView.getViewModel(event.getPath().getLastPathComponent());
     }
   }
 }

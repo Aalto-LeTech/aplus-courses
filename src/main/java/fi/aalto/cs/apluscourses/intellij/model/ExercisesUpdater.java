@@ -129,7 +129,7 @@ public class ExercisesUpdater extends RepeatedTask {
     var exercisesTree = new ExercisesTree(exerciseGroups, selectedStudent);
     for (var exerciseGroup : exerciseGroups) {
 
-      if (courseProject.getLazyLoaded().contains(exerciseGroup.getId())) {
+      if (courseProject.isLazyLoaded(exerciseGroup.getId())) {
         for (var exerciseId : points.getExercises(exerciseGroup.getId())) {
           if (Thread.interrupted()) {
             return;

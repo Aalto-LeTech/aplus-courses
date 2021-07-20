@@ -1,7 +1,7 @@
 package fi.aalto.cs.apluscourses.presentation.exercise;
 
-import fi.aalto.cs.apluscourses.intellij.model.CourseProject;
 import fi.aalto.cs.apluscourses.model.ExercisesTree;
+import fi.aalto.cs.apluscourses.model.LazyLoader;
 import fi.aalto.cs.apluscourses.presentation.base.BaseTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.Searchable;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
@@ -9,16 +9,11 @@ import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
-import javax.swing.event.TreeExpansionEvent;
-import javax.swing.tree.DefaultMutableTreeNode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ExercisesTreeViewModel extends BaseTreeViewModel<ExercisesTree>
         implements Searchable {
-
-  @Nullable
-  private final CourseProject courseProject;
 
   private boolean isAuthenticated;
 
@@ -39,14 +34,13 @@ public class ExercisesTreeViewModel extends BaseTreeViewModel<ExercisesTree>
    */
   public ExercisesTreeViewModel(@NotNull ExercisesTree exercisesTree,
                                 @NotNull Options filterOptions,
-                                @Nullable CourseProject courseProject) {
+                                @Nullable LazyLoader lazyLoader) {
     super(exercisesTree,
         exercisesTree.getExerciseGroups()
             .stream()
-            .map(ExerciseGroupViewModel::new)
+            .map(exerciseGroup -> new ExerciseGroupViewModel(exerciseGroup, lazyLoader))
             .collect(Collectors.toList()),
         filterOptions);
-    this.courseProject = courseProject;
   }
 
   public boolean isEmptyTextVisible() {
@@ -75,18 +69,6 @@ public class ExercisesTreeViewModel extends BaseTreeViewModel<ExercisesTree>
   public String getName() {
     var student = getModel().getSelectedStudent();
     return student == null ? null : student.getFullName();
-  }
-
-  @Override
-  public void treeWillExpand(TreeExpansionEvent e) {
-    var viewModel = ((DefaultMutableTreeNode) e.getPath().getLastPathComponent()).getUserObject();
-    if (viewModel instanceof ExerciseGroupViewModel) {
-      var exerciseGroup = ((ExerciseGroupViewModel) viewModel).getModel();
-      if (courseProject != null && !courseProject.getLazyLoaded().contains(exerciseGroup.getId())) {
-        courseProject.addLazyLoaded(exerciseGroup.getId());
-        courseProject.getExercisesUpdater().restart();
-      }
-    }
   }
 
   @Override
