@@ -17,7 +17,7 @@ public class ExerciseGroupViewModel extends SelectableNodeViewModel<ExerciseGrou
   private final @Nullable LazyLoader lazyLoader;
 
   public ExerciseGroupViewModel(@NotNull ExerciseGroup exerciseGroup) {
-   this(exerciseGroup, null);
+    this(exerciseGroup, null);
   }
 
   /**

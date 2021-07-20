@@ -34,7 +34,10 @@ public class SelectStudentViewModel {
   }
 
   public void setStudents(@NotNull List<Student> newStudents) {
-    students.set(newStudents.stream().sorted(Comparator.comparing(Student::getFullName)).toArray(Student[]::new));
+    students.set(newStudents
+        .stream()
+        .sorted(Comparator.comparing(Student::getFullName))
+        .toArray(Student[]::new));
   }
 
   @NotNull
