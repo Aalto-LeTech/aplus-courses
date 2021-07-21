@@ -8,10 +8,14 @@ import fi.aalto.cs.apluscourses.model.task.ComponentPresenter;
 import fi.aalto.cs.apluscourses.ui.ideactivities.ComponentDatabase;
 import fi.aalto.cs.apluscourses.ui.ideactivities.GenericHighlighter;
 import fi.aalto.cs.apluscourses.ui.ideactivities.OverlayPane;
+import java.util.Timer;
+import java.util.TimerTask;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class IntelliJComponentPresenterBase implements ComponentPresenter {
 
+  public static final int REFRESH_INTERVAL = 1000;
+  private final Timer timer;
   private final @NotNull String instruction;
   private final @NotNull String info;
   protected final @NotNull Project project;
@@ -23,6 +27,8 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
     this.instruction = instruction;
     this.info = info;
     this.project = project;
+    this.timer = new Timer();
+    startTimer();
   }
 
   @Override
@@ -38,11 +44,9 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
     }
 
     GenericHighlighter highlighter = getHighlighter();
-    if (highlighter == null) {
-      if (tryToShow()) {
-        highlightInternal();
-        return;
-      }
+    if (highlighter == null && tryToShow()) {
+      highlighter = getHighlighter();
+    } else if (highlighter == null) {
       throw new IllegalStateException("Component was not found!");
     }
     overlayPane = OverlayPane.installOverlay();
@@ -74,6 +78,28 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
 
   @Override
   public boolean isVisible() {
-    return getHighlighter() != null && getHighlighter().getComponent().isVisible();
+    var highlighter = getHighlighter();
+    return highlighter != null && highlighter.getComponent().isVisible();
+  }
+
+  @Override
+  public Timer getTimer() {
+    return timer;
+  }
+
+  private void startTimer() {
+    timer.scheduleAtFixedRate(new TaskRefresher(), REFRESH_INTERVAL, REFRESH_INTERVAL);
+  }
+
+  private class TaskRefresher extends TimerTask {
+
+    @Override
+    public void run() {
+      ApplicationManager.getApplication().invokeLater(() -> {
+        if (!isVisible()) {
+          highlight();
+        }
+      });
+    }
   }
 }

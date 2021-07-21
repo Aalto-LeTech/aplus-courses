@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.model.task;
 
+import java.util.Timer;
+
 public interface ComponentPresenter {
 
   void highlight();
@@ -7,4 +9,6 @@ public interface ComponentPresenter {
   void removeHighlight();
 
   boolean isVisible();
+
+  Timer getTimer();
 }
