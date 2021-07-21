@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
@@ -125,7 +127,7 @@ public class TutorialAction extends AnAction {
     @Override
     public boolean confirmStart(@NotNull TutorialViewModel tutorialViewModel) {
       return JOptionPane.showConfirmDialog(null,
-        "A tutorial will start.",
+        getText("ui.tutorial.TutorialAction.confirmStart"),
         tutorialViewModel.getTitle(),
         JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION;
     }
@@ -133,7 +135,7 @@ public class TutorialAction extends AnAction {
     @Override
     public boolean confirmCancel(@NotNull TutorialViewModel tutorialViewModel) {
       return JOptionPane.showConfirmDialog(null,
-        "Cancel tutorial?",
+        getText("ui.tutorial.TutorialAction.confirmCancel"),
         tutorialViewModel.getTitle(),
         JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION;
     }
@@ -141,7 +143,7 @@ public class TutorialAction extends AnAction {
     @Override
     public void end(@NotNull TutorialViewModel tutorialViewModel) {
       JOptionPane.showMessageDialog(null,
-          "The tutorial has ended.",
+          getText("ui.tutorial.TutorialAction.end"),
           tutorialViewModel.getTitle(),
           JOptionPane.INFORMATION_MESSAGE);
     }
