@@ -31,6 +31,11 @@ public class ComponentDatabase {
     return null;
   }
 
+  /**
+   * Returns the button that controls the tutorial progress.
+   *
+   * @return A JButton or null, if no such a component was found.
+   */
   public static @Nullable Component getProgressButton() {
     return ComponentLocator.getComponentByClass("TutorialProgressAction");
   }
