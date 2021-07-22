@@ -1,9 +1,16 @@
 package fi.aalto.cs.apluscourses.model;
 
+import com.intellij.openapi.project.Project;
+import fi.aalto.cs.apluscourses.intellij.notifications.TaskNotifier;
 import fi.aalto.cs.apluscourses.model.task.Task;
+import fi.aalto.cs.apluscourses.ui.InstallerDialogs;
 import fi.aalto.cs.apluscourses.utils.Event;
 import fi.aalto.cs.apluscourses.utils.JsonUtil;
+import fi.aalto.cs.apluscourses.utils.async.SimpleAsyncTaskManager;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
@@ -12,17 +19,22 @@ import org.json.JSONObject;
 
 public class Tutorial {
   private final List<Task> tasks;
+  private final String @NotNull [] moduleDependencies;
 
   @NotNull
   public final Event tutorialCompleted = new Event();
 
-  public Tutorial(Task[] tasks) {
+  public Tutorial(Task @NotNull [] tasks,
+                  String @NotNull [] moduleDependencies) {
     this.tasks = List.of(tasks);
+    this.moduleDependencies = moduleDependencies;
   }
 
   public static Tutorial fromJsonObject(@NotNull JSONObject jsonObject) {
     return new Tutorial(JsonUtil.parseArray(jsonObject.getJSONArray("tasks"),
-        JSONArray::getJSONObject, Task::fromJsonObject, Task[]::new));
+        JSONArray::getJSONObject, Task::fromJsonObject, Task[]::new),
+        JsonUtil.parseArray(jsonObject.getJSONArray("moduleDependencies"),
+            JSONArray::getString, String::new, String[]::new));
   }
 
   public List<Task> getTasks() {
@@ -31,6 +43,7 @@ public class Tutorial {
 
   /**
    * Method to get the next Task in row.
+   *
    * @param task the current Task whose successor we are looking for.
    * @return the next Task to be performed
    */
@@ -44,5 +57,39 @@ public class Tutorial {
 
   public void onComplete() {
     this.tutorialCompleted.trigger();
+  }
+
+  public void downloadDependencies(@NotNull Course course,
+                                   @NotNull Project project,
+                                   @NotNull TaskNotifier taskNotifier) {
+    taskNotifier.notifyDownloadingDeps(false);
+
+    var modules = getModules(course);
+
+    var componentInstallerFactory = new ComponentInstallerImpl.FactoryImpl<>(new SimpleAsyncTaskManager());
+    var dialogs = new InstallerDialogs(project);
+
+    componentInstallerFactory.getInstallerFor(course, dialogs).installAsync(modules,
+        () -> taskNotifier.notifyDownloadingDeps(true));
+  }
+
+  public void deleteDependencies(@NotNull Course course) {
+    for (var component : getModules(course)) {
+      try {
+        component.remove();
+      } catch (IOException e) {
+        // fail silently
+      }
+    }
+  }
+
+  private List<Component> getModules(@NotNull Course course) {
+    return Arrays
+        .stream(moduleDependencies)
+        .map(course::getComponentIfExists)
+        .filter(Module.class::isInstance)
+        .map(Module.class::cast)
+        .map(module -> (Component) module.copy("Ideact_" + module.getOriginalName()))
+        .collect(Collectors.toList());
   }
 }

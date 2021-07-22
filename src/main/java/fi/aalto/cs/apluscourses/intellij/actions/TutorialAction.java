@@ -11,6 +11,7 @@ import fi.aalto.cs.apluscourses.intellij.notifications.TaskNotifier;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Authentication;
+import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.TutorialExercise;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
@@ -84,13 +85,15 @@ public class TutorialAction extends AnAction {
     Optional.ofNullable(mainViewModel.tutorialViewModel.get())
         .ifPresent(TutorialViewModel::cancelTutorial);
 
+    TaskNotifier taskNotifier = new TaskNotifier(notifier, project);
+
     TutorialViewModel tutorialViewModel =
-        new TutorialViewModel(tutorialExercise, new IntelliJActivityFactory(project),
-            new TaskNotifier(notifier, project));
+        new TutorialViewModel(tutorialExercise, new IntelliJActivityFactory(project), taskNotifier);
     if (dialogs.confirmStart(tutorialViewModel)) {
+      tutorialViewModel.getTutorial().downloadDependencies(courseViewModel.getModel(), project, taskNotifier);
       mainViewModelProvider.getMainViewModel(project).tutorialViewModel.set(tutorialViewModel);
       tutorialViewModel.getTutorial().tutorialCompleted
-          .addListener(mainViewModel, this::onTutorialComplete);
+          .addListener(mainViewModel, mainVm -> onTutorialComplete(mainVm, courseViewModel.getModel()));
       tutorialViewModel.startNextTask();
     }
   }
@@ -145,10 +148,13 @@ public class TutorialAction extends AnAction {
     }
   }
 
-  private void onTutorialComplete(@NotNull MainViewModel mainViewModel) {
+  private void onTutorialComplete(@NotNull MainViewModel mainViewModel,
+                                  @NotNull Course course) {
     TutorialViewModel viewModel = mainViewModel.tutorialViewModel.get();
     if (viewModel != null) {
-      viewModel.getTutorial().tutorialCompleted.removeCallback(mainViewModel);
+      var tutorial = viewModel.getTutorial();
+      tutorial.deleteDependencies(course);
+      tutorial.tutorialCompleted.removeCallback(mainViewModel);
       mainViewModel.tutorialViewModel.set(null);
       dialogs.end(viewModel);
     }

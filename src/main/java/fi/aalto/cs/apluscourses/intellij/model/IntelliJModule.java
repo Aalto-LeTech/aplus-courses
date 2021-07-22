@@ -115,6 +115,7 @@ class IntelliJModule
   @Override
   public void remove() throws IOException {
     FileUtils.deleteDirectory(getFullPath().toFile());
+    project.getModuleManager().setUnloadedModules(List.of(getName()));
   }
 
   @Override
