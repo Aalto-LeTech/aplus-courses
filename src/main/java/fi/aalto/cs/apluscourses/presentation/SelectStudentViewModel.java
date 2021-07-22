@@ -33,6 +33,11 @@ public class SelectStudentViewModel {
     this.authentication = authentication;
   }
 
+  /**
+   * Set the students.
+   *
+   * @param newStudents A list.  The list is copied once and no reference to the original list is maintained.
+   */
   public void setStudents(@NotNull List<Student> newStudents) {
     students.set(newStudents
         .stream()

@@ -21,19 +21,20 @@ public class ComponentLocator {
     return !getComponents(c, comp -> isComponentOfClass(comp, classSubstring)).isEmpty();
   }
 
+  /**
+   * Determines whether a component is related to an action of a specific class.
+   *
+   * @param c Component
+   * @param classSubstring Part of the action class name.
+   * @return True, if component matches to the action, otherwise false.
+   */
   public static boolean hasActionOfClass(@NotNull JButton c, @NotNull String classSubstring) {
     var action = c.getAction();
     var actionProperty = c.getClientProperty(CustomComponentAction.ACTION_KEY);
 
-    if (action != null && action.getClass().getName().contains(classSubstring)) {
-      return true;
-    }
+    return action != null && action.getClass().getName().contains(classSubstring)
+        || actionProperty != null && actionProperty.getClass().getName().contains(classSubstring);
 
-    if (actionProperty != null && actionProperty.getClass().getName().contains(classSubstring)) {
-      return true;
-    }
-
-    return false;
   }
 
   @RequiresEdt
