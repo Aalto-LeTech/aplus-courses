@@ -11,7 +11,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.notifications.FeedbackAvailableNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
-import java.time.ZonedDateTime;
+import fi.aalto.cs.apluscourses.utils.cache.CachePreference;
 import java.util.Collections;
 import java.util.OptionalLong;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -37,7 +37,7 @@ public class SubmissionStatusUpdaterTest {
     public SubmissionResult getSubmissionResult(@NotNull String submissionUrl,
                                                 @NotNull Exercise exercise,
                                                 @NotNull Authentication authentication,
-                                                @NotNull ZonedDateTime minCacheEntryTime) {
+                                                @NotNull CachePreference cachePreference) {
       return new SubmissionResult(
           123L,
           0,
