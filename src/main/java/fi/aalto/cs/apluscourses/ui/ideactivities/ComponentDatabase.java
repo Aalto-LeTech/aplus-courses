@@ -2,7 +2,6 @@ package fi.aalto.cs.apluscourses.ui.ideactivities;
 
 import com.intellij.openapi.editor.impl.EditorComponentImpl;
 import java.awt.Component;
-import javax.swing.JButton;
 import org.jetbrains.annotations.Nullable;
 
 public class ComponentDatabase {
@@ -38,10 +37,7 @@ public class ComponentDatabase {
    * @return A JButton or null, if no such a component was found.
    */
   public static @Nullable Component getProgressButton() {
-    return ComponentLocator.getComponentsByClass("JButton")
-        .stream().filter(c -> c instanceof JButton)
-        .filter(c -> ComponentLocator.hasActionOfClass((JButton) c, "ProgressAction"))
-        .findFirst().orElse(null);
+    return ComponentLocator.getComponentByClass("TutorialProgressAction");
   }
 
   private ComponentDatabase() {

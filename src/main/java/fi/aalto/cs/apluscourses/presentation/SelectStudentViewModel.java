@@ -34,7 +34,7 @@ public class SelectStudentViewModel {
   }
 
   /**
-   * Set the students.
+   * Sets the students and sorts them.
    *
    * @param newStudents A list.  The list is copied once and no reference to the original list is maintained.
    */
