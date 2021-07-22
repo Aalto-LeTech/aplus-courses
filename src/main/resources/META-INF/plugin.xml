@@ -128,8 +128,8 @@
                text="A+ Navbar"
                description="A+ actions for navbar">
             <add-to-group group-id="NavBarToolBar" anchor="first"/>
-            <action id="fi.aalto.cs.apluscourses.intellij.actions.ProgressAction"
-                    class="fi.aalto.cs.apluscourses.intellij.actions.ProgressAction"
+            <action id="fi.aalto.cs.apluscourses.intellij.actions.TutorialProgressAction"
+                    class="fi.aalto.cs.apluscourses.intellij.actions.TutorialProgressAction"
                     text="Progress"
                     icon="PluginIcons.A_PLUS_INFO"/>
         </group>
