@@ -7,23 +7,32 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class CacheImpl<K, V> implements Cache<K, V> {
-  private volatile @NotNull Map<K, CacheEntry<V>> entries = new HashMap<>();
+  private @NotNull Map<K, CacheEntry<V>> entries = new HashMap<>();
+  private final @NotNull Object lock = new Object();
 
   @Nullable
-  protected synchronized CacheEntry<V> getEntry(K key) {
-    return entries.get(key);
+  protected CacheEntry<V> getEntry(K key) {
+    synchronized (lock) {
+      return entries.get(key);
+    }
   }
 
-  protected synchronized void putEntry(K key, CacheEntry<V> entry) {
-    entries.put(key, entry);
+  protected void putEntry(K key, CacheEntry<V> entry) {
+    synchronized (lock) {
+      entries.put(key, entry);
+    }
   }
 
-  protected synchronized void setEntries(@NotNull Map<K, CacheEntry<V>> entries) {
-    this.entries = new HashMap<>(entries);
+  protected void setEntries(@NotNull Map<K, CacheEntry<V>> entries) {
+    synchronized (lock) {
+      this.entries = new HashMap<>(entries);
+    }
   }
 
-  protected synchronized @NotNull Map<K, CacheEntry<V>> getEntries() {
-    return new HashMap<>(entries);
+  protected @NotNull Map<K, CacheEntry<V>> getEntries() {
+    synchronized (lock) {
+      return new HashMap<>(entries);
+    }
   }
 
   @Override
