@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.utils.async;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * Represents a task that gets run repeatedly with a specific time interval between each run.
  * Subclasses need only implement the task and this class takes care of the rest. This class is
@@ -7,9 +9,31 @@ package fi.aalto.cs.apluscourses.utils.async;
  */
 public abstract class RepeatedTask {
 
+  private static final long DEFAULT_INTERVAL_MILLIS = 1000;
+
   private final long updateInterval;
 
   private Thread thread = null;
+
+  /**
+   * Creates a new repeated task.
+   *
+   * @param delegate Task that is run repeatedly.
+   * @param updateInterval Update interval in milliseconds.
+   * @return A new instance of RepeatedTask.
+   */
+  public static RepeatedTask create(final @NotNull Runnable delegate, long updateInterval) {
+    return new RepeatedTask(updateInterval) {
+      @Override
+      protected void doTask() {
+        delegate.run();
+      }
+    };
+  }
+
+  public static RepeatedTask create(@NotNull Runnable delegate) {
+    return create(delegate, DEFAULT_INTERVAL_MILLIS);
+  }
 
   public RepeatedTask(long updateInterval) {
     this.updateInterval = updateInterval;

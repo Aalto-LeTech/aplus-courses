@@ -25,6 +25,7 @@ import fi.aalto.cs.apluscourses.utils.cache.JsonFileCache;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -261,7 +263,8 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
         return value;
       }
       try (InputStream inputStream = CoursesClient.fetch(new URL(url), authentication)) {
-        var response = new JSONObject(new JSONTokener(inputStream));
+        var streamString = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+        var response = new JSONObject(new JSONTokener(streamString));
         cache.putValue(url, response, cachePreference);
         return response;
       }
