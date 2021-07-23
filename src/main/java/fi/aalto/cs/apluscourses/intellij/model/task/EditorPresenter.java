@@ -29,7 +29,7 @@ public class EditorPresenter extends IntelliJComponentPresenterBase {
 
   @Override
   protected @Nullable EditorHighlighter getHighlighter() {
-    var component = ComponentDatabase.getEditorWindow();
+    var component = ComponentDatabase.getEditorWindow(project, path);
     return component != null ? new EditorHighlighter(component) : null;
   }
 

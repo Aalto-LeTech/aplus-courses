@@ -16,9 +16,6 @@ public class ProjectTreePresenter extends IntelliJComponentPresenterBase {
   @Override
   protected @Nullable GenericHighlighter getHighlighter() {
     var component = ComponentDatabase.getProjectPane();
-    if (component == null && tryToShow()) {
-      component = ComponentDatabase.getProjectPane();
-    }
     return component != null ? new GenericHighlighter(component) : null;
   }
 

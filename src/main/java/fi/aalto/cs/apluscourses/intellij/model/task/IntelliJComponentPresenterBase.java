@@ -30,7 +30,6 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
     this.info = info;
     this.project = project;
     this.timer = new Timer();
-    startTimer();
   }
 
   @Override
@@ -60,6 +59,7 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
     if (progressButton != null) {
       overlayPane.addHighlighter(new GenericHighlighter(progressButton));
     }
+    startTimer();
   }
 
   @Override
@@ -73,13 +73,13 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
       overlayPane.remove();
       overlayPane = null;
     }
+    timer.cancel();
   }
 
   protected abstract GenericHighlighter getHighlighter();
 
   protected abstract boolean tryToShow();
 
-  @Override
   public boolean isVisible() {
     var highlighter = getHighlighter();
     return highlighter != null && highlighter.getComponent().isVisible();
@@ -90,24 +90,16 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
     this.cancelHandler = cancelHandler;
   }
 
-  @Override
-  public Timer getTimer() {
-    return timer;
-  }
-
   private void startTimer() {
     timer.scheduleAtFixedRate(new TaskRefresher(), REFRESH_INTERVAL, REFRESH_INTERVAL);
   }
 
   private class TaskRefresher extends TimerTask {
-
     @Override
     public void run() {
-      ApplicationManager.getApplication().invokeLater(() -> {
-        if (!isVisible()) {
-          highlight();
-        }
-      });
+      if (!isVisible()) {
+        highlight();
+      }
     }
   }
 }

@@ -6,6 +6,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.wm.ToolWindowManager;
 import java.awt.Component;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,11 +27,18 @@ public class ComponentDatabase {
   /**
    * Out of all open editors, retrieves the one with a specific file open.
    */
-  public static @Nullable EditorComponentImpl getEditorWindow(String fileNameSubstring) {
+  public static @Nullable EditorComponentImpl getEditorWindow(@NotNull Project project,
+                                                              @NotNull String path) {
+    var basePath = project.getBasePath();
+    if (basePath == null) {
+      return null;
+    }
+    var fullPath = Path.of(basePath, path);
     var editors = ComponentLocator.getComponentsByClass("EditorComponentImpl");
     for (var editorComponent : editors) {
       var editor = (EditorComponentImpl) editorComponent;
-      if (editor.getEditor().getVirtualFile().getName().contains(fileNameSubstring)) {
+      if (editor.getEditor().getVirtualFile() != null
+          && Path.of(editor.getEditor().getVirtualFile().getPath()).equals(fullPath)) {
         return editor;
       }
     }
