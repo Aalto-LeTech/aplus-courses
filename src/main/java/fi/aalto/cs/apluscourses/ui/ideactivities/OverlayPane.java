@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.ui.ideactivities;
 
 import com.intellij.util.concurrency.annotations.RequiresEdt;
+import fi.aalto.cs.apluscourses.utils.Event;
 import icons.PluginIcons;
 import java.awt.AWTEvent;
 import java.awt.AlphaComposite;
@@ -30,6 +31,8 @@ public class OverlayPane extends JPanel implements AWTEventListener {
   private final JRootPane associatedRootPane;
   private final Set<GenericHighlighter> highlighters = new HashSet<>();
   private final Set<BalloonPopup> balloonPopups = new HashSet<>();
+
+  public final Event clickEvent = new Event();
 
   private void revalidatePane() {
     getRootPane().revalidate();
@@ -199,8 +202,12 @@ public class OverlayPane extends JPanel implements AWTEventListener {
       return;
     }
 
-    var windowEventPos = SwingUtilities.convertPoint(source, source.getX(), source.getY(), this);
+    var windowEventPos = SwingUtilities.convertPoint(source, mouseEvent.getX(), mouseEvent.getY(), this);
     if (getDimmedArea().contains(windowEventPos)) {
+      mouseEvent.consume();
+      if (mouseEvent.getButton() == MouseEvent.BUTTON1) {
+        clickEvent.trigger();
+      }
       // the mouse event is inside dimmed area, do something with it
       // for example, use mouseEvent.consume() to block the event from reaching any component
     }

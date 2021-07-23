@@ -4,6 +4,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.concurrency.annotations.RequiresEdt;
+import fi.aalto.cs.apluscourses.model.task.CancelHandler;
 import fi.aalto.cs.apluscourses.model.task.ComponentPresenter;
 import fi.aalto.cs.apluscourses.ui.ideactivities.ComponentDatabase;
 import fi.aalto.cs.apluscourses.ui.ideactivities.GenericHighlighter;
@@ -20,6 +21,7 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
   private final @NotNull String info;
   protected final @NotNull Project project;
   private OverlayPane overlayPane;
+  private volatile CancelHandler cancelHandler; //NOSONAR
 
   protected IntelliJComponentPresenterBase(@NotNull String instruction,
                                            @NotNull String info,
@@ -51,6 +53,7 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
     }
     overlayPane = OverlayPane.installOverlay();
     overlayPane.addHighlighter(highlighter);
+    overlayPane.clickEvent.addListener(cancelHandler, CancelHandler::onCancel);
     overlayPane.addPopup(highlighter.getComponent(), instruction, info);
 
     var progressButton = ComponentDatabase.getProgressButton();
@@ -80,6 +83,11 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
   public boolean isVisible() {
     var highlighter = getHighlighter();
     return highlighter != null && highlighter.getComponent().isVisible();
+  }
+
+  @Override
+  public void setCancelHandler(CancelHandler cancelHandler) {
+    this.cancelHandler = cancelHandler;
   }
 
   @Override

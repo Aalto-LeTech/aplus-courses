@@ -15,9 +15,8 @@ import fi.aalto.cs.apluscourses.model.Progress;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import fi.aalto.cs.apluscourses.utils.Event;
 import fi.aalto.cs.apluscourses.utils.async.RepeatedTask;
+import fi.aalto.cs.apluscourses.utils.cache.CachePreferences;
 import java.io.IOException;
-import java.time.OffsetDateTime;
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -128,7 +127,7 @@ public class ExercisesUpdater extends RepeatedTask {
           return;
         }
         var exercise = dataSource.getExercise(exerciseId, points, course.getTutorials(),
-            authentication, ZonedDateTime.now().minusDays(7));
+            authentication, CachePreferences.GET_MAX_ONE_WEEK_OLD);
         exerciseGroup.addExercise(exercise);
         progress.increment();
       }
@@ -152,11 +151,11 @@ public class ExercisesUpdater extends RepeatedTask {
         return;
       }
       // Ignore cache for submissions that had the status WAITING
-      var cacheTime = submissionsInGrading.remove(id)
-          ? OffsetDateTime.MAX.toZonedDateTime()
-          : ZonedDateTime.now().minusDays(7);
+      var cachePreference = submissionsInGrading.remove(id)
+          ? CachePreferences.GET_NEW_AND_KEEP
+          : CachePreferences.GET_MAX_ONE_WEEK_OLD;
       var submission = dataSource.getSubmissionResult(
-          baseUrl + id + "/", exercise, authentication, cacheTime);
+          baseUrl + id + "/", exercise, authentication, cachePreference);
       if (submission.getStatus() == SubmissionResult.Status.WAITING) {
         submissionsInGrading.add(id);
       }

@@ -8,7 +8,5 @@ public interface ComponentPresenter {
 
   void removeHighlight();
 
-  boolean isVisible();
-
-  Timer getTimer();
+  void setCancelHandler(CancelHandler cancelHandler);
 }
