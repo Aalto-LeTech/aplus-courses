@@ -36,6 +36,7 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
   public void highlight() {
     ApplicationManager.getApplication()
         .invokeLater(this::highlightInternal, ModalityState.NON_MODAL);
+    startTimer();
   }
 
   @RequiresEdt
@@ -59,7 +60,6 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
     if (progressButton != null) {
       overlayPane.addHighlighter(new GenericHighlighter(progressButton));
     }
-    startTimer();
   }
 
   @Override
@@ -97,9 +97,12 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
   private class TaskRefresher extends TimerTask {
     @Override
     public void run() {
-      if (!isVisible()) {
-        highlight();
-      }
+      ApplicationManager.getApplication()
+          .invokeLater(() -> {
+            if (!isVisible()) {
+              highlightInternal();
+            }
+          }, ModalityState.NON_MODAL);
     }
   }
 }
