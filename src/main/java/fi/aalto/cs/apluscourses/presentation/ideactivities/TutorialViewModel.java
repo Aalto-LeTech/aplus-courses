@@ -12,8 +12,13 @@ import org.jetbrains.annotations.NotNull;
 public class TutorialViewModel {
 
   private final TutorialExercise tutorialExercise;
+
+  private final TutorialDialogs dialogs;
+
   private final ActivityFactory activityFactory;
+
   private final TaskNotifier taskNotifier;
+
   private final Object lock = new Object();
 
   private Task currentTask = null;
@@ -27,8 +32,10 @@ public class TutorialViewModel {
    */
   public TutorialViewModel(@NotNull TutorialExercise tutorialExercise,
                            @NotNull ActivityFactory activityFactory,
-                           @NotNull TaskNotifier taskNotifier) {
+                           @NotNull TaskNotifier taskNotifier,
+                           @NotNull TutorialDialogs dialogs) {
     this.tutorialExercise = tutorialExercise;
+    this.dialogs = dialogs;
     List<Task> tasks = tutorialExercise.getTutorial().getTasks();
     if (!tasks.isEmpty()) {
       this.currentTask = tasks.get(0);
@@ -45,6 +52,7 @@ public class TutorialViewModel {
   public void startNextTask() {
     synchronized (lock) {
       currentTask.taskCompleted.addListener(this, TutorialViewModel::currentTaskCompleted);
+      currentTask.taskCanceled.addListener(this, TutorialViewModel::confirmCancel);
       incrementTaskIndex();
       if (currentTask.startTask(activityFactory)) {
         taskNotifier.notifyAlreadyEndTask(tutorialExercise.getTutorial().getTasks().indexOf(currentTask),
@@ -62,7 +70,7 @@ public class TutorialViewModel {
   }
 
   /**
-   * Sets the currentTask as completed and fress up any resources associated with it.
+   * Sets the currentTask as completed and frees up any resources associated with it.
    * If this task was the last one the Tutorial is completed,
    * if not, then the currentTask is set to point to the next Task to be done.
    */
@@ -71,10 +79,10 @@ public class TutorialViewModel {
       if (!currentTask.getAlreadyComplete()) {
         taskNotifier.notifyEndTask(tutorialExercise.getTutorial().getTasks().indexOf(currentTask));
       }
-
-      Tutorial tutorial = tutorialExercise.getTutorial();
       currentTask.endTask();
       currentTask.taskCompleted.removeCallback(this);
+      currentTask.taskCanceled.removeCallback(this);
+      Tutorial tutorial = tutorialExercise.getTutorial();
       currentTask = tutorial.getNextTask(currentTask);
       if (currentTask == null) {
         tutorial.onComplete();
@@ -92,6 +100,7 @@ public class TutorialViewModel {
       if (currentTask != null) {
         currentTask.endTask();
         currentTask.taskCompleted.removeCallback(this);
+        currentTask.taskCanceled.removeCallback(this);
         currentTask = null;
         tutorialExercise.getTutorial().onComplete();
       }
@@ -117,5 +126,14 @@ public class TutorialViewModel {
 
   public int getTasksAmount() {
     return tasksAmount;
+  }
+
+  /**
+   * Cancels the tutorial if the user confirms it.
+   */
+  public void confirmCancel() {
+    if (dialogs.confirmCancel(this)) {
+      cancelTutorial();
+    }
   }
 }

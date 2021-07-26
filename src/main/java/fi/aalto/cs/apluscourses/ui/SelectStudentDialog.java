@@ -14,12 +14,12 @@ import fi.aalto.cs.apluscourses.model.Student;
 import fi.aalto.cs.apluscourses.presentation.SelectStudentViewModel;
 import fi.aalto.cs.apluscourses.ui.base.OurDialogWrapper;
 import fi.aalto.cs.apluscourses.ui.base.SingleSelectionList;
+import fi.aalto.cs.apluscourses.utils.cache.CachePreferences;
 import icons.PluginIcons;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
-import java.time.OffsetDateTime;
 import java.util.concurrent.Executors;
 import javax.swing.Action;
 import javax.swing.JComponent;
@@ -128,7 +128,7 @@ public class SelectStudentDialog extends OurDialogWrapper {
       Executors.newSingleThreadExecutor().submit(() -> {
         try {
           var students = course.getExerciseDataSource()
-              .getStudents(course, auth, OffsetDateTime.MAX.toZonedDateTime());
+              .getStudents(course, auth, CachePreferences.GET_NEW_AND_KEEP);
           SwingUtilities.invokeLater(() -> {
             viewModel.setStudents(students);
             studentList.setPaintBusy(false);

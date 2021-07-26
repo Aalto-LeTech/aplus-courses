@@ -10,8 +10,8 @@ import fi.aalto.cs.apluscourses.intellij.services.Dialogs;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.intellij.utils.Interfaces;
 import fi.aalto.cs.apluscourses.presentation.SelectStudentViewModel;
+import fi.aalto.cs.apluscourses.utils.cache.CachePreferences;
 import java.io.IOException;
-import java.time.ZonedDateTime;
 import org.jetbrains.annotations.NotNull;
 
 public class SelectStudentAction extends AnAction {
@@ -63,7 +63,7 @@ public class SelectStudentAction extends AnAction {
     }
     try {
       var students = course.getExerciseDataSource()
-          .getStudents(course, auth, ZonedDateTime.now().minusDays(7));
+          .getStudents(course, auth, CachePreferences.GET_MAX_ONE_WEEK_OLD);
       var studentListViewModel = new SelectStudentViewModel(students, course, auth);
       if (!dialogs.create(studentListViewModel, e.getProject()).showAndGet()) {
         return;
