@@ -41,6 +41,7 @@ public class BalloonPopup extends JPanel implements TransparentComponent, MouseL
   @GuiObject
   private final BalloonLabel messageLabel;
 
+  @NotNull
   private final PopupTransparencyHandler transparencyHandler;
 
   private float transparencyCoefficient;
@@ -130,6 +131,11 @@ public class BalloonPopup extends JPanel implements TransparentComponent, MouseL
   /**
    * Recomputes the popups bounds and triggers a reposition if needed. Should ideally be called
    * every time anything changes in the parent frame.
+   * The algorithm for popup positioning works as follows:
+   *   1. Calculate, how much available space (pixels) there is in each direction.
+   *   2. Verify that the popup can indeed be placed on some side relative to the component.
+   *   2a. If yes, then find the side which has the most space and place the popup there.
+   *   2b. If not, then place the popup in the right corner of the component.
    */
   public void recalculateBounds() {
     // the origin of the component that this popup is attached to must be converted to the
@@ -151,13 +157,17 @@ public class BalloonPopup extends JPanel implements TransparentComponent, MouseL
     final int mostHorizontalSpace = Integer.max(availableSizeLeft, availableSizeRight);
     final int mostVerticalSpace = Integer.max(availableSizeTop, availableSizeBottom);
 
+    final boolean canPlaceHorizontally = mostHorizontalSpace > popupWidth + 2 * POPUP_MARGIN;
+    final boolean canPlaceVertically = mostVerticalSpace > popupHeight + 2 * POPUP_MARGIN;
+
     int popupX;
     int popupY;
 
     int oldAlignment = alignment;
     boolean outOfBoundsX = false;
     boolean outOfBoundsY = false;
-    if (mostHorizontalSpace < popupWidth + 2 * POPUP_MARGIN && mostVerticalSpace < popupHeight + 2 * POPUP_MARGIN) {
+    if (!canPlaceHorizontally && !canPlaceVertically) {
+      // if there's no space on any side of the component, place the popup on the component
       alignment = SwingConstants.CENTER;
       popupX = componentWindowPos.x + componentSize.width - popupWidth - POPUP_MARGIN;
       popupY = componentWindowPos.y + POPUP_MARGIN;
@@ -174,7 +184,7 @@ public class BalloonPopup extends JPanel implements TransparentComponent, MouseL
         repaint();
       }
     } else {
-      if (mostHorizontalSpace > mostVerticalSpace) {
+      if (!canPlaceVertically || (mostHorizontalSpace > mostVerticalSpace && canPlaceHorizontally)) {
         if (availableSizeRight > availableSizeLeft) {
           alignment = SwingConstants.RIGHT;
           popupX = componentWindowPos.x + anchorComponent.getWidth() + 5;

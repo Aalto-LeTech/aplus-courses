@@ -176,19 +176,6 @@ public class OverlayPane extends JPanel implements AWTEventListener {
     this.revalidatePane();
   }
 
-  /**
-   * Resets the overlay to its original state, i.e. removes all popups and dims all components.
-   */
-  @RequiresEdt
-  public void reset() {
-    this.highlighters.clear();
-    for (var c : this.balloonPopups) {
-      this.getRootPane().getLayeredPane().remove(c);
-    }
-    this.balloonPopups.clear();
-    this.revalidatePane();
-  }
-
   private OverlayPane() {
     associatedRootPane = ((JFrame) JOptionPane.getRootFrame()).getRootPane();
     setLayout(null);
@@ -204,7 +191,7 @@ public class OverlayPane extends JPanel implements AWTEventListener {
       return;
     }
 
-    var windowEventPos = SwingUtilities.convertPoint(source, source.getX(), source.getY(), this);
+    var windowEventPos = SwingUtilities.convertPoint(source, mouseEvent.getX(), mouseEvent.getY(), this);
     if (getDimmedArea().contains(windowEventPos)) {
       // the mouse event is inside dimmed area, do something with it
       // for example, use mouseEvent.consume() to block the event from reaching any component
