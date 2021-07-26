@@ -31,7 +31,7 @@ public class BalloonPopup extends JPanel implements TransparentComponent, MouseL
   private final BalloonLabel messageLabel;
 
   @NotNull
-  private final PopupTransparencyHandler transparencyHandler;
+  private final TransparencyAnimationHandler transparencyHandler;
 
   private float transparencyCoefficient;
 
@@ -45,7 +45,7 @@ public class BalloonPopup extends JPanel implements TransparentComponent, MouseL
   public BalloonPopup(@NotNull Component anchorComponent, @NotNull String title,
                       @NotNull String message, @Nullable Icon icon) {
     this.anchorComponent = anchorComponent;
-    transparencyHandler = new PopupTransparencyHandler(this);
+    transparencyHandler = new TransparencyAnimationHandler(this);
 
     addMouseListener(this);
 
@@ -159,7 +159,6 @@ public class BalloonPopup extends JPanel implements TransparentComponent, MouseL
 
       transparencyHandler.update(mousePos != null && popupBounds.contains(mousePos));
       if (transparencyHandler.isInAnimation()) {
-        revalidate();
         repaint();
       }
     } else {
@@ -207,7 +206,6 @@ public class BalloonPopup extends JPanel implements TransparentComponent, MouseL
     transparencyHandler.resetAnimationProgress();
     transparencyHandler.update(true);
 
-    revalidate();
     repaint();
   }
 
@@ -216,7 +214,6 @@ public class BalloonPopup extends JPanel implements TransparentComponent, MouseL
     transparencyHandler.resetAnimationProgress();
     transparencyHandler.update(false);
 
-    revalidate();
     repaint();
   }
 }
