@@ -172,8 +172,8 @@ public class BalloonPopup extends JPanel implements TransparentComponent, MouseL
       popupX = componentWindowPos.x + componentSize.width - popupWidth - POPUP_MARGIN;
       popupY = componentWindowPos.y + POPUP_MARGIN;
 
-      outOfBoundsX = position != null && (position.x < componentWindowPos.x + POPUP_MARGIN || position.x + popupWidth > componentWindowPos.x + componentSize.width - POPUP_MARGIN);
-      outOfBoundsY = position != null && (position.y < componentWindowPos.y + POPUP_MARGIN || position.y + popupHeight > componentWindowPos.y + componentSize.height - POPUP_MARGIN);
+      outOfBoundsX = outOfBoundsX(POPUP_MARGIN);
+      outOfBoundsY = outOfBoundsY(POPUP_MARGIN);
 
       final var popupBounds = new Rectangle(0, 0, popupWidth, popupHeight);
       final var mousePos = getMousePosition();
@@ -194,6 +194,7 @@ public class BalloonPopup extends JPanel implements TransparentComponent, MouseL
         }
 
         popupY = componentWindowPos.y + (anchorComponent.getHeight() - popupHeight) / 2;
+        outOfBoundsY = outOfBoundsY(0);
       } else {
         if (availableSizeBottom > availableSizeTop) {
           alignment = SwingConstants.BOTTOM;
@@ -204,6 +205,7 @@ public class BalloonPopup extends JPanel implements TransparentComponent, MouseL
         }
 
         popupX = componentWindowPos.x + (anchorComponent.getWidth() - popupWidth) / 2;
+        outOfBoundsX = outOfBoundsX(0);
       }
 
       setTransparencyCoefficient(1.0f);
@@ -219,6 +221,16 @@ public class BalloonPopup extends JPanel implements TransparentComponent, MouseL
     setBounds(popupX, popupY, popupWidth, popupHeight);
   }
 
+  private boolean outOfBoundsX(int margin) {
+    return position != null && (position.x < componentWindowPos.x + margin
+        || position.x + popupWidth > componentWindowPos.x + componentSize.width - margin);
+  }
+
+  private boolean outOfBoundsY(int margin) {
+    return position != null && (position.y < componentWindowPos.y + margin
+        || position.y + popupHeight > componentWindowPos.y + componentSize.height - margin);
+  }
+
   @Override
   public void mouseDragged(MouseEvent mouseEvent) {
     int anchorX = anchorPoint.x;
@@ -232,11 +244,15 @@ public class BalloonPopup extends JPanel implements TransparentComponent, MouseL
     int margin = positionCenter ? POPUP_MARGIN : 0;
 
     int newX = positionCenter || !positionHorizontally
-        ? Math.max(componentWindowPos.x + margin, Math.min(componentWindowPos.x + componentSize.width - popupWidth - margin, mouseOnScreen.x - parentOnScreen.x - anchorX))
+        ? Integer.max(componentWindowPos.x + margin,
+            Integer.min(componentWindowPos.x + componentSize.width - popupWidth - margin,
+              mouseOnScreen.x - parentOnScreen.x - anchorX))
         : oldX;
 
     int newY = positionCenter || positionHorizontally
-        ? Math.max(componentWindowPos.y + margin, Math.min(componentWindowPos.y + componentSize.height - popupHeight - margin, mouseOnScreen.y - parentOnScreen.y - anchorY))
+        ? Integer.max(componentWindowPos.y + margin,
+            Integer.min(componentWindowPos.y + componentSize.height - popupHeight - margin,
+                mouseOnScreen.y - parentOnScreen.y - anchorY))
         : oldY;
 
     position = new Point(newX, newY);
