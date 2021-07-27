@@ -56,7 +56,7 @@ public class ExerciseViewModelTest {
     Exercise partialPoints = new Exercise(0, "", htmlUrl, info, 10, 10, OptionalLong.of(1L));
     var partialPointsSubmissionRes = new SubmissionResult(1L, 5, 0.0, SubmissionResult.Status.GRADED, partialPoints);
     partialPoints.addSubmissionResult(partialPointsSubmissionRes);
-    partialPoints.addSubmissionResult(new SubmissionResult(1L,5,0.0,resultStatus,partialPoints));
+    partialPoints.addSubmissionResult(new SubmissionResult(1L, 5, 0.0, resultStatus, partialPoints));
     Exercise fullPoints = new Exercise(0, "", htmlUrl, info, 10, 10, OptionalLong.of(2L));
     var fullPointsSubmissionRes = new SubmissionResult(2L, 10, 0.0, SubmissionResult.Status.GRADED, fullPoints);
     fullPoints.addSubmissionResult(fullPointsSubmissionRes);

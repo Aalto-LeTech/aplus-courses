@@ -113,7 +113,7 @@ public class ResourcesTest {
 
     assertEquals("Height of the image should be 1", 1, image.getHeight());
     assertEquals("Width of the image should be 1", 1, image.getWidth());
-    assertEquals("The only pixel should be red", 0xffff0000, image.getRGB(0,0));
+    assertEquals("The only pixel should be red", 0xffff0000, image.getRGB(0, 0));
   }
 
   @Test(expected = ResourceException.class)
