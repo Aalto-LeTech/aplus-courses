@@ -48,10 +48,10 @@ public class IntelliJActivityFactory implements ActivityFactory {
     for (var closedComponent : assertClosed) {
       switch (closedComponent) {
         case "projectTree":
-          ComponentDatabase.hideProjectToolWindow(project);
+          ComponentDatabase.hideToolWindow(ComponentDatabase.PROJECT_TOOL_WINDOW, project);
           break;
         case "aPlusCourses":
-          ComponentDatabase.hideAPlusToolWindow(project);
+          ComponentDatabase.hideToolWindow(ComponentDatabase.APLUS_TOOL_WINDOW, project);
           break;
         case "editor":
           ComponentDatabase.closeFile(actionArguments, project);
