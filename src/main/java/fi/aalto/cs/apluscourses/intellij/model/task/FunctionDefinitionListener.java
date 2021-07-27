@@ -4,12 +4,12 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import fi.aalto.cs.apluscourses.intellij.psi.PsiUtil;
 import fi.aalto.cs.apluscourses.intellij.psi.ScalaFunctionDefinition;
 import fi.aalto.cs.apluscourses.model.task.Arguments;
 import fi.aalto.cs.apluscourses.model.task.ListenerCallback;
 import java.util.Arrays;
 import java.util.Optional;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement;
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaRecursiveElementVisitor;
@@ -66,7 +66,8 @@ public class FunctionDefinitionListener extends CodeListener {
               ScParametersImpl.class::isInstance).findFirst();
           if (scalaFunctionDefinition.checkScTypeParametersClause(optTypeParameters)
                && scalaFunctionDefinition.checkParameters(optParameters)
-                && scalaFunctionDefinition.checkFunctionBody(children)) {
+                && scalaFunctionDefinition.checkFunctionBody(children)
+                && !PsiUtil.psiNextSiblingHasErrors(element)) {
             ApplicationManager.getApplication().invokeLater(callback::callback);
             isCorrect.set(true);
           }
