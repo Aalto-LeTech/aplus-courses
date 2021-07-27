@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.presentation.ideactivities;
 
+import fi.aalto.cs.apluscourses.intellij.notifications.TaskNotifier;
 import fi.aalto.cs.apluscourses.model.Tutorial;
 import fi.aalto.cs.apluscourses.model.TutorialExercise;
 import fi.aalto.cs.apluscourses.model.task.ActivityFactory;
@@ -11,14 +12,19 @@ import org.jetbrains.annotations.NotNull;
 public class TutorialViewModel {
 
   private final TutorialExercise tutorialExercise;
+
   private final TutorialDialogs dialogs;
+
   private final ActivityFactory activityFactory;
+
+  private final TaskNotifier taskNotifier;
 
   private final Object lock = new Object();
 
   private Task currentTask = null;
 
   private int currentTaskIndex;
+
   private int unlockedIndex;
 
   private final int tasksAmount;
@@ -28,6 +34,7 @@ public class TutorialViewModel {
    */
   public TutorialViewModel(@NotNull TutorialExercise tutorialExercise,
                            @NotNull ActivityFactory activityFactory,
+                           @NotNull TaskNotifier taskNotifier,
                            @NotNull TutorialDialogs dialogs) {
     this.tutorialExercise = tutorialExercise;
     this.dialogs = dialogs;
@@ -39,6 +46,7 @@ public class TutorialViewModel {
     unlockedIndex = 0;
     tasksAmount = tasks.size();
     this.activityFactory = activityFactory;
+    this.taskNotifier = taskNotifier;
   }
 
   /**
@@ -48,8 +56,11 @@ public class TutorialViewModel {
     synchronized (lock) {
       currentTask.taskCompleted.addListener(this, TutorialViewModel::currentTaskCompleted);
       currentTask.taskCanceled.addListener(this, TutorialViewModel::confirmCancel);
-      incrementIndex();
+      incrementTaskIndex();
       if (currentTask.startTask(activityFactory)) {
+        taskNotifier.notifyAlreadyEndTask(tutorialExercise.getTutorial().getTasks().indexOf(currentTask),
+            currentTask.getInstruction());
+        currentTask.setAlreadyComplete(true);
         currentTaskCompleted();
       }
       // The Task/Tutorial has been completed prematurely
@@ -58,8 +69,6 @@ public class TutorialViewModel {
       // No need to show the instructions for this Task
       // as we are proceeding directly to the next one.
       // We can instead inform the user that they have already completed it
-      // through the alreadyComplete boolean.
-
     }
   }
 
@@ -70,6 +79,9 @@ public class TutorialViewModel {
    */
   public void currentTaskCompleted() {
     synchronized (lock) {
+      if (!currentTask.getAlreadyComplete()) {
+        taskNotifier.notifyEndTask(tutorialExercise.getTutorial().getTasks().indexOf(currentTask));
+      }
       currentTask.endTask();
       currentTask.taskCompleted.removeCallback(this);
       currentTask.taskCanceled.removeCallback(this);
@@ -130,9 +142,9 @@ public class TutorialViewModel {
     return currentTaskIndex;
   }
 
-  private void incrementIndex() {
+  private void incrementTaskIndex() {
     currentTaskIndex++;
-    unlockedIndex = Math.max(currentTaskIndex, unlockedIndex);
+    unlockedIndex = Integer.max(currentTaskIndex, unlockedIndex);
   }
 
   public int getTasksAmount() {
@@ -140,7 +152,7 @@ public class TutorialViewModel {
   }
 
   /**
-   * Cancels the tutorial after the user confirms it.
+   * Cancels the tutorial if the user confirms it.
    */
   public void confirmCancel() {
     if (dialogs.confirmCancel(this)) {

@@ -1,10 +1,8 @@
 package fi.aalto.cs.apluscourses.model.task;
 
-import com.intellij.openapi.application.ApplicationManager;
 import fi.aalto.cs.apluscourses.utils.Event;
 import fi.aalto.cs.apluscourses.utils.JsonUtil;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -12,7 +10,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class Task implements CancelHandler {
-  public static final int REFRESH_INTERVAL = 1000;
   public final @NotNull Event taskCompleted = new Event();
   public final @NotNull Event taskCanceled = new Event();
 
@@ -23,10 +20,11 @@ public class Task implements CancelHandler {
   private final @NotNull Arguments componentArguments;
   private final @NotNull String action;
   private final @NotNull Arguments actionArguments;
-  private Timer timer;
 
   private ActivitiesListener listener;
   private ComponentPresenter presenter;
+
+  private final AtomicBoolean alreadyComplete = new AtomicBoolean();
 
   /**
    * Task constructor.
@@ -55,7 +53,7 @@ public class Task implements CancelHandler {
    * Ends the task.
    */
   public synchronized void endTask() {
-    timer.cancel();
+    alreadyComplete.set(false);
     if (listener != null) {
       listener.unregisterListener();
       listener = null;
@@ -79,8 +77,6 @@ public class Task implements CancelHandler {
     presenter = activityFactory.createPresenter(component, instruction, info, componentArguments,
         actionArguments, assertClosed);
     presenter.setCancelHandler(this);
-    this.timer = new Timer();
-    startTimer();
     listener = activityFactory.createListener(action, actionArguments, taskCompleted::trigger);
     if (listener.registerListener()) {
       return true;
@@ -113,23 +109,17 @@ public class Task implements CancelHandler {
             Function.identity(), Function.identity())::get;
   }
 
-  private void startTimer() {
-    timer.scheduleAtFixedRate(new TaskRefresher(), REFRESH_INTERVAL, REFRESH_INTERVAL);
+  public boolean getAlreadyComplete() {
+    return alreadyComplete.get();
   }
 
-  private class TaskRefresher extends TimerTask {
+  public void setAlreadyComplete(boolean alreadyComplete) {
+    this.alreadyComplete.set(alreadyComplete);
+  }
 
-    @Override
-    public void run() {
-      ApplicationManager.getApplication().invokeLater(() -> {
-        if (presenter == null) {
-          return;
-        }
-        if (!presenter.isVisible()) {
-          presenter.highlight();
-        }
-      });
-    }
+  @NotNull
+  public String getInstruction() {
+    return instruction;
   }
 
   @Override

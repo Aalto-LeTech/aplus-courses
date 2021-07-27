@@ -29,17 +29,29 @@ public class ComponentDatabase {
   /**
    * Out of all open editors, retrieves the one with a specific file open.
    */
-  public static @Nullable EditorComponentImpl getEditorWindow(@NotNull Path path) {
+  public static @Nullable EditorComponentImpl getEditorWindow(@NotNull Project project,
+                                                              @NotNull String path) {
+    var basePath = project.getBasePath();
+    if (basePath == null) {
+      return null;
+    }
+    var fullPath = Path.of(basePath, path);
     var editors = ComponentLocator.getComponentsByClass("EditorComponentImpl");
     for (var editorComponent : editors) {
       var editor = (EditorComponentImpl) editorComponent;
-      if (Path.of(editor.getEditor().getVirtualFile().getPath()).equals(path)) {
+      if (editor.getEditor().getVirtualFile() != null
+          && Path.of(editor.getEditor().getVirtualFile().getPath()).equals(fullPath)) {
         return editor;
       }
     }
     return null;
   }
 
+  /**
+   * Returns the button that controls the tutorial progress.
+   *
+   * @return A JButton or null, if no such a component was found.
+   */
   public static @Nullable Component getProgressButton() {
     return ComponentLocator.getComponentByClass("TutorialProgressAction");
   }
@@ -48,7 +60,10 @@ public class ComponentDatabase {
    * Opens a file in the editor, return true if successful.
    */
   public static boolean showFile(@NotNull String path, @NotNull Project project) {
-    var modulePath = Paths.get(project.getBasePath() + path);
+    if (project.getBasePath() == null) {
+      return false;
+    }
+    var modulePath = Path.of(project.getBasePath(), path);
     var vf = LocalFileSystem.getInstance().findFileByIoFile(modulePath.toFile());
     if (vf == null) {
       return false;
@@ -88,27 +103,6 @@ public class ComponentDatabase {
       return;
     }
     FileEditorManager.getInstance(project).closeFile(vf);
-  }
-
-  public static boolean hideProjectToolWindow(@NotNull Project project) {
-    return hideToolWindow("Project", project);
-  }
-
-  public static boolean hideAPlusToolWindow(@NotNull Project project) {
-    return hideToolWindow("A+ Courses", project);
-  }
-
-  private static boolean hideToolWindow(@NotNull String id, @NotNull Project project) {
-    var toolWindow = ToolWindowManager.getInstance(project).getToolWindow(id);
-    if (toolWindow != null) {
-      try {
-        toolWindow.hide();
-        return true;
-      } catch (IllegalStateException e) {
-        return false;
-      }
-    }
-    return false;
   }
 
   private ComponentDatabase() {

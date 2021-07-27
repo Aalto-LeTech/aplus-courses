@@ -15,9 +15,12 @@ import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.UrlRenderingErrorNotification;
 import fi.aalto.cs.apluscourses.model.Exercise;
+import fi.aalto.cs.apluscourses.model.SubmissionInfo;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import fi.aalto.cs.apluscourses.model.UrlRenderer;
 import java.net.URISyntaxException;
+import java.util.Collections;
+import java.util.OptionalLong;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -37,8 +40,9 @@ public class OpenSubmissionNotificationActionTest {
   public void setUp() {
     event = mock(AnActionEvent.class);
     doReturn(mock(Project.class)).when(event).getProject();
-    submissionResult = new SubmissionResult(1, 0, SubmissionResult.Status.GRADED,
-        new Exercise(1, "Ex", "http://example.com", 0, 5, 10, true));
+    var info = new SubmissionInfo(Collections.emptyMap());
+    submissionResult = new SubmissionResult(1, 0, 0.0, SubmissionResult.Status.GRADED,
+        new Exercise(1, "Ex", "http://example.com", info, 5, 10, OptionalLong.empty()));
     notification = mock(Notification.class);
     notifier = mock(Notifier.class);
     submissionRenderer = mock(UrlRenderer.class);
