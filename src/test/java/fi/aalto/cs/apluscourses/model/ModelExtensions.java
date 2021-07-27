@@ -2,12 +2,14 @@ package fi.aalto.cs.apluscourses.model;
 
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import fi.aalto.cs.apluscourses.utils.Version;
+import fi.aalto.cs.apluscourses.utils.cache.CachePreference;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +28,7 @@ public class ModelExtensions {
   }
 
   public static class TestExerciseDataSource implements ExerciseDataSource {
+
     @NotNull
     @Override
     public List<Group> getGroups(@NotNull Course course, @NotNull Authentication authentication) {
@@ -49,13 +52,23 @@ public class ModelExtensions {
       );
     }
 
+    @Override
+    public @NotNull Points getPoints(@NotNull Course course,
+                                     @NotNull Authentication authentication,
+                                     @Nullable Student student) {
+      return new Points(
+          Collections.emptyMap(),
+          Collections.emptyMap(),
+          Collections.emptyMap());
+    }
+
     @NotNull
     @Override
     public Exercise getExercise(long exerciseId,
                                 @NotNull Points points,
                                 @NotNull Map<Long, Tutorial> tutorials,
                                 @NotNull Authentication authentication,
-                                @NotNull ZonedDateTime minCacheEntryTime) {
+                                @NotNull CachePreference cachePreference) {
       return new Exercise(1, "lol", "http://example.com",
           new SubmissionInfo(Collections.emptyMap()), 20, 10, OptionalLong.empty()
       );
@@ -66,7 +79,7 @@ public class ModelExtensions {
     public SubmissionResult getSubmissionResult(@NotNull String submissionUrl,
                                                 @NotNull Exercise exercise,
                                                 @NotNull Authentication authentication,
-                                                @NotNull ZonedDateTime minCacheEntryTime) {
+                                                @NotNull CachePreference cachePreference) {
       return new SubmissionResult(0, 20, 0.0, SubmissionResult.Status.GRADED, exercise);
     }
 
@@ -76,10 +89,18 @@ public class ModelExtensions {
     }
 
     @Override
+    @NotNull
+    public List<Student> getStudents(@NotNull Course course,
+                                     @NotNull Authentication authentication,
+                                     @NotNull CachePreference cachePreference) {
+      return new ArrayList<>();
+    }
+
+    @Override
     public @NotNull ZonedDateTime getEndingTime(@NotNull Course course,
                                                 @NotNull Authentication authentication) {
       return ZonedDateTime.of(2020, 1, 2, 0, 0, 0, 0,
-              ZoneId.systemDefault());
+          ZoneId.systemDefault());
     }
 
     @Override
@@ -120,8 +141,8 @@ public class ModelExtensions {
     /**
      * Creates a dummy {@link Course} for testing purposes.
      *
-     * @param id {@link String} id for the {@link Course}
-     * @param name {@link String} for the {@link Course}.
+     * @param id                 {@link String} id for the {@link Course}
+     * @param name               {@link String} for the {@link Course}.
      * @param exerciseDataSource Data source for exercises.
      */
     public TestCourse(@NotNull String id, @NotNull String name,
@@ -255,6 +276,11 @@ public class ModelExtensions {
     @Override
     protected boolean hasLocalChanges(@NotNull ZonedDateTime downloadedAt) {
       return false;
+    }
+
+    @Override
+    public Module copy(@NotNull String newName) {
+      return new TestModule(newName, url, version, localVersion, changelog, downloadedAt);
     }
 
     @NotNull

@@ -7,14 +7,15 @@ import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.Course;
-import fi.aalto.cs.apluscourses.model.ExerciseGroup;
+import fi.aalto.cs.apluscourses.model.ExercisesTree;
+import fi.aalto.cs.apluscourses.model.Student;
 import fi.aalto.cs.apluscourses.model.User;
 import fi.aalto.cs.apluscourses.utils.Event;
+import fi.aalto.cs.apluscourses.utils.async.RepeatedTask;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -34,27 +35,30 @@ public class CourseProject {
   @NotNull
   private final Course course;
 
-  private volatile List<ExerciseGroup> exerciseGroups;
+  private volatile ExercisesTree exercisesTree;
 
   private final AtomicBoolean hasTriedToReadAuthenticationFromStorage = new AtomicBoolean(false);
 
   @NotNull
-  private final CourseUpdater courseUpdater;
+  private final RepeatedTask courseUpdater;
 
   @NotNull
-  private final ExercisesUpdater exercisesUpdater;
+  private final RepeatedTask exercisesUpdater;
 
   @NotNull
   private final Project project;
 
   @NotNull
-  public final Event courseUpdated;
+  public final Event courseUpdated = new Event();
 
   @NotNull
-  public final Event exercisesUpdated;
+  public final Event exercisesUpdated = new Event();
 
   @NotNull
   public final ObservableProperty<User> user = new ObservableReadWriteProperty<>(null);
+
+  @Nullable
+  private volatile Student selectedStudent = null;
 
   /**
    * Construct a course project from the given course, course configuration URL (used for updating),
@@ -67,10 +71,24 @@ public class CourseProject {
     this.notifier = notifier;
     this.course = course;
     this.project = project;
-    this.courseUpdated = new Event();
-    this.exercisesUpdated = new Event();
     this.courseUpdater = new CourseUpdater(course, project, courseUrl, courseUpdated);
     this.exercisesUpdater = new ExercisesUpdater(this, exercisesUpdated);
+  }
+
+  /**
+   * Construct a course project from the given course, exercises and course updaters,
+   * and project.
+   */
+  public CourseProject(@NotNull Course course,
+                       @NotNull RepeatedTask courseUpdater,
+                       @NotNull RepeatedTask exercisesUpdater,
+                       @NotNull Project project,
+                       @NotNull Notifier notifier) {
+    this.notifier = notifier;
+    this.course = course;
+    this.project = project;
+    this.courseUpdater = courseUpdater;
+    this.exercisesUpdater = exercisesUpdater;
   }
 
   /**
@@ -128,12 +146,12 @@ public class CourseProject {
   }
 
   @Nullable
-  public List<ExerciseGroup> getExerciseGroups() {
-    return exerciseGroups;
+  public ExercisesTree getExerciseTree() {
+    return exercisesTree;
   }
 
-  public void setExerciseGroups(@NotNull List<ExerciseGroup> exerciseGroups) {
-    this.exerciseGroups = exerciseGroups;
+  public void setExerciseTree(@NotNull ExercisesTree exercisesTree) {
+    this.exercisesTree = exercisesTree;
   }
 
   @Nullable
@@ -163,13 +181,21 @@ public class CourseProject {
   }
 
   @NotNull
-  public CourseUpdater getCourseUpdater() {
+  public RepeatedTask getCourseUpdater() {
     return courseUpdater;
   }
 
   @NotNull
-  public ExercisesUpdater getExercisesUpdater() {
+  public RepeatedTask getExercisesUpdater() {
     return exercisesUpdater;
   }
 
+  @Nullable
+  public Student getSelectedStudent() {
+    return selectedStudent;
+  }
+
+  public void setSelectedStudent(@Nullable Student selectedStudent) {
+    this.selectedStudent = selectedStudent;
+  }
 }

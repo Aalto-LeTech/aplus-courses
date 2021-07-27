@@ -1,10 +1,10 @@
-package fi.aalto.cs.apluscourses.model;
+package fi.aalto.cs.apluscourses.utils.cache;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.ZonedDateTime;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
@@ -17,45 +17,16 @@ import org.jetbrains.annotations.Nullable;
 /**
  * A cache is essentially a map backed by a file. For each value, the time of creation is also
  * stored so that clients can determine the age of the cache entry. A subclass needs to implement
- * {@link Cache#fromFile} and {@link Cache#toFile}, which read and write the entries to a file. The
+ * {@link FileCache#fromFile} and {@link FileCache#toFile}, which read and write the entries to a file. The
  * file format is completely up to the client. The file is read once when the cache is instantiated.
  * Writes occur after each insertion, but bursts of insertions only cause one write. Reading and
  * writing is done in a background thread, so a read or write may take a long time without blocking
  * other code. Note, that the cache makes no guarantee that every entry inserted is also written to
  * the file.
  */
-public abstract class Cache<K, V> {
-
-  public class Entry {
-    @NotNull
-    private final V value;
-
-    @NotNull
-    private final ZonedDateTime createdAt;
-
-    public Entry(@NotNull V value, @NotNull ZonedDateTime createdAt) {
-      this.value = value;
-      this.createdAt = createdAt;
-    }
-
-    public Entry(@NotNull V value) {
-      this(value, ZonedDateTime.now());
-    }
-
-    @NotNull
-    public V getValue() {
-      return value;
-    }
-
-    @NotNull
-    public ZonedDateTime getCreationTime() {
-      return createdAt;
-    }
-  }
+public abstract class FileCache<K, V> extends CacheImpl<K, V> {
 
   private final File file;
-
-  private volatile Map<K, Entry> entries = new HashMap<>();
 
   private final CountDownLatch fileRead = new CountDownLatch(1);
 
@@ -67,7 +38,7 @@ public abstract class Cache<K, V> {
   /**
    * Construct an instance with the given underlying file.
    */
-  protected Cache(@NotNull Path filePath) {
+  protected FileCache(@NotNull Path filePath) {
     this.file = filePath.toFile();
     new Thread(this::doInitialFileRead).start();
   }
@@ -75,43 +46,45 @@ public abstract class Cache<K, V> {
   /**
    * Returns the entry corresponding to the given key, or null if no such entry exists.
    */
+  @Override
   @Nullable
-  public synchronized Entry getEntry(@NotNull K key) {
+  public CacheEntry<V> getEntry(@NotNull K key) {
     ensureFileIsRead();
-    return entries.get(key);
+    return super.getEntry(key);
   }
 
   /**
    * Adds the given key and value to the cache. The creation time is determined by
    * {@link ZonedDateTime#now}. If an entry exists with the given key, it is replaced.
    */
-  public synchronized void putValue(@NotNull K key, @NotNull V value) {
+  @Override
+  protected void putEntry(@NotNull K key, @NotNull CacheEntry<V> entry) {
     ensureFileIsRead();
-    entries.put(key, new Entry(value));
+    super.putEntry(key, entry);
     queueFileWrite();
   }
 
   @NotNull
-  protected abstract Map<K, Entry> fromFile(@NotNull File file) throws IOException;
+  protected abstract Map<K, CacheEntry<V>> fromFile(@NotNull File file) throws IOException;
 
-  @NotNull
+
   protected abstract void toFile(@NotNull File file,
-                                 @NotNull Map<K, Entry> entries) throws IOException;
+                                 @NotNull Map<K, CacheEntry<V>> entries) throws IOException;
 
   private void doInitialFileRead() {
     try {
-      entries = fromFile(file);
+      setEntries(fromFile(file));
     } catch (IOException e) {
-      entries = new HashMap<>();
+      setEntries(Collections.emptyMap());
     } finally {
       fileRead.countDown();
     }
   }
 
   private void writeFile() {
-    Map<K, Entry> copy;
+    Map<K, CacheEntry<V>> copy;
     synchronized (this) {
-      copy = new HashMap<>(entries);
+      copy = getEntries();
     }
     try {
       toFile(file, copy);
@@ -136,8 +109,8 @@ public abstract class Cache<K, V> {
 
   /*
    * If a write is already pending, does nothing. Otherwise creates a pending write, which runs in
-   * the background after 10 seconds. This method can be called after each insertion into the cache;
-   * the delay ensures that a burst of entries get coalesced into a single file write.
+   * the background after 10 seconds. This method can be called after each insertion into the cache.
+   * The delay ensures that a burst of entries get coalesced into a single file write.
    */
   private void queueFileWrite() {
     if (writePending.compareAndSet(false, true)) {
