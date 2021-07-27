@@ -18,6 +18,7 @@ import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseGroupViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.ideactivities.TutorialViewModel;
+import fi.aalto.cs.apluscourses.ui.ideactivities.ComponentDatabase;
 import java.util.Optional;
 import javax.swing.JOptionPane;
 import org.jetbrains.annotations.NotNull;
@@ -75,7 +76,7 @@ public class TutorialAction extends AnAction {
     ExerciseViewModel selectedExercise = (ExerciseViewModel) selection.getLevel(2);
     ExerciseGroupViewModel selectedExerciseGroup = (ExerciseGroupViewModel) selection.getLevel(1);
     if (selectedExercise == null || selectedExerciseGroup == null
-            || !ExerciseViewModel.Status.TUTORIAL.equals(selectedExercise.getStatus())) {
+        || !ExerciseViewModel.Status.TUTORIAL.equals(selectedExercise.getStatus())) {
       notifier.notifyAndHide(new ExerciseNotSelectedNotification(), project);
       return;
     }
@@ -101,13 +102,13 @@ public class TutorialAction extends AnAction {
     Authentication authentication = authenticationProvider.getAuthentication(e.getProject());
     ExercisesTreeViewModel exercisesViewModel = mainViewModel.exercisesViewModel.get();
     boolean isTutorialSelected =
-            exercisesViewModel != null
+        exercisesViewModel != null
             && authentication != null && courseViewModel != null
             && exercisesViewModel.getSelectedItem() != null
             && !(exercisesViewModel.getSelectedItem() instanceof ExerciseGroupViewModel)
             && exercisesViewModel.findSelected().getLevel(2) != null
             && ExerciseViewModel.Status.TUTORIAL.equals(
-               ((ExerciseViewModel) exercisesViewModel.findSelected().getLevel(2)).getStatus());
+            ((ExerciseViewModel) exercisesViewModel.findSelected().getLevel(2)).getStatus());
 
     e.getPresentation().setVisible(e.getProject() != null && isTutorialSelected);
   }
@@ -129,9 +130,9 @@ public class TutorialAction extends AnAction {
     @Override
     public boolean confirmStart(@NotNull TutorialViewModel tutorialViewModel) {
       return JOptionPane.showConfirmDialog(null,
-        "A tutorial will start.",
-        tutorialViewModel.getTitle(),
-        JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION;
+          "A tutorial will start.",
+          tutorialViewModel.getTitle(),
+          JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION;
     }
 
     @Override
@@ -148,6 +149,8 @@ public class TutorialAction extends AnAction {
     if (viewModel != null) {
       viewModel.getTutorial().tutorialCompleted.removeCallback(mainViewModel);
       mainViewModel.tutorialViewModel.set(null);
+      // Update the progress tracker.
+      Optional.ofNullable(ComponentDatabase.getNavBarToolBar()).ifPresent(tb -> tb.updateActionsImmediately(true));
       dialogs.end(viewModel);
     }
   }

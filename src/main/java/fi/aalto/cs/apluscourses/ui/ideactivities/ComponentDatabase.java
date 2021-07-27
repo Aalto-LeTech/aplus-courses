@@ -1,5 +1,8 @@
 package fi.aalto.cs.apluscourses.ui.ideactivities;
 
+import com.intellij.ide.ui.customization.CustomActionsSchema;
+import com.intellij.openapi.actionSystem.ActionGroup;
+import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl;
 import com.intellij.openapi.editor.impl.EditorComponentImpl;
 import java.awt.Component;
 import javax.swing.JButton;
@@ -37,6 +40,11 @@ public class ComponentDatabase {
         .stream().filter(c -> c instanceof JButton)
         .filter(c -> ComponentLocator.hasActionOfClass((JButton) c, "ProgressAction"))
         .findFirst().orElse(null);
+  }
+
+  public static @Nullable ActionToolbarImpl getNavBarToolBar() {
+    return ActionToolbarImpl
+        .findToolbar((ActionGroup) CustomActionsSchema.getInstance().getCorrectedAction("NavBarToolBar"));
   }
 
   private ComponentDatabase() {
