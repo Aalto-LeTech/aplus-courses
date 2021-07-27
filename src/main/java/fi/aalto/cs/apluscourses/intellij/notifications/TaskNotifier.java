@@ -14,7 +14,8 @@ public class TaskNotifier {
   }
 
   public void notifyAlreadyEndTask(int index, String instructions) {
-    notifier.notifyAndHide(TaskCompleteNotification.createTaskAlreadyCompleteNotification(index, instructions), project);
+    notifier.notifyAndHide(TaskCompleteNotification.createTaskAlreadyCompleteNotification(index, instructions),
+        project);
   }
 
   public void notifyEndTask(int index) {

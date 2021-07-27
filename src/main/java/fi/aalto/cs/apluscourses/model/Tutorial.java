@@ -30,6 +30,9 @@ public class Tutorial {
     this.moduleDependencies = moduleDependencies;
   }
 
+  /**
+   * Construct a tutorial instance from the given JSON object.
+   */
   public static Tutorial fromJsonObject(@NotNull JSONObject jsonObject) {
     return new Tutorial(JsonUtil.parseArray(jsonObject.getJSONArray("tasks"),
         JSONArray::getJSONObject, Task::fromJsonObject, Task[]::new),
@@ -59,6 +62,9 @@ public class Tutorial {
     this.tutorialCompleted.trigger();
   }
 
+  /**
+   * Downloads the module deps for a tutorial, with the module name starting with "Ideact_".
+   */
   public void downloadDependencies(@NotNull Course course,
                                    @NotNull Project project,
                                    @NotNull TaskNotifier taskNotifier) {
@@ -73,6 +79,9 @@ public class Tutorial {
         () -> taskNotifier.notifyDownloadingDeps(true));
   }
 
+  /**
+   * Deletes the module deps for a tutorial.
+   */
   public void deleteDependencies(@NotNull Course course) {
     for (var component : getModules(course)) {
       try {

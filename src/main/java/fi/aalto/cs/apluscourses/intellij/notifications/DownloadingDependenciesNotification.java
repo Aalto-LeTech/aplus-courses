@@ -7,6 +7,9 @@ import com.intellij.notification.NotificationType;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 
 public class DownloadingDependenciesNotification extends Notification {
+  /**
+   * Creates a notification for either downloading deps started or completed.
+   */
   public DownloadingDependenciesNotification(boolean done) {
     super(
         PluginSettings.A_PLUS,
