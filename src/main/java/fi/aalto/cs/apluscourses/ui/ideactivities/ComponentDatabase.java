@@ -1,5 +1,8 @@
 package fi.aalto.cs.apluscourses.ui.ideactivities;
 
+import com.intellij.ide.ui.customization.CustomActionsSchema;
+import com.intellij.openapi.actionSystem.ActionGroup;
+import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl;
 import com.intellij.openapi.editor.impl.EditorComponentImpl;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
@@ -52,6 +55,11 @@ public class ComponentDatabase {
    */
   public static @Nullable Component getProgressButton() {
     return ComponentLocator.getComponentByClass("TutorialProgressAction");
+  }
+
+  public static @Nullable ActionToolbarImpl getNavBarToolBar() {
+    return ActionToolbarImpl
+        .findToolbar((ActionGroup) CustomActionsSchema.getInstance().getCorrectedAction("NavBarToolBar"));
   }
 
   /**
