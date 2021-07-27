@@ -12,6 +12,7 @@ import fi.aalto.cs.apluscourses.model.LazyLoader;
 import fi.aalto.cs.apluscourses.model.Student;
 import fi.aalto.cs.apluscourses.model.User;
 import fi.aalto.cs.apluscourses.utils.Event;
+import fi.aalto.cs.apluscourses.utils.async.RepeatedTask;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
 import java.io.IOException;
@@ -43,19 +44,19 @@ public class CourseProject implements LazyLoader {
   private final AtomicBoolean hasTriedToReadAuthenticationFromStorage = new AtomicBoolean(false);
 
   @NotNull
-  private final CourseUpdater courseUpdater;
+  private final RepeatedTask courseUpdater;
 
   @NotNull
-  private final ExercisesUpdater exercisesUpdater;
+  private final RepeatedTask exercisesUpdater;
 
   @NotNull
   private final Project project;
 
   @NotNull
-  public final Event courseUpdated;
+  public final Event courseUpdated = new Event();
 
   @NotNull
-  public final Event exercisesUpdated;
+  public final Event exercisesUpdated = new Event();
 
   @NotNull
   public final ObservableProperty<User> user = new ObservableReadWriteProperty<>(null);
@@ -77,10 +78,24 @@ public class CourseProject implements LazyLoader {
     this.notifier = notifier;
     this.course = course;
     this.project = project;
-    this.courseUpdated = new Event();
-    this.exercisesUpdated = new Event();
     this.courseUpdater = new CourseUpdater(course, project, courseUrl, courseUpdated);
     this.exercisesUpdater = new ExercisesUpdater(this, exercisesUpdated);
+  }
+
+  /**
+   * Construct a course project from the given course, exercises and course updaters,
+   * and project.
+   */
+  public CourseProject(@NotNull Course course,
+                       @NotNull RepeatedTask courseUpdater,
+                       @NotNull RepeatedTask exercisesUpdater,
+                       @NotNull Project project,
+                       @NotNull Notifier notifier) {
+    this.notifier = notifier;
+    this.course = course;
+    this.project = project;
+    this.courseUpdater = courseUpdater;
+    this.exercisesUpdater = exercisesUpdater;
   }
 
   /**
@@ -173,12 +188,12 @@ public class CourseProject implements LazyLoader {
   }
 
   @NotNull
-  public CourseUpdater getCourseUpdater() {
+  public RepeatedTask getCourseUpdater() {
     return courseUpdater;
   }
 
   @NotNull
-  public ExercisesUpdater getExercisesUpdater() {
+  public RepeatedTask getExercisesUpdater() {
     return exercisesUpdater;
   }
 

@@ -1,24 +1,14 @@
 package fi.aalto.cs.apluscourses.model;
 
+import fi.aalto.cs.apluscourses.utils.cache.CachePreference;
 import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.json.JSONObject;
 
 public interface ExerciseDataSource {
-
-  <T> List<T> getPaginatedResults(@NotNull String url,
-                                  @NotNull Authentication authentication,
-                                  @Nullable ZonedDateTime zonedDateTime,
-                                  @NotNull Function<JSONObject, T> parseFunction) throws IOException;
-
-  <T> List<T> getPaginatedResults(@NotNull String url,
-                                  @NotNull Authentication authentication,
-                                  @NotNull Function<JSONObject, T> parseFunction) throws IOException;
 
   @NotNull
   List<Group> getGroups(@NotNull Course course, @NotNull Authentication authentication)
@@ -41,13 +31,13 @@ public interface ExerciseDataSource {
                        @NotNull Points points,
                        @NotNull Map<Long, Tutorial> tutorials,
                        @NotNull Authentication authentication,
-                       @NotNull ZonedDateTime minCacheEntryTime) throws IOException;
+                       @NotNull CachePreference cachePreference) throws IOException;
 
   @NotNull
   SubmissionResult getSubmissionResult(@NotNull String submissionUrl,
                                        @NotNull Exercise exercise,
                                        @NotNull Authentication authentication,
-                                       @NotNull ZonedDateTime minCacheEntryTime) throws IOException;
+                                       @NotNull CachePreference cachePreference) throws IOException;
 
   @NotNull
   User getUser(@NotNull Authentication authentication) throws IOException;
@@ -55,7 +45,7 @@ public interface ExerciseDataSource {
   @NotNull
   List<Student> getStudents(@NotNull Course course,
                             @NotNull Authentication authentication,
-                            @NotNull ZonedDateTime minCacheEntryTime) throws IOException;
+                            @NotNull CachePreference cachePreference) throws IOException;
 
   @NotNull
   ZonedDateTime getEndingTime(@NotNull Course course,

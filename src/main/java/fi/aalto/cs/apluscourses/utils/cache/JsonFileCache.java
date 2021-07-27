@@ -1,4 +1,4 @@
-package fi.aalto.cs.apluscourses.model;
+package fi.aalto.cs.apluscourses.utils.cache;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,29 +11,29 @@ import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
-public class JsonCache extends Cache<String, JSONObject> {
+public class JsonFileCache extends FileCache<String, JSONObject> {
   
-  public JsonCache(@NotNull Path filePath) {
+  public JsonFileCache(@NotNull Path filePath) {
     super(filePath);
   }
 
   @Override
-  protected @NotNull Map<String, Entry> fromFile(@NotNull File file) throws IOException {
-    Map<String, Entry> entries = new HashMap<>();
+  protected @NotNull Map<String, CacheEntry<JSONObject>> fromFile(@NotNull File file) throws IOException {
+    Map<String, CacheEntry<JSONObject>> entries = new HashMap<>();
     var json = new JSONObject(FileUtils.readFileToString(file, StandardCharsets.UTF_8));
     Iterable<String> keys = json::keys;
     for (String url : keys) {
       var entryJson = json.getJSONObject(url);
       var createdAt = ZonedDateTime.parse(entryJson.getString("createdAt"));
       var value = entryJson.getJSONObject("value");
-      entries.put(url, new Entry(value, createdAt));
+      entries.put(url, new CacheEntry<>(value, createdAt));
     }
     return entries;
   }
 
   @Override
   protected void toFile(@NotNull File file,
-                        @NotNull Map<String, Entry> entries) throws IOException {
+                        @NotNull Map<String, CacheEntry<JSONObject>> entries) throws IOException {
     var json = new JSONObject();
     entries.forEach((url, entry) -> {
       var entryJson = new JSONObject();
