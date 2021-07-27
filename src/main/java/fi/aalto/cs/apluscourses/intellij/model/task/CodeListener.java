@@ -53,7 +53,7 @@ public abstract class CodeListener implements DocumentListener, ActivitiesListen
 
   private boolean checkFile() {
     if (project.getBasePath() != null) {
-      Path modulePath = Paths.get(project.getBasePath()).resolve(filePath);
+      Path modulePath = Path.of(project.getBasePath(), filePath);
       modulePath = Paths.get(PathUtil.toSystemDependentName(modulePath.toString()));
       VirtualFile vf = LocalFileSystem.getInstance().findFileByIoFile(modulePath.toFile());
       if (vf != null) {
