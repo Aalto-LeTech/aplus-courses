@@ -1,6 +1,5 @@
 package fi.aalto.cs.apluscourses.presentation;
 
-import fi.aalto.cs.apluscourses.BannerViewModel;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.ExercisesTree;
 import fi.aalto.cs.apluscourses.presentation.exercise.EmptyExercisesTreeViewModel;

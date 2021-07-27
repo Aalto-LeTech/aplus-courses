@@ -3,7 +3,6 @@ package fi.aalto.cs.apluscourses.presentation;
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 import com.intellij.ui.LightColors;
-import fi.aalto.cs.apluscourses.BannerViewModel;
 import fi.aalto.cs.apluscourses.intellij.model.CourseProject;
 import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
