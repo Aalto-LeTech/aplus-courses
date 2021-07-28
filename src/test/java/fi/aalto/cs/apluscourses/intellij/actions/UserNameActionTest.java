@@ -8,9 +8,11 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.model.CourseProject;
+import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.services.CourseProjectProvider;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
+import fi.aalto.cs.apluscourses.utils.async.RepeatedTask;
 import java.net.URL;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,7 +34,9 @@ public class UserNameActionTest {
     when(event.getPresentation()).thenReturn(presentation);
 
     var course = new ModelExtensions.TestCourse("oe1");
-    courseProject = new CourseProject(course, new URL("http://localhost:8000"), project);
+    courseProject = new CourseProject(course,
+        RepeatedTask.create(() -> { }), RepeatedTask.create(() -> { }),
+        project, mock(Notifier.class));
     var courseProjectProvider = mock(CourseProjectProvider.class);
     when(courseProjectProvider.getCourseProject(project)).thenReturn(courseProject);
 

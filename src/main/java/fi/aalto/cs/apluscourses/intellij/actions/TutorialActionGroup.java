@@ -1,5 +1,8 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getAndReplaceText;
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
@@ -34,7 +37,7 @@ public class TutorialActionGroup extends DefaultActionGroup implements DumbAware
 
   private class CancelAction extends DumbAwareAction {
     public CancelAction() {
-      super("Cancel Tutorial");
+      super(getText("ui.tutorial.TutorialActionGroup.cancel"));
     }
 
     @Override
@@ -65,7 +68,7 @@ public class TutorialActionGroup extends DefaultActionGroup implements DumbAware
     private final int index;
 
     public StepAction(int index) {
-      super("Step " + index);
+      super(getAndReplaceText("ui.tutorial.TutorialActionGroup.step", index));
       this.index = index;
     }
 

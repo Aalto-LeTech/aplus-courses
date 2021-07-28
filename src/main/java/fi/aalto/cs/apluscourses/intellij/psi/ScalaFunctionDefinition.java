@@ -3,16 +3,13 @@ package fi.aalto.cs.apluscourses.intellij.psi;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiParameter;
 import com.intellij.psi.PsiWhiteSpace;
-import fi.aalto.cs.apluscourses.utils.IdeActivitiesUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import org.jetbrains.plugins.scala.lang.psi.api.expr.ScAssignment;
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunctionDefinition;
 import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScTypeParamClause;
-import org.jetbrains.plugins.scala.lang.psi.impl.expr.ScReferenceExpressionImpl;
 import org.jetbrains.plugins.scala.lang.psi.impl.statements.params.ScParametersImpl;
 
 public class ScalaFunctionDefinition {
@@ -20,13 +17,13 @@ public class ScalaFunctionDefinition {
   private final String methodName;
   private final String[] arguments;
   private final String[] methodBody;
-  private final String[] typeParameters;
+  private final String typeParameters;
 
   /**
    * Constructor.
    */
   public ScalaFunctionDefinition(String methodName, String[] arguments, String[] methodBody,
-                                 String[] typeParameters) {
+                                 String typeParameters) {
     this.methodName = methodName;
     this.arguments = arguments;
     this.methodBody = methodBody;
@@ -39,18 +36,15 @@ public class ScalaFunctionDefinition {
 
   /**
    * Checks the type parameters of the function.
-   * Certain characters are removed. In the case of type parameters, some text from the PSI
-   * comes in the form of [A, B] and so the brackets need to be removed.
    * @param clause The ScTypeParametersClause to be checked.
    * @return true if the type parameters are correct, false otherwise.
    */
   public boolean checkScTypeParametersClause(Optional<PsiElement> clause) {
-    if (clause.isPresent() && typeParameters.length != 0) {
+    if (clause.isPresent() && typeParameters.length() != 0) {
       ScTypeParamClause typeParamClause = (ScTypeParamClause) clause.get();
-      return Arrays.equals(typeParameters, IdeActivitiesUtil.getSeparateWords(
-          typeParamClause.getText().replace("[", "").replace("]",""), ","));
+      return typeParameters.equals(typeParamClause.getText().replace(" ", ""));
     } else {
-      return clause.isEmpty() && typeParameters.length == 0;
+      return clause.isEmpty() && typeParameters.length() == 0;
     }
   }
 
@@ -80,28 +74,35 @@ public class ScalaFunctionDefinition {
     PsiElement methodBodyParent = children[children.length - 1];
     if (methodBodyParent != null) {
       children = methodBodyParent.getChildren();
-      Collection<PsiElement> totalElements = getMethodBodyPsiElements(children);
+      Collection<String> totalElements = getPsiElementsSiblings(children[0]);
       List<String> args = Arrays.asList(methodBody.clone());
-      List<String> body = new ArrayList<>();
-      totalElements.forEach(element -> body.add(element.getText()));
-      return args.equals(body);
+      return args.equals(totalElements);
     }
     return false;
   }
 
-  private Collection<PsiElement> getMethodBodyPsiElements(PsiElement[] methodElements) {
-    List<PsiElement> elements = new ArrayList<>();
-    for (PsiElement element: methodElements) {
-      if (element instanceof PsiWhiteSpace) {
+
+  private Collection<String> getPsiElementsSiblings(PsiElement methodElement) {
+    List<String> elements = new ArrayList<>();
+    PsiElement prevSibling = methodElement.getPrevSibling();
+    PsiElement nextSibling = methodElement;
+    while (prevSibling != null) {
+      nextSibling = prevSibling;
+      prevSibling = prevSibling.getPrevSibling();
+    }
+
+    while (nextSibling != null) {
+      if (nextSibling instanceof PsiWhiteSpace) {
+        nextSibling = nextSibling.getNextSibling();
         continue;
-      }
-      if (element.getChildren().length == 0 || element instanceof ScReferenceExpressionImpl
-          || element instanceof ScAssignment) {
-        elements.add(element);
+      } else if (nextSibling.getText().contains(" ") && nextSibling.getChildren().length > 0) {
+        elements.addAll(getPsiElementsSiblings(nextSibling.getChildren()[0]));
       } else {
-        elements.addAll(getMethodBodyPsiElements(element.getChildren()));
+        elements.add(nextSibling.getText());
       }
+      nextSibling = nextSibling.getNextSibling();
     }
     return elements;
   }
+
 }

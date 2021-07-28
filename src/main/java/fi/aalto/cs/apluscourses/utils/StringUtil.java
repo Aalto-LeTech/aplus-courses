@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-public class IdeActivitiesUtil {
+public class StringUtil {
 
-  private IdeActivitiesUtil() {}
+  private StringUtil() {}
 
   /**
    * Separates the given text into a String[] by tokenizing with the specified delimeter.
@@ -14,9 +14,9 @@ public class IdeActivitiesUtil {
    * @param delim The delimeter used in the tokenizing.
    * @return The String[] containing the tokens.
    */
-  public static String[] getSeparateWords(String phrase, String delim) {
+  public static String[] getArrayOfTokens(String phrase, char delim) {
     List<String> tokens = new ArrayList<>();
-    StringTokenizer tokenizer = new StringTokenizer(phrase, delim);
+    StringTokenizer tokenizer = new StringTokenizer(phrase, String.valueOf(delim));
     while (tokenizer.hasMoreTokens()) {
       tokens.add(tokenizer.nextToken().trim());
     }

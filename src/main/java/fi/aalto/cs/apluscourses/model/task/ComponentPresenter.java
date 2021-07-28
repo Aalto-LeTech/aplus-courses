@@ -6,7 +6,5 @@ public interface ComponentPresenter {
 
   void removeHighlight();
 
-  boolean isVisible();
-
   void setCancelHandler(CancelHandler cancelHandler);
 }

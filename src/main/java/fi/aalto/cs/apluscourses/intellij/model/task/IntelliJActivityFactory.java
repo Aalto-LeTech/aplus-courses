@@ -12,8 +12,6 @@ import org.jetbrains.annotations.NotNull;
 public class IntelliJActivityFactory implements ActivityFactory {
   private final @NotNull Project project;
 
-  private static final String FILE_PATH = "filePath";
-
   public IntelliJActivityFactory(@NotNull Project project) {
     this.project = project;
   }
@@ -24,28 +22,16 @@ public class IntelliJActivityFactory implements ActivityFactory {
                                                     @NotNull ListenerCallback callback) {
     switch (action) {
       case "openEditor":
-        return new OpenFileListener(callback, arguments.getOrThrow(FILE_PATH), project);
+        return OpenFileListener.create(callback, project, arguments);
       case "build":
-        return new IdeActionListener(callback, project, arguments.getOrThrow("actionName"), null);
-      case "test":
-        return new IdeActionListener(callback, project,
-            arguments.getOrThrow("actionName"), arguments.getOrThrow(FILE_PATH));
+        return BuildActionListener.create(callback, project);
+      case "run":
+        return RunActionListener.create(callback, project, arguments);
       case "classDeclScala":
-        return new ClassDeclarationListener(callback, project,
-            arguments.getOrThrow("className"),
-            arguments.getArrayOrThrow("classArguments"),
-            arguments.getOrThrow("classHierarchy"),
-            arguments.getArrayOrThrow("traitHierarchy"),
-            arguments.getArrayOrThrow("typeParamClause"),
-            arguments.getArrayOrThrow("modifiers"),
-            arguments.getArrayOrThrow("annotations"),
-            arguments.getOrThrow(FILE_PATH));
+        return ClassDeclarationListener.create(callback, project, arguments);
       case "functionDefinition":
-        return new FunctionDefinitionListener(callback, project,
-            arguments.getOrThrow("methodName"),
-            arguments.getArrayOrThrow("methodArguments"),
-            arguments.getArrayOrThrow("methodBody"),
-            arguments.getOrThrow(FILE_PATH));
+        return FunctionDefinitionListener.create(callback, project, arguments);
+        //TODO
       case "openRepl":
         return new RunReplListener(callback, project,
             arguments.getOrThrow("module"));
@@ -70,7 +56,7 @@ public class IntelliJActivityFactory implements ActivityFactory {
                                                      @NotNull Arguments actionArguments,
                                                      String @NotNull [] assertClosed) {
     for (var closedComponent : assertClosed) {
-      switch (closedComponent.split("\\|")[0]) {
+      switch (closedComponent) {
         case "projectTree":
           ComponentDatabase.hideToolWindow(ComponentDatabase.PROJECT_TOOL_WINDOW, project);
           break;
@@ -78,7 +64,7 @@ public class IntelliJActivityFactory implements ActivityFactory {
           ComponentDatabase.hideToolWindow(ComponentDatabase.APLUS_TOOL_WINDOW, project);
           break;
         case "editor":
-          ComponentDatabase.closeFile(closedComponent.replaceFirst("editor\\|", ""), project);
+          ComponentDatabase.closeFile(actionArguments, project);
           break;
         case "repl":
           ComponentDatabase.closeRepls(project);
@@ -91,9 +77,9 @@ public class IntelliJActivityFactory implements ActivityFactory {
       case "projectTree":
         return new ProjectTreePresenter(instruction, info, project);
       case "editor":
-        return new EditorPresenter(instruction, info, actionArguments.getOrThrow(FILE_PATH),
-            project);
+        return EditorPresenter.create(instruction, info, project, actionArguments);
       case "repl":
+        //TODO
         return new ReplPresenter(instruction, info, actionArguments.getOrThrow("module"), project);
       default:
         throw new IllegalArgumentException("Unsupported component: '" + component + "'");

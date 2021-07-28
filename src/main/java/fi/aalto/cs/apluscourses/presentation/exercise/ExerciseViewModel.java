@@ -46,6 +46,7 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
     PARTIAL_POINTS,
     FULL_POINTS,
     IN_GRADING,
+    LATE,
     TUTORIAL
   }
 
@@ -64,6 +65,8 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
       return Status.NO_SUBMISSIONS;
     } else if (exercise.getUserPoints() == exercise.getMaxPoints()) {
       return Status.FULL_POINTS;
+    } else if (exercise.isLate()) {
+      return Status.LATE;
     } else if (exercise.getUserPoints() == 0) {
       return Status.NO_POINTS;
     } else {
@@ -83,7 +86,9 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
       return "optional practice";
     }
     Exercise exercise = getModel();
-    return "" + exercise.getSubmissionResults().size() + " of " + exercise.getMaxSubmissions()
-        + ", " + exercise.getUserPoints() + "/" + exercise.getMaxPoints();
+    String lateString = exercise.isLate() ? "late, " : "";
+    return lateString + exercise.getSubmissionResults().size() + " of "
+        + exercise.getMaxSubmissions() + ", " + exercise.getUserPoints() + "/"
+        + exercise.getMaxPoints();
   }
 }

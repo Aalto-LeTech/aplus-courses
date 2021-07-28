@@ -62,7 +62,6 @@ class MainTest {
                         "O1Library not found in project view tree"
                     ) { hasText("O1Library") }
                 }
-                aPlusSideBarButton().click()
                 with(modules()) {
                     waitFor(
                         Duration.ofSeconds(60),
@@ -114,6 +113,14 @@ class MainTest {
                     assertEquals("Only one item is selected", selectedItems.size, 1)
                     assertTrue("Selected module is correct", selectedItems[0].contains("Viinaharava", true))
                 }
+            }
+        }
+        step("Make sure the assignments have been loaded") {
+            with(ideFrame()) {
+                waitFor(
+                    Duration.ofSeconds(180),
+                    Duration.ofSeconds(5)
+                ) { !hasText("Refreshing assignments...") }
             }
         }
         step("Searching assignments") {
@@ -226,7 +233,7 @@ class MainTest {
                 }
                 assertTrue(
                     "The assignments tree gets cleared after logging out",
-                    containsText("Set your A+ token")
+                    containsText("Click here to set your A+ token")
                 )
                 userButton().click()
                 with(dropDownMenu()) {

@@ -2,13 +2,17 @@ package fi.aalto.cs.apluscourses.intellij.psi;
 
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiParameter;
-import fi.aalto.cs.apluscourses.utils.IdeActivitiesUtil;
+import com.intellij.psi.PsiWhiteSpace;
+import com.intellij.psi.impl.source.tree.LeafPsiElement;
+import fi.aalto.cs.apluscourses.utils.ArrayUtil;
+import fi.aalto.cs.apluscourses.utils.StringUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScAnnotations;
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScPrimaryConstructor;
 import org.jetbrains.plugins.scala.lang.psi.api.base.types.ScSimpleTypeElement;
@@ -24,13 +28,13 @@ public class ScalaClassDeclaration {
   private final String[] traits;
   private final List<String> parameterModifiers;
   private final List<String> parameterAnnotations;
-  private final String[] typeParameters;
+  private final String typeParameters;
 
   /**
    * Constructor.
    */
   public ScalaClassDeclaration(String className, String[] arguments,
-                               String hierarchy, String[] traitHierarchy, String[] typeParameters,
+                               String hierarchy, String[] traitHierarchy, String typeParameters,
                                String[] parameterModifiers, String[] parameterAnnotations) {
     this.className = className;
     this.arguments = arguments;
@@ -60,9 +64,9 @@ public class ScalaClassDeclaration {
             || !checkParameterAnnotationsList(param, params.size())) {
           return false;
         }
-        if (param.getText().contains("val ")) {
+        if (isVal(param)) {
           params.add("val " + param.getName() + ":" + param.getType().getPresentableText());
-        } else if (param.getText().contains("var ")) {
+        } else if (isVar(param)) {
           params.add("var " + param.getName() + ":" + param.getType().getPresentableText());
         } else {
           params.add(param.getName() + ":" + param.getType().getPresentableText());
@@ -81,12 +85,12 @@ public class ScalaClassDeclaration {
    * @return true if the type parameters are correct, false otherwise.
    */
   public boolean checkTypeParameters(Optional<PsiElement> clause) {
-    if (clause.isPresent() && typeParameters.length != 0) {
+    if (clause.isPresent() && typeParameters.length() != 0) {
       ScTypeParamClause typeParamClause = (ScTypeParamClause) clause.get();
-      return Arrays.equals(typeParameters, IdeActivitiesUtil.getSeparateWords(
-          typeParamClause.getText().replace("[", "").replace("]",""), ","));
+      return typeParameters.equals(
+          typeParamClause.getText().replace(" ", ""));
     } else {
-      return clause.isEmpty() && typeParameters.length == 0;
+      return clause.isEmpty() && typeParameters.length() == 0;
     }
   }
 
@@ -97,7 +101,6 @@ public class ScalaClassDeclaration {
    */
   public boolean checkExtendsBlock(Optional<PsiElement> element) {
     if (element.isPresent()) {
-      Set<String> hierarchies = new HashSet<>();
       PsiElement[] children = element.get().getChildren();
       Optional<PsiElement> extendsElement = Arrays.stream(children).filter(
           ScTemplateParentsImpl.class::isInstance).findFirst();
@@ -109,15 +112,15 @@ public class ScalaClassDeclaration {
           //traits may not be present!
           children = extendsElement.get().getChildren();
           if (children.length > 0 && hierarchy.equals(children[0].getText())) {
-            Arrays.stream(children).filter(
-                ScSimpleTypeElement.class::isInstance).forEach(
-                    child -> hierarchies.add(child.getText()));
-            return traits.length == 0 || hierarchies.equals(new HashSet<>(Arrays.asList(traits)));
+            var hierarchies = Arrays.stream(children)
+                .filter(ScSimpleTypeElement.class::isInstance)
+                .map(PsiElement::getText)
+                .collect(Collectors.toSet());
+            return traits.length == 0 || hierarchies.equals(ArrayUtil.toSet(traits));
           }
-          //The order does not matter?!!
-          //The first one should be present first - ScConstructorInvocationImpl -> class hierarchy
+          // The extends keyword should be present first:
+          // ScConstructorInvocationImpl -> class hierarchy
           // The with order does not matter ScSimpleTypeElementImpl
-          // -> trait hierarchy compare Sets since the order does not matter?
         } else {
           return false;
         }
@@ -142,11 +145,11 @@ public class ScalaClassDeclaration {
         ScModifierListImpl.class::isInstance).findFirst();
     if (modifiersElement.isPresent()) {
       ScModifierListImpl modifierList = (ScModifierListImpl) modifiersElement.get();
-      String[] psiModifiers = IdeActivitiesUtil.getSeparateWords(
-          modifierList.getText(), " ");
-      String[] configModifiers =
-          IdeActivitiesUtil.getSeparateWords(parameterModifiers.get(index), " ");
-      return Arrays.equals(psiModifiers, configModifiers);
+      Set<String> psiModifiers = ArrayUtil.toSet(StringUtil.getArrayOfTokens(
+          modifierList.getText(), ' '));
+      Set<String> configModifiers = ArrayUtil.toSet(
+          StringUtil.getArrayOfTokens(parameterModifiers.get(index), ' '));
+      return psiModifiers.equals(configModifiers);
     }
     return false;
   }
@@ -164,17 +167,58 @@ public class ScalaClassDeclaration {
         ScAnnotations.class::isInstance).findFirst();
     if (annotationsElement.isPresent()) {
       ScAnnotations annotationList = (ScAnnotations) annotationsElement.get();
-      String[] psiAnnotations =
-          IdeActivitiesUtil.getSeparateWords(annotationList.getText(), " ");
-      String[] configAnnotations =
-          IdeActivitiesUtil.getSeparateWords(parameterAnnotations.get(index), " ");
-      return Arrays.equals(psiAnnotations, configAnnotations);
+      Set<String> psiAnnotations = ArrayUtil.toSet(
+          StringUtil.getArrayOfTokens(annotationList.getText(), ' '));
+      Set<String> configAnnotations = ArrayUtil.toSet(
+          StringUtil.getArrayOfTokens(parameterAnnotations.get(index), ' '));
+      return psiAnnotations.equals(configAnnotations);
     }
     return false;
   }
 
-  public String[] getArguments() {
-    return arguments;
+  private Collection<PsiElement> getPsiElementsSiblings(PsiElement methodElement) {
+    List<PsiElement> elements = new ArrayList<>();
+
+    PsiElement prevSibling = methodElement.getPrevSibling();
+    PsiElement nextSibling = methodElement;
+
+    //First make sure to find the leftmost sibling (in order to maintain the order of the elements)
+    while (prevSibling != null) {
+      nextSibling = prevSibling;
+      prevSibling = prevSibling.getPrevSibling();
+    }
+
+    while (nextSibling != null) {
+      if (nextSibling instanceof PsiWhiteSpace) {
+        nextSibling = nextSibling.getNextSibling();
+        continue;
+      } else if (nextSibling.getChildren().length > 0) {
+        elements.addAll(getPsiElementsSiblings(nextSibling.getChildren()[0]));
+      } else {
+        elements.add(nextSibling);
+      }
+      nextSibling = nextSibling.getNextSibling();
+    }
+
+    return elements;
+  }
+
+  private boolean isVar(PsiParameter param) {
+    if (param.getChildren().length > 0) {
+      Collection<PsiElement> elements = getPsiElementsSiblings(param.getChildren()[0]);
+      return elements.stream().anyMatch(elem -> elem instanceof LeafPsiElement
+          && elem.getText().equals("var"));
+    }
+    return false;
+  }
+
+  private boolean isVal(PsiParameter param) {
+    if (param.getChildren().length > 0) {
+      Collection<PsiElement> elements = getPsiElementsSiblings(param.getChildren()[0]);
+      return elements.stream().anyMatch(elem -> elem instanceof LeafPsiElement
+          && elem.getText().equals("val"));
+    }
+    return false;
   }
 
 }

@@ -37,6 +37,8 @@ public final class PluginIcons {
           .getIcon("/META-INF/icons/partialPoints.svg", PluginIcons.class);
   public static final Icon A_PLUS_FULL_POINTS = IconLoader
           .getIcon("/META-INF/icons/fullPoints.svg", PluginIcons.class);
+  public static final Icon A_PLUS_LATE = IconLoader
+          .getIcon("/META-INF/icons/late.svg", PluginIcons.class);
   public static final Icon A_PLUS_DOWNLOAD = IconLoader
           .getIcon("/META-INF/icons/download.svg", PluginIcons.class);
   public static final Icon A_PLUS_UPLOAD = IconLoader
@@ -57,7 +59,7 @@ public final class PluginIcons {
           .getIcon("/META-INF/icons/hourglass.svg", PluginIcons.class);
   public static final Icon A_PLUS_USER = IconLoader
       .getIcon("/META-INF/icons/user.svg", PluginIcons.class);
-  public static final Icon A_PLUS_USER_LOGGED_IN = IconLoader
+  public static final Icon A_PLUS_USER_ACTIVE = IconLoader
       .getIcon("/META-INF/icons/user_pink.svg", PluginIcons.class);
   public static final Icon A_PLUS_INFO = IconLoader
           .getIcon("/META-INF/icons/info.svg", PluginIcons.class);
