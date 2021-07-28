@@ -27,6 +27,9 @@ public class Tutorial {
   @NotNull
   public final Event tutorialCompleted = new Event();
 
+  /**
+   * A constructor.
+   */
   public Tutorial(Task @NotNull [] tasks,
                   String @NotNull [] moduleDependencies,
                   boolean downloadDependencies,
@@ -111,6 +114,9 @@ public class Tutorial {
         .collect(Collectors.toList());
   }
 
+  /**
+   * Returns true and shows notifications if modules are missing.
+   */
   public boolean dependenciesMissing(@NotNull Project project,
                                     @NotNull TaskNotifier taskNotifier) {
     var moduleSource = new ProjectModuleSource();
