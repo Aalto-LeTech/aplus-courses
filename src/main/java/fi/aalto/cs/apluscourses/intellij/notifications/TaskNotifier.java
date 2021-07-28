@@ -25,4 +25,8 @@ public class TaskNotifier {
   public void notifyDownloadingDeps(boolean done) {
     notifier.notifyAndHide(new DownloadingDependenciesNotification(done), project);
   }
+
+  public void notifyMissingModule(@NotNull String moduleName) {
+    notifier.notifyAndHide(new MissingModuleNotification(moduleName), project);
+  }
 }

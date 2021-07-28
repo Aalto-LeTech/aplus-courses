@@ -94,9 +94,14 @@ public class TutorialAction extends AnAction {
         new TutorialViewModel(tutorialExercise, new IntelliJActivityFactory(project),
             taskNotifier, dialogs);
     if (dialogs.confirmStart(tutorialViewModel)) {
-      tutorialViewModel.getTutorial().downloadDependencies(courseViewModel.getModel(), project, taskNotifier);
+      var tutorial = tutorialViewModel.getTutorial();
+      if (tutorial.isDownloadDependencies()) {
+        tutorial.downloadDependencies(courseViewModel.getModel(), project, taskNotifier);
+      } else if (tutorial.dependenciesMissing(project, taskNotifier)) {
+        return;
+      }
       mainViewModelProvider.getMainViewModel(project).tutorialViewModel.set(tutorialViewModel);
-      tutorialViewModel.getTutorial().tutorialCompleted
+      tutorial.tutorialCompleted
           .addListener(mainViewModel, mainVm -> onTutorialComplete(mainVm, courseViewModel.getModel()));
       tutorialViewModel.startNextTask();
     }
@@ -158,7 +163,9 @@ public class TutorialAction extends AnAction {
     TutorialViewModel viewModel = mainViewModel.tutorialViewModel.get();
     if (viewModel != null) {
       var tutorial = viewModel.getTutorial();
-      tutorial.deleteDependencies(course);
+      if (tutorial.isDeleteDependencies()) {
+        tutorial.deleteDependencies(course);
+      }
       tutorial.tutorialCompleted.removeCallback(mainViewModel);
       mainViewModel.tutorialViewModel.set(null);
       dialogs.end(viewModel);

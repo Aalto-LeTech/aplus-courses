@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.model;
 
 import com.intellij.openapi.project.Project;
+import fi.aalto.cs.apluscourses.intellij.model.ProjectModuleSource;
 import fi.aalto.cs.apluscourses.intellij.notifications.TaskNotifier;
 import fi.aalto.cs.apluscourses.model.task.Task;
 import fi.aalto.cs.apluscourses.ui.InstallerDialogs;
@@ -20,14 +21,20 @@ import org.json.JSONObject;
 public class Tutorial {
   private final List<Task> tasks;
   private final String @NotNull [] moduleDependencies;
+  private final boolean downloadDependencies;
+  private final boolean deleteDependencies;
 
   @NotNull
   public final Event tutorialCompleted = new Event();
 
   public Tutorial(Task @NotNull [] tasks,
-                  String @NotNull [] moduleDependencies) {
+                  String @NotNull [] moduleDependencies,
+                  boolean downloadDependencies,
+                  boolean deleteDependencies) {
     this.tasks = List.of(tasks);
     this.moduleDependencies = moduleDependencies;
+    this.downloadDependencies = downloadDependencies;
+    this.deleteDependencies = deleteDependencies;
   }
 
   /**
@@ -37,7 +44,9 @@ public class Tutorial {
     return new Tutorial(JsonUtil.parseArray(jsonObject.getJSONArray("tasks"),
         JSONArray::getJSONObject, Task::fromJsonObject, Task[]::new),
         JsonUtil.parseArray(jsonObject.getJSONArray("moduleDependencies"),
-            JSONArray::getString, String::new, String[]::new));
+            JSONArray::getString, String::new, String[]::new),
+        jsonObject.optBoolean("downloadDependencies", false),
+        jsonObject.optBoolean("deleteDependencies", false));
   }
 
   public List<Task> getTasks() {
@@ -100,5 +109,24 @@ public class Tutorial {
         .map(Module.class::cast)
         .map(module -> (Component) module.copy("Ideact_" + module.getOriginalName()))
         .collect(Collectors.toList());
+  }
+
+  public boolean dependenciesMissing(@NotNull Project project,
+                                    @NotNull TaskNotifier taskNotifier) {
+    var moduleSource = new ProjectModuleSource();
+    var missing = Arrays
+        .stream(moduleDependencies)
+        .filter(name -> moduleSource.getModule(project, name) == null)
+        .collect(Collectors.toList());
+    missing.forEach(taskNotifier::notifyMissingModule);
+    return !missing.isEmpty();
+  }
+
+  public boolean isDownloadDependencies() {
+    return downloadDependencies;
+  }
+
+  public boolean isDeleteDependencies() {
+    return deleteDependencies;
   }
 }
