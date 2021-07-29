@@ -43,7 +43,7 @@ dependencies {
 intellij {
     //  this is the version of the IntelliJ IDEA API (SDK) used to build the plugin
     version '2021.1'
-    plugins = ['java', 'org.intellij.scala:2021.1.16']
+    plugins = ['java', 'org.intellij.scala:2021.2.15']
     downloadRobotServerPlugin.version = remoteRobotVersion
 }
 
