@@ -43,6 +43,8 @@ fun SearchContext.dialog(title: String, timeout: Duration = Duration.ofSeconds(5
         timeout
     )
 
+fun SearchContext.languageList() = find(JListFixture::class.java, byXpath("//div[@class='JList']"), Duration.ofSeconds(5))
+
 fun SearchContext.heavyWeightWindow() = find(HeavyWeightWindowFixture::class.java, Duration.ofSeconds(5))
 
 @FixtureName("Welcome Frame")
