@@ -63,10 +63,12 @@ class CommonSteps(val remoteRobot: RemoteRobot) {
     fun setAPlusToken(token: String) {
         with(remoteRobot) {
             with(ideFrame()) {
-                openAPlusMenuItem("Set A+ Token")
-                with(dialog("A+ Token")) {
-                    passwordField().text = token
-                    button("OK").click()
+                attempt(5) {
+                    openAPlusMenuItem("Set A+ Token")
+                    with(dialog("A+ Token")) {
+                        passwordField().text = token
+                        button("OK").click()
+                    }
                 }
             }
         }
