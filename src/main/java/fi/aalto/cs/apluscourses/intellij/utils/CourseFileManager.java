@@ -40,7 +40,7 @@ public class CourseFileManager {
 
   private static final Logger logger = LoggerFactory.getLogger(CourseFileManager.class);
 
-  private File courseFile;
+  private final File courseFile;
   private URL courseUrl;
   private String language;
   private Map<String, ModuleMetadata> modulesMetadata;
@@ -338,6 +338,9 @@ public class CourseFileManager {
     writeCourseFileWithModulesObject(modulesObject);
   }
 
+  /**
+   * Deletes the course file.
+   */
   public void delete() {
     try {
       Files.delete(courseFile.toPath());
