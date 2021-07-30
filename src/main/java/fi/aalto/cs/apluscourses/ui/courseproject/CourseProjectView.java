@@ -2,13 +2,8 @@ package fi.aalto.cs.apluscourses.ui.courseproject;
 
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
-import com.intellij.ide.DataManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.ui.Messages;
-import fi.aalto.cs.apluscourses.intellij.actions.ActionUtil;
-import fi.aalto.cs.apluscourses.intellij.actions.CourseProjectAction;
-import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.presentation.CourseProjectViewModel;
 import fi.aalto.cs.apluscourses.ui.GuiObject;
 import fi.aalto.cs.apluscourses.ui.IconListCellRenderer;
@@ -18,19 +13,16 @@ import fi.aalto.cs.apluscourses.ui.base.OurDialogWrapper;
 import fi.aalto.cs.apluscourses.ui.base.TemplateLabel;
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
 import fi.aalto.cs.apluscourses.utils.PluginResourceBundle;
-import java.awt.event.ActionEvent;
 import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class CourseProjectView extends OurDialogWrapper {
   private JPanel basePanel;
-  private CourseProjectViewModel viewModel;
-  private final Project project;
+  private final CourseProjectViewModel viewModel;
 
   @GuiObject
   private TemplateLabel infoText;
@@ -55,7 +47,6 @@ public class CourseProjectView extends OurDialogWrapper {
                     @NotNull CourseProjectViewModel viewModel) {
     super(project);
 
-    this.project = project;
     this.viewModel = viewModel;
 
     setTitle(PluginResourceBundle.getText("ui.courseProject.view"));
@@ -91,7 +82,7 @@ public class CourseProjectView extends OurDialogWrapper {
 
   @Override
   protected Action @NotNull [] createActions() {
-    return new Action[]{getOKAction(), getCancelAction(), new ChangeCourseAction()};
+    return new Action[]{getOKAction(), getCancelAction()};
   }
 
   @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
@@ -103,32 +94,5 @@ public class CourseProjectView extends OurDialogWrapper {
         APlusLocalizationUtil::languageCodeToName,
         null));
     languageComboBox.selectedItemBindable.bindToSource(viewModel.languageProperty);
-  }
-
-  private class ChangeCourseAction extends DialogWrapperAction {
-
-    public ChangeCourseAction() {
-      super("Change Course");
-    }
-
-    @Override
-    protected void doAction(ActionEvent e) {
-      if (JOptionPane.showConfirmDialog(basePanel,
-          "Are you sure you want to change the course?\nThis will remove the current course configuration.",
-          "Change Course",
-          JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
-
-        PluginSettings.getInstance().getCourseFileManager(project).delete();
-        PluginSettings.getInstance().removeMainViewModel(project);
-
-//        InitializationActivity.isInitialized(project).set(false);
-//        new InitializationActivity().runActivity(project);
-        var context = DataManager.getInstance().getDataContext(basePanel);
-        ActionUtil.launch(CourseProjectAction.ACTION_ID, context);
-        ProjectManager.getInstance().reloadProject(project);
-
-        doCancelAction(e);
-      }
-    }
   }
 }
