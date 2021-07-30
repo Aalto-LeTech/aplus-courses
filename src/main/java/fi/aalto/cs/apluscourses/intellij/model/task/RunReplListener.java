@@ -62,6 +62,9 @@ public class RunReplListener implements ActivitiesListener {
     }
   }
 
+  /**
+   * Returns true if the REPL for a given module is open.
+   */
   public static boolean isReplOpen(@NotNull Project project, @NotNull String module) {
     return ScalaConsoleInfo.getConsole(project) != null
         && ExecutionManagerImpl.getAllDescriptors(project).stream().anyMatch(d -> d.getDisplayName().contains("REPL")
