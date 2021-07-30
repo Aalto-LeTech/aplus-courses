@@ -70,7 +70,8 @@ public class Task implements CancelHandler {
     if (presenter != null || listener != null) {
       throw new IllegalStateException();
     }
-    presenter = activityFactory.createPresenter(component, instruction, info, componentArguments);
+    presenter = activityFactory.createPresenter(component, instruction, info, componentArguments,
+        actionArguments);
     presenter.setCancelHandler(this);
     listener = activityFactory.createListener(action, actionArguments, taskCompleted::trigger);
     if (listener.registerListener()) {

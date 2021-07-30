@@ -27,6 +27,7 @@ import fi.aalto.cs.apluscourses.presentation.CourseSelectionViewModel;
 import fi.aalto.cs.apluscourses.ui.InstallerDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogsImpl;
+import fi.aalto.cs.apluscourses.ui.ideactivities.ComponentDatabase;
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import fi.aalto.cs.apluscourses.utils.PostponedRunnable;
 import fi.aalto.cs.apluscourses.utils.Version;
@@ -208,6 +209,8 @@ public class CourseProjectAction extends AnAction {
 
     Future<Boolean> customPropertiesImported =
         executor.submit(() -> tryImportCustomProperties(project, Paths.get(basePath), course));
+
+    ComponentDatabase.showAPlusToolWindow(project);
 
     executor.execute(() -> {
       try {
