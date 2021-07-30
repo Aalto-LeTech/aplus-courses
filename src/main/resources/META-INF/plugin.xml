@@ -28,6 +28,8 @@
                     anchor="right"
                     factoryClass="fi.aalto.cs.apluscourses.intellij.toolwindows.APlusToolWindowFactory"
                     icon="PluginIcons.A_PLUS_LOGO"/>
+
+        <errorHandler implementation="fi.aalto.cs.apluscourses.intellij.utils.ErrorHandler"/>
     </extensions>
 
     <actions>
@@ -55,6 +57,10 @@
                     class="fi.aalto.cs.apluscourses.intellij.actions.AboutAction"
                     text="About the A+ Courses Plugin"
                     description="Information about the A+ Courses plugin for IntelliJ" />
+            <action id="fi.aalto.cs.apluscourses.intellij.actions.AssistantModeAction"
+                    class="fi.aalto.cs.apluscourses.intellij.actions.AssistantModeAction"
+                    text="Assistant Mode"
+                    description="Toggles the assistant mode" />
         </group>
         <group id="fi.aalto.cs.apluscourses.intellij.actions.ActionGroups.MODULE_ACTIONS"
                text="A+ Module"
@@ -75,6 +81,10 @@
                     class="fi.aalto.cs.apluscourses.intellij.actions.SubmitExerciseAction"
                     text="Submit A+ Assignment"
                     icon="PluginIcons.A_PLUS_UPLOAD"/>
+            <action id="fi.aalto.cs.apluscourses.intellij.actions.TutorialAction"
+                    class="fi.aalto.cs.apluscourses.intellij.actions.TutorialAction"
+                    text="Start Tutorial"
+                    icon="PluginIcons.A_PLUS_START" />
             <action id="fi.aalto.cs.apluscourses.intellij.actions.OpenItemAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.OpenItemAction"
                     text="Open In Browser"
@@ -83,16 +93,20 @@
                     class="fi.aalto.cs.apluscourses.intellij.actions.RefreshExercisesAction"
                     text="Refresh Assignments"
                     icon="PluginIcons.A_PLUS_REFRESH" />
-            <action id="fi.aalto.cs.apluscourses.intellij.actions.TutorialAction"
-                    class="fi.aalto.cs.apluscourses.intellij.actions.TutorialAction"
-                    text="Start Tutorial"
-                    icon="PluginIcons.A_PLUS_IN_GRADING" />
             <group id="fi.aalto.cs.apluscourses.intellij.actions.FilterOptionsActionGroup"
                    class="fi.aalto.cs.apluscourses.intellij.actions.FilterOptionsActionGroup"
                    popup="true"
                    text="Filter Assignments"
                    icon="PluginIcons.A_PLUS_FILTER">
             </group>
+            <action id="fi.aalto.cs.apluscourses.intellij.actions.SelectStudentAction"
+                    class="fi.aalto.cs.apluscourses.intellij.actions.SelectStudentAction"
+                    text="Select Student"
+                    icon="PluginIcons.A_PLUS_USER_ACTIVE" />
+            <action id="fi.aalto.cs.apluscourses.intellij.actions.DownloadSubmissionAction"
+                    class="fi.aalto.cs.apluscourses.intellij.actions.DownloadSubmissionAction"
+                    text="Download Submission"
+                    icon="PluginIcons.A_PLUS_DOWNLOAD" />
         </group>
         <group id="fi.aalto.cs.apluscourses.intellij.actions.ActionGroups.TOOL_WINDOW_ACTIONS"
                text="A+ Tool Window"
@@ -109,6 +123,15 @@
                         class="fi.aalto.cs.apluscourses.intellij.actions.LogInOutAction"
                         text="Log in"/>
             </group>
+        </group>
+        <group id="fi.aalto.cs.apluscourses.intellij.actions.ActionGroups.NAVBAR_ACTIONS"
+               text="A+ Navbar"
+               description="A+ actions for navbar">
+            <add-to-group group-id="NavBarToolBar" anchor="first"/>
+            <action id="fi.aalto.cs.apluscourses.intellij.actions.TutorialProgressAction"
+                    class="fi.aalto.cs.apluscourses.intellij.actions.TutorialProgressAction"
+                    text="Progress"
+                    icon="PluginIcons.A_PLUS_INFO"/>
         </group>
         <action id="Scala.RunConsole"
                 class="fi.aalto.cs.apluscourses.intellij.actions.ReplAction"

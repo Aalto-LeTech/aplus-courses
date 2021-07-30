@@ -27,6 +27,7 @@ import fi.aalto.cs.apluscourses.presentation.CourseSelectionViewModel;
 import fi.aalto.cs.apluscourses.ui.InstallerDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogsImpl;
+import fi.aalto.cs.apluscourses.ui.ideactivities.ComponentDatabase;
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import fi.aalto.cs.apluscourses.utils.PostponedRunnable;
 import fi.aalto.cs.apluscourses.utils.Version;
@@ -206,11 +207,16 @@ public class CourseProjectAction extends AnAction {
     Future<Boolean> ideSettingsImported =
         executor.submit(() -> importIdeSettings && tryImportIdeSettings(project, course));
 
+    Future<Boolean> customPropertiesImported =
+        executor.submit(() -> tryImportCustomProperties(project, Paths.get(basePath), course));
+
+    ComponentDatabase.showAPlusToolWindow(project);
+
     executor.execute(() -> {
       try {
         autoInstallDone.get();
-        if (projectSettingsImported.get() && importIdeSettings //  NOSONAR
-            && ideSettingsImported.get()) { //  NOSONAR
+        if (projectSettingsImported.get() && customPropertiesImported.get() //  NOSONAR
+            && importIdeSettings && ideSettingsImported.get()) { //  NOSONAR
           ideRestarter.run();
         }
       } catch (InterruptedException ex) {
@@ -340,6 +346,18 @@ public class CourseProjectAction extends AnAction {
       return true;
     } catch (IOException e) {
       logger.error("Failed to import IDE settings", e);
+      notifier.notify(new NetworkErrorNotification(e), project);
+      return false;
+    }
+  }
+
+  private boolean tryImportCustomProperties(@NotNull Project project, @NotNull Path basePath,
+                                            @NotNull Course course) {
+    try {
+      settingsImporter.importCustomProperties(basePath, course, project);
+      return true;
+    } catch (IOException e) {
+      logger.error("Failed to import custom properties", e);
       notifier.notify(new NetworkErrorNotification(e), project);
       return false;
     }

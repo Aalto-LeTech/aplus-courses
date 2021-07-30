@@ -3,7 +3,6 @@ package fi.aalto.cs.apluscourses.presentation;
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 import com.intellij.ui.LightColors;
-import fi.aalto.cs.apluscourses.BannerViewModel;
 import fi.aalto.cs.apluscourses.intellij.model.CourseProject;
 import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
@@ -28,7 +27,7 @@ public class CourseEndedBannerViewModel extends BannerViewModel {
       try {
         var endingTime = course.getExerciseDataSource().getEndingTime(course, authentication);
         if (endingTime.compareTo(ZonedDateTime.now()) < 0) {
-          text = getText("ui.BannerView.courseEnded");
+          text = getText("ui.BannerView.courseEnded", courseProject.getProject());
         }
       } catch (IOException e) {
         notifier.notify(new NetworkErrorNotification(e), courseProject.getProject());

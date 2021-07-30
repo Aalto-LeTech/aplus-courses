@@ -15,13 +15,13 @@ version '2.2'
 sourceCompatibility = 11
 
 def courseVersion = '1.0'
-def remoteRobotVersion = '0.10.3'
+def remoteRobotVersion = '0.11.5'
 def fixturesVersion = "1.1.18"
 
 repositories {
     mavenCentral()
     jcenter()
-    maven { url = "https://jetbrains.bintray.com/intellij-third-party-dependencies" }
+    maven { url = "https://packages.jetbrains.team/maven/p/ij/intellij-dependencies" }
 }
 
 dependencies {
@@ -129,4 +129,8 @@ runIdeForUiTests {
     systemProperty 'ide.show.tips.on.startup.default.value', 'false'
     systemProperty 'io.netty.tryReflectionSetAccessible', 'false'
     systemProperty "ide.mac.message.dialogs.as.sheets", "false"
+}
+
+configure(uiTest) {
+    group = 'verification'
 }

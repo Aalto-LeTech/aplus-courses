@@ -1,7 +1,7 @@
 package fi.aalto.cs.apluscourses.ui;
 
 import com.intellij.ui.JBColor;
-import fi.aalto.cs.apluscourses.BannerViewModel;
+import fi.aalto.cs.apluscourses.presentation.BannerViewModel;
 import fi.aalto.cs.apluscourses.ui.utils.Bindable;
 import java.awt.BorderLayout;
 import java.awt.Color;

@@ -1,8 +1,14 @@
 package fi.aalto.cs.apluscourses.intellij.utils;
 
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.roots.ModuleRootManager;
+import fi.aalto.cs.apluscourses.intellij.notifications.MissingDependencyNotification;
+import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.model.ModuleMetadata;
+import fi.aalto.cs.apluscourses.utils.JsonUtil;
 import fi.aalto.cs.apluscourses.utils.Version;
 import java.io.File;
 import java.io.IOException;
@@ -13,12 +19,18 @@ import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -32,6 +44,9 @@ public class CourseFileManager {
   private URL courseUrl;
   private String language;
   private Map<String, ModuleMetadata> modulesMetadata;
+  private final Map<String, Set<String>> moduleDependencies;
+  private final Project project;
+  private final Notifier notifier;
 
   private static final String COURSE_FILE_NAME = "a-plus-project.json";
   private static final String URL_KEY = "url";
@@ -39,9 +54,17 @@ public class CourseFileManager {
   private static final String MODULES_KEY = "modules";
   private static final String MODULE_VERSION_KEY = "version";
   private static final String MODULE_DOWNLOADED_AT_KEY = "downloadedAt";
+  private static final String MODULE_DEPENDENCIES_KEY = "dependencies";
 
-  public CourseFileManager(@NotNull Project project) {
+  /**
+   * Constructor.
+   */
+  public CourseFileManager(@NotNull Project project,
+                           @NotNull Notifier notifier) {
     courseFile = getCourseFile(project);
+    this.project = project;
+    this.notifier = notifier;
+    this.moduleDependencies = new HashMap<>();
   }
 
   /**
@@ -69,6 +92,7 @@ public class CourseFileManager {
             .put(URL_KEY, courseUrl.toString())
             .put(LANGUAGE_KEY, language)
             .put(MODULES_KEY, createModulesObject())
+            .put(MODULE_DEPENDENCIES_KEY, createDependenciesObject())
     );
   }
 
@@ -78,7 +102,7 @@ public class CourseFileManager {
    *
    * @return {@code true} if the course file was successfully loaded, {@code false} if the course
    *         file doesn't exist.
-   * @throws IOException   If an IO error occurs while reading the course file.
+   * @throws IOException If an IO error occurs while reading the course file.
    */
   public synchronized boolean load() throws IOException {
     if (courseFile.exists()) {
@@ -96,7 +120,8 @@ public class CourseFileManager {
    * @param module The module for which an entry is added.
    * @throws IOException If an IO error occurs while writing to the course file.
    */
-  public synchronized void addModuleEntry(@NotNull Module module) throws IOException {
+  public synchronized void addModuleEntry(@NotNull Module module)
+      throws IOException {
     ModuleMetadata newModuleMetadata = module.getMetadata();
     JSONObject newModuleObject = new JSONObject()
         .put(MODULE_VERSION_KEY, newModuleMetadata.getVersion())
@@ -106,16 +131,69 @@ public class CourseFileManager {
 
     modulesObject.put(module.getName(), newModuleObject);
 
-    JSONObject jsonObject = new JSONObject()
-        .put(URL_KEY, courseUrl.toString())
-        .put(LANGUAGE_KEY, language)
-        .put(MODULES_KEY, modulesObject);
+    addAllDependencies();
+    fixDependencies();
 
-    writeCourseFile(jsonObject);
+    writeCourseFileWithModulesObject(modulesObject);
 
     // Only add the entry to the map after writing to the file, so that if the write fails, the map
     // is still in the correct state.
     modulesMetadata.put(module.getName(), newModuleMetadata);
+  }
+
+  /**
+   * Only supports adding new modules, not removing them.
+   */
+  private synchronized void addModuleDependencies(
+      @NotNull com.intellij.openapi.module.Module module) {
+    var deps = getDependencies(module);
+    var oldDeps = moduleDependencies.computeIfAbsent(module.getName(), m -> deps);
+    if (oldDeps.size() < deps.size()) {
+      moduleDependencies.put(module.getName(), deps);
+    }
+  }
+
+  private synchronized void addAllDependencies() {
+    var modules = ModuleManager.getInstance(project).getModules();
+    for (var module : modules) {
+      addModuleDependencies(module);
+    }
+  }
+
+  private synchronized Set<String> fixDependencies() {
+    var moduleManager = ModuleManager.getInstance(project);
+    var modules = moduleManager.getModules();
+    var missingModules = new HashSet<String>();
+
+    for (var module : modules) {
+      var depsInIml = getDependencies(module);
+      var depsInJson = new HashSet<>(moduleDependencies.get(module.getName()));
+      depsInJson.removeAll(depsInIml);
+
+      if (!depsInJson.isEmpty()) {
+        var model = ModuleRootManager.getInstance(module).getModifiableModel();
+
+        for (var missingModelName : depsInJson) {
+          var missingModule = moduleManager.findModuleByName(missingModelName);
+
+          if (missingModule != null) {
+            model.addModuleOrderEntry(missingModule);
+          } else {
+            missingModules.add(missingModelName);
+          }
+        }
+        ApplicationManager.getApplication().invokeLater(() ->
+            ApplicationManager.getApplication().runWriteAction(model::commit));
+      }
+    }
+    return missingModules;
+  }
+
+  private synchronized Set<String> getDependencies(
+      @NotNull com.intellij.openapi.module.Module module) {
+    return Arrays.stream(ModuleRootManager.getInstance(module).getDependencies())
+        .map(com.intellij.openapi.module.Module::getName)
+        .collect(Collectors.toCollection(HashSet::new));
   }
 
   /**
@@ -155,6 +233,15 @@ public class CourseFileManager {
     FileUtils.writeStringToFile(courseFile, jsonObject.toString(), StandardCharsets.UTF_8);
   }
 
+  private void writeCourseFileWithModulesObject(@NotNull JSONObject modulesObject)
+      throws IOException {
+    writeCourseFile(new JSONObject()
+        .put(URL_KEY, courseUrl.toString())
+        .put(LANGUAGE_KEY, language)
+        .put(MODULES_KEY, modulesObject)
+        .put(MODULE_DEPENDENCIES_KEY, createDependenciesObject()));
+  }
+
   /*
    * Returns the course file corresponding to the given project.
    */
@@ -178,6 +265,13 @@ public class CourseFileManager {
             .put(MODULE_VERSION_KEY, metadata.getVersion())
             .put(MODULE_DOWNLOADED_AT_KEY, metadata.getDownloadedAt())));
     return modulesObject;
+  }
+
+  @NotNull
+  private JSONObject createDependenciesObject() {
+    var dependenciesObject = new JSONObject();
+    moduleDependencies.forEach(dependenciesObject::put);
+    return dependenciesObject;
   }
 
   /*
@@ -217,6 +311,31 @@ public class CourseFileManager {
       this.modulesMetadata
           .put(moduleName, new ModuleMetadata(moduleVersion, downloadedAt));
     }
+
+
+    JSONObject dependenciesObject = jsonObject.optJSONObject(MODULE_DEPENDENCIES_KEY);
+    if (dependenciesObject != null) {
+      Iterable<String> depModuleNames = dependenciesObject::keys;
+
+      for (String moduleName : depModuleNames) {
+        JSONArray jsonDependencies = dependenciesObject.getJSONArray(moduleName);
+        Set<String> dependencies = new HashSet<>(Arrays.asList(
+            JsonUtil.parseArray(
+                jsonDependencies, JSONArray::getString, Function.identity(), String[]::new)
+        ));
+
+        moduleDependencies.put(moduleName, dependencies);
+      }
+    }
+    addAllDependencies();
+    var missingModules = fixDependencies();
+
+    if (!missingModules.isEmpty()) {
+      notifier.notify(new MissingDependencyNotification(String.join(", ", missingModules)),
+          project);
+    }
+
+    writeCourseFileWithModulesObject(modulesObject);
   }
 
   public void delete() {
