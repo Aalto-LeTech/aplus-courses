@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.openapi.project.ProjectManager;
@@ -17,8 +19,8 @@ class ResetProjectAction extends DumbAwareAction {
     }
 
     if (JOptionPane.showConfirmDialog(null,
-        "Are you sure you want to reset the course project?\nThis will remove the current course configuration.",
-        "Change Course",
+        getText("ui.ResetProjectAction.confirmDialog.content"),
+        getText("ui.ResetProjectAction.confirmDialog.title"),
         JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
 
       PluginSettings.getInstance().getCourseFileManager(project).delete();
