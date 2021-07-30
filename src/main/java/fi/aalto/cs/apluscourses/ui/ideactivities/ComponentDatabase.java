@@ -5,8 +5,6 @@ import com.intellij.execution.ExecutionManager;
 import com.intellij.execution.RunManager;
 import com.intellij.execution.executors.DefaultRunExecutor;
 import com.intellij.execution.impl.ExecutionManagerImpl;
-import com.intellij.ide.DataManager;
-import com.intellij.openapi.actionSystem.LangDataKeys;
 import com.intellij.openapi.editor.impl.EditorComponentImpl;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
@@ -18,11 +16,11 @@ import com.intellij.openapi.wm.ToolWindowManager;
 import fi.aalto.cs.apluscourses.model.task.Arguments;
 import java.awt.Component;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Date;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.plugins.scala.console.ScalaConsoleInfo;
 
 public class ComponentDatabase {
   public static final String PROJECT_TOOL_WINDOW = "Project";
@@ -93,6 +91,7 @@ public class ComponentDatabase {
 
   /**
    * Opens a tool window.
+   *
    * @param id      The name of the tool window
    * @param project The project
    */
@@ -114,10 +113,9 @@ public class ComponentDatabase {
    */
   public static boolean startAndShowRepl(@NotNull Module module, @NotNull Project project) {
     var toolWindow = ToolWindowManager.getInstance(project).getToolWindow(RUN_TOOL_WINDOW);
-    if (toolWindow == null) {
+    if (toolWindow == null || !showToolWindow(RUN_TOOL_WINDOW, project)) {
       return false;
     }
-    showToolWindow(RUN_TOOL_WINDOW, project);
 
     if (Arrays.stream(toolWindow.getContentManager().getContents()).anyMatch(content ->
         content.toString().contains("REPL") && content.toString().contains(module.getName()))) {
@@ -125,26 +123,23 @@ public class ComponentDatabase {
     }
 
     var runConfigs = RunManager.getInstance(project).getAllConfigurationsList();
-    var opened = false;
     for (var config : runConfigs) {
       var name = config.getName();
       if (name.contains("REPL") && name.contains(module.getName())) {
 
         var settings = RunManager.getInstance(project).findSettings(config);
-        var context = DataManager.getInstance().getDataContext(toolWindow.getComponent());
-        var runContentDescriptor = LangDataKeys.RUN_CONTENT_DESCRIPTOR.getData(context);
-        if (runContentDescriptor != null) {
+        var processHandler = ScalaConsoleInfo.getProcessHandler(project);
+        if (settings != null && processHandler != null) {
           ExecutionManager.getInstance(project).restartRunProfile(project,
               DefaultRunExecutor.getRunExecutorInstance(),
               DefaultExecutionTarget.INSTANCE,
               settings,
-              runContentDescriptor.getProcessHandler());
-          opened = true;
-          break;
+              processHandler);
+          return true;
         }
       }
     }
-    return opened;
+    return false;
   }
 
   /**
@@ -194,6 +189,7 @@ public class ComponentDatabase {
 
   /**
    * Closes a tool window.
+   *
    * @param id      The name of the tool window
    * @param project The project
    */

@@ -31,18 +31,12 @@ public class IntelliJActivityFactory implements ActivityFactory {
         return ClassDeclarationListener.create(callback, project, arguments);
       case "functionDefinition":
         return FunctionDefinitionListener.create(callback, project, arguments);
-        //TODO
       case "openRepl":
-        return new RunReplListener(callback, project,
-            arguments.getOrThrow("module"));
+        return RunReplListener.create(callback, project, arguments);
       case "replInput":
-        return new SingleLineReplListener(callback, project,
-            arguments.getOrThrow("input"),
-            arguments.getOrThrow("output"));
+        return ReplInOutListener.create(callback, project, arguments);
       case "replInputContains":
-        return new ReplContainsListener(callback, project,
-            arguments.getArrayOrThrow("inputs"),
-            arguments.getOrThrow("output"));
+        return ReplContainsListener.create(callback, project, arguments);
       default:
         throw new IllegalArgumentException("Unsupported action: '" + action + "'");
     }
@@ -79,8 +73,7 @@ public class IntelliJActivityFactory implements ActivityFactory {
       case "editor":
         return EditorPresenter.create(instruction, info, project, actionArguments);
       case "repl":
-        //TODO
-        return new ReplPresenter(instruction, info, actionArguments.getOrThrow("module"), project);
+        return ReplPresenter.create(instruction, info, project, actionArguments);
       default:
         throw new IllegalArgumentException("Unsupported component: '" + component + "'");
     }

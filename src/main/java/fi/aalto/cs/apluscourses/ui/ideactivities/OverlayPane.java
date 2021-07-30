@@ -135,7 +135,7 @@ public class OverlayPane extends JPanel implements AWTEventListener {
 
     Toolkit.getDefaultToolkit().addAWTEventListener(overlay,
         AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK
-        | AWTEvent.MOUSE_WHEEL_EVENT_MASK);
+            | AWTEvent.MOUSE_WHEEL_EVENT_MASK);
 
     return overlay;
   }
@@ -167,11 +167,15 @@ public class OverlayPane extends JPanel implements AWTEventListener {
    */
   @RequiresEdt
   public void addPopup(@NotNull Component c, @NotNull String title,
-                                        @NotNull String message) {
+                       @NotNull String message) {
     var popup = new BalloonPopup(c, title, message, PluginIcons.A_PLUS_OPTIONAL_PRACTICE);
     this.balloonPopups.add(popup);
     this.getRootPane().getLayeredPane().add(popup, PANE_Z_ORDER + 1);
     this.revalidatePane();
+  }
+
+  public boolean hasPopup() {
+    return !balloonPopups.isEmpty();
   }
 
   /**

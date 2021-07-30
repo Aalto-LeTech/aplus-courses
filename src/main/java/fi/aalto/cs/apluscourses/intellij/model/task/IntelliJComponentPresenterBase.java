@@ -11,6 +11,7 @@ import fi.aalto.cs.apluscourses.ui.ideactivities.GenericHighlighter;
 import fi.aalto.cs.apluscourses.ui.ideactivities.OverlayPane;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class IntelliJComponentPresenterBase implements ComponentPresenter {
@@ -22,6 +23,8 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
   protected final @NotNull Project project;
   private OverlayPane overlayPane;
   private volatile CancelHandler cancelHandler; //NOSONAR
+  private final AtomicBoolean highlighting = new AtomicBoolean(false);
+  private final AtomicBoolean tryingToShow = new AtomicBoolean(false);
 
   protected IntelliJComponentPresenterBase(@NotNull String instruction,
                                            @NotNull String info,
@@ -41,15 +44,27 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
 
   @RequiresEdt
   private void highlightInternal() {
+    highlighting.set(true);
     if (overlayPane != null) {
       overlayPane.remove();
     }
 
-    GenericHighlighter highlighter = getHighlighter();
-    if (highlighter == null && tryToShow()) {
+    var highlighter = getHighlighter();
+    var showing = false;
+    if (highlighter == null && !tryingToShow.get() && tryToShow()) {
+      showing = true; // tryToShow returned true
       highlighter = getHighlighter();
-    } else if (highlighter == null) {
-      throw new IllegalStateException("Component was not found!");
+    }
+    if (highlighter == null) {
+      if (showing || tryingToShow.get()) {
+        highlighting.set(false);
+        tryingToShow.set(true);
+        return; // tryToShow returned true, but component not visible yet
+      } else {
+        throw new IllegalStateException("Component was not found!");
+      }
+    } else {
+      tryingToShow.set(false);
     }
     overlayPane = OverlayPane.installOverlay();
     overlayPane.addHighlighter(highlighter);
@@ -60,6 +75,7 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
     if (progressButton != null) {
       overlayPane.addHighlighter(new GenericHighlighter(progressButton));
     }
+    highlighting.set(false);
   }
 
   @Override
@@ -99,7 +115,7 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
     public void run() {
       ApplicationManager.getApplication()
           .invokeLater(() -> {
-            if (!isVisible()) {
+            if (!highlighting.get() && (tryingToShow.get() || !isVisible())) {
               highlightInternal();
             }
           }, ModalityState.NON_MODAL);
