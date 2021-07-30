@@ -82,7 +82,7 @@ public class CourseProjectView extends OurDialogWrapper {
 
   @Override
   protected Action @NotNull [] createActions() {
-    return new Action[]{getOKAction(), getCancelAction()};
+    return new Action[] { getOKAction(), getCancelAction() };
   }
 
   @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
