@@ -7,7 +7,6 @@ import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Authentication;
-import fi.aalto.cs.apluscourses.model.DummyExercise;
 import fi.aalto.cs.apluscourses.model.DummySubmissionResult;
 import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
@@ -94,14 +93,15 @@ public class ExercisesUpdater extends RepeatedTask {
         return;
       }
 
-      progress.incrementMaxValue(submissionsAmount(exerciseGroups, points) + exercisesAmount(exerciseGroups));
+      progress.incrementMaxValue(submissionsToBeLoadedCount(exerciseGroups, points)
+          + exercisesToBeLoadedCount(exerciseGroups));
       addExercises(exerciseGroups, points, authentication, progress);
 
       progress.finish();
       if (Thread.interrupted()) {
         return;
       }
-      courseProject.setExerciseTree(exerciseTree);
+
       eventToTrigger.trigger();
     } catch (IOException e) {
       var observable = PluginSettings
@@ -126,9 +126,10 @@ public class ExercisesUpdater extends RepeatedTask {
     var dataSource = course.getExerciseDataSource();
     var selectedStudent = courseProject.getSelectedStudent();
     var exercisesTree = new ExercisesTree(exerciseGroups, selectedStudent);
+    courseProject.setExerciseTree(exercisesTree);
     for (var exerciseGroup : exerciseGroups) {
 
-      if (courseProject.isLazyLoaded(exerciseGroup.getId())) {
+      if (courseProject.isLazyLoadedGroup(exerciseGroup.getId())) {
         for (var exerciseId : points.getExercises(exerciseGroup.getId())) {
           if (Thread.interrupted()) {
             return;
@@ -141,7 +142,6 @@ public class ExercisesUpdater extends RepeatedTask {
 
           addSubmissionResults(exercise, points, authentication, progress);
 
-          courseProject.setExerciseTree(exercisesTree);
           eventToTrigger.trigger();
         }
 
@@ -152,12 +152,12 @@ public class ExercisesUpdater extends RepeatedTask {
   private void addDummySubmissionResults(@NotNull List<ExerciseGroup> exerciseGroups,
                                          @NotNull Points points) {
     for (var exerciseGroup : exerciseGroups) {
+      if (Thread.interrupted()) {
+        return;
+      }
       for (var exercise : exerciseGroup.getExercises()) {
         var submissionIds = points.getSubmissions(exercise.getId());
         for (var id : submissionIds) {
-          if (Thread.interrupted()) {
-            return;
-          }
           exercise.addSubmissionResult(new DummySubmissionResult(id, exercise));
         }
       }
@@ -176,36 +176,33 @@ public class ExercisesUpdater extends RepeatedTask {
       if (Thread.interrupted()) {
         return;
       }
-      SubmissionResult submission;
-      if (exercise instanceof DummyExercise) {
-        submission = new DummySubmissionResult(id, exercise);
-      } else {
-        // Ignore cache for submissions that had the status WAITING
-        var cachePreference = submissionsInGrading.remove(id)
-            ? CachePreferences.GET_NEW_AND_KEEP
-            : CachePreferences.GET_MAX_ONE_WEEK_OLD;
-        submission = dataSource.getSubmissionResult(
-            baseUrl + id + "/", exercise, authentication, cachePreference);
-        if (submission.getStatus() == SubmissionResult.Status.WAITING) {
-          submissionsInGrading.add(id);
-        }
+
+      // Ignore cache for submissions that had the status WAITING
+      var cachePreference = submissionsInGrading.remove(id)
+          ? CachePreferences.GET_NEW_AND_KEEP
+          : CachePreferences.GET_MAX_ONE_WEEK_OLD;
+      var submission = dataSource.getSubmissionResult(
+          baseUrl + id + "/", exercise, authentication, cachePreference);
+      if (submission.getStatus() == SubmissionResult.Status.WAITING) {
+        submissionsInGrading.add(id);
       }
+
       exercise.addSubmissionResult(submission);
       progress.increment();
     }
   }
 
-  private int submissionsAmount(@NotNull List<ExerciseGroup> exerciseGroups, @NotNull Points points) {
+  private int submissionsToBeLoadedCount(@NotNull List<ExerciseGroup> exerciseGroups, @NotNull Points points) {
     return exerciseGroups.stream()
-        .filter(group -> courseProject.isLazyLoaded(group.getId()))
+        .filter(group -> courseProject.isLazyLoadedGroup(group.getId()))
         .mapToInt(group -> group.getExercises().stream()
             .mapToInt(exercise -> points.getSubmissionsAmount(exercise.getId())).sum())
         .sum();
   }
 
-  private int exercisesAmount(@NotNull List<ExerciseGroup> exerciseGroups) {
+  private int exercisesToBeLoadedCount(@NotNull List<ExerciseGroup> exerciseGroups) {
     return exerciseGroups.stream()
-        .filter(group -> courseProject.isLazyLoaded(group.getId()))
+        .filter(group -> courseProject.isLazyLoadedGroup(group.getId()))
         .mapToInt(group -> group.getExercises().size())
         .sum();
   }

@@ -1,6 +1,5 @@
 package fi.aalto.cs.apluscourses.presentation;
 
-import fi.aalto.cs.apluscourses.BannerViewModel;
 import fi.aalto.cs.apluscourses.intellij.model.CourseProject;
 import fi.aalto.cs.apluscourses.presentation.exercise.EmptyExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;

@@ -137,13 +137,16 @@ public class ExercisesView {
   private static class ExercisesTreeView extends TreeView {
     @Override
     public void setViewModel(@Nullable BaseTreeViewModel<?> viewModel) {
-      if (this.viewModel != null
-          && viewModel != null
-          && this.viewModel.getModel() instanceof ExercisesTree
-          && viewModel.getModel() instanceof ExercisesTree
-          && ((ExercisesTree) this.viewModel.getModel()).getSelectedStudent()
-          != ((ExercisesTree) viewModel.getModel()).getSelectedStudent()) {
-        TreeUtil.collapseAll(this, 1);
+      var oldViewModel = getViewModel();
+      if (viewModel != null && oldViewModel != null) {
+        var oldModel = oldViewModel.getModel();
+        var newModel = viewModel.getModel();
+        if (oldModel instanceof ExercisesTree
+            && newModel instanceof ExercisesTree
+            && ((ExercisesTree) oldModel).getSelectedStudent()
+            != ((ExercisesTree) newModel).getSelectedStudent()) {
+          TreeUtil.collapseAll(this, 1);
+        }
       }
       super.setViewModel(viewModel);
     }

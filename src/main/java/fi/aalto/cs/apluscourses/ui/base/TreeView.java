@@ -50,7 +50,11 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
     return (SelectableNodeViewModel<?>) TREE_MODEL_BUILDER.getUserObject(node);
   }
 
-  protected BaseTreeViewModel<?> viewModel = null;
+  protected BaseTreeViewModel<?> getViewModel() {
+    return viewModel;
+  }
+
+  private BaseTreeViewModel<?> viewModel = null;
   private final Object viewModelLock = new Object();
 
   /**

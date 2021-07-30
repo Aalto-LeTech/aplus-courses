@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -19,7 +18,6 @@ public class ExerciseGroup implements Browsable {
   @NotNull
   private final String htmlUrl;
   private final boolean isOpen;
-  private final List<DummyExercise> dummyExercises;
   @NotNull
   private final List<Exercise> exercises = Collections.synchronizedList(new ArrayList<>());
 
@@ -35,8 +33,7 @@ public class ExerciseGroup implements Browsable {
     this.name = name;
     this.htmlUrl = htmlUrl;
     this.isOpen = isOpen;
-    this.dummyExercises = dummyExercises;
-    exercises.addAll(dummyExercises);
+    this.exercises.addAll(dummyExercises);
   }
 
   /**
@@ -94,22 +91,12 @@ public class ExerciseGroup implements Browsable {
     return Collections.unmodifiableList(exercises);
   }
 
-  @Nullable
-  public Exercise getExerciseById(long id) {
-    return exercises.stream().filter(ex -> ex.getId() == id).findFirst().orElse(null);
-  }
-
   /**
    * Adds an exercise or replaces an existing one.
    */
   public void addExercise(@NotNull Exercise exercise) {
     var oldExercise = exercises.stream().filter(oldEx -> oldEx.equals(exercise)).findFirst();
-    if (oldExercise.isPresent()) {
-      exercises.remove(oldExercise.get());
-      if (oldExercise.get() instanceof DummyExercise) {
-        dummyExercises.remove(oldExercise.get());
-      }
-    }
+    oldExercise.ifPresent(exercises::remove);
     exercises.add(exercise);
   }
 

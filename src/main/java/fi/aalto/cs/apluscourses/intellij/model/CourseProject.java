@@ -7,8 +7,8 @@ import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.Course;
+import fi.aalto.cs.apluscourses.model.ExercisesLazyLoader;
 import fi.aalto.cs.apluscourses.model.ExercisesTree;
-import fi.aalto.cs.apluscourses.model.LazyLoader;
 import fi.aalto.cs.apluscourses.model.Student;
 import fi.aalto.cs.apluscourses.model.User;
 import fi.aalto.cs.apluscourses.utils.Event;
@@ -31,7 +31,7 @@ import org.jetbrains.annotations.Nullable;
  * contains a {@link CourseUpdater} that regularly updates the course, and an {@link Event} that is
  * triggered when an update occurs.
  */
-public class CourseProject implements LazyLoader {
+public class CourseProject implements ExercisesLazyLoader {
 
   @NotNull
   private final Notifier notifier;
@@ -65,7 +65,7 @@ public class CourseProject implements LazyLoader {
   private volatile Student selectedStudent = null;
 
   @NotNull
-  private final Set<Long> lazyLoaded = Collections.synchronizedSet(new HashSet<>());
+  private final Set<Long> lazyLoadedGroups = Collections.synchronizedSet(new HashSet<>());
 
   /**
    * Construct a course project from the given course, course configuration URL (used for updating),
@@ -204,18 +204,18 @@ public class CourseProject implements LazyLoader {
 
   public void setSelectedStudent(@Nullable Student selectedStudent) {
     this.selectedStudent = selectedStudent;
-    lazyLoaded.clear();
+    lazyLoadedGroups.clear();
   }
 
   @Override
-  public void addLazyLoaded(long id) {
-    if (lazyLoaded.add(id)) {
+  public void setLazyLoadedGroup(long id) {
+    if (lazyLoadedGroups.add(id)) {
       getExercisesUpdater().restart();
     }
   }
 
   @Override
-  public boolean isLazyLoaded(long id) {
-    return lazyLoaded.contains(id);
+  public boolean isLazyLoadedGroup(long id) {
+    return lazyLoadedGroups.contains(id);
   }
 }

@@ -1,7 +1,7 @@
 package fi.aalto.cs.apluscourses.presentation.exercise;
 
+import fi.aalto.cs.apluscourses.model.ExercisesLazyLoader;
 import fi.aalto.cs.apluscourses.model.ExercisesTree;
-import fi.aalto.cs.apluscourses.model.LazyLoader;
 import fi.aalto.cs.apluscourses.presentation.base.BaseTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.Searchable;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
@@ -34,11 +34,11 @@ public class ExercisesTreeViewModel extends BaseTreeViewModel<ExercisesTree>
    */
   public ExercisesTreeViewModel(@NotNull ExercisesTree exercisesTree,
                                 @NotNull Options filterOptions,
-                                @Nullable LazyLoader lazyLoader) {
+                                @Nullable ExercisesLazyLoader exercisesLazyLoader) {
     super(exercisesTree,
         exercisesTree.getExerciseGroups()
             .stream()
-            .map(exerciseGroup -> new ExerciseGroupViewModel(exerciseGroup, lazyLoader))
+            .map(exerciseGroup -> new ExerciseGroupViewModel(exerciseGroup, exercisesLazyLoader))
             .collect(Collectors.toList()),
         filterOptions);
   }

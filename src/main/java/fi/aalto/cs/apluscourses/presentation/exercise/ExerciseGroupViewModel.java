@@ -1,7 +1,7 @@
 package fi.aalto.cs.apluscourses.presentation.exercise;
 
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
-import fi.aalto.cs.apluscourses.model.LazyLoader;
+import fi.aalto.cs.apluscourses.model.ExercisesLazyLoader;
 import fi.aalto.cs.apluscourses.presentation.base.Searchable;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 public class ExerciseGroupViewModel extends SelectableNodeViewModel<ExerciseGroup>
         implements Searchable {
 
-  private final @Nullable LazyLoader lazyLoader;
+  private final @Nullable ExercisesLazyLoader exercisesLazyLoader;
 
   public ExerciseGroupViewModel(@NotNull ExerciseGroup exerciseGroup) {
     this(exerciseGroup, null);
@@ -23,14 +23,15 @@ public class ExerciseGroupViewModel extends SelectableNodeViewModel<ExerciseGrou
   /**
    * Construct an exercise group view model with the given exercise group.
    */
-  public ExerciseGroupViewModel(@NotNull ExerciseGroup exerciseGroup, @Nullable LazyLoader lazyLoader) {
+  public ExerciseGroupViewModel(@NotNull ExerciseGroup exerciseGroup,
+                                @Nullable ExercisesLazyLoader exercisesLazyLoader) {
     super(exerciseGroup, exerciseGroup
         .getExercises()
         .stream()
         .map(ExerciseViewModel::new)
         .sorted(EXERCISE_COMPARATOR)
         .collect(Collectors.toList()));
-    this.lazyLoader = lazyLoader;
+    this.exercisesLazyLoader = exercisesLazyLoader;
   }
 
   public String getPresentableName() {
@@ -82,8 +83,8 @@ public class ExerciseGroupViewModel extends SelectableNodeViewModel<ExerciseGrou
 
   @Override
   public void willExpand() {
-    if (lazyLoader != null) {
-      lazyLoader.addLazyLoaded(getId());
+    if (exercisesLazyLoader != null) {
+      exercisesLazyLoader.setLazyLoadedGroup(getId());
     }
   }
 }
