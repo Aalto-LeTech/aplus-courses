@@ -176,6 +176,7 @@ public class ScalaClassDeclaration {
     return false;
   }
 
+  //TODO turn into a Utils method!!
   private Collection<PsiElement> getPsiElementsSiblings(PsiElement methodElement) {
     List<PsiElement> elements = new ArrayList<>();
 
