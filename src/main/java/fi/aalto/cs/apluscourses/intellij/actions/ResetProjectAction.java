@@ -28,4 +28,14 @@ class ResetProjectAction extends DumbAwareAction {
       ProjectManager.getInstance().reloadProject(project);
     }
   }
+
+  @Override
+  public void update(@NotNull AnActionEvent e) {
+    var project = e.getProject();
+    if (project == null) {
+      return;
+    }
+
+    e.getPresentation().setEnabled(PluginSettings.getInstance().getCourseFileManager(project).courseFileExists());
+  }
 }

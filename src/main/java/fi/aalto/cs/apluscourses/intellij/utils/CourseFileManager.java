@@ -348,4 +348,8 @@ public class CourseFileManager {
       // Ignore
     }
   }
+
+  public boolean courseFileExists() {
+    return courseFile.exists();
+  }
 }
