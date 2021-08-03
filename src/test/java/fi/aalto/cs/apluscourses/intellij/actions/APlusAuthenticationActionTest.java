@@ -18,6 +18,7 @@ import fi.aalto.cs.apluscourses.intellij.services.Dialogs;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.presentation.AuthenticationViewModel;
+import fi.aalto.cs.apluscourses.utils.async.RepeatedTask;
 import java.net.URL;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,7 +53,9 @@ public class APlusAuthenticationActionTest {
     course = new ModelExtensions.TestCourse("oe1");
     token = "secrets";
 
-    courseProject = new CourseProject(course, new URL("http://localhost:8000"), project);
+    courseProject = new CourseProject(course,
+        RepeatedTask.create(() -> { }), RepeatedTask.create(() -> { }),
+        project, mock(Notifier.class));
     courseProjectProvider = mock(CourseProjectProvider.class);
     doReturn(courseProject).when(courseProjectProvider).getCourseProject(project);
 

@@ -4,13 +4,13 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import fi.aalto.cs.apluscourses.intellij.psi.PsiUtil;
 import fi.aalto.cs.apluscourses.intellij.psi.ScalaFunctionDefinition;
 import fi.aalto.cs.apluscourses.model.task.Arguments;
 import fi.aalto.cs.apluscourses.model.task.ListenerCallback;
 import java.util.Arrays;
 import java.util.Optional;
-
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement;
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaRecursiveElementVisitor;
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunctionDefinition;
@@ -18,16 +18,20 @@ import org.jetbrains.plugins.scala.lang.psi.api.statements.params.ScTypeParamCla
 import org.jetbrains.plugins.scala.lang.psi.impl.statements.params.ScParametersImpl;
 
 
-public class FunctionDefinitionListener extends ScalaCodeListener {
+public class FunctionDefinitionListener extends CodeListener {
 
   private final ScalaFunctionDefinition scalaFunctionDefinition;
 
   /**
    * Constructor.
    */
-  public FunctionDefinitionListener(ListenerCallback callback,
-                                    Project project, String methodName, String[] arguments,
-                                    String[] body, String typeParameters, String filePath) {
+  public FunctionDefinitionListener(@NotNull ListenerCallback callback,
+                                    @NotNull Project project,
+                                    @NotNull String methodName,
+                                    @NotNull String[] arguments,
+                                    @NotNull String[] body,
+                                    @NotNull String typeParameters,
+                                    @NotNull String filePath) {
     super(callback, project, filePath);
     this.scalaFunctionDefinition = new ScalaFunctionDefinition(methodName,
         arguments, body, typeParameters);
@@ -39,19 +43,16 @@ public class FunctionDefinitionListener extends ScalaCodeListener {
   public static FunctionDefinitionListener create(ListenerCallback callback,
                                                   Project project, Arguments arguments) {
     return new FunctionDefinitionListener(callback, project,
-                arguments.getOrThrow("methodName"),
-                arguments.getArrayOrThrow("methodArguments"),
-                arguments.getArrayOrThrow("methodBody"),
-                arguments.getOrThrow("typeParamClause"),
-                arguments.getOrThrow("filePath"));
+                arguments.getString("methodName"),
+                arguments.getArray("methodArguments"),
+                arguments.getArray("methodBody"),
+                arguments.getString("typeParamClause"),
+                arguments.getString("filePath"));
   }
 
 
   @Override
-  protected void checkPsiFile(@Nullable PsiFile psiFile) {
-    if (psiFile == null) {
-      return;
-    }
+  protected void checkPsiFile(@NotNull PsiFile psiFile) {
     psiFile.accept(new ScalaRecursiveElementVisitor() {
       @Override
       public void visitScalaElement(ScalaPsiElement element) {
@@ -65,7 +66,8 @@ public class FunctionDefinitionListener extends ScalaCodeListener {
               ScParametersImpl.class::isInstance).findFirst();
           if (scalaFunctionDefinition.checkScTypeParametersClause(optTypeParameters)
                && scalaFunctionDefinition.checkParameters(optParameters)
-                && scalaFunctionDefinition.checkFunctionBody(children)) {
+                && scalaFunctionDefinition.checkFunctionBody(children)
+                && !PsiUtil.psiNextSiblingHasErrors(element)) {
             ApplicationManager.getApplication().invokeLater(callback::callback);
             isCorrect.set(true);
           }

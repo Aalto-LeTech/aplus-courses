@@ -23,7 +23,7 @@ public class IntelliJActivityFactory implements ActivityFactory {
       case "openEditor":
         return OpenFileListener.create(callback, project, arguments);
       case "build":
-        return BuildActionListener.create(callback, project,arguments);
+        return BuildActionListener.create(callback, project);
       case "run":
         return RunActionListener.create(callback, project, arguments);
       case "classDeclScala":
@@ -41,12 +41,13 @@ public class IntelliJActivityFactory implements ActivityFactory {
   public @NotNull ComponentPresenter createPresenter(@NotNull String component,
                                                      @NotNull String instruction,
                                                      @NotNull String info,
-                                                     @NotNull Arguments arguments) {
+                                                     @NotNull Arguments componentArguments,
+                                                     @NotNull Arguments actionArguments) {
     switch (component) {
       case "projectTree":
-        return new ProjectTreePresenter(instruction, info);
+        return new ProjectTreePresenter(instruction, info, project);
       case "editor":
-        return new EditorPresenter(instruction, info);
+        return EditorPresenter.create(instruction, info, project, actionArguments);
       default:
         throw new IllegalArgumentException("Unsupported component: " + component);
     }

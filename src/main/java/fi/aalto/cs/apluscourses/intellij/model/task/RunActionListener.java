@@ -17,9 +17,9 @@ public class RunActionListener extends IdeActionListener implements ExecutionLis
   /**
    * Constructor.
    */
-  public RunActionListener(ListenerCallback callback, Project project,
-                           String actionName, @Nullable String fileName) {
-    super(callback, project, actionName);
+  public RunActionListener(@NotNull ListenerCallback callback, @NotNull Project project,
+                          @Nullable String fileName) {
+    super(callback, project, "Run");
     this.fileName = fileName;
   }
 
@@ -29,7 +29,7 @@ public class RunActionListener extends IdeActionListener implements ExecutionLis
   public static RunActionListener create(ListenerCallback callback, Project project,
                                          Arguments arguments) {
     return new RunActionListener(callback, project,
-                arguments.getOrThrow("actionName"), arguments.getOrThrow("filePath"));
+                arguments.getString("filePath"));
   }
 
   @Override

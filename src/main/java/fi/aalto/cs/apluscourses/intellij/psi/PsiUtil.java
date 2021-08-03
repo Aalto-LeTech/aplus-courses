@@ -14,6 +14,10 @@ public class PsiUtil {
     return psiElementHasErrors(element.getPrevSibling()) || psiElementHasErrors(element.getNextSibling());
   }
 
+  public static boolean psiNextSiblingHasErrors(@NotNull PsiElement element) {
+    return psiElementHasErrors(element.getNextSibling());
+  }
+
   public static boolean psiElementHasErrors(@NotNull PsiElement element) {
     return !SyntaxTraverser.psiTraverser(element).traverse().filter(PsiErrorElement.class).isEmpty();
   }

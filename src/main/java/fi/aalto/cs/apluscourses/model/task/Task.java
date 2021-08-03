@@ -2,13 +2,15 @@ package fi.aalto.cs.apluscourses.model.task;
 
 import fi.aalto.cs.apluscourses.utils.Event;
 import fi.aalto.cs.apluscourses.utils.JsonUtil;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
-public class Task {
+public class Task implements CancelHandler {
   public final @NotNull Event taskCompleted = new Event();
+  public final @NotNull Event taskCanceled = new Event();
 
   private final @NotNull String instruction;
   private final @NotNull String info;
@@ -19,6 +21,8 @@ public class Task {
 
   private ActivitiesListener listener;
   private ComponentPresenter presenter;
+
+  private final AtomicBoolean alreadyComplete = new AtomicBoolean();
 
   /**
    * Task constructor.
@@ -45,6 +49,7 @@ public class Task {
    * Ends the task.
    */
   public synchronized void endTask() {
+    alreadyComplete.set(false);
     if (listener != null) {
       listener.unregisterListener();
       listener = null;
@@ -65,7 +70,9 @@ public class Task {
     if (presenter != null || listener != null) {
       throw new IllegalStateException();
     }
-    presenter = activityFactory.createPresenter(component, instruction, info, componentArguments);
+    presenter = activityFactory.createPresenter(component, instruction, info, componentArguments,
+        actionArguments);
+    presenter.setCancelHandler(this);
     listener = activityFactory.createListener(action, actionArguments, taskCompleted::trigger);
     if (listener.registerListener()) {
       return true;
@@ -95,6 +102,24 @@ public class Task {
     return jsonObject == null ? Arguments.empty()
         : JsonUtil.parseObject(jsonObject, JSONObject::get,
             Function.identity(), Function.identity())::get;
+  }
+
+  public boolean getAlreadyComplete() {
+    return alreadyComplete.get();
+  }
+
+  public void setAlreadyComplete(boolean alreadyComplete) {
+    this.alreadyComplete.set(alreadyComplete);
+  }
+
+  @NotNull
+  public String getInstruction() {
+    return instruction;
+  }
+
+  @Override
+  public void onCancel() {
+    taskCanceled.trigger();
   }
 }
 

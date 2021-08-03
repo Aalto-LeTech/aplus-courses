@@ -5,8 +5,6 @@ import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.Submission;
-import fi.aalto.cs.apluscourses.model.SubmissionHistory;
-import fi.aalto.cs.apluscourses.model.SubmissionInfo;
 import fi.aalto.cs.apluscourses.model.SubmittableFile;
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
 import fi.aalto.cs.apluscourses.utils.FileDateFormatter;
@@ -28,10 +26,6 @@ public class SubmissionViewModel {
   private static final Logger logger = LoggerFactory.getLogger(SubmissionViewModel.class);
 
   private final Exercise exercise;
-
-  private final SubmissionInfo submissionInfo;
-
-  private final SubmissionHistory submissionHistory;
 
   private final List<Group> availableGroups;
 
@@ -56,19 +50,16 @@ public class SubmissionViewModel {
    * Construct a submission view model with the given exercise, groups, authentication, and project.
    */
   public SubmissionViewModel(@NotNull Exercise exercise,
-                             @NotNull SubmissionInfo submissionInfo,
-                             @NotNull SubmissionHistory submissionHistory,
                              @NotNull List<Group> availableGroups,
                              @Nullable Group defaultGroup,
                              @NotNull Map<String, Path> filePaths,
                              @NotNull String language) {
     this.exercise = exercise;
-    this.submissionInfo = submissionInfo;
-    this.submissionHistory = submissionHistory;
     this.availableGroups = availableGroups;
     this.filePaths = filePaths;
     this.language = language;
-    this.submittableFiles = submissionInfo.getFiles(language).toArray(new SubmittableFile[0]);
+    this.submittableFiles = exercise
+        .getSubmissionInfo().getFiles(language).toArray(new SubmittableFile[0]);
     if (defaultGroup != null) {
       selectedGroup.set(defaultGroup);
       makeDefaultGroup.set(true);
@@ -91,7 +82,7 @@ public class SubmissionViewModel {
   }
 
   public int getCurrentSubmissionNumber() {
-    return submissionHistory.getNumberOfSubmissions() + 1;
+    return exercise.getSubmissionResults().size() + 1;
   }
 
   /**
@@ -102,9 +93,9 @@ public class SubmissionViewModel {
   public String getSubmissionCountText() {
     StringBuilder submissionCountText = new StringBuilder("You are about to make submission ");
     submissionCountText.append(getCurrentSubmissionNumber());
-    if (submissionInfo.getSubmissionsLimit() != 0) {
+    if (exercise.getMaxSubmissions() != 0) {
       submissionCountText.append(" out of ");
-      submissionCountText.append(submissionInfo.getSubmissionsLimit());
+      submissionCountText.append(exercise.getMaxSubmissions());
     }
     submissionCountText.append('.');
     return submissionCountText.toString();
@@ -137,11 +128,10 @@ public class SubmissionViewModel {
    */
   @Nullable
   public String getSubmissionWarning() {
-    if (submissionInfo.getSubmissionsLimit() == 0) {
+    if (exercise.getMaxSubmissions() == 0) {
       return null;
     }
-    int submissionsLeft =
-        submissionInfo.getSubmissionsLimit() - submissionHistory.getNumberOfSubmissions();
+    int submissionsLeft = exercise.getMaxSubmissions() - exercise.getSubmissionResults().size();
     if (submissionsLeft == 1) {
       return getText("presentation.submissionViewModel.warning.lastSubmission");
     }
@@ -153,7 +143,7 @@ public class SubmissionViewModel {
 
   public Submission buildSubmission() {
     Group group = Objects.requireNonNull(selectedGroup.get());
-    return new Submission(exercise, submissionInfo, filePaths, group, language);
+    return new Submission(exercise, filePaths, group, language);
   }
 
   public static class GroupNotSelectedError implements ValidationError {
