@@ -14,21 +14,21 @@ public class BuildActionListener extends IdeActionListener {
    * Constructor.
    */
   public BuildActionListener(ListenerCallback callback, Project project,
-                             String[] action) {
-    super(callback, project, action);
+                             String actionName) {
+    super(callback, project, actionName);
   }
 
   public static BuildActionListener create(ListenerCallback callback, Project project,
                                          Arguments arguments) {
     return new BuildActionListener(callback, project,
-                arguments.getArrayOrThrow("actionNames"));
+                arguments.getOrThrow("actionName"));
   }
 
   @Override
   public void beforeActionPerformed(@NotNull AnAction action, @NotNull DataContext dataContext,
                                     @NotNull AnActionEvent event) {
-    if ((actionNames.contains(action.getTemplateText()))
-                    || actionNames.contains(event.getPresentation().getText())) {
+    if ((actionName.equals(action.getTemplateText()))
+                    || actionName.equals(event.getPresentation().getText())) {
       callback.callback();
     }
   }

@@ -5,24 +5,22 @@ import com.intellij.openapi.project.Project;
 import com.intellij.util.messages.MessageBusConnection;
 import fi.aalto.cs.apluscourses.model.task.ActivitiesListener;
 import fi.aalto.cs.apluscourses.model.task.ListenerCallback;
-import java.util.Arrays;
-import java.util.List;
 
 public abstract class IdeActionListener implements AnActionListener, ActivitiesListener {
   
   protected final Project project;
   protected MessageBusConnection messageBusConnection;
-  protected final List<String> actionNames;
+  protected final String actionName;
   protected final ListenerCallback callback;
 
   /**
    * Constructor.
    */
   protected IdeActionListener(ListenerCallback callback, Project project,
-                           String[] action) {
+                           String actionName) {
     this.callback = callback;
     this.project = project;
-    this.actionNames = Arrays.asList(action);
+    this.actionName = actionName;
   }
 
   @Override
