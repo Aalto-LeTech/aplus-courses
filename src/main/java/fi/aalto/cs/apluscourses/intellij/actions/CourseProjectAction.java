@@ -28,6 +28,7 @@ import fi.aalto.cs.apluscourses.ui.InstallerDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogsImpl;
 import fi.aalto.cs.apluscourses.ui.ideactivities.ComponentDatabase;
+import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import fi.aalto.cs.apluscourses.utils.PostponedRunnable;
 import fi.aalto.cs.apluscourses.utils.Version;
@@ -45,11 +46,10 @@ import java.util.concurrent.Future;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CourseProjectAction extends AnAction {
 
-  private static final Logger logger = LoggerFactory.getLogger(CourseProjectAction.class);
+  private static final Logger logger = APlusLogger.logger;
 
   public static final String ACTION_ID = CourseProjectAction.class.getCanonicalName();
 
@@ -147,6 +147,7 @@ public class CourseProjectAction extends AnAction {
 
   @Override
   public void actionPerformed(@NotNull AnActionEvent e) {
+    logger.info("Starting CourseProjectAction");
     Project project = e.getProject();
 
     if (project == null) {
@@ -163,11 +164,16 @@ public class CourseProjectAction extends AnAction {
       return;
     }
 
-    var versionComparison =
-        BuildInfo.INSTANCE.courseVersion.compareTo(course.getVersion());
+    var version = BuildInfo.INSTANCE.courseVersion;
+    var versionComparison = version.compareTo(course.getVersion());
 
     if (versionComparison == Version.ComparisonStatus.MAJOR_TOO_OLD
         || versionComparison == Version.ComparisonStatus.MAJOR_TOO_NEW) {
+      if (versionComparison == Version.ComparisonStatus.MAJOR_TOO_OLD) {
+        logger.error("A+ Courses version outdated: installed v{}, required v{}", version, course.getVersion());
+      } else {
+        logger.error("A+ Courses version too new: installed v{}, required v{}", version, course.getVersion());
+      }
       notifier.notify(
           versionComparison == Version.ComparisonStatus.MAJOR_TOO_OLD
           ? new CourseVersionOutdatedError() : new CourseVersionTooNewError(), project);
@@ -176,16 +182,20 @@ public class CourseProjectAction extends AnAction {
 
     CourseProjectViewModel courseProjectViewModel
         = new CourseProjectViewModel(course, settingsImporter.currentlyImportedIdeSettings());
+    logger.info("Showing main dialog");
     if (!dialogs.showMainDialog(project, courseProjectViewModel)) {
+      logger.info("Canceled");
       return;
     }
 
     String language = Objects.requireNonNull(courseProjectViewModel.languageProperty.get());
+    logger.info("Language chosen: {}", language);
     if (!tryCreateCourseFile(project, courseUrl, language)) {
       return;
     }
 
     boolean importIdeSettings = courseProjectViewModel.shouldApplyNewIdeSettings();
+    logger.info("Should apply new IDE settings: {}", importIdeSettings);
 
     String basePath = project.getBasePath();
     if (basePath == null) {
@@ -244,14 +254,23 @@ public class CourseProjectAction extends AnAction {
 
   @Nullable
   private URL tryGetCourseUrl(@NotNull Project project) {
+    logger.info("Getting course url");
     try {
       if (useCourseFile && PluginSettings.getInstance().getCourseFileManager(project).load()) {
+        logger.info("Course file exists");
         return PluginSettings.getInstance().getCourseFileManager(project).getCourseUrl();
       }
 
       CourseSelectionViewModel viewModel = new CourseSelectionViewModel(AVAILABLE_COURSES);
       boolean cancelled = !dialogs.showCourseSelectionDialog(project, viewModel);
-      return cancelled ? null : new URL(Objects.requireNonNull(viewModel.selectedCourseUrl.get()));
+      if (cancelled) {
+        logger.info("Canceled course selection");
+        return null;
+      } else {
+        var url = new URL(Objects.requireNonNull(viewModel.selectedCourseUrl.get()));
+        logger.info("Got url: {}", url);
+        return url;
+      }
     } catch (MalformedURLException e) {
       // User entered an invalid URL (or the default list has an invalid URL, which would be a bug)
       logger.error("Malformed course configuration file URL", e);
@@ -274,8 +293,10 @@ public class CourseProjectAction extends AnAction {
   @Nullable
   private Course tryGetCourse(@NotNull Project project, @NotNull URL courseUrl) {
     try {
+      logger.info("Getting course");
       return courseFactory.fromUrl(courseUrl, project);
     } catch (IOException e) {
+      logger.error("Network error", e);
       notifier.notify(new NetworkErrorNotification(e), project);
       return null;
     } catch (MalformedCourseConfigurationException e) {
@@ -301,6 +322,7 @@ public class CourseProjectAction extends AnAction {
                                       @NotNull URL courseUrl,
                                       @NotNull String language) {
     try {
+      logger.info("Creating course file");
       if (useCourseFile) {
         PluginSettings
             .getInstance()
@@ -325,7 +347,9 @@ public class CourseProjectAction extends AnAction {
                                            @NotNull Path basePath,
                                            @NotNull Course course) {
     try {
-      settingsImporter.importProjectSettings(basePath, course);
+      if (settingsImporter.importProjectSettings(basePath, course)) {
+        logger.info("Imported project settings");
+      }
       return true;
     } catch (IOException e) {
       logger.error("Failed to import project settings", e);
@@ -343,6 +367,7 @@ public class CourseProjectAction extends AnAction {
   private boolean tryImportIdeSettings(@NotNull Project project, @NotNull Course course) {
     try {
       settingsImporter.importIdeSettings(course);
+      logger.info("Imported IDE settings");
       return true;
     } catch (IOException e) {
       logger.error("Failed to import IDE settings", e);
@@ -354,7 +379,9 @@ public class CourseProjectAction extends AnAction {
   private boolean tryImportCustomProperties(@NotNull Project project, @NotNull Path basePath,
                                             @NotNull Course course) {
     try {
-      settingsImporter.importCustomProperties(basePath, course, project);
+      if (settingsImporter.importCustomProperties(basePath, course, project)) {
+        logger.info("Imported custom properties");
+      }
       return true;
     } catch (IOException e) {
       logger.error("Failed to import custom properties", e);

@@ -30,7 +30,9 @@ import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionResultViewModel;
 import fi.aalto.cs.apluscourses.ui.InstallerDialogs;
+import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
+import fi.aalto.cs.apluscourses.utils.Stopwatch;
 import fi.aalto.cs.apluscourses.utils.async.SimpleAsyncTaskManager;
 import java.io.IOException;
 import java.net.URL;
@@ -40,8 +42,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class DownloadSubmissionAction extends AnAction {
+
+  private static final Logger logger = APlusLogger.logger;
+
   @NotNull
   private final MainViewModelProvider mainViewModelProvider;
 
@@ -123,6 +129,7 @@ public class DownloadSubmissionAction extends AnAction {
 
   @Override
   public void actionPerformed(@NotNull AnActionEvent e) {
+    logger.info("Starting DownloadSubmissionAction");
     var project = e.getProject();
     var mainViewModel = mainViewModelProvider.getMainViewModel(project);
     var courseViewModel = mainViewModel.courseViewModel.get();
@@ -132,6 +139,7 @@ public class DownloadSubmissionAction extends AnAction {
     }
     var selectedItem = exercisesTreeViewModel.getSelectedItem();
     if (!(selectedItem instanceof SubmissionResultViewModel)) {
+      logger.info("Selected item not submission result");
       return;
     }
     var submissionId = selectedItem.getId();
@@ -161,7 +169,9 @@ public class DownloadSubmissionAction extends AnAction {
     }
 
     var module = downloadSubmissionViewModel.selectedModule.get();
+    logger.info("User-selected module: {}", module);
     var newName = downloadSubmissionViewModel.moduleName.get();
+    logger.info("New module name: {}", newName);
 
     if (module == null || newName == null) {
       return;
@@ -184,8 +194,14 @@ public class DownloadSubmissionAction extends AnAction {
                                    @NotNull Course course,
                                    @NotNull Exercise exercise) {
     var language = languageSource.getLanguage(project);
+    logger.info("Selected language: {}", language);
 
     var exerciseModules = course.getExerciseModules().get(exercise.getId());
+    if (exerciseModules != null) {
+      exerciseModules.forEach((lan, mod) -> logger.info("Found module {} ({}) for exercise {}", mod, lan, exercise));
+    } else {
+      logger.info("No modules found for exercise {}", exercise);
+    }
 
     var moduleName = Optional
         .ofNullable(exerciseModules)
@@ -196,6 +212,7 @@ public class DownloadSubmissionAction extends AnAction {
     if (selectedComponent instanceof Module) {
       selectedModule = (Module) selectedComponent;
     }
+    logger.info("Auto-selected module: {}", selectedModule);
     return selectedModule;
   }
 
@@ -204,6 +221,7 @@ public class DownloadSubmissionAction extends AnAction {
                              @NotNull Module module) {
     var courseViewModel = mainViewModelProvider.getMainViewModel(project).courseViewModel.get();
     if (courseViewModel == null || project == null) {
+      logger.info("CourseViewModel or project null");
       return;
     }
     var course = courseViewModel.getModel();
@@ -211,18 +229,25 @@ public class DownloadSubmissionAction extends AnAction {
 
     var auth = authenticationProvider.getAuthentication(project);
 
+    logger.info("Starting download");
+    var stopwatch = new Stopwatch();
     for (var info : submissionFilesInfo) {
       try {
         var file = fileFinder.findFile(module.getFullPath(), info.getFileName()).toFile();
+        logger.info("Found file: {}", file);
         CoursesClient.fetch(new URL(info.getUrl()), file, auth);
+        logger.info("Fetched file");
         fileBrowser.navigateTo(file, project);
+        logger.info("Opened file");
       } catch (FileDoesNotExistException ex) {
+        logger.error("File not found", ex);
         notifier.notifyAndHide(new MissingFileNotification(module.getPath(), info.getFileName(), true), project);
       } catch (IOException ex) {
+        logger.error("IOException while downloading submission", ex);
         notifier.notifyAndHide(new NetworkErrorNotification(ex), project);
       }
     }
-
+    logger.info("Finished downloading submission (took {}ms)", stopwatch.getTimeMs());
   }
 
   @Override

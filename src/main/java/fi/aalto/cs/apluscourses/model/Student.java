@@ -55,4 +55,12 @@ public class Student {
   public String getPresentableName() {
     return fullName + " " + studentId;
   }
+
+  @Override
+  public String toString() {
+    return "Student{" +
+        "A+ID=" + id +
+        ", fullName='" + fullName + '\'' +
+        '}';
+  }
 }

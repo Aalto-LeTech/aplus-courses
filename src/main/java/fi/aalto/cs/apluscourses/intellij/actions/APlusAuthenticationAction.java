@@ -14,9 +14,13 @@ import fi.aalto.cs.apluscourses.intellij.services.Dialogs;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.presentation.AuthenticationViewModel;
+import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
 
 public class APlusAuthenticationAction extends DumbAwareAction {
+
+  private static final Logger logger = APlusLogger.logger;
 
   public static final String ACTION_ID = APlusAuthenticationAction.class.getCanonicalName();
 
@@ -64,9 +68,11 @@ public class APlusAuthenticationAction extends DumbAwareAction {
 
   @Override
   public void actionPerformed(@NotNull AnActionEvent e) {
+    logger.info("Starting APlusAuthenticationAction");
     Project project = e.getProject();
     var courseProject = courseProjectProvider.getCourseProject(project);
     if (courseProject == null) {
+      logger.info("Course project was null");
       return;
     }
     var course = courseProject.getCourse();
@@ -82,6 +88,7 @@ public class APlusAuthenticationAction extends DumbAwareAction {
     );
 
     if (!dialogs.create(authenticationViewModel, project).showAndGet()) {
+      logger.info("Authentication cancelled");
       return;
     }
 
@@ -94,6 +101,7 @@ public class APlusAuthenticationAction extends DumbAwareAction {
     }
     courseProject.setAuthentication(authentication);
     courseProject.getExercisesUpdater().restart();
+    logger.info("Authentication finished");
   }
 
 }

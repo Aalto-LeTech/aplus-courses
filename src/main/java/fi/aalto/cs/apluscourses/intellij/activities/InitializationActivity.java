@@ -23,7 +23,9 @@ import fi.aalto.cs.apluscourses.intellij.utils.ProjectViewUtil;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationException;
 import fi.aalto.cs.apluscourses.model.UnexpectedResponseException;
+import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
+import fi.aalto.cs.apluscourses.utils.Stopwatch;
 import fi.aalto.cs.apluscourses.utils.Version;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
@@ -36,18 +38,17 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONException;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class InitializationActivity implements Background {
 
-  private static final Logger logger = LoggerFactory.getLogger(InitializationActivity.class);
+  private static final Logger logger = APlusLogger.logger;
 
   @NotNull
   private final Notifier notifier;
 
   @NotNull
   private static final Map<ProjectKey, ObservableProperty<Boolean>> initializedProjects
-          = new ConcurrentHashMap<>();
+      = new ConcurrentHashMap<>();
 
   public InitializationActivity() {
     this(new DefaultNotifier());
@@ -59,18 +60,25 @@ public class InitializationActivity implements Background {
 
   @Override
   public void runActivity(@NotNull Project project) {
+    var stopwatch = new Stopwatch();
+    logger.info("Starting initialization");
+    logger.info("A+ Courses v{}", BuildInfo.INSTANCE.pluginVersion);
+    var courseVersion = BuildInfo.INSTANCE.courseVersion;
+    logger.info("Course v{}", courseVersion);
+    logger.info("Logs made by Jaakko <3");
     PluginSettings pluginSettings = PluginSettings.getInstance();
     pluginSettings.initializeLocalIdeSettings();
 
     ProjectViewUtil.ignoreFileInProjectView(MODULE_REPL_INITIAL_COMMANDS_FILE_NAME, project);
 
     var progressViewModel
-            = PluginSettings.getInstance().getMainViewModel(project).progressViewModel;
+        = PluginSettings.getInstance().getMainViewModel(project).progressViewModel;
 
     URL courseConfigurationFileUrl = getCourseUrlFromProject(project);
     if (courseConfigurationFileUrl == null) {
       isInitialized(project).set(true);
       progressViewModel.stopAll();
+      logger.info("No course configuration found");
       return;
     }
 
@@ -96,17 +104,22 @@ public class InitializationActivity implements Background {
     setCustomResources(project, course);
     progress.increment();
 
-    var versionComparison =
-            BuildInfo.INSTANCE.courseVersion.compareTo(course.getVersion());
+    var versionComparison = courseVersion.compareTo(course.getVersion());
 
     if (versionComparison == Version.ComparisonStatus.MAJOR_TOO_OLD
-            || versionComparison == Version.ComparisonStatus.MAJOR_TOO_NEW) {
+        || versionComparison == Version.ComparisonStatus.MAJOR_TOO_NEW) {
+      if (versionComparison == Version.ComparisonStatus.MAJOR_TOO_OLD) {
+        logger.error("A+ Courses version outdated: installed v{}, required v{}", courseVersion, course.getVersion());
+      } else {
+        logger.error("A+ Courses version too new: installed v{}, required v{}", courseVersion, course.getVersion());
+      }
       notifier.notify(
-              versionComparison == Version.ComparisonStatus.MAJOR_TOO_OLD
-                      ? new CourseVersionOutdatedError() : new CourseVersionTooNewError(), project);
+          versionComparison == Version.ComparisonStatus.MAJOR_TOO_OLD
+              ? new CourseVersionOutdatedError() : new CourseVersionTooNewError(), project);
       progress.finish();
       return;
     } else if (versionComparison == Version.ComparisonStatus.MINOR_TOO_OLD) {
+      logger.error("A+ Courses version outdated: installed v{}, required v{}", courseVersion, course.getVersion());
       notifier.notify(new CourseVersionOutdatedWarning(), project);
     }
 
@@ -115,6 +128,7 @@ public class InitializationActivity implements Background {
     PluginSettings.getInstance().registerCourseProject(courseProject);
     isInitialized(project).set(true);
     progress.finish();
+    logger.info("Initialization took {}ms", stopwatch.getTimeMs());
   }
 
   private static final ProjectManagerListener projectListener = new ProjectManagerListener() {
@@ -145,9 +159,9 @@ public class InitializationActivity implements Background {
 
     try {
       boolean isCourseProject = PluginSettings
-              .getInstance()
-              .getCourseFileManager(project)
-              .load();
+          .getInstance()
+          .getCourseFileManager(project)
+          .load();
       if (isCourseProject) {
         return PluginSettings.getInstance().getCourseFileManager(project).getCourseUrl();
       } else {
@@ -163,9 +177,11 @@ public class InitializationActivity implements Background {
     var basePath = project.getBasePath();
     if (basePath != null) {
       try {
-        new SettingsImporter().importCustomProperties(Paths.get(project.getBasePath()),
+        if (new SettingsImporter().importCustomProperties(Paths.get(project.getBasePath()),
             course,
-            project);
+            project)) {
+          logger.info("Imported custom properties");
+        }
       } catch (IOException e) {
         // No custom resources.
       }

@@ -11,12 +11,17 @@ import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.BaseViewModel;
 import fi.aalto.cs.apluscourses.ui.InstallerDialogs;
+import fi.aalto.cs.apluscourses.utils.APlusLogger;
+import fi.aalto.cs.apluscourses.utils.Stopwatch;
 import fi.aalto.cs.apluscourses.utils.async.SimpleAsyncTaskManager;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
 
 public class InstallModuleAction extends DumbAwareAction {
+
+  private static final Logger logger = APlusLogger.logger;
 
   public static final String ACTION_ID = InstallModuleAction.class.getCanonicalName();
   @NotNull
@@ -60,6 +65,8 @@ public class InstallModuleAction extends DumbAwareAction {
 
   @Override
   public void actionPerformed(@NotNull AnActionEvent e) {
+    var stopwatch = new Stopwatch();
+    logger.info("Starting InstallModuleAction");
     CourseViewModel courseViewModel =
         mainViewModelProvider.getMainViewModel(e.getProject()).courseViewModel.get();
     if (courseViewModel != null) {
@@ -67,9 +74,15 @@ public class InstallModuleAction extends DumbAwareAction {
           .stream()
           .map(BaseViewModel::getModel)
           .collect(Collectors.toList());
+      logger.info("Downloading modules: {}", modules);
       Course course = courseViewModel.getModel();
       componentInstallerFactory.getInstallerFor(course, dialogsFactory.getDialogs(e.getProject()))
-          .installAsync(modules, course::validate);
+          .installAsync(modules, () -> downloadDone(course, stopwatch));
     }
+  }
+
+  private void downloadDone(@NotNull Course course, @NotNull Stopwatch stopwatch) {
+    course.validate();
+    logger.info("Finished downloading modules (took {}ms)", stopwatch.getTimeMs());
   }
 }

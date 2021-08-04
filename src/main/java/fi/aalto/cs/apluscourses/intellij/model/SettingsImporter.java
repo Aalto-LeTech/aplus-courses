@@ -77,11 +77,11 @@ public class SettingsImporter {
    * this method does nothing.
    * @throws IOException If an IO error occurs (e.g. network issues).
    */
-  public void importProjectSettings(@NotNull Path basePath, @NotNull Course course)
+  public boolean importProjectSettings(@NotNull Path basePath, @NotNull Course course)
       throws IOException {
     URL settingsUrl = course.getResourceUrls().get("projectSettings");
     if (settingsUrl == null) {
-      return;
+      return false;
     }
 
     Path settingsPath = basePath.resolve(Project.DIRECTORY_STORE_FOLDER);
@@ -95,6 +95,7 @@ public class SettingsImporter {
     Path workspaceXmlPath = settingsPath.resolve("workspace.xml");
     Document workspaceXml = createCustomWorkspaceXml(workspaceXmlPath);
     DomUtil.writeDocumentToFile(workspaceXml, workspaceXmlPath.toFile());
+    return true;
   }
 
   /**
@@ -102,20 +103,21 @@ public class SettingsImporter {
    * .idea directory.
    * @throws IOException If an IO error occurs (e.g. network issues).
    */
-  public void importCustomProperties(@NotNull Path basePath, @NotNull Course course,
+  public boolean importCustomProperties(@NotNull Path basePath, @NotNull Course course,
                                      @NotNull Project project)
       throws IOException {
     URL settingsUrl = course.getResourceUrls().get("customProperties");
     if (settingsUrl == null) {
-      return;
+      return false;
     }
 
     Path settingsPath = basePath.resolve(Project.DIRECTORY_STORE_FOLDER);
 
-    File file = settingsPath.resolve("customResources.properties").toFile();
+    File file = settingsPath.resolve(PluginResourceBundle.CUSTOM_RESOURCES_FILENAME).toFile();
     CoursesClient.fetch(settingsUrl, file);
 
     PluginResourceBundle.setCustomBundle(file, project);
+    return true;
   }
 
   private static void extractZipTo(@NotNull ZipFile zipFile, @NotNull Path target)
