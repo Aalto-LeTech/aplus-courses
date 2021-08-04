@@ -187,9 +187,9 @@ public class Exercise implements Browsable {
 
   @Override
   public String toString() {
-    return "Exercise{" +
-        "id=" + id +
-        ", name='" + name + '\'' +
-        '}';
+    return "Exercise{"
+        + "id=" + id
+        + ", name='" + name + '\''
+        + '}';
   }
 }

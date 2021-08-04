@@ -60,7 +60,7 @@ public class InitializationActivity implements Background {
 
   @Override
   public void runActivity(@NotNull Project project) {
-    var stopwatch = new Stopwatch();
+    final var stopwatch = new Stopwatch();
     logger.info("Starting initialization");
     logger.info("A+ Courses v{}", BuildInfo.INSTANCE.pluginVersion);
     var courseVersion = BuildInfo.INSTANCE.courseVersion;

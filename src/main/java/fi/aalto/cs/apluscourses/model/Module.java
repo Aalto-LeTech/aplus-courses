@@ -217,8 +217,8 @@ public abstract class Module extends Component {
 
   @Override
   public String toString() {
-    return "Module{" +
-        "name='" + name + '\'' +
-        '}';
+    return "Module{"
+        + "name='" + name + '\''
+        + '}';
   }
 }

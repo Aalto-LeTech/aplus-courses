@@ -186,7 +186,7 @@ public class SubmitExerciseAction extends AnAction {
 
   private void trySubmit(@NotNull Project project)
       throws IOException, FileDoesNotExistException, ModuleMissingException {
-    var stopwatch = new Stopwatch();
+    final var stopwatch = new Stopwatch();
     MainViewModel mainViewModel = mainViewModelProvider.getMainViewModel(project);
     CourseViewModel courseViewModel = mainViewModel.courseViewModel.get();
     ExercisesTreeViewModel exercisesViewModel = mainViewModel.exercisesViewModel.get();
