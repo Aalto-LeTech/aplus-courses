@@ -5,6 +5,9 @@ import com.intellij.execution.ExecutionManager;
 import com.intellij.execution.RunManager;
 import com.intellij.execution.executors.DefaultRunExecutor;
 import com.intellij.execution.impl.ExecutionManagerImpl;
+import com.intellij.ide.ui.customization.CustomActionsSchema;
+import com.intellij.openapi.actionSystem.ActionGroup;
+import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl;
 import com.intellij.openapi.editor.impl.EditorComponentImpl;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
@@ -71,6 +74,11 @@ public class ComponentDatabase {
    */
   public static @Nullable Component getProgressButton() {
     return ComponentLocator.getComponentByClass("TutorialProgressAction");
+  }
+
+  public static @Nullable ActionToolbarImpl getNavBarToolBar() {
+    return ActionToolbarImpl
+        .findToolbar((ActionGroup) CustomActionsSchema.getInstance().getCorrectedAction("NavBarToolBar"));
   }
 
   /**
