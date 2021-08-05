@@ -210,7 +210,7 @@ public class CourseProjectAction extends AnAction {
     Future<Boolean> customPropertiesImported =
         executor.submit(() -> tryImportCustomProperties(project, Paths.get(basePath), course));
 
-    ComponentDatabase.showAPlusToolWindow(project);
+    ComponentDatabase.showToolWindow(ComponentDatabase.APLUS_TOOL_WINDOW, project);
 
     executor.execute(() -> {
       try {
