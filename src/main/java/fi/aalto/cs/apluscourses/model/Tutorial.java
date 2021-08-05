@@ -42,6 +42,11 @@ public class Tutorial {
     return null;
   }
 
+  @NotNull
+  public String getSubmissionPayload() {
+    return "success";
+  }
+
   public void onComplete() {
     this.tutorialCompleted.trigger();
   }

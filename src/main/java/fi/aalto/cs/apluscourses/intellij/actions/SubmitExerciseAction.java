@@ -12,6 +12,7 @@ import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.io.FileUtilRt;
 import fi.aalto.cs.apluscourses.intellij.model.CourseProject;
 import fi.aalto.cs.apluscourses.intellij.model.ProjectModuleSource;
 import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
@@ -35,6 +36,7 @@ import fi.aalto.cs.apluscourses.model.FileFinder;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.SubmissionStatusUpdater;
 import fi.aalto.cs.apluscourses.model.SubmittableFile;
+import fi.aalto.cs.apluscourses.model.TutorialExercise;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import fi.aalto.cs.apluscourses.presentation.ModuleSelectionViewModel;
@@ -44,6 +46,7 @@ import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionResultViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionViewModel;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -52,6 +55,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -151,10 +155,10 @@ public class SubmitExerciseAction extends AnAction {
       e.getPresentation().setEnabled(project != null
               && authentication != null && courseViewModel != null
               && (isSubmittableExerciseSelected || isSubmittableSubmissionSelected));
-      var selectedEx = exercisesViewModel.findSelected().getLevel(2);
+      /*var selectedEx = exercisesViewModel.findSelected().getLevel(2);
       var isTutorial = selectedEx instanceof ExerciseViewModel
           && ExerciseViewModel.Status.TUTORIAL.equals(((ExerciseViewModel) selectedEx).getStatus());
-      e.getPresentation().setVisible(!isTutorial);
+      e.getPresentation().setVisible(!isTutorial);*/
     }
     if ((ActionPlaces.TOOLWINDOW_POPUP).equals(e.getPlace()) && !e.getPresentation().isEnabled()) {
       e.getPresentation().setVisible(false);
@@ -201,44 +205,53 @@ public class SubmitExerciseAction extends AnAction {
     var submissionInfo = exercise.getSubmissionInfo();
     String language = languageSource.getLanguage(project);
 
-    if (!submissionInfo.isSubmittable(language)) {
-      notifier.notify(new NotSubmittableNotification(), project);
-      return;
-    }
+    final Map<String, Path> files = new HashMap<>();
 
-    Map<String, String> exerciseModules =
-        courseViewModel.getModel().getExerciseModules().get(exercise.getId());
-
-    Optional<String> moduleName = Optional
-        .ofNullable(exerciseModules)
-        .map(self -> self.get(language));
-
-    Module selectedModule;
-    if (moduleName.isPresent()) {
-      selectedModule = moduleName
-          .map(self -> moduleSource.getModule(project, self))
-          .orElseThrow(() -> new ModuleMissingException(moduleName.get()));
-    } else {
-      Module[] modules = moduleSource.getModules(project);
-
-      ModuleSelectionViewModel moduleSelectionViewModel = new ModuleSelectionViewModel(
-          modules, getText("ui.toolWindow.subTab.exercises.submission.selectModule"));
-      if (!dialogs.create(moduleSelectionViewModel, project).showAndGet()) {
+    if (!(exercise instanceof TutorialExercise)) {
+      if (!submissionInfo.isSubmittable(language)) {
+        notifier.notify(new NotSubmittableNotification(), project);
         return;
       }
-      selectedModule = moduleSelectionViewModel.selectedModule.get();
-    }
 
-    if (selectedModule == null) {
-      return;
-    }
+      Map<String, String> exerciseModules =
+          courseViewModel.getModel().getExerciseModules().get(exercise.getId());
 
-    documentSaver.saveAllDocuments();
+      Optional<String> moduleName = Optional
+          .ofNullable(exerciseModules)
+          .map(self -> self.get(language));
 
-    Path modulePath = Paths.get(ModuleUtilCore.getModuleDirPath(selectedModule));
-    Map<String, Path> files = new HashMap<>();
-    for (SubmittableFile file : submissionInfo.getFiles(language)) {
-      files.put(file.getKey(), fileFinder.findFile(modulePath, file.getName()));
+      Module selectedModule;
+      if (moduleName.isPresent()) {
+        selectedModule = moduleName
+            .map(self -> moduleSource.getModule(project, self))
+            .orElseThrow(() -> new ModuleMissingException(moduleName.get()));
+      } else {
+        Module[] modules = moduleSource.getModules(project);
+
+        ModuleSelectionViewModel moduleSelectionViewModel = new ModuleSelectionViewModel(
+            modules, getText("ui.toolWindow.subTab.exercises.submission.selectModule"));
+        if (!dialogs.create(moduleSelectionViewModel, project).showAndGet()) {
+          return;
+        }
+        selectedModule = moduleSelectionViewModel.selectedModule.get();
+      }
+
+      if (selectedModule == null) {
+        return;
+      }
+
+      documentSaver.saveAllDocuments();
+
+      Path modulePath = Paths.get(ModuleUtilCore.getModuleDirPath(selectedModule));
+      for (SubmittableFile file : submissionInfo.getFiles(language)) {
+        files.put(file.getKey(), fileFinder.findFile(modulePath, file.getName()));
+      }
+    } else {
+      var tutorialResultFile = FileUtilRt.createTempFile("tutorials", null);
+      String payload = ((TutorialExercise) exercise).getTutorial().getSubmissionPayload();
+      FileUtils.writeStringToFile(tutorialResultFile, payload, StandardCharsets.UTF_8);
+
+      files.put(TutorialExercise.TUTORIAL_SUBMIT_FILE_NAME, tutorialResultFile.toPath());
     }
 
     var course = courseViewModel.getModel();

@@ -1,9 +1,13 @@
 package fi.aalto.cs.apluscourses.model;
 
+import java.util.List;
+import java.util.Map;
 import java.util.OptionalLong;
 import org.jetbrains.annotations.NotNull;
 
 public class TutorialExercise extends Exercise {
+
+  public static final String TUTORIAL_SUBMIT_FILE_NAME = "_ideact_result";
 
   private final @NotNull Tutorial tutorial;
 
@@ -38,4 +42,9 @@ public class TutorialExercise extends Exercise {
     return obj instanceof TutorialExercise && ((TutorialExercise) obj).getId() == getId();
   }
 
+  @Override
+  public @NotNull SubmissionInfo getSubmissionInfo() {
+    var resultFile = List.of(new SubmittableFile(TUTORIAL_SUBMIT_FILE_NAME, TUTORIAL_SUBMIT_FILE_NAME));
+    return new SubmissionInfo(Map.of("en", resultFile, "fi", resultFile));
+  }
 }
