@@ -137,11 +137,13 @@ public class Exercise implements Browsable {
    */
   @Nullable
   public SubmissionResult getBestSubmission() {
-    return submissionResults
-        .stream()
-        .filter(submission -> OptionalLong.of(submission.getId()).equals(bestSubmissionId))
-        .findFirst()
-        .orElse(null);
+    synchronized (submissionResults) {
+      return submissionResults
+          .stream()
+          .filter(submission -> OptionalLong.of(submission.getId()).equals(bestSubmissionId))
+          .findFirst()
+          .orElse(null);
+    }
   }
 
   public boolean isSubmittable() {
@@ -166,9 +168,11 @@ public class Exercise implements Browsable {
    * Returns true if any of the submissions of this exercise has status WAITING.
    */
   public boolean isInGrading() {
-    return submissionResults
-        .stream()
-        .anyMatch(submission -> submission.getStatus() == SubmissionResult.Status.WAITING);
+    synchronized (submissionResults) {
+      return submissionResults
+          .stream()
+          .anyMatch(submission -> submission.getStatus() == SubmissionResult.Status.WAITING);
+    }
   }
 
   public boolean isLate() {
