@@ -23,6 +23,7 @@ import javax.swing.JPanel;
 import javax.swing.JRootPane;
 import javax.swing.SwingUtilities;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class OverlayPane extends JPanel implements AWTEventListener {
   // A high value (> 500) allows us to place the overlay pretty much above every other component
@@ -160,6 +161,10 @@ public class OverlayPane extends JPanel implements AWTEventListener {
   public void addHighlighter(@NotNull GenericHighlighter highlighter) {
     this.highlighters.add(highlighter);
     this.revalidatePane();
+  }
+
+  public boolean hasHighlighterForComponent(@Nullable Component component) {
+    return this.highlighters.stream().anyMatch(highlighter -> highlighter.getComponent().equals(component));
   }
 
   /**

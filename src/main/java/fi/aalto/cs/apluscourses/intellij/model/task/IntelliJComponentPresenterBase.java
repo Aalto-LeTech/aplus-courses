@@ -115,7 +115,12 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
     public void run() {
       ApplicationManager.getApplication()
           .invokeLater(() -> {
-            if (!highlighting.get() && (tryingToShow.get() || !isVisible())) {
+            var progressButtonHighlighted = overlayPane != null
+                && overlayPane.hasHighlighterForComponent(ComponentDatabase.getProgressButton());
+            if (!highlighting.get()
+                && (tryingToShow.get()
+                || !isVisible()
+                || !progressButtonHighlighted)) {
               highlightInternal();
             }
           }, ModalityState.NON_MODAL);
