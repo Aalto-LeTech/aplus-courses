@@ -26,7 +26,7 @@ public class BalloonPopup extends JPanel {
     this.anchorComponent = anchorComponent;
 
     setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-    setBorder(new EmptyBorder(JBUI.insets(0, 5, 10, 5)));
+    setBorder(new BalloonShadowBorder());
 
     // introduce a limit to the popup's width (so it doesn't take the entire screen width)
     setMaximumSize(new Dimension(500, 0));
