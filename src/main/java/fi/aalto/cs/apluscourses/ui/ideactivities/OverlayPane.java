@@ -14,6 +14,7 @@ import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.AWTEventListener;
 import java.awt.event.MouseEvent;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.util.HashSet;
 import java.util.Set;
@@ -44,11 +45,15 @@ public class OverlayPane extends JPanel implements AWTEventListener {
     var overlayArea = new Area(new Rectangle(0, 0, getWidth(), getHeight()));
 
     for (var c : highlighters) {
-      // convertPoint is necessary because the component uses a different coordinate origin
+      var posDiff = SwingUtilities.convertPoint(c.getComponent(), 0, 0, this);
+      var translation = AffineTransform.getTranslateInstance(posDiff.x, posDiff.y);
+
       if (c.getComponent().isShowing()) {
         for (var rectangle : c.getArea()) {
-          var windowRect = SwingUtilities.convertRectangle(c.getComponent(), rectangle, this);
-          overlayArea.subtract(new Area(windowRect));
+          var rectangleArea = new Area(rectangle);
+          rectangleArea.transform(translation);
+
+          overlayArea.subtract(rectangleArea);
         }
       }
     }
@@ -171,19 +176,6 @@ public class OverlayPane extends JPanel implements AWTEventListener {
     var popup = new BalloonPopup(c, title, message, PluginIcons.A_PLUS_OPTIONAL_PRACTICE);
     this.balloonPopups.add(popup);
     this.getRootPane().getLayeredPane().add(popup, PANE_Z_ORDER + 1);
-    this.revalidatePane();
-  }
-
-  /**
-   * Resets the overlay to its original state, i.e. removes all popups and dims all components.
-   */
-  @RequiresEdt
-  public void reset() {
-    this.highlighters.clear();
-    for (var c : this.balloonPopups) {
-      this.getRootPane().getLayeredPane().remove(c);
-    }
-    this.balloonPopups.clear();
     this.revalidatePane();
   }
 
