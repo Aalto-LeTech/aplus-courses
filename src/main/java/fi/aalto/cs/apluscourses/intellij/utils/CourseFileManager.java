@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -39,7 +40,7 @@ public class CourseFileManager {
 
   private static final Logger logger = LoggerFactory.getLogger(CourseFileManager.class);
 
-  private File courseFile;
+  private final File courseFile;
   private URL courseUrl;
   private String language;
   private Map<String, ModuleMetadata> modulesMetadata;
@@ -335,5 +336,20 @@ public class CourseFileManager {
     }
 
     writeCourseFileWithModulesObject(modulesObject);
+  }
+
+  /**
+   * Deletes the course file.
+   */
+  public void delete() {
+    try {
+      Files.delete(courseFile.toPath());
+    } catch (IOException e) {
+      // Ignore
+    }
+  }
+
+  public boolean courseFileExists() {
+    return courseFile.exists();
   }
 }
