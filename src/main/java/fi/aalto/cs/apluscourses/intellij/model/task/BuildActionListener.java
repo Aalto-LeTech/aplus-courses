@@ -12,8 +12,8 @@ public class BuildActionListener extends IdeActionListener {
   /**
    * Constructor.
    */
-  public BuildActionListener(ListenerCallback callback, Project project) {
-    super(callback, project, new String[]{"Build Project"});
+  public BuildActionListener(@NotNull ListenerCallback callback, @NotNull Project project) {
+    super(callback, project, "Build Project");
   }
 
   public static BuildActionListener create(ListenerCallback callback, Project project) {
@@ -23,8 +23,8 @@ public class BuildActionListener extends IdeActionListener {
   @Override
   public void beforeActionPerformed(@NotNull AnAction action, @NotNull DataContext dataContext,
                                     @NotNull AnActionEvent event) {
-    if ((actionNames.contains(action.getTemplateText()))
-                    || actionNames.contains(event.getPresentation().getText())) {
+    if ((actionName.equals(action.getTemplateText()))
+                    || actionName.equals(event.getPresentation().getText())) {
       callback.callback();
     }
   }
