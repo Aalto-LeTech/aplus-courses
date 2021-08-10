@@ -57,5 +57,7 @@ public class BalloonShadowBorder extends AbstractBorder {
 
       g.drawRoundRect(i, i, width - (i * 2), height - (i * 2), i * 2, i * 2);
     }
+
+    g.dispose();
   }
 }

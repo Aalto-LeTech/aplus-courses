@@ -62,11 +62,12 @@ public class OverlayPane extends JPanel implements AWTEventListener {
     for (var c : balloonPopups) {
       // popups are already places in the overlay's coordinate system
       if (c.isVisible()) {
-        final int borderWidth = BalloonPopup.BORDER_WIDTH * 2;
-        final int borderHeight = BalloonPopup.BORDER_WIDTH * 2;
+        final double borderWidth = BalloonPopup.BORDER_WIDTH * 2.0;
+        final double borderHeight = BalloonPopup.BORDER_WIDTH * 2.0;
 
         var componentRect = new RoundRectangle2D.Double(
-            c.getX() + BalloonPopup.BORDER_WIDTH, c.getY() + BalloonPopup.BORDER_WIDTH,
+            c.getX() + (double) BalloonPopup.BORDER_WIDTH,
+            c.getY() + (double) BalloonPopup.BORDER_WIDTH,
             c.getWidth() - borderWidth, c.getHeight() - borderHeight, 6, 6
         );
 
