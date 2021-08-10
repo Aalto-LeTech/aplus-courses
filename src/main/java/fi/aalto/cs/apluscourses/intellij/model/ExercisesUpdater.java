@@ -15,7 +15,6 @@ import fi.aalto.cs.apluscourses.model.Progress;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import fi.aalto.cs.apluscourses.utils.Event;
-import fi.aalto.cs.apluscourses.utils.Stopwatch;
 import fi.aalto.cs.apluscourses.utils.async.RepeatedTask;
 import fi.aalto.cs.apluscourses.utils.cache.CachePreferences;
 import java.io.IOException;
@@ -57,8 +56,7 @@ public class ExercisesUpdater extends RepeatedTask {
 
   @Override
   protected void doTask() {
-    var stopwatch = new Stopwatch();
-    logger.info("Starting exercises update");
+    logger.debug("Starting exercises update");
     var course = courseProject.getCourse();
     var dataSource = course.getExerciseDataSource();
     var authentication = courseProject.getAuthentication();
@@ -67,7 +65,7 @@ public class ExercisesUpdater extends RepeatedTask {
         courseProject.setExerciseTree(new ExercisesTree());
         eventToTrigger.trigger();
       }
-      logger.info("Not authenticated");
+      logger.warn("Not authenticated");
       return;
     }
     var progressViewModel =
@@ -109,7 +107,7 @@ public class ExercisesUpdater extends RepeatedTask {
       }
       courseProject.setExerciseTree(exerciseTree);
       eventToTrigger.trigger();
-      logger.info("Exercises update took {}ms", stopwatch.getTimeMs());
+      logger.debug("Exercises update done");
     } catch (IOException e) {
       var observable = PluginSettings
           .getInstance()

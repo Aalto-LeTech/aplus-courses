@@ -65,7 +65,7 @@ public class APlusAuthenticationView extends DialogWrapper implements Dialog {
   @Nullable
   @Override
   protected ValidationInfo doValidate() {
-    logger.info("Validating token");
+    logger.debug("Validating token");
     if (inputField.getPassword().length == 0) {
       return new ValidationInfo(getText("ui.authenticationView.noEmptyToken"),
           inputField).withOKEnabled();

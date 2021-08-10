@@ -7,6 +7,7 @@ import com.intellij.openapi.updateSettings.impl.UpdateSettings;
 import com.intellij.openapi.util.io.FileUtilRt;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Course;
+import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
 import fi.aalto.cs.apluscourses.utils.DomUtil;
 import fi.aalto.cs.apluscourses.utils.PluginResourceBundle;
@@ -21,12 +22,15 @@ import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.model.FileHeader;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 public class SettingsImporter {
+
+  private static final Logger logger = APlusLogger.logger;
 
   // Some hard coded custom settings for workspace.xml. This information should eventually come from
   // the course configuration file in some way.
@@ -77,11 +81,11 @@ public class SettingsImporter {
    * this method does nothing.
    * @throws IOException If an IO error occurs (e.g. network issues).
    */
-  public boolean importProjectSettings(@NotNull Path basePath, @NotNull Course course)
+  public void importProjectSettings(@NotNull Path basePath, @NotNull Course course)
       throws IOException {
     URL settingsUrl = course.getResourceUrls().get("projectSettings");
     if (settingsUrl == null) {
-      return false;
+      return;
     }
 
     Path settingsPath = basePath.resolve(Project.DIRECTORY_STORE_FOLDER);
@@ -95,7 +99,7 @@ public class SettingsImporter {
     Path workspaceXmlPath = settingsPath.resolve("workspace.xml");
     Document workspaceXml = createCustomWorkspaceXml(workspaceXmlPath);
     DomUtil.writeDocumentToFile(workspaceXml, workspaceXmlPath.toFile());
-    return true;
+    logger.info("Imported project settings");
   }
 
   /**
@@ -103,12 +107,12 @@ public class SettingsImporter {
    * .idea directory.
    * @throws IOException If an IO error occurs (e.g. network issues).
    */
-  public boolean importCustomProperties(@NotNull Path basePath, @NotNull Course course,
+  public void importCustomProperties(@NotNull Path basePath, @NotNull Course course,
                                      @NotNull Project project)
       throws IOException {
     URL settingsUrl = course.getResourceUrls().get("customProperties");
     if (settingsUrl == null) {
-      return false;
+      return;
     }
 
     Path settingsPath = basePath.resolve(Project.DIRECTORY_STORE_FOLDER);
@@ -117,7 +121,7 @@ public class SettingsImporter {
     CoursesClient.fetch(settingsUrl, file);
 
     PluginResourceBundle.setCustomBundle(file, project);
-    return true;
+    logger.info("Imported custom properties");
   }
 
   private static void extractZipTo(@NotNull ZipFile zipFile, @NotNull Path target)

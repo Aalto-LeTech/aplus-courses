@@ -44,7 +44,6 @@ import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionResultViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionViewModel;
 import fi.aalto.cs.apluscourses.utils.APlusLogger;
-import fi.aalto.cs.apluscourses.utils.Stopwatch;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -168,7 +167,7 @@ public class SubmitExerciseAction extends AnAction {
 
   @Override
   public void actionPerformed(@NotNull AnActionEvent e) {
-    logger.info("Starting SubmitExerciseAction");
+    logger.debug("Starting SubmitExerciseAction");
     Project project = e.getProject();
     if (project == null) {
       return;
@@ -186,7 +185,6 @@ public class SubmitExerciseAction extends AnAction {
 
   private void trySubmit(@NotNull Project project)
       throws IOException, FileDoesNotExistException, ModuleMissingException {
-    final var stopwatch = new Stopwatch();
     MainViewModel mainViewModel = mainViewModelProvider.getMainViewModel(project);
     CourseViewModel courseViewModel = mainViewModel.courseViewModel.get();
     ExercisesTreeViewModel exercisesViewModel = mainViewModel.exercisesViewModel.get();
@@ -214,7 +212,7 @@ public class SubmitExerciseAction extends AnAction {
     logger.info("Language: {}", language);
 
     if (!submissionInfo.isSubmittable(language)) {
-      logger.info("{} not submittable", exercise);
+      logger.warn("{} not submittable", exercise);
       notifier.notify(new NotSubmittableNotification(), project);
       return;
     }
@@ -300,7 +298,7 @@ public class SubmitExerciseAction extends AnAction {
         submission.getPresentableExerciseName(),
         submission.getCurrentSubmissionNumber());
     addLocalHistoryTag(project, tag);
-    logger.info("Finished submitting exercise (took {}ms)", stopwatch.getTimeMs());
+    logger.debug("Finished submitting exercise");
   }
 
   private void notifyNetworkError(@NotNull IOException exception, @Nullable Project project) {

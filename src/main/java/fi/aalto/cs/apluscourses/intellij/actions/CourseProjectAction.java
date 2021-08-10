@@ -147,7 +147,7 @@ public class CourseProjectAction extends AnAction {
 
   @Override
   public void actionPerformed(@NotNull AnActionEvent e) {
-    logger.info("Starting CourseProjectAction");
+    logger.debug("Starting CourseProjectAction");
     Project project = e.getProject();
 
     if (project == null) {
@@ -170,9 +170,9 @@ public class CourseProjectAction extends AnAction {
     if (versionComparison == Version.ComparisonStatus.MAJOR_TOO_OLD
         || versionComparison == Version.ComparisonStatus.MAJOR_TOO_NEW) {
       if (versionComparison == Version.ComparisonStatus.MAJOR_TOO_OLD) {
-        logger.error("A+ Courses version outdated: installed v{}, required v{}", version, course.getVersion());
+        logger.error("A+ Courses version outdated: installed {}, required {}", version, course.getVersion());
       } else {
-        logger.error("A+ Courses version too new: installed v{}, required v{}", version, course.getVersion());
+        logger.error("A+ Courses version too new: installed {}, required {}", version, course.getVersion());
       }
       notifier.notify(
           versionComparison == Version.ComparisonStatus.MAJOR_TOO_OLD
@@ -182,9 +182,7 @@ public class CourseProjectAction extends AnAction {
 
     CourseProjectViewModel courseProjectViewModel
         = new CourseProjectViewModel(course, settingsImporter.currentlyImportedIdeSettings());
-    logger.info("Showing main dialog");
     if (!dialogs.showMainDialog(project, courseProjectViewModel)) {
-      logger.info("Canceled");
       return;
     }
 
@@ -293,7 +291,7 @@ public class CourseProjectAction extends AnAction {
   @Nullable
   private Course tryGetCourse(@NotNull Project project, @NotNull URL courseUrl) {
     try {
-      logger.info("Getting course");
+      logger.debug("Getting course");
       return courseFactory.fromUrl(courseUrl, project);
     } catch (IOException e) {
       logger.error("Network error", e);
@@ -322,7 +320,7 @@ public class CourseProjectAction extends AnAction {
                                       @NotNull URL courseUrl,
                                       @NotNull String language) {
     try {
-      logger.info("Creating course file");
+      logger.debug("Creating course file");
       if (useCourseFile) {
         PluginSettings
             .getInstance()
@@ -347,9 +345,7 @@ public class CourseProjectAction extends AnAction {
                                            @NotNull Path basePath,
                                            @NotNull Course course) {
     try {
-      if (settingsImporter.importProjectSettings(basePath, course)) {
-        logger.info("Imported project settings");
-      }
+      settingsImporter.importProjectSettings(basePath, course);
       return true;
     } catch (IOException e) {
       logger.error("Failed to import project settings", e);
@@ -379,9 +375,7 @@ public class CourseProjectAction extends AnAction {
   private boolean tryImportCustomProperties(@NotNull Project project, @NotNull Path basePath,
                                             @NotNull Course course) {
     try {
-      if (settingsImporter.importCustomProperties(basePath, course, project)) {
-        logger.info("Imported custom properties");
-      }
+      settingsImporter.importCustomProperties(basePath, course, project);
       return true;
     } catch (IOException e) {
       logger.error("Failed to import custom properties", e);

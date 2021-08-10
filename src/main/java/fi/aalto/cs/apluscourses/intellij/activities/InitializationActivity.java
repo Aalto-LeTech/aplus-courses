@@ -25,7 +25,6 @@ import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationException;
 import fi.aalto.cs.apluscourses.model.UnexpectedResponseException;
 import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
-import fi.aalto.cs.apluscourses.utils.Stopwatch;
 import fi.aalto.cs.apluscourses.utils.Version;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
@@ -60,12 +59,8 @@ public class InitializationActivity implements Background {
 
   @Override
   public void runActivity(@NotNull Project project) {
-    final var stopwatch = new Stopwatch();
-    logger.info("Starting initialization");
-    logger.info("A+ Courses v{}", BuildInfo.INSTANCE.pluginVersion);
     var courseVersion = BuildInfo.INSTANCE.courseVersion;
-    logger.info("Course v{}", courseVersion);
-    logger.info("Logs made by Jaakko <3");
+    logger.info("Starting initialization, course version {}", courseVersion);
     PluginSettings pluginSettings = PluginSettings.getInstance();
     pluginSettings.initializeLocalIdeSettings();
 
@@ -109,9 +104,9 @@ public class InitializationActivity implements Background {
     if (versionComparison == Version.ComparisonStatus.MAJOR_TOO_OLD
         || versionComparison == Version.ComparisonStatus.MAJOR_TOO_NEW) {
       if (versionComparison == Version.ComparisonStatus.MAJOR_TOO_OLD) {
-        logger.error("A+ Courses version outdated: installed v{}, required v{}", courseVersion, course.getVersion());
+        logger.warn("A+ Courses version outdated: installed {}, required {}", courseVersion, course.getVersion());
       } else {
-        logger.error("A+ Courses version too new: installed v{}, required v{}", courseVersion, course.getVersion());
+        logger.warn("A+ Courses version too new: installed {}, required {}", courseVersion, course.getVersion());
       }
       notifier.notify(
           versionComparison == Version.ComparisonStatus.MAJOR_TOO_OLD
@@ -119,7 +114,7 @@ public class InitializationActivity implements Background {
       progress.finish();
       return;
     } else if (versionComparison == Version.ComparisonStatus.MINOR_TOO_OLD) {
-      logger.error("A+ Courses version outdated: installed v{}, required v{}", courseVersion, course.getVersion());
+      logger.warn("A+ Courses version outdated: installed {}, required {}", courseVersion, course.getVersion());
       notifier.notify(new CourseVersionOutdatedWarning(), project);
     }
 
@@ -128,7 +123,7 @@ public class InitializationActivity implements Background {
     PluginSettings.getInstance().registerCourseProject(courseProject);
     isInitialized(project).set(true);
     progress.finish();
-    logger.info("Initialization took {}ms", stopwatch.getTimeMs());
+    logger.info("Initialization done");
   }
 
   private static final ProjectManagerListener projectListener = new ProjectManagerListener() {
@@ -177,11 +172,7 @@ public class InitializationActivity implements Background {
     var basePath = project.getBasePath();
     if (basePath != null) {
       try {
-        if (new SettingsImporter().importCustomProperties(Paths.get(project.getBasePath()),
-            course,
-            project)) {
-          logger.info("Imported custom properties");
-        }
+        new SettingsImporter().importCustomProperties(Paths.get(project.getBasePath()), course, project);
       } catch (IOException e) {
         // No custom resources.
       }

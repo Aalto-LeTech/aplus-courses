@@ -32,7 +32,6 @@ import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionResultViewModel;
 import fi.aalto.cs.apluscourses.ui.InstallerDialogs;
 import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
-import fi.aalto.cs.apluscourses.utils.Stopwatch;
 import fi.aalto.cs.apluscourses.utils.async.SimpleAsyncTaskManager;
 import java.io.IOException;
 import java.net.URL;
@@ -230,7 +229,6 @@ public class DownloadSubmissionAction extends AnAction {
     var auth = authenticationProvider.getAuthentication(project);
 
     logger.info("Starting download");
-    var stopwatch = new Stopwatch();
     for (var info : submissionFilesInfo) {
       try {
         var file = fileFinder.findFile(module.getFullPath(), info.getFileName()).toFile();
@@ -247,7 +245,7 @@ public class DownloadSubmissionAction extends AnAction {
         notifier.notifyAndHide(new NetworkErrorNotification(ex), project);
       }
     }
-    logger.info("Finished downloading submission (took {}ms)", stopwatch.getTimeMs());
+    logger.debug("Finished downloading submission");
   }
 
   @Override

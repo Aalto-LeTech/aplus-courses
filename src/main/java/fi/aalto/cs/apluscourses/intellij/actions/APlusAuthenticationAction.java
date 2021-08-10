@@ -68,11 +68,11 @@ public class APlusAuthenticationAction extends DumbAwareAction {
 
   @Override
   public void actionPerformed(@NotNull AnActionEvent e) {
-    logger.info("Starting APlusAuthenticationAction");
+    logger.debug("Starting APlusAuthenticationAction");
     Project project = e.getProject();
     var courseProject = courseProjectProvider.getCourseProject(project);
     if (courseProject == null) {
-      logger.info("Course project was null");
+      logger.warn("Course project was null");
       return;
     }
     var course = courseProject.getCourse();
