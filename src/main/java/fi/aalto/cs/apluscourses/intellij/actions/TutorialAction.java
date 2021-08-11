@@ -105,7 +105,9 @@ public class TutorialAction extends AnAction {
       }
       mainViewModelProvider.getMainViewModel(project).tutorialViewModel.set(tutorialViewModel);
       tutorial.tutorialCompleted
-          .addListener(mainViewModel, mainVm -> onTutorialComplete(mainVm, courseViewModel.getModel()));
+          .addListener(mainViewModel, mainVm -> onTutorialComplete(mainVm,
+              courseViewModel.getModel(),
+              project));
       tutorialViewModel.startNextTask();
     }
   }
@@ -162,12 +164,13 @@ public class TutorialAction extends AnAction {
   }
 
   private void onTutorialComplete(@NotNull MainViewModel mainViewModel,
-                                  @NotNull Course course) {
+                                  @NotNull Course course,
+                                  @NotNull Project project) {
     TutorialViewModel viewModel = mainViewModel.tutorialViewModel.get();
     if (viewModel != null) {
       var tutorial = viewModel.getTutorial();
       if (tutorial.isDeleteDependencies()) {
-        tutorial.deleteDependencies(course);
+        tutorial.deleteDependencies(course, project);
       }
       tutorial.tutorialCompleted.removeCallback(mainViewModel);
       mainViewModel.tutorialViewModel.set(null);

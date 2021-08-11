@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.intellij.model;
 
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
+import fi.aalto.cs.apluscourses.intellij.notifications.IoErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.TaskNotifier;
 import fi.aalto.cs.apluscourses.model.Component;
@@ -10,7 +11,7 @@ import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.model.Tutorial;
 import fi.aalto.cs.apluscourses.model.task.Task;
-import fi.aalto.cs.apluscourses.ui.InstallerDialogs;
+import fi.aalto.cs.apluscourses.ui.ReinstallDialogs;
 import fi.aalto.cs.apluscourses.utils.JsonUtil;
 import fi.aalto.cs.apluscourses.utils.async.SimpleAsyncTaskManager;
 import java.io.IOException;
@@ -55,20 +56,27 @@ public class IntelliJTutorial extends Tutorial {
 
     var modules = getModules(course);
 
+    for (var module : modules) {
+      if (module.hasLocalChanges()) {
+        ((Module) module).setForceUpdatable();
+      }
+    }
+
     var componentInstallerFactory = new ComponentInstallerImpl.FactoryImpl<>(new SimpleAsyncTaskManager());
-    var dialogs = new InstallerDialogs(project);
+    var dialogs = new ReinstallDialogs(project);
 
     componentInstallerFactory.getInstallerFor(course, dialogs).installAsync(modules,
         () -> taskNotifier.notifyDownloadingDeps(true));
   }
 
   @Override
-  public void deleteDependencies(@NotNull Course course) {
+  public void deleteDependencies(@NotNull Course course, @NotNull Project project) {
     for (var component : getModules(course)) {
       try {
         component.remove();
+        component.unload();
       } catch (IOException e) {
-        // fail silently
+        notifier.notify(new IoErrorNotification(e), project);
       }
     }
   }

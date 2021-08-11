@@ -6,6 +6,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.ZonedDateTime;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
@@ -25,6 +26,8 @@ public abstract class Module extends Component {
   protected ZonedDateTime downloadedAt;
   @NotNull
   protected String originalName;
+  @NotNull
+  private final AtomicBoolean forceUpdatable = new AtomicBoolean(false);
 
   /* synchronize with this when accessing variable fields of this class */
   private final Object moduleLock = new Object();
@@ -83,7 +86,7 @@ public abstract class Module extends Component {
    * @param factory    A {@link ModelFactory} object that is responsible for actual object
    *                   creation.
    * @return A module constructed from the given JSON object.
-   * @throws MalformedURLException  If the URL of the module is malformed.
+   * @throws MalformedURLException If the URL of the module is malformed.
    */
   @NotNull
   public static Module fromJsonObject(@NotNull JSONObject jsonObject, @NotNull ModelFactory factory)
@@ -108,12 +111,15 @@ public abstract class Module extends Component {
    * Tells whether or not the module is updatable.
    *
    * @return True, if the module is loaded and the local version is not the newest one; otherwise
-   *         false.
+   * false.
    */
   @Override
   public boolean isUpdatable() {
     if (stateMonitor.get() != LOADED) {
       return false;
+    }
+    if (forceUpdatable.get()) {
+      return true;
     }
     synchronized (moduleLock) {
       return !version.equals(localVersion);
@@ -213,6 +219,10 @@ public abstract class Module extends Component {
   @Override
   public @NotNull String getOriginalName() {
     return originalName;
+  }
+
+  public void setForceUpdatable() {
+    forceUpdatable.set(true);
   }
 
   @Override

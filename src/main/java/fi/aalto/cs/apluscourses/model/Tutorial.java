@@ -60,7 +60,7 @@ public abstract class Tutorial {
   /**
    * Deletes the module deps for a tutorial.
    */
-  public abstract void deleteDependencies(@NotNull Course course);
+  public abstract void deleteDependencies(@NotNull Course course, @NotNull Project project);
 
 
   /**
