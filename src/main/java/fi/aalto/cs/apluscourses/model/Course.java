@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.model;
 
 import com.intellij.openapi.util.SystemInfoRt;
+import fi.aalto.cs.apluscourses.intellij.model.IntelliJTutorial;
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
 import fi.aalto.cs.apluscourses.utils.JsonUtil;
@@ -74,12 +75,13 @@ public abstract class Course implements ComponentSource {
 
   /**
    * Constructs a course with the given parameters.
-   *  @param name                The name of the course.
+   *
+   * @param name                The name of the course.
    * @param modules             The list of modules in the course.
    * @param resourceUrls        A map containing URLs to resources related to the course. The keys
- *                            are the names of the resources and the values are the URLs.
+   *                            are the names of the resources and the values are the URLs.
    * @param replInitialCommands A {@link Map}, with module name {@link String} as a key and a
-*                            {@link String} array of the commands to be executed on REPL
+   *                            {@link String} array of the commands to be executed on REPL
    */
   protected Course(@NotNull String id,
                    @NotNull String name,
@@ -122,7 +124,7 @@ public abstract class Course implements ComponentSource {
    * @param reader A reader providing a character stream with the course configuration data.
    * @return A course instance containing the information parsed from the configuration data.
    * @throws MalformedCourseConfigurationException If the configuration data is malformed in any
-   *                                                   way
+   *                                               way
    */
   @NotNull
   public static Course fromConfigurationData(@NotNull Reader reader, @NotNull ModelFactory factory)
@@ -138,7 +140,7 @@ public abstract class Course implements ComponentSource {
    *                   from this method.
    * @return A course instance containing the information parsed from the configuration data.
    * @throws MalformedCourseConfigurationException If the configuration data is malformed in any
-   *                                                   way
+   *                                               way
    */
   @NotNull
   public static Course fromConfigurationData(@NotNull Reader reader,
@@ -181,10 +183,10 @@ public abstract class Course implements ComponentSource {
    *
    * @param url The URL of the course configuration file.
    * @return A course instance containing the information parsed from the course configuration file.
-   * @throws IOException                               If an IO error occurs (network connection
-   *                                                   issues for an example).
+   * @throws IOException                           If an IO error occurs (network connection
+   *                                               issues for an example).
    * @throws MalformedCourseConfigurationException If the course configuration file is malformed
-   *                                                   in any way.
+   *                                               in any way.
    */
   @NotNull
   public static Course fromUrl(@NotNull URL url, @NotNull ModelFactory modelFactory)
@@ -515,7 +517,7 @@ public abstract class Course implements ComponentSource {
 
   @NotNull
   private static Version getCourseVersion(@NotNull JSONObject jsonObject,
-                                                @NotNull String source)
+                                          @NotNull String source)
       throws MalformedCourseConfigurationException {
     String versionJson = jsonObject.optString("version", null);
     if (versionJson == null) {
@@ -534,7 +536,7 @@ public abstract class Course implements ComponentSource {
     JSONObject tutorialsJson = jsonObject.optJSONObject("tutorials");
     return tutorialsJson == null ? Collections.emptyMap()
         : JsonUtil.parseObject(tutorialsJson, JSONObject::getJSONObject,
-        Tutorial::fromJsonObject, Long::valueOf);
+        IntelliJTutorial::fromJsonObject, Long::valueOf);
   }
 
   public Map<Long, Tutorial> getTutorials() {

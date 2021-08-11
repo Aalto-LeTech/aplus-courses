@@ -1,24 +1,14 @@
 package fi.aalto.cs.apluscourses.model;
 
 import com.intellij.openapi.project.Project;
-import fi.aalto.cs.apluscourses.intellij.model.ProjectModuleSource;
-import fi.aalto.cs.apluscourses.intellij.notifications.TaskNotifier;
 import fi.aalto.cs.apluscourses.model.task.Task;
-import fi.aalto.cs.apluscourses.ui.InstallerDialogs;
 import fi.aalto.cs.apluscourses.utils.Event;
-import fi.aalto.cs.apluscourses.utils.JsonUtil;
-import fi.aalto.cs.apluscourses.utils.async.SimpleAsyncTaskManager;
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 
-public class Tutorial {
+public abstract class Tutorial {
   private final List<Task> tasks;
   private final String @NotNull [] moduleDependencies;
   private final boolean downloadDependencies;
@@ -30,26 +20,14 @@ public class Tutorial {
   /**
    * A constructor.
    */
-  public Tutorial(Task @NotNull [] tasks,
-                  String @NotNull [] moduleDependencies,
-                  boolean downloadDependencies,
-                  boolean deleteDependencies) {
+  protected Tutorial(Task @NotNull [] tasks,
+                     String @NotNull [] moduleDependencies,
+                     boolean downloadDependencies,
+                     boolean deleteDependencies) {
     this.tasks = List.of(tasks);
     this.moduleDependencies = moduleDependencies;
     this.downloadDependencies = downloadDependencies;
     this.deleteDependencies = deleteDependencies;
-  }
-
-  /**
-   * Construct a tutorial instance from the given JSON object.
-   */
-  public static Tutorial fromJsonObject(@NotNull JSONObject jsonObject) {
-    return new Tutorial(JsonUtil.parseArray(jsonObject.getJSONArray("tasks"),
-        JSONArray::getJSONObject, Task::fromJsonObject, Task[]::new),
-        JsonUtil.parseArray(jsonObject.getJSONArray("moduleDependencies"),
-            JSONArray::getString, String::new, String[]::new),
-        jsonObject.optBoolean("downloadDependencies", false),
-        jsonObject.optBoolean("deleteDependencies", false));
   }
 
   public List<Task> getTasks() {
@@ -77,55 +55,21 @@ public class Tutorial {
   /**
    * Downloads the module deps for a tutorial, with the module name starting with "Ideact_".
    */
-  public void downloadDependencies(@NotNull Course course,
-                                   @NotNull Project project,
-                                   @NotNull TaskNotifier taskNotifier) {
-    taskNotifier.notifyDownloadingDeps(false);
-
-    var modules = getModules(course);
-
-    var componentInstallerFactory = new ComponentInstallerImpl.FactoryImpl<>(new SimpleAsyncTaskManager());
-    var dialogs = new InstallerDialogs(project);
-
-    componentInstallerFactory.getInstallerFor(course, dialogs).installAsync(modules,
-        () -> taskNotifier.notifyDownloadingDeps(true));
-  }
+  public abstract void downloadDependencies(@NotNull Course course, @NotNull Project project);
 
   /**
    * Deletes the module deps for a tutorial.
    */
-  public void deleteDependencies(@NotNull Course course) {
-    for (var component : getModules(course)) {
-      try {
-        component.remove();
-      } catch (IOException e) {
-        // fail silently
-      }
-    }
-  }
+  public abstract void deleteDependencies(@NotNull Course course);
 
-  private List<Component> getModules(@NotNull Course course) {
-    return Arrays
-        .stream(moduleDependencies)
-        .map(course::getComponentIfExists)
-        .filter(Module.class::isInstance)
-        .map(Module.class::cast)
-        .map(module -> (Component) module.copy("Ideact_" + module.getOriginalName()))
-        .collect(Collectors.toList());
-  }
 
   /**
    * Returns true and shows notifications if modules are missing.
    */
-  public boolean dependenciesMissing(@NotNull Project project,
-                                    @NotNull TaskNotifier taskNotifier) {
-    var moduleSource = new ProjectModuleSource();
-    var missing = Arrays
-        .stream(moduleDependencies)
-        .filter(name -> moduleSource.getModule(project, name) == null)
-        .collect(Collectors.toList());
-    missing.forEach(taskNotifier::notifyMissingModule);
-    return !missing.isEmpty();
+  public abstract boolean dependenciesMissing(@NotNull Project project);
+
+  public String @NotNull [] getModuleDependencies() {
+    return moduleDependencies;
   }
 
   public boolean isDownloadDependencies() {
