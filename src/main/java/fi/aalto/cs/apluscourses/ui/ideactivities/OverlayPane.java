@@ -3,25 +3,14 @@ package fi.aalto.cs.apluscourses.ui.ideactivities;
 import com.intellij.util.concurrency.annotations.RequiresEdt;
 import fi.aalto.cs.apluscourses.utils.Event;
 import icons.PluginIcons;
-import java.awt.AWTEvent;
-import java.awt.AlphaComposite;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.event.AWTEventListener;
 import java.awt.event.MouseEvent;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.util.HashSet;
 import java.util.Set;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRootPane;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import org.jetbrains.annotations.NotNull;
 
 public class OverlayPane extends JPanel implements AWTEventListener {
@@ -44,11 +33,15 @@ public class OverlayPane extends JPanel implements AWTEventListener {
     var overlayArea = new Area(new Rectangle(0, 0, getWidth(), getHeight()));
 
     for (var c : highlighters) {
-      // convertPoint is necessary because the component uses a different coordinate origin
+      var posDiff = SwingUtilities.convertPoint(c.getComponent(), 0, 0, this);
+      var translation = AffineTransform.getTranslateInstance(posDiff.x, posDiff.y);
+
       if (c.getComponent().isShowing()) {
         for (var rectangle : c.getArea()) {
-          var windowRect = SwingUtilities.convertRectangle(c.getComponent(), rectangle, this);
-          overlayArea.subtract(new Area(windowRect));
+          var rectangleArea = new Area(rectangle);
+          rectangleArea.transform(translation);
+
+          overlayArea.subtract(rectangleArea);
         }
       }
     }
@@ -172,10 +165,6 @@ public class OverlayPane extends JPanel implements AWTEventListener {
     this.balloonPopups.add(popup);
     this.getRootPane().getLayeredPane().add(popup, PANE_Z_ORDER + 1);
     this.revalidatePane();
-  }
-
-  public boolean hasPopup() {
-    return !balloonPopups.isEmpty();
   }
 
   /**

@@ -215,4 +215,10 @@ public abstract class Module extends Component {
     return originalName;
   }
 
+  @Override
+  public String toString() {
+    return "Module{"
+        + "name='" + name + '\''
+        + '}';
+  }
 }

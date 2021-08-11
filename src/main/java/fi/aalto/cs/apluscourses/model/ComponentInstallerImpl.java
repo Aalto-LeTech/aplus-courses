@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.model;
 
+import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import fi.aalto.cs.apluscourses.utils.async.TaskManager;
 import java.io.IOException;
 import java.util.List;
@@ -7,11 +8,10 @@ import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ComponentInstallerImpl<T> implements ComponentInstaller {
 
-  private static final Logger logger = LoggerFactory.getLogger(ComponentInstallerImpl.class);
+  private static final Logger logger = APlusLogger.logger;
 
   private final ComponentSource componentSource;
   private final TaskManager<T> taskManager;

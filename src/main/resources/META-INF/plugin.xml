@@ -41,6 +41,10 @@
                     class="fi.aalto.cs.apluscourses.intellij.actions.CourseProjectAction"
                     text="Turn Project Into A+ Project"
                     description="Turn the currently open project into an A+ course project." />
+            <action id="fi.aalto.cs.apluscourses.intellij.actions.ResetProjectAction"
+                    class="fi.aalto.cs.apluscourses.intellij.actions.ResetProjectAction"
+                    text="Reset A+ Project"
+                    description="Resets the open A+ course project." />
             <action id="fi.aalto.cs.apluscourses.intellij.actions.APlusAuthenticationAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.APlusAuthenticationAction"
                     text="Set A+ Token"

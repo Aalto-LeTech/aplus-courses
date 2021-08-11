@@ -7,6 +7,7 @@ import com.intellij.openapi.updateSettings.impl.UpdateSettings;
 import com.intellij.openapi.util.io.FileUtilRt;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Course;
+import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
 import fi.aalto.cs.apluscourses.utils.DomUtil;
 import fi.aalto.cs.apluscourses.utils.PluginResourceBundle;
@@ -21,12 +22,15 @@ import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.model.FileHeader;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 public class SettingsImporter {
+
+  private static final Logger logger = APlusLogger.logger;
 
   // Some hard coded custom settings for workspace.xml. This information should eventually come from
   // the course configuration file in some way.
@@ -95,6 +99,7 @@ public class SettingsImporter {
     Path workspaceXmlPath = settingsPath.resolve("workspace.xml");
     Document workspaceXml = createCustomWorkspaceXml(workspaceXmlPath);
     DomUtil.writeDocumentToFile(workspaceXml, workspaceXmlPath.toFile());
+    logger.info("Imported project settings");
   }
 
   /**
@@ -112,10 +117,11 @@ public class SettingsImporter {
 
     Path settingsPath = basePath.resolve(Project.DIRECTORY_STORE_FOLDER);
 
-    File file = settingsPath.resolve("customResources.properties").toFile();
+    File file = settingsPath.resolve(PluginResourceBundle.CUSTOM_RESOURCES_FILENAME).toFile();
     CoursesClient.fetch(settingsUrl, file);
 
     PluginResourceBundle.setCustomBundle(file, project);
+    logger.info("Imported custom properties");
   }
 
   private static void extractZipTo(@NotNull ZipFile zipFile, @NotNull Path target)
