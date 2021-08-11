@@ -7,7 +7,7 @@ import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.openapi.project.ProjectManager;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Component;
-import javax.swing.*;
+import javax.swing.JOptionPane;
 import org.jetbrains.annotations.NotNull;
 
 class ResetProjectAction extends DumbAwareAction {

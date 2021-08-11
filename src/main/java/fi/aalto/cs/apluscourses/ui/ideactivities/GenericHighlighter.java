@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.ui.ideactivities;
 
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Rectangle;
 import java.awt.geom.RectangularShape;
 import java.util.Collections;
 import java.util.List;

@@ -13,7 +13,11 @@ import fi.aalto.cs.apluscourses.presentation.AuthenticationViewModel;
 import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import java.io.IOException;
 import java.util.Arrays;
-import javax.swing.*;
+import javax.swing.Action;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.SwingConstants;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -49,7 +53,7 @@ public class APlusAuthenticationView extends DialogWrapper implements Dialog {
   @NotNull
   @Override
   protected Action @NotNull [] createActions() {
-    return new Action[]{getOKAction(), getCancelAction()};
+    return new Action[] {getOKAction(), getCancelAction()};
   }
 
   @Nullable

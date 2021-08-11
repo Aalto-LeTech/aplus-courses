@@ -3,7 +3,8 @@ package fi.aalto.cs.apluscourses.ui.ideactivities;
 import com.intellij.openapi.editor.LogicalPosition;
 import com.intellij.openapi.editor.impl.EditorComponentImpl;
 import com.intellij.openapi.editor.impl.EditorImpl;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Rectangle;
 import java.awt.geom.RectangularShape;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +33,7 @@ public class EditorHighlighter extends GenericHighlighter {
    * The lines are indexed from 1, not 0.
    *
    * @param lineBegin The beginning of the intervals of lines, inclusive.
-   * @param lineEnd The ending of the intervals of lines, inclusive.
+   * @param lineEnd   The ending of the intervals of lines, inclusive.
    */
   public void highlightLineRange(int lineBegin, int lineEnd) {
     for (int i = lineBegin; i <= lineEnd; ++i) {

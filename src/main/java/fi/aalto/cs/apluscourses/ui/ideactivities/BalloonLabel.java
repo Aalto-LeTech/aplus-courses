@@ -1,7 +1,9 @@
 package fi.aalto.cs.apluscourses.ui.ideactivities;
 
-import java.awt.*;
-import javax.swing.*;
+import java.awt.AlphaComposite;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import javax.swing.JLabel;
 
 public class BalloonLabel extends JLabel implements TransparentComponent {
   private float transparencyCoefficient;
