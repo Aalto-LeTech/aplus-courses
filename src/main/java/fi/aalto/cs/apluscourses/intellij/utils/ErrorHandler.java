@@ -32,6 +32,9 @@ import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
 public class ErrorHandler extends ErrorReportSubmitter {
+  @NotNull
+  private static final String REPORT_SERVER = "https://apluscourses-reports.cs.aalto.fi/report";
+
   private JSONObject serializeErrorData(@Nullable String errorInfo,
                                         @Nullable String lastActionId,
                                         @NotNull List<String> stackTraces) {
@@ -94,7 +97,7 @@ public class ErrorHandler extends ErrorReportSubmitter {
             Arrays.stream(events).map(IdeaLoggingEvent::getThrowableText)
                 .collect(Collectors.toList()));
 
-        HttpPost request = new HttpPost("http://127.0.0.1/report");
+        HttpPost request = new HttpPost(REPORT_SERVER);
         request.setHeader("Content-Type", "application/json");
         request.setHeader("Connection", "close");
         request.setEntity(new StringEntity(serializedData.toString(), StandardCharsets.UTF_8));

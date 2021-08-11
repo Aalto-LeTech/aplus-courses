@@ -22,6 +22,7 @@ import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.ideactivities.TutorialDialogs;
 import fi.aalto.cs.apluscourses.presentation.ideactivities.TutorialViewModel;
+import fi.aalto.cs.apluscourses.ui.ideactivities.ComponentDatabase;
 import java.util.Optional;
 import javax.swing.JOptionPane;
 import org.jetbrains.annotations.NotNull;
@@ -168,6 +169,8 @@ public class TutorialAction extends AnAction {
       }
       tutorial.tutorialCompleted.removeCallback(mainViewModel);
       mainViewModel.tutorialViewModel.set(null);
+      // Update the progress tracker.
+      Optional.ofNullable(ComponentDatabase.getNavBarToolBar()).ifPresent(tb -> tb.updateActionsImmediately(true));
       dialogs.end(viewModel);
     }
   }

@@ -1,4 +1,4 @@
-package fi.aalto.cs.apluscourses;
+package fi.aalto.cs.apluscourses.presentation;
 
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;

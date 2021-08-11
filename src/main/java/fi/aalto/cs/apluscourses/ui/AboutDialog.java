@@ -64,7 +64,7 @@ public class AboutDialog {
     panel.add(authors);
     panel.add(Box.createVerticalStrut(attributes.getFont().getSize()));
     panel.add(attributes);
-    panel.setBorder(BorderFactory.createEmptyBorder(0,15,0,15));
+    panel.setBorder(BorderFactory.createEmptyBorder(0, 15, 0, 15));
     return panel;
   }
 
