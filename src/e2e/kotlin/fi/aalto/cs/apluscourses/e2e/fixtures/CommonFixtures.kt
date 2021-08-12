@@ -55,7 +55,7 @@ class WelcomeFrameFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteCompo
     fun newProjectButton() = button(
         byXpath(
             "//div[(@class='MainButton' and @text='New Project') " +
-                "or (@accessiblename='New Project' and @class='JButton')]"
+                    "or (@accessiblename='New Project' and @class='JButton')]"
         )
     )
 }
@@ -83,7 +83,7 @@ class IdeFrameFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent
 
     fun assignments() = find(
         CommonContainerFixture::class.java,
-        byXpath("//div[@class='TreeView']"),
+        byXpath("//div[@class='ExercisesTreeView']"),
         Duration.ofSeconds(20)
     )
 

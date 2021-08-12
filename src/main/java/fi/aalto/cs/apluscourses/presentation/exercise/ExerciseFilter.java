@@ -10,21 +10,21 @@ public abstract class ExerciseFilter extends TypedFilter<ExerciseViewModel> {
   public static class NonSubmittableFilter extends ExerciseFilter {
     @Override
     public boolean applyInternal(ExerciseViewModel item) {
-      return !item.isSubmittable();
+      return !item.isDummy() && !item.isSubmittable();
     }
   }
 
   public static class CompletedFilter extends ExerciseFilter {
     @Override
     public boolean applyInternal(ExerciseViewModel item) {
-      return item.getModel().isCompleted();
+      return !item.isDummy() && item.getModel().isCompleted();
     }
   }
 
   public static class OptionalFilter extends ExerciseFilter {
     @Override
     public boolean applyInternal(ExerciseViewModel item) {
-      return item.getModel().isOptional();
+      return !item.isDummy() && item.getModel().isOptional();
     }
   }
 }

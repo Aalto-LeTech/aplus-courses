@@ -35,6 +35,10 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
     return getModel().isSubmittable();
   }
 
+  public boolean isDummy() {
+    return getModel().isDummy();
+  }
+
   @Override
   public long getId() {
     return getModel().getId();
@@ -57,7 +61,7 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
    */
   public Status getStatus() {
     Exercise exercise = getModel();
-    if (exercise instanceof DummyExercise) {
+    if (exercise.isDummy()) {
       return Status.DUMMY;
     } else if (exercise instanceof TutorialExercise) {
       return Status.TUTORIAL;

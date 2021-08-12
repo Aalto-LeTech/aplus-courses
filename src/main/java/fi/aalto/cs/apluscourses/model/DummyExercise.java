@@ -35,4 +35,9 @@ public class DummyExercise extends Exercise {
 
     return new DummyExercise(id, name, htmlUrl, submissionInfo, maxPoints, maxSubmissions);
   }
+
+  @Override
+  public boolean isDummy() {
+    return true;
+  }
 }
