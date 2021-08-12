@@ -108,10 +108,9 @@ public abstract class Module extends Component {
   }
 
   /**
-   * Tells whether or not the module is updatable.
+   * Tells whether the module is updatable.
    *
-   * @return True, if the module is loaded and the local version is not the newest one; otherwise
-   * false.
+   * @return True, if the module is loaded and the local version is not the newest one; otherwise false.
    */
   @Override
   public boolean isUpdatable() {
