@@ -4,7 +4,12 @@ import com.intellij.remoterobot.RemoteRobot
 import com.intellij.remoterobot.stepsProcessing.step
 import com.intellij.remoterobot.utils.attempt
 import com.intellij.remoterobot.utils.keyboard
-import fi.aalto.cs.apluscourses.e2e.fixtures.*
+import fi.aalto.cs.apluscourses.e2e.fixtures.customComboBox
+import fi.aalto.cs.apluscourses.e2e.fixtures.dialog
+import fi.aalto.cs.apluscourses.e2e.fixtures.heavyWeightWindow
+import fi.aalto.cs.apluscourses.e2e.fixtures.ideFrame
+import fi.aalto.cs.apluscourses.e2e.fixtures.languageList
+import fi.aalto.cs.apluscourses.e2e.fixtures.welcomeFrame
 import java.time.Duration
 
 class CommonSteps(val remoteRobot: RemoteRobot) {
