@@ -55,7 +55,7 @@ class WelcomeFrameFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteCompo
     fun newProjectButton() = button(
         byXpath(
             "//div[(@class='MainButton' and @text='New Project') " +
-                    "or (@accessiblename='New Project' and @class='JButton')]"
+                "or (@accessiblename='New Project' and @class='JButton')]"
         )
     )
 }
