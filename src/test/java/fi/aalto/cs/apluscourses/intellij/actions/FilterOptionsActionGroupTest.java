@@ -17,9 +17,7 @@ import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.filter.Option;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
-import java.util.Collections;
 import java.util.Optional;
-
 import org.junit.Before;
 import org.junit.Test;
 

@@ -41,26 +41,26 @@ public class PluginSettings implements MainViewModelProvider, DefaultGroupIdSett
   PluginSettings(@NotNull PropertiesManager propertiesManager) {
     applicationPropertiesManager = propertiesManager;
     exerciseFilterOptions = new Options(
-      new IntelliJFilterOption(applicationPropertiesManager,
-          LocalIdeSettingsNames.A_PLUS_SHOW_NON_SUBMITTABLE,
-          getText("presentation.exerciseFilterOptions.nonSubmittable"),
-          null,
-          new ExerciseFilter.NonSubmittableFilter()),
-      new IntelliJFilterOption(applicationPropertiesManager,
-          LocalIdeSettingsNames.A_PLUS_SHOW_COMPLETED,
-          getText("presentation.exerciseFilterOptions.Completed"),
-          null,
-          new ExerciseFilter.CompletedFilter()),
-      new IntelliJFilterOption(applicationPropertiesManager,
-          LocalIdeSettingsNames.A_PLUS_SHOW_OPTIONAL,
-          getText("presentation.exerciseFilterOptions.Optional"),
-          null,
-          new ExerciseFilter.OptionalFilter()),
-      new IntelliJFilterOption(applicationPropertiesManager,
-          LocalIdeSettingsNames.A_PLUS_SHOW_CLOSED,
-          getText("presentation.exerciseGroupFilterOptions.Closed"),
-          null,
-          new ExerciseGroupFilter.ClosedFilter()));
+        new IntelliJFilterOption(applicationPropertiesManager,
+            LocalIdeSettingsNames.A_PLUS_SHOW_NON_SUBMITTABLE,
+            getText("presentation.exerciseFilterOptions.nonSubmittable"),
+            null,
+            new ExerciseFilter.NonSubmittableFilter()),
+        new IntelliJFilterOption(applicationPropertiesManager,
+            LocalIdeSettingsNames.A_PLUS_SHOW_COMPLETED,
+            getText("presentation.exerciseFilterOptions.Completed"),
+            null,
+            new ExerciseFilter.CompletedFilter()),
+        new IntelliJFilterOption(applicationPropertiesManager,
+            LocalIdeSettingsNames.A_PLUS_SHOW_OPTIONAL,
+            getText("presentation.exerciseFilterOptions.Optional"),
+            null,
+            new ExerciseFilter.OptionalFilter()),
+        new IntelliJFilterOption(applicationPropertiesManager,
+            LocalIdeSettingsNames.A_PLUS_SHOW_CLOSED,
+            getText("presentation.exerciseGroupFilterOptions.Closed"),
+            null,
+            new ExerciseGroupFilter.ClosedFilter()));
   }
 
   public enum LocalIdeSettingsNames {
@@ -312,10 +312,10 @@ public class PluginSettings implements MainViewModelProvider, DefaultGroupIdSett
     /**
      * Sets property to the given value, or unsets it if the value equals default value.
      *
-     * @param key Name of the property
-     * @param value Value
+     * @param key          Name of the property
+     * @param value        Value
      * @param defaultValue Default value
-     * @param <T> Type of the value
+     * @param <T>          Type of the value
      */
     default <T> void setValue(@NotNull String key, @Nullable T value, @Nullable T defaultValue) {
       if (Objects.equals(value, defaultValue)) {

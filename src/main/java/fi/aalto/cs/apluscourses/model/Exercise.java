@@ -188,4 +188,12 @@ public class Exercise implements Browsable {
   public boolean equals(Object obj) {
     return obj instanceof Exercise && ((Exercise) obj).getId() == getId();
   }
+
+  @Override
+  public String toString() {
+    return "Exercise{"
+        + "id=" + id
+        + ", name='" + name + '\''
+        + '}';
+  }
 }

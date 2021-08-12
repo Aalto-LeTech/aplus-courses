@@ -4,11 +4,7 @@ import com.intellij.remoterobot.RemoteRobot
 import com.intellij.remoterobot.stepsProcessing.step
 import com.intellij.remoterobot.utils.attempt
 import com.intellij.remoterobot.utils.keyboard
-import fi.aalto.cs.apluscourses.e2e.fixtures.customComboBox
-import fi.aalto.cs.apluscourses.e2e.fixtures.dialog
-import fi.aalto.cs.apluscourses.e2e.fixtures.heavyWeightWindow
-import fi.aalto.cs.apluscourses.e2e.fixtures.ideFrame
-import fi.aalto.cs.apluscourses.e2e.fixtures.welcomeFrame
+import fi.aalto.cs.apluscourses.e2e.fixtures.*
 import java.time.Duration
 
 class CommonSteps(val remoteRobot: RemoteRobot) {
@@ -52,7 +48,7 @@ class CommonSteps(val remoteRobot: RemoteRobot) {
         with(remoteRobot) {
             with(dialog("Turn Project Into A+ Project")) {
                 findText("Select language").click()
-                heavyWeightWindow().findText("English").click()
+                languageList().selectItem("English")
                 checkBox("Leave IntelliJ settings unchanged.").setValue(settingsUnchanged)
                 button("OK").click()
             }
@@ -62,10 +58,12 @@ class CommonSteps(val remoteRobot: RemoteRobot) {
     fun setAPlusToken(token: String) {
         with(remoteRobot) {
             with(ideFrame()) {
-                openAPlusMenuItem("Set A+ Token")
-                with(dialog("A+ Token")) {
-                    passwordField().text = token
-                    button("OK").click()
+                attempt(5) {
+                    openAPlusMenuItem("Set A+ Token")
+                    with(dialog("A+ Token")) {
+                        passwordField().text = token
+                        button("OK").click()
+                    }
                 }
             }
         }

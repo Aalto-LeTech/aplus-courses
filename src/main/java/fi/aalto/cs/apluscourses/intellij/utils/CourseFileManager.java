@@ -8,12 +8,14 @@ import fi.aalto.cs.apluscourses.intellij.notifications.MissingDependencyNotifica
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.model.ModuleMetadata;
+import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import fi.aalto.cs.apluscourses.utils.JsonUtil;
 import fi.aalto.cs.apluscourses.utils.Version;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -33,13 +35,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CourseFileManager {
 
-  private static final Logger logger = LoggerFactory.getLogger(CourseFileManager.class);
+  private static final Logger logger = APlusLogger.logger;
 
-  private File courseFile;
+  private final File courseFile;
   private URL courseUrl;
   private String language;
   private Map<String, ModuleMetadata> modulesMetadata;
@@ -335,5 +336,20 @@ public class CourseFileManager {
     }
 
     writeCourseFileWithModulesObject(modulesObject);
+  }
+
+  /**
+   * Deletes the course file.
+   */
+  public void delete() {
+    try {
+      Files.delete(courseFile.toPath());
+    } catch (IOException e) {
+      // Ignore
+    }
+  }
+
+  public boolean courseFileExists() {
+    return courseFile.exists();
   }
 }
