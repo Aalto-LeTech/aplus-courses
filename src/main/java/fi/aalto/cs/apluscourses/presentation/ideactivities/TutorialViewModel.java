@@ -11,12 +11,16 @@ import org.jetbrains.annotations.NotNull;
 
 public class TutorialViewModel {
 
+  @NotNull
   private final TutorialExercise tutorialExercise;
 
+  @NotNull
   private final TutorialDialogs dialogs;
 
+  @NotNull
   private final ActivityFactory activityFactory;
 
+  @NotNull
   private final TaskNotifier taskNotifier;
 
   private final Object lock = new Object();
@@ -129,6 +133,9 @@ public class TutorialViewModel {
     }
   }
 
+  public @NotNull TutorialExercise getExercise() {
+    return tutorialExercise;
+  }
 
   public @NotNull String getTitle() {
     return APlusLocalizationUtil.getEnglishName(tutorialExercise.getName());

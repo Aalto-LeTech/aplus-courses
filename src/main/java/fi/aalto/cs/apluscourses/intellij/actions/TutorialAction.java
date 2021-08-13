@@ -94,7 +94,7 @@ public class TutorialAction extends AnAction {
     if (dialogs.confirmStart(tutorialViewModel)) {
       mainViewModelProvider.getMainViewModel(project).tutorialViewModel.set(tutorialViewModel);
       tutorialViewModel.getTutorial().tutorialCompleted
-          .addListener(mainViewModel, this::onTutorialComplete);
+          .addListener(mainViewModel, (e) -> this.onTutorialComplete(e, project));
       tutorialViewModel.startNextTask();
     }
   }
@@ -150,12 +150,13 @@ public class TutorialAction extends AnAction {
     }
   }
 
-  private void onTutorialComplete(@NotNull MainViewModel mainViewModel) {
+  private void onTutorialComplete(@NotNull MainViewModel mainViewModel,
+                                  @NotNull Project project) {
     TutorialViewModel viewModel = mainViewModel.tutorialViewModel.get();
     if (viewModel != null) {
       viewModel.getTutorial().tutorialCompleted.removeCallback(mainViewModel);
       if (dialogs.finishAndSubmit(viewModel)) {
-        // TODO: submit
+        new SubmitExerciseAction().submitTutorial(project, viewModel);
       }
       mainViewModel.tutorialViewModel.set(null);
       // Update the progress tracker.

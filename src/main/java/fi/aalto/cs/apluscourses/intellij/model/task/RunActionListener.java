@@ -35,7 +35,7 @@ public class RunActionListener extends IdeActionListener implements ExecutionLis
   @Override
   public boolean registerListener() {
     super.registerListener();
-    messageBusConnection.subscribe(ExecutionManager.EXECUTION_TOPIC,this);
+    messageBusConnection.subscribe(ExecutionManager.EXECUTION_TOPIC, this);
     return false;
   }
 
