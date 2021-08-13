@@ -14,7 +14,6 @@ import javax.swing.Icon;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-import javax.swing.border.EmptyBorder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,7 +34,8 @@ public class BalloonPopup extends JPanel implements TransparentComponent, MouseL
 
   private float transparencyCoefficient;
 
-  private static final int POPUP_MARGIN = 20;
+  public static final int BORDER_WIDTH = 6;
+  public static final int POPUP_MARGIN = 20;
 
   /**
    * Creates a popup with the given text. The popup is permanently attached to the specified
@@ -51,7 +51,7 @@ public class BalloonPopup extends JPanel implements TransparentComponent, MouseL
 
     setOpaque(false);
     setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-    setBorder(new EmptyBorder(JBUI.insets(0, 5, 10, 5)));
+    setBorder(new BalloonShadowBorder(BORDER_WIDTH, JBUI.insets(0, 5, 10, 5)));
 
     // introduce a limit to the popup's width (so it doesn't take the entire screen width)
     setMaximumSize(new Dimension(500, 0));
@@ -79,19 +79,19 @@ public class BalloonPopup extends JPanel implements TransparentComponent, MouseL
     return anchorComponent.isShowing();
   }
 
+  @SuppressWarnings("SuspiciousNameCombination")
   @Override
   protected void paintComponent(Graphics g) {
     super.paintComponent(g);
 
     Graphics g2 = g.create();
 
-    var bgColor = getBackground();
-    var newColor = new Color(bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue(),
+    final var bgColor = getBackground();
+    final var newColor = new Color(bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue(),
         (int) (transparencyCoefficient * 255));
 
     g2.setColor(newColor);
-    Rectangle drawBounds = g2.getClipBounds();
-    g2.fillRect(drawBounds.x, drawBounds.y, drawBounds.width, drawBounds.height);
+    g2.fillRect(BORDER_WIDTH, BORDER_WIDTH, getWidth() - BORDER_WIDTH * 2, getHeight() - BORDER_WIDTH * 2);
 
     g2.dispose();
   }
