@@ -16,6 +16,7 @@ import java.awt.event.AWTEventListener;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
+import java.awt.geom.RoundRectangle2D;
 import java.util.HashSet;
 import java.util.Set;
 import javax.swing.JFrame;
@@ -61,7 +62,15 @@ public class OverlayPane extends JPanel implements AWTEventListener {
     for (var c : balloonPopups) {
       // popups are already places in the overlay's coordinate system
       if (c.isVisible()) {
-        var componentRect = new Rectangle(c.getX(), c.getY(), c.getWidth(), c.getHeight());
+        final double borderWidth = BalloonPopup.BORDER_WIDTH * 2.0;
+        final double borderHeight = BalloonPopup.BORDER_WIDTH * 2.0;
+
+        var componentRect = new RoundRectangle2D.Double(
+            c.getX() + (double) BalloonPopup.BORDER_WIDTH,
+            c.getY() + (double) BalloonPopup.BORDER_WIDTH,
+            c.getWidth() - borderWidth, c.getHeight() - borderHeight, 6, 6
+        );
+
         overlayArea.subtract(new Area(componentRect));
       }
     }
