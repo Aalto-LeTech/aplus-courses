@@ -94,7 +94,7 @@ public class TutorialAction extends AnAction {
     if (dialogs.confirmStart(tutorialViewModel)) {
       mainViewModelProvider.getMainViewModel(project).tutorialViewModel.set(tutorialViewModel);
       tutorialViewModel.getTutorial().tutorialCompleted
-          .addListener(mainViewModel, (e) -> this.onTutorialComplete(e, project));
+          .addListener(mainViewModel, e -> this.onTutorialComplete(e, project));
       tutorialViewModel.startNextTask();
     }
   }
