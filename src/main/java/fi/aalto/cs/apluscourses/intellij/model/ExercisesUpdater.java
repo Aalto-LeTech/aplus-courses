@@ -13,6 +13,7 @@ import fi.aalto.cs.apluscourses.model.ExercisesTree;
 import fi.aalto.cs.apluscourses.model.Points;
 import fi.aalto.cs.apluscourses.model.Progress;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
+import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import fi.aalto.cs.apluscourses.utils.Event;
 import fi.aalto.cs.apluscourses.utils.async.RepeatedTask;
 import fi.aalto.cs.apluscourses.utils.cache.CachePreferences;
@@ -21,8 +22,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
 
 public class ExercisesUpdater extends RepeatedTask {
+
+  private static final Logger logger = APlusLogger.logger;
 
   private final CourseProject courseProject;
 
@@ -52,6 +56,7 @@ public class ExercisesUpdater extends RepeatedTask {
 
   @Override
   protected void doTask() {
+    logger.debug("Starting exercises update");
     var course = courseProject.getCourse();
     var dataSource = course.getExerciseDataSource();
     var authentication = courseProject.getAuthentication();
@@ -60,6 +65,7 @@ public class ExercisesUpdater extends RepeatedTask {
         courseProject.setExerciseTree(new ExercisesTree());
         eventToTrigger.trigger();
       }
+      logger.warn("Not authenticated");
       return;
     }
     var progressViewModel =
@@ -74,8 +80,10 @@ public class ExercisesUpdater extends RepeatedTask {
       }
       var exerciseGroups
           = dataSource.getExerciseGroups(course, authentication);
+      logger.info("Exercise groups count: {}", exerciseGroups.size());
       progress.increment();
       var selectedStudent = courseProject.getSelectedStudent();
+      logger.info("Selected student: {}", selectedStudent);
       var exerciseTree = new ExercisesTree(exerciseGroups, selectedStudent);
       if (courseProject.getExerciseTree() == null) {
         courseProject.setExerciseTree(exerciseTree);
@@ -99,6 +107,7 @@ public class ExercisesUpdater extends RepeatedTask {
       }
       courseProject.setExerciseTree(exerciseTree);
       eventToTrigger.trigger();
+      logger.debug("Exercises update done");
     } catch (IOException e) {
       var observable = PluginSettings
           .getInstance()

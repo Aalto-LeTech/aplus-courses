@@ -22,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class CourseProjectView extends OurDialogWrapper {
   private JPanel basePanel;
-  private CourseProjectViewModel viewModel;
+  private final CourseProjectViewModel viewModel;
 
   @GuiObject
   private TemplateLabel infoText;
@@ -82,7 +82,7 @@ public class CourseProjectView extends OurDialogWrapper {
 
   @Override
   protected Action @NotNull [] createActions() {
-    return new Action[] { getOKAction(), getCancelAction() };
+    return new Action[] {getOKAction(), getCancelAction()};
   }
 
   @SuppressWarnings("checkstyle:AbbreviationAsWordInName")

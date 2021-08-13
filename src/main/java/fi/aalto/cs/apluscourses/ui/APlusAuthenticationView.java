@@ -10,6 +10,7 @@ import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.ui.components.labels.LinkLabel;
 import fi.aalto.cs.apluscourses.model.UnexpectedResponseException;
 import fi.aalto.cs.apluscourses.presentation.AuthenticationViewModel;
+import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import java.io.IOException;
 import java.util.Arrays;
 import javax.swing.Action;
@@ -19,8 +20,11 @@ import javax.swing.JPasswordField;
 import javax.swing.SwingConstants;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class APlusAuthenticationView extends DialogWrapper implements Dialog {
+
+  private static final Logger logger = APlusLogger.logger;
 
   @GuiObject
   protected JPasswordField inputField;
@@ -49,7 +53,7 @@ public class APlusAuthenticationView extends DialogWrapper implements Dialog {
   @NotNull
   @Override
   protected Action @NotNull [] createActions() {
-    return new Action[]{getOKAction(), getCancelAction()};
+    return new Action[] {getOKAction(), getCancelAction()};
   }
 
   @Nullable
@@ -61,6 +65,7 @@ public class APlusAuthenticationView extends DialogWrapper implements Dialog {
   @Nullable
   @Override
   protected ValidationInfo doValidate() {
+    logger.debug("Validating token");
     if (inputField.getPassword().length == 0) {
       return new ValidationInfo(getText("ui.authenticationView.noEmptyToken"),
           inputField).withOKEnabled();
@@ -72,9 +77,11 @@ public class APlusAuthenticationView extends DialogWrapper implements Dialog {
       authenticationViewModel.build();
       authenticationViewModel.tryGetUser(authenticationViewModel.getAuthentication());
     } catch (UnexpectedResponseException e) {
+      logger.error("Invalid token while authenticating", e);
       return new ValidationInfo(getText("ui.authenticationView.invalidToken"),
           inputField).withOKEnabled();
     } catch (IOException e) {
+      logger.error("Connection error while authenticating", e);
       return new ValidationInfo(getText("ui.authenticationView.connectionError"),
           inputField).withOKEnabled();
     }
