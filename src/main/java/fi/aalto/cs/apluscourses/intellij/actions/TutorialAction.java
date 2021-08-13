@@ -142,11 +142,11 @@ public class TutorialAction extends AnAction {
     }
 
     @Override
-    public void end(@NotNull TutorialViewModel tutorialViewModel) {
-      JOptionPane.showMessageDialog(null,
+    public boolean finishAndSubmit(@NotNull TutorialViewModel tutorialViewModel) {
+      return JOptionPane.showConfirmDialog(null,
           getText("ui.tutorial.TutorialAction.end"),
           tutorialViewModel.getTitle(),
-          JOptionPane.INFORMATION_MESSAGE);
+          JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
     }
   }
 
@@ -154,10 +154,12 @@ public class TutorialAction extends AnAction {
     TutorialViewModel viewModel = mainViewModel.tutorialViewModel.get();
     if (viewModel != null) {
       viewModel.getTutorial().tutorialCompleted.removeCallback(mainViewModel);
+      if (dialogs.finishAndSubmit(viewModel)) {
+        // TODO: submit
+      }
       mainViewModel.tutorialViewModel.set(null);
       // Update the progress tracker.
       Optional.ofNullable(ComponentDatabase.getNavBarToolBar()).ifPresent(tb -> tb.updateActionsImmediately(true));
-      dialogs.end(viewModel);
     }
   }
 }
