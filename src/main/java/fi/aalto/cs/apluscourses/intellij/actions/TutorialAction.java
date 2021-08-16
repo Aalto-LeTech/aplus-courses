@@ -155,7 +155,7 @@ public class TutorialAction extends AnAction {
     TutorialViewModel viewModel = mainViewModel.tutorialViewModel.get();
     if (viewModel != null) {
       viewModel.getTutorial().tutorialCompleted.removeCallback(mainViewModel);
-      if (dialogs.finishAndSubmit(viewModel)) {
+      if (viewModel.isCompleted() && dialogs.finishAndSubmit(viewModel)) {
         new SubmitExerciseAction().submitTutorial(project, viewModel);
       }
       mainViewModel.tutorialViewModel.set(null);
