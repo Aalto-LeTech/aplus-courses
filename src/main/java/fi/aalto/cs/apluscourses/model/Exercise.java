@@ -35,12 +35,13 @@ public class Exercise implements Browsable {
 
   /**
    * Construct an exercise instance with the given parameters.
-   * @param id                The ID of the exercise.
-   * @param name              The name of the exercise.
-   * @param htmlUrl           A URL to the HTML page of the exercise.
-   * @param maxPoints         The maximum points available from this exercise.
-   * @param maxSubmissions    The maximum number of submissions allowed for this exercise.
-   * @param bestSubmissionId  The ID of the best submission for the exercise if one exists.
+   *
+   * @param id               The ID of the exercise.
+   * @param name             The name of the exercise.
+   * @param htmlUrl          A URL to the HTML page of the exercise.
+   * @param maxPoints        The maximum points available from this exercise.
+   * @param maxSubmissions   The maximum number of submissions allowed for this exercise.
+   * @param bestSubmissionId The ID of the best submission for the exercise if one exists.
    */
   public Exercise(long id,
                   @NotNull String name,
@@ -83,7 +84,7 @@ public class Exercise implements Browsable {
 
     var tutorial = tutorials.get(id);
     var optionalBestSubmission = bestSubmissionId == null ? OptionalLong.empty()
-            : OptionalLong.of(bestSubmissionId);
+        : OptionalLong.of(bestSubmissionId);
     if (tutorial == null) {
       return new Exercise(id, name, htmlUrl, submissionInfo, maxPoints, maxSubmissions, optionalBestSubmission);
     } else {
@@ -137,11 +138,13 @@ public class Exercise implements Browsable {
    */
   @Nullable
   public SubmissionResult getBestSubmission() {
-    return submissionResults
-        .stream()
-        .filter(submission -> OptionalLong.of(submission.getId()).equals(bestSubmissionId))
-        .findFirst()
-        .orElse(null);
+    synchronized (submissionResults) {
+      return submissionResults
+          .stream()
+          .filter(submission -> OptionalLong.of(submission.getId()).equals(bestSubmissionId))
+          .findFirst()
+          .orElse(null);
+    }
   }
 
   public boolean isSubmittable() {
@@ -150,6 +153,7 @@ public class Exercise implements Browsable {
 
   /**
    * Returns true if assignment is completed.
+   *
    * @return True if userPoints are the same as maxPoints, otherwise False
    */
   public boolean isCompleted() {
@@ -166,13 +170,19 @@ public class Exercise implements Browsable {
    * Returns true if any of the submissions of this exercise has status WAITING.
    */
   public boolean isInGrading() {
-    return submissionResults
-        .stream()
-        .anyMatch(submission -> submission.getStatus() == SubmissionResult.Status.WAITING);
+    synchronized (submissionResults) {
+      return submissionResults
+          .stream()
+          .anyMatch(submission -> submission.getStatus() == SubmissionResult.Status.WAITING);
+    }
   }
 
   public boolean isLate() {
     return getBestSubmission() != null && getBestSubmission().getLatePenalty() != 0.0;
+  }
+
+  public boolean isDummy() {
+    return false;
   }
 
   @Override

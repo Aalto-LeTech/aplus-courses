@@ -38,7 +38,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
@@ -310,11 +309,6 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
     @Override
     public Group parseGroup(@NotNull JSONObject object) {
       return Group.fromJsonObject(object);
-    }
-
-    @Override
-    public List<ExerciseGroup> parseExerciseGroups(@NotNull JSONArray array) {
-      return ExerciseGroup.fromJsonArray(array);
     }
 
     @Override

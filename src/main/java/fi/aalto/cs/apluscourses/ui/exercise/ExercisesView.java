@@ -10,15 +10,16 @@ import com.intellij.openapi.application.ModalityState;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.ScrollPaneFactory;
 import com.intellij.ui.TreeSpeedSearch;
+import com.intellij.util.ui.tree.TreeUtil;
 import fi.aalto.cs.apluscourses.intellij.actions.APlusAuthenticationAction;
 import fi.aalto.cs.apluscourses.intellij.actions.ActionUtil;
 import fi.aalto.cs.apluscourses.intellij.actions.OpenItemAction;
-import fi.aalto.cs.apluscourses.model.Student;
+import fi.aalto.cs.apluscourses.model.ExercisesTree;
+import fi.aalto.cs.apluscourses.presentation.base.BaseTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.Searchable;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.ui.GuiObject;
 import fi.aalto.cs.apluscourses.ui.base.TreeView;
-import fi.aalto.cs.apluscourses.ui.utils.Bindable;
 import java.awt.CardLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -41,7 +42,7 @@ public class ExercisesView {
   @GuiObject
   private JLabel title;
   private JPanel cardPanel;
-  private CardLayout cl;
+  private final CardLayout cl;
   private final NoTokenMouseAdapter mouseAdapter = new NoTokenMouseAdapter();
 
   /**
@@ -72,29 +73,29 @@ public class ExercisesView {
    */
   public void viewModelChanged(@Nullable ExercisesTreeViewModel viewModel) {
     ApplicationManager.getApplication().invokeLater(() -> {
-      exerciseGroupsTree.setViewModel(viewModel);
-      cl.show(cardPanel, viewModel == null || viewModel.isEmptyTextVisible() ? "LabelCard" :
+          exerciseGroupsTree.setViewModel(viewModel);
+          cl.show(cardPanel, viewModel == null || viewModel.isEmptyTextVisible() ? "LabelCard" :
               "TreeCard");
-      if (viewModel == null) {
-        return;
-      }
+          if (viewModel == null) {
+            return;
+          }
 
-      if (viewModel.isProjectReady()) {
-        emptyText.setText(getText("ui.module.ModuleListView.turnIntoAPlusProject"));
-        if (viewModel.isAuthenticated()) {
-          exerciseGroupsTree.getEmptyText().setText(
+          if (viewModel.isProjectReady()) {
+            emptyText.setText(getText("ui.module.ModuleListView.turnIntoAPlusProject"));
+            if (viewModel.isAuthenticated()) {
+              exerciseGroupsTree.getEmptyText().setText(
                   getText("ui.exercise.ExercisesView.allAssignmentsFiltered"));
-        } else {
-          exerciseGroupsTree.getEmptyText().setText(
+            } else {
+              exerciseGroupsTree.getEmptyText().setText(
                   getText("ui.exercise.ExercisesView.setToken"));
-          exerciseGroupsTree.getEmptyText().appendLine(
+              exerciseGroupsTree.getEmptyText().appendLine(
                   getText("ui.exercise.ExercisesView.setTokenDirections"));
-        }
-        title.setText(viewModel.getName() == null ? getText("ui.toolWindow.subTab.exercises.name")
-            : getAndReplaceText("ui.toolWindow.subTab.exercises.nameStudent", viewModel.getName()));
-      }
+            }
+            title.setText(viewModel.getName() == null ? getText("ui.toolWindow.subTab.exercises.name")
+                : getAndReplaceText("ui.toolWindow.subTab.exercises.nameStudent", viewModel.getName()));
+          }
 
-    }, ModalityState.any()
+        }, ModalityState.any()
     );
   }
 
@@ -102,7 +103,7 @@ public class ExercisesView {
   private void createUIComponents() {
     pane = ScrollPaneFactory.createScrollPane(basePanel);
     title = new JLabel();
-    exerciseGroupsTree = new TreeView();
+    exerciseGroupsTree = new ExercisesTreeView();
     exerciseGroupsTree.setCellRenderer(new ExercisesTreeRenderer());
     exerciseGroupsTree.addNodeAppliedListener(
         ActionUtil.createOnEventLauncher(OpenItemAction.ACTION_ID, exerciseGroupsTree));
@@ -126,10 +127,28 @@ public class ExercisesView {
     public void mouseClicked(MouseEvent e) {
       if (exerciseGroupsTree.isEmpty()
           && exerciseGroupsTree.getEmptyText().getText().contains(
-              getText("ui.exercise.ExercisesView.setToken"))) {
+          getText("ui.exercise.ExercisesView.setToken"))) {
         DataContext context = DataManager.getInstance().getDataContext(e.getComponent());
         ActionUtil.launch(APlusAuthenticationAction.ACTION_ID, context);
       }
+    }
+  }
+
+  private static class ExercisesTreeView extends TreeView {
+    @Override
+    public void setViewModel(@Nullable BaseTreeViewModel<?> viewModel) {
+      var oldViewModel = getViewModel();
+      if (viewModel != null && oldViewModel != null) {
+        var oldModel = oldViewModel.getModel();
+        var newModel = viewModel.getModel();
+        if (oldModel instanceof ExercisesTree
+            && newModel instanceof ExercisesTree
+            && ((ExercisesTree) oldModel).getSelectedStudent()
+            != ((ExercisesTree) newModel).getSelectedStudent()) {
+          TreeUtil.collapseAll(this, 1);
+        }
+      }
+      super.setViewModel(viewModel);
     }
   }
 

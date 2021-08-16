@@ -20,6 +20,8 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
   @NotNull
   private static Icon statusToIcon(@NotNull ExerciseViewModel.Status exerciseStatus) {
     switch (exerciseStatus) {
+      case DUMMY:
+        return PluginIcons.A_PLUS_DUMMY;
       case OPTIONAL_PRACTICE:
         return PluginIcons.A_PLUS_OPTIONAL_PRACTICE;
       case NO_SUBMISSIONS:

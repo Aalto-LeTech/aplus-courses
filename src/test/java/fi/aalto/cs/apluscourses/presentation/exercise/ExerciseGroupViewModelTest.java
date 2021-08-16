@@ -21,10 +21,10 @@ public class ExerciseGroupViewModelTest {
 
   @Test
   public void testGetPresentableName() {
-    var group1 = new ExerciseGroup(1, "|fi:Ryhma|en:Group|", "", true);
+    var group1 = new ExerciseGroup(1, "|fi:Ryhma|en:Group|", "", true, List.of());
     ExerciseGroupViewModel viewModel1 = new ExerciseGroupViewModel(group1);
 
-    var group2 = new ExerciseGroup(2, "group name", "", true);
+    var group2 = new ExerciseGroup(2, "group name", "", true, List.of());
     ExerciseGroupViewModel viewModel2 = new ExerciseGroupViewModel(group2);
 
     Assert.assertEquals("getPresentableName returns the English name",
@@ -48,7 +48,7 @@ public class ExerciseGroupViewModelTest {
         "http://localhost:1000/w12/ch01/w12_ch01_1/", info, 0, 0, OptionalLong.empty());
 
 
-    ExerciseGroup group = new ExerciseGroup(5, "", "", true);
+    ExerciseGroup group = new ExerciseGroup(5, "", "", true, List.of());
     List.of(third, fifth, first, fourth, second).forEach(group::addExercise);
     ExerciseGroupViewModel groupViewModel = new ExerciseGroupViewModel(group);
     List<ExerciseViewModel> exerciseViewModels = groupViewModel.getChildren().stream()
@@ -75,7 +75,7 @@ public class ExerciseGroupViewModelTest {
         "http://localhost:1000/studio_2/k2021dev/k15A/osa01/k15B_osa01_1/", info, 0, 0, OptionalLong.empty());
 
 
-    ExerciseGroup group = new ExerciseGroup(5, "", "", true);
+    ExerciseGroup group = new ExerciseGroup(5, "", "", true, List.of());
     List.of(third, second, first).forEach(group::addExercise);
     ExerciseGroupViewModel groupViewModel = new ExerciseGroupViewModel(group);
     List<ExerciseViewModel> exerciseViewModels = groupViewModel.getChildren().stream()
@@ -97,7 +97,7 @@ public class ExerciseGroupViewModelTest {
     Exercise exercise = new Exercise(424, "Assignment 3",
         "http://localhost:1000/studio_2/k2021dev/k15A/osa01/k15A_osa01_1/", info, 0, 0, OptionalLong.empty());
 
-    ExerciseGroup group = new ExerciseGroup(5, "", "", true);
+    ExerciseGroup group = new ExerciseGroup(5, "", "", true, List.of());
     group.addExercise(exercise);
     ExerciseGroupViewModel groupViewModel = new ExerciseGroupViewModel(group);
 
@@ -105,7 +105,7 @@ public class ExerciseGroupViewModelTest {
     groupViewModel.applyFilter(filter);
     assertTrue("Week with children is visible", groupViewModel.isVisible());
 
-    ExerciseGroup emptyGroup = new ExerciseGroup(6, "", "", true);
+    ExerciseGroup emptyGroup = new ExerciseGroup(6, "", "", true, List.of());
     ExerciseGroupViewModel emptyGroupViewModel = new ExerciseGroupViewModel(emptyGroup);
 
     emptyGroupViewModel.applyFilter(filter);

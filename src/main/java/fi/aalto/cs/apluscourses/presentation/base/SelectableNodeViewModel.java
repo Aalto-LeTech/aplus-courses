@@ -67,6 +67,13 @@ public abstract class SelectableNodeViewModel<T> extends BaseViewModel<T> implem
     this.selected = selected;
   }
 
+  public void willExpand() {
+    // may be overridden by subclasses
+  }
+
+  public void willCollapse() {
+    // may be overridden by subclasses
+  }
 
   @Override
   @NotNull
