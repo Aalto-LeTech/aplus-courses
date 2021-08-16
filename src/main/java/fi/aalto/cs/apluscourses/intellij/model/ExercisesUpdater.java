@@ -13,17 +13,20 @@ import fi.aalto.cs.apluscourses.model.ExercisesTree;
 import fi.aalto.cs.apluscourses.model.Points;
 import fi.aalto.cs.apluscourses.model.Progress;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
+import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import fi.aalto.cs.apluscourses.utils.Event;
 import fi.aalto.cs.apluscourses.utils.async.RepeatedTask;
+import fi.aalto.cs.apluscourses.utils.cache.CachePreferences;
 import java.io.IOException;
-import java.time.OffsetDateTime;
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
 
 public class ExercisesUpdater extends RepeatedTask {
+
+  private static final Logger logger = APlusLogger.logger;
 
   private final CourseProject courseProject;
 
@@ -53,6 +56,7 @@ public class ExercisesUpdater extends RepeatedTask {
 
   @Override
   protected void doTask() {
+    logger.debug("Starting exercises update");
     var course = courseProject.getCourse();
     var dataSource = course.getExerciseDataSource();
     var authentication = courseProject.getAuthentication();
@@ -61,6 +65,7 @@ public class ExercisesUpdater extends RepeatedTask {
         courseProject.setExerciseTree(new ExercisesTree());
         eventToTrigger.trigger();
       }
+      logger.warn("Not authenticated");
       return;
     }
     var progressViewModel =
@@ -75,8 +80,10 @@ public class ExercisesUpdater extends RepeatedTask {
       }
       var exerciseGroups
           = dataSource.getExerciseGroups(course, authentication);
+      logger.info("Exercise groups count: {}", exerciseGroups.size());
       progress.increment();
       var selectedStudent = courseProject.getSelectedStudent();
+      logger.info("Selected student: {}", selectedStudent);
       var exerciseTree = new ExercisesTree(exerciseGroups, selectedStudent);
       if (courseProject.getExerciseTree() == null) {
         courseProject.setExerciseTree(exerciseTree);
@@ -100,6 +107,7 @@ public class ExercisesUpdater extends RepeatedTask {
       }
       courseProject.setExerciseTree(exerciseTree);
       eventToTrigger.trigger();
+      logger.debug("Exercises update done");
     } catch (IOException e) {
       var observable = PluginSettings
           .getInstance()
@@ -128,7 +136,7 @@ public class ExercisesUpdater extends RepeatedTask {
           return;
         }
         var exercise = dataSource.getExercise(exerciseId, points, course.getTutorials(),
-            authentication, ZonedDateTime.now().minusDays(7));
+            authentication, CachePreferences.GET_MAX_ONE_WEEK_OLD);
         exerciseGroup.addExercise(exercise);
         progress.increment();
       }
@@ -152,11 +160,11 @@ public class ExercisesUpdater extends RepeatedTask {
         return;
       }
       // Ignore cache for submissions that had the status WAITING
-      var cacheTime = submissionsInGrading.remove(id)
-          ? OffsetDateTime.MAX.toZonedDateTime()
-          : ZonedDateTime.now().minusDays(7);
+      var cachePreference = submissionsInGrading.remove(id)
+          ? CachePreferences.GET_NEW_AND_KEEP
+          : CachePreferences.GET_MAX_ONE_WEEK_OLD;
       var submission = dataSource.getSubmissionResult(
-          baseUrl + id + "/", exercise, authentication, cacheTime);
+          baseUrl + id + "/", exercise, authentication, cachePreference);
       if (submission.getStatus() == SubmissionResult.Status.WAITING) {
         submissionsInGrading.add(id);
       }

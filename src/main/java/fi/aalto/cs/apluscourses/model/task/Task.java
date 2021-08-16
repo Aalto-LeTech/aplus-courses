@@ -6,13 +6,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class Task {
+public class Task implements CancelHandler {
   public final @NotNull Event taskCompleted = new Event();
+  public final @NotNull Event taskCanceled = new Event();
 
   private final @NotNull String instruction;
   private final @NotNull String info;
+  private final String @NotNull [] assertClosed;
   private final @NotNull String component;
   private final @NotNull Arguments componentArguments;
   private final @NotNull String action;
@@ -28,11 +31,13 @@ public class Task {
    */
   public Task(@NotNull String instruction,
               @NotNull String info,
+              String @NotNull [] assertClosed,
               @NotNull String component,
               @NotNull Arguments componentArguments,
               @NotNull String action,
               @NotNull Arguments actionArguments) {
     this.instruction = instruction;
+    this.assertClosed = assertClosed;
     this.action = action;
     this.actionArguments = actionArguments;
     this.info = info;
@@ -69,7 +74,9 @@ public class Task {
     if (presenter != null || listener != null) {
       throw new IllegalStateException();
     }
-    presenter = activityFactory.createPresenter(component, instruction, info, componentArguments);
+    presenter = activityFactory.createPresenter(component, instruction, info, componentArguments,
+        actionArguments, assertClosed);
+    presenter.setCancelHandler(this);
     listener = activityFactory.createListener(action, actionArguments, taskCompleted::trigger);
     if (listener.registerListener()) {
       return true;
@@ -88,6 +95,7 @@ public class Task {
     return new Task(
         jsonObject.getString("instruction"),
         jsonObject.getString("info"),
+        parseAssert(jsonObject.optJSONArray("assertClosed")),
         jsonObject.getString("component"),
         parseArguments(jsonObject.optJSONObject("componentArguments")),
         jsonObject.getString("action"),
@@ -109,8 +117,20 @@ public class Task {
     this.alreadyComplete.set(alreadyComplete);
   }
 
+  @NotNull
   public String getInstruction() {
     return instruction;
+  }
+
+  @Override
+  public void onCancel() {
+    taskCanceled.trigger();
+  }
+
+  protected static String @NotNull [] parseAssert(@Nullable JSONArray jsonObject) {
+    return jsonObject == null ? new String[0]
+        : JsonUtil.parseArray(jsonObject, JSONArray::getString,
+            Function.identity(), String[]::new);
   }
 }
 

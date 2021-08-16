@@ -62,7 +62,6 @@ class MainTest {
                         "O1Library not found in project view tree"
                     ) { hasText("O1Library") }
                 }
-                aPlusSideBarButton().click()
                 with(modules()) {
                     waitFor(
                         Duration.ofSeconds(60),
@@ -119,7 +118,7 @@ class MainTest {
         step("Make sure the assignments have been loaded") {
             with(ideFrame()) {
                 waitFor(
-                    Duration.ofSeconds(180),
+                    Duration.ofSeconds(900),
                     Duration.ofSeconds(5)
                 ) { !hasText("Refreshing assignments...") }
             }

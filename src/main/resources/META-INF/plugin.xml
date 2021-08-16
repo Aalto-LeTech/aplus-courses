@@ -41,6 +41,10 @@
                     class="fi.aalto.cs.apluscourses.intellij.actions.CourseProjectAction"
                     text="Turn Project Into A+ Project"
                     description="Turn the currently open project into an A+ course project." />
+            <action id="fi.aalto.cs.apluscourses.intellij.actions.ResetProjectAction"
+                    class="fi.aalto.cs.apluscourses.intellij.actions.ResetProjectAction"
+                    text="Reset A+ Project"
+                    description="Resets the open A+ course project." />
             <action id="fi.aalto.cs.apluscourses.intellij.actions.APlusAuthenticationAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.APlusAuthenticationAction"
                     text="Set A+ Token"
@@ -128,8 +132,8 @@
                text="A+ Navbar"
                description="A+ actions for navbar">
             <add-to-group group-id="NavBarToolBar" anchor="first"/>
-            <action id="fi.aalto.cs.apluscourses.intellij.actions.ProgressAction"
-                    class="fi.aalto.cs.apluscourses.intellij.actions.ProgressAction"
+            <action id="fi.aalto.cs.apluscourses.intellij.actions.TutorialProgressAction"
+                    class="fi.aalto.cs.apluscourses.intellij.actions.TutorialProgressAction"
                     text="Progress"
                     icon="PluginIcons.A_PLUS_INFO"/>
         </group>

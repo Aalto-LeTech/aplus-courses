@@ -6,6 +6,7 @@ import fi.aalto.cs.apluscourses.model.task.ActivityFactory;
 import fi.aalto.cs.apluscourses.model.task.Arguments;
 import fi.aalto.cs.apluscourses.model.task.ComponentPresenter;
 import fi.aalto.cs.apluscourses.model.task.ListenerCallback;
+import fi.aalto.cs.apluscourses.ui.ideactivities.ComponentDatabase;
 import org.jetbrains.annotations.NotNull;
 
 public class IntelliJActivityFactory implements ActivityFactory {
@@ -30,6 +31,8 @@ public class IntelliJActivityFactory implements ActivityFactory {
         return ClassDeclarationListener.create(callback, project, arguments);
       case "functionDefinition":
         return FunctionDefinitionListener.create(callback, project, arguments);
+      case "errors":
+        return ErrorListener.create(callback, project, arguments);
       default:
         throw new IllegalArgumentException("Unsupported action: " + action);
     }
@@ -39,12 +42,29 @@ public class IntelliJActivityFactory implements ActivityFactory {
   public @NotNull ComponentPresenter createPresenter(@NotNull String component,
                                                      @NotNull String instruction,
                                                      @NotNull String info,
-                                                     @NotNull Arguments arguments) {
+                                                     @NotNull Arguments componentArguments,
+                                                     @NotNull Arguments actionArguments,
+                                                     String @NotNull [] assertClosed) {
+    for (var closedComponent : assertClosed) {
+      switch (closedComponent) {
+        case "projectTree":
+          ComponentDatabase.hideToolWindow(ComponentDatabase.PROJECT_TOOL_WINDOW, project);
+          break;
+        case "aPlusCourses":
+          ComponentDatabase.hideToolWindow(ComponentDatabase.APLUS_TOOL_WINDOW, project);
+          break;
+        case "editor":
+          ComponentDatabase.closeFile(actionArguments, project);
+          break;
+        default:
+          throw new IllegalArgumentException("Unsupported component: " + component);
+      }
+    }
     switch (component) {
       case "projectTree":
-        return new ProjectTreePresenter(instruction, info);
+        return new ProjectTreePresenter(instruction, info, project);
       case "editor":
-        return new EditorPresenter(instruction, info);
+        return EditorPresenter.create(instruction, info, project, actionArguments);
       default:
         throw new IllegalArgumentException("Unsupported component: " + component);
     }

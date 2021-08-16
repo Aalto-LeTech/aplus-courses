@@ -1,9 +1,12 @@
-import logging, os, smtplib
-import config as MailConfig
+import logging
+import os
+import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from threading import Event
-from reportmgr import REPORTS_PATH, ARCHIVE_PATH
+
+import config as MailConfig
+from reportmgr import REPORTS_PATH, ARCHIVE_PATH, create_report_directories
 
 exit_event = Event()
 
@@ -49,6 +52,8 @@ def signal_exit():
 
 def report_submitter_thread():
     logging.info("Starting the report submitter thread")
+    create_report_directories()
+
     while True:
         _send_pending_reports()
         if exit_event.wait(15 * 60): # sleep for 15 minutes

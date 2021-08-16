@@ -5,9 +5,8 @@ import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.FeedbackAvailableNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
+import fi.aalto.cs.apluscourses.utils.cache.CachePreferences;
 import java.io.IOException;
-import java.time.OffsetDateTime;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -128,7 +127,7 @@ public class SubmissionStatusUpdater {
     SubmissionResult submissionResult;
     try {
       submissionResult = dataSource.getSubmissionResult(
-          submissionUrl, exercise, authentication, OffsetDateTime.MAX.toZonedDateTime());
+          submissionUrl, exercise, authentication, CachePreferences.GET_NEW_AND_KEEP);
       var status = submissionResult.getStatus();
       if (status != SubmissionResult.Status.WAITING && status != SubmissionResult.Status.UNKNOWN) {
         notifier.notifyAndHide(

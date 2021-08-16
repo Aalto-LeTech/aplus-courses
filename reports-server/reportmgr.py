@@ -1,4 +1,6 @@
-import json, logging, os
+import json
+import logging
+import os
 from datetime import datetime
 from pytz import timezone
 
@@ -12,13 +14,16 @@ def _get_string_safe(report_data, key):
 
     return entry
 
-def save_report(client_address, report_string):
+def create_report_directories():
     # create reports directories if necessary
     if not os.path.exists(REPORTS_PATH):
         os.mkdir(REPORTS_PATH)
 
     if not os.path.exists(os.path.join(REPORTS_PATH, ARCHIVE_PATH)):
         os.mkdir(os.path.join(REPORTS_PATH, ARCHIVE_PATH))
+
+def save_report(client_address, report_string):
+    create_report_directories()
 
     report_data = json.loads(report_string)
     active_plugins = report_data["loadedPlugins"]
