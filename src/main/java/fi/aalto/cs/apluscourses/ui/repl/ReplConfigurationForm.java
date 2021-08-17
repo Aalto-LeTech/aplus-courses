@@ -16,10 +16,9 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class ReplConfigurationForm extends JPanel {
-
-  public static final String INFOLABEL_TEXT = getText("ui.repl.configuration.form.infoLabel");
 
   private ReplConfigurationFormModel model;
 
@@ -40,13 +39,13 @@ public class ReplConfigurationForm extends JPanel {
    * Creates a workable REPL configuration form with all the bells and whistles required. Binds the
    * corresponding data model {@link ReplConfigurationFormModel} into it.
    */
-  public ReplConfigurationForm(@NotNull ReplConfigurationFormModel model) {
+  public ReplConfigurationForm(@NotNull ReplConfigurationFormModel model, @Nullable Project project) {
     this.model = model;
 
     dontShowThisWindowCheckBox
         .setSelected(PluginSettings.getInstance().shouldShowReplConfigurationDialog());
 
-    infoTextLabel.setText(INFOLABEL_TEXT);
+    infoTextLabel.setText(getText("ui.repl.configuration.form.infoLabel", project));
 
     addFileChooser(workingDirectoryField, model.getProject());
     workingDirectoryField.setText(model.getModuleWorkingDirectory());

@@ -51,7 +51,7 @@ public class SubmissionDialog extends OurDialogWrapper {
 
     defaultGroupCheckBox.isCheckedBindable.bindToSource(viewModel.makeDefaultGroup);
 
-    warning.setText(viewModel.getSubmissionWarning());
+    warning.setText(viewModel.getSubmissionWarning(project));
 
     init();
   }

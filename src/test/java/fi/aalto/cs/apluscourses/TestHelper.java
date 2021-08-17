@@ -56,6 +56,6 @@ public interface TestHelper {
    */
   @NotNull
   default ReplConfigurationForm getDummyReplConfigurationForm(@NotNull Project project) {
-    return new ReplConfigurationForm(getDummyReplConfigurationFormModel(project));
+    return new ReplConfigurationForm(getDummyReplConfigurationFormModel(project), project);
   }
 }
