@@ -176,6 +176,10 @@ public class OverlayPane extends JPanel implements AWTEventListener {
     this.revalidatePane();
   }
 
+  public boolean hasHighlighterForComponent(@NotNull Component component) {
+    return this.highlighters.stream().anyMatch(highlighter -> highlighter.getComponent().equals(component));
+  }
+
   /**
    * Adds a popup to a specified component.
    */
