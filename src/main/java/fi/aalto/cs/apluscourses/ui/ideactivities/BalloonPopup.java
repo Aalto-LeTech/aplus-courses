@@ -25,10 +25,6 @@ public class BalloonPopup extends JPanel implements TransparentComponent, MouseL
   private final @NotNull Component anchorComponent;
   private Point position;
   private int alignment;
-  private Dimension componentSize;
-  private Point componentWindowPos;
-  private int popupWidth;
-  private int popupHeight;
   private Point anchorPoint;
 
   @GuiObject
@@ -132,33 +128,26 @@ public class BalloonPopup extends JPanel implements TransparentComponent, MouseL
    * Recomputes the popups bounds and triggers a reposition if needed. Should ideally be called
    * every time anything changes in the parent frame.
    * The algorithm for popup positioning works as follows:
-   *   1. Calculate, how much available space (pixels) there is in each direction.
-   *   2. Verify that the popup can indeed be placed on some side relative to the component.
-   *   2a. If yes, then find the side which has the most space and place the popup there.
-   *   2b. If not, then place the popup in the right corner of the component.
+   * 1. Calculate, how much available space (pixels) there is in each direction.
+   * 2. Verify that the popup can indeed be placed on some side relative to the component.
+   * 2a. If yes, then find the side which has the most space and place the popup there.
+   * 2b. If not, then place the popup in the right corner of the component.
    */
   public void recalculateBounds() {
-    // the origin of the component that this popup is attached to must be converted to the
-    // overlay pane's coordinate system, because that overlay uses a null layout and requires
-    // that this popup specify its bounds
-    componentWindowPos = SwingUtilities.convertPoint(anchorComponent, 0, 0, getParent());
 
     final var windowSize = JOptionPane.getRootFrame().getSize();
-    componentSize = anchorComponent.getSize();
+    final var componentSize = anchorComponent.getSize();
 
-    popupWidth = titleLabel.getPreferredSize().width + 20;
-    popupHeight = getMinimumSize().height;
-
-    final int availableSizeLeft = componentWindowPos.x;
-    final int availableSizeRight = windowSize.width - (componentWindowPos.x + componentSize.width);
-    final int availableSizeTop = componentWindowPos.y;
-    final int availableSizeBottom = windowSize.height - (componentWindowPos.y + componentSize.height);
+    final int availableSizeLeft = componentWindowPos().x;
+    final int availableSizeRight = windowSize.width - (componentWindowPos().x + componentSize.width);
+    final int availableSizeTop = componentWindowPos().y;
+    final int availableSizeBottom = windowSize.height - (componentWindowPos().y + componentSize.height);
 
     final int mostHorizontalSpace = Integer.max(availableSizeLeft, availableSizeRight);
     final int mostVerticalSpace = Integer.max(availableSizeTop, availableSizeBottom);
 
-    final boolean canPlaceHorizontally = mostHorizontalSpace > popupWidth + 2 * POPUP_MARGIN;
-    final boolean canPlaceVertically = mostVerticalSpace > popupHeight + 2 * POPUP_MARGIN;
+    final boolean canPlaceHorizontally = mostHorizontalSpace > popupWidth() + 2 * POPUP_MARGIN;
+    final boolean canPlaceVertically = mostVerticalSpace > popupHeight() + 2 * POPUP_MARGIN;
 
     int popupX;
     int popupY;
@@ -169,13 +158,13 @@ public class BalloonPopup extends JPanel implements TransparentComponent, MouseL
     if (!canPlaceHorizontally && !canPlaceVertically) {
       // if there's no space on any side of the component, place the popup on the component
       alignment = SwingConstants.CENTER;
-      popupX = componentWindowPos.x + componentSize.width - popupWidth - POPUP_MARGIN;
-      popupY = componentWindowPos.y + POPUP_MARGIN;
+      popupX = componentWindowPos().x + componentSize.width - popupWidth() - POPUP_MARGIN;
+      popupY = componentWindowPos().y + POPUP_MARGIN;
 
-      outOfBoundsX = outOfBoundsX(POPUP_MARGIN);
-      outOfBoundsY = outOfBoundsY(POPUP_MARGIN);
+      outOfBoundsX = isOutOfBoundsX(POPUP_MARGIN);
+      outOfBoundsY = isOutOfBoundsY(POPUP_MARGIN);
 
-      final var popupBounds = new Rectangle(0, 0, popupWidth, popupHeight);
+      final var popupBounds = new Rectangle(0, 0, popupWidth(), popupHeight());
       final var mousePos = getMousePosition();
 
       transparencyHandler.update(mousePos != null && popupBounds.contains(mousePos));
@@ -186,48 +175,107 @@ public class BalloonPopup extends JPanel implements TransparentComponent, MouseL
       if (!canPlaceVertically || (mostHorizontalSpace > mostVerticalSpace && canPlaceHorizontally)) {
         if (availableSizeRight > availableSizeLeft) {
           alignment = SwingConstants.RIGHT;
-          popupX = componentWindowPos.x + anchorComponent.getWidth() + 5;
+          popupX = componentWindowPos().x + anchorComponent.getWidth() + 5;
         } else {
           alignment = SwingConstants.LEFT;
-          popupX = componentWindowPos.x - popupWidth - 5;
+          popupX = componentWindowPos().x - popupWidth() - 5;
         }
 
-        popupY = componentWindowPos.y + (anchorComponent.getHeight() - popupHeight) / 2;
-        outOfBoundsY = outOfBoundsY(0);
+        popupY = componentWindowPos().y + (anchorComponent.getHeight() - popupHeight()) / 2;
+        outOfBoundsY = isOutOfBoundsY(0);
       } else {
         if (availableSizeBottom > availableSizeTop) {
           alignment = SwingConstants.BOTTOM;
-          popupY = componentWindowPos.y + anchorComponent.getHeight() + 5;
+          popupY = componentWindowPos().y + anchorComponent.getHeight() + 5;
         } else {
           alignment = SwingConstants.TOP;
-          popupY = componentWindowPos.y - popupHeight - 5;
+          popupY = componentWindowPos().y - popupHeight() - 5;
         }
 
-        popupX = componentWindowPos.x + (anchorComponent.getWidth() - popupWidth) / 2;
-        outOfBoundsX = outOfBoundsX(0);
+        popupX = componentWindowPos().x + (anchorComponent.getWidth() - popupWidth()) / 2;
+        outOfBoundsX = isOutOfBoundsX(0);
       }
 
       setTransparencyCoefficient(1.0f);
     }
 
+    var popupPoint = calculatePoint(popupX, popupY, oldAlignment, outOfBoundsX, outOfBoundsY);
+
+    popupX = popupPoint.x;
+    popupY = popupPoint.y;
+
+    setBounds(popupX, popupY, popupWidth(), popupHeight());
+  }
+
+  private boolean isOutOfBoundsX(int margin) {
+    return position != null
+        && isOutOfBounds(position.x, componentWindowPos().x, margin, popupWidth(), componentSize().width);
+  }
+
+  private boolean isOutOfBoundsY(int margin) {
+    return position != null
+        && isOutOfBounds(position.y, componentWindowPos().y, margin, popupHeight(), componentSize().height);
+  }
+
+  private boolean isOutOfBounds(int positionCoord, int componentWindowPos,
+                                int margin, int popupSize,
+                                int componentSize) {
+    return positionCoord < componentWindowPos + margin
+        || positionCoord + popupSize > componentWindowPos + componentSize - margin;
+  }
+
+  private int clampX(int x) {
+    return clamp(componentWindowPos().x, componentSize().width, popupWidth(), x);
+  }
+
+  private int clampY(int y) {
+    return clamp(componentWindowPos().y, componentSize().height, popupHeight(), y);
+  }
+
+  private int clamp(int componentWindowPos, int componentSize, int popupSize, int coord) {
+    int margin = positionCenter ? POPUP_MARGIN : 0;
+    return Integer.max(componentWindowPos + margin,
+        Integer.min(componentWindowPos + componentSize - popupSize - margin,
+            coord));
+  }
+
+  private Point calculatePoint(int popupX, int popupY, int oldAlignment, boolean outOfBoundsX, boolean outOfBoundsY) {
     positionHorizontally = alignment == SwingConstants.LEFT || alignment == SwingConstants.RIGHT;
     positionCenter = alignment == SwingConstants.CENTER;
+    var point = new Point(popupX, popupY);
     if (oldAlignment == alignment && position != null) {
-      popupX = (positionCenter || !positionHorizontally) && !outOfBoundsX ? position.x : popupX;
-      popupY = (positionCenter ||  positionHorizontally) && !outOfBoundsY ? position.y : popupY;
+      var positionX = position.x;
+      if (outOfBoundsX) {
+        positionX = clampX(positionX);
+      }
+      var positionY = position.y;
+      if (outOfBoundsY) {
+        positionY = clampY(positionY);
+      }
+      position.setLocation(positionX, positionY);
+      point.setLocation(positionCenter || !positionHorizontally ? positionX : popupX,
+          positionCenter || positionHorizontally ? positionY : popupY);
     }
-
-    setBounds(popupX, popupY, popupWidth, popupHeight);
+    return point;
   }
 
-  private boolean outOfBoundsX(int margin) {
-    return position != null && (position.x < componentWindowPos.x + margin
-        || position.x + popupWidth > componentWindowPos.x + componentSize.width - margin);
+  private Dimension componentSize() {
+    return anchorComponent.getSize();
   }
 
-  private boolean outOfBoundsY(int margin) {
-    return position != null && (position.y < componentWindowPos.y + margin
-        || position.y + popupHeight > componentWindowPos.y + componentSize.height - margin);
+  private int popupWidth() {
+    return titleLabel.getPreferredSize().width + 20;
+  }
+
+  private int popupHeight() {
+    return getMinimumSize().height;
+  }
+
+  private Point componentWindowPos() {
+    // the origin of the component that this popup is attached to must be converted to the
+    // overlay pane's coordinate system, because that overlay uses a null layout and requires
+    // that this popup specify its bounds
+    return SwingUtilities.convertPoint(anchorComponent, 0, 0, getParent());
   }
 
   @Override
@@ -240,18 +288,12 @@ public class BalloonPopup extends JPanel implements TransparentComponent, MouseL
     var parentOnScreen = getParent().getLocationOnScreen();
     var mouseOnScreen = mouseEvent.getLocationOnScreen();
 
-    int margin = positionCenter ? POPUP_MARGIN : 0;
-
     int newX = positionCenter || !positionHorizontally
-        ? Integer.max(componentWindowPos.x + margin,
-            Integer.min(componentWindowPos.x + componentSize.width - popupWidth - margin,
-              mouseOnScreen.x - parentOnScreen.x - anchorX))
+        ? clampX(mouseOnScreen.x - parentOnScreen.x - anchorX)
         : oldX;
 
     int newY = positionCenter || positionHorizontally
-        ? Integer.max(componentWindowPos.y + margin,
-            Integer.min(componentWindowPos.y + componentSize.height - popupHeight - margin,
-                mouseOnScreen.y - parentOnScreen.y - anchorY))
+        ? clampY(mouseOnScreen.y - parentOnScreen.y - anchorY)
         : oldY;
 
     position = new Point(newX, newY);
