@@ -6,7 +6,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
+import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.SubmissionInfo;
@@ -67,7 +69,8 @@ public class SubmissionViewModelTest {
     assertEquals(4, submissionViewModel1.getCurrentSubmissionNumber());
     assertEquals("You are about to make submission 4 out of 5.",
         submissionViewModel1.getSubmissionCountText());
-    assertNull(submissionViewModel1.getSubmissionWarning());
+    var project = mock(Project.class);
+    assertNull(submissionViewModel1.getSubmissionWarning(project));
 
     exercise.addSubmissionResult(
         new SubmissionResult(3, 10, 0.0, SubmissionResult.Status.GRADED, exercise));
@@ -76,7 +79,7 @@ public class SubmissionViewModelTest {
 
     assertEquals("You are about to make submission 5 out of 5.",
         submissionViewModel2.getSubmissionCountText());
-    assertNotNull(submissionViewModel2.getSubmissionWarning());
+    assertNotNull(submissionViewModel2.getSubmissionWarning(project));
 
     SubmissionViewModel submissionViewModel3 = new SubmissionViewModel(
         exercise, Collections.emptyList(), null, Collections.emptyMap(), "");
@@ -85,7 +88,7 @@ public class SubmissionViewModelTest {
         new SubmissionResult(4, 10, 0.0, SubmissionResult.Status.GRADED, exercise));
     assertEquals("You are about to make submission 6 out of 5.",
         submissionViewModel3.getSubmissionCountText());
-    assertNotNull(submissionViewModel3.getSubmissionWarning());
+    assertNotNull(submissionViewModel3.getSubmissionWarning(project));
 
     // Max submissions 0
     SubmissionViewModel submissionViewModel4 = new SubmissionViewModel(
@@ -93,7 +96,7 @@ public class SubmissionViewModelTest {
         Collections.emptyList(), null, Collections.emptyMap(), "");
     assertEquals("You are about to make submission 1.",
         submissionViewModel4.getSubmissionCountText());
-    assertNull(submissionViewModel4.getSubmissionWarning());
+    assertNull(submissionViewModel4.getSubmissionWarning(project));
   }
 
   @Test
@@ -113,7 +116,7 @@ public class SubmissionViewModelTest {
     );
 
     assertArrayEquals("getFiles returns the files corresponding to the given language",
-        new SubmittableFile[]{finnishFile1, finnishFile2}, submission.getFiles());
+        new SubmittableFile[] {finnishFile1, finnishFile2}, submission.getFiles());
   }
 
   @Test
