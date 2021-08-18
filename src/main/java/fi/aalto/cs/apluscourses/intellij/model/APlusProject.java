@@ -28,7 +28,6 @@ public class APlusProject {
   /**
    * Returns the IntelliJ IDEA project corresponding to this project. Throws {@link
    * IllegalStateException} if the project is disposed.
-   * @return
    */
   @RequiresReadLock
   @NotNull

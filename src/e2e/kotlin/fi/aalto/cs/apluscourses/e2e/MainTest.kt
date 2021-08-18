@@ -18,6 +18,8 @@ import org.junit.Test
 import java.time.Duration
 
 class MainTest {
+    private val token = System.getenv("APLUS_TEST_TOKEN")
+
     init {
         StepLoggerInitializer.init()
     }
@@ -87,7 +89,7 @@ class MainTest {
             }
         }
         step("Authenticate with right token") {
-            CommonSteps(this).setAPlusToken(System.getenv("APLUS_TEST_TOKEN"))
+            CommonSteps(this).setAPlusToken(token)
             with(ideFrame()) {
                 with(assignments()) {
                     waitFor(
@@ -118,7 +120,7 @@ class MainTest {
         step("Make sure the assignments have been loaded") {
             with(ideFrame()) {
                 waitFor(
-                    Duration.ofSeconds(180),
+                    Duration.ofSeconds(900),
                     Duration.ofSeconds(5)
                 ) { !hasText("Refreshing assignments...") }
             }
@@ -175,6 +177,11 @@ class MainTest {
                 }
 
                 with(assignments()) {
+                    waitFor(
+                        Duration.ofSeconds(60),
+                        Duration.ofSeconds(1),
+                        "Week 1 not found in assignments list"
+                    ) { !containsText("Files") }
                     assertFalse("'Files' assignment should now be hidden", containsText("Files"))
                     assertTrue("Feedback submissions should be visible", containsText("Feedback"))
                 }

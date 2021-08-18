@@ -1,12 +1,10 @@
 package fi.aalto.cs.apluscourses.model.task;
 
 import fi.aalto.cs.apluscourses.utils.JsonUtil;
-
 import java.util.function.Function;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
-
 
 @FunctionalInterface
 public interface Arguments {

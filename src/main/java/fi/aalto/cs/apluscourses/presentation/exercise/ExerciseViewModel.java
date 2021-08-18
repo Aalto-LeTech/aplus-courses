@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.presentation.exercise;
 
+import fi.aalto.cs.apluscourses.model.DummyExercise;
 import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.TutorialExercise;
 import fi.aalto.cs.apluscourses.presentation.base.Searchable;
@@ -34,6 +35,10 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
     return getModel().isSubmittable();
   }
 
+  public boolean isDummy() {
+    return getModel().isDummy();
+  }
+
   @Override
   public long getId() {
     return getModel().getId();
@@ -47,7 +52,8 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
     FULL_POINTS,
     IN_GRADING,
     LATE,
-    TUTORIAL
+    TUTORIAL,
+    DUMMY
   }
 
   /**
@@ -55,7 +61,9 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
    */
   public Status getStatus() {
     Exercise exercise = getModel();
-    if (exercise instanceof TutorialExercise) {
+    if (exercise.isDummy()) {
+      return Status.DUMMY;
+    } else if (exercise instanceof TutorialExercise) {
       return Status.TUTORIAL;
     } else if (exercise.isInGrading()) {
       return Status.IN_GRADING;
@@ -86,6 +94,9 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
       return "optional practice";
     }
     Exercise exercise = getModel();
+    if (exercise instanceof DummyExercise) {
+      return "???";
+    }
     String lateString = exercise.isLate() ? "late, " : "";
     return lateString + exercise.getSubmissionResults().size() + " of "
         + exercise.getMaxSubmissions() + ", " + exercise.getUserPoints() + "/"

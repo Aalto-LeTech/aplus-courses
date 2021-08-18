@@ -6,6 +6,7 @@ import fi.aalto.cs.apluscourses.model.task.ActivityFactory;
 import fi.aalto.cs.apluscourses.model.task.Arguments;
 import fi.aalto.cs.apluscourses.model.task.ComponentPresenter;
 import fi.aalto.cs.apluscourses.model.task.ListenerCallback;
+import fi.aalto.cs.apluscourses.ui.ideactivities.ComponentDatabase;
 import org.jetbrains.annotations.NotNull;
 
 public class IntelliJActivityFactory implements ActivityFactory {
@@ -52,7 +53,23 @@ public class IntelliJActivityFactory implements ActivityFactory {
                                                      @NotNull String instruction,
                                                      @NotNull String info,
                                                      @NotNull Arguments componentArguments,
-                                                     @NotNull Arguments actionArguments) {
+                                                     @NotNull Arguments actionArguments,
+                                                     String @NotNull [] assertClosed) {
+    for (var closedComponent : assertClosed) {
+      switch (closedComponent) {
+        case "projectTree":
+          ComponentDatabase.hideToolWindow(ComponentDatabase.PROJECT_TOOL_WINDOW, project);
+          break;
+        case "aPlusCourses":
+          ComponentDatabase.hideToolWindow(ComponentDatabase.APLUS_TOOL_WINDOW, project);
+          break;
+        case "editor":
+          ComponentDatabase.closeFile(actionArguments, project);
+          break;
+        default:
+          throw new IllegalArgumentException("Unsupported component: " + component);
+      }
+    }
     switch (component) {
       case "projectTree":
         return new ProjectTreePresenter(instruction, info, project);

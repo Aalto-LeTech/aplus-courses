@@ -21,6 +21,6 @@ public class ProjectTreePresenter extends IntelliJComponentPresenterBase {
 
   @Override
   public boolean tryToShow() {
-    return ComponentDatabase.showProjectToolWindow(project);
+    return ComponentDatabase.showToolWindow(ComponentDatabase.PROJECT_TOOL_WINDOW, project);
   }
 }

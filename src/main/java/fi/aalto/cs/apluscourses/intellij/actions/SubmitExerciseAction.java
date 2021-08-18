@@ -43,6 +43,7 @@ import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionResultViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionViewModel;
+import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -54,8 +55,11 @@ import java.util.Map;
 import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class SubmitExerciseAction extends AnAction {
+
+  private static final Logger logger = APlusLogger.logger;
 
   public static final String ACTION_ID = SubmitExerciseAction.class.getCanonicalName();
 
@@ -163,6 +167,7 @@ public class SubmitExerciseAction extends AnAction {
 
   @Override
   public void actionPerformed(@NotNull AnActionEvent e) {
+    logger.debug("Starting SubmitExerciseAction");
     Project project = e.getProject();
     if (project == null) {
       return;
@@ -186,6 +191,9 @@ public class SubmitExerciseAction extends AnAction {
     Authentication authentication = authenticationProvider.getAuthentication(project);
 
     if (courseViewModel == null || exercisesViewModel == null || authentication == null) {
+      if (authentication == null) {
+        logger.error("Null authentication while submitting exercise");
+      }
       return;
     }
 
@@ -198,10 +206,13 @@ public class SubmitExerciseAction extends AnAction {
     }
 
     Exercise exercise = selectedExercise.getModel();
+    logger.info("Submitting {}", exercise);
     var submissionInfo = exercise.getSubmissionInfo();
     String language = languageSource.getLanguage(project);
+    logger.info("Language: {}", language);
 
     if (!submissionInfo.isSubmittable(language)) {
+      logger.warn("{} not submittable", exercise);
       notifier.notify(new NotSubmittableNotification(), project);
       return;
     }
@@ -229,6 +240,8 @@ public class SubmitExerciseAction extends AnAction {
       selectedModule = moduleSelectionViewModel.selectedModule.get();
     }
 
+    logger.info("Selected {}", selectedModule);
+
     if (selectedModule == null) {
       return;
     }
@@ -240,6 +253,7 @@ public class SubmitExerciseAction extends AnAction {
     for (SubmittableFile file : submissionInfo.getFiles(language)) {
       files.put(file.getKey(), fileFinder.findFile(modulePath, file.getName()));
     }
+    logger.info("Submission files: {}", files);
 
     var course = courseViewModel.getModel();
     var exerciseDataSource = course.getExerciseDataSource();
@@ -271,7 +285,9 @@ public class SubmitExerciseAction extends AnAction {
       defaultGroupIdSetting.clearDefaultGroupId();
     }
 
+    logger.info("Submitting with group: {}", submission.selectedGroup.get());
     String submissionUrl = exerciseDataSource.submit(submission.buildSubmission(), authentication);
+    logger.info("Submission url: {}", submissionUrl);
     new SubmissionStatusUpdater(
         project, exerciseDataSource, authentication, submissionUrl, selectedExercise.getModel()
     ).start();
@@ -282,9 +298,11 @@ public class SubmitExerciseAction extends AnAction {
         submission.getPresentableExerciseName(),
         submission.getCurrentSubmissionNumber());
     addLocalHistoryTag(project, tag);
+    logger.debug("Finished submitting exercise");
   }
 
   private void notifyNetworkError(@NotNull IOException exception, @Nullable Project project) {
+    logger.error("Network error while submitting exercise", exception);
     notifier.notify(new NetworkErrorNotification(exception), project);
   }
 

@@ -14,7 +14,9 @@ import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.AWTEventListener;
 import java.awt.event.MouseEvent;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
+import java.awt.geom.RoundRectangle2D;
 import java.util.HashSet;
 import java.util.Set;
 import javax.swing.JFrame;
@@ -44,11 +46,15 @@ public class OverlayPane extends JPanel implements AWTEventListener {
     var overlayArea = new Area(new Rectangle(0, 0, getWidth(), getHeight()));
 
     for (var c : highlighters) {
-      // convertPoint is necessary because the component uses a different coordinate origin
+      var posDiff = SwingUtilities.convertPoint(c.getComponent(), 0, 0, this);
+      var translation = AffineTransform.getTranslateInstance(posDiff.x, posDiff.y);
+
       if (c.getComponent().isShowing()) {
         for (var rectangle : c.getArea()) {
-          var windowRect = SwingUtilities.convertRectangle(c.getComponent(), rectangle, this);
-          overlayArea.subtract(new Area(windowRect));
+          var rectangleArea = new Area(rectangle);
+          rectangleArea.transform(translation);
+
+          overlayArea.subtract(rectangleArea);
         }
       }
     }
@@ -56,7 +62,15 @@ public class OverlayPane extends JPanel implements AWTEventListener {
     for (var c : balloonPopups) {
       // popups are already places in the overlay's coordinate system
       if (c.isVisible()) {
-        var componentRect = new Rectangle(c.getX(), c.getY(), c.getWidth(), c.getHeight());
+        final double borderWidth = BalloonPopup.BORDER_WIDTH * 2.0;
+        final double borderHeight = BalloonPopup.BORDER_WIDTH * 2.0;
+
+        var componentRect = new RoundRectangle2D.Double(
+            c.getX() + (double) BalloonPopup.BORDER_WIDTH,
+            c.getY() + (double) BalloonPopup.BORDER_WIDTH,
+            c.getWidth() - borderWidth, c.getHeight() - borderHeight, 6, 6
+        );
+
         overlayArea.subtract(new Area(componentRect));
       }
     }
@@ -171,19 +185,6 @@ public class OverlayPane extends JPanel implements AWTEventListener {
     var popup = new BalloonPopup(c, title, message, PluginIcons.A_PLUS_OPTIONAL_PRACTICE);
     this.balloonPopups.add(popup);
     this.getRootPane().getLayeredPane().add(popup, PANE_Z_ORDER + 1);
-    this.revalidatePane();
-  }
-
-  /**
-   * Resets the overlay to its original state, i.e. removes all popups and dims all components.
-   */
-  @RequiresEdt
-  public void reset() {
-    this.highlighters.clear();
-    for (var c : this.balloonPopups) {
-      this.getRootPane().getLayeredPane().remove(c);
-    }
-    this.balloonPopups.clear();
     this.revalidatePane();
   }
 

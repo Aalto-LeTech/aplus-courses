@@ -1,7 +1,6 @@
 package fi.aalto.cs.apluscourses.dal;
 
 import fi.aalto.cs.apluscourses.model.Exercise;
-import fi.aalto.cs.apluscourses.model.ExerciseGroup;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.Points;
 import fi.aalto.cs.apluscourses.model.SubmissionInfo;
@@ -26,8 +25,6 @@ public interface Parser {
   SubmissionInfo parseSubmissionInfo(@NotNull JSONObject object);
 
   Group parseGroup(@NotNull JSONObject object);
-
-  List<ExerciseGroup> parseExerciseGroups(@NotNull JSONArray array);
 
   Points parsePoints(@NotNull JSONObject object);
 

@@ -53,4 +53,9 @@ public class Group {
   public boolean equals(Object obj) {
     return obj instanceof Group && ((Group) obj).getId() == getId();
   }
+
+  @Override
+  public String toString() {
+    return "Group{" + memberNames + '}';
+  }
 }

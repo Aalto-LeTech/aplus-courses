@@ -7,10 +7,8 @@ import com.intellij.psi.PsiFile;
 import fi.aalto.cs.apluscourses.intellij.psi.ScalaClassDeclaration;
 import fi.aalto.cs.apluscourses.model.task.Arguments;
 import fi.aalto.cs.apluscourses.model.task.ListenerCallback;
-
 import java.util.Arrays;
 import java.util.Optional;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement;
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaRecursiveElementVisitor;
@@ -37,7 +35,7 @@ public class ClassDeclarationListener extends CodeListener {
                                   @NotNull String[] parameterAnnotations,
                                   @NotNull String fileName) {
     super(callback, project, fileName);
-    this.modelScalaClass = new ScalaClassDeclaration(className,arguments, hierarchy,
+    this.modelScalaClass = new ScalaClassDeclaration(className, arguments, hierarchy,
         traitHierarchy, typeParameters, parameterModifiers, parameterAnnotations);
   }
 

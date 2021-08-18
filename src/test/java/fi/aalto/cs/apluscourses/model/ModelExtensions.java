@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.model;
 
+import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import fi.aalto.cs.apluscourses.utils.Version;
 import fi.aalto.cs.apluscourses.utils.cache.CachePreference;
@@ -17,11 +18,10 @@ import java.util.OptionalLong;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ModelExtensions {
 
-  private static final Logger logger = LoggerFactory.getLogger(ModelExtensions.class);
+  private static final Logger logger = APlusLogger.logger;
 
   private ModelExtensions() {
 

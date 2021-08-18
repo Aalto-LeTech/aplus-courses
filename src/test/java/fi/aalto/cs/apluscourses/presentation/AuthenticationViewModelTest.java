@@ -35,7 +35,7 @@ public class AuthenticationViewModelTest {
     assertTrue(authentication instanceof APlusTokenAuthentication);
     assertEquals("The view model has the URL passed to the constructor",
         "https://example.com", viewModel.getAuthenticationHtmlUrl());
-    assertTrue("build() creates a correct object", ((TokenAuthentication)authentication)
+    assertTrue("build() creates a correct object", ((TokenAuthentication) authentication)
         .tokenEquals("asd"));
   }
 

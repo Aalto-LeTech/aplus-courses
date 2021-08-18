@@ -5,8 +5,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class DualCache<K, V> implements Cache<K, V> {
 
-  private final @NotNull Cache<K,V> longTimeCache;
-  private final @NotNull Cache<K,V> shortTimeCache;
+  private final @NotNull Cache<K, V> longTimeCache;
+  private final @NotNull Cache<K, V> shortTimeCache;
 
   public DualCache(@NotNull Cache<K, V> longTimeCache, @NotNull Cache<K, V> shortTimeCache) {
     this.longTimeCache = longTimeCache;
