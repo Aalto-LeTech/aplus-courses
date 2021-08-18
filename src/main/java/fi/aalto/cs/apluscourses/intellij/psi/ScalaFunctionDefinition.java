@@ -34,6 +34,8 @@ public class ScalaFunctionDefinition {
     return methodName.equals(element.getName());
   }
 
+  //also check for the existence of "="
+      //List<PsiElement> allChildren = List.copyOf(PsiUtil.getPsiElementsSiblings(children[0]));
   /**
    * Checks the type parameters of the function.
    * @param clause The ScTypeParametersClause to be checked.
@@ -73,9 +75,16 @@ public class ScalaFunctionDefinition {
   public boolean checkFunctionBody(PsiElement[] children) {
     PsiElement methodBodyParent = children[children.length - 1];
     if (methodBodyParent != null) {
-      children = methodBodyParent.getChildren();
-      Collection<String> totalElements = getPsiElementsSiblings(children[0]);
+      
       List<String> args = Arrays.asList(methodBody.clone());
+      /*if (args.size() >0 && args.get(0).equals("=")) {
+        List<PsiElement> parentSiblings = List.copyOf(PsiUtil.getPsiElementsSiblings(methodBodyParent));
+        
+      }*/
+      children = methodBodyParent.getChildren();
+      //TODO get all the children with PsiUtil method and adjust the config file!
+      //and check if children is empty or not!!
+      Collection<String> totalElements = getPsiElementsSiblings(children[0]);
       return args.equals(totalElements);
     }
     return false;

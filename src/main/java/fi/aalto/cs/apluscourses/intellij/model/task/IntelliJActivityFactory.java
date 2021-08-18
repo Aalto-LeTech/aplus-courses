@@ -33,7 +33,15 @@ public class IntelliJActivityFactory implements ActivityFactory {
       case "errors":
         return ErrorListener.create(callback, project, arguments);
       case "newObjectAssignmentScala":
-        return VariableDeclListener.create(callback, project, arguments);
+        return NewObjectAssignmentListener.create(callback, project, arguments);
+      case "methodCall":
+        return MethodCallListener.create(callback, project, arguments);
+      case "assignStatement":
+        return AssignStatementListener.create(callback, project, arguments);
+      case "declareVariable":
+        return VariableDeclarationListener.create(callback, project, arguments);
+      case "comment":
+        return CommentListener.create(callback, project, arguments);
       default:
         throw new IllegalArgumentException("Unsupported action: " + action);
     }
