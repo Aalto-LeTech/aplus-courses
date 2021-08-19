@@ -96,7 +96,7 @@ public class TutorialAction extends AnAction {
     if (dialogs.confirmStart(tutorialViewModel)) {
       mainViewModelProvider.getMainViewModel(project).tutorialViewModel.set(tutorialViewModel);
       tutorialViewModel.getTutorial().tutorialCompleted
-          .addListener(mainViewModel, this::onTutorialComplete);
+          .addListener(mainViewModel, e -> this.onTutorialComplete(e, project));
       tutorialViewModel.startNextTask();
     }
   }
@@ -144,25 +144,28 @@ public class TutorialAction extends AnAction {
     }
 
     @Override
-    public void end(@NotNull TutorialViewModel tutorialViewModel) {
-      JOptionPane.showMessageDialog(null,
+    public boolean finishAndSubmit(@NotNull TutorialViewModel tutorialViewModel) {
+      return JOptionPane.showConfirmDialog(null,
           getText("ui.tutorial.TutorialAction.end"),
           tutorialViewModel.getTitle(),
-          JOptionPane.INFORMATION_MESSAGE);
+          JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
     }
   }
 
-  private void onTutorialComplete(@NotNull MainViewModel mainViewModel) {
+  private void onTutorialComplete(@NotNull MainViewModel mainViewModel,
+                                  @NotNull Project project) {
     TutorialViewModel viewModel = mainViewModel.tutorialViewModel.get();
     if (viewModel != null) {
       viewModel.getTutorial().tutorialCompleted.removeCallback(mainViewModel);
+      if (viewModel.isCompleted() && dialogs.finishAndSubmit(viewModel)) {
+        new SubmitExerciseAction().submitTutorial(project, viewModel);
+      }
       mainViewModel.tutorialViewModel.set(null);
       // Update the progress tracker.
       ApplicationManager.getApplication().invokeLater(() ->
           Optional.ofNullable(ComponentDatabase.getNavBarToolBar())
               .ifPresent(ActionToolbarImpl::updateActionsImmediately)
       );
-      dialogs.end(viewModel);
     }
   }
 }

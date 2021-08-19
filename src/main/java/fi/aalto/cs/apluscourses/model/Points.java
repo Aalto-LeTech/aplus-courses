@@ -63,6 +63,10 @@ public class Points {
     return submissionsCount;
   }
 
+  public int getSubmissionsAmount(@NotNull Long id) {
+    return submissions.get(id).size();
+  }
+
   @NotNull
   public List<Long> getExercises(long exerciseGroupId) {
     return exercises.getOrDefault(exerciseGroupId, Collections.emptyList());

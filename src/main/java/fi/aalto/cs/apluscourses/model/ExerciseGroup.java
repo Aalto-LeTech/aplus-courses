@@ -1,9 +1,11 @@
 package fi.aalto.cs.apluscourses.model;
 
+import fi.aalto.cs.apluscourses.utils.JsonUtil;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -22,11 +24,16 @@ public class ExerciseGroup implements Browsable {
   /**
    * Construct an exercise group with the given name and exercises.
    */
-  public ExerciseGroup(long id, @NotNull String name, @NotNull String htmlUrl, boolean isOpen) {
+  public ExerciseGroup(long id,
+                       @NotNull String name,
+                       @NotNull String htmlUrl,
+                       boolean isOpen,
+                       List<DummyExercise> dummyExercises) {
     this.id = id;
     this.name = name;
     this.htmlUrl = htmlUrl;
     this.isOpen = isOpen;
+    this.exercises.addAll(dummyExercises);
   }
 
   /**
@@ -42,7 +49,12 @@ public class ExerciseGroup implements Browsable {
     String name = jsonObject.getString("display_name");
     String htmlUrl = jsonObject.getString("html_url");
     boolean isOpen = jsonObject.getBoolean("is_open");
-    return new ExerciseGroup(id, name, htmlUrl, isOpen);
+    JSONArray exercisesArray = jsonObject.getJSONArray("exercises");
+    DummyExercise[] dummyExercises = JsonUtil.parseArray(exercisesArray,
+        JSONArray::getJSONObject,
+        DummyExercise::fromJsonObject,
+        DummyExercise[]::new);
+    return new ExerciseGroup(id, name, htmlUrl, isOpen, Arrays.stream(dummyExercises).collect(Collectors.toList()));
   }
 
   /**
@@ -79,7 +91,12 @@ public class ExerciseGroup implements Browsable {
     return Collections.unmodifiableList(exercises);
   }
 
+  /**
+   * Adds an exercise or replaces an existing one.
+   */
   public void addExercise(@NotNull Exercise exercise) {
+    var oldExercise = exercises.stream().filter(oldEx -> oldEx.equals(exercise)).findFirst();
+    oldExercise.ifPresent(exercises::remove);
     exercises.add(exercise);
   }
 

@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.presentation.exercise;
 
+import fi.aalto.cs.apluscourses.model.ExercisesLazyLoader;
 import fi.aalto.cs.apluscourses.model.ExercisesTree;
 import fi.aalto.cs.apluscourses.presentation.base.BaseTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.Searchable;
@@ -16,6 +17,7 @@ public class ExercisesTreeViewModel extends BaseTreeViewModel<ExercisesTree>
 
   private boolean isAuthenticated;
 
+  @NotNull
   private final AtomicBoolean isProjectReady = new AtomicBoolean(false);
 
   /**
@@ -23,10 +25,20 @@ public class ExercisesTreeViewModel extends BaseTreeViewModel<ExercisesTree>
    */
   public ExercisesTreeViewModel(@NotNull ExercisesTree exercisesTree,
                                 @NotNull Options filterOptions) {
+    this(exercisesTree, filterOptions, null);
+  }
+
+
+  /**
+   * Construct an exercises tree view model from the given exercise groups.
+   */
+  public ExercisesTreeViewModel(@NotNull ExercisesTree exercisesTree,
+                                @NotNull Options filterOptions,
+                                @Nullable ExercisesLazyLoader exercisesLazyLoader) {
     super(exercisesTree,
         exercisesTree.getExerciseGroups()
             .stream()
-            .map(ExerciseGroupViewModel::new)
+            .map(exerciseGroup -> new ExerciseGroupViewModel(exerciseGroup, exercisesLazyLoader))
             .collect(Collectors.toList()),
         filterOptions);
   }

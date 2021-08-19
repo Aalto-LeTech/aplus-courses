@@ -130,7 +130,7 @@ public class SubmitExerciseActionTest {
         exerciseId, "Test exercise", "http://localhost:10000", submissionInfo, 0, 0, OptionalLong.empty());
     group = new Group(124, Collections.singletonList("Only you"));
     groups = Collections.singletonList(group);
-    exerciseGroup = new ExerciseGroup(0, "Test EG", "", true);
+    exerciseGroup = new ExerciseGroup(0, "Test EG", "", true, List.of());
     exerciseGroup.addExercise(exercise);
     exerciseGroups = Collections.singletonList(exerciseGroup);
 
@@ -306,7 +306,7 @@ public class SubmitExerciseActionTest {
   public void testNotifiesExerciseNotSubmittable() throws IOException {
     var exercise = new Exercise(0, "", "", new SubmissionInfo(Map.of()), 0, 0,
         OptionalLong.empty());
-    var exerciseGroup = new ExerciseGroup(0, "", "", true);
+    var exerciseGroup = new ExerciseGroup(0, "", "", true, List.of());
     exerciseGroup.addExercise(exercise);
     mainViewModel.exercisesViewModel.set(
         new ExercisesTreeViewModel(new ExercisesTree(List.of(exerciseGroup)), new Options()));

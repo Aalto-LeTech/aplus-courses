@@ -8,5 +8,5 @@ public interface TutorialDialogs {
 
   boolean confirmCancel(@NotNull TutorialViewModel tutorialViewModel);
 
-  void end(@NotNull TutorialViewModel tutorialViewModel);
+  boolean finishAndSubmit(@NotNull TutorialViewModel tutorialViewModel);
 }

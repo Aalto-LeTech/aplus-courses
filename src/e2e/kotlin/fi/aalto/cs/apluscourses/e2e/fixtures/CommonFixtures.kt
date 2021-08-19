@@ -43,7 +43,8 @@ fun SearchContext.dialog(title: String, timeout: Duration = Duration.ofSeconds(5
         timeout
     )
 
-fun SearchContext.languageList() = find(JListFixture::class.java, byXpath("//div[@class='JList']"), Duration.ofSeconds(5))
+fun SearchContext.languageList() =
+    find(JListFixture::class.java, byXpath("//div[@class='JList']"), Duration.ofSeconds(5))
 
 fun SearchContext.heavyWeightWindow() = find(HeavyWeightWindowFixture::class.java, Duration.ofSeconds(5))
 
@@ -73,31 +74,37 @@ class IdeFrameFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent
         CommonContainerFixture::class.java,
         byXpath("//div[@accessiblename='A+ Courses' and @class='StripeButton' and @text='A+ Courses']")
     )
+
     fun modules() = find(
         JListFixture::class.java,
         byXpath("//div[@class='ModuleListView']"),
         Duration.ofSeconds(20)
     )
+
     fun assignments() = find(
         CommonContainerFixture::class.java,
-        byXpath("//div[@class='TreeView']"),
+        byXpath("//div[@class='ExercisesTreeView']"),
         Duration.ofSeconds(20)
     )
+
     fun filterButton() = find(
         ActionButtonFixture::class.java,
         byXpath("//div[@accessiblename='Filter Assignments']"),
         Duration.ofSeconds(20)
     )
+
     fun userButton() = find(
         ActionButtonFixture::class.java,
         byXpath("//div[@class='ActionButton' and @myaction='Not logged in (null)']"),
         Duration.ofSeconds(20)
     )
+
     fun searchEverywhereButton() = find(
         ActionButtonFixture::class.java,
         byXpath("//div[@accessiblename='Search Everywhere' and @class='ActionButton']"),
         Duration.ofSeconds(20)
     )
+
     fun dropDownMenu() = with(heavyWeightWindow()) {
         find(
             JListFixture::class.java,
@@ -105,20 +112,24 @@ class IdeFrameFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent
             Duration.ofSeconds(20)
         )
     }
+
     fun codeWithMeButton() = findAll(
         JButtonFixture::class.java,
         byXpath("//div[@class='JButton' and @text='Got It']")
     ).firstOrNull()
+
     fun ideErrorButton() = find(
         ComponentFixture::class.java,
         byXpath("//div[@class='IdeErrorsIcon']"),
         Duration.ofSeconds(20)
     )
+
     fun isDumbMode(): Boolean =
         callJs(
             "com.intellij.openapi.project.DumbService.isDumb(component.project);",
             runInEdt = true
         )
+
     fun waitForSmartMode() {
         waitFor(
             duration = Duration.ofMinutes(2),
@@ -140,6 +151,7 @@ class MenuItemFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent
             .withClass(JMenuItem::class.java)
             .build()
     )
+
     fun select(text: String): MenuItemFixture = with(item(text)) { click(); return@select this }
 }
 
@@ -150,6 +162,7 @@ class DialogFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent) 
         ContainerFixture::class.java,
         byXpath("//div[@class='SidePanel']")
     )
+
     fun passwordField() = find(
         JTextFieldFixture::class.java,
         byXpath("//div[@class='JPasswordField']")

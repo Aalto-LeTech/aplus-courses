@@ -28,6 +28,7 @@ import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionResultViewModel;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import java.net.URISyntaxException;
 import java.util.Collections;
+import java.util.List;
 import java.util.OptionalLong;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -100,7 +101,7 @@ public class OpenItemActionTest {
 
   @Test
   public void testOpenItemActionWeek() throws Exception {
-    var exerciseGroup = new ExerciseGroup(0, "", "https://url.com/", true);
+    var exerciseGroup = new ExerciseGroup(0, "", "https://url.com/", true, List.of());
     setUp(new ExerciseGroupViewModel(exerciseGroup));
     OpenItemAction action = new OpenItemAction(
         mainViewModelProvider,
