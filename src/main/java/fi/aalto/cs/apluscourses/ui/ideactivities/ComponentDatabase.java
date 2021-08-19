@@ -165,6 +165,12 @@ public class ComponentDatabase {
           if (now.getTime() - started.getTime() > 500) {
             break;
           }
+          try {
+            Thread.sleep(50);
+          } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return;
+          }
         }
       }
     }
