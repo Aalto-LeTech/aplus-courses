@@ -16,6 +16,8 @@ public class Tutorial {
   @NotNull
   public final Event tutorialCompleted = new Event();
 
+  public static final String TUTORIAL_SUBMIT_FILE_NAME = "_ideact_result";
+
   public Tutorial(Task[] tasks) {
     this.tasks = List.of(tasks);
   }
@@ -40,6 +42,11 @@ public class Tutorial {
       return tasks.get(index + 1);
     }
     return null;
+  }
+
+  @NotNull
+  public String getSubmissionPayload() {
+    return "success";
   }
 
   public void onComplete() {
