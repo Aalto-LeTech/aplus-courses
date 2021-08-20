@@ -11,17 +11,23 @@ import org.jetbrains.annotations.NotNull;
 
 public class TutorialViewModel {
 
+  @NotNull
   private final TutorialExercise tutorialExercise;
 
+  @NotNull
   private final TutorialDialogs dialogs;
 
+  @NotNull
   private final ActivityFactory activityFactory;
 
+  @NotNull
   private final TaskNotifier taskNotifier;
 
   private final Object lock = new Object();
 
   private Task currentTask = null;
+
+  private boolean isCompleted;
 
   private int currentTaskIndex;
 
@@ -42,6 +48,7 @@ public class TutorialViewModel {
     if (!tasks.isEmpty()) {
       this.currentTask = tasks.get(0);
     }
+    isCompleted = false;
     currentTaskIndex = 0;
     unlockedIndex = 0;
     tasksAmount = tasks.size();
@@ -88,6 +95,7 @@ public class TutorialViewModel {
       Tutorial tutorial = tutorialExercise.getTutorial();
       currentTask = tutorial.getNextTask(currentTask);
       if (currentTask == null) {
+        isCompleted = true;
         tutorial.onComplete();
       } else {
         startNextTask();
@@ -129,6 +137,9 @@ public class TutorialViewModel {
     }
   }
 
+  public @NotNull TutorialExercise getExercise() {
+    return tutorialExercise;
+  }
 
   public @NotNull String getTitle() {
     return APlusLocalizationUtil.getEnglishName(tutorialExercise.getName());
@@ -149,6 +160,10 @@ public class TutorialViewModel {
 
   public int getTasksAmount() {
     return tasksAmount;
+  }
+
+  public boolean isCompleted() {
+    return isCompleted;
   }
 
   /**
