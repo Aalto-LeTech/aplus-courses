@@ -181,7 +181,7 @@ class ReplAction extends RunConsoleAction {
   private def showReplDialog(@NotNull project: Project,
                              @NotNull module: Module): ReplConfigurationFormModel = {
     val configModel = new ReplConfigurationFormModel(project, ModuleUtils.getModuleDirectory(module), module.getName)
-    val configForm = new ReplConfigurationForm(configModel)
+    val configForm = new ReplConfigurationForm(configModel, project)
     val configDialog = new ReplConfigurationDialog
     configDialog.setReplConfigurationForm(configForm)
     configDialog.setVisible(true)
