@@ -20,7 +20,7 @@ public class SingleSelectionList<T> extends JBList<T> {
   private final transient Runnable submitRunnable;
 
   /**
-   * Constructs a new SingleSelectionListener.
+   * Constructs a new SingleSelectionList.
    */
   public SingleSelectionList(@NotNull Runnable submitRunnable) {
     this.submitRunnable = submitRunnable;

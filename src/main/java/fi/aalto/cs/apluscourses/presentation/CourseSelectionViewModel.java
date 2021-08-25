@@ -6,7 +6,6 @@ import fi.aalto.cs.apluscourses.utils.observable.ValidationError;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
-import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 
 public class CourseSelectionViewModel {
@@ -26,9 +25,11 @@ public class CourseSelectionViewModel {
    */
   public CourseSelectionViewModel(List<CourseItemViewModel> courses) {
     this.courses.set(courses.toArray(CourseItemViewModel[]::new));
-    selectedCourse.addValueObserver(this, (self, course) ->
-        selectedCourseUrl.set(Optional.ofNullable(course)
-            .map(CourseItemViewModel::getUrl).orElse("")));
+    selectedCourse.addValueObserver(this, (self, course) -> {
+      if (course != null) {
+        self.selectedCourseUrl.set(course.getUrl());
+      }
+    });
   }
 
   private static ValidationError validateCourseUrl(String courseUrl) {
