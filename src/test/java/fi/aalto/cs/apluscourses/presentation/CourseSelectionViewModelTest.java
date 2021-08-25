@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.presentation;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -15,11 +16,11 @@ public class CourseSelectionViewModelTest {
     ));
 
     Assert.assertTrue("The URL field is initially empty",
-        viewModel.selectedCourseUrl.get().isEmpty());
+        Objects.requireNonNull(viewModel.selectedCourseUrl.get()).isEmpty());
     Assert.assertEquals("The view model contains the given courses",
-        "A", viewModel.getCourses()[0].getName());
+        "A", Objects.requireNonNull(viewModel.courses.get())[0].getName());
     Assert.assertEquals("The view model contains the given courses",
-        "B", viewModel.getCourses()[1].getName());
+        "B", Objects.requireNonNull(viewModel.courses.get())[1].getName());
   }
 
   @Test

@@ -3,10 +3,10 @@ package fi.aalto.cs.apluscourses.ui.courseproject;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.ColoredListCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
-import com.intellij.ui.components.JBList;
 import fi.aalto.cs.apluscourses.presentation.CourseItemViewModel;
 import fi.aalto.cs.apluscourses.presentation.CourseSelectionViewModel;
 import fi.aalto.cs.apluscourses.ui.base.OurDialogWrapper;
+import fi.aalto.cs.apluscourses.ui.base.SingleSelectionList;
 import fi.aalto.cs.apluscourses.ui.base.TextField;
 import fi.aalto.cs.apluscourses.utils.PluginResourceBundle;
 import icons.PluginIcons;
@@ -18,18 +18,17 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.ListSelectionModel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class CourseSelectionView extends OurDialogWrapper {
 
-  private CourseSelectionViewModel viewModel;
+  private final CourseSelectionViewModel viewModel;
 
   private JPanel basePanel;
   private JLabel urlFieldLabel;
   private JLabel courseListLabel;
-  private JList<CourseItemViewModel> courseList;
+  private SingleSelectionList<CourseItemViewModel> courseList;
   private TextField urlField;
 
   private static final SimpleTextAttributes NAME_TEXT_ATTRIBUTES
@@ -45,14 +44,6 @@ public class CourseSelectionView extends OurDialogWrapper {
     super(project);
     this.viewModel = viewModel;
     setTitle(PluginResourceBundle.getText("ui.courseProject.courseSelection.title"));
-
-    courseList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    courseList.addListSelectionListener(listSelectionEvent -> {
-      CourseItemViewModel selected = courseList.getSelectedValue();
-      if (selected != null) {
-        viewModel.selectedCourseUrl.set(selected.getUrl());
-      }
-    });
 
     courseList.setCellRenderer(new ColoredListCellRenderer<>() {
 
@@ -95,7 +86,7 @@ public class CourseSelectionView extends OurDialogWrapper {
 
   @Override
   protected @NotNull Action @NotNull [] createActions() {
-    return new Action[]{getOKAction(), getCancelAction()};
+    return new Action[] {getOKAction(), getCancelAction()};
   }
 
   @Override
@@ -111,7 +102,9 @@ public class CourseSelectionView extends OurDialogWrapper {
 
   @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
   private void createUIComponents() {
-    courseList = new JBList<>(viewModel.getCourses());
+    courseList = new SingleSelectionList<>(this::doOKAction);
+    courseList.listDataBindable.bindToSource(viewModel.courses);
+    courseList.selectionBindable.bindToSource(viewModel.selectedCourse);
     urlField = new TextField();
   }
 }
