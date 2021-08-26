@@ -55,7 +55,7 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
 
     var highlighter = getHighlighter();
 
-    if (highlighter != null) {
+    if (highlighter != null && isVisible()) {
       tryingToShow = false;
     } else if (tryingToShow) {
       return;
