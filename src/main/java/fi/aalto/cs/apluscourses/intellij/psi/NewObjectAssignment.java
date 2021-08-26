@@ -27,7 +27,6 @@ public class NewObjectAssignment {
    */
   public NewObjectAssignment(String variableName, String variableType, String className,
                              String[] argsList) {
-    //TODO add and check all the occurencies of this listener
     this.variableName = variableName;
     this.variableType = variableType;
     this.className = className;
