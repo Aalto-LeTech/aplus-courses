@@ -118,10 +118,10 @@ public class BalloonPopup extends JPanel implements TransparentComponent, MouseL
    * Recomputes the popups bounds and triggers a reposition if needed. Should ideally be called
    * every time anything changes in the parent frame.
    * The algorithm for popup positioning works as follows:
-   *   1. Calculate, how much available space (pixels) there is in each direction.
-   *   2. Verify that the popup can indeed be placed on some side relative to the component.
-   *   2a. If yes, then find the side which has the most space and place the popup there.
-   *   2b. If not, then place the popup in the right corner of the component.
+   * 1. Calculate, how much available space (pixels) there is in each direction.
+   * 2. Verify that the popup can indeed be placed on some side relative to the component.
+   * 2a. If yes, then find the side which has the most space and place the popup there.
+   * 2b. If not, then place the popup in the right corner of the component.
    */
   public void recalculateBounds() {
     // the origin of the component that this popup is attached to must be converted to the

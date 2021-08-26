@@ -3,61 +3,62 @@ Manual testing
 
 ### Notes
 
-+ The menus of IntelliJ are a bit different on Mac than on Linux/Windows.
-  For example, to open settings on Linux, one can navigate to **File > Settings...**
++ The menus of IntelliJ are a bit different on Mac than on Linux/Windows. For example, to open settings on Linux, one
+  can navigate to **File > Settings...**
   but on Mac, the same result is achieved with **IntelliJ IDEA > Preferences...**.
 
-+ Similarly, on Mac one does not use right-click
-  but, instead, clicks holding **Ctrl** key down.
++ Similarly, on Mac one does not use right-click but, instead, clicks holding **Ctrl** key down.
 
 ### 0 Setup
 
 **0.1** Make sure you are using a clean installation of
-        **IntelliJ IDEA Community** version **2021.1**.
+**IntelliJ IDEA Community** version **2021.1**.
+
 - You can download IntelliJ IDEA Community from https://www.jetbrains.com/idea/download.
-- In case you use an existing install of IntelliJ IDEA,
-  you can use one of the following ways to restore to the default settings:
+- In case you use an existing install of IntelliJ IDEA, you can use one of the following ways to restore to the default
+  settings:
 
 **0.1.A.** In the main window, choose **File > Manage IDE Settings > Restore Default Settings...**
+
 - In the popup window, choose **Restore and restart**.
 
 **0.1.B** In the startup window, choose **Configure > Restore Default Settings...**
+
 - In the popup window, choose **Restore and restart**.
 
-**0.2** When the IntelliJ IDEA opens first time, choose **Light** UI theme and
-        click **Skip Remaining and Set Defaults**.
+**0.2** When the IntelliJ IDEA opens first time, choose **Light** UI theme and click **Skip Remaining and Set Defaults**
+.
 
 **0.3** Remove installed external plugins, if there are any.
+
 - In the startup window, choose **Configure > Plugins** and open **Installed** tab.
-- If there are **Downloaded** plugins on the top of the list,
-  uninstall all of them, one by one.
+- If there are **Downloaded** plugins on the top of the list, uninstall all of them, one by one.
 - Restart IntelliJ IDEA.
 
 ### 1 Install **A+ Courses** plugin
 
 **1.1** In the startup window, choose **Plugins**.
 
-**1.2** Do one of the following options, depending on whether you are testing
-        a pre-publish version of the plugin or a published version.
+**1.2** Do one of the following options, depending on whether you are testing a pre-publish version of the plugin or a
+published version.
 
 **1.2.A** Install a published version.
+
 - Open **Marketplace** tab and search **A+ Courses** plugin.
 - Ensure that the version is the one you want to test.
 - Click **Install**.
 
 **1.2.B** Install a pre-publish version.
-- If you don't have a ZIP file yet, you can generate it.
-  To get the source code, execute
+
+- If you don't have a ZIP file yet, you can generate it. To get the source code, execute
 
       git clone https://github.com/Aalto-LeTech/intellij-plugin.git
 
-  and navigate to the cloned directory.
-  Checkout the branch/tag/commit you want to test, and execute
- 
+  and navigate to the cloned directory. Checkout the branch/tag/commit you want to test, and execute
+
       ./gradlew buildPlugin
-  
-  Once the build is ready,
-  the generated ZIP file can be found in `build/distributions`.
+
+  Once the build is ready, the generated ZIP file can be found in `build/distributions`.
 - In **Plugins** window, click the cog icon next to the tabs.
 - From a popup menu, choose **Install Plugin from Disk...**
 - Select the ZIP file on the popped-up file selector.
@@ -80,8 +81,7 @@ Manual testing
 
 **2.4** On the next view, click **Finish**.
 
-**2.5** If the **Tip of the Day** window is shown,
-        check **Don't show tips** and click **Close**. 
+**2.5** If the **Tip of the Day** window is shown, check **Don't show tips** and click **Close**.
 
 **2.6** ASSERTION: **Project Structure** window opens with **Modules** tab visible.
 
@@ -90,16 +90,14 @@ Manual testing
 **2.8** ASSERTION: **Project SDK** reads **\<No SDK\>**.
 
 **2.9** Choose JDK 11 as **Project SDK**.
-- If JDK 11 is not installed on the computer,
-  choose **Add SDK > Download JDK...**
-- On the window that opens,
-  choose **AdoptOpenJDK (HotSpot)** as **Vendor**
-  and **11.x.x** as **Version**,
-  and click **Download**.
+
+- If JDK 11 is not installed on the computer, choose **Add SDK > Download JDK...**
+- On the window that opens, choose **AdoptOpenJDK (HotSpot)** as **Vendor**
+  and **11.x.x** as **Version**, and click **Download**.
 
 **2.10** Click **OK** to close **Project Structure** window.
 
-**2.11** Click the **A+ Courses** tab on the right. 
+**2.11** Click the **A+ Courses** tab on the right.
 
 **2.12** ASSERTION: There should be 2 labels that inform the user to turn the project into an A+ Project.
 
@@ -167,7 +165,7 @@ Manual testing
 
 ### 5 Installing modules
 
-**5.1** On **Modules** list  tool window, double-click **RobotTribes**.
+**5.1** On **Modules** list tool window, double-click **RobotTribes**.
 
 **5.2** ASSERTION: **RobotTribes** and **Robots** appear as modules in the project tree.
 
@@ -184,17 +182,17 @@ Manual testing
 **5.7** ASSERTION: **SwingExamples** is marked **Installed** in the modules list.
 
 **5.8** On **Modules** list, select multiple uninstalled modules.
+
 - Hold **Ctrl**/**Cmd** key down while clicking to select many items.
 
-**5.9** Click the button with download icon
-        on the top of the **Modules** list
-        to install all selected modules.
+**5.9** Click the button with download icon on the top of the **Modules** list to install all selected modules.
 
 **5.10** ASSERTION: The chosen modules appear in the project tree.
 
 **5.11** ASSERTION: The chosen modules are marked **Installed** in **Modules** list.
 
 **5.12** ASSERTION: All the installed modules have their dependencies correctly configured.
+
 - To check this, navigate to **File > Project Structure... > Modules**
   and make sure none of the modules is underlined in red.
 - Exit **Project Structure** window by clicking **Cancel**.
@@ -214,6 +212,7 @@ Manual testing
 #### Part I: Basic case
 
 **6.1** Open REPL by choosing a folder or a file within **SwingExamples** module.
+
 - Read [this](https://confluence.jetbrains.com/pages/viewpage.action?pageId=53326891)
   if you don't know how to open and use REPL.
 
@@ -223,10 +222,10 @@ Manual testing
 
 **6.3** Click **OK**.
 
-**6.4** ASSERTION: A REPL opens with **SwingExamples** in its title. 
+**6.4** ASSERTION: A REPL opens with **SwingExamples** in its title.
 
-**6.5** ASSERTION: Welcome message contains the **SwingExamples** as module name and a list of 
-imported packages: **o1, o1.llama, o1.randomtext**.
+**6.5** ASSERTION: Welcome message contains the **SwingExamples** as module name and a list of imported packages: **o1,
+o1.llama, o1.randomtext**.
 
 **6.6** ASSERTION: Welcome message contains `[Ctrl+Enter]` as one of the available commands.
 
@@ -253,8 +252,8 @@ imported packages: **o1, o1.llama, o1.randomtext**.
 
 **6.12** Close the REPL by clicking X next to its tab title.
 
-**6.13** The window opens asking whether REPL should be terminated.
-        Check **Don't ask again** checkbox and click **Terminate**.
+**6.13** The window opens asking whether REPL should be terminated. Check **Don't ask again** checkbox and click **
+Terminate**.
 
 #### Part II: Changing parameters
 
@@ -263,6 +262,7 @@ imported packages: **o1, o1.llama, o1.randomtext**.
 **6.15** Again, uncheck **Don't show this window again** checkbox.
 
 **6.16** Change **Working directory** to be the directory of **O1Library** module.
+
 - Just replacing **SwingExamples** with **O1Library** in the path does the trick.
 
 **6.17** Change value for **Use classpath and SDK of module** dropdown list to be **O1Library**.
@@ -276,7 +276,7 @@ imported packages: **o1, o1.llama, o1.randomtext**.
 **6.21** ASSERTION: The output of the first statement is the directory of **O1Library** module.
 
 **6.22** ASSERTION: The output of the second statement (classpath) contains **O1Library**
-         (but not other modules, such as **SwingExamples**).
+(but not other modules, such as **SwingExamples**).
 
 **6.23** Close the REPL.
 
@@ -297,7 +297,7 @@ imported packages: **o1, o1.llama, o1.randomtext**.
 **6.30** ASSERTION: The output of the first statement is the directory of **SwingExamples** module.
 
 **6.31** ASSERTION: The output of the second statement (classpath) contains **O1Library**
-         (but not other modules, such as **SwingExamples**).
+(but not other modules, such as **SwingExamples**).
 
 **6.32** Close the REPL.
 
@@ -314,14 +314,13 @@ imported packages: **o1, o1.llama, o1.randomtext**.
 **6.37** ASSERTION: The output of the first statement is the directory of **O1Library** module.
 
 **6.38** ASSERTION: The output of the second statement (classpath) contains **O1Library**
-         (but not other modules, such as **SwingExamples**).
+(but not other modules, such as **SwingExamples**).
 
 **6.39** Close the REPL.
 
 **6.40** Restart the IDE.
 
-**6.41** Once the IDE has restarted, open a file from **O1Library** in the editor
-         and start the Scala REPL.
+**6.41** Once the IDE has restarted, open a file from **O1Library** in the editor and start the Scala REPL.
 
 **6.42** ASSERTION: **REPL Configuration** window does not show up.
 
@@ -343,8 +342,7 @@ imported packages: **o1, o1.llama, o1.randomtext**.
 
 ### 7 Removing a module
 
-**7.1** Right-click **SwingExamples** in the project tree
-        and choose **Remove Module** from the context menu.
+**7.1** Right-click **SwingExamples** in the project tree and choose **Remove Module** from the context menu.
 
 **7.2** Confirm the removal by clicking **Remove** on a popup window.
 
@@ -352,8 +350,8 @@ imported packages: **o1, o1.llama, o1.randomtext**.
 
 **7.4** Double click **SwingExamples** in **Modules** list.
 
-**7.5** ASSERTION: **SwingExamples** shows up as a module in the project tree
-        and its status changes to **Installed** in the modules list.
+**7.5** ASSERTION: **SwingExamples** shows up as a module in the project tree and its status changes to **Installed** in
+the modules list.
 
 ### 8 Authentication with A+ LMS
 
@@ -374,18 +372,18 @@ imported packages: **o1, o1.llama, o1.randomtext**.
 **8.6** Restart the IDE.
 
 **8.7** ASSERTION: All the assignments are listed in the assignments tab, assuming that the
-        [safe password storage](https://jetbrains.org/intellij/sdk/docs/basics/persisting_sensitive_data.html?search=sensitive#storage) 
-        is enabled in the OS.
+[safe password storage](https://jetbrains.org/intellij/sdk/docs/basics/persisting_sensitive_data.html?search=sensitive#storage)
+is enabled in the OS.
 
 ### 9 Assignments submission
 
-**9.1** Expand **Week 1**, select **Assignment 2 (GoodStuff)**, and hit 
+**9.1** Expand **Week 1**, select **Assignment 2 (GoodStuff)**, and hit
 **Submit A+ Assignment**.
 
 ![Submit](images/submit_button.png)
 
-**9.2** ASSERTION: The **Could not find module: The A+ Courses plugin could not find the 
-module GoodStuff.** error is shown.
+**9.2** ASSERTION: The **Could not find module: The A+ Courses plugin could not find the module GoodStuff.** error is
+shown.
 
 **9.3** Go to **Modules** list and install **GoodStuff** module like described in **5.1**.
 
@@ -395,8 +393,8 @@ module GoodStuff.** error is shown.
 
 **9.6** Select **Submit as: > Submit alone**, check the default group check box, and click **OK**.
 
-**9.7** ASSERTION: The **Assignment sent for assessment: You will be notified here when
- feedback is available. (You may also always check any ... )** notification is shown.
+**9.7** ASSERTION: The **Assignment sent for assessment: You will be notified here when feedback is available. (You may
+also always check any ... )** notification is shown.
 
 **9.8** ASSERTION: The icon for the assignment changes to an hourglass.
 
@@ -406,7 +404,8 @@ module GoodStuff.** error is shown.
 
 ![Tags](images/tags.png)
 
-**9.10** ASSERTION: Local history contains accent-colored tag with text **Week 1, Assignment 2 (Goodstuff), Submission...**
+**9.10** ASSERTION: Local history contains accent-colored tag with text **Week 1, Assignment 2 (Goodstuff),
+Submission...**
 
 **9.11** Repeat **9.1**.
 
@@ -429,11 +428,11 @@ module GoodStuff.** error is shown.
 ![Refresh](images/refresh.png)
 
 **10.2** ASSERTION: Assignments submission has appeared in the list of corresponding submissions.
- 
+
 ### 11 Checking the submission
- 
-**11.1** ASSERTION: The **Submission feedback available Feedback for Assignment 2 (GoodStuff) [0/5] is now 
-available. Click here to open the feedback.** notification is shown.
+
+**11.1** ASSERTION: The **Submission feedback available Feedback for Assignment 2 (GoodStuff) [0/5] is now available.
+Click here to open the feedback.** notification is shown.
 
 **11.2** ASSERTION: Submission is added under the corresponding Assignment.
 
@@ -457,7 +456,7 @@ available. Click here to open the feedback.** notification is shown.
 
 **12.2** ASSERTION: **Non-submittable** and **Optional** menu items are checked.
 
-**12.3** Uncheck **Non-submittable** menu item. 
+**12.3** Uncheck **Non-submittable** menu item.
 
 **12.4** ASSERTION: Non-submittable (that is, grayed out) assignments are no longer in the tree.
 
@@ -493,4 +492,53 @@ available. Click here to open the feedback.** notification is shown.
 
 **13.3** Type the characters *fl* on your keyboard.
 
-**13.4** ASSERTION: **Week 5** is automatically expanded, **Assignment 4 (FlappyBug 15)** is automatically selected, and the substring **Fl** is highlighted.
+**13.4** ASSERTION: **Week 5** is automatically expanded, **Assignment 4 (FlappyBug 15)** is automatically selected, and
+the substring **Fl** is highlighted.
+
+### 14 Downloading student submissions
+
+**14.1** Enable Assistant Mode from the A+ menu.
+
+**14.2** ASSERTION: The student selection and submission downloading buttons appear above the assignments.
+
+**14.3** Click the student selection button.
+
+**14.4** ASSERTION: After loading, the student selection dialog opens.
+
+**14.5** ASSERTION: The dialog lists students with their names and student IDs.
+
+**14.6** Select a student with submissions by double-clicking the student.
+
+**14.7** ASSERTION: The dialog closes.
+
+**14.8** ASSERTION: After the loading bar disappears, the student's name gets added to the assignments tree title bar
+and the tree is collapsed.
+
+**14.9** Open Week 1 and the first GoodStuff assignment, select a submission and download it.
+
+**14.10** ASSERTION: The submission gets downloaded onto a new module with the name given in the dialog and the
+submission file is opened.
+
+### 15 User menu
+
+**15.1** ASSERTION: The A+ Courses tool window has a pink student icon at the top.
+
+**15.2** ASSERTION: The tooltip for said button has the text "Logged in as $name".
+
+**15.3** Click the button.
+
+**15.4** ASSERTION: The opened drop-down menu has two items, a greyed out name and "Log out".
+
+**15.5** Click "Log out".
+
+**15.6** ASSERTION: The assignment tree gets cleared and the button turns grey.
+
+**15.7** ASSERTION: The tooltip for the button says "Not logged in"
+
+**15.8** Click the button.
+
+**15.9** ASSERTION: The dropdown has the items "Not logged in" and "Log in".
+
+**15.10** Click "Log in".
+
+**15.11** ASSERTION: The token dialog opens.

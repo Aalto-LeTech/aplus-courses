@@ -17,8 +17,6 @@ import fi.aalto.cs.apluscourses.ui.base.SingleSelectionList;
 import fi.aalto.cs.apluscourses.utils.cache.CachePreferences;
 import icons.PluginIcons;
 import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.concurrent.Executors;
 import javax.swing.Action;
@@ -53,7 +51,7 @@ public class SelectStudentDialog extends OurDialogWrapper {
   @NotNull
   @Override
   protected Action @NotNull [] createActions() {
-    return new Action[]{new RefreshStudentsAction(), getOKAction(), getCancelAction()};
+    return new Action[] {new RefreshStudentsAction(), getOKAction(), getCancelAction()};
   }
 
   @Override
@@ -71,27 +69,7 @@ public class SelectStudentDialog extends OurDialogWrapper {
   private void createUIComponents() {
     scrollPane = new JBScrollPane();
 
-    studentList = new SingleSelectionList<>() {
-      @Override
-      protected void processMouseEvent(MouseEvent e) {
-        super.processMouseEvent(e);
-        if (e.getClickCount() == 2) {
-          performOkAction();
-        }
-      }
-
-      @Override
-      protected void processKeyEvent(KeyEvent e) {
-        super.processKeyEvent(e);
-        if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-          performOkAction();
-        }
-      }
-
-      private void performOkAction() {
-        getOKAction().actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null));
-      }
-    };
+    studentList = new SingleSelectionList<>(this::doOKAction);
     studentList.selectionBindable.bindToSource(viewModel.selectedStudent);
     studentList.listDataBindable.bindToSource(viewModel.students);
     new ListSpeedSearch<>(studentList, Student::getPresentableName);

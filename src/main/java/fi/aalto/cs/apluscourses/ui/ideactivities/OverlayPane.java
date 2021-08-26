@@ -149,7 +149,7 @@ public class OverlayPane extends JPanel implements AWTEventListener {
 
     Toolkit.getDefaultToolkit().addAWTEventListener(overlay,
         AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK
-        | AWTEvent.MOUSE_WHEEL_EVENT_MASK);
+            | AWTEvent.MOUSE_WHEEL_EVENT_MASK);
 
     return overlay;
   }
@@ -176,15 +176,32 @@ public class OverlayPane extends JPanel implements AWTEventListener {
     this.revalidatePane();
   }
 
+  public boolean hasHighlighterForComponent(@NotNull Component component) {
+    return this.highlighters.stream().anyMatch(highlighter -> highlighter.getComponent().equals(component));
+  }
+
   /**
    * Adds a popup to a specified component.
    */
   @RequiresEdt
   public void addPopup(@NotNull Component c, @NotNull String title,
-                                        @NotNull String message) {
+                       @NotNull String message) {
     var popup = new BalloonPopup(c, title, message, PluginIcons.A_PLUS_OPTIONAL_PRACTICE);
     this.balloonPopups.add(popup);
     this.getRootPane().getLayeredPane().add(popup, PANE_Z_ORDER + 1);
+    this.revalidatePane();
+  }
+
+  /**
+   * Resets the overlay to its original state, i.e. removes all popups and dims all components.
+   */
+  @RequiresEdt
+  public void reset() {
+    this.highlighters.clear();
+    for (var c : this.balloonPopups) {
+      this.getRootPane().getLayeredPane().remove(c);
+    }
+    this.balloonPopups.clear();
     this.revalidatePane();
   }
 

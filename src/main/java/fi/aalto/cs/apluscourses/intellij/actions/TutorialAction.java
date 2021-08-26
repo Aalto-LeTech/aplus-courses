@@ -4,6 +4,8 @@ import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.model.task.IntelliJActivityFactory;
 import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
@@ -79,7 +81,7 @@ public class TutorialAction extends AnAction {
     ExerciseViewModel selectedExercise = selection.getExercise();
     ExerciseGroupViewModel selectedExerciseGroup = selection.getExerciseGroup();
     if (selectedExercise == null || selectedExerciseGroup == null
-            || !ExerciseViewModel.Status.TUTORIAL.equals(selectedExercise.getStatus())) {
+        || !ExerciseViewModel.Status.TUTORIAL.equals(selectedExercise.getStatus())) {
       notifier.notifyAndHide(new ExerciseNotSelectedNotification(), project);
       return;
     }
@@ -94,7 +96,7 @@ public class TutorialAction extends AnAction {
     if (dialogs.confirmStart(tutorialViewModel)) {
       mainViewModelProvider.getMainViewModel(project).tutorialViewModel.set(tutorialViewModel);
       tutorialViewModel.getTutorial().tutorialCompleted
-          .addListener(mainViewModel, this::onTutorialComplete);
+          .addListener(mainViewModel, e -> this.onTutorialComplete(e, project));
       tutorialViewModel.startNextTask();
     }
   }
@@ -108,7 +110,7 @@ public class TutorialAction extends AnAction {
     var selection = exercisesViewModel == null ? null
         : (ExercisesTreeViewModel.ExerciseTreeSelection) exercisesViewModel.findSelected();
     boolean isTutorialSelected =
-            exercisesViewModel != null
+        exercisesViewModel != null
             && authentication != null && courseViewModel != null
             && exercisesViewModel.getSelectedItem() != null
             && !(exercisesViewModel.getSelectedItem() instanceof ExerciseGroupViewModel)
@@ -128,36 +130,42 @@ public class TutorialAction extends AnAction {
     @Override
     public boolean confirmStart(@NotNull TutorialViewModel tutorialViewModel) {
       return JOptionPane.showConfirmDialog(null,
-        getText("ui.tutorial.TutorialAction.confirmStart"),
-        tutorialViewModel.getTitle(),
-        JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION;
+          getText("ui.tutorial.TutorialAction.confirmStart"),
+          tutorialViewModel.getTitle(),
+          JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION;
     }
 
     @Override
     public boolean confirmCancel(@NotNull TutorialViewModel tutorialViewModel) {
       return JOptionPane.showConfirmDialog(null,
-        getText("ui.tutorial.TutorialAction.confirmCancel"),
-        tutorialViewModel.getTitle(),
-        JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION;
+          getText("ui.tutorial.TutorialAction.confirmCancel"),
+          tutorialViewModel.getTitle(),
+          JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION;
     }
 
     @Override
-    public void end(@NotNull TutorialViewModel tutorialViewModel) {
-      JOptionPane.showMessageDialog(null,
+    public boolean finishAndSubmit(@NotNull TutorialViewModel tutorialViewModel) {
+      return JOptionPane.showConfirmDialog(null,
           getText("ui.tutorial.TutorialAction.end"),
           tutorialViewModel.getTitle(),
-          JOptionPane.INFORMATION_MESSAGE);
+          JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
     }
   }
 
-  private void onTutorialComplete(@NotNull MainViewModel mainViewModel) {
+  private void onTutorialComplete(@NotNull MainViewModel mainViewModel,
+                                  @NotNull Project project) {
     TutorialViewModel viewModel = mainViewModel.tutorialViewModel.get();
     if (viewModel != null) {
       viewModel.getTutorial().tutorialCompleted.removeCallback(mainViewModel);
+      if (viewModel.isCompleted() && dialogs.finishAndSubmit(viewModel)) {
+        new SubmitExerciseAction().submitTutorial(project, viewModel);
+      }
       mainViewModel.tutorialViewModel.set(null);
       // Update the progress tracker.
-      Optional.ofNullable(ComponentDatabase.getNavBarToolBar()).ifPresent(tb -> tb.updateActionsImmediately(true));
-      dialogs.end(viewModel);
+      ApplicationManager.getApplication().invokeLater(() ->
+          Optional.ofNullable(ComponentDatabase.getNavBarToolBar())
+              .ifPresent(ActionToolbarImpl::updateActionsImmediately)
+      );
     }
   }
 }

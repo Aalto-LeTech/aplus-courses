@@ -60,6 +60,7 @@ public class CourseProjectView extends OurDialogWrapper {
     settingsOptOutCheckbox.setEnabled(viewModel.canUserOptOutSettings());
 
     warningText.setVisible(viewModel.shouldWarnUser());
+    warningText.setText(getText("ui.courseProject.form.settingsWarningText", project));
     settingsInfoText.setVisible(viewModel.shouldShowSettingsInfo());
 
     infoText.applyTemplate(viewModel.getCourseName());
@@ -70,6 +71,8 @@ public class CourseProjectView extends OurDialogWrapper {
     settingsPanel.setVisible(viewModel.shouldShowSettingsSegment());
 
     updateLabel.setVisible(viewModel.shouldDisplayVersionWarning());
+
+    languagePrompt.setText(getText("ui.courseProject.view.languagePrompt", project));
 
     init();
   }
@@ -82,12 +85,12 @@ public class CourseProjectView extends OurDialogWrapper {
 
   @Override
   protected Action @NotNull [] createActions() {
-    return new Action[] { getOKAction(), getCancelAction() };
+    return new Action[] {getOKAction(), getCancelAction()};
   }
 
   @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
   private void createUIComponents() {
-    languagePrompt = new JLabel(getText("ui.courseProject.view.languagePrompt"));
+    languagePrompt = new JLabel();
     languageComboBox = new OurComboBox<>(viewModel.getLanguages(), String.class);
     languageComboBox.setRenderer(new IconListCellRenderer<>(
         getText("ui.courseProject.view.languageSelectorDefault"),

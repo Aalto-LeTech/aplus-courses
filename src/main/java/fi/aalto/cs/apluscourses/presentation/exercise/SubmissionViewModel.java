@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.presentation.exercise;
 
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
+import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.Submission;
@@ -127,16 +128,16 @@ public class SubmissionViewModel {
    * @return A warning text or null, if no warning.
    */
   @Nullable
-  public String getSubmissionWarning() {
+  public String getSubmissionWarning(@Nullable Project project) {
     if (exercise.getMaxSubmissions() == 0) {
       return null;
     }
     int submissionsLeft = exercise.getMaxSubmissions() - exercise.getSubmissionResults().size();
     if (submissionsLeft == 1) {
-      return getText("presentation.submissionViewModel.warning.lastSubmission");
+      return getText("presentation.submissionViewModel.warning.lastSubmission", project);
     }
     if (submissionsLeft <= 0) {
-      return getText("presentation.submissionViewModel.warning.submissionsExceeded");
+      return getText("presentation.submissionViewModel.warning.submissionsExceeded", project);
     }
     return null;
   }

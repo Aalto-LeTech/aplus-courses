@@ -22,6 +22,7 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
   protected final @NotNull Project project;
   private OverlayPane overlayPane;
   private volatile CancelHandler cancelHandler; //NOSONAR
+  private boolean tryingToShow = false;
 
   protected IntelliJComponentPresenterBase(@NotNull String instruction,
                                            @NotNull String info,
@@ -44,22 +45,33 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
     if (overlayPane != null) {
       overlayPane.remove();
     }
-
-    GenericHighlighter highlighter = getHighlighter();
-    if (highlighter == null && tryToShow()) {
-      highlighter = getHighlighter();
-    } else if (highlighter == null) {
-      throw new IllegalStateException("Component was not found!");
-    }
     overlayPane = OverlayPane.installOverlay();
-    overlayPane.addHighlighter(highlighter);
     overlayPane.clickEvent.addListener(cancelHandler, CancelHandler::onCancel);
-    overlayPane.addPopup(highlighter.getComponent(), instruction, info);
 
     var progressButton = ComponentDatabase.getProgressButton();
     if (progressButton != null) {
       overlayPane.addHighlighter(new GenericHighlighter(progressButton));
     }
+
+    var highlighter = getHighlighter();
+
+    if (highlighter != null) {
+      tryingToShow = false;
+    } else if (tryingToShow) {
+      return;
+    } else if (tryToShow()) {
+      highlighter = getHighlighter();
+      if (highlighter == null) {
+        tryingToShow = true;
+        return;
+      }
+    } else {
+      throw new IllegalStateException("Component was not found!");
+    }
+
+    overlayPane.addHighlighter(highlighter);
+    overlayPane.addPopup(highlighter.getComponent(), instruction, info);
+
   }
 
   @Override
@@ -99,7 +111,11 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
     public void run() {
       ApplicationManager.getApplication()
           .invokeLater(() -> {
-            if (!isVisible()) {
+            var progressButton = ComponentDatabase.getProgressButton();
+            var progressButtonHighlighted = overlayPane != null
+                && progressButton != null
+                && overlayPane.hasHighlighterForComponent(progressButton);
+            if (!isVisible() || !progressButtonHighlighted || tryingToShow) {
               highlightInternal();
             }
           }, ModalityState.NON_MODAL);
