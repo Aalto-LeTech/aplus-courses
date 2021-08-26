@@ -15,7 +15,7 @@
     ]]></description>
 
     <change-notes>
-        Added IDE Activities.
+        Added support for tutorials.
     </change-notes>
 
     <depends>com.intellij.modules.java</depends>
