@@ -1,13 +1,13 @@
 package fi.aalto.cs.apluscourses.intellij.psi;
 
 import com.intellij.psi.PsiElement;
-import org.jetbrains.plugins.scala.lang.psi.api.expr.ScArgumentExprList;
-import org.jetbrains.plugins.scala.lang.psi.api.expr.ScReferenceExpression;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import org.jetbrains.plugins.scala.lang.psi.api.expr.ScArgumentExprList;
+import org.jetbrains.plugins.scala.lang.psi.api.expr.ScReferenceExpression;
+
 
 public class ScalaMethodCall {
   
@@ -19,6 +19,9 @@ public class ScalaMethodCall {
     this.argsList = argsList;
   }
   
+  /**
+   * Checks the name of the called method.
+   */
   public boolean checkMethodName(Optional<PsiElement> refExprMethodName) {
     if (refExprMethodName.isPresent()) {
       ScReferenceExpression refExpr = (ScReferenceExpression) refExprMethodName.get();
@@ -27,6 +30,9 @@ public class ScalaMethodCall {
     return false;
   }
   
+  /**
+   * Checks the arguments given to the method.
+   */
   public boolean checkArguments(Optional<PsiElement> argsList) {
     if (argsList.isPresent()) {
       ScArgumentExprList refExpr = (ScArgumentExprList) argsList.get();

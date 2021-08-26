@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScConstructorInvocation;
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScPatternList;
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.ScReferencePattern;
