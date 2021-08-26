@@ -33,8 +33,14 @@ public class IntelliJActivityFactory implements ActivityFactory {
         return FunctionDefinitionListener.create(callback, project, arguments);
       case "errors":
         return ErrorListener.create(callback, project, arguments);
+      case "openRepl":
+        return RunReplListener.create(callback, project, arguments);
+      case "replInput":
+        return ReplInOutListener.create(callback, project, arguments);
+      case "replInputContains":
+        return ReplContainsListener.create(callback, project, arguments);
       default:
-        throw new IllegalArgumentException("Unsupported action: " + action);
+        throw new IllegalArgumentException("Unsupported action: '" + action + "'");
     }
   }
 
@@ -56,8 +62,11 @@ public class IntelliJActivityFactory implements ActivityFactory {
         case "editor":
           ComponentDatabase.closeFile(actionArguments, project);
           break;
+        case "repl":
+          ComponentDatabase.closeRepls(project);
+          break;
         default:
-          throw new IllegalArgumentException("Unsupported component: " + component);
+          throw new IllegalArgumentException("Unsupported component: '" + closedComponent + "'");
       }
     }
     switch (component) {
@@ -65,8 +74,10 @@ public class IntelliJActivityFactory implements ActivityFactory {
         return new ProjectTreePresenter(instruction, info, project);
       case "editor":
         return EditorPresenter.create(instruction, info, project, actionArguments);
+      case "repl":
+        return ReplPresenter.create(instruction, info, project, actionArguments);
       default:
-        throw new IllegalArgumentException("Unsupported component: " + component);
+        throw new IllegalArgumentException("Unsupported component: '" + component + "'");
     }
   }
 }

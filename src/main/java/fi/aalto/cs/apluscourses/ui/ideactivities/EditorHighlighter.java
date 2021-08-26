@@ -33,7 +33,7 @@ public class EditorHighlighter extends GenericHighlighter {
    * The lines are indexed from 1, not 0.
    *
    * @param lineBegin The beginning of the intervals of lines, inclusive.
-   * @param lineEnd The ending of the intervals of lines, inclusive.
+   * @param lineEnd   The ending of the intervals of lines, inclusive.
    */
   public void highlightLineRange(int lineBegin, int lineEnd) {
     for (int i = lineBegin; i <= lineEnd; ++i) {

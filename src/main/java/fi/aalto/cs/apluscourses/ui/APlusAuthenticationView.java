@@ -53,7 +53,7 @@ public class APlusAuthenticationView extends DialogWrapper implements Dialog {
   @NotNull
   @Override
   protected Action @NotNull [] createActions() {
-    return new Action[]{getOKAction(), getCancelAction()};
+    return new Action[] {getOKAction(), getCancelAction()};
   }
 
   @Nullable
