@@ -8,6 +8,8 @@ import fi.aalto.cs.apluscourses.intellij.psi.ScalaMethodCall;
 import fi.aalto.cs.apluscourses.model.task.ActivitiesListener;
 import fi.aalto.cs.apluscourses.model.task.Arguments;
 import fi.aalto.cs.apluscourses.model.task.ListenerCallback;
+import java.util.Arrays;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement;
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaRecursiveElementVisitor;
@@ -15,8 +17,6 @@ import org.jetbrains.plugins.scala.lang.psi.api.expr.ScArgumentExprList;
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScMethodCall;
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScReferenceExpression;
 
-import java.util.Arrays;
-import java.util.Optional;
 
 public class MethodCallListener extends CodeListener {
   

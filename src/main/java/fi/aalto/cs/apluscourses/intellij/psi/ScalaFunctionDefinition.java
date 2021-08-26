@@ -18,24 +18,36 @@ public class ScalaFunctionDefinition {
   private final String[] arguments;
   private final String[] methodBody;
   private final String typeParameters;
+  private final boolean checkEquals;
 
   /**
    * Constructor.
    */
   public ScalaFunctionDefinition(String methodName, String[] arguments, String[] methodBody,
-                                 String typeParameters) {
+                                 String typeParameters, boolean checkEquals) {
     this.methodName = methodName;
     this.arguments = arguments;
     this.methodBody = methodBody;
     this.typeParameters = typeParameters;
+    this.checkEquals = checkEquals;
   }
 
   public boolean checkMethodName(ScFunctionDefinition element) {
     return methodName.equals(element.getName());
   }
+  
+  private boolean checkEquals(PsiElement element) {
+    if (checkEquals) {
+      Collection<PsiElement> siblings = PsiUtil.getPsiElementsSiblings(element);
+      Optional<PsiElement> parametersOptional = siblings.stream().filter(
+          ScParametersImpl.class::isInstance).findFirst();
+      PsiElement equalsElement = PsiUtil.findNextLeafPsiElement(parametersOptional);
+      
+      return equalsElement != null && ("=").equals(equalsElement.getText());
+    }
+    return true;
+  }
 
-  //also check for the existence of "="
-      //List<PsiElement> allChildren = List.copyOf(PsiUtil.getPsiElementsSiblings(children[0]));
   /**
    * Checks the type parameters of the function.
    * @param clause The ScTypeParametersClause to be checked.
@@ -45,6 +57,7 @@ public class ScalaFunctionDefinition {
     if (clause.isPresent() && typeParameters.length() != 0) {
       ScTypeParamClause typeParamClause = (ScTypeParamClause) clause.get();
       return typeParameters.equals(typeParamClause.getText().replace(" ", ""));
+      
     } else {
       return clause.isEmpty() && typeParameters.length() == 0;
     }
@@ -77,15 +90,9 @@ public class ScalaFunctionDefinition {
     if (methodBodyParent != null) {
       
       List<String> args = Arrays.asList(methodBody.clone());
-      /*if (args.size() >0 && args.get(0).equals("=")) {
-        List<PsiElement> parentSiblings = List.copyOf(PsiUtil.getPsiElementsSiblings(methodBodyParent));
-        
-      }*/
       children = methodBodyParent.getChildren();
-      //TODO get all the children with PsiUtil method and adjust the config file!
-      //and check if children is empty or not!!
       Collection<String> totalElements = getPsiElementsSiblings(children[0]);
-      return args.equals(totalElements);
+      return checkEquals(methodBodyParent) && args.equals(totalElements);
     }
     return false;
   }
@@ -113,5 +120,4 @@ public class ScalaFunctionDefinition {
     }
     return elements;
   }
-
 }

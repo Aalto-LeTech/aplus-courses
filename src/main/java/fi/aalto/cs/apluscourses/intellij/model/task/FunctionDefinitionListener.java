@@ -31,10 +31,11 @@ public class FunctionDefinitionListener extends CodeListener {
                                     @NotNull String[] arguments,
                                     @NotNull String[] body,
                                     @NotNull String typeParameters,
-                                    @NotNull String filePath) {
+                                    @NotNull String filePath,
+                                    @NotNull boolean checkEquals) {
     super(callback, project, filePath);
     this.scalaFunctionDefinition = new ScalaFunctionDefinition(methodName,
-        arguments, body, typeParameters);
+        arguments, body, typeParameters, checkEquals);
   }
 
   /**
@@ -47,7 +48,8 @@ public class FunctionDefinitionListener extends CodeListener {
                 arguments.getArray("methodArguments"),
                 arguments.getArray("methodBody"),
                 arguments.getString("typeParamClause"),
-                arguments.getString("filePath"));
+                arguments.getString("filePath"),
+                Boolean.getBoolean(arguments.getString("checkEquals")));
   }
 
 

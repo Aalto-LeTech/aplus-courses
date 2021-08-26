@@ -59,7 +59,6 @@ public class NewObjectAssignmentListener extends CodeListener {
               ScPatternList.class::isInstance).findFirst();
           if (newObjectAssignment.checkVariableType(patternList)
               && newObjectAssignment.checkName(patternList)) {
-            //TODO check if these lines above till here are the same and put into a super class! the subclasses will only check the different types of values assigned!!
             //If the keyword new is missing, ExtendsBlock does not exist in the PSI
             //and the command is treated like a MethodCall.
             Optional<PsiElement> constructorInvocation = newObjectAssignment.traversePsiTree(templateDef);

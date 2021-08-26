@@ -7,14 +7,13 @@ import com.intellij.psi.PsiFile;
 import fi.aalto.cs.apluscourses.intellij.psi.ScalaVariableDeclaration;
 import fi.aalto.cs.apluscourses.model.task.Arguments;
 import fi.aalto.cs.apluscourses.model.task.ListenerCallback;
+import java.util.Arrays;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement;
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaRecursiveElementVisitor;
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScPatternList;
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScPatternDefinition;
-
-import java.util.Arrays;
-import java.util.Optional;
 
 public class VariableDeclarationListener extends CodeListener {
   
@@ -43,11 +42,9 @@ public class VariableDeclarationListener extends CodeListener {
           PsiElement[] children = element.getChildren();
           Optional<PsiElement> refPattern = Arrays.stream(children).filter(
               ScPatternList.class::isInstance).findFirst();
-          //TODO the lines are different so don't create a superclass, instead create util methods
           if (scalaVariableDeclaration.checkVariableName(refPattern)
-            && scalaVariableDeclaration.checkVariableType(refPattern)
-            && scalaVariableDeclaration.checkAssignedValue(refPattern)) {
-            
+              && scalaVariableDeclaration.checkVariableType(refPattern)
+              && scalaVariableDeclaration.checkAssignedValue(refPattern)) {
             ApplicationManager.getApplication().invokeLater(callback::callback);
           }
         }

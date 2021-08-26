@@ -2,7 +2,6 @@ package fi.aalto.cs.apluscourses.intellij.psi;
 
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiParameter;
-import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.impl.source.tree.LeafPsiElement;
 import fi.aalto.cs.apluscourses.utils.ArrayUtil;
 import fi.aalto.cs.apluscourses.utils.StringUtil;
@@ -176,37 +175,9 @@ public class ScalaClassDeclaration {
     return false;
   }
 
-  //TODO turn into a Utils method!!
-  private Collection<PsiElement> getPsiElementsSiblings(PsiElement methodElement) {
-    List<PsiElement> elements = new ArrayList<>();
-
-    PsiElement prevSibling = methodElement.getPrevSibling();
-    PsiElement nextSibling = methodElement;
-
-    //First make sure to find the leftmost sibling (in order to maintain the order of the elements)
-    while (prevSibling != null) {
-      nextSibling = prevSibling;
-      prevSibling = prevSibling.getPrevSibling();
-    }
-
-    while (nextSibling != null) {
-      if (nextSibling instanceof PsiWhiteSpace) {
-        nextSibling = nextSibling.getNextSibling();
-        continue;
-      } else if (nextSibling.getChildren().length > 0) {
-        elements.addAll(getPsiElementsSiblings(nextSibling.getChildren()[0]));
-      } else {
-        elements.add(nextSibling);
-      }
-      nextSibling = nextSibling.getNextSibling();
-    }
-
-    return elements;
-  }
-
   private boolean isVar(PsiParameter param) {
     if (param.getChildren().length > 0) {
-      Collection<PsiElement> elements = getPsiElementsSiblings(param.getChildren()[0]);
+      Collection<PsiElement> elements = PsiUtil.getPsiElementsSiblings(param.getChildren()[0]);
       return elements.stream().anyMatch(elem -> elem instanceof LeafPsiElement
           && elem.getText().equals("var"));
     }
@@ -215,7 +186,7 @@ public class ScalaClassDeclaration {
 
   private boolean isVal(PsiParameter param) {
     if (param.getChildren().length > 0) {
-      Collection<PsiElement> elements = getPsiElementsSiblings(param.getChildren()[0]);
+      Collection<PsiElement> elements = PsiUtil.getPsiElementsSiblings(param.getChildren()[0]);
       return elements.stream().anyMatch(elem -> elem instanceof LeafPsiElement
           && elem.getText().equals("val"));
     }

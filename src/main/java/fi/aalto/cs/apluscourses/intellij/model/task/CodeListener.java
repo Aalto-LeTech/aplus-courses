@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.intellij.model.task;
 
 import com.intellij.openapi.Disposable;
+import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
@@ -21,7 +22,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class CodeListener implements DocumentListener, ActivitiesListener {
-
 
   protected final ListenerCallback callback;
   protected final Project project;
@@ -50,7 +50,6 @@ public abstract class CodeListener implements DocumentListener, ActivitiesListen
     disposable.dispose();
   }
 
-
   private boolean checkFile() {
     if (project.getBasePath() != null) {
       Path modulePath = Path.of(project.getBasePath(), filePath);
@@ -71,7 +70,15 @@ public abstract class CodeListener implements DocumentListener, ActivitiesListen
     PsiDocumentManager.getInstance(project).commitDocument(event.getDocument());
     PsiFile psiFile = PsiDocumentManager.getInstance(project).getPsiFile(event.getDocument());
     if (psiFile != null) {
-      checkPsiFile(psiFile);
+      //use thread pool in the future
+      Thread checkPsiFileThread = new Thread(() ->
+          ReadAction.run(() -> {
+            if (psiFile.isValid()) {
+              checkPsiFile(psiFile);
+            }
+          })
+      );
+      checkPsiFileThread.start();
     }
   }
 

@@ -8,7 +8,6 @@ import fi.aalto.cs.apluscourses.intellij.psi.PsiUtil;
 import fi.aalto.cs.apluscourses.intellij.psi.ScalaAssignStatement;
 import fi.aalto.cs.apluscourses.model.task.Arguments;
 import fi.aalto.cs.apluscourses.model.task.ListenerCallback;
-
 import java.util.Arrays;
 import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
@@ -22,10 +21,6 @@ import org.jetbrains.plugins.scala.lang.psi.api.expr.ScReferenceExpression;
 public class AssignStatementListener extends CodeListener {
   
   private ScalaAssignStatement scalaAssignStatement;
-  //reuse for the check of val ballRadius = 50 and add an optional val or var check?
-  //Or reuse the code into a new listener!
-  
-  //ΤΟΔΟ ΦΙΧ ΤΗΕ ΝΑΜΕΣ!!
   
   protected AssignStatementListener(ListenerCallback callback, Project project, String filePath,
                                     String variableName, String[] valueTokens) {
@@ -35,7 +30,7 @@ public class AssignStatementListener extends CodeListener {
   }
   
   public static AssignStatementListener create(ListenerCallback callback, Project project, Arguments arguments) {
-    return new AssignStatementListener(callback,project,arguments.getString("filePath"),
+    return new AssignStatementListener(callback, project, arguments.getString("filePath"),
       arguments.getString("variableName"), arguments.getArray("valueTokens"));
   }
   
@@ -53,7 +48,7 @@ public class AssignStatementListener extends CodeListener {
             if (scalaAssignStatement.checkVariableName(refExpr)) {
               Optional<PsiElement> infixExpr = Arrays.stream(element.getChildren()).filter(
                     ScInfixExpr.class::isInstance).findFirst();
-              PsiElement equals = PsiUtil.getNextLeafPsiElement(refExpr);
+              PsiElement equals = PsiUtil.findNextNonEmptyPsiElement(refExpr);
               if (scalaAssignStatement.checkEquals(equals) && scalaAssignStatement.checkInfixExpr(infixExpr)) {
                 ApplicationManager.getApplication().invokeLater(callback::callback);
               }
