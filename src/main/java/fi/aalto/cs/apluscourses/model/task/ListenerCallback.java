@@ -1,6 +1,6 @@
 package fi.aalto.cs.apluscourses.model.task;
 
-@FunctionalInterface
 public interface ListenerCallback {
-  void callback();
+  void onHappened(boolean isInitial);
+  void onStarted();
 }

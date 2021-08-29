@@ -1,11 +1,10 @@
 package fi.aalto.cs.apluscourses.intellij.model.task;
 
 import com.intellij.openapi.Disposable;
-import com.intellij.openapi.application.ReadAction;
+import com.intellij.openapi.application.NonBlockingReadAction;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
-import com.intellij.openapi.editor.event.EditorEventMulticaster;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.vfs.LocalFileSystem;
@@ -14,74 +13,66 @@ import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.util.PathUtil;
-import fi.aalto.cs.apluscourses.model.task.ActivitiesListener;
+import com.intellij.util.concurrency.annotations.RequiresReadLock;
+import fi.aalto.cs.apluscourses.intellij.utils.VfsUtil;
 import fi.aalto.cs.apluscourses.model.task.ListenerCallback;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.concurrent.atomic.AtomicBoolean;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public abstract class CodeListener implements DocumentListener, ActivitiesListener {
+public abstract class CodeListener extends ActivitiesListenerBase<@Nullable PsiFile> implements DocumentListener {
 
-  protected final ListenerCallback callback;
   protected final Project project;
-  private Disposable disposable;
+  private final Disposable disposable = Disposer.newDisposable();
   protected final String filePath;
-  protected final AtomicBoolean isCorrect = new AtomicBoolean(false);
 
   protected CodeListener(ListenerCallback callback, Project project, String filePath) {
-    this.callback = callback;
+    super(callback);
     this.project = project;
     this.filePath = filePath;
   }
 
   @Override
-  public boolean registerListener() {
-    EditorEventMulticaster multicaster = EditorFactory.getInstance().getEventMulticaster();
-    disposable = Disposer.newDisposable();
-    multicaster.addDocumentListener(this, disposable);
-    return checkFile();
+  public void registerListenerOverride() {
+    EditorFactory.getInstance().getEventMulticaster().addDocumentListener(this, disposable);
   }
 
   @Override
-  public void unregisterListener() {
-    EditorEventMulticaster multicaster = EditorFactory.getInstance().getEventMulticaster();
-    multicaster.removeDocumentListener(this);
+  public void unregisterListenerOverride() {
+    EditorFactory.getInstance().getEventMulticaster().removeDocumentListener(this);
     disposable.dispose();
-  }
-
-  private boolean checkFile() {
-    if (project.getBasePath() != null) {
-      Path modulePath = Path.of(project.getBasePath(), filePath);
-      modulePath = Paths.get(PathUtil.toSystemDependentName(modulePath.toString()));
-      VirtualFile vf = LocalFileSystem.getInstance().findFileByIoFile(modulePath.toFile());
-      if (vf != null) {
-        PsiFile psiFile = PsiManager.getInstance(project).findFile(vf);
-        if (psiFile != null) {
-          checkPsiFile(psiFile);
-        }
-      }
-    }
-    return isCorrect.get();
   }
 
   @Override
   public void documentChanged(@NotNull DocumentEvent event) {
-    PsiDocumentManager.getInstance(project).commitDocument(event.getDocument());
-    PsiFile psiFile = PsiDocumentManager.getInstance(project).getPsiFile(event.getDocument());
-    if (psiFile != null) {
-      //use thread pool in the future
-      Thread checkPsiFileThread = new Thread(() ->
-          ReadAction.run(() -> {
-            if (psiFile.isValid()) {
-              checkPsiFile(psiFile);
-            }
-          })
-      );
-      checkPsiFileThread.start();
-    }
+    check(PsiDocumentManager.getInstance(project).getPsiFile(event.getDocument()));
   }
 
-  protected abstract void checkPsiFile(@NotNull PsiFile file);
+  @Override
+  protected boolean checkOverride(@Nullable PsiFile param) {
+    return param != null && checkPsiFile(param);
+  }
 
+  @Override
+  protected <V> NonBlockingReadAction<V> prepareReadAction(@NotNull NonBlockingReadAction<V> action) {
+    return action.withDocumentsCommitted(project);
+  }
+
+  @Override
+  @RequiresReadLock
+  protected @Nullable PsiFile getDefaultParameter() {
+    String basePath = project.getBasePath();
+    if (basePath == null) {
+      return null;
+    }
+    Path modulePath = Paths.get(PathUtil.toSystemDependentName(VfsUtil.joinPaths(basePath, filePath)));
+    VirtualFile vf = LocalFileSystem.getInstance().findFileByIoFile(modulePath.toFile());
+    if (vf == null) {
+      return null;
+    }
+    return PsiManager.getInstance(project).findFile(vf);
+  }
+
+  protected abstract boolean checkPsiFile(@NotNull PsiFile psiFile);
 }

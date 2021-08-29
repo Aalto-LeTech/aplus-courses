@@ -9,7 +9,7 @@ import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
-public class TutorialViewModel {
+public class TutorialViewModel implements Task.Observer {
 
   @NotNull
   private final TutorialExercise tutorialExercise;
@@ -59,24 +59,39 @@ public class TutorialViewModel {
   /**
    * Begins the nextTask which is indicated by the currentTask variable.
    */
-  public void startNextTask() {
+  public void startCurrentTask() {
     synchronized (lock) {
-      currentTask.taskCompleted.addListener(this, TutorialViewModel::currentTaskCompleted);
-      currentTask.taskCanceled.addListener(this, TutorialViewModel::confirmCancel);
-      incrementTaskIndex();
-      if (currentTask.startTask(activityFactory)) {
-        taskNotifier.notifyAlreadyEndTask(tutorialExercise.getTutorial().getTasks().indexOf(currentTask),
-            currentTask.getInstruction());
-        currentTask.setAlreadyComplete(true);
-        currentTaskCompleted();
-      }
-      // The Task/Tutorial has been completed prematurely
-      // because the Activity was already performed.
-      // E.g. the file was open already, variable renamed etc.
-      // No need to show the instructions for this Task
-      // as we are proceeding directly to the next one.
-      // We can instead inform the user that they have already completed it
+      currentTask.addObserver(this);
+      currentTask.startTask(activityFactory);
     }
+  }
+
+  /**
+   * Ends the current task.
+   */
+  public void endCurrentTask() {
+    synchronized (lock) {
+      currentTask.removeObserver(this);
+      currentTask.endTask();
+    }
+  }
+
+  @Override
+  public void onCancelled() {
+    confirmCancel();
+  }
+
+  @Override
+  public void onAutoCompleted() {
+    taskNotifier.notifyAlreadyEndTask(tutorialExercise.getTutorial().getTasks().indexOf(currentTask),
+        currentTask.getInstruction());
+    currentTaskCompleted();
+  }
+
+  @Override
+  public void onCompleted() {
+    taskNotifier.notifyEndTask(tutorialExercise.getTutorial().getTasks().indexOf(currentTask));
+    currentTaskCompleted();
   }
 
   /**
@@ -86,19 +101,15 @@ public class TutorialViewModel {
    */
   public void currentTaskCompleted() {
     synchronized (lock) {
-      if (!currentTask.getAlreadyComplete()) {
-        taskNotifier.notifyEndTask(tutorialExercise.getTutorial().getTasks().indexOf(currentTask));
-      }
-      currentTask.endTask();
-      currentTask.taskCompleted.removeCallback(this);
-      currentTask.taskCanceled.removeCallback(this);
+      endCurrentTask();
       Tutorial tutorial = tutorialExercise.getTutorial();
       currentTask = tutorial.getNextTask(currentTask);
       if (currentTask == null) {
         isCompleted = true;
         tutorial.onComplete();
       } else {
-        startNextTask();
+        incrementTaskIndex();
+        startCurrentTask();
       }
     }
   }
@@ -109,16 +120,11 @@ public class TutorialViewModel {
    */
   public void changeTask(int newTaskIndex) {
     synchronized (lock) {
+      endCurrentTask();
       Tutorial tutorial = tutorialExercise.getTutorial();
-      currentTask.endTask();
-      currentTask.taskCompleted.removeCallback(this);
       currentTask = tutorial.getTasks().get(newTaskIndex);
       this.currentTaskIndex = newTaskIndex;
-      if (currentTask == null) {
-        tutorial.onComplete();
-      } else {
-        startNextTask();
-      }
+      startCurrentTask();
     }
   }
 
@@ -128,9 +134,7 @@ public class TutorialViewModel {
   public void cancelTutorial() {
     synchronized (lock) {
       if (currentTask != null) {
-        currentTask.endTask();
-        currentTask.taskCompleted.removeCallback(this);
-        currentTask.taskCanceled.removeCallback(this);
+        endCurrentTask();
         currentTask = null;
         tutorialExercise.getTutorial().onComplete();
       }
@@ -167,8 +171,8 @@ public class TutorialViewModel {
   }
 
   /**
-   * Cancels the tutorial if the user confirms it.
-   */
+    * Cancels the tutorial if the user confirms it.
+    */
   public void confirmCancel() {
     if (dialogs.confirmCancel(this)) {
       cancelTutorial();

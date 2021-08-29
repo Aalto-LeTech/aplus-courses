@@ -4,15 +4,33 @@ import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileVisitor;
 import com.intellij.util.concurrency.annotations.RequiresReadLock;
+import fi.aalto.cs.apluscourses.utils.StringUtil;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class VfsUtil {
 
+  private static final char PATH_SEPARATOR = '/';
+
   private VfsUtil() {
 
+  }
+
+  /**
+   * Combines system independent paths.
+   * Considers nulls as empty paths.
+   */
+  @NotNull
+  public static String joinPaths(@Nullable String... paths) {
+    return Arrays.stream(paths)
+        .filter(Objects::nonNull)
+        .map(path -> StringUtil.strip(path, PATH_SEPARATOR))
+        .collect(Collectors.joining(String.valueOf(PATH_SEPARATOR)));
   }
 
   /**
