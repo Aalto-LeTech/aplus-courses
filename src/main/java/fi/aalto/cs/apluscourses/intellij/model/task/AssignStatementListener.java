@@ -24,7 +24,11 @@ public class AssignStatementListener extends ScalaElementListener {
     super(callback, project, filePath);
     scalaAssignStatement = new ScalaAssignStatement(variableName, valueTokens);
   }
-  
+
+  /**
+   * A factory method.
+   * @return A new instance of this class.
+   */
   public static AssignStatementListener create(ListenerCallback callback, Project project, Arguments arguments) {
     return new AssignStatementListener(callback, project,
         arguments.getString("filePath"),

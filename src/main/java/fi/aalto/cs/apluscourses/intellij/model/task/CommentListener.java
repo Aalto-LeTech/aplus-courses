@@ -17,7 +17,11 @@ public class CommentListener extends CodeListener {
     super(callback, project, filePath);
     this.text = text;
   }
-  
+
+  /**
+   * A factory method.
+   * @return A new instance of this class.
+   */
   public static CodeListener create(ListenerCallback listenerCallback,
                                     Project project,
                                     Arguments arguments) {
