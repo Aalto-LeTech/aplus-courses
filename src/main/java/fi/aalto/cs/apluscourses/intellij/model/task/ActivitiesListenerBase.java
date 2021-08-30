@@ -68,6 +68,7 @@ public abstract class ActivitiesListenerBase<T> implements ActivitiesListener {
     if (isSuccess) {
       callback.onHappened(true);
     } else {
+      callback.onStarted();
       registerListenerOverride();
     }
   }

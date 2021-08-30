@@ -49,8 +49,8 @@ public class TutorialViewModel implements Task.Observer {
       this.currentTask = tasks.get(0);
     }
     isCompleted = false;
-    currentTaskIndex = 0;
-    unlockedIndex = 0;
+    currentTaskIndex = 1;
+    unlockedIndex = 1;
     tasksAmount = tasks.size();
     this.activityFactory = activityFactory;
     this.taskNotifier = taskNotifier;
