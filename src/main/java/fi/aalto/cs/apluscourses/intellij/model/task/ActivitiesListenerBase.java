@@ -11,6 +11,7 @@ import fi.aalto.cs.apluscourses.model.task.ActivitiesListener;
 import fi.aalto.cs.apluscourses.model.task.ListenerCallback;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import org.jetbrains.annotations.CalledInAny;
@@ -31,8 +32,13 @@ public abstract class ActivitiesListenerBase<T> implements ActivitiesListener {
   private static final Executor EDT_EXECUTOR = ApplicationManager.getApplication()::invokeLater;
   private static final Executor BG_EXECUTOR = AppExecutorUtil.getAppExecutorService();
 
+  private static final int INITIAL = 0;
+  private static final int REGISTERED = 1;
+  private static final int UNREGISTERED = 2;
+
   private final ListenerCallback callback;
   private final AtomicBoolean isAlreadyFinished = new AtomicBoolean(false);
+  private final AtomicInteger state = new AtomicInteger(INITIAL);
 
   protected ActivitiesListenerBase(ListenerCallback callback) {
     this.callback = callback;
@@ -47,7 +53,19 @@ public abstract class ActivitiesListenerBase<T> implements ActivitiesListener {
   @CalledInAny
   @Override
   public void unregisterListener() {
-    EDT_EXECUTOR.execute(this::unregisterListenerOverride);
+    EDT_EXECUTOR.execute(this::unregisterListenerInternal);
+  }
+
+  private void registerListenerInternal() {
+    if (state.compareAndSet(INITIAL, REGISTERED)) {
+      registerListenerOverride();
+    }
+  }
+
+  private void unregisterListenerInternal() {
+    if (state.compareAndSet(REGISTERED, UNREGISTERED)) {
+      unregisterListenerOverride();
+    }
   }
 
   @CalledInAny
@@ -69,7 +87,7 @@ public abstract class ActivitiesListenerBase<T> implements ActivitiesListener {
       callback.onHappened(true);
     } else {
       callback.onStarted();
-      registerListenerOverride();
+      registerListenerInternal();
     }
   }
 

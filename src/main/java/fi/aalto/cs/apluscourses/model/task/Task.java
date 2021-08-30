@@ -73,7 +73,6 @@ public class Task implements CancelHandler, ListenerCallback {
     }
     presenter = activityFactory.createPresenter(component, instruction, info, componentArguments,
         actionArguments, assertClosed);
-    presenter.setCancelHandler(this);
     listener = activityFactory.createListener(action, actionArguments, this);
     listener.registerListener();
   }
@@ -124,8 +123,11 @@ public class Task implements CancelHandler, ListenerCallback {
   }
 
   @Override
-  public void onStarted() {
-    presenter.highlight();
+  public synchronized void onStarted() {
+    if (presenter != null) {
+      presenter.setCancelHandler(this);
+      presenter.highlight();
+    }
   }
 
   private void notifyObservers(@NotNull Consumer<@NotNull Observer> method) {
