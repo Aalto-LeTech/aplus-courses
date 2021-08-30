@@ -154,13 +154,13 @@ public class SubmitExerciseAction extends AnAction {
     } else {
       var selectedItem = exercisesViewModel.getSelectedItem();
       var isSubmittableExerciseSelected = selectedItem instanceof ExerciseViewModel
-              && ((ExerciseViewModel) selectedItem).isSubmittable();
+          && ((ExerciseViewModel) selectedItem).isSubmittable();
       var isSubmittableSubmissionSelected = selectedItem instanceof SubmissionResultViewModel
-              && ((SubmissionResultViewModel) selectedItem).getModel().getExercise()
-              .isSubmittable();
+          && ((SubmissionResultViewModel) selectedItem).getModel().getExercise()
+          .isSubmittable();
       e.getPresentation().setEnabled(project != null
-              && authentication != null && courseViewModel != null
-              && (isSubmittableExerciseSelected || isSubmittableSubmissionSelected));
+          && authentication != null && courseViewModel != null
+          && (isSubmittableExerciseSelected || isSubmittableSubmissionSelected));
       var selectedEx = exercisesViewModel.findSelected().getLevel(2);
       var isTutorial = selectedEx instanceof ExerciseViewModel
           && ExerciseViewModel.Status.TUTORIAL.equals(((ExerciseViewModel) selectedEx).getStatus());
@@ -334,11 +334,11 @@ public class SubmitExerciseAction extends AnAction {
     TutorialExercise exercise = tutorialViewModel.getExercise();
 
     // a submission for an IDE activity only has one file with a magic file name
-    var tutorialResultFile = FileUtilRt.createTempFile("tutorials", null);
+    var tutorialResultFile = FileUtilRt.createTempFile(Tutorial.TUTORIAL_SUBMIT_FILE_NAME, null);
     String payload = tutorial.getSubmissionPayload();
     FileUtils.writeStringToFile(tutorialResultFile, payload, StandardCharsets.UTF_8);
 
-    Map<String, Path> files = Map.of(Tutorial.TUTORIAL_SUBMIT_FILE_NAME, tutorialResultFile.toPath());
+    Map<String, Path> files = Map.of("file1", tutorialResultFile.toPath());
 
     // IDE activities are always submitted alone
     var aloneGroup =
