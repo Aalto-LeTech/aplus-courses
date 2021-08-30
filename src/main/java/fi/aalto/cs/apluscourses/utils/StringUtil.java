@@ -53,9 +53,9 @@ public class StringUtil {
    */
   public static String stripTrailing(@NotNull String string, char character) {
     int index = string.length();
-    do {
+    while (index > 0 && string.charAt(index - 1) == character) {
       index--;
-    } while (index >= 0 && string.charAt(index) == character);
-    return index < 0 ? "" : string.substring(0, index);
+    }
+    return index > 0 ? string.substring(0, index) : "";
   }
 }

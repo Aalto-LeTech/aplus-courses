@@ -29,6 +29,10 @@ public class ScalaReplObserver {
     }, 500, 500);
   }
 
+  public void stop() {
+    timer.cancel();
+  }
+
   private void checkIsReplOpen() {
     if (isReplOpen()) {
       stop();
@@ -38,10 +42,6 @@ public class ScalaReplObserver {
 
   public boolean isReplOpen() {
     return isReplOpen(project, module);
-  }
-
-  public void stop() {
-    timer.cancel();
   }
 
   /**
