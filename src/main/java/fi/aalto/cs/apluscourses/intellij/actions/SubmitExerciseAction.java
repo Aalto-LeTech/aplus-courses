@@ -338,14 +338,27 @@ public class SubmitExerciseAction extends AnAction {
     String payload = tutorial.getSubmissionPayload();
     FileUtils.writeStringToFile(tutorialResultFile, payload, StandardCharsets.UTF_8);
 
-    Map<String, Path> files = Map.of("file1", tutorialResultFile.toPath());
+    var submissionInfo = exercise.getSubmissionInfo();
+    String language = "en";
+
+    if (!submissionInfo.isSubmittable(language)) {
+      logger.warn("{} not submittable", exercise);
+      notifier.notify(new NotSubmittableNotification(), project);
+      return;
+    }
+    var submittableFiles = submissionInfo.getFiles(language);
+    if (submittableFiles.size() != 1) {
+      logger.warn("Tutorial doesn't have one submittable file: {}", submittableFiles);
+      return;
+    }
+    Map<String, Path> files = Map.of(submittableFiles.get(0).getKey(), tutorialResultFile.toPath());
 
     // IDE activities are always submitted alone
     var aloneGroup =
         new Group(-1, Collections.singletonList(getText("ui.toolWindow.subTab.exercises.submission.submitAlone")));
     List<Group> groups = List.of(aloneGroup);
 
-    SubmissionViewModel submission = new SubmissionViewModel(exercise, groups, aloneGroup, files, "en");
+    SubmissionViewModel submission = new SubmissionViewModel(exercise, groups, aloneGroup, files, language);
 
     final var exerciseDataSource = courseViewModel.getModel().getExerciseDataSource();
     String submissionUrl = exerciseDataSource.submit(submission.buildSubmission(), authentication);
