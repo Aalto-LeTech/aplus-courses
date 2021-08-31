@@ -9,7 +9,7 @@ plugins {
     id "org.jmailen.kotlinter" version "3.3.0"
 }
 
-def pluginVersion
+def pluginVersion = '3.0'
 
 group 'fi.aalto.cs'
 version '2.2'
@@ -19,6 +19,11 @@ sourceCompatibility = 11
 def courseVersion = '1.0'
 def remoteRobotVersion = '0.11.6'
 def fixturesVersion = "1.1.18"
+
+group 'fi.aalto.cs'
+version pluginVersion
+
+sourceCompatibility = 11
 
 repositories {
     mavenCentral()
@@ -44,9 +49,13 @@ dependencies {
 
 intellij {
     //  this is the version of the IntelliJ IDEA API (SDK) used to build the plugin
-    version '2021.1'
+    version '2021.2'
     plugins = ['java', 'org.intellij.scala:2021.2.15']
     downloadRobotServerPlugin.version = remoteRobotVersion
+}
+
+patchPluginXml {
+    version.set(pluginVersion)
 }
 
 sourceSets {
@@ -101,7 +110,7 @@ task gatherBuildInfo(dependsOn: processResources) {
     doLast {
         new File("$buildDir/resources/main/build-info.properties").withWriter { writer ->
             Properties props = new Properties()
-            props['version'] = version
+            props['version'] = pluginVersion
             props['courseVersion'] = courseVersion
             props.store(writer, null)
         }
