@@ -63,7 +63,7 @@ public abstract class ActivitiesListenerBase<T> implements ActivitiesListener {
   }
 
   private void unregisterListenerInternal() {
-    if (state.compareAndSet(REGISTERED, UNREGISTERED)) {
+    if (state.getAndSet(UNREGISTERED) == REGISTERED) {
       unregisterListenerOverride();
     }
   }
