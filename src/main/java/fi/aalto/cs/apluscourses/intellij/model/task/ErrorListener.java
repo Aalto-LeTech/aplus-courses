@@ -30,15 +30,14 @@ public class ErrorListener extends CodeListener {
 
 
   @Override
-  protected void checkPsiFile(@Nullable PsiFile file) {
-    if (file == null || file.getVirtualFile() == null) {
-      return;
+  protected boolean checkPsiFile(@Nullable PsiFile psiFile) {
+    if (psiFile == null) {
+      return false;
     }
-
-    if (problemsCollector.getFileProblemCount(file.getVirtualFile()) == 0) {
-      callback.callback();
-      isCorrect.set(true);
+    var virtualFile = psiFile.getVirtualFile();
+    if (virtualFile == null) {
+      return false;
     }
+    return problemsCollector.getFileProblemCount(virtualFile) == 0;
   }
-
 }

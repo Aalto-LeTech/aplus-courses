@@ -23,7 +23,7 @@ public class BuildActionListener extends IdeActionListener {
   public void beforeActionPerformed(@NotNull AnAction action, @NotNull AnActionEvent event) {
     if ((actionName.equals(action.getTemplateText()))
                     || actionName.equals(event.getPresentation().getText())) {
-      callback.callback();
+      check(true);
     }
   }
 }

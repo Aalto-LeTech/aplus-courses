@@ -1,20 +1,13 @@
 package fi.aalto.cs.apluscourses.intellij.model.task;
 
-import com.intellij.execution.impl.ExecutionManagerImpl;
 import com.intellij.openapi.project.Project;
-import fi.aalto.cs.apluscourses.model.task.ActivitiesListener;
+import fi.aalto.cs.apluscourses.intellij.utils.ScalaReplObserver;
 import fi.aalto.cs.apluscourses.model.task.Arguments;
 import fi.aalto.cs.apluscourses.model.task.ListenerCallback;
-import java.util.Timer;
-import java.util.TimerTask;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.plugins.scala.console.ScalaConsoleInfo;
 
-public class RunReplListener implements ActivitiesListener {
-  private final ListenerCallback callback;
-  private final Project project;
-  private final String module;
-  private Timer timer;
+public class RunReplListener extends ActivitiesListenerBase<Boolean> implements ScalaReplObserver.Callback {
+  private final ScalaReplObserver observer;
 
   /**
    * A constructor for a listener that listens for a REPL of a given module opening.
@@ -22,9 +15,8 @@ public class RunReplListener implements ActivitiesListener {
   public RunReplListener(@NotNull ListenerCallback callback,
                          @NotNull Project project,
                          @NotNull String module) {
-    this.callback = callback;
-    this.project = project;
-    this.module = module;
+    super(callback);
+    observer = new ScalaReplObserver(project, module, this);
   }
 
   /**
@@ -37,37 +29,27 @@ public class RunReplListener implements ActivitiesListener {
   }
 
   @Override
-  public boolean registerListener() {
-    if (isReplOpen(project, module)) {
-      return true;
-    }
-    timer = new Timer();
-    timer.schedule(new TimerTask() {
-      @Override
-      public void run() {
-        if (isReplOpen(project, module)) {
-          timer.cancel();
-          callback.callback();
-        }
-      }
-    }, 500, 500);
-    return false;
+  protected boolean checkOverride(Boolean param) {
+    return param;
   }
 
   @Override
-  public void unregisterListener() {
-    if (timer != null) {
-      timer.cancel();
-      timer = null;
-    }
+  protected void registerListenerOverride() {
+    observer.start();
   }
 
-  /**
-   * Returns true if the REPL for a given module is open.
-   */
-  public static boolean isReplOpen(@NotNull Project project, @NotNull String module) {
-    return ScalaConsoleInfo.getConsole(project) != null
-        && ExecutionManagerImpl.getAllDescriptors(project).stream().anyMatch(d -> d.getDisplayName().contains("REPL")
-        && d.getDisplayName().contains(module));
+  @Override
+  protected void unregisterListenerOverride() {
+    observer.stop();
+  }
+
+  @Override
+  protected Boolean getDefaultParameter() {
+    return observer.isReplOpen();
+  }
+
+  @Override
+  public void onReplOpen() {
+    check(true);
   }
 }
