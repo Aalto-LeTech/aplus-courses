@@ -270,7 +270,7 @@ class MainTest {
                     assertTrue(hasText("Apache Commons IO"))
                     assertTrue(hasText("IntelliJ Scala Plugin"))
                     assertTrue(hasText("json.org"))
-                    assertTrue(hasText("Scala Standard Library 2.13.4"))
+                    assertTrue(hasText("Scala Standard Library"))
                     assertTrue(hasText("zip4j"))
                 }
                 button("OK").click()

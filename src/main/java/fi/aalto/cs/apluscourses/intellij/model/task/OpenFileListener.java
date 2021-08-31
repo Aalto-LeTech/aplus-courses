@@ -5,18 +5,22 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.FileEditorManagerListener;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.util.concurrency.annotations.RequiresEdt;
 import com.intellij.util.concurrency.annotations.RequiresReadLock;
 import com.intellij.util.messages.MessageBusConnection;
-import fi.aalto.cs.apluscourses.model.task.ActivitiesListener;
 import fi.aalto.cs.apluscourses.model.task.Arguments;
 import fi.aalto.cs.apluscourses.model.task.ListenerCallback;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
 
-public class OpenFileListener implements FileEditorManagerListener, ActivitiesListener {
-  private final ListenerCallback callback;
+public class OpenFileListener extends ActivitiesListenerBase<@NotNull Collection<@NotNull VirtualFile>>
+    implements FileEditorManagerListener {
+
   private final @NotNull String filePath;
   private final Project project;
   private MessageBusConnection messageBusConnection;
@@ -31,50 +35,50 @@ public class OpenFileListener implements FileEditorManagerListener, ActivitiesLi
   public OpenFileListener(@NotNull ListenerCallback callback,
                           @NotNull Project project,
                           @NotNull String filePath) {
-    this.callback = callback;
+    super(callback);
     this.filePath = filePath;
     this.project = project;
   }
 
-  public static OpenFileListener create(ListenerCallback callback, Project project,
+  public static OpenFileListener create(ListenerCallback callback,
+                                        Project project,
                                         Arguments arguments) {
     return new OpenFileListener(callback, project, arguments.getString("filePath"));
   }
 
-  @RequiresReadLock
+  @RequiresEdt
   @Override
-  public boolean registerListener() {
-    boolean alreadyOpen = Arrays.stream(FileEditorManager.getInstance(project).getAllEditors())
-        .map(FileEditor::getFile)
-        .filter(Objects::nonNull)
-        .anyMatch(this::checkFile);
-    if (alreadyOpen) {
-      return true;
-    }
+  protected void registerListenerOverride() {
     messageBusConnection = project.getMessageBus().connect();
     messageBusConnection.subscribe(FileEditorManagerListener.FILE_EDITOR_MANAGER, this);
-    return false;
   }
 
-  @RequiresReadLock
+  @RequiresEdt
   @Override
-  public void unregisterListener() {
-    if (messageBusConnection != null) {
-      messageBusConnection.disconnect();
-      messageBusConnection = null;
-    }
+  protected void unregisterListenerOverride() {
+    messageBusConnection.disconnect();
+    messageBusConnection = null;
   }
 
   @RequiresReadLock
   @Override
   public void fileOpened(@NotNull FileEditorManager source, @NotNull VirtualFile file) {
-    if (checkFile(file)) {
-      callback.callback();
-    }
+    check(Collections.singleton(file));
   }
 
-  private boolean checkFile(@NotNull VirtualFile file) {
-    return file.getPath().endsWith(filePath);
+  @RequiresReadLock
+  @Override
+  protected boolean checkOverride(@NotNull Collection<@NotNull VirtualFile> files) {
+    return files.stream().anyMatch(file -> file.getPath().endsWith(filePath));
+  }
+
+  @RequiresReadLock
+  @Override
+  protected @NotNull Collection<@NotNull VirtualFile> getDefaultParameter() {
+    return Arrays.stream(FileEditorManager.getInstance(project).getAllEditors())
+      .map(FileEditor::getFile)
+      .filter(Objects::nonNull)
+      .collect(Collectors.toList());
   }
 }
 

@@ -33,6 +33,16 @@ public class IntelliJActivityFactory implements ActivityFactory {
         return FunctionDefinitionListener.create(callback, project, arguments);
       case "errors":
         return ErrorListener.create(callback, project, arguments);
+      case "newObjectAssignmentScala":
+        return NewObjectAssignmentListener.create(callback, project, arguments);
+      case "methodCall":
+        return MethodCallListener.create(callback, project, arguments);
+      case "assignStatement":
+        return AssignStatementListener.create(callback, project, arguments);
+      case "declareVariable":
+        return VariableDeclarationListener.create(callback, project, arguments);
+      case "comment":
+        return CommentListener.create(callback, project, arguments);
       case "openRepl":
         return RunReplListener.create(callback, project, arguments);
       case "replInput":

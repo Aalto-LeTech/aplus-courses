@@ -9,22 +9,19 @@ import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.util.Key;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiFileFactory;
-import fi.aalto.cs.apluscourses.model.task.ActivitiesListener;
+import fi.aalto.cs.apluscourses.intellij.utils.ScalaReplObserver;
 import fi.aalto.cs.apluscourses.model.task.ListenerCallback;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.plugins.scala.ScalaLanguage;
 import org.jetbrains.plugins.scala.console.ScalaConsoleInfo;
 import org.jetbrains.plugins.scala.console.ScalaLanguageConsole;
 
-public abstract class ScalaReplListener implements ActivitiesListener, ProcessListener {
-  @NotNull
-  private final ListenerCallback callback;
+public abstract class ScalaReplListener extends ActivitiesListenerBase<Boolean>
+    implements ProcessListener, ScalaReplObserver.Callback {
 
   @NotNull
   private final Project project;
 
-  @NotNull
-  private final String module;
 
   private ProcessHandler processHandler;
 
@@ -36,7 +33,7 @@ public abstract class ScalaReplListener implements ActivitiesListener, ProcessLi
 
   protected PsiFile file;
 
-  private RunReplListener runReplListener;
+  private ScalaReplObserver scalaReplObserver;
 
   /**
    * A constructor.
@@ -44,39 +41,40 @@ public abstract class ScalaReplListener implements ActivitiesListener, ProcessLi
   protected ScalaReplListener(@NotNull ListenerCallback callback,
                               @NotNull Project project,
                               @NotNull String module) {
-    this.callback = callback;
+    super(callback);
+    scalaReplObserver = new ScalaReplObserver(project, module, this);
     this.project = project;
-    this.module = module;
   }
 
   @Override
-  public boolean registerListener() {
-    if (!RunReplListener.isReplOpen(project, module)) {
-      runReplListener = new RunReplListener(this::registerListener, project, module);
-      if (!runReplListener.registerListener()) {
-        return false;
-      }
-    }
+  protected void registerListenerOverride() {
+    scalaReplObserver.start();
+  }
 
-    if (runReplListener != null) {
-      runReplListener.unregisterListener();
-    }
-
+  @Override
+  public void onReplOpen() {
     console = ScalaConsoleInfo.getConsole(project);
-
     processHandler = ScalaConsoleInfo.getProcessHandler(project);
-
     processHandler.addProcessListener(this);
-
-    return false;
   }
 
   @Override
-  public void unregisterListener() {
+  protected void unregisterListenerOverride() {
+    scalaReplObserver.stop();
     if (processHandler != null) {
       processHandler.removeProcessListener(this);
       processHandler = null;
     }
+  }
+
+  @Override
+  protected boolean checkOverride(Boolean param) {
+    return param;
+  }
+
+  @Override
+  protected Boolean getDefaultParameter() {
+    return false;
   }
 
   @Override
@@ -108,7 +106,7 @@ public abstract class ScalaReplListener implements ActivitiesListener, ProcessLi
       historyLength = history.length();
     }
     if (isCorrect(event)) {
-      callback.callback();
+      check(true);
     }
   }
 
@@ -118,5 +116,4 @@ public abstract class ScalaReplListener implements ActivitiesListener, ProcessLi
     var text = event.getText();
     return text.substring(text.indexOf(" ") + 1);
   }
-
 }

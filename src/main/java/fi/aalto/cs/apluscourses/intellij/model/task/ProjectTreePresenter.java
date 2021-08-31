@@ -3,8 +3,10 @@ package fi.aalto.cs.apluscourses.intellij.model.task;
 import static fi.aalto.cs.apluscourses.ui.ideactivities.ComponentDatabase.PROJECT_TOOL_WINDOW;
 
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.wm.ToolWindow;
 import fi.aalto.cs.apluscourses.ui.ideactivities.ComponentDatabase;
 import fi.aalto.cs.apluscourses.ui.ideactivities.GenericHighlighter;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,12 +19,22 @@ public class ProjectTreePresenter extends IntelliJComponentPresenterBase {
 
   @Override
   protected @Nullable GenericHighlighter getHighlighter() {
-    var toolWindow = ComponentDatabase.getToolWindow(PROJECT_TOOL_WINDOW, project);
+    var toolWindow = getToolWindow();
     return toolWindow == null ? null : new GenericHighlighter(toolWindow.getComponent());
   }
 
   @Override
   public boolean tryToShow() {
     return ComponentDatabase.showToolWindow(PROJECT_TOOL_WINDOW, project);
+  }
+
+  @Override
+  public boolean isVisible() {
+    return Optional.ofNullable(getToolWindow()).map(ToolWindow::isVisible).orElse(false);
+  }
+
+  @Nullable
+  private ToolWindow getToolWindow() {
+    return ComponentDatabase.getToolWindow(PROJECT_TOOL_WINDOW, project);
   }
 }

@@ -1,18 +1,17 @@
 package fi.aalto.cs.apluscourses.model.task;
 
-import fi.aalto.cs.apluscourses.utils.Event;
 import fi.aalto.cs.apluscourses.utils.JsonUtil;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class Task implements CancelHandler {
-  public final @NotNull Event taskCompleted = new Event();
-  public final @NotNull Event taskCanceled = new Event();
-
+public class Task implements CancelHandler, ListenerCallback {
   private final @NotNull String instruction;
   private final @NotNull String info;
   private final String @NotNull [] assertClosed;
@@ -24,7 +23,7 @@ public class Task implements CancelHandler {
   private ActivitiesListener listener;
   private ComponentPresenter presenter;
 
-  private final AtomicBoolean alreadyComplete = new AtomicBoolean();
+  private final Set<@NotNull Observer> observers = Collections.synchronizedSet(new HashSet<>());
 
   /**
    * Task constructor.
@@ -53,7 +52,6 @@ public class Task implements CancelHandler {
    * Ends the task.
    */
   public synchronized void endTask() {
-    alreadyComplete.set(false);
     if (listener != null) {
       listener.unregisterListener();
       listener = null;
@@ -68,21 +66,15 @@ public class Task implements CancelHandler {
    * Starts a task.
    *
    * @param activityFactory Creator for listener and presenter objects.
-   * @return True, if task was already completed, otherwise false
    */
-  public synchronized boolean startTask(ActivityFactory activityFactory) {
+  public synchronized void startTask(ActivityFactory activityFactory) {
     if (presenter != null || listener != null) {
       throw new IllegalStateException();
     }
     presenter = activityFactory.createPresenter(component, instruction, info, componentArguments,
         actionArguments, assertClosed);
-    presenter.setCancelHandler(this);
-    listener = activityFactory.createListener(action, actionArguments, taskCompleted::trigger);
-    if (listener.registerListener()) {
-      return true;
-    }
-    presenter.highlight();
-    return false;
+    listener = activityFactory.createListener(action, actionArguments, this);
+    listener.registerListener();
   }
 
   /**
@@ -109,14 +101,6 @@ public class Task implements CancelHandler {
             Function.identity(), Function.identity())::get;
   }
 
-  public boolean getAlreadyComplete() {
-    return alreadyComplete.get();
-  }
-
-  public void setAlreadyComplete(boolean alreadyComplete) {
-    this.alreadyComplete.set(alreadyComplete);
-  }
-
   @NotNull
   public String getInstruction() {
     return instruction;
@@ -124,13 +108,48 @@ public class Task implements CancelHandler {
 
   @Override
   public void onCancel() {
-    taskCanceled.trigger();
+    notifyObservers(Observer::onCancelled);
   }
 
   protected static String @NotNull [] parseAssert(@Nullable JSONArray jsonObject) {
     return jsonObject == null ? new String[0]
         : JsonUtil.parseArray(jsonObject, JSONArray::getString,
             Function.identity(), String[]::new);
+  }
+
+  @Override
+  public void onHappened(boolean isInitial) {
+    notifyObservers(isInitial ? Observer::onAutoCompleted : Observer::onCompleted);
+  }
+
+  @Override
+  public synchronized void onStarted() {
+    if (presenter != null) {
+      presenter.setCancelHandler(this);
+      presenter.highlight();
+    }
+  }
+
+  private void notifyObservers(@NotNull Consumer<@NotNull Observer> method) {
+    for (var observer : observers.toArray(Observer[]::new)) {
+      method.accept(observer);
+    }
+  }
+
+  public void addObserver(@NotNull Observer observer) {
+    observers.add(observer);
+  }
+
+  public void removeObserver(@NotNull Observer observer) {
+    observers.remove(observer);
+  }
+
+  public interface Observer {
+    void onCancelled();
+
+    void onAutoCompleted();
+
+    void onCompleted();
   }
 }
 

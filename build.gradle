@@ -10,6 +10,12 @@ plugins {
 }
 
 def pluginVersion = '3.0'
+
+group 'fi.aalto.cs'
+version '2.2'
+
+sourceCompatibility = 11
+
 def courseVersion = '1.0'
 def remoteRobotVersion = '0.11.6'
 def fixturesVersion = "1.1.18"
@@ -67,6 +73,10 @@ compileE2eKotlin {
 configurations {
     e2eImplementation.extendsFrom testImplementation
     e2eRuntime.extendsFrom testRuntime
+}
+
+patchPluginXml {
+    version.set(pluginVersion)
 }
 
 publishPlugin {
