@@ -342,13 +342,13 @@ public class SubmitExerciseAction extends AnAction {
     String language = "en";
 
     if (!submissionInfo.isSubmittable(language)) {
-      logger.warn("{} not submittable", exercise);
+      logger.warn("Tutorial {} not submittable", exercise);
       notifier.notify(new NotSubmittableNotification(), project);
       return;
     }
     var submittableFiles = submissionInfo.getFiles(language);
     if (submittableFiles.size() != 1) {
-      logger.warn("Tutorial doesn't have one submittable file: {}", submittableFiles);
+      logger.warn("Tutorial {} doesn't have one submittable file", exercise);
       return;
     }
     Map<String, Path> files = Map.of(submittableFiles.get(0).getKey(), tutorialResultFile.toPath());
