@@ -5,7 +5,7 @@
             url="https://research.cs.aalto.fi/LeTech/">LeTech Group at Aalto University
     </vendor>
     <!--  this is the range of supported IntelliJ IDEA version the plugin can be used with  -->
-    <idea-version since-build="212.5080.55"/>
+    <idea-version since-build="212.4746.92"/>
 
     <description><![CDATA[
     This plugin supports the educational use of IntelliJ IDEA (and its Scala plugin) in programming
