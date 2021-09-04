@@ -9,8 +9,10 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
+import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -19,9 +21,6 @@ import org.jetbrains.annotations.Nullable;
 
 public class BalloonPopup extends JPanel implements TransparentComponent, MouseListener {
   private final @NotNull Component anchorComponent;
-
-  @GuiObject
-  private final JPanel titlePanel;
 
   @GuiObject
   private final BalloonLabel titleLabel;
@@ -59,16 +58,26 @@ public class BalloonPopup extends JPanel implements TransparentComponent, MouseL
     titleLabel = new BalloonLabel("<html><h1>" + title + "</h1></html>");
     titleLabel.setIcon(icon);
 
-    titlePanel = new JPanel();
-    titlePanel.setOpaque(false);
-    titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.X_AXIS));
-    titlePanel.setAlignmentX(LEFT_ALIGNMENT);
-    titlePanel.add(titleLabel);
-    add(titlePanel);
+    var titleBox = Box.createHorizontalBox();
+    titleBox.setOpaque(false);
+    titleBox.setAlignmentX(LEFT_ALIGNMENT);
+    titleBox.add(titleLabel);
+    add(titleBox);
 
     messageLabel = new BalloonLabel("<html>" + message + "</html>");
     messageLabel.setAlignmentX(LEFT_ALIGNMENT);
     add(messageLabel);
+
+    var doneButton = new JButton("I am done");
+    doneButton.setAlignmentX(RIGHT_ALIGNMENT);
+    doneButton.addActionListener(e -> JOptionPane.showMessageDialog(null, "hello"));
+
+    var buttonBox = Box.createHorizontalBox();
+    buttonBox.setOpaque(false);
+    buttonBox.setAlignmentX(LEFT_ALIGNMENT);
+    buttonBox.add(Box.createHorizontalGlue());
+    buttonBox.add(doneButton);
+    add(buttonBox);
 
     setTransparencyCoefficient(0.3f);
     recalculateBounds();
