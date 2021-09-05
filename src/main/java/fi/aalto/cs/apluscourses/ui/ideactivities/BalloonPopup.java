@@ -9,6 +9,7 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
@@ -41,8 +42,8 @@ public class BalloonPopup extends JPanel implements TransparentComponent, MouseL
    * component. Optionally, an icon can be provided which will be displayed to the left of
    * the popup's title.
    */
-  public BalloonPopup(@NotNull Component anchorComponent, @NotNull String title,
-                      @NotNull String message, @Nullable Icon icon) {
+  public BalloonPopup(@NotNull Component anchorComponent, @NotNull String title, @NotNull String message,
+                      @Nullable Icon icon, @NotNull Action @NotNull [] actions) {
     this.anchorComponent = anchorComponent;
     transparencyHandler = new TransparencyAnimationHandler(this);
 
@@ -68,16 +69,18 @@ public class BalloonPopup extends JPanel implements TransparentComponent, MouseL
     messageLabel.setAlignmentX(LEFT_ALIGNMENT);
     add(messageLabel);
 
-    var doneButton = new JButton("I am done");
-    doneButton.setAlignmentX(RIGHT_ALIGNMENT);
-    doneButton.addActionListener(e -> JOptionPane.showMessageDialog(null, "hello"));
-
-    var buttonBox = Box.createHorizontalBox();
-    buttonBox.setOpaque(false);
-    buttonBox.setAlignmentX(LEFT_ALIGNMENT);
-    buttonBox.add(Box.createHorizontalGlue());
-    buttonBox.add(doneButton);
-    add(buttonBox);
+    if (actions.length > 0) {
+      var buttonBox = Box.createHorizontalBox();
+      buttonBox.setOpaque(false);
+      buttonBox.setAlignmentX(LEFT_ALIGNMENT);
+      buttonBox.add(Box.createHorizontalGlue());
+      for (var action : actions) {
+        var button = new JButton(action);
+        button.setAlignmentX(RIGHT_ALIGNMENT);
+        buttonBox.add(button);
+      }
+      add(buttonBox);
+    }
 
     setTransparencyCoefficient(0.3f);
     recalculateBounds();
