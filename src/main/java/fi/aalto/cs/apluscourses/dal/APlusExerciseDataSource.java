@@ -100,11 +100,19 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
         : appendTwoLists(results, getPaginatedResults(nextPage, authentication, cachePreference, parseFunction));
   }
 
-  private  <T> List<T> getPaginatedResults(@NotNull String url,
-                                           @NotNull Authentication authentication,
-                                           @NotNull Function<JSONObject, T> parseFunction)
+  private <T> List<T> getPaginatedResults(@NotNull String url,
+                                          @NotNull Authentication authentication,
+                                          @NotNull Function<JSONObject, T> parseFunction)
       throws IOException {
     return getPaginatedResults(url, authentication, CachePreferences.GET_NEW_AND_FORGET, parseFunction);
+  }
+
+  @NotNull
+  private Map<Long, List<Long>> getExerciseOrder(@NotNull Course course, @NotNull Authentication authentication)
+      throws IOException {
+    String url = apiUrl + COURSES + "/" + course.getId() + "/tree/";
+    JSONObject response = client.fetch(url, authentication);
+    return parser.parseExerciseOrder(response);
   }
 
   /**
@@ -133,7 +141,8 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
                                                @NotNull Authentication authentication)
       throws IOException {
     String url = apiUrl + COURSES + "/" + course.getId() + "/" + EXERCISES + "/";
-    return getPaginatedResults(url, authentication, ExerciseGroup::fromJsonObject);
+    var exerciseOrder = getExerciseOrder(course, authentication);
+    return getPaginatedResults(url, authentication, object -> ExerciseGroup.fromJsonObject(object, exerciseOrder));
   }
 
   /**
@@ -203,7 +212,7 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   @NotNull
   public ZonedDateTime getEndingTime(@NotNull Course course,
                                      @NotNull Authentication authentication)
-          throws IOException {
+      throws IOException {
     String url = apiUrl + COURSES + "/" + course.getId() + "/";
     JSONObject response = client.fetch(url, authentication);
     return parser.parseEndingTime(response);
@@ -314,6 +323,29 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
     @Override
     public Points parsePoints(@NotNull JSONObject object) {
       return Points.fromJsonObject(object);
+    }
+
+    @Override
+    public Map<Long, List<Long>> parseExerciseOrder(@NotNull JSONObject object) {
+      var modules = object.getJSONArray("modules");
+      var exerciseIds = new HashMap<Long, List<Long>>();
+
+      for (int i = 0; i < modules.length(); i++) {
+        var module = modules.getJSONObject(i);
+        var moduleChildren = module.getJSONArray("children");
+        var moduleExerciseIds = new ArrayList<Long>();
+
+        for (int j = 0; j < moduleChildren.length(); j++) {
+          var chapterChildren = moduleChildren.getJSONObject(j).getJSONArray("children");
+          for (int k = 0; k < chapterChildren.length(); k++) {
+            moduleExerciseIds.add(chapterChildren.getJSONObject(k).getLong("id"));
+          }
+        }
+
+        var moduleId = module.getLong("id");
+        exerciseIds.put(moduleId, moduleExerciseIds);
+      }
+      return exerciseIds;
     }
 
     @Override
