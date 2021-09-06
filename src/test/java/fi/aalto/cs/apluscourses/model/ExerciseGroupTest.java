@@ -3,6 +3,7 @@ package fi.aalto.cs.apluscourses.model;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.OptionalLong;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -63,7 +64,7 @@ public class ExerciseGroupTest {
                 .put(HTML_KEY, "http://localhost:7000")
                 .put(MAX_POINTS_KEY, 50)
                 .put(MAX_SUBMISSIONS_KEY, 10)));
-    ExerciseGroup group = ExerciseGroup.fromJsonObject(json, new HashMap<>());
+    ExerciseGroup group = ExerciseGroup.fromJsonObject(json, Map.of(567L, List.of()));
 
     Assert.assertEquals(567, group.getId());
     Assert.assertEquals("The exercise group has the same name as in the JSON object",
