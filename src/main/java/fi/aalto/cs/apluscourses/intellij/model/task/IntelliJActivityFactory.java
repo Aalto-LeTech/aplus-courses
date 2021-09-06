@@ -26,6 +26,8 @@ public class IntelliJActivityFactory implements ActivityFactory {
                                                     @NotNull Arguments arguments,
                                                     @NotNull ListenerCallback callback) {
     switch (action) {
+      case "null":
+        return NullListener.create(callback);
       case "openEditor":
         return OpenFileListener.create(callback, project, arguments);
       case "build":
