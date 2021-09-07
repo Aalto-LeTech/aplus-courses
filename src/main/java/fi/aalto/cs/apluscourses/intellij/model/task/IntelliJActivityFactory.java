@@ -13,6 +13,7 @@ import java.util.Arrays;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class IntelliJActivityFactory implements ActivityFactory {
   private final @NotNull Project project;
@@ -63,8 +64,8 @@ public class IntelliJActivityFactory implements ActivityFactory {
 
   @Override
   public @NotNull ComponentPresenter createPresenter(@NotNull String component,
-                                                     @NotNull String instruction,
-                                                     @NotNull String info,
+                                                     @Nullable String instruction,
+                                                     @Nullable String info,
                                                      @NotNull Arguments componentArguments,
                                                      @NotNull Arguments actionArguments,
                                                      @NotNull String @NotNull [] assertClosed,

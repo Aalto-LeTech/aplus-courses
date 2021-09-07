@@ -80,11 +80,16 @@ public class Task implements CancelHandler, ListenerCallback {
     if (!presenters.isEmpty() || listener != null) {
       throw new IllegalStateException();
     }
-    for (var componentName : components) {
-      presenters.add(activityFactory.createPresenter(componentName, instruction, info,
-          componentArguments, actionArguments, assertClosed,
+
+    for (int i = 0; i < components.length; ++i) {
+      var componentName = components[i];
+      boolean attachPopup = i == 0; // only the first component in the array has the popup attached
+
+      presenters.add(activityFactory.createPresenter(componentName, attachPopup ? instruction : null,
+          attachPopup ? info : null, componentArguments, actionArguments, assertClosed,
           isFreeRange ? new Reaction[] { new ImDoneReaction() } : new Reaction[0]));
     }
+
     listener = activityFactory.createListener(action, actionArguments, this);
     listener.registerListener();
   }

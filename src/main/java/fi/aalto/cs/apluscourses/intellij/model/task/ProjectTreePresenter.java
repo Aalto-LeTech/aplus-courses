@@ -12,8 +12,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ProjectTreePresenter extends IntelliJComponentPresenterBase {
-  public ProjectTreePresenter(@NotNull String instruction,
-                              @NotNull String info,
+  public ProjectTreePresenter(@Nullable String instruction,
+                              @Nullable String info,
                               @NotNull Project project,
                               @NotNull Action @NotNull [] actions) {
     super(instruction, info, project, actions);

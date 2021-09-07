@@ -35,6 +35,8 @@ public class OverlayPane extends JPanel implements AWTEventListener {
   private final Set<GenericHighlighter> highlighters = new HashSet<>();
   private final Set<BalloonPopup> balloonPopups = new HashSet<>();
 
+  private static OverlayPane overlayInstance;
+
   public final Event clickEvent = new Event();
 
   private void revalidatePane() {
@@ -144,14 +146,18 @@ public class OverlayPane extends JPanel implements AWTEventListener {
    */
   @RequiresEdt
   public static OverlayPane installOverlay() {
+    if (overlayInstance != null) {
+      return overlayInstance;
+    }
+
     var overlay = new OverlayPane();
     overlay.getRootPane().getLayeredPane().add(overlay, PANE_Z_ORDER);
     overlay.revalidatePane();
 
     Toolkit.getDefaultToolkit().addAWTEventListener(overlay,
-        AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK
-            | AWTEvent.MOUSE_WHEEL_EVENT_MASK);
+        AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK | AWTEvent.MOUSE_WHEEL_EVENT_MASK);
 
+    overlayInstance = overlay;
     return overlay;
   }
 
@@ -166,7 +172,9 @@ public class OverlayPane extends JPanel implements AWTEventListener {
     for (var c : this.balloonPopups) {
       this.getRootPane().getLayeredPane().remove(c);
     }
+
     this.revalidatePane();
+    overlayInstance = null;
   }
 
   /**
@@ -227,8 +235,6 @@ public class OverlayPane extends JPanel implements AWTEventListener {
       if (mouseEvent.getButton() == MouseEvent.BUTTON1) {
         clickEvent.trigger();
       }
-      // the mouse event is inside dimmed area, do something with it
-      // for example, use mouseEvent.consume() to block the event from reaching any component
     }
   }
 }
