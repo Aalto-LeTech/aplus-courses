@@ -1,8 +1,10 @@
 package fi.aalto.cs.apluscourses.model.task;
 
 import fi.aalto.cs.apluscourses.utils.JsonUtil;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -15,13 +17,13 @@ public class Task implements CancelHandler, ListenerCallback {
   private final @NotNull String instruction;
   private final @NotNull String info;
   private final String @NotNull [] assertClosed;
-  private final @NotNull String component;
+  private final @NotNull String[] components;
   private final @NotNull Arguments componentArguments;
   private final @NotNull String action;
   private final @NotNull Arguments actionArguments;
 
   private ActivitiesListener listener;
-  private ComponentPresenter presenter;
+  private final List<ComponentPresenter> presenters = new ArrayList<>();
 
   private final Set<@NotNull Observer> observers = Collections.synchronizedSet(new HashSet<>());
 
@@ -31,7 +33,7 @@ public class Task implements CancelHandler, ListenerCallback {
   public Task(@NotNull String instruction,
               @NotNull String info,
               String @NotNull [] assertClosed,
-              @NotNull String component,
+              @NotNull String[] components,
               @NotNull Arguments componentArguments,
               @NotNull String action,
               @NotNull Arguments actionArguments) {
@@ -40,7 +42,7 @@ public class Task implements CancelHandler, ListenerCallback {
     this.action = action;
     this.actionArguments = actionArguments;
     this.info = info;
-    this.component = component;
+    this.components = components;
     this.componentArguments = componentArguments;
   }
 
@@ -56,10 +58,14 @@ public class Task implements CancelHandler, ListenerCallback {
       listener.unregisterListener();
       listener = null;
     }
-    if (presenter != null) {
-      presenter.removeHighlight();
-      presenter = null;
+
+    for (var presenter : presenters) {
+      if (presenter != null) {
+        presenter.removeHighlight();
+      }
     }
+
+    presenters.clear();
   }
 
   /**
@@ -68,11 +74,13 @@ public class Task implements CancelHandler, ListenerCallback {
    * @param activityFactory Creator for listener and presenter objects.
    */
   public synchronized void startTask(ActivityFactory activityFactory) {
-    if (presenter != null || listener != null) {
+    if (!presenters.isEmpty() || listener != null) {
       throw new IllegalStateException();
     }
-    presenter = activityFactory.createPresenter(component, instruction, info, componentArguments,
-        actionArguments, assertClosed);
+    for (var componentName : components) {
+      presenters.add(activityFactory.createPresenter(componentName, instruction, info,
+          componentArguments, actionArguments, assertClosed));
+    }
     listener = activityFactory.createListener(action, actionArguments, this);
     listener.registerListener();
   }
@@ -88,7 +96,7 @@ public class Task implements CancelHandler, ListenerCallback {
         jsonObject.getString("instruction"),
         jsonObject.getString("info"),
         parseAssert(jsonObject.optJSONArray("assertClosed")),
-        jsonObject.getString("component"),
+        JsonUtil.parseArray(jsonObject.getJSONArray("component"), JSONArray::getString, Function.identity(), String[]::new),
         parseArguments(jsonObject.optJSONObject("componentArguments")),
         jsonObject.getString("action"),
         parseArguments(jsonObject.optJSONObject("actionArguments"))
@@ -124,7 +132,7 @@ public class Task implements CancelHandler, ListenerCallback {
 
   @Override
   public synchronized void onStarted() {
-    if (presenter != null) {
+    for (var presenter : presenters) {
       presenter.setCancelHandler(this);
       presenter.highlight();
     }
