@@ -9,8 +9,11 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import javax.swing.Action;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
+import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -19,9 +22,6 @@ import org.jetbrains.annotations.Nullable;
 
 public class BalloonPopup extends JPanel implements TransparentComponent, MouseListener {
   private final @NotNull Component anchorComponent;
-
-  @GuiObject
-  private final JPanel titlePanel;
 
   @GuiObject
   private final BalloonLabel titleLabel;
@@ -42,8 +42,8 @@ public class BalloonPopup extends JPanel implements TransparentComponent, MouseL
    * component. Optionally, an icon can be provided which will be displayed to the left of
    * the popup's title.
    */
-  public BalloonPopup(@NotNull Component anchorComponent, @NotNull String title,
-                      @NotNull String message, @Nullable Icon icon) {
+  public BalloonPopup(@NotNull Component anchorComponent, @NotNull String title, @NotNull String message,
+                      @Nullable Icon icon, @NotNull Action @NotNull [] actions) {
     this.anchorComponent = anchorComponent;
     transparencyHandler = new TransparencyAnimationHandler(this);
 
@@ -59,16 +59,28 @@ public class BalloonPopup extends JPanel implements TransparentComponent, MouseL
     titleLabel = new BalloonLabel("<html><h1>" + title + "</h1></html>");
     titleLabel.setIcon(icon);
 
-    titlePanel = new JPanel();
-    titlePanel.setOpaque(false);
-    titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.X_AXIS));
-    titlePanel.setAlignmentX(LEFT_ALIGNMENT);
-    titlePanel.add(titleLabel);
-    add(titlePanel);
+    var titleBox = Box.createHorizontalBox();
+    titleBox.setOpaque(false);
+    titleBox.setAlignmentX(LEFT_ALIGNMENT);
+    titleBox.add(titleLabel);
+    add(titleBox);
 
     messageLabel = new BalloonLabel("<html>" + message + "</html>");
     messageLabel.setAlignmentX(LEFT_ALIGNMENT);
     add(messageLabel);
+
+    if (actions.length > 0) {
+      var buttonBox = Box.createHorizontalBox();
+      buttonBox.setOpaque(false);
+      buttonBox.setAlignmentX(LEFT_ALIGNMENT);
+      buttonBox.add(Box.createHorizontalGlue());
+      for (var action : actions) {
+        var button = new JButton(action);
+        button.setAlignmentX(RIGHT_ALIGNMENT);
+        buttonBox.add(button);
+      }
+      add(buttonBox);
+    }
 
     setTransparencyCoefficient(0.3f);
     recalculateBounds();

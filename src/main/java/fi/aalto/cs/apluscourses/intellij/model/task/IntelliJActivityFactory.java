@@ -6,7 +6,12 @@ import fi.aalto.cs.apluscourses.model.task.ActivityFactory;
 import fi.aalto.cs.apluscourses.model.task.Arguments;
 import fi.aalto.cs.apluscourses.model.task.ComponentPresenter;
 import fi.aalto.cs.apluscourses.model.task.ListenerCallback;
+import fi.aalto.cs.apluscourses.model.task.Reaction;
 import fi.aalto.cs.apluscourses.ui.ideactivities.ComponentDatabase;
+import java.awt.event.ActionEvent;
+import java.util.Arrays;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import org.jetbrains.annotations.NotNull;
 
 public class IntelliJActivityFactory implements ActivityFactory {
@@ -21,6 +26,8 @@ public class IntelliJActivityFactory implements ActivityFactory {
                                                     @NotNull Arguments arguments,
                                                     @NotNull ListenerCallback callback) {
     switch (action) {
+      case "null":
+        return NullListener.create(callback);
       case "openEditor":
         return OpenFileListener.create(callback, project, arguments);
       case "build":
@@ -60,7 +67,8 @@ public class IntelliJActivityFactory implements ActivityFactory {
                                                      @NotNull String info,
                                                      @NotNull Arguments componentArguments,
                                                      @NotNull Arguments actionArguments,
-                                                     String @NotNull [] assertClosed) {
+                                                     @NotNull String @NotNull [] assertClosed,
+                                                     @NotNull Reaction @NotNull [] reactions) {
     for (var closedComponent : assertClosed) {
       switch (closedComponent) {
         case "projectTree":
@@ -79,15 +87,31 @@ public class IntelliJActivityFactory implements ActivityFactory {
           throw new IllegalArgumentException("Unsupported component: '" + closedComponent + "'");
       }
     }
+    Action[] actions = Arrays.stream(reactions).map(PresenterAction::new).toArray(Action[]::new);
     switch (component) {
       case "projectTree":
-        return new ProjectTreePresenter(instruction, info, project);
+        return new ProjectTreePresenter(instruction, info, project, actions);
       case "editor":
-        return EditorPresenter.create(instruction, info, project, actionArguments);
+        return EditorPresenter.create(instruction, info, project, actionArguments, actions);
       case "repl":
-        return ReplPresenter.create(instruction, info, project, actionArguments);
+        return ReplPresenter.create(instruction, info, project, actionArguments, actions);
       default:
         throw new IllegalArgumentException("Unsupported component: '" + component + "'");
+    }
+  }
+
+  private static class PresenterAction extends AbstractAction {
+
+    private final Reaction reaction;
+
+    public PresenterAction(@NotNull Reaction reaction) {
+      super(reaction.getLabel());
+      this.reaction = reaction;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      reaction.react();
     }
   }
 }

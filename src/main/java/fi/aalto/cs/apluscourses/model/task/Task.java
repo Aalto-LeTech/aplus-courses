@@ -21,6 +21,7 @@ public class Task implements CancelHandler, ListenerCallback {
   private final @NotNull Arguments componentArguments;
   private final @NotNull String action;
   private final @NotNull Arguments actionArguments;
+  private final boolean isFreeRange;
 
   private ActivitiesListener listener;
   private final List<ComponentPresenter> presenters = new ArrayList<>();
@@ -36,7 +37,8 @@ public class Task implements CancelHandler, ListenerCallback {
               @NotNull String[] components,
               @NotNull Arguments componentArguments,
               @NotNull String action,
-              @NotNull Arguments actionArguments) {
+              @NotNull Arguments actionArguments,
+              boolean isFreeRange) {
     this.instruction = instruction;
     this.assertClosed = assertClosed;
     this.action = action;
@@ -44,6 +46,7 @@ public class Task implements CancelHandler, ListenerCallback {
     this.info = info;
     this.components = components;
     this.componentArguments = componentArguments;
+    this.isFreeRange = isFreeRange;
   }
 
   public @NotNull String getAction() {
@@ -79,7 +82,8 @@ public class Task implements CancelHandler, ListenerCallback {
     }
     for (var componentName : components) {
       presenters.add(activityFactory.createPresenter(componentName, instruction, info,
-          componentArguments, actionArguments, assertClosed));
+          componentArguments, actionArguments, assertClosed,
+          isFreeRange ? new Reaction[] { new ImDoneReaction() } : new Reaction[0]));
     }
     listener = activityFactory.createListener(action, actionArguments, this);
     listener.registerListener();
@@ -99,8 +103,8 @@ public class Task implements CancelHandler, ListenerCallback {
         JsonUtil.parseArray(jsonObject.getJSONArray("component"), JSONArray::getString, Function.identity(), String[]::new),
         parseArguments(jsonObject.optJSONObject("componentArguments")),
         jsonObject.getString("action"),
-        parseArguments(jsonObject.optJSONObject("actionArguments"))
-    );
+        parseArguments(jsonObject.optJSONObject("actionArguments")),
+        jsonObject.optBoolean("freeRange", false));
   }
 
   protected static @NotNull Arguments parseArguments(@Nullable JSONObject jsonObject) {
@@ -158,6 +162,19 @@ public class Task implements CancelHandler, ListenerCallback {
     void onAutoCompleted();
 
     void onCompleted();
+  }
+
+  private class ImDoneReaction implements Reaction {
+
+    @Override
+    public String getLabel() {
+      return "I'm done!";
+    }
+
+    @Override
+    public void react() {
+      onHappened(false);
+    }
   }
 }
 
