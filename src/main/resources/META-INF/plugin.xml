@@ -46,21 +46,20 @@
                     class="fi.aalto.cs.apluscourses.intellij.actions.APlusAuthenticationAction"
                     text="Set A+ Token"
                     description="Set an access token for submitting assignments to A+."/>
-            <separator/>
             <action id="fi.aalto.cs.apluscourses.intellij.actions.ResetProjectAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.ResetProjectAction"
                     text="Reset A+ Project"
                     description="Resets the open A+ course project."/>
-            <action id="fi.aalto.cs.apluscourses.intellij.actions.ResetSettingsAction"
-                    class="fi.aalto.cs.apluscourses.intellij.actions.ResetSettingsAction"
-                    text="Reset A+ Courses Plugin Settings"
-                    description="Reset all the settings related to the A+ Courses plugin."/>
             <separator/>
             <action id="fi.aalto.cs.apluscourses.intellij.actions.ExportModuleAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.ExportModuleAction"
                     text="Export Module"
                     description="Export the contents of a module to a ZIP file."/>
             <separator/>
+            <action id="fi.aalto.cs.apluscourses.intellij.actions.ResetSettingsAction"
+                    class="fi.aalto.cs.apluscourses.intellij.actions.ResetSettingsAction"
+                    text="Reset A+ Courses Plugin Settings"
+                    description="Reset all the settings related to the A+ Courses plugin."/>
             <action id="fi.aalto.cs.apluscourses.intellij.actions.AssistantModeAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.AssistantModeAction"
                     text="Assistant Mode"
