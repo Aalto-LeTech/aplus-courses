@@ -4,6 +4,7 @@ import fi.aalto.cs.apluscourses.utils.JsonUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -20,8 +21,6 @@ public class ExerciseGroup implements Browsable {
   private final String htmlUrl;
   private final boolean isOpen;
   @NotNull
-  private final List<Long> exerciseOrder;
-  @NotNull
   private final List<Exercise> exercises = Collections.synchronizedList(new ArrayList<>());
 
   /**
@@ -37,8 +36,8 @@ public class ExerciseGroup implements Browsable {
     this.name = name;
     this.htmlUrl = htmlUrl;
     this.isOpen = isOpen;
-    this.exerciseOrder = exerciseOrder;
     this.exercises.addAll(dummyExercises);
+    this.exercises.sort(Comparator.comparing(exercise -> exerciseOrder.indexOf(exercise.getId())));
   }
 
   /**
@@ -92,10 +91,5 @@ public class ExerciseGroup implements Browsable {
     var oldExercise = exercises.stream().filter(oldEx -> oldEx.equals(exercise)).findFirst();
     oldExercise.ifPresent(exercises::remove);
     exercises.add(exercise);
-  }
-
-  @NotNull
-  public List<Long> getExerciseOrder() {
-    return exerciseOrder;
   }
 }

@@ -5,7 +5,6 @@ import fi.aalto.cs.apluscourses.model.ExercisesLazyLoader;
 import fi.aalto.cs.apluscourses.presentation.base.Searchable;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
-import java.util.Comparator;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
@@ -29,8 +28,6 @@ public class ExerciseGroupViewModel extends SelectableNodeViewModel<ExerciseGrou
         .getExercises()
         .stream()
         .map(ExerciseViewModel::new)
-        .sorted(Comparator.comparing(exerciseViewModel ->
-            exerciseGroup.getExerciseOrder().indexOf(exerciseViewModel.getId())))
         .collect(Collectors.toList()));
     this.exercisesLazyLoader = exercisesLazyLoader;
   }
