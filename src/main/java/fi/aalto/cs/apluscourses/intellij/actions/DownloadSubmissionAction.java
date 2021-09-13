@@ -238,10 +238,10 @@ public class DownloadSubmissionAction extends AnAction {
         fileBrowser.navigateTo(file, project);
         logger.info("Opened file");
       } catch (FileDoesNotExistException ex) {
-        logger.error("File not found", ex);
+        logger.warn("File not found", ex);
         notifier.notifyAndHide(new MissingFileNotification(module.getPath(), info.getFileName(), true), project);
       } catch (IOException ex) {
-        logger.error("IOException while downloading submission", ex);
+        logger.warn("IOException while downloading submission", ex);
         notifier.notifyAndHide(new NetworkErrorNotification(ex), project);
       }
     }
