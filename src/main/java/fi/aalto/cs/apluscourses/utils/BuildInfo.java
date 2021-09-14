@@ -27,9 +27,9 @@ public class BuildInfo {
     try {
       buildInfo = new BuildInfo(Resources.DEFAULT.getProperties(RESOURCE_NAME));
     } catch (ResourceException ex) {
-      logger.error("Could not read build info from resources.", ex);
+      logger.warn("Could not read build info from resources.", ex);
     } catch (PropertyException ex) {
-      logger.error("Build info is badly formatted.", ex);
+      logger.warn("Build info is badly formatted.", ex);
     }
     INSTANCE = buildInfo == null ? new BuildInfo() : buildInfo;
   }
