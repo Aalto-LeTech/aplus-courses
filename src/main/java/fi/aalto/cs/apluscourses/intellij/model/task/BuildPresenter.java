@@ -7,14 +7,16 @@ import com.intellij.openapi.wm.ToolWindow;
 import fi.aalto.cs.apluscourses.ui.ideactivities.ComponentDatabase;
 import fi.aalto.cs.apluscourses.ui.ideactivities.GenericHighlighter;
 import java.util.Optional;
+import javax.swing.Action;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class BuildPresenter extends IntelliJComponentPresenterBase {
   public BuildPresenter(@NotNull String instruction,
                         @NotNull String info,
-                        @NotNull Project project) {
-    super(instruction, info, project);
+                        @NotNull Project project,
+                        @NotNull Action @NotNull [] actions) {
+    super(instruction, info, project, actions);
   }
 
   @Override

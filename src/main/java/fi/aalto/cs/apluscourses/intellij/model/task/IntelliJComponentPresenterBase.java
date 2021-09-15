@@ -11,6 +11,7 @@ import fi.aalto.cs.apluscourses.ui.ideactivities.GenericHighlighter;
 import fi.aalto.cs.apluscourses.ui.ideactivities.OverlayPane;
 import java.util.Timer;
 import java.util.TimerTask;
+import javax.swing.Action;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class IntelliJComponentPresenterBase implements ComponentPresenter {
@@ -20,16 +21,19 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
   private final @NotNull String instruction;
   private final @NotNull String info;
   protected final @NotNull Project project;
+  private final @NotNull Action @NotNull [] actions;
   private OverlayPane overlayPane;
   private volatile CancelHandler cancelHandler; //NOSONAR
   private boolean tryingToShow = false;
 
   protected IntelliJComponentPresenterBase(@NotNull String instruction,
                                            @NotNull String info,
-                                           @NotNull Project project) {
+                                           @NotNull Project project,
+                                           @NotNull Action @NotNull [] actions) {
     this.instruction = instruction;
     this.info = info;
     this.project = project;
+    this.actions = actions;
     this.timer = new Timer();
   }
 
@@ -70,7 +74,7 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
     }
 
     overlayPane.addHighlighter(highlighter);
-    overlayPane.addPopup(highlighter.getComponent(), instruction, info);
+    overlayPane.addPopup(highlighter.getComponent(), instruction, info, actions);
 
   }
 
