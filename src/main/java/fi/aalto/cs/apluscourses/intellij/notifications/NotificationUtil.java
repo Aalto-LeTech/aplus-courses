@@ -29,7 +29,7 @@ public class NotificationUtil {
         Thread.sleep(6000);
         notification.expire();
       } catch (InterruptedException e) {
-        logger.error("Notification timeout interrupted", e);
+        logger.warn("Notification timeout interrupted", e);
         Thread.currentThread().interrupt();
       }
       return null;

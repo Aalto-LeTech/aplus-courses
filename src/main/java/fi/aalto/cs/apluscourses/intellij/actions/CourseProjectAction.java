@@ -79,8 +79,8 @@ public class CourseProjectAction extends AnAction {
   private final ExecutorService executor;
 
   private static final List<CourseItemViewModel> AVAILABLE_COURSES = List.of(
-      new CourseItemViewModel("O1", "Fall 2020",
-          "https://grader.cs.aalto.fi/static/O1_2020/projects/o1_course_config.json"),
+      new CourseItemViewModel("O1", "Fall 2021",
+          "https://grader.cs.aalto.fi/static/O1_2021/projects/o1_course_config.json"),
       new CourseItemViewModel("Ohjelmointistudio 2 / Programming Studio A", "Spring 2021",
           "https://grader.cs.aalto.fi/static/studio2_k2021/projects/s2_course_config.json")
   );
@@ -170,13 +170,13 @@ public class CourseProjectAction extends AnAction {
     if (versionComparison == Version.ComparisonStatus.MAJOR_TOO_OLD
         || versionComparison == Version.ComparisonStatus.MAJOR_TOO_NEW) {
       if (versionComparison == Version.ComparisonStatus.MAJOR_TOO_OLD) {
-        logger.error("A+ Courses version outdated: installed {}, required {}", version, course.getVersion());
+        logger.warn("A+ Courses version outdated: installed {}, required {}", version, course.getVersion());
       } else {
-        logger.error("A+ Courses version too new: installed {}, required {}", version, course.getVersion());
+        logger.warn("A+ Courses version too new: installed {}, required {}", version, course.getVersion());
       }
       notifier.notify(
           versionComparison == Version.ComparisonStatus.MAJOR_TOO_OLD
-          ? new CourseVersionOutdatedError() : new CourseVersionTooNewError(), project);
+              ? new CourseVersionOutdatedError() : new CourseVersionTooNewError(), project);
       return;
     }
 
@@ -197,7 +197,7 @@ public class CourseProjectAction extends AnAction {
 
     String basePath = project.getBasePath();
     if (basePath == null) {
-      logger.error("Settings could not be imported because (default?) project does not have path.");
+      logger.warn("Settings could not be imported because (default?) project does not have path.");
       return;
     }
 
@@ -230,7 +230,7 @@ public class CourseProjectAction extends AnAction {
       } catch (InterruptedException ex) {
         Thread.currentThread().interrupt();
       } catch (ExecutionException ex) {
-        logger.error("An exception was thrown in an asynchronous call", ex);
+        logger.warn("An exception was thrown in an asynchronous call", ex);
       }
     });
   }
@@ -271,7 +271,7 @@ public class CourseProjectAction extends AnAction {
       }
     } catch (MalformedURLException e) {
       // User entered an invalid URL (or the default list has an invalid URL, which would be a bug)
-      logger.error("Malformed course configuration file URL", e);
+      logger.warn("Malformed course configuration file URL", e);
       notifier.notify(new NetworkErrorNotification(e), project);
       return null;
     } catch (IOException e) {
@@ -294,11 +294,11 @@ public class CourseProjectAction extends AnAction {
       logger.debug("Getting course");
       return courseFactory.fromUrl(courseUrl, project);
     } catch (IOException e) {
-      logger.error("Network error", e);
+      logger.warn("Network error", e);
       notifier.notify(new NetworkErrorNotification(e), project);
       return null;
     } catch (MalformedCourseConfigurationException e) {
-      logger.error("Malformed course configuration file", e);
+      logger.warn("Malformed course configuration file", e);
       notifier.notify(new CourseConfigurationError(e), project);
       return null;
     }
@@ -329,7 +329,7 @@ public class CourseProjectAction extends AnAction {
       }
       return true;
     } catch (IOException e) {
-      logger.error("Failed to create course file", e);
+      logger.warn("Failed to create course file", e);
       notifier.notify(new CourseFileError(e), project);
       return false;
     }
@@ -348,7 +348,7 @@ public class CourseProjectAction extends AnAction {
       settingsImporter.importProjectSettings(basePath, course);
       return true;
     } catch (IOException e) {
-      logger.error("Failed to import project settings", e);
+      logger.warn("Failed to import project settings", e);
       notifier.notify(new NetworkErrorNotification(e), project);
       return false;
     }
@@ -366,7 +366,7 @@ public class CourseProjectAction extends AnAction {
       logger.info("Imported IDE settings");
       return true;
     } catch (IOException e) {
-      logger.error("Failed to import IDE settings", e);
+      logger.warn("Failed to import IDE settings", e);
       notifier.notify(new NetworkErrorNotification(e), project);
       return false;
     }
@@ -378,7 +378,7 @@ public class CourseProjectAction extends AnAction {
       settingsImporter.importCustomProperties(basePath, course, project);
       return true;
     } catch (IOException e) {
-      logger.error("Failed to import custom properties", e);
+      logger.warn("Failed to import custom properties", e);
       notifier.notify(new NetworkErrorNotification(e), project);
       return false;
     }

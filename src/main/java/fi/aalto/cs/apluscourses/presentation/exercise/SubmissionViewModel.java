@@ -117,7 +117,7 @@ public class SubmissionViewModel {
       fileInfoText.append(" (modified ").append(lastModificationTime).append(")");
     } catch (IOException e) {
       // in case of an error, don't display the last modification time and continue gracefully
-      logger.error("Failed to retrieve the file's last modification time", e);
+      logger.warn("Failed to retrieve the file's last modification time", e);
     }
     return fileInfoText.toString();
   }

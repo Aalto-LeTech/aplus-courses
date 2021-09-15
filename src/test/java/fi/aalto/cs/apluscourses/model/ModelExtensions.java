@@ -240,7 +240,7 @@ public class ModelExtensions {
       try {
         testURL = new URL("https://example.com");
       } catch (MalformedURLException e) {
-        logger.error("Test URL is malformed", e);
+        logger.warn("Test URL is malformed", e);
       }
     }
 
