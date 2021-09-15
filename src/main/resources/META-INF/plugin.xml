@@ -15,7 +15,7 @@
     ]]></description>
 
     <change-notes>
-        Added support for tutorials. Added an assistant mode for downloading student submissions.
+        Updates to the upcoming tutorials and minor bugfixes.
     </change-notes>
 
     <depends>com.intellij.modules.java</depends>
