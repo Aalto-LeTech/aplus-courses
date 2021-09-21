@@ -101,11 +101,23 @@ public class Task implements CancelHandler, ListenerCallback {
    * @return A task.
    */
   public static @NotNull Task fromJsonObject(@NotNull JSONObject jsonObject) {
+    String[] componentArray;
+    Object componentJsonEntry = jsonObject.get("component");
+
+    // entry "component" can be either String or String[] - the former gets converted
+    // to a String[] with only one element - this is done to preserve backwards compatibility
+    if (componentJsonEntry instanceof JSONArray) {
+      componentArray = JsonUtil.parseArray(jsonObject.getJSONArray("component"),
+          JSONArray::getString, Function.identity(), String[]::new);
+    } else {
+      componentArray = new String[] { (String) componentJsonEntry };
+    }
+
     return new Task(
         jsonObject.getString("instruction"),
         jsonObject.getString("info"),
         parseAssert(jsonObject.optJSONArray("assertClosed")),
-        JsonUtil.parseArray(jsonObject.getJSONArray("component"), JSONArray::getString, Function.identity(), String[]::new),
+        componentArray,
         parseArguments(jsonObject.optJSONObject("componentArguments")),
         jsonObject.getString("action"),
         parseArguments(jsonObject.optJSONObject("actionArguments")),
