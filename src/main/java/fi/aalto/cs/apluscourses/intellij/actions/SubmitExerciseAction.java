@@ -198,7 +198,7 @@ public class SubmitExerciseAction extends AnAction {
 
     if (courseViewModel == null || exercisesViewModel == null || authentication == null) {
       if (authentication == null) {
-        logger.error("Null authentication while submitting exercise");
+        logger.warn("Null authentication while submitting exercise");
       }
       return;
     }
@@ -369,7 +369,7 @@ public class SubmitExerciseAction extends AnAction {
   }
 
   private void notifyNetworkError(@NotNull IOException exception, @Nullable Project project) {
-    logger.error("Network error while submitting exercise", exception);
+    logger.warn("Network error while submitting exercise", exception);
     notifier.notify(new NetworkErrorNotification(exception), project);
   }
 

@@ -96,6 +96,8 @@ public class IntelliJActivityFactory implements ActivityFactory {
         return EditorPresenter.create(instruction, info, project, actionArguments, actions);
       case "repl":
         return ReplPresenter.create(instruction, info, project, actionArguments, actions);
+      case "build":
+        return new BuildPresenter(instruction, info, project, actions);
       default:
         throw new IllegalArgumentException("Unsupported component: '" + component + "'");
     }
