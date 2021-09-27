@@ -3,6 +3,7 @@ package fi.aalto.cs.apluscourses.intellij.model.task;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.wm.WindowManager;
 import com.intellij.util.concurrency.annotations.RequiresEdt;
 import fi.aalto.cs.apluscourses.model.task.CancelHandler;
 import fi.aalto.cs.apluscourses.model.task.ComponentPresenter;
@@ -12,6 +13,7 @@ import fi.aalto.cs.apluscourses.ui.ideactivities.OverlayPane;
 import java.util.Timer;
 import java.util.TimerTask;
 import javax.swing.Action;
+import javax.swing.JOptionPane;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -53,6 +55,11 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
 
   @RequiresEdt
   private void highlightInternal() {
+    // if we are focused on another window than the tutorial one, don't touch anything
+    if (JOptionPane.getRootFrame() != WindowManager.getInstance().getFrame(project)) {
+      return;
+    }
+
     if (overlayPane == null) {
       overlayPane = OverlayPane.installOverlay();
     }
