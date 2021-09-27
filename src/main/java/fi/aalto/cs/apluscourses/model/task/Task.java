@@ -11,6 +11,7 @@ import java.util.function.Function;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Task implements CancelHandler, ListenerCallback {
@@ -109,8 +110,10 @@ public class Task implements CancelHandler, ListenerCallback {
     if (componentJsonEntry instanceof JSONArray) {
       componentArray = JsonUtil.parseArray(jsonObject.getJSONArray("component"),
           JSONArray::getString, Function.identity(), String[]::new);
-    } else {
+    } else if (componentJsonEntry instanceof String) {
       componentArray = new String[] { (String) componentJsonEntry };
+    } else {
+      throw new JSONException("The field \"component\" is of an invalid type");
     }
 
     return new Task(
