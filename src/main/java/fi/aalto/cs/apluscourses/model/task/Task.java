@@ -1,28 +1,31 @@
 package fi.aalto.cs.apluscourses.model.task;
 
 import fi.aalto.cs.apluscourses.utils.JsonUtil;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Task implements CancelHandler, ListenerCallback {
   private final @NotNull String instruction;
   private final @NotNull String info;
   private final String @NotNull [] assertClosed;
-  private final @NotNull String component;
+  private final @NotNull String[] components;
   private final @NotNull Arguments componentArguments;
   private final @NotNull String action;
   private final @NotNull Arguments actionArguments;
   private final boolean isFreeRange;
 
   private ActivitiesListener listener;
-  private ComponentPresenter presenter;
+  private final List<ComponentPresenter> presenters = new ArrayList<>();
 
   private final Set<@NotNull Observer> observers = Collections.synchronizedSet(new HashSet<>());
 
@@ -32,7 +35,7 @@ public class Task implements CancelHandler, ListenerCallback {
   public Task(@NotNull String instruction,
               @NotNull String info,
               String @NotNull [] assertClosed,
-              @NotNull String component,
+              @NotNull String[] components,
               @NotNull Arguments componentArguments,
               @NotNull String action,
               @NotNull Arguments actionArguments,
@@ -42,7 +45,7 @@ public class Task implements CancelHandler, ListenerCallback {
     this.action = action;
     this.actionArguments = actionArguments;
     this.info = info;
-    this.component = component;
+    this.components = components;
     this.componentArguments = componentArguments;
     this.isFreeRange = isFreeRange;
   }
@@ -59,10 +62,14 @@ public class Task implements CancelHandler, ListenerCallback {
       listener.unregisterListener();
       listener = null;
     }
-    if (presenter != null) {
-      presenter.removeHighlight();
-      presenter = null;
+
+    for (var presenter : presenters) {
+      if (presenter != null) {
+        presenter.removeHighlight();
+      }
     }
+
+    presenters.clear();
   }
 
   /**
@@ -71,11 +78,19 @@ public class Task implements CancelHandler, ListenerCallback {
    * @param activityFactory Creator for listener and presenter objects.
    */
   public synchronized void startTask(ActivityFactory activityFactory) {
-    if (presenter != null || listener != null) {
+    if (!presenters.isEmpty() || listener != null) {
       throw new IllegalStateException();
     }
-    presenter = activityFactory.createPresenter(component, instruction, info, componentArguments,
-        actionArguments, assertClosed, isFreeRange ? new Reaction[] { new ImDoneReaction() } : new Reaction[0]);
+
+    for (int i = 0; i < components.length; ++i) {
+      var componentName = components[i];
+      boolean attachPopup = i == 0; // only the first component in the array has the popup attached
+
+      presenters.add(activityFactory.createPresenter(componentName, attachPopup ? instruction : null,
+          attachPopup ? info : null, componentArguments, actionArguments, assertClosed,
+          isFreeRange ? new Reaction[] { new ImDoneReaction() } : new Reaction[0]));
+    }
+
     listener = activityFactory.createListener(action, actionArguments, this);
     listener.registerListener();
   }
@@ -87,11 +102,25 @@ public class Task implements CancelHandler, ListenerCallback {
    * @return A task.
    */
   public static @NotNull Task fromJsonObject(@NotNull JSONObject jsonObject) {
+    String[] componentArray;
+    Object componentJsonEntry = jsonObject.get("component");
+
+    // entry "component" can be either String or String[] - the former gets converted
+    // to a String[] with only one element - this is done to preserve backwards compatibility
+    if (componentJsonEntry instanceof JSONArray) {
+      componentArray = JsonUtil.parseArray(jsonObject.getJSONArray("component"),
+          JSONArray::getString, Function.identity(), String[]::new);
+    } else if (componentJsonEntry instanceof String) {
+      componentArray = new String[] { (String) componentJsonEntry };
+    } else {
+      throw new JSONException("The field \"component\" is of an invalid type");
+    }
+
     return new Task(
         jsonObject.getString("instruction"),
         jsonObject.getString("info"),
         parseAssert(jsonObject.optJSONArray("assertClosed")),
-        jsonObject.getString("component"),
+        componentArray,
         parseArguments(jsonObject.optJSONObject("componentArguments")),
         jsonObject.getString("action"),
         parseArguments(jsonObject.optJSONObject("actionArguments")),
@@ -127,7 +156,7 @@ public class Task implements CancelHandler, ListenerCallback {
 
   @Override
   public synchronized void onStarted() {
-    if (presenter != null) {
+    for (var presenter : presenters) {
       presenter.setCancelHandler(this);
       presenter.highlight();
     }

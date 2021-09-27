@@ -16,8 +16,8 @@ public class ReplPresenter extends IntelliJComponentPresenterBase {
   /**
    * A constructor.
    */
-  public ReplPresenter(@NotNull String instruction,
-                       @NotNull String info,
+  public ReplPresenter(@Nullable String instruction,
+                       @Nullable String info,
                        @NotNull String module,
                        @NotNull Project project,
                        @NotNull Action @NotNull [] actions) throws IllegalArgumentException {
@@ -29,8 +29,8 @@ public class ReplPresenter extends IntelliJComponentPresenterBase {
   }
 
   @NotNull
-  public static ReplPresenter create(@NotNull String instruction,
-                                     @NotNull String info,
+  public static ReplPresenter create(@Nullable String instruction,
+                                     @Nullable String info,
                                      @NotNull Project project,
                                      @NotNull Arguments actionArguments,
                                      @NotNull Action @NotNull [] actions) {

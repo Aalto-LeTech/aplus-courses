@@ -12,8 +12,8 @@ public class EditorPresenter extends IntelliJComponentPresenterBase {
   @NotNull
   private final String path;
 
-  private EditorPresenter(@NotNull String instruction,
-                          @NotNull String info,
+  private EditorPresenter(@Nullable String instruction,
+                          @Nullable String info,
                           @NotNull Project project,
                           @NotNull String path,
                           @NotNull Action @NotNull [] actions) {
@@ -22,8 +22,8 @@ public class EditorPresenter extends IntelliJComponentPresenterBase {
   }
 
   @NotNull
-  public static EditorPresenter create(@NotNull String instruction,
-                                       @NotNull String info,
+  public static EditorPresenter create(@Nullable String instruction,
+                                       @Nullable String info,
                                        @NotNull Project project,
                                        @NotNull Arguments actionArguments,
                                        @NotNull Action @NotNull [] actions) {

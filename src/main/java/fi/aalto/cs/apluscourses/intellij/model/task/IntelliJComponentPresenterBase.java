@@ -13,21 +13,28 @@ import java.util.Timer;
 import java.util.TimerTask;
 import javax.swing.Action;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class IntelliJComponentPresenterBase implements ComponentPresenter {
 
   public static final int REFRESH_INTERVAL = 1000;
   private final Timer timer;
-  private final @NotNull String instruction;
-  private final @NotNull String info;
+  private final @Nullable String instruction;
+  private final @Nullable String info;
   protected final @NotNull Project project;
   private final @NotNull Action @NotNull [] actions;
   private OverlayPane overlayPane;
   private volatile CancelHandler cancelHandler; //NOSONAR
   private boolean tryingToShow = false;
 
-  protected IntelliJComponentPresenterBase(@NotNull String instruction,
-                                           @NotNull String info,
+  /**
+   * Constructor for the presenter.
+   *
+   * @param instruction The heading text of the balloon popup. If null, the popup won't be shown.
+   * @param info The info text of the balloon popup. If null, the text will be empty.
+   */
+  protected IntelliJComponentPresenterBase(@Nullable String instruction,
+                                           @Nullable String info,
                                            @NotNull Project project,
                                            @NotNull Action @NotNull [] actions) {
     this.instruction = instruction;
@@ -46,10 +53,9 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
 
   @RequiresEdt
   private void highlightInternal() {
-    if (overlayPane != null) {
-      overlayPane.remove();
+    if (overlayPane == null) {
+      overlayPane = OverlayPane.installOverlay();
     }
-    overlayPane = OverlayPane.installOverlay();
     overlayPane.clickEvent.addListener(cancelHandler, CancelHandler::onCancel);
 
     var progressButton = ComponentDatabase.getProgressButton();
@@ -74,8 +80,9 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
     }
 
     overlayPane.addHighlighter(highlighter);
-    overlayPane.addPopup(highlighter.getComponent(), instruction, info, actions);
-
+    if (instruction != null) {
+      overlayPane.addPopup(highlighter.getComponent(), instruction, info == null ? "" : info, actions);
+    }
   }
 
   @Override
