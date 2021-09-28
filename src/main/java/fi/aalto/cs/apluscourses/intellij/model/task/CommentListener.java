@@ -33,6 +33,6 @@ public class CommentListener extends CodeListener {
   
   @Override
   protected boolean checkPsiFile(@NotNull PsiFile psiFile) {
-    return Pattern.compile("//(\\s)*" + text).matcher(psiFile.getText()).find();
+    return Pattern.compile("//([^\\S\\r\\n])*" + text).matcher(psiFile.getText()).find();
   }
 }
