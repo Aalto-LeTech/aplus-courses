@@ -130,8 +130,7 @@ public class SubmissionStatusUpdater {
           submissionUrl, exercise, authentication, CachePreferences.GET_NEW_AND_KEEP);
       var status = submissionResult.getStatus();
       if (status != SubmissionResult.Status.WAITING && status != SubmissionResult.Status.UNKNOWN) {
-        notifier.notifyAndHide(
-            new FeedbackAvailableNotification(submissionResult, exercise), project);
+        notifier.notify(new FeedbackAvailableNotification(submissionResult, exercise), project);
         var courseProject = PluginSettings.getInstance().getCourseProject(project);
         if (courseProject != null) {
           courseProject.getExercisesUpdater().restart();
