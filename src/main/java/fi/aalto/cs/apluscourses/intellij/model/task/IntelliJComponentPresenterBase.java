@@ -10,23 +10,29 @@ import fi.aalto.cs.apluscourses.model.task.ComponentPresenter;
 import fi.aalto.cs.apluscourses.ui.ideactivities.ComponentDatabase;
 import fi.aalto.cs.apluscourses.ui.ideactivities.GenericHighlighter;
 import fi.aalto.cs.apluscourses.ui.ideactivities.OverlayPane;
+import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import java.util.Timer;
 import java.util.TimerTask;
 import javax.swing.Action;
 import javax.swing.JOptionPane;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public abstract class IntelliJComponentPresenterBase implements ComponentPresenter {
 
+  private static final Logger logger = APlusLogger.logger;
+
   public static final int REFRESH_INTERVAL = 1000;
   private final Timer timer;
+
   private final @Nullable String instruction;
   private final @Nullable String info;
   protected final @NotNull Project project;
   private final @NotNull Action @NotNull [] actions;
-  private OverlayPane overlayPane;
   private volatile CancelHandler cancelHandler; //NOSONAR
+
+  private OverlayPane overlayPane;
   private boolean tryingToShow = false;
 
   /**
@@ -129,6 +135,12 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
     public void run() {
       ApplicationManager.getApplication()
           .invokeLater(() -> {
+            if (project.isDisposed()) {
+              logger.info("Tutorial cancelled due to project closing");
+              cancelHandler.onForceCancel();
+              return;
+            }
+
             var progressButton = ComponentDatabase.getProgressButton();
             var progressButtonHighlighted = overlayPane != null
                 && progressButton != null
