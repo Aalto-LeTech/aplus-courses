@@ -82,6 +82,11 @@ public class TutorialViewModel implements Task.Observer {
   }
 
   @Override
+  public void onForceCancelled() {
+    cancelTutorial(); // does not ask for confirmation
+  }
+
+  @Override
   public void onAutoCompleted() {
     taskNotifier.notifyAlreadyEndTask(tutorialExercise.getTutorial().getTasks().indexOf(currentTask),
         currentTask.getInstruction());
