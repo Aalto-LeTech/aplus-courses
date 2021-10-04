@@ -69,20 +69,20 @@ public class Exercise implements Browsable {
    */
   @NotNull
   public static Exercise fromJsonObject(@NotNull JSONObject jsonObject,
-                                        @NotNull Points points,
-                                        @NotNull Map<Long, Tutorial> tutorials) {
+                                        @Nullable Points points,
+                                        @Nullable Map<Long, Tutorial> tutorials) {
     long id = jsonObject.getLong("id");
 
     String name = jsonObject.getString("display_name");
     String htmlUrl = jsonObject.getString("html_url");
 
-    var bestSubmissionId = points.getBestSubmissionIds().get(id);
+    var bestSubmissionId = points != null ? points.getBestSubmissionIds().get(id) : null;
     int maxPoints = jsonObject.getInt("max_points");
     int maxSubmissions = jsonObject.getInt("max_submissions");
 
     var submissionInfo = SubmissionInfo.fromJsonObject(jsonObject);
 
-    var tutorial = tutorials.get(id);
+    var tutorial = tutorials != null ? tutorials.get(id) : null;
     var optionalBestSubmission = bestSubmissionId == null ? OptionalLong.empty()
         : OptionalLong.of(bestSubmissionId);
     if (tutorial == null) {
@@ -91,6 +91,11 @@ public class Exercise implements Browsable {
       return new TutorialExercise(
           id, name, htmlUrl, submissionInfo, maxPoints, maxSubmissions, optionalBestSubmission, tutorial);
     }
+  }
+
+  @NotNull
+  public static Exercise fromJsonObject(@NotNull JSONObject jsonObject) {
+    return fromJsonObject(jsonObject, null, null);
   }
 
   public long getId() {

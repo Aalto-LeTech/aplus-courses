@@ -35,4 +35,19 @@ public class ExercisesTree {
   public Student getSelectedStudent() {
     return selectedStudent;
   }
+
+  /**
+   * Finds the exercise from the given url, returns null if not found.
+   */
+  @Nullable
+  public Exercise findExerciseByUrl(@NotNull String htmlUrl) {
+    for (var group : exerciseGroups) {
+      for (var exercise : group.getExercises()) {
+        if (exercise.getHtmlUrl().equals(htmlUrl)) {
+          return exercise;
+        }
+      }
+    }
+    return null;
+  }
 }
