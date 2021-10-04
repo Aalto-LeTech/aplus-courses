@@ -143,6 +143,11 @@ public class Task implements CancelHandler, ListenerCallback {
     notifyObservers(Observer::onCancelled);
   }
 
+  @Override
+  public void onForceCancel() {
+    notifyObservers(Observer::onForceCancelled);
+  }
+
   protected static String @NotNull [] parseAssert(@Nullable JSONArray jsonObject) {
     return jsonObject == null ? new String[0]
         : JsonUtil.parseArray(jsonObject, JSONArray::getString,
@@ -178,6 +183,8 @@ public class Task implements CancelHandler, ListenerCallback {
 
   public interface Observer {
     void onCancelled();
+
+    void onForceCancelled();
 
     void onAutoCompleted();
 
