@@ -137,9 +137,8 @@ public class TutorialAction extends AnAction {
 
     @Override
     public boolean confirmCancel(@NotNull TutorialViewModel tutorialViewModel) {
-      //TODO Externalize Strings
-      Object[] options = {"Cancel Tutorial",
-          "Go back"};
+      Object[] options = { getText("ui.tutorial.TutorialAction.cancelTutorial"),
+          getText("ui.tutorial.TutorialAction.continueTutorial")};
       return JOptionPane.showOptionDialog(null,
           getText("ui.tutorial.TutorialAction.confirmCancel"),
           tutorialViewModel.getTitle(),
