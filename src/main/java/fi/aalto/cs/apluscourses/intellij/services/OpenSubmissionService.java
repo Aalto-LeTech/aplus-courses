@@ -1,7 +1,9 @@
 package fi.aalto.cs.apluscourses.intellij.services;
 
+import static com.intellij.util.io.NettyKt.getOrigin;
 import static java.lang.Long.parseLong;
 
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import fi.aalto.cs.apluscourses.intellij.utils.SubmissionDownloader;
 import fi.aalto.cs.apluscourses.utils.cache.CachePreferences;
@@ -48,7 +50,16 @@ public class OpenSubmissionService extends RestService {
   @NotNull
   @Override
   protected OriginCheckResult isOriginAllowed(@NotNull HttpRequest request) {
-    return OriginCheckResult.ALLOW;
+    var project = getOpenAPlusProject();
+    if (project == null) {
+      return OriginCheckResult.FORBID;
+    }
+    var courseProject = PluginSettings.getInstance().getCourseProject(project);
+    if (courseProject == null) {
+      return OriginCheckResult.FORBID;
+    }
+    var apiUrl = courseProject.getCourse().getHtmlUrl();
+    return apiUrl.equals(getOrigin(request) + "/") ? OriginCheckResult.ALLOW : OriginCheckResult.FORBID;
   }
 
   @Nullable
@@ -57,13 +68,10 @@ public class OpenSubmissionService extends RestService {
       return "HTTP request missing parameters";
     }
 
-    var projects = Arrays.stream(ProjectManager.getInstance().getOpenProjects())
-        .filter(project -> PluginSettings.getInstance().getCourseProject(project) != null);
-    var optProject = projects.findFirst();
-    if (optProject.isEmpty()) {
+    var project = getOpenAPlusProject();
+    if (project == null) {
       return "No A+ Courses project found";
     }
-    var project = optProject.get();
     var courseProject = PluginSettings.getInstance().getCourseProject(project);
     if (courseProject == null) {
       return NOT_LOADED_ERROR;
@@ -92,6 +100,17 @@ public class OpenSubmissionService extends RestService {
       return "Error while downloading submission";
     }
     return null;
+  }
+
+  @Nullable
+  private Project getOpenAPlusProject() {
+    var projects = Arrays.stream(ProjectManager.getInstance().getOpenProjects())
+        .filter(project -> PluginSettings.getInstance().getCourseProject(project) != null);
+    var optProject = projects.findFirst();
+    if (optProject.isEmpty()) {
+      return null;
+    }
+    return optProject.get();
   }
 
   private static class OpenSubmissionRequest {
