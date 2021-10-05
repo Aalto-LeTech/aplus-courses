@@ -137,10 +137,17 @@ public class TutorialAction extends AnAction {
 
     @Override
     public boolean confirmCancel(@NotNull TutorialViewModel tutorialViewModel) {
-      return JOptionPane.showConfirmDialog(null,
+      //TODO Externalize Strings
+      Object[] options = {"Cancel Tutorial",
+          "Go back"};
+      return JOptionPane.showOptionDialog(null,
           getText("ui.tutorial.TutorialAction.confirmCancel"),
           tutorialViewModel.getTitle(),
-          JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION;
+          JOptionPane.OK_CANCEL_OPTION,
+          JOptionPane.QUESTION_MESSAGE,
+          null,
+          options,
+          options[0]) == 0;
     }
 
     @Override
