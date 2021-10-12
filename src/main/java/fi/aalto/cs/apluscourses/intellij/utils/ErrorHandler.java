@@ -68,7 +68,7 @@ public class ErrorHandler extends ErrorReportSubmitter {
 
   @Override
   public @NotNull String getPrivacyNoticeText() {
-    return "The privacy policy is <a href=\"\">available here</a>.";
+    return "The privacy policy is <a href=\"https://plus.cs.aalto.fi/accounts/privacy-notice/\">available here</a>.";
   }
 
   @Override
