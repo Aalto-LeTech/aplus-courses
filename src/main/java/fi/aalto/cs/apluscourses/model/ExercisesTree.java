@@ -41,13 +41,10 @@ public class ExercisesTree {
    */
   @Nullable
   public Exercise findExerciseByUrl(@NotNull String htmlUrl) {
-    for (var group : exerciseGroups) {
-      for (var exercise : group.getExercises()) {
-        if (exercise.getHtmlUrl().equals(htmlUrl)) {
-          return exercise;
-        }
-      }
-    }
-    return null;
+    return exerciseGroups.stream()
+        .flatMap(group -> group.getExercises().stream())
+        .filter(exercise -> exercise.getHtmlUrl().equals(htmlUrl))
+        .findFirst()
+        .orElse(null);
   }
 }

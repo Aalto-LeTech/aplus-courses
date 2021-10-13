@@ -3,8 +3,6 @@ package fi.aalto.cs.apluscourses.intellij.utils;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.LocalFileSystem;
-import com.intellij.openapi.wm.WindowManager;
 import fi.aalto.cs.apluscourses.intellij.model.CourseProject;
 import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.MissingFileNotification;
@@ -26,6 +24,7 @@ import fi.aalto.cs.apluscourses.presentation.exercise.DownloadSubmissionViewMode
 import fi.aalto.cs.apluscourses.ui.InstallerDialogs;
 import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
+import fi.aalto.cs.apluscourses.utils.WindowUtil;
 import fi.aalto.cs.apluscourses.utils.async.SimpleAsyncTaskManager;
 import java.io.IOException;
 import java.net.URL;
@@ -69,6 +68,7 @@ public class SubmissionDownloader {
   private final InstallerDialogs.Factory dialogsFactory;
   private final Interfaces.FileRefresher fileRefresher;
   private final Interfaces.FileBrowser fileBrowser;
+  private final Interfaces.VirtualFileFinder virtualFileFinder;
 
 
   /**
@@ -87,7 +87,8 @@ public class SubmissionDownloader {
         new ComponentInstallerImpl.FactoryImpl<>(new SimpleAsyncTaskManager()),
         InstallerDialogs::new,
         Interfaces.FileRefresherImpl::refreshPath,
-        Interfaces.FileBrowserImpl::navigateTo
+        Interfaces.FileBrowserImpl::navigateTo,
+        Interfaces.VirtualFileFinderImpl::findVirtualFile
     );
   }
 
@@ -106,7 +107,8 @@ public class SubmissionDownloader {
                               @NotNull ComponentInstaller.Factory componentInstallerFactory,
                               @NotNull InstallerDialogs.Factory dialogsFactory,
                               @NotNull Interfaces.FileRefresher fileRefresher,
-                              @NotNull Interfaces.FileBrowser fileBrowser) {
+                              @NotNull Interfaces.FileBrowser fileBrowser,
+                              @NotNull Interfaces.VirtualFileFinder virtualFileFinder) {
     this.mainViewModelProvider = mainViewModelProvider;
     this.authenticationProvider = authenticationProvider;
     this.fileFinder = fileFinder;
@@ -118,6 +120,7 @@ public class SubmissionDownloader {
     this.dialogsFactory = dialogsFactory;
     this.fileRefresher = fileRefresher;
     this.fileBrowser = fileBrowser;
+    this.virtualFileFinder = virtualFileFinder;
   }
 
   /**
@@ -135,11 +138,7 @@ public class SubmissionDownloader {
     var downloadSubmissionViewModel = new DownloadSubmissionViewModel(course, selectedModule, submissionResult.getId(),
         installedModules);
     ApplicationManager.getApplication().invokeLater(() -> {
-      var frame = WindowManager.getInstance().getFrame(project);
-      if (frame != null) {
-        frame.toFront();
-        frame.repaint();
-      }
+      WindowUtil.bringWindowToFront(project);
 
       if (!dialogs.create(downloadSubmissionViewModel, project).showAndGet()) {
         return;
@@ -156,7 +155,7 @@ public class SubmissionDownloader {
 
       var moduleCopy = module.copy(newName);
 
-      var moduleVf = LocalFileSystem.getInstance().findFileByIoFile(moduleCopy.getFullPath().toFile());
+      var moduleVf = virtualFileFinder.findFile(moduleCopy.getFullPath().toFile());
 
       componentInstallerFactory.getInstallerFor(course, dialogsFactory.getDialogs(project))
           .installAsync(List.of(moduleCopy),
@@ -175,21 +174,14 @@ public class SubmissionDownloader {
     logger.info("Selected language: {}", language);
 
     var exerciseModules = course.getExerciseModules().get(exercise.getId());
-    if (exerciseModules != null) {
-      exerciseModules.forEach((lan, mod) -> logger.info("Found module {} ({}) for exercise {}", mod, lan, exercise));
-    } else {
-      logger.info("No modules found for exercise {}", exercise);
-    }
 
-    var moduleName = Optional
+    var selectedComponent = Optional
         .ofNullable(exerciseModules)
-        .map(self -> self.get(language));
+        .map(self -> self.get(language))
+        .map(course::getComponentIfExists).orElse(null);
 
-    var selectedComponent = moduleName.map(course::getComponentIfExists).orElse(null);
-    Module selectedModule = null;
-    if (selectedComponent instanceof Module) {
-      selectedModule = (Module) selectedComponent;
-    }
+    Module selectedModule = selectedComponent instanceof Module ? (Module) selectedComponent : null;
+
     logger.info("Auto-selected module: {}", selectedModule);
     return selectedModule;
   }

@@ -20,14 +20,29 @@ import org.jetbrains.ide.RestService;
 
 public class OpenSubmissionService extends RestService {
   private static final String NOT_LOADED_ERROR = "A+ Courses hasn't loaded assignments yet";
+  private final CourseProjectProvider courseProjectProvider;
+
+  public OpenSubmissionService() {
+    this(PluginSettings.getInstance()::getCourseProject);
+  }
+
+  public OpenSubmissionService(@NotNull CourseProjectProvider courseProjectProvider) {
+    this.courseProjectProvider = courseProjectProvider;
+  }
 
   @Nullable
   @Override
   public String execute(@NotNull QueryStringDecoder urlDecoder, @NotNull FullHttpRequest request,
                         @NotNull ChannelHandlerContext context) throws IOException {
+    if (!isOriginApi(request)) {
+      return "Origin not allowed";
+    }
     var apiRequest = new OpenSubmissionRequest(getStringParameter("exerciseUrl", urlDecoder),
         getStringParameter("submissionId", urlDecoder));
-    var error = openSubmission(apiRequest);
+    if (apiRequest.submissionId == null || apiRequest.exerciseUrl == null) {
+      return "HTTP request missing parameters";
+    }
+    var error = openSubmission(apiRequest.submissionId, apiRequest.exerciseUrl);
     if (error != null) {
       return error;
     }
@@ -44,35 +59,35 @@ public class OpenSubmissionService extends RestService {
 
   @Override
   protected boolean isMethodSupported(@NotNull HttpMethod method) {
-    return method == HttpMethod.GET;
+    return method == HttpMethod.POST;
   }
 
   @NotNull
   @Override
   protected OriginCheckResult isOriginAllowed(@NotNull HttpRequest request) {
+    return OriginCheckResult.ALLOW;
+  }
+
+  private boolean isOriginApi(@NotNull HttpRequest request) {
     var project = getOpenAPlusProject();
     if (project == null) {
-      return OriginCheckResult.FORBID;
+      return false;
     }
-    var courseProject = PluginSettings.getInstance().getCourseProject(project);
+    var courseProject = courseProjectProvider.getCourseProject(project);
     if (courseProject == null) {
-      return OriginCheckResult.FORBID;
+      return false;
     }
     var apiUrl = courseProject.getCourse().getHtmlUrl();
-    return apiUrl.equals(getOrigin(request) + "/") ? OriginCheckResult.ALLOW : OriginCheckResult.FORBID;
+    return apiUrl.equals(getOrigin(request) + "/");
   }
 
   @Nullable
-  private String openSubmission(@NotNull OpenSubmissionRequest request) {
-    if (request.submissionId == null || request.exerciseUrl == null) {
-      return "HTTP request missing parameters";
-    }
-
+  private String openSubmission(long submissionId, @NotNull String exerciseUrl) {
     var project = getOpenAPlusProject();
     if (project == null) {
       return "No A+ Courses project found";
     }
-    var courseProject = PluginSettings.getInstance().getCourseProject(project);
+    var courseProject = courseProjectProvider.getCourseProject(project);
     if (courseProject == null) {
       return NOT_LOADED_ERROR;
     }
@@ -83,7 +98,7 @@ public class OpenSubmissionService extends RestService {
       if (exerciseTree == null) {
         return NOT_LOADED_ERROR;
       }
-      var exercise = exerciseTree.findExerciseByUrl(request.exerciseUrl);
+      var exercise = exerciseTree.findExerciseByUrl(exerciseUrl);
       if (exercise == null) {
         return "Exercise not found";
       }
@@ -93,7 +108,7 @@ public class OpenSubmissionService extends RestService {
       }
 
       var submissionResult = dataSource.getSubmissionResult(
-          course.getApiUrl() + "submissions/" + request.submissionId + "/", exercise,
+          course.getApiUrl() + "submissions/" + submissionId + "/", exercise,
           courseProject.getAuthentication(), CachePreferences.FOR_THIS_SESSION_ONLY);
       new SubmissionDownloader().downloadSubmission(project, course, exercise, submissionResult);
     } catch (IOException e) {
@@ -104,13 +119,10 @@ public class OpenSubmissionService extends RestService {
 
   @Nullable
   private Project getOpenAPlusProject() {
-    var projects = Arrays.stream(ProjectManager.getInstance().getOpenProjects())
-        .filter(project -> PluginSettings.getInstance().getCourseProject(project) != null);
-    var optProject = projects.findFirst();
-    if (optProject.isEmpty()) {
-      return null;
-    }
-    return optProject.get();
+    return Arrays.stream(ProjectManager.getInstance().getOpenProjects())
+        .filter(project -> courseProjectProvider.getCourseProject(project) != null)
+        .findFirst()
+        .orElse(null);
   }
 
   private static class OpenSubmissionRequest {
