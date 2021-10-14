@@ -8,6 +8,9 @@ public class WindowUtil {
   private WindowUtil() {
   }
 
+  /**
+   * Brings the window to the front.
+   */
   public static void bringWindowToFront(@NotNull Project project) {
     var frame = WindowManager.getInstance().getFrame(project);
     if (frame != null) {
