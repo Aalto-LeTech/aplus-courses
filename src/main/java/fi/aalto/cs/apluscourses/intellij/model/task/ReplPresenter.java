@@ -38,7 +38,6 @@ public class ReplPresenter extends IntelliJComponentPresenterBase {
   }
 
 
-
   @Nullable
   @Override
   protected GenericHighlighter getHighlighter() {

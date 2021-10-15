@@ -69,7 +69,8 @@ public class IntelliJActivityFactory implements ActivityFactory {
                                                      @NotNull Arguments componentArguments,
                                                      @NotNull Arguments actionArguments,
                                                      @NotNull String @NotNull [] assertClosed,
-                                                     @NotNull Reaction @NotNull [] reactions) {
+                                                     @NotNull Reaction @NotNull [] reactions,
+                                                     boolean isAlreadyCompleted) {
     for (var closedComponent : assertClosed) {
       switch (closedComponent) {
         case "projectTree":

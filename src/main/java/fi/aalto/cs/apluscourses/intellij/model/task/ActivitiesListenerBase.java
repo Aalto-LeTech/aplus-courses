@@ -37,11 +37,15 @@ public abstract class ActivitiesListenerBase<T> implements ActivitiesListener {
   private static final int UNREGISTERED = 2;
 
   private final ListenerCallback callback;
-  private final AtomicBoolean isAlreadyFinished = new AtomicBoolean(false);
+  public final AtomicBoolean isAlreadyFinished = new AtomicBoolean(false);
   private final AtomicInteger state = new AtomicInteger(INITIAL);
 
   protected ActivitiesListenerBase(ListenerCallback callback) {
     this.callback = callback;
+  }
+
+  public void setAlreadyCompleted() {
+    isAlreadyFinished.set(true);
   }
 
   @CalledInAny
@@ -83,7 +87,7 @@ public abstract class ActivitiesListenerBase<T> implements ActivitiesListener {
 
   @RequiresEdt
   private void handleInitialResult(boolean isSuccess) {
-    if (isSuccess) {
+    if (isSuccess && !isAlreadyFinished.get()) {
       callback.onHappened(true);
     } else {
       callback.onStarted();

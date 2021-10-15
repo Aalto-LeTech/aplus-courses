@@ -23,6 +23,7 @@ public class Task implements CancelHandler, ListenerCallback {
   private final @NotNull String action;
   private final @NotNull Arguments actionArguments;
   private final boolean isFreeRange;
+  private final boolean isAlreadyCompleted;
 
   private ActivitiesListener listener;
   private final List<ComponentPresenter> presenters = new ArrayList<>();
@@ -39,15 +40,34 @@ public class Task implements CancelHandler, ListenerCallback {
               @NotNull Arguments componentArguments,
               @NotNull String action,
               @NotNull Arguments actionArguments,
-              boolean isFreeRange) {
+              boolean isFreeRange,
+              boolean isAlreadyCompleted) {
     this.instruction = instruction;
-    this.assertClosed = assertClosed;
-    this.action = action;
-    this.actionArguments = actionArguments;
     this.info = info;
+    this.assertClosed = assertClosed;
     this.components = components;
     this.componentArguments = componentArguments;
+    this.action = action;
+    this.actionArguments = actionArguments;
     this.isFreeRange = isFreeRange;
+    this.isAlreadyCompleted = isAlreadyCompleted;
+  }
+
+  /**
+   * Creates a copy of the current task that is already completed and free-range.
+   */
+  public Task alreadyCompleted() {
+    return new Task(
+        instruction + " (Done)",
+        info + "<br><br>The task is already completed, you can move on to the next task by clicking \"Next task\".",
+        assertClosed,
+        components,
+        componentArguments,
+        action,
+        actionArguments,
+        true,
+        true
+    );
   }
 
   public @NotNull String getAction() {
@@ -86,12 +106,25 @@ public class Task implements CancelHandler, ListenerCallback {
       var componentName = components[i];
       boolean attachPopup = i == 0; // only the first component in the array has the popup attached
 
-      presenters.add(activityFactory.createPresenter(componentName, attachPopup ? instruction : null,
-          attachPopup ? info : null, componentArguments, actionArguments, assertClosed,
-          isFreeRange ? new Reaction[] { new ImDoneReaction() } : new Reaction[0]));
+      var reaction = new Reaction[0];
+      if (isAlreadyCompleted) {
+        reaction = new Reaction[] {new AlreadyCompleteReaction()};
+      } else if (isFreeRange) {
+        reaction = new Reaction[] {new ImDoneReaction()};
+      }
+
+      var presenter = activityFactory.createPresenter(componentName, attachPopup ? instruction : null,
+          attachPopup ? info : null, componentArguments, actionArguments, assertClosed, reaction, isAlreadyCompleted);
+      if (isAlreadyCompleted) {
+        presenter.setAlreadyCompleted();
+      }
+      presenters.add(presenter);
     }
 
     listener = activityFactory.createListener(action, actionArguments, this);
+    if (isAlreadyCompleted) {
+      listener.setAlreadyCompleted();
+    }
     listener.registerListener();
   }
 
@@ -111,7 +144,7 @@ public class Task implements CancelHandler, ListenerCallback {
       componentArray = JsonUtil.parseArray(jsonObject.getJSONArray("component"),
           JSONArray::getString, Function.identity(), String[]::new);
     } else if (componentJsonEntry instanceof String) {
-      componentArray = new String[] { (String) componentJsonEntry };
+      componentArray = new String[] {(String) componentJsonEntry};
     } else {
       throw new JSONException("The field \"component\" is of an invalid type");
     }
@@ -124,13 +157,14 @@ public class Task implements CancelHandler, ListenerCallback {
         parseArguments(jsonObject.optJSONObject("componentArguments")),
         jsonObject.getString("action"),
         parseArguments(jsonObject.optJSONObject("actionArguments")),
-        jsonObject.optBoolean("freeRange", false));
+        jsonObject.optBoolean("freeRange", false),
+        false);
   }
 
   protected static @NotNull Arguments parseArguments(@Nullable JSONObject jsonObject) {
     return jsonObject == null ? Arguments.empty()
         : JsonUtil.parseObject(jsonObject, JSONObject::get,
-            Function.identity(), Function.identity())::get;
+        Function.identity(), Function.identity())::get;
   }
 
   @NotNull
@@ -151,7 +185,7 @@ public class Task implements CancelHandler, ListenerCallback {
   protected static String @NotNull [] parseAssert(@Nullable JSONArray jsonObject) {
     return jsonObject == null ? new String[0]
         : JsonUtil.parseArray(jsonObject, JSONArray::getString,
-            Function.identity(), String[]::new);
+        Function.identity(), String[]::new);
   }
 
   @Override
@@ -181,6 +215,10 @@ public class Task implements CancelHandler, ListenerCallback {
     observers.remove(observer);
   }
 
+  public boolean isAlreadyCompleted() {
+    return isAlreadyCompleted;
+  }
+
   public interface Observer {
     void onCancelled();
 
@@ -196,6 +234,19 @@ public class Task implements CancelHandler, ListenerCallback {
     @Override
     public String getLabel() {
       return "I'm done!";
+    }
+
+    @Override
+    public void react() {
+      onHappened(false);
+    }
+  }
+
+  private class AlreadyCompleteReaction implements Reaction {
+
+    @Override
+    public String getLabel() {
+      return "Next task";
     }
 
     @Override
