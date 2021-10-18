@@ -58,8 +58,8 @@ public class Task implements CancelHandler, ListenerCallback {
    */
   public Task alreadyCompleted() {
     return new Task(
-        instruction + " (Done)",
-        info + "<br><br>The task is already completed, you can move on to the next task by clicking \"Next task\".",
+        "(Done) " + instruction,
+        "The task is already completed, you can move on to the next task by clicking \"Next task\".<br><br>" + info,
         assertClosed,
         components,
         componentArguments,
