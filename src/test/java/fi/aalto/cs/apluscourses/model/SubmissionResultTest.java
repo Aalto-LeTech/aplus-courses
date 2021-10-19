@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.OptionalLong;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class SubmissionResultTest {
 

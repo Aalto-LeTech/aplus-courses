@@ -7,8 +7,8 @@ import fi.aalto.cs.apluscourses.presentation.ViewModelExtensions.TestNodeViewMod
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import java.util.Collections;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class BaseTreeViewModelTest {
 
@@ -19,7 +19,7 @@ public class BaseTreeViewModelTest {
   /**
    * Run before each test.
    */
-  @Before
+  @BeforeEach
   public void setUp() {
     childViewModel1 = new TestNodeViewModel(1, new Object(), Collections.emptyList());
     childViewModel2 = new TestNodeViewModel(2, new Object(), Collections.emptyList());

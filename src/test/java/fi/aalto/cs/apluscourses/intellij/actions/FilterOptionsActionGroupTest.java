@@ -18,8 +18,8 @@ import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.filter.Option;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class FilterOptionsActionGroupTest {
 
@@ -31,7 +31,7 @@ public class FilterOptionsActionGroupTest {
   /**
    * Called before each test.
    */
-  @Before
+  @BeforeEach
   public void setUp() {
     Project project = mock(Project.class);
     event = mock(AnActionEvent.class);

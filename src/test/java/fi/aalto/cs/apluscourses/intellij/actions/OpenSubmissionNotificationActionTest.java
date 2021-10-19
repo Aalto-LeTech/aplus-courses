@@ -21,8 +21,9 @@ import fi.aalto.cs.apluscourses.model.UrlRenderer;
 import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.OptionalLong;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 public class OpenSubmissionNotificationActionTest {
@@ -36,7 +37,7 @@ public class OpenSubmissionNotificationActionTest {
   /**
    * Called before each test.
    */
-  @Before
+  @BeforeEach
   public void setUp() {
     event = mock(AnActionEvent.class);
     doReturn(mock(Project.class)).when(event).getProject();

@@ -13,8 +13,8 @@ import fi.aalto.cs.apluscourses.presentation.filter.Filter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.internal.stubbing.answers.Returns;
 
 public class SelectableNodeViewModelTest {
@@ -29,7 +29,7 @@ public class SelectableNodeViewModelTest {
   /**
    * Run before each call.
    */
-  @Before
+  @BeforeEach
   public void setUp() {
     model = new Object();
 

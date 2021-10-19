@@ -26,8 +26,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.swing.ListSelectionModel;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.mockito.ArgumentCaptor;
 
 public class InstallModuleActionTest {
@@ -40,7 +41,7 @@ public class InstallModuleActionTest {
   /**
    * Called before each test method call.  Initializes private fields.
    */
-  @Before
+  @BeforeEach
   public void createMockObjects()   {
     project = mock(Project.class);
 

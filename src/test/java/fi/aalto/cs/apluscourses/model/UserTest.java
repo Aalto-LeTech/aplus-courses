@@ -3,7 +3,7 @@ package fi.aalto.cs.apluscourses.model;
 import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class UserTest {
 

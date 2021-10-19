@@ -2,7 +2,7 @@ package fi.aalto.cs.apluscourses.presentation.base;
 
 import static org.junit.Assert.assertSame;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class BaseViewModelTest {
   

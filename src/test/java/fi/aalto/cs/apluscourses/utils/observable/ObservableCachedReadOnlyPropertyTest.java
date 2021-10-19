@@ -8,7 +8,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.function.Supplier;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ObservableCachedReadOnlyPropertyTest {
   @SuppressWarnings("unchecked")

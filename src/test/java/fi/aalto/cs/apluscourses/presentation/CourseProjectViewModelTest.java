@@ -13,7 +13,8 @@ import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import fi.aalto.cs.apluscourses.utils.observable.ValidationError;
 import java.util.Collections;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 public class CourseProjectViewModelTest {
 

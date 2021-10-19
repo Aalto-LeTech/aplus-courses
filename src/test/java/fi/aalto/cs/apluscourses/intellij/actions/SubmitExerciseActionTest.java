@@ -67,8 +67,8 @@ import java.util.Optional;
 import java.util.OptionalLong;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 public class SubmitExerciseActionTest {
@@ -118,7 +118,7 @@ public class SubmitExerciseActionTest {
    * @throws IOException               Never.
    * @throws FileDoesNotExistException Never.
    */
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     exerciseId = 12;
     fileName = "some_file.scala";

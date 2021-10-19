@@ -7,7 +7,7 @@ import static org.junit.Assert.assertThat;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class CourseFileErrorTest {
 

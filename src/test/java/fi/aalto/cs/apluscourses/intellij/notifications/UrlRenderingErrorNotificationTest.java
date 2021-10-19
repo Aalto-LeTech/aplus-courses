@@ -3,7 +3,7 @@ package fi.aalto.cs.apluscourses.intellij.notifications;
 import static org.hamcrest.Matchers.containsString;
 
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class UrlRenderingErrorNotificationTest {
 

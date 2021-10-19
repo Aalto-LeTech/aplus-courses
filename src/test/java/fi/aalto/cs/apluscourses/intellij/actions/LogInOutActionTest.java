@@ -18,8 +18,8 @@ import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.utils.async.RepeatedTask;
 import java.net.URL;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class LogInOutActionTest {
 
@@ -30,7 +30,7 @@ public class LogInOutActionTest {
   /**
    * Called before each test.
    */
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     event = mock(AnActionEvent.class);
     var project = mock(Project.class);

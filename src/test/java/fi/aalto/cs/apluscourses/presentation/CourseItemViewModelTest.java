@@ -1,7 +1,7 @@
 package fi.aalto.cs.apluscourses.presentation;
 
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class CourseItemViewModelTest {
 

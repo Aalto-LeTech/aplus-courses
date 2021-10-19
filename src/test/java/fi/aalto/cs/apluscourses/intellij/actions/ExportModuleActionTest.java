@@ -27,8 +27,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.mockito.ArgumentCaptor;
 
 public class ExportModuleActionTest {
@@ -54,7 +55,7 @@ public class ExportModuleActionTest {
   /**
    * Runs before every tests. Initializes mock objects and other stuff.
    */
-  @Before
+  @BeforeEach
   public void setUp() {
     project = mock(Project.class);
     event = mock(AnActionEvent.class);

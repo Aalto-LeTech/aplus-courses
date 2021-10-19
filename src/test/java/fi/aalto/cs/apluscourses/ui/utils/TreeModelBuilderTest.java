@@ -7,7 +7,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.stream.Stream;
 import javax.swing.tree.TreeModel;
 import org.jetbrains.annotations.NotNull;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TreeModelBuilderTest {
 

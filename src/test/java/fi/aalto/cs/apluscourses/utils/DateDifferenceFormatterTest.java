@@ -3,7 +3,7 @@ package fi.aalto.cs.apluscourses.utils;
 import static org.junit.Assert.assertEquals;
 
 import java.time.ZonedDateTime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class DateDifferenceFormatterTest {
 

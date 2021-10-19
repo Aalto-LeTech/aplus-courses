@@ -13,7 +13,8 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.testFramework.LightVirtualFile;
 import java.nio.file.Paths;
 import java.time.ZonedDateTime;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 public class VfsUtilTest {
 

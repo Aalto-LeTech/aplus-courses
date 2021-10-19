@@ -29,8 +29,8 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class CourseFileManagerTest {
 
@@ -66,7 +66,7 @@ public class CourseFileManagerTest {
   /**
    * Run before every test, initializes useful instance variables.
    */
-  @Before
+  @BeforeEach
   public void initializeObjects() throws IOException {
     Project project = mock(Project.class);
     File tempDir = FileUtilRt.createTempDirectory("test", "", true);

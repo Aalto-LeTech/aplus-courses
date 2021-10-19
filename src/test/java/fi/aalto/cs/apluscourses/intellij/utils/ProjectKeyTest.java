@@ -5,7 +5,7 @@ import static org.mockito.Mockito.mock;
 
 import com.intellij.openapi.project.Project;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ProjectKeyTest {
 

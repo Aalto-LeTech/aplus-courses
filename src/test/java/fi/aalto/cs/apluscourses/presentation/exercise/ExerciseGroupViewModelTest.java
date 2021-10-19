@@ -14,7 +14,7 @@ import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.stream.Collectors;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.internal.stubbing.answers.Returns;
 
 public class ExerciseGroupViewModelTest {

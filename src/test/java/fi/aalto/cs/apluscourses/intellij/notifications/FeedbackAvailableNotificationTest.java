@@ -12,7 +12,7 @@ import fi.aalto.cs.apluscourses.model.SubmissionInfo;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import java.util.Collections;
 import java.util.OptionalLong;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class FeedbackAvailableNotificationTest {
 

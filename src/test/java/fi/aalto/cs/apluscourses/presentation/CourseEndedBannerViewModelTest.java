@@ -12,7 +12,8 @@ import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.utils.async.RepeatedTask;
 import java.net.MalformedURLException;
 import java.net.URL;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 public class CourseEndedBannerViewModelTest {
   @Test

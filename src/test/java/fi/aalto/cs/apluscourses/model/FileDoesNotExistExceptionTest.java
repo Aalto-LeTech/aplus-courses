@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class FileDoesNotExistExceptionTest {
 

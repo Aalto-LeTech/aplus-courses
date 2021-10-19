@@ -6,7 +6,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 
 import java.util.Properties;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class PropertyExceptionTest {
 

@@ -30,7 +30,8 @@ import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.List;
 import java.util.OptionalLong;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 public class OpenItemActionTest {

@@ -5,7 +5,8 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
 import java.util.Optional;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 public class AndFilterTest {
 

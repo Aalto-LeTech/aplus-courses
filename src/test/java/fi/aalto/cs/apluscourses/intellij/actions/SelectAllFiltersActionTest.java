@@ -9,7 +9,7 @@ import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.presentation.filter.Option;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import java.util.Optional;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class SelectAllFiltersActionTest {
 

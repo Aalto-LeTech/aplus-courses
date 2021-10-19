@@ -9,7 +9,7 @@ import static org.mockito.Mockito.mock;
 
 import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.NoSuchComponentException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class CommonLibraryProviderTest {
 

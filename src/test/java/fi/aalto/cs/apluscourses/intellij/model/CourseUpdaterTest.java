@@ -25,9 +25,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 public class CourseUpdaterTest {
@@ -44,7 +44,7 @@ public class CourseUpdaterTest {
   /**
    * Set up mock objects before each test.
    */
-  @Before
+  @BeforeEach
   public void setUp() throws IOException {
     module = mock(Module.class);
     doReturn("Awesome Module").when(module).getName();
@@ -79,7 +79,7 @@ public class CourseUpdaterTest {
     verifyNoInteractions(project);
   }
 
-  @Ignore("Uses PluginSettings")
+  @Disabled("Uses PluginSettings")
   @Test
   public void testCourseUpdaterWithNoUpdatableModules() throws IOException, InterruptedException {
     updater.restart();
@@ -92,7 +92,7 @@ public class CourseUpdaterTest {
     verifyNoInteractions(project);
   }
 
-  @Ignore("Uses PluginSettings")
+  @Disabled("Uses PluginSettings")
   @Test
   public void testCourseUpdaterNotifies() throws IOException, InterruptedException {
     doReturn(true).when(module).isUpdatable();

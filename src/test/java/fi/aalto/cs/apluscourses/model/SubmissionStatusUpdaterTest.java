@@ -16,11 +16,11 @@ import java.util.Collections;
 import java.util.OptionalLong;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.jetbrains.annotations.NotNull;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
-@Ignore
+@Disabled
 public class SubmissionStatusUpdaterTest {
 
   static class TestDataSource extends ModelExtensions.TestExerciseDataSource {
@@ -56,7 +56,7 @@ public class SubmissionStatusUpdaterTest {
   /**
    * Initialize mock objects and a {@link TestDataSource}. Called before every test.
    */
-  @Before
+  @BeforeEach
   public void setUp() {
     dataSource = new TestDataSource();
     notifier = mock(Notifier.class);

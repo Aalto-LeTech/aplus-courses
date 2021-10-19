@@ -10,7 +10,7 @@ import fi.aalto.cs.apluscourses.dal.APlusTokenAuthentication;
 import fi.aalto.cs.apluscourses.dal.TokenAuthentication;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.ExerciseDataSource;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class AuthenticationViewModelTest {
 

@@ -6,7 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import fi.aalto.cs.apluscourses.ui.IconListCellRenderer;
 import icons.PluginIcons;
 import javax.swing.JList;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class IconListCellRendererTest {
 

@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ResourcesTest {
 

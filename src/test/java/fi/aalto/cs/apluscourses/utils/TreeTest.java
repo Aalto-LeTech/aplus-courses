@@ -9,8 +9,8 @@ import static org.mockito.Mockito.mock;
 
 import java.util.Collections;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TreeTest {
 
@@ -24,7 +24,7 @@ public class TreeTest {
   /**
    * Called before each test.
    */
-  @Before
+  @BeforeEach
   public void setUp() {
     root = mock(Tree.class, CALLS_REAL_METHODS);
     node1 = mock(Tree.class, CALLS_REAL_METHODS);

@@ -6,7 +6,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TreeModelTraverserTest {
 

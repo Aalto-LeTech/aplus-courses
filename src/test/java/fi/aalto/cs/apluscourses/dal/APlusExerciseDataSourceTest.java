@@ -28,8 +28,8 @@ import java.util.Map;
 import java.util.OptionalLong;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 public class APlusExerciseDataSourceTest {
@@ -44,7 +44,7 @@ public class APlusExerciseDataSourceTest {
   /**
    * Called before each test.
    */
-  @Before
+  @BeforeEach
   public void setUp() {
     client = mock(Client.class);
     parser = mock(Parser.class);

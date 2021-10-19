@@ -7,7 +7,7 @@ import fi.aalto.cs.apluscourses.model.ModelExtensions.TestModule;
 import fi.aalto.cs.apluscourses.model.Module;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class NewModulesVersionsNotificationTest {
 

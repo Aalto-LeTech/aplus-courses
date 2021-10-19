@@ -2,7 +2,7 @@ package fi.aalto.cs.apluscourses.presentation;
 
 import com.intellij.openapi.module.Module;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ModuleSelectionViewModelTest {
 

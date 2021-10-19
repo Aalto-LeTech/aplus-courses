@@ -8,7 +8,7 @@ import static org.hamcrest.CoreMatchers.hasItems;
 import io.restassured.http.ContentType;
 import org.apache.http.HttpStatus;
 import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ApiTest {
 

@@ -13,8 +13,8 @@ import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 public class CoursesClientTest {
 
@@ -23,7 +23,7 @@ public class CoursesClientTest {
   /**
    * Set up mock objects before each test.
    */
-  @Before
+  @BeforeEach
   public void setUp() {
     StatusLine statusLine = mock(StatusLine.class);
     doReturn(401).when(statusLine).getStatusCode();

@@ -12,7 +12,7 @@ import fi.aalto.cs.apluscourses.presentation.filter.Option;
 import java.util.Optional;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class FilterOptionActionTest {
 

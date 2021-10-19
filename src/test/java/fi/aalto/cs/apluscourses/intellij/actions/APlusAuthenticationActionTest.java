@@ -20,8 +20,8 @@ import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.presentation.AuthenticationViewModel;
 import fi.aalto.cs.apluscourses.utils.async.RepeatedTask;
 import java.net.URL;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class APlusAuthenticationActionTest {
 
@@ -42,7 +42,7 @@ public class APlusAuthenticationActionTest {
   /**
    * Called before each test.
    */
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     project = mock(Project.class);
     actionEvent = mock(AnActionEvent.class);

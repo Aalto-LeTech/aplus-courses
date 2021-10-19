@@ -9,7 +9,8 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 public class StateMonitorTest {
 
