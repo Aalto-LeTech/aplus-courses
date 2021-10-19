@@ -33,7 +33,7 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
   private volatile CancelHandler cancelHandler; //NOSONAR
 
   private OverlayPane overlayPane;
-  private boolean hasEnded = false;
+  private boolean hasEnded = false; //NOSONAR
   private boolean tryingToShow = false;
 
   /**
