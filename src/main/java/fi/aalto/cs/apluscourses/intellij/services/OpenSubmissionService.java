@@ -3,6 +3,7 @@ package fi.aalto.cs.apluscourses.intellij.services;
 import static com.intellij.util.io.NettyKt.getOrigin;
 import static java.lang.Long.parseLong;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import fi.aalto.cs.apluscourses.intellij.utils.SubmissionDownloader;
@@ -37,12 +38,13 @@ public class OpenSubmissionService extends RestService {
     if (!isOriginApi(request)) {
       return "Origin not allowed";
     }
-    var apiRequest = new OpenSubmissionRequest(getStringParameter("exerciseUrl", urlDecoder),
-        getStringParameter("submissionId", urlDecoder));
-    if (apiRequest.submissionId == null || apiRequest.exerciseUrl == null) {
+    var submissionIdString = getStringParameter("submissionId", urlDecoder);
+    var exerciseUrl = getStringParameter("exerciseUrl", urlDecoder);
+    if (submissionIdString == null || exerciseUrl == null) {
       return "HTTP request missing parameters";
     }
-    var error = openSubmission(apiRequest.submissionId, apiRequest.exerciseUrl);
+    long submissionId = parseLong(submissionIdString);
+    var error = openSubmission(submissionId, exerciseUrl);
     if (error != null) {
       return error;
     }
@@ -93,24 +95,27 @@ public class OpenSubmissionService extends RestService {
     }
     var course = courseProject.getCourse();
     var dataSource = course.getExerciseDataSource();
-    try {
-      var exerciseTree = courseProject.getExerciseTree();
-      if (exerciseTree == null) {
-        return NOT_LOADED_ERROR;
-      }
-      var exercise = exerciseTree.findExerciseByUrl(exerciseUrl);
-      if (exercise == null) {
-        return "Exercise not found";
-      }
-      var auth = courseProject.getAuthentication();
-      if (auth == null) {
-        return "A+ Courses Project not authenticated";
-      }
 
+    var exerciseTree = courseProject.getExerciseTree();
+    if (exerciseTree == null) {
+      return NOT_LOADED_ERROR;
+    }
+    var exercise = exerciseTree.findExerciseByUrl(exerciseUrl);
+    if (exercise == null) {
+      return "Exercise not found";
+    }
+    var auth = courseProject.getAuthentication();
+    if (auth == null) {
+      return "A+ Courses Project not authenticated";
+    }
+
+    try {
       var submissionResult = dataSource.getSubmissionResult(
           course.getApiUrl() + "submissions/" + submissionId + "/", exercise,
           courseProject.getAuthentication(), CachePreferences.FOR_THIS_SESSION_ONLY);
-      new SubmissionDownloader().downloadSubmission(project, course, exercise, submissionResult);
+
+      ApplicationManager.getApplication().invokeLater(
+          () -> new SubmissionDownloader().downloadSubmission(project, course, exercise, submissionResult));
     } catch (IOException e) {
       return "Error while downloading submission";
     }
@@ -123,17 +128,5 @@ public class OpenSubmissionService extends RestService {
         .filter(project -> courseProjectProvider.getCourseProject(project) != null)
         .findFirst()
         .orElse(null);
-  }
-
-  private static class OpenSubmissionRequest {
-    @Nullable
-    private final String exerciseUrl;
-    @Nullable
-    private final Long submissionId;
-
-    public OpenSubmissionRequest(@Nullable String exerciseUrl, @Nullable String submissionId) {
-      this.exerciseUrl = exerciseUrl;
-      this.submissionId = submissionId != null ? parseLong(submissionId) : null;
-    }
   }
 }

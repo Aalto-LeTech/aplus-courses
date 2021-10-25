@@ -1,6 +1,5 @@
 package fi.aalto.cs.apluscourses.intellij.utils;
 
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.model.CourseProject;
@@ -9,7 +8,6 @@ import fi.aalto.cs.apluscourses.intellij.notifications.MissingFileNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.services.Dialogs;
-import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.ComponentInstaller;
 import fi.aalto.cs.apluscourses.model.ComponentInstallerImpl;
@@ -41,9 +39,6 @@ public class SubmissionDownloader {
   private static final Logger logger = APlusLogger.logger;
 
   @NotNull
-  private final MainViewModelProvider mainViewModelProvider;
-
-  @NotNull
   private final Interfaces.AuthenticationProvider authenticationProvider;
 
   @NotNull
@@ -57,9 +52,6 @@ public class SubmissionDownloader {
 
   // TODO: store language and default group ID in the object model and read them from there
   private final Interfaces.LanguageSource languageSource;
-
-  @NotNull
-  private final Interfaces.AssistantModeProvider assistantModeProvider;
 
   @NotNull
   private final ComponentInstaller.Factory componentInstallerFactory;
@@ -76,14 +68,12 @@ public class SubmissionDownloader {
    */
   public SubmissionDownloader() {
     this(
-        PluginSettings.getInstance(),
         project -> Optional.ofNullable(PluginSettings.getInstance().getCourseProject(project))
             .map(CourseProject::getAuthentication).orElse(null),
         VfsUtil::findFileInDirectory,
         Dialogs.DEFAULT,
         new DefaultNotifier(),
         project -> PluginSettings.getInstance().getCourseFileManager(project).getLanguage(),
-        () -> PluginSettings.getInstance().isAssistantMode(),
         new ComponentInstallerImpl.FactoryImpl<>(new SimpleAsyncTaskManager()),
         InstallerDialogs::new,
         Interfaces.FileRefresherImpl::refreshPath,
@@ -97,25 +87,21 @@ public class SubmissionDownloader {
    * Construct an exercise submission action with the given parameters. This constructor is useful
    * for testing purposes.
    */
-  public SubmissionDownloader(@NotNull MainViewModelProvider mainViewModelProvider,
-                              @NotNull Interfaces.AuthenticationProvider authenticationProvider,
+  public SubmissionDownloader(@NotNull Interfaces.AuthenticationProvider authenticationProvider,
                               @NotNull FileFinder fileFinder,
                               @NotNull Dialogs dialogs,
                               @NotNull Notifier notifier,
                               @NotNull Interfaces.LanguageSource languageSource,
-                              @NotNull Interfaces.AssistantModeProvider assistantModeProvider,
                               @NotNull ComponentInstaller.Factory componentInstallerFactory,
                               @NotNull InstallerDialogs.Factory dialogsFactory,
                               @NotNull Interfaces.FileRefresher fileRefresher,
                               @NotNull Interfaces.FileBrowser fileBrowser,
                               @NotNull Interfaces.VirtualFileFinder virtualFileFinder) {
-    this.mainViewModelProvider = mainViewModelProvider;
     this.authenticationProvider = authenticationProvider;
     this.fileFinder = fileFinder;
     this.dialogs = dialogs;
     this.notifier = notifier;
     this.languageSource = languageSource;
-    this.assistantModeProvider = assistantModeProvider;
     this.componentInstallerFactory = componentInstallerFactory;
     this.dialogsFactory = dialogsFactory;
     this.fileRefresher = fileRefresher;
@@ -137,33 +123,33 @@ public class SubmissionDownloader {
 
     var downloadSubmissionViewModel = new DownloadSubmissionViewModel(course, selectedModule, submissionResult.getId(),
         installedModules);
-    ApplicationManager.getApplication().invokeLater(() -> {
-      WindowUtil.bringWindowToFront(project);
 
-      if (!dialogs.create(downloadSubmissionViewModel, project).showAndGet()) {
-        return;
-      }
+    WindowUtil.bringWindowToFront(project);
 
-      var module = downloadSubmissionViewModel.selectedModule.get();
-      logger.info("User-selected module: {}", module);
-      var newName = downloadSubmissionViewModel.moduleName.get();
-      logger.info("New module name: {}", newName);
+    if (!dialogs.create(downloadSubmissionViewModel, project).showAndGet()) {
+      return;
+    }
 
-      if (module == null || newName == null) {
-        return;
-      }
+    var module = downloadSubmissionViewModel.selectedModule.get();
+    logger.info("User-selected module: {}", module);
+    var newName = downloadSubmissionViewModel.moduleName.get();
+    logger.info("New module name: {}", newName);
 
-      var moduleCopy = module.copy(newName);
+    if (module == null || newName == null) {
+      return;
+    }
 
-      var moduleVf = virtualFileFinder.findFile(moduleCopy.getFullPath().toFile());
+    var moduleCopy = module.copy(newName);
 
-      componentInstallerFactory.getInstallerFor(course, dialogsFactory.getDialogs(project))
-          .installAsync(List.of(moduleCopy),
-              () -> fileRefresher.refreshPath(moduleVf,
-                  () -> downloadFiles(project,
-                      submissionResult.getFilesInfo(),
-                      moduleCopy)));
-    });
+    var moduleVf = virtualFileFinder.findFile(moduleCopy.getFullPath().toFile());
+
+    componentInstallerFactory.getInstallerFor(course, dialogsFactory.getDialogs(project))
+        .installAsync(List.of(moduleCopy),
+            () -> fileRefresher.refreshPath(moduleVf,
+                () -> downloadFiles(project,
+                    course,
+                    submissionResult.getFilesInfo(),
+                    moduleCopy)));
   }
 
   @Nullable
@@ -187,14 +173,13 @@ public class SubmissionDownloader {
   }
 
   private void downloadFiles(@Nullable Project project,
+                             @NotNull Course course,
                              SubmissionFileInfo @NotNull [] submissionFilesInfo,
                              @NotNull Module module) {
-    var courseViewModel = mainViewModelProvider.getMainViewModel(project).courseViewModel.get();
-    if (courseViewModel == null || project == null) {
-      logger.info("CourseViewModel or project null");
+    if (project == null) {
+      logger.info("Project null");
       return;
     }
-    var course = courseViewModel.getModel();
     course.validate();
 
     var auth = authenticationProvider.getAuthentication(project);
