@@ -35,6 +35,7 @@ dependencies {
     testCompile group: 'org.hamcrest', name: 'hamcrest', version: '2.2'
     testCompile group: 'org.mockito', name: 'mockito-core', version: '3.2.4'
     testCompile group: 'org.scala-lang', name: 'scala-library', version: '2.13.4'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testCompile('io.rest-assured:rest-assured:4.2.0') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-xml'
     }
