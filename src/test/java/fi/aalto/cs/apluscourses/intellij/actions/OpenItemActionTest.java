@@ -44,6 +44,7 @@ public class OpenItemActionTest {
 
   /**
    * Called before each test.
+   *
    * @param testableViewModel The SelectableNodeViewModel to be tested
    */
   public void setUp(SelectableNodeViewModel<?> testableViewModel) {
@@ -101,7 +102,7 @@ public class OpenItemActionTest {
 
   @Test
   public void testOpenItemActionWeek() throws Exception {
-    var exerciseGroup = new ExerciseGroup(0, "", "https://url.com/", true, List.of());
+    var exerciseGroup = new ExerciseGroup(0, "", "https://url.com/", true, List.of(), List.of());
     setUp(new ExerciseGroupViewModel(exerciseGroup));
     OpenItemAction action = new OpenItemAction(
         mainViewModelProvider,

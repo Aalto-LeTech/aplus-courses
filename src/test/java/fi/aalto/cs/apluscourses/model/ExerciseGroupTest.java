@@ -1,7 +1,9 @@
 package fi.aalto.cs.apluscourses.model;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.OptionalLong;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,7 +27,7 @@ public class ExerciseGroupTest {
     Exercise exercise1 = new Exercise(123, "name1", "https://example.com", info, 0, 0, OptionalLong.empty());
     Exercise exercise2 = new Exercise(456, "name2", "https://example.org", info, 0, 0, OptionalLong.empty());
 
-    ExerciseGroup group = new ExerciseGroup(22, "group", "https://example.fi", true, List.of());
+    ExerciseGroup group = new ExerciseGroup(22, "group", "https://example.fi", true, List.of(), List.of());
     group.addExercise(exercise1);
     group.addExercise(exercise2);
 
@@ -44,7 +46,7 @@ public class ExerciseGroupTest {
 
   @Test(expected = UnsupportedOperationException.class)
   public void testGetExercisesReturnsUnmodifiableList() {
-    ExerciseGroup group = new ExerciseGroup(10, "", "", true, List.of());
+    ExerciseGroup group = new ExerciseGroup(10, "", "", true, List.of(), List.of());
     group.getExercises().add(null);
   }
 
@@ -62,7 +64,7 @@ public class ExerciseGroupTest {
                 .put(HTML_KEY, "http://localhost:7000")
                 .put(MAX_POINTS_KEY, 50)
                 .put(MAX_SUBMISSIONS_KEY, 10)));
-    ExerciseGroup group = ExerciseGroup.fromJsonObject(json);
+    ExerciseGroup group = ExerciseGroup.fromJsonObject(json, Map.of(567L, List.of()));
 
     Assert.assertEquals(567, group.getId());
     Assert.assertEquals("The exercise group has the same name as in the JSON object",
@@ -76,41 +78,14 @@ public class ExerciseGroupTest {
   @Test(expected = JSONException.class)
   public void testFromJsonObjectMissingExercises() {
     JSONObject json = new JSONObject().put(NAME_KEY, "group test name");
-    ExerciseGroup.fromJsonObject(json);
+    ExerciseGroup.fromJsonObject(json, new HashMap<>());
   }
 
   @Test(expected = JSONException.class)
   public void testFromJsonObjectMissingName() {
     JSONObject json = new JSONObject()
         .put(ID_KEY, 100);
-    ExerciseGroup.fromJsonObject(json);
-  }
-
-  @Test
-  public void testFromJsonArray() {
-    JSONArray array = new JSONArray();
-    for (int i = 0; i < 5; ++i) {
-      JSONObject json = new JSONObject()
-          .put(NAME_KEY, "group " + i)
-          .put(HTML_KEY, "http://example.com/w01")
-          .put(OPEN_KEY, true)
-          .put(ID_KEY, i)
-          .put(EXERCISES_KEY, new JSONArray()
-              .put(new JSONObject()
-                  .put(ID_KEY, i)
-                  .put(NAME_KEY, "exercise in group " + i)
-                  .put(HTML_KEY, "http://localhost:4000")
-                  .put(MAX_POINTS_KEY, 30)
-                  .put(MAX_SUBMISSIONS_KEY, 8)));
-      array.put(json);
-    }
-    List<ExerciseGroup> exerciseGroups =
-        ExerciseGroup.fromJsonArray(array);
-
-    for (int i = 0; i < 5; ++i) {
-      Assert.assertEquals("group " + i, exerciseGroups.get(i).getName());
-      Assert.assertEquals(i, exerciseGroups.get(i).getId());
-    }
+    ExerciseGroup.fromJsonObject(json, new HashMap<>());
   }
 
 }
