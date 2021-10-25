@@ -1,6 +1,6 @@
 package fi.aalto.cs.apluscourses.intellij.notifications;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.intellij.notification.NotificationType;
 import fi.aalto.cs.apluscourses.model.ModelExtensions.TestModule;

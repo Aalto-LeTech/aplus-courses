@@ -1,6 +1,6 @@
 package fi.aalto.cs.apluscourses.utils;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.ZonedDateTime;
 import org.junit.jupiter.api.Test;

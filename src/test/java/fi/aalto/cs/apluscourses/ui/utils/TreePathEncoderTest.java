@@ -1,6 +1,6 @@
 package fi.aalto.cs.apluscourses.ui.utils;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import javax.swing.tree.TreePath;
 

@@ -2,7 +2,7 @@ package fi.aalto.cs.apluscourses.presentation;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;

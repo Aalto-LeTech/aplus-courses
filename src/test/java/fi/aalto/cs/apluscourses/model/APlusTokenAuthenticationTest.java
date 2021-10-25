@@ -1,7 +1,7 @@
 package fi.aalto.cs.apluscourses.model;
 
 import static fi.aalto.cs.apluscourses.dal.APlusTokenAuthentication.AUTHORIZATION_HEADER;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import fi.aalto.cs.apluscourses.dal.APlusTokenAuthentication;
 import org.apache.http.HttpRequest;
