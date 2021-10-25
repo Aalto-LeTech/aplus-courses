@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.model.task;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import fi.aalto.cs.apluscourses.utils.JsonUtil;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -58,8 +60,8 @@ public class Task implements CancelHandler, ListenerCallback {
    */
   public Task alreadyCompleted() {
     return new Task(
-        "(Done) " + instruction,
-        "The task is already completed, you can move on to the next task by clicking \"Next task\".<br><br>" + info,
+        getText("ui.tutorial.Task.done") + " " + instruction,
+        getText("ui.tutorial.Task.alreadyCompleted") + info,
         assertClosed,
         components,
         componentArguments,
