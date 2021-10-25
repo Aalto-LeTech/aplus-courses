@@ -77,11 +77,11 @@ public class APlusAuthenticationView extends DialogWrapper implements Dialog {
       authenticationViewModel.build();
       authenticationViewModel.tryGetUser(authenticationViewModel.getAuthentication());
     } catch (UnexpectedResponseException e) {
-      logger.error("Invalid token while authenticating", e);
+      logger.warn("Invalid token while authenticating", e);
       return new ValidationInfo(getText("ui.authenticationView.invalidToken"),
           inputField).withOKEnabled();
     } catch (IOException e) {
-      logger.error("Connection error while authenticating", e);
+      logger.warn("Connection error while authenticating", e);
       return new ValidationInfo(getText("ui.authenticationView.connectionError"),
           inputField).withOKEnabled();
     }

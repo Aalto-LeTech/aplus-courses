@@ -4,6 +4,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
 import fi.aalto.cs.apluscourses.model.task.Arguments;
 import fi.aalto.cs.apluscourses.model.task.ListenerCallback;
+import java.util.regex.Pattern;
 import org.jetbrains.annotations.NotNull;
 
 public class CommentListener extends CodeListener {
@@ -32,6 +33,6 @@ public class CommentListener extends CodeListener {
   
   @Override
   protected boolean checkPsiFile(@NotNull PsiFile psiFile) {
-    return psiFile.getText().contains("//" + text);
+    return Pattern.compile("//(\\h)*" + text).matcher(psiFile.getText()).find();
   }
 }

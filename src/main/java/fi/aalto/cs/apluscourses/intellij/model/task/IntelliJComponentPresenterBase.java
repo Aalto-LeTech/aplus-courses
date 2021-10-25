@@ -3,33 +3,52 @@ package fi.aalto.cs.apluscourses.intellij.model.task;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.wm.WindowManager;
 import com.intellij.util.concurrency.annotations.RequiresEdt;
 import fi.aalto.cs.apluscourses.model.task.CancelHandler;
 import fi.aalto.cs.apluscourses.model.task.ComponentPresenter;
 import fi.aalto.cs.apluscourses.ui.ideactivities.ComponentDatabase;
 import fi.aalto.cs.apluscourses.ui.ideactivities.GenericHighlighter;
 import fi.aalto.cs.apluscourses.ui.ideactivities.OverlayPane;
+import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import java.util.Timer;
 import java.util.TimerTask;
+import javax.swing.Action;
+import javax.swing.JOptionPane;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public abstract class IntelliJComponentPresenterBase implements ComponentPresenter {
 
+  private static final Logger logger = APlusLogger.logger;
+
   public static final int REFRESH_INTERVAL = 1000;
   private final Timer timer;
-  private final @NotNull String instruction;
-  private final @NotNull String info;
+
+  private final @Nullable String instruction;
+  private final @Nullable String info;
   protected final @NotNull Project project;
-  private OverlayPane overlayPane;
+  private final @NotNull Action @NotNull [] actions;
   private volatile CancelHandler cancelHandler; //NOSONAR
+
+  private OverlayPane overlayPane;
   private boolean tryingToShow = false;
 
-  protected IntelliJComponentPresenterBase(@NotNull String instruction,
-                                           @NotNull String info,
-                                           @NotNull Project project) {
+  /**
+   * Constructor for the presenter.
+   *
+   * @param instruction The heading text of the balloon popup. If null, the popup won't be shown.
+   * @param info The info text of the balloon popup. If null, the text will be empty.
+   */
+  protected IntelliJComponentPresenterBase(@Nullable String instruction,
+                                           @Nullable String info,
+                                           @NotNull Project project,
+                                           @NotNull Action @NotNull [] actions) {
     this.instruction = instruction;
     this.info = info;
     this.project = project;
+    this.actions = actions;
     this.timer = new Timer();
   }
 
@@ -42,10 +61,14 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
 
   @RequiresEdt
   private void highlightInternal() {
-    if (overlayPane != null) {
-      overlayPane.remove();
+    // if we are focused on another window than the tutorial one, don't touch anything
+    if (JOptionPane.getRootFrame() != WindowManager.getInstance().getFrame(project)) {
+      return;
     }
-    overlayPane = OverlayPane.installOverlay();
+
+    if (overlayPane == null) {
+      overlayPane = OverlayPane.installOverlay();
+    }
     overlayPane.clickEvent.addListener(cancelHandler, CancelHandler::onCancel);
 
     var progressButton = ComponentDatabase.getProgressButton();
@@ -70,8 +93,9 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
     }
 
     overlayPane.addHighlighter(highlighter);
-    overlayPane.addPopup(highlighter.getComponent(), instruction, info);
-
+    if (instruction != null) {
+      overlayPane.addPopup(highlighter.getComponent(), instruction, info == null ? "" : info, actions);
+    }
   }
 
   @Override
@@ -111,6 +135,12 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
     public void run() {
       ApplicationManager.getApplication()
           .invokeLater(() -> {
+            if (project.isDisposed()) {
+              logger.info("Tutorial cancelled due to project closing");
+              cancelHandler.onForceCancel();
+              return;
+            }
+
             var progressButton = ComponentDatabase.getProgressButton();
             var progressButtonHighlighted = overlayPane != null
                 && progressButton != null

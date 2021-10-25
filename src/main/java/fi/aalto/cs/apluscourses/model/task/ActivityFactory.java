@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.model.task;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public interface ActivityFactory {
   @NotNull ActivitiesListener createListener(@NotNull String action,
@@ -8,9 +9,10 @@ public interface ActivityFactory {
                                              @NotNull ListenerCallback callback);
 
   @NotNull ComponentPresenter createPresenter(@NotNull String component,
-                                              @NotNull String instruction,
-                                              @NotNull String info,
+                                              @Nullable String instruction,
+                                              @Nullable String info,
                                               @NotNull Arguments componentArguments,
                                               @NotNull Arguments actionArguments,
-                                              String @NotNull [] assertClosed);
+                                              @NotNull String @NotNull [] assertClosed,
+                                              @NotNull Reaction @NotNull [] reactions);
 }

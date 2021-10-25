@@ -8,5 +8,5 @@ public class APlusLogger {
 
   }
 
-  public static final Logger logger = LoggerFactory.getLogger("A+ Courses " + BuildInfo.INSTANCE.pluginVersion);
+  public static final Logger logger = LoggerFactory.getLogger("A+ Courses");
 }

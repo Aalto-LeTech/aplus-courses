@@ -116,9 +116,11 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
     synchronized (viewModelLock) {
       localViewModel = this.viewModel;
     }
-    Set<String> expandedState = getExpandedState();
+    var expandedState = getExpandedState();
+    var selection = getSelectionRows();
     setModel(TREE_MODEL_BUILDER.build(localViewModel));
     restoreExpandedState(expandedState);
+    setSelectionRows(selection);
   }
 
   public void addNodeAppliedListener(ActionListener listener) {
@@ -142,9 +144,9 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
     TreeModel treeModel = getModel();
     return treeModel == null ? Collections.emptySet()
         : new TreeModelTraverser(treeModel).traverse()
-            .filter(this::isExpanded)
-            .map(new TreePathStringEncoder()::encode)
-            .collect(Collectors.toSet());
+        .filter(this::isExpanded)
+        .map(new TreePathStringEncoder()::encode)
+        .collect(Collectors.toSet());
   }
 
   private void restoreExpandedState(@NotNull Set<String> expandedState) {

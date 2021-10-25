@@ -4,6 +4,7 @@ import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.model.task.Arguments;
 import fi.aalto.cs.apluscourses.ui.ideactivities.ComponentDatabase;
 import fi.aalto.cs.apluscourses.ui.ideactivities.EditorHighlighter;
+import javax.swing.Action;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -11,20 +12,22 @@ public class EditorPresenter extends IntelliJComponentPresenterBase {
   @NotNull
   private final String path;
 
-  private EditorPresenter(@NotNull String instruction,
-                          @NotNull String info,
+  private EditorPresenter(@Nullable String instruction,
+                          @Nullable String info,
                           @NotNull Project project,
-                          @NotNull String path) {
-    super(instruction, info, project);
+                          @NotNull String path,
+                          @NotNull Action @NotNull [] actions) {
+    super(instruction, info, project, actions);
     this.path = path;
   }
 
   @NotNull
-  public static EditorPresenter create(@NotNull String instruction,
-                                       @NotNull String info,
+  public static EditorPresenter create(@Nullable String instruction,
+                                       @Nullable String info,
                                        @NotNull Project project,
-                                       @NotNull Arguments actionArguments) {
-    return new EditorPresenter(instruction, info, project, actionArguments.getString("filePath"));
+                                       @NotNull Arguments actionArguments,
+                                       @NotNull Action @NotNull [] actions) {
+    return new EditorPresenter(instruction, info, project, actionArguments.getString("filePath"), actions);
   }
 
   @Override

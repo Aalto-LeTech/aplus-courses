@@ -283,7 +283,7 @@ public class CourseFileManager {
     try {
       this.language = jsonObject.getString(LANGUAGE_KEY);
     } catch (JSONException e) {
-      logger.error("Course file missing language, defaulting to 'en'", e);
+      logger.warn("Course file missing language, defaulting to 'en'", e);
       language = "en";
     }
 
@@ -303,8 +303,7 @@ public class CourseFileManager {
       try {
         downloadedAt = ZonedDateTime.parse(moduleObject.getString(MODULE_DOWNLOADED_AT_KEY));
       } catch (JSONException e) {
-        logger
-            .error(String.format("Module %s missing 'downloadedAt' in course file", moduleName), e);
+        logger.warn(String.format("Module %s missing 'downloadedAt' in course file", moduleName), e);
         downloadedAt = Instant.EPOCH.atZone(ZoneId.systemDefault());
       }
 

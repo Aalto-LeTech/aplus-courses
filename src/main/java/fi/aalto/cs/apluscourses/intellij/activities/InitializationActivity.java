@@ -81,7 +81,7 @@ public class InitializationActivity implements Background {
     try {
       course = Course.fromUrl(courseConfigurationFileUrl, new IntelliJModelFactory(project));
     } catch (UnexpectedResponseException | MalformedCourseConfigurationException e) {
-      logger.error("Error occurred while trying to parse a course configuration file", e);
+      logger.warn("Error occurred while trying to parse a course configuration file", e);
       notifier.notify(new CourseConfigurationError(e), project);
       isInitialized(project).set(true);
       progressViewModel.stopAll();
@@ -163,7 +163,7 @@ public class InitializationActivity implements Background {
         return null;
       }
     } catch (IOException | JSONException e) {
-      logger.error("Malformed project course tag file", e);
+      logger.warn("Malformed project course tag file", e);
       return null;
     }
   }

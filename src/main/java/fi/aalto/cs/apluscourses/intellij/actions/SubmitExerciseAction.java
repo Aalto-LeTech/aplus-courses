@@ -41,6 +41,7 @@ import fi.aalto.cs.apluscourses.model.TutorialExercise;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import fi.aalto.cs.apluscourses.presentation.ModuleSelectionViewModel;
+import fi.aalto.cs.apluscourses.presentation.ProgressViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseGroupViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
@@ -149,6 +150,7 @@ public class SubmitExerciseAction extends AnAction {
     CourseViewModel courseViewModel = mainViewModel.courseViewModel.get();
     ExercisesTreeViewModel exercisesViewModel = mainViewModel.exercisesViewModel.get();
     Authentication authentication = authenticationProvider.getAuthentication(project);
+    ProgressViewModel progressViewModel = mainViewModel.progressViewModel;
     if (exercisesViewModel == null) {
       e.getPresentation().setEnabled(false);
     } else {
@@ -161,6 +163,11 @@ public class SubmitExerciseAction extends AnAction {
       e.getPresentation().setEnabled(project != null
           && authentication != null && courseViewModel != null
           && (isSubmittableExerciseSelected || isSubmittableSubmissionSelected));
+      if (progressViewModel.getCurrentProgress() != null && !progressViewModel.getCurrentProgress().isFinished()) {
+        e.getPresentation().setText(getText("intellij.actions.SubmitExerciseAction.waitForAssignments"));
+      } else {
+        e.getPresentation().setText(getText("intellij.actions.SubmitExerciseAction.submitAssignment"));
+      }
       var selectedEx = exercisesViewModel.findSelected().getLevel(2);
       var isTutorial = selectedEx instanceof ExerciseViewModel
           && ExerciseViewModel.Status.TUTORIAL.equals(((ExerciseViewModel) selectedEx).getStatus());
@@ -198,7 +205,7 @@ public class SubmitExerciseAction extends AnAction {
 
     if (courseViewModel == null || exercisesViewModel == null || authentication == null) {
       if (authentication == null) {
-        logger.error("Null authentication while submitting exercise");
+        logger.warn("Null authentication while submitting exercise");
       }
       return;
     }
@@ -369,7 +376,7 @@ public class SubmitExerciseAction extends AnAction {
   }
 
   private void notifyNetworkError(@NotNull IOException exception, @Nullable Project project) {
-    logger.error("Network error while submitting exercise", exception);
+    logger.warn("Network error while submitting exercise", exception);
     notifier.notify(new NetworkErrorNotification(exception), project);
   }
 

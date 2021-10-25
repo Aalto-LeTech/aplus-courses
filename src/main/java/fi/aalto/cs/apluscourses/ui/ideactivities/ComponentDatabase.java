@@ -26,6 +26,7 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.plugins.scala.console.ScalaConsoleInfo;
 
 public class ComponentDatabase {
+  public static final String BUILD_TOOL_WINDOW = "Build";
   public static final String PROJECT_TOOL_WINDOW = "Project";
   public static final String APLUS_TOOL_WINDOW = "A+ Courses";
   public static final String RUN_TOOL_WINDOW = "Run";

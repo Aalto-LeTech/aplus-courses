@@ -1,6 +1,6 @@
 package fi.aalto.cs.apluscourses.intellij.model.task;
 
-import static fi.aalto.cs.apluscourses.ui.ideactivities.ComponentDatabase.PROJECT_TOOL_WINDOW;
+import static fi.aalto.cs.apluscourses.ui.ideactivities.ComponentDatabase.BUILD_TOOL_WINDOW;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
@@ -11,11 +11,11 @@ import javax.swing.Action;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class ProjectTreePresenter extends IntelliJComponentPresenterBase {
-  public ProjectTreePresenter(@Nullable String instruction,
-                              @Nullable String info,
-                              @NotNull Project project,
-                              @NotNull Action @NotNull [] actions) {
+public class BuildPresenter extends IntelliJComponentPresenterBase {
+  public BuildPresenter(@Nullable String instruction,
+                        @Nullable String info,
+                        @NotNull Project project,
+                        @NotNull Action @NotNull [] actions) {
     super(instruction, info, project, actions);
   }
 
@@ -27,7 +27,7 @@ public class ProjectTreePresenter extends IntelliJComponentPresenterBase {
 
   @Override
   public boolean tryToShow() {
-    return ComponentDatabase.showToolWindow(PROJECT_TOOL_WINDOW, project);
+    return ComponentDatabase.showToolWindow(BUILD_TOOL_WINDOW, project);
   }
 
   @Override
@@ -37,6 +37,6 @@ public class ProjectTreePresenter extends IntelliJComponentPresenterBase {
 
   @Nullable
   private ToolWindow getToolWindow() {
-    return ComponentDatabase.getToolWindow(PROJECT_TOOL_WINDOW, project);
+    return ComponentDatabase.getToolWindow(BUILD_TOOL_WINDOW, project);
   }
 }
