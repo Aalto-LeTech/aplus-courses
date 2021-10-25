@@ -20,6 +20,7 @@ public class ExerciseGroup implements Browsable {
   @NotNull
   private final String htmlUrl;
   private final boolean isOpen;
+  private final List<Long> exerciseOrder;
   @NotNull
   private final List<Exercise> exercises = Collections.synchronizedList(new ArrayList<>());
 
@@ -36,7 +37,12 @@ public class ExerciseGroup implements Browsable {
     this.name = name;
     this.htmlUrl = htmlUrl;
     this.isOpen = isOpen;
+    this.exerciseOrder = exerciseOrder;
     this.exercises.addAll(dummyExercises);
+    sort();
+  }
+
+  private void sort() {
     this.exercises.sort(Comparator.comparing(exercise -> exerciseOrder.indexOf(exercise.getId())));
   }
 
@@ -90,6 +96,14 @@ public class ExerciseGroup implements Browsable {
   public void addExercise(@NotNull Exercise exercise) {
     var oldExercise = exercises.stream().filter(oldEx -> oldEx.equals(exercise)).findFirst();
     oldExercise.ifPresent(exercises::remove);
-    exercises.add(exercise);
+    var index = exerciseOrder.indexOf(exercise.getId());
+    if (index == -1) {
+      exercises.add(exercise);
+    } else if (index > exercises.size() - 1) {
+      exercises.add(exercise);
+      sort();
+    } else {
+      exercises.add(index, exercise);
+    }
   }
 }
