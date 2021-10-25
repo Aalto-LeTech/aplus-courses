@@ -37,7 +37,7 @@ public abstract class ActivitiesListenerBase<T> implements ActivitiesListener {
   private static final int UNREGISTERED = 2;
 
   private final ListenerCallback callback;
-  public final AtomicBoolean isAlreadyFinished = new AtomicBoolean(false);
+  private final AtomicBoolean isAlreadyFinished = new AtomicBoolean(false);
   private final AtomicInteger state = new AtomicInteger(INITIAL);
 
   protected ActivitiesListenerBase(ListenerCallback callback) {
