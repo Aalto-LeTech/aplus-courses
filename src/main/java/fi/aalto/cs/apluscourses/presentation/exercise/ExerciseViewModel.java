@@ -15,7 +15,7 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
    * Construct a view model corresponding to the given exercise.
    */
   public ExerciseViewModel(@NotNull Exercise exercise) {
-    super(exercise, CollectionUtil.mapWithIndex(
+    super(exercise, CollectionUtil.mapWithIndexReverse(
         exercise.getSubmissionResults(), SubmissionResultViewModel::new, 1));
   }
 
@@ -63,10 +63,10 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
     Exercise exercise = getModel();
     if (exercise.isDummy()) {
       return Status.DUMMY;
-    } else if (exercise instanceof TutorialExercise) {
-      return Status.TUTORIAL;
     } else if (exercise.isInGrading()) {
       return Status.IN_GRADING;
+    } else if (exercise instanceof TutorialExercise) {
+      return Status.TUTORIAL;
     } else if (exercise.getMaxSubmissions() == 0 && exercise.getMaxPoints() == 0) {
       return Status.OPTIONAL_PRACTICE;
     } else if (exercise.getSubmissionResults().isEmpty()) {
