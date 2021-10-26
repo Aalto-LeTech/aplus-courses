@@ -9,6 +9,7 @@ import com.intellij.ui.ScrollPaneFactory;
 import com.intellij.ui.treeStructure.Tree;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.ui.GuiObject;
+import fi.aalto.cs.apluscourses.ui.ToolbarPanel;
 import java.awt.CardLayout;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -18,7 +19,7 @@ import javax.swing.SwingConstants;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class ModulesView {
+public class ModulesView implements ToolbarPanel {
   @GuiObject
   public ModuleListView moduleListView;
   @GuiObject
@@ -29,7 +30,7 @@ public class ModulesView {
   private JLabel emptyText;
   @GuiObject
   private JScrollPane pane;
-  private CardLayout cl;
+  private final CardLayout cl;
 
   /**
    * A view that holds the content of the Modules tool window.
@@ -60,9 +61,15 @@ public class ModulesView {
     emptyText.setText(getText("ui.exercise.ExercisesView.loading"));
   }
 
+  @Override
   @NotNull
   public JPanel getBasePanel() {
     return basePanel;
+  }
+
+  @Override
+  public @NotNull JPanel getToolbar() {
+    return toolbarContainer;
   }
 
   /**
@@ -70,9 +77,9 @@ public class ModulesView {
    */
   public void viewModelChanged(@Nullable CourseViewModel course) {
     ApplicationManager.getApplication().invokeLater(() -> {
-      moduleListView.setModel(course == null ? null : course.getModules());
-      cl.show(cardPanel, (course != null) ? "TreeCard" : "LabelCard");
-    }, ModalityState.any()
+          moduleListView.setModel(course == null ? null : course.getModules());
+          cl.show(cardPanel, (course != null) ? "TreeCard" : "LabelCard");
+        }, ModalityState.any()
     );
   }
 
