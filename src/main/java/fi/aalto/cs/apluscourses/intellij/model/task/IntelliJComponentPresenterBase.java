@@ -33,6 +33,7 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
   private volatile CancelHandler cancelHandler; //NOSONAR
 
   private OverlayPane overlayPane;
+  private boolean hasEnded = false; //NOSONAR
   private boolean tryingToShow = false;
 
   /**
@@ -105,6 +106,7 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
 
   @RequiresEdt
   private void removeHighlightInternal() {
+    hasEnded = true;
     if (overlayPane != null) {
       overlayPane.remove();
       overlayPane = null;
@@ -138,6 +140,10 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
             if (project.isDisposed()) {
               logger.info("Tutorial cancelled due to project closing");
               cancelHandler.onForceCancel();
+              return;
+            }
+
+            if (hasEnded) {
               return;
             }
 

@@ -57,6 +57,8 @@ public class IntelliJActivityFactory implements ActivityFactory {
         return ReplInOutListener.create(callback, project, arguments);
       case "replInputContains":
         return ReplContainsListener.create(callback, project, arguments);
+      case "stop":
+        return StopListener.create(callback, project, arguments);
       default:
         throw new IllegalArgumentException("Unsupported action: '" + action + "'");
     }
