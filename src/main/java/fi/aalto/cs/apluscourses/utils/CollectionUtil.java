@@ -36,6 +36,9 @@ public class CollectionUtil {
         .collect(Collectors.toList());
   }
 
+  /**
+   * Like mapWithIndex, but reverse.
+   */
   public static <T, R> List<R> mapWithIndexReverse(@NotNull List<T> list,
                                                    @NotNull BiFunction<T, Integer, R> func,
                                                    int startIndex) {

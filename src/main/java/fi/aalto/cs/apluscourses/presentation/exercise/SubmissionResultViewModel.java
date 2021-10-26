@@ -31,10 +31,9 @@ public class SubmissionResultViewModel extends SelectableNodeViewModel<Submissio
 
 
   /**
-   * Constructs text appearing in parenthesis.
+   * Constructs text appearing in parentheses.
    *
-   * @return Returns status text for assignment.
-   * Methods considers case assignment has not yet been graded
+   * @return Returns status text for assignment. Method considers case assignment has not yet been graded
    */
   @NotNull
   public String getStatusText() {
