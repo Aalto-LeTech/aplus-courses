@@ -7,4 +7,6 @@ public interface ToolbarPanel {
   @NotNull JPanel getBasePanel();
 
   @NotNull JPanel getToolbar();
+
+  @NotNull String getTitle();
 }

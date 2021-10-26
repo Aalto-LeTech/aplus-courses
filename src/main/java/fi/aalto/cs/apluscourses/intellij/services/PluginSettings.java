@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.intellij.services;
 
+import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalIdeSettingsNames.A_PLUS_COLLAPSED_PANELS;
 import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalIdeSettingsNames.A_PLUS_DEFAULT_GROUP;
 import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalIdeSettingsNames.A_PLUS_IMPORTED_IDE_SETTINGS;
 import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalIdeSettingsNames.A_PLUS_IS_ASSISTANT_MODE;
@@ -33,6 +34,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -71,7 +73,8 @@ public class PluginSettings implements MainViewModelProvider, DefaultGroupIdSett
     A_PLUS_SHOW_COMPLETED("A+.showCompleted"),
     A_PLUS_SHOW_OPTIONAL("A+.showOptional"),
     A_PLUS_SHOW_CLOSED("A+.showClosed"),
-    A_PLUS_IS_ASSISTANT_MODE("A+.assistantMode");
+    A_PLUS_IS_ASSISTANT_MODE("A+.assistantMode"),
+    A_PLUS_COLLAPSED_PANELS("A+.collapsed");
 
     private final String name;
 
@@ -216,6 +219,31 @@ public class PluginSettings implements MainViewModelProvider, DefaultGroupIdSett
     applicationPropertiesManager
         .setValue(A_PLUS_IS_ASSISTANT_MODE.getName(),
             String.valueOf(assistantMode));
+  }
+
+  /**
+   * Sets a collapsible panel collapsed.
+   */
+  public void setCollapsed(@NotNull String title) {
+    applicationPropertiesManager.setValue(A_PLUS_COLLAPSED_PANELS.getName(),
+        getCollapsed() != null ? getCollapsed() + ";" + title : title);
+  }
+
+  /**
+   * Sets a collapsible panel expanded.
+   */
+  public void setExpanded(@NotNull String title) {
+    if (getCollapsed() == null) {
+      return;
+    }
+    applicationPropertiesManager.setValue(A_PLUS_COLLAPSED_PANELS.getName(),
+        Arrays.stream(getCollapsed().split(";"))
+            .filter(s -> !s.equals(title))
+            .collect(Collectors.joining(";")));
+  }
+
+  public String getCollapsed() {
+    return applicationPropertiesManager.getValue(A_PLUS_COLLAPSED_PANELS.getName());
   }
 
   /**

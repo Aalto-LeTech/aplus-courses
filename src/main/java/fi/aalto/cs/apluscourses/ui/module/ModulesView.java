@@ -72,6 +72,12 @@ public class ModulesView implements ToolbarPanel {
     return toolbarContainer;
   }
 
+  @NotNull
+  @Override
+  public String getTitle() {
+    return getText("ui.toolWindow.subTab.modules.name");
+  }
+
   /**
    * Update this modules view with the given view model (which may be null).
    */

@@ -34,7 +34,9 @@ public class APlusToolWindowFactory extends BaseToolWindowFactory implements Dum
     // TODO remove, for demo purposes
     ModulesView modulesView2 = createModulesView(project);
     ExercisesView exercisesView = createExercisesView(project);
+    var collapsed = PluginSettings.getInstance().getCollapsed();
     var splitter = new CollapsibleSplitter(modulesView, modulesView2, exercisesView);
+    splitter.collapseByTitles(collapsed);
 
     var progressViewModel
         = PluginSettings.getInstance().getMainViewModel(project).progressViewModel;

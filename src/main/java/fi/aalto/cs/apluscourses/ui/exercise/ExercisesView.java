@@ -76,6 +76,12 @@ public class ExercisesView implements ToolbarPanel {
     return toolbarContainer;
   }
 
+  @NotNull
+  @Override
+  public String getTitle() {
+    return getText("ui.toolWindow.subTab.exercises.name");
+  }
+
   /**
    * Sets the view model of this view, or does nothing if the given view model is null.
    */
@@ -99,7 +105,7 @@ public class ExercisesView implements ToolbarPanel {
               exerciseGroupsTree.getEmptyText().appendLine(
                   getText("ui.exercise.ExercisesView.setTokenDirections"));
             }
-            title.setText(viewModel.getName() == null ? getText("ui.toolWindow.subTab.exercises.name")
+            title.setText(viewModel.getName() == null ? getTitle()
                 : getAndReplaceText("ui.toolWindow.subTab.exercises.nameStudent", viewModel.getName()));
           }
 
