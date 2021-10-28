@@ -5,6 +5,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.newvfs.RefreshQueue;
+import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import java.io.File;
 import org.jetbrains.annotations.NotNull;
@@ -41,6 +42,12 @@ public class Interfaces {
     void refreshPath(VirtualFile file, Runnable callback);
   }
 
+  public interface ReadNews {
+    void setNewsRead(long id);
+
+    String getReadNews();
+  }
+
   @FunctionalInterface
   public interface FileBrowser {
     void navigateTo(File file, Project project);
@@ -64,6 +71,10 @@ public class Interfaces {
   }
 
   public static class FileBrowserImpl {
+    private FileBrowserImpl() {
+
+    }
+
 
     /**
      * Opens the file in the editor.
@@ -73,6 +84,18 @@ public class Interfaces {
       if (vf != null) {
         new OpenFileDescriptor(project, vf).navigate(true);
       }
+    }
+  }
+
+  public static class ReadNewsImpl implements ReadNews {
+    @Override
+    public void setNewsRead(long id) {
+      PluginSettings.getInstance().setNewsRead(id);
+    }
+
+    @Override
+    public String getReadNews() {
+      return PluginSettings.getInstance().getReadNews();
     }
   }
 }

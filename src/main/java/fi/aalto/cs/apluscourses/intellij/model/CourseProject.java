@@ -9,6 +9,7 @@ import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.ExercisesLazyLoader;
 import fi.aalto.cs.apluscourses.model.ExercisesTree;
+import fi.aalto.cs.apluscourses.model.NewsTree;
 import fi.aalto.cs.apluscourses.model.Student;
 import fi.aalto.cs.apluscourses.model.User;
 import fi.aalto.cs.apluscourses.utils.Event;
@@ -40,6 +41,8 @@ public class CourseProject implements ExercisesLazyLoader {
   private final Course course;
 
   private volatile ExercisesTree exercisesTree;
+
+  private volatile NewsTree newsTree;
 
   private final AtomicBoolean hasTriedToReadAuthenticationFromStorage = new AtomicBoolean(false);
 
@@ -78,7 +81,7 @@ public class CourseProject implements ExercisesLazyLoader {
     this.notifier = notifier;
     this.course = course;
     this.project = project;
-    this.courseUpdater = new CourseUpdater(course, project, courseUrl, courseUpdated);
+    this.courseUpdater = new CourseUpdater(this, course, project, courseUrl, courseUpdated);
     this.exercisesUpdater = new ExercisesUpdater(this, exercisesUpdated);
   }
 
@@ -162,6 +165,15 @@ public class CourseProject implements ExercisesLazyLoader {
   }
 
   @Nullable
+  public NewsTree getNewsTree() {
+    return newsTree;
+  }
+
+  public void setNewsTree(@NotNull NewsTree newsTree) {
+    this.newsTree = newsTree;
+  }
+
+  @Nullable
   public Authentication getAuthentication() {
     return user.get() == null ? null : Objects.requireNonNull(user.get()).getAuthentication();
   }
@@ -172,7 +184,7 @@ public class CourseProject implements ExercisesLazyLoader {
   public void setAuthentication(Authentication authentication) {
     try {
       var newUser = authentication == null
-              ? null : course.getExerciseDataSource().getUser(authentication);
+          ? null : course.getExerciseDataSource().getUser(authentication);
       var oldUser = this.user.getAndSet(newUser);
       if (oldUser != null) {
         oldUser.getAuthentication().clear();

@@ -51,6 +51,10 @@ public interface ExerciseDataSource {
   ZonedDateTime getEndingTime(@NotNull Course course,
                               @NotNull Authentication authentication) throws IOException;
 
+  @NotNull
+  List<News> getNews(@NotNull Course course,
+                     @NotNull Authentication authentication) throws IOException;
+
   @Nullable
   String submit(@NotNull Submission submission, @NotNull Authentication authentication)
       throws IOException;

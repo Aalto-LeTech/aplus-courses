@@ -54,17 +54,16 @@ public class CollapsibleSplitter {
   }
 
   private class Splitter {
+    private final ToolbarPanel toolbarPanel;
     private boolean collapsed = true;
     private final JButton collapseButton;
     private final JBSplitter jbSplitter;
-    private final String title;
 
     protected Splitter(@NotNull ToolbarPanel toolbarPanel) {
+      this.toolbarPanel = toolbarPanel;
       var panel = toolbarPanel.getBasePanel();
       var toolbar = toolbarPanel.getToolbar();
       panel.setMinimumSize(toolbar.getPreferredSize());
-
-      this.title = toolbarPanel.getTitle();
 
       this.jbSplitter = new JBSplitter(true);
       jbSplitter.setFirstComponent(panel);
@@ -106,6 +105,7 @@ public class CollapsibleSplitter {
       collapseButton.setIcon(expandIcon);
       jbSplitter.setResizeEnabled(true);
       collapsed = false;
+      toolbarPanel.onExpandSplitter();
     }
 
     protected void collapse() {
@@ -118,10 +118,10 @@ public class CollapsibleSplitter {
     private void toggleCollapsed() {
       if (collapsed) {
         expand();
-        PluginSettings.getInstance().setExpanded(title);
+        PluginSettings.getInstance().setExpanded(getTitle());
       } else {
         collapse();
-        PluginSettings.getInstance().setCollapsed(title);
+        PluginSettings.getInstance().setCollapsed(getTitle());
       }
     }
 
@@ -130,7 +130,7 @@ public class CollapsibleSplitter {
     }
 
     public String getTitle() {
-      return title;
+      return toolbarPanel.getTitle();
     }
   }
 }

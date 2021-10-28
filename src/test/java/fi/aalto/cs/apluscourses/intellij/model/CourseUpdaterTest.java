@@ -55,18 +55,18 @@ public class CourseUpdaterTest {
     json = "{\"modules\":[{\"name\":\"Module\",\"url\":\"http://example.org\",\"id\":\"a\"}]}";
     var bytes = json.getBytes(StandardCharsets.UTF_8);
     doAnswer(invocationOnMock -> new ByteArrayInputStream(bytes))
-        .when(configurationFetcher)
-        .fetch(any(URL.class));
+            .when(configurationFetcher)
+            .fetch(any(URL.class));
     event = mock(Event.class);
     notifier = mock(Notifier.class);
     var course = new ModelExtensions.TestCourse(
-        "1", "O1", "http://example.com", Collections.emptyList(), Collections.singletonList(module),
-        Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap(),
-        Collections.emptyList(), Collections.emptyMap(), BuildInfo.INSTANCE.courseVersion,
-        Collections.emptyMap()
+            "1", "O1", "http://example.com", Collections.emptyList(), Collections.singletonList(module),
+            Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap(),
+            Collections.emptyList(), Collections.emptyMap(), BuildInfo.INSTANCE.courseVersion,
+            Collections.emptyMap()
     );
     updater = new CourseUpdater(
-        course, project, courseUrl, configurationFetcher, event, notifier, 50L
+            mock(CourseProject.class), course, project, courseUrl, configurationFetcher, event, notifier, 50L
     );
   }
 

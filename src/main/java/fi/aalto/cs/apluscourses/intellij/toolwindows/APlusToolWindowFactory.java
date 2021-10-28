@@ -21,6 +21,7 @@ import fi.aalto.cs.apluscourses.ui.CollapsibleSplitter;
 import fi.aalto.cs.apluscourses.ui.ProgressBarView;
 import fi.aalto.cs.apluscourses.ui.exercise.ExercisesView;
 import fi.aalto.cs.apluscourses.ui.module.ModulesView;
+import fi.aalto.cs.apluscourses.ui.news.NewsView;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JComponent;
@@ -30,16 +31,15 @@ public class APlusToolWindowFactory extends BaseToolWindowFactory implements Dum
 
   @Override
   protected JComponent createToolWindowContentInternal(@NotNull Project project) {
+    NewsView newsView = createNewsView(project);
     ModulesView modulesView = createModulesView(project);
-    // TODO remove, for demo purposes
-    ModulesView modulesView2 = createModulesView(project);
     ExercisesView exercisesView = createExercisesView(project);
     var collapsed = PluginSettings.getInstance().getCollapsed();
-    var splitter = new CollapsibleSplitter(modulesView, modulesView2, exercisesView);
+    var splitter = new CollapsibleSplitter(newsView, modulesView, exercisesView);
     splitter.collapseByTitles(collapsed);
 
     var progressViewModel
-        = PluginSettings.getInstance().getMainViewModel(project).progressViewModel;
+            = PluginSettings.getInstance().getMainViewModel(project).progressViewModel;
     var progressBarView = new ProgressBarView(progressViewModel, splitter.getFirstSplitter()).getContainer();
     return createBannerView(project, progressBarView).getContainer();
   }
@@ -48,11 +48,11 @@ public class APlusToolWindowFactory extends BaseToolWindowFactory implements Dum
   private static ModulesView createModulesView(@NotNull Project project) {
     ModulesView modulesView = new ModulesView();
     PluginSettings.getInstance().getMainViewModel(project).courseViewModel
-        .addValueObserver(modulesView, ModulesView::viewModelChanged);
+            .addValueObserver(modulesView, ModulesView::viewModelChanged);
 
     InitializationActivity
-        .isInitialized(project)
-        .addValueObserver(modulesView, ModulesView::setProjectReady);
+            .isInitialized(project)
+            .addValueObserver(modulesView, ModulesView::setProjectReady);
 
     ActionManager actionManager = ActionManager.getInstance();
     ActionGroup group = (ActionGroup) actionManager.getAction(ActionGroups.MODULE_ACTIONS);
@@ -62,12 +62,12 @@ public class APlusToolWindowFactory extends BaseToolWindowFactory implements Dum
     modulesView.toolbarContainer.add(toolbar.getComponent());
 
     ActionPopupMenu popupMenu =
-        actionManager.createActionPopupMenu(ActionPlaces.TOOLWINDOW_POPUP, group);
+            actionManager.createActionPopupMenu(ActionPlaces.TOOLWINDOW_POPUP, group);
     popupMenu.setTargetComponent(modulesView.moduleListView);
     modulesView.moduleListView.setPopupMenu(popupMenu.getComponent());
 
     modulesView.moduleListView.addListActionListener(ActionUtil.createOnEventLauncher(
-        InstallModuleAction.ACTION_ID, modulesView.moduleListView));
+            InstallModuleAction.ACTION_ID, modulesView.moduleListView));
     modulesView.getEmptyText().addMouseListener(new EmptyLabelMouseAdapter());
 
     return modulesView;
@@ -78,14 +78,14 @@ public class APlusToolWindowFactory extends BaseToolWindowFactory implements Dum
     MainViewModel mainViewModel = PluginSettings.getInstance().getMainViewModel(project);
 
     InitializationActivity
-        .isInitialized(project)
-        .addValueObserver(mainViewModel, MainViewModel::setProjectReady);
+            .isInitialized(project)
+            .addValueObserver(mainViewModel, MainViewModel::setProjectReady);
 
     ExercisesView exercisesView = new ExercisesView();
     exercisesView.getEmptyTextLabel().addMouseListener(new EmptyLabelMouseAdapter());
 
     mainViewModel.exercisesViewModel
-        .addValueObserver(exercisesView, ExercisesView::viewModelChanged);
+            .addValueObserver(exercisesView, ExercisesView::viewModelChanged);
     ActionManager actionManager = ActionManager.getInstance();
     ActionGroup group = (ActionGroup) actionManager.getAction(ActionGroups.EXERCISE_ACTIONS);
 
@@ -94,11 +94,39 @@ public class APlusToolWindowFactory extends BaseToolWindowFactory implements Dum
     exercisesView.toolbarContainer.add(toolbar.getComponent());
 
     ActionPopupMenu popupMenu =
-        actionManager.createActionPopupMenu(ActionPlaces.TOOLWINDOW_POPUP, group);
+            actionManager.createActionPopupMenu(ActionPlaces.TOOLWINDOW_POPUP, group);
     popupMenu.setTargetComponent(exercisesView.getExerciseGroupsTree());
     exercisesView.getExerciseGroupsTree().setPopupMenu(popupMenu.getComponent());
 
     return exercisesView;
+  }
+
+  @NotNull
+  private static NewsView createNewsView(@NotNull Project project) {
+    MainViewModel mainViewModel = PluginSettings.getInstance().getMainViewModel(project);
+
+    InitializationActivity
+            .isInitialized(project)
+            .addValueObserver(mainViewModel, MainViewModel::setProjectReady);
+
+    NewsView newsView = new NewsView();
+    newsView.getEmptyTextLabel().addMouseListener(new EmptyLabelMouseAdapter());
+
+    mainViewModel.newsTreeViewModel
+            .addValueObserver(newsView, NewsView::viewModelChanged);
+    ActionManager actionManager = ActionManager.getInstance();
+    ActionGroup group = (ActionGroup) actionManager.getAction(ActionGroups.NEWS_ACTIONS);
+
+    ActionToolbar toolbar = actionManager.createActionToolbar(ActionPlaces.TOOLBAR, group, true);
+    toolbar.setTargetComponent(newsView.getNewsTree());
+    newsView.toolbarContainer.add(toolbar.getComponent());
+
+    ActionPopupMenu popupMenu =
+            actionManager.createActionPopupMenu(ActionPlaces.TOOLWINDOW_POPUP, group);
+    popupMenu.setTargetComponent(newsView.getNewsTree());
+    newsView.getNewsTree().setPopupMenu(popupMenu.getComponent());
+
+    return newsView;
   }
 
   @NotNull

@@ -9,4 +9,7 @@ public interface ToolbarPanel {
   @NotNull JPanel getToolbar();
 
   @NotNull String getTitle();
+
+  default void onExpandSplitter() {
+  }
 }
