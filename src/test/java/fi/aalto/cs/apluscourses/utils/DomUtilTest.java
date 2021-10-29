@@ -1,7 +1,7 @@
 package fi.aalto.cs.apluscourses.utils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import com.intellij.openapi.util.io.FileUtilRt;
 import java.io.File;

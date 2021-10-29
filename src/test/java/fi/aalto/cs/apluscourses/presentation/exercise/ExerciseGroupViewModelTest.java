@@ -1,7 +1,7 @@
 package fi.aalto.cs.apluscourses.presentation.exercise;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 import fi.aalto.cs.apluscourses.model.Exercise;

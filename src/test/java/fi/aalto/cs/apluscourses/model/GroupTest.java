@@ -1,7 +1,7 @@
 package fi.aalto.cs.apluscourses.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,9 +24,9 @@ public class GroupTest {
         "Catherine", group.getMemberNames().get(1));
   }
 
-  @Test(expected = UnsupportedOperationException.class)
+  @Test
   public void testGetMemberNamesReturnsUnmodifiableList() {
-    new Group(0, Collections.emptyList()).getMemberNames().add("");
+    assertThrows(UnsupportedOperationException.class, ()->new Group(0, Collections.emptyList()).getMemberNames().add(""));
   }
 
   @Test

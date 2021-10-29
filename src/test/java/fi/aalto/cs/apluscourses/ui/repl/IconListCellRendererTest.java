@@ -1,7 +1,7 @@
 package fi.aalto.cs.apluscourses.ui.repl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import fi.aalto.cs.apluscourses.ui.IconListCellRenderer;
 import icons.PluginIcons;
