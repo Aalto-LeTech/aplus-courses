@@ -43,18 +43,18 @@ public class OpenItemAction extends DumbAwareAction {
    */
   public OpenItemAction() {
     this(
-        PluginSettings.getInstance(),
-        new UrlRenderer(),
-        new DefaultNotifier()
+            PluginSettings.getInstance(),
+            new UrlRenderer(),
+            new DefaultNotifier()
     );
   }
 
   @Override
   public void actionPerformed(@NotNull AnActionEvent e) {
     ExercisesTreeViewModel exercisesTree = mainViewModelProvider
-        .getMainViewModel(e.getProject())
-        .exercisesViewModel
-        .get();
+            .getMainViewModel(e.getProject())
+            .exercisesViewModel
+            .get();
     if (exercisesTree == null) {
       return;
     }
@@ -76,7 +76,6 @@ public class OpenItemAction extends DumbAwareAction {
     var project = e.getProject();
     var exercisesTreeViewModel =
             mainViewModelProvider.getMainViewModel(project).exercisesViewModel.get();
-    e.getPresentation().setEnabled(exercisesTreeViewModel != null
-            && exercisesTreeViewModel.isAuthenticated());
+    e.getPresentation().setEnabled(exercisesTreeViewModel != null);
   }
 }

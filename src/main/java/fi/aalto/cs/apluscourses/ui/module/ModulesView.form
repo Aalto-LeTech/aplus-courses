@@ -28,6 +28,7 @@
           <component id="a54c3" class="javax.swing.JLabel">
             <constraints/>
             <properties>
+              <labelFor value="7ffb3"/>
               <text resource-bundle="resources" key="ui.toolWindow.subTab.modules.name"/>
             </properties>
           </component>
@@ -46,27 +47,10 @@
         <properties/>
         <border type="none"/>
         <children>
-          <grid id="a1679" binding="cardPanel" layout-manager="CardLayout" hgap="0" vgap="0">
+          <component id="b661" class="fi.aalto.cs.apluscourses.ui.module.ModuleListView" binding="moduleListView">
             <constraints/>
             <properties/>
-            <border type="none"/>
-            <children>
-              <component id="2ab31" class="javax.swing.JLabel" binding="emptyText">
-                <constraints>
-                  <card name="LabelCard"/>
-                </constraints>
-                <properties>
-                  <text value=""/>
-                </properties>
-              </component>
-              <component id="b661" class="fi.aalto.cs.apluscourses.ui.module.ModuleListView" binding="moduleListView">
-                <constraints>
-                  <card name="TreeCard"/>
-                </constraints>
-                <properties/>
-              </component>
-            </children>
-          </grid>
+          </component>
         </children>
       </scrollpane>
     </children>
