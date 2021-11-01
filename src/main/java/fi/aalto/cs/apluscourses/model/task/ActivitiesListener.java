@@ -5,4 +5,6 @@ public interface ActivitiesListener {
   void registerListener();
 
   void unregisterListener();
+
+  void setAlreadyCompleted();
 }
