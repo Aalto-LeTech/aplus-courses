@@ -12,9 +12,4 @@ public class EmptyExercisesTreeViewModel extends ExercisesTreeViewModel {
   public EmptyExercisesTreeViewModel() {
     super(new ExercisesTree(), new Options());
   }
-
-  @Override
-  public boolean isEmptyTextVisible() {
-    return true;
-  }
 }

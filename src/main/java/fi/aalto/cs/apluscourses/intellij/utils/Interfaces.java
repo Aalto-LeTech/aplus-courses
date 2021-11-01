@@ -53,6 +53,12 @@ public class Interfaces {
     void navigateTo(File file, Project project);
   }
 
+  public interface CollapsedPanels {
+    void setCollapsed(@NotNull String title);
+
+    void setExpanded(@NotNull String title);
+  }
+
   public static class FileRefresherImpl {
     private FileRefresherImpl() {
 
@@ -84,6 +90,19 @@ public class Interfaces {
       if (vf != null) {
         new OpenFileDescriptor(project, vf).navigate(true);
       }
+    }
+  }
+
+  public static class CollapsedPanelsImpl implements Interfaces.CollapsedPanels {
+
+    @Override
+    public void setCollapsed(@NotNull String title) {
+      PluginSettings.getInstance().setCollapsed(title);
+    }
+
+    @Override
+    public void setExpanded(@NotNull String title) {
+      PluginSettings.getInstance().setExpanded(title);
     }
   }
 

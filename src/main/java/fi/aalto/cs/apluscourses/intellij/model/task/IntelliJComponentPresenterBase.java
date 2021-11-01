@@ -30,16 +30,18 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
   private final @Nullable String info;
   protected final @NotNull Project project;
   private final @NotNull Action @NotNull [] actions;
+  private boolean isAlreadyCompleted = false;
   private volatile CancelHandler cancelHandler; //NOSONAR
 
   private OverlayPane overlayPane;
+  private boolean hasEnded = false; //NOSONAR
   private boolean tryingToShow = false;
 
   /**
    * Constructor for the presenter.
    *
    * @param instruction The heading text of the balloon popup. If null, the popup won't be shown.
-   * @param info The info text of the balloon popup. If null, the text will be empty.
+   * @param info        The info text of the balloon popup. If null, the text will be empty.
    */
   protected IntelliJComponentPresenterBase(@Nullable String instruction,
                                            @Nullable String info,
@@ -50,6 +52,10 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
     this.project = project;
     this.actions = actions;
     this.timer = new Timer();
+  }
+
+  public void setAlreadyCompleted() {
+    isAlreadyCompleted = true;
   }
 
   @Override
@@ -94,7 +100,8 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
 
     overlayPane.addHighlighter(highlighter);
     if (instruction != null) {
-      overlayPane.addPopup(highlighter.getComponent(), instruction, info == null ? "" : info, actions);
+      overlayPane.addPopup(
+          highlighter.getComponent(), instruction, info == null ? "" : info, actions, isAlreadyCompleted);
     }
   }
 
@@ -105,6 +112,7 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
 
   @RequiresEdt
   private void removeHighlightInternal() {
+    hasEnded = true;
     if (overlayPane != null) {
       overlayPane.remove();
       overlayPane = null;
@@ -138,6 +146,10 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
             if (project.isDisposed()) {
               logger.info("Tutorial cancelled due to project closing");
               cancelHandler.onForceCancel();
+              return;
+            }
+
+            if (hasEnded) {
               return;
             }
 

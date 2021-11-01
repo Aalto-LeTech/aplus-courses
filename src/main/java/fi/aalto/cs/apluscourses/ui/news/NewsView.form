@@ -48,29 +48,12 @@
         </properties>
         <border type="none"/>
         <children>
-          <grid id="be1b5" binding="cardPanel" layout-manager="CardLayout" hgap="0" vgap="0">
+          <component id="1c591" class="fi.aalto.cs.apluscourses.ui.base.TreeView" binding="newsTree" custom-create="true">
             <constraints/>
-            <properties/>
-            <border type="none"/>
-            <children>
-              <component id="9b0" class="javax.swing.JLabel" binding="emptyText">
-                <constraints>
-                  <card name="LabelCard"/>
-                </constraints>
-                <properties>
-                  <text value=""/>
-                </properties>
-              </component>
-              <component id="2cca" class="fi.aalto.cs.apluscourses.ui.base.TreeView" binding="newsTree" custom-create="true">
-                <constraints>
-                  <card name="TreeCard"/>
-                </constraints>
-                <properties>
-                  <rootVisible value="false"/>
-                </properties>
-              </component>
-            </children>
-          </grid>
+            <properties>
+              <rootVisible value="false"/>
+            </properties>
+          </component>
         </children>
       </scrollpane>
     </children>

@@ -45,9 +45,9 @@ public class OpenItemAction<T> extends DumbAwareAction {
    */
   protected OpenItemAction() {
     this(
-        PluginSettings.getInstance(),
-        new UrlRenderer(),
-        new DefaultNotifier()
+            PluginSettings.getInstance(),
+            new UrlRenderer(),
+            new DefaultNotifier()
     );
   }
 

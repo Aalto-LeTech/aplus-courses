@@ -2,7 +2,7 @@ package fi.aalto.cs.apluscourses.ui;
 
 import com.intellij.ui.JBSplitter;
 import com.intellij.util.ui.UIUtil;
-import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
+import fi.aalto.cs.apluscourses.intellij.utils.Interfaces;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,11 +18,21 @@ public class CollapsibleSplitter {
   private final List<Splitter> splitters = new ArrayList<>();
   private static final Icon expandIcon = UIUtil.getTreeExpandedIcon();
   private static final Icon collapseIcon = UIUtil.getTreeCollapsedIcon();
+  private final Interfaces.CollapsedPanels collapsedPanels;
 
   /**
    * Constructor.
    */
   public CollapsibleSplitter(@NotNull ToolbarPanel... toolbarPanels) {
+    this(new Interfaces.CollapsedPanelsImpl(), toolbarPanels);
+  }
+
+  /**
+   * Constructor.
+   */
+  public CollapsibleSplitter(@NotNull Interfaces.CollapsedPanels collapsedPanels,
+                             @NotNull ToolbarPanel... toolbarPanels) {
+    this.collapsedPanels = collapsedPanels;
     for (var toolbarPanel : toolbarPanels) {
       this.add(toolbarPanel);
     }
@@ -41,8 +51,8 @@ public class CollapsibleSplitter {
       return;
     }
     Arrays.stream(titles.split(";"))
-        .forEach(title -> splitters.stream().filter(splitter -> title.equals(splitter.getTitle()))
-            .forEach(Splitter::collapse));
+            .forEach(title -> splitters.stream().filter(splitter -> title.equals(splitter.getTitle()))
+                    .forEach(Splitter::collapse));
   }
 
   public JBSplitter getFirstSplitter() {
@@ -118,10 +128,10 @@ public class CollapsibleSplitter {
     private void toggleCollapsed() {
       if (collapsed) {
         expand();
-        PluginSettings.getInstance().setExpanded(getTitle());
+        collapsedPanels.setExpanded(getTitle());
       } else {
         collapse();
-        PluginSettings.getInstance().setCollapsed(getTitle());
+        collapsedPanels.setCollapsed(getTitle());
       }
     }
 

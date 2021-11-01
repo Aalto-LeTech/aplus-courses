@@ -10,12 +10,9 @@ import com.intellij.ui.treeStructure.Tree;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.ui.GuiObject;
 import fi.aalto.cs.apluscourses.ui.ToolbarPanel;
-import java.awt.CardLayout;
 import javax.swing.BorderFactory;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.SwingConstants;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,11 +23,8 @@ public class ModulesView implements ToolbarPanel {
   public JPanel toolbarContainer;
   @GuiObject
   private JPanel basePanel;
-  private JPanel cardPanel;
-  private JLabel emptyText;
   @GuiObject
   private JScrollPane pane;
-  private final CardLayout cl;
 
   /**
    * A view that holds the content of the Modules tool window.
@@ -53,12 +47,9 @@ public class ModulesView implements ToolbarPanel {
     // We use class name as a unique key for the property.
     basePanel.putClientProperty(ModulesView.class.getName(), this);
     pane.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, JBColor.border()));
-    cl = (CardLayout) cardPanel.getLayout();
     moduleListView.setBackground(new Tree().getBackground());
-    emptyText.setHorizontalAlignment(SwingConstants.CENTER);
-    emptyText.setVerticalAlignment(SwingConstants.CENTER);
     pane.getVerticalScrollBar().setUnitIncrement(moduleListView.getFixedCellHeight());
-    emptyText.setText(getText("ui.exercise.ExercisesView.loading"));
+    moduleListView.setEmptyText(getText("ui.toolWindow.loading"));
   }
 
   @Override
@@ -84,23 +75,10 @@ public class ModulesView implements ToolbarPanel {
   public void viewModelChanged(@Nullable CourseViewModel course) {
     ApplicationManager.getApplication().invokeLater(() -> {
           moduleListView.setModel(course == null ? null : course.getModules());
-          cl.show(cardPanel, (course != null) ? "TreeCard" : "LabelCard");
+          moduleListView.setEmptyText(
+              course == null ? getText("ui.toolWindow.loading") : getText("ui.toolWindow.subTab.modules.noModules"));
         }, ModalityState.any()
     );
-  }
-
-  public JLabel getEmptyText() {
-    return emptyText;
-  }
-
-  /**
-   * Determines whether the empty text shows that the project is loading or that the user should
-   * turn the project into a course project.
-   */
-  public void setProjectReady(boolean isReady) {
-    ApplicationManager.getApplication().invokeLater(() -> emptyText.setText(isReady
-        ? getText("ui.module.ModuleListView.turnIntoAPlusProject")
-        : getText("ui.exercise.ExercisesView.loading")), ModalityState.any());
   }
 
   @SuppressWarnings("checkstyle:AbbreviationAsWordInName")

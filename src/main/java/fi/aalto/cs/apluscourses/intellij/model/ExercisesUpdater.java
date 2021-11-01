@@ -113,15 +113,12 @@ public class ExercisesUpdater extends RepeatedTask {
       eventToTrigger.trigger();
       logger.debug("Exercises update done");
     } catch (IOException e) {
-      var observable = PluginSettings
+      var mainVm = PluginSettings
           .getInstance()
-          .getMainViewModel(courseProject.getProject())
-          .exercisesViewModel;
-      var exercisesViewModel = observable.get();
-      if (exercisesViewModel != null) {
-        exercisesViewModel.setAuthenticated(false);
-        observable.valueChanged();
-      }
+          .getMainViewModel(courseProject.getProject());
+      var cardVm = mainVm.toolWindowCardViewModel;
+      cardVm.setAuthenticated(false);
+      cardVm.updated.trigger();
       progress.finish();
       notifier.notify(new NetworkErrorNotification(e), courseProject.getProject());
     }

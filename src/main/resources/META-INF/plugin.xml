@@ -76,7 +76,7 @@
             <action id="fi.aalto.cs.apluscourses.intellij.actions.ReadAllNewsAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.ReadAllNewsAction"
                     text="Mark All News As Read"
-                    icon="PluginIcons.A_PLUS_BROWSE"/>
+                    icon="PluginIcons.A_PLUS_CHECKED"/>
             <action id="fi.aalto.cs.apluscourses.intellij.actions.NewsRefreshAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.RefreshModulesAction"
                     text="Refresh News"

@@ -260,7 +260,6 @@ public class DownloadSubmissionAction extends AnAction {
       ExerciseViewModel selectedExercise = selection.getExercise();
       var selectedItem = exercisesTreeViewModel.getSelectedItem();
       e.getPresentation().setEnabled(selectedItem instanceof SubmissionResultViewModel
-          && exercisesTreeViewModel.isAuthenticated()
           && selectedExercise != null
           && selectedExercise.isSubmittable());
     }

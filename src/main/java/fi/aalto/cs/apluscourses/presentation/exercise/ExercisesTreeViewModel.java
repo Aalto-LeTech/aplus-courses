@@ -7,18 +7,13 @@ import fi.aalto.cs.apluscourses.presentation.base.Searchable;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ExercisesTreeViewModel extends BaseTreeViewModel<ExercisesTree>
-        implements Searchable {
-
-  private boolean isAuthenticated;
-
-  @NotNull
-  private final AtomicBoolean isProjectReady = new AtomicBoolean(false);
+    implements Searchable {
+  private boolean isLoaded = false;
 
   /**
    * Construct an exercises tree view model from the given exercise groups.
@@ -43,29 +38,6 @@ public class ExercisesTreeViewModel extends BaseTreeViewModel<ExercisesTree>
         filterOptions);
   }
 
-  public boolean isEmptyTextVisible() {
-    return false;
-  }
-
-  public boolean isAuthenticated() {
-    return isAuthenticated;
-  }
-
-  public void setAuthenticated(boolean authenticated) {
-    isAuthenticated = authenticated;
-  }
-
-  public boolean isProjectReady() {
-    return isProjectReady.get();
-  }
-
-  /**
-   * Returns true if the value changed, false if the value was already equal to the given value.
-   */
-  public boolean setProjectReady(boolean projectReady) {
-    return isProjectReady.getAndSet(projectReady) != projectReady;
-  }
-
   public String getName() {
     var student = getModel().getSelectedStudent();
     return student == null ? null : student.getFullName();
@@ -75,6 +47,14 @@ public class ExercisesTreeViewModel extends BaseTreeViewModel<ExercisesTree>
   @NotNull
   public Selection findSelected() {
     return new ExerciseTreeSelection(traverseAndFind(SelectableNodeViewModel::isSelected));
+  }
+
+  public boolean isLoaded() {
+    return isLoaded;
+  }
+
+  public void setLoaded(boolean loaded) {
+    isLoaded = loaded;
   }
 
   public static class ExerciseTreeSelection extends Selection {

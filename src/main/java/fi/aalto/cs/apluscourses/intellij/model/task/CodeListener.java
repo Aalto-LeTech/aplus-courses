@@ -12,12 +12,9 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
-import com.intellij.util.PathUtil;
 import com.intellij.util.concurrency.annotations.RequiresReadLock;
-import fi.aalto.cs.apluscourses.intellij.utils.VfsUtil;
 import fi.aalto.cs.apluscourses.model.task.ListenerCallback;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -66,7 +63,7 @@ public abstract class CodeListener extends ActivitiesListenerBase<@Nullable PsiF
     if (basePath == null) {
       return null;
     }
-    Path modulePath = Paths.get(PathUtil.toSystemDependentName(VfsUtil.joinPaths(basePath, filePath)));
+    Path modulePath = Path.of(basePath, filePath);
     VirtualFile vf = LocalFileSystem.getInstance().findFileByIoFile(modulePath.toFile());
     if (vf == null) {
       return null;
