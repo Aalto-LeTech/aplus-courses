@@ -17,12 +17,12 @@ public class JsonUtil {
   /**
    * Parses an JSON array to an array using a given parsing function.
    *
-   * @param array JSON array.
+   * @param array  JSON array.
    * @param getter E.g. JSONArray::getJSONObject, JSONArray::getString, ...
    * @param parser Function that parses JSON to T object.
-   * @param ctor T[]::new.
-   * @param <T> Type of the result items.
-   * @param <J> Type of the input elements, e.g. JSONObject.
+   * @param ctor   T[]::new.
+   * @param <T>    Type of the result items.
+   * @param <J>    Type of the input elements, e.g. JSONObject.
    * @return An array whose items are parsed from the elements of the given array.
    */
   public static <T, J> T[] parseArray(@NotNull JSONArray array,
@@ -41,15 +41,15 @@ public class JsonUtil {
   }
 
   /**
-   *  Parses an JSON object to a map using a given parsing function.
+   * Parses an JSON object to a map using a given parsing function.
    *
-   * @param object JSON object.
-   * @param getter E.g. JSONObject::getJSONObject, JSONObject::getString, ...
-   * @param parser Function that parses an JSON to T object.
+   * @param object    JSON object.
+   * @param getter    E.g. JSONObject::getJSONObject, JSONObject::getString, ...
+   * @param parser    Function that parses an JSON to T object.
    * @param keyParser Function that parses keys from strings.
-   * @param <T> Type of the result items.
-   * @param <J> Type of the input elements, e.g. JSONObject.
-   * @param <K> Type of the keys.
+   * @param <T>       Type of the result items.
+   * @param <J>       Type of the input elements, e.g. JSONObject.
+   * @param <K>       Type of the keys.
    * @return A map whose entries are the properties of the given object.
    */
   public static <T, J, K> Map<K, T> parseObject(@NotNull JSONObject object,

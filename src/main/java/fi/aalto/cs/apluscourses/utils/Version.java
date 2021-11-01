@@ -12,6 +12,7 @@ public class Version {
 
   /**
    * Returns a {@link Version} object based on the value of the given string.
+   *
    * @param versionString A version string of format "{major}.{minor}.{build}".
    * @return A {@link Version} object.
    * @throws InvalidVersionStringException If the given string is invalid.
@@ -60,6 +61,7 @@ public class Version {
 
   /**
    * A constructor for {@link Version} class.
+   *
    * @param major Major version number.
    * @param minor Minor version number.
    * @throws IllegalArgumentException If any of the arguments are negative.

@@ -9,12 +9,13 @@ import org.jetbrains.annotations.Nullable;
 public interface ComponentSource {
   /**
    * Returns the component with the given name.
+   *
    * @throws NoSuchComponentException If the source doesn't have a component with the given name.
    */
   @NotNull
   default Component getComponent(@NotNull String componentName) throws NoSuchComponentException {
     return Optional.ofNullable(getComponentIfExists(componentName))
-       .orElseThrow(() -> new NoSuchComponentException(componentName, null));
+        .orElseThrow(() -> new NoSuchComponentException(componentName, null));
   }
 
   /**

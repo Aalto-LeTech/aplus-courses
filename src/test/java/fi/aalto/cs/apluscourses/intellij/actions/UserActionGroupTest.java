@@ -13,7 +13,6 @@ import fi.aalto.cs.apluscourses.intellij.services.CourseProjectProvider;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.utils.async.RepeatedTask;
-import java.net.URL;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -35,7 +34,9 @@ public class UserActionGroupTest {
 
     var course = new ModelExtensions.TestCourse("oe1");
     courseProject = new CourseProject(course,
-        RepeatedTask.create(() -> { }), RepeatedTask.create(() -> { }),
+        RepeatedTask.create(() -> {
+        }), RepeatedTask.create(() -> {
+    }),
         project, mock(Notifier.class));
     var courseProjectProvider = mock(CourseProjectProvider.class);
     when(courseProjectProvider.getCourseProject(project)).thenReturn(courseProject);

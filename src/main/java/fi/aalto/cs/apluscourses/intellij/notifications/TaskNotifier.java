@@ -8,7 +8,7 @@ public class TaskNotifier {
   private final @NotNull Notifier notifier;
   private final @NotNull Project project;
 
-  public TaskNotifier(@NotNull  Notifier notifier, @NotNull Project project) {
+  public TaskNotifier(@NotNull Notifier notifier, @NotNull Project project) {
     this.notifier = notifier;
     this.project = project;
   }

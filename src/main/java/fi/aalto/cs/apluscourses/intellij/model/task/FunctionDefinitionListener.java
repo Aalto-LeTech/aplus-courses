@@ -41,12 +41,12 @@ public class FunctionDefinitionListener extends ScalaElementListener {
   public static FunctionDefinitionListener create(ListenerCallback callback,
                                                   Project project, Arguments arguments) {
     return new FunctionDefinitionListener(callback, project,
-                arguments.getString("methodName"),
-                arguments.getArray("methodArguments"),
-                arguments.getArray("methodBody"),
-                arguments.getString("typeParamClause"),
-                arguments.getString("filePath"),
-                Boolean.getBoolean(arguments.getString("checkEquals")));
+        arguments.getString("methodName"),
+        arguments.getArray("methodArguments"),
+        arguments.getArray("methodBody"),
+        arguments.getString("typeParamClause"),
+        arguments.getString("filePath"),
+        Boolean.getBoolean(arguments.getString("checkEquals")));
   }
 
   @Override

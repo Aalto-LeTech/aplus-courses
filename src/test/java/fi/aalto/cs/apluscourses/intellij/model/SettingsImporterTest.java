@@ -35,8 +35,8 @@ public class SettingsImporterTest {
   public void testCreateCustomWorkspaceXmlWithExistingComponent() throws IOException {
     File temp = FileUtilRt.createTempFile("xml", "xml", true);
     FileUtils.writeStringToFile(temp, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-        + "<project version=\"4\"><component name=\"CompilerWorkspaceConfiguration\"><option name="
-        + "\"AUTO_SHOW_ERRORS_IN_EDITOR\" value=\"true\"/></component></project>",
+            + "<project version=\"4\"><component name=\"CompilerWorkspaceConfiguration\"><option name="
+            + "\"AUTO_SHOW_ERRORS_IN_EDITOR\" value=\"true\"/></component></project>",
         StandardCharsets.UTF_8);
     Document document = SettingsImporter.createCustomWorkspaceXml(temp.toPath());
     List<Node> componentMatches = DomUtil.getNodesFromXPath(

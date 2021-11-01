@@ -45,6 +45,7 @@ public class BuildInfo {
 
   /**
    * Construct a {@link BuildInfo} from given properties.
+   *
    * @param properties Properties containing the build information.
    * @throws PropertyException If the properties are not valid.
    */

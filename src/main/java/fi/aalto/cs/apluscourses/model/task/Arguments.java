@@ -12,6 +12,7 @@ public interface Arguments {
 
   /**
    * Gets an argument or throws a runtime exception if the argument is missing.
+   *
    * @param key Key
    * @return The (non-null) value of the argument.
    */
@@ -28,11 +29,12 @@ public interface Arguments {
 
   /**
    * Gets an argument or throws a runtime exception if the argument is missing.
+   *
    * @param key Key
    * @return The (non-null) array values of the argument.
    */
   default @NotNull String[] getArray(@NotNull String key) {
-    if (! (opt(key) instanceof JSONArray)) {
+    if (!(opt(key) instanceof JSONArray)) {
       throw new IllegalArgumentException("Argument is not a JSONArray: " + key);
     }
     JSONArray jsonArray = (JSONArray) opt(key);

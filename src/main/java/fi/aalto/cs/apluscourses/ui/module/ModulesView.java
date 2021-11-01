@@ -29,7 +29,7 @@ public class ModulesView {
   private JLabel emptyText;
   @GuiObject
   private JScrollPane pane;
-  private CardLayout cl;
+  private final CardLayout cl;
 
   /**
    * A view that holds the content of the Modules tool window.
@@ -70,9 +70,9 @@ public class ModulesView {
    */
   public void viewModelChanged(@Nullable CourseViewModel course) {
     ApplicationManager.getApplication().invokeLater(() -> {
-      moduleListView.setModel(course == null ? null : course.getModules());
-      cl.show(cardPanel, (course != null) ? "TreeCard" : "LabelCard");
-    }, ModalityState.any()
+          moduleListView.setModel(course == null ? null : course.getModules());
+          cl.show(cardPanel, (course != null) ? "TreeCard" : "LabelCard");
+        }, ModalityState.any()
     );
   }
 

@@ -20,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
  * <li>selection state to be stored inside the element objects</li>
  * <li>the view to be informed about changes in the presentation model</li>
  * </ul>
+ *
  * @param <E> Type of the list elements (presentation models), subtype of
  *            {@link ListElementViewModel}
  */
@@ -34,6 +35,7 @@ public class BaseListViewModel<E extends ListElementViewModel<?>> extends Abstra
 
   /**
    * A constructor.
+   *
    * @param models                      A List of model elements.
    * @param listElementViewModelFactory A function that creates a list element view model object of
    *                                    a model object.

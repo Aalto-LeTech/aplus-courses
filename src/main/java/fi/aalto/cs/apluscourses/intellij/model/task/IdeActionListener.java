@@ -7,7 +7,7 @@ import com.intellij.util.messages.MessageBusConnection;
 import fi.aalto.cs.apluscourses.model.task.ListenerCallback;
 
 public abstract class IdeActionListener extends ActivitiesListenerBase<Boolean> implements AnActionListener {
-  
+
   protected final Project project;
   protected final String actionName;
 
@@ -17,7 +17,7 @@ public abstract class IdeActionListener extends ActivitiesListenerBase<Boolean> 
    * Constructor.
    */
   protected IdeActionListener(ListenerCallback callback, Project project,
-                           String actionName) {
+                              String actionName) {
     super(callback);
     this.project = project;
     this.actionName = actionName;

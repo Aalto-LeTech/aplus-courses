@@ -19,11 +19,11 @@ public class ScalaLibrary extends IntelliJLibrary<UnknownLibraryKind, Element> {
 
   @Override
   @NotNull
-  protected Content @NotNull[] getContents() {
+  protected Content @NotNull [] getContents() {
     return new Content[] {
         new RemoteZippedFile(
-          "https://scala-lang.org/files/archive/scala-" + scalaVersion + ".zip",
-          "scala-" + scalaVersion + "/lib/scala-library.jar")
+            "https://scala-lang.org/files/archive/scala-" + scalaVersion + ".zip",
+            "scala-" + scalaVersion + "/lib/scala-library.jar")
     };
   }
 }
