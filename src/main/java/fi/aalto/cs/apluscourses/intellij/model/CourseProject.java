@@ -5,7 +5,6 @@ import fi.aalto.cs.apluscourses.dal.PasswordStorage;
 import fi.aalto.cs.apluscourses.dal.TokenAuthentication;
 import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
-import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.ExercisesLazyLoader;
@@ -128,9 +127,9 @@ public class CourseProject implements ExercisesLazyLoader {
       return;
     }
     Optional.ofNullable(passwordStorage)
-        .map(PasswordStorage::restorePassword)
-        .map(factory::create)
-        .ifPresent(this::setAuthentication);
+            .map(PasswordStorage::restorePassword)
+            .map(factory::create)
+            .ifPresent(this::setAuthentication);
   }
 
   /**
@@ -173,12 +172,11 @@ public class CourseProject implements ExercisesLazyLoader {
   public void setAuthentication(Authentication authentication) {
     try {
       var newUser = authentication == null
-          ? null : course.getExerciseDataSource().getUser(authentication);
+              ? null : course.getExerciseDataSource().getUser(authentication);
       var oldUser = this.user.getAndSet(newUser);
       if (oldUser != null) {
         oldUser.getAuthentication().clear();
       }
-      PluginSettings.getInstance().getMainViewModel(project).setAuthenticated(authentication != null);
     } catch (IOException e) {
       notifier.notify(new NetworkErrorNotification(e), project);
     }

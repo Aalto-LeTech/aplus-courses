@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.presentation;
 
 import fi.aalto.cs.apluscourses.intellij.model.CourseProject;
+import fi.aalto.cs.apluscourses.model.User;
 import fi.aalto.cs.apluscourses.presentation.exercise.EmptyExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
@@ -24,22 +25,22 @@ public class MainViewModel {
 
   @NotNull
   public final ObservableProperty<CourseViewModel> courseViewModel =
-      new ObservableReadWriteProperty<>(null);
+          new ObservableReadWriteProperty<>(null);
 
   @NotNull
   public final ObservableProperty<ExercisesTreeViewModel> exercisesViewModel =
-      new ObservableReadWriteProperty<>(new EmptyExercisesTreeViewModel());
+          new ObservableReadWriteProperty<>(new EmptyExercisesTreeViewModel());
 
   @NotNull
   public final ProgressViewModel progressViewModel = new ProgressViewModel();
 
   @NotNull
   public final ObservableProperty<BannerViewModel> bannerViewModel =
-      new ObservableReadWriteProperty<>(null);
+          new ObservableReadWriteProperty<>(null);
 
   @NotNull
   public final ObservableProperty<TutorialViewModel> tutorialViewModel =
-      new ObservableReadWriteProperty<>(null);
+          new ObservableReadWriteProperty<>(null);
 
   @NotNull
   private final Options exerciseFilterOptions;
@@ -95,5 +96,9 @@ public class MainViewModel {
   public void setAuthenticated(boolean authenticated) {
     toolWindowCardViewModel.setAuthenticated(authenticated);
     toolWindowCardViewModel.updated.trigger();
+  }
+
+  public void userChanged(@Nullable User user) {
+    setAuthenticated(user != null);
   }
 }

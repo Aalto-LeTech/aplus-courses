@@ -179,7 +179,7 @@ public class PluginSettings implements MainViewModelProvider, DefaultGroupIdSett
       // missing.
       var exercisesViewModel = new ExercisesTreeViewModel(new ExercisesTree(), new Options());
       mainViewModel.toolWindowCardViewModel.setAPlusProject(true);
-      mainViewModel.setAuthenticated(courseProject.getAuthentication() != null);
+      courseProject.user.addValueObserver(mainViewModel, MainViewModel::userChanged);
       mainViewModel.exercisesViewModel.set(exercisesViewModel);
       courseProject.courseUpdated.addListener(
           mainViewModel.courseViewModel, ObservableProperty::valueChanged);
