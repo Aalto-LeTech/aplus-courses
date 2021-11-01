@@ -53,8 +53,9 @@ public class APlusAuthenticationActionTest {
 
     courseProject = new CourseProject(course,
         RepeatedTask.create(() -> {
-        }), RepeatedTask.create(() -> {
-    }),
+        }),
+        RepeatedTask.create(() -> {
+        }),
         project, mock(Notifier.class));
     courseProjectProvider = mock(CourseProjectProvider.class);
     doReturn(courseProject).when(courseProjectProvider).getCourseProject(project);

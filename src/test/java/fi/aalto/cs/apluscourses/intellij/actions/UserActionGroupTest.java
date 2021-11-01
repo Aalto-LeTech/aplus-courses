@@ -35,8 +35,9 @@ public class UserActionGroupTest {
     var course = new ModelExtensions.TestCourse("oe1");
     courseProject = new CourseProject(course,
         RepeatedTask.create(() -> {
-        }), RepeatedTask.create(() -> {
-    }),
+        }),
+        RepeatedTask.create(() -> {
+        }),
         project, mock(Notifier.class));
     var courseProjectProvider = mock(CourseProjectProvider.class);
     when(courseProjectProvider.getCourseProject(project)).thenReturn(courseProject);
