@@ -30,6 +30,7 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
   private final @Nullable String info;
   protected final @NotNull Project project;
   private final @NotNull Action @NotNull [] actions;
+  private boolean isAlreadyCompleted = false;
   private volatile CancelHandler cancelHandler; //NOSONAR
 
   private OverlayPane overlayPane;
@@ -40,7 +41,7 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
    * Constructor for the presenter.
    *
    * @param instruction The heading text of the balloon popup. If null, the popup won't be shown.
-   * @param info The info text of the balloon popup. If null, the text will be empty.
+   * @param info        The info text of the balloon popup. If null, the text will be empty.
    */
   protected IntelliJComponentPresenterBase(@Nullable String instruction,
                                            @Nullable String info,
@@ -51,6 +52,10 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
     this.project = project;
     this.actions = actions;
     this.timer = new Timer();
+  }
+
+  public void setAlreadyCompleted() {
+    isAlreadyCompleted = true;
   }
 
   @Override
@@ -95,7 +100,8 @@ public abstract class IntelliJComponentPresenterBase implements ComponentPresent
 
     overlayPane.addHighlighter(highlighter);
     if (instruction != null) {
-      overlayPane.addPopup(highlighter.getComponent(), instruction, info == null ? "" : info, actions);
+      overlayPane.addPopup(
+          highlighter.getComponent(), instruction, info == null ? "" : info, actions, isAlreadyCompleted);
     }
   }
 

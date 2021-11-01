@@ -7,4 +7,6 @@ public interface ComponentPresenter {
   void removeHighlight();
 
   void setCancelHandler(CancelHandler cancelHandler);
+
+  void setAlreadyCompleted();
 }

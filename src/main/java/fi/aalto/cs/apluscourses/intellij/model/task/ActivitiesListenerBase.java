@@ -44,6 +44,10 @@ public abstract class ActivitiesListenerBase<T> implements ActivitiesListener {
     this.callback = callback;
   }
 
+  public void setAlreadyCompleted() {
+    isAlreadyFinished.set(true);
+  }
+
   @CalledInAny
   @Override
   public void registerListener() {
@@ -83,7 +87,7 @@ public abstract class ActivitiesListenerBase<T> implements ActivitiesListener {
 
   @RequiresEdt
   private void handleInitialResult(boolean isSuccess) {
-    if (isSuccess) {
+    if (isSuccess && !isAlreadyFinished.get()) {
       callback.onHappened(true);
     } else {
       callback.onStarted();
