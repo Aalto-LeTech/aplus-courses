@@ -31,7 +31,7 @@ public class ActionUtil {
    * id each time {@code actionPerformed()} is called.
    *
    * @param actionId Id of the action.
-   * @param source A {@link Component} that gives the {@link DataContext} for the action.
+   * @param source   A {@link Component} that gives the {@link DataContext} for the action.
    * @return An {@link ActionListener}
    */
   public static ActionListener createOnEventLauncher(@NotNull String actionId,

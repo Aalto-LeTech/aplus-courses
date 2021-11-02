@@ -8,19 +8,19 @@ import java.util.List;
 import java.util.Optional;
 
 public class ScalaAssignStatement {
-  
+
   private final String variableName;
   private final String[] valueTokens;
-  
+
   public ScalaAssignStatement(String variableName, String[] valueTokens) {
     this.variableName = variableName;
     this.valueTokens = valueTokens;
   }
-  
+
   public boolean checkEquals(PsiElement equals) {
     return equals != null && ("=").equals(equals.getText());
   }
-  
+
   /**
    * Checks the assigned expression.
    */
@@ -36,7 +36,7 @@ public class ScalaAssignStatement {
     }
     return false;
   }
-  
+
   /**
    * Checks the name of the variable.
    */

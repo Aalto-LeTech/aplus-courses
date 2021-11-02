@@ -10,7 +10,7 @@ import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
 import org.jetbrains.annotations.NotNull;
 
 public class SubmissionResultViewModel extends SelectableNodeViewModel<SubmissionResult>
-        implements Searchable {
+    implements Searchable {
 
   private final int submissionNumber;
 
@@ -34,14 +34,14 @@ public class SubmissionResultViewModel extends SelectableNodeViewModel<Submissio
    * Constructs text appearing in parenthesis.
    *
    * @return Returns status text for assignment.
-   *         Methods considers case assignment has not yet been graded
+   * Methods considers case assignment has not yet been graded
    */
   @NotNull
   public String getStatusText() {
     SubmissionResult model = getModel();
     return (model.getStatus() == SubmissionResult.Status.UNKNOWN)
-            ? getText("presentation.submissionResultViewModel.inGrading")
-            : getStatus(model);
+        ? getText("presentation.submissionResultViewModel.inGrading")
+        : getStatus(model);
   }
 
   private String getStatus(SubmissionResult model) {

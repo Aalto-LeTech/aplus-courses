@@ -15,7 +15,7 @@ public class ProjectViewUtil {
    * Method that adds a new file (pattern) to the list of files not being shown in the Project UI.
    *
    * @param ignoredFileName a {@link String} name of the file to be ignored.
-   * @param project a {@link Project} to ignore the file from.
+   * @param project         a {@link Project} to ignore the file from.
    */
   public static void ignoreFileInProjectView(@NotNull String ignoredFileName,
                                              @NotNull Project project) {

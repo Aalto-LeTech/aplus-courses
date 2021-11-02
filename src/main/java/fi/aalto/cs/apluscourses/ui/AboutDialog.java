@@ -99,7 +99,7 @@ public class AboutDialog {
         getText("ui.aboutDialog.APlusWebsite"),
         AllIcons.Ide.External_link_arrow,
         (first, second) ->
-                BrowserUtil.browse(A_PLUS_PAGE));
+            BrowserUtil.browse(A_PLUS_PAGE));
     linkLabel.setIconTextGap(0);
     linkLabel.setHorizontalTextPosition(SwingConstants.LEFT);
 
@@ -112,7 +112,7 @@ public class AboutDialog {
         getText("ui.aboutDialog.GithubWebsite"),
         AllIcons.Ide.External_link_arrow,
         (first, second) ->
-                BrowserUtil.browse(GITHUB_PAGE));
+            BrowserUtil.browse(GITHUB_PAGE));
     linkLabel.setIconTextGap(0);
     linkLabel.setHorizontalTextPosition(SwingConstants.LEFT);
 

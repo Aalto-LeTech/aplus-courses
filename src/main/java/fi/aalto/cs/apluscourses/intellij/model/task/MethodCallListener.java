@@ -15,7 +15,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.expr.ScReferenceExpression;
 
 
 public class MethodCallListener extends ScalaElementListener {
-  
+
   private final ScalaMethodCall scalaMethodCall;
 
   protected MethodCallListener(ListenerCallback callback,
@@ -29,6 +29,7 @@ public class MethodCallListener extends ScalaElementListener {
 
   /**
    * Factory method.
+   *
    * @return A new instance of this class.
    */
   public static ActivitiesListener create(ListenerCallback callback, Project project, Arguments arguments) {

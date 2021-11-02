@@ -15,6 +15,7 @@ public class NetworkErrorNotification extends Notification {
 
   /**
    * Constructs a notification that notifies the user of an IO error arising from the HTTP client.
+   *
    * @param exception An exception that caused this notification.
    */
   public NetworkErrorNotification(@NotNull Exception exception) {

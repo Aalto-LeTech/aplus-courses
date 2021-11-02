@@ -60,7 +60,7 @@ public class TutorialActionGroup extends DefaultActionGroup implements DumbAware
         return new AnAction[0];
       }
       return IntStream.range(1, tutorial.getTasksAmount() + 1).mapToObj(StepAction::new)
-              .toArray(AnAction[]::new);
+          .toArray(AnAction[]::new);
     }
   }
 

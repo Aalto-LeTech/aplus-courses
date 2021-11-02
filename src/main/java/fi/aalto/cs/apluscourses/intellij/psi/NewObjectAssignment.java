@@ -21,7 +21,7 @@ public class NewObjectAssignment {
   private final String variableType;
   private final String className;
   private final String[] argsList;
-  
+
   /**
    * Constructor.
    */
@@ -32,7 +32,7 @@ public class NewObjectAssignment {
     this.className = className;
     this.argsList = argsList;
   }
-  
+
   /**
    * Checks if the variable is val or var.
    */
@@ -40,13 +40,13 @@ public class NewObjectAssignment {
     if (element.isPresent()) {
       ScPatternList patternList = (ScPatternList) element.get();
       Collection<PsiElement> allChildren = PsiUtil.getPsiElementsSiblings(patternList);
-  
+
       return allChildren.stream().anyMatch(elem -> elem instanceof LeafPsiElement
-            && elem.getText().equals(variableType));
+          && elem.getText().equals(variableType));
     }
     return false;
   }
-  
+
   /**
    * Traverse the PSI tree to find the ScConstructorInvocation element.
    * If it is not present in the PSI tree an empty Optional is returned.
@@ -64,13 +64,13 @@ public class NewObjectAssignment {
           children = templateParents.get().getChildren();
           return Arrays.stream(children).filter(
               ScConstructorInvocation.class::isInstance).findFirst();
-          
+
         }
       }
     }
     return Optional.empty();
   }
-  
+
   /**
    * Checks the name of the new variable.
    */
@@ -78,23 +78,23 @@ public class NewObjectAssignment {
     if (element.isPresent()) {
       ScPatternList patternList = (ScPatternList) element.get();
       Optional<PsiElement> refPattern = Arrays.stream(patternList.getChildren()).filter(
-                ScReferencePattern.class::isInstance).findFirst();
+          ScReferencePattern.class::isInstance).findFirst();
       return refPattern.map(psiElement -> psiElement.getText().equals(variableName)).orElse(false);
     }
     return false;
   }
-  
+
   /**
    * Checks the class of the new instance.
    */
-  public boolean checkSimpleType(Optional<PsiElement>  element) {
+  public boolean checkSimpleType(Optional<PsiElement> element) {
     if (element.isPresent()) {
       ScSimpleTypeElement simpleTypeElement = (ScSimpleTypeElement) element.get();
       return simpleTypeElement.getText().equals(className);
     }
     return false;
   }
-  
+
   /**
    * Checks the arguments provided to the constructor.
    */
@@ -103,7 +103,7 @@ public class NewObjectAssignment {
       ScArgumentExprList argElement = (ScArgumentExprList) element.get();
       PsiElement[] children = argElement.getChildren();
       List<String> fileArgsList = new ArrayList<>();
-      for (PsiElement child: children) {
+      for (PsiElement child : children) {
         fileArgsList.add(child.getText());
       }
       return Arrays.equals(argsList, fileArgsList.toArray());
@@ -113,7 +113,7 @@ public class NewObjectAssignment {
 
   public boolean checkNewObjectAssignment(Optional<PsiElement> simpleType, Optional<PsiElement> argList) {
     return this.checkSimpleType(simpleType)
-                  && this.checkArgsList(argList);
+        && this.checkArgsList(argList);
   }
- 
+
 }

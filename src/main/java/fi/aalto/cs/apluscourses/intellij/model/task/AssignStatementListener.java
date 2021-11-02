@@ -15,18 +15,19 @@ import org.jetbrains.plugins.scala.lang.psi.api.expr.ScReferenceExpression;
 
 
 public class AssignStatementListener extends ScalaElementListener {
-  
+
   private final ScalaAssignStatement scalaAssignStatement;
-  
+
   protected AssignStatementListener(ListenerCallback callback, Project project, String filePath,
                                     String variableName, String[] valueTokens) {
-    
+
     super(callback, project, filePath);
     scalaAssignStatement = new ScalaAssignStatement(variableName, valueTokens);
   }
 
   /**
    * A factory method.
+   *
    * @return A new instance of this class.
    */
   public static AssignStatementListener create(ListenerCallback callback, Project project, Arguments arguments) {
