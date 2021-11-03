@@ -129,7 +129,7 @@ public class TutorialViewModel implements Task.Observer {
     synchronized (lock) {
       endCurrentTask();
       Tutorial tutorial = tutorialExercise.getTutorial();
-      currentTask = tutorial.getTasks().get(newTaskIndex);
+      currentTask = tutorial.getTasks().get(newTaskIndex - 1);
       this.currentTaskIndex = newTaskIndex;
       startCurrentTask();
     }
