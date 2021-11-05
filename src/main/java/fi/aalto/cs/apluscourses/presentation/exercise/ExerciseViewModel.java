@@ -7,6 +7,7 @@ import fi.aalto.cs.apluscourses.presentation.base.Searchable;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
 import fi.aalto.cs.apluscourses.utils.CollectionUtil;
+import java.util.Collections;
 import org.jetbrains.annotations.NotNull;
 
 public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> implements Searchable {
@@ -15,8 +16,9 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
    * Construct a view model corresponding to the given exercise.
    */
   public ExerciseViewModel(@NotNull Exercise exercise) {
-    super(exercise, CollectionUtil.mapWithIndexReverse(
+    super(exercise, CollectionUtil.mapWithIndex(
         exercise.getSubmissionResults(), SubmissionResultViewModel::new, 1));
+    Collections.reverse(getChildren());
   }
 
   public String getPresentableName() {
