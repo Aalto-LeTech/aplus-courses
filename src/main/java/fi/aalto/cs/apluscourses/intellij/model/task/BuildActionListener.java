@@ -24,7 +24,7 @@ public class BuildActionListener extends IdeActionListener {
   @Override
   public void beforeActionPerformed(@NotNull AnAction action, @NotNull AnActionEvent event) {
     if (actionName.equals(action.getTemplateText())
-                    || actionName.equals(event.getPresentation().getText())) {
+        || actionName.equals(event.getPresentation().getText())) {
       check(true);
     }
   }

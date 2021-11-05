@@ -16,8 +16,9 @@ public class ScalaReplObserver {
 
   /**
    * Instantiates a new ScalaReplObserver.
-   * @param project Project.
-   * @param module Name of the module.
+   *
+   * @param project  Project.
+   * @param module   Name of the module.
    * @param callback Who to call, when the REPL is open.
    */
   public ScalaReplObserver(@NotNull Project project, @NotNull String module, @NotNull Callback callback) {

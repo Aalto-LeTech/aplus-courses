@@ -32,8 +32,8 @@ public class IconListCellRenderer<T> extends SimpleListCellRenderer<T> {
    * A complete constructor.
    *
    * @param nullText Test that is shown when no item is selected.
-   * @param getText Reference to a function/method.
-   * @param icon Icon to be set to items.
+   * @param getText  Reference to a function/method.
+   * @param icon     Icon to be set to items.
    */
   public IconListCellRenderer(@Nullable String nullText,
                               @NotNull Function<? super T, String> getText,

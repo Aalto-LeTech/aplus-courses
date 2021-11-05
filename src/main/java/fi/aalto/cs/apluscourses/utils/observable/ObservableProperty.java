@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * A property that notifies its registered observers of the changes to its value.
+ *
  * @param <T> Type of the property's value.
  */
 public abstract class ObservableProperty<T> {
@@ -72,7 +73,7 @@ public abstract class ObservableProperty<T> {
   /**
    * Sets the value without notifying the source.
    *
-   * @param value The new value
+   * @param value  The new value
    * @param source The source object who will not be notified of this change.  If source is null,
    *               or its not an observer of this property, the argument has no effect.
    */

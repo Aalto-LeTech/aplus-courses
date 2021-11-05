@@ -17,18 +17,18 @@ public class Scala3Sdk extends ScalaSdk {
 
   @Override
   @NotNull
-  protected Content @NotNull[] getContents() {
+  protected Content @NotNull [] getContents() {
     return new Content[] {
         new RemoteZippedDir(
-          "https://github.com/lampepfl/dotty/releases/download/"
-              + scalaVersion + "/scala3-" + scalaVersion + ".zip",
-          "scala3-" + scalaVersion + "/lib")
+            "https://github.com/lampepfl/dotty/releases/download/"
+                + scalaVersion + "/scala3-" + scalaVersion + ".zip",
+            "scala3-" + scalaVersion + "/lib")
     };
   }
 
   @Override
   @NotNull
   protected String @NotNull [] getClassRoots() {
-    return new String[] { "scala3-library_" + scalaVersion + "-" + scalaVersion + ".jar" };
+    return new String[] {"scala3-library_" + scalaVersion + "-" + scalaVersion + ".jar"};
   }
 }

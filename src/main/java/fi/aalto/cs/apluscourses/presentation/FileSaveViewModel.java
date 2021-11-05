@@ -23,6 +23,7 @@ public class FileSaveViewModel {
 
   /**
    * Construct a view model with the given parameters.
+   *
    * @param defaultDirectory An optional default directory.
    * @param defaultName      An optional default name for the file.
    */

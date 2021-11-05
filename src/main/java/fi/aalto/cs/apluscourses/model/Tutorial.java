@@ -3,6 +3,8 @@ package fi.aalto.cs.apluscourses.model;
 import fi.aalto.cs.apluscourses.model.task.Task;
 import fi.aalto.cs.apluscourses.utils.Event;
 import fi.aalto.cs.apluscourses.utils.JsonUtil;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -19,7 +21,7 @@ public class Tutorial {
   public static final String TUTORIAL_SUBMIT_FILE_NAME = "_ideact_result";
 
   public Tutorial(Task[] tasks) {
-    this.tasks = List.of(tasks);
+    this.tasks = new ArrayList<>(Arrays.asList(tasks));
   }
 
   public static Tutorial fromJsonObject(@NotNull JSONObject jsonObject) {
@@ -32,7 +34,21 @@ public class Tutorial {
   }
 
   /**
+   * Replaces the parameter task in the tasks list with a completed version of it, and returns the completed version.
+   */
+  public @Nullable Task setTaskAlreadyCompleted(@NotNull Task task) {
+    int index = tasks.indexOf(task);
+    if (index < 0) {
+      return null;
+    }
+    var newTask = task.alreadyCompleted();
+    tasks.set(index, newTask);
+    return newTask;
+  }
+
+  /**
    * Method to get the next Task in row.
+   *
    * @param task the current Task whose successor we are looking for.
    * @return the next Task to be performed
    */

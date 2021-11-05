@@ -50,6 +50,7 @@ public class ScalaClassDeclaration {
 
   /**
    * Checks if the class' constructor is correct.
+   *
    * @param element The ScPrimaryConstructor to be checked.
    * @return whether the constructor is in the desired state.
    */
@@ -58,7 +59,7 @@ public class ScalaClassDeclaration {
       ScPrimaryConstructor constructor = (ScPrimaryConstructor) element.get();
       PsiParameter[] parameters = constructor.parameterList().getParameters();
       List<String> params = new ArrayList<>();
-      for (PsiParameter param: parameters) {
+      for (PsiParameter param : parameters) {
         if (!checkParameterModifiers(param, params.size())
             || !checkParameterAnnotationsList(param, params.size())) {
           return false;
@@ -73,13 +74,14 @@ public class ScalaClassDeclaration {
       }
       return Arrays.equals(arguments, params.toArray());
     }
-    return  false;
+    return false;
   }
 
   /**
    * Checks the type parameters of the function.
    * Certain characters are removed. In the case of type parameters, some text from the PSI
    * comes in the form of [A, B] and so the brackets need to be removed.
+   *
    * @param clause The ScTypeParamClause to be checked
    * @return true if the type parameters are correct, false otherwise.
    */
@@ -95,6 +97,7 @@ public class ScalaClassDeclaration {
 
   /**
    * Checks the hierachy of the class.
+   *
    * @param element The ScTemplateParentsImpl to be checked
    * @return true if the hierarchy is correct, false otherwise.
    */
@@ -133,9 +136,10 @@ public class ScalaClassDeclaration {
 
   /**
    * Checks the modifiers (sealed, implicit, etc.) of the parameters.
+   *
    * @param element The ScModifierListImpl to be checked
-   * @param index the index indicating which parameter
-   *              (in parameterModifiers) these modifiers refer to
+   * @param index   the index indicating which parameter
+   *                (in parameterModifiers) these modifiers refer to
    * @return true if the modifiers are correct, false otherwise.
    */
   public boolean checkParameterModifiers(PsiParameter element, int index) {
@@ -155,9 +159,10 @@ public class ScalaClassDeclaration {
 
   /**
    * Checks the annotations of the parameters.
+   *
    * @param element The ScAnnotations to be checked
-   * @param index the index indicating which parameter
-   *              (in parameterAnnotations) these modifiers refer to
+   * @param index   the index indicating which parameter
+   *                (in parameterAnnotations) these modifiers refer to
    * @return true if the annotations are correct, false otherwise.
    */
   public boolean checkParameterAnnotationsList(PsiParameter element, int index) {

@@ -25,11 +25,11 @@ public class TreeModelTraverserTest {
     TreeModelTraverser traverser = new TreeModelTraverser(treeModel);
     TreePath[] actuals = traverser.traverse().toArray(TreePath[]::new);
     TreePath[] expecteds = new TreePath[] {
-        new TreePath(new Object[] { root }),
-        new TreePath(new Object[] { root, child1 }),
-        new TreePath(new Object[] { root, child1, child11 }),
-        new TreePath(new Object[] { root, child1, child12 }),
-        new TreePath(new Object[] { root, child2 })
+        new TreePath(new Object[] {root}),
+        new TreePath(new Object[] {root, child1}),
+        new TreePath(new Object[] {root, child1, child11}),
+        new TreePath(new Object[] {root, child1, child12}),
+        new TreePath(new Object[] {root, child2})
     };
     assertArrayEquals(expecteds, actuals);
   }

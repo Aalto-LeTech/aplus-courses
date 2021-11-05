@@ -1,8 +1,8 @@
 <idea-plugin>
-  <id>com.liferay.ide.intellij.plugin</id>
-  <name>Liferay IntelliJ Plugin</name>
-  <vendor url="https://www.liferay.com">Liferay Inc.</vendor>
-  <description><![CDATA[<p>
+    <id>com.liferay.ide.intellij.plugin</id>
+    <name>Liferay IntelliJ Plugin</name>
+    <vendor url="https://www.liferay.com">Liferay Inc.</vendor>
+    <description><![CDATA[<p>
 		Liferay Plugin for IntelliJ IDEA
 	</p>
 	<p>
@@ -25,8 +25,8 @@
 			<li><a href="https://github.com/dmarks2">Dominik Marks</a></li>
 		</ul>
 	</p>]]></description>
-  <change-notes>
-    <![CDATA[<p>
+    <change-notes>
+        <![CDATA[<p>
 		See for all changes: https://github.com/liferay/liferay-intellij-plugin/commits/
 	</p>
 	<p>
@@ -166,5 +166,5 @@
 			</ul>
 		</ul>
 	</p>]]>
-  </change-notes>
+    </change-notes>
 </idea-plugin>

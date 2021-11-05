@@ -194,8 +194,9 @@ public class OverlayPane extends JPanel implements AWTEventListener {
    */
   @RequiresEdt
   public void addPopup(@NotNull Component c, @NotNull String title,
-                       @NotNull String message, @NotNull Action @NotNull [] actions) {
-    var popup = new BalloonPopup(c, title, message, PluginIcons.A_PLUS_OPTIONAL_PRACTICE, actions);
+                       @NotNull String message, @NotNull Action @NotNull [] actions, boolean isAlreadyCompleted) {
+    var popup = new BalloonPopup(c, title, message,
+        isAlreadyCompleted ? PluginIcons.A_PLUS_FULL_POINTS : PluginIcons.A_PLUS_OPTIONAL_PRACTICE, actions);
     this.balloonPopups.add(popup);
     this.getRootPane().getLayeredPane().add(popup, PANE_Z_ORDER + 1);
     this.revalidatePane();

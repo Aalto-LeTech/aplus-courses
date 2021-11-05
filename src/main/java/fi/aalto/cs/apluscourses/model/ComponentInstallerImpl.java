@@ -54,7 +54,8 @@ public class ComponentInstallerImpl<T> implements ComponentInstaller {
         .collect(Collectors.toList()));
   }
 
-  /** Installs a component and its dependencies.
+  /**
+   * Installs a component and its dependencies.
    *
    * @param component A {@link Component} to be installed.
    */
@@ -80,7 +81,7 @@ public class ComponentInstallerImpl<T> implements ComponentInstaller {
     public Installation(Component component) {
       this.component = component;
     }
-    
+
     public void doIt() {
       component.resolveState();
       unloadIfError();
