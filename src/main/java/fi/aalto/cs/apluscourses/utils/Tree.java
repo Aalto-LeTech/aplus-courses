@@ -17,7 +17,7 @@ public interface Tree {
    * last is the found node.
    *
    * @param selector A predicate that we use to test nodes.
-   * @param <T> Subtype of {@link Tree} that each node in the tree must be instances of.
+   * @param <T>      Subtype of {@link Tree} that each node in the tree must be instances of.
    * @return A path to the node as a list or null, if no node matches {@code selector}.
    */
   @Nullable

@@ -75,8 +75,8 @@ public class OpenItemAction extends DumbAwareAction {
   public void update(@NotNull AnActionEvent e) {
     var project = e.getProject();
     var exercisesTreeViewModel =
-            mainViewModelProvider.getMainViewModel(project).exercisesViewModel.get();
+        mainViewModelProvider.getMainViewModel(project).exercisesViewModel.get();
     e.getPresentation().setEnabled(exercisesTreeViewModel != null
-            && exercisesTreeViewModel.isAuthenticated());
+        && exercisesTreeViewModel.isAuthenticated());
   }
 }

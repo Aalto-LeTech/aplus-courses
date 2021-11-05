@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ExercisesTreeViewModel extends BaseTreeViewModel<ExercisesTree>
-        implements Searchable {
+    implements Searchable {
 
   private boolean isAuthenticated;
 

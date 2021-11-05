@@ -25,7 +25,7 @@ public class DirAwareZipFile extends ZipFile {
    *
    * @param dirName         The name of the directory without a trailing slash.  Must not be empty.
    * @param destinationPath The destination path.
-   * @throws ZipException          If there were errors related to ZIP.
+   * @throws ZipException If there were errors related to ZIP.
    */
   public void extractDir(@NotNull String dirName,
                          @NotNull String destinationPath,

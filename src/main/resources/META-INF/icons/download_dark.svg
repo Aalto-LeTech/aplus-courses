@@ -1,71 +1,71 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg
-  xmlns:dc="http://purl.org/dc/elements/1.1/"
-  xmlns:cc="http://creativecommons.org/ns#"
-  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-  xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-  width="16"
-  height="16"
-  viewBox="0 0 16 16"
-  version="1.1"
-  id="svg8"
-  sodipodi:docname="download_dark.svg"
-  inkscape:version="0.92.3 (2405546, 2018-03-11)">
-  <metadata
-     id="metadata14">
-    <rdf:RDF>
-      <cc:Work
-         rdf:about="">
-        <dc:format>image/svg+xml</dc:format>
-        <dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-      </cc:Work>
-    </rdf:RDF>
-  </metadata>
-  <defs
-     id="defs12" />
-  <sodipodi:namedview
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1"
-     objecttolerance="10"
-     gridtolerance="10"
-     guidetolerance="10"
-     inkscape:pageopacity="0"
-     inkscape:pageshadow="2"
-     inkscape:window-width="1853"
-     inkscape:window-height="1018"
-     id="namedview10"
-     showgrid="false"
-     inkscape:zoom="14.75"
-     inkscape:cx="0.10169492"
-     inkscape:cy="8"
-     inkscape:window-x="67"
-     inkscape:window-y="34"
-     inkscape:window-maximized="1"
-     inkscape:current-layer="svg8" />
-  <g
-     fill="none"
-     fill-rule="evenodd"
-     id="g6">
-    <polygon
-       fill="#AFB1B3"
-       points="9 7 12 7 8 11 4 7 7 7 7 2 9 2"
-       transform="matrix(-1 0 0 1 16 0)"
-       id="polygon2" />
-    <rect
-       width="12"
-       height="2"
-       x="2"
-       y="12"
-       fill="#AFB1B3"
-       id="rect4" />
-  </g>
-  <path
-     style="opacity:1;fill:#ff0090;fill-opacity:1;stroke-width:0.06779661"
-     d="M 5.9661052,9.0169525 3.9330509,6.9830508 H 5.4411017 6.9491525 V 4.4745763 1.9661017 H 8 9.0508475 v 2.5071775 2.5071775 l 1.4920255,0.018246 1.492025,0.018246 -2.017869,2.0169525 -2.0178696,2.0169528 z"
-     id="path821"
-     inkscape:connector-curvature="0" />
+        xmlns:dc="http://purl.org/dc/elements/1.1/"
+        xmlns:cc="http://creativecommons.org/ns#"
+        xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+        xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+        width="16"
+        height="16"
+        viewBox="0 0 16 16"
+        version="1.1"
+        id="svg8"
+        sodipodi:docname="download_dark.svg"
+        inkscape:version="0.92.3 (2405546, 2018-03-11)">
+    <metadata
+            id="metadata14">
+        <rdf:RDF>
+            <cc:Work
+                    rdf:about="">
+                <dc:format>image/svg+xml</dc:format>
+                <dc:type
+                        rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+            </cc:Work>
+        </rdf:RDF>
+    </metadata>
+    <defs
+            id="defs12"/>
+    <sodipodi:namedview
+            pagecolor="#ffffff"
+            bordercolor="#666666"
+            borderopacity="1"
+            objecttolerance="10"
+            gridtolerance="10"
+            guidetolerance="10"
+            inkscape:pageopacity="0"
+            inkscape:pageshadow="2"
+            inkscape:window-width="1853"
+            inkscape:window-height="1018"
+            id="namedview10"
+            showgrid="false"
+            inkscape:zoom="14.75"
+            inkscape:cx="0.10169492"
+            inkscape:cy="8"
+            inkscape:window-x="67"
+            inkscape:window-y="34"
+            inkscape:window-maximized="1"
+            inkscape:current-layer="svg8"/>
+    <g
+            fill="none"
+            fill-rule="evenodd"
+            id="g6">
+        <polygon
+                fill="#AFB1B3"
+                points="9 7 12 7 8 11 4 7 7 7 7 2 9 2"
+                transform="matrix(-1 0 0 1 16 0)"
+                id="polygon2"/>
+        <rect
+                width="12"
+                height="2"
+                x="2"
+                y="12"
+                fill="#AFB1B3"
+                id="rect4"/>
+    </g>
+    <path
+            style="opacity:1;fill:#ff0090;fill-opacity:1;stroke-width:0.06779661"
+            d="M 5.9661052,9.0169525 3.9330509,6.9830508 H 5.4411017 6.9491525 V 4.4745763 1.9661017 H 8 9.0508475 v 2.5071775 2.5071775 l 1.4920255,0.018246 1.492025,0.018246 -2.017869,2.0169525 -2.0178696,2.0169528 z"
+            id="path821"
+            inkscape:connector-curvature="0"/>
 </svg>

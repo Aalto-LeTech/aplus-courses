@@ -106,7 +106,7 @@ public class SelectStudentDialog extends OurDialogWrapper {
       Executors.newSingleThreadExecutor().submit(() -> {
         try {
           var students = course.getExerciseDataSource()
-              .getStudents(course, auth, CachePreferences.GET_NEW_AND_KEEP);
+              .getStudents(course, auth, CachePreferences.FOR_THIS_SESSION_ONLY);
           SwingUtilities.invokeLater(() -> {
             viewModel.setStudents(students);
             studentList.setPaintBusy(false);

@@ -21,7 +21,7 @@ public class TreePathEncoderTest {
   @Test
   public void testEncode() {
     TreePathEncoder<String> encoder = new TestTreePathEncoder();
-    TreePath path = new TreePath(new Object[] { "foo", "bar", "baz" });
+    TreePath path = new TreePath(new Object[] {"foo", "bar", "baz"});
     String code = encoder.encode(path);
 
     assertEquals("/foo/bar/baz", code);

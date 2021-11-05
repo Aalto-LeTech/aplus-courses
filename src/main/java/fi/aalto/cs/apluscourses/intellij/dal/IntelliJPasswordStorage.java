@@ -27,7 +27,7 @@ public class IntelliJPasswordStorage implements PasswordStorage {
   /**
    * Constructs a new instance.
    *
-   * @param service The name of the service (URL) that the username/password is for.
+   * @param service      The name of the service (URL) that the username/password is for.
    * @param passwordSafe A {@link PasswordSafe} that stores username/password.
    */
   public IntelliJPasswordStorage(@NotNull String service,

@@ -12,12 +12,12 @@ import javax.swing.JList;
 import org.jetbrains.annotations.NotNull;
 
 public class ColoredModuleListRenderer
-        extends ColoredListCellRenderer<ModuleListElementViewModel> {
+    extends ColoredListCellRenderer<ModuleListElementViewModel> {
 
   private static final SimpleTextAttributes BOLDED_TEXT_STYLE = new SimpleTextAttributes(
-          SimpleTextAttributes.STYLE_BOLD, null);
+      SimpleTextAttributes.STYLE_BOLD, null);
   private static final SimpleTextAttributes STATUS_TEXT_STYLE = new SimpleTextAttributes(
-          SimpleTextAttributes.STYLE_ITALIC | SimpleTextAttributes.STYLE_SMALLER, null);
+      SimpleTextAttributes.STYLE_ITALIC | SimpleTextAttributes.STYLE_SMALLER, null);
 
   @Override
   protected void customizeCellRenderer(@NotNull JList<? extends ModuleListElementViewModel> list,
@@ -26,7 +26,7 @@ public class ColoredModuleListRenderer
                                        boolean selected,
                                        boolean hasFocus) {
     append(element.getName(),
-            element.isBoldface() ? BOLDED_TEXT_STYLE : REGULAR_ATTRIBUTES, true);
+        element.isBoldface() ? BOLDED_TEXT_STYLE : REGULAR_ATTRIBUTES, true);
     append("  [" + element.getStatus() + "]", STATUS_TEXT_STYLE);
     setToolTipText(element.getTooltip());
     setIcon(PluginIcons.A_PLUS_MODULE);

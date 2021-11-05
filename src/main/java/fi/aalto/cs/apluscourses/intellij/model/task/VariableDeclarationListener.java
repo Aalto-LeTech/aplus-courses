@@ -12,9 +12,9 @@ import org.jetbrains.plugins.scala.lang.psi.api.base.ScPatternList;
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScPatternDefinition;
 
 public class VariableDeclarationListener extends ScalaElementListener {
-  
+
   private final ScalaVariableDeclaration scalaVariableDeclaration;
-  
+
   protected VariableDeclarationListener(ListenerCallback callback, Project project,
                                         String filePath, String variableType, String variableName,
                                         String[] valueTokens) {
@@ -24,6 +24,7 @@ public class VariableDeclarationListener extends ScalaElementListener {
 
   /**
    * Factory method.
+   *
    * @return A new instance of the class.
    */
   public static VariableDeclarationListener create(ListenerCallback callback,

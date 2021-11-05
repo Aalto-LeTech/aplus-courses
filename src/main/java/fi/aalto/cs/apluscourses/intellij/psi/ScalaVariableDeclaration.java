@@ -10,11 +10,11 @@ import java.util.Optional;
 import org.jetbrains.plugins.scala.lang.psi.api.base.ScPatternList;
 
 public class ScalaVariableDeclaration {
-  
+
   private final String variableType;
   private final String variableName;
   private final String[] valueTokens;
-  
+
   /**
    * Constructor.
    */
@@ -23,14 +23,14 @@ public class ScalaVariableDeclaration {
     this.variableName = variableName;
     this.valueTokens = valueTokens;
   }
-  
+
   /**
    * Checks the name of the declared variable.
    */
   public boolean checkVariableName(Optional<PsiElement> refPattern) {
     return refPattern.isPresent() && variableName.equals(refPattern.get().getText());
   }
-  
+
   /**
    * Check if the variable is of the specified var or val type.
    */
@@ -39,11 +39,11 @@ public class ScalaVariableDeclaration {
       ScPatternList patternList = (ScPatternList) element.get();
       Collection<PsiElement> allChildren = PsiUtil.getPsiElementsSiblings(patternList);
       return allChildren.stream().anyMatch(elem -> elem instanceof LeafPsiElement
-            && elem.getText().equals(variableType));
+          && elem.getText().equals(variableType));
     }
     return false;
   }
-  
+
   /**
    * Checks the tokens of the assigned value.
    */

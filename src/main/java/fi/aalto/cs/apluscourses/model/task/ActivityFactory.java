@@ -14,5 +14,6 @@ public interface ActivityFactory {
                                               @NotNull Arguments componentArguments,
                                               @NotNull Arguments actionArguments,
                                               @NotNull String @NotNull [] assertClosed,
-                                              @NotNull Reaction @NotNull [] reactions);
+                                              @NotNull Reaction @NotNull [] reactions,
+                                              boolean isAlreadyCompleted);
 }

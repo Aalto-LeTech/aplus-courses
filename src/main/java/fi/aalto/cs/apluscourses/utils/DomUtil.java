@@ -77,6 +77,7 @@ public class DomUtil {
 
   /**
    * Get a list of nodes that matches the given XPath when applied to the given node.
+   *
    * @param xpath A {@link String} that contains an XPath expression.
    * @param node  A {@link Node} that is used as a root for XPath.
    * @return A {@link List} containing all the {@link Node}s that match the XPath.
@@ -104,6 +105,7 @@ public class DomUtil {
 
   /**
    * Get a list of nodes that matches the given XPath when applied to the root of the document.
+   *
    * @param xpath A {@link String} that contains an XPath expression.
    * @param file  A {@link File} that contains the document.
    * @return A {@link List} containing all the {@link Node}s that match the XPath.
@@ -119,6 +121,7 @@ public class DomUtil {
 
   /**
    * Parses the content of given input stream to a DOM document.
+   *
    * @param stream An {@link InputStream}.
    * @return A DOM {@link Document}.
    * @throws IOException  If the stream cannot be read.
@@ -135,6 +138,7 @@ public class DomUtil {
 
   /**
    * Parses the content of the given file to a DOM document.
+   *
    * @param file A {@link File}.
    * @return A DOM {@link Document}.
    * @throws IOException  If the stream cannot be read.
@@ -151,6 +155,7 @@ public class DomUtil {
 
   /**
    * Writes the given document to the given file.
+   *
    * @param document The document that is written to the file.
    * @param out      The file to which the document is written.
    * @throws IOException If an IO error occurs.

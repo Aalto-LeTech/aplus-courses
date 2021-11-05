@@ -16,9 +16,10 @@ public class PropertyException extends Exception {
 
   /**
    * Constructs a {@link PropertyException}.
+   *
    * @param propertyKey The key of the property to which this exception relates.
-   * @param message The message.
-   * @param cause The cause of this exception or null.
+   * @param message     The message.
+   * @param cause       The cause of this exception or null.
    */
   public PropertyException(@NotNull Properties properties,
                            @NotNull String propertyKey,

@@ -41,6 +41,7 @@ public class ComponentLocator {
 
   /**
    * Scans through all components and locates the ones which class name matches a substring.
+   *
    * @param classSubstring A case-sensitive substring of the component's desired class.
    */
   @RequiresEdt
