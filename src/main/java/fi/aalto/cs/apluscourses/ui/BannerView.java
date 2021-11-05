@@ -28,8 +28,8 @@ public class BannerView {
     var banner = new MyEditorNotificationPanel();
     banner.setVisible(false);
     banner.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createMatteBorder(0, 0, 1, 0, JBColor.border()),
-            BorderFactory.createEmptyBorder(0, 10, 0, 10))
+        BorderFactory.createMatteBorder(0, 0, 1, 0, JBColor.border()),
+        BorderFactory.createEmptyBorder(0, 10, 0, 10))
     );
 
     this.container.add(BorderLayout.CENTER, bottomComponent);

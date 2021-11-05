@@ -15,7 +15,6 @@ public class IntelliJFilterOption extends Option {
   /**
    * An option, that is, a filter that when not selected, filters out those that match to the filter
    * given to this constructor.
-   *
    */
   public IntelliJFilterOption(@NotNull PluginSettings.PropertiesManager propertiesManager,
                               @NotNull PluginSettings.LocalIdeSettingsNames setting,

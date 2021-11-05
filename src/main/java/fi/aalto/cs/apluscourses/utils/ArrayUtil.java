@@ -24,9 +24,9 @@ public class ArrayUtil {
    * @return Mapped array.
    * @throws E if mapping function throws.
    */
-  public static <T, R, E extends  Exception> R[] mapArray(@NotNull T[] source,
-                                                          @NotNull ThrowingFunction<T, R, E> func,
-                                                          @NotNull IntFunction<R[]> generator)
+  public static <T, R, E extends Exception> R[] mapArray(@NotNull T[] source,
+                                                         @NotNull ThrowingFunction<T, R, E> func,
+                                                         @NotNull IntFunction<R[]> generator)
       throws E {
     R[] result = generator.apply(source.length);
     for (int i = 0; i < source.length; i++) {

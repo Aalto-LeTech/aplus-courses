@@ -72,7 +72,7 @@ public class ExportModuleActionTest {
 
     Module otherModule = mock(Module.class);
     moduleSource = mock(ProjectModuleSource.class);
-    doReturn(new Module[]{otherModule, selectedModule})
+    doReturn(new Module[] {otherModule, selectedModule})
         .when(moduleSource).getModules(any(Project.class));
 
     projectPathResolver = mock(ExportModuleAction.ProjectPathResolver.class);

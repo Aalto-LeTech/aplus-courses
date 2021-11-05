@@ -43,15 +43,15 @@ public class ClassDeclarationListener extends ScalaElementListener {
                                                 Project project,
                                                 Arguments arguments) {
     return new ClassDeclarationListener(
-      callback, project,
-      arguments.getString("className"),
-      arguments.getArray("classArguments"),
-      arguments.getString("classHierarchy"),
-      arguments.getArray("traitHierarchy"),
-      arguments.getString("typeParamClause"),
-      arguments.getArray("modifiers"),
-      arguments.getArray("annotations"),
-      arguments.getString("filePath")
+        callback, project,
+        arguments.getString("className"),
+        arguments.getArray("classArguments"),
+        arguments.getString("classHierarchy"),
+        arguments.getArray("traitHierarchy"),
+        arguments.getString("typeParamClause"),
+        arguments.getArray("modifiers"),
+        arguments.getArray("annotations"),
+        arguments.getString("filePath")
     );
   }
 

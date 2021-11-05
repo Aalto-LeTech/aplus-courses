@@ -20,7 +20,7 @@ public class LogInOutAction extends DumbAwareAction {
 
   public LogInOutAction() {
     this(PluginSettings.getInstance()::getCourseProject,
-            IntelliJPasswordStorage::new);
+        IntelliJPasswordStorage::new);
   }
 
   public LogInOutAction(@NotNull CourseProjectProvider courseProjectProvider,
@@ -46,8 +46,8 @@ public class LogInOutAction extends DumbAwareAction {
   @Override
   public void update(@NotNull AnActionEvent e) {
     var text = isLoggedIn(e)
-            ? getText("presentation.userDropdown.logOut")
-            : getText("presentation.userDropdown.logIn");
+        ? getText("presentation.userDropdown.logOut")
+        : getText("presentation.userDropdown.logIn");
     e.getPresentation().setText(text);
   }
 

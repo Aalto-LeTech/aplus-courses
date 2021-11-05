@@ -77,6 +77,7 @@ public abstract class Component {
 
   /**
    * Tells whether the component is in an error state.
+   *
    * @return True if error, otherwise false.
    */
   public boolean hasError() {
@@ -121,6 +122,7 @@ public abstract class Component {
 
   /**
    * Checks whether this component's dependencies are in LOADED state.
+   *
    * @param componentSource A component source which should have the dependencies of this component.
    * @return True if the dependencies are LOADED, otherwise false.
    */

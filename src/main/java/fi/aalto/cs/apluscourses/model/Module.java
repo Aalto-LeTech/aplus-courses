@@ -83,7 +83,7 @@ public abstract class Module extends Component {
    * @param factory    A {@link ModelFactory} object that is responsible for actual object
    *                   creation.
    * @return A module constructed from the given JSON object.
-   * @throws MalformedURLException  If the URL of the module is malformed.
+   * @throws MalformedURLException If the URL of the module is malformed.
    */
   @NotNull
   public static Module fromJsonObject(@NotNull JSONObject jsonObject, @NotNull ModelFactory factory)
@@ -108,7 +108,7 @@ public abstract class Module extends Component {
    * Tells whether or not the module is updatable.
    *
    * @return True, if the module is loaded and the local version is not the newest one; otherwise
-   *         false.
+   * false.
    */
   @Override
   public boolean isUpdatable() {

@@ -48,8 +48,8 @@ public class CoursesClient {
    * Makes a GET request to the given URL and returns the response body in a
    * {@link ByteArrayInputStream}.
    *
-   * @param url          The URL to which the request is made.
-   * @return             A {@link ByteArrayInputStream} containing the response body.
+   * @param url The URL to which the request is made.
+   * @return A {@link ByteArrayInputStream} containing the response body.
    * @throws IOException If an error (e.g. network error) occurs while downloading the file. This is
    *                     an instance of {@link UnexpectedResponseException} if the status code of
    *                     the response isn't 2xx or the response is missing a body.
@@ -65,10 +65,10 @@ public class CoursesClient {
    *
    * @param url            The URL to which the request is made.
    * @param authentication The authentication that gets added to the request.
-   * @return               A {@link ByteArrayInputStream} containing the response body.
-   * @throws IOException   If an error (e.g. network error) occurs while downloading the file. This
-   *                       is an instance of {@link InvalidAuthenticationException} if the response
-   *                       status code is 401 or 403.
+   * @return A {@link ByteArrayInputStream} containing the response body.
+   * @throws IOException If an error (e.g. network error) occurs while downloading the file. This
+   *                     is an instance of {@link InvalidAuthenticationException} if the response
+   *                     status code is 401 or 403.
    */
   @NotNull
   public static ByteArrayInputStream fetch(@NotNull URL url,
@@ -84,10 +84,10 @@ public class CoursesClient {
   /**
    * Downloads a file from the given URL into the given file.
    *
-   * @throws IOException                 If an error (e.g. network error) occurs while downloading
-   *                                     the file. This is an instance of {@link
-   *                                     UnexpectedResponseException} if the status code of the
-   *                                     response isn't 2xx or the response is missing a body.
+   * @throws IOException If an error (e.g. network error) occurs while downloading
+   *                     the file. This is an instance of {@link
+   *                     UnexpectedResponseException} if the status code of the
+   *                     response isn't 2xx or the response is missing a body.
    */
   public static void fetch(@NotNull URL url, @NotNull File file) throws IOException {
     fetch(url, file, null);
@@ -96,10 +96,10 @@ public class CoursesClient {
   /**
    * Downloads a file from the given URL into the given file.
    *
-   * @throws IOException                 If an error (e.g. network error) occurs while downloading
-   *                                     the file. This is an instance of {@link
-   *                                     UnexpectedResponseException} if the status code of the
-   *                                     response isn't 2xx or the response is missing a body.
+   * @throws IOException If an error (e.g. network error) occurs while downloading
+   *                     the file. This is an instance of {@link
+   *                     UnexpectedResponseException} if the status code of the
+   *                     response isn't 2xx or the response is missing a body.
    */
   public static void fetch(@NotNull URL url,
                            @NotNull File file,
@@ -147,7 +147,7 @@ public class CoursesClient {
    * @param mapper         A {@link ResponseMapper} that converts the {@link HttpResponse} instance
    *                       to the desired format.
    * @return The result of {@code mapper.map(response)}, where response is a {@link HttpResponse}
-   *         containing the response.
+   * containing the response.
    * @throws IOException If an issue occurs while making the request, which includes cases such as
    *                     an unknown host. This is an instance of {@link UnexpectedResponseException}
    *                     if the status code isn't 2xx.
@@ -192,9 +192,7 @@ public class CoursesClient {
    * @param data           Map of request data.  Values can be strings, numbers or files.
    * @param mapper         A {@link ResponseMapper} that maps the HTTP response to the desired
    *                       format.
-   *
    * @return The value created by passing the response to the given mapper.
-   *
    * @throws IOException In case of I/O related errors or non-successful response.
    */
   @Nullable

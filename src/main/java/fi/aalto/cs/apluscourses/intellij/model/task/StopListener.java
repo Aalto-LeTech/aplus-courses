@@ -32,9 +32,9 @@ public class StopListener extends IdeActionListener implements ExecutionListener
 
   @Override
   public void processTerminated(@NotNull String executorId,
-                                 @NotNull ExecutionEnvironment env,
-                                 @NotNull ProcessHandler handler,
-                                 int exitCode) {
+                                @NotNull ExecutionEnvironment env,
+                                @NotNull ProcessHandler handler,
+                                int exitCode) {
     if (env.getRunnerAndConfigurationSettings() != null
         && appName.equals(env.getRunnerAndConfigurationSettings().getConfiguration().getName())) {
       check(true);
