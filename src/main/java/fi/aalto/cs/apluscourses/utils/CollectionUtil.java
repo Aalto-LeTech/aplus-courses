@@ -37,19 +37,6 @@ public class CollectionUtil {
   }
 
   /**
-   * Like mapWithIndex, but reverse.
-   */
-  public static <T, R> List<R> mapWithIndexReverse(@NotNull List<T> list,
-                                                   @NotNull BiFunction<T, Integer, R> func,
-                                                   int startIndex) {
-    int n = list.size();
-    return IntStream
-        .range(0, n)
-        .mapToObj(i -> func.apply(list.get(n - i - 1), n - (startIndex + i) + 1))
-        .collect(Collectors.toList());
-  }
-
-  /**
    * Returns the index of the given element in an iterator.
    *
    * @param iterator   An iterator.
