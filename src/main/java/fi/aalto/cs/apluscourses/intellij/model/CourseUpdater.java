@@ -93,7 +93,7 @@ public class CourseUpdater extends RepeatedTask {
     var progressViewModel =
         PluginSettings.getInstance().getMainViewModel(project).progressViewModel;
     var progress =
-            progressViewModel.start(1, getText("ui.ProgressBarView.refreshingModules"), false);
+        progressViewModel.start(1, getText("ui.ProgressBarView.refreshingModules"), false);
     updateModules(fetchModulesInfo());
     if (Thread.interrupted()) {
       progress.finish();

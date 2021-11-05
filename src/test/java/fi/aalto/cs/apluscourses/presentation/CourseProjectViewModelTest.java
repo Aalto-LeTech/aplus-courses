@@ -83,7 +83,7 @@ public class CourseProjectViewModelTest {
   public void testGetLanguages() {
     CourseProjectViewModel courseProjectViewModel
         = new CourseProjectViewModel(emptyCourse, "987");
-    assertArrayEquals(new String[]{"de"}, courseProjectViewModel.getLanguages());
+    assertArrayEquals(new String[] {"de"}, courseProjectViewModel.getLanguages());
   }
 
   @Test

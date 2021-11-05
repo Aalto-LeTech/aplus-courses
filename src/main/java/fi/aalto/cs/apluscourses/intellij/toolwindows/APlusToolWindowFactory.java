@@ -31,11 +31,9 @@ public class APlusToolWindowFactory extends BaseToolWindowFactory implements Dum
   @Override
   protected JComponent createToolWindowContentInternal(@NotNull Project project) {
     ModulesView modulesView = createModulesView(project);
-    // TODO remove, for demo purposes
-    ModulesView modulesView2 = createModulesView(project);
     ExercisesView exercisesView = createExercisesView(project);
     var collapsed = PluginSettings.getInstance().getCollapsed();
-    var splitter = new CollapsibleSplitter(modulesView, modulesView2, exercisesView);
+    var splitter = new CollapsibleSplitter(modulesView, exercisesView);
     splitter.collapseByTitles(collapsed);
 
     var progressViewModel
@@ -106,10 +104,8 @@ public class APlusToolWindowFactory extends BaseToolWindowFactory implements Dum
                                              @NotNull JComponent bottomComponent) {
     var bannerView = new BannerView(bottomComponent);
 
-    PluginSettings.getInstance()
-            .getMainViewModel(project)
-            .bannerViewModel
-            .addValueObserver(bannerView, BannerView::viewModelChanged);
+    var mainViewModel = PluginSettings.getInstance().getMainViewModel(project);
+    mainViewModel.bannerViewModel.addValueObserver(bannerView, BannerView::viewModelChanged);
 
     return bannerView;
   }

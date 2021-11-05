@@ -172,7 +172,7 @@ public class CourseProject implements ExercisesLazyLoader {
   public void setAuthentication(Authentication authentication) {
     try {
       var newUser = authentication == null
-              ? null : course.getExerciseDataSource().getUser(authentication);
+          ? null : course.getExerciseDataSource().getUser(authentication);
       var oldUser = this.user.getAndSet(newUser);
       if (oldUser != null) {
         oldUser.getAuthentication().clear();

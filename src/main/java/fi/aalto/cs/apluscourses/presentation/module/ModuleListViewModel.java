@@ -9,6 +9,7 @@ public class ModuleListViewModel extends BaseListViewModel<ModuleListElementView
 
   /**
    * Presentation model for a list of modules shown in the UI.
+   *
    * @param modules A list of modules (domain model objects).
    */
   public ModuleListViewModel(@NotNull List<Module> modules) {

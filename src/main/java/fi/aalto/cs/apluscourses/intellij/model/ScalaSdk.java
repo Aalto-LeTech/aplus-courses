@@ -28,7 +28,7 @@ public class ScalaSdk extends IntelliJLibrary
 
   @Override
   @NotNull
-  protected Content @NotNull[] getContents() {
+  protected Content @NotNull [] getContents() {
     return new Content[] {
         new RemoteZippedDir(
             "https://scala-lang.org/files/archive/scala-" + scalaVersion + ".zip",
@@ -38,15 +38,15 @@ public class ScalaSdk extends IntelliJLibrary
 
   @Override
   @NotNull
-  protected String @NotNull[] getClassRoots() {
+  protected String @NotNull [] getClassRoots() {
     return new String[] {
-      "scala-library.jar",
-      "scala-reflect.jar"
+        "scala-library.jar",
+        "scala-reflect.jar"
     };
   }
 
   @NotNull
-  protected String @NotNull[] getCompilerRoots() {
+  protected String @NotNull [] getCompilerRoots() {
     return getJarFiles();
   }
 

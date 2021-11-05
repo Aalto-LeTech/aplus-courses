@@ -153,7 +153,7 @@ public class ExerciseTest {
     Exercise optionalSubmitted
         = new Exercise(2, "optionalSubmitted", "http://localhost:1111", info, 0, 0, OptionalLong.empty());
     optionalSubmitted.addSubmissionResult(new SubmissionResult(
-            1, 0, 0.0, SubmissionResult.Status.GRADED, optionalSubmitted));
+        1, 0, 0.0, SubmissionResult.Status.GRADED, optionalSubmitted));
 
     assertFalse("Optional assignment with no submissions isn't completed",
         optionalNotSubmitted.isCompleted());
@@ -165,11 +165,11 @@ public class ExerciseTest {
     Exercise failed
         = new Exercise(4, "failed", "http://localhost:1111", info, 5, 10, OptionalLong.of(1));
     failed.addSubmissionResult(new SubmissionResult(
-            1, 3, 0.0, SubmissionResult.Status.GRADED, failed));
+        1, 3, 0.0, SubmissionResult.Status.GRADED, failed));
 
     Exercise completed = new Exercise(5, "completed", "http://localhost:1111", info, 5, 10, OptionalLong.of(1));
     completed.addSubmissionResult(new SubmissionResult(
-            1, 5, 0.0, SubmissionResult.Status.GRADED, completed));
+        1, 5, 0.0, SubmissionResult.Status.GRADED, completed));
 
 
     assertFalse("Assignment with no submissions isn't completed",
@@ -185,7 +185,7 @@ public class ExerciseTest {
     var info = new SubmissionInfo(Collections.emptyMap());
     Exercise optional = new Exercise(1, "optional", "http://localhost:1111", info, 0, 0, OptionalLong.empty());
     assertTrue("Assignment is optional",
-            optional.isOptional());
+        optional.isOptional());
 
     Exercise notOptional = new Exercise(2, "notOptional", "http://localhost:1111", info, 5, 10, OptionalLong.empty());
     assertFalse("Assignment isn't optional",

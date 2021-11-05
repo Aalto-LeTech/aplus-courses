@@ -56,7 +56,7 @@ public class StateMonitor {
    * @param newState       New state.
    * @param expectedStates Expected states.
    * @return Whether or not the current state in the beginning was equal to any of
-   *         {@code expectedStates}.
+   * {@code expectedStates}.
    * @throws IllegalArgumentException If {@code newState} is less than any of {@code expectedStates}
    *                                  (and is not an error state).
    */
@@ -117,6 +117,7 @@ public class StateMonitor {
 
   /**
    * Returns a boolean value indicating whether the state is an error state.
+   *
    * @return True if error, otherwise false.
    */
   public boolean hasError() {

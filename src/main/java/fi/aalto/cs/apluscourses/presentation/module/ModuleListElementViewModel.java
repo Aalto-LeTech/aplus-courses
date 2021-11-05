@@ -13,7 +13,7 @@ import java.time.format.FormatStyle;
 import org.jetbrains.annotations.NotNull;
 
 public class ModuleListElementViewModel extends ListElementViewModel<Module>
-        implements Searchable {
+    implements Searchable {
 
   public ModuleListElementViewModel(@NotNull Module module) {
     super(module);
@@ -67,6 +67,7 @@ public class ModuleListElementViewModel extends ListElementViewModel<Module>
 
   /**
    * Returns a textual representation of the status of the module.
+   *
    * @return A {@link String} describing the status.
    */
   public String getStatus() {

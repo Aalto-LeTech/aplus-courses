@@ -18,9 +18,9 @@ public class Submission {
   /**
    * Constructs a new object instance.
    *
-   * @param exercise       Exercise.
-   * @param files          Map from keys to file paths.
-   * @param group          Group in which the submission is made.
+   * @param exercise Exercise.
+   * @param files    Map from keys to file paths.
+   * @param group    Group in which the submission is made.
    */
   public Submission(@NotNull Exercise exercise,
                     @NotNull Map<String, Path> files,
