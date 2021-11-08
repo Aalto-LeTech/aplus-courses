@@ -125,12 +125,13 @@ public class ModelExtensions {
                       @NotNull List<Library> libraries,
                       @NotNull Map<Long, Map<String, String>> exerciseModules,
                       @NotNull Map<String, URL> resourceUrls,
+                      @NotNull Map<String, String> vmOptions,
                       @NotNull List<String> autoInstallComponentNames,
                       @NotNull Map<String, String[]> replInitialCommands,
                       @NotNull Version courseVersion,
                       @NotNull Map<Long, Tutorial> tutorials) {
       super(id, name, aplusUrl, languages, modules, libraries, exerciseModules, resourceUrls,
-          autoInstallComponentNames, replInitialCommands, courseVersion, tutorials);
+          vmOptions, autoInstallComponentNames, replInitialCommands, courseVersion, tutorials);
       exerciseDataSource = new TestExerciseDataSource();
     }
 
@@ -152,19 +153,21 @@ public class ModelExtensions {
           name,
           "https://example.com/",
           Collections.emptyList(),
-          //  modules
+          // modules
           Collections.emptyList(),
-          //  libraries
+          // libraries
           Collections.emptyList(),
-          //  exerciseModules
+          // exerciseModules
           Collections.emptyMap(),
-          //  resourceUrls
+          // resourceUrls
           Collections.emptyMap(),
-          //  autoInstallComponentNames
+          // vmOptions
+          Collections.emptyMap(),
+          // autoInstallComponentNames
           Collections.emptyList(),
-          //  replInitialCommands
+          // replInitialCommands
           Collections.emptyMap(),
-          //  courseVersion
+          // courseVersion
           BuildInfo.INSTANCE.courseVersion,
           // tutorials
           Collections.emptyMap());
@@ -346,6 +349,7 @@ public class ModelExtensions {
                                @NotNull List<Library> libraries,
                                @NotNull Map<Long, Map<String, String>> exerciseModules,
                                @NotNull Map<String, URL> resourceUrls,
+                               @NotNull Map<String, String> vmOptions,
                                @NotNull List<String> autoInstallComponentNames,
                                @NotNull Map<String, String[]> replInitialCommands,
                                @NotNull Version courseVersion,
@@ -359,6 +363,7 @@ public class ModelExtensions {
           libraries,
           exerciseModules,
           resourceUrls,
+          vmOptions,
           autoInstallComponentNames,
           replInitialCommands,
           courseVersion,

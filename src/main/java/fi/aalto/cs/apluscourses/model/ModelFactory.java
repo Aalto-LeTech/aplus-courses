@@ -16,6 +16,7 @@ public interface ModelFactory {
                       @NotNull List<Library> libraries,
                       @NotNull Map<Long, Map<String, String>> exerciseModules,
                       @NotNull Map<String, URL> resourceUrls,
+                      @NotNull Map<String, String> vmOptions,
                       @NotNull List<String> autoInstallComponentNames,
                       @NotNull Map<String, String[]> replInitialCommands,
                       @NotNull Version courseVersion,
