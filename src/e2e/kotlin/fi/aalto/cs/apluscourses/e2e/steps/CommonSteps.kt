@@ -40,7 +40,7 @@ class CommonSteps(val remoteRobot: RemoteRobot) {
                         customComboBox("Version:").click()
                         heavyWeightWindow().findText("11").click()
                         customComboBox("Vendor:").click()
-                        heavyWeightWindow().findText("AdoptOpenJDK (OpenJ9)").click()
+                        heavyWeightWindow().findText("Amazon Corretto").click()
                         button("Download").click()
                     }
                     button("OK").click()
