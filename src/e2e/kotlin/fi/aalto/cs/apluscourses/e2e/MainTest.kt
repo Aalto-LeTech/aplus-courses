@@ -128,6 +128,7 @@ class MainTest {
         step("Searching assignments") {
             with(ideFrame()) {
                 with(assignments()) {
+                    data.reloadData()
                     waitFor(
                         Duration.ofSeconds(90),
                         Duration.ofSeconds(1),
