@@ -129,10 +129,10 @@ class MainTest {
             with(ideFrame()) {
                 with(assignments()) {
                     waitFor(
-                        Duration.ofSeconds(60),
+                        Duration.ofSeconds(90),
                         Duration.ofSeconds(1),
                         "Week 1 not found in assignments list"
-                    ) { hasText("Week 1") }
+                    ) { containsText("Week 1") }
 
                     // searching for assignments uses "containsText" rather than "hasText" because of
                     // platform-dependant quirks such as splitting the assignment number and name into two strings
