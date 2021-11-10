@@ -27,7 +27,7 @@ class MainTest {
     @Test
     fun mainTest() = uiTest {
         // step 2
-        CommonSteps(this).createProject()
+        /*CommonSteps(this).createProject()
         // step 4
         ideFrame().waitForSmartMode()
         step("Cancel") {
@@ -128,7 +128,6 @@ class MainTest {
         step("Searching assignments") {
             with(ideFrame()) {
                 with(assignments()) {
-                    data.reloadData()
                     waitFor(
                         Duration.ofSeconds(90),
                         Duration.ofSeconds(1),
@@ -149,7 +148,7 @@ class MainTest {
                     }
                 }
             }
-        }
+        }*/
         // Week 11 is now expanded in the tree view because of the previous test
         step("Filtering assignments") {
             with(ideFrame()) {
@@ -178,11 +177,6 @@ class MainTest {
                 }
 
                 with(assignments()) {
-                    waitFor(
-                        Duration.ofSeconds(60),
-                        Duration.ofSeconds(1),
-                        "Week 1 not found in assignments list"
-                    ) { !containsText("Files") }
                     assertFalse("'Files' assignment should now be hidden", containsText("Files"))
                     assertTrue("Feedback submissions should be visible", containsText("Feedback"))
                 }
