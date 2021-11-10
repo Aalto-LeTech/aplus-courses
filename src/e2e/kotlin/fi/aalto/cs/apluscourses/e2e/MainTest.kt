@@ -27,7 +27,7 @@ class MainTest {
     @Test
     fun mainTest() = uiTest {
         // step 2
-        /*CommonSteps(this).createProject()
+        CommonSteps(this).createProject()
         // step 4
         ideFrame().waitForSmartMode()
         step("Cancel") {
@@ -148,7 +148,7 @@ class MainTest {
                     }
                 }
             }
-        }*/
+        }
         // Week 11 is now expanded in the tree view because of the previous test
         step("Filtering assignments") {
             with(ideFrame()) {
