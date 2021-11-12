@@ -9,7 +9,6 @@ import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
-import com.intellij.ui.JBSplitter;
 import fi.aalto.cs.apluscourses.intellij.actions.ActionGroups;
 import fi.aalto.cs.apluscourses.intellij.actions.ActionUtil;
 import fi.aalto.cs.apluscourses.intellij.actions.CourseProjectAction;
@@ -18,6 +17,7 @@ import fi.aalto.cs.apluscourses.intellij.activities.InitializationActivity;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import fi.aalto.cs.apluscourses.ui.BannerView;
+import fi.aalto.cs.apluscourses.ui.CollapsibleSplitter;
 import fi.aalto.cs.apluscourses.ui.ProgressBarView;
 import fi.aalto.cs.apluscourses.ui.exercise.ExercisesView;
 import fi.aalto.cs.apluscourses.ui.module.ModulesView;
@@ -32,13 +32,13 @@ public class APlusToolWindowFactory extends BaseToolWindowFactory implements Dum
   protected JComponent createToolWindowContentInternal(@NotNull Project project) {
     ModulesView modulesView = createModulesView(project);
     ExercisesView exercisesView = createExercisesView(project);
-    JBSplitter splitter = new JBSplitter(true);
-    splitter.setFirstComponent(modulesView.getBasePanel());
-    splitter.setSecondComponent(exercisesView.getBasePanel());
+    var collapsed = PluginSettings.getInstance().getCollapsed();
+    var splitter = new CollapsibleSplitter(modulesView, exercisesView);
+    splitter.collapseByTitles(collapsed);
 
     var progressViewModel
         = PluginSettings.getInstance().getMainViewModel(project).progressViewModel;
-    var progressBarView = new ProgressBarView(progressViewModel, splitter).getContainer();
+    var progressBarView = new ProgressBarView(progressViewModel, splitter.getFirstSplitter()).getContainer();
     return createBannerView(project, progressBarView).getContainer();
   }
 

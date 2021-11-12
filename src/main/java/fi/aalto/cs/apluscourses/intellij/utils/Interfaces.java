@@ -5,6 +5,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.newvfs.RefreshQueue;
+import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import java.io.File;
 import org.jetbrains.annotations.NotNull;
@@ -51,6 +52,12 @@ public class Interfaces {
     VirtualFile findFile(File file);
   }
 
+  public interface CollapsedPanels {
+    void setCollapsed(@NotNull String title);
+
+    void setExpanded(@NotNull String title);
+  }
+
   public static class FileRefresherImpl {
     private FileRefresherImpl() {
 
@@ -95,6 +102,19 @@ public class Interfaces {
     @Nullable
     public static VirtualFile findVirtualFile(File file) {
       return LocalFileSystem.getInstance().findFileByIoFile(file);
+    }
+  }
+
+  public static class CollapsedPanelsImpl implements Interfaces.CollapsedPanels {
+
+    @Override
+    public void setCollapsed(@NotNull String title) {
+      PluginSettings.getInstance().setCollapsed(title);
+    }
+
+    @Override
+    public void setExpanded(@NotNull String title) {
+      PluginSettings.getInstance().setExpanded(title);
     }
   }
 }

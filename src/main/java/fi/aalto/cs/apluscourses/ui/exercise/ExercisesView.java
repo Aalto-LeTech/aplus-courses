@@ -19,6 +19,7 @@ import fi.aalto.cs.apluscourses.presentation.base.BaseTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.Searchable;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.ui.GuiObject;
+import fi.aalto.cs.apluscourses.ui.ToolbarPanel;
 import fi.aalto.cs.apluscourses.ui.base.TreeView;
 import java.awt.CardLayout;
 import java.awt.event.MouseAdapter;
@@ -31,7 +32,7 @@ import javax.swing.SwingConstants;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class ExercisesView {
+public class ExercisesView implements ToolbarPanel {
   private TreeView exerciseGroupsTree;
   private JLabel emptyText;
   private JPanel basePanel;
@@ -63,9 +64,22 @@ public class ExercisesView {
     pane.getVerticalScrollBar().setUnitIncrement(rowHeight <= 0 ? 20 : rowHeight);
   }
 
+  @Override
   @NotNull
   public JPanel getBasePanel() {
     return basePanel;
+  }
+
+  @Override
+  @NotNull
+  public JPanel getToolbar() {
+    return toolbarContainer;
+  }
+
+  @NotNull
+  @Override
+  public String getTitle() {
+    return getText("ui.toolWindow.subTab.exercises.name");
   }
 
   /**
@@ -91,7 +105,7 @@ public class ExercisesView {
               exerciseGroupsTree.getEmptyText().appendLine(
                   getText("ui.exercise.ExercisesView.setTokenDirections"));
             }
-            title.setText(viewModel.getName() == null ? getText("ui.toolWindow.subTab.exercises.name")
+            title.setText(viewModel.getName() == null ? getTitle()
                 : getAndReplaceText("ui.toolWindow.subTab.exercises.nameStudent", viewModel.getName()));
           }
 
