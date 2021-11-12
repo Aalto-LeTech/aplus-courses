@@ -1,7 +1,14 @@
 package fi.aalto.cs.apluscourses.model;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getAndReplaceText;
+
 import fi.aalto.cs.apluscourses.intellij.utils.Interfaces;
+import fi.aalto.cs.apluscourses.utils.parser.DefaultNewsParser;
+import fi.aalto.cs.apluscourses.utils.parser.NewsParser;
+import fi.aalto.cs.apluscourses.utils.parser.O1NewsParser;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.Arrays;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
@@ -17,7 +24,7 @@ public class News implements Browsable {
   private final String title;
 
   @NotNull
-  private final String body;
+  private final String[] body;
 
   @NotNull
   private final ZonedDateTime publish;
@@ -29,7 +36,7 @@ public class News implements Browsable {
   public News(long id,
               @NotNull String url,
               @NotNull String title,
-              @NotNull String body,
+              @NotNull String[] body,
               @NotNull ZonedDateTime publish,
               @NotNull Interfaces.ReadNews readNews) {
     this.id = id;
@@ -43,17 +50,27 @@ public class News implements Browsable {
   /**
    * Constructs News from JSON.
    */
-  public static News fromJsonObject(@NotNull JSONObject object, @NotNull Course course) {
+  public static News fromJsonObject(@NotNull JSONObject object, @NotNull Course course, @NotNull String language) {
     var id = object.getLong("id");
     var url = course.getHtmlUrl();
 
     var title = object.getString("title");
     var titleElement = Jsoup.parseBodyFragment(title).body();
-    var titleText = titleElement.getElementsByClass("onlyfi").first().text();
 
     var body = object.getString("body");
     var bodyElement = Jsoup.parseBodyFragment(body).body();
-    var bodyText = bodyElement.getElementsByClass("onlyfi").first().text();
+
+    NewsParser parser;
+    switch (course.getName()) {
+      case "O1":
+        parser = new O1NewsParser(language);
+        break;
+      default:
+        parser = new DefaultNewsParser();
+        break;
+    }
+    var titleText = parser.parseTitle(titleElement);
+    var bodyText = parser.parseBody(bodyElement);
 
     var publishString = object.getString("publish");
     var publish = ZonedDateTime.parse(publishString);
@@ -75,13 +92,14 @@ public class News implements Browsable {
   }
 
   @NotNull
-  public String getBody() {
+  public String[] getBody() {
     return body;
   }
 
   @NotNull
   public String getPublishTimeInfo() {
-    return publish;
+    return getAndReplaceText("ui.toolWindow.subTab.news.publishTime",
+        publish.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)));
   }
 
   public boolean isRead() {

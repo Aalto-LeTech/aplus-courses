@@ -223,10 +223,11 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   @Override
   @NotNull
   public List<News> getNews(@NotNull Course course,
-                            @NotNull Authentication authentication) throws IOException {
+                            @NotNull Authentication authentication,
+                            @NotNull String language) throws IOException {
     String url = apiUrl + COURSES + "/" + course.getId() + "/" + NEWS + "/";
     return getPaginatedResults(url, authentication, CachePreferences.GET_NEW_AND_FORGET,
-        jsonObject -> News.fromJsonObject(jsonObject, course));
+        jsonObject -> News.fromJsonObject(jsonObject, course, language));
   }
 
   /**

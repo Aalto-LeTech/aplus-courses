@@ -99,11 +99,14 @@ public class CourseUpdater extends RepeatedTask {
         PluginSettings.getInstance().getMainViewModel(project).progressViewModel;
     var progress =
         progressViewModel.start(2, getText("ui.ProgressBarView.refreshingCourse"), false);
+    var selectedLanguage = PluginSettings
+        .getInstance()
+        .getCourseFileManager(project).getLanguage();
 
     var auth = courseProject.getAuthentication();
     try {
       if (auth != null) {
-        var news = course.getExerciseDataSource().getNews(course, auth);
+        var news = course.getExerciseDataSource().getNews(course, auth, selectedLanguage);
         var newsTree = new NewsTree(news);
         courseProject.setNewsTree(newsTree);
         eventToTrigger.trigger();

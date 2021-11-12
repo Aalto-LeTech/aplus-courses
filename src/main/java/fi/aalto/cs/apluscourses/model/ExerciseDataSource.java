@@ -53,7 +53,8 @@ public interface ExerciseDataSource {
 
   @NotNull
   List<News> getNews(@NotNull Course course,
-                     @NotNull Authentication authentication) throws IOException;
+                     @NotNull Authentication authentication,
+                     @NotNull String language) throws IOException;
 
   @Nullable
   String submit(@NotNull Submission submission, @NotNull Authentication authentication)

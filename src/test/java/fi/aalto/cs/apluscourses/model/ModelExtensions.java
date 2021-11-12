@@ -46,9 +46,9 @@ public class ModelExtensions {
     @Override
     public Points getPoints(@NotNull Course course, @NotNull Authentication authentication) {
       return new Points(
-              Collections.emptyMap(),
-              Collections.emptyMap(),
-              Collections.emptyMap()
+          Collections.emptyMap(),
+          Collections.emptyMap(),
+          Collections.emptyMap()
       );
     }
 
@@ -57,9 +57,9 @@ public class ModelExtensions {
                                      @NotNull Authentication authentication,
                                      @Nullable Student student) {
       return new Points(
-              Collections.emptyMap(),
-              Collections.emptyMap(),
-              Collections.emptyMap());
+          Collections.emptyMap(),
+          Collections.emptyMap(),
+          Collections.emptyMap());
     }
 
     @NotNull
@@ -70,7 +70,7 @@ public class ModelExtensions {
                                 @NotNull Authentication authentication,
                                 @NotNull CachePreference cachePreference) {
       return new Exercise(1, "lol", "http://example.com",
-              new SubmissionInfo(Collections.emptyMap()), 20, 10, OptionalLong.empty()
+          new SubmissionInfo(Collections.emptyMap()), 20, 10, OptionalLong.empty()
       );
     }
 
@@ -100,11 +100,12 @@ public class ModelExtensions {
     public @NotNull ZonedDateTime getEndingTime(@NotNull Course course,
                                                 @NotNull Authentication authentication) {
       return ZonedDateTime.of(2020, 1, 2, 0, 0, 0, 0,
-              ZoneId.systemDefault());
+          ZoneId.systemDefault());
     }
 
     @Override
-    public @NotNull List<News> getNews(@NotNull Course course, @NotNull Authentication authentication) {
+    public @NotNull List<News> getNews(@NotNull Course course, @NotNull Authentication authentication,
+                                       @NotNull String language) {
       return Collections.emptyList();
     }
 
@@ -135,7 +136,7 @@ public class ModelExtensions {
                       @NotNull Version courseVersion,
                       @NotNull Map<Long, Tutorial> tutorials) {
       super(id, name, aplusUrl, languages, modules, libraries, exerciseModules, resourceUrls,
-              autoInstallComponentNames, replInitialCommands, courseVersion, tutorials);
+          autoInstallComponentNames, replInitialCommands, courseVersion, tutorials);
       exerciseDataSource = new TestExerciseDataSource();
     }
 
@@ -153,26 +154,26 @@ public class ModelExtensions {
     public TestCourse(@NotNull String id, @NotNull String name,
                       @NotNull ExerciseDataSource exerciseDataSource) {
       super(
-              id,
-              name,
-              "https://example.com/",
-              Collections.emptyList(),
-              //  modules
-              Collections.emptyList(),
-              //  libraries
-              Collections.emptyList(),
-              //  exerciseModules
-              Collections.emptyMap(),
-              //  resourceUrls
-              Collections.emptyMap(),
-              //  autoInstallComponentNames
-              Collections.emptyList(),
-              //  replInitialCommands
-              Collections.emptyMap(),
-              //  courseVersion
-              BuildInfo.INSTANCE.courseVersion,
-              // tutorials
-              Collections.emptyMap());
+          id,
+          name,
+          "https://example.com/",
+          Collections.emptyList(),
+          //  modules
+          Collections.emptyList(),
+          //  libraries
+          Collections.emptyList(),
+          //  exerciseModules
+          Collections.emptyMap(),
+          //  resourceUrls
+          Collections.emptyMap(),
+          //  autoInstallComponentNames
+          Collections.emptyList(),
+          //  replInitialCommands
+          Collections.emptyMap(),
+          //  courseVersion
+          BuildInfo.INSTANCE.courseVersion,
+          // tutorials
+          Collections.emptyMap());
       this.exerciseDataSource = exerciseDataSource;
     }
 
@@ -356,18 +357,18 @@ public class ModelExtensions {
                                @NotNull Version courseVersion,
                                @NotNull Map<Long, Tutorial> tutorials) {
       return new ModelExtensions.TestCourse(
-              id,
-              name,
-              aplusUrl,
-              languages,
-              modules,
-              libraries,
-              exerciseModules,
-              resourceUrls,
-              autoInstallComponentNames,
-              replInitialCommands,
-              courseVersion,
-              tutorials
+          id,
+          name,
+          aplusUrl,
+          languages,
+          modules,
+          libraries,
+          exerciseModules,
+          resourceUrls,
+          autoInstallComponentNames,
+          replInitialCommands,
+          courseVersion,
+          tutorials
       );
     }
 
