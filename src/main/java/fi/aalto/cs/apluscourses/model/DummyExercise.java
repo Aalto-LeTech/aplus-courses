@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.model;
 
 import java.util.OptionalLong;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
 public class DummyExercise extends Exercise {
@@ -14,8 +15,9 @@ public class DummyExercise extends Exercise {
                        @NotNull String htmlUrl,
                        @NotNull SubmissionInfo submissionInfo,
                        int maxPoints,
-                       int maxSubmissions) {
-    super(id, name, htmlUrl, submissionInfo, maxPoints, maxSubmissions, OptionalLong.empty());
+                       int maxSubmissions,
+                       @Nullable String difficulty) {
+    super(id, name, htmlUrl, submissionInfo, maxPoints, maxSubmissions, OptionalLong.empty(), difficulty);
   }
 
   /**
@@ -31,9 +33,11 @@ public class DummyExercise extends Exercise {
     int maxPoints = jsonObject.getInt("max_points");
     int maxSubmissions = jsonObject.getInt("max_submissions");
 
+    String difficulty = jsonObject.optString("difficulty");
+
     var submissionInfo = SubmissionInfo.fromJsonObject(jsonObject);
 
-    return new DummyExercise(id, name, htmlUrl, submissionInfo, maxPoints, maxSubmissions);
+    return new DummyExercise(id, name, htmlUrl, submissionInfo, maxPoints, maxSubmissions, difficulty);
   }
 
   @Override

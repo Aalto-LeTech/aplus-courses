@@ -31,6 +31,9 @@ public class Exercise implements Browsable {
   private final int maxSubmissions;
 
   @NotNull
+  private final String difficulty;
+
+  @NotNull
   private final OptionalLong bestSubmissionId;
 
   /**
@@ -49,7 +52,8 @@ public class Exercise implements Browsable {
                   @NotNull SubmissionInfo submissionInfo,
                   int maxPoints,
                   int maxSubmissions,
-                  @NotNull OptionalLong bestSubmissionId) {
+                  @NotNull OptionalLong bestSubmissionId,
+                  @Nullable String difficulty) {
     this.id = id;
     this.name = name;
     this.htmlUrl = htmlUrl;
@@ -57,6 +61,7 @@ public class Exercise implements Browsable {
     this.maxPoints = maxPoints;
     this.maxSubmissions = maxSubmissions;
     this.bestSubmissionId = bestSubmissionId;
+    this.difficulty = difficulty == null ? "" : difficulty;
   }
 
   /**
@@ -79,6 +84,7 @@ public class Exercise implements Browsable {
     var bestSubmissionId = points.getBestSubmissionIds().get(id);
     int maxPoints = jsonObject.getInt("max_points");
     int maxSubmissions = jsonObject.getInt("max_submissions");
+    String difficulty = jsonObject.optString("difficulty");
 
     var submissionInfo = SubmissionInfo.fromJsonObject(jsonObject);
 
@@ -86,10 +92,11 @@ public class Exercise implements Browsable {
     var optionalBestSubmission = bestSubmissionId == null ? OptionalLong.empty()
         : OptionalLong.of(bestSubmissionId);
     if (tutorial == null) {
-      return new Exercise(id, name, htmlUrl, submissionInfo, maxPoints, maxSubmissions, optionalBestSubmission);
+      return new Exercise(
+          id, name, htmlUrl, submissionInfo, maxPoints, maxSubmissions, optionalBestSubmission, difficulty);
     } else {
       return new TutorialExercise(
-          id, name, htmlUrl, submissionInfo, maxPoints, maxSubmissions, optionalBestSubmission, tutorial);
+          id, name, htmlUrl, submissionInfo, maxPoints, maxSubmissions, optionalBestSubmission, difficulty, tutorial);
     }
   }
 
@@ -100,6 +107,11 @@ public class Exercise implements Browsable {
   @NotNull
   public String getName() {
     return name;
+  }
+
+  @NotNull
+  public String getDifficulty() {
+    return difficulty;
   }
 
   @Override
