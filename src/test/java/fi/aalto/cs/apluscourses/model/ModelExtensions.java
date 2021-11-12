@@ -70,7 +70,7 @@ public class ModelExtensions {
                                 @NotNull Authentication authentication,
                                 @NotNull CachePreference cachePreference) {
       return new Exercise(1, "lol", "http://example.com",
-          new SubmissionInfo(Collections.emptyMap()), 20, 10, OptionalLong.empty()
+          new SubmissionInfo(Collections.emptyMap()), 20, 10, OptionalLong.empty(), null
       );
     }
 

@@ -47,7 +47,7 @@ public class SubmissionViewModelTest {
         = Collections.singletonMap(language, Collections.singletonList(file));
     var submissionInfo = new SubmissionInfo(files);
     Exercise exercise = new Exercise(
-        100, "Exercise", "http://localhost:1000", submissionInfo, 0, 0, OptionalLong.empty());
+        100, "Exercise", "http://localhost:1000", submissionInfo, 0, 0, OptionalLong.empty(), null);
 
     SubmissionViewModel submissionViewModel =
         new SubmissionViewModel(exercise, groups, null, fileMap, language);
@@ -59,7 +59,7 @@ public class SubmissionViewModelTest {
   @Test
   public void testSubmissionNumbers() {
     var info = new SubmissionInfo(Collections.emptyMap());
-    Exercise exercise = new Exercise(1, "ex", "http://localhost:2000", info, 0, 5, OptionalLong.empty());
+    Exercise exercise = new Exercise(1, "ex", "http://localhost:2000", info, 0, 5, OptionalLong.empty(), null);
     IntStream.range(0, 3).forEach(i -> exercise.addSubmissionResult(
         new SubmissionResult(i, 10, 0.0, SubmissionResult.Status.GRADED, exercise)));
 
@@ -92,7 +92,7 @@ public class SubmissionViewModelTest {
 
     // Max submissions 0
     SubmissionViewModel submissionViewModel4 = new SubmissionViewModel(
-        new Exercise(0, "", "", info, 0, 0, OptionalLong.empty()),
+        new Exercise(0, "", "", info, 0, 0, OptionalLong.empty(), null),
         Collections.emptyList(), null, Collections.emptyMap(), "");
     assertEquals("You are about to make submission 1.",
         submissionViewModel4.getSubmissionCountText());
@@ -109,7 +109,7 @@ public class SubmissionViewModelTest {
     files.put("en", List.of(englishFile1, englishFile2));
     files.put("fi", List.of(finnishFile1, finnishFile2));
     var exercise = new Exercise(
-        324, "cool", "http://localhost:1324", new SubmissionInfo(files), 0, 0, OptionalLong.empty());
+        324, "cool", "http://localhost:1324", new SubmissionInfo(files), 0, 0, OptionalLong.empty(), null);
 
     SubmissionViewModel submission = new SubmissionViewModel(
         exercise, Collections.emptyList(), null, Collections.emptyMap(), "fi"
@@ -122,7 +122,7 @@ public class SubmissionViewModelTest {
   @Test
   public void testDefaultGroup() {
     Exercise exercise = new Exercise(
-        1000, "wow", "http://www.fi", new SubmissionInfo(Collections.emptyMap()), 0, 0, OptionalLong.empty());
+        1000, "wow", "http://www.fi", new SubmissionInfo(Collections.emptyMap()), 0, 0, OptionalLong.empty(), null);
     Group group = new Group(1, List.of("Jyrki", "Jorma"));
     List<Group> availableGroups = Collections.singletonList(group);
 

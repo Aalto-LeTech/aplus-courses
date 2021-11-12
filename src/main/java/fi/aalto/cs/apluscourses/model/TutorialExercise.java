@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.model;
 
 import java.util.OptionalLong;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class TutorialExercise extends Exercise {
 
@@ -17,8 +18,9 @@ public class TutorialExercise extends Exercise {
                           int maxPoints,
                           int maxSubmissions,
                           @NotNull OptionalLong bestSubmissionId,
+                          @Nullable String difficulty,
                           @NotNull Tutorial tutorial) {
-    super(id, name, htmlUrl, submissionInfo, maxPoints, maxSubmissions, bestSubmissionId);
+    super(id, name, htmlUrl, submissionInfo, maxPoints, maxSubmissions, bestSubmissionId, difficulty);
     this.tutorial = tutorial;
   }
 
