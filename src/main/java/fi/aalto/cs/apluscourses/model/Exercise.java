@@ -175,7 +175,7 @@ public class Exercise implements Browsable {
   }
 
   public boolean isOptional() {
-    return maxSubmissions == 0 && maxPoints == 0;
+    return difficulty.equals("training") || difficulty.equals("challenge");
   }
 
   /**
