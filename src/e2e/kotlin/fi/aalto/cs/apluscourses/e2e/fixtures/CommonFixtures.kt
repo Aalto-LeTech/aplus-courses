@@ -139,6 +139,14 @@ class IdeFrameFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent
             isDumbMode().not()
         }
     }
+
+    fun waitForAssignmentsLoaded() {
+        waitFor(
+            duration = Duration.ofMinutes(10),
+            interval = Duration.ofSeconds(5),
+            errorMessage = "Loading assignments takes too long"
+        ) { !hasText("Refreshing assignments...") }
+    }
 }
 
 @FixtureName("Menu Item")

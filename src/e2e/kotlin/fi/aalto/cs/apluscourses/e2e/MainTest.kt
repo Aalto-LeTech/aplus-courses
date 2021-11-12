@@ -118,12 +118,7 @@ class MainTest {
             }
         }
         step("Make sure the assignments have been loaded") {
-            with(ideFrame()) {
-                waitFor(
-                    Duration.ofSeconds(900),
-                    Duration.ofSeconds(5)
-                ) { !hasText("Refreshing assignments...") }
-            }
+            ideFrame().waitForAssignmentsLoaded()
         }
         step("Searching assignments") {
             with(ideFrame()) {
@@ -153,6 +148,7 @@ class MainTest {
         step("Filtering assignments") {
             with(ideFrame()) {
                 // just check the initial state (nothing is filtered out)
+                waitForAssignmentsLoaded() // we just opened some weeks, this could have triggered loading
                 filterButton().click()
                 with(dropDownMenu()) {
                     assertTrue("By default, nothing is filtered out", hasText("Deselect all"))
