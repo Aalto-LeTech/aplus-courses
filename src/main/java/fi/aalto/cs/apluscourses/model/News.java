@@ -80,7 +80,7 @@ public class News implements Browsable {
   }
 
   @NotNull
-  public ZonedDateTime getPublish() {
+  public String getPublishTimeInfo() {
     return publish;
   }
 
