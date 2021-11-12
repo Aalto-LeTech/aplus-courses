@@ -12,6 +12,8 @@ import org.jetbrains.annotations.NotNull;
 
 public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> implements Searchable {
 
+  private static final String TRAINING_DIFFICULTY_ID = "training";
+
   /**
    * Construct a view model corresponding to the given exercise.
    */
@@ -69,7 +71,7 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
       return Status.IN_GRADING;
     } else if (exercise instanceof TutorialExercise) {
       return Status.TUTORIAL;
-    } else if (exercise.getDifficulty().equals("training")) { // O1 specific
+    } else if (exercise.getDifficulty().equals(TRAINING_DIFFICULTY_ID)) { // O1 specific
       return Status.OPTIONAL_PRACTICE;
     } else if (exercise.getSubmissionResults().isEmpty()) {
       return Status.NO_SUBMISSIONS;
