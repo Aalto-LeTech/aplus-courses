@@ -1,6 +1,5 @@
 package fi.aalto.cs.apluscourses.ui.exercise;
 
-import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getAndReplaceText;
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 import com.intellij.openapi.application.ApplicationManager;
@@ -79,12 +78,8 @@ public class ExercisesView implements ToolbarPanel {
             return;
           }
 
-          if (viewModel.isLoaded()) {
-            exerciseGroupsTree.getEmptyText().setText(
-                getText("ui.exercise.ExercisesView.allAssignmentsFiltered"));
-          }
-          title.setText(viewModel.getName() == null ? getTitle()
-              : getAndReplaceText("ui.toolWindow.subTab.exercises.nameStudent", viewModel.getName()));
+          exerciseGroupsTree.getEmptyText().setText(viewModel.getEmptyText());
+          title.setText(viewModel.getTitleText());
 
         }, ModalityState.any()
     );

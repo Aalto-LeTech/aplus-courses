@@ -118,7 +118,6 @@ public class ExercisesUpdater extends RepeatedTask {
           .getMainViewModel(courseProject.getProject());
       var cardVm = mainVm.toolWindowCardViewModel;
       cardVm.setAuthenticated(false);
-      cardVm.updated.trigger();
       progress.finish();
       notifier.notify(new NetworkErrorNotification(e), courseProject.getProject());
     }

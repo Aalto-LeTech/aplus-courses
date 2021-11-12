@@ -1,6 +1,9 @@
 package fi.aalto.cs.apluscourses.presentation.exercise;
 
-import fi.aalto.cs.apluscourses.model.ExercisesLazyLoader;
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getAndReplaceText;
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
+import fi.aalto.cs.apluscourses.intellij.model.CourseProject;
 import fi.aalto.cs.apluscourses.model.ExercisesTree;
 import fi.aalto.cs.apluscourses.presentation.base.BaseTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.Searchable;
@@ -29,18 +32,43 @@ public class ExercisesTreeViewModel extends BaseTreeViewModel<ExercisesTree>
    */
   public ExercisesTreeViewModel(@NotNull ExercisesTree exercisesTree,
                                 @NotNull Options filterOptions,
-                                @Nullable ExercisesLazyLoader exercisesLazyLoader) {
+                                @Nullable CourseProject courseProject) {
     super(exercisesTree,
         exercisesTree.getExerciseGroups()
             .stream()
-            .map(exerciseGroup -> new ExerciseGroupViewModel(exerciseGroup, exercisesLazyLoader))
+            .map(exerciseGroup -> new ExerciseGroupViewModel(exerciseGroup, courseProject))
             .collect(Collectors.toList()),
         filterOptions);
+    setLoaded(courseProject != null && courseProject.getAuthentication() != null);
+  }
+
+  /**
+   * Creates an EmptyExercisesTreeViewModel if the exercisesTree is null, else an ExercisesTreeViewModel.
+   */
+  @NotNull
+  public static ExercisesTreeViewModel createExerciseTreeViewModel(@Nullable ExercisesTree exercisesTree,
+                                                                   @NotNull Options filterOptions,
+                                                                   @Nullable CourseProject courseProject) {
+    if (exercisesTree == null) {
+      return new EmptyExercisesTreeViewModel();
+    }
+    return new ExercisesTreeViewModel(exercisesTree, filterOptions, courseProject);
   }
 
   public String getName() {
     var student = getModel().getSelectedStudent();
     return student == null ? null : student.getFullName();
+  }
+
+  @NotNull
+  public String getEmptyText() {
+    return isLoaded ? getText("ui.exercise.ExercisesView.allAssignmentsFiltered") : getText("ui.toolWindow.loading");
+  }
+
+  @NotNull
+  public String getTitleText() {
+    return getName() == null ? getText("ui.toolWindow.subTab.exercises.name") :
+        getAndReplaceText("ui.toolWindow.subTab.exercises.nameStudent", getName());
   }
 
   @Override
