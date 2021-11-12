@@ -77,8 +77,7 @@ public class NewsView implements ToolbarPanel {
             return;
           }
 
-          var unread = viewModel.getModel().getNews().stream().filter(news -> !news.isRead()).count();
-          title.setText(getTitle() + ((unread > 0) ? " [" + unread + " unread]" : ""));
+          title.setText(viewModel.getTitle());
 
         }, ModalityState.any()
     );
