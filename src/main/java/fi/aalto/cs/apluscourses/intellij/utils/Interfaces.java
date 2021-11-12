@@ -47,6 +47,11 @@ public class Interfaces {
     void navigateTo(File file, Project project);
   }
 
+  @FunctionalInterface
+  public interface VirtualFileFinder {
+    VirtualFile findFile(File file);
+  }
+
   public interface CollapsedPanels {
     void setCollapsed(@NotNull String title);
 
@@ -71,6 +76,9 @@ public class Interfaces {
   }
 
   public static class FileBrowserImpl {
+    private FileBrowserImpl() {
+
+    }
 
     /**
      * Opens the file in the editor.
@@ -80,6 +88,20 @@ public class Interfaces {
       if (vf != null) {
         new OpenFileDescriptor(project, vf).navigate(true);
       }
+    }
+  }
+
+  public static class VirtualFileFinderImpl {
+    private VirtualFileFinderImpl() {
+
+    }
+
+    /**
+     * Finds a file.
+     */
+    @Nullable
+    public static VirtualFile findVirtualFile(File file) {
+      return LocalFileSystem.getInstance().findFileByIoFile(file);
     }
   }
 
