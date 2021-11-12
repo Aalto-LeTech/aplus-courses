@@ -82,6 +82,8 @@ public class SettingsImporter {
     for (var option : options.entrySet()) {
       VMOptions.writeOption(option.getKey(), "=", option.getValue());
     }
+
+    logger.info("Imported " + options.size() + " VM options");
   }
 
   /**
