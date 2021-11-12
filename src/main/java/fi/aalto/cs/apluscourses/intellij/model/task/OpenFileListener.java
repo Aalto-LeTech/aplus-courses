@@ -30,7 +30,7 @@ public class OpenFileListener extends ActivitiesListenerBase<@NotNull Collection
    *
    * @param callback Who to call when it happens?
    * @param filePath Path of the file to be opened.
-   * @param project Project.
+   * @param project  Project.
    */
   public OpenFileListener(@NotNull ListenerCallback callback,
                           @NotNull Project project,
@@ -76,9 +76,9 @@ public class OpenFileListener extends ActivitiesListenerBase<@NotNull Collection
   @Override
   protected @NotNull Collection<@NotNull VirtualFile> getDefaultParameter() {
     return Arrays.stream(FileEditorManager.getInstance(project).getAllEditors())
-      .map(FileEditor::getFile)
-      .filter(Objects::nonNull)
-      .collect(Collectors.toList());
+        .map(FileEditor::getFile)
+        .filter(Objects::nonNull)
+        .collect(Collectors.toList());
   }
 }
 

@@ -46,7 +46,7 @@ public class ComponentTest {
     assertEquals("The name should be the same as was given to constructor",
         componentName, component.getName());
   }
-  
+
   @Test
   public void testHasErrorReturnsTrue() {
     Component component = new ModelExtensions.TestComponent();

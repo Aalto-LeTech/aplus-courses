@@ -41,7 +41,7 @@ public class InstallModuleActionTest {
    * Called before each test method call.  Initializes private fields.
    */
   @Before
-  public void createMockObjects()   {
+  public void createMockObjects() {
     project = mock(Project.class);
 
     mainViewModel = new MainViewModel(new Options());

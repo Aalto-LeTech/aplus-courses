@@ -18,7 +18,7 @@ public abstract class RepeatedTask {
   /**
    * Creates a new repeated task.
    *
-   * @param delegate Task that is run repeatedly.
+   * @param delegate       Task that is run repeatedly.
    * @param updateInterval Update interval in milliseconds.
    * @return A new instance of RepeatedTask.
    */

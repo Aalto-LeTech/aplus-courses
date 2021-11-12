@@ -94,7 +94,6 @@ public class InitializationActivity implements Background {
       progressViewModel.stopAll();
 
       cardVm.setNetworkError(true);
-      cardVm.updated.trigger();
 
       return;
     }

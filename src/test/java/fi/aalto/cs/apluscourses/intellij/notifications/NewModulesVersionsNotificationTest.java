@@ -33,13 +33,13 @@ public class NewModulesVersionsNotificationTest {
 
     List<Module> module = List.of(new TestModule("module"));
     NewModulesVersionsNotification otherNotification =
-            new NewModulesVersionsNotification(module);
+        new NewModulesVersionsNotification(module);
     assertEquals("Title should be 'Updates available for A+ Course Modules'.",
-            "Update available for course module", otherNotification.getTitle());
+        "Update available for course module", otherNotification.getTitle());
     assertEquals("Content should contain the names of the Modules to update.",
-            "There is a newer version of the following course module available: "
-                    + "module.",
-            otherNotification.getContent());
+        "There is a newer version of the following course module available: "
+            + "module.",
+        otherNotification.getContent());
   }
 
   @Test

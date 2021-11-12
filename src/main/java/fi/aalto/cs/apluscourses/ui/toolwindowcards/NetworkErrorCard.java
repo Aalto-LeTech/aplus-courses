@@ -19,7 +19,6 @@ public class NetworkErrorCard {
       var mainVm = PluginSettings.getInstance().getMainViewModel(project);
       var cardVm = mainVm.toolWindowCardViewModel;
       cardVm.setNetworkError(false);
-      cardVm.updated.trigger();
       new InitializationActivity().runActivity(project);
     });
   }

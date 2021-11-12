@@ -147,7 +147,7 @@ public class TutorialAction extends AnAction implements DumbAware {
 
     @Override
     public boolean confirmCancel(@NotNull TutorialViewModel tutorialViewModel) {
-      Object[] options = { getText("ui.tutorial.TutorialAction.cancelTutorial"),
+      Object[] options = {getText("ui.tutorial.TutorialAction.cancelTutorial"),
           getText("ui.tutorial.TutorialAction.continueTutorial")};
       return JOptionPane.showOptionDialog(null,
           getText("ui.tutorial.TutorialAction.confirmCancel"),

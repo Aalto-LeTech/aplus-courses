@@ -9,16 +9,17 @@ import javax.swing.JPanel;
 import org.jetbrains.annotations.NotNull;
 
 public class ToolWindowCardView extends JPanel {
-  private static final String MAIN_CARD = "MainCard";
-  private static final String LOADING_CARD = "LoadingCard";
-  private static final String NO_TOKEN_CARD = "NoTokenCard";
-  private static final String PROJECT_CARD = "ProjectCard";
-  private static final String ERROR_CARD = "ErrorCard";
+  public static final String MAIN_CARD = "MainCard";
+  public static final String LOADING_CARD = "LoadingCard";
+  public static final String NO_TOKEN_CARD = "NoTokenCard";
+  public static final String PROJECT_CARD = "ProjectCard";
+  public static final String ERROR_CARD = "ErrorCard";
 
   @NotNull
   private final CardLayout cl;
   @NotNull
   private final Project project;
+  @NotNull
   private final ToolWindowCardViewModel viewModel;
 
   /**
@@ -61,7 +62,7 @@ public class ToolWindowCardView extends JPanel {
    */
   public void viewModelUpdated() {
     ApplicationManager.getApplication().invokeLater(() -> {
-          if (viewModel == null || !viewModel.isProjectReady()) {
+          if (!viewModel.isProjectReady()) {
             cl.show(this, LOADING_CARD);
           } else if (viewModel.isNetworkError()) {
             cl.show(this, ERROR_CARD);

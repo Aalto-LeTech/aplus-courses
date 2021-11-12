@@ -84,7 +84,7 @@ public class SubmissionDialogTest extends LightIdeaTestCase {
     Map<String, Path> submittableFilePaths = new HashMap<>();
     for (int i = 0; i < 2; i++) {
       submittableFilePaths.put("file" + i,
-              FileUtilRt.createTempFile("testFile", "", true).toPath());
+          FileUtilRt.createTempFile("testFile", "", true).toPath());
     }
 
     return new TestDialog(

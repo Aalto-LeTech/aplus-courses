@@ -63,8 +63,8 @@ public class ProgressBarView {
     progressBar.setBorder(border);
     label.setBorder(border);
     myPanel.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createMatteBorder(1, 0, 0, 0, JBColor.border()),
-            BorderFactory.createEmptyBorder(0, 0, 10, 0))
+        BorderFactory.createMatteBorder(1, 0, 0, 0, JBColor.border()),
+        BorderFactory.createEmptyBorder(0, 0, 10, 0))
     );
 
     progressBar.setAlignmentX(Component.LEFT_ALIGNMENT);

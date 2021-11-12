@@ -58,7 +58,7 @@ public class ModuleListElementViewModelTest {
         moduleViewModelAvailable.getTooltip().contains("Available"));
 
     Module moduleInstalled = new ModelExtensions.TestModule(
-            "", url, new Version(1, 0), null, "don't show this", ZonedDateTime.now());
+        "", url, new Version(1, 0), null, "don't show this", ZonedDateTime.now());
     ModuleListElementViewModel moduleViewModelInstalled =
         new ModuleListElementViewModel(moduleInstalled);
     assertTrue("The tooltip for a downloaded module should contain Installed",

@@ -135,9 +135,9 @@ public class APlusToolWindowFactory extends BaseToolWindowFactory implements Dum
                                              @NotNull JComponent bottomComponent) {
     var bannerView = new BannerView(bottomComponent);
 
-    PluginSettings.getInstance()
-        .getMainViewModel(project)
-        .bannerViewModel
+    var mainViewModel =PluginSettings.getInstance()
+        .getMainViewModel(project);
+        mainViewModel.bannerViewModel
         .addValueObserver(bannerView, BannerView::viewModelChanged);
 
     return bannerView;

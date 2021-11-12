@@ -1,19 +1,23 @@
 <idea-plugin>
-  <version>0.1.101</version>
-  <idea-version since-build="193.5662" until-build="193.*"/>
-  <id>fi.aalto.cs.intellij-plugin</id>
-  <name>A+ Courses</name>
-  <vendor email="intellij-plugin-letech@aalto.fi" url="https://research.cs.aalto.fi/LeTech/">LeTech Group at Aalto University</vendor>
-  <description>
-    This plugin supports the educational use of IntelliJ (and its Scala plugin) in programming courses that rely on the
-    A+ course platform, which has been developed at Aalto University. The plugin accesses programming assignments and
-    automated grading services provided by A+ and otherwise enhances the student experience.
+    <version>0.1.101</version>
+    <idea-version since-build="193.5662" until-build="193.*"/>
+    <id>fi.aalto.cs.intellij-plugin</id>
+    <name>A+ Courses</name>
+    <vendor email="intellij-plugin-letech@aalto.fi" url="https://research.cs.aalto.fi/LeTech/">LeTech Group at Aalto
+        University
+    </vendor>
+    <description>
+        This plugin supports the educational use of IntelliJ (and its Scala plugin) in programming courses that rely on
+        the
+        A+ course platform, which has been developed at Aalto University. The plugin accesses programming assignments
+        and
+        automated grading services provided by A+ and otherwise enhances the student experience.
     </description>
-  <change-notes>
-      Adding the initial skeleton of the plugin.&lt;br&gt;
-    
+    <change-notes>
+        Adding the initial skeleton of the plugin.&lt;br&gt;
+
     </change-notes>
-  <depends>com.intellij.modules.platform</depends>
-  <extensions defaultExtensionNs="com.intellij"/>
-  <actions/>
+    <depends>com.intellij.modules.platform</depends>
+    <extensions defaultExtensionNs="com.intellij"/>
+    <actions/>
 </idea-plugin>

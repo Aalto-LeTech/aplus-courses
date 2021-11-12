@@ -43,6 +43,7 @@ public class SettingsImporter {
    * that unzip the temporary file to the IDEA configuration path after which the temporary file is
    * deleted. Therefore, the new IDE settings only take effect once IDEA is restarted and the
    * temporary file must still exist at that point.
+   *
    * @throws IOException If an IO error occurs (e.g. network issues).
    */
   public void importIdeSettings(@NotNull Course course) throws IOException {
@@ -79,6 +80,7 @@ public class SettingsImporter {
    * the .idea directory of the ZIP file are extracted to the .idea directory of the given project,
    * after which the project is reloaded. If the course does not provide custom project settings,
    * this method does nothing.
+   *
    * @throws IOException If an IO error occurs (e.g. network issues).
    */
   public void importProjectSettings(@NotNull Path basePath, @NotNull Course course)
@@ -105,6 +107,7 @@ public class SettingsImporter {
   /**
    * Downloads a custom properties file if it exists, and saves it to the project's
    * .idea directory.
+   *
    * @throws IOException If an IO error occurs (e.g. network issues).
    */
   public void importCustomProperties(@NotNull Path basePath, @NotNull Course course,
@@ -141,6 +144,7 @@ public class SettingsImporter {
   /**
    * Returns the names of the files inside the given ZIP file. Directories are not included, but
    * files inside directories are included.
+   *
    * @param zipFile The ZIP file from which the file names are read.
    * @return A list of names of the files inside the given ZIP file.
    * @throws IOException If an IO error occurs.
@@ -158,6 +162,7 @@ public class SettingsImporter {
   /**
    * Parses the XML file (usually the workspace.xml file stored in .idea) at the given path and
    * returns a {@link Document} with file contents and an additional setting added.
+   *
    * @param workspaceXmlPath The path pointing to the XML file.
    * @throws IOException           If an IO error occurs while parsing the XML file.
    * @throws IllegalStateException If the existing XML in the given file is malformed. In practice

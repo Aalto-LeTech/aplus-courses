@@ -20,11 +20,11 @@ public class CollectionUtil {
   /**
    * Index-supporting mapping for lists.
    *
-   * @param list Source list.
-   * @param func Function from source element and its index to result element.
+   * @param list       Source list.
+   * @param func       Function from source element and its index to result element.
    * @param startIndex The beginning of indexing.
-   * @param <T> Type of source list elements.
-   * @param <R> Type of result list elements.
+   * @param <T>        Type of source list elements.
+   * @param <R>        Type of result list elements.
    * @return List of result elements.
    */
   public static <T, R> List<R> mapWithIndex(@NotNull List<T> list,
@@ -37,11 +37,11 @@ public class CollectionUtil {
   }
 
   /**
-   *  Returns the index of the given element in an iterator.
+   * Returns the index of the given element in an iterator.
    *
-   * @param iterator An iterator.
+   * @param iterator   An iterator.
    * @param itemToFind A item that is wanted to be found.
-   * @param <T> Type of items.
+   * @param <T>        Type of items.
    * @return The index of the item.
    */
   public static <T> int indexOf(@NotNull Iterator<T> iterator, @Nullable T itemToFind) {
@@ -58,12 +58,13 @@ public class CollectionUtil {
 
   /**
    * Removes items for which the predicate is true.
+   *
    * @param collection A collection.
-   * @param predicate A predicate that decides if an item is removed.
-   * @param <T> Type of items.
+   * @param predicate  A predicate that decides if an item is removed.
+   * @param <T>        Type of items.
    */
   public static <T> Collection<T> removeIf(@NotNull Collection<T> collection,
-                                     @NotNull Predicate<T> predicate) {
+                                           @NotNull Predicate<T> predicate) {
     List<T> toBeRemoved = new ArrayList<>();
     for (var item : collection) {
       if (predicate.test(item)) {

@@ -26,11 +26,11 @@ public class MainViewModel {
 
   @NotNull
   public final ObservableProperty<CourseViewModel> courseViewModel =
-          new ObservableReadWriteProperty<>(null);
+      new ObservableReadWriteProperty<>(null);
 
   @NotNull
   public final ObservableProperty<ExercisesTreeViewModel> exercisesViewModel =
-          new ObservableReadWriteProperty<>(new EmptyExercisesTreeViewModel());
+      new ObservableReadWriteProperty<>(new EmptyExercisesTreeViewModel());
 
   @NotNull
   public final ObservableProperty<NewsTreeViewModel> newsTreeViewModel =
@@ -41,11 +41,11 @@ public class MainViewModel {
 
   @NotNull
   public final ObservableProperty<BannerViewModel> bannerViewModel =
-          new ObservableReadWriteProperty<>(null);
+      new ObservableReadWriteProperty<>(null);
 
   @NotNull
   public final ObservableProperty<TutorialViewModel> tutorialViewModel =
-          new ObservableReadWriteProperty<>(null);
+      new ObservableReadWriteProperty<>(null);
 
   @NotNull
   private final Options exerciseFilterOptions;
@@ -62,13 +62,9 @@ public class MainViewModel {
    * to {@link MainViewModel#exercisesViewModel}.
    */
   public void updateExercisesViewModel(@NotNull CourseProject courseProject) {
-    if (courseProject.getExerciseTree() == null) {
-      exercisesViewModel.set(new EmptyExercisesTreeViewModel());
-    } else {
-      var viewModel = new ExercisesTreeViewModel(courseProject.getExerciseTree(), exerciseFilterOptions, courseProject);
-      viewModel.setLoaded(courseProject.getAuthentication() != null);
-      exercisesViewModel.set(viewModel);
-    }
+    exercisesViewModel.set(
+        ExercisesTreeViewModel.createExerciseTreeViewModel(courseProject.getExerciseTree(), exerciseFilterOptions,
+            courseProject));
   }
 
   /**
@@ -99,12 +95,10 @@ public class MainViewModel {
 
   /**
    * Calling this method informs the main view model that the corresponding project has been
-   * initialized (by InitializationActivity). If needed, this method notifies the listeners of
-   * toolWindowCardViewModel.
+   * initialized (by InitializationActivity).
    */
   public void setProjectReady(boolean isReady) {
     toolWindowCardViewModel.setProjectReady(isReady);
-    toolWindowCardViewModel.updated.trigger();
   }
 
   /**
@@ -112,7 +106,6 @@ public class MainViewModel {
    */
   public void setAuthenticated(boolean authenticated) {
     toolWindowCardViewModel.setAuthenticated(authenticated);
-    toolWindowCardViewModel.updated.trigger();
   }
 
   public void userChanged(@Nullable User user) {

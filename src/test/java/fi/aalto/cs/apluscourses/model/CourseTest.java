@@ -30,7 +30,7 @@ public class CourseTest {
     resourceUrls.put("ideSettings", new URL("http://localhost:23333"));
     List<String> autoInstallComponents = List.of(module1name);
     Map<String, String[]> replInitialCommands = new HashMap<>();
-    replInitialCommands.put("Module1", new String[]{"import o1._"});
+    replInitialCommands.put("Module1", new String[] {"import o1._"});
     Course course = new ModelExtensions.TestCourse(
         "13",
         "Tester Course",

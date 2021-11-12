@@ -113,7 +113,6 @@ public class CourseUpdater extends RepeatedTask {
       return;
     }
     progress.increment();
-
     updateModules(fetchModulesInfo());
     if (Thread.interrupted()) {
       progress.finish();

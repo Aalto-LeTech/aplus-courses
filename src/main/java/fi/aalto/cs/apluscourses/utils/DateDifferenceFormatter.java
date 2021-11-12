@@ -9,12 +9,12 @@ public class DateDifferenceFormatter {
 
   // the order of time units to check, ordered from most to least precise
   private static final List<ChronoUnit> TimeUnits = List.of(
-          ChronoUnit.SECONDS,
-          ChronoUnit.MINUTES,
-          ChronoUnit.HOURS,
-          ChronoUnit.DAYS,
-          ChronoUnit.MONTHS,
-          ChronoUnit.YEARS
+      ChronoUnit.SECONDS,
+      ChronoUnit.MINUTES,
+      ChronoUnit.HOURS,
+      ChronoUnit.DAYS,
+      ChronoUnit.MONTHS,
+      ChronoUnit.YEARS
   );
 
   private static String formatWithTimeUnit(ZonedDateTime earlierTimePoint,
@@ -36,10 +36,10 @@ public class DateDifferenceFormatter {
    * time unit is used.
    *
    * @param earlierTimePoint The earlier time point.
-   * @param laterTimePoint The later time point.
+   * @param laterTimePoint   The later time point.
    */
   public static String formatWithLargestTimeUnit(ZonedDateTime earlierTimePoint,
-                                                  ZonedDateTime laterTimePoint) {
+                                                 ZonedDateTime laterTimePoint) {
     if (ChronoUnit.SECONDS.between(earlierTimePoint, laterTimePoint) <= 0) {
       return "just now";
     }
@@ -51,7 +51,7 @@ public class DateDifferenceFormatter {
     }
 
     return formatWithTimeUnit(earlierTimePoint, laterTimePoint,
-            TimeUnits.get(TimeUnits.size() - 1));
+        TimeUnits.get(TimeUnits.size() - 1));
   }
 
   private DateDifferenceFormatter() {
