@@ -249,22 +249,24 @@ class MainTest {
     @Test
     fun aboutDialogTest() = uiTest {
         step("About dialog") {
-            CommonSteps(this).openAboutDialog()
-            with(dialog("A+ Courses", Duration.ofSeconds(20))) {
-                step("Check the version") {
-                    assertTrue("Version is correct", hasText("Version: ${getVersion()}"))
+            attempt(3) {
+                CommonSteps(this).openAboutDialog()
+                with(dialog("A+ Courses", Duration.ofSeconds(20))) {
+                    step("Check the version") {
+                        assertTrue("Version is correct", hasText("Version: ${getVersion()}"))
+                    }
+                    step("Check the links") {
+                        assertTrue(hasText("A+ Courses plugin website"))
+                        assertTrue(hasText("A+ Courses plugin GitHub"))
+                        assertTrue(hasText("A+ website"))
+                        assertTrue(hasText("Apache Commons IO"))
+                        assertTrue(hasText("IntelliJ Scala Plugin"))
+                        assertTrue(hasText("json.org"))
+                        assertTrue(hasText("Scala Standard Library"))
+                        assertTrue(hasText("zip4j"))
+                    }
+                    button("OK").click()
                 }
-                step("Check the links") {
-                    assertTrue(hasText("A+ Courses plugin website"))
-                    assertTrue(hasText("A+ Courses plugin GitHub"))
-                    assertTrue(hasText("A+ website"))
-                    assertTrue(hasText("Apache Commons IO"))
-                    assertTrue(hasText("IntelliJ Scala Plugin"))
-                    assertTrue(hasText("json.org"))
-                    assertTrue(hasText("Scala Standard Library"))
-                    assertTrue(hasText("zip4j"))
-                }
-                button("OK").click()
             }
         }
     }
