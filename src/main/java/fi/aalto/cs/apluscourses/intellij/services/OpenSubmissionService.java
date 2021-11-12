@@ -117,7 +117,7 @@ public class OpenSubmissionService extends RestService {
       ApplicationManager.getApplication().invokeLater(
           () -> new SubmissionDownloader().downloadSubmission(project, course, exercise, submissionResult));
     } catch (IOException e) {
-      return "Error while downloading submission";
+      return e.toString();
     }
     return null;
   }
