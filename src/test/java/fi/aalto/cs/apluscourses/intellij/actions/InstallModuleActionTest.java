@@ -59,17 +59,19 @@ public class InstallModuleActionTest {
         "http://localhost:7766",
         Collections.emptyList(),
         modules,
-        //  libraries
+        // libraries
         Collections.emptyList(),
-        //  exerciseModules
+        // exerciseModules
         Collections.emptyMap(),
-        //  resourceUrls
+        // resourceUrls
         Collections.emptyMap(),
-        //  autoInstallComponentNames
+        // vmOptions
+        Collections.emptyMap(),
+        // autoInstallComponentNames
         Collections.emptyList(),
-        //  replInitialCommands
+        // replInitialCommands
         Collections.emptyMap(),
-        //  courseVersion
+        // courseVersion
         BuildInfo.INSTANCE.courseVersion,
         // tutorials
         Collections.emptyMap());

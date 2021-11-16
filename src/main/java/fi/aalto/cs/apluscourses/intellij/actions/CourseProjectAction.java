@@ -363,6 +363,7 @@ public class CourseProjectAction extends AnAction {
   private boolean tryImportIdeSettings(@NotNull Project project, @NotNull Course course) {
     try {
       settingsImporter.importIdeSettings(course);
+      settingsImporter.importVMOptions(course);
       logger.info("Imported IDE settings");
       return true;
     } catch (IOException e) {

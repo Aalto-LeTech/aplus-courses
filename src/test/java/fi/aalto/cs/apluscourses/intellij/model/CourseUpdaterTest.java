@@ -61,7 +61,7 @@ public class CourseUpdaterTest {
     notifier = mock(Notifier.class);
     var course = new ModelExtensions.TestCourse(
         "1", "O1", "http://example.com", Collections.emptyList(), Collections.singletonList(module),
-        Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap(),
+        Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap(),
         Collections.emptyList(), Collections.emptyMap(), BuildInfo.INSTANCE.courseVersion,
         Collections.emptyMap()
     );

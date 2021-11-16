@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.intellij.model;
 
+import com.intellij.diagnostic.VMOptions;
 import com.intellij.ide.startup.StartupActionScriptManager;
 import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.project.Project;
@@ -65,6 +66,24 @@ public class SettingsImporter {
     UpdateSettings.getInstance().forceCheckForUpdateAfterRestart();
 
     PluginSettings.getInstance().setImportedIdeSettingsId(course.getId());
+  }
+
+  /**
+   * Imports the VM options from the course configuration file into the IDE. If there are no
+   * options to import, this function does nothing.
+   */
+  @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
+  public void importVMOptions(@NotNull Course course) {
+    if (!VMOptions.canWriteOptions()) {
+      return;
+    }
+
+    var options = course.getVMOptions();
+    for (var option : options.entrySet()) {
+      VMOptions.writeOption(option.getKey(), "=", option.getValue());
+    }
+
+    logger.info("Imported " + options.size() + " VM options");
   }
 
   /**

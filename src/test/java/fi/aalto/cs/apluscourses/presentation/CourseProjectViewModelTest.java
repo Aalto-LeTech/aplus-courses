@@ -22,19 +22,21 @@ public class CourseProjectViewModelTest {
       "NiceCourse",
       "http://localhost:9999",
       Collections.singletonList("de"),
-      //  modules
+      // modules
       Collections.emptyList(),
-      //  libraries
+      // libraries
       Collections.emptyList(),
-      //  exerciseModules
+      // exerciseModules
       Collections.emptyMap(),
-      //  resourceUrls
+      // resourceUrls
       Collections.emptyMap(),
-      //  autoInstallComponentNames
+      // vmOptions
+      Collections.emptyMap(),
+      // autoInstallComponentNames
       Collections.emptyList(),
-      //  replInitialCommands
+      // replInitialCommands
       Collections.emptyMap(),
-      //  courseVersion
+      // courseVersion
       BuildInfo.INSTANCE.courseVersion,
       // tutorials
       Collections.emptyMap()
