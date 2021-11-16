@@ -52,7 +52,7 @@ published version.
 
 - If you don't have a ZIP file yet, you can generate it. To get the source code, execute
 
-      git clone https://github.com/Aalto-LeTech/intellij-plugin.git
+      git clone https://github.com/Aalto-LeTech/aplus-courses.git
 
   and navigate to the cloned directory. Checkout the branch/tag/commit you want to test, and execute
 

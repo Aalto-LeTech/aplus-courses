@@ -22,7 +22,7 @@ public class AboutDialog {
 
   private static final String A_COURSES_PLUGIN_PAGE = "https://plugins.jetbrains.com/plugin/13634-a-courses";
   private static final String A_PLUS_PAGE = "https://plus.cs.aalto.fi/";
-  private static final String GITHUB_PAGE = "https://github.com/Aalto-LeTech/intellij-plugin";
+  private static final String GITHUB_PAGE = "https://github.com/Aalto-LeTech/aplus-courses";
 
   private AboutDialog() {
 
