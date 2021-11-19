@@ -4,7 +4,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAwareAction;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
-import fi.aalto.cs.apluscourses.model.News;
 import org.jetbrains.annotations.NotNull;
 
 public class ReadAllNewsAction extends DumbAwareAction {
@@ -33,7 +32,7 @@ public class ReadAllNewsAction extends DumbAwareAction {
     if (newsViewModel == null) {
       return;
     }
-    newsViewModel.getModel().getNews().forEach(News::setRead);
+    newsViewModel.getModel().setAllRead();
     mainViewModel.newsTreeViewModel.valueChanged();
   }
 

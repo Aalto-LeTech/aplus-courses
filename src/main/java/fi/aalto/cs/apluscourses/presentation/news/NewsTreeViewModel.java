@@ -23,7 +23,7 @@ public class NewsTreeViewModel extends BaseTreeViewModel<NewsTree> {
 
   @NotNull
   public String getTitle() {
-    var unread = getModel().getNews().stream().filter(news -> !news.isRead()).count();
+    var unread = getModel().unreadCount();
     return getText("ui.toolWindow.subTab.news.name") + ((unread > 0) ? " [" + unread + " unread]" : "");
   }
 }

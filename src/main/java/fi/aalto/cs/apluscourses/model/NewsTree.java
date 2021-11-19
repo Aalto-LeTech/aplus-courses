@@ -21,4 +21,12 @@ public class NewsTree {
     return news;
   }
 
+  public void setAllRead() {
+    news.forEach(News::setRead);
+  }
+
+  public long unreadCount() {
+    return news.stream().filter(n -> !n.isRead()).count();
+  }
+
 }

@@ -103,8 +103,9 @@ public class News implements Browsable {
   }
 
   public boolean isRead() {
-    return readNews.getReadNews() != null
-        && Arrays.stream(readNews.getReadNews().split(";")).anyMatch(idS -> Long.parseLong(idS) == this.id);
+    var readNewsString = this.readNews.getReadNews();
+    return readNewsString != null
+        && Arrays.stream(readNewsString.split(";")).anyMatch(idS -> Long.parseLong(idS) == this.id);
   }
 
   public void setRead() {
