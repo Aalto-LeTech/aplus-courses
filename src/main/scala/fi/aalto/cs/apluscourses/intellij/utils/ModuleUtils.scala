@@ -72,7 +72,7 @@ object ModuleUtils {
     val editorDownShortCut = getPrettyKeyMapString("EditorDown")
 
     val commonText = getAndReplaceText("ui.repl.console.welcome.commonText",
-      executeConsoleShortCut, editorUpShortCut, editorDownShortCut, reRunShortCut)
+      executeConsoleShortCut, editorUpShortCut, editorDownShortCut, reRunShortCut) + "\n"
 
     if (isTopLevelModule(module)) {
       getAndReplaceText("ui.repl.console.welcome.noModuleText",

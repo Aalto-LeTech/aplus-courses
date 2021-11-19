@@ -69,4 +69,6 @@ public final class PluginIcons {
       .getIcon("/META-INF/icons/info.svg", PluginIcons.class);
   public static final Icon A_PLUS_DUMMY = IconLoader
       .getIcon("/META-INF/icons/dummy.svg", PluginIcons.class);
+  public static final Icon A_PLUS_CHECKED = IconLoader
+      .getIcon("/META-INF/icons/checked.svg", PluginIcons.class);
 }

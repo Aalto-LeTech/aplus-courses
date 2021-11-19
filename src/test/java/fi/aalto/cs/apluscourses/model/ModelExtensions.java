@@ -104,6 +104,12 @@ public class ModelExtensions {
     }
 
     @Override
+    public @NotNull List<News> getNews(@NotNull Course course, @NotNull Authentication authentication,
+                                       @NotNull String language) {
+      return Collections.emptyList();
+    }
+
+    @Override
     public String submit(@NotNull Submission submission, @NotNull Authentication authentication) {
       // do nothing
       return "";

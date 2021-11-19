@@ -6,6 +6,7 @@ import fi.aalto.cs.apluscourses.presentation.exercise.EmptyExercisesTreeViewMode
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import fi.aalto.cs.apluscourses.presentation.ideactivities.TutorialViewModel;
+import fi.aalto.cs.apluscourses.presentation.news.NewsTreeViewModel;
 import fi.aalto.cs.apluscourses.utils.Event;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
@@ -30,6 +31,10 @@ public class MainViewModel {
   @NotNull
   public final ObservableProperty<ExercisesTreeViewModel> exercisesViewModel =
       new ObservableReadWriteProperty<>(new EmptyExercisesTreeViewModel());
+
+  @NotNull
+  public final ObservableProperty<NewsTreeViewModel> newsTreeViewModel =
+          new ObservableReadWriteProperty<>(null);
 
   @NotNull
   public final ProgressViewModel progressViewModel = new ProgressViewModel();
@@ -60,6 +65,18 @@ public class MainViewModel {
     exercisesViewModel.set(
         ExercisesTreeViewModel.createExerciseTreeViewModel(courseProject.getExerciseTree(), exerciseFilterOptions,
             courseProject));
+  }
+
+  /**
+   * Creates a new {@link NewsTreeViewModel} from the NewsTree from the {@link CourseProject},
+   * which is then set to {@link MainViewModel#newsTreeViewModel}.
+   */
+  public void updateNewsViewModel(@NotNull CourseProject courseProject) {
+    if (courseProject.getNewsTree() == null) {
+      newsTreeViewModel.set(null);
+    } else {
+      newsTreeViewModel.set(new NewsTreeViewModel(courseProject.getNewsTree(), this));
+    }
   }
 
   public void dispose() {

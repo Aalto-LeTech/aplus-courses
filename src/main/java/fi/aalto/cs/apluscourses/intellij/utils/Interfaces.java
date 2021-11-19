@@ -42,6 +42,12 @@ public class Interfaces {
     void refreshPath(VirtualFile file, Runnable callback);
   }
 
+  public interface ReadNews {
+    void setNewsRead(long id);
+
+    String getReadNews();
+  }
+
   @FunctionalInterface
   public interface FileBrowser {
     void navigateTo(File file, Project project);
@@ -115,6 +121,18 @@ public class Interfaces {
     @Override
     public void setExpanded(@NotNull String title) {
       PluginSettings.getInstance().setExpanded(title);
+    }
+  }
+
+  public static class ReadNewsImpl implements ReadNews {
+    @Override
+    public void setNewsRead(long id) {
+      PluginSettings.getInstance().setNewsRead(id);
+    }
+
+    @Override
+    public String getReadNews() {
+      return PluginSettings.getInstance().getReadNews();
     }
   }
 }

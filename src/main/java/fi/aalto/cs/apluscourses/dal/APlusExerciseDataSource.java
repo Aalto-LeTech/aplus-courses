@@ -9,6 +9,7 @@ import fi.aalto.cs.apluscourses.model.ExerciseDataSource;
 import fi.aalto.cs.apluscourses.model.ExerciseGroup;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.InvalidAuthenticationException;
+import fi.aalto.cs.apluscourses.model.News;
 import fi.aalto.cs.apluscourses.model.Points;
 import fi.aalto.cs.apluscourses.model.Student;
 import fi.aalto.cs.apluscourses.model.Submission;
@@ -51,6 +52,7 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   private static final String STUDENTS = "students";
   public static final String RESULTS = "results";
   public static final String ME = "me";
+  private static final String NEWS = "news";
 
   @NotNull
   private final Client client;
@@ -216,6 +218,16 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
     String url = apiUrl + COURSES + "/" + course.getId() + "/";
     JSONObject response = client.fetch(url, authentication);
     return parser.parseEndingTime(response);
+  }
+
+  @Override
+  @NotNull
+  public List<News> getNews(@NotNull Course course,
+                            @NotNull Authentication authentication,
+                            @NotNull String language) throws IOException {
+    String url = apiUrl + COURSES + "/" + course.getId() + "/" + NEWS + "/";
+    return getPaginatedResults(url, authentication, CachePreferences.GET_NEW_AND_FORGET,
+        jsonObject -> News.fromJsonObject(jsonObject, course, language));
   }
 
   /**
