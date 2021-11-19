@@ -31,6 +31,7 @@
                     icon="PluginIcons.A_PLUS_LOGO"/>
 
         <errorHandler implementation="fi.aalto.cs.apluscourses.intellij.utils.ErrorHandler"/>
+        <httpRequestHandler implementation="fi.aalto.cs.apluscourses.intellij.services.OpenSubmissionService"/>
     </extensions>
 
     <actions>

@@ -69,7 +69,7 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
       return Status.IN_GRADING;
     } else if (exercise instanceof TutorialExercise) {
       return Status.TUTORIAL;
-    } else if (exercise.getMaxSubmissions() == 0 && exercise.getMaxPoints() == 0) {
+    } else if (exercise.isOptional()) {
       return Status.OPTIONAL_PRACTICE;
     } else if (exercise.getSubmissionResults().isEmpty()) {
       return Status.NO_SUBMISSIONS;

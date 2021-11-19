@@ -58,6 +58,9 @@ public abstract class Course implements ComponentSource {
   private final Map<String, URL> resourceUrls;
 
   @NotNull
+  private final Map<String, String> vmOptions;
+
+  @NotNull
   private final List<String> autoInstallComponentNames;
 
   @NotNull
@@ -90,6 +93,7 @@ public abstract class Course implements ComponentSource {
                    @NotNull List<Library> libraries,
                    @NotNull Map<Long, Map<String, String>> exerciseModules,
                    @NotNull Map<String, URL> resourceUrls,
+                   @NotNull Map<String, String> vmOptions,
                    @NotNull List<String> autoInstallComponentNames,
                    @NotNull Map<String, String[]> replInitialCommands,
                    @NotNull Version courseVersion,
@@ -100,6 +104,7 @@ public abstract class Course implements ComponentSource {
     this.languages = languages;
     this.modules = modules;
     this.resourceUrls = resourceUrls;
+    this.vmOptions = vmOptions;
     this.libraries = libraries;
     this.exerciseModules = exerciseModules;
     this.autoInstallComponentNames = autoInstallComponentNames;
@@ -155,6 +160,7 @@ public abstract class Course implements ComponentSource {
     Map<Long, Map<String, String>> exerciseModules
         = getCourseExerciseModules(jsonObject, sourcePath);
     Map<String, URL> resourceUrls = getCourseResourceUrls(jsonObject, sourcePath);
+    Map<String, String> vmOptions = getInitVMOptions(jsonObject, sourcePath);
     List<String> autoInstallComponentNames
         = getCourseAutoInstallComponentNames(jsonObject, sourcePath);
     Map<String, String[]> replInitialCommands
@@ -170,6 +176,7 @@ public abstract class Course implements ComponentSource {
         Collections.emptyList(), // libraries
         exerciseModules,
         resourceUrls,
+        vmOptions,
         autoInstallComponentNames,
         replInitialCommands,
         courseVersion,
@@ -312,6 +319,12 @@ public abstract class Course implements ComponentSource {
     }
 
     return ideSettingsUrl;
+  }
+
+  @NotNull
+  @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
+  public Map<String, String> getVMOptions() {
+    return vmOptions;
   }
 
   @NotNull
@@ -458,6 +471,29 @@ public abstract class Course implements ComponentSource {
       }
     }
     return resourceUrls;
+  }
+
+  @NotNull
+  @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
+  private static Map<String, String> getInitVMOptions(@NotNull JSONObject jsonObject, @NotNull String source)
+      throws MalformedCourseConfigurationException {
+    Map<String, String> vmOptions = new HashMap<>();
+    JSONObject vmOptionsJsonObject = jsonObject.optJSONObject("vmOptions");
+    if (vmOptionsJsonObject == null) {
+      return vmOptions;
+    }
+
+    Iterable<String> keys = vmOptionsJsonObject::keys;
+    for (var optionKey : keys) {
+      try {
+        vmOptions.put(optionKey, vmOptionsJsonObject.getString(optionKey));
+      } catch (JSONException ex) {
+        throw new MalformedCourseConfigurationException(source,
+            "Expected string-typed key-value pairs in \"vmOptions\" object", ex);
+      }
+    }
+
+    return vmOptions;
   }
 
   @NotNull
