@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.presentation;
 
 import fi.aalto.cs.apluscourses.intellij.model.CourseProject;
+import fi.aalto.cs.apluscourses.model.User;
 import fi.aalto.cs.apluscourses.presentation.exercise.EmptyExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
@@ -18,6 +19,9 @@ public class MainViewModel {
   public static final Logger logger = LoggerFactory.getLogger(MainViewModel.class);
 
   public final Event disposing = new Event();
+
+  @NotNull
+  public final ToolWindowCardViewModel toolWindowCardViewModel = new ToolWindowCardViewModel();
 
   @NotNull
   public final ObservableProperty<CourseViewModel> courseViewModel =
@@ -53,10 +57,9 @@ public class MainViewModel {
    * to {@link MainViewModel#exercisesViewModel}.
    */
   public void updateExercisesViewModel(@NotNull CourseProject courseProject) {
-    var viewModel = new ExercisesTreeViewModel(courseProject.getExerciseTree(), exerciseFilterOptions, courseProject);
-    viewModel.setAuthenticated(courseProject.getAuthentication() != null);
-    viewModel.setProjectReady(exercisesViewModel.get().isProjectReady());
-    exercisesViewModel.set(viewModel);
+    exercisesViewModel.set(
+        ExercisesTreeViewModel.createExerciseTreeViewModel(courseProject.getExerciseTree(), exerciseFilterOptions,
+            courseProject));
   }
 
   public void dispose() {
@@ -75,17 +78,20 @@ public class MainViewModel {
 
   /**
    * Calling this method informs the main view model that the corresponding project has been
-   * initialized (by InitializationActivity). If needed, this method notifies the listeners of
-   * exercisesViewModel.
+   * initialized (by InitializationActivity).
    */
   public void setProjectReady(boolean isReady) {
-    var viewModel = exercisesViewModel.get();
-    if (viewModel == null) {
-      return;
-    }
-    var changed = viewModel.setProjectReady(isReady);
-    if (changed) {
-      exercisesViewModel.valueChanged();
-    }
+    toolWindowCardViewModel.setProjectReady(isReady);
+  }
+
+  /**
+   * Sets the ToolWindowCardCViewModel authenticated.
+   */
+  public void setAuthenticated(boolean authenticated) {
+    toolWindowCardViewModel.setAuthenticated(authenticated);
+  }
+
+  public void userChanged(@Nullable User user) {
+    setAuthenticated(user != null);
   }
 }

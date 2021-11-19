@@ -127,9 +127,9 @@ public class CourseProject implements ExercisesLazyLoader {
       return;
     }
     Optional.ofNullable(passwordStorage)
-        .map(PasswordStorage::restorePassword)
-        .map(factory::create)
-        .ifPresent(this::setAuthentication);
+            .map(PasswordStorage::restorePassword)
+            .map(factory::create)
+            .ifPresent(this::setAuthentication);
   }
 
   /**

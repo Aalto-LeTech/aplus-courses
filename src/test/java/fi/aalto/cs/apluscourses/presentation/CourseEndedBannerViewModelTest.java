@@ -18,11 +18,11 @@ public class CourseEndedBannerViewModelTest {
     var course = new ModelExtensions.TestCourse("a");
     var notifier = mock(Notifier.class);
     var courseProject = new CourseProject(course,
-        RepeatedTask.create(() -> {
-        }),
-        RepeatedTask.create(() -> {
-        }),
-        mock(Project.class), notifier);
+            RepeatedTask.create(() -> {
+            }),
+            RepeatedTask.create(() -> {
+            }),
+            mock(Project.class), notifier);
     var authentication = mock(Authentication.class);
     courseProject.setAuthentication(authentication);
 

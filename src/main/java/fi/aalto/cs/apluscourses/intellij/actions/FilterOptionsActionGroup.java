@@ -75,8 +75,7 @@ public class FilterOptionsActionGroup extends DefaultActionGroup implements Dumb
     Project project = e.getProject();
     var exercisesTreeViewModel =
         mainViewModelProvider.getMainViewModel(project).exercisesViewModel.get();
-    e.getPresentation().setEnabled(exercisesTreeViewModel != null
-        && exercisesTreeViewModel.isAuthenticated());
+    e.getPresentation().setEnabled(exercisesTreeViewModel != null);
     boolean filterActive =
         Arrays.stream(this.filterOptionActions).anyMatch(action -> !action.isSelected(e));
     Toggleable.setSelected(e.getPresentation(), filterActive);

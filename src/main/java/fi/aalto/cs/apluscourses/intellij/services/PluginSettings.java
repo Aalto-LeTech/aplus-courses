@@ -178,7 +178,8 @@ public class PluginSettings implements MainViewModelProvider, DefaultGroupIdSett
       // instructed to turn the project into a course project for an example when the token is
       // missing.
       var exercisesViewModel = new ExercisesTreeViewModel(new ExercisesTree(), new Options());
-      exercisesViewModel.setAuthenticated(courseProject.getAuthentication() != null);
+      mainViewModel.toolWindowCardViewModel.setAPlusProject(true);
+      courseProject.user.addValueObserver(mainViewModel, MainViewModel::userChanged);
       mainViewModel.exercisesViewModel.set(exercisesViewModel);
       courseProject.courseUpdated.addListener(
           mainViewModel.courseViewModel, ObservableProperty::valueChanged);
