@@ -27,6 +27,7 @@ repositories {
 }
 
 dependencies {
+    implementation 'org.jsoup:jsoup:1.14.3'
     compile group: 'commons-io', name: 'commons-io', version: '2.8.0'
     compile group: 'net.lingala.zip4j', name: 'zip4j', version: '2.7.0'
     compileOnly group: 'org.scala-lang', name: 'scala-library', version: '2.13.4'
@@ -44,14 +45,10 @@ dependencies {
 
 intellij {
     //  this is the version of the IntelliJ IDEA API (SDK) used to build the plugin
-    version '212.4746'
+    version = '212.4746.92'
     updateSinceUntilBuild = false
-    plugins = ['java', 'org.intellij.scala:2021.2.15']
+    plugins = ['java', 'org.intellij.scala:2021.2.22']
     downloadRobotServerPlugin.version = remoteRobotVersion
-}
-
-patchPluginXml {
-    version.set(pluginVersion)
 }
 
 sourceSets {

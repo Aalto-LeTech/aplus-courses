@@ -82,13 +82,14 @@ public class ExportModuleAction extends AnAction {
     Module[] availableModules = moduleSource.getModules(project);
 
     ModuleSelectionViewModel moduleSelectionViewModel = new ModuleSelectionViewModel(
-        availableModules, getText("ui.exportModule.selectModule"));
+        availableModules, getText("ui.exportModule.selectModule"), project);
     if (!dialogs.create(moduleSelectionViewModel, project).showAndGet()) {
       return;
     }
 
     Module selectedModule = moduleSelectionViewModel.selectedModule.get();
-    if (selectedModule == null) {
+    VirtualFile moduleDirectory = moduleSelectionViewModel.selectedModuleFile.get();
+    if (selectedModule == null || moduleDirectory == null) {
       return; // Should never happen though
     }
 
@@ -105,7 +106,7 @@ public class ExportModuleAction extends AnAction {
 
     try {
       zipper.zipDirectory(
-          fileViewModel.getPath(), selectedModule.getModuleFile().getParent().toNioPath()
+          fileViewModel.getPath(), moduleDirectory.toNioPath()
       );
     } catch (IOException ex) {
       notifier.notify(new IoErrorNotification(ex), project);

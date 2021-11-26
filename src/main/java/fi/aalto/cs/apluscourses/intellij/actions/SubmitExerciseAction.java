@@ -13,6 +13,7 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtilRt;
+import com.intellij.openapi.vfs.VirtualFile;
 import fi.aalto.cs.apluscourses.intellij.model.CourseProject;
 import fi.aalto.cs.apluscourses.intellij.model.ProjectModuleSource;
 import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
@@ -231,6 +232,7 @@ public class SubmitExerciseAction extends AnAction {
         .map(self -> self.get(language));
 
     Module selectedModule;
+    VirtualFile moduleDir = null;
     if (moduleName.isPresent()) {
       selectedModule = moduleName
           .map(self -> moduleSource.getModule(project, self))
@@ -239,11 +241,12 @@ public class SubmitExerciseAction extends AnAction {
       Module[] modules = moduleSource.getModules(project);
 
       ModuleSelectionViewModel moduleSelectionViewModel = new ModuleSelectionViewModel(
-          modules, getText("ui.toolWindow.subTab.exercises.submission.selectModule"));
+          modules, getText("ui.toolWindow.subTab.exercises.submission.selectModule"), project);
       if (!dialogs.create(moduleSelectionViewModel, project).showAndGet()) {
         return;
       }
       selectedModule = moduleSelectionViewModel.selectedModule.get();
+      moduleDir = moduleSelectionViewModel.selectedModuleFile.get();
     }
 
     logger.info("Selected {}", selectedModule);
@@ -254,7 +257,8 @@ public class SubmitExerciseAction extends AnAction {
 
     documentSaver.saveAllDocuments();
 
-    Path modulePath = Paths.get(ModuleUtilCore.getModuleDirPath(selectedModule));
+    Path modulePath =
+        moduleDir == null ? Paths.get(ModuleUtilCore.getModuleDirPath(selectedModule)) : Paths.get(moduleDir.getPath());
     Map<String, Path> files = new HashMap<>();
     for (SubmittableFile file : submissionInfo.getFiles(language)) {
       files.put(file.getKey(), fileFinder.findFile(modulePath, file.getName()));
