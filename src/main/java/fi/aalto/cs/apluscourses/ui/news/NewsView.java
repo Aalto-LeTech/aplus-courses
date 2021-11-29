@@ -6,8 +6,6 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.ScrollPaneFactory;
-import fi.aalto.cs.apluscourses.intellij.actions.ActionUtil;
-import fi.aalto.cs.apluscourses.intellij.actions.OpenItemAction;
 import fi.aalto.cs.apluscourses.presentation.news.NewsTreeViewModel;
 import fi.aalto.cs.apluscourses.ui.GuiObject;
 import fi.aalto.cs.apluscourses.ui.ToolbarPanel;
@@ -89,8 +87,8 @@ public class NewsView implements ToolbarPanel {
     title = new JLabel();
     newsTree = new TreeView();
     newsTree.setCellRenderer(new NewsTreeRenderer());
-    newsTree.addNodeAppliedListener(
-        ActionUtil.createOnEventLauncher(OpenItemAction.ACTION_ID, newsTree));
+//    newsTree.addNodeAppliedListener(
+//        ActionUtil.createOnEventLauncher(OpenItemAction.ACTION_ID, newsTree));
   }
 
   public TreeView getNewsTree() {
