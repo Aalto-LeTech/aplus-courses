@@ -87,8 +87,6 @@ public class NewsView implements ToolbarPanel {
     title = new JLabel();
     newsTree = new TreeView();
     newsTree.setCellRenderer(new NewsTreeRenderer());
-//    newsTree.addNodeAppliedListener(
-//        ActionUtil.createOnEventLauncher(OpenItemAction.ACTION_ID, newsTree));
   }
 
   public TreeView getNewsTree() {
