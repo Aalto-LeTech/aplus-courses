@@ -102,6 +102,9 @@ public class News implements Browsable {
         publish.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)));
   }
 
+  /**
+   * Returns true if the news is read.
+   */
   public boolean isRead() {
     var readNewsString = this.readNews.getReadNews();
     return readNewsString != null
