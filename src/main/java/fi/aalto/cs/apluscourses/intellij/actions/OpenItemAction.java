@@ -16,9 +16,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class OpenItemAction<T> extends DumbAwareAction {
-
-  public static final String ACTION_ID = OpenItemAction.class.getCanonicalName();
-
   @NotNull
   protected final MainViewModelProvider mainViewModelProvider;
 
@@ -45,9 +42,9 @@ public class OpenItemAction<T> extends DumbAwareAction {
    */
   protected OpenItemAction() {
     this(
-            PluginSettings.getInstance(),
-            new UrlRenderer(),
-            new DefaultNotifier()
+        PluginSettings.getInstance(),
+        new UrlRenderer(),
+        new DefaultNotifier()
     );
   }
 
