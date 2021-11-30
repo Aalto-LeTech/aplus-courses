@@ -15,7 +15,7 @@
     ]]></description>
 
     <change-notes>
-        Updates to the upcoming tutorials and minor bugfixes.
+        Fix to a bug in Export Module.
     </change-notes>
 
     <depends>com.intellij.modules.java</depends>
