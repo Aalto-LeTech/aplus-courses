@@ -2,16 +2,21 @@ package fi.aalto.cs.apluscourses.ui.exercise;
 
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
+import com.intellij.openapi.fileChooser.FileChooser;
+import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.ui.FieldPanel;
 import fi.aalto.cs.apluscourses.presentation.ModuleSelectionViewModel;
 import fi.aalto.cs.apluscourses.ui.Dialog;
 import fi.aalto.cs.apluscourses.ui.GuiObject;
 import fi.aalto.cs.apluscourses.ui.IconListCellRenderer;
 import fi.aalto.cs.apluscourses.ui.base.OurComboBox;
 import icons.PluginIcons;
+import java.util.Optional;
 import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -27,6 +32,8 @@ public class ModuleSelectionDialog extends DialogWrapper
   private OurComboBox<Module> modulesComboBox;
   @GuiObject
   private JLabel infoLabel;
+  @GuiObject
+  private JPanel fileChooser;
 
   /**
    * Construct a module selection dialog with the given view model.
@@ -69,5 +76,16 @@ public class ModuleSelectionDialog extends DialogWrapper
     modulesComboBox.setRenderer(new IconListCellRenderer<>(viewModel.getPrompt(),
         Module::getName, PluginIcons.A_PLUS_MODULE));
     modulesComboBox.selectedItemBindable.bindToSource(viewModel.selectedModule);
+    fileChooser = new FieldPanel(getText("ui.moduleSelectionDialog.path"), null, event -> browse(), null);
+    viewModel.selectedModuleFile.addValueObserver(this,
+        (self, file) -> ((FieldPanel) fileChooser).setText(Optional.ofNullable(file).map(
+            VirtualFile::getPath).orElse("")));
+    ((FieldPanel) fileChooser).setEditable(false);
+  }
+
+  private void browse() {
+    var descriptor = FileChooserDescriptorFactory.createSingleLocalFileDescriptor();
+    FileChooser.chooseFile(descriptor, viewModel.getProject(), basePanel, viewModel.selectedModuleFile.get(),
+        viewModel.selectedModuleFile::set);
   }
 }

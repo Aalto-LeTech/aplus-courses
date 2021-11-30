@@ -23,6 +23,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtilRt;
+import com.intellij.openapi.vfs.VirtualFile;
 import fi.aalto.cs.apluscourses.intellij.DialogHelper;
 import fi.aalto.cs.apluscourses.intellij.model.ProjectModuleSource;
 import fi.aalto.cs.apluscourses.intellij.notifications.ExerciseNotSelectedNotification;
@@ -217,8 +218,12 @@ public class SubmitExerciseActionTest {
 
     defaultGroupIdSetting = new TestDefaultGroupIdSetting();
 
+    VirtualFile moduleDir = mock(VirtualFile.class);
+    doReturn(filePath.getParent().toString()).when(moduleDir).getPath();
+    Interfaces.ModuleDirGuesser moduleDirGuesser = m -> moduleDir;
+
     action = new SubmitExerciseAction(mainVmProvider, authProvider, fileFinder, moduleSource,
-        dialogs, notifier, tagger, documentSaver, languageSource, defaultGroupIdSetting);
+        dialogs, notifier, tagger, documentSaver, languageSource, defaultGroupIdSetting, moduleDirGuesser);
   }
 
   @Test

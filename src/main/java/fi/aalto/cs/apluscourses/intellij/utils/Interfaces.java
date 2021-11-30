@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.intellij.utils;
 
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
+import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -12,6 +13,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class Interfaces {
+  @FunctionalInterface
+  public interface ModuleDirGuesser {
+    @Nullable
+    VirtualFile guessModuleDir(@NotNull Module module);
+  }
+
   @FunctionalInterface
   public interface AuthenticationProvider {
     Authentication getAuthentication(@Nullable Project project);
