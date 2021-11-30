@@ -28,17 +28,17 @@ public class NewObjectAssignmentListener extends ScalaElementListener {
     super(callback, project, filePath);
     this.newObjectAssignment = new NewObjectAssignment(variableName, variableType, className, argsList);
   }
-  
+
   /**
    * Factory method.
    */
   public static NewObjectAssignmentListener create(ListenerCallback callback,
                                                    Project project, Arguments arguments) {
     return new NewObjectAssignmentListener(callback, project, arguments.getString("filePath"),
-            arguments.getString("variableName"),
-            arguments.getString("variableType"),
-            arguments.getString("className"),
-            arguments.getArray("argsList"));
+        arguments.getString("variableName"),
+        arguments.getString("variableType"),
+        arguments.getString("className"),
+        arguments.getArray("argsList"));
   }
 
   @Override

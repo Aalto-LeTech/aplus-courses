@@ -7,6 +7,7 @@ import fi.aalto.cs.apluscourses.presentation.base.Searchable;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
 import fi.aalto.cs.apluscourses.utils.CollectionUtil;
+import java.util.Collections;
 import org.jetbrains.annotations.NotNull;
 
 public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> implements Searchable {
@@ -17,6 +18,7 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
   public ExerciseViewModel(@NotNull Exercise exercise) {
     super(exercise, CollectionUtil.mapWithIndex(
         exercise.getSubmissionResults(), SubmissionResultViewModel::new, 1));
+    Collections.reverse(getChildren());
   }
 
   public String getPresentableName() {
@@ -63,11 +65,11 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
     Exercise exercise = getModel();
     if (exercise.isDummy()) {
       return Status.DUMMY;
-    } else if (exercise instanceof TutorialExercise) {
-      return Status.TUTORIAL;
     } else if (exercise.isInGrading()) {
       return Status.IN_GRADING;
-    } else if (exercise.getMaxSubmissions() == 0 && exercise.getMaxPoints() == 0) {
+    } else if (exercise instanceof TutorialExercise) {
+      return Status.TUTORIAL;
+    } else if (exercise.isOptional()) {
       return Status.OPTIONAL_PRACTICE;
     } else if (exercise.getSubmissionResults().isEmpty()) {
       return Status.NO_SUBMISSIONS;

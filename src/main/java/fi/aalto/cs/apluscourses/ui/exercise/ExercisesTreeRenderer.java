@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.ui.exercise;
 
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+import static fi.aalto.cs.apluscourses.utils.TreeRendererUtil.isIrrelevantNode;
 
 import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
@@ -12,7 +13,6 @@ import fi.aalto.cs.apluscourses.ui.base.TreeView;
 import icons.PluginIcons;
 import javax.swing.Icon;
 import javax.swing.JTree;
-import javax.swing.tree.DefaultMutableTreeNode;
 import org.jetbrains.annotations.NotNull;
 
 public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
@@ -90,19 +90,5 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
       append(" [" + resultViewModel.getStatusText() + "]", STATUS_TEXT_STYLE, false);
       setToolTipText(getText("ui.exercise.ExercisesTreeRenderer.doubleClickToOpenBrowser"));
     }
-  }
-
-  /**
-   * Sometimes {@code customizeCellRenderer} is called with a value
-   * that is just some placeholder object for tree root.
-   * This method recognizes such cases.
-   *
-   * @param value A parameter passed to {@code customizeCellRenderer}
-   * @return True, if node is irrelevant and should be ignored, otherwise false.
-   */
-  private boolean isIrrelevantNode(Object value) {
-    // That irrelevant root has no parent
-    return value instanceof DefaultMutableTreeNode
-        && ((DefaultMutableTreeNode) value).getParent() == null;
   }
 }

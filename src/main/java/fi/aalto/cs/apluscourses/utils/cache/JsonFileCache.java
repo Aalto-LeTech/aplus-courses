@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
 public class JsonFileCache extends FileCache<String, JSONObject> {
-  
+
   public JsonFileCache(@NotNull Path filePath) {
     super(filePath);
   }

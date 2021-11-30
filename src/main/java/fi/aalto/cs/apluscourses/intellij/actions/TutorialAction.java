@@ -1,11 +1,13 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
+import static com.intellij.openapi.actionSystem.ex.ActionUtil.isDumbMode;
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.model.task.IntelliJActivityFactory;
 import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
@@ -30,7 +32,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 
-public class TutorialAction extends AnAction {
+public class TutorialAction extends AnAction implements DumbAware {
   private final @NotNull MainViewModelProvider mainViewModelProvider;
   private final @NotNull TutorialAuthenticationProvider authenticationProvider;
   private final @NotNull Notifier notifier;
@@ -73,7 +75,8 @@ public class TutorialAction extends AnAction {
     ExercisesTreeViewModel exercisesViewModel = mainViewModel.exercisesViewModel.get();
     Authentication authentication = authenticationProvider.getAuthentication(project);
 
-    if (courseViewModel == null || exercisesViewModel == null || authentication == null) {
+    if (courseViewModel == null || exercisesViewModel == null || authentication == null
+        || isDumbMode(project)) {
       return;
     }
 
@@ -118,6 +121,13 @@ public class TutorialAction extends AnAction {
             && ExerciseViewModel.Status.TUTORIAL.equals(selection.getExercise().getStatus());
 
     e.getPresentation().setVisible(e.getProject() != null && isTutorialSelected);
+
+    if (isDumbMode(e.getProject())) {
+      e.getPresentation().setText(getText("intellij.action.TutorialAction.waitForIndexing"));
+      e.getPresentation().setEnabled(false);
+    } else {
+      e.getPresentation().setText(getText("intellij.action.TutorialAction.startTutorial"));
+    }
   }
 
   @FunctionalInterface
@@ -137,10 +147,16 @@ public class TutorialAction extends AnAction {
 
     @Override
     public boolean confirmCancel(@NotNull TutorialViewModel tutorialViewModel) {
-      return JOptionPane.showConfirmDialog(null,
+      Object[] options = {getText("ui.tutorial.TutorialAction.cancelTutorial"),
+          getText("ui.tutorial.TutorialAction.continueTutorial")};
+      return JOptionPane.showOptionDialog(null,
           getText("ui.tutorial.TutorialAction.confirmCancel"),
           tutorialViewModel.getTitle(),
-          JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION;
+          JOptionPane.OK_CANCEL_OPTION,
+          JOptionPane.QUESTION_MESSAGE,
+          null,
+          options,
+          options[0]) == 0;
     }
 
     @Override

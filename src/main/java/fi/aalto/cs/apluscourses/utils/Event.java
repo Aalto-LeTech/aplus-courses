@@ -23,9 +23,9 @@ public class Event {
    *                 methods of this event.
    * @param executor An executor for callback.  If null, callback is executed in the same thread
    *                 where {@code trigger} is called.
-   * @param <T> A type of the listener.  For the best reliability, should be one whose
-   *            {@code equals} function follows the default paradigm, that is, checks the reference
-   *            identity.
+   * @param <T>      A type of the listener.  For the best reliability, should be one whose
+   *                 {@code equals} function follows the default paradigm, that is, checks the reference
+   *                 identity.
    */
   public <T> void addListener(@NotNull T listener,
                               @NotNull Callback<T> callback,

@@ -7,12 +7,14 @@ import org.jetbrains.annotations.NotNull;
 
 public class StringUtil {
 
-  private StringUtil() {}
+  private StringUtil() {
+  }
 
   /**
    * Separates the given text into a String[] by tokenizing with the specified delimeter.
+   *
    * @param phrase The String to be tokenized.
-   * @param delim The delimeter used in the tokenizing.
+   * @param delim  The delimeter used in the tokenizing.
    * @return The String[] containing the tokens.
    */
   public static String[] getArrayOfTokens(String phrase, char delim) {
@@ -21,7 +23,7 @@ public class StringUtil {
     while (tokenizer.hasMoreTokens()) {
       tokens.add(tokenizer.nextToken().trim());
     }
-    return tokens.toArray(new String[]{});
+    return tokens.toArray(new String[] {});
   }
 
   public static String strip(@NotNull String string, char character) {
@@ -31,7 +33,7 @@ public class StringUtil {
   /**
    * Removes occurences of a certain character from the beginning of the string.
    *
-   * @param string A string.
+   * @param string    A string.
    * @param character The character to be removed.
    * @return The given string with the leading characters removed.
    */
@@ -47,7 +49,7 @@ public class StringUtil {
   /**
    * Removes occurences of a certain character from the end of the string.
    *
-   * @param string A string.
+   * @param string    A string.
    * @param character The character to be removed.
    * @return The given string with the trailing characters removed.
    */

@@ -27,7 +27,7 @@ public class NotificationUtil {
     Executors.newSingleThreadExecutor().submit(() -> {
       try {
         Thread.sleep(6000);
-        notification.expire();
+        notification.hideBalloon();
       } catch (InterruptedException e) {
         logger.warn("Notification timeout interrupted", e);
         Thread.currentThread().interrupt();

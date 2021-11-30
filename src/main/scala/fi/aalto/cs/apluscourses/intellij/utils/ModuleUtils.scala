@@ -28,8 +28,8 @@ object ModuleUtils {
   def getModuleOfEditorFile(@NotNull project: Project,
                             @NotNull dataContext: DataContext): Option[Module] =
     Option(CommonDataKeys.EDITOR.getData(dataContext))
-        .flatMap(editor => Option(FileDocumentManager.getInstance.getFile(editor.getDocument)))
-        .flatMap(openFile => Option(ModuleUtilCore.findModuleForFile(openFile, project)))
+      .flatMap(editor => Option(FileDocumentManager.getInstance.getFile(editor.getDocument)))
+      .flatMap(openFile => Option(ModuleUtilCore.findModuleForFile(openFile, project)))
 
   def getModuleOfSelectedFile(@NotNull project: Project,
                               @NotNull dataContext: DataContext): Option[Module] =
@@ -72,7 +72,7 @@ object ModuleUtils {
     val editorDownShortCut = getPrettyKeyMapString("EditorDown")
 
     val commonText = getAndReplaceText("ui.repl.console.welcome.commonText",
-      executeConsoleShortCut, editorUpShortCut, editorDownShortCut, reRunShortCut)
+      executeConsoleShortCut, editorUpShortCut, editorDownShortCut, reRunShortCut) + "\n"
 
     if (isTopLevelModule(module)) {
       getAndReplaceText("ui.repl.console.welcome.noModuleText",

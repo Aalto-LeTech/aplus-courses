@@ -47,7 +47,7 @@ public abstract class IntelliJLibrary
   }
 
   @NotNull
-  protected abstract Content @NotNull[] getContents();
+  protected abstract Content @NotNull [] getContents();
 
   @RequiresWriteLock
   @SuppressWarnings("unchecked")
@@ -160,6 +160,7 @@ public abstract class IntelliJLibrary
 
   /**
    * Helper method that returns all the JAR files in the library path.
+   *
    * @return An array of filenames.
    */
   @NotNull

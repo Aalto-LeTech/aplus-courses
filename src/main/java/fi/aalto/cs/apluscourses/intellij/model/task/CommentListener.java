@@ -4,12 +4,13 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
 import fi.aalto.cs.apluscourses.model.task.Arguments;
 import fi.aalto.cs.apluscourses.model.task.ListenerCallback;
+import java.util.regex.Pattern;
 import org.jetbrains.annotations.NotNull;
 
 public class CommentListener extends CodeListener {
-  
+
   private final String text;
-  
+
   protected CommentListener(ListenerCallback callback,
                             Project project,
                             String filePath,
@@ -20,6 +21,7 @@ public class CommentListener extends CodeListener {
 
   /**
    * A factory method.
+   *
    * @return A new instance of this class.
    */
   public static CodeListener create(ListenerCallback listenerCallback,
@@ -29,9 +31,9 @@ public class CommentListener extends CodeListener {
         arguments.getString("filePath"),
         arguments.getString("text"));
   }
-  
+
   @Override
   protected boolean checkPsiFile(@NotNull PsiFile psiFile) {
-    return psiFile.getText().contains("//" + text);
+    return Pattern.compile("//(\\h)*" + text).matcher(psiFile.getText()).find();
   }
 }

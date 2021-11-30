@@ -16,6 +16,7 @@ public class IoErrorNotification extends Notification {
 
   /**
    * Construct an error notification that tells the user of an IO error.
+   *
    * @param exception The exception corresponding to the IO error.
    */
   public IoErrorNotification(@NotNull IOException exception) {

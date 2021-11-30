@@ -14,15 +14,16 @@ public class ResourceException extends Exception {
   /**
    * Constructs a {@link ResourceException} object representing an error that occurred while
    * trying to read a resource.
+   *
    * @param message A description of what went wrong.
-   * @param cause An {@link Exception} (or other {@link Throwable}) which caused this exception
-   *              or, null if there is no such a cause.
+   * @param cause   An {@link Exception} (or other {@link Throwable}) which caused this exception
+   *                or, null if there is no such a cause.
    */
   public ResourceException(@NotNull String resourceName,
                            @NotNull String message,
                            @Nullable Throwable cause) {
     super("Resource '" + resourceName + "': " + message, cause);
-    
+
     this.resourceName = resourceName;
   }
 

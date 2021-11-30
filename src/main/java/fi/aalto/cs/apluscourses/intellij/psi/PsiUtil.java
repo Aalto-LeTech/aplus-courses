@@ -28,7 +28,7 @@ public class PsiUtil {
   public static boolean psiElementHasErrors(@NotNull PsiElement element) {
     return !SyntaxTraverser.psiTraverser(element).traverse().filter(PsiErrorElement.class).isEmpty();
   }
-  
+
   /**
    * Gets all the siblings of the given PsiElement.
    */
@@ -37,13 +37,13 @@ public class PsiUtil {
 
     PsiElement prevSibling = methodElement.getPrevSibling();
     PsiElement nextSibling = methodElement;
-  
+
     //First make sure to find the leftmost sibling (in order to maintain the order of the elements)
     while (prevSibling != null) {
       nextSibling = prevSibling;
       prevSibling = prevSibling.getPrevSibling();
     }
-  
+
     while (nextSibling != null) {
       if (nextSibling instanceof PsiWhiteSpace) {
         nextSibling = nextSibling.getNextSibling();
@@ -55,10 +55,10 @@ public class PsiUtil {
       }
       nextSibling = nextSibling.getNextSibling();
     }
-  
+
     return elements;
   }
-  
+
   /**
    * Finds the next PsiElement sibling that is not a PsiWhiteSpace.
    */
@@ -74,7 +74,7 @@ public class PsiUtil {
     }
     return null;
   }
-  
+
   /**
    * Finds the next LeafPsiElement sibling that is not a PsiWhiteSpace.
    */

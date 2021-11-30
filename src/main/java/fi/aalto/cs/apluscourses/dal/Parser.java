@@ -28,6 +28,8 @@ public interface Parser {
 
   Points parsePoints(@NotNull JSONObject object);
 
+  Map<Long, List<Long>> parseExerciseOrder(@NotNull JSONObject object);
+
   Exercise parseExercise(@NotNull JSONObject jsonObject,
                          @NotNull Points points,
                          @NotNull Map<Long, Tutorial> tutorials);

@@ -12,7 +12,7 @@ Manual testing
 ### 0 Setup
 
 **0.1** Make sure you are using a clean installation of
-**IntelliJ IDEA Community** version **2021.1**.
+**IntelliJ IDEA Community** version **2021.2**.
 
 - You can download IntelliJ IDEA Community from https://www.jetbrains.com/idea/download.
 - In case you use an existing install of IntelliJ IDEA, you can use one of the following ways to restore to the default

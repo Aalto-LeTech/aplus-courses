@@ -9,6 +9,7 @@ import fi.aalto.cs.apluscourses.intellij.notifications.NewModulesVersionsNotific
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Course;
+import fi.aalto.cs.apluscourses.model.NewsTree;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
 import fi.aalto.cs.apluscourses.utils.Event;
 import fi.aalto.cs.apluscourses.utils.Version;
@@ -36,6 +37,7 @@ public class CourseUpdater extends RepeatedTask {
     InputStream fetch(URL configurationUrl) throws IOException;
   }
 
+  private final CourseProject courseProject;
   @NotNull
   private final Course course;
 
@@ -61,7 +63,8 @@ public class CourseUpdater extends RepeatedTask {
   /**
    * Construct a course updater with the given parameters.
    */
-  public CourseUpdater(@NotNull Course course,
+  public CourseUpdater(@NotNull CourseProject courseProject,
+                       @NotNull Course course,
                        @NotNull Project project,
                        @NotNull URL courseUrl,
                        @NotNull CourseConfigurationFetcher configurationFetcher,
@@ -69,6 +72,7 @@ public class CourseUpdater extends RepeatedTask {
                        @NotNull Notifier notifier,
                        long updateInterval) {
     super(updateInterval);
+    this.courseProject = courseProject;
     this.course = course;
     this.project = project;
     this.courseUrl = courseUrl;
@@ -80,11 +84,12 @@ public class CourseUpdater extends RepeatedTask {
   /**
    * Construct a course updater with reasonable defaults.
    */
-  public CourseUpdater(@NotNull Course course,
+  public CourseUpdater(@NotNull CourseProject courseProject,
+                       @NotNull Course course,
                        @NotNull Project project,
                        @NotNull URL courseUrl,
                        @NotNull Event eventToTrigger) {
-    this(course, project, courseUrl, CoursesClient::fetch, eventToTrigger, new DefaultNotifier(),
+    this(courseProject, course, project, courseUrl, CoursesClient::fetch, eventToTrigger, new DefaultNotifier(),
         PluginSettings.UPDATE_INTERVAL);
   }
 
@@ -93,7 +98,24 @@ public class CourseUpdater extends RepeatedTask {
     var progressViewModel =
         PluginSettings.getInstance().getMainViewModel(project).progressViewModel;
     var progress =
-            progressViewModel.start(1, getText("ui.ProgressBarView.refreshingModules"), false);
+        progressViewModel.start(2, getText("ui.ProgressBarView.refreshingCourse"), false);
+    var selectedLanguage = PluginSettings
+        .getInstance()
+        .getCourseFileManager(project).getLanguage();
+
+    var auth = courseProject.getAuthentication();
+    try {
+      if (auth != null) {
+        var news = course.getExerciseDataSource().getNews(course, auth, selectedLanguage);
+        var newsTree = new NewsTree(news);
+        courseProject.setNewsTree(newsTree);
+        eventToTrigger.trigger();
+      }
+    } catch (IOException e) {
+      progress.finish();
+      return;
+    }
+    progress.increment();
     updateModules(fetchModulesInfo());
     if (Thread.interrupted()) {
       progress.finish();

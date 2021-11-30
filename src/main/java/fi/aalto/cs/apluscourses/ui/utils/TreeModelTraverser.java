@@ -25,8 +25,8 @@ public class TreeModelTraverser {
   private Stream<TreePath> traverse(@NotNull TreePath treePath) {
     return Stream.concat(Stream.of(treePath), // pre-order guaranteed
         getChildNodeStream(treePath.getLastPathComponent())
-        .map(treePath::pathByAddingChild)
-        .flatMap(this::traverse));
+            .map(treePath::pathByAddingChild)
+            .flatMap(this::traverse));
   }
 
   @NotNull

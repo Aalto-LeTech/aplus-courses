@@ -13,6 +13,7 @@ import java.util.Arrays;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class IntelliJActivityFactory implements ActivityFactory {
   private final @NotNull Project project;
@@ -56,6 +57,8 @@ public class IntelliJActivityFactory implements ActivityFactory {
         return ReplInOutListener.create(callback, project, arguments);
       case "replInputContains":
         return ReplContainsListener.create(callback, project, arguments);
+      case "stop":
+        return StopListener.create(callback, project, arguments);
       default:
         throw new IllegalArgumentException("Unsupported action: '" + action + "'");
     }
@@ -63,12 +66,13 @@ public class IntelliJActivityFactory implements ActivityFactory {
 
   @Override
   public @NotNull ComponentPresenter createPresenter(@NotNull String component,
-                                                     @NotNull String instruction,
-                                                     @NotNull String info,
+                                                     @Nullable String instruction,
+                                                     @Nullable String info,
                                                      @NotNull Arguments componentArguments,
                                                      @NotNull Arguments actionArguments,
                                                      @NotNull String @NotNull [] assertClosed,
-                                                     @NotNull Reaction @NotNull [] reactions) {
+                                                     @NotNull Reaction @NotNull [] reactions,
+                                                     boolean isAlreadyCompleted) {
     for (var closedComponent : assertClosed) {
       switch (closedComponent) {
         case "projectTree":

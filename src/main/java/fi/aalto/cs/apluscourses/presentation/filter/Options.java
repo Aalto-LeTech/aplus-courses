@@ -44,10 +44,10 @@ public class Options extends AndFilter implements Streamable<Option> {
    */
   public boolean isAnyActive() {
     return optionList.stream()
-            .anyMatch(option -> {
-              var selected = option.isSelected.get();
-              return selected != null && !selected;
-            });
+        .anyMatch(option -> {
+          var selected = option.isSelected.get();
+          return selected != null && !selected;
+        });
   }
 
   /**
@@ -55,7 +55,7 @@ public class Options extends AndFilter implements Streamable<Option> {
    */
   public String getSelectText() {
     return this.isAnyActive()
-            ? getText("presentation.filter.selectAll")
-            : getText("presentation.filter.deselectAll");
+        ? getText("presentation.filter.selectAll")
+        : getText("presentation.filter.deselectAll");
   }
 }

@@ -107,6 +107,7 @@ public abstract class BaseListView<E extends ListElementViewModel<?>>
   /**
    * Removes the given {@link ActionListener} of the set of list action listeners.  If the listener
    * is not in that set, this method has no effect.
+   *
    * @param listener An {@link ActionListener}.
    */
   public void removeListActionListener(ActionListener listener) {

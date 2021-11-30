@@ -17,7 +17,7 @@ public class ProgressViewModel {
   public final ObservableProperty<Integer> maxValue = new ObservableReadWriteProperty<>(0);
   public final ObservableProperty<Integer> value = new ObservableReadWriteProperty<>(0);
   public final ObservableProperty<String> label =
-          new ObservableReadWriteProperty<>(getText("ui.ProgressBarView.loading"));
+      new ObservableReadWriteProperty<>(getText("ui.ProgressBarView.loading"));
   public final ObservableProperty<Boolean> visible = new ObservableReadWriteProperty<>(true);
   public final ObservableProperty<Boolean> indeterminate = new ObservableReadWriteProperty<>(true);
 

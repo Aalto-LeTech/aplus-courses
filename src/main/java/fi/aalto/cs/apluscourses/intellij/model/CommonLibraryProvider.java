@@ -40,7 +40,7 @@ public class CommonLibraryProvider implements ComponentSource {
     } else if (name.startsWith("scala3-sdk-")) {
       return new Scala3Sdk(name, name.replace("scala3-sdk-", ""), project);
     } else if (name.startsWith("scala-library-")) {
-      return new ScalaLibrary(name, name.replace("scala-library-", ""),  project);
+      return new ScalaLibrary(name, name.replace("scala-library-", ""), project);
     }
     return null;
   }

@@ -101,7 +101,7 @@ public class CourseFileManager {
    * the course file doesn't exist, {@code true} otherwise.
    *
    * @return {@code true} if the course file was successfully loaded, {@code false} if the course
-   *         file doesn't exist.
+   * file doesn't exist.
    * @throws IOException If an IO error occurs while reading the course file.
    */
   public synchronized boolean load() throws IOException {

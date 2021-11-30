@@ -33,8 +33,8 @@ public class UserActionGroup extends DefaultActionGroup implements DumbAware {
       var loggedIn = !userName.equals("");
       var icon = loggedIn ? PluginIcons.A_PLUS_USER_ACTIVE : PluginIcons.A_PLUS_USER;
       var text = loggedIn
-              ? getAndReplaceText("presentation.userDropdown.loggedInAs", userName)
-              : getText("presentation.userDropdown.notLoggedIn");
+          ? getAndReplaceText("presentation.userDropdown.loggedInAs", userName)
+          : getText("presentation.userDropdown.notLoggedIn");
       e.getPresentation().setIcon(icon);
       e.getPresentation().setText(text);
     }

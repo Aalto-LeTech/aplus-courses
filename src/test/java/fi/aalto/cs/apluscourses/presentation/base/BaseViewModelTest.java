@@ -5,7 +5,7 @@ import static org.junit.Assert.assertSame;
 import org.junit.Test;
 
 public class BaseViewModelTest {
-  
+
   @Test
   public void testBaseViewModel() {
     Object model = new Object();
