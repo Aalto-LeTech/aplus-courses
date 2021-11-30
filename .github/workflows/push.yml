@@ -8,11 +8,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
       - name: Build & Analyze
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: wrapper
-          arguments: build sonarqube --stacktrace
+          arguments: build sonarqube --stacktrace --build-cache
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
