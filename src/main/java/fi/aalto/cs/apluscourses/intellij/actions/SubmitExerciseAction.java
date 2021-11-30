@@ -12,6 +12,7 @@ import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectUtil;
 import com.intellij.openapi.util.io.FileUtilRt;
 import com.intellij.openapi.vfs.VirtualFile;
 import fi.aalto.cs.apluscourses.intellij.model.CourseProject;
@@ -98,6 +99,7 @@ public class SubmitExerciseAction extends AnAction {
   private final Interfaces.LanguageSource languageSource;
 
   private final DefaultGroupIdSetting defaultGroupIdSetting;
+  private final Interfaces.ModuleDirGuesser moduleDirGuesser;
 
   /**
    * Constructor with reasonable defaults.
@@ -114,7 +116,8 @@ public class SubmitExerciseAction extends AnAction {
         LocalHistory.getInstance()::putSystemLabel,
         FileDocumentManager.getInstance()::saveAllDocuments,
         project -> PluginSettings.getInstance().getCourseFileManager(project).getLanguage(),
-        PluginSettings.getInstance()
+        PluginSettings.getInstance(),
+        ProjectUtil::guessModuleDir
     );
   }
 
@@ -131,7 +134,8 @@ public class SubmitExerciseAction extends AnAction {
                               @NotNull Interfaces.Tagger tagger,
                               @NotNull Interfaces.DocumentSaver documentSaver,
                               @NotNull Interfaces.LanguageSource languageSource,
-                              @NotNull DefaultGroupIdSetting defaultGroupIdSetting) {
+                              @NotNull DefaultGroupIdSetting defaultGroupIdSetting,
+                              @NotNull Interfaces.ModuleDirGuesser moduleDirGuesser) {
     this.mainViewModelProvider = mainViewModelProvider;
     this.authenticationProvider = authenticationProvider;
     this.fileFinder = fileFinder;
@@ -142,6 +146,7 @@ public class SubmitExerciseAction extends AnAction {
     this.documentSaver = documentSaver;
     this.languageSource = languageSource;
     this.defaultGroupIdSetting = defaultGroupIdSetting;
+    this.moduleDirGuesser = moduleDirGuesser;
   }
 
   @Override
@@ -248,7 +253,7 @@ public class SubmitExerciseAction extends AnAction {
       Module[] modules = moduleSource.getModules(project);
 
       ModuleSelectionViewModel moduleSelectionViewModel = new ModuleSelectionViewModel(
-          modules, getText("ui.toolWindow.subTab.exercises.submission.selectModule"), project);
+          modules, getText("ui.toolWindow.subTab.exercises.submission.selectModule"), project, moduleDirGuesser);
       if (!dialogs.create(moduleSelectionViewModel, project).showAndGet()) {
         return;
       }

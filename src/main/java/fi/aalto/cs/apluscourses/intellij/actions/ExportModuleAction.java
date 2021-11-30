@@ -6,12 +6,14 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import fi.aalto.cs.apluscourses.intellij.model.ProjectModuleSource;
 import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.IoErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.services.Dialogs;
+import fi.aalto.cs.apluscourses.intellij.utils.Interfaces;
 import fi.aalto.cs.apluscourses.presentation.FileSaveViewModel;
 import fi.aalto.cs.apluscourses.presentation.ModuleSelectionViewModel;
 import java.io.IOException;
@@ -37,6 +39,9 @@ public class ExportModuleAction extends AnAction {
   @NotNull
   private final Notifier notifier;
 
+  @NotNull
+  private final Interfaces.ModuleDirGuesser moduleDirGuesser;
+
   /**
    * Create an {@link ExportModuleAction} with the given parameters. This constructor is mostly
    * useful for testing purposes.
@@ -45,12 +50,14 @@ public class ExportModuleAction extends AnAction {
                             @NotNull ProjectPathResolver projectPathResolver,
                             @NotNull DirectoryZipper zipper,
                             @NotNull Dialogs dialogs,
-                            @NotNull Notifier notifier) {
+                            @NotNull Notifier notifier,
+                            @NotNull Interfaces.ModuleDirGuesser moduleDirGuesser) {
     this.moduleSource = moduleSource;
     this.projectPathResolver = projectPathResolver;
     this.zipper = zipper;
     this.dialogs = dialogs;
     this.notifier = notifier;
+    this.moduleDirGuesser = moduleDirGuesser;
   }
 
   /**
@@ -62,7 +69,8 @@ public class ExportModuleAction extends AnAction {
         project -> project.getProjectFile().getParent().getParent(),
         (zip, directory) -> new ZipFile(zip.toString()).addFolder(directory.toFile()),
         Dialogs.DEFAULT,
-        new DefaultNotifier()
+        new DefaultNotifier(),
+        ProjectUtil::guessModuleDir
     );
   }
 
@@ -82,7 +90,7 @@ public class ExportModuleAction extends AnAction {
     Module[] availableModules = moduleSource.getModules(project);
 
     ModuleSelectionViewModel moduleSelectionViewModel = new ModuleSelectionViewModel(
-        availableModules, getText("ui.exportModule.selectModule"), project);
+        availableModules, getText("ui.exportModule.selectModule"), project, moduleDirGuesser);
     if (!dialogs.create(moduleSelectionViewModel, project).showAndGet()) {
       return;
     }

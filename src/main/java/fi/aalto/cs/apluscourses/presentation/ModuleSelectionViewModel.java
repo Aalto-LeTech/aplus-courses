@@ -6,6 +6,7 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+import fi.aalto.cs.apluscourses.intellij.utils.Interfaces;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
 import org.jetbrains.annotations.NotNull;
@@ -24,7 +25,8 @@ public class ModuleSelectionViewModel {
   /**
    * Constructor.
    */
-  public ModuleSelectionViewModel(@NotNull Module[] modules, @NotNull String infoText, @NotNull Project project) {
+  public ModuleSelectionViewModel(@NotNull Module[] modules, @NotNull String infoText, @NotNull Project project,
+                                  @NotNull Interfaces.ModuleDirGuesser moduleDirGuesser) {
     this.modules = modules;
     this.infoText = infoText;
     this.project = project;
@@ -32,11 +34,16 @@ public class ModuleSelectionViewModel {
       if (module == null) {
         selectedModuleFile.set(null);
       } else {
-        var path = ProjectUtil.guessModuleDir(module);
+        var path = moduleDirGuesser.guessModuleDir(module);
         selectedModuleFile.set(path);
       }
     });
   }
+
+  public ModuleSelectionViewModel(@NotNull Module[] modules, @NotNull String infoText, @NotNull Project project) {
+    this(modules, infoText, project, ProjectUtil::guessModuleDir);
+  }
+
 
   public Module[] getModules() {
     return modules;
