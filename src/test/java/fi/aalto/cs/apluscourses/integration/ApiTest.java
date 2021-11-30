@@ -14,7 +14,7 @@ public class ApiTest {
 
   //  For this to work the 'CI=true' environment variable is added to .travis.yml
   @ClassRule
-  public static final EnvironmentChecker checker = new EnvironmentChecker("CI");
+  public static final EnvironmentChecker checker = new EnvironmentChecker("INTEGRATION");
 
   private static final String BASE_URL = "http://localhost:8000/api/v2/";
 
