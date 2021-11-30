@@ -15,7 +15,7 @@
     ]]></description>
 
     <change-notes>
-        Improvements to tutorials and UI
+        Improvements to tutorials and UI. See the full changelog at https://github.com/Aalto-LeTech/aplus-courses/releases
     </change-notes>
 
     <depends>com.intellij.modules.java</depends>
