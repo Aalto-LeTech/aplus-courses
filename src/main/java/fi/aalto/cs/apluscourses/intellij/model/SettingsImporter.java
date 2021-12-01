@@ -73,14 +73,14 @@ public class SettingsImporter {
    * options to import, this function does nothing.
    */
   @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
-  public void importVMOptions(@NotNull Course course) {
+  public void importVMOptions(@NotNull Course course) throws IOException {
     if (!VMOptions.canWriteOptions()) {
       return;
     }
 
     var options = course.getVMOptions();
     for (var option : options.entrySet()) {
-      VMOptions.writeOption(option.getKey(), "=", option.getValue());
+      VMOptions.setProperty(option.getKey(), option.getValue());
     }
 
     logger.info("Imported " + options.size() + " VM options");
