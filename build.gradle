@@ -9,7 +9,7 @@ plugins {
     id "org.jmailen.kotlinter" version "3.3.0"
 }
 
-def pluginVersion = '3.3'
+def pluginVersion = '3.4'
 
 def courseVersion = '1.0'
 def remoteRobotVersion = '0.11.6'
@@ -45,9 +45,9 @@ dependencies {
 
 intellij {
     //  this is the version of the IntelliJ IDEA API (SDK) used to build the plugin
-    version = '212.4746.92'
+    version = '213.5744.223'
     updateSinceUntilBuild = false
-    plugins = ['java', 'org.intellij.scala:2021.2.22']
+    plugins = ['java', 'org.intellij.scala:2021.3.14']
     downloadRobotServerPlugin.version = remoteRobotVersion
 }
 

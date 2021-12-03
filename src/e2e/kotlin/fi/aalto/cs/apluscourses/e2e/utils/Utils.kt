@@ -101,7 +101,7 @@ object HierarchyDownloader {
         return File(folder).apply {
             mkdirs()
         }.resolve(name).apply {
-            writeText(response.body?.string() ?: "")
+            writeText(response.body()?.string() ?: "")
         }
     }
 }

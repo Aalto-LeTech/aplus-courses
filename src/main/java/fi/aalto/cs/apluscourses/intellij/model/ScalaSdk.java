@@ -62,6 +62,6 @@ public class ScalaSdk extends IntelliJLibrary
       @Nullable ScalaLibraryPropertiesState currentState) {
     return new ScalaLibraryPropertiesState(
         ScalaLanguageLevel.findByVersion(scalaVersion).get(),
-        getUris(getCompilerRoots()));
+        getUris(getCompilerRoots()), new String[0]);
   }
 }
