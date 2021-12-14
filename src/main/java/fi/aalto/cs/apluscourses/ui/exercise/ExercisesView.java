@@ -9,7 +9,7 @@ import com.intellij.ui.ScrollPaneFactory;
 import com.intellij.ui.TreeSpeedSearch;
 import com.intellij.util.ui.tree.TreeUtil;
 import fi.aalto.cs.apluscourses.intellij.actions.ActionUtil;
-import fi.aalto.cs.apluscourses.intellij.actions.OpenItemAction;
+import fi.aalto.cs.apluscourses.intellij.actions.OpenExerciseItemAction;
 import fi.aalto.cs.apluscourses.model.ExercisesTree;
 import fi.aalto.cs.apluscourses.presentation.base.BaseTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.Searchable;
@@ -92,7 +92,7 @@ public class ExercisesView implements ToolbarPanel {
     exerciseGroupsTree = new ExercisesTreeView();
     exerciseGroupsTree.setCellRenderer(new ExercisesTreeRenderer());
     exerciseGroupsTree.addNodeAppliedListener(
-        ActionUtil.createOnEventLauncher(OpenItemAction.ACTION_ID, exerciseGroupsTree));
+        ActionUtil.createOnEventLauncher(OpenExerciseItemAction.ACTION_ID, exerciseGroupsTree));
 
     new TreeSpeedSearch(exerciseGroupsTree, treePath -> {
       Searchable treeObject = (Searchable) TreeView.getViewModel(treePath.getLastPathComponent());

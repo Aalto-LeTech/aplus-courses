@@ -7,7 +7,7 @@ plugins {
     id 'jacoco'
 }
 
-def pluginVersion = '3.3'
+def pluginVersion = '3.4'
 
 def courseVersion = '1.0'
 
@@ -38,10 +38,10 @@ dependencies {
 }
 
 intellij {
-    //  this is the version of the IntelliJ IDEA API (SDK) used to build the plugin
-    version = '212.4746.92'
+    // this is the version of the IntelliJ IDEA API (SDK) used to build the plugin
+    version = '213.5744.223'
     updateSinceUntilBuild = false
-    plugins = ['java', 'org.intellij.scala:2021.2.22']
+    plugins = ['java', 'org.intellij.scala:2021.3.14']
 }
 
 patchPluginXml {
