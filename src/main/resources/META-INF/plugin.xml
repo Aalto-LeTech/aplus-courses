@@ -15,7 +15,7 @@
     ]]></description>
 
     <change-notes>
-        Updates to the upcoming tutorials and minor bugfixes.
+        Improvements to tutorials and UI. See the full changelog at https://github.com/Aalto-LeTech/aplus-courses/releases
     </change-notes>
 
     <depends>com.intellij.modules.java</depends>
@@ -31,6 +31,7 @@
                     icon="PluginIcons.A_PLUS_LOGO"/>
 
         <errorHandler implementation="fi.aalto.cs.apluscourses.intellij.utils.ErrorHandler"/>
+        <httpRequestHandler implementation="fi.aalto.cs.apluscourses.intellij.services.OpenSubmissionService"/>
     </extensions>
 
     <actions>
@@ -70,6 +71,18 @@
                     text="About the A+ Courses Plugin"
                     description="Information about the A+ Courses plugin for IntelliJ"/>
         </group>
+        <group id="fi.aalto.cs.apluscourses.intellij.actions.ActionGroups.NEWS_ACTIONS"
+               text="A+ News"
+               description="Actions for A+ news">
+            <action id="fi.aalto.cs.apluscourses.intellij.actions.ReadAllNewsAction"
+                    class="fi.aalto.cs.apluscourses.intellij.actions.ReadAllNewsAction"
+                    text="Mark All News As Read"
+                    icon="PluginIcons.A_PLUS_CHECKED"/>
+            <action id="fi.aalto.cs.apluscourses.intellij.actions.NewsRefreshAction"
+                    class="fi.aalto.cs.apluscourses.intellij.actions.RefreshModulesAction"
+                    text="Refresh News"
+                    icon="PluginIcons.A_PLUS_REFRESH"/>
+        </group>
         <group id="fi.aalto.cs.apluscourses.intellij.actions.ActionGroups.MODULE_ACTIONS"
                text="A+ Module"
                description="Actions for A+ modules">
@@ -93,8 +106,8 @@
                     class="fi.aalto.cs.apluscourses.intellij.actions.TutorialAction"
                     text="Start Tutorial"
                     icon="PluginIcons.A_PLUS_START"/>
-            <action id="fi.aalto.cs.apluscourses.intellij.actions.OpenItemAction"
-                    class="fi.aalto.cs.apluscourses.intellij.actions.OpenItemAction"
+            <action id="fi.aalto.cs.apluscourses.intellij.actions.OpenExerciseItemAction"
+                    class="fi.aalto.cs.apluscourses.intellij.actions.OpenExerciseItemAction"
                     text="Open In Browser"
                     icon="PluginIcons.A_PLUS_BROWSE"/>
             <action id="fi.aalto.cs.apluscourses.intellij.actions.ExercisesRefreshAction"
@@ -122,11 +135,11 @@
             <group id="fi.aalto.cs.apluscourses.intellij.actions.UserActionGroup"
                    class="fi.aalto.cs.apluscourses.intellij.actions.UserActionGroup"
                    popup="true"
-                   text="Not logged in"
+                   text="Not Logged In"
                    icon="PluginIcons.A_PLUS_USER">
                 <action id="fi.aalto.cs.apluscourses.intellij.actions.UserNameAction"
                         class="fi.aalto.cs.apluscourses.intellij.actions.UserNameAction"
-                        text="Not logged in"/>
+                        text="Not Logged In"/>
                 <action id="fi.aalto.cs.apluscourses.intellij.actions.LogInOutAction"
                         class="fi.aalto.cs.apluscourses.intellij.actions.LogInOutAction"
                         text="Log in"/>

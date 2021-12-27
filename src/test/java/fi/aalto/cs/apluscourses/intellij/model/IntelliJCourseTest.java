@@ -39,19 +39,21 @@ public class IntelliJCourseTest {
     IntelliJCourse course = new IntelliJCourse(id, name,
         "http://localhost:1355",
         Collections.emptyList(),
-        //  modules
+        // modules
         Collections.emptyList(),
-        //  libraries
+        // libraries
         Collections.emptyList(),
-        //  exerciseModules
+        // exerciseModules
         Collections.emptyMap(),
-        //  resourceUrls
+        // resourceUrls
         Collections.emptyMap(),
-        //  autoInstallComponentNames
+        // vmOptions
+        Collections.emptyMap(),
+        // autoInstallComponentNames
         Collections.emptyList(),
-        //  replInitialCommands
+        // replInitialCommands
         Collections.emptyMap(),
-        //  courseVersion
+        // courseVersion
         BuildInfo.INSTANCE.courseVersion,
         project,
         commonLibraryProvider,
@@ -87,17 +89,19 @@ public class IntelliJCourseTest {
         "https://example.com",
         Collections.emptyList(),
         modules,
-        //  libraries
+        // libraries
         Collections.emptyList(),
-        //  exerciseModules
+        // exerciseModules
         Collections.emptyMap(),
-        //  resourceUrls
+        // resourceUrls
         Collections.emptyMap(),
-        //  autoInstallComponentNames
+        // vmOptions
+        Collections.emptyMap(),
+        // autoInstallComponentNames
         Collections.emptyList(),
-        //  replInitialCommands
+        // replInitialCommands
         Collections.emptyMap(),
-        //  courseVersion
+        // courseVersion
         BuildInfo.INSTANCE.courseVersion,
         project,
         commonLibraryProvider,
@@ -136,17 +140,19 @@ public class IntelliJCourseTest {
         "http://localhost:2000",
         Collections.emptyList(),
         modules,
-        //  libraries
+        // libraries
         Collections.emptyList(),
-        //  exerciseModules
+        // exerciseModules
         Collections.emptyMap(),
-        //  resourceUrls
+        // resourceUrls
         Collections.emptyMap(),
-        //  autoInstallComponentNames
+        // vmOptions
+        Collections.emptyMap(),
+        // autoInstallComponentNames
         Collections.emptyList(),
-        //  replInitialCommands
+        // replInitialCommands
         Collections.emptyMap(),
-        //  courseVersion
+        // courseVersion
         BuildInfo.INSTANCE.courseVersion,
         project,
         mock(CommonLibraryProvider.class),
@@ -174,17 +180,19 @@ public class IntelliJCourseTest {
         "http://localhost:2200",
         Collections.emptyList(),
         Stream.of(new ModelExtensions.TestModule(moduleName)).collect(Collectors.toList()),
-        //  libraries
+        // libraries
         Collections.emptyList(),
-        //  exerciseModules
+        // exerciseModules
         Collections.emptyMap(),
-        //  resourceUrls
+        // resourceUrls
         Collections.emptyMap(),
-        //  autoInstallComponentNames
+        // vmOptions
+        Collections.emptyMap(),
+        // autoInstallComponentNames
         Collections.emptyList(),
-        //  replInitialCommands
+        // replInitialCommands
         Collections.emptyMap(),
-        //  courseVersion
+        // courseVersion
         BuildInfo.INSTANCE.courseVersion,
         project,
         mock(CommonLibraryProvider.class),

@@ -154,7 +154,6 @@ public class ComponentInstallerTest {
     });
 
 
-
     ComponentInstaller installer = new ComponentInstallerImpl<>(
         new ModelExtensions.TestComponentSource(), new SimpleAsyncTaskManager(),
         mock(ComponentInstaller.Dialogs.class));

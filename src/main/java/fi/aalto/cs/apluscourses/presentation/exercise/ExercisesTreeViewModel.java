@@ -1,24 +1,22 @@
 package fi.aalto.cs.apluscourses.presentation.exercise;
 
-import fi.aalto.cs.apluscourses.model.ExercisesLazyLoader;
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getAndReplaceText;
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
+import fi.aalto.cs.apluscourses.intellij.model.CourseProject;
 import fi.aalto.cs.apluscourses.model.ExercisesTree;
 import fi.aalto.cs.apluscourses.presentation.base.BaseTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.Searchable;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ExercisesTreeViewModel extends BaseTreeViewModel<ExercisesTree>
-        implements Searchable {
-
-  private boolean isAuthenticated;
-
-  @NotNull
-  private final AtomicBoolean isProjectReady = new AtomicBoolean(false);
+    implements Searchable {
+  private boolean isLoaded = false;
 
   /**
    * Construct an exercises tree view model from the given exercise groups.
@@ -34,36 +32,27 @@ public class ExercisesTreeViewModel extends BaseTreeViewModel<ExercisesTree>
    */
   public ExercisesTreeViewModel(@NotNull ExercisesTree exercisesTree,
                                 @NotNull Options filterOptions,
-                                @Nullable ExercisesLazyLoader exercisesLazyLoader) {
+                                @Nullable CourseProject courseProject) {
     super(exercisesTree,
         exercisesTree.getExerciseGroups()
             .stream()
-            .map(exerciseGroup -> new ExerciseGroupViewModel(exerciseGroup, exercisesLazyLoader))
+            .map(exerciseGroup -> new ExerciseGroupViewModel(exerciseGroup, courseProject))
             .collect(Collectors.toList()),
         filterOptions);
-  }
-
-  public boolean isEmptyTextVisible() {
-    return false;
-  }
-
-  public boolean isAuthenticated() {
-    return isAuthenticated;
-  }
-
-  public void setAuthenticated(boolean authenticated) {
-    isAuthenticated = authenticated;
-  }
-
-  public boolean isProjectReady() {
-    return isProjectReady.get();
+    setLoaded(courseProject != null && courseProject.getAuthentication() != null);
   }
 
   /**
-   * Returns true if the value changed, false if the value was already equal to the given value.
+   * Creates an EmptyExercisesTreeViewModel if the exercisesTree is null, else an ExercisesTreeViewModel.
    */
-  public boolean setProjectReady(boolean projectReady) {
-    return isProjectReady.getAndSet(projectReady) != projectReady;
+  @NotNull
+  public static ExercisesTreeViewModel createExerciseTreeViewModel(@Nullable ExercisesTree exercisesTree,
+                                                                   @NotNull Options filterOptions,
+                                                                   @Nullable CourseProject courseProject) {
+    if (exercisesTree == null) {
+      return new EmptyExercisesTreeViewModel();
+    }
+    return new ExercisesTreeViewModel(exercisesTree, filterOptions, courseProject);
   }
 
   public String getName() {
@@ -71,10 +60,29 @@ public class ExercisesTreeViewModel extends BaseTreeViewModel<ExercisesTree>
     return student == null ? null : student.getFullName();
   }
 
+  @NotNull
+  public String getEmptyText() {
+    return isLoaded ? getText("ui.exercise.ExercisesView.allAssignmentsFiltered") : getText("ui.toolWindow.loading");
+  }
+
+  @NotNull
+  public String getTitleText() {
+    return getName() == null ? getText("ui.toolWindow.subTab.exercises.name") :
+        getAndReplaceText("ui.toolWindow.subTab.exercises.nameStudent", getName());
+  }
+
   @Override
   @NotNull
   public Selection findSelected() {
     return new ExerciseTreeSelection(traverseAndFind(SelectableNodeViewModel::isSelected));
+  }
+
+  public boolean isLoaded() {
+    return isLoaded;
+  }
+
+  public void setLoaded(boolean loaded) {
+    isLoaded = loaded;
   }
 
   public static class ExerciseTreeSelection extends Selection {

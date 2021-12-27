@@ -21,6 +21,7 @@ import fi.aalto.cs.apluscourses.intellij.model.ProjectModuleSource;
 import fi.aalto.cs.apluscourses.intellij.notifications.IoErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.services.Dialogs;
+import fi.aalto.cs.apluscourses.intellij.utils.Interfaces;
 import fi.aalto.cs.apluscourses.presentation.FileSaveViewModel;
 import fi.aalto.cs.apluscourses.presentation.ModuleSelectionViewModel;
 import java.io.IOException;
@@ -52,6 +53,8 @@ public class ExportModuleActionTest {
 
   Notifier notifier;
 
+  Interfaces.ModuleDirGuesser moduleDirGuesser;
+
   /**
    * Runs before every tests. Initializes mock objects and other stuff.
    */
@@ -73,19 +76,21 @@ public class ExportModuleActionTest {
 
     Module otherModule = mock(Module.class);
     moduleSource = mock(ProjectModuleSource.class);
-    doReturn(new Module[]{otherModule, selectedModule})
+    doReturn(new Module[] {otherModule, selectedModule})
         .when(moduleSource).getModules(any(Project.class));
 
     projectPathResolver = mock(ExportModuleAction.ProjectPathResolver.class);
     doReturn(mock(VirtualFile.class)).when(projectPathResolver).getProjectPath(any(Project.class));
 
     zipper = mock(ExportModuleAction.DirectoryZipper.class);
+    moduleDirGuesser = module -> moduleDir;
 
     cancelModuleSelection = new AtomicBoolean(false);
     cancelFileSave = new AtomicBoolean(false);
     moduleSelectionDialog = spy(new DialogHelper<>(
         viewModel -> {
           viewModel.selectedModule.set(viewModel.getModules()[1]);
+          viewModel.selectedModuleFile.set(moduleDir);
           return !cancelModuleSelection.get();
         }
     ));
@@ -110,7 +115,7 @@ public class ExportModuleActionTest {
   public void testExportModuleAction() throws IOException {
     ExportModuleAction action = new ExportModuleAction(
         moduleSource, projectPathResolver,
-        zipper, dialogs, notifier
+        zipper, dialogs, notifier, moduleDirGuesser
     );
     action.actionPerformed(event);
 
@@ -135,7 +140,7 @@ public class ExportModuleActionTest {
     cancelModuleSelection.set(true);
     ExportModuleAction action = new ExportModuleAction(
         moduleSource, projectPathResolver,
-        zipper, dialogs, notifier
+        zipper, dialogs, notifier, moduleDirGuesser
     );
     action.actionPerformed(event);
 
@@ -151,7 +156,7 @@ public class ExportModuleActionTest {
     cancelFileSave.set(true);
     ExportModuleAction action = new ExportModuleAction(
         moduleSource, projectPathResolver,
-        zipper, dialogs, notifier
+        zipper, dialogs, notifier, moduleDirGuesser
     );
     action.actionPerformed(event);
 
@@ -171,7 +176,8 @@ public class ExportModuleActionTest {
           throw exception;
         },
         dialogs,
-        notifier
+        notifier,
+        moduleDirGuesser
     );
     action.actionPerformed(event);
 

@@ -42,7 +42,7 @@ public class FilterOptionsActionGroup extends DefaultActionGroup implements Dumb
     if (e != null) {
       actions.add(new Separator());
       Options filterOptions =
-              mainViewModelProvider.getMainViewModel(e.getProject()).getExerciseFilterOptions();
+          mainViewModelProvider.getMainViewModel(e.getProject()).getExerciseFilterOptions();
       actions.add(new SelectAllFiltersAction(filterOptions));
     }
     return actions.toArray(new AnAction[0]);
@@ -50,19 +50,20 @@ public class FilterOptionsActionGroup extends DefaultActionGroup implements Dumb
 
   /**
    * Returns filter option actions.
+   *
    * @param e AnActionEvent
    * @return An array of FilterOptionActions
    */
   private FilterOptionAction @NotNull [] getFilterOptionActions(@Nullable AnActionEvent e) {
     return Optional.ofNullable(e)
-            .map(AnActionEvent::getProject)
-            .map(mainViewModelProvider::getMainViewModel)
-            .map(MainViewModel::getExercises)
-            .map(BaseTreeViewModel::getFilterOptions)
-            .map(Streamable::stream)
-            .orElseGet(Stream::empty)
-            .map(FilterOptionAction::new)
-            .toArray(FilterOptionAction[]::new);
+        .map(AnActionEvent::getProject)
+        .map(mainViewModelProvider::getMainViewModel)
+        .map(MainViewModel::getExercises)
+        .map(BaseTreeViewModel::getFilterOptions)
+        .map(Streamable::stream)
+        .orElseGet(Stream::empty)
+        .map(FilterOptionAction::new)
+        .toArray(FilterOptionAction[]::new);
   }
 
   public FilterOptionAction @NotNull [] getFilterOptionActions() {
@@ -73,11 +74,10 @@ public class FilterOptionsActionGroup extends DefaultActionGroup implements Dumb
   public void update(@NotNull AnActionEvent e) {
     Project project = e.getProject();
     var exercisesTreeViewModel =
-            mainViewModelProvider.getMainViewModel(project).exercisesViewModel.get();
-    e.getPresentation().setEnabled(exercisesTreeViewModel != null
-            && exercisesTreeViewModel.isAuthenticated());
+        mainViewModelProvider.getMainViewModel(project).exercisesViewModel.get();
+    e.getPresentation().setEnabled(exercisesTreeViewModel != null);
     boolean filterActive =
-            Arrays.stream(this.filterOptionActions).anyMatch(action -> !action.isSelected(e));
+        Arrays.stream(this.filterOptionActions).anyMatch(action -> !action.isSelected(e));
     Toggleable.setSelected(e.getPresentation(), filterActive);
   }
 }

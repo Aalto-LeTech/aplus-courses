@@ -66,8 +66,9 @@ public class InitializationActivity implements Background {
 
     ProjectViewUtil.ignoreFileInProjectView(MODULE_REPL_INITIAL_COMMANDS_FILE_NAME, project);
 
-    var progressViewModel
-        = PluginSettings.getInstance().getMainViewModel(project).progressViewModel;
+    var mainVm = PluginSettings.getInstance().getMainViewModel(project);
+    var progressViewModel = mainVm.progressViewModel;
+    var cardVm = mainVm.toolWindowCardViewModel;
 
     URL courseConfigurationFileUrl = getCourseUrlFromProject(project);
     if (courseConfigurationFileUrl == null) {
@@ -91,6 +92,9 @@ public class InitializationActivity implements Background {
       notifier.notify(new NetworkErrorNotification(e), project);
       isInitialized(project).set(true);
       progressViewModel.stopAll();
+
+      cardVm.setNetworkError(true);
+
       return;
     }
     var progress = progressViewModel.start(3, getText("ui.ProgressBarView.loading"), false);

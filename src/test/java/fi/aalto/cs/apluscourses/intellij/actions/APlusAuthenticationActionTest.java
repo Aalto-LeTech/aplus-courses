@@ -19,7 +19,6 @@ import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.presentation.AuthenticationViewModel;
 import fi.aalto.cs.apluscourses.utils.async.RepeatedTask;
-import java.net.URL;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -54,7 +53,10 @@ public class APlusAuthenticationActionTest {
     token = "secrets";
 
     courseProject = new CourseProject(course,
-        RepeatedTask.create(() -> { }), RepeatedTask.create(() -> { }),
+        RepeatedTask.create(() -> {
+        }),
+        RepeatedTask.create(() -> {
+        }),
         project, mock(Notifier.class));
     courseProjectProvider = mock(CourseProjectProvider.class);
     doReturn(courseProject).when(courseProjectProvider).getCourseProject(project);

@@ -32,7 +32,8 @@ public class InstallModuleAction extends DumbAwareAction {
 
   /**
    * Constructs an action using given main view model provider and module installer factory.
-   * @param mainViewModelProvider A main view model provider.
+   *
+   * @param mainViewModelProvider     A main view model provider.
    * @param componentInstallerFactory A component installer factory.
    */
   public InstallModuleAction(@NotNull MainViewModelProvider mainViewModelProvider,

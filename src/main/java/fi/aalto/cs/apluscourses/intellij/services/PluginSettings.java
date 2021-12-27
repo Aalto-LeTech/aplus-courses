@@ -1,8 +1,10 @@
 package fi.aalto.cs.apluscourses.intellij.services;
 
+import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalIdeSettingsNames.A_PLUS_COLLAPSED_PANELS;
 import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalIdeSettingsNames.A_PLUS_DEFAULT_GROUP;
 import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalIdeSettingsNames.A_PLUS_IMPORTED_IDE_SETTINGS;
 import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalIdeSettingsNames.A_PLUS_IS_ASSISTANT_MODE;
+import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalIdeSettingsNames.A_PLUS_READ_NEWS;
 import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalIdeSettingsNames.A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG;
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
@@ -19,6 +21,7 @@ import fi.aalto.cs.apluscourses.intellij.utils.CourseFileManager;
 import fi.aalto.cs.apluscourses.intellij.utils.IntelliJFilterOption;
 import fi.aalto.cs.apluscourses.intellij.utils.ProjectKey;
 import fi.aalto.cs.apluscourses.model.ExercisesTree;
+import fi.aalto.cs.apluscourses.model.NewsTree;
 import fi.aalto.cs.apluscourses.presentation.CourseEndedBannerViewModel;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
@@ -27,12 +30,14 @@ import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseGroupFilter;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.filter.Option;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
+import fi.aalto.cs.apluscourses.presentation.news.NewsTreeViewModel;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -71,7 +76,9 @@ public class PluginSettings implements MainViewModelProvider, DefaultGroupIdSett
     A_PLUS_SHOW_COMPLETED("A+.showCompleted"),
     A_PLUS_SHOW_OPTIONAL("A+.showOptional"),
     A_PLUS_SHOW_CLOSED("A+.showClosed"),
-    A_PLUS_IS_ASSISTANT_MODE("A+.assistantMode");
+    A_PLUS_IS_ASSISTANT_MODE("A+.assistantMode"),
+    A_PLUS_COLLAPSED_PANELS("A+.collapsed"),
+    A_PLUS_READ_NEWS("A+.readNews");
 
     private final String name;
 
@@ -175,10 +182,14 @@ public class PluginSettings implements MainViewModelProvider, DefaultGroupIdSett
       // instructed to turn the project into a course project for an example when the token is
       // missing.
       var exercisesViewModel = new ExercisesTreeViewModel(new ExercisesTree(), new Options());
-      exercisesViewModel.setAuthenticated(courseProject.getAuthentication() != null);
+      mainViewModel.toolWindowCardViewModel.setAPlusProject(true);
+      courseProject.user.addValueObserver(mainViewModel, MainViewModel::userChanged);
       mainViewModel.exercisesViewModel.set(exercisesViewModel);
+      mainViewModel.newsTreeViewModel.set(new NewsTreeViewModel(new NewsTree(), mainViewModel));
       courseProject.courseUpdated.addListener(
           mainViewModel.courseViewModel, ObservableProperty::valueChanged);
+      courseProject.courseUpdated.addListener(mainViewModel, viewModel ->
+          viewModel.updateNewsViewModel(courseProject));
       courseProject.exercisesUpdated.addListener(mainViewModel, viewModel ->
           viewModel.updateExercisesViewModel(courseProject));
       courseProject.getCourseUpdater().restart();
@@ -216,6 +227,40 @@ public class PluginSettings implements MainViewModelProvider, DefaultGroupIdSett
     applicationPropertiesManager
         .setValue(A_PLUS_IS_ASSISTANT_MODE.getName(),
             String.valueOf(assistantMode));
+  }
+
+  /**
+   * Sets a collapsible panel collapsed.
+   */
+  public void setCollapsed(@NotNull String title) {
+    applicationPropertiesManager.setValue(A_PLUS_COLLAPSED_PANELS.getName(),
+        getCollapsed() != null ? getCollapsed() + ";" + title : title);
+  }
+
+  /**
+   * Sets a collapsible panel expanded.
+   */
+  public void setExpanded(@NotNull String title) {
+    if (getCollapsed() == null) {
+      return;
+    }
+    applicationPropertiesManager.setValue(A_PLUS_COLLAPSED_PANELS.getName(),
+        Arrays.stream(getCollapsed().split(";"))
+            .filter(s -> !s.equals(title))
+            .collect(Collectors.joining(";")));
+  }
+
+  public String getCollapsed() {
+    return applicationPropertiesManager.getValue(A_PLUS_COLLAPSED_PANELS.getName());
+  }
+
+  public void setNewsRead(long id) {
+    applicationPropertiesManager.setValue(A_PLUS_READ_NEWS.getName(),
+        getReadNews() != null ? getReadNews() + ";" + id : String.valueOf(id));
+  }
+
+  public String getReadNews() {
+    return applicationPropertiesManager.getValue(A_PLUS_READ_NEWS.getName());
   }
 
   /**

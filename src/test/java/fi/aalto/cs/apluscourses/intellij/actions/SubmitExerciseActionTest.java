@@ -23,6 +23,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtilRt;
+import com.intellij.openapi.vfs.VirtualFile;
 import fi.aalto.cs.apluscourses.intellij.DialogHelper;
 import fi.aalto.cs.apluscourses.intellij.model.ProjectModuleSource;
 import fi.aalto.cs.apluscourses.intellij.notifications.ExerciseNotSelectedNotification;
@@ -127,10 +128,10 @@ public class SubmitExerciseActionTest {
     String language = "fi";
     submissionInfo = new SubmissionInfo(Map.of(language, Collections.singletonList(file)));
     exercise = new Exercise(
-        exerciseId, "Test exercise", "http://localhost:10000", submissionInfo, 0, 0, OptionalLong.empty());
+        exerciseId, "Test exercise", "http://localhost:10000", submissionInfo, 0, 0, OptionalLong.empty(), null);
     group = new Group(124, Collections.singletonList("Only you"));
     groups = Collections.singletonList(group);
-    exerciseGroup = new ExerciseGroup(0, "Test EG", "", true, List.of());
+    exerciseGroup = new ExerciseGroup(0, "Test EG", "", true, List.of(), List.of());
     exerciseGroup.addExercise(exercise);
     exerciseGroups = Collections.singletonList(exerciseGroup);
 
@@ -183,7 +184,7 @@ public class SubmitExerciseActionTest {
     doCallRealMethod().when(fileFinder).findFiles(any(), any());
 
     moduleSource = mock(ProjectModuleSource.class);
-    doReturn(new Module[]{module}).when(moduleSource).getModules(project);
+    doReturn(new Module[] {module}).when(moduleSource).getModules(project);
     doReturn(module).when(moduleSource).getModule(project, moduleName);
 
     dialogs = new Dialogs();
@@ -211,14 +212,18 @@ public class SubmitExerciseActionTest {
     tagger = mock(Interfaces.Tagger.class);
 
     documentSaver = mock(Interfaces.DocumentSaver.class);
-    
+
     languageSource = mock(Interfaces.LanguageSource.class);
     doReturn(language).when(languageSource).getLanguage(project);
-    
+
     defaultGroupIdSetting = new TestDefaultGroupIdSetting();
 
+    VirtualFile moduleDir = mock(VirtualFile.class);
+    doReturn(filePath.getParent().toString()).when(moduleDir).getPath();
+    Interfaces.ModuleDirGuesser moduleDirGuesser = m -> moduleDir;
+
     action = new SubmitExerciseAction(mainVmProvider, authProvider, fileFinder, moduleSource,
-        dialogs, notifier, tagger, documentSaver, languageSource, defaultGroupIdSetting);
+        dialogs, notifier, tagger, documentSaver, languageSource, defaultGroupIdSetting, moduleDirGuesser);
   }
 
   @Test
@@ -305,8 +310,8 @@ public class SubmitExerciseActionTest {
   @Test
   public void testNotifiesExerciseNotSubmittable() throws IOException {
     var exercise = new Exercise(0, "", "", new SubmissionInfo(Map.of()), 0, 0,
-        OptionalLong.empty());
-    var exerciseGroup = new ExerciseGroup(0, "", "", true, List.of());
+        OptionalLong.empty(), null);
+    var exerciseGroup = new ExerciseGroup(0, "", "", true, List.of(), List.of());
     exerciseGroup.addExercise(exercise);
     mainViewModel.exercisesViewModel.set(
         new ExercisesTreeViewModel(new ExercisesTree(List.of(exerciseGroup)), new Options()));
@@ -376,17 +381,17 @@ public class SubmitExerciseActionTest {
 
   public static class TestDefaultGroupIdSetting implements DefaultGroupIdSetting {
     private volatile @Nullable Long defaultGroupId = null;
-    
+
     @Override
     public @NotNull Optional<Long> getDefaultGroupId() {
       return Optional.ofNullable(defaultGroupId);
     }
-  
+
     @Override
     public void setDefaultGroupId(long groupId) {
       defaultGroupId = groupId;
     }
-  
+
     @Override
     public void clearDefaultGroupId() {
       defaultGroupId = null;

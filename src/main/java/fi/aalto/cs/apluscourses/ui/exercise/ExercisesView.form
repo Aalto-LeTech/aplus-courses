@@ -26,6 +26,7 @@
           <component id="de40" class="javax.swing.JLabel" binding="title" custom-create="true">
             <constraints/>
             <properties>
+              <labelFor value="abec8"/>
               <text resource-bundle="resources" key="ui.toolWindow.subTab.exercises.name"/>
             </properties>
           </component>
@@ -46,29 +47,12 @@
         </properties>
         <border type="none"/>
         <children>
-          <grid id="be1b5" binding="cardPanel" layout-manager="CardLayout" hgap="0" vgap="0">
+          <component id="2cca" class="fi.aalto.cs.apluscourses.ui.base.TreeView" binding="exerciseGroupsTree" custom-create="true">
             <constraints/>
-            <properties/>
-            <border type="none"/>
-            <children>
-              <component id="9b0" class="javax.swing.JLabel" binding="emptyText">
-                <constraints>
-                  <card name="LabelCard"/>
-                </constraints>
-                <properties>
-                  <text value=""/>
-                </properties>
-              </component>
-              <component id="2cca" class="fi.aalto.cs.apluscourses.ui.base.TreeView" binding="exerciseGroupsTree" custom-create="true">
-                <constraints>
-                  <card name="TreeCard"/>
-                </constraints>
-                <properties>
-                  <rootVisible value="false"/>
-                </properties>
-              </component>
-            </children>
-          </grid>
+            <properties>
+              <rootVisible value="false"/>
+            </properties>
+          </component>
         </children>
       </scrollpane>
     </children>

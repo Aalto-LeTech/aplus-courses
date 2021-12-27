@@ -41,7 +41,7 @@ public interface TaskManager<T> {
    *
    * @param tasks {@link List} of task identifiers.
    * @return A task identifier that, when passed to {@code join}, ensures that all the tasks
-   *         given to this function, are joined.
+   * given to this function, are joined.
    */
   default T all(List<T> tasks) {
     return fork(() -> {

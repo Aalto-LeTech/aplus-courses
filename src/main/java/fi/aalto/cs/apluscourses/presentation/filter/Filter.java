@@ -9,8 +9,8 @@ public interface Filter {
    *
    * @param item An item to check.
    * @return True: this filter applies to the item.
-   *         False: this filter could apply to the item, but does not.
-   *         Empty: this filter is not applicable to the item.
+   * False: this filter could apply to the item, but does not.
+   * Empty: this filter is not applicable to the item.
    */
   @NotNull
   Optional<Boolean> apply(Object item);

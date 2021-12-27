@@ -49,20 +49,20 @@ public class ProgressViewModelTest {
     var progress1 = viewModel.start(maxValue, label1, true);
     var progress2 = viewModel.start(maxValue, label2, true);
     assertNotEquals("The most recent progress is the current progress",
-            viewModel.getCurrentProgress(), progress1);
+        viewModel.getCurrentProgress(), progress1);
     assertEquals("The most recent progress is the current progress",
-            viewModel.getCurrentProgress(), progress2);
+        viewModel.getCurrentProgress(), progress2);
     assertEquals("The value is correct when start is called",
-            Optional.of(0), Optional.ofNullable(viewModel.value.get()));
+        Optional.of(0), Optional.ofNullable(viewModel.value.get()));
     progress1.increment();
     progress1.increment();
     assertEquals("The value doesn't change if the incremented progress isn't the current one",
-            Optional.of(0), Optional.ofNullable(viewModel.value.get()));
+        Optional.of(0), Optional.ofNullable(viewModel.value.get()));
     progress2.increment();
     assertEquals("The value changes when the current progress is incremented",
-            Optional.of(1), Optional.ofNullable(viewModel.value.get()));
+        Optional.of(1), Optional.ofNullable(viewModel.value.get()));
     progress2.finish();
     assertEquals("The value changes when the current progress is changed",
-            Optional.of(2), Optional.ofNullable(viewModel.value.get()));
+        Optional.of(2), Optional.ofNullable(viewModel.value.get()));
   }
 }

@@ -10,6 +10,7 @@ public class ObservableReadWriteProperty<T> extends ObservableProperty<T> {
 
   /**
    * Construct a new observable property.
+   *
    * @param initialValue Initial value of this {@link ObservableReadWriteProperty}
    */
   public ObservableReadWriteProperty(@Nullable T initialValue) {

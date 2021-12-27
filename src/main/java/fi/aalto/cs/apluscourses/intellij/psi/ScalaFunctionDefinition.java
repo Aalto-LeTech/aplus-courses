@@ -35,14 +35,14 @@ public class ScalaFunctionDefinition {
   public boolean checkMethodName(ScFunctionDefinition element) {
     return methodName.equals(element.getName());
   }
-  
+
   private boolean checkEquals(PsiElement element) {
     if (checkEquals) {
       Collection<PsiElement> siblings = PsiUtil.getPsiElementsSiblings(element);
       Optional<PsiElement> parametersOptional = siblings.stream().filter(
           ScParametersImpl.class::isInstance).findFirst();
       PsiElement equalsElement = PsiUtil.findNextLeafPsiElement(parametersOptional);
-      
+
       return equalsElement != null && ("=").equals(equalsElement.getText());
     }
     return true;
@@ -50,6 +50,7 @@ public class ScalaFunctionDefinition {
 
   /**
    * Checks the type parameters of the function.
+   *
    * @param clause The ScTypeParametersClause to be checked.
    * @return true if the type parameters are correct, false otherwise.
    */
@@ -57,7 +58,7 @@ public class ScalaFunctionDefinition {
     if (clause.isPresent() && typeParameters.length() != 0) {
       ScTypeParamClause typeParamClause = (ScTypeParamClause) clause.get();
       return typeParameters.equals(typeParamClause.getText().replace(" ", ""));
-      
+
     } else {
       return clause.isEmpty() && typeParameters.length() == 0;
     }
@@ -65,6 +66,7 @@ public class ScalaFunctionDefinition {
 
   /**
    * Checks the parameters(arguments) of the function.
+   *
    * @param optParameters The ScParametersImpl to be checked
    * @return true if the parameters are correct, false otherwise
    */
@@ -72,7 +74,7 @@ public class ScalaFunctionDefinition {
     if (optParameters.isPresent()) {
       PsiParameter[] parameters = ((ScParametersImpl) optParameters.get()).getParameters();
       List<String> params = new ArrayList<>();
-      for (PsiParameter param: parameters) {
+      for (PsiParameter param : parameters) {
         params.add(param.getName() + ":" + param.getType().getPresentableText());
       }
       return Arrays.equals(arguments, params.toArray());
@@ -82,13 +84,14 @@ public class ScalaFunctionDefinition {
 
   /**
    * Check the body of the function.
+   *
    * @param children The PsiElement to derive the function body from
    * @return true if the body is correct, false otherwise
    */
   public boolean checkFunctionBody(PsiElement[] children) {
     PsiElement methodBodyParent = children[children.length - 1];
     if (methodBodyParent != null) {
-      
+
       List<String> args = Arrays.asList(methodBody.clone());
       children = methodBodyParent.getChildren();
       Collection<String> totalElements = getPsiElementsSiblings(children[0]);

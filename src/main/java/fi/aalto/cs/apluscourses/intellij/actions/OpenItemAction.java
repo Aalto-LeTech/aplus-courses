@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.intellij.actions;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAwareAction;
+import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.UrlRenderingErrorNotification;
@@ -9,16 +10,14 @@ import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Browsable;
 import fi.aalto.cs.apluscourses.model.UrlRenderer;
+import fi.aalto.cs.apluscourses.presentation.base.BaseTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
-import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class OpenItemAction extends DumbAwareAction {
-
-  public static final String ACTION_ID = OpenItemAction.class.getCanonicalName();
-
+public class OpenItemAction<T> extends DumbAwareAction {
   @NotNull
-  private final MainViewModelProvider mainViewModelProvider;
+  protected final MainViewModelProvider mainViewModelProvider;
 
   @NotNull
   private final UrlRenderer urlRenderer;
@@ -30,9 +29,9 @@ public class OpenItemAction extends DumbAwareAction {
    * Construct an {@link OpenItemAction} instance with the given parameters. This constructor
    * is mainly useful for testing purposes.
    */
-  public OpenItemAction(@NotNull MainViewModelProvider mainViewModelProvider,
-                        @NotNull UrlRenderer urlRenderer,
-                        @NotNull Notifier notifier) {
+  protected OpenItemAction(@NotNull MainViewModelProvider mainViewModelProvider,
+                           @NotNull UrlRenderer urlRenderer,
+                           @NotNull Notifier notifier) {
     this.mainViewModelProvider = mainViewModelProvider;
     this.urlRenderer = urlRenderer;
     this.notifier = notifier;
@@ -41,7 +40,7 @@ public class OpenItemAction extends DumbAwareAction {
   /**
    * Construct an {@link OpenItemAction} instance with reasonable defaults.
    */
-  public OpenItemAction() {
+  protected OpenItemAction() {
     this(
         PluginSettings.getInstance(),
         new UrlRenderer(),
@@ -51,15 +50,15 @@ public class OpenItemAction extends DumbAwareAction {
 
   @Override
   public void actionPerformed(@NotNull AnActionEvent e) {
-    ExercisesTreeViewModel exercisesTree = mainViewModelProvider
-        .getMainViewModel(e.getProject())
-        .exercisesViewModel
-        .get();
-    if (exercisesTree == null) {
+    if (e.getProject() == null) {
+      return;
+    }
+    BaseTreeViewModel<T> treeViewModel = getTreeViewModel(e.getProject());
+    if (treeViewModel == null) {
       return;
     }
 
-    SelectableNodeViewModel<?> nodeViewModel = exercisesTree.getSelectedItem();
+    SelectableNodeViewModel<?> nodeViewModel = treeViewModel.getSelectedItem();
     if (nodeViewModel == null) {
       return;
     }
@@ -74,9 +73,11 @@ public class OpenItemAction extends DumbAwareAction {
   @Override
   public void update(@NotNull AnActionEvent e) {
     var project = e.getProject();
-    var exercisesTreeViewModel =
-            mainViewModelProvider.getMainViewModel(project).exercisesViewModel.get();
-    e.getPresentation().setEnabled(exercisesTreeViewModel != null
-            && exercisesTreeViewModel.isAuthenticated());
+    e.getPresentation().setEnabled(project != null && getTreeViewModel(project) != null);
+  }
+
+  @Nullable
+  BaseTreeViewModel<T> getTreeViewModel(@NotNull Project project) {
+    return null;
   }
 }

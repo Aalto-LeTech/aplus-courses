@@ -24,10 +24,10 @@ public class CourseProjectViewModel {
   private final boolean currentSettingsDiffer;
 
 
-
   /**
    * Construct a course project view model with the given course and name of the currently imported
    * IDE settings.
+   *
    * @param course                       The course bound to this course project view model.
    * @param currentlyImportedIdeSettings The ID of the course for which the IDE settings have
    *                                     currently been imported.

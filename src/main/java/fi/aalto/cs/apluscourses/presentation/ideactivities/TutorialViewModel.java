@@ -88,9 +88,11 @@ public class TutorialViewModel implements Task.Observer {
 
   @Override
   public void onAutoCompleted() {
-    taskNotifier.notifyAlreadyEndTask(tutorialExercise.getTutorial().getTasks().indexOf(currentTask),
-        currentTask.getInstruction());
-    currentTaskCompleted();
+    if (!currentTask.isAlreadyCompleted()) {
+      endCurrentTask();
+      currentTask = getTutorial().setTaskAlreadyCompleted(currentTask);
+      startCurrentTask();
+    }
   }
 
   @Override
@@ -127,7 +129,7 @@ public class TutorialViewModel implements Task.Observer {
     synchronized (lock) {
       endCurrentTask();
       Tutorial tutorial = tutorialExercise.getTutorial();
-      currentTask = tutorial.getTasks().get(newTaskIndex);
+      currentTask = tutorial.getTasks().get(newTaskIndex - 1);
       this.currentTaskIndex = newTaskIndex;
       startCurrentTask();
     }
@@ -176,8 +178,8 @@ public class TutorialViewModel implements Task.Observer {
   }
 
   /**
-    * Cancels the tutorial if the user confirms it.
-    */
+   * Cancels the tutorial if the user confirms it.
+   */
   public void confirmCancel() {
     if (dialogs.confirmCancel(this)) {
       cancelTutorial();

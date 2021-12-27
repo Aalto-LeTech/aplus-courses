@@ -28,20 +28,23 @@ public class CourseTest {
     Map<String, URL> resourceUrls = new HashMap<>();
     resourceUrls.put("key", new URL("http://localhost:8000"));
     resourceUrls.put("ideSettings", new URL("http://localhost:23333"));
+    Map<String, String> vmOptions = new HashMap<>();
+    vmOptions.put("some-option", "nice-value");
     List<String> autoInstallComponents = List.of(module1name);
     Map<String, String[]> replInitialCommands = new HashMap<>();
-    replInitialCommands.put("Module1", new String[]{"import o1._"});
+    replInitialCommands.put("Module1", new String[] {"import o1._"});
     Course course = new ModelExtensions.TestCourse(
         "13",
         "Tester Course",
         "http://localhost:2466/",
         List.of("se", "en"),
         modules,
-        //  libraries
+        // libraries
         Collections.emptyList(),
-        //  exerciseModules
+        // exerciseModules
         Collections.emptyMap(),
         resourceUrls,
+        vmOptions,
         autoInstallComponents,
         replInitialCommands,
         BuildInfo.INSTANCE.courseVersion,
@@ -66,6 +69,8 @@ public class CourseTest {
         new URL("http://localhost:8000"), course.getResourceUrls().get("key"));
     assertEquals("The IDE settings path should be the same as the one given to the constructor",
         new URL("http://localhost:23333"), course.getAppropriateIdeSettingsUrl());
+    assertEquals("The VM options should be the same as those given to the constructor",
+        "nice-value", course.getVMOptions().get("some-option"));
     assertEquals(
         "The auto-install components should be the same as those given to the constructor",
         module1name, course.getAutoInstallComponents().get(0).getName());
@@ -80,23 +85,25 @@ public class CourseTest {
     Course course = new ModelExtensions.TestCourse(
         // id
         "",
-        //  name
+        // name
         "",
         "http://localhost:2736",
         Collections.emptyList(),
-        //  modules
+        // modules
         List.of(module1, module2),
-        //  libraries
+        // libraries
         Collections.emptyList(),
-        //  exerciseModules
+        // exerciseModules
         Collections.emptyMap(),
-        //  resourceUrls
+        // resourceUrls
         Collections.emptyMap(),
-        //  autoInstallComponentNames
+        // vmOptions
+        Collections.emptyMap(),
+        // autoInstallComponentNames
         Collections.emptyList(),
-        //  replInitialCommands
+        // replInitialCommands
         Collections.emptyMap(),
-        //  courseVersion
+        // courseVersion
         BuildInfo.INSTANCE.courseVersion,
         // tutorials
         Collections.emptyMap());
@@ -112,25 +119,27 @@ public class CourseTest {
         moduleName, new URL("http://localhost:3000"), new Version(2, 3), null, "changes", null);
     Library library = new ModelExtensions.TestLibrary(libraryName);
     Course course = new ModelExtensions.TestCourse(
-        //  id
+        // id
         "",
-        //  name
+        // name
         "",
         "http://localhost:5555",
         Collections.emptyList(),
-        //  modules
+        // modules
         List.of(module),
-        //  libraries
+        // libraries
         List.of(library),
-        //  exerciseModules
+        // exerciseModules
         Collections.emptyMap(),
         // resourceUrls
         Collections.emptyMap(),
-        //  autoInstallComponentNames
-        List.of("test-module", "test-library"),
-        //  replInitialCommands
+        // vmOptions
         Collections.emptyMap(),
-        //  courseVersion
+        // autoInstallComponentNames
+        List.of("test-module", "test-library"),
+        // replInitialCommands
+        Collections.emptyMap(),
+        // courseVersion
         BuildInfo.INSTANCE.courseVersion,
         // tutorials
         Collections.emptyMap());
@@ -147,19 +156,21 @@ public class CourseTest {
         "Just some course",
         "http://localhost:1951",
         Collections.emptyList(),
-        //  modules
+        // modules
         Collections.emptyList(),
-        //  libraries
+        // libraries
         Collections.emptyList(),
-        //  exerciseModules
+        // exerciseModules
         Collections.emptyMap(),
-        //  resourceUrls
+        // resourceUrls
         Collections.emptyMap(),
-        //  autoInstallComponentNames
+        // vmOptions
+        Collections.emptyMap(),
+        // autoInstallComponentNames
         Collections.emptyList(),
-        //  replInitialCommands
+        // replInitialCommands
         Collections.emptyMap(),
-        //  courseVersion
+        // courseVersion
         BuildInfo.INSTANCE.courseVersion,
         // tutorials
         Collections.emptyMap());
@@ -175,6 +186,7 @@ public class CourseTest {
   private static String exerciseModulesJson = "\"exerciseModules\":{123:{\"en\":\"en_module\"}}";
   private static String resourcesJson = "\"resources\":{\"abc\":\"http://example.com\","
       + "\"def\":\"http://example.org\"}";
+  private static String vmOptionsJson = "\"vmOptions\":{\"a\":\"bcd\"}";
   private static String autoInstallJson = "\"autoInstall\":[\"O1Library\"]";
   private static String replInitialCommands = "\"repl\": {\"initialCommands\": {\"GoodStuff\": ["
       + "\"import o1._\",\"import o1.goodstuff._\"]}}";
@@ -184,7 +196,7 @@ public class CourseTest {
   public void testFromConfigurationFile() throws MalformedCourseConfigurationException {
     StringReader stringReader = new StringReader("{" + idJson + "," + nameJson + "," + urlJson
         + "," + languagesJson + "," + modulesJson + "," + exerciseModulesJson + "," + resourcesJson
-        + "," + autoInstallJson + "," + replInitialCommands + "," + courseVersion + "}");
+        + "," + vmOptionsJson + "," + autoInstallJson + "," + replInitialCommands + "," + courseVersion + "}");
     Course course = Course.fromConfigurationData(stringReader, "./path/to/file", MODEL_FACTORY);
     assertEquals("Course should have the same ID as that in the configuration JSON",
         "1238", course.getId());
@@ -206,6 +218,8 @@ public class CourseTest {
         "http://example.com", course.getResourceUrls().get("abc").toString());
     assertEquals("The course should have the resource URLs of the configuration JSON",
         "http://example.org", course.getResourceUrls().get("def").toString());
+    assertEquals("The course should have the VM options of the configuration JSON",
+        "bcd", course.getVMOptions().get("a"));
     assertEquals("The course should have the auto-install components of the configuration JSON",
         "O1Library", course.getAutoInstallComponents().get(0).getName());
     assertEquals("The course should have the REPL initial commands of the configuration JSON",

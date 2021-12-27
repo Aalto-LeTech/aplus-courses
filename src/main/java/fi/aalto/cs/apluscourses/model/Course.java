@@ -58,6 +58,9 @@ public abstract class Course implements ComponentSource {
   private final Map<String, URL> resourceUrls;
 
   @NotNull
+  private final Map<String, String> vmOptions;
+
+  @NotNull
   private final List<String> autoInstallComponentNames;
 
   @NotNull
@@ -74,12 +77,13 @@ public abstract class Course implements ComponentSource {
 
   /**
    * Constructs a course with the given parameters.
-   *  @param name                The name of the course.
+   *
+   * @param name                The name of the course.
    * @param modules             The list of modules in the course.
    * @param resourceUrls        A map containing URLs to resources related to the course. The keys
- *                            are the names of the resources and the values are the URLs.
+   *                            are the names of the resources and the values are the URLs.
    * @param replInitialCommands A {@link Map}, with module name {@link String} as a key and a
-*                            {@link String} array of the commands to be executed on REPL
+   *                            {@link String} array of the commands to be executed on REPL
    */
   protected Course(@NotNull String id,
                    @NotNull String name,
@@ -89,6 +93,7 @@ public abstract class Course implements ComponentSource {
                    @NotNull List<Library> libraries,
                    @NotNull Map<Long, Map<String, String>> exerciseModules,
                    @NotNull Map<String, URL> resourceUrls,
+                   @NotNull Map<String, String> vmOptions,
                    @NotNull List<String> autoInstallComponentNames,
                    @NotNull Map<String, String[]> replInitialCommands,
                    @NotNull Version courseVersion,
@@ -99,6 +104,7 @@ public abstract class Course implements ComponentSource {
     this.languages = languages;
     this.modules = modules;
     this.resourceUrls = resourceUrls;
+    this.vmOptions = vmOptions;
     this.libraries = libraries;
     this.exerciseModules = exerciseModules;
     this.autoInstallComponentNames = autoInstallComponentNames;
@@ -122,7 +128,7 @@ public abstract class Course implements ComponentSource {
    * @param reader A reader providing a character stream with the course configuration data.
    * @return A course instance containing the information parsed from the configuration data.
    * @throws MalformedCourseConfigurationException If the configuration data is malformed in any
-   *                                                   way
+   *                                               way
    */
   @NotNull
   public static Course fromConfigurationData(@NotNull Reader reader, @NotNull ModelFactory factory)
@@ -138,7 +144,7 @@ public abstract class Course implements ComponentSource {
    *                   from this method.
    * @return A course instance containing the information parsed from the configuration data.
    * @throws MalformedCourseConfigurationException If the configuration data is malformed in any
-   *                                                   way
+   *                                               way
    */
   @NotNull
   public static Course fromConfigurationData(@NotNull Reader reader,
@@ -154,6 +160,7 @@ public abstract class Course implements ComponentSource {
     Map<Long, Map<String, String>> exerciseModules
         = getCourseExerciseModules(jsonObject, sourcePath);
     Map<String, URL> resourceUrls = getCourseResourceUrls(jsonObject, sourcePath);
+    Map<String, String> vmOptions = getInitVMOptions(jsonObject, sourcePath);
     List<String> autoInstallComponentNames
         = getCourseAutoInstallComponentNames(jsonObject, sourcePath);
     Map<String, String[]> replInitialCommands
@@ -169,6 +176,7 @@ public abstract class Course implements ComponentSource {
         Collections.emptyList(), // libraries
         exerciseModules,
         resourceUrls,
+        vmOptions,
         autoInstallComponentNames,
         replInitialCommands,
         courseVersion,
@@ -181,10 +189,10 @@ public abstract class Course implements ComponentSource {
    *
    * @param url The URL of the course configuration file.
    * @return A course instance containing the information parsed from the course configuration file.
-   * @throws IOException                               If an IO error occurs (network connection
-   *                                                   issues for an example).
+   * @throws IOException                           If an IO error occurs (network connection
+   *                                               issues for an example).
    * @throws MalformedCourseConfigurationException If the course configuration file is malformed
-   *                                                   in any way.
+   *                                               in any way.
    */
   @NotNull
   public static Course fromUrl(@NotNull URL url, @NotNull ModelFactory modelFactory)
@@ -311,6 +319,12 @@ public abstract class Course implements ComponentSource {
     }
 
     return ideSettingsUrl;
+  }
+
+  @NotNull
+  @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
+  public Map<String, String> getVMOptions() {
+    return vmOptions;
   }
 
   @NotNull
@@ -460,6 +474,29 @@ public abstract class Course implements ComponentSource {
   }
 
   @NotNull
+  @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
+  private static Map<String, String> getInitVMOptions(@NotNull JSONObject jsonObject, @NotNull String source)
+      throws MalformedCourseConfigurationException {
+    Map<String, String> vmOptions = new HashMap<>();
+    JSONObject vmOptionsJsonObject = jsonObject.optJSONObject("vmOptions");
+    if (vmOptionsJsonObject == null) {
+      return vmOptions;
+    }
+
+    Iterable<String> keys = vmOptionsJsonObject::keys;
+    for (var optionKey : keys) {
+      try {
+        vmOptions.put(optionKey, vmOptionsJsonObject.getString(optionKey));
+      } catch (JSONException ex) {
+        throw new MalformedCourseConfigurationException(source,
+            "Expected string-typed key-value pairs in \"vmOptions\" object", ex);
+      }
+    }
+
+    return vmOptions;
+  }
+
+  @NotNull
   private static List<String> getCourseAutoInstallComponentNames(@NotNull JSONObject jsonObject,
                                                                  @NotNull String source)
       throws MalformedCourseConfigurationException {
@@ -515,7 +552,7 @@ public abstract class Course implements ComponentSource {
 
   @NotNull
   private static Version getCourseVersion(@NotNull JSONObject jsonObject,
-                                                @NotNull String source)
+                                          @NotNull String source)
       throws MalformedCourseConfigurationException {
     String versionJson = jsonObject.optString("version", null);
     if (versionJson == null) {

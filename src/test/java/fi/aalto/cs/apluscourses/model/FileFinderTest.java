@@ -40,7 +40,7 @@ public class FileFinderTest {
     String file1 = "bar";
 
     FileFinder fileFinder = Path::resolve;
-    Path[] paths = fileFinder.findFiles(dir, new String[] { file0, file1 });
+    Path[] paths = fileFinder.findFiles(dir, new String[] {file0, file1});
 
     assertEquals(2, paths.length);
     assertEquals(dir.resolve(file0), paths[0]);

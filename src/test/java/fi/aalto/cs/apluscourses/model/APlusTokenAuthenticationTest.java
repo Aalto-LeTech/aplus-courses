@@ -12,7 +12,7 @@ public class APlusTokenAuthenticationTest {
 
   @Test
   public void testAPlusAuthentication() {
-    Authentication authentication = new APlusTokenAuthentication(new char[]{'a', 'b', 'c'});
+    Authentication authentication = new APlusTokenAuthentication(new char[] {'a', 'b', 'c'});
 
     HttpRequest request = new HttpGet("https://example.com");
     authentication.addToRequest(request);
@@ -23,7 +23,7 @@ public class APlusTokenAuthenticationTest {
 
   @Test
   public void testCreationCopiesToken() {
-    char[] token = (new char[]{'d', 'e', 'f'});
+    char[] token = (new char[] {'d', 'e', 'f'});
 
     Authentication authentication = new APlusTokenAuthentication(token);
 
@@ -37,7 +37,7 @@ public class APlusTokenAuthenticationTest {
 
   @Test
   public void testClearToken() {
-    char[] token = new char[]{'g', 'h', 'i'};
+    char[] token = new char[] {'g', 'h', 'i'};
     APlusTokenAuthentication authentication = new APlusTokenAuthentication(token);
 
     authentication.clear();

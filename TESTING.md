@@ -12,7 +12,7 @@ Manual testing
 ### 0 Setup
 
 **0.1** Make sure you are using a clean installation of
-**IntelliJ IDEA Community** version **2021.1**.
+**IntelliJ IDEA Community** version **2021.2**.
 
 - You can download IntelliJ IDEA Community from https://www.jetbrains.com/idea/download.
 - In case you use an existing install of IntelliJ IDEA, you can use one of the following ways to restore to the default
@@ -52,7 +52,7 @@ published version.
 
 - If you don't have a ZIP file yet, you can generate it. To get the source code, execute
 
-      git clone https://github.com/Aalto-LeTech/intellij-plugin.git
+      git clone https://github.com/Aalto-LeTech/aplus-courses.git
 
   and navigate to the cloned directory. Checkout the branch/tag/commit you want to test, and execute
 

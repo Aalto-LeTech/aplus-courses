@@ -25,6 +25,7 @@ public class Resources {
   /**
    * Constructs a new {@link Resources} object that provides an access to resources from a given
    * class loader.
+   *
    * @param classLoader A {@link ClassLoader} from which the resources are read.
    */
   public Resources(@NotNull ClassLoader classLoader) {
@@ -34,6 +35,7 @@ public class Resources {
   /**
    * Constructs a new {@link Resources} object that provides an access to resources from a given
    * resource provider.
+   *
    * @param resourceProvider A {@link ResourceProvider} from which the resources are read.
    */
   public Resources(@NotNull ResourceProvider resourceProvider) {
@@ -42,6 +44,7 @@ public class Resources {
 
   /**
    * Returns properties from a resource.
+   *
    * @param resourceName Name of the resource.
    * @return Contents of the resource as a {@link Properties} object.
    * @throws ResourceException If properties could not be read either because the resource was not
@@ -60,6 +63,7 @@ public class Resources {
 
   /**
    * Returns a resource as a stream.
+   *
    * @param resourceName Name of the resource.
    * @return An {@link InputStream} to the given resource.
    * @throws ResourceException If the resource could not be found.
@@ -103,9 +107,10 @@ public class Resources {
 
     /**
      * Opens an input stream to the resource indicated by {@code name}.
+     *
      * @param name Name of the resource.
      * @return An open {@link InputStream} which corresponds to {@code name} or {@code null} if
-     *         the resource could not be found.
+     * the resource could not be found.
      */
     @Nullable
     InputStream getResourceAsStream(@NotNull String name);

@@ -43,7 +43,7 @@ public class FilterOptionsActionGroupTest {
 
     MainViewModel mainViewModel = new MainViewModel(new Options());
     ExercisesTreeViewModel exercisesViewModel =
-            spy(new ExercisesTreeViewModel(new ExercisesTree(), new Options()));
+        spy(new ExercisesTreeViewModel(new ExercisesTree(), new Options()));
     when(exercisesViewModel.getFilterOptions()).thenReturn(filterOptions);
     mainViewModel.exercisesViewModel.set(exercisesViewModel);
     MainViewModelProvider mainViewModelProvider = mock(MainViewModelProvider.class);

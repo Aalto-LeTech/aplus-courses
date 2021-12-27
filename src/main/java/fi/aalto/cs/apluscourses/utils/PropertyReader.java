@@ -13,6 +13,7 @@ public class PropertyReader {
 
   /**
    * Constructs a reader for {@code properties}.
+   *
    * @param properties A {@link Properties} object to be read.
    */
   public PropertyReader(@NotNull Properties properties) {
@@ -23,6 +24,7 @@ public class PropertyReader {
    * Reads a property with key {@code propertyKey} from the properties.
    * The difference between this method and {@code Properties.getProperty(String)} is that this
    * method throws a {@link PropertyException} if the property is not found.
+   *
    * @param propertyKey The key of the property.
    * @return The value of the property.
    * @throws PropertyException If the property is not found.
@@ -38,12 +40,13 @@ public class PropertyReader {
 
   /**
    * Reads a property and parses its value to an object of type {@code T}.
+   *
    * @param propertyKey The key of the property.
-   * @param parser A {@link ValueParser} that parses the value of the property to an object.
-   *               Any runtime exception thrown by the parser is caught and a
-   *               {@link PropertyException} is thrown instead (with the original exception as the
-   *               cause of the {@link PropertyException}).
-   * @param <T> The type of the object to be parsed from the property value.
+   * @param parser      A {@link ValueParser} that parses the value of the property to an object.
+   *                    Any runtime exception thrown by the parser is caught and a
+   *                    {@link PropertyException} is thrown instead (with the original exception as the
+   *                    cause of the {@link PropertyException}).
+   * @param <T>         The type of the object to be parsed from the property value.
    * @return An object of type {@code T}.
    * @throws PropertyException If the value cannot be parsed.
    */

@@ -22,7 +22,7 @@ public class AboutDialog {
 
   private static final String A_COURSES_PLUGIN_PAGE = "https://plugins.jetbrains.com/plugin/13634-a-courses";
   private static final String A_PLUS_PAGE = "https://plus.cs.aalto.fi/";
-  private static final String GITHUB_PAGE = "https://github.com/Aalto-LeTech/intellij-plugin";
+  private static final String GITHUB_PAGE = "https://github.com/Aalto-LeTech/aplus-courses";
 
   private AboutDialog() {
 
@@ -99,7 +99,7 @@ public class AboutDialog {
         getText("ui.aboutDialog.APlusWebsite"),
         AllIcons.Ide.External_link_arrow,
         (first, second) ->
-                BrowserUtil.browse(A_PLUS_PAGE));
+            BrowserUtil.browse(A_PLUS_PAGE));
     linkLabel.setIconTextGap(0);
     linkLabel.setHorizontalTextPosition(SwingConstants.LEFT);
 
@@ -112,7 +112,7 @@ public class AboutDialog {
         getText("ui.aboutDialog.GithubWebsite"),
         AllIcons.Ide.External_link_arrow,
         (first, second) ->
-                BrowserUtil.browse(GITHUB_PAGE));
+            BrowserUtil.browse(GITHUB_PAGE));
     linkLabel.setIconTextGap(0);
     linkLabel.setHorizontalTextPosition(SwingConstants.LEFT);
 

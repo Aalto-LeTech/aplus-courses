@@ -10,7 +10,7 @@ public class BaseTreeViewModel<T> extends SelectableNodeViewModel<T> {
 
   @NotNull
   public final Event filtered = new Event();
-  @NotNull
+  @Nullable
   protected final Options options;
   @Nullable
   private Thread filterThread = null;
@@ -32,11 +32,21 @@ public class BaseTreeViewModel<T> extends SelectableNodeViewModel<T> {
    */
   public BaseTreeViewModel(@NotNull T model,
                            @Nullable List<SelectableNodeViewModel<?>> children,
-                           @NotNull Options options) {
+                           @Nullable Options options) {
     super(model, children);
     this.options = options;
-    this.options.optionsChanged.addListener(this, BaseTreeViewModel::filter);
+    if (options != null) {
+      this.options.optionsChanged.addListener(this, BaseTreeViewModel::filter);
+    }
     filter();
+  }
+
+  /**
+   * Base class for tree view models.
+   */
+  public BaseTreeViewModel(@NotNull T model,
+                           @Nullable List<SelectableNodeViewModel<?>> children) {
+    this(model, children, null);
   }
 
   protected void filter() {
@@ -46,7 +56,7 @@ public class BaseTreeViewModel<T> extends SelectableNodeViewModel<T> {
     }
   }
 
-  @NotNull
+  @Nullable
   public Options getFilterOptions() {
     return options;
   }
@@ -71,7 +81,9 @@ public class BaseTreeViewModel<T> extends SelectableNodeViewModel<T> {
           previous.interrupt();
           previous.join();
         }
-        applyFilter(options);
+        if (options != null) {
+          applyFilter(options);
+        }
         if (done()) {
           filtered.trigger();
         }
