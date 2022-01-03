@@ -1,8 +1,10 @@
 #!/bin/bash
 
 # preparing and compiling the A+ env components (https://apluslms.github.io/guides/quick/)
-git clone https://github.com/apluslms/a-plus.git &&
-git clone https://github.com/Aalto-LeTech/course-templates.git my_new_course &&
+git clone --depth 1 --branch "$(curl --silent "https://api.github.com/repos/apluslms/a-plus/releases/latest" |
+                                grep '"tag_name":' |
+                                sed -E 's/.*"([^"]+)".*/\1/')" https://github.com/apluslms/a-plus.git &&
+git clone --depth 1 https://github.com/Aalto-LeTech/course-templates.git my_new_course &&
 cd my_new_course &&
 git submodule init &&
 git submodule update &&
