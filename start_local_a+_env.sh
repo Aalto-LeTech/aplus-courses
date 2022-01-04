@@ -15,6 +15,13 @@ head -102 docker-up.sh > docker-up-custom.sh &&
 chmod +x docker-up-custom.sh &&
 ./docker-up-custom.sh &&
 # wait for all the components of A+ to start
+i=0
+
 until curl --output /dev/null --silent --head --fail http://localhost:8000; do
+      if [[ ${i} -eq 25 ]];then
+        echo "Could not start A+"
+        exit 1
+      fi
     sleep 5
+    i=$((i+1))
 done
