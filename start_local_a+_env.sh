@@ -1,10 +1,7 @@
 #!/bin/bash
 
 # preparing and compiling the A+ env components (https://apluslms.github.io/guides/quick/)
-git clone --depth 1 --branch "$(curl --silent "https://api.github.com/repos/apluslms/a-plus/releases/latest" |
-                                grep '"tag_name":' |
-                                sed -E 's/.*"([^"]+)".*/\1/')" https://github.com/apluslms/a-plus.git &&
-git clone --depth 1 https://github.com/Aalto-LeTech/course-templates.git my_new_course &&
+git clone --depth 1 https://github.com/jaakkonarhi/aplus-manual.git my_new_course &&
 cd my_new_course &&
 git submodule init &&
 git submodule update &&
@@ -15,7 +12,7 @@ head -102 docker-up.sh > docker-up-custom.sh &&
 chmod +x docker-up-custom.sh &&
 ./docker-up-custom.sh &&
 # wait for all the components of A+ to start
-i=0
+i=0 &&
 
 until curl --output /dev/null --silent --head --fail http://localhost:8000; do
       if [[ ${i} -eq 25 ]];then
