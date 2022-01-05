@@ -12,7 +12,7 @@ import org.junit.Test;
 
 public class ApiTest {
 
-  //  For this to work the 'CI=true' environment variable is added to .travis.yml
+  //  For this to work the 'INTEGRATION=true' environment variable is added to the GitHub workflow .yml file
   @ClassRule
   public static final EnvironmentChecker checker = new EnvironmentChecker("INTEGRATION");
 
@@ -59,7 +59,6 @@ public class ApiTest {
         .statusCode(HttpStatus.SC_OK)
         .contentType(ContentType.JSON)
         .body("results[0].id", equalTo(200))
-        .body("results[0].members.id", hasItems(5, 6))
         .body("results[0].members.full_name", hasItems("Perry Cash", "Zorita Alston"));
   }
 
