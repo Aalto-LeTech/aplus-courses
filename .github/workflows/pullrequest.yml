@@ -1,0 +1,26 @@
+name: Pull Request Build
+
+on: pull_request
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - name: Setup A+ LMS locally
+        run: chmod +x start_local_a+_env.sh && ./start_local_a+_env.sh
+      - name: Build & Analyze
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: wrapper
+          arguments: build sonarqube --info --stacktrace --build-cache
+          cache-read-only: ${{ github.ref != 'refs/heads/master' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          INTEGRATION: true
