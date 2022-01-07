@@ -18,21 +18,20 @@ sourceCompatibility = 11
 
 repositories {
     mavenCentral()
-    jcenter()
     maven { url = "https://packages.jetbrains.team/maven/p/ij/intellij-dependencies" }
 }
 
 dependencies {
     implementation 'org.jsoup:jsoup:1.14.3'
-    compile group: 'commons-io', name: 'commons-io', version: '2.8.0'
-    compile group: 'net.lingala.zip4j', name: 'zip4j', version: '2.7.0'
-    compileOnly group: 'org.scala-lang', name: 'scala-library', version: '2.13.4'
+    compile group: 'commons-io', name: 'commons-io', version: '2.11.0'
+    compile group: 'net.lingala.zip4j', name: 'zip4j', version: '2.9.1'
+    compileOnly group: 'org.scala-lang', name: 'scala-library', version: '2.13.6'
     implementation group: 'org.json', name: 'json', version: '20190722'
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testCompile group: 'junit', name: 'junit', version: '4.13.2'
     testCompile group: 'org.hamcrest', name: 'hamcrest', version: '2.2'
-    testCompile group: 'org.mockito', name: 'mockito-core', version: '3.2.4'
-    testCompile group: 'org.scala-lang', name: 'scala-library', version: '2.13.4'
-    testCompile('io.rest-assured:rest-assured:4.2.0') {
+    testCompile group: 'org.mockito', name: 'mockito-core', version: '4.2.0'
+    testCompile group: 'org.scala-lang', name: 'scala-library', version: '2.13.6'
+    testCompile('io.rest-assured:rest-assured:4.4.0') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-xml'
     }
 }
