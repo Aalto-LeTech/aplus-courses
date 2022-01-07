@@ -107,6 +107,7 @@ public class TutorialAction extends AnAction implements DumbAware {
 
     if (!missingDependencies.isEmpty()) {
       notifier.notify(new MissingDependencyNotification(missingDependencies), project);
+      return;
     }
 
 
