@@ -19,7 +19,6 @@ jobs:
         with:
           gradle-version: wrapper
           arguments: build sonarqube --info --stacktrace --build-cache
-          cache-read-only: ${{ github.ref != 'refs/heads/master' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
