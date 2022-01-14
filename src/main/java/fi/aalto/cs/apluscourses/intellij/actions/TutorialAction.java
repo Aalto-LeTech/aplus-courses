@@ -9,9 +9,11 @@ import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
+import fi.aalto.cs.apluscourses.intellij.model.ProjectModuleSource;
 import fi.aalto.cs.apluscourses.intellij.model.task.IntelliJActivityFactory;
 import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.ExerciseNotSelectedNotification;
+import fi.aalto.cs.apluscourses.intellij.notifications.MissingDependencyNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.TaskNotifier;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
@@ -27,6 +29,8 @@ import fi.aalto.cs.apluscourses.presentation.ideactivities.TutorialDialogs;
 import fi.aalto.cs.apluscourses.presentation.ideactivities.TutorialViewModel;
 import fi.aalto.cs.apluscourses.ui.ideactivities.ComponentDatabase;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javax.swing.JOptionPane;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -37,6 +41,7 @@ public class TutorialAction extends AnAction implements DumbAware {
   private final @NotNull TutorialAuthenticationProvider authenticationProvider;
   private final @NotNull Notifier notifier;
   private final @NotNull TutorialDialogs dialogs;
+  private final @NotNull ProjectModuleSource moduleSource;
 
   /**
    * Empty Constructor.
@@ -45,7 +50,7 @@ public class TutorialAction extends AnAction implements DumbAware {
     this(PluginSettings.getInstance(), new DefaultNotifier(), project -> {
       var courseProject = PluginSettings.getInstance().getCourseProject(project);
       return courseProject == null ? null : courseProject.getAuthentication();
-    }, new DefaultDialogs());
+    }, new DefaultDialogs(), new ProjectModuleSource());
   }
 
   /**
@@ -54,11 +59,13 @@ public class TutorialAction extends AnAction implements DumbAware {
   public TutorialAction(@NotNull MainViewModelProvider mainViewModelProvider,
                         @NotNull Notifier notifier,
                         @NotNull TutorialAuthenticationProvider authenticationProvider,
-                        @NotNull TutorialDialogs dialogs) {
+                        @NotNull TutorialDialogs dialogs,
+                        @NotNull ProjectModuleSource moduleSource) {
     this.mainViewModelProvider = mainViewModelProvider;
     this.notifier = notifier;
     this.authenticationProvider = authenticationProvider;
     this.dialogs = dialogs;
+    this.moduleSource = moduleSource;
   }
 
   @Override
@@ -89,6 +96,17 @@ public class TutorialAction extends AnAction implements DumbAware {
       return;
     }
     TutorialExercise tutorialExercise = (TutorialExercise) selectedExercise.getModel();
+
+    Set<String> dependencies = tutorialExercise.getTutorial().getDependencies();
+    Set<String> missingDependencies =
+        dependencies.stream().filter(moduleName -> moduleSource.getModule(project, moduleName) == null).collect(
+            Collectors.toSet());
+
+    if (!missingDependencies.isEmpty()) {
+      notifier.notify(new MissingDependencyNotification(missingDependencies), project);
+      return;
+    }
+
 
     Optional.ofNullable(mainViewModel.tutorialViewModel.get())
         .ifPresent(TutorialViewModel::cancelTutorial);

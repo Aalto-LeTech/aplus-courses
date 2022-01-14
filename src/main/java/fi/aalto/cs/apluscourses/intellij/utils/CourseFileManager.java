@@ -330,7 +330,7 @@ public class CourseFileManager {
     var missingModules = fixDependencies();
 
     if (!missingModules.isEmpty()) {
-      notifier.notify(new MissingDependencyNotification(String.join(", ", missingModules)),
+      notifier.notify(new MissingDependencyNotification(missingModules),
           project);
     }
 

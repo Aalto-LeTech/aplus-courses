@@ -6,6 +6,8 @@ import fi.aalto.cs.apluscourses.utils.JsonUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
@@ -15,18 +17,26 @@ import org.json.JSONObject;
 public class Tutorial {
   private final List<Task> tasks;
 
+  private final Set<String> dependencies;
+
   @NotNull
   public final Event tutorialCompleted = new Event();
 
   public static final String TUTORIAL_SUBMIT_FILE_NAME = "_ideact_result";
 
-  public Tutorial(Task[] tasks) {
+  public Tutorial(Task[] tasks, String[] dependencies) {
     this.tasks = new ArrayList<>(Arrays.asList(tasks));
+    this.dependencies = Arrays.stream(dependencies).collect(Collectors.toSet());
   }
 
+  /**
+   * Creates Tutorial from JSON.
+   */
   public static Tutorial fromJsonObject(@NotNull JSONObject jsonObject) {
     return new Tutorial(JsonUtil.parseArray(jsonObject.getJSONArray("tasks"),
-        JSONArray::getJSONObject, Task::fromJsonObject, Task[]::new));
+        JSONArray::getJSONObject, Task::fromJsonObject, Task[]::new),
+        JsonUtil.parseArray(jsonObject.getJSONArray("moduleDependencies"),
+            JSONArray::getString, String::new, String[]::new));
   }
 
   public List<Task> getTasks() {
@@ -67,5 +77,9 @@ public class Tutorial {
 
   public void onComplete() {
     this.tutorialCompleted.trigger();
+  }
+
+  public Set<String> getDependencies() {
+    return dependencies;
   }
 }

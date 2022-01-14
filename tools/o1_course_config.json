@@ -1,0 +1,1656 @@
+{
+  "tutorials": {
+    "36321": {
+      "moduleDependencies": [
+        "GoodStuff"
+      ],
+      "tasks": [
+        {
+          "instruction": "Now, run GoodStuff",
+          "component": "projectTree",
+          "info": "You can still see your project's files here.",
+          "action": "run",
+          "actionArguments": {
+            "actionNames": [
+              "Run"
+            ],
+            "filePath": "GoodStuff"
+          }
+        },
+        {
+          "instruction": "Now, open CategoryDisplayWin.scala!",
+          "component": "projectTree",
+          "info": "Hint: there is a typo in the name",
+          "action": "openEditor",
+          "assertClosed": "editor",
+          "actionArguments": {
+            "filePath": "GoodStuff/o1/goodstuff/gui/CategoryDisplayWindow.scala"
+          }
+        },
+        {
+          "instruction": "Now fix the title at CategoryDisplayWin.scala!",
+          "component": "editor",
+          "info": "Hint: there is a typo in the name",
+          "action": "assignStatement",
+          "actionArguments": {
+            "filePath": "GoodStuff/o1/goodstuff/gui/CategoryDisplayWindow.scala",
+            "variableName": "this.title",
+            "valueTokens": [
+              "\"GoodStuff Diary - Category: \"",
+              "+",
+              "category",
+              ".",
+              "name",
+              "+",
+              "\" Experiences\""
+            ]
+          }
+        },
+        {
+          "instruction": "Now, run GoodStuff",
+          "component": "projectTree",
+          "info": "You can still see your project's files here.",
+          "action": "run",
+          "actionArguments": {
+            "actionNames": [
+              "Run"
+            ],
+            "filePath": "GoodStuff"
+          }
+        }
+      ]
+    },
+    "36323": {
+      "moduleDependencies": [
+        "Pong"
+      ],
+      "tasks": [
+        {
+          "instruction": "Now, run PongApp",
+          "component": "projectTree",
+          "info": "You can still see your project's files here.",
+          "action": "run",
+          "actionArguments": {
+            "actionNames": [
+              "Run 'PongApp'"
+            ],
+            "filePath": "PongApp"
+          }
+        },
+        {
+          "instruction": "Now, open package.scala!",
+          "component": "projectTree",
+          "info": "Hint: there is a typo in the name",
+          "action": "openEditor",
+          "assertClosed": "editor",
+          "actionArguments": {
+            "filePath": "Pong/o1/pong/package.scala"
+          }
+        },
+        {
+          "instruction": "Now, change the value assigned to BallRadius!",
+          "component": "editor",
+          "info": "Hint: change to 50",
+          "action": "declareVariable",
+          "actionArguments": {
+            "filePath": "Pong/o1/pong/package.scala",
+            "variableName": "BallRadius",
+            "variableType": "val",
+            "valueTokens": [
+              "50"
+            ]
+          }
+        },
+        {
+          "instruction": "Now, run PongApp",
+          "component": "projectTree",
+          "info": "You can still see your project's files here.",
+          "action": "run",
+          "actionArguments": {
+            "actionNames": [
+              "Run 'PongApp'"
+            ],
+            "filePath": "PongApp"
+          }
+        },
+        {
+          "instruction": "Now, open Ball.scala!",
+          "component": "projectTree",
+          "info": "Hint: there is a typo in the name",
+          "action": "openEditor",
+          "assertClosed": "editor",
+          "actionArguments": {
+            "filePath": "Pong/o1/pong/Ball.scala"
+          }
+        },
+        {
+          "instruction": "Now, comment out the line!",
+          "component": "editor",
+          "info": "Hint: this.velocity = this.velocity.switchY",
+          "action": "comment",
+          "actionArguments": {
+            "filePath": "Pong/o1/pong/Ball.scala",
+            "text": "this.velocity = this.velocity.switchY"
+          }
+        },
+        {
+          "instruction": "Now, run PongApp",
+          "component": "projectTree",
+          "info": "You can still see your project's files here.",
+          "action": "run",
+          "actionArguments": {
+            "actionNames": [
+              "Run 'PongApp'"
+            ],
+            "filePath": "PongApp"
+          }
+        }
+      ]
+    },
+    "36324": {
+      "moduleDependencies": [
+        "GoodStuff"
+      ],
+      "tasks": [
+        {
+          "instruction": "open repl for GoodStuff",
+          "component": "projectTree",
+          "info": "",
+          "action": "openRepl",
+          "assertClosed": [
+            "repl"
+          ],
+          "actionArguments": {
+            "module": "GoodStuff"
+          }
+        },
+        {
+          "instruction": "enter '1 + 1'",
+          "component": "repl",
+          "info": "",
+          "action": "replInput",
+          "actionArguments": {
+            "module": "GoodStuff",
+            "input": "11",
+            "output": "Int = 2"
+          }
+        },
+        {
+          "instruction": "try more arithmetic operations 1/3",
+          "component": "repl",
+          "info": "enter expression containing either +, -, * or /",
+          "action": "replInputContains",
+          "actionArguments": {
+            "module": "GoodStuff",
+            "inputs": [
+              "+",
+              "-",
+              "*",
+              "/"
+            ],
+            "output": "Int ="
+          }
+        },
+        {
+          "instruction": "try more arithmetic operations 2/3",
+          "component": "repl",
+          "info": "enter expression containing either +, -, * or /",
+          "action": "replInputContains",
+          "actionArguments": {
+            "module": "GoodStuff",
+            "inputs": [
+              "+",
+              "-",
+              "*",
+              "/"
+            ],
+            "output": "Int ="
+          }
+        },
+        {
+          "instruction": "try more arithmetic operations 3/3",
+          "component": "repl",
+          "info": "enter expression containing either +, -, * or /",
+          "action": "replInputContains",
+          "actionArguments": {
+            "module": "GoodStuff",
+            "inputs": [
+              "+",
+              "-",
+              "*",
+              "/"
+            ],
+            "output": "Int ="
+          }
+        },
+        {
+          "instruction": "enter '1000 / (5 / 6)'",
+          "component": "repl",
+          "info": "",
+          "action": "replInput",
+          "actionArguments": {
+            "module": "GoodStuff",
+            "input": "1000/(5/6)",
+            "output": "/ by zero"
+          }
+        }
+      ]
+    },
+    "36331": {
+      "moduleDependencies": [
+        "Football1"
+      ],
+      "tasks": [
+        {
+          "instruction": "Now, build the module Football1",
+          "component": "projectTree",
+          "info": "You can still see your project's files here.",
+          "action": "build",
+          "actionArguments": {
+            "actionName": "Build Module 'Football1'",
+            "filePath": ""
+          }
+        },
+        {
+          "instruction": "Look at the build info",
+          "component": "build",
+          "info": "You can still see your project's files here.",
+          "action": "null",
+          "freeRange": "true",
+          "actionArguments": {
+          }
+        },
+        {
+          "instruction": "Now, fix Club's declaration!",
+          "component": "editor",
+          "info": "Something is missing.",
+          "action": "classDeclScala",
+          "actionArguments": {
+            "className": "Club",
+            "classArguments": [
+              "val name:String",
+              "val stadium:String"
+            ],
+            "classHierarchy": "",
+            "traitHierarchy": [],
+            "typeParamClause": "",
+            "modifiers": [
+              "",
+              ""
+            ],
+            "annotations": [
+              "",
+              ""
+            ],
+            "filePath": "Football1/o1/football1/Club.scala"
+          }
+        },
+        {
+          "instruction": "Now, build the module Football1",
+          "component": "projectTree",
+          "info": "You can still see your project's files here.",
+          "action": "build",
+          "actionArguments": {
+            "actionName": "Build Module 'Football1'",
+            "filePath": ""
+          }
+        },
+        {
+          "instruction": "Look at the build info",
+          "component": "build",
+          "info": "You can still see your project's files here.",
+          "action": "null",
+          "freeRange": "true",
+          "actionArguments": {
+          }
+        },
+        {
+          "instruction": "Now, fix the isHigherScoringThan method's definition!",
+          "component": "editor",
+          "info": "",
+          "action": "functionDefinition",
+          "actionArguments": {
+            "methodName": "isHigherScoringThan",
+            "methodArguments": [
+              "anotherMatch:Match"
+            ],
+            "methodBody": [
+              "this.totalGoals",
+              ">",
+              "anotherMatch.totalGoals"
+            ],
+            "typeParamClause": "",
+            "filePath": "Football1/o1/football1/Match.scala",
+            "checkEquals": "false"
+          }
+        },
+        {
+          "instruction": "Now, build the module Football1",
+          "component": "projectTree",
+          "info": "You can still see your project's files here.",
+          "action": "build",
+          "actionArguments": {
+            "actionName": "Build Module 'Football1'",
+            "filePath": ""
+          }
+        },
+        {
+          "instruction": "Look at the build info",
+          "component": "build",
+          "info": "You can still see your project's files here.",
+          "action": "null",
+          "freeRange": "true",
+          "actionArguments": {
+          }
+        },
+        {
+          "instruction": "Now, open Match.scala!",
+          "component": "projectTree",
+          "info": "Hint: there is a typo in the name",
+          "action": "openEditor",
+          "assertClosed": "editor",
+          "actionArguments": {
+            "filePath": "Football1/o1/football1/Match.scala"
+          }
+        },
+        {
+          "instruction": "Now, fix the goalDifference method's definition!",
+          "component": "editor",
+          "info": "You can still see your project's files here.",
+          "action": "functionDefinition",
+          "actionArguments": {
+            "methodName": "goalDifference",
+            "methodArguments": [],
+            "methodBody": [
+              "{",
+              "this.homeGoals",
+              "-",
+              "this.awayGoals",
+              "}"
+            ],
+            "typeParamClause": "",
+            "filePath": "/Football1/o1/football1/Match.scala",
+            "checkEquals": "true"
+          }
+        },
+        {
+          "instruction": "Now, build the module Football1",
+          "component": "projectTree",
+          "info": "You can still see your project's files here.",
+          "action": "build",
+          "actionArguments": {
+            "actionName": "Build Module 'Football1'",
+            "filePath": ""
+          }
+        },
+        {
+          "instruction": "Look at the build info",
+          "component": "build",
+          "info": "You can still see your project's files here.",
+          "action": "null",
+          "freeRange": "true",
+          "actionArguments": {
+          }
+        },
+        {
+          "instruction": "Now, open MatchTest.scala!",
+          "component": "projectTree",
+          "info": "Hint: there is a typo in the name",
+          "action": "openEditor",
+          "assertClosed": "editor",
+          "actionArguments": {
+            "filePath": "Football1/o1/football1/MatchTest.scala"
+          }
+        },
+        {
+          "instruction": "Now, fix the println method call at MatchTest.scala!",
+          "component": "editor",
+          "info": "Hint: you should call clubs' methods",
+          "action": "methodCall",
+          "actionArguments": {
+            "filePath": "Football1/o1/football1/MatchTest.scala",
+            "methodName": "println",
+            "argsList": [
+              "match1.homeGoals"
+            ]
+          }
+        },
+        {
+          "instruction": "Now, build the module Football1",
+          "component": "projectTree",
+          "info": "You can still see your project's files here.",
+          "action": "build",
+          "actionArguments": {
+            "actionName": "Build Module 'Football1'",
+            "filePath": ""
+          }
+        },
+        {
+          "instruction": "Look at the build info",
+          "component": "build",
+          "info": "You can still see your project's files here.",
+          "action": "null",
+          "freeRange": "true",
+          "actionArguments": {
+          }
+        },
+        {
+          "instruction": "Now, create a new Match object match1!",
+          "component": "editor",
+          "info": "Hint: there is a typo in the name",
+          "action": "newObjectAssignmentScala",
+          "actionArguments": {
+            "filePath": "Football1/o1/football1/MatchTest.scala",
+            "variableName": "match1",
+            "variableType": "val",
+            "className": "Match",
+            "argsList": [
+              "club2.name",
+              "club1.name"
+            ]
+          }
+        },
+        {
+          "instruction": "Now, build the module Football1",
+          "component": "projectTree",
+          "info": "You can still see your project's files here.",
+          "action": "build",
+          "actionArguments": {
+            "actionName": "Build Module 'Football1'",
+            "filePath": ""
+          }
+        },
+        {
+          "instruction": "Look at the build info",
+          "component": "build",
+          "info": "You can still see your project's files here.",
+          "action": "null",
+          "freeRange": "true",
+          "actionArguments": {
+          }
+        },
+        {
+          "instruction": "Now, fix the AddAwayGoal method's definition!",
+          "component": "editor",
+          "info": "Hint: there is a typo in the name",
+          "action": "functionDefinition",
+          "actionArguments": {
+            "methodName": "addAwayGoal",
+            "methodArguments": [],
+            "methodBody": [
+              "{",
+              "this.awayCount",
+              "=",
+              "this.awayCount",
+              "+",
+              "1",
+              "}"
+            ],
+            "filePath": "Football1/o1/football1/Match.scala",
+            "typeParamClause": "",
+            "checkEquals": "false"
+          }
+        },
+        {
+          "instruction": "Now, build the module Football1",
+          "component": "projectTree",
+          "info": "You can still see your project's files here.",
+          "action": "build",
+          "actionArguments": {
+            "actionName": "Build Module 'Football1'",
+            "filePath": ""
+          }
+        },
+        {
+          "instruction": "Look at the build info",
+          "component": "build",
+          "info": "You can still see your project's files here.",
+          "action": "null",
+          "freeRange": "true",
+          "actionArguments": {
+          }
+        },
+        {
+          "instruction": "Now, fix the goalDifference method's definition!",
+          "component": "editor",
+          "info": "It should return Int",
+          "action": "functionDefinition",
+          "actionArguments": {
+            "methodName": "goalDifference",
+            "methodArguments": [],
+            "methodBody": [
+              "{",
+              "this.homeGoals",
+              "-",
+              "this.awayGoals",
+              "}"
+            ],
+            "filePath": "Football1/o1/football1/Match.scala",
+            "typeParamClause": "",
+            "checkEquals": "false"
+          }
+        },
+        {
+          "instruction": "Now, run MatchTest",
+          "component": "projectTree",
+          "info": "You can still see your project's files here.",
+          "action": "run",
+          "actionArguments": {
+            "actionNames": [
+              "Run"
+            ],
+            "filePath": "MatchTest"
+          }
+        },
+        {
+          "instruction": "Do the last step",
+          "component": "editor",
+          "info": "You can still see your project's files here.",
+          "action": "null",
+          "freeRange": "true",
+          "actionArguments": {
+            "filePath": "Football1/o1/football1/Match.scala"
+          }
+        }
+      ]
+    }
+  },
+  "id": "197",
+  "name": "O1",
+  "aPlusUrl": "https://plus.cs.aalto.fi/",
+  "languages": [
+    "fi",
+    "en"
+  ],
+  "resources": {
+    "ideSettings": "https://grader.cs.aalto.fi/static/O1_2021/projects/o1_2021_ij_settings.zip",
+    "ideSettingsMac": "https://grader.cs.aalto.fi/static/O1_2021/projects/o1_2021_ij_mac_settings.zip",
+    "projectSettings": "https://grader.cs.aalto.fi/static/O1_2021/projects/o1_2021_project_settings.zip"
+  },
+  "autoInstall": [
+    "O1Library"
+  ],
+  "repl": {
+    "initialCommands": {
+      "Adventure": [
+        "import o1.adventure._"
+      ],
+      "AdventureDraft": [
+        "import o1.adventure.draft._"
+      ],
+      "Aliohjelmia": [
+        "import o1._",
+        "import o1.aliohjelmia._"
+      ],
+      "AuctionHouse1": [
+        "import o1._",
+        "import o1.auctionhouse._"
+      ],
+      "AuctionHouse2": [
+        "import o1._",
+        "import o1.auctionhouse._"
+      ],
+      "CarSim": [
+        "import o1._",
+        "import o1.carsim._"
+      ],
+      "CitySim": [
+        "import o1._",
+        "import o1.city._"
+      ],
+      "DoWhile": [
+        "import o1._"
+      ],
+      "Election": [
+        "import o1._",
+        "import o1.election._"
+      ],
+      "Files": [
+        "import o1._"
+      ],
+      "FlappyBug": [
+        "import o1._",
+        "import o1.flappy._"
+      ],
+      "Football1": [
+        "import o1._",
+        "import o1.football1._"
+      ],
+      "Football2": [
+        "import o1._",
+        "import o1.football2._"
+      ],
+      "Football3": [
+        "import o1._",
+        "import o1.football3._"
+      ],
+      "Football4": [
+        "import o1._",
+        "import o1.football4._"
+      ],
+      "ForLoops": [
+        "import o1._"
+      ],
+      "GoodStuff": [
+        "import o1._",
+        "import o1.goodstuff._",
+        "import o1.goodstuff.gui._"
+      ],
+      "HigherOrder": [
+        "import o1._",
+        "import o1.rainfall._"
+      ],
+      "IntroApps": [
+        "import o1._",
+        "import o1.art._",
+        "import o1.block._",
+        "import o1.burr._",
+        "import o1.counter._",
+        "import o1.grouse._",
+        "import o1.space._"
+      ],
+      "IntroOOP": [
+        "import o1._",
+        "import o1.luokkia._",
+        "import o1.olioita._"
+      ],
+      "Miscellaneous": [
+        "import o1._",
+        "import o1.misc._",
+        "import o1.people._",
+        "import o1.soda._",
+        "import o1.time._",
+        "import o1.blood._"
+      ],
+      "MoreApps": [
+        "import o1._",
+        "import o1.charger._",
+        "import o1.trotter._",
+        "import o1.glider._"
+      ],
+      "MovieStats": [
+        "import o1._",
+        "import o1.movies._"
+      ],
+      "O1Library": [
+        "import o1._"
+      ],
+      "Odds": [
+        "import o1._",
+        "import o1.odds._"
+      ],
+      "Oliointro": [
+        "import o1._",
+        "import o1.classes._",
+        "import o1.objects._"
+      ],
+      "Peeveli": [
+        "import o1._",
+        "import o1.peeveli._"
+      ],
+      "Pikkusovelluksia": [
+        "import o1._",
+        "import o1.taide._",
+        "import o1.palikka._",
+        "import o1.takiainen._",
+        "import o1.laskuri._",
+        "import o1.pyy._",
+        "import o1.avaruus._"
+      ],
+      "Pong": [
+        "import o1._",
+        "import o1.pong._"
+      ],
+      "Recursion": [
+        "import o1._",
+        "import o1.family._",
+        "import o1.money._",
+        "import o1.recursion._"
+      ],
+      "Robots": [
+        "import o1._",
+        "import o1.robots._"
+      ],
+      "RobotTribes": [
+        "import o1._",
+        "import o1.robots._",
+        "import o1.robots.tribal._"
+      ],
+      "Sananmuunnos": [
+        "import o1._",
+        "import o1.sananmuunnos._"
+      ],
+      "Sentiments": [
+        "import o1._",
+        "import o1.sentiment._"
+      ],
+      "Snake": [
+        "import o1._",
+        "import o1.snake._"
+      ],
+      "Stars": [
+        "import o1._",
+        "import o1.stars._",
+        "import o1.stars.io._"
+      ],
+      "Subprograms": [
+        "import o1._",
+        "import o1.subprograms._"
+      ],
+      "Subtypes": [
+        "import o1._",
+        "import o1.shapes._",
+        "import o1.blood._",
+        "import o1.items._",
+        "import o1.legal._"
+      ],
+      "SwingExamples": [
+        "import o1._",
+        "import o1.llama._",
+        "import o1.randomtext._"
+      ],
+      "Train": [
+        "import o1._",
+        "import o1.train._"
+      ],
+      "Viinaharava": [
+        "import o1._",
+        "import o1.viinaharava._"
+      ]
+    }
+  },
+  "modules": [
+    {
+      "name": "Adventure",
+      "url": "https://grader.cs.aalto.fi/static/O1_2021/projects/given/Adventure/Adventure.zip",
+      "version": "1.0",
+      "changelog": ""
+    },
+    {
+      "name": "AdventureDraft",
+      "url": "https://grader.cs.aalto.fi/static/O1_2021/projects/given/AdventureDraft/AdventureDraft.zip",
+      "version": "1.0",
+      "changelog": ""
+    },
+    {
+      "name": "Aliohjelmia",
+      "url": "https://grader.cs.aalto.fi/static/O1_2021/projects/given/Aliohjelmia/Aliohjelmia.zip",
+      "version": "1.0",
+      "changelog": ""
+    },
+    {
+      "name": "AuctionHouse1",
+      "url": "https://grader.cs.aalto.fi/static/O1_2021/projects/given/AuctionHouse1/AuctionHouse1.zip",
+      "version": "1.0",
+      "changelog": ""
+    },
+    {
+      "name": "AuctionHouse2",
+      "url": "https://grader.cs.aalto.fi/static/O1_2021/projects/given/AuctionHouse2/AuctionHouse2.zip",
+      "version": "1.0",
+      "changelog": ""
+    },
+    {
+      "name": "CarSim",
+      "url": "https://grader.cs.aalto.fi/static/O1_2021/projects/given/CarSim/CarSim.zip",
+      "version": "1.0",
+      "changelog": ""
+    },
+    {
+      "name": "CitySim",
+      "url": "https://grader.cs.aalto.fi/static/O1_2021/projects/given/CitySim/CitySim.zip",
+      "version": "1.0",
+      "changelog": ""
+    },
+    {
+      "name": "DoWhile",
+      "url": "https://grader.cs.aalto.fi/static/O1_2021/projects/given/DoWhile/DoWhile.zip",
+      "version": "1.0",
+      "changelog": ""
+    },
+    {
+      "name": "Election",
+      "url": "https://grader.cs.aalto.fi/static/O1_2021/projects/given/Election/Election.zip",
+      "version": "1.0",
+      "changelog": ""
+    },
+    {
+      "name": "Files",
+      "url": "https://grader.cs.aalto.fi/static/O1_2021/projects/given/Files/Files.zip",
+      "version": "1.0",
+      "changelog": ""
+    },
+    {
+      "name": "FlappyBug",
+      "url": "https://grader.cs.aalto.fi/static/O1_2021/projects/given/FlappyBug/FlappyBug.zip",
+      "version": "1.0",
+      "changelog": ""
+    },
+    {
+      "name": "Football1",
+      "url": "https://grader.cs.aalto.fi/static/O1_2021/projects/given/Football1/Football1.zip",
+      "version": "1.0",
+      "changelog": ""
+    },
+    {
+      "name": "Football2",
+      "url": "https://grader.cs.aalto.fi/static/O1_2021/projects/given/Football2/Football2.zip",
+      "version": "1.0",
+      "changelog": ""
+    },
+    {
+      "name": "Football3",
+      "url": "https://grader.cs.aalto.fi/static/O1_2021/projects/given/Football3/Football3.zip",
+      "version": "1.0",
+      "changelog": ""
+    },
+    {
+      "name": "Football4",
+      "url": "https://grader.cs.aalto.fi/static/O1_2021/projects/given/Football4/Football4.zip",
+      "version": "1.0",
+      "changelog": ""
+    },
+    {
+      "name": "ForLoops",
+      "url": "https://grader.cs.aalto.fi/static/O1_2021/projects/given/ForLoops/ForLoops.zip",
+      "version": "1.0",
+      "changelog": ""
+    },
+    {
+      "name": "GoodStuff",
+      "url": "https://grader.cs.aalto.fi/static/O1_2021/projects/given/GoodStuff/GoodStuff.zip",
+      "version": "1.0",
+      "changelog": ""
+    },
+    {
+      "name": "HigherOrder",
+      "url": "https://grader.cs.aalto.fi/static/O1_2021/projects/given/HigherOrder/HigherOrder.zip",
+      "version": "1.0",
+      "changelog": ""
+    },
+    {
+      "name": "IntroApps",
+      "url": "https://grader.cs.aalto.fi/static/O1_2021/projects/given/IntroApps/IntroApps.zip",
+      "version": "1.0",
+      "changelog": ""
+    },
+    {
+      "name": "IntroOOP",
+      "url": "https://grader.cs.aalto.fi/static/O1_2021/projects/given/IntroOOP/IntroOOP.zip",
+      "version": "1.0",
+      "changelog": ""
+    },
+    {
+      "name": "Miscellaneous",
+      "url": "https://grader.cs.aalto.fi/static/O1_2021/projects/given/Miscellaneous/Miscellaneous.zip",
+      "version": "1.0",
+      "changelog": ""
+    },
+    {
+      "name": "MoreApps",
+      "url": "https://grader.cs.aalto.fi/static/O1_2021/projects/given/MoreApps/MoreApps.zip",
+      "version": "1.0",
+      "changelog": ""
+    },
+    {
+      "name": "MovieStats",
+      "url": "https://grader.cs.aalto.fi/static/O1_2021/projects/given/MovieStats/MovieStats.zip",
+      "version": "1.0",
+      "changelog": ""
+    },
+    {
+      "name": "O1Library",
+      "url": "https://grader.cs.aalto.fi/static/O1_2021/projects/given/O1Library/O1Library.zip",
+      "version": "1.0",
+      "changelog": ""
+    },
+    {
+      "name": "Odds",
+      "url": "https://grader.cs.aalto.fi/static/O1_2021/projects/given/Odds/Odds.zip",
+      "version": "1.0",
+      "changelog": ""
+    },
+    {
+      "name": "Oliointro",
+      "url": "https://grader.cs.aalto.fi/static/O1_2021/projects/given/Oliointro/Oliointro.zip",
+      "version": "1.0",
+      "changelog": ""
+    },
+    {
+      "name": "Peeveli",
+      "url": "https://grader.cs.aalto.fi/static/O1_2021/projects/given/Peeveli/Peeveli.zip",
+      "version": "1.0",
+      "changelog": ""
+    },
+    {
+      "name": "Pikkusovelluksia",
+      "url": "https://grader.cs.aalto.fi/static/O1_2021/projects/given/Pikkusovelluksia/Pikkusovelluksia.zip",
+      "version": "1.0",
+      "changelog": ""
+    },
+    {
+      "name": "Pong",
+      "url": "https://grader.cs.aalto.fi/static/O1_2021/projects/given/Pong/Pong.zip",
+      "version": "1.0",
+      "changelog": ""
+    },
+    {
+      "name": "Recursion",
+      "url": "https://grader.cs.aalto.fi/static/O1_2021/projects/given/Recursion/Recursion.zip",
+      "version": "1.0",
+      "changelog": ""
+    },
+    {
+      "name": "Robots",
+      "url": "https://grader.cs.aalto.fi/static/O1_2021/projects/given/Robots/Robots.zip",
+      "version": "1.0",
+      "changelog": ""
+    },
+    {
+      "name": "RobotTribes",
+      "url": "https://grader.cs.aalto.fi/static/O1_2021/projects/given/RobotTribes/RobotTribes.zip",
+      "version": "1.0",
+      "changelog": ""
+    },
+    {
+      "name": "Sananmuunnos",
+      "url": "https://grader.cs.aalto.fi/static/O1_2021/projects/given/Sananmuunnos/Sananmuunnos.zip",
+      "version": "1.0",
+      "changelog": ""
+    },
+    {
+      "name": "Sentiments",
+      "url": "https://grader.cs.aalto.fi/static/O1_2021/projects/given/Sentiments/Sentiments.zip",
+      "version": "1.0",
+      "changelog": ""
+    },
+    {
+      "name": "Snake",
+      "url": "https://grader.cs.aalto.fi/static/O1_2021/projects/given/Snake/Snake.zip",
+      "version": "1.0",
+      "changelog": ""
+    },
+    {
+      "name": "Stars",
+      "url": "https://grader.cs.aalto.fi/static/O1_2021/projects/given/Stars/Stars.zip",
+      "version": "1.0",
+      "changelog": ""
+    },
+    {
+      "name": "Subprograms",
+      "url": "https://grader.cs.aalto.fi/static/O1_2021/projects/given/Subprograms/Subprograms.zip",
+      "version": "1.0",
+      "changelog": ""
+    },
+    {
+      "name": "Subtypes",
+      "url": "https://grader.cs.aalto.fi/static/O1_2021/projects/given/Subtypes/Subtypes.zip",
+      "version": "1.0",
+      "changelog": ""
+    },
+    {
+      "name": "SwingExamples",
+      "url": "https://grader.cs.aalto.fi/static/O1_2021/projects/given/SwingExamples/SwingExamples.zip",
+      "version": "1.0",
+      "changelog": ""
+    },
+    {
+      "name": "Train",
+      "url": "https://grader.cs.aalto.fi/static/O1_2021/projects/given/Train/Train.zip",
+      "version": "1.0",
+      "changelog": ""
+    },
+    {
+      "name": "Viinaharava",
+      "url": "https://grader.cs.aalto.fi/static/O1_2021/projects/given/Viinaharava/Viinaharava.zip",
+      "version": "1.0",
+      "changelog": ""
+    }
+  ],
+  "exerciseModules": {
+    "31353": {
+      "en": "Subprograms",
+      "fi": "Aliohjelmia"
+    },
+    "31383": {
+      "en": "IntroOOP",
+      "fi": "Oliointro"
+    },
+    "31427": {
+      "en": "Ave",
+      "fi": "Ave"
+    },
+    "31428": {
+      "en": "Ave",
+      "fi": "Ave"
+    },
+    "31431": {
+      "en": "IntroApps",
+      "fi": "Pikkusovelluksia"
+    },
+    "31392": {
+      "en": "Subprograms",
+      "fi": "Aliohjelmia"
+    },
+    "31444": {
+      "en": "IntroApps",
+      "fi": "Pikkusovelluksia"
+    },
+    "31445": {
+      "en": "IntroApps",
+      "fi": "Pikkusovelluksia"
+    },
+    "31446": {
+      "en": "IntroApps",
+      "fi": "Pikkusovelluksia"
+    },
+    "31447": {
+      "en": "IntroApps",
+      "fi": "Pikkusovelluksia"
+    },
+    "31352": {
+      "en": "Subprograms",
+      "fi": "Aliohjelmia"
+    },
+    "31413": {
+      "en": "Subprograms",
+      "fi": "Aliohjelmia"
+    },
+    "31367": {
+      "en": "Subprograms",
+      "fi": "Aliohjelmia"
+    },
+    "31415": {
+      "en": "Subprograms",
+      "fi": "Aliohjelmia"
+    },
+    "31350": {
+      "en": "Subprograms",
+      "fi": "Aliohjelmia"
+    },
+    "31417": {
+      "en": "Subprograms",
+      "fi": "Aliohjelmia"
+    },
+    "31371": {
+      "en": "Subprograms",
+      "fi": "Aliohjelmia"
+    },
+    "31394": {
+      "en": "Subprograms",
+      "fi": "Aliohjelmia"
+    },
+    "31423": {
+      "en": "FlappyBug",
+      "fi": "FlappyBug"
+    },
+    "31424": {
+      "en": "FlappyBug",
+      "fi": "FlappyBug"
+    },
+    "31432": {
+      "en": "FlappyBug",
+      "fi": "FlappyBug"
+    },
+    "31433": {
+      "en": "FlappyBug",
+      "fi": "FlappyBug"
+    },
+    "31438": {
+      "en": "FlappyBug",
+      "fi": "FlappyBug"
+    },
+    "31440": {
+      "en": "FlappyBug",
+      "fi": "FlappyBug"
+    },
+    "31441": {
+      "en": "FlappyBug",
+      "fi": "FlappyBug"
+    },
+    "31442": {
+      "en": "FlappyBug",
+      "fi": "FlappyBug"
+    },
+    "31443": {
+      "en": "FlappyBug",
+      "fi": "FlappyBug"
+    },
+    "31416": {
+      "en": "Subprograms",
+      "fi": "Aliohjelmia"
+    },
+    "36322": {
+      "en": "GoodStuff",
+      "fi": "GoodStuff"
+    },
+    "31368": {
+      "en": "Subprograms",
+      "fi": "Aliohjelmia"
+    },
+    "31369": {
+      "en": "Subprograms",
+      "fi": "Aliohjelmia"
+    },
+    "31349": {
+      "en": "Subprograms",
+      "fi": "Aliohjelmia"
+    },
+    "34624": {
+      "en": "Subprograms",
+      "fi": "Aliohjelmia"
+    },
+    "31404": {
+      "en": "Odds",
+      "fi": "Odds"
+    },
+    "31408": {
+      "en": "Odds",
+      "fi": "Odds"
+    },
+    "31410": {
+      "en": "Odds",
+      "fi": "Odds"
+    },
+    "31412": {
+      "en": "Odds",
+      "fi": "Odds"
+    },
+    "31429": {
+      "en": "Odds",
+      "fi": "Odds"
+    },
+    "31448": {
+      "en": "IntroApps",
+      "fi": "Pikkusovelluksia"
+    },
+    "31449": {
+      "en": "IntroApps",
+      "fi": "Pikkusovelluksia"
+    },
+    "31450": {
+      "en": "IntroApps",
+      "fi": "Pikkusovelluksia"
+    },
+    "31372": {
+      "en": "Subprograms",
+      "fi": "Aliohjelmia"
+    },
+    "31318": {
+      "en": "Pong",
+      "fi": "Pong"
+    },
+    "31398": {
+      "en": "IntroOOP",
+      "fi": "Oliointro"
+    },
+    "31401": {
+      "en": "IntroOOP",
+      "fi": "Oliointro"
+    },
+    "31402": {
+      "en": "IntroOOP",
+      "fi": "Oliointro"
+    },
+    "31430": {
+      "en": "Odds",
+      "fi": "Odds"
+    },
+    "31393": {
+      "en": "Subprograms",
+      "fi": "Aliohjelmia"
+    },
+    "31439": {
+      "en": "IntroApps",
+      "fi": "Pikkusovelluksia"
+    },
+    "31420": {
+      "en": "IntroOOP",
+      "fi": "Oliointro"
+    },
+    "31370": {
+      "en": "Subprograms",
+      "fi": "Aliohjelmia"
+    },
+    "31354": {
+      "en": "Subprograms",
+      "fi": "Aliohjelmia"
+    },
+    "31355": {
+      "en": "Subprograms",
+      "fi": "Aliohjelmia"
+    },
+    "31455": {
+      "en": "FlappyBug",
+      "fi": "FlappyBug"
+    },
+    "31465": {
+      "en": "FlappyBug",
+      "fi": "FlappyBug"
+    },
+    "31463": {
+      "en": "IntroOOP",
+      "fi": "Oliointro"
+    },
+    "31461": {
+      "en": "Miscellaneous",
+      "fi": "Miscellaneous"
+    },
+    "31464": {
+      "en": "Odds",
+      "fi": "Odds"
+    },
+    "31470": {
+      "en": "Odds",
+      "fi": "Odds"
+    },
+    "31476": {
+      "en": "Odds",
+      "fi": "Odds"
+    },
+    "31487": {
+      "en": "Odds",
+      "fi": "Odds"
+    },
+    "31473": {
+      "en": "FlappyBug",
+      "fi": "FlappyBug"
+    },
+    "31484": {
+      "en": "FlappyBug",
+      "fi": "FlappyBug"
+    },
+    "31486": {
+      "en": "FlappyBug",
+      "fi": "FlappyBug"
+    },
+    "31469": {
+      "en": "Miscellaneous",
+      "fi": "Miscellaneous"
+    },
+    "31474": {
+      "en": "Miscellaneous",
+      "fi": "Miscellaneous"
+    },
+    "31471": {
+      "en": "IntroApps",
+      "fi": "Pikkusovelluksia"
+    },
+    "31480": {
+      "en": "Football1",
+      "fi": "Football1"
+    },
+    "31488": {
+      "en": "MoreApps",
+      "fi": "MoreApps"
+    },
+    "31489": {
+      "en": "MoreApps",
+      "fi": "MoreApps"
+    },
+    "31490": {
+      "en": "MoreApps",
+      "fi": "MoreApps"
+    },
+    "31491": {
+      "en": "MoreApps",
+      "fi": "MoreApps"
+    },
+    "31497": {
+      "en": "CarSim",
+      "fi": "CarSim"
+    },
+    "31502": {
+      "en": "Miscellaneous",
+      "fi": "Miscellaneous"
+    },
+    "31507": {
+      "en": "Football2",
+      "fi": "Football2"
+    },
+    "31516": {
+      "en": "Miscellaneous",
+      "fi": "Miscellaneous"
+    },
+    "31517": {
+      "en": "Miscellaneous",
+      "fi": "Miscellaneous"
+    },
+    "31518": {
+      "en": "Miscellaneous",
+      "fi": "Miscellaneous"
+    },
+    "31519": {
+      "en": "IntroOOP",
+      "fi": "Oliointro"
+    },
+    "31520": {
+      "en": "MoreApps",
+      "fi": "MoreApps"
+    },
+    "31521": {
+      "en": "Stars",
+      "fi": "Stars"
+    },
+    "31522": {
+      "en": "Stars",
+      "fi": "Stars"
+    },
+    "31523": {
+      "en": "Football3",
+      "fi": "Football3"
+    },
+    "31533": {
+      "en": "FlappyBug",
+      "fi": "FlappyBug"
+    },
+    "31534": {
+      "en": "Miscellaneous",
+      "fi": "Miscellaneous"
+    },
+    "31535": {
+      "en": "AuctionHouse1",
+      "fi": "AuctionHouse1"
+    },
+    "31536": {
+      "en": "Miscellaneous",
+      "fi": "Miscellaneous"
+    },
+    "31537": {
+      "en": "AuctionHouse1",
+      "fi": "AuctionHouse1"
+    },
+    "31538": {
+      "en": "AuctionHouse1",
+      "fi": "AuctionHouse1"
+    },
+    "31547": {
+      "en": "Miscellaneous",
+      "fi": "Miscellaneous"
+    },
+    "31548": {
+      "en": "Miscellaneous",
+      "fi": "Miscellaneous"
+    },
+    "31549": {
+      "en": "Stars",
+      "fi": "Stars"
+    },
+    "31544": {
+      "en": "Miscellaneous",
+      "fi": "Miscellaneous"
+    },
+    "31563": {
+      "en": "ForLoops",
+      "fi": "ForLoops"
+    },
+    "31567": {
+      "en": "ForLoops",
+      "fi": "ForLoops"
+    },
+    "31568": {
+      "en": "ForLoops",
+      "fi": "ForLoops"
+    },
+    "31569": {
+      "en": "ForLoops",
+      "fi": "ForLoops"
+    },
+    "31570": {
+      "en": "ForLoops",
+      "fi": "ForLoops"
+    },
+    "31571": {
+      "en": "ForLoops",
+      "fi": "ForLoops"
+    },
+    "31576": {
+      "en": "ForLoops",
+      "fi": "ForLoops"
+    },
+    "31572": {
+      "en": "Election",
+      "fi": "Election"
+    },
+    "31574": {
+      "en": "FlappyBug",
+      "fi": "FlappyBug"
+    },
+    "31581": {
+      "en": "HigherOrder",
+      "fi": "HigherOrder"
+    },
+    "31582": {
+      "en": "HigherOrder",
+      "fi": "HigherOrder"
+    },
+    "31583": {
+      "en": "HigherOrder",
+      "fi": "HigherOrder"
+    },
+    "31584": {
+      "en": "HigherOrder",
+      "fi": "HigherOrder"
+    },
+    "31585": {
+      "en": "HigherOrder",
+      "fi": "HigherOrder"
+    },
+    "31588": {
+      "en": "HigherOrder",
+      "fi": "HigherOrder"
+    },
+    "31589": {
+      "en": "HigherOrder",
+      "fi": "HigherOrder"
+    },
+    "31590": {
+      "en": "HigherOrder",
+      "fi": "HigherOrder"
+    },
+    "31591": {
+      "en": "HigherOrder",
+      "fi": "HigherOrder"
+    },
+    "35384": {
+      "en": "HigherOrder",
+      "fi": "HigherOrder"
+    },
+    "31610": {
+      "en": "Election",
+      "fi": "Election"
+    },
+    "35382": {
+      "en": "Snake",
+      "fi": "Snake"
+    },
+    "31620": {
+      "en": "Election",
+      "fi": "Election"
+    },
+    "31621": {
+      "en": "FlappyBug",
+      "fi": "FlappyBug"
+    },
+    "31623": {
+      "en": "HigherOrder",
+      "fi": "HigherOrder"
+    },
+    "31624": {
+      "en": "HigherOrder",
+      "fi": "HigherOrder"
+    },
+    "34630": {
+      "en": "HigherOrder",
+      "fi": "HigherOrder"
+    },
+    "31635": {
+      "en": "Sentiments",
+      "fi": "Sentiments"
+    },
+    "31636": {
+      "en": "HigherOrder",
+      "fi": "HigherOrder"
+    },
+    "31637": {
+      "en": "HigherOrder",
+      "fi": "HigherOrder"
+    },
+    "31643": {
+      "en": "Subtypes",
+      "fi": "Subtypes"
+    },
+    "31646": {
+      "en": "FlappyBug",
+      "fi": "FlappyBug"
+    },
+    "34632": {
+      "en": "Subtypes",
+      "fi": "Subtypes"
+    },
+    "31651": {
+      "en": "Subtypes",
+      "fi": "Subtypes"
+    },
+    "34633": {
+      "en": "Subtypes",
+      "fi": "Subtypes"
+    },
+    "34635": {
+      "en": "AuctionHouse2",
+      "fi": "AuctionHouse2"
+    },
+    "34634": {
+      "en": "Viinaharava",
+      "fi": "Viinaharava"
+    },
+    "31658": {
+      "en": "CitySim",
+      "fi": "CitySim"
+    },
+    "31664": {
+      "en": "Robots",
+      "fi": "Robots"
+    },
+    "31668": {
+      "en": "Robots",
+      "fi": "Robots"
+    },
+    "31669": {
+      "en": "Robots",
+      "fi": "Robots"
+    },
+    "31679": {
+      "en": "Robots",
+      "fi": "Robots"
+    },
+    "31680": {
+      "en": "Robots",
+      "fi": "Robots"
+    },
+    "31681": {
+      "en": "Robots",
+      "fi": "Robots"
+    },
+    "31682": {
+      "en": "Robots",
+      "fi": "Robots"
+    },
+    "31685": {
+      "en": "Miscellaneous",
+      "fi": "Miscellaneous"
+    },
+    "31687": {
+      "en": "Miscellaneous",
+      "fi": "Miscellaneous"
+    },
+    "31688": {
+      "en": "Miscellaneous",
+      "fi": "Miscellaneous"
+    },
+    "31691": {
+      "en": "Miscellaneous",
+      "fi": "Miscellaneous"
+    },
+    "31697": {
+      "en": "Adventure",
+      "fi": "Adventure"
+    },
+    "31700": {
+      "en": "Stars",
+      "fi": "Stars"
+    },
+    "31701": {
+      "en": "CitySim",
+      "fi": "CitySim"
+    },
+    "31703": {
+      "en": "Election",
+      "fi": "Election"
+    },
+    "34643": {
+      "en": "Election",
+      "fi": "Election"
+    },
+    "31707": {
+      "en": "Peeveli",
+      "fi": "Peeveli"
+    },
+    "34644": {
+      "en": "Sananmuunnos",
+      "fi": "Sananmuunnos"
+    },
+    "31676": {
+      "en": "DoWhile",
+      "fi": "DoWhile"
+    },
+    "31677": {
+      "en": "DoWhile",
+      "fi": "DoWhile"
+    },
+    "31715": {
+      "en": "Football4",
+      "fi": "Football4"
+    },
+    "31721": {
+      "en": "Train",
+      "fi": "Train"
+    },
+    "31739": {
+      "en": "Viinaharava",
+      "fi": "Viinaharava"
+    },
+    "31741": {
+      "en": "Recursion",
+      "fi": "Recursion"
+    },
+    "31742": {
+      "en": "Recursion",
+      "fi": "Recursion"
+    },
+    "31727": {
+      "en": "RobotTribes",
+      "fi": "RobotTribes"
+    },
+    "34636": {
+      "en": "RobotTribes",
+      "fi": "RobotTribes"
+    },
+    "34638": {
+      "en": "RobotTribes",
+      "fi": "RobotTribes"
+    },
+    "31746": {
+      "en": "RobotTribes",
+      "fi": "RobotTribes"
+    },
+    "34639": {
+      "en": "Files",
+      "fi": "Files"
+    },
+    "31749": {
+      "en": "SwingExamples",
+      "fi": "SwingExamples"
+    }
+  }
+}
