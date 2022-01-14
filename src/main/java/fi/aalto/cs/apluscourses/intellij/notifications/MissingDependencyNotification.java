@@ -11,8 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class MissingDependencyNotification extends Notification {
   /**
-   * Construct a missing module notification that explains that a module with the given name
-   * couldn't be found.
+   * Construct a missing module notification which explains that modules with the given names couldn't be found.
    */
   public MissingDependencyNotification(@NotNull Set<String> moduleNames) {
     super(

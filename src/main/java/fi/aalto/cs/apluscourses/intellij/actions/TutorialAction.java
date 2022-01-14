@@ -30,6 +30,7 @@ import fi.aalto.cs.apluscourses.presentation.ideactivities.TutorialViewModel;
 import fi.aalto.cs.apluscourses.ui.ideactivities.ComponentDatabase;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.swing.JOptionPane;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -40,7 +41,7 @@ public class TutorialAction extends AnAction implements DumbAware {
   private final @NotNull TutorialAuthenticationProvider authenticationProvider;
   private final @NotNull Notifier notifier;
   private final @NotNull TutorialDialogs dialogs;
-  private final ProjectModuleSource moduleSource;
+  private final @NotNull ProjectModuleSource moduleSource;
 
   /**
    * Empty Constructor.
@@ -97,13 +98,9 @@ public class TutorialAction extends AnAction implements DumbAware {
     TutorialExercise tutorialExercise = (TutorialExercise) selectedExercise.getModel();
 
     Set<String> dependencies = tutorialExercise.getTutorial().getDependencies();
-    Set<String> missingDependencies = new java.util.HashSet<>();
-
-    for (var moduleName : dependencies) {
-      if (moduleSource.getModule(project, moduleName) == null) {
-        missingDependencies.add(moduleName);
-      }
-    }
+    Set<String> missingDependencies =
+        dependencies.stream().filter(moduleName -> moduleSource.getModule(project, moduleName) == null).collect(
+            Collectors.toSet());
 
     if (!missingDependencies.isEmpty()) {
       notifier.notify(new MissingDependencyNotification(missingDependencies), project);
