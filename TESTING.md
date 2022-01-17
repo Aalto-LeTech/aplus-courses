@@ -495,29 +495,64 @@ Click here to open the feedback.** notification is shown.
 **13.4** ASSERTION: **Week 5** is automatically expanded, **Assignment 4 (FlappyBug 15)** is automatically selected, and
 the substring **Fl** is highlighted.
 
-### 14 Downloading student submissions
+### 14 Assistant mode
 
-**14.1** Enable Assistant Mode from the A+ menu.
+**14.1** ASSERTION: The A+ Courses tool window has four buttons in the Assignments section, as on the image below.
 
-**14.2** ASSERTION: The student selection and submission downloading buttons appear above the assignments.
+![Buttons_1](images/buttons_1.png)
 
-**14.3** Click the student selection button.
+**14.2** Navigate to **A+ > Assistant mode** in the top menu strip.
 
-**14.4** ASSERTION: After loading, the student selection dialog opens.
+**14.3** ASSERTION: The Assignments section now has six buttons, as follows:
 
-**14.5** ASSERTION: The dialog lists students with their names and student IDs.
+![Buttons_2](images/buttons_2.png)
 
-**14.6** Select a student with submissions by double-clicking the student.
+**14.4** Click the pink student icon.
 
-**14.7** ASSERTION: The dialog closes.
+**14.5** ASSERTION: A dialog box containing the list of student names and IDs appears. Note that your current A+ account has to have appropriate permissions to access this list, otherwise the list will only have your own name.
 
-**14.8** ASSERTION: After the loading bar disappears, the student's name gets added to the assignments tree title bar
-and the tree is collapsed.
+**14.6** Select a random student from the list and press OK.
 
-**14.9** Open Week 1 and the first GoodStuff assignment, select a submission and download it.
+**14.7** ASSERTION: The Assignments section now shows the name of the selected user.
 
-**14.10** ASSERTION: The submission gets downloaded onto a new module with the name given in the dialog and the
-submission file is opened.
+**14.8** ASSERTION: The assignment list has been refreshed and shows different entries than previously.
+
+**14.9** Expand **Week 1**, then expand **Assignment 2 (GoodStuff)**, and double-click any submission therein.  
+If there are no submissions, pick another assignment that the user has submitted. If no such assignment exists, return to **14.6** and pick a different student.
+
+**14.10** A+ website with the submission details opens.
+
+**14.11** ASSERTION: Verify on the webpage that the assignment indeed belongs to the user you have previously selected.
+
+**14.12** Make sure the assignment from step **14.9** is selected.
+
+**14.13** Click the **Download submission** button.
+
+**14.14** ASSERTION: A dialog box appears prompting to select a base module and new module's name.
+
+**14.15** Leave the defaults and press OK.
+
+**14.16** ASSERTION: The student's submission downloads successfully. A new module is created and visible in the **Project Structure** tab.
+
+**14.17** Try downloading the same module again by repeating steps **14.12** to **14.15**.
+
+**14.18** ASSERTION: The module is not downloaded because the module name is already in use.
+
+**14.19** Close the dialog box.
+
+**14.20** In the Assignments tool window, click the pink student icon.
+
+**14.21** Press OK without selecting any student.
+
+**14.22** ASSERTION: The Assignments section no longer shows a name.
+
+**14.23** ASSERTION: The assignment list has been refreshed and shows your submissions.
+
+**14.24** Navigate to **A+ > Assistant mode** in the top menu strip.
+
+**14.25** ASSERTION: The A+ Courses tool window returns to having four buttons in the Assignments section, as on the image below.
+
+![Buttons_1](images/buttons_1.png)
 
 ### 15 User menu
 
@@ -542,62 +577,3 @@ submission file is opened.
 **15.10** Click "Log in".
 
 **15.11** ASSERTION: The token dialog opens.
-
-### 16 Assistant mode
-
-**16.1** ASSERTION: The A+ Courses tool window has four buttons in the Assignments section, as on the image below.
-
-![Buttons_1](images/buttons_1.png)
-
-**16.2** Navigate to **A+ > Assistant mode** in the top menu strip.
-
-**16.3** ASSERTION: The Assignments section now has six buttons, as follows:
-
-![Buttons_2](images/buttons_2.png)
-
-**16.4** Click the pink student icon.
-
-**16.5** ASSERTION: A dialog box containing the list of student names and IDs appears. Note that your current A+ account has to have appropriate permissions to access this list, otherwise the list will only have your own name.
-
-**16.6** Select a random student from the list and press OK.
-
-**16.7** ASSERTION: The Assignments section now shows the name of the selected user.
-
-**16.8** ASSERTION: The assignment list has been refreshed and shows different entries than previously.
-
-**16.9** Expand **Week 1**, then expand **Assignment 2 (GoodStuff)**, and double-click any submission therein.  
-If there are no submissions, pick another assignment that the user has submitted. If no such assignment exists, return to **16.6** and pick a different student.
-
-**16.10** A+ website with the submission details opens.
-
-**16.11** ASSERTION: Verify on the webpage that the assignment indeed belongs to the user you have previously selected.
-
-**16.12** Make sure the assignment from step **16.9** is selected.
-
-**16.13** Click the **Download submission** button.
-
-**16.14** ASSERTION: A dialog box appears prompting to select a base module and new module's name.
-
-**16.15** Leave the defaults and press OK.
-
-**16.16** ASSERTION: The student's submission downloads successfully. A new module is created and visible in the **Project Structure** tab.
-
-**16.17** Try downloading the same module again by repeating steps **16.12** to **16.15**.
-
-**16.18** ASSERTION: The module is not downloaded because the module name is already in use.
-
-**16.19** Close the dialog box.
-
-**16.20** In the Assignments tool window, click the pink student icon.
-
-**16.21** Press OK without selecting any student.
-
-**16.22** ASSERTION: The Assignments section no longer shows a name.
-
-**16.23** ASSERTION: The assignment list has been refreshed and shows your submissions.
-
-**16.24** Navigate to **A+ > Assistant mode** in the top menu strip.
-
-**16.25** ASSERTION: The A+ Courses tool window returns to having four buttons in the Assignments section, as on the image below.
-
-![Buttons_1](images/buttons_1.png)
