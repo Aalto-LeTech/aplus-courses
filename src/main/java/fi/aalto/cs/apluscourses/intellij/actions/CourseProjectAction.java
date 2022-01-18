@@ -79,10 +79,10 @@ public class CourseProjectAction extends AnAction {
   private final ExecutorService executor;
 
   private static final List<CourseItemViewModel> AVAILABLE_COURSES = List.of(
+      new CourseItemViewModel("Ohjelmointistudio 2 / Programming Studio A", "Spring 2022",
+          "https://gitmanager.cs.aalto.fi/static/studio2_k2022dev2-horrible-gitmanager-interface/projects/s2_course_config.json"),
       new CourseItemViewModel("O1", "Fall 2021",
-          "https://grader.cs.aalto.fi/static/O1_2021/projects/o1_course_config.json"),
-      new CourseItemViewModel("Ohjelmointistudio 2 / Programming Studio A", "Spring 2021",
-          "https://grader.cs.aalto.fi/static/studio2_k2021/projects/s2_course_config.json")
+          "https://gitmanager.cs.aalto.fi/static/O1_2021/projects/o1_course_config.json")
   );
 
   /**

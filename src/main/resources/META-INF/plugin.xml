@@ -15,7 +15,7 @@
     ]]></description>
 
     <change-notes>
-        Improvements to tutorials and UI. See the full changelog at https://github.com/Aalto-LeTech/aplus-courses/releases
+        Added support for Programming Studio 2, 2022 edition.
     </change-notes>
 
     <depends>com.intellij.modules.java</depends>
