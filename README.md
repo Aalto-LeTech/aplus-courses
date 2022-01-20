@@ -31,6 +31,8 @@ and, eventually, your IDE.
 
 Medium- to high-priority issues are usually solved within **one working-week**.
 
+List of courses is available at [https://version.aalto.fi/gitlab/aplus-courses/course-config-urls](https://version.aalto.fi/gitlab/aplus-courses/course-config-urls)
+
 ## Research
 
 Contains references for the academic research related to or created based on the A+ Courses plugin.
