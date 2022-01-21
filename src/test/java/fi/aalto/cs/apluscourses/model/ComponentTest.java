@@ -18,13 +18,15 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.hamcrest.MatcherAssert;
 import org.jetbrains.annotations.NotNull;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class ComponentTest {
+class ComponentTest {
   @SuppressWarnings("unchecked")
   @Test
-  public void testStateChanged() {
+  void testStateChanged() {
     Object listener = new Object();
     Event.Callback<Object> callback = mock(Event.Callback.class);
     Component component = new ModelExtensions.TestComponent();
@@ -32,94 +34,94 @@ public class ComponentTest {
     component.stateChanged.addListener(listener, callback);
 
     verifyNoInteractions(callback);
-    assertEquals("Component should be initially in UNRESOLVED state",
-        Component.UNRESOLVED, component.stateMonitor.get());
+    Assertions.assertEquals(Component.UNRESOLVED, component.stateMonitor.get(),
+        "Component should be initially in UNRESOLVED state");
     component.stateMonitor.set(Component.FETCHING);
     verify(callback, times(1)).callbackUntyped(listener);
     verifyNoMoreInteractions(callback);
   }
 
   @Test
-  public void testGetName() {
+  void testGetName() {
     String componentName = "testComponent";
     Component component = new ModelExtensions.TestComponent(componentName);
-    assertEquals("The name should be the same as was given to constructor",
-        componentName, component.getName());
+    Assertions.assertEquals(componentName, component.getName(),
+        "The name should be the same as was given to constructor");
   }
 
   @Test
-  public void testHasErrorReturnsTrue() {
+  void testHasErrorReturnsTrue() {
     Component component = new ModelExtensions.TestComponent();
     component.stateMonitor.set(Component.ERROR);
-    assertTrue("Component should have error when its state is ERROR", component.hasError());
+    Assertions.assertTrue(component.hasError(), "Component should have error when its state is ERROR");
   }
 
   @Test
-  public void testHasErrorReturnsFalse() {
+  void testHasErrorReturnsFalse() {
     Component component = new ModelExtensions.TestComponent();
     component.stateMonitor.set(Component.NOT_INSTALLED);
-    assertFalse("Component shouldn't have error when in a non-error state", component.hasError());
+    Assertions.assertFalse(component.hasError(), "Component shouldn't have error when in a non-error state");
   }
 
   @Test
-  public void testHasErrorWhenLoaded() {
+  void testHasErrorWhenLoaded() {
     Component component = new ModelExtensions.TestComponent();
     component.stateMonitor.set(Component.LOADED);
     component.dependencyStateMonitor.set(Component.DEP_ERROR);
-    assertTrue("Component should have error when its state is LOADED and dependency state is error",
-        component.hasError());
+    Assertions.assertTrue(component.hasError(),
+        "Component should have error when its state is LOADED and dependency state is error");
     component.dependencyStateMonitor.set(Component.DEP_LOADED);
-    assertFalse("Component shouldn't have error when its state and dependency state are ok",
-        component.hasError());
+    Assertions.assertFalse(component.hasError(),
+        "Component shouldn't have error when its state and dependency state are ok");
   }
 
   @Test
-  public void testResolveState() {
+  void testResolveState() {
     int resolvedState = Component.LOADED;
     Component component = spy(new ModelExtensions.TestComponent());
     when(component.resolveStateInternal()).thenReturn(resolvedState);
 
-    assertEquals("Component should be initially in UNRESOLVED state",
-        Component.UNRESOLVED, component.stateMonitor.get());
+    Assertions.assertEquals(Component.UNRESOLVED, component.stateMonitor.get(),
+        "Component should be initially in UNRESOLVED state");
 
     component.resolveState();
 
-    assertEquals("Component's state should be one that was resolved by the subclass",
-        resolvedState, component.stateMonitor.get());
+    Assertions.assertEquals(resolvedState, component.stateMonitor.get(),
+        "Component's state should be one that was resolved by the subclass");
 
     component.resolveState();
 
-    assertEquals("Component's state should be the same as in the previous call",
-        resolvedState, component.stateMonitor.get());
+    Assertions.assertEquals(resolvedState, component.stateMonitor.get(),
+        "Component's state should be the same as in the previous call");
 
     verify(component).resolveStateInternal();
   }
 
   @Test
-  public void testSetUnresolved() {
+  void testSetUnresolved() {
     Component component = new ModelExtensions.TestComponent();
     component.stateMonitor.set(Component.LOADED);
     component.setUnresolved();
-    assertEquals("setUnresolved() should set the component to UNRESOLVED state",
-        Component.UNRESOLVED, component.stateMonitor.get());
+    Assertions.assertEquals(Component.UNRESOLVED, component.stateMonitor.get(),
+        "setUnresolved() should set the component to UNRESOLVED state");
   }
 
   @Test
-  public void testGetDependencies() {
+  void testGetDependencies() {
     List<String> dependencies = List.of("dep1", "dep2", "dep3");
     Component component = spy(new ModelExtensions.TestComponent());
     when(component.computeDependencies()).thenReturn(dependencies);
 
-    assertThat("getDependencies() should return the dependencies computed by the subclass",
+    MatcherAssert.assertThat("getDependencies() should return the dependencies computed by the subclass",
         component.getDependencies(), is(dependencies));
-    assertThat("Subsequent call should return the same dependencies",
-        component.getDependencies(), is(dependencies));
+    MatcherAssert.assertThat("Subsequent call should return the same dependencies", component.getDependencies(),
+        is(dependencies));
 
     verify(component).computeDependencies();
   }
 
   @Test
-  public void testValidateTrivialCases() {
+  void testValidateTrivialCases() {
     Component component = new ModelExtensions.TestComponent();
     ComponentSource componentSource = mock(ComponentSource.class);
 
@@ -133,7 +135,7 @@ public class ComponentTest {
   }
 
   @Test
-  public void testValidate() {
+  void testValidate() {
     Map<String, Component> components = new HashMap<>();
 
     Component dependency1 = new ModelExtensions.TestComponent();
@@ -155,12 +157,12 @@ public class ComponentTest {
     component.dependencyStateMonitor.set(Component.DEP_ERROR);
     component.validate(components::get);
 
-    assertEquals("Component's dependency state should be DEP_LOADED",
-        Component.DEP_LOADED, component.dependencyStateMonitor.get());
+    Assertions.assertEquals(Component.DEP_LOADED, component.dependencyStateMonitor.get(),
+        "Component's dependency state should be DEP_LOADED");
   }
 
   @Test
-  public void testValidateInvalid() {
+  void testValidateInvalid() {
     Component nonLoadedDependency = new ModelExtensions.TestComponent();
 
     Component component = new ModelExtensions.TestComponent() {
@@ -174,12 +176,12 @@ public class ComponentTest {
     component.dependencyStateMonitor.set(Component.DEP_LOADED);
     component.validate(componentName -> nonLoadedDependency);
 
-    assertEquals("Component's dependency state should be DEP_ERROR",
-        Component.DEP_ERROR, component.dependencyStateMonitor.get());
+    Assertions.assertEquals(Component.DEP_ERROR, component.dependencyStateMonitor.get(),
+        "Component's dependency state should be DEP_ERROR");
   }
 
   @Test
-  public void testValidateDependencyMissing() {
+  void testValidateDependencyMissing() {
     Component component = new ModelExtensions.TestComponent() {
       @NotNull
       @Override
@@ -191,7 +193,7 @@ public class ComponentTest {
     component.dependencyStateMonitor.set(Component.DEP_LOADED);
     component.validate(componentName -> null);
 
-    assertEquals("Component's dependency state should be DEP_ERROR",
-        Component.DEP_ERROR, component.dependencyStateMonitor.get());
+    Assertions.assertEquals(Component.DEP_ERROR, component.dependencyStateMonitor.get(),
+        "Component's dependency state should be DEP_ERROR");
   }
 }

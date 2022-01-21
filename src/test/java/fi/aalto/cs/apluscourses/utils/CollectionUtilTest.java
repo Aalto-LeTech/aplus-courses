@@ -11,28 +11,30 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
-import org.junit.Test;
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class CollectionUtilTest {
+class CollectionUtilTest {
 
   @Test
-  public void testMapWithIndex() {
+  void testMapWithIndex() {
     List<String> source = List.of("a", "b", "c");
     List<String> result =
         CollectionUtil.mapWithIndex(source, (item, index) -> item + index.toString(), 4);
-    assertThat(result, is(List.of("a4", "b5", "c6")));
+    MatcherAssert.assertThat(result, is(List.of("a4", "b5", "c6")));
   }
 
   @Test
-  public void testIndexOf() {
+  void testIndexOf() {
     Object item = new Object();
     Iterator<Object> it = List.of(new Object(), new Object(), item, new Object()).iterator();
-    assertEquals(2, CollectionUtil.indexOf(it, item));
+    Assertions.assertEquals(2, CollectionUtil.indexOf(it, item));
   }
 
   @SuppressWarnings("unchecked")
   @Test
-  public void testRemoveIf() {
+  void testRemoveIf() {
     Consumer<String> callback = mock(Consumer.class);
 
     Collection<String> collection = new ArrayDeque<>();
@@ -46,15 +48,15 @@ public class CollectionUtilTest {
     collection.add("Dodge");
 
     var removed = CollectionUtil.removeIf(collection, s -> s.startsWith("C"));
-    assertThat(removed, hasItem("Chevrolet"));
-    assertThat(removed, hasItem("Chrysler"));
+    MatcherAssert.assertThat(removed, hasItem("Chevrolet"));
+    MatcherAssert.assertThat(removed, hasItem("Chrysler"));
 
-    assertEquals(6, collection.size());
-    assertThat(collection, hasItem("Audi"));
-    assertThat(collection, hasItem("BMW"));
-    assertThat(collection, hasItem("Daimler"));
-    assertThat(collection, hasItem("Alfa Romeo"));
-    assertThat(collection, hasItem("Bentley"));
-    assertThat(collection, hasItem("Dodge"));
+    Assertions.assertEquals(6, collection.size());
+    MatcherAssert.assertThat(collection, hasItem("Audi"));
+    MatcherAssert.assertThat(collection, hasItem("BMW"));
+    MatcherAssert.assertThat(collection, hasItem("Daimler"));
+    MatcherAssert.assertThat(collection, hasItem("Alfa Romeo"));
+    MatcherAssert.assertThat(collection, hasItem("Bentley"));
+    MatcherAssert.assertThat(collection, hasItem("Dodge"));
   }
 }

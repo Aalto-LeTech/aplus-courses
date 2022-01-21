@@ -6,12 +6,13 @@ import static org.junit.Assert.assertNotNull;
 import fi.aalto.cs.apluscourses.ui.IconListCellRenderer;
 import icons.PluginIcons;
 import javax.swing.JList;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class IconListCellRendererTest {
+class IconListCellRendererTest {
 
   @Test
-  public void testCustomizeWithValidInputWorks() {
+  void testCustomizeWithValidInputWorks() {
     //  given
     IconListCellRenderer renderer = new IconListCellRenderer(PluginIcons.A_PLUS_MODULE);
 
@@ -19,7 +20,7 @@ public class IconListCellRendererTest {
     renderer.customize(new JList<String>(), "", 0, true, true);
 
     //  then
-    assertNotNull("The icon for rendering Modules in ComboBoxList is set", renderer.getIcon());
-    assertEquals("There is a correct icon set.", PluginIcons.A_PLUS_MODULE, renderer.getIcon());
+    Assertions.assertNotNull(renderer.getIcon(), "The icon for rendering Modules in ComboBoxList is set");
+    Assertions.assertEquals(PluginIcons.A_PLUS_MODULE, renderer.getIcon(), "There is a correct icon set.");
   }
 }

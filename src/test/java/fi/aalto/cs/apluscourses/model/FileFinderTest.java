@@ -5,36 +5,37 @@ import static org.junit.Assert.fail;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class FileFinderTest {
+class FileFinderTest {
 
   @Test
-  public void findFile() throws FileDoesNotExistException {
+  void findFile() throws FileDoesNotExistException {
     Path dir = Paths.get("some", "dir");
     String name = "file.txt";
     FileFinder fileFinder = Path::resolve; // Path::resolve is an implementation of tryFindFile
 
     // asserts that findFile() delegates to tryFindFile()
-    assertEquals(dir.resolve(name), fileFinder.findFile(dir, name));
+    Assertions.assertEquals(dir.resolve(name), fileFinder.findFile(dir, name));
   }
 
   @Test
-  public void findFileThrows() {
+  void findFileThrows() {
     Path dir = Paths.get("data");
     String name = "ok.txt";
     FileFinder fileFinder = (what, ever) -> null;
     try {
       fileFinder.findFile(dir, name);
-      fail();
+      Assertions.fail();
     } catch (FileDoesNotExistException e) {
-      assertEquals(name, e.getName());
-      assertEquals(dir, e.getPath());
+      Assertions.assertEquals(name, e.getName());
+      Assertions.assertEquals(dir, e.getPath());
     }
   }
 
   @Test
-  public void findFiles() throws FileDoesNotExistException {
+  void findFiles() throws FileDoesNotExistException {
     Path dir = Paths.get("root");
     String file0 = "foo";
     String file1 = "bar";
@@ -42,8 +43,8 @@ public class FileFinderTest {
     FileFinder fileFinder = Path::resolve;
     Path[] paths = fileFinder.findFiles(dir, new String[] {file0, file1});
 
-    assertEquals(2, paths.length);
-    assertEquals(dir.resolve(file0), paths[0]);
-    assertEquals(dir.resolve(file1), paths[1]);
+    Assertions.assertEquals(2, paths.length);
+    Assertions.assertEquals(dir.resolve(file0), paths[0]);
+    Assertions.assertEquals(dir.resolve(file1), paths[1]);
   }
 }

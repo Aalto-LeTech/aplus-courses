@@ -6,13 +6,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class EventTest {
+class EventTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void testEvent() {
+  void testEvent() {
     Object listener1 = new Object();
     Object listener2 = new Object();
     Event.Callback<Object> callback1 = mock(Event.Callback.class);
@@ -34,7 +35,7 @@ public class EventTest {
     verifyNoMoreInteractions(callback2);
 
     // Prevent listeners from getting GC'ed
-    assertNotNull(listener1);
-    assertNotNull(listener2);
+    Assertions.assertNotNull(listener1);
+    Assertions.assertNotNull(listener2);
   }
 }

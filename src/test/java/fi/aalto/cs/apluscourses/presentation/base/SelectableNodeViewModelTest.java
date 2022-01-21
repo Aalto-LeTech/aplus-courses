@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -13,11 +14,12 @@ import fi.aalto.cs.apluscourses.presentation.filter.Filter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.internal.stubbing.answers.Returns;
 
-public class SelectableNodeViewModelTest {
+class SelectableNodeViewModelTest {
 
   Object model;
   SelectableNodeViewModel<Object> node;
@@ -29,8 +31,8 @@ public class SelectableNodeViewModelTest {
   /**
    * Run before each call.
    */
-  @Before
-  public void setUp() {
+  @BeforeEach
+  void setUp() {
     model = new Object();
 
     child0 = spy(new TestNodeViewModel(0, new Object(), Collections.emptyList()));
@@ -41,29 +43,31 @@ public class SelectableNodeViewModelTest {
   }
 
   @Test
-  public void testGetModel() {
-    assertSame(model, node.getModel());
+  void testGetModel() {
+    Assertions.assertSame(model, node.getModel());
   }
 
   @Test
-  public void testGetChildren() {
+  void testGetChildren() {
     List<SelectableNodeViewModel<?>> actualChildren = node.getChildren();
-    assertEquals(3, actualChildren.size());
-    assertSame(child0, actualChildren.get(0));
-    assertSame(child1, actualChildren.get(1));
-    assertSame(child2, actualChildren.get(2));
+    Assertions.assertEquals(3, actualChildren.size());
+    Assertions.assertSame(child0, actualChildren.get(0));
+    Assertions.assertSame(child1, actualChildren.get(1));
+    Assertions.assertSame(child2, actualChildren.get(2));
   }
 
-  @Test(expected = InterruptedException.class)
-  public void testApplyFilterIsInterrupted() throws InterruptedException {
+  @Test
+  void testApplyFilterIsInterrupted() throws InterruptedException {
     Filter filter = mock(Filter.class);
 
     Thread.currentThread().interrupt();
-    node.applyFilter(filter);
+
+    assertThrows(InterruptedException.class, () ->
+        node.applyFilter(filter));
   }
 
   @Test
-  public void testApplyFilterWhenChildReturnsTrue() throws InterruptedException {
+  void testApplyFilterWhenChildReturnsTrue() throws InterruptedException {
     Filter filter = mock(Filter.class);
     when(filter.apply(child0)).thenReturn(Optional.of(false));
     when(filter.apply(child1)).thenReturn(Optional.of(true));
@@ -71,26 +75,26 @@ public class SelectableNodeViewModelTest {
 
 
     Optional<Boolean> result = node.applyFilter(filter);
-    assertTrue(result.isPresent() && Boolean.TRUE.equals(result.get()));
-    assertTrue(node.isVisible());
+    Assertions.assertTrue(result.isPresent() && Boolean.TRUE.equals(result.get()));
+    Assertions.assertTrue(node.isVisible());
   }
 
   @Test
-  public void testApplyFilterReturnsFalse() throws InterruptedException {
+  void testApplyFilterReturnsFalse() throws InterruptedException {
     Filter filter = mock(Filter.class, new Returns(Optional.empty()));
     when(filter.apply(node)).thenReturn(Optional.of(false));
 
     Optional<Boolean> result = node.applyFilter(filter);
-    assertTrue(result.isPresent() && Boolean.FALSE.equals(result.get()));
-    assertFalse(node.isVisible());
+    Assertions.assertTrue(result.isPresent() && Boolean.FALSE.equals(result.get()));
+    Assertions.assertFalse(node.isVisible());
   }
 
   @Test
-  public void testApplyFilterReturnsEmpty() throws InterruptedException {
+  void testApplyFilterReturnsEmpty() throws InterruptedException {
     Filter filter = mock(Filter.class, new Returns(Optional.empty()));
 
     Optional<Boolean> result = node.applyFilter(filter);
-    assertFalse(result.isPresent());
-    assertTrue(node.isVisible());
+    Assertions.assertFalse(result.isPresent());
+    Assertions.assertTrue(node.isVisible());
   }
 }

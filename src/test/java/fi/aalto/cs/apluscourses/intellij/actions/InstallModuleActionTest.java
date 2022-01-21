@@ -1,8 +1,5 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -26,11 +23,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.swing.ListSelectionModel;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
-public class InstallModuleActionTest {
+class InstallModuleActionTest {
 
   private Project project;
   private MainViewModel mainViewModel;
@@ -40,8 +38,8 @@ public class InstallModuleActionTest {
   /**
    * Called before each test method call.  Initializes private fields.
    */
-  @Before
-  public void createMockObjects() {
+  @BeforeEach
+  void createMockObjects() {
     project = mock(Project.class);
 
     mainViewModel = new MainViewModel(new Options());
@@ -84,7 +82,7 @@ public class InstallModuleActionTest {
 
   @SuppressWarnings({"ConstantConditions"})
   @Test
-  public void testUpdate() {
+  void testUpdate() {
     InstallModuleAction action = new InstallModuleAction(p -> mainViewModel, (c, d) -> installer,
         dialogsFactory);
 
@@ -94,7 +92,7 @@ public class InstallModuleActionTest {
     doReturn(project).when(e).getProject();
 
     action.update(e);
-    assertFalse(presentation.isEnabledAndVisible());
+    Assertions.assertFalse(presentation.isEnabledAndVisible());
 
     ListSelectionModel selectionModel = mainViewModel.courseViewModel.get()
         .getModules()
@@ -102,16 +100,16 @@ public class InstallModuleActionTest {
 
     selectionModel.addSelectionInterval(1, 2);
     action.update(e);
-    assertTrue(presentation.isEnabledAndVisible());
+    Assertions.assertTrue(presentation.isEnabledAndVisible());
 
     selectionModel.clearSelection();
     action.update(e);
-    assertFalse(presentation.isEnabledAndVisible());
+    Assertions.assertFalse(presentation.isEnabledAndVisible());
   }
 
   @SuppressWarnings({"unchecked", "ConstantConditions"})
   @Test
-  public void testActionPerformed() {
+  void testActionPerformed() {
     InstallModuleAction action = new InstallModuleAction(p -> mainViewModel, (c, d) -> installer,
         dialogsFactory);
 
@@ -131,11 +129,8 @@ public class InstallModuleActionTest {
 
     List<Module> modules = mainViewModel.courseViewModel.get().getModel().getModules();
 
-    assertEquals("installAsync() should be called with list of size 2.",
-        2, captor.getValue().size());
-    assertTrue("The second module should get installed.",
-        captor.getValue().contains(modules.get(1)));
-    assertTrue("The third module should get installed.",
-        captor.getValue().contains(modules.get(2)));
+    Assertions.assertEquals(2, captor.getValue().size(), "installAsync() should be called with list of size 2.");
+    Assertions.assertTrue(captor.getValue().contains(modules.get(1)), "The second module should get installed.");
+    Assertions.assertTrue(captor.getValue().contains(modules.get(2)), "The third module should get installed.");
   }
 }

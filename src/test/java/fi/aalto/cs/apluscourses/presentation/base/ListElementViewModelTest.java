@@ -7,30 +7,30 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class ListElementViewModelTest {
+class ListElementViewModelTest {
 
   @Test
-  public void testSetSelected() {
+  void testSetSelected() {
     ListElementViewModel<Object> listElementViewModel = new ListElementViewModel<>(new Object());
-    assertFalse("isSelected() should initially return false.", listElementViewModel.isSelected());
+    Assertions.assertFalse(listElementViewModel.isSelected(), "isSelected() should initially return false.");
     listElementViewModel.setSelected(true);
-    assertTrue("isSelected() should return true.", listElementViewModel.isSelected());
+    Assertions.assertTrue(listElementViewModel.isSelected(), "isSelected() should return true.");
     listElementViewModel.setSelected(false);
-    assertFalse("isSelected() should return false.", listElementViewModel.isSelected());
+    Assertions.assertFalse(listElementViewModel.isSelected(), "isSelected() should return false.");
   }
 
   @SuppressWarnings("unchecked")
   @Test
-  public void testIndexAndListModel() {
+  void testIndexAndListModel() {
     ListElementViewModel<Object> listElementViewModel = new ListElementViewModel<>(new Object());
-    assertEquals(0, listElementViewModel.getIndex());
+    Assertions.assertEquals(0, listElementViewModel.getIndex());
 
     int index = 44;
     listElementViewModel.setIndex(index);
-    assertEquals("getIndex() should return newly set index.",
-        index, listElementViewModel.getIndex());
+    Assertions.assertEquals(index, listElementViewModel.getIndex(), "getIndex() should return newly set index.");
 
     listElementViewModel.onChanged(); // nothing should happen
 

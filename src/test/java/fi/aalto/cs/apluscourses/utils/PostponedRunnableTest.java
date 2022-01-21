@@ -2,11 +2,12 @@ package fi.aalto.cs.apluscourses.utils;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class PostponedRunnableTest {
+class PostponedRunnableTest {
   @Test
-  public void testUsesExecutorToRunRunnable() {
+  void testUsesExecutorToRunRunnable() {
     AtomicInteger runnableCallCount = new AtomicInteger(0);
     AtomicInteger executorCallCount = new AtomicInteger(0);
     PostponedRunnable postponedRunnable = new PostponedRunnable(
@@ -19,7 +20,7 @@ public class PostponedRunnableTest {
 
     postponedRunnable.run();
 
-    Assert.assertEquals("The given runnable is ran", 1, runnableCallCount.get());
-    Assert.assertEquals("The runnable is ran by the given executor", 1, executorCallCount.get());
+    Assertions.assertEquals(1, runnableCallCount.get(), "The given runnable is ran");
+    Assertions.assertEquals(1, executorCallCount.get(), "The runnable is ran by the given executor");
   }
 }

@@ -6,12 +6,12 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class SimpleAsyncTaskManagerTest {
+class SimpleAsyncTaskManagerTest {
 
   @Test
-  public void testFork() {
+  void testFork() {
     SimpleAsyncTaskManager taskManager = new SimpleAsyncTaskManager();
 
     Runnable runnable = mock(Runnable.class);
@@ -25,13 +25,13 @@ public class SimpleAsyncTaskManagerTest {
   }
 
   @Test
-  public void testJoinNull() {
+  void testJoinNull() {
     new SimpleAsyncTaskManager().join(null);
     // nothing should happen, no exceptions should be thrown
   }
 
   @Test
-  public void testAll() {
+  void testAll() {
     SimpleAsyncTaskManager taskManager = new SimpleAsyncTaskManager();
 
     Runnable runnable1 = mock(Runnable.class);

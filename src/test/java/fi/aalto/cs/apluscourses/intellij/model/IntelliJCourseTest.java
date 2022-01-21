@@ -24,12 +24,13 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class IntelliJCourseTest {
+class IntelliJCourseTest {
 
   @Test
-  public void testCreateIntelliJCourse() {
+  void testCreateIntelliJCourse() {
     String id = "id";
     String name = "testName";
     APlusProject project = mock(APlusProject.class);
@@ -58,14 +59,14 @@ public class IntelliJCourseTest {
         project,
         commonLibraryProvider,
         Collections.emptyMap());
-    assertEquals(id, course.getId());
-    assertEquals(name, course.getName());
-    assertSame(project, course.getProject());
-    assertSame(commonLibraryProvider, course.getCommonLibraryProvider());
+    Assertions.assertEquals(id, course.getId());
+    Assertions.assertEquals(name, course.getName());
+    Assertions.assertSame(project, course.getProject());
+    Assertions.assertSame(commonLibraryProvider, course.getCommonLibraryProvider());
   }
 
   @Test
-  public void testGetComponents() {
+  void testGetComponents() {
     String moduleName = "testModule";
     Module module = new ModelExtensions.TestModule(moduleName);
     List<Module> modules = new ArrayList<>();
@@ -108,21 +109,21 @@ public class IntelliJCourseTest {
         Collections.emptyMap());
 
     Collection<Component> components1 = course.getComponents();
-    assertEquals(1, components1.size());
-    assertTrue(components1.contains(module));
+    Assertions.assertEquals(1, components1.size());
+    Assertions.assertTrue(components1.contains(module));
 
-    assertSame(module, course.getComponentIfExists(moduleName));
-    assertSame(library, course.getComponentIfExists(libraryName));
-    assertNull(course.getComponentIfExists("otherComponent"));
+    Assertions.assertSame(module, course.getComponentIfExists(moduleName));
+    Assertions.assertSame(library, course.getComponentIfExists(libraryName));
+    Assertions.assertNull(course.getComponentIfExists("otherComponent"));
 
     Collection<Component> components2 = course.getComponents();
-    assertEquals(2, components2.size());
-    assertTrue(components2.contains(module));
-    assertTrue(components2.contains(library));
+    Assertions.assertEquals(2, components2.size());
+    Assertions.assertTrue(components2.contains(module));
+    Assertions.assertTrue(components2.contains(library));
   }
 
   @Test
-  public void testGetComponentIfExists() {
+  void testGetComponentIfExists() {
     var project = mock(APlusProject.class);
     doReturn(Paths.get("")).when(project).getBasePath();
 
@@ -158,11 +159,11 @@ public class IntelliJCourseTest {
         mock(CommonLibraryProvider.class),
         Collections.emptyMap());
 
-    assertSame(module, course.getComponentIfExists(file));
+    Assertions.assertSame(module, course.getComponentIfExists(file));
   }
 
   @Test
-  public void testGetComponentIfExistsReturnsNull() {
+  void testGetComponentIfExistsReturnsNull() {
     var project = mock(APlusProject.class);
     doReturn(Paths.get("")).when(project).getBasePath();
 
@@ -198,7 +199,7 @@ public class IntelliJCourseTest {
         mock(CommonLibraryProvider.class),
         Collections.emptyMap());
 
-    assertNull(course.getComponentIfExists(file1));
-    assertNull(course.getComponentIfExists(file2));
+    Assertions.assertNull(course.getComponentIfExists(file1));
+    Assertions.assertNull(course.getComponentIfExists(file2));
   }
 }

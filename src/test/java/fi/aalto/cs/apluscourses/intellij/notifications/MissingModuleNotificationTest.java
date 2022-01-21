@@ -2,20 +2,21 @@ package fi.aalto.cs.apluscourses.intellij.notifications;
 
 import static org.hamcrest.Matchers.containsString;
 
+import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class MissingModuleNotificationTest {
+class MissingModuleNotificationTest {
 
   @Test
-  public void testMissingModuleNotification() {
+  void testMissingModuleNotification() {
     String name = "module name";
     MissingModuleNotification notification = new MissingModuleNotification(name);
-    Assert.assertEquals("The title is correct", "Could not find module",
-        notification.getTitle());
-    Assert.assertEquals("Module name should be correct", name, notification.getModuleName());
-    Assert.assertEquals("Group ID should be A+", "A+", notification.getGroupId());
-    Assert.assertThat("The content should contain the module name", notification.getContent(),
+    Assertions.assertEquals("Could not find module", notification.getTitle(), "The title is correct");
+    Assertions.assertEquals(name, notification.getModuleName(), "Module name should be correct");
+    Assertions.assertEquals("A+", notification.getGroupId(), "Group ID should be A+");
+    MatcherAssert.assertThat("The content should contain the module name", notification.getContent(),
         containsString(name));
   }
 

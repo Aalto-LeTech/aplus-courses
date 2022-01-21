@@ -25,12 +25,13 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
-public class CourseUpdaterTest {
+class CourseUpdaterTest {
 
   private CourseUpdater updater;
   private String json;
@@ -44,8 +45,8 @@ public class CourseUpdaterTest {
   /**
    * Set up mock objects before each test.
    */
-  @Before
-  public void setUp() throws IOException {
+  @BeforeEach
+  void setUp() throws IOException {
     module = mock(Module.class);
     doReturn("Awesome Module").when(module).getName();
     doReturn(new URL("http://example.org")).when(module).getUrl();
@@ -55,23 +56,23 @@ public class CourseUpdaterTest {
     json = "{\"modules\":[{\"name\":\"Module\",\"url\":\"http://example.org\",\"id\":\"a\"}]}";
     var bytes = json.getBytes(StandardCharsets.UTF_8);
     doAnswer(invocationOnMock -> new ByteArrayInputStream(bytes))
-            .when(configurationFetcher)
-            .fetch(any(URL.class));
+        .when(configurationFetcher)
+        .fetch(any(URL.class));
     event = mock(Event.class);
     notifier = mock(Notifier.class);
     var course = new ModelExtensions.TestCourse(
-            "1", "O1", "http://example.com", Collections.emptyList(), Collections.singletonList(module),
-            Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap(),
-            Collections.emptyList(), Collections.emptyMap(), BuildInfo.INSTANCE.courseVersion,
-            Collections.emptyMap()
+        "1", "O1", "http://example.com", Collections.emptyList(), Collections.singletonList(module),
+        Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap(),
+        Collections.emptyList(), Collections.emptyMap(), BuildInfo.INSTANCE.courseVersion,
+        Collections.emptyMap()
     );
     updater = new CourseUpdater(
-            mock(CourseProject.class), course, project, courseUrl, configurationFetcher, event, notifier, 50L
+        mock(CourseProject.class), course, project, courseUrl, configurationFetcher, event, notifier, 50L
     );
   }
 
   @Test
-  public void testCourseUpdaterIsInterruptible() {
+  void testCourseUpdaterIsInterruptible() {
     updater.restart();
     updater.stop();
     verifyNoInteractions(event);
@@ -79,9 +80,9 @@ public class CourseUpdaterTest {
     verifyNoInteractions(project);
   }
 
-  @Ignore("Uses PluginSettings")
+  @Disabled("Uses PluginSettings")
   @Test
-  public void testCourseUpdaterWithNoUpdatableModules() throws IOException, InterruptedException {
+  void testCourseUpdaterWithNoUpdatableModules() throws IOException, InterruptedException {
     updater.restart();
     Thread.sleep(300L);
     updater.stop();
@@ -92,9 +93,9 @@ public class CourseUpdaterTest {
     verifyNoInteractions(project);
   }
 
-  @Ignore("Uses PluginSettings")
+  @Disabled("Uses PluginSettings")
   @Test
-  public void testCourseUpdaterNotifies() throws IOException, InterruptedException {
+  void testCourseUpdaterNotifies() throws IOException, InterruptedException {
     doReturn(true).when(module).isUpdatable();
     updater.restart();
     Thread.sleep(300L);
@@ -103,7 +104,7 @@ public class CourseUpdaterTest {
     verify(event, atLeast(2)).trigger();
     var argumentCaptor = ArgumentCaptor.forClass(NewModulesVersionsNotification.class);
     verify(notifier, times(1)).notifyAndHide(argumentCaptor.capture(), eq(project));
-    assertThat(argumentCaptor.getValue().getContent(), containsString("Awesome Module"));
+    MatcherAssert.assertThat(argumentCaptor.getValue().getContent(), containsString("Awesome Module"));
     verifyNoInteractions(project);
   }
 

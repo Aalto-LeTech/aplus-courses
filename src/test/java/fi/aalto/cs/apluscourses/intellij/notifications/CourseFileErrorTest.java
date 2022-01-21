@@ -7,17 +7,19 @@ import static org.junit.Assert.assertThat;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
-import org.junit.Test;
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class CourseFileErrorTest {
+class CourseFileErrorTest {
 
   @Test
-  public void testCourseFileError() {
+  void testCourseFileError() {
     String errorMessage = "This is just a test! :D";
     Exception e = new Exception(errorMessage);
     Notification notification = new CourseFileError(e);
-    assertEquals(PluginSettings.A_PLUS, notification.getGroupId());
-    assertEquals(NotificationType.ERROR, notification.getType());
-    assertThat(notification.getContent(), containsString(errorMessage));
+    Assertions.assertEquals(PluginSettings.A_PLUS, notification.getGroupId());
+    Assertions.assertEquals(NotificationType.ERROR, notification.getType());
+    MatcherAssert.assertThat(notification.getContent(), containsString(errorMessage));
   }
 }

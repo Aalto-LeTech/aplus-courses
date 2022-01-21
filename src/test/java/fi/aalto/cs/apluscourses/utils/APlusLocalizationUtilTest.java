@@ -1,29 +1,29 @@
 package fi.aalto.cs.apluscourses.utils;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class APlusLocalizationUtilTest {
+class APlusLocalizationUtilTest {
 
   @Test
-  public void testGetEnglishName() {
+  void testGetEnglishName() {
     String multilingualName = "|fi:hei|en:hello|se:hej|";
-    Assert.assertEquals("Correctly parses the English name", "hello",
-        APlusLocalizationUtil.getEnglishName(multilingualName));
+    Assertions.assertEquals("hello", APlusLocalizationUtil.getEnglishName(multilingualName),
+        "Correctly parses the English name");
   }
 
   @Test
-  public void testGetEnglishNameWithoutLocalization() {
+  void testGetEnglishNameWithoutLocalization() {
     String name = "abcdefg";
-    Assert.assertEquals("Returns the given string when the string doesn't contain localization",
-        "abcdefg", APlusLocalizationUtil.getEnglishName(name));
+    Assertions.assertEquals("abcdefg", APlusLocalizationUtil.getEnglishName(name),
+        "Returns the given string when the string doesn't contain localization");
   }
 
   @Test
-  public void testLanguageCodeToName() {
-    Assert.assertEquals("Finnish", APlusLocalizationUtil.languageCodeToName("fi"));
-    Assert.assertEquals("English", APlusLocalizationUtil.languageCodeToName("en"));
-    Assert.assertEquals("qwerty", APlusLocalizationUtil.languageCodeToName("qwerty"));
+  void testLanguageCodeToName() {
+    Assertions.assertEquals("Finnish", APlusLocalizationUtil.languageCodeToName("fi"));
+    Assertions.assertEquals("English", APlusLocalizationUtil.languageCodeToName("en"));
+    Assertions.assertEquals("qwerty", APlusLocalizationUtil.languageCodeToName("qwerty"));
   }
 
 }

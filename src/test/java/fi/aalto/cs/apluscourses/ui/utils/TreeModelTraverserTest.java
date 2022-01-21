@@ -6,12 +6,13 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class TreeModelTraverserTest {
+class TreeModelTraverserTest {
 
   @Test
-  public void testTraverse() {
+  void testTraverse() {
     DefaultMutableTreeNode child11 = new DefaultMutableTreeNode();
     DefaultMutableTreeNode child12 = new DefaultMutableTreeNode();
     DefaultMutableTreeNode child1 = new DefaultMutableTreeNode();
@@ -31,6 +32,6 @@ public class TreeModelTraverserTest {
         new TreePath(new Object[] {root, child1, child12}),
         new TreePath(new Object[] {root, child2})
     };
-    assertArrayEquals(expecteds, actuals);
+    Assertions.assertArrayEquals(expecteds, actuals);
   }
 }

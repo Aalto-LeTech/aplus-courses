@@ -29,10 +29,11 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class CourseFileManagerTest {
+class CourseFileManagerTest {
 
   // CourseFileManager is supposed to be thread safe, so all of these tests use multiple threads.
   private static final int NUM_THREADS = 16;
@@ -66,8 +67,8 @@ public class CourseFileManagerTest {
   /**
    * Run before every test, initializes useful instance variables.
    */
-  @Before
-  public void initializeObjects() throws IOException {
+  @BeforeEach
+  void initializeObjects() throws IOException {
     Project project = mock(Project.class);
     File tempDir = FileUtilRt.createTempDirectory("test", "", true);
     doReturn(tempDir.toString()).when(project).getBasePath();
@@ -86,8 +87,8 @@ public class CourseFileManagerTest {
   }
 
   @Test
-  public void testCreateAndLoad() throws IOException, InterruptedException {
-    Assert.assertFalse(courseFile.exists());
+  void testCreateAndLoad() throws IOException, InterruptedException {
+    Assertions.assertFalse(courseFile.exists());
 
     URL url = new URL("http://localhost:3000");
     String language = "fi";
@@ -104,24 +105,22 @@ public class CourseFileManagerTest {
 
     startAndJoinEach(threads);
 
-    Assert.assertFalse(threadFailed.get());
+    Assertions.assertFalse(threadFailed.get());
 
-    Assert.assertEquals("CourseFileManager returns the correct url", url, manager.getCourseUrl());
-    Assert.assertEquals("CourseFileManager returns the correct language",
-        language, manager.getLanguage());
-    Assert.assertTrue("CourseFileManager returns an empty map for modules metadata",
-        manager.getModulesMetadata().isEmpty());
+    Assertions.assertEquals(url, manager.getCourseUrl(), "CourseFileManager returns the correct url");
+    Assertions.assertEquals(language, manager.getLanguage(), "CourseFileManager returns the correct language");
+    Assertions.assertTrue(manager.getModulesMetadata().isEmpty(),
+        "CourseFileManager returns an empty map for modules metadata");
 
     JSONObject jsonObject = getCourseFileContents();
     URL jsonUrl = new URL(jsonObject.getString(URL_KEY));
     String jsonLanguage = jsonObject.getString(LANGUAGE_KEY);
-    Assert.assertEquals("The course file contains JSON with the given URL", url, jsonUrl);
-    Assert.assertEquals("The course file contains JSON with the given language",
-        language, jsonLanguage);
+    Assertions.assertEquals(url, jsonUrl, "The course file contains JSON with the given URL");
+    Assertions.assertEquals(language, jsonLanguage, "The course file contains JSON with the given language");
   }
 
   @Test
-  public void testCreateAndLoadWithExistingFile() throws IOException {
+  void testCreateAndLoadWithExistingFile() throws IOException {
     URL oldUrl = new URL("https://google.com");
     URL newUrl = new URL("https://github.com");
     String oldLanguage = "en";
@@ -139,26 +138,22 @@ public class CourseFileManagerTest {
 
     FileUtils.writeStringToFile(courseFile, jsonObject.toString(), StandardCharsets.UTF_8);
 
-    Assert.assertTrue(courseFile.exists());
+    Assertions.assertTrue(courseFile.exists());
 
     manager.createAndLoad(newUrl, newLanguage);
 
-    Assert.assertEquals(
-        "CourseFileManager#createAndLoad overwrites the URL of the existing course file",
-        newUrl, manager.getCourseUrl()
-    );
-    Assert.assertEquals(
-        "CourseFileManager#createAndLoad overwrites the language of the existing course file",
-        newLanguage, manager.getLanguage()
-    );
-    Assert.assertEquals("CourseFileManager#createAndLoad gets the existing modules metadata",
-        1, manager.getModulesMetadata().size());
-    Assert.assertEquals("CourseFileManager#createAndLoad gets the existing modules metadata",
-        new Version(5, 4), manager.getModulesMetadata().get("awesome module").getVersion());
+    Assertions.assertEquals(newUrl, manager.getCourseUrl(),
+        "CourseFileManager#createAndLoad overwrites the URL of the existing course file");
+    Assertions.assertEquals(newLanguage, manager.getLanguage(),
+        "CourseFileManager#createAndLoad overwrites the language of the existing course file");
+    Assertions.assertEquals(1, manager.getModulesMetadata().size(),
+        "CourseFileManager#createAndLoad gets the existing modules metadata");
+    Assertions.assertEquals(new Version(5, 4), manager.getModulesMetadata().get("awesome module").getVersion(),
+        "CourseFileManager#createAndLoad gets the existing modules metadata");
   }
 
   @Test
-  public void testLoad() throws IOException, InterruptedException {
+  void testLoad() throws IOException, InterruptedException {
     JSONObject jsonObject = new JSONObject()
         .put(URL_KEY, new URL("https://example.org"))
         .put(LANGUAGE_KEY, "de")
@@ -185,27 +180,26 @@ public class CourseFileManagerTest {
 
     startAndJoinEach(threads);
 
-    Assert.assertEquals("CourseFileManager returns the correct URL",
-        new URL("https://example.org"), manager.getCourseUrl());
-    Assert.assertEquals("CourseFileManager returns the correct language",
-        "de", manager.getLanguage());
+    Assertions.assertEquals(new URL("https://example.org"), manager.getCourseUrl(),
+        "CourseFileManager returns the correct URL");
+    Assertions.assertEquals("de", manager.getLanguage(), "CourseFileManager returns the correct language");
     Map<String, ModuleMetadata> metadata = manager.getModulesMetadata();
-    Assert.assertEquals("CourseFileManager should return the correct number of modules metadata",
-        2, metadata.size());
-    Assert.assertEquals("CourseFileManager should return the correct modules metadata",
-        new Version(1, 2), metadata.get("great name").getVersion());
-    Assert.assertEquals("CourseFileManager should return the correct modules metadata",
-        new Version(3, 4), metadata.get("also a great name").getVersion());
+    Assertions.assertEquals(2, metadata.size(),
+        "CourseFileManager should return the correct number of modules metadata");
+    Assertions.assertEquals(new Version(1, 2), metadata.get("great name").getVersion(),
+        "CourseFileManager should return the correct modules metadata");
+    Assertions.assertEquals(new Version(3, 4), metadata.get("also a great name").getVersion(),
+        "CourseFileManager should return the correct modules metadata");
   }
 
   @Test
-  public void testLoadWithNoCourseFile() throws IOException {
+  void testLoadWithNoCourseFile() throws IOException {
     boolean courseFileExists = manager.load();
-    Assert.assertFalse("Load should return false when no course file exists", courseFileExists);
+    Assertions.assertFalse(courseFileExists, "Load should return false when no course file exists");
   }
 
   @Test
-  public void testAddEntryForModule() throws IOException, InterruptedException {
+  void testAddEntryForModule() throws IOException, InterruptedException {
     URL url = new URL("http://localhost:8000");
     manager.createAndLoad(url, "en");
     for (int i = 0; i < NUM_THREADS; ++i) {
@@ -224,13 +218,12 @@ public class CourseFileManagerTest {
 
     startAndJoinEach(threads);
 
-    Assert.assertFalse(threadFailed.get());
+    Assertions.assertFalse(threadFailed.get());
 
     JSONObject jsonObject = getCourseFileContents();
     JSONObject modulesObject = jsonObject.getJSONObject(MODULES_KEY);
     Set<String> keys = modulesObject.keySet();
-    Assert.assertEquals("The file should contain the correct number of module entries",
-        NUM_THREADS, keys.size());
+    Assertions.assertEquals(NUM_THREADS, keys.size(), "The file should contain the correct number of module entries");
     for (String key : keys) {
       // This will throw and fail this test if the JSON format in the file is malformed
       modulesObject.getJSONObject(key).getString(MODULE_VERSION_KEY);
@@ -239,11 +232,9 @@ public class CourseFileManagerTest {
   }
 
   @Test
-  public void testGetModulesMetadata() throws IOException, InterruptedException {
-    Assert.assertTrue(
-        "Course file manager returns empty metadata map when no course file has been loaded",
-        manager.getModulesMetadata().isEmpty()
-    );
+  void testGetModulesMetadata() throws IOException, InterruptedException {
+    Assertions.assertTrue(manager.getModulesMetadata().isEmpty(),
+        "Course file manager returns empty metadata map when no course file has been loaded");
 
     JSONObject modulesObject = new JSONObject();
     for (int i = 0; i < NUM_THREADS; ++i) {
@@ -274,7 +265,7 @@ public class CourseFileManagerTest {
     startAndJoinEach(threads);
 
     if (threadFailed.get()) {
-      Assert.fail("CourseFileManager#getModulesMetadata did not return the correct map");
+      Assertions.fail("CourseFileManager#getModulesMetadata did not return the correct map");
     }
   }
 

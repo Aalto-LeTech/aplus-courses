@@ -10,12 +10,13 @@ import fi.aalto.cs.apluscourses.dal.APlusTokenAuthentication;
 import fi.aalto.cs.apluscourses.dal.TokenAuthentication;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.ExerciseDataSource;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class AuthenticationViewModelTest {
+class AuthenticationViewModelTest {
 
   @Test
-  public void testAPlusAuthenticationViewModel() {
+  void testAPlusAuthenticationViewModel() {
     Project project = mock(Project.class);
     doReturn("hello there").when(project).getBasePath();
     ExerciseDataSource dataSource = mock(ExerciseDataSource.class);
@@ -32,11 +33,11 @@ public class AuthenticationViewModelTest {
     viewModel.build();
     Authentication authentication = viewModel.getAuthentication();
 
-    assertTrue(authentication instanceof APlusTokenAuthentication);
-    assertEquals("The view model has the URL passed to the constructor",
-        "https://example.com", viewModel.getAuthenticationHtmlUrl());
-    assertTrue("build() creates a correct object", ((TokenAuthentication) authentication)
-        .tokenEquals("asd"));
+    Assertions.assertTrue(authentication instanceof APlusTokenAuthentication);
+    Assertions.assertEquals("https://example.com", viewModel.getAuthenticationHtmlUrl(),
+        "The view model has the URL passed to the constructor");
+    Assertions.assertTrue(((TokenAuthentication) authentication)
+        .tokenEquals("asd"), "build() creates a correct object");
   }
 
 }

@@ -2,17 +2,18 @@ package fi.aalto.cs.apluscourses.model;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class SubmittableFileTest {
+class SubmittableFileTest {
 
   @Test
-  public void testCreate() {
+  void testCreate() {
     String key = "mykey";
     String name = "myname";
     SubmittableFile submittableFile = new SubmittableFile(key, name);
-    assertEquals(key, submittableFile.getKey());
-    assertEquals(name, submittableFile.getName());
+    Assertions.assertEquals(key, submittableFile.getKey());
+    Assertions.assertEquals(name, submittableFile.getName());
   }
 
 }

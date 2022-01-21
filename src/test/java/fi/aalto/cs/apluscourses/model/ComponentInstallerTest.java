@@ -17,24 +17,25 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
-public class ComponentInstallerTest {
+class ComponentInstallerTest {
 
   @Test
-  public void testInstall() throws IOException, ComponentLoadException {
+  void testInstall() throws IOException, ComponentLoadException {
     Module module = spy(new ModelExtensions.TestModule("someModule") {
       @Override
       public void fetch() {
-        assertEquals("When fetch() is called, module should be in FETCHING state.",
-            Component.FETCHING, stateMonitor.get());
+        Assertions.assertEquals(Component.FETCHING, stateMonitor.get(),
+            "When fetch() is called, module should be in FETCHING state.");
       }
 
       @Override
       public void load() {
-        assertEquals("When load() is called, module should be in LOADING state.",
-            Component.LOADING, stateMonitor.get());
+        Assertions.assertEquals(Component.LOADING, stateMonitor.get(),
+            "When load() is called, module should be in LOADING state.");
       }
     });
 
@@ -51,21 +52,21 @@ public class ComponentInstallerTest {
     order.verify(module).fetch();
     order.verify(module).load();
 
-    assertEquals("Module should be in LOADED state, after the installation has ended.",
-        Component.LOADED, module.stateMonitor.get());
-    assertEquals("Module should be in DEP_LOADED state, after the installation has ended.",
-        Component.DEP_LOADED, module.dependencyStateMonitor.get());
+    Assertions.assertEquals(Component.LOADED, module.stateMonitor.get(),
+        "Module should be in LOADED state, after the installation has ended.");
+    Assertions.assertEquals(Component.DEP_LOADED, module.dependencyStateMonitor.get(),
+        "Module should be in DEP_LOADED state, after the installation has ended.");
   }
 
   @Test
-  public void testInstallDependencies()
+  void testInstallDependencies()
       throws IOException, ComponentLoadException {
     Module module1 = spy(new ModelExtensions.TestModule("dependentModule") {
       @NotNull
       @Override
       protected List<String> computeDependencies() {
-        assertEquals("Module should be in LOADED state when computeDependencies() is called.",
-            Component.LOADED, stateMonitor.get());
+        Assertions.assertEquals(Component.LOADED, stateMonitor.get(),
+            "Module should be in LOADED state when computeDependencies() is called.");
         List<String> dependencies = new ArrayList<>();
         dependencies.add("firstDep");
         dependencies.add("secondDep");
@@ -98,20 +99,19 @@ public class ComponentInstallerTest {
     order3.verify(secondDep).fetch();
     order3.verify(secondDep).load();
 
-    assertEquals("Dependent module should be in LOADED state, after the installation has ended.",
-        Component.LOADED, module1.stateMonitor.get());
-    assertEquals("Dependent module should be in DEP_LOADED state, after the installation.",
-        Component.DEP_LOADED, module1.dependencyStateMonitor.get());
+    Assertions.assertEquals(Component.LOADED, module1.stateMonitor.get(),
+        "Dependent module should be in LOADED state, after the installation has ended.");
+    Assertions.assertEquals(Component.DEP_LOADED, module1.dependencyStateMonitor.get(),
+        "Dependent module should be in DEP_LOADED state, after the installation.");
 
-    assertEquals("1st dependency should be in LOADED state.",
-        Component.LOADED, firstDep.stateMonitor.get());
+    Assertions.assertEquals(Component.LOADED, firstDep.stateMonitor.get(), "1st dependency should be in LOADED state.");
 
-    assertEquals("2nd dependency should be in LOADED state.",
-        Component.LOADED, secondDep.stateMonitor.get());
+    Assertions.assertEquals(Component.LOADED, secondDep.stateMonitor.get(),
+        "2nd dependency should be in LOADED state.");
   }
 
   @Test
-  public void testInstallMany()
+  void testInstallMany()
       throws IOException, ComponentLoadException {
     Module module1 = spy(new ModelExtensions.TestModule("module1"));
     Module module2 = spy(new ModelExtensions.TestModule("module2"));
@@ -137,15 +137,15 @@ public class ComponentInstallerTest {
     order2.verify(module2).fetch();
     order2.verify(module2).load();
 
-    assertEquals("Module 1 should be in LOADED state, after the installation has ended.",
-        Component.LOADED, module1.stateMonitor.get());
+    Assertions.assertEquals(Component.LOADED, module1.stateMonitor.get(),
+        "Module 1 should be in LOADED state, after the installation has ended.");
 
-    assertEquals("Module 2 should be in LOADED state, after the installation has ended.",
-        Component.LOADED, module2.stateMonitor.get());
+    Assertions.assertEquals(Component.LOADED, module2.stateMonitor.get(),
+        "Module 2 should be in LOADED state, after the installation has ended.");
   }
 
   @Test
-  public void testInstallFetchFails() throws ComponentLoadException {
+  void testInstallFetchFails() throws ComponentLoadException {
     Module module = spy(new ModelExtensions.TestModule("fetchFailModule") {
       @Override
       public void fetch() throws IOException {
@@ -163,12 +163,12 @@ public class ComponentInstallerTest {
     verify(module, never()).getDependencies();
     verify(module, never()).load();
 
-    assertTrue("Fetch-fail-module should be in an error state, after the installation has ended.",
-        module.hasError());
+    Assertions.assertTrue(module.hasError(),
+        "Fetch-fail-module should be in an error state, after the installation has ended.");
   }
 
   @Test
-  public void testInstallLoadFails() {
+  void testInstallLoadFails() {
     String moduleName = "loadFailModule";
     Module module = spy(new ModelExtensions.TestModule(moduleName) {
       @Override
@@ -183,12 +183,12 @@ public class ComponentInstallerTest {
 
     installer.install(module);
 
-    assertTrue("Load-fail-module should be in an error state, after the installation has ended.",
-        module.hasError());
+    Assertions.assertTrue(module.hasError(),
+        "Load-fail-module should be in an error state, after the installation has ended.");
   }
 
   @Test
-  public void testInstallUnknownDependency() {
+  void testInstallUnknownDependency() {
     String nonExistentModuleName = "nonExistentModule";
 
     Module module = spy(new ModelExtensions.TestModule("unknownDepModule") {
@@ -207,12 +207,12 @@ public class ComponentInstallerTest {
 
     installer.install(module);
 
-    assertTrue("Unknown-dep-module should be in an error state, after the installation has ended.",
-        module.hasError());
+    Assertions.assertTrue(module.hasError(),
+        "Unknown-dep-module should be in an error state, after the installation has ended.");
   }
 
   @Test
-  public void testInstallDependencyFails() {
+  void testInstallDependencyFails() {
     Module dependentModule = spy(new ModelExtensions.TestModule("dependentModule") {
       @NotNull
       @Override
@@ -244,20 +244,20 @@ public class ComponentInstallerTest {
 
     installer.install(modules);
 
-    assertEquals("Dependent module should be in LOADED state, after the installation has ended.",
-        Component.LOADED, dependentModule.stateMonitor.get());
-    assertEquals("Other module should be in LOADED state, after the installation has ended.",
-        Component.LOADED, otherModule.stateMonitor.get());
-    assertEquals("Dependent module should be in DEP_ERROR state, after the installation.",
-        Component.DEP_ERROR, dependentModule.dependencyStateMonitor.get());
-    assertEquals("Other module should be in DEP_LOADED state, after the installation.",
-        Component.DEP_LOADED, otherModule.dependencyStateMonitor.get());
-    assertTrue("Failing dependency should be in an error state, after the installation has ended.",
-        failingDep.hasError());
+    Assertions.assertEquals(Component.LOADED, dependentModule.stateMonitor.get(),
+        "Dependent module should be in LOADED state, after the installation has ended.");
+    Assertions.assertEquals(Component.LOADED, otherModule.stateMonitor.get(),
+        "Other module should be in LOADED state, after the installation has ended.");
+    Assertions.assertEquals(Component.DEP_ERROR, dependentModule.dependencyStateMonitor.get(),
+        "Dependent module should be in DEP_ERROR state, after the installation.");
+    Assertions.assertEquals(Component.DEP_LOADED, otherModule.dependencyStateMonitor.get(),
+        "Other module should be in DEP_LOADED state, after the installation.");
+    Assertions.assertTrue(failingDep.hasError(),
+        "Failing dependency should be in an error state, after the installation has ended.");
   }
 
   @Test
-  public void testInstallCircularDependency() {
+  void testInstallCircularDependency() {
     Module moduleA = spy(new ModelExtensions.TestModule("moduleA") {
       @NotNull
       @Override
@@ -287,18 +287,18 @@ public class ComponentInstallerTest {
 
     installer.install(modules);
 
-    assertEquals("Module A should be in LOADED state, after the installation has ended.",
-        Component.LOADED, moduleA.stateMonitor.get());
-    assertEquals("Module B should be in LOADED state, after the installation has ended.",
-        Component.LOADED, moduleB.stateMonitor.get());
-    assertEquals("Module A should be in DEP_LOADED state, after the installation has ended.",
-        Component.DEP_LOADED, moduleA.dependencyStateMonitor.get());
-    assertEquals("Module B should be in DEP_LOADED state, after the installation has ended.",
-        Component.DEP_LOADED, moduleB.dependencyStateMonitor.get());
+    Assertions.assertEquals(Component.LOADED, moduleA.stateMonitor.get(),
+        "Module A should be in LOADED state, after the installation has ended.");
+    Assertions.assertEquals(Component.LOADED, moduleB.stateMonitor.get(),
+        "Module B should be in LOADED state, after the installation has ended.");
+    Assertions.assertEquals(Component.DEP_LOADED, moduleA.dependencyStateMonitor.get(),
+        "Module A should be in DEP_LOADED state, after the installation has ended.");
+    Assertions.assertEquals(Component.DEP_LOADED, moduleB.dependencyStateMonitor.get(),
+        "Module B should be in DEP_LOADED state, after the installation has ended.");
   }
 
   @Test
-  public void testUpdate() throws ComponentLoadException, IOException {
+  void testUpdate() throws ComponentLoadException, IOException {
     Component component = spy(new ModelExtensions.TestComponent());
     doReturn(true).when(component).isUpdatable();
     doReturn(true).when(component).hasLocalChanges();
@@ -315,11 +315,11 @@ public class ComponentInstallerTest {
     verify(component).fetch();
     verify(component).load();
 
-    assertEquals(Component.LOADED, component.stateMonitor.get());
+    Assertions.assertEquals(Component.LOADED, component.stateMonitor.get());
   }
 
   @Test
-  public void testUpdateCancelled() throws ComponentLoadException, IOException {
+  void testUpdateCancelled() throws ComponentLoadException, IOException {
     Component component = spy(new ModelExtensions.TestComponent());
     doReturn(true).when(component).isUpdatable();
     doReturn(true).when(component).hasLocalChanges();
@@ -337,11 +337,11 @@ public class ComponentInstallerTest {
     verify(component, never()).fetch();
     verify(component, never()).load();
 
-    assertEquals(Component.LOADED, component.stateMonitor.get());
+    Assertions.assertEquals(Component.LOADED, component.stateMonitor.get());
   }
 
   @Test
-  public void testUpdateWithoutAsking() throws ComponentLoadException, IOException {
+  void testUpdateWithoutAsking() throws ComponentLoadException, IOException {
     Component component = spy(new ModelExtensions.TestComponent());
     doReturn(true).when(component).isUpdatable();
     doReturn(false).when(component).hasLocalChanges();
@@ -359,6 +359,6 @@ public class ComponentInstallerTest {
     verify(component).fetch();
     verify(component).load();
 
-    assertEquals(Component.LOADED, component.stateMonitor.get());
+    Assertions.assertEquals(Component.LOADED, component.stateMonitor.get());
   }
 }

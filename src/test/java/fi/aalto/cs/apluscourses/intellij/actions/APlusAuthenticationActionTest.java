@@ -1,8 +1,5 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
@@ -19,10 +16,11 @@ import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.presentation.AuthenticationViewModel;
 import fi.aalto.cs.apluscourses.utils.async.RepeatedTask;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class APlusAuthenticationActionTest {
+class APlusAuthenticationActionTest {
 
   Project project;
   AnActionEvent actionEvent;
@@ -41,8 +39,8 @@ public class APlusAuthenticationActionTest {
   /**
    * Called before each test.
    */
-  @Before
-  public void setUp() throws Exception {
+  @BeforeEach
+  void setUp() throws Exception {
     project = mock(Project.class);
     actionEvent = mock(AnActionEvent.class);
     doReturn(project).when(actionEvent).getProject();
@@ -78,21 +76,21 @@ public class APlusAuthenticationActionTest {
   }
 
   @Test
-  public void testActionPerformed() {
+  void testActionPerformed() {
     action.actionPerformed(actionEvent);
 
     var authentication = courseProject.getAuthentication();
-    assertNotNull(authentication);
-    assertTrue(((TokenAuthentication) authentication).tokenEquals(token));
+    Assertions.assertNotNull(authentication);
+    Assertions.assertTrue(((TokenAuthentication) authentication).tokenEquals(token));
   }
 
   @Test
-  public void testActionPerformedCancels() {
+  void testActionPerformedCancels() {
     dialogs.register(AuthenticationViewModel.class, (viewModel, none) -> () -> false);
 
     action.actionPerformed(actionEvent);
 
-    assertNull(courseProject.getAuthentication());
+    Assertions.assertNull(courseProject.getAuthentication());
   }
 
 }

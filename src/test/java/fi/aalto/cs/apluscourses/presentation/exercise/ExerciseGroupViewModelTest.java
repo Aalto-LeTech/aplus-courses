@@ -14,27 +14,26 @@ import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.stream.Collectors;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.internal.stubbing.answers.Returns;
 
-public class ExerciseGroupViewModelTest {
+class ExerciseGroupViewModelTest {
 
   @Test
-  public void testGetPresentableName() {
+  void testGetPresentableName() {
     var group1 = new ExerciseGroup(1, "|fi:Ryhma|en:Group|", "", true, List.of(), List.of());
     ExerciseGroupViewModel viewModel1 = new ExerciseGroupViewModel(group1);
 
     var group2 = new ExerciseGroup(2, "group name", "", true, List.of(), List.of());
     ExerciseGroupViewModel viewModel2 = new ExerciseGroupViewModel(group2);
 
-    Assert.assertEquals("getPresentableName returns the English name",
-        "Group", viewModel1.getPresentableName());
-    Assert.assertEquals("getPresentableName returns correct name",
-        "group name", viewModel2.getPresentableName());
+    Assertions.assertEquals("Group", viewModel1.getPresentableName(), "getPresentableName returns the English name");
+    Assertions.assertEquals("group name", viewModel2.getPresentableName(), "getPresentableName returns correct name");
   }
 
   @Test
-  public void testSortsExercises1() {
+  void testSortsExercises1() {
     var info = new SubmissionInfo(Collections.emptyMap());
     Exercise first = new Exercise(424, "Assignment 3",
         "http://localhost:1000/w10/ch02/w10_ch02_03/", info, 0, 0, OptionalLong.empty(), null);
@@ -61,12 +60,11 @@ public class ExerciseGroupViewModelTest {
         .map(Exercise::getId)
         .toArray(Long[]::new);
 
-    Assert.assertArrayEquals("The exercises are sorted correctly",
-        new Long[] {424L, 325L, 195L, 282L, 908L}, ids);
+    Assertions.assertArrayEquals(new Long[] {424L, 325L, 195L, 282L, 908L}, ids, "The exercises are sorted correctly");
   }
 
   @Test
-  public void testSortsExercises2() {
+  void testSortsExercises2() {
     var info = new SubmissionInfo(Collections.emptyMap());
     Exercise first = new Exercise(424, "Assignment 3",
         "http://localhost:1000/studio_2/k2021dev/k15A/osa01/k15A_osa01_1/", info, 0, 0, OptionalLong.empty(), null);
@@ -89,12 +87,11 @@ public class ExerciseGroupViewModelTest {
         .map(Exercise::getId)
         .toArray(Long[]::new);
 
-    Assert.assertArrayEquals("The exercises are sorted correctly",
-        new Long[] {424L, 325L, 195L}, ids);
+    Assertions.assertArrayEquals(new Long[] {424L, 325L, 195L}, ids, "The exercises are sorted correctly");
   }
 
   @Test
-  public void testFilterVisibility() throws InterruptedException {
+  void testFilterVisibility() throws InterruptedException {
     var info = new SubmissionInfo(Collections.emptyMap());
     Exercise exercise = new Exercise(424, "Assignment 3",
         "http://localhost:1000/studio_2/k2021dev/k15A/osa01/k15A_osa01_1/", info, 0, 0, OptionalLong.empty(), null);
@@ -105,13 +102,13 @@ public class ExerciseGroupViewModelTest {
 
     Filter filter = mock(Filter.class, new Returns(Optional.empty()));
     groupViewModel.applyFilter(filter);
-    assertTrue("Week with children is visible", groupViewModel.isVisible());
+    Assertions.assertTrue(groupViewModel.isVisible(), "Week with children is visible");
 
     ExerciseGroup emptyGroup = new ExerciseGroup(6, "", "", true, List.of(), List.of());
     ExerciseGroupViewModel emptyGroupViewModel = new ExerciseGroupViewModel(emptyGroup);
 
     emptyGroupViewModel.applyFilter(filter);
-    assertFalse("Week with no children is not visible", emptyGroupViewModel.isVisible());
+    Assertions.assertFalse(emptyGroupViewModel.isVisible(), "Week with no children is not visible");
   }
 
 }

@@ -7,12 +7,13 @@ import fi.aalto.cs.apluscourses.model.ModelExtensions.TestModule;
 import fi.aalto.cs.apluscourses.model.Module;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class NewModulesVersionsNotificationTest {
+class NewModulesVersionsNotificationTest {
 
   @Test
-  public void testNewModulesVersionsNotificationCreation() {
+  void testNewModulesVersionsNotificationCreation() {
     //  given
     List<Module> modules = getTwoModulesAsList();
 
@@ -21,29 +22,26 @@ public class NewModulesVersionsNotificationTest {
         new NewModulesVersionsNotification(modules);
 
     // then
-    assertEquals("Group ID should be 'A+'.", "A+", notification.getGroupId());
-    assertEquals("Title should be 'Updates available for course modules'.",
-        "Updates available for course modules", notification.getTitle());
-    assertEquals("Content should contain the names of the Modules to update.",
-        "There are newer versions of the following course modules available: "
-            + "firstModule, secondModule.",
-        notification.getContent());
-    assertEquals("The type of the notification should be 'INFORMATION'.",
-        NotificationType.INFORMATION, notification.getType());
+    Assertions.assertEquals("A+", notification.getGroupId(), "Group ID should be 'A+'.");
+    Assertions.assertEquals("Updates available for course modules", notification.getTitle(),
+        "Title should be 'Updates available for course modules'.");
+    Assertions.assertEquals("There are newer versions of the following course modules available: "
+            + "firstModule, secondModule.", notification.getContent(),
+        "Content should contain the names of the Modules to update.");
+    Assertions.assertEquals(NotificationType.INFORMATION, notification.getType(),
+        "The type of the notification should be 'INFORMATION'.");
 
     List<Module> module = List.of(new TestModule("module"));
     NewModulesVersionsNotification otherNotification =
         new NewModulesVersionsNotification(module);
-    assertEquals("Title should be 'Updates available for A+ Course Modules'.",
-        "Update available for course module", otherNotification.getTitle());
-    assertEquals("Content should contain the names of the Modules to update.",
-        "There is a newer version of the following course module available: "
-            + "module.",
-        otherNotification.getContent());
+    Assertions.assertEquals("Update available for course module", otherNotification.getTitle(),
+        "Title should be 'Updates available for A+ Course Modules'.");
+    Assertions.assertEquals("There is a newer version of the following course module available: "
+        + "module.", otherNotification.getContent(), "Content should contain the names of the Modules to update.");
   }
 
   @Test
-  public void testGetModuleNameStrings() {
+  void testGetModuleNameStrings() {
     //  given
     List<Module> modules = getTwoModulesAsList();
 
@@ -51,8 +49,7 @@ public class NewModulesVersionsNotificationTest {
     String moduleNameStrings = NewModulesVersionsNotification.getModuleNameStrings(modules);
 
     //  then
-    assertEquals("Module names are listed correctly.", "firstModule, secondModule",
-        moduleNameStrings);
+    Assertions.assertEquals("firstModule, secondModule", moduleNameStrings, "Module names are listed correctly.");
   }
 
   private List<Module> getTwoModulesAsList() {

@@ -6,27 +6,29 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 
 import java.util.Properties;
-import org.junit.Test;
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class PropertyExceptionTest {
+class PropertyExceptionTest {
 
   @Test
-  public void testCreatePropertyException() {
+  void testCreatePropertyException() {
     Properties properties = new Properties();
     String propertyKey = "some-key";
     String message = "This is a cool message.";
     Throwable cause = new Throwable();
 
     PropertyException exception = new PropertyException(properties, propertyKey, message, cause);
-    assertSame("Properties should be those given in the constructor.",
-        properties, exception.getProperties());
-    assertEquals("Property key should be the same that is given to the constructor.",
-        propertyKey, exception.getPropertyKey());
-    assertSame("Cause of exception should be the one given to the constructor.",
-        cause, exception.getCause());
-    assertThat("Message should contain the property key",
-        exception.getMessage(), containsString(propertyKey));
-    assertThat("Message should contain the message given to the constructor.",
-        exception.getMessage(), containsString(message));
+    Assertions.assertSame(properties, exception.getProperties(),
+        "Properties should be those given in the constructor.");
+    Assertions.assertEquals(propertyKey, exception.getPropertyKey(),
+        "Property key should be the same that is given to the constructor.");
+    Assertions.assertSame(cause, exception.getCause(),
+        "Cause of exception should be the one given to the constructor.");
+    MatcherAssert.assertThat("Message should contain the property key", exception.getMessage(),
+        containsString(propertyKey));
+    MatcherAssert.assertThat("Message should contain the message given to the constructor.", exception.getMessage(),
+        containsString(message));
   }
 }

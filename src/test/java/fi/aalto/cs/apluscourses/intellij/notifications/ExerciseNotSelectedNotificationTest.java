@@ -5,16 +5,18 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import com.intellij.notification.Notification;
-import org.junit.Test;
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class ExerciseNotSelectedNotificationTest {
+class ExerciseNotSelectedNotificationTest {
 
   @Test
-  public void testExerciseNotSelectedNotification() {
+  void testExerciseNotSelectedNotification() {
     Notification notification = new ExerciseNotSelectedNotification();
-    assertEquals("The title is correct", "No assignment is selected", notification.getTitle());
-    assertEquals("Group ID should be A+", "A+", notification.getGroupId());
-    assertThat(notification.getContent(), containsString("To submit an assignment, please "
+    Assertions.assertEquals("No assignment is selected", notification.getTitle(), "The title is correct");
+    Assertions.assertEquals("A+", notification.getGroupId(), "Group ID should be A+");
+    MatcherAssert.assertThat(notification.getContent(), containsString("To submit an assignment, please "
         + "select the assignment in the list before clicking the submit button."));
   }
 

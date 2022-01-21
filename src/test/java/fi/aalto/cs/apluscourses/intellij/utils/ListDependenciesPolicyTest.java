@@ -9,12 +9,13 @@ import com.intellij.openapi.roots.LibraryOrderEntry;
 import com.intellij.openapi.roots.ModuleOrderEntry;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class ListDependenciesPolicyTest {
+class ListDependenciesPolicyTest {
 
   @Test
-  public void testVisitModuleOrderEntry() {
+  void testVisitModuleOrderEntry() {
     String moduleName = "myModule";
     ModuleOrderEntry moduleOrderEntry = mock(ModuleOrderEntry.class);
     when(moduleOrderEntry.getModuleName()).thenReturn(moduleName);
@@ -23,11 +24,11 @@ public class ListDependenciesPolicyTest {
     List<String> value = new ArrayList<>();
     policy.visitModuleOrderEntry(moduleOrderEntry, value);
 
-    assertTrue(value.contains(moduleName));
+    Assertions.assertTrue(value.contains(moduleName));
   }
 
   @Test
-  public void testVisitLibraryOrderEntry() {
+  void testVisitLibraryOrderEntry() {
     String projectLibraryName = "projectLib";
     LibraryOrderEntry projectLibraryOrderEntry = mock(LibraryOrderEntry.class);
     when(projectLibraryOrderEntry.getLibraryName()).thenReturn(projectLibraryName);
@@ -43,7 +44,7 @@ public class ListDependenciesPolicyTest {
     policy.visitLibraryOrderEntry(projectLibraryOrderEntry, value);
     policy.visitLibraryOrderEntry(localLibraryOrderEntry, value);
 
-    assertTrue(value.contains(projectLibraryName));
-    assertFalse(value.contains(localLibraryName));
+    Assertions.assertTrue(value.contains(projectLibraryName));
+    Assertions.assertFalse(value.contains(localLibraryName));
   }
 }

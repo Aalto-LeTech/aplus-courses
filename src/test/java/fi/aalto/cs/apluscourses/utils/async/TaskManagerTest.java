@@ -7,12 +7,12 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class TaskManagerTest {
+class TaskManagerTest {
 
   @Test
-  public void testDefaultImplementationOfAllWithDelayTaskManager() {
+  void testDefaultImplementationOfAllWithDelayTaskManager() {
     Runnable runnable1 = mock(Runnable.class);
     Runnable runnable2 = mock(Runnable.class);
     Runnable runnable3 = mock(Runnable.class);
@@ -40,7 +40,7 @@ public class TaskManagerTest {
   }
 
   @Test
-  public void testDefaultImplementationOfAllWithImmediateTaskManager() {
+  void testDefaultImplementationOfAllWithImmediateTaskManager() {
     Runnable runnable1 = mock(Runnable.class);
     Runnable runnable2 = mock(Runnable.class);
     Runnable runnable3 = mock(Runnable.class);
@@ -64,7 +64,7 @@ public class TaskManagerTest {
   }
 
   @Test
-  public void testDefaultImplementationOfJoinAll() {
+  void testDefaultImplementationOfJoinAll() {
     DelayTaskManager taskManager = new DelayTaskManager();
 
     List<Runnable> taskList = new ArrayList<>();
@@ -87,7 +87,7 @@ public class TaskManagerTest {
   }
 
   @Test
-  public void testHelperTaskManagersJoinNull() {
+  void testHelperTaskManagersJoinNull() {
     new DelayTaskManager().join(null);
     new ImmediateTaskManager().join(null);
     // nothing should happen, no exceptions should be thrown
