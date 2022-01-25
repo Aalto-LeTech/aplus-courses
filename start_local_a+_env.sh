@@ -17,7 +17,7 @@ chmod +x docker-up-custom.sh &&
 i=0 &&
 
 until curl --output /dev/null --silent --head --fail http://localhost:8000; do
-      if [[ ${i} -eq 25 ]];then
+      if [[ ${i} -eq 100 ]];then
         echo "Could not start A+"
         exit 1
       fi
