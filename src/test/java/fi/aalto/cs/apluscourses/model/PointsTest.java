@@ -5,30 +5,31 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class PointsTest {
+class PointsTest {
 
   @Test
-  public void testPoints() {
+  void testPoints() {
     Points points = new Points(
         Collections.singletonMap(51L, List.of(0L, 123L)),
         Collections.singletonMap(123L, List.of(11L, 22L)),
         Collections.singletonMap(123L, 22L)
     );
 
-    Assert.assertEquals("The exercise ID list is the same as that given to the constructor",
-        Long.valueOf(0L), points.getExercises(51L).get(0));
-    Assert.assertEquals("The exercise ID list is the same as that given to the constructor",
-        Long.valueOf(123L), points.getExercises(51L).get(1));
-    Assert.assertEquals("The submission ID list is the same as that given to the constructor",
-        Long.valueOf(11L), points.getSubmissions(123L).get(0));
-    Assert.assertEquals("The submission ID list is the same as that given to the constructor",
-        Long.valueOf(22L), points.getSubmissions(123L).get(1));
+    Assertions.assertEquals(Long.valueOf(0L), points.getExercises(51L).get(0),
+        "The exercise ID list is the same as that given to the constructor");
+    Assertions.assertEquals(Long.valueOf(123L), points.getExercises(51L).get(1),
+        "The exercise ID list is the same as that given to the constructor");
+    Assertions.assertEquals(Long.valueOf(11L), points.getSubmissions(123L).get(0),
+        "The submission ID list is the same as that given to the constructor");
+    Assertions.assertEquals(Long.valueOf(22L), points.getSubmissions(123L).get(1),
+        "The submission ID list is the same as that given to the constructor");
   }
 
   @Test
-  public void testFromJsonObject() {
+  void testFromJsonObject() {
     JSONArray submissionsWithPoints1 = new JSONArray()
         .put(new JSONObject().put("id", 1L).put("grade", 10))
         .put(new JSONObject().put("id", 2L).put("grade", 20));
@@ -53,16 +54,15 @@ public class PointsTest {
 
     Points points = Points.fromJsonObject(json);
 
-    Assert.assertEquals("The exercise IDs are parsed from the JSON",
-        List.of(100L, 200L), points.getExercises(0));
+    Assertions.assertEquals(List.of(100L, 200L), points.getExercises(0), "The exercise IDs are parsed from the JSON");
 
-    Assert.assertEquals("The submission IDs are parsed from the JSON (in reverse order)",
-        Long.valueOf(2L), points.getSubmissions(100L).get(0));
-    Assert.assertEquals("The submission IDs are parsed from the JSON (in reverse order)",
-        Long.valueOf(1L), points.getSubmissions(100L).get(1));
-    Assert.assertEquals("The submission IDs are parsed from the JSON (in reverse order)",
-        Long.valueOf(4L), points.getSubmissions(200L).get(0));
-    Assert.assertEquals("The submission IDs are parsed from the JSON (in reverse order)",
-        Long.valueOf(3L), points.getSubmissions(200L).get(1));
+    Assertions.assertEquals(Long.valueOf(2L), points.getSubmissions(100L).get(0),
+        "The submission IDs are parsed from the JSON (in reverse order)");
+    Assertions.assertEquals(Long.valueOf(1L), points.getSubmissions(100L).get(1),
+        "The submission IDs are parsed from the JSON (in reverse order)");
+    Assertions.assertEquals(Long.valueOf(4L), points.getSubmissions(200L).get(0),
+        "The submission IDs are parsed from the JSON (in reverse order)");
+    Assertions.assertEquals(Long.valueOf(3L), points.getSubmissions(200L).get(1),
+        "The submission IDs are parsed from the JSON (in reverse order)");
   }
 }

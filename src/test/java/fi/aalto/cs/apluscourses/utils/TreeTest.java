@@ -9,10 +9,12 @@ import static org.mockito.Mockito.mock;
 
 import java.util.Collections;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TreeTest {
+class TreeTest {
 
   Tree root;
   Tree node1;
@@ -24,8 +26,8 @@ public class TreeTest {
   /**
    * Called before each test.
    */
-  @Before
-  public void setUp() {
+  @BeforeEach
+  void setUp() {
     root = mock(Tree.class, CALLS_REAL_METHODS);
     node1 = mock(Tree.class, CALLS_REAL_METHODS);
     node2 = mock(Tree.class, CALLS_REAL_METHODS);
@@ -37,20 +39,20 @@ public class TreeTest {
   }
 
   @Test
-  public void testTraverseAndFindDescendant() {
+  void testTraverseAndFindDescendant() {
     List<Tree> path = root.traverseAndFind(node -> node == node21);
-    assertThat(path, is(List.of(root, node2, node21)));
+    MatcherAssert.assertThat(path, is(List.of(root, node2, node21)));
   }
 
   @Test
-  public void testTraverseAndFindSelf() {
+  void testTraverseAndFindSelf() {
     List<Tree> path = root.traverseAndFind(node -> node == root);
-    assertThat(path, is(Collections.singletonList(root)));
+    MatcherAssert.assertThat(path, is(Collections.singletonList(root)));
   }
 
   @Test
-  public void testTraverseAndFindNone() {
+  void testTraverseAndFindNone() {
     List<Tree> path = root.traverseAndFind(node -> false);
-    assertNull(path);
+    Assertions.assertNull(path);
   }
 }

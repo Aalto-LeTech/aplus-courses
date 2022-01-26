@@ -2,21 +2,21 @@ package fi.aalto.cs.apluscourses.utils;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class PluginResourceBundleTest {
+class PluginResourceBundleTest {
 
   @Test
-  public void testGetSimpleProperty() {
+  void testGetSimpleProperty() {
     String actual = PluginResourceBundle.getText("test.single");
-    assertEquals("The retrieved bundle value is correct.", "blaaaah!", actual);
+    Assertions.assertEquals("blaaaah!", actual, "The retrieved bundle value is correct.");
   }
 
   @Test
-  public void testGetCombinedProperty() {
+  void testGetCombinedProperty() {
     String actual = PluginResourceBundle.getAndReplaceText("test.compound",
         "blaaaah!", "blaaaah!");
-    assertEquals("The retrieved bundle value is correct.",
-        "blaaaah! blaaaah! blaaaah!", actual);
+    Assertions.assertEquals("blaaaah! blaaaah! blaaaah!", actual, "The retrieved bundle value is correct.");
   }
 }

@@ -1,7 +1,5 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
@@ -21,11 +19,12 @@ import fi.aalto.cs.apluscourses.model.UrlRenderer;
 import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.OptionalLong;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
-public class OpenSubmissionNotificationActionTest {
+class OpenSubmissionNotificationActionTest {
 
   private AnActionEvent event;
   private SubmissionResult submissionResult;
@@ -36,8 +35,8 @@ public class OpenSubmissionNotificationActionTest {
   /**
    * Called before each test.
    */
-  @Before
-  public void setUp() {
+  @BeforeEach
+  void setUp() {
     event = mock(AnActionEvent.class);
     doReturn(mock(Project.class)).when(event).getProject();
     var info = new SubmissionInfo(Collections.emptyMap());
@@ -49,7 +48,7 @@ public class OpenSubmissionNotificationActionTest {
   }
 
   @Test
-  public void testOpenSubmissionNotificationAction() throws Exception {
+  void testOpenSubmissionNotificationAction() throws Exception {
     new OpenSubmissionNotificationAction(
         submissionResult,
         submissionRenderer,
@@ -59,11 +58,11 @@ public class OpenSubmissionNotificationActionTest {
     ArgumentCaptor<String> argumentCaptor
         = ArgumentCaptor.forClass(String.class);
     verify(submissionRenderer).show(argumentCaptor.capture());
-    assertEquals(submissionResult.getHtmlUrl(), argumentCaptor.getValue());
+    Assertions.assertEquals(submissionResult.getHtmlUrl(), argumentCaptor.getValue());
   }
 
   @Test
-  public void testErrorNotification() throws URISyntaxException {
+  void testErrorNotification() throws URISyntaxException {
     URISyntaxException exception = new URISyntaxException("input", "reason");
     doThrow(exception).when(submissionRenderer).show(anyString());
 
@@ -76,7 +75,7 @@ public class OpenSubmissionNotificationActionTest {
     ArgumentCaptor<UrlRenderingErrorNotification> argumentCaptor
         = ArgumentCaptor.forClass(UrlRenderingErrorNotification.class);
     verify(notifier).notify(argumentCaptor.capture(), any(Project.class));
-    assertSame(exception, argumentCaptor.getValue().getException());
+    Assertions.assertSame(exception, argumentCaptor.getValue().getException());
   }
 
 }

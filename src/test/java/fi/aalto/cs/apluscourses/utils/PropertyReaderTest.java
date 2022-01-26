@@ -5,40 +5,39 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
 
 import java.util.Properties;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class PropertyReaderTest {
+class PropertyReaderTest {
 
   @Test
-  public void testGetProperty() throws PropertyException {
+  void testGetProperty() throws PropertyException {
     Properties properties = new Properties();
     properties.setProperty("a", "x");
     properties.setProperty("b", "y");
 
     PropertyReader reader = new PropertyReader(properties);
-    assertEquals("getProperty(\"x\") should return the value set for 'x'",
-        "x", reader.getProperty("a"));
-    assertEquals("getProperty(\"y\") should return the value set for 'y'",
-        "y", reader.getProperty("b"));
+    Assertions.assertEquals("x", reader.getProperty("a"), "getProperty(\"x\") should return the value set for 'x'");
+    Assertions.assertEquals("y", reader.getProperty("b"), "getProperty(\"y\") should return the value set for 'y'");
   }
 
   @Test
-  public void testGetPropertyWhichDoesNotExist() {
+  void testGetPropertyWhichDoesNotExist() {
     String propertyKey = "nonExistentProperty";
 
     PropertyReader reader = new PropertyReader(new Properties());
     try {
       reader.getProperty(propertyKey);
     } catch (PropertyException ex) {
-      assertEquals("Exception should have the property key that was requested.",
-          propertyKey, ex.getPropertyKey());
+      Assertions.assertEquals(propertyKey, ex.getPropertyKey(),
+          "Exception should have the property key that was requested.");
       return;
     }
-    fail("getProperty() should throw a PropertyException if the key is not there.");
+    Assertions.fail("getProperty() should throw a PropertyException if the key is not there.");
   }
 
   @Test
-  public void testGetPropertyAsObject() throws PropertyException {
+  void testGetPropertyAsObject() throws PropertyException {
     String propertyKey = "foo";
     String propertyValue = "bar";
     Object obj = new Object();
@@ -48,17 +47,16 @@ public class PropertyReaderTest {
 
     PropertyReader reader = new PropertyReader(properties);
     Object result = reader.getPropertyAsObject(propertyKey, value -> {
-      assertEquals("Parser should be provided with the value corresponding the requested key.",
-          propertyValue, value);
+      Assertions.assertEquals(propertyValue, value,
+          "Parser should be provided with the value corresponding the requested key.");
       return obj;
     });
 
-    assertSame("getPropertyAsObject() should return the object provided by the parser",
-        obj, result);
+    Assertions.assertSame(obj, result, "getPropertyAsObject() should return the object provided by the parser");
   }
 
   @Test
-  public void testGetPropertyAsObjectWithError() {
+  void testGetPropertyAsObjectWithError() {
     String propertyKey = "someKey";
     RuntimeException exception = new UnsupportedOperationException();
     PropertyReader.ValueParser<Object> parser = value -> {
@@ -72,12 +70,10 @@ public class PropertyReaderTest {
     try {
       reader.getPropertyAsObject(propertyKey, parser);
     } catch (PropertyException ex) {
-      assertEquals("Exception should have the requested key.",
-          propertyKey, ex.getPropertyKey());
-      assertSame("The cause of the exception should come from the parser.",
-          exception, ex.getCause());
+      Assertions.assertEquals(propertyKey, ex.getPropertyKey(), "Exception should have the requested key.");
+      Assertions.assertSame(exception, ex.getCause(), "The cause of the exception should come from the parser.");
       return;
     }
-    fail("getPropertyAsObject() should throw a PropertyException if the key is not there.");
+    Assertions.fail("getPropertyAsObject() should throw a PropertyException if the key is not there.");
   }
 }

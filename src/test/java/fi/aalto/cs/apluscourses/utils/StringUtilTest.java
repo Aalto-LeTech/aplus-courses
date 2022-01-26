@@ -2,16 +2,16 @@ package fi.aalto.cs.apluscourses.utils;
 
 import static org.junit.Assert.assertArrayEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class StringUtilTest {
+class StringUtilTest {
 
   @Test
-  public void testGetArrayOfTokens() {
-    assertArrayEquals("Test get array of tokens (variable modifiers)",
-        new String[] {"private", "val"}, StringUtil.getArrayOfTokens("private val", ' '));
-    assertArrayEquals("Test get array of tokens (variable annotations)",
-        new String[] {"@Nullable", "@Deprecated"},
-        StringUtil.getArrayOfTokens("@Nullable  @Deprecated", ' '));
+  void testGetArrayOfTokens() {
+    Assertions.assertArrayEquals(new String[] {"private", "val"}, StringUtil.getArrayOfTokens("private val", ' '),
+        "Test get array of tokens (variable modifiers)");
+    Assertions.assertArrayEquals(new String[] {"@Nullable", "@Deprecated"},
+        StringUtil.getArrayOfTokens("@Nullable  @Deprecated", ' '), "Test get array of tokens (variable annotations)");
   }
 }

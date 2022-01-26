@@ -1,7 +1,5 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.same;
@@ -28,11 +26,12 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
-public class ExportModuleActionTest {
+class ExportModuleActionTest {
 
   Project project;
   AnActionEvent event;
@@ -55,10 +54,10 @@ public class ExportModuleActionTest {
   Interfaces.ModuleDirGuesser moduleDirGuesser;
 
   /**
-   * Runs before every tests. Initializes mock objects and other stuff.
+   * Runs before every test. Initializes mock objects and other stuff.
    */
-  @Before
-  public void setUp() {
+  @BeforeEach
+  void setUp() {
     project = mock(Project.class);
     event = mock(AnActionEvent.class);
     doReturn(project).when(event).getProject();
@@ -111,7 +110,7 @@ public class ExportModuleActionTest {
   }
 
   @Test
-  public void testExportModuleAction() throws IOException {
+  void testExportModuleAction() throws IOException {
     ExportModuleAction action = new ExportModuleAction(
         moduleSource, projectPathResolver,
         zipper, dialogs, notifier, moduleDirGuesser
@@ -121,12 +120,12 @@ public class ExportModuleActionTest {
     ArgumentCaptor<ModuleSelectionViewModel> moduleSelectionDialogArg
         = ArgumentCaptor.forClass(ModuleSelectionViewModel.class);
     verify(moduleSelectionDialog).showAndGet(moduleSelectionDialogArg.capture());
-    assertEquals(2, moduleSelectionDialogArg.getValue().getModules().length);
+    Assertions.assertEquals(2, moduleSelectionDialogArg.getValue().getModules().length);
 
     ArgumentCaptor<FileSaveViewModel> fileSaveDialogArg
         = ArgumentCaptor.forClass(FileSaveViewModel.class);
     verify(fileSaveDialog).showAndGet(fileSaveDialogArg.capture());
-    assertEquals(zipPath, fileSaveDialogArg.getValue().getPath());
+    Assertions.assertEquals(zipPath, fileSaveDialogArg.getValue().getPath());
 
     verify(moduleSource).getModules(same(project));
     verify(projectPathResolver).getProjectPath(same(project));
@@ -135,7 +134,7 @@ public class ExportModuleActionTest {
   }
 
   @Test
-  public void testCancelModuleSelectionDialog() {
+  void testCancelModuleSelectionDialog() {
     cancelModuleSelection.set(true);
     ExportModuleAction action = new ExportModuleAction(
         moduleSource, projectPathResolver,
@@ -151,7 +150,7 @@ public class ExportModuleActionTest {
   }
 
   @Test
-  public void testCancelFileSaveDialog() {
+  void testCancelFileSaveDialog() {
     cancelFileSave.set(true);
     ExportModuleAction action = new ExportModuleAction(
         moduleSource, projectPathResolver,
@@ -166,7 +165,7 @@ public class ExportModuleActionTest {
   }
 
   @Test
-  public void testNotifiesOfIoError() {
+  void testNotifiesOfIoError() {
     IOException exception = new IOException("test exception");
     ExportModuleAction action = new ExportModuleAction(
         moduleSource,
@@ -188,7 +187,7 @@ public class ExportModuleActionTest {
     ArgumentCaptor<IoErrorNotification> notificationArg
         = ArgumentCaptor.forClass(IoErrorNotification.class);
     verify(notifier).notify(notificationArg.capture(), same(project));
-    assertSame(exception, notificationArg.getValue().getException());
+    Assertions.assertSame(exception, notificationArg.getValue().getException());
   }
 
 }

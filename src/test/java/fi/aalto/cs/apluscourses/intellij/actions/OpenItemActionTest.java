@@ -1,7 +1,5 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
@@ -30,10 +28,11 @@ import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.List;
 import java.util.OptionalLong;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
-public class OpenItemActionTest {
+class OpenItemActionTest {
 
   private Exercise exercise;
   private SubmissionResult submissionResult;
@@ -47,7 +46,7 @@ public class OpenItemActionTest {
    *
    * @param testableViewModel The SelectableNodeViewModel to be tested
    */
-  public void setUp(SelectableNodeViewModel<?> testableViewModel) {
+  void setUp(SelectableNodeViewModel<?> testableViewModel) {
     ExercisesTreeViewModel exercisesTree = mock(ExercisesTreeViewModel.class);
     doReturn(testableViewModel).when(exercisesTree).getSelectedItem();
 
@@ -63,80 +62,80 @@ public class OpenItemActionTest {
   }
 
   @Test
-  public void testOpenItemActionSubmission() throws Exception {
+  void testOpenItemActionSubmission() throws Exception {
     var info = new SubmissionInfo(Collections.emptyMap());
     exercise = new Exercise(223, "TestEx", "http://example.com", info, 1, 10, OptionalLong.empty(), null);
     submissionResult
-            = new SubmissionResult(1, 0, 0.0, SubmissionResult.Status.GRADED, exercise);
+        = new SubmissionResult(1, 0, 0.0, SubmissionResult.Status.GRADED, exercise);
     setUp(new SubmissionResultViewModel(submissionResult, 1));
     OpenExerciseItemAction action = new OpenExerciseItemAction(
-            mainViewModelProvider,
-            urlRenderer,
-            notifier
+        mainViewModelProvider,
+        urlRenderer,
+        notifier
     );
     action.actionPerformed(actionEvent);
 
     ArgumentCaptor<String> argumentCaptor
-            = ArgumentCaptor.forClass(String.class);
+        = ArgumentCaptor.forClass(String.class);
     verify(urlRenderer).show(argumentCaptor.capture());
-    assertEquals(submissionResult.getHtmlUrl(), argumentCaptor.getValue());
+    Assertions.assertEquals(submissionResult.getHtmlUrl(), argumentCaptor.getValue());
   }
 
   @Test
-  public void testOpenItemActionExercise() throws Exception {
+  void testOpenItemActionExercise() throws Exception {
     var info = new SubmissionInfo(Collections.emptyMap());
     exercise = new Exercise(223, "TestEx", "http://example.com", info, 1, 10, OptionalLong.empty(), null);
     setUp(new ExerciseViewModel(exercise));
     OpenExerciseItemAction action = new OpenExerciseItemAction(
-            mainViewModelProvider,
-            urlRenderer,
-            notifier
+        mainViewModelProvider,
+        urlRenderer,
+        notifier
     );
     action.actionPerformed(actionEvent);
 
     ArgumentCaptor<String> argumentCaptor
-            = ArgumentCaptor.forClass(String.class);
+        = ArgumentCaptor.forClass(String.class);
     verify(urlRenderer).show(argumentCaptor.capture());
-    assertEquals(exercise.getHtmlUrl(), argumentCaptor.getValue());
+    Assertions.assertEquals(exercise.getHtmlUrl(), argumentCaptor.getValue());
   }
 
   @Test
-  public void testOpenItemActionWeek() throws Exception {
+  void testOpenItemActionWeek() throws Exception {
     var exerciseGroup = new ExerciseGroup(0, "", "https://url.com/", true, List.of(), List.of());
     setUp(new ExerciseGroupViewModel(exerciseGroup));
     OpenExerciseItemAction action = new OpenExerciseItemAction(
-            mainViewModelProvider,
-            urlRenderer,
-            notifier
+        mainViewModelProvider,
+        urlRenderer,
+        notifier
     );
     action.actionPerformed(actionEvent);
 
     ArgumentCaptor<String> argumentCaptor
-            = ArgumentCaptor.forClass(String.class);
+        = ArgumentCaptor.forClass(String.class);
     verify(urlRenderer).show(argumentCaptor.capture());
-    assertEquals(exerciseGroup.getHtmlUrl(), argumentCaptor.getValue());
+    Assertions.assertEquals(exerciseGroup.getHtmlUrl(), argumentCaptor.getValue());
   }
 
   @Test
-  public void testErrorNotification() throws URISyntaxException {
+  void testErrorNotification() throws URISyntaxException {
     var info = new SubmissionInfo(Collections.emptyMap());
     exercise = new Exercise(223, "TestEx", "http://example.com", info, 1, 10, OptionalLong.empty(), null);
     submissionResult
-            = new SubmissionResult(1, 0, 0.0, SubmissionResult.Status.GRADED, exercise);
+        = new SubmissionResult(1, 0, 0.0, SubmissionResult.Status.GRADED, exercise);
     setUp(new SubmissionResultViewModel(submissionResult, 1));
     URISyntaxException exception = new URISyntaxException("input", "reason");
     doThrow(exception).when(urlRenderer).show(anyString());
     OpenExerciseItemAction action = new OpenExerciseItemAction(
-            mainViewModelProvider,
-            urlRenderer,
-            notifier
+        mainViewModelProvider,
+        urlRenderer,
+        notifier
     );
     action.actionPerformed(actionEvent);
 
     ArgumentCaptor<UrlRenderingErrorNotification> argumentCaptor
-            = ArgumentCaptor.forClass(UrlRenderingErrorNotification.class);
+        = ArgumentCaptor.forClass(UrlRenderingErrorNotification.class);
     verify(notifier).notify(argumentCaptor.capture(), any(Project.class));
-    assertSame(exception, argumentCaptor.getValue().getException());
+    Assertions.assertSame(exception, argumentCaptor.getValue().getException());
   }
 
 }

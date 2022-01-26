@@ -16,19 +16,20 @@ import java.util.Collections;
 import java.util.OptionalLong;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.jetbrains.annotations.NotNull;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
-@Ignore
-public class SubmissionStatusUpdaterTest {
+@Disabled
+class SubmissionStatusUpdaterTest {
 
   static class TestDataSource extends ModelExtensions.TestExerciseDataSource {
 
     private int limit = 3;
     private final AtomicInteger submissionResultFetchCount = new AtomicInteger(0);
 
-    public int getSubmissionResultFetchCount() {
+    int getSubmissionResultFetchCount() {
       return submissionResultFetchCount.get();
     }
 
@@ -56,15 +57,15 @@ public class SubmissionStatusUpdaterTest {
   /**
    * Initialize mock objects and a {@link TestDataSource}. Called before every test.
    */
-  @Before
-  public void setUp() {
+  @BeforeEach
+  void setUp() {
     dataSource = new TestDataSource();
     notifier = mock(Notifier.class);
     project = mock(Project.class);
   }
 
   @Test
-  public void testSubmissionStatusUpdater() throws InterruptedException {
+  void testSubmissionStatusUpdater() throws InterruptedException {
     var info = new SubmissionInfo(Collections.emptyMap());
     new SubmissionStatusUpdater(
         project,
@@ -79,13 +80,13 @@ public class SubmissionStatusUpdaterTest {
     ).start();
     Thread.sleep(800L); //  NOSONAR
 
-    assertEquals("The submission results are not fetched anymore after feedback is available",
-        3, dataSource.getSubmissionResultFetchCount());
+    Assertions.assertEquals(3, dataSource.getSubmissionResultFetchCount(),
+        "The submission results are not fetched anymore after feedback is available");
     verify(notifier).notifyAndHide(any(FeedbackAvailableNotification.class), same(project));
   }
 
   @Test
-  public void testSubmissionStatusUpdaterTimeLimit() throws InterruptedException {
+  void testSubmissionStatusUpdaterTimeLimit() throws InterruptedException {
     dataSource.limit = 9999;
     var info = new SubmissionInfo(Collections.emptyMap());
     new SubmissionStatusUpdater(
@@ -100,7 +101,7 @@ public class SubmissionStatusUpdaterTest {
         200L // 0.2 second time limit, should update at most 8 times
     ).start();
     Thread.sleep(800L); //  NOSONAR
-    assertTrue(dataSource.getSubmissionResultFetchCount() <= 8);
+    Assertions.assertTrue(dataSource.getSubmissionResultFetchCount() <= 8);
     verifyNoInteractions(notifier);
   }
 

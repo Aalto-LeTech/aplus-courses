@@ -1,8 +1,5 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -17,10 +14,11 @@ import fi.aalto.cs.apluscourses.intellij.services.CourseProjectProvider;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.utils.async.RepeatedTask;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class LogInOutActionTest {
+class LogInOutActionTest {
 
   private AnActionEvent event;
   private CourseProject courseProject;
@@ -29,8 +27,8 @@ public class LogInOutActionTest {
   /**
    * Called before each test.
    */
-  @Before
-  public void setUp() throws Exception {
+  @BeforeEach
+  void setUp() throws Exception {
     event = mock(AnActionEvent.class);
     var project = mock(Project.class);
     when(event.getProject()).thenReturn(project);
@@ -59,13 +57,13 @@ public class LogInOutActionTest {
   }
 
   @Test
-  public void testLogInOutAction() {
+  void testLogInOutAction() {
     action.update(event);
-    assertEquals("Log out", event.getPresentation().getText());
-    assertNotNull(courseProject.getAuthentication());
+    Assertions.assertEquals("Log out", event.getPresentation().getText());
+    Assertions.assertNotNull(courseProject.getAuthentication());
     action.actionPerformed(event);
     action.update(event);
-    assertEquals("Log in", event.getPresentation().getText());
-    assertNull(courseProject.getAuthentication());
+    Assertions.assertEquals("Log in", event.getPresentation().getText());
+    Assertions.assertNull(courseProject.getAuthentication());
   }
 }

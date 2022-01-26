@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * A helper interface< to simplify testing plugin manipulation logics.
  */
-public interface TestHelper {
+interface TestHelper {
 
   /**
    * A helper method to ensure at least one (first) module for the default testing project is of a

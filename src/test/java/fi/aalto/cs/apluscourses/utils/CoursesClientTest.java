@@ -11,20 +11,22 @@ import java.io.InputStream;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
+import org.hamcrest.MatcherAssert;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class CoursesClientTest {
+class CoursesClientTest {
 
   private HttpResponse response;
 
   /**
    * Set up mock objects before each test.
    */
-  @Before
-  public void setUp() {
+  @BeforeEach
+  void setUp() {
     StatusLine statusLine = mock(StatusLine.class);
     doReturn(401).when(statusLine).getStatusCode();
     doReturn("test reason").when(statusLine).getReasonPhrase();
@@ -44,18 +46,18 @@ public class CoursesClientTest {
   }
 
   @Test
-  public void testRequireSuccessStatusCode() throws IOException {
+  void testRequireSuccessStatusCode() throws IOException {
     Exception exception = getRequireSuccessStatusCodeException(response);
 
-    Assert.assertNotNull(exception);
-    Assert.assertThat("The exception message contains the status code",
-        exception.getMessage(), containsString("401"));
-    Assert.assertThat("The exception message contains the reason phrase",
-        exception.getMessage(), containsString("test reason"));
+    Assertions.assertNotNull(exception);
+    MatcherAssert.assertThat("The exception message contains the status code", exception.getMessage(),
+        containsString("401"));
+    MatcherAssert.assertThat("The exception message contains the reason phrase", exception.getMessage(),
+        containsString("test reason"));
   }
 
   @Test
-  public void testRequireSuccessStatusCodeWithResponseBody1() throws IOException {
+  void testRequireSuccessStatusCodeWithResponseBody1() throws IOException {
     InputStream inputStream = new ByteArrayInputStream(
         "{\"detail\":\"detailed message\",\"errors\":[\"hmm\",\"hello\"]}".getBytes()
     );
@@ -65,13 +67,13 @@ public class CoursesClientTest {
 
     Exception exception = getRequireSuccessStatusCodeException(response);
 
-    Assert.assertNotNull(exception);
-    Assert.assertThat("The exception message contains the detail string",
-        exception.getMessage(), containsString("detailed message"));
+    Assertions.assertNotNull(exception);
+    MatcherAssert.assertThat("The exception message contains the detail string", exception.getMessage(),
+        containsString("detailed message"));
   }
 
   @Test
-  public void testRequireSuccessStatusCodeWithResponseBody2() throws IOException {
+  void testRequireSuccessStatusCodeWithResponseBody2() throws IOException {
     InputStream inputStream = new ByteArrayInputStream(
         "{\"detail\":\"   \",\"errors\":[\"hmm\",\"hello\"]}".getBytes()
     );
@@ -81,15 +83,15 @@ public class CoursesClientTest {
 
     Exception exception = getRequireSuccessStatusCodeException(response);
 
-    Assert.assertNotNull(exception);
-    Assert.assertThat("The exception message contains the errors",
-        exception.getMessage(), containsString("hmm"));
-    Assert.assertThat("The exception message contains the errors",
-        exception.getMessage(), containsString("hello"));
+    Assertions.assertNotNull(exception);
+    MatcherAssert.assertThat("The exception message contains the errors", exception.getMessage(),
+        containsString("hmm"));
+    MatcherAssert.assertThat("The exception message contains the errors", exception.getMessage(),
+        containsString("hello"));
   }
 
   @Test
-  public void testRequireSuccessStatusCodeWithMalformedResponseBody() throws IOException {
+  void testRequireSuccessStatusCodeWithMalformedResponseBody() throws IOException {
     InputStream inputStream = new ByteArrayInputStream("{}".getBytes());
     HttpEntity entity = mock(HttpEntity.class);
     doReturn(inputStream).when(entity).getContent();
@@ -97,11 +99,11 @@ public class CoursesClientTest {
 
     Exception exception = getRequireSuccessStatusCodeException(response);
 
-    Assert.assertNotNull(exception);
-    Assert.assertThat("The exception message contains the status code",
-        exception.getMessage(), containsString("401"));
-    Assert.assertThat("The exception message contains the reason phrase",
-        exception.getMessage(), containsString("test reason"));
+    Assertions.assertNotNull(exception);
+    MatcherAssert.assertThat("The exception message contains the status code", exception.getMessage(),
+        containsString("401"));
+    MatcherAssert.assertThat("The exception message contains the reason phrase", exception.getMessage(),
+        containsString("test reason"));
   }
 
 }

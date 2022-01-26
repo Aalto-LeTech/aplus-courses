@@ -13,10 +13,11 @@ import fi.aalto.cs.apluscourses.intellij.services.CourseProjectProvider;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.utils.async.RepeatedTask;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class UserNameActionTest {
+class UserNameActionTest {
   private AnActionEvent event;
   private CourseProject courseProject;
   private UserNameAction action;
@@ -24,8 +25,8 @@ public class UserNameActionTest {
   /**
    * Called before each test.
    */
-  @Before
-  public void setUp() throws Exception {
+  @BeforeEach
+  void setUp() throws Exception {
     event = mock(AnActionEvent.class);
     var project = mock(Project.class);
     when(event.getProject()).thenReturn(project);
@@ -46,12 +47,12 @@ public class UserNameActionTest {
   }
 
   @Test
-  public void testUserNameAction() {
+  void testUserNameAction() {
     action.update(event);
-    assertEquals("Not Logged In", event.getPresentation().getText());
+    Assertions.assertEquals("Not Logged In", event.getPresentation().getText());
     var authentication = mock(Authentication.class);
     courseProject.setAuthentication(authentication);
     action.update(event);
-    assertEquals("test", event.getPresentation().getText());
+    Assertions.assertEquals("test", event.getPresentation().getText());
   }
 }

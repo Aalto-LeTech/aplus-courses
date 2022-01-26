@@ -5,24 +5,26 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 
-import org.junit.Test;
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class ResourceExceptionTest {
+class ResourceExceptionTest {
 
   @Test
-  public void testCreateResourceException() {
+  void testCreateResourceException() {
     String resourceName = "some-resource";
     String message = "This is a nice message.";
     Throwable cause = new Throwable();
 
     ResourceException exception = new ResourceException(resourceName, message, cause);
-    assertEquals("Resource name should be the same as that given to the constructor.",
-        resourceName, exception.getResourceName());
-    assertSame("Cause of the exception should be the one given to the constructor.",
-        cause, exception.getCause());
-    assertThat("Message should contain the resource name.",
-        exception.getMessage(), containsString(resourceName));
-    assertThat("Message should contain the message given to the constructor",
-        exception.getMessage(), containsString(message));
+    Assertions.assertEquals(resourceName, exception.getResourceName(),
+        "Resource name should be the same as that given to the constructor.");
+    Assertions.assertSame(cause, exception.getCause(),
+        "Cause of the exception should be the one given to the constructor.");
+    MatcherAssert.assertThat("Message should contain the resource name.", exception.getMessage(),
+        containsString(resourceName));
+    MatcherAssert.assertThat("Message should contain the message given to the constructor", exception.getMessage(),
+        containsString(message));
   }
 }

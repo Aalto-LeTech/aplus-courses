@@ -3,22 +3,24 @@ package fi.aalto.cs.apluscourses.utils;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class StateMonitorTest {
+class StateMonitorTest {
 
   @Test
-  public void testSetAndGet() {
+  void testSetAndGet() {
     StateMonitor.StateListener stateListener = mock(StateMonitor.StateListener.class);
     StateMonitor stateMonitor = new StateMonitor(stateListener);
 
-    assertEquals("get() should return INITIAL state", StateMonitor.INITIAL, stateMonitor.get());
+    Assertions.assertEquals(StateMonitor.INITIAL, stateMonitor.get(), "get() should return INITIAL state");
 
     verifyNoInteractions(stateListener);
 
@@ -27,13 +29,13 @@ public class StateMonitorTest {
 
     verify(stateListener).onStateChanged(newState);
 
-    assertEquals("get() should return new state", newState, stateMonitor.get());
+    Assertions.assertEquals(newState, stateMonitor.get(), "get() should return new state");
 
     verifyNoMoreInteractions(stateListener);
   }
 
   @Test
-  public void testSetConditionallyToReturnsTrue() {
+  void testSetConditionallyToReturnsTrue() {
     StateMonitor.StateListener stateListener = mock(StateMonitor.StateListener.class);
     StateMonitor stateMonitor = new StateMonitor(stateListener);
 
@@ -42,42 +44,43 @@ public class StateMonitorTest {
     verify(stateListener).onStateChanged(expectedState);
 
     int newState = 1337;
-    assertTrue("setConditionally() should return true",
-        stateMonitor.setConditionallyTo(newState, expectedState));
+    Assertions.assertTrue(stateMonitor.setConditionallyTo(newState, expectedState),
+        "setConditionally() should return true");
     verify(stateListener).onStateChanged(newState);
 
-    assertEquals("get() should return new state", newState, stateMonitor.get());
+    Assertions.assertEquals(newState, stateMonitor.get(), "get() should return new state");
 
     verifyNoMoreInteractions(stateListener);
   }
 
   @Test
-  public void testSetConditionallyToReturnsFalse() {
+  void testSetConditionallyToReturnsFalse() {
     StateMonitor.StateListener stateListener = mock(StateMonitor.StateListener.class);
     StateMonitor stateMonitor = new StateMonitor(stateListener);
 
     int expectedState = 20;
     int newState = 220;
-    assertFalse("setConditionally() should return false",
-        stateMonitor.setConditionallyTo(newState, expectedState));
+    Assertions.assertFalse(stateMonitor.setConditionallyTo(newState, expectedState),
+        "setConditionally() should return false");
 
-    assertEquals("get() should return the initial state", StateMonitor.INITIAL, stateMonitor.get());
-
-    verifyNoInteractions(stateListener);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testSetConditionallyToThrowsException() {
-    StateMonitor.StateListener stateListener = mock(StateMonitor.StateListener.class);
-    StateMonitor stateMonitor = new StateMonitor(stateListener);
-
-    stateMonitor.setConditionallyTo(20, 100);
+    Assertions.assertEquals(StateMonitor.INITIAL, stateMonitor.get(), "get() should return the initial state");
 
     verifyNoInteractions(stateListener);
   }
 
   @Test
-  public void testWaitUntil() throws InterruptedException {
+  void testSetConditionallyToThrowsException() {
+    StateMonitor.StateListener stateListener = mock(StateMonitor.StateListener.class);
+    StateMonitor stateMonitor = new StateMonitor(stateListener);
+
+    assertThrows(IllegalArgumentException.class, () ->
+        stateMonitor.setConditionallyTo(20, 100));
+
+    verifyNoInteractions(stateListener);
+  }
+
+  @Test
+  void testWaitUntil() throws InterruptedException {
     StateMonitor stateMonitor = new StateMonitor(mock(StateMonitor.StateListener.class));
 
     int expectedState = 400;
@@ -93,16 +96,16 @@ public class StateMonitorTest {
     // Let's go to sleep and give the other thread a possibility to proceed...
     Thread.sleep(20); // NOSONAR
 
-    assertFalse("The other thread should still be waiting", waitOver.get());
+    Assertions.assertFalse(waitOver.get(), "The other thread should still be waiting");
 
     stateMonitor.set(expectedState);
     thread.join();
 
-    assertTrue("The other thread should have been run", waitOver.get());
+    Assertions.assertTrue(waitOver.get(), "The other thread should have been run");
   }
 
   @Test
-  public void testWaitUntilInterruption() throws InterruptedException {
+  void testWaitUntilInterruption() throws InterruptedException {
     StateMonitor.StateListener stateListener = mock(StateMonitor.StateListener.class);
     StateMonitor stateMonitor = new StateMonitor(stateListener);
     Thread thread = new Thread(() -> stateMonitor.waitUntil(9999));

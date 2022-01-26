@@ -6,12 +6,13 @@ import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class SubmissionInfoTest {
+class SubmissionInfoTest {
 
   @Test
-  public void testSubmissionInfo() {
+  void testSubmissionInfo() {
 
     SubmittableFile file1 = new SubmittableFile("file1", "f1.py");
     SubmittableFile file2 = new SubmittableFile("file2", "f2.py");
@@ -23,14 +24,14 @@ public class SubmissionInfoTest {
 
     SubmissionInfo info = new SubmissionInfo(files);
     String message = "The filenames are the same as those given to the constructor";
-    Assert.assertEquals(message, file1.getName(), info.getFiles(langFi).get(0).getName());
-    Assert.assertEquals(message, file2.getName(), info.getFiles(langFi).get(1).getName());
-    Assert.assertEquals(message, file1.getName(), info.getFiles(langSe).get(0).getName());
-    Assert.assertEquals(message, file2.getName(), info.getFiles(langSe).get(1).getName());
+    Assertions.assertEquals(file1.getName(), info.getFiles(langFi).get(0).getName(), message);
+    Assertions.assertEquals(file2.getName(), info.getFiles(langFi).get(1).getName(), message);
+    Assertions.assertEquals(file1.getName(), info.getFiles(langSe).get(0).getName(), message);
+    Assertions.assertEquals(file2.getName(), info.getFiles(langSe).get(1).getName(), message);
   }
 
   @Test
-  public void testFromJsonObject() {
+  void testFromJsonObject() {
     JSONArray formSpec = new JSONArray()
         .put(new JSONObject()
             .put("key", "file1")
@@ -57,10 +58,10 @@ public class SubmissionInfoTest {
 
     SubmissionInfo info = SubmissionInfo.fromJsonObject(json);
 
-    Assert.assertEquals("The filenames are parsed from the JSON",
-        "coolEnglishFilename.scala", info.getFiles("en").get(0).getName());
-    Assert.assertEquals("The filenames are parsed from the JSON",
-        "coolFinnishFilename.scala", info.getFiles("fi").get(0).getName());
+    Assertions.assertEquals("coolEnglishFilename.scala", info.getFiles("en").get(0).getName(),
+        "The filenames are parsed from the JSON");
+    Assertions.assertEquals("coolFinnishFilename.scala", info.getFiles("fi").get(0).getName(),
+        "The filenames are parsed from the JSON");
   }
 
 }

@@ -6,12 +6,13 @@ import static org.mockito.Mockito.verify;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class CheckBoxTest {
+class CheckBoxTest {
 
   @Test
-  public void testAddsItemListener() {
+  void testAddsItemListener() {
     CheckBox checkBox = new CheckBox();
 
     ObservableProperty<Boolean> isChecked = new ObservableReadWriteProperty<>(false);
@@ -20,23 +21,21 @@ public class CheckBoxTest {
     ObservableProperty<Boolean> isEnabled = new ObservableReadWriteProperty<>(true);
     checkBox.isEnabledBindable.bindToSource(isEnabled);
 
-    Assert.assertFalse("The check box should get its initial selection value from the given "
-        + "observable property", checkBox.isSelected());
-    Assert.assertTrue("The check box should get its initial enabled value from the given "
-        + "observable property", checkBox.isEnabled());
+    Assertions.assertFalse(checkBox.isSelected(), "The check box should get its initial selection value from the given "
+        + "observable property");
+    Assertions.assertTrue(checkBox.isEnabled(), "The check box should get its initial enabled value from the given "
+        + "observable property");
 
 
     checkBox.setSelected(true);
-    Assert.assertTrue("Selecting the check box should affect the given observable property",
-        isChecked.get());
+    Assertions.assertTrue(isChecked.get(), "Selecting the check box should affect the given observable property");
 
     checkBox.setSelected(false);
-    Assert.assertFalse("Deselecting the check box should affect the given observable property",
-        isChecked.get());
+    Assertions.assertFalse(isChecked.get(), "Deselecting the check box should affect the given observable property");
   }
 
   @Test
-  public void testAddsValueObservers() {
+  void testAddsValueObservers() {
     CheckBox checkBox = new CheckBox();
 
     ObservableProperty<Boolean> isChecked = new ObservableReadWriteProperty<>(false);
@@ -49,18 +48,18 @@ public class CheckBoxTest {
         = "Changes in the given observable properties should be reflected in the check box";
 
     isChecked.set(true);
-    Assert.assertTrue(message, checkBox.isSelected());
+    Assertions.assertTrue(checkBox.isSelected(), message);
     isChecked.set(false);
-    Assert.assertFalse(message, checkBox.isSelected());
+    Assertions.assertFalse(checkBox.isSelected(), message);
 
     isEnabled.set(true);
-    Assert.assertTrue(message, checkBox.isEnabled());
+    Assertions.assertTrue(checkBox.isEnabled(), message);
     isEnabled.set(false);
-    Assert.assertFalse(message, checkBox.isEnabled());
+    Assertions.assertFalse(checkBox.isEnabled(), message);
   }
 
   @Test
-  public void testCallbackGetsCalled() {
+  void testCallbackGetsCalled() {
     CheckBox checkBox = new CheckBox();
 
     ObservableProperty<Boolean> isChecked = new ObservableReadWriteProperty<>(true);

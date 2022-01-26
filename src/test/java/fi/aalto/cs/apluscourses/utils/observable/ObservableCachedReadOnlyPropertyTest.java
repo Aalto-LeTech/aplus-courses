@@ -8,20 +8,21 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.function.Supplier;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class ObservableCachedReadOnlyPropertyTest {
+class ObservableCachedReadOnlyPropertyTest {
   @SuppressWarnings("unchecked")
   @Test
-  public void testObservableCachedReadOnlyProperty() {
+  void testObservableCachedReadOnlyProperty() {
     var supplier = (Supplier<Object>) mock(Supplier.class);
     var supplied = new Object();
     when(supplier.get()).thenReturn(supplied);
     var observable = new ObservableCachedReadOnlyProperty<>(supplier);
-    assertSame(supplied, observable.get());
+    Assertions.assertSame(supplied, observable.get());
     observable.get();
     verify(supplier, times(1)).get();
-    assertSame(supplied, observable.get());
+    Assertions.assertSame(supplied, observable.get());
     verifyNoMoreInteractions(supplier);
   }
 }

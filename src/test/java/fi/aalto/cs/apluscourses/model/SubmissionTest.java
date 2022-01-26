@@ -12,12 +12,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.OptionalLong;
-import org.junit.Test;
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class SubmissionTest {
+class SubmissionTest {
 
   @Test
-  public void testCreate() {
+  void testCreate() {
     var fileA = new SubmittableFile("keyA", "fileA");
     var fileB = new SubmittableFile("keyB", "fileB");
     var language = "de";
@@ -30,9 +32,9 @@ public class SubmissionTest {
 
     Submission submission = new Submission(exercise, files, group, language);
 
-    assertSame(exercise, submission.getExercise());
-    assertThat(files, is(files));
-    assertSame(group, submission.getGroup());
-    assertEquals(language, submission.getLanguage());
+    Assertions.assertSame(exercise, submission.getExercise());
+    MatcherAssert.assertThat(files, is(files));
+    Assertions.assertSame(group, submission.getGroup());
+    Assertions.assertEquals(language, submission.getLanguage());
   }
 }

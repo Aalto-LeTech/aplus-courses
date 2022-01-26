@@ -3,6 +3,7 @@ package fi.aalto.cs.apluscourses.utils;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -14,16 +15,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class ResourcesTest {
+class ResourcesTest {
 
   @Test
-  public void testGetProperties() throws ResourceException {
+  void testGetProperties() throws ResourceException {
     AtomicInteger closeCallCounter = new AtomicInteger(0);
 
     Resources res = new Resources(name -> {
-      assertEquals("correct-properties", name);
+      Assertions.assertEquals("correct-properties", name);
 
       return new ByteArrayInputStream("a=x\nb=y\n".getBytes()) {
 
@@ -35,21 +37,17 @@ public class ResourcesTest {
       };
     });
 
-    assertEquals("Stream should not be closed by the constructor.",
-        0, closeCallCounter.get());
+    Assertions.assertEquals(0, closeCallCounter.get(), "Stream should not be closed by the constructor.");
 
     Properties props = res.getProperties("correct-properties");
 
-    assertEquals("Stream should be closed by the getProperties().",
-        1, closeCallCounter.get());
-    assertEquals("getProperty(\"a\") should return the value set for 'a'",
-        "x", props.getProperty("a"));
-    assertEquals("getProperty(\"b\") should return the value set for 'b'",
-        "y", props.getProperty("b"));
+    Assertions.assertEquals(1, closeCallCounter.get(), "Stream should be closed by the getProperties().");
+    Assertions.assertEquals("x", props.getProperty("a"), "getProperty(\"a\") should return the value set for 'a'");
+    Assertions.assertEquals("y", props.getProperty("b"), "getProperty(\"b\") should return the value set for 'b'");
   }
 
   @Test
-  public void testGetPropertiesWithError() {
+  void testGetPropertiesWithError() {
     IOException exception = new IOException();
 
     Resources res = new Resources(name -> new InputStream() {
@@ -63,32 +61,29 @@ public class ResourcesTest {
     try {
       res.getProperties(resourceName);
     } catch (ResourceException ex) {
-      assertEquals("Exception should have the requested resource name.",
-          resourceName, ex.getResourceName());
-      assertSame("The cause of the expression should come from the stream.",
-          exception, ex.getCause());
+      Assertions.assertEquals(resourceName, ex.getResourceName(), "Exception should have the requested resource name.");
+      Assertions.assertSame(exception, ex.getCause(), "The cause of the expression should come from the stream.");
       return;
     }
-    fail("getProperties() should throw an exception if the stream cannot be read.");
+    Assertions.fail("getProperties() should throw an exception if the stream cannot be read.");
   }
 
   @Test
-  public void testGetPropertiesWithNullStream() {
+  void testGetPropertiesWithNullStream() {
     Resources res = new Resources(name -> null);
     String resourceName = "null-stream-resource";
 
     try {
       res.getProperties(resourceName);
     } catch (ResourceException ex) {
-      assertEquals("Exception should have the requested resource name.",
-          resourceName, ex.getResourceName());
+      Assertions.assertEquals(resourceName, ex.getResourceName(), "Exception should have the requested resource name.");
       return;
     }
-    fail("getProperties() should throw an exception if the stream is null");
+    Assertions.fail("getProperties() should throw an exception if the stream is null");
   }
 
   @Test
-  public void testGetImage() throws ResourceException, IOException {
+  void testGetImage() throws ResourceException, IOException {
     // Example PNG, one red pixel
     // https://en.wikipedia.org/wiki/Portable_Network_Graphics#Examples
     byte[] imageData = new byte[] {
@@ -111,37 +106,37 @@ public class ResourcesTest {
     BufferedImage image = res.getImage("testImage");
     verify(stream).close();
 
-    assertEquals("Height of the image should be 1", 1, image.getHeight());
-    assertEquals("Width of the image should be 1", 1, image.getWidth());
-    assertEquals("The only pixel should be red", 0xffff0000, image.getRGB(0, 0));
+    Assertions.assertEquals(1, image.getHeight(), "Height of the image should be 1");
+    Assertions.assertEquals(1, image.getWidth(), "Width of the image should be 1");
+    Assertions.assertEquals(0xffff0000, image.getRGB(0, 0), "The only pixel should be red");
   }
 
-  @Test(expected = ResourceException.class)
-  public void testGetImageWithError() throws IOException, ResourceException {
+  @Test
+  void testGetImageWithError() throws IOException, ResourceException {
     ByteArrayInputStream stream = spy(new ByteArrayInputStream("not-an-image".getBytes()));
     Resources.ResourceProvider resourceProvider = mock(Resources.ResourceProvider.class);
     when(resourceProvider.getResourceAsStream("badTestImage")).thenReturn(stream);
 
     Resources res = new Resources(resourceProvider);
     try {
-      res.getImage("badTestImage");
+      assertThrows(ResourceException.class, () ->
+          res.getImage("badTestImage"));
     } finally {
       verify(stream).close();
     }
   }
 
   @Test
-  public void testGetIconWithNullStream() {
+  void testGetIconWithNullStream() {
     Resources res = new Resources(name -> null);
     String resourceName = "null-stream-resource";
 
     try {
       res.getImage(resourceName);
     } catch (ResourceException ex) {
-      assertEquals("Exception should have the requested resource name.",
-          resourceName, ex.getResourceName());
+      Assertions.assertEquals(resourceName, ex.getResourceName(), "Exception should have the requested resource name.");
       return;
     }
-    fail("getImage() should throw an exception if the stream is null");
+    Assertions.fail("getImage() should throw an exception if the stream is null");
   }
 }

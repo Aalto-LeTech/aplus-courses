@@ -23,12 +23,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.OptionalLong;
 import java.util.stream.IntStream;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class SubmissionViewModelTest {
+class SubmissionViewModelTest {
 
   @Test
-  public void testValidation() {
+  void testValidation() {
     List<String> names = new ArrayList<>();
     names.add("Someone");
 
@@ -52,12 +53,12 @@ public class SubmissionViewModelTest {
     SubmissionViewModel submissionViewModel =
         new SubmissionViewModel(exercise, groups, null, fileMap, language);
 
-    assertNotNull("The validation should fail when no group is yet selected",
-        submissionViewModel.selectedGroup.validate());
+    Assertions.assertNotNull(submissionViewModel.selectedGroup.validate(),
+        "The validation should fail when no group is yet selected");
   }
 
   @Test
-  public void testSubmissionNumbers() {
+  void testSubmissionNumbers() {
     var info = new SubmissionInfo(Collections.emptyMap());
     Exercise exercise = new Exercise(1, "ex", "http://localhost:2000", info, 0, 5, OptionalLong.empty(), null);
     IntStream.range(0, 3).forEach(i -> exercise.addSubmissionResult(
@@ -66,41 +67,40 @@ public class SubmissionViewModelTest {
     SubmissionViewModel submissionViewModel1 = new SubmissionViewModel(
         exercise, Collections.emptyList(), null, Collections.emptyMap(), "");
 
-    assertEquals(4, submissionViewModel1.getCurrentSubmissionNumber());
-    assertEquals("You are about to make submission 4 out of 5.",
+    Assertions.assertEquals(4, submissionViewModel1.getCurrentSubmissionNumber());
+    Assertions.assertEquals("You are about to make submission 4 out of 5.",
         submissionViewModel1.getSubmissionCountText());
     var project = mock(Project.class);
-    assertNull(submissionViewModel1.getSubmissionWarning(project));
+    Assertions.assertNull(submissionViewModel1.getSubmissionWarning(project));
 
     exercise.addSubmissionResult(
         new SubmissionResult(3, 10, 0.0, SubmissionResult.Status.GRADED, exercise));
     SubmissionViewModel submissionViewModel2 = new SubmissionViewModel(
         exercise, Collections.emptyList(), null, Collections.emptyMap(), "");
 
-    assertEquals("You are about to make submission 5 out of 5.",
+    Assertions.assertEquals("You are about to make submission 5 out of 5.",
         submissionViewModel2.getSubmissionCountText());
-    assertNotNull(submissionViewModel2.getSubmissionWarning(project));
+    Assertions.assertNotNull(submissionViewModel2.getSubmissionWarning(project));
 
     SubmissionViewModel submissionViewModel3 = new SubmissionViewModel(
         exercise, Collections.emptyList(), null, Collections.emptyMap(), "");
 
     exercise.addSubmissionResult(
         new SubmissionResult(4, 10, 0.0, SubmissionResult.Status.GRADED, exercise));
-    assertEquals("You are about to make submission 6 out of 5.",
+    Assertions.assertEquals("You are about to make submission 6 out of 5.",
         submissionViewModel3.getSubmissionCountText());
-    assertNotNull(submissionViewModel3.getSubmissionWarning(project));
+    Assertions.assertNotNull(submissionViewModel3.getSubmissionWarning(project));
 
     // Max submissions 0
     SubmissionViewModel submissionViewModel4 = new SubmissionViewModel(
         new Exercise(0, "", "", info, 0, 0, OptionalLong.empty(), null),
         Collections.emptyList(), null, Collections.emptyMap(), "");
-    assertEquals("You are about to make submission 1.",
-        submissionViewModel4.getSubmissionCountText());
-    assertNull(submissionViewModel4.getSubmissionWarning(project));
+    Assertions.assertEquals("You are about to make submission 1.", submissionViewModel4.getSubmissionCountText());
+    Assertions.assertNull(submissionViewModel4.getSubmissionWarning(project));
   }
 
   @Test
-  public void testGetFiles() {
+  void testGetFiles() {
     SubmittableFile englishFile1 = new SubmittableFile("file1", "enFile1");
     SubmittableFile englishFile2 = new SubmittableFile("file2", "enFile2");
     SubmittableFile finnishFile1 = new SubmittableFile("file1", "fiFile1");
@@ -115,12 +115,12 @@ public class SubmissionViewModelTest {
         exercise, Collections.emptyList(), null, Collections.emptyMap(), "fi"
     );
 
-    assertArrayEquals("getFiles returns the files corresponding to the given language",
-        new SubmittableFile[] {finnishFile1, finnishFile2}, submission.getFiles());
+    Assertions.assertArrayEquals(new SubmittableFile[] {finnishFile1, finnishFile2}, submission.getFiles(),
+        "getFiles returns the files corresponding to the given language");
   }
 
   @Test
-  public void testDefaultGroup() {
+  void testDefaultGroup() {
     Exercise exercise = new Exercise(
         1000, "wow", "http://www.fi", new SubmissionInfo(Collections.emptyMap()), 0, 0, OptionalLong.empty(), null);
     Group group = new Group(1, List.of("Jyrki", "Jorma"));
@@ -133,12 +133,12 @@ public class SubmissionViewModelTest {
         exercise, availableGroups, group, Collections.emptyMap(), "fi"
     );
 
-    assertNull(viewModel1.selectedGroup.get());
-    assertNotNull(viewModel2.selectedGroup.get());
+    Assertions.assertNull(viewModel1.selectedGroup.get());
+    Assertions.assertNotNull(viewModel2.selectedGroup.get());
 
-    assertFalse("The default group check box is unchecked when no default group exists",
-        viewModel1.makeDefaultGroup.get());
-    assertTrue("The default group check box is automatically checked if a default group exists",
-        viewModel2.makeDefaultGroup.get());
+    Assertions.assertFalse(viewModel1.makeDefaultGroup.get(),
+        "The default group check box is unchecked when no default group exists");
+    Assertions.assertTrue(viewModel2.makeDefaultGroup.get(),
+        "The default group check box is automatically checked if a default group exists");
   }
 }

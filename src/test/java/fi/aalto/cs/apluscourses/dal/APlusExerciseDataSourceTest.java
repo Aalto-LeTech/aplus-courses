@@ -1,7 +1,5 @@
 package fi.aalto.cs.apluscourses.dal;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doCallRealMethod;
@@ -28,11 +26,12 @@ import java.util.Map;
 import java.util.OptionalLong;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
-public class APlusExerciseDataSourceTest {
+class APlusExerciseDataSourceTest {
 
   final Authentication authentication = mock(Authentication.class);
   final String url = "https://example.com/";
@@ -44,8 +43,8 @@ public class APlusExerciseDataSourceTest {
   /**
    * Called before each test.
    */
-  @Before
-  public void setUp() {
+  @BeforeEach
+  void setUp() {
     client = mock(Client.class);
     parser = mock(Parser.class);
     doCallRealMethod().when(parser).parseArray(any(), any());
@@ -53,17 +52,17 @@ public class APlusExerciseDataSourceTest {
   }
 
   @Test
-  public void testDefaultConstructor() {
+  void testDefaultConstructor() {
     var exerciseDataSource = new APlusExerciseDataSource(
         url, Paths.get(FileUtilRt.getTempDirectory()));
-    assertEquals(url, exerciseDataSource.getApiUrl());
-    assertTrue(exerciseDataSource.getClient() instanceof APlusExerciseDataSource.DefaultDataAccess);
-    assertTrue(exerciseDataSource.getParser() instanceof APlusExerciseDataSource.DefaultDataAccess);
+    Assertions.assertEquals(url, exerciseDataSource.getApiUrl());
+    Assertions.assertTrue(exerciseDataSource.getClient() instanceof APlusExerciseDataSource.DefaultDataAccess);
+    Assertions.assertTrue(exerciseDataSource.getParser() instanceof APlusExerciseDataSource.DefaultDataAccess);
   }
 
   @Test
   @SuppressWarnings("unchecked")
-  public void testSubmit() throws IOException {
+  void testSubmit() throws IOException {
     String key0 = "firstKey";
     String key1 = "anotherKey";
     SubmittableFile subFile0 = new SubmittableFile(key0, "first.scala");
@@ -93,15 +92,15 @@ public class APlusExerciseDataSourceTest {
     );
 
     Map<String, Object> data = dataCaptor.getValue();
-    assertEquals(3, data.size());
+    Assertions.assertEquals(3, data.size());
 
-    assertEquals(path0, ((File) data.get(key0)).toPath());
-    assertEquals(path1, ((File) data.get(key1)).toPath());
+    Assertions.assertEquals(path0, ((File) data.get(key0)).toPath());
+    Assertions.assertEquals(path1, ((File) data.get(key1)).toPath());
 
     String aplusArg = (String) data.get("__aplus__");
     JSONObject object = new JSONObject(new JSONTokener(aplusArg));
-    assertEquals(2, object.length());
-    assertEquals(435, object.getInt("group"));
-    assertEquals("fi", object.getString("lang"));
+    Assertions.assertEquals(2, object.length());
+    Assertions.assertEquals(435, object.getInt("group"));
+    Assertions.assertEquals("fi", object.getString("lang"));
   }
 }

@@ -7,12 +7,14 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 import java.util.Properties;
-import org.junit.Test;
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class BuildInfoTest {
+class BuildInfoTest {
 
   @Test
-  public void testCreateBuildInfoFromProperties() throws PropertyException {
+  void testCreateBuildInfoFromProperties() throws PropertyException {
     String versionString = "1.5";
     String courseVersionString = "3.3";
 
@@ -22,29 +24,29 @@ public class BuildInfoTest {
 
     BuildInfo buildInfo = new BuildInfo(props);
 
-    assertEquals("Build info should have version given in properties.",
-        versionString, buildInfo.pluginVersion.toString());
+    Assertions.assertEquals(versionString, buildInfo.pluginVersion.toString(),
+        "Build info should have version given in properties.");
 
-    assertEquals("Build info should have course version given in properties.",
-        courseVersionString, buildInfo.courseVersion.toString());
+    Assertions.assertEquals(courseVersionString, buildInfo.courseVersion.toString(),
+        "Build info should have course version given in properties.");
   }
 
   @Test
-  public void testCreateBuildInfoFromIncompleteProperties() {
+  void testCreateBuildInfoFromIncompleteProperties() {
     Properties props = new Properties();
 
     try {
       new BuildInfo(props);
     } catch (PropertyException ex) {
-      assertEquals("The property key of exception should be one that is missing.",
-          BuildInfo.PropertyKeys.VERSION, ex.getPropertyKey());
+      Assertions.assertEquals(BuildInfo.PropertyKeys.VERSION, ex.getPropertyKey(),
+          "The property key of exception should be one that is missing.");
       return;
     }
-    fail("Constructor should throw exception if properties do not contain necessary data.");
+    Assertions.fail("Constructor should throw exception if properties do not contain necessary data.");
   }
 
   @Test
-  public void testCreateBuildInfoFromInvalidProperties() {
+  void testCreateBuildInfoFromInvalidProperties() {
     String invalidVersionString = "invalid.version.string";
 
     Properties props = new Properties();
@@ -53,11 +55,11 @@ public class BuildInfoTest {
     try {
       new BuildInfo(props);
     } catch (PropertyException ex) {
-      assertEquals(BuildInfo.PropertyKeys.VERSION, ex.getPropertyKey());
-      assertThat(ex.getCause(), instanceOf(Version.InvalidVersionStringException.class));
-      assertThat(ex.getMessage(), containsString(invalidVersionString));
+      Assertions.assertEquals(BuildInfo.PropertyKeys.VERSION, ex.getPropertyKey());
+      MatcherAssert.assertThat(ex.getCause(), instanceOf(Version.InvalidVersionStringException.class));
+      MatcherAssert.assertThat(ex.getMessage(), containsString(invalidVersionString));
       return;
     }
-    fail("Constructor should throw a PropertyException if the data is invalid.");
+    Assertions.fail("Constructor should throw a PropertyException if the data is invalid.");
   }
 }

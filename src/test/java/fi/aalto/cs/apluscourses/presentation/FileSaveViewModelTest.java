@@ -4,12 +4,13 @@ import static org.mockito.Mockito.mock;
 
 import com.intellij.openapi.vfs.VirtualFile;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class FileSaveViewModelTest {
+class FileSaveViewModelTest {
 
   @Test
-  public void testFileSaveViewModel() {
+  void testFileSaveViewModel() {
     VirtualFile defaultPath = mock(VirtualFile.class);
     FileSaveViewModel viewModel = new FileSaveViewModel(
         "Test Title",
@@ -17,14 +18,14 @@ public class FileSaveViewModelTest {
         defaultPath,
         "TestName.zip"
     );
-    Assert.assertEquals("The title is equal to the one given to the constructor",
-        "Test Title", viewModel.getTitle());
-    Assert.assertEquals("The description is equal to the one given to the constructor",
-        "Test description", viewModel.getDescription());
-    Assert.assertSame("The default directory is the one given to the constructor",
-        defaultPath, viewModel.getDefaultDirectory());
-    Assert.assertEquals("The default name is the one given to the constructor",
-        "TestName.zip", viewModel.getDefaultName());
+    Assertions.assertEquals("Test Title", viewModel.getTitle(),
+        "The title is equal to the one given to the constructor");
+    Assertions.assertEquals("Test description", viewModel.getDescription(),
+        "The description is equal to the one given to the constructor");
+    Assertions.assertSame(defaultPath, viewModel.getDefaultDirectory(),
+        "The default directory is the one given to the constructor");
+    Assertions.assertEquals("TestName.zip", viewModel.getDefaultName(),
+        "The default name is the one given to the constructor");
   }
 
 }

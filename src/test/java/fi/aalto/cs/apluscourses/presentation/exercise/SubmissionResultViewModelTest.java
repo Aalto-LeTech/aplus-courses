@@ -9,21 +9,22 @@ import fi.aalto.cs.apluscourses.model.SubmissionInfo;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import java.util.Collections;
 import java.util.OptionalLong;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class SubmissionResultViewModelTest {
+class SubmissionResultViewModelTest {
 
   @Test
-  public void testSubmissionResultViewModel() {
+  void testSubmissionResultViewModel() {
     var info = new SubmissionInfo(Collections.emptyMap());
     Exercise exercise = new Exercise(0, "", "", info, 25, 10, OptionalLong.empty(), null);
     SubmissionResult submissionResult
         = new SubmissionResult(123L, 15, 0.0, SubmissionResult.Status.WAITING, exercise, new SubmissionFileInfo[0]);
     SubmissionResultViewModel viewModel = new SubmissionResultViewModel(submissionResult, 34);
 
-    assertEquals("Submission 34 (123)", viewModel.getPresentableName());
-    assertEquals("In grading", viewModel.getStatusText());
-    assertTrue(viewModel.getChildren().isEmpty());
+    Assertions.assertEquals("Submission 34 (123)", viewModel.getPresentableName());
+    Assertions.assertEquals("In grading", viewModel.getStatusText());
+    Assertions.assertTrue(viewModel.getChildren().isEmpty());
   }
 
 }

@@ -13,9 +13,11 @@ import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import fi.aalto.cs.apluscourses.utils.observable.ValidationError;
 import java.util.Collections;
-import org.junit.Test;
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class CourseProjectViewModelTest {
+class CourseProjectViewModelTest {
 
   private final Course emptyCourse = new ModelExtensions.TestCourse(
       "123",
@@ -43,58 +45,56 @@ public class CourseProjectViewModelTest {
   );
 
   @Test
-  public void testInformationTextIncludesCourseName() {
+  void testInformationTextIncludesCourseName() {
     CourseProjectViewModel courseProjectViewModel = new CourseProjectViewModel(emptyCourse, "");
-    assertEquals("The information text contains the course name",
-        "NiceCourse", courseProjectViewModel.getCourseName());
+    Assertions.assertEquals("NiceCourse", courseProjectViewModel.getCourseName(),
+        "The information text contains the course name");
   }
 
   @Test
-  public void testIdeSettingsNotPreviouslyImported() {
+  void testIdeSettingsNotPreviouslyImported() {
     CourseProjectViewModel courseProjectViewModel
         = new CourseProjectViewModel(emptyCourse, "different");
 
-    assertFalse("By default the user should not want to opt out",
-        courseProjectViewModel.userOptsOutOfSettings());
+    Assertions.assertFalse(courseProjectViewModel.userOptsOutOfSettings(),
+        "By default the user should not want to opt out");
 
-    assertTrue("Settings opt out should be available",
-        courseProjectViewModel.canUserOptOutSettings());
+    Assertions.assertTrue(courseProjectViewModel.canUserOptOutSettings(), "Settings opt out should be available");
 
-    assertTrue("The settings text should mention that IDEA settings will be adjusted",
-        courseProjectViewModel.shouldShowSettingsInfo());
+    Assertions.assertTrue(courseProjectViewModel.shouldShowSettingsInfo(),
+        "The settings text should mention that IDEA settings will be adjusted");
 
-    assertFalse("The settings panel in the dialog box should not be shown when there's no URL",
-        courseProjectViewModel.shouldShowSettingsSegment());
+    Assertions.assertFalse(courseProjectViewModel.shouldShowSettingsSegment(),
+        "The settings panel in the dialog box should not be shown when there's no URL");
   }
 
   @Test
-  public void testIdeSettingsAlreadyImported() {
+  void testIdeSettingsAlreadyImported() {
     CourseProjectViewModel courseProjectViewModel
         = new CourseProjectViewModel(emptyCourse, "123");
 
-    assertTrue(courseProjectViewModel.userOptsOutOfSettings());
+    Assertions.assertTrue(courseProjectViewModel.userOptsOutOfSettings());
 
-    assertFalse("Settings opt out should not be available",
-        courseProjectViewModel.canUserOptOutSettings());
+    Assertions.assertFalse(courseProjectViewModel.canUserOptOutSettings(), "Settings opt out should not be available");
 
-    assertTrue("The settings text should mention that settings are already imported",
-        courseProjectViewModel.shouldShowCurrentSettings());
+    Assertions.assertTrue(courseProjectViewModel.shouldShowCurrentSettings(),
+        "The settings text should mention that settings are already imported");
   }
 
   @Test
-  public void testGetLanguages() {
+  void testGetLanguages() {
     CourseProjectViewModel courseProjectViewModel
         = new CourseProjectViewModel(emptyCourse, "987");
-    assertArrayEquals(new String[] {"de"}, courseProjectViewModel.getLanguages());
+    Assertions.assertArrayEquals(new String[] {"de"}, courseProjectViewModel.getLanguages());
   }
 
   @Test
-  public void testLanguageSelectionValidation() {
+  void testLanguageSelectionValidation() {
     CourseProjectViewModel courseProjectViewModel
         = new CourseProjectViewModel(emptyCourse, "111");
     ValidationError error = courseProjectViewModel.languageProperty.validate();
-    assertThat(error.getDescription(), containsString("Select a language"));
+    MatcherAssert.assertThat(error.getDescription(), containsString("Select a language"));
     courseProjectViewModel.languageProperty.set("fi");
-    assertNull(courseProjectViewModel.languageProperty.validate());
+    Assertions.assertNull(courseProjectViewModel.languageProperty.validate());
   }
 }

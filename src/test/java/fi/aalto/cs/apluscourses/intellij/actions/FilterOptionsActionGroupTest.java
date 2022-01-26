@@ -1,7 +1,5 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -18,10 +16,11 @@ import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.filter.Option;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class FilterOptionsActionGroupTest {
+class FilterOptionsActionGroupTest {
 
   AnActionEvent event;
   FilterOptionsActionGroup actionGroup;
@@ -31,8 +30,8 @@ public class FilterOptionsActionGroupTest {
   /**
    * Called before each test.
    */
-  @Before
-  public void setUp() {
+  @BeforeEach
+  void setUp() {
     Project project = mock(Project.class);
     event = mock(AnActionEvent.class);
     when(event.getProject()).thenReturn(project);
@@ -53,22 +52,22 @@ public class FilterOptionsActionGroupTest {
   }
 
   @Test
-  public void testGetFilterOptionActions() {
+  void testGetFilterOptionActions() {
     actionGroup.getChildren(event);
     FilterOptionAction[] actions = actionGroup.getFilterOptionActions();
 
-    assertSame(filterOption1, actions[0].getOption());
-    assertSame(filterOption2, actions[1].getOption());
+    Assertions.assertSame(filterOption1, actions[0].getOption());
+    Assertions.assertSame(filterOption2, actions[1].getOption());
   }
 
   @Test
-  public void testGetChildren() {
+  void testGetChildren() {
     AnAction[] children = actionGroup.getChildren(event);
 
-    assertTrue(children[0] instanceof FilterOptionAction);
-    assertTrue(children[1] instanceof FilterOptionAction);
-    assertTrue(children[2] instanceof Separator);
-    assertTrue(children[3] instanceof SelectAllFiltersAction);
+    Assertions.assertTrue(children[0] instanceof FilterOptionAction);
+    Assertions.assertTrue(children[1] instanceof FilterOptionAction);
+    Assertions.assertTrue(children[2] instanceof Separator);
+    Assertions.assertTrue(children[3] instanceof SelectAllFiltersAction);
   }
 
 }

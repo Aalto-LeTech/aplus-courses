@@ -7,19 +7,17 @@ import static org.hamcrest.CoreMatchers.hasItems;
 
 import io.restassured.http.ContentType;
 import org.apache.http.HttpStatus;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 
-public class ApiTest {
-
-  //  For this to work the 'INTEGRATION=true' environment variable is added to the GitHub workflow .yml file
-  @ClassRule
-  public static final EnvironmentChecker checker = new EnvironmentChecker("INTEGRATION");
+//  For this to work the 'INTEGRATION=true' environment variable is added to the GitHub workflow .yml file
+@EnabledIfEnvironmentVariable(named = "INTEGRATION", matches = "true")
+class ApiTest {
 
   private static final String BASE_URL = "http://localhost:8000/api/v2/";
 
   @Test
-  public void testGetPoints() {
+  void testGetPoints() {
     final String firstExercise = "modules[0].exercises[0]";
     final String url = BASE_URL + "courses/100/points/me/";
 
@@ -47,7 +45,7 @@ public class ApiTest {
   }
 
   @Test
-  public void testGetStudentsGroups() {
+  void testGetStudentsGroups() {
     given()
         .auth()
         .preemptive()
@@ -63,7 +61,7 @@ public class ApiTest {
   }
 
   @Test
-  public void testGetExercises() {
+  void testGetExercises() {
     given()
         .auth()
         .preemptive()
@@ -80,7 +78,7 @@ public class ApiTest {
   }
 
   @Test
-  public void testGetIndividualExercise() {
+  void testGetIndividualExercise() {
     given()
         .auth()
         .preemptive()
@@ -96,7 +94,7 @@ public class ApiTest {
   }
 
   @Test
-  public void testGetSubmissions() {
+  void testGetSubmissions() {
     given()
         .auth()
         .preemptive()
@@ -111,7 +109,7 @@ public class ApiTest {
   }
 
   @Test
-  public void testGetIndividualSubmission() {
+  void testGetIndividualSubmission() {
     given()
         .auth()
         .preemptive()

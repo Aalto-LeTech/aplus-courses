@@ -9,12 +9,13 @@ import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.presentation.filter.Option;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import java.util.Optional;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class SelectAllFiltersActionTest {
+class SelectAllFiltersActionTest {
 
   @Test
-  public void testSelectAllFilters() {
+  void testSelectAllFilters() {
     Project project = mock(Project.class);
     AnActionEvent e = mock(AnActionEvent.class);
     when(e.getProject()).thenReturn(project);
@@ -25,22 +26,22 @@ public class SelectAllFiltersActionTest {
 
     SelectAllFiltersAction selectAllFiltersAction = new SelectAllFiltersAction(filterOptions);
 
-    assertEquals(true, filterOption1.isSelected.get());
-    assertEquals(true, filterOption2.isSelected.get());
-    assertEquals("Deselect all", selectAllFiltersAction.getTemplateText());
+    Assertions.assertEquals(true, filterOption1.isSelected.get());
+    Assertions.assertEquals(true, filterOption2.isSelected.get());
+    Assertions.assertEquals("Deselect all", selectAllFiltersAction.getTemplateText());
 
     filterOption1.isSelected.set(false);
-    assertEquals("Select all", selectAllFiltersAction.getTemplateText());
+    Assertions.assertEquals("Select all", selectAllFiltersAction.getTemplateText());
 
     selectAllFiltersAction.actionPerformed(e);
-    assertEquals(true, filterOption1.isSelected.get());
-    assertEquals(true, filterOption2.isSelected.get());
-    assertEquals("Deselect all", selectAllFiltersAction.getTemplateText());
+    Assertions.assertEquals(true, filterOption1.isSelected.get());
+    Assertions.assertEquals(true, filterOption2.isSelected.get());
+    Assertions.assertEquals("Deselect all", selectAllFiltersAction.getTemplateText());
 
     selectAllFiltersAction.actionPerformed(e);
-    assertEquals(false, filterOption1.isSelected.get());
-    assertEquals(false, filterOption2.isSelected.get());
-    assertEquals("Select all", selectAllFiltersAction.getTemplateText());
+    Assertions.assertEquals(false, filterOption1.isSelected.get());
+    Assertions.assertEquals(false, filterOption2.isSelected.get());
+    Assertions.assertEquals("Select all", selectAllFiltersAction.getTemplateText());
   }
 
 }

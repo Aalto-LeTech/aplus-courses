@@ -5,12 +5,13 @@ import static org.mockito.Mockito.mock;
 
 import com.intellij.openapi.project.Project;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class ProjectKeyTest {
+class ProjectKeyTest {
 
   @Test
-  public void testProjectKey() {
+  void testProjectKey() {
     var project1 = mock(Project.class);
     var project2 = mock(Project.class);
     var project3 = mock(Project.class);
@@ -21,14 +22,14 @@ public class ProjectKeyTest {
     var key2 = new ProjectKey(project2);
     var key3 = new ProjectKey(project3);
 
-    Assert.assertEquals(key1, key2);
-    Assert.assertEquals(key1.hashCode(), key2.hashCode());
-    Assert.assertNotEquals(key1, key3);
-    Assert.assertNotEquals(key2, key3);
+    Assertions.assertEquals(key1, key2);
+    Assertions.assertEquals(key1.hashCode(), key2.hashCode());
+    Assertions.assertNotEquals(key1, key3);
+    Assertions.assertNotEquals(key2, key3);
   }
 
   @Test
-  public void testProjectKeyWithDefaultProject() {
+  void testProjectKeyWithDefaultProject() {
     var project1 = mock(Project.class);
     doReturn(true).when(project1).isDefault();
     var project2 = mock(Project.class);
@@ -36,8 +37,8 @@ public class ProjectKeyTest {
     var key1 = new ProjectKey(project1);
     var key2 = new ProjectKey(project2);
 
-    Assert.assertEquals(key1, key2);
-    Assert.assertEquals(key1.hashCode(), key2.hashCode());
+    Assertions.assertEquals(key1, key2);
+    Assertions.assertEquals(key1.hashCode(), key2.hashCode());
   }
 
 }

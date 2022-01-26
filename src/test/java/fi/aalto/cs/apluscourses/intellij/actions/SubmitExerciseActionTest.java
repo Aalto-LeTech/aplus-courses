@@ -1,9 +1,6 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -66,13 +63,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalLong;
+import org.hamcrest.MatcherAssert;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
-public class SubmitExerciseActionTest {
+class SubmitExerciseActionTest {
 
   Course course;
   long exerciseId;
@@ -119,8 +118,8 @@ public class SubmitExerciseActionTest {
    * @throws IOException               Never.
    * @throws FileDoesNotExistException Never.
    */
-  @Before
-  public void setUp() throws Exception {
+  @BeforeEach
+  void setUp() throws Exception {
     exerciseId = 12;
     fileName = "some_file.scala";
     fileKey = "file1";
@@ -227,19 +226,19 @@ public class SubmitExerciseActionTest {
   }
 
   @Test
-  public void testSubmitExerciseAction() throws IOException {
+  void testSubmitExerciseAction() throws IOException {
     action.actionPerformed(event);
 
     ArgumentCaptor<Submission> submissionArg = ArgumentCaptor.forClass(Submission.class);
     verify(exerciseDataSource).submit(submissionArg.capture(), same(authentication));
 
     Submission submission = submissionArg.getValue();
-    assertEquals(group, submission.getGroup());
-    assertEquals(exercise, submission.getExercise());
+    Assertions.assertEquals(group, submission.getGroup());
+    Assertions.assertEquals(exercise, submission.getExercise());
 
     Map<String, Path> files = new HashMap<>();
     files.put(fileKey, filePath);
-    assertThat(submission.getFiles(), is(files));
+    MatcherAssert.assertThat(submission.getFiles(), is(files));
 
     ArgumentCaptor<SubmissionSentNotification> notificationArg =
         ArgumentCaptor.forClass(SubmissionSentNotification.class);
@@ -250,7 +249,7 @@ public class SubmitExerciseActionTest {
   }
 
   @Test
-  public void testNotifiesNoExerciseSelected() {
+  void testNotifiesNoExerciseSelected() {
     exercises.getChildren().get(0).getChildren().get(0).setSelected(false);
 
     action.actionPerformed(event);
@@ -262,7 +261,7 @@ public class SubmitExerciseActionTest {
   }
 
   @Test
-  public void testNotifiesOfMissingFile() throws IOException {
+  void testNotifiesOfMissingFile() throws IOException {
     doReturn(null).when(fileFinder).tryFindFile(modulePath, fileName);
 
     action.actionPerformed(event);
@@ -276,14 +275,14 @@ public class SubmitExerciseActionTest {
     verify(notifier).notify(notificationArg.capture(), eq(project));
 
     MissingFileNotification notification = notificationArg.getValue();
-    assertEquals(fileName, notification.getFilename());
-    assertEquals(modulePath, notification.getPath());
+    Assertions.assertEquals(fileName, notification.getFilename());
+    Assertions.assertEquals(modulePath, notification.getPath());
 
     verifyNoMoreInteractions(notifier);
   }
 
   @Test
-  public void testNotifiesOfMissingModule() throws IOException {
+  void testNotifiesOfMissingModule() throws IOException {
     String nonexistentModuleName = "nonexistent module";
 
     Map<Long, Map<String, String>> map = Collections.singletonMap(exerciseId,
@@ -302,13 +301,13 @@ public class SubmitExerciseActionTest {
     verify(notifier).notify(notificationArg.capture(), eq(project));
 
     MissingModuleNotification notification = notificationArg.getValue();
-    assertEquals(nonexistentModuleName, notification.getModuleName());
+    Assertions.assertEquals(nonexistentModuleName, notification.getModuleName());
 
     verifyNoMoreInteractions(notifier);
   }
 
   @Test
-  public void testNotifiesExerciseNotSubmittable() throws IOException {
+  void testNotifiesExerciseNotSubmittable() throws IOException {
     var exercise = new Exercise(0, "", "", new SubmissionInfo(Map.of()), 0, 0,
         OptionalLong.empty(), null);
     var exerciseGroup = new ExerciseGroup(0, "", "", true, List.of(), List.of());
@@ -330,7 +329,7 @@ public class SubmitExerciseActionTest {
   }
 
   @Test
-  public void testNotifiesOfNetworkErrorWhenGettingGroups() throws IOException {
+  void testNotifiesOfNetworkErrorWhenGettingGroups() throws IOException {
     IOException exception = new IOException();
     doThrow(exception).when(exerciseDataSource).getGroups(course, authentication);
 
@@ -345,13 +344,13 @@ public class SubmitExerciseActionTest {
     verify(notifier).notify(notificationArg.capture(), eq(project));
 
     NetworkErrorNotification notification = notificationArg.getValue();
-    assertSame(exception, notification.getException());
+    Assertions.assertSame(exception, notification.getException());
 
     verifyNoMoreInteractions(notifier);
   }
 
   @Test
-  public void testNotifiesOfNetworkErrorWhenSubmitting() throws IOException {
+  void testNotifiesOfNetworkErrorWhenSubmitting() throws IOException {
     IOException exception = new IOException();
     doThrow(exception).when(exerciseDataSource).submit(any(), any());
 
@@ -363,13 +362,13 @@ public class SubmitExerciseActionTest {
     verify(notifier).notify(notificationArg.capture(), eq(project));
 
     NetworkErrorNotification notification = notificationArg.getValue();
-    assertSame(exception, notification.getException());
+    Assertions.assertSame(exception, notification.getException());
 
     verifyNoMoreInteractions(notifier);
   }
 
   @Test
-  public void testModuleSelectionDialogCancel() throws IOException {
+  void testModuleSelectionDialogCancel() throws IOException {
     dialogs.register(SubmissionViewModel.class, (submission, project) -> () -> false);
 
     action.actionPerformed(event);

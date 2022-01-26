@@ -6,16 +6,17 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class ObservablePropertyTest {
+class ObservablePropertyTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void testObservableProperty() {
+  void testObservableProperty() {
     Object initialValue = new Object();
     ObservableReadWriteProperty<Object> property = new ObservableReadWriteProperty<>(initialValue);
-    assertEquals("Value should be initial value.", initialValue, property.get());
+    Assertions.assertEquals(initialValue, property.get(), "Value should be initial value.");
 
     Object observer1 = new Object();
     ObservableProperty.Callback<Object, Object> callback1 = mock(ObservableProperty.Callback.class);
@@ -25,7 +26,7 @@ public class ObservablePropertyTest {
     Object newValue = new Object();
     property.set(newValue);
     verify(callback1).valueChangedUntyped(observer1, newValue);
-    assertEquals("Value should be new value.", newValue, property.get());
+    Assertions.assertEquals(newValue, property.get(), "Value should be new value.");
 
     Object observer2 = new Object();
     ObservableProperty.Callback<Object, Object> callback2 = mock(ObservableProperty.Callback.class);
@@ -36,12 +37,12 @@ public class ObservablePropertyTest {
     property.set(finalValue);
     verify(callback1).valueChangedUntyped(observer1, finalValue);
     verify(callback2).valueChangedUntyped(observer2, finalValue);
-    assertEquals("Value should be final value.", finalValue, property.get());
+    Assertions.assertEquals(finalValue, property.get(), "Value should be final value.");
 
     verifyNoMoreInteractions(callback1);
     verifyNoMoreInteractions(callback2);
 
-    assertNotNull(observer1);
-    assertNotNull(observer2);
+    Assertions.assertNotNull(observer1);
+    Assertions.assertNotNull(observer2);
   }
 }

@@ -5,24 +5,24 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 
-import org.junit.Test;
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class CourseConfigurationErrorTest {
+class CourseConfigurationErrorTest {
 
   @Test
-  public void testCourseConfigurationError() {
+  void testCourseConfigurationError() {
     String errorMessage = "My test error message";
     Exception exception = new Exception(errorMessage);
     CourseConfigurationError notification = new CourseConfigurationError(exception);
 
-    assertEquals("Group ID should be 'A+'",
-        "A+", notification.getGroupId());
-    assertEquals("Title should be 'A+ Courses failed to parse the course configuration file'",
-        "Failed to parse the course configuration file",
-        notification.getTitle());
-    assertThat("Content should contain the message of the exception given to constructor.",
+    Assertions.assertEquals("A+", notification.getGroupId(), "Group ID should be 'A+'");
+    Assertions.assertEquals("Failed to parse the course configuration file", notification.getTitle(),
+        "Title should be 'A+ Courses failed to parse the course configuration file'");
+    MatcherAssert.assertThat("Content should contain the message of the exception given to constructor.",
         notification.getContent(), containsString(errorMessage));
-    assertSame("Exception should be same as the one that was given to the constructor",
-        exception, notification.getException());
+    Assertions.assertSame(exception, notification.getException(),
+        "Exception should be same as the one that was given to the constructor");
   }
 }

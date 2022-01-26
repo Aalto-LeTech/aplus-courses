@@ -7,10 +7,11 @@ import fi.aalto.cs.apluscourses.presentation.ViewModelExtensions.TestNodeViewMod
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import java.util.Collections;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class BaseTreeViewModelTest {
+class BaseTreeViewModelTest {
 
   BaseTreeViewModel<Object> treeViewModel;
   SelectableNodeViewModel<Object> childViewModel1;
@@ -19,8 +20,8 @@ public class BaseTreeViewModelTest {
   /**
    * Run before each test.
    */
-  @Before
-  public void setUp() {
+  @BeforeEach
+  void setUp() {
     childViewModel1 = new TestNodeViewModel(1, new Object(), Collections.emptyList());
     childViewModel2 = new TestNodeViewModel(2, new Object(), Collections.emptyList());
     treeViewModel = new BaseTreeViewModel<>(
@@ -28,26 +29,26 @@ public class BaseTreeViewModelTest {
   }
 
   @Test
-  public void findSelected() {
+  void findSelected() {
     childViewModel2.setSelected(true);
     BaseTreeViewModel.Selection selection = treeViewModel.findSelected();
 
-    assertSame(treeViewModel, selection.getLevel(0));
-    assertSame(childViewModel2, selection.getLevel(1));
-    assertNull(selection.getLevel(2));
+    Assertions.assertSame(treeViewModel, selection.getLevel(0));
+    Assertions.assertSame(childViewModel2, selection.getLevel(1));
+    Assertions.assertNull(selection.getLevel(2));
   }
 
   @Test
-  public void findSelectedReturnsNull() {
+  void findSelectedReturnsNull() {
     BaseTreeViewModel.Selection selection = treeViewModel.findSelected();
 
-    assertNull(selection.getLevel(0));
+    Assertions.assertNull(selection.getLevel(0));
   }
 
   @Test
-  public void setGetSelectedItem() {
-    assertNull(treeViewModel.getSelectedItem());
+  void setGetSelectedItem() {
+    Assertions.assertNull(treeViewModel.getSelectedItem());
     treeViewModel.setSelectedItem(childViewModel1);
-    assertSame(childViewModel1, treeViewModel.getSelectedItem());
+    Assertions.assertSame(childViewModel1, treeViewModel.getSelectedItem());
   }
 }
