@@ -25,6 +25,7 @@ public class Task implements CancelHandler, ListenerCallback {
   private final @NotNull String action;
   private final @NotNull Arguments actionArguments;
   private final boolean isFreeRange;
+  private final @Nullable String freeRangeLabel; // label of the "next step" button; if null, some default is used
   private final boolean isAlreadyCompleted;
 
   private ActivitiesListener listener;
@@ -43,6 +44,7 @@ public class Task implements CancelHandler, ListenerCallback {
               @NotNull String action,
               @NotNull Arguments actionArguments,
               boolean isFreeRange,
+              @Nullable String freeRangeLabel,
               boolean isAlreadyCompleted) {
     this.instruction = instruction;
     this.info = info;
@@ -52,6 +54,7 @@ public class Task implements CancelHandler, ListenerCallback {
     this.action = action;
     this.actionArguments = actionArguments;
     this.isFreeRange = isFreeRange;
+    this.freeRangeLabel = freeRangeLabel;
     this.isAlreadyCompleted = isAlreadyCompleted;
   }
 
@@ -68,6 +71,7 @@ public class Task implements CancelHandler, ListenerCallback {
         action,
         actionArguments,
         true,
+        getText("ui.tutorial.Task.freeRangeNextTaskButton"),
         true
     );
   }
@@ -110,9 +114,9 @@ public class Task implements CancelHandler, ListenerCallback {
 
       var reaction = new Reaction[0];
       if (isAlreadyCompleted) {
-        reaction = new Reaction[] {new AlreadyCompleteReaction()};
+        reaction = new Reaction[] { new AlreadyCompleteReaction() };
       } else if (isFreeRange) {
-        reaction = new Reaction[] {new ImDoneReaction()};
+        reaction = new Reaction[] { new ImDoneReaction(freeRangeLabel) };
       }
 
       var presenter = activityFactory.createPresenter(componentName, attachPopup ? instruction : null,
@@ -160,6 +164,7 @@ public class Task implements CancelHandler, ListenerCallback {
         jsonObject.getString("action"),
         parseArguments(jsonObject.optJSONObject("actionArguments")),
         jsonObject.optBoolean("freeRange", false),
+        jsonObject.optString("freeRangeLabel", null),
         false);
   }
 
@@ -233,9 +238,15 @@ public class Task implements CancelHandler, ListenerCallback {
 
   private class ImDoneReaction implements Reaction {
 
+    private final @NotNull String labelText;
+
+    public ImDoneReaction(@Nullable String labelText) {
+      this.labelText = labelText == null ? getText("ui.tutorial.Task.freeRangeDefaultButton") : labelText;
+    }
+
     @Override
     public String getLabel() {
-      return "I'm done!";
+      return labelText;
     }
 
     @Override
