@@ -5,7 +5,6 @@ import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ValidationError;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 public class CourseSelectionViewModel {
@@ -23,8 +22,7 @@ public class CourseSelectionViewModel {
   /**
    * A constructor.
    */
-  public CourseSelectionViewModel(List<CourseItemViewModel> courses) {
-    this.courses.set(courses.toArray(CourseItemViewModel[]::new));
+  public CourseSelectionViewModel() {
     selectedCourse.addValueObserver(this, (self, course) -> {
       if (course != null) {
         self.selectedCourseUrl.set(course.getUrl());
