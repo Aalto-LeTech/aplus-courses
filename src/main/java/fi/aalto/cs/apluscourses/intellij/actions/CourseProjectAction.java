@@ -9,6 +9,7 @@ import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.model.CourseProject;
 import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory;
 import fi.aalto.cs.apluscourses.intellij.model.SettingsImporter;
+import fi.aalto.cs.apluscourses.intellij.notifications.CourseConfigListErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.CourseConfigurationError;
 import fi.aalto.cs.apluscourses.intellij.notifications.CourseFileError;
 import fi.aalto.cs.apluscourses.intellij.notifications.CourseVersionOutdatedError;
@@ -30,6 +31,7 @@ import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogsImpl;
 import fi.aalto.cs.apluscourses.ui.ideactivities.ComponentDatabase;
 import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
+import fi.aalto.cs.apluscourses.utils.CoursesClient;
 import fi.aalto.cs.apluscourses.utils.PostponedRunnable;
 import fi.aalto.cs.apluscourses.utils.Version;
 import fi.aalto.cs.apluscourses.utils.async.SimpleAsyncTaskManager;
@@ -39,13 +41,16 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
+import org.yaml.snakeyaml.Yaml;
 
 public class CourseProjectAction extends AnAction {
 
@@ -78,7 +83,10 @@ public class CourseProjectAction extends AnAction {
 
   private final ExecutorService executor;
 
-  private static final List<CourseItemViewModel> AVAILABLE_COURSES = List.of(
+  private static final String COURSE_LIST_URL =
+      "https://version.aalto.fi/gitlab/aplus-courses/course-config-urls/-/raw/main/courses.yaml";
+
+  private static final List<CourseItemViewModel> FALLBACK_COURSES = List.of(
       new CourseItemViewModel("Ohjelmointistudio 2 / Programming Studio A", "Spring 2022",
           "https://gitmanager.cs.aalto.fi/static/studio2_k2022dev2-horrible-gitmanager-interface/projects/s2_course_config.json"),
       new CourseItemViewModel("O1", "Fall 2021",
@@ -259,7 +267,8 @@ public class CourseProjectAction extends AnAction {
         return PluginSettings.getInstance().getCourseFileManager(project).getCourseUrl();
       }
 
-      CourseSelectionViewModel viewModel = new CourseSelectionViewModel(AVAILABLE_COURSES);
+      CourseSelectionViewModel viewModel = new CourseSelectionViewModel();
+      Executors.newSingleThreadExecutor().submit(() -> viewModel.courses.set(fetchCourses(project)));
       boolean cancelled = !dialogs.showCourseSelectionDialog(project, viewModel);
       if (cancelled) {
         logger.info("Canceled course selection");
@@ -278,6 +287,25 @@ public class CourseProjectAction extends AnAction {
       notifier.notify(new NetworkErrorNotification(e), project);
       return null;
     }
+  }
+
+  private CourseItemViewModel[] fetchCourses(@NotNull Project project) {
+    try {
+      var url = new URL(COURSE_LIST_URL);
+      var courseStream = CoursesClient.fetch(url);
+      var yaml = new Yaml();
+
+      @SuppressWarnings("unchecked") var courseList = (List<Map<String, String>>) yaml.load(courseStream);
+      return courseList.stream().map(CourseItemViewModel::fromMap).toArray(CourseItemViewModel[]::new);
+    } catch (MalformedURLException e) {
+      logger.info("Malformed course config list url", e);
+    } catch (IOException e) {
+      logger.info("Failed to fetch course config list", e);
+    } catch (ClassCastException e) {
+      logger.info("Course config list yaml corrupted", e);
+    }
+    notifier.notify(new CourseConfigListErrorNotification(), project);
+    return FALLBACK_COURSES.toArray(CourseItemViewModel[]::new);
   }
 
   /**

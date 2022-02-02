@@ -1,9 +1,6 @@
 package fi.aalto.cs.apluscourses.presentation;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
-import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -11,10 +8,11 @@ class CourseSelectionViewModelTest {
 
   @Test
   void testCourseSelectionViewModel() {
-    CourseSelectionViewModel viewModel = new CourseSelectionViewModel(List.of(
+    CourseSelectionViewModel viewModel = new CourseSelectionViewModel();
+    viewModel.courses.set(new CourseItemViewModel[] {
         new CourseItemViewModel("A", "A", "http://example.com"),
         new CourseItemViewModel("B", "B", "http://example.com")
-    ));
+    });
 
     Assertions.assertTrue(Objects.requireNonNull(viewModel.selectedCourseUrl.get()).isEmpty(),
         "The URL field is initially empty");
@@ -26,7 +24,7 @@ class CourseSelectionViewModelTest {
 
   @Test
   void testCourseSelectionValidation() {
-    CourseSelectionViewModel viewModel = new CourseSelectionViewModel(Collections.emptyList());
+    CourseSelectionViewModel viewModel = new CourseSelectionViewModel();
 
     Assertions.assertNotNull(viewModel.selectedCourseUrl.validate(), "The initially empty URL field is not accepted");
 

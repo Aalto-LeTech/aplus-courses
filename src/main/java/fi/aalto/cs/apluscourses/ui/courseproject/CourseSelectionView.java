@@ -59,6 +59,9 @@ public class CourseSelectionView extends OurDialogWrapper {
       }
     });
 
+    courseList.setPaintBusy(true);
+    viewModel.courses.addSimpleObserver(this, a -> courseList.setPaintBusy(false));
+
     courseListLabel.setText(
         PluginResourceBundle.getText("ui.courseProject.courseSelection.selection"));
     String fontName = courseListLabel.getFont().getFontName();
