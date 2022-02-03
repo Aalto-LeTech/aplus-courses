@@ -11,6 +11,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.event.AWTEventListener;
 import java.awt.event.MouseEvent;
@@ -93,6 +94,9 @@ public class OverlayPane extends JPanel implements AWTEventListener {
     Graphics2D g = (Graphics2D) graphics.create();
     g.setComposite(AlphaComposite.SrcOver.derive(0.7f));
     g.setColor(Color.BLACK); // using JBColor.BLACK is wrong here
+    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+    g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
     g.fill(getDimmedArea());
   }
 
