@@ -10,6 +10,14 @@ import org.json.JSONArray;
 public interface Arguments {
   @Nullable Object opt(@NotNull String key);
 
+  default int getInt(@NotNull String key) {
+    Object obj = opt(key);
+    if (obj instanceof Integer) {
+      return (Integer) obj;
+    }
+    throw new IllegalArgumentException();
+  }
+
   /**
    * Gets an argument or throws a runtime exception if the argument is missing.
    *
