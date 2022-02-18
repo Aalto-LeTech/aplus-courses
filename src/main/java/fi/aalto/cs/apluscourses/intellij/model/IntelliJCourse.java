@@ -33,7 +33,7 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-class IntelliJCourse extends Course {
+public class IntelliJCourse extends Course {
 
   @NotNull
   private final APlusProject project;
@@ -44,6 +44,9 @@ class IntelliJCourse extends Course {
 
   private final ExerciseDataSource exerciseDataSource;
 
+  /**
+   * Constructor.
+   */
   public IntelliJCourse(@NotNull String id,
                         @NotNull String name,
                         @NotNull String aplusUrl,
@@ -101,8 +104,7 @@ class IntelliJCourse extends Course {
   @Nullable
   public Component getComponentIfExists(VirtualFile file) {
     Component component = getComponentIfExists(file.getName());
-    Path pathOfTheFile = Paths.get(file.getPath());
-    return component != null && component.getFullPath().equals(pathOfTheFile) ? component : null;
+    return component != null && component.getFullPath().equals(Paths.get(file.getPath())) ? component : null;
   }
 
   @NotNull

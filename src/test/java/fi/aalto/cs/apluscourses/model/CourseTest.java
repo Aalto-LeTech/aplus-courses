@@ -148,30 +148,8 @@ class CourseTest {
   }
 
   @Test
-  void testGetModuleWithMissingModule() throws NoSuchComponentException {
-    Course course = new ModelExtensions.TestCourse(
-        "Just some ID",
-        "Just some course",
-        "http://localhost:1951",
-        Collections.emptyList(),
-        // modules
-        Collections.emptyList(),
-        // libraries
-        Collections.emptyList(),
-        // exerciseModules
-        Collections.emptyMap(),
-        // resourceUrls
-        Collections.emptyMap(),
-        // vmOptions
-        Collections.emptyMap(),
-        // autoInstallComponentNames
-        Collections.emptyList(),
-        // replInitialCommands
-        Collections.emptyMap(),
-        // courseVersion
-        BuildInfo.INSTANCE.courseVersion,
-        // tutorials
-        Collections.emptyMap());
+  void testGetModuleWithMissingModule() {
+    Course course = new ModelExtensions.TestCourse("Some ID");
     assertThrows(NoSuchComponentException.class, () ->
         course.getComponent("Test Module"));
   }
@@ -229,8 +207,7 @@ class CourseTest {
   }
 
   @Test
-  void testFromConfigurationFileMissingId()
-      throws MalformedCourseConfigurationException {
+  void testFromConfigurationFileMissingId() {
     StringReader stringReader = new StringReader(
         "{" + nameJson + "," + urlJson + "," + languagesJson + "," + modulesJson + "}");
     assertThrows(MalformedCourseConfigurationException.class, () ->
@@ -238,8 +215,7 @@ class CourseTest {
   }
 
   @Test
-  void testFromConfigurationFileMissingName()
-      throws MalformedCourseConfigurationException {
+  void testFromConfigurationFileMissingName() {
     StringReader stringReader = new StringReader(
         "{" + idJson + "," + urlJson + "," + languagesJson + "," + modulesJson + "}");
     assertThrows(MalformedCourseConfigurationException.class, () ->
@@ -247,8 +223,7 @@ class CourseTest {
   }
 
   @Test
-  void testFromConfigurationFileMissingUrl()
-      throws MalformedCourseConfigurationException {
+  void testFromConfigurationFileMissingUrl() {
     StringReader stringReader = new StringReader(
         "{" + idJson + "," + nameJson + "," + languagesJson + "," + modulesJson + "}");
     assertThrows(MalformedCourseConfigurationException.class, () ->
@@ -256,8 +231,7 @@ class CourseTest {
   }
 
   @Test
-  void testFromConfigurationFileMissingLanguages()
-      throws MalformedCourseConfigurationException {
+  void testFromConfigurationFileMissingLanguages() {
     StringReader stringReader = new StringReader(
         "{" + idJson + "," + nameJson + "," + urlJson + "," + modulesJson + "}");
     assertThrows(MalformedCourseConfigurationException.class, () ->
@@ -265,8 +239,7 @@ class CourseTest {
   }
 
   @Test
-  void testFromConfigurationFileMissingModules()
-      throws MalformedCourseConfigurationException {
+  void testFromConfigurationFileMissingModules() {
     StringReader stringReader = new StringReader(
         "{" + idJson + "," + nameJson + "," + languagesJson + "," + urlJson + "}");
     assertThrows(MalformedCourseConfigurationException.class, () ->
@@ -274,16 +247,14 @@ class CourseTest {
   }
 
   @Test
-  void testFromConfigurationFileWithoutJson()
-      throws MalformedCourseConfigurationException {
+  void testFromConfigurationFileWithoutJson() {
     StringReader stringReader = new StringReader("random text");
     assertThrows(MalformedCourseConfigurationException.class, () ->
         Course.fromConfigurationData(stringReader, MODEL_FACTORY));
   }
 
   @Test
-  void testFromConfigurationFileWithInvalidModules()
-      throws MalformedCourseConfigurationException {
+  void testFromConfigurationFileWithInvalidModules() {
     String modules = "\"modules\":[1,2,3,4]";
     StringReader stringReader = new StringReader(
         "{" + idJson + "," + nameJson + "," + urlJson + "," + languagesJson + "," + modules + "}");
@@ -292,8 +263,7 @@ class CourseTest {
   }
 
   @Test
-  void testFromConfigurationFileWithInvalidAutoInstalls()
-      throws MalformedCourseConfigurationException {
+  void testFromConfigurationFileWithInvalidAutoInstalls() {
     String autoInstalls = "\"autoInstall\":[1,2,3,4]";
     StringReader stringReader = new StringReader("{" + idJson + "," + nameJson + "," + urlJson
         + "," + languagesJson + "," + modulesJson + "," + autoInstalls + "}");
@@ -302,8 +272,7 @@ class CourseTest {
   }
 
   @Test
-  void testFromConfigurationWithMalformedReplInitialCommands()
-      throws MalformedCourseConfigurationException {
+  void testFromConfigurationWithMalformedReplInitialCommands() {
     String replJson = "\"repl\": {\"initialCommands\": []}";
     StringReader stringReader = new StringReader("{" + idJson + "," + nameJson + "," + urlJson
         + "," + languagesJson + "," + replJson + "}");

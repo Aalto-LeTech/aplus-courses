@@ -1,5 +1,8 @@
 package fi.aalto.cs.apluscourses.model;
 
+import fi.aalto.cs.apluscourses.intellij.model.APlusProject;
+import fi.aalto.cs.apluscourses.intellij.model.CommonLibraryProvider;
+import fi.aalto.cs.apluscourses.intellij.model.IntelliJCourse;
 import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import fi.aalto.cs.apluscourses.utils.Version;
@@ -184,6 +187,51 @@ public class ModelExtensions {
     @Override
     public ExerciseDataSource getExerciseDataSource() {
       return exerciseDataSource;
+    }
+  }
+
+  public static class TestIntelliJCourse extends IntelliJCourse {
+
+    public TestIntelliJCourse(@NotNull String id,
+                              @NotNull String name,
+                              @NotNull APlusProject project,
+                              @NotNull CommonLibraryProvider commonLibraryProvider) {
+      this(id, name, Collections.emptyList(), project, commonLibraryProvider);
+    }
+
+    /**
+     * Constructor for testing purposes that assumes reasonable defaults for most arguments.
+     */
+    public TestIntelliJCourse(@NotNull String id,
+                              @NotNull String name,
+                              @NotNull List<Module> modules,
+                              @NotNull APlusProject project,
+                              @NotNull CommonLibraryProvider commonLibraryProvider) {
+      super(
+          id,
+          name,
+          "",
+          // languages
+          Collections.emptyList(),
+          modules,
+          // libraries
+          Collections.emptyList(),
+          // exerciseModules
+          Collections.emptyMap(),
+          // resourceUrls
+          Collections.emptyMap(),
+          // vmOptions
+          Collections.emptyMap(),
+          // autoInstallComponentNames
+          Collections.emptyList(),
+          // replInitialCommands
+          Collections.emptyMap(),
+          // courseVersion
+          BuildInfo.INSTANCE.courseVersion,
+          project,
+          commonLibraryProvider,
+          // tutorials
+          Collections.emptyMap());
     }
   }
 
