@@ -29,6 +29,6 @@ public class Scala3Sdk extends ScalaSdk {
   @Override
   @NotNull
   protected String @NotNull [] getClassRoots() {
-    return new String[] {"scala3-library_" + scalaVersion + "-" + scalaVersion + ".jar"};
+    return new String[] {"scala3-library_3-" + scalaVersion + ".jar"};
   }
 }
