@@ -1,11 +1,9 @@
 package fi.aalto.cs.apluscourses.ui;
 
-import com.intellij.ui.JBColor;
 import fi.aalto.cs.apluscourses.presentation.BannerViewModel;
 import fi.aalto.cs.apluscourses.ui.utils.Bindable;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import org.jetbrains.annotations.NotNull;
@@ -14,9 +12,9 @@ import org.jetbrains.annotations.Nullable;
 public class BannerView {
   private final JPanel container;
 
-  private final Bindable<MyEditorNotificationPanel, String> textBindable;
+  private final Bindable<BannerPanel, String> textBindable;
 
-  private final Bindable<MyEditorNotificationPanel, Color> colorBindable;
+  private final Bindable<BannerPanel, Color> colorBindable;
 
   /**
    * Constructs a BannerView with a banner at the top and bottomComponent at the bottom.
@@ -25,22 +23,18 @@ public class BannerView {
   public BannerView(@NotNull JComponent bottomComponent) {
     this.container = new JPanel(new BorderLayout());
     this.container.putClientProperty(BannerView.class.getName(), this);
-    var banner = new MyEditorNotificationPanel();
+    var banner = new BannerPanel();
     banner.setVisible(false);
-    banner.setBorder(BorderFactory.createCompoundBorder(
-        BorderFactory.createMatteBorder(0, 0, 1, 0, JBColor.border()),
-        BorderFactory.createEmptyBorder(0, 10, 0, 10))
-    );
 
     this.container.add(BorderLayout.CENTER, bottomComponent);
     this.container.add(BorderLayout.NORTH, banner);
 
     this.textBindable = new Bindable<>(banner, (panel, text) -> {
-      panel.setVisible(text != null);
       panel.setText(text);
+      panel.setVisible(text != null);
     }, true);
 
-    this.colorBindable = new Bindable<>(banner, MyEditorNotificationPanel::setColor, true);
+    this.colorBindable = new Bindable<>(banner, BannerPanel::setBackground, true);
   }
 
   /**
