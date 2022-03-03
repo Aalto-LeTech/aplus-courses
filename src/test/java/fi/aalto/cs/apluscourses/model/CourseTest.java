@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -30,6 +31,7 @@ class CourseTest {
     resourceUrls.put("ideSettings", new URL("http://localhost:23333"));
     Map<String, String> vmOptions = new HashMap<>();
     vmOptions.put("some-option", "nice-value");
+    Set<String> optionalCategories = Set.of("optional-category");
     List<String> autoInstallComponents = List.of(module1name);
     Map<String, String[]> replInitialCommands = new HashMap<>();
     replInitialCommands.put("Module1", new String[] {"import o1._"});
@@ -45,6 +47,7 @@ class CourseTest {
         Collections.emptyMap(),
         resourceUrls,
         vmOptions,
+        optionalCategories,
         autoInstallComponents,
         replInitialCommands,
         BuildInfo.INSTANCE.courseVersion,
@@ -70,6 +73,8 @@ class CourseTest {
         "The IDE settings path should be the same as the one given to the constructor");
     Assertions.assertEquals("nice-value", course.getVMOptions().get("some-option"),
         "The VM options should be the same as those given to the constructor");
+    Assertions.assertEquals("optional-category", course.getOptionalCategories().stream().findFirst().get(),
+        "The optional categories should be the same as those given to the constructor");
     Assertions.assertEquals(module1name, course.getAutoInstallComponents().get(0).getName(),
         "The auto-install components should be the same as those given to the constructor");
     Assertions.assertEquals("import o1._", course.getReplInitialCommands().get("Module1")[0],
@@ -97,6 +102,8 @@ class CourseTest {
         Collections.emptyMap(),
         // vmOptions
         Collections.emptyMap(),
+        // optionalCategories
+        Collections.emptySet(),
         // autoInstallComponentNames
         Collections.emptyList(),
         // replInitialCommands
@@ -133,6 +140,8 @@ class CourseTest {
         Collections.emptyMap(),
         // vmOptions
         Collections.emptyMap(),
+        // optionalCategories
+        Collections.emptySet(),
         // autoInstallComponentNames
         List.of("test-module", "test-library"),
         // replInitialCommands

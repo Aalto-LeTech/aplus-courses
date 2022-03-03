@@ -65,6 +65,8 @@ class InstallModuleActionTest {
         Collections.emptyMap(),
         // vmOptions
         Collections.emptyMap(),
+        // optionalCategories
+        Collections.emptySet(),
         // autoInstallComponentNames
         Collections.emptyList(),
         // replInitialCommands

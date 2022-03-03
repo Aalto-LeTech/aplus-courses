@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
@@ -56,6 +57,7 @@ public class IntelliJCourse extends Course {
                         @NotNull Map<Long, Map<String, String>> exerciseModules,
                         @NotNull Map<String, URL> resourceUrls,
                         @NotNull Map<String, String> vmOptions,
+                        @NotNull Set<String> optionalCategories,
                         @NotNull List<String> autoInstallComponentNames,
                         @NotNull Map<String, String[]> replInitialCommands,
                         @NotNull Version courseVersion,
@@ -72,6 +74,7 @@ public class IntelliJCourse extends Course {
         exerciseModules,
         resourceUrls,
         vmOptions,
+        optionalCategories,
         autoInstallComponentNames,
         replInitialCommands,
         courseVersion,
