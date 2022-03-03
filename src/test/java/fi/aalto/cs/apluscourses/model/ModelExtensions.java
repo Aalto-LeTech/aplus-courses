@@ -70,11 +70,12 @@ public class ModelExtensions {
     @Override
     public Exercise getExercise(long exerciseId,
                                 @NotNull Points points,
+                                @NotNull Set<String> optionalCategories,
                                 @NotNull Map<Long, Tutorial> tutorials,
                                 @NotNull Authentication authentication,
                                 @NotNull CachePreference cachePreference) {
       return new Exercise(1, "lol", "http://example.com",
-          new SubmissionInfo(Collections.emptyMap()), 20, 10, OptionalLong.empty(), null
+          new SubmissionInfo(Collections.emptyMap()), 20, 10, OptionalLong.empty(), null, false
       );
     }
 

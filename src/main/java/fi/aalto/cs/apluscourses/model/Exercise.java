@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.OptionalLong;
+import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
@@ -36,6 +37,8 @@ public class Exercise implements Browsable {
   @NotNull
   private final OptionalLong bestSubmissionId;
 
+  private final boolean isOptional;
+
   /**
    * Construct an exercise instance with the given parameters.
    *
@@ -53,7 +56,8 @@ public class Exercise implements Browsable {
                   int maxPoints,
                   int maxSubmissions,
                   @NotNull OptionalLong bestSubmissionId,
-                  @Nullable String difficulty) {
+                  @Nullable String difficulty,
+                  boolean isOptional) {
     this.id = id;
     this.name = name;
     this.htmlUrl = htmlUrl;
@@ -62,6 +66,7 @@ public class Exercise implements Browsable {
     this.maxSubmissions = maxSubmissions;
     this.bestSubmissionId = bestSubmissionId;
     this.difficulty = difficulty == null ? "" : difficulty;
+    this.isOptional = isOptional;
   }
 
   /**
@@ -75,6 +80,7 @@ public class Exercise implements Browsable {
   @NotNull
   public static Exercise fromJsonObject(@NotNull JSONObject jsonObject,
                                         @NotNull Points points,
+                                        @NotNull Set<String> optionalCategories,
                                         @NotNull Map<Long, Tutorial> tutorials) {
     long id = jsonObject.getLong("id");
 
@@ -85,6 +91,7 @@ public class Exercise implements Browsable {
     int maxPoints = jsonObject.getInt("max_points");
     int maxSubmissions = jsonObject.getInt("max_submissions");
     String difficulty = jsonObject.optString("difficulty");
+    var isOptional = optionalCategories.contains(difficulty);
 
     var submissionInfo = SubmissionInfo.fromJsonObject(jsonObject);
 
@@ -93,10 +100,12 @@ public class Exercise implements Browsable {
         : OptionalLong.of(bestSubmissionId);
     if (tutorial == null) {
       return new Exercise(
-          id, name, htmlUrl, submissionInfo, maxPoints, maxSubmissions, optionalBestSubmission, difficulty);
+          id, name, htmlUrl, submissionInfo, maxPoints, maxSubmissions, optionalBestSubmission,
+          difficulty, isOptional);
     } else {
       return new TutorialExercise(
-          id, name, htmlUrl, submissionInfo, maxPoints, maxSubmissions, optionalBestSubmission, difficulty, tutorial);
+          id, name, htmlUrl, submissionInfo, maxPoints, maxSubmissions, optionalBestSubmission,
+          difficulty, isOptional, tutorial);
     }
   }
 
@@ -175,7 +184,7 @@ public class Exercise implements Browsable {
   }
 
   public boolean isOptional() {
-    return difficulty.equals("training") || difficulty.equals("challenge");
+    return isOptional;
   }
 
   /**
