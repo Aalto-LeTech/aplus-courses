@@ -23,7 +23,8 @@ class ExerciseTest {
   @Test
   void testExercise() {
     var info = new SubmissionInfo(Map.of("de", List.of(new SubmittableFile("f1", "a"))));
-    Exercise exercise = new Exercise(987, "def", "http://localhost:4444", info, 15, 10, OptionalLong.empty(), null);
+    Exercise exercise = new Exercise(987, "def", "http://localhost:4444", info, 15, 10,
+        OptionalLong.empty(), null, false);
 
     Assertions.assertEquals(987L, exercise.getId(), "The ID is the same as the one given to the constructor");
     Assertions.assertEquals("def", exercise.getName(), "The name is the same as the one given to the constructor");
@@ -70,7 +71,7 @@ class ExerciseTest {
         .put(DIFFICULTY_KEY, "ha")
         .put("additional key", "which shouldn't cause errors");
 
-    Exercise exercise = Exercise.fromJsonObject(json, TEST_POINTS, Collections.emptyMap());
+    Exercise exercise = Exercise.fromJsonObject(json, TEST_POINTS, Collections.emptySet(), Collections.emptyMap());
     exercise.addSubmissionResult(
         new SubmissionResult(2, 0, 0.0, SubmissionResult.Status.GRADED, exercise));
 
@@ -97,7 +98,7 @@ class ExerciseTest {
         .put(MAX_SUBMISSIONS_KEY, 3);
 
     assertThrows(JSONException.class, () ->
-        Exercise.fromJsonObject(json, TEST_POINTS, Collections.emptyMap()));
+        Exercise.fromJsonObject(json, TEST_POINTS, Collections.emptySet(), Collections.emptyMap()));
   }
 
   @Test
@@ -109,7 +110,7 @@ class ExerciseTest {
         .put(MAX_SUBMISSIONS_KEY, 4);
 
     assertThrows(JSONException.class, () ->
-        Exercise.fromJsonObject(json, TEST_POINTS, Collections.emptyMap()));
+        Exercise.fromJsonObject(json, TEST_POINTS, Collections.emptySet(), Collections.emptyMap()));
   }
 
   @Test
@@ -121,7 +122,7 @@ class ExerciseTest {
         .put(MAX_SUBMISSIONS_KEY, 4);
 
     assertThrows(JSONException.class, () ->
-        Exercise.fromJsonObject(json, TEST_POINTS, Collections.emptyMap()));
+        Exercise.fromJsonObject(json, TEST_POINTS, Collections.emptySet(), Collections.emptyMap()));
   }
 
   @Test
@@ -133,15 +134,17 @@ class ExerciseTest {
         .put(MAX_POINTS_KEY, 4);
 
     assertThrows(JSONException.class, () ->
-        Exercise.fromJsonObject(json, TEST_POINTS, Collections.emptyMap()));
+        Exercise.fromJsonObject(json, TEST_POINTS, Collections.emptySet(), Collections.emptyMap()));
   }
 
   @Test
   void testEquals() {
     var info = new SubmissionInfo(Collections.emptyMap());
-    var exercise = new Exercise(7, "oneEx", "http://localhost:1111", info, 0, 0, OptionalLong.empty(), "A");
-    var sameExercise = new Exercise(7, "twoEx", "http://localhost:2222", info, 3, 4, OptionalLong.empty(), "B");
-    var otherExercise = new Exercise(4, "oneEx", "http://localhost:2222", info, 2, 1, OptionalLong.empty(), "A");
+    var exercise = new Exercise(7, "oneEx", "http://localhost:1111", info, 0, 0, OptionalLong.empty(), "A", false);
+    var sameExercise = new Exercise(7, "twoEx", "http://localhost:2222", info, 3, 4,
+        OptionalLong.empty(), "B", false);
+    var otherExercise = new Exercise(4, "oneEx", "http://localhost:2222", info, 2, 1,
+        OptionalLong.empty(), "A", false);
 
     Assertions.assertEquals(exercise, sameExercise);
     Assertions.assertEquals(exercise.hashCode(), sameExercise.hashCode());
@@ -152,11 +155,10 @@ class ExerciseTest {
   @Test
   void testIsCompleted() {
     var info = new SubmissionInfo(Collections.emptyMap());
-    Exercise optionalNotSubmitted
-        =
-        new Exercise(1, "optionalNotSubmitted", "http://localhost:1111", info, 1, 10, OptionalLong.empty(), "training");
-    Exercise optionalSubmitted
-        = new Exercise(2, "optionalSubmitted", "http://localhost:1111", info, 1, 10, OptionalLong.empty(), "training");
+    Exercise optionalNotSubmitted = new Exercise(1, "optionalNotSubmitted",
+        "http://localhost:1111", info, 1, 10, OptionalLong.empty(), "training", true);
+    Exercise optionalSubmitted = new Exercise(2, "optionalSubmitted", "http://localhost:1111",
+        info, 1, 10, OptionalLong.empty(), "training", true);
     optionalSubmitted.addSubmissionResult(new SubmissionResult(
         1, 0, 0.0, SubmissionResult.Status.GRADED, optionalSubmitted));
 
@@ -165,13 +167,14 @@ class ExerciseTest {
     Assertions.assertFalse(optionalSubmitted.isCompleted(), "Optional assignment with submissions isn't completed");
 
     Exercise noSubmissions
-        = new Exercise(3, "noSubmissions", "http://localhost:1111", info, 5, 10, OptionalLong.empty(), null);
+        = new Exercise(3, "noSubmissions", "http://localhost:1111", info, 5, 10, OptionalLong.empty(), null, false);
     Exercise failed
-        = new Exercise(4, "failed", "http://localhost:1111", info, 5, 10, OptionalLong.of(1), null);
+        = new Exercise(4, "failed", "http://localhost:1111", info, 5, 10, OptionalLong.of(1), null, false);
     failed.addSubmissionResult(new SubmissionResult(
         1, 3, 0.0, SubmissionResult.Status.GRADED, failed));
 
-    Exercise completed = new Exercise(5, "completed", "http://localhost:1111", info, 5, 10, OptionalLong.of(1), null);
+    Exercise completed = new Exercise(5, "completed", "http://localhost:1111", info, 5, 10,
+        OptionalLong.of(1), null, false);
     completed.addSubmissionResult(new SubmissionResult(
         1, 5, 0.0, SubmissionResult.Status.GRADED, completed));
 
@@ -185,18 +188,19 @@ class ExerciseTest {
   void testIsOptional() {
     var info = new SubmissionInfo(Collections.emptyMap());
     Exercise optional =
-        new Exercise(1, "optional", "http://localhost:1111", info, 1, 10, OptionalLong.empty(), "training");
+        new Exercise(1, "optional", "http://localhost:1111", info, 1, 10, OptionalLong.empty(), "training", true);
     Assertions.assertTrue(optional.isOptional(), "Assignment is optional");
 
     Exercise notOptional =
-        new Exercise(2, "notOptional", "http://localhost:1111", info, 1, 10, OptionalLong.empty(), "B");
+        new Exercise(2, "notOptional", "http://localhost:1111", info, 1, 10, OptionalLong.empty(), "B", false);
     Assertions.assertFalse(notOptional.isOptional(), "Assignment isn't optional");
   }
 
   @Test
   void testIsInGrading() {
     var exercise = new Exercise(
-        1, "", "http://localhost:1", new SubmissionInfo(Collections.emptyMap()), 10, 10, OptionalLong.empty(), null);
+        1, "", "http://localhost:1", new SubmissionInfo(Collections.emptyMap()), 10, 10,
+        OptionalLong.empty(), null, false);
     exercise.addSubmissionResult(new SubmissionResult(
         0, 0, 0.0, SubmissionResult.Status.UNOFFICIAL, exercise
     ));

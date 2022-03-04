@@ -17,7 +17,7 @@ class SubmissionResultViewModelTest {
   @Test
   void testSubmissionResultViewModel() {
     var info = new SubmissionInfo(Collections.emptyMap());
-    Exercise exercise = new Exercise(0, "", "", info, 25, 10, OptionalLong.empty(), null);
+    Exercise exercise = new Exercise(0, "", "", info, 25, 10, OptionalLong.empty(), null, false);
     SubmissionResult submissionResult
         = new SubmissionResult(123L, 15, 0.0, SubmissionResult.Status.WAITING, exercise, new SubmissionFileInfo[0]);
     SubmissionResultViewModel viewModel = new SubmissionResultViewModel(submissionResult, 34);
