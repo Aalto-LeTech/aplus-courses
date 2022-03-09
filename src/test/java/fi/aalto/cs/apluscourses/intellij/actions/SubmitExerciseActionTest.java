@@ -127,7 +127,8 @@ class SubmitExerciseActionTest {
     String language = "fi";
     submissionInfo = new SubmissionInfo(Map.of(language, Collections.singletonList(file)));
     exercise = new Exercise(
-        exerciseId, "Test exercise", "http://localhost:10000", submissionInfo, 0, 0, OptionalLong.empty(), null);
+        exerciseId, "Test exercise", "http://localhost:10000", submissionInfo, 0, 0,
+        OptionalLong.empty(), null, false);
     group = new Group(124, Collections.singletonList("Only you"));
     groups = Collections.singletonList(group);
     exerciseGroup = new ExerciseGroup(0, "Test EG", "", true, List.of(), List.of());
@@ -309,7 +310,7 @@ class SubmitExerciseActionTest {
   @Test
   void testNotifiesExerciseNotSubmittable() throws IOException {
     var exercise = new Exercise(0, "", "", new SubmissionInfo(Map.of()), 0, 0,
-        OptionalLong.empty(), null);
+        OptionalLong.empty(), null, false);
     var exerciseGroup = new ExerciseGroup(0, "", "", true, List.of(), List.of());
     exerciseGroup.addExercise(exercise);
     mainViewModel.exercisesViewModel.set(

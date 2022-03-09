@@ -19,8 +19,9 @@ public class TutorialExercise extends Exercise {
                           int maxSubmissions,
                           @NotNull OptionalLong bestSubmissionId,
                           @Nullable String difficulty,
+                          boolean isOptional,
                           @NotNull Tutorial tutorial) {
-    super(id, name, htmlUrl, submissionInfo, maxPoints, maxSubmissions, bestSubmissionId, difficulty);
+    super(id, name, htmlUrl, submissionInfo, maxPoints, maxSubmissions, bestSubmissionId, difficulty, isOptional);
     this.tutorial = tutorial;
   }
 
