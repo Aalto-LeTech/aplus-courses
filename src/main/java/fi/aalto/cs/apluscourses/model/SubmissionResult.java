@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.model;
 
 import fi.aalto.cs.apluscourses.utils.JsonUtil;
+import fi.aalto.cs.apluscourses.utils.parser.FeedbackParser;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -9,6 +10,14 @@ public class SubmissionResult implements Browsable {
 
   public SubmissionFileInfo[] getFilesInfo() {
     return filesInfo;
+  }
+
+  public int getTestsSucceeded() {
+    return testsSucceeded;
+  }
+
+  public int getTestsFailed() {
+    return testsFailed;
   }
 
   public enum Status {
@@ -32,6 +41,10 @@ public class SubmissionResult implements Browsable {
 
   private final SubmissionFileInfo @NotNull [] filesInfo;
 
+  private final int testsSucceeded;
+
+  private final int testsFailed;
+
   /**
    * Construct an instance with the given ID and exercise URL.
    */
@@ -40,7 +53,7 @@ public class SubmissionResult implements Browsable {
                           double latePenalty,
                           @NotNull Status status,
                           @NotNull Exercise exercise) {
-    this(submissionId, points, latePenalty, status, exercise, new SubmissionFileInfo[0]);
+    this(submissionId, points, latePenalty, status, exercise, new SubmissionFileInfo[0], -1, -1);
   }
 
   /**
@@ -51,13 +64,17 @@ public class SubmissionResult implements Browsable {
                           double latePenalty,
                           @NotNull Status status,
                           @NotNull Exercise exercise,
-                          SubmissionFileInfo @NotNull [] filesInfo) {
+                          SubmissionFileInfo @NotNull [] filesInfo,
+                          int testsSucceeded,
+                          int testsFailed) {
     this.submissionId = submissionId;
     this.points = points;
     this.latePenalty = latePenalty;
     this.status = status;
     this.exercise = exercise;
     this.filesInfo = filesInfo;
+    this.testsSucceeded = testsSucceeded;
+    this.testsFailed = testsFailed;
   }
 
   /**
@@ -66,7 +83,8 @@ public class SubmissionResult implements Browsable {
    */
   @NotNull
   public static SubmissionResult fromJsonObject(@NotNull JSONObject jsonObject,
-                                                @NotNull Exercise exercise) {
+                                                @NotNull Exercise exercise,
+                                                @NotNull Course course) {
     long id = jsonObject.getLong("id");
     int points = jsonObject.getInt("grade");
     double latePenalty = jsonObject.optDouble("late_penalty_applied", 0.0);
@@ -88,7 +106,22 @@ public class SubmissionResult implements Browsable {
         SubmissionFileInfo[]::new
     );
 
-    return new SubmissionResult(id, points, latePenalty, status, exercise, filesInfo);
+    FeedbackParser.TestResults testResults = new FeedbackParser.TestResults(-1, -1);
+
+    if (exercise.isSubmittable() && jsonObject.has("feedback")) {
+      switch (course.getName()) {
+        case "O1":
+          testResults = FeedbackParser.parseO1TestResults(jsonObject.getString("feedback"));
+          break;
+        case "Programming Studio 2/A":
+          testResults = FeedbackParser.parseS2TestResults(jsonObject.getString("feedback"));
+          break;
+        default:
+      }
+    }
+
+    return new SubmissionResult(id, points, latePenalty, status, exercise, filesInfo, testResults.succeeded,
+        testResults.failed);
   }
 
   public long getId() {

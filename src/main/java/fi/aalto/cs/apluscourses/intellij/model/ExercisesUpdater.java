@@ -187,7 +187,7 @@ public class ExercisesUpdater extends RepeatedTask {
           ? CachePreferences.GET_NEW_AND_KEEP
           : CachePreferences.GET_MAX_ONE_WEEK_OLD;
       var submission = dataSource.getSubmissionResult(
-          baseUrl + id + "/", exercise, authentication, cachePreference);
+          baseUrl + id + "/", exercise, authentication, courseProject.getCourse(), cachePreference);
       if (submission.getStatus() == SubmissionResult.Status.WAITING) {
         submissionsInGrading.add(id);
       }

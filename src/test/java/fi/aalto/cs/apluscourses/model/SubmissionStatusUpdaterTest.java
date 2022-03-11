@@ -1,7 +1,5 @@
 package fi.aalto.cs.apluscourses.model;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
@@ -38,6 +36,7 @@ class SubmissionStatusUpdaterTest {
     public SubmissionResult getSubmissionResult(@NotNull String submissionUrl,
                                                 @NotNull Exercise exercise,
                                                 @NotNull Authentication authentication,
+                                                @NotNull Course course,
                                                 @NotNull CachePreference cachePreference) {
       return new SubmissionResult(
           123L,
@@ -74,6 +73,7 @@ class SubmissionStatusUpdaterTest {
         notifier,
         "http://localhost:1000",
         new Exercise(789, "Cool Exercise Name", "http://example.com", info, 5, 10, OptionalLong.empty(), null),
+        mock(Course.class),
         25L, // 0.025 second interval
         0L, // don't increment the interval at all
         10000L // 10 second time limit, which shouldn't be reached
@@ -96,6 +96,7 @@ class SubmissionStatusUpdaterTest {
         notifier,
         "http://localhost:1000",
         new Exercise(789, "Cool Exercise Name", "http://example.com", info, 5, 10, OptionalLong.empty(), null),
+        mock(Course.class),
         25L, // 0.025 second interval
         0L, // don't increment the interval at all
         200L // 0.2 second time limit, should update at most 8 times

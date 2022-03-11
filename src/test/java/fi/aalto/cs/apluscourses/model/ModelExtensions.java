@@ -7,6 +7,7 @@ import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import fi.aalto.cs.apluscourses.utils.Version;
 import fi.aalto.cs.apluscourses.utils.cache.CachePreference;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -77,11 +78,18 @@ public class ModelExtensions {
       );
     }
 
+    @Override
+    public @NotNull String getSubmissionFeedback(long submissionId, @NotNull Authentication authentication)
+        throws IOException {
+      return "";
+    }
+
     @NotNull
     @Override
     public SubmissionResult getSubmissionResult(@NotNull String submissionUrl,
                                                 @NotNull Exercise exercise,
                                                 @NotNull Authentication authentication,
+                                                @NotNull Course course,
                                                 @NotNull CachePreference cachePreference) {
       return new SubmissionResult(0, 20, 0.0, SubmissionResult.Status.GRADED, exercise);
     }

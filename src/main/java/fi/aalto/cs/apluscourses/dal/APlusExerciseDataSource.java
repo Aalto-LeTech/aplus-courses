@@ -175,10 +175,11 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   public SubmissionResult getSubmissionResult(@NotNull String submissionUrl,
                                               @NotNull Exercise exercise,
                                               @NotNull Authentication authentication,
+                                              @NotNull Course course,
                                               @NotNull CachePreference cachePreference)
       throws IOException {
     JSONObject response = client.fetch(submissionUrl, authentication, cachePreference);
-    return parser.parseSubmissionResult(response, exercise);
+    return parser.parseSubmissionResult(response, exercise, course);
   }
 
   @Override
@@ -191,6 +192,15 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
     var url = apiUrl + "exercises/" + exerciseId + "/";
     var response = client.fetch(url, authentication, cachePreference);
     return parser.parseExercise(response, points, tutorials);
+  }
+
+  @Override
+  @NotNull
+  public String getSubmissionFeedback(long submissionId,
+                                      @NotNull Authentication authentication) throws IOException {
+    var url = apiUrl + "submissions/" + submissionId + "/";
+    var response = client.fetch(url, authentication, CachePreferences.GET_NEW_AND_FORGET);
+    return response.getString("feedback");
   }
 
   @Override
@@ -369,8 +379,9 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
 
     @Override
     public SubmissionResult parseSubmissionResult(@NotNull JSONObject object,
-                                                  @NotNull Exercise exercise) {
-      return SubmissionResult.fromJsonObject(object, exercise);
+                                                  @NotNull Exercise exercise,
+                                                  @NotNull Course course) {
+      return SubmissionResult.fromJsonObject(object, exercise, course);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.dal;
 
+import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.Points;
@@ -35,7 +36,8 @@ public interface Parser {
                          @NotNull Map<Long, Tutorial> tutorials);
 
   SubmissionResult parseSubmissionResult(@NotNull JSONObject jsonObject,
-                                         @NotNull Exercise exercise);
+                                         @NotNull Exercise exercise,
+                                         @NotNull Course course);
 
   String parseUserName(@NotNull JSONObject object);
 

@@ -45,6 +45,8 @@ public final class PluginIcons {
       .getIcon("/META-INF/icons/upload.svg", PluginIcons.class);
   public static final Icon A_PLUS_BROWSE = IconLoader
       .getIcon("/META-INF/icons/web.svg", PluginIcons.class);
+  public static final Icon A_PLUS_FEEDBACK = IconLoader
+      .getIcon("/META-INF/icons/feedback.svg", PluginIcons.class);
   public static final Icon A_PLUS_REFRESH = IconLoader
       .getIcon("/META-INF/icons/refresh.svg", PluginIcons.class);
   public static final Icon A_PLUS_LOGO = IconLoader

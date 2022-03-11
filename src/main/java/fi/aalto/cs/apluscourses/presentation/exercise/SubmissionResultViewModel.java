@@ -3,10 +3,10 @@ package fi.aalto.cs.apluscourses.presentation.exercise;
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getAndReplaceText;
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
-import fi.aalto.cs.apluscourses.model.DummySubmissionResult;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import fi.aalto.cs.apluscourses.presentation.base.Searchable;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
+import fi.aalto.cs.apluscourses.utils.SubmissionResultUtil;
 import org.jetbrains.annotations.NotNull;
 
 public class SubmissionResultViewModel extends SelectableNodeViewModel<SubmissionResult>
@@ -44,9 +44,7 @@ public class SubmissionResultViewModel extends SelectableNodeViewModel<Submissio
   }
 
   private String getStatus(SubmissionResult model) {
-    return getModel() instanceof DummySubmissionResult ? "???"
-        : getAndReplaceText("presentation.submissionResultViewModel.points",
-        model.getPoints(), model.getExercise().getMaxPoints());
+    return SubmissionResultUtil.getStatus(model);
   }
 
   @Override
