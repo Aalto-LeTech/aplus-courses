@@ -124,6 +124,7 @@
                    text="Filter Assignments"
                    icon="PluginIcons.A_PLUS_FILTER">
             </group>
+            <separator/>
             <action id="fi.aalto.cs.apluscourses.intellij.actions.SelectStudentAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.SelectStudentAction"
                     text="Select Student"
