@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.intellij.actions;
 
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getAndReplaceText;
 
+import com.intellij.openapi.actionSystem.ActionPlaces;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.fileEditor.FileEditorManager;
@@ -177,12 +178,15 @@ public class ShowFeedbackAction extends AnAction {
     if (courseViewModel == null || exercisesViewModel == null
         || Arrays.stream(SUPPORTED_COURSES).noneMatch(name -> name.equals(courseViewModel.getModel().getName()))) {
       e.getPresentation().setVisible(false);
-      return;
+    } else {
+      var selectedSubmissionResult =
+          ((ExercisesTreeViewModel.ExerciseTreeSelection) exercisesViewModel.findSelected()).getSubmissionResult();
+      if (selectedSubmissionResult == null || !selectedSubmissionResult.getModel().getExercise().isSubmittable()) {
+        e.getPresentation().setEnabled(false);
+      }
     }
-    var selectedSubmissionResult =
-        ((ExercisesTreeViewModel.ExerciseTreeSelection) exercisesViewModel.findSelected()).getSubmissionResult();
-    if (selectedSubmissionResult == null || !selectedSubmissionResult.getModel().getExercise().isSubmittable()) {
-      e.getPresentation().setEnabled(false);
+    if ((ActionPlaces.TOOLWINDOW_POPUP).equals(e.getPlace()) && !e.getPresentation().isEnabled()) {
+      e.getPresentation().setVisible(false);
     }
   }
 

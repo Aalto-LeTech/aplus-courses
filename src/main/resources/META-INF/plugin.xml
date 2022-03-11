@@ -132,6 +132,10 @@
                     class="fi.aalto.cs.apluscourses.intellij.actions.DownloadSubmissionAction"
                     text="Download Submission"
                     icon="PluginIcons.A_PLUS_DOWNLOAD"/>
+            <action id="fi.aalto.cs.apluscourses.intellij.actions.ResubmitExerciseAction"
+                    class="fi.aalto.cs.apluscourses.intellij.actions.ResubmitExerciseAction"
+                    text="Re-Submit Submission"
+                    icon="PluginIcons.A_PLUS_REFRESH"/>
         </group>
         <group id="fi.aalto.cs.apluscourses.intellij.actions.ActionGroups.TOOL_WINDOW_ACTIONS"
                text="A+ Tool Window"
