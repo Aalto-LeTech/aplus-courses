@@ -79,7 +79,6 @@ public class ShowFeedbackAction extends AnAction {
     var exercisesViewModel = mainViewModel.exercisesViewModel.get();
     var courseViewModel = mainViewModel.courseViewModel.get();
     var authentication = authenticationProvider.getAuthentication(project);
-    var progressViewModel = mainViewModel.progressViewModel;
 
     if (courseViewModel == null || exercisesViewModel == null || authentication == null) {
       return;
@@ -97,7 +96,7 @@ public class ShowFeedbackAction extends AnAction {
     var course = courseViewModel.getModel();
     var exerciseDataSource = course.getExerciseDataSource();
 
-    var progress = progressViewModel.start(1, "Loading Feedback...", true);
+    var progress = mainViewModel.progressViewModel.start(1, "Loading Feedback...", true);
     try {
 
       var feedbackString = exerciseDataSource.getSubmissionFeedback(submissionResult.getId(), authentication);
