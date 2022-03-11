@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.OptionalLong;
+import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -70,11 +71,12 @@ public class ModelExtensions {
     @Override
     public Exercise getExercise(long exerciseId,
                                 @NotNull Points points,
+                                @NotNull Set<String> optionalCategories,
                                 @NotNull Map<Long, Tutorial> tutorials,
                                 @NotNull Authentication authentication,
                                 @NotNull CachePreference cachePreference) {
       return new Exercise(1, "lol", "http://example.com",
-          new SubmissionInfo(Collections.emptyMap()), 20, 10, OptionalLong.empty(), null
+          new SubmissionInfo(Collections.emptyMap()), 20, 10, OptionalLong.empty(), null, false
       );
     }
 
@@ -143,12 +145,13 @@ public class ModelExtensions {
                       @NotNull Map<Long, Map<String, String>> exerciseModules,
                       @NotNull Map<String, URL> resourceUrls,
                       @NotNull Map<String, String> vmOptions,
+                      @NotNull Set<String> optionalCategories,
                       @NotNull List<String> autoInstallComponentNames,
                       @NotNull Map<String, String[]> replInitialCommands,
                       @NotNull Version courseVersion,
                       @NotNull Map<Long, Tutorial> tutorials) {
-      super(id, name, aplusUrl, languages, modules, libraries, exerciseModules, resourceUrls,
-          vmOptions, autoInstallComponentNames, replInitialCommands, courseVersion, tutorials);
+      super(id, name, aplusUrl, languages, modules, libraries, exerciseModules, resourceUrls, vmOptions,
+          optionalCategories, autoInstallComponentNames, replInitialCommands, courseVersion, tutorials);
       exerciseDataSource = new TestExerciseDataSource();
     }
 
@@ -180,6 +183,8 @@ public class ModelExtensions {
           Collections.emptyMap(),
           // vmOptions
           Collections.emptyMap(),
+          // optionalCategories
+          Collections.emptySet(),
           // autoInstallComponentNames
           Collections.emptyList(),
           // replInitialCommands
@@ -230,6 +235,8 @@ public class ModelExtensions {
           Collections.emptyMap(),
           // vmOptions
           Collections.emptyMap(),
+          // optionalCategories
+          Collections.emptySet(),
           // autoInstallComponentNames
           Collections.emptyList(),
           // replInitialCommands
@@ -412,6 +419,7 @@ public class ModelExtensions {
                                @NotNull Map<Long, Map<String, String>> exerciseModules,
                                @NotNull Map<String, URL> resourceUrls,
                                @NotNull Map<String, String> vmOptions,
+                               @NotNull Set<String> optionalCategories,
                                @NotNull List<String> autoInstallComponentNames,
                                @NotNull Map<String, String[]> replInitialCommands,
                                @NotNull Version courseVersion,
@@ -426,6 +434,7 @@ public class ModelExtensions {
           exerciseModules,
           resourceUrls,
           vmOptions,
+          optionalCategories,
           autoInstallComponentNames,
           replInitialCommands,
           courseVersion,

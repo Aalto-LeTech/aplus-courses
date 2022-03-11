@@ -27,8 +27,10 @@ class ExerciseGroupTest {
   @Test
   void testExerciseGroup() {
     var info = new SubmissionInfo(Collections.emptyMap());
-    Exercise exercise1 = new Exercise(123, "name1", "https://example.com", info, 0, 0, OptionalLong.empty(), null);
-    Exercise exercise2 = new Exercise(456, "name2", "https://example.org", info, 0, 0, OptionalLong.empty(), null);
+    Exercise exercise1 = new Exercise(123, "name1", "https://example.com", info, 0, 0,
+        OptionalLong.empty(), null, false);
+    Exercise exercise2 = new Exercise(456, "name2", "https://example.org", info, 0, 0,
+        OptionalLong.empty(), null, false);
 
     ExerciseGroup group = new ExerciseGroup(22, "group", "https://example.fi", true, List.of(), List.of());
     group.addExercise(exercise1);

@@ -16,8 +16,10 @@ public class DummyExercise extends Exercise {
                        @NotNull SubmissionInfo submissionInfo,
                        int maxPoints,
                        int maxSubmissions,
-                       @Nullable String difficulty) {
-    super(id, name, htmlUrl, submissionInfo, maxPoints, maxSubmissions, OptionalLong.empty(), difficulty);
+                       @Nullable String difficulty,
+                       boolean isOptional) {
+    super(id, name, htmlUrl, submissionInfo, maxPoints, maxSubmissions,
+        OptionalLong.empty(), difficulty, isOptional);
   }
 
   /**
@@ -37,7 +39,7 @@ public class DummyExercise extends Exercise {
 
     var submissionInfo = SubmissionInfo.fromJsonObject(jsonObject);
 
-    return new DummyExercise(id, name, htmlUrl, submissionInfo, maxPoints, maxSubmissions, difficulty);
+    return new DummyExercise(id, name, htmlUrl, submissionInfo, maxPoints, maxSubmissions, difficulty, false);
   }
 
   @Override

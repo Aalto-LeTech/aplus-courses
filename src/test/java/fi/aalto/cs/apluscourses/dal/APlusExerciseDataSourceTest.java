@@ -76,7 +76,8 @@ class APlusExerciseDataSourceTest {
 
     var info = new SubmissionInfo(Collections.singletonMap("fi", List.of(subFile0, subFile1)));
 
-    Exercise exercise = new Exercise(71, "newex", "https://example.com", info, 0, 0, OptionalLong.empty(), null);
+    Exercise exercise = new Exercise(71, "newex", "https://example.com", info, 0, 0,
+        OptionalLong.empty(), null, false);
 
     Group group = new Group(435, new ArrayList<>());
 

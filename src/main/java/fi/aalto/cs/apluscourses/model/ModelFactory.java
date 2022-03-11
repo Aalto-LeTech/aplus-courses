@@ -4,6 +4,7 @@ import fi.aalto.cs.apluscourses.utils.Version;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 
 public interface ModelFactory {
@@ -17,6 +18,7 @@ public interface ModelFactory {
                       @NotNull Map<Long, Map<String, String>> exerciseModules,
                       @NotNull Map<String, URL> resourceUrls,
                       @NotNull Map<String, String> vmOptions,
+                      @NotNull Set<String> optionalCategories,
                       @NotNull List<String> autoInstallComponentNames,
                       @NotNull Map<String, String[]> replInitialCommands,
                       @NotNull Version courseVersion,

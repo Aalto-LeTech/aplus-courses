@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
@@ -186,12 +187,13 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   @NotNull
   public Exercise getExercise(long exerciseId,
                               @NotNull Points points,
+                              @NotNull Set<String> optionalCategories,
                               @NotNull Map<Long, Tutorial> tutorials,
                               @NotNull Authentication authentication,
                               @NotNull CachePreference cachePreference) throws IOException {
     var url = apiUrl + "exercises/" + exerciseId + "/";
     var response = client.fetch(url, authentication, cachePreference);
-    return parser.parseExercise(response, points, tutorials);
+    return parser.parseExercise(response, points, optionalCategories, tutorials);
   }
 
   @Override
@@ -373,8 +375,9 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
     @Override
     public Exercise parseExercise(@NotNull JSONObject jsonObject,
                                   @NotNull Points points,
+                                  @NotNull Set<String> optionalCategories,
                                   @NotNull Map<Long, Tutorial> tutorials) {
-      return Exercise.fromJsonObject(jsonObject, points, tutorials);
+      return Exercise.fromJsonObject(jsonObject, points, optionalCategories, tutorials);
     }
 
     @Override

@@ -18,9 +18,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -61,6 +63,9 @@ public abstract class Course implements ComponentSource {
   private final Map<String, String> vmOptions;
 
   @NotNull
+  private final Set<String> optionalCategories;
+
+  @NotNull
   private final List<String> autoInstallComponentNames;
 
   @NotNull
@@ -94,6 +99,7 @@ public abstract class Course implements ComponentSource {
                    @NotNull Map<Long, Map<String, String>> exerciseModules,
                    @NotNull Map<String, URL> resourceUrls,
                    @NotNull Map<String, String> vmOptions,
+                   @NotNull Set<String> optionalCategories,
                    @NotNull List<String> autoInstallComponentNames,
                    @NotNull Map<String, String[]> replInitialCommands,
                    @NotNull Version courseVersion,
@@ -107,6 +113,7 @@ public abstract class Course implements ComponentSource {
     this.vmOptions = vmOptions;
     this.libraries = libraries;
     this.exerciseModules = exerciseModules;
+    this.optionalCategories = optionalCategories;
     this.autoInstallComponentNames = autoInstallComponentNames;
     this.tutorials = tutorials;
     this.components = Stream.concat(modules.stream(), libraries.stream())
@@ -161,6 +168,7 @@ public abstract class Course implements ComponentSource {
         = getCourseExerciseModules(jsonObject, sourcePath);
     Map<String, URL> resourceUrls = getCourseResourceUrls(jsonObject, sourcePath);
     Map<String, String> vmOptions = getInitVMOptions(jsonObject, sourcePath);
+    Set<String> optionalCategories = getCourseOptionalCategories(jsonObject, sourcePath);
     List<String> autoInstallComponentNames
         = getCourseAutoInstallComponentNames(jsonObject, sourcePath);
     Map<String, String[]> replInitialCommands
@@ -177,6 +185,7 @@ public abstract class Course implements ComponentSource {
         exerciseModules,
         resourceUrls,
         vmOptions,
+        optionalCategories,
         autoInstallComponentNames,
         replInitialCommands,
         courseVersion,
@@ -325,6 +334,11 @@ public abstract class Course implements ComponentSource {
   @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
   public Map<String, String> getVMOptions() {
     return vmOptions;
+  }
+
+  @NotNull
+  public Set<String> getOptionalCategories() {
+    return optionalCategories;
   }
 
   @NotNull
@@ -494,6 +508,26 @@ public abstract class Course implements ComponentSource {
     }
 
     return vmOptions;
+  }
+
+  @NotNull
+  private static Set<String> getCourseOptionalCategories(@NotNull JSONObject jsonObject,
+                                                    @NotNull String source)
+      throws MalformedCourseConfigurationException {
+    JSONArray categoriesJson = jsonObject.optJSONArray("optionalCategories");
+    if (categoriesJson == null) {
+      return Set.of("training", "challenge"); // defaults for older O1 courses
+    }
+    Set<String> categories = new HashSet<>();
+    for (int i = 0; i < categoriesJson.length(); ++i) {
+      try {
+        categories.add(categoriesJson.getString(i));
+      } catch (JSONException e) {
+        throw new MalformedCourseConfigurationException(
+            source, "\"optionalCategories\" array should contain strings", e);
+      }
+    }
+    return categories;
   }
 
   @NotNull

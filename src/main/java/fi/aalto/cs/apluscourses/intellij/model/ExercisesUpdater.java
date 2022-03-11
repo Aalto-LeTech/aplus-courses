@@ -139,8 +139,8 @@ public class ExercisesUpdater extends RepeatedTask {
           if (Thread.interrupted()) {
             return;
           }
-          var exercise = dataSource.getExercise(exerciseId, points, course.getTutorials(),
-              authentication, CachePreferences.GET_MAX_ONE_WEEK_OLD);
+          var exercise = dataSource.getExercise(exerciseId, points, course.getOptionalCategories(),
+              course.getTutorials(), authentication, CachePreferences.GET_MAX_ONE_WEEK_OLD);
           exerciseGroup.addExercise(exercise);
 
           progress.increment();

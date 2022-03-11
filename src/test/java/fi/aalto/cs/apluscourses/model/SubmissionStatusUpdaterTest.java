@@ -72,7 +72,8 @@ class SubmissionStatusUpdaterTest {
         mock(Authentication.class),
         notifier,
         "http://localhost:1000",
-        new Exercise(789, "Cool Exercise Name", "http://example.com", info, 5, 10, OptionalLong.empty(), null),
+        new Exercise(789, "Cool Exercise Name", "http://example.com", info, 5, 10,
+            OptionalLong.empty(), null, false),
         mock(Course.class),
         25L, // 0.025 second interval
         0L, // don't increment the interval at all
@@ -95,7 +96,8 @@ class SubmissionStatusUpdaterTest {
         mock(Authentication.class),
         notifier,
         "http://localhost:1000",
-        new Exercise(789, "Cool Exercise Name", "http://example.com", info, 5, 10, OptionalLong.empty(), null),
+        new Exercise(789, "Cool Exercise Name", "http://example.com", info, 5, 10,
+            OptionalLong.empty(), null, false),
         mock(Course.class),
         25L, // 0.025 second interval
         0L, // don't increment the interval at all

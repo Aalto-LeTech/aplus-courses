@@ -14,7 +14,8 @@ class SubmissionResultTest {
   @Test
   void testSubmissionResult() {
     var info = new SubmissionInfo(Collections.emptyMap());
-    Exercise exercise = new Exercise(444L, "someEx", "http://example.com/", info, 20, 10, OptionalLong.of(123L), null);
+    Exercise exercise = new Exercise(444L, "someEx", "http://example.com/", info, 20, 10,
+        OptionalLong.of(123L), null, false);
     SubmissionResult submissionResult
         = new SubmissionResult(123L, 13, 0.5, SubmissionResult.Status.GRADED, exercise);
     exercise.addSubmissionResult(submissionResult);
@@ -35,7 +36,8 @@ class SubmissionResultTest {
   @Test
   void testFromJsonObject() {
     var info = new SubmissionInfo(Collections.emptyMap());
-    Exercise exercise = new Exercise(555L, "myEx", "https://example.org/", info, 20, 10, OptionalLong.of(234), null);
+    Exercise exercise = new Exercise(555L, "myEx", "https://example.org/", info, 20, 10,
+        OptionalLong.of(234), null, false);
     JSONObject jsonObject = new JSONObject()
         .put("id", 234)
         .put("grade", 30)

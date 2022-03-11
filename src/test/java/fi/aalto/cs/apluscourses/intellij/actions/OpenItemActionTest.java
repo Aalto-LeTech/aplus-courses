@@ -64,7 +64,7 @@ class OpenItemActionTest {
   @Test
   void testOpenItemActionSubmission() throws Exception {
     var info = new SubmissionInfo(Collections.emptyMap());
-    exercise = new Exercise(223, "TestEx", "http://example.com", info, 1, 10, OptionalLong.empty(), null);
+    exercise = new Exercise(223, "TestEx", "http://example.com", info, 1, 10, OptionalLong.empty(), null, false);
     submissionResult
         = new SubmissionResult(1, 0, 0.0, SubmissionResult.Status.GRADED, exercise);
     setUp(new SubmissionResultViewModel(submissionResult, 1));
@@ -84,7 +84,7 @@ class OpenItemActionTest {
   @Test
   void testOpenItemActionExercise() throws Exception {
     var info = new SubmissionInfo(Collections.emptyMap());
-    exercise = new Exercise(223, "TestEx", "http://example.com", info, 1, 10, OptionalLong.empty(), null);
+    exercise = new Exercise(223, "TestEx", "http://example.com", info, 1, 10, OptionalLong.empty(), null, false);
     setUp(new ExerciseViewModel(exercise));
     OpenExerciseItemAction action = new OpenExerciseItemAction(
         mainViewModelProvider,
@@ -119,7 +119,7 @@ class OpenItemActionTest {
   @Test
   void testErrorNotification() throws URISyntaxException {
     var info = new SubmissionInfo(Collections.emptyMap());
-    exercise = new Exercise(223, "TestEx", "http://example.com", info, 1, 10, OptionalLong.empty(), null);
+    exercise = new Exercise(223, "TestEx", "http://example.com", info, 1, 10, OptionalLong.empty(), null, false);
     submissionResult
         = new SubmissionResult(1, 0, 0.0, SubmissionResult.Status.GRADED, exercise);
     setUp(new SubmissionResultViewModel(submissionResult, 1));
