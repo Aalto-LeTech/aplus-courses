@@ -20,6 +20,7 @@ import fi.aalto.cs.apluscourses.ui.exercise.ExercisesView;
 import fi.aalto.cs.apluscourses.ui.module.ModulesView;
 import fi.aalto.cs.apluscourses.ui.news.NewsView;
 import fi.aalto.cs.apluscourses.ui.toolwindowcards.ToolWindowCardView;
+import java.util.Optional;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import org.jetbrains.annotations.NotNull;
@@ -85,6 +86,8 @@ public class APlusToolWindowFactory extends BaseToolWindowFactory implements Dum
     MainViewModel mainViewModel = PluginSettings.getInstance().getMainViewModel(project);
 
     ExercisesView exercisesView = new ExercisesView();
+    mainViewModel.courseViewModel.addValueObserver(exercisesView, ((observer, value) -> observer.setCourseName(
+        Optional.ofNullable(value).map(c -> c.getModel().getName()).orElse(""))));
 
     mainViewModel.exercisesViewModel
         .addValueObserver(exercisesView, ExercisesView::viewModelChanged);

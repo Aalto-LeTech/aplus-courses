@@ -9,6 +9,7 @@ import com.intellij.ui.ScrollPaneFactory;
 import com.intellij.ui.TreeSpeedSearch;
 import com.intellij.util.ui.tree.TreeUtil;
 import fi.aalto.cs.apluscourses.intellij.actions.ActionUtil;
+import fi.aalto.cs.apluscourses.intellij.actions.OpenExerciseItemAction;
 import fi.aalto.cs.apluscourses.intellij.actions.ShowFeedbackAction;
 import fi.aalto.cs.apluscourses.intellij.actions.SubmitExerciseAction;
 import fi.aalto.cs.apluscourses.model.ExercisesTree;
@@ -94,8 +95,6 @@ public class ExercisesView implements ToolbarPanel {
     title = new JLabel();
     exerciseGroupsTree = new ExercisesTreeView();
     exerciseGroupsTree.setCellRenderer(new ExercisesTreeRenderer());
-    exerciseGroupsTree.addNodeAppliedListener(SubmissionResultViewModel.class.getName(),
-        ActionUtil.createOnEventLauncher(ShowFeedbackAction.ACTION_ID, exerciseGroupsTree));
     exerciseGroupsTree.addNodeAppliedListener(SubmitExerciseViewModel.class.getName(),
         ActionUtil.createOnEventLauncher(SubmitExerciseAction.ACTION_ID, exerciseGroupsTree));
 
@@ -107,6 +106,20 @@ public class ExercisesView implements ToolbarPanel {
 
   public TreeView getExerciseGroupsTree() {
     return exerciseGroupsTree;
+  }
+
+  /**
+   * Sets the nodeAppliedListener as OpenExerciseItemAction if the course isn't supported in ShowFeedbackAction,
+   * else ShowFeedbackAction.
+   */
+  public void setCourseName(String courseName) {
+    if (ShowFeedbackAction.SUPPORTED_COURSES.stream().noneMatch(name -> name.equals(courseName))) {
+      exerciseGroupsTree.addNodeAppliedListener(SubmissionResultViewModel.class.getName(),
+          ActionUtil.createOnEventLauncher(OpenExerciseItemAction.ACTION_ID, exerciseGroupsTree));
+    } else {
+      exerciseGroupsTree.addNodeAppliedListener(SubmissionResultViewModel.class.getName(),
+          ActionUtil.createOnEventLauncher(ShowFeedbackAction.ACTION_ID, exerciseGroupsTree));
+    }
   }
 
   private static class ExercisesTreeView extends TreeView {

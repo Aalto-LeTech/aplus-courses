@@ -20,6 +20,7 @@ import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
@@ -29,7 +30,7 @@ import org.jsoup.Jsoup;
 public class ShowFeedbackAction extends AnAction {
   public static final String ACTION_ID = ShowFeedbackAction.class.getCanonicalName();
 
-  private static final String[] SUPPORTED_COURSES = new String[] {"O1", "Programming Studio 2/A"};
+  public static final List<String> SUPPORTED_COURSES = List.of("O1", "Programming Studio 2/A");
 
   @NotNull
   private final MainViewModelProvider mainViewModelProvider;
@@ -177,7 +178,7 @@ public class ShowFeedbackAction extends AnAction {
     var courseViewModel = mainViewModel.courseViewModel.get();
 
     if (courseViewModel == null || exercisesViewModel == null
-        || Arrays.stream(SUPPORTED_COURSES).noneMatch(name -> name.equals(courseViewModel.getModel().getName()))) {
+        || SUPPORTED_COURSES.stream().noneMatch(name -> name.equals(courseViewModel.getModel().getName()))) {
       e.getPresentation().setVisible(false);
       return;
     }
