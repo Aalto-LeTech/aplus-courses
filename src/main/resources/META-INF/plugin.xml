@@ -160,6 +160,11 @@
                 icon="PluginIcons.A_PLUS_REPL">
             <keyboard-shortcut first-keystroke="control shift D" keymap="$default"/>
         </action>
+        <action id="ScalaConsole.Execute"
+                class="fi.aalto.cs.apluscourses.intellij.actions.ConsoleExecuteAction"
+                overrides="true">
+            <keyboard-shortcut first-keystroke="control shift D" keymap="$default"/>
+        </action>
     </actions>
     <applicationListeners>
         <listener class="fi.aalto.cs.apluscourses.intellij.utils.PluginLoadUnloadEventsListener"
