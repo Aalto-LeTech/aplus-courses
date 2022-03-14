@@ -163,7 +163,6 @@
         <action id="ScalaConsole.Execute"
                 class="fi.aalto.cs.apluscourses.intellij.actions.ConsoleExecuteAction"
                 overrides="true">
-            <keyboard-shortcut first-keystroke="control shift D" keymap="$default"/>
         </action>
     </actions>
     <applicationListeners>
