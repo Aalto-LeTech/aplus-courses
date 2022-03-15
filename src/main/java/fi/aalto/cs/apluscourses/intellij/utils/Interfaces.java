@@ -8,9 +8,24 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.newvfs.RefreshQueue;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Authentication;
+import fi.aalto.cs.apluscourses.utils.cache.Cache;
+import fi.aalto.cs.apluscourses.utils.cache.CacheImpl;
+import fi.aalto.cs.apluscourses.utils.cache.StringFileCache;
 import java.io.File;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
+import java.util.Comparator;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -92,6 +107,50 @@ public class Interfaces {
         refresher.addFile(file);
       }
       refresher.launch();
+    }
+  }
+
+  public static class DuplicateSubmissionCheckerImpl {
+
+    private final Cache<String, String> submissionsCache = new StringFileCache(
+        Path.of(Project.DIRECTORY_STORE_FOLDER, "a-plus-hashes.json"));
+
+    private DuplicateSubmissionCheckerImpl() {
+
+    }
+
+    private static String hashFileToString(@NotNull MessageDigest digest, @NotNull Path path) {
+      try {
+        byte[] hash = digest.digest(Files.readAllBytes(path));
+        return Base64.getEncoder().encodeToString(hash);
+      } catch (IOException e) {
+        throw new UncheckedIOException(e);
+      }
+    }
+
+    public static boolean checkForDuplicateSubmission(@NotNull String courseId,
+                                                      long exerciseId,
+                                                      @NotNull Map<String, Path> files) {
+
+      try {
+        MessageDigest shaDigest = MessageDigest.getInstance("SHA-256");
+        StringBuilder submissionString = new StringBuilder();
+
+        files.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEachOrdered(entry -> {
+          submissionString.append(entry.getKey());
+          submissionString.append('|'); // a separating character that is not in base-64 alphabet
+          submissionString.append(hashFileToString(shaDigest, entry.getValue()));
+          submissionString.append(',');
+        });
+
+        byte[] finalHashBytes = shaDigest.digest(submissionString.toString().getBytes(StandardCharsets.UTF_8));
+        String finalHash = Base64.getEncoder().encodeToString(finalHashBytes);
+        //submissionsCache.getValue()
+
+        return true;
+      } catch (UncheckedIOException | NoSuchAlgorithmException e) {
+        return true;
+      }
     }
   }
 

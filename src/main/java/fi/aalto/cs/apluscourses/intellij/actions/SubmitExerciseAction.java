@@ -124,7 +124,7 @@ public class SubmitExerciseAction extends AnAction {
         project -> PluginSettings.getInstance().getCourseFileManager(project).getLanguage(),
         PluginSettings.getInstance(),
         ProjectUtil::guessModuleDir,
-        null
+        Interfaces.DuplicateSubmissionCheckerImpl::checkForDuplicateSubmission
     );
   }
 
