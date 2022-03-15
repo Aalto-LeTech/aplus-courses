@@ -10,6 +10,7 @@ import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.utils.cache.Cache;
 import fi.aalto.cs.apluscourses.utils.cache.CacheImpl;
+import fi.aalto.cs.apluscourses.utils.cache.CachePreferences;
 import fi.aalto.cs.apluscourses.utils.cache.StringFileCache;
 import java.io.File;
 import java.io.IOException;
@@ -20,8 +21,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -112,7 +115,7 @@ public class Interfaces {
 
   public static class DuplicateSubmissionCheckerImpl {
 
-    private final Cache<String, String> submissionsCache = new StringFileCache(
+    private static final Cache<String, String> submissionsCache = new StringFileCache(
         Path.of(Project.DIRECTORY_STORE_FOLDER, "a-plus-hashes.json"));
 
     private DuplicateSubmissionCheckerImpl() {
@@ -143,10 +146,24 @@ public class Interfaces {
           submissionString.append(',');
         });
 
+        String cacheKey = "hash_c" + courseId + ",e" + exerciseId;
         byte[] finalHashBytes = shaDigest.digest(submissionString.toString().getBytes(StandardCharsets.UTF_8));
         String finalHash = Base64.getEncoder().encodeToString(finalHashBytes);
-        //submissionsCache.getValue()
 
+        String cachedHashes = submissionsCache.getValue(cacheKey, CachePreferences.PERMANENT);
+        if (cachedHashes == null) {
+          submissionsCache.putValue(cacheKey, finalHash, CachePreferences.PERMANENT);
+          return true;
+        }
+
+        List<String> existingHashes = Arrays.asList(cachedHashes.split(","));
+        if (existingHashes.contains(finalHash)) {
+          // nothing
+        } else {
+          existingHashes.add(finalHash);
+        }
+
+        submissionsCache.putValue(cacheKey, String.join(",", existingHashes), CachePreferences.PERMANENT);
         return true;
       } catch (UncheckedIOException | NoSuchAlgorithmException e) {
         return true;
