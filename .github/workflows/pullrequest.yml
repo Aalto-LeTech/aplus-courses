@@ -11,6 +11,7 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
+          distribution: temurin
           java-version: 11
       - name: Setup A+ LMS locally
         run: chmod +x start_local_a+_env.sh && ./start_local_a+_env.sh

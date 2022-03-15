@@ -2,7 +2,7 @@ name: Pre-release
 
 on:
   release:
-    types: [prereleased]
+    types: [ prereleased ]
 
 jobs:
   release:
@@ -12,6 +12,7 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
+          distribution: temurin
           java-version: 1.8
 
       # The checkout action by default fetches the event that triggered the workflow, which in this case is the
