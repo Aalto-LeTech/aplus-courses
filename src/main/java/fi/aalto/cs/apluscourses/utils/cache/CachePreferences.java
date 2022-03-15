@@ -1,12 +1,11 @@
 package fi.aalto.cs.apluscourses.utils.cache;
 
 import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 
 public class CachePreferences {
 
   public static final CachePreference PERMANENT =
-      new CachePreference(Duration.of(10, ChronoUnit.YEARS), CachePreference.LONG_TIME_CACHE);
+      new CachePreference(Duration.ofDays(10000), CachePreference.LONG_TIME_CACHE);
   public static final CachePreference GET_MAX_ONE_WEEK_OLD =
       new CachePreference(Duration.ofDays(7), CachePreference.LONG_TIME_CACHE);
   public static final CachePreference FOR_THIS_SESSION_ONLY =

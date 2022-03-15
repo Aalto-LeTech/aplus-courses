@@ -6,10 +6,11 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.newvfs.RefreshQueue;
+import fi.aalto.cs.apluscourses.intellij.actions.SubmitExerciseAction;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Authentication;
+import fi.aalto.cs.apluscourses.ui.DuplicateSubmissionDialog;
 import fi.aalto.cs.apluscourses.utils.cache.Cache;
-import fi.aalto.cs.apluscourses.utils.cache.CacheImpl;
 import fi.aalto.cs.apluscourses.utils.cache.CachePreferences;
 import fi.aalto.cs.apluscourses.utils.cache.StringFileCache;
 import java.io.File;
@@ -18,17 +19,12 @@ import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Base64;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -115,8 +111,7 @@ public class Interfaces {
 
   public static class DuplicateSubmissionCheckerImpl {
 
-    private static final Cache<String, String> submissionsCache = new StringFileCache(
-        Path.of(Project.DIRECTORY_STORE_FOLDER, "a-plus-hashes.json"));
+    private static Cache<String, String> submissionsCache;
 
     private DuplicateSubmissionCheckerImpl() {
 
@@ -131,13 +126,25 @@ public class Interfaces {
       }
     }
 
+    /**
+     * Checks whether the same submission has already been submitted by the user. If it is the case, the user
+     * is asked whether they want to submit anyway or abort the submission.
+     * @param courseId ID of the course which contains the exercise in question.
+     * @param exerciseId ID of the exercise.
+     * @param files A map of submittable files, as constructed in {@link SubmitExerciseAction}.
+     * @return True if duplicate check succeeded and the submission should proceed; false if it should be cancelled.
+     */
     public static boolean checkForDuplicateSubmission(@NotNull String courseId,
                                                       long exerciseId,
                                                       @NotNull Map<String, Path> files) {
 
+      if (submissionsCache == null) {
+        submissionsCache = new StringFileCache(Path.of(Project.DIRECTORY_STORE_FOLDER, "a-plus-hashes.json"));
+      }
+
       try {
-        MessageDigest shaDigest = MessageDigest.getInstance("SHA-256");
-        StringBuilder submissionString = new StringBuilder();
+        final MessageDigest shaDigest = MessageDigest.getInstance("SHA-256");
+        final StringBuilder submissionString = new StringBuilder();
 
         files.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEachOrdered(entry -> {
           submissionString.append(entry.getKey());
@@ -146,7 +153,7 @@ public class Interfaces {
           submissionString.append(',');
         });
 
-        String cacheKey = "hash_c" + courseId + ",e" + exerciseId;
+        String cacheKey = "hash_c" + courseId + "_e" + exerciseId;
         byte[] finalHashBytes = shaDigest.digest(submissionString.toString().getBytes(StandardCharsets.UTF_8));
         String finalHash = Base64.getEncoder().encodeToString(finalHashBytes);
 
@@ -158,7 +165,9 @@ public class Interfaces {
 
         List<String> existingHashes = Arrays.asList(cachedHashes.split(","));
         if (existingHashes.contains(finalHash)) {
-          // nothing
+          if (!DuplicateSubmissionDialog.showDialog()) {
+            return false;
+          }
         } else {
           existingHashes.add(finalHash);
         }
@@ -166,6 +175,8 @@ public class Interfaces {
         submissionsCache.putValue(cacheKey, String.join(",", existingHashes), CachePreferences.PERMANENT);
         return true;
       } catch (UncheckedIOException | NoSuchAlgorithmException e) {
+        // if an exception occurs, don't bother the user and just proceed with submitting as normal
+        // it's highly probable that in such case, submitting will fail later on anyway, and the error will be logged
         return true;
       }
     }
