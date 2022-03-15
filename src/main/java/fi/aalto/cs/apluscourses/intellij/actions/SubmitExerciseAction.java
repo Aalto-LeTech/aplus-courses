@@ -93,13 +93,19 @@ public class SubmitExerciseAction extends AnAction {
   @NotNull
   private final Interfaces.Tagger tagger;
 
+  @NotNull
   private final Interfaces.DocumentSaver documentSaver;
 
   // TODO: store language and default group ID in the object model and read them from there
   private final Interfaces.LanguageSource languageSource;
 
   private final DefaultGroupIdSetting defaultGroupIdSetting;
+
+  @NotNull
   private final Interfaces.ModuleDirGuesser moduleDirGuesser;
+
+  @NotNull
+  private final Interfaces.DuplicateSubmissionChecker duplicateChecker;
 
   /**
    * Constructor with reasonable defaults.
@@ -117,7 +123,8 @@ public class SubmitExerciseAction extends AnAction {
         FileDocumentManager.getInstance()::saveAllDocuments,
         project -> PluginSettings.getInstance().getCourseFileManager(project).getLanguage(),
         PluginSettings.getInstance(),
-        ProjectUtil::guessModuleDir
+        ProjectUtil::guessModuleDir,
+        null
     );
   }
 
@@ -135,7 +142,8 @@ public class SubmitExerciseAction extends AnAction {
                               @NotNull Interfaces.DocumentSaver documentSaver,
                               @NotNull Interfaces.LanguageSource languageSource,
                               @NotNull DefaultGroupIdSetting defaultGroupIdSetting,
-                              @NotNull Interfaces.ModuleDirGuesser moduleDirGuesser) {
+                              @NotNull Interfaces.ModuleDirGuesser moduleDirGuesser,
+                              @NotNull Interfaces.DuplicateSubmissionChecker duplicateChecker) {
     this.mainViewModelProvider = mainViewModelProvider;
     this.authenticationProvider = authenticationProvider;
     this.fileFinder = fileFinder;
@@ -147,6 +155,7 @@ public class SubmitExerciseAction extends AnAction {
     this.languageSource = languageSource;
     this.defaultGroupIdSetting = defaultGroupIdSetting;
     this.moduleDirGuesser = moduleDirGuesser;
+    this.duplicateChecker = duplicateChecker;
   }
 
   @Override
@@ -297,6 +306,10 @@ public class SubmitExerciseAction extends AnAction {
     SubmissionViewModel submission = new SubmissionViewModel(exercise, groups, defaultGroup, files, language);
 
     if (!dialogs.create(submission, project).showAndGet()) {
+      return;
+    }
+
+    if (!duplicateChecker.checkForDuplicateSubmission(course.getId(), exercise.getId(), files)) {
       return;
     }
 

@@ -9,6 +9,8 @@ import com.intellij.openapi.vfs.newvfs.RefreshQueue;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import java.io.File;
+import java.nio.file.Path;
+import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,6 +34,11 @@ public class Interfaces {
   @FunctionalInterface
   public interface DocumentSaver {
     void saveAllDocuments();
+  }
+
+  @FunctionalInterface
+  public interface DuplicateSubmissionChecker {
+    boolean checkForDuplicateSubmission(@NotNull String courseId, long exerciseId, @NotNull Map<String, Path> files);
   }
 
   @FunctionalInterface
