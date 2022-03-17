@@ -33,7 +33,7 @@ dependencies {
     testImplementation group: 'org.hamcrest', name: 'hamcrest', version: '2.2'
     testImplementation group: 'org.mockito', name: 'mockito-core', version: '4.4.0'
     testImplementation group: 'org.scala-lang', name: 'scala-library', version: '2.13.6'
-    testImplementation(group: 'io.rest-assured', name: 'rest-assured', version: '4.2.0') {
+    testImplementation(group: 'io.rest-assured', name: 'rest-assured', version: '4.5.1') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-xml'
     }
 }
