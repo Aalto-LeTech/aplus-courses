@@ -17,7 +17,7 @@ jobs:
       # The checkout action by default fetches the event that triggered the workflow, which in this case is the
       # pre-release tag.
       - name: Fetch Sources
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Publish Plugin
         env:
