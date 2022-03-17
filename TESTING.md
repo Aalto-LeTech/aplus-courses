@@ -332,7 +332,7 @@ Terminate**.
 
 **6.46** Execute the following command in the REPL: `println("世界です")`
 
-**6.47** ASSERTION: The characters appear correctly, without any garbled letters (question marks, missing characters)
+**6.47** ASSERTION: The characters appear correctly, without any corruption (question marks, missing characters)
 
 **6.48** Close the REPL.
 
