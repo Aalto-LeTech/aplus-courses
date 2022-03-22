@@ -1,5 +1,7 @@
 <p align="center">
-   <img src="images/courses-banner.png" alt="A+ Courses">
+   <a href="https://plugins.jetbrains.com/plugin/13634-a-courses">
+      <img width="1500px" src="images/courses-banner.webp" alt="A+ Courses is a plugin for IntelliJ IDEA, used in programming courses at Aalto University ">
+   </a>
 </p>
 
 <p align="center">
@@ -20,9 +22,15 @@
    </a>
 </p>
 
+<p align="center">
+   <a href="https://plugins.jetbrains.com/plugin/13634-a-courses">
+      <img width="245px" height="48px" src="images/marketplace.webp" alt="A+ Courses is a plugin for IntelliJ IDEA, used in programming courses at Aalto University ">
+   </a>
+</p>
+
 ---
 
-<img width="300px" align="right" src="images/image_4_readme.png"/>
+<img width="300px" height="539px" align="right" src="images/image_4_readme.webp"/>
 
 
 This repository hosts the source code for the A+ Courses [IntelliJ IDEA](https://www.jetbrains.com/idea/) plugin
@@ -53,7 +61,9 @@ If you are a student in a course and you have discovered an issue you'd like to 
 assistants. You can also create an issue directly
 here: [Aalto-LeTech/aplus-courses/issues](https://github.com/Aalto-LeTech/aplus-courses/issues).
 
-Once the bug report is made, the development team (**[@jaakkonarhi](https://github.com/jaakkonarhi)**, **[@OlliKiljunen](https://github.com/OlliKiljunen)**, **[@stellatsv](https://github.com/stellatsv)**, **[@Taikelenn](https://github.com/Taikelenn)**) will handle it on a **best-effort basis:**
+Once the bug report is made, the development team (**[@jaakkonarhi](https://github.com/jaakkonarhi)**
+, **[@OlliKiljunen](https://github.com/OlliKiljunen)**, **[@stellatsv](https://github.com/stellatsv)**
+, **[@Taikelenn](https://github.com/Taikelenn)**) will handle it on a **best-effort basis:**
 
 1. The issue will be confirmed and prioritized within **two working days**.
 2. An estimation of when the issue could be fixed is made within **three working days**.
@@ -62,7 +72,9 @@ Once the bug report is made, the development team (**[@jaakkonarhi](https://gith
 
 Medium- to high-priority issues are usually solved within **one working-week**.
 
-List of courses is available at [https://version.aalto.fi/gitlab/aplus-courses/course-config-urls](https://version.aalto.fi/gitlab/aplus-courses/course-config-urls).
+List of courses is available
+at [https://version.aalto.fi/gitlab/aplus-courses/course-config-urls](https://version.aalto.fi/gitlab/aplus-courses/course-config-urls)
+.
 
 ## Research
 
@@ -86,18 +98,26 @@ Contains references for the academic research related to or created based on the
 ## Code Style
 
 This project uses slightly modified google checkstyle rules
-from [Checkstyle GitHub](https://github.com/checkstyle/checkstyle/blob/checkstyle-8.12/src/main/resources/google_checks.xml) for code formatting. The particular version applied to this project is in the `checkstyle` directory. Please note that
-the checkstyle file itself is licensed under the **GNU LGPL** license (also in the directory). Scala code is checked using the [default rules from the scalastyle repository](https://github.com/scalastyle/scalastyle/blob/master/src/main/resources/default_config.xml). The configuration file is located in the `scalastyle` directory and it is licensed under the **Apache-2.0** license.
+from [Checkstyle GitHub](https://github.com/checkstyle/checkstyle/blob/checkstyle-8.12/src/main/resources/google_checks.xml)
+for code formatting. The particular version applied to this project is in the `checkstyle` directory. Please note that
+the checkstyle file itself is licensed under the **GNU LGPL** license (also in the directory). Scala code is checked
+using
+the [default rules from the scalastyle repository](https://github.com/scalastyle/scalastyle/blob/master/src/main/resources/default_config.xml)
+. The configuration file is located in the `scalastyle` directory and it is licensed under the **Apache-2.0** license.
 
 ## Code of Conduct
 
 The team follows general principles of Aalto
-University's [code of conduct](https://www.aalto.fi/sites/g/files/flghsv161/files/2018-09/aalto_university_code_of_conduct_en-003.pdf).
+University's [code of conduct](https://www.aalto.fi/sites/g/files/flghsv161/files/2018-09/aalto_university_code_of_conduct_en-003.pdf)
+.
 
 ## Credits
 
-We would like to acknowledge **[Nikolas Drosdek](https://github.com/nikke234)**, **[@superseacat](https://github.com/superseacat)**, **[@valtonv2](https://github.com/valtonv2)**, **[@xiaoxiaobt](https://github.com/xiaoxiaobt)**, **Ida Iskala**, and **[@StanislavFranko](https://github.com/StanislavFranko)** for their help in testing and improving this project.
+We would like to acknowledge **[Nikolas Drosdek](https://github.com/nikke234)**
+, **[@superseacat](https://github.com/superseacat)**, **[@valtonv2](https://github.com/valtonv2)**
+, **[@xiaoxiaobt](https://github.com/xiaoxiaobt)**, **Ida Iskala**,
+and **[@StanislavFranko](https://github.com/StanislavFranko)** for their help in testing and improving this project.
 
 <p align="center">
-   <img src="images/footer.png">
+   <img width="1500px" src="images/footer.png">
 </p>
