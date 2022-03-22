@@ -1,6 +1,6 @@
 <p align="center">
    <a href="https://plugins.jetbrains.com/plugin/13634-a-courses">
-      <img width="1500px" src="images/courses-banner.webp" alt="A+ Courses is a plugin for IntelliJ IDEA, used in programming courses at Aalto University ">
+      <img style="background-color:#000; max-height:500px" width="1500px" src="images/courses-baner.webp" alt="A+ Courses is a plugin for IntelliJ IDEA, used in programming courses at Aalto University">
    </a>
 </p>
 
@@ -24,13 +24,13 @@
 
 <p align="center">
    <a href="https://plugins.jetbrains.com/plugin/13634-a-courses">
-      <img width="245px" height="48px" src="images/marketplace.webp" alt="A+ Courses is a plugin for IntelliJ IDEA, used in programming courses at Aalto University ">
+      <img width="245px" height="48px" src="images/marketplace.webp" alt="Get from Marketplace">
    </a>
 </p>
 
 ---
 
-<img width="300px" align="right" src="images/image_4_readme.webp"/>
+<img width="300px" align="right" src="images/image_4_readme.webp" alt=""/>
 
 
 This repository hosts the source code for the A+ Courses [IntelliJ IDEA](https://www.jetbrains.com/idea/) plugin
@@ -119,5 +119,5 @@ We would like to acknowledge **[Nikolas Drosdek](https://github.com/nikke234)**
 and **[@StanislavFranko](https://github.com/StanislavFranko)** for their help in testing and improving this project.
 
 <p align="center">
-   <img width="1500px" src="images/footer.png">
+   <img width="1500px" src="images/footer.png" alt="">
 </p>
