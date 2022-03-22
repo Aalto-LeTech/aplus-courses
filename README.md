@@ -30,7 +30,7 @@
 
 ---
 
-<img width="300px" height="539px" align="right" src="images/image_4_readme.webp"/>
+<img width="300px" align="right" src="images/image_4_readme.webp"/>
 
 
 This repository hosts the source code for the A+ Courses [IntelliJ IDEA](https://www.jetbrains.com/idea/) plugin
