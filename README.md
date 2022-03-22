@@ -119,5 +119,7 @@ We would like to acknowledge **[Nikolas Drosdek](https://github.com/nikke234)**
 and **[@StanislavFranko](https://github.com/StanislavFranko)** for their help in testing and improving this project.
 
 <p align="center">
-   <img width="1500px" src="images/footer.png" alt="">
+   <a href="https://github.com/Aalto-LeTech/aplus-courses">
+      <img width="1500px" src="images/footer.png" alt="">
+   </a>
 </p>
