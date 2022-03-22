@@ -30,9 +30,7 @@
 
 ---
 
-<a href="#">
-   <img width="300px" align="right" src="images/image_4_readme.webp" alt=""/>
-</a>
+<img width="300px" align="right" src="images/image_4_readme.webp" alt="Screenshot"/>
 
 This repository hosts the source code for the A+ Courses [IntelliJ IDEA](https://www.jetbrains.com/idea/) plugin
 communicating with the [A+ LMS](https://apluslms.github.io/). It allows users to download code modules, submit
