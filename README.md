@@ -120,6 +120,6 @@ and **[@StanislavFranko](https://github.com/StanislavFranko)** for their help in
 
 <p align="center">
    <a href="https://github.com/Aalto-LeTech/aplus-courses">
-      <img width="1500px" src="images/footer.png" alt="">
+      <img width="1500px" src="images/footer.png" alt="A+ Courses">
    </a>
 </p>
