@@ -1,29 +1,29 @@
 <p align="center">
-   <a href="https://plugins.jetbrains.com/plugin/13634-a-courses">
+   <a href="https://plugins.jetbrains.com/plugin/13634-a-courses" target="_blank">
       <img src="images/courses-banner.webp" alt="A+ Courses is a plugin for IntelliJ IDEA, used in programming courses at Aalto University">
    </a>
 </p>
 
 <p align="center">
-   <a href="https://github.com/Aalto-LeTech/aplus-courses/actions?query=workflow%3Abuild">
+   <a href="https://github.com/Aalto-LeTech/aplus-courses/actions?query=workflow%3Abuild" target="_blank">
       <img alt="Build" src="https://github.com/Aalto-LeTech/aplus-courses/workflows/build/badge.svg"/>
    </a>
-   <a href="https://snyk.io/test/github/Aalto-LeTech/aplus-courses?targetFile=build.gradle">
+   <a href="https://snyk.io/test/github/Aalto-LeTech/aplus-courses?targetFile=build.gradle" target="_blank">
       <img alt="Known Vulnerabilities" src="https://snyk.io/test/github/Aalto-LeTech/aplus-courses/badge.svg?targetFile=build.gradle"/>
    </a>
-   <a href="https://sonarcloud.io/dashboard?id=Aalto-LeTech_intellij-plugin">
+   <a href="https://sonarcloud.io/dashboard?id=Aalto-LeTech_intellij-plugin" target="_blank">
       <img alt="Coverage" src="https://sonarcloud.io/api/project_badges/measure?project=Aalto-LeTech_intellij-plugin&metric=coverage"/>
    </a>
-   <a href="https://plugins.jetbrains.com/plugin/13634-a-plugin-for-intellij">
+   <a href="https://plugins.jetbrains.com/plugin/13634-a-plugin-for-intellij" target="_blank">
       <img alt="A+ Courses plugin downloads" src="https://img.shields.io/jetbrains/plugin/d/13634-a-plugin-for-intellij?label=plugin%20downloads"/>
    </a>
-   <a href="https://plugins.jetbrains.com/plugin/13634-a-plugin-for-intellij">
+   <a href="https://plugins.jetbrains.com/plugin/13634-a-plugin-for-intellij" target="_blank">
       <img alt="A+ Courses plugin version" src="https://img.shields.io/jetbrains/plugin/v/13634?label=plugin%20version"/>
    </a>
 </p>
 
 <p align="center">
-   <a href="https://plugins.jetbrains.com/plugin/13634-a-courses">
+   <a href="https://plugins.jetbrains.com/plugin/13634-a-courses" target="_blank">
       <img width="245px" height="48px" src="images/marketplace.webp" alt="Get from Marketplace">
    </a>
 </p>
@@ -118,7 +118,7 @@ We would like to acknowledge **[Nikolas Drosdek](https://github.com/nikke234)**
 and **[@StanislavFranko](https://github.com/StanislavFranko)** for their help in testing and improving this project.
 
 <p align="center">
-   <a href="https://github.com/Aalto-LeTech/aplus-courses">
+   <a href="#">
       <img width="1500px" src="images/footer.png" alt="A+ Courses">
    </a>
 </p>
