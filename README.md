@@ -1,6 +1,6 @@
 <p align="center">
    <a href="https://plugins.jetbrains.com/plugin/13634-a-courses">
-      <img src="images/banner.svg" alt="A+ Courses is a plugin for IntelliJ IDEA, used in programming courses at Aalto University">
+      <img src="images/courses-banner.webp" alt="A+ Courses is a plugin for IntelliJ IDEA, used in programming courses at Aalto University">
    </a>
 </p>
 
