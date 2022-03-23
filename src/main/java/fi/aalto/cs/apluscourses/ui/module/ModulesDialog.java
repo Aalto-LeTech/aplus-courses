@@ -22,8 +22,9 @@ public class ModulesDialog extends DialogWrapper {
 
     this.modulesView = APlusToolWindowFactory.createModulesView(project);
 
-    init();
+    setModal(false);
 
+    init();
     setSize(400, 600);
   }
 
