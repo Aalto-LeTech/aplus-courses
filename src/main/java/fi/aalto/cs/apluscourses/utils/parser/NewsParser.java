@@ -3,10 +3,14 @@ package fi.aalto.cs.apluscourses.utils.parser;
 import org.jetbrains.annotations.NotNull;
 import org.jsoup.nodes.Element;
 
-public interface NewsParser {
+public class NewsParser {
   @NotNull
-  String parseTitle(@NotNull Element titleElement);
+  public String parseTitle(@NotNull Element titleElement) {
+    return titleElement.text();
+  }
 
   @NotNull
-  String[] parseBody(@NotNull Element bodyElement);
+  public String[] parseBody(@NotNull Element bodyElement) {
+    return new String[] {bodyElement.text()};
+  }
 }

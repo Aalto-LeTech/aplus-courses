@@ -2,6 +2,8 @@ package fi.aalto.cs.apluscourses.model;
 
 import fi.aalto.cs.apluscourses.utils.JsonUtil;
 import fi.aalto.cs.apluscourses.utils.parser.FeedbackParser;
+import fi.aalto.cs.apluscourses.utils.parser.O1FeedbackParser;
+import fi.aalto.cs.apluscourses.utils.parser.S2FeedbackParser;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -106,19 +108,21 @@ public class SubmissionResult implements Browsable {
         SubmissionFileInfo[]::new
     );
 
-    FeedbackParser.TestResults testResults = new FeedbackParser.TestResults(-1, -1);
+    FeedbackParser feedbackParser = new FeedbackParser();
 
-    if (exercise.isSubmittable() && jsonObject.has("feedback")) {
-      switch (course.getName()) {
-        case "O1":
-          testResults = FeedbackParser.parseO1TestResults(jsonObject.getString("feedback"));
+    if (course.getFeedbackParser() != null && exercise.isSubmittable() && jsonObject.has("feedback")) {
+      switch (course.getFeedbackParser()) {
+        case O1FeedbackParser.NAME:
+          feedbackParser = new O1FeedbackParser();
           break;
-        case "Programming Studio 2/A":
-          testResults = FeedbackParser.parseS2TestResults(jsonObject.getString("feedback"));
+        case S2FeedbackParser.NAME:
+          feedbackParser = new S2FeedbackParser();
           break;
         default:
       }
     }
+
+    var testResults = feedbackParser.parseTestResults(jsonObject.getString("feedback"));
 
     return new SubmissionResult(id, points, latePenalty, status, exercise, filesInfo, testResults.succeeded,
         testResults.failed);

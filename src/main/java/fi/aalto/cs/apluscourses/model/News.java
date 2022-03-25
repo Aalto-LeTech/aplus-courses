@@ -3,7 +3,6 @@ package fi.aalto.cs.apluscourses.model;
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getAndReplaceText;
 
 import fi.aalto.cs.apluscourses.intellij.utils.Interfaces;
-import fi.aalto.cs.apluscourses.utils.parser.DefaultNewsParser;
 import fi.aalto.cs.apluscourses.utils.parser.NewsParser;
 import fi.aalto.cs.apluscourses.utils.parser.O1NewsParser;
 import java.time.ZonedDateTime;
@@ -60,14 +59,16 @@ public class News implements Browsable {
     var body = object.getString("body");
     var bodyElement = Jsoup.parseBodyFragment(body).body();
 
-    NewsParser parser;
-    switch (course.getName()) {
-      case "O1":
-        parser = new O1NewsParser(language);
-        break;
-      default:
-        parser = new DefaultNewsParser();
-        break;
+    var parser = new NewsParser();
+    if (course.getNewsParser() != null) {
+      switch (course.getNewsParser()) {
+        case O1NewsParser.NAME:
+          parser = new O1NewsParser(language);
+          break;
+        default:
+      }
+    } else if (course.getName().equals(O1NewsParser.NAME)) {
+      parser = new O1NewsParser(language);
     }
     var titleText = parser.parseTitle(titleElement);
     var bodyText = parser.parseBody(bodyElement);
