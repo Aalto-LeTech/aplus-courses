@@ -3,6 +3,7 @@ package fi.aalto.cs.apluscourses.presentation.exercise;
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getAndReplaceText;
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
+import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import fi.aalto.cs.apluscourses.presentation.base.Searchable;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
@@ -25,8 +26,11 @@ public class SubmissionResultViewModel extends SelectableNodeViewModel<Submissio
 
   @NotNull
   public String getPresentableName() {
-    return getAndReplaceText("presentation.submissionResultViewModel.name",
-        submissionNumber, String.valueOf(getId()));
+    return PluginSettings.getInstance().isAssistantMode() ?
+        getAndReplaceText("presentation.submissionResultViewModel.nameAssistant",
+            submissionNumber, String.valueOf(getId())) :
+        getAndReplaceText("presentation.submissionResultViewModel.name",
+            submissionNumber);
   }
 
 
