@@ -122,7 +122,7 @@ public class SubmissionResult implements Browsable {
       }
     }
 
-    var testResults = feedbackParser.parseTestResults(jsonObject.getString("feedback"));
+    var testResults = feedbackParser.parseTestResults(jsonObject.optString("feedback", ""));
 
     return new SubmissionResult(id, points, latePenalty, status, exercise, filesInfo, testResults.succeeded,
         testResults.failed);
