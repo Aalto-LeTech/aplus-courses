@@ -309,7 +309,7 @@ public class SubmitExerciseAction extends AnAction {
       return;
     }
 
-    if (!duplicateChecker.checkForDuplicateSubmission(course.getId(), exercise.getId(), files)) {
+    if (!duplicateChecker.checkForDuplicateSubmission(project, course.getId(), exercise.getId(), files)) {
       return;
     }
 
