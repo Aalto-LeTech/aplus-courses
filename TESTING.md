@@ -326,19 +326,23 @@ Terminate**.
 
 **6.43** ASSERTION: A Scala REPL for **O1Library** opens.
 
-**6.44** Close the REPL.
+**6.44** Execute the following command in the REPL: `println("Myöhässä こんにちは世界")`
+
+**6.45** ASSERTION: The characters appear correctly, without any corruption (question marks, missing characters)
+
+**6.46** Close the REPL.
 
 #### Part V: Settings reset.
 
-**6.45** From the main menu, choose **A+ > Reset A+ Courses Plugin Settings**.
+**6.47** From the main menu, choose **A+ > Reset A+ Courses Plugin Settings**.
 
-**6.46** Open the Scala REPL for **O1Library**.
+**6.48** Open the Scala REPL for **O1Library**.
 
-**6.47** ASSERTION: **REPL Configuration** window shows up.
+**6.49** ASSERTION: **REPL Configuration** window shows up.
 
-**6.48** Close the window by clicking **Cancel**.
+**6.50** Close the window by clicking **Cancel**.
 
-**6.49** ASSERTION: No REPL opens.
+**6.51** ASSERTION: No REPL opens.
 
 ### 7 Removing a module
 
