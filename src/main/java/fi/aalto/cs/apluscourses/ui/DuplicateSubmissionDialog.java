@@ -18,8 +18,8 @@ public class DuplicateSubmissionDialog {
     final String[] options = { getText("ui.duplicateDialog.yesOption"), getText("ui.duplicateDialog.noOption") };
 
     return JOptionPane.showOptionDialog(null,
-        getText("ui.duplicateDialog.title"),
         getText("ui.duplicateDialog.content"),
+        getText("ui.duplicateDialog.title"),
         JOptionPane.YES_NO_OPTION,
         JOptionPane.QUESTION_MESSAGE,
         null,
