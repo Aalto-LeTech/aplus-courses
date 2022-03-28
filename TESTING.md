@@ -419,7 +419,13 @@ Submission...**
 
 **9.16** ASSERTION: A window with **Assignment 2 (GoodStuff)** appears.
 
-**9.17** Press **Cancel**.
+**9.17** Press **OK** to submit.
+
+**9.18** ASSERTION: A dialog "Duplicate submission detected" appears.
+
+**9.19** Press **Don't submit**.
+
+**9.20** ASSERTION: The dialog closes and no submission is created.
 
 ### 10 Refreshing Assignments
 

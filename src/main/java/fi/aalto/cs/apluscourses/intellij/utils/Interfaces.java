@@ -191,7 +191,7 @@ public class Interfaces {
                                                       @NotNull String courseId,
                                                       long exerciseId,
                                                       @NotNull Map<String, Path> files) {
-
+      // we want to defer creation of the cache until it's actually necessary
       if (submissionsCache == null) {
         Path projectPath = Path.of(Objects.requireNonNull(project.getBasePath()));
         submissionsCache = new JsonFileCache(
@@ -210,12 +210,12 @@ public class Interfaces {
           submissionString.append(',');
         });
 
-        String cacheKey = "hash_c" + courseId + "_e" + exerciseId;
-        byte[] finalHashBytes = shaDigest.digest(submissionString.toString().getBytes(StandardCharsets.UTF_8));
-        String finalHash = Base64.getEncoder().encodeToString(finalHashBytes);
+        final String cacheKey = "hash_c" + courseId + "_e" + exerciseId;
+        final byte[] finalHashBytes = shaDigest.digest(submissionString.toString().getBytes(StandardCharsets.UTF_8));
+        final String finalHash = Base64.getEncoder().encodeToString(finalHashBytes);
 
-        JSONObject cachedHashesJson = submissionsCache.getValue(cacheKey, CachePreferences.PERMANENT);
-        SubmissionHashes cachedHashes = new SubmissionHashes(cachedHashesJson);
+        final JSONObject cachedHashesJson = submissionsCache.getValue(cacheKey, CachePreferences.PERMANENT);
+        final SubmissionHashes cachedHashes = new SubmissionHashes(cachedHashesJson);
         if (cachedHashesJson == null) {
           // this is the first hash, so the entry doesn't yet exist in the cache
           cachedHashes.addHash(finalHash);
