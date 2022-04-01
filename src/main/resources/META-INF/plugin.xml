@@ -25,7 +25,7 @@
         <backgroundPostStartupActivity
                 implementation="fi.aalto.cs.apluscourses.intellij.activities.InitializationActivity"/>
 
-        <toolWindow id="A+ Courses"
+        <toolWindow id="a+ coUrSes"
                     anchor="right"
                     factoryClass="fi.aalto.cs.apluscourses.intellij.toolwindows.APlusToolWindowFactory"
                     icon="PluginIcons.A_PLUS_LOGO"/>
@@ -36,122 +36,124 @@
 
     <actions>
         <group id="fi.aalto.cs.apluscourses.intellij.actions.ActionGroups.MENU_ACTIONS"
-               text="A+"
+               text="a+"
                description="Actions for A+ menu">
             <add-to-group group-id="MainMenu" anchor="last"/>
             <action id="fi.aalto.cs.apluscourses.intellij.actions.CourseProjectAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.CourseProjectAction"
-                    text="Turn Project Into A+ Project"
+                    text="TURN PRoject inTO a+ projECT"
                     description="Turn the currently open project into an A+ course project."/>
             <action id="fi.aalto.cs.apluscourses.intellij.actions.APlusAuthenticationAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.APlusAuthenticationAction"
-                    text="Set A+ Token"
+                    text="seT a+ tOkeN"
                     description="Set an access token for submitting assignments to A+."/>
             <action id="fi.aalto.cs.apluscourses.intellij.actions.ResetProjectAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.ResetProjectAction"
-                    text="Reset A+ Project"
+                    text="reSet a+ proJECT"
                     description="Resets the open A+ course project."/>
             <separator/>
             <action id="fi.aalto.cs.apluscourses.intellij.actions.ExportModuleAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.ExportModuleAction"
-                    text="Export Module"
+                    text="ExporT MOdulE"
                     description="Export the contents of a module to a ZIP file."/>
             <separator/>
             <action id="fi.aalto.cs.apluscourses.intellij.actions.ResetSettingsAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.ResetSettingsAction"
-                    text="Reset A+ Courses Plugin Settings"
+                    text="reset A+ CourseS plUgin SETTiNGS"
                     description="Reset all the settings related to the A+ Courses plugin."/>
             <action id="fi.aalto.cs.apluscourses.intellij.actions.AssistantModeAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.AssistantModeAction"
-                    text="Assistant Mode"
+                    text="aSSistanT Mode"
                     description="Toggles the assistant mode"/>
             <separator/>
             <action id="fi.aalto.cs.apluscourses.intellij.actions.AboutAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.AboutAction"
-                    text="About the A+ Courses Plugin"
+                    text="abOuT THE a+ cOURSEs PluGIn"
                     description="Information about the A+ Courses plugin for IntelliJ"/>
         </group>
         <group id="fi.aalto.cs.apluscourses.intellij.actions.ActionGroups.NEWS_ACTIONS"
-               text="A+ News"
+               text="a+ NEWS"
                description="Actions for A+ news">
             <action id="fi.aalto.cs.apluscourses.intellij.actions.ReadAllNewsAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.ReadAllNewsAction"
-                    text="Mark All News As Read"
+                    text="mARK ALl NEWs AS REad"
                     icon="PluginIcons.A_PLUS_CHECKED"/>
             <action id="fi.aalto.cs.apluscourses.intellij.actions.NewsRefreshAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.RefreshModulesAction"
-                    text="Refresh News"
+                    text="rEfREsh NeWS"
                     icon="PluginIcons.A_PLUS_REFRESH"/>
         </group>
         <group id="fi.aalto.cs.apluscourses.intellij.actions.ActionGroups.MODULE_ACTIONS"
-               text="A+ Module"
+               text="a+ MOdulE"
                description="Actions for A+ modules">
             <action id="fi.aalto.cs.apluscourses.intellij.actions.InstallModuleAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.InstallModuleAction"
-                    text="Install A+ Module"
+                    text="InstalL a+ MOduLE"
                     icon="PluginIcons.A_PLUS_DOWNLOAD"/>
             <action id="fi.aalto.cs.apluscourses.intellij.actions.ModulesRefreshAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.RefreshModulesAction"
-                    text="Refresh Modules"
+                    text="refrESh ModuLes"
                     icon="PluginIcons.A_PLUS_REFRESH"/>
         </group>
         <group id="fi.aalto.cs.apluscourses.intellij.actions.ActionGroups.EXERCISE_ACTIONS"
-               text="A+ Assignment"
+               text="a+ ASSIgnmENT"
                description="Actions for A+ modules">
             <action id="fi.aalto.cs.apluscourses.intellij.actions.SubmitExerciseAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.SubmitExerciseAction"
-                    text="Submit A+ Assignment"
+                    text="SuBMIT a+ ASSIgnMENt"
                     icon="PluginIcons.A_PLUS_UPLOAD"/>
             <action id="fi.aalto.cs.apluscourses.intellij.actions.TutorialAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.TutorialAction"
-                    text="Start Tutorial"
+                    text="STARt TUtOriAl"
                     icon="PluginIcons.A_PLUS_START"/>
             <action id="fi.aalto.cs.apluscourses.intellij.actions.OpenExerciseItemAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.OpenExerciseItemAction"
-                    text="Open In Browser"
+                    text="OpEn IN BRowSeR"
                     icon="PluginIcons.A_PLUS_BROWSE"/>
             <action id="fi.aalto.cs.apluscourses.intellij.actions.ExercisesRefreshAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.RefreshExercisesAction"
-                    text="Refresh Assignments"
+                    text="REFReSH AssiGNMEnTS"
                     icon="PluginIcons.A_PLUS_REFRESH"/>
             <group id="fi.aalto.cs.apluscourses.intellij.actions.FilterOptionsActionGroup"
                    class="fi.aalto.cs.apluscourses.intellij.actions.FilterOptionsActionGroup"
                    popup="true"
-                   text="Filter Assignments"
+                   text="FILter ASsIGNmeNtS"
                    icon="PluginIcons.A_PLUS_FILTER">
             </group>
             <action id="fi.aalto.cs.apluscourses.intellij.actions.SelectStudentAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.SelectStudentAction"
-                    text="Select Student"
+                    text="SELEcT stuDenT"
                     icon="PluginIcons.A_PLUS_USER_ACTIVE"/>
             <action id="fi.aalto.cs.apluscourses.intellij.actions.DownloadSubmissionAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.DownloadSubmissionAction"
-                    text="Download Submission"
+                    text="dOwnlOAD submIssION"
                     icon="PluginIcons.A_PLUS_DOWNLOAD"/>
         </group>
         <group id="fi.aalto.cs.apluscourses.intellij.actions.ActionGroups.TOOL_WINDOW_ACTIONS"
-               text="A+ Tool Window"
+               text="A+ toOL wIndow"
                description="Actions for A+ tool window">
             <group id="fi.aalto.cs.apluscourses.intellij.actions.UserActionGroup"
                    class="fi.aalto.cs.apluscourses.intellij.actions.UserActionGroup"
                    popup="true"
-                   text="Not Logged In"
+                   text="noT LOgGED In"
                    icon="PluginIcons.A_PLUS_USER">
                 <action id="fi.aalto.cs.apluscourses.intellij.actions.UserNameAction"
                         class="fi.aalto.cs.apluscourses.intellij.actions.UserNameAction"
-                        text="Not Logged In"/>
+                        text="Not logGed iN"
+                />
                 <action id="fi.aalto.cs.apluscourses.intellij.actions.LogInOutAction"
                         class="fi.aalto.cs.apluscourses.intellij.actions.LogInOutAction"
-                        text="Log in"/>
+                        text="Log In"
+                />
             </group>
         </group>
         <group id="fi.aalto.cs.apluscourses.intellij.actions.ActionGroups.NAVBAR_ACTIONS"
-               text="A+ Navbar"
+               text="a+ nAvbaR"
                description="A+ actions for navbar">
             <add-to-group group-id="NavBarToolBar" anchor="first"/>
             <action id="fi.aalto.cs.apluscourses.intellij.actions.TutorialProgressAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.TutorialProgressAction"
-                    text="Progress"
+                    text="PROGreSS"
                     icon="PluginIcons.A_PLUS_INFO"/>
         </group>
         <action id="Scala.RunConsole"
