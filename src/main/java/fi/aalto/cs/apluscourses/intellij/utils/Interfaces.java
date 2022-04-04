@@ -216,12 +216,6 @@ public class Interfaces {
 
         final JSONObject cachedHashesJson = submissionsCache.getValue(cacheKey, CachePreferences.PERMANENT);
         final SubmissionHashes cachedHashes = new SubmissionHashes(cachedHashesJson);
-        if (cachedHashesJson == null) {
-          // this is the first hash, so the entry doesn't yet exist in the cache
-          cachedHashes.addHash(finalHash);
-          submissionsCache.putValue(cacheKey, cachedHashes.toJsonObject(), CachePreferences.PERMANENT);
-          return true;
-        }
 
         if (cachedHashes.containsHash(finalHash)) {
           if (!DuplicateSubmissionDialog.showDialog()) {
