@@ -40,9 +40,9 @@ dependencies {
 
 intellij {
     // this is the version of the IntelliJ IDEA API (SDK) used to build the plugin
-    version = '213.5744.223'
+    version = '221.5080.210'
     updateSinceUntilBuild = false
-    plugins = ['java', 'org.intellij.scala:2021.3.14']
+    plugins = ['java', 'org.intellij.scala:2022.1.13']
 }
 
 patchPluginXml {
