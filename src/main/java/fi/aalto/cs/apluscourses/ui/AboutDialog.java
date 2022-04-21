@@ -9,6 +9,7 @@ import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.labels.LinkLabel;
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import icons.PluginIcons;
+import java.awt.BorderLayout;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -41,9 +42,13 @@ public class AboutDialog {
 
   @NotNull
   private static JPanel createAboutInnerContainer() {
+    JPanel outerPanel = new JPanel();
+    var layout = new BorderLayout();
+    outerPanel.setLayout(new BorderLayout());
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
     JBLabel logo = createLogoImageLabel();
+    JBLabel footer = createFooterLabel();
     JBLabel version = createVersionTextLabel();
     JBLabel about = createAboutTextLabel();
     JBLabel authors = createAuthorsTextLabel();
@@ -64,12 +69,21 @@ public class AboutDialog {
     panel.add(authors);
     panel.add(Box.createVerticalStrut(attributes.getFont().getSize()));
     panel.add(attributes);
+    panel.add(footer);
     panel.setBorder(BorderFactory.createEmptyBorder(0, 15, 0, 15));
-    return panel;
+    outerPanel.add(panel, BorderLayout.CENTER);
+    outerPanel.add(logo, BorderLayout.NORTH);
+    outerPanel.add(footer, BorderLayout.SOUTH);
+    return outerPanel;
   }
 
   private static JBLabel createLogoImageLabel() {
-    final Icon icon = PluginIcons.A_PLUS_COURSES;
+    final Icon icon = PluginIcons.A_PLUS_COURSES_BANNER;
+    return new JBLabel(icon, SwingConstants.CENTER);
+  }
+
+  private static JBLabel createFooterLabel() {
+    final Icon icon = PluginIcons.A_PLUS_COURSES_FOOTER;
     return new JBLabel(icon, SwingConstants.CENTER);
   }
 
