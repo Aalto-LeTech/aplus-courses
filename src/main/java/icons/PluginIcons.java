@@ -49,6 +49,9 @@ public final class PluginIcons {
       .getIcon("/META-INF/icons/refresh.svg", PluginIcons.class);
   public static final Icon A_PLUS_LOGO = IconLoader
       .getIcon("/META-INF/icons/aPlusLogo.svg", PluginIcons.class);
+
+  public static final Icon A_PLUS_LOGO_COLOR = IconLoader
+      .getIcon("/META-INF/icons/aPlusLogoColor.svg", PluginIcons.class);
   public static final Icon A_PLUS_REPL = IconLoader
       .getIcon("/META-INF/icons/repl.svg", PluginIcons.class);
   public static final Icon A_PLUS_FILTER = IconLoader
