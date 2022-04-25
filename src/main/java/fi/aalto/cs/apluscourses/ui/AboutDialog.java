@@ -33,6 +33,9 @@ public class AboutDialog extends DialogWrapper {
   private static final String A_PLUS_PAGE = "https://plus.cs.aalto.fi/";
   private static final String GITHUB_PAGE = "https://github.com/Aalto-LeTech/aplus-courses";
 
+  /**
+   * Constructor.
+   */
   public AboutDialog(@NotNull Project project) {
     super(project);
     setResizable(false);

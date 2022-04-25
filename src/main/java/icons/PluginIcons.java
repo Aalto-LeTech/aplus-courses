@@ -10,7 +10,7 @@ import javax.swing.Icon;
  * <a href="https://jetbrains.design/intellij/resources/icons_list/">Icons source</a><br>
  * Accent colour: #FF0090(FF)<br>
  * (100% opacity) aka RGB(255, 0, 144) Light schema: #AFB1B3(FF) (100% opacity) Dark schema:
- * #6E6E6E(FF) (100% opacity)
+ * #6E6E6E(FF) (100% opacity).
  */
 public final class PluginIcons {
   private PluginIcons() {
