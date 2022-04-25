@@ -21,7 +21,6 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JComponent;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
@@ -65,17 +64,6 @@ public class AboutDialog extends DialogWrapper {
   @Override
   protected @Nullable Border createContentPaneBorder() {
     return null;
-  }
-
-  /**
-   * Displays a small pop up window containing basic information about the plugin.
-   */
-  public static void display2() {
-
-    JOptionPane.showMessageDialog(null,
-        null,
-        getText("ui.aboutDialog.title"),
-        JOptionPane.PLAIN_MESSAGE);
   }
 
   @NotNull
