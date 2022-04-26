@@ -194,6 +194,7 @@ public class AboutDialog extends DialogWrapper {
     textArea.setEditable(false);
     textArea.setMaximumSize(new Dimension(420, textArea.getMaximumSize().height));
     textArea.setBackground(JBColor.background());
+    textArea.setFont(JBUI.Fonts.label());
     return textArea;
   }
 }
