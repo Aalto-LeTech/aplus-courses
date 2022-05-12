@@ -596,7 +596,7 @@ public abstract class Course implements ComponentSource {
                                                          @NotNull String source)
       throws MalformedCourseConfigurationException {
     try {
-      return jsonObject.getString("replArguments");
+      return jsonObject.optString("replArguments", "");
     } catch (JSONException ex) {
       throw new MalformedCourseConfigurationException(source,
               "Malformed or non-string \"replArguments\" key", ex);
