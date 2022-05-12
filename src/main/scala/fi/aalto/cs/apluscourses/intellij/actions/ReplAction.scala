@@ -129,6 +129,13 @@ class ReplAction extends RunConsoleAction {
     }
   }
 
+  def getReplAdditionalArguments(@NotNull project: Project): String = {
+    Option(PluginSettings.getInstance().getMainViewModel(project).courseViewModel.get) match {
+      case Some(courseViewModel) => courseViewModel.getModel.getReplAdditionalArguments
+      case None => ""
+    }
+  }
+
   def setConfigurationFields(@NotNull configuration: ScalaConsoleRunConfiguration,
                              @NotNull workingDirectory: String,
                              @NotNull module: Module): Unit = {

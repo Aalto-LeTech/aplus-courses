@@ -60,6 +60,7 @@ public class IntelliJCourse extends Course {
                         @NotNull Set<String> optionalCategories,
                         @NotNull List<String> autoInstallComponentNames,
                         @NotNull Map<String, String[]> replInitialCommands,
+                        @NotNull String replAdditionalArguments,
                         @NotNull Version courseVersion,
                         @NotNull APlusProject project,
                         @NotNull CommonLibraryProvider commonLibraryProvider,
@@ -77,6 +78,7 @@ public class IntelliJCourse extends Course {
         optionalCategories,
         autoInstallComponentNames,
         replInitialCommands,
+        replAdditionalArguments,
         courseVersion,
         tutorials);
 
