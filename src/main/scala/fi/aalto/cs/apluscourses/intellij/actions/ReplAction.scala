@@ -23,7 +23,7 @@ import org.jetbrains.plugins.scala.console.actions.RunConsoleAction
 import org.jetbrains.plugins.scala.console.configuration.ScalaConsoleRunConfiguration
 import org.jetbrains.plugins.scala.project.ProjectExt
 
-import scala.collection.mutable
+import scala.collection.mutable.StringBuilder
 import scala.jdk.CollectionConverters.ListHasAsScala
 
 /**
@@ -144,7 +144,7 @@ class ReplAction extends RunConsoleAction {
     configuration.setModule(module)
     configuration.setName(getAndReplaceText("ui.repl.console.name", module.getName))
 
-    val argsBuilder = new mutable.StringBuilder("-usejavacp " + getReplAdditionalArguments(module.getProject))
+    val argsBuilder = new StringBuilder("-usejavacp " + getReplAdditionalArguments(module.getProject))
 
     ModuleUtils.createInitialReplCommandsFile(module)
     if (ModuleUtils.initialReplCommandsFileExists(module)) {
