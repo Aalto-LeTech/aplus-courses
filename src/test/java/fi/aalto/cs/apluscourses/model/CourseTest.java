@@ -34,6 +34,7 @@ class CourseTest {
     Set<String> optionalCategories = Set.of("optional-category");
     List<String> autoInstallComponents = List.of(module1name);
     Map<String, String[]> replInitialCommands = new HashMap<>();
+    String replAdditionalArguments = "-test";
     replInitialCommands.put("Module1", new String[] {"import o1._"});
     Course course = new ModelExtensions.TestCourse(
         "13",
@@ -50,6 +51,7 @@ class CourseTest {
         optionalCategories,
         autoInstallComponents,
         replInitialCommands,
+        replAdditionalArguments,
         BuildInfo.INSTANCE.courseVersion,
         Collections.emptyMap());
     Assertions.assertEquals("13", course.getId(),
@@ -79,6 +81,8 @@ class CourseTest {
         "The auto-install components should be the same as those given to the constructor");
     Assertions.assertEquals("import o1._", course.getReplInitialCommands().get("Module1")[0],
         "The REPL initial commands for Module1 are correct.");
+    Assertions.assertEquals("-test", course.getReplAdditionalArguments(),
+            "The REPL arguments should be the same as that given to the constructor");
   }
 
   @Test
@@ -108,6 +112,8 @@ class CourseTest {
         Collections.emptyList(),
         // replInitialCommands
         Collections.emptyMap(),
+        // replAdditionalArguments
+        "",
         // courseVersion
         BuildInfo.INSTANCE.courseVersion,
         // tutorials
@@ -146,6 +152,8 @@ class CourseTest {
         List.of("test-module", "test-library"),
         // replInitialCommands
         Collections.emptyMap(),
+        // replAdditionalArguments
+        "",
         // courseVersion
         BuildInfo.INSTANCE.courseVersion,
         // tutorials
@@ -176,13 +184,15 @@ class CourseTest {
   private static final String autoInstallJson = "\"autoInstall\":[\"O1Library\"]";
   private static final String replInitialCommands = "\"repl\": {\"initialCommands\": {\"GoodStuff\": ["
       + "\"import o1._\",\"import o1.goodstuff._\"]}}";
+  private static final String replAdditionalArgumentsJson = "\"replArguments\": \"-test\"";
   private static final String courseVersion = "\"version\": \"5.8\"";
 
   @Test
   void testFromConfigurationFile() throws MalformedCourseConfigurationException {
     StringReader stringReader = new StringReader("{" + idJson + "," + nameJson + "," + urlJson
         + "," + languagesJson + "," + modulesJson + "," + exerciseModulesJson + "," + resourcesJson
-        + "," + vmOptionsJson + "," + autoInstallJson + "," + replInitialCommands + "," + courseVersion + "}");
+        + "," + vmOptionsJson + "," + autoInstallJson + "," + replInitialCommands
+        + "," + replAdditionalArgumentsJson + "," + courseVersion + "}");
     Course course = Course.fromConfigurationData(stringReader, "./path/to/file", MODEL_FACTORY);
     Assertions.assertEquals("1238", course.getId(), "Course should have the same ID as that in the configuration JSON");
     Assertions.assertEquals("Awesome Course", course.getName(),
@@ -211,8 +221,10 @@ class CourseTest {
         "The course should have the REPL initial commands of the configuration JSON");
     Assertions.assertEquals("import o1.goodstuff._", course.getReplInitialCommands().get("GoodStuff")[1],
         "The course should have the REPL initial commands of the configuration JSON");
+    Assertions.assertEquals("-test", course.getReplAdditionalArguments(),
+        "The course should have the REPL arguments of the configuration JSON");
     Assertions.assertEquals("5.8", course.getVersion().toString(),
-        "Course should have the same version as that in the configuration JSON");
+        "The course should have the same version as that in the configuration JSON");
   }
 
   @Test
