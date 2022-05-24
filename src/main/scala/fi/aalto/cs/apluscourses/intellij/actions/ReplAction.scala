@@ -13,7 +13,7 @@ import com.intellij.openapi.util.io.FileUtilRt.toSystemIndependentName
 import fi.aalto.cs.apluscourses.intellij.Repl
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings.MODULE_REPL_INITIAL_COMMANDS_FILE_NAME
-import fi.aalto.cs.apluscourses.intellij.utils.ModuleUtils
+import fi.aalto.cs.apluscourses.intellij.utils.{ModuleUtils, ReplChangesObserver}
 import fi.aalto.cs.apluscourses.presentation.ReplConfigurationFormModel
 import fi.aalto.cs.apluscourses.ui.repl.{ReplConfigurationDialog, ReplConfigurationForm}
 import fi.aalto.cs.apluscourses.utils.PluginResourceBundle.{getAndReplaceText, getText}
@@ -22,6 +22,7 @@ import org.jetbrains.plugins.scala.actions.ScalaActionUtil
 import org.jetbrains.plugins.scala.console.actions.RunConsoleAction
 import org.jetbrains.plugins.scala.console.configuration.ScalaConsoleRunConfiguration
 import org.jetbrains.plugins.scala.project.ProjectExt
+
 import scala.jdk.CollectionConverters.ListHasAsScala
 
 /**
@@ -106,7 +107,10 @@ class ReplAction extends RunConsoleAction {
       }
 
       private class MyBuilder(module: Module) extends TextConsoleBuilderImpl(module.getProject) {
-        override def createConsole(): ConsoleView = new Repl(module)
+        override def createConsole(): ConsoleView = {
+          ReplChangesObserver.onStartedRepl(module)
+          new Repl(module)
+        }
       }
 
     }
