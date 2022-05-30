@@ -29,7 +29,9 @@ import org.jetbrains.annotations.Nullable;
  *            {@link ListElementViewModel}
  */
 public class BaseListViewModel<E extends ListElementViewModel<?>> extends AbstractListModel<E>
-    implements SelectableListModel<E> {
+    implements SelectableListModel<E>, FilterEngine.FilterApplier {
+
+  public final transient Event filtered = new Event();
 
   @NotNull
   private final ListSelectionModel selectionModel;
@@ -48,6 +50,7 @@ public class BaseListViewModel<E extends ListElementViewModel<?>> extends Abstra
    *                                    a model object.
    */
   public <M> BaseListViewModel(@NotNull List<M> models,
+                               @Nullable Options filterOptions,
                                @NotNull Function<M, E> listElementViewModelFactory) {
     this.selectionModel = new SelectionModel();
     this.elements = new ArrayList<>(models.size());
@@ -57,6 +60,12 @@ public class BaseListViewModel<E extends ListElementViewModel<?>> extends Abstra
       element.setListModel(this);
       element.setIndex(index++);
       elements.add(element);
+    }
+    this.filterOptions = filterOptions;
+    this.filterEngine = new FilterEngine(filterOptions, this, filtered::trigger);
+    filterEngine.filter();
+    if (this.filterOptions != null) {
+      this.filterOptions.optionsChanged.addListener(this, BaseListViewModel::filter);
     }
   }
 

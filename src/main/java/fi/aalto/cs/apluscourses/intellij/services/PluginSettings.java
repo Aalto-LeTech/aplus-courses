@@ -195,7 +195,7 @@ public class PluginSettings implements MainViewModelProvider, DefaultGroupIdSett
     courseProjects.computeIfAbsent(key, projectKey -> {
       courseProject.getCourse().register();
       courseProject.readAuthenticationFromStorage(passwordStorage, authenticationFactory);
-      mainViewModel.courseViewModel.set(new CourseViewModel(courseProject.getCourse()));
+      mainViewModel.updateCourseViewModel(courseProject);
       // This is needed here, because by default MainViewModel has an ExercisesTreeViewModel that
       // assumes that the project isn't a course project. This means that the user would be
       // instructed to turn the project into a course project for an example when the token is

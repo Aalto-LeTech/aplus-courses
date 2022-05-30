@@ -38,7 +38,7 @@ class BaseListViewModelTest {
     elementMap.put(model3, listElementViewModel3);
 
     BaseListViewModel<ListElementViewModel<?>> listViewModel =
-        new BaseListViewModel<>(models, elementMap::get);
+        new BaseListViewModel<>(models, null, elementMap::get);
 
     Assertions.assertSame(listElementViewModel1, listViewModel.getElementAt(0),
         "The first element should be accessible with index 0.");

@@ -1,21 +1,18 @@
 package fi.aalto.cs.apluscourses.presentation.base;
 
+import fi.aalto.cs.apluscourses.presentation.filter.Filter;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import fi.aalto.cs.apluscourses.utils.Event;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class BaseTreeViewModel<T> extends SelectableNodeViewModel<T> {
+public class BaseTreeViewModel<T> extends SelectableNodeViewModel<T> implements FilterEngine.FilterApplier {
 
   @NotNull
   public final Event filtered = new Event();
-  @Nullable
-  protected final Options options;
-  @Nullable
-  private Thread filterThread = null;
-  @NotNull
-  private final Object filterLock = new Object();
+  private final @Nullable Options filterOptions;
+  private final @NotNull FilterEngine filterEngine;
   @Nullable
   protected volatile SelectableNodeViewModel<?> selectedItem = null; //  NOSONAR
 
@@ -34,11 +31,20 @@ public class BaseTreeViewModel<T> extends SelectableNodeViewModel<T> {
                            @Nullable List<SelectableNodeViewModel<?>> children,
                            @Nullable Options filterOptions) {
     super(model, children);
-    this.options = options;
-    if (options != null) {
-      this.options.optionsChanged.addListener(this, BaseTreeViewModel::filter);
+    this.filterOptions = filterOptions;
+    this.filterEngine = new FilterEngine(filterOptions, this, filtered::trigger);
+    filterEngine.filter();
+    if (this.filterOptions != null) {
+      this.filterOptions.optionsChanged.addListener(this, BaseTreeViewModel::filter);
     }
-    filter();
+  }
+
+  private void filter() {
+    filterEngine.filter();
+  }
+
+  public @Nullable Options getFilterOptions() {
+    return filterOptions;
   }
 
   /**

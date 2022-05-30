@@ -6,10 +6,12 @@ import fi.aalto.cs.apluscourses.presentation.exercise.EmptyExercisesTreeViewMode
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import fi.aalto.cs.apluscourses.presentation.ideactivities.TutorialViewModel;
+import fi.aalto.cs.apluscourses.presentation.module.ModuleListViewModel;
 import fi.aalto.cs.apluscourses.presentation.news.NewsTreeViewModel;
 import fi.aalto.cs.apluscourses.utils.Event;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;

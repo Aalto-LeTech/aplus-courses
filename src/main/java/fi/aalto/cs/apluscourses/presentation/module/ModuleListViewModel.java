@@ -2,8 +2,10 @@ package fi.aalto.cs.apluscourses.presentation.module;
 
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.presentation.base.BaseListViewModel;
+import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class ModuleListViewModel extends BaseListViewModel<ModuleListElementViewModel> {
 
@@ -13,8 +15,9 @@ public class ModuleListViewModel extends BaseListViewModel<ModuleListElementView
    *
    * @param modules A list of modules (domain model objects).
    */
-  public ModuleListViewModel(@NotNull List<Module> modules) {
-    super(modules, ModuleListElementViewModel::new);
+  public ModuleListViewModel(@NotNull List<Module> modules, @Nullable Options filterOptions) {
+    super(modules, filterOptions, ModuleListElementViewModel::new);
   }
+
 }
 
