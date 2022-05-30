@@ -94,6 +94,12 @@
                     class="fi.aalto.cs.apluscourses.intellij.actions.RefreshModulesAction"
                     text="Refresh Modules"
                     icon="PluginIcons.A_PLUS_REFRESH"/>
+            <group id="fi.aalto.cs.apluscourses.intellij.actions.ModuleFilterOptionsActionGroup"
+                   class="fi.aalto.cs.apluscourses.intellij.actions.ModuleFilterOptionsActionGroup"
+                   popup="true"
+                   text="Filter Modules"
+                   icon="PluginIcons.A_PLUS_FILTER">
+            </group>
         </group>
         <group id="fi.aalto.cs.apluscourses.intellij.actions.ActionGroups.EXERCISE_ACTIONS"
                text="A+ Assignment"

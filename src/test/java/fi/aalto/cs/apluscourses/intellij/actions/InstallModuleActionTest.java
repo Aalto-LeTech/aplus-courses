@@ -42,7 +42,7 @@ class InstallModuleActionTest {
   void createMockObjects() {
     project = mock(Project.class);
 
-    mainViewModel = new MainViewModel(new Options());
+    mainViewModel = new MainViewModel(new Options(), new Options());
     MainViewModelProvider mainViewModelProvider = mock(MainViewModelProvider.class);
     doReturn(mainViewModel).when(mainViewModelProvider).getMainViewModel(project);
 

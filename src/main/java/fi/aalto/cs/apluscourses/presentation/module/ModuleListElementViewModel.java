@@ -112,4 +112,8 @@ public class ModuleListElementViewModel extends ListElementViewModel<Module>
     Module model = getModel();
     return !model.hasError() && model.stateMonitor.get() == Component.LOADED;
   }
+
+  public boolean isDownloaded() {
+    return getModel().stateMonitor.get() == Component.LOADED;
+  }
 }

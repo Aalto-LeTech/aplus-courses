@@ -23,13 +23,13 @@ import fi.aalto.cs.apluscourses.intellij.utils.ProjectKey;
 import fi.aalto.cs.apluscourses.model.ExercisesTree;
 import fi.aalto.cs.apluscourses.model.NewsTree;
 import fi.aalto.cs.apluscourses.presentation.CourseEndedBannerViewModel;
-import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseFilter;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseGroupFilter;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.filter.Option;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
+import fi.aalto.cs.apluscourses.presentation.module.ModuleFilter;
 import fi.aalto.cs.apluscourses.presentation.news.NewsTreeViewModel;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import java.util.Arrays;
@@ -45,6 +45,21 @@ public class PluginSettings implements MainViewModelProvider, DefaultGroupIdSett
 
   PluginSettings(@NotNull PropertiesManager propertiesManager) {
     applicationPropertiesManager = propertiesManager;
+    this.moduleFilterOptions = new Options(
+        new IntelliJFilterOption(applicationPropertiesManager,
+            LocalIdeSettingsNames.A_PLUS_SHOW_DOWNLOADED,
+            getText("presentation.moduleFilterOptions.Downloaded"),
+            null,
+            new ModuleFilter.DownloadedFilter()
+        ),
+        new IntelliJFilterOption(applicationPropertiesManager,
+            LocalIdeSettingsNames.A_PLUS_SHOW_NON_DOWNLOADED,
+            getText("presentation.moduleFilterOptions.notDownloaded"),
+            null,
+            new ModuleFilter.NotDownloadedFilter()
+        )
+
+      );
     exerciseFilterOptions = new Options(
         new IntelliJFilterOption(applicationPropertiesManager,
             LocalIdeSettingsNames.A_PLUS_SHOW_NON_SUBMITTABLE,
@@ -73,6 +88,8 @@ public class PluginSettings implements MainViewModelProvider, DefaultGroupIdSett
     A_PLUS_IMPORTED_IDE_SETTINGS("A+.importedIdeSettings"),
     A_PLUS_DEFAULT_GROUP("A+.defaultGroup"),
     A_PLUS_SHOW_NON_SUBMITTABLE("A+.showNonSubmittable"),
+    A_PLUS_SHOW_NON_DOWNLOADED("A+.showNotDownloaded"),
+    A_PLUS_SHOW_DOWNLOADED("A+.showDownloaded"),
     A_PLUS_SHOW_COMPLETED("A+.showCompleted"),
     A_PLUS_SHOW_OPTIONAL("A+.showOptional"),
     A_PLUS_SHOW_CLOSED("A+.showClosed"),
@@ -115,6 +132,8 @@ public class PluginSettings implements MainViewModelProvider, DefaultGroupIdSett
 
   @NotNull
   private final Options exerciseFilterOptions;
+  @NotNull
+  private final Options moduleFilterOptions;
 
   private final ProjectManagerListener projectManagerListener = new ProjectManagerListener() {
     @Override
@@ -157,7 +176,7 @@ public class PluginSettings implements MainViewModelProvider, DefaultGroupIdSett
       ProjectManager
           .getInstance()
           .addProjectManagerListener(project, projectManagerListener);
-      return new MainViewModel(exerciseFilterOptions);
+      return new MainViewModel(exerciseFilterOptions, moduleFilterOptions);
     });
   }
 

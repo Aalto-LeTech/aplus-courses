@@ -32,7 +32,7 @@ public class BaseTreeViewModel<T> extends SelectableNodeViewModel<T> {
    */
   public BaseTreeViewModel(@NotNull T model,
                            @Nullable List<SelectableNodeViewModel<?>> children,
-                           @Nullable Options options) {
+                           @Nullable Options filterOptions) {
     super(model, children);
     this.options = options;
     if (options != null) {
@@ -49,63 +49,19 @@ public class BaseTreeViewModel<T> extends SelectableNodeViewModel<T> {
     this(model, children, null);
   }
 
-  protected void filter() {
-    synchronized (filterLock) {
-      filterThread = new FilterThread(filterThread);
-      filterThread.start();
-    }
-  }
-
-  @Nullable
-  public Options getFilterOptions() {
-    return options;
-  }
-
   @Override
   public long getId() {
     return 0;
   }
 
-  private class FilterThread extends Thread {
-    @Nullable
-    private final Thread previous;
-
-    public FilterThread(@Nullable Thread previous) {
-      this.previous = previous;
-    }
-
-    @Override
-    public void run() {
-      try {
-        if (previous != null) {
-          previous.interrupt();
-          previous.join();
-        }
-        if (options != null) {
-          applyFilter(options);
-        }
-        if (done()) {
-          filtered.trigger();
-        }
-      } catch (InterruptedException e) {
-        interrupt();
-      }
-    }
-
-    private boolean done() {
-      synchronized (filterLock) {
-        if (filterThread == this) {
-          filterThread = null;
-          return true;
-        }
-      }
-      return false;
-    }
-  }
-
   @NotNull
   public Selection findSelected() {
     return new Selection(traverseAndFind(SelectableNodeViewModel::isSelected));
+  }
+
+  @Override
+  public void applyFilter(@NotNull Filter filter) throws InterruptedException {
+    applyFilterRecursive(filter);
   }
 
   public static class Selection {

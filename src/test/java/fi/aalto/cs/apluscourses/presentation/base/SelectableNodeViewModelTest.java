@@ -63,7 +63,7 @@ class SelectableNodeViewModelTest {
     Thread.currentThread().interrupt();
 
     assertThrows(InterruptedException.class, () ->
-        node.applyFilter(filter));
+        node.applyFilterRecursive(filter));
   }
 
   @Test
@@ -74,7 +74,7 @@ class SelectableNodeViewModelTest {
     when(filter.apply(child2)).thenReturn(Optional.empty());
 
 
-    Optional<Boolean> result = node.applyFilter(filter);
+    Optional<Boolean> result = node.applyFilterRecursive(filter);
     Assertions.assertTrue(result.isPresent() && Boolean.TRUE.equals(result.get()));
     Assertions.assertTrue(node.isVisible());
   }
@@ -84,7 +84,7 @@ class SelectableNodeViewModelTest {
     Filter filter = mock(Filter.class, new Returns(Optional.empty()));
     when(filter.apply(node)).thenReturn(Optional.of(false));
 
-    Optional<Boolean> result = node.applyFilter(filter);
+    Optional<Boolean> result = node.applyFilterRecursive(filter);
     Assertions.assertTrue(result.isPresent() && Boolean.FALSE.equals(result.get()));
     Assertions.assertFalse(node.isVisible());
   }
@@ -93,7 +93,7 @@ class SelectableNodeViewModelTest {
   void testApplyFilterReturnsEmpty() throws InterruptedException {
     Filter filter = mock(Filter.class, new Returns(Optional.empty()));
 
-    Optional<Boolean> result = node.applyFilter(filter);
+    Optional<Boolean> result = node.applyFilterRecursive(filter);
     Assertions.assertFalse(result.isPresent());
     Assertions.assertTrue(node.isVisible());
   }

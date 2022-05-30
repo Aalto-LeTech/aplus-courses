@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class ModuleListViewModel extends BaseListViewModel<ModuleListElementViewModel> {
 
+
   /**
    * Presentation model for a list of modules shown in the UI.
    *
@@ -16,3 +17,4 @@ public class ModuleListViewModel extends BaseListViewModel<ModuleListElementView
     super(modules, ModuleListElementViewModel::new);
   }
 }
+

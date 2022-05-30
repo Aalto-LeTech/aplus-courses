@@ -1,9 +1,13 @@
 package fi.aalto.cs.apluscourses.presentation.base;
 
+import fi.aalto.cs.apluscourses.presentation.filter.Filter;
+import fi.aalto.cs.apluscourses.presentation.filter.Options;
+import fi.aalto.cs.apluscourses.utils.Event;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.ListModel;
@@ -32,6 +36,9 @@ public class BaseListViewModel<E extends ListElementViewModel<?>> extends Abstra
 
   @NotNull
   protected final List<E> elements;
+  private final @Nullable Options filterOptions;
+  private final transient @NotNull FilterEngine filterEngine;
+
 
   /**
    * A constructor.
@@ -51,6 +58,14 @@ public class BaseListViewModel<E extends ListElementViewModel<?>> extends Abstra
       element.setIndex(index++);
       elements.add(element);
     }
+  }
+
+  private void filter() {
+    filterEngine.filter();
+  }
+
+  public Stream<E> streamVisibleItems() {
+    return elements.stream().filter(ListElementViewModel::isVisible);
   }
 
   public void onElementChanged(int index) {
@@ -89,6 +104,20 @@ public class BaseListViewModel<E extends ListElementViewModel<?>> extends Abstra
     } catch (IndexOutOfBoundsException e) {
       return null;
     }
+  }
+
+  @Override
+  public void applyFilter(@NotNull Filter filter) throws InterruptedException {
+    for (var elem : elements) {
+      if (Thread.interrupted()) {
+        throw new InterruptedException();
+      }
+      elem.applyFilter(filter);
+    }
+  }
+
+  public @Nullable Options getFilterOptions() {
+    return filterOptions;
   }
 
   private class SelectionModel extends DefaultListSelectionModel implements ListSelectionListener {

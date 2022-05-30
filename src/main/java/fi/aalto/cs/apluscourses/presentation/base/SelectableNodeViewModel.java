@@ -32,14 +32,15 @@ public abstract class SelectableNodeViewModel<T> extends BaseViewModel<T> implem
    * @param filter A filter.
    * @return True, if the filter applies to this node or one of its descendants, otherwise false.
    */
-  public Optional<Boolean> applyFilter(Filter filter) throws InterruptedException {
+
+  public Optional<Boolean> applyFilterRecursive(Filter filter) throws InterruptedException {
     Optional<Boolean> result = filter.apply(this);
     if (result.isEmpty() || Boolean.TRUE.equals(result.get())) {
       for (SelectableNodeViewModel<?> child : children) {
         if (Thread.interrupted()) {
           throw new InterruptedException();
         }
-        Optional<Boolean> childResult = child.applyFilter(filter);
+        Optional<Boolean> childResult = child.applyFilterRecursive(filter);
         if (childResult.isPresent()) {
           result = Optional.of(result.orElse(false) || Boolean.TRUE.equals(childResult.get()));
         }

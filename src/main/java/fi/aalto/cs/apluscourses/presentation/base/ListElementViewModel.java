@@ -1,8 +1,12 @@
 package fi.aalto.cs.apluscourses.presentation.base;
 
+import fi.aalto.cs.apluscourses.presentation.filter.Filter;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 
 public class ListElementViewModel<T> extends BaseViewModel<T> {
+
+  protected volatile boolean visibility = true;
 
   private volatile boolean selected;
   // Sonar does not like non-primitive volatile fields because the semantics of "volatile" are
@@ -26,6 +30,18 @@ public class ListElementViewModel<T> extends BaseViewModel<T> {
     if (localListModel != null) {
       localListModel.onElementChanged(getIndex());
     }
+  }
+
+  public void applyFilter(Filter filter) {
+    setVisibilityByFilterResult(filter.apply(this));
+  }
+
+  protected void setVisibilityByFilterResult(Optional<Boolean> result) {
+    visibility = result.orElse(true);
+  }
+
+  public boolean isVisible() {
+    return visibility;
   }
 
   public boolean isSelected() {

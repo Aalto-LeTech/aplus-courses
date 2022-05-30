@@ -60,7 +60,7 @@ class BaseListViewModelTest {
     models.add(new Object());
 
     BaseListViewModel<ListElementViewModel<?>> listViewModel =
-        new BaseListViewModel<>(models, ListElementViewModel::new);
+        new BaseListViewModel<>(models, null, ListElementViewModel::new);
 
     ListElementViewModel<?> listElementViewModel1 = listViewModel.getElementAt(0);
     ListElementViewModel<?> listElementViewModel2 = listViewModel.getElementAt(1);

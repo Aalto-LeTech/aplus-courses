@@ -50,11 +50,15 @@ public class MainViewModel {
   @NotNull
   private final Options exerciseFilterOptions;
 
+  @NotNull
+  private final Options moduleFilterOptions;
+
   /**
    * Instantiates a class representing the whole main view of the plugin.
    */
-  public MainViewModel(@NotNull Options exerciseFilterOptions) {
+  public MainViewModel(@NotNull Options exerciseFilterOptions, @NotNull Options moduleFilterOptions) {
     this.exerciseFilterOptions = exerciseFilterOptions;
+    this.moduleFilterOptions = moduleFilterOptions;
   }
 
   /**
@@ -65,6 +69,11 @@ public class MainViewModel {
     exercisesViewModel.set(
         ExercisesTreeViewModel.createExerciseTreeViewModel(courseProject.getExerciseTree(), exerciseFilterOptions,
             courseProject));
+  }
+
+  public void updateCourseViewModel(@NotNull CourseProject courseProject) {
+    courseViewModel.set(
+        new CourseViewModel(courseProject.getCourse(), moduleFilterOptions));
   }
 
   /**
@@ -88,9 +97,19 @@ public class MainViewModel {
     return exercisesViewModel.get();
   }
 
+  @Nullable
+  public ModuleListViewModel getModules() {
+    return Optional.ofNullable(courseViewModel.get()).map(CourseViewModel::getModules).orElse(null);
+  }
+
   @NotNull
   public Options getExerciseFilterOptions() {
     return exerciseFilterOptions;
+  }
+
+  @NotNull
+  public Options getModuleFilterOptions() {
+    return moduleFilterOptions;
   }
 
   /**

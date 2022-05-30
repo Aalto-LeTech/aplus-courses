@@ -40,7 +40,7 @@ class FilterOptionsActionGroupTest {
     filterOption2 = new Option("Another filter", null, item -> Optional.of(false)).init();
     Options filterOptions = new Options(filterOption1, filterOption2);
 
-    MainViewModel mainViewModel = new MainViewModel(new Options());
+    MainViewModel mainViewModel = new MainViewModel(new Options(), new Options());
     ExercisesTreeViewModel exercisesViewModel =
         spy(new ExercisesTreeViewModel(new ExercisesTree(), new Options()));
     when(exercisesViewModel.getFilterOptions()).thenReturn(filterOptions);

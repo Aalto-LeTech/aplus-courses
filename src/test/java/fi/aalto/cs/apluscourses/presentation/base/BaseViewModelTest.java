@@ -1,7 +1,5 @@
 package fi.aalto.cs.apluscourses.presentation.base;
 
-import static org.junit.Assert.assertSame;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

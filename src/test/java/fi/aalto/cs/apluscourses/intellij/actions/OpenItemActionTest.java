@@ -50,7 +50,7 @@ class OpenItemActionTest {
     ExercisesTreeViewModel exercisesTree = mock(ExercisesTreeViewModel.class);
     doReturn(testableViewModel).when(exercisesTree).getSelectedItem();
 
-    MainViewModel mainViewModel = new MainViewModel(new Options());
+    MainViewModel mainViewModel = new MainViewModel(new Options(), new Options());
     mainViewModel.exercisesViewModel.set(exercisesTree);
 
     mainViewModelProvider = project -> mainViewModel;

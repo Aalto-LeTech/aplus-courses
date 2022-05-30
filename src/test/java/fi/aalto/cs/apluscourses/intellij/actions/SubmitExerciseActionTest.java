@@ -134,7 +134,7 @@ class SubmitExerciseActionTest {
     exerciseGroup.addExercise(exercise);
     exerciseGroups = Collections.singletonList(exerciseGroup);
 
-    mainViewModel = new MainViewModel(new Options());
+    mainViewModel = new MainViewModel(new Options(), new Options());
 
     authentication = mock(Authentication.class);
     points = new Points(
