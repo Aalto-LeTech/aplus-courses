@@ -11,6 +11,7 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import javax.swing.BorderFactory;
@@ -37,61 +38,21 @@ public class ReplBannerPanel extends JPanel {
 
     dontShowOnceText.setForeground(JBColor.BLUE);
     dontShowOnceText.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-    dontShowOnceText.addMouseListener(new MouseListener() {
+    dontShowOnceText.addMouseListener(new MouseAdapter() {
       @Override
       public void mouseClicked(MouseEvent e) {
         isPermanentlyHidden = true;
         setVisible(false);
       }
-
-      @Override
-      public void mousePressed(MouseEvent e) {
-        // unused
-      }
-
-      @Override
-      public void mouseReleased(MouseEvent e) {
-        // unused
-      }
-
-      @Override
-      public void mouseEntered(MouseEvent e) {
-        // unused
-      }
-
-      @Override
-      public void mouseExited(MouseEvent e) {
-        // unused
-      }
     });
 
     neverAskAgainText.setForeground(JBColor.BLUE);
     neverAskAgainText.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-    neverAskAgainText.addMouseListener(new MouseListener() {
+    neverAskAgainText.addMouseListener(new MouseAdapter() {
       @Override
       public void mouseClicked(MouseEvent e) {
         PluginSettings.getInstance().setHideReplModuleChangedWarning(true);
         setVisible(false);
-      }
-
-      @Override
-      public void mousePressed(MouseEvent e) {
-        // unused
-      }
-
-      @Override
-      public void mouseReleased(MouseEvent e) {
-        // unused
-      }
-
-      @Override
-      public void mouseEntered(MouseEvent e) {
-        // unused
-      }
-
-      @Override
-      public void mouseExited(MouseEvent e) {
-        // unused
       }
     });
 
@@ -112,10 +73,8 @@ public class ReplBannerPanel extends JPanel {
 
   @Override
   public void setVisible(boolean isVisible) {
-    if (this.isPermanentlyHidden || PluginSettings.getInstance().shouldHideReplModuleChangedWarning()) {
-      isVisible = false;
-    }
-
-    super.setVisible(isVisible);
+    super.setVisible(isVisible
+        && !this.isPermanentlyHidden
+        && !PluginSettings.getInstance().shouldHideReplModuleChangedWarning());
   }
 }

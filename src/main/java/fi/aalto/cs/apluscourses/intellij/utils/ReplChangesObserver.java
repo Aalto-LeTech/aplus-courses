@@ -10,6 +10,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.vfs.VirtualFile;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import org.jetbrains.annotations.NotNull;
@@ -17,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
 public class ReplChangesObserver {
   private static boolean documentListenerInstalled;
   private static final @NotNull Disposable disposable = Disposer.newDisposable();
-  private static final Set<Module> modifiedModules = new HashSet<>();
+  private static final Set<Module> modifiedModules = Collections.synchronizedSet(new HashSet<>());
 
   private ReplChangesObserver() {
 
@@ -35,9 +36,7 @@ public class ReplChangesObserver {
       documentListenerInstalled = true;
     }
 
-    synchronized (modifiedModules) {
-      modifiedModules.remove(module);
-    }
+    modifiedModules.remove(module);
   }
 
   /**
@@ -46,9 +45,7 @@ public class ReplChangesObserver {
    * @param module The module which has been changed.
    */
   public static void onModuleChanged(@NotNull Module module) {
-    synchronized (modifiedModules) {
-      modifiedModules.add(module);
-    }
+    modifiedModules.add(module);
   }
 
   public static boolean hasModuleChanged(@NotNull Module module) {
