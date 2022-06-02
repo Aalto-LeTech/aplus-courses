@@ -43,16 +43,24 @@ public class ReplBannerPanel extends JPanel {
       }
 
       @Override
-      public void mousePressed(MouseEvent e) {}
+      public void mousePressed(MouseEvent e) {
+        // unused
+      }
 
       @Override
-      public void mouseReleased(MouseEvent e) {}
+      public void mouseReleased(MouseEvent e) {
+        // unused
+      }
 
       @Override
-      public void mouseEntered(MouseEvent e) {}
+      public void mouseEntered(MouseEvent e) {
+        // unused
+      }
 
       @Override
-      public void mouseExited(MouseEvent e) {}
+      public void mouseExited(MouseEvent e) {
+        // unused
+      }
     });
 
     neverAskAgainText.setForeground(JBColor.BLUE);
@@ -65,16 +73,24 @@ public class ReplBannerPanel extends JPanel {
       }
 
       @Override
-      public void mousePressed(MouseEvent e) {}
+      public void mousePressed(MouseEvent e) {
+        // unused
+      }
 
       @Override
-      public void mouseReleased(MouseEvent e) {}
+      public void mouseReleased(MouseEvent e) {
+        // unused
+      }
 
       @Override
-      public void mouseEntered(MouseEvent e) {}
+      public void mouseEntered(MouseEvent e) {
+        // unused
+      }
 
       @Override
-      public void mouseExited(MouseEvent e) {}
+      public void mouseExited(MouseEvent e) {
+        // unused
+      }
     });
 
     panel.add(infoText);
