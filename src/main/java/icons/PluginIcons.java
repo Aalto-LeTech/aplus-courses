@@ -6,10 +6,11 @@ import java.awt.Color;
 import javax.swing.Icon;
 
 /**
- * Guide: https://www.jetbrains.org/intellij/sdk/docs/reference_guide/work_with_icons_and_images.html
- * Icons source: https://jetbrains.design/intellij/resources/icons_list/ Accent colour: #FF0090(FF)
+ * <a href="https://www.jetbrains.org/intellij/sdk/docs/reference_guide/work_with_icons_and_images.html">Guide</a><br>
+ * <a href="https://jetbrains.design/intellij/resources/icons_list/">Icons source</a><br>
+ * Accent colour: #FF0090(FF)<br>
  * (100% opacity) aka RGB(255, 0, 144) Light schema: #AFB1B3(FF) (100% opacity) Dark schema:
- * #6E6E6E(FF) (100% opacity)
+ * #6E6E6E(FF) (100% opacity).
  */
 public final class PluginIcons {
   private PluginIcons() {
@@ -58,6 +59,10 @@ public final class PluginIcons {
       .getIcon("/META-INF/icons/filter.svg", PluginIcons.class);
   public static final Icon A_PLUS_COURSES = IconLoader
       .getIcon("/META-INF/icons/logo_courses.svg", PluginIcons.class);
+  public static final Icon A_PLUS_COURSES_BANNER = IconLoader
+      .getIcon("/META-INF/images/courses-banner.png", PluginIcons.class);
+  public static final Icon A_PLUS_COURSES_FOOTER = IconLoader
+      .getIcon("/META-INF/images/footer.png", PluginIcons.class);
   public static final Icon A_PLUS_IN_GRADING = IconLoader
       .getIcon("/META-INF/icons/hourglass.svg", PluginIcons.class);
   public static final Icon A_PLUS_USER = IconLoader

@@ -9,6 +9,9 @@ public class AboutAction extends DumbAwareAction {
 
   @Override
   public void actionPerformed(@NotNull AnActionEvent e) {
-    AboutDialog.display();
+    if (e.getProject() == null) {
+      return;
+    }
+    new AboutDialog(e.getProject()).show();
   }
 }

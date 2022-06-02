@@ -140,10 +140,12 @@ public class ModelExtensions {
                       @NotNull Set<String> optionalCategories,
                       @NotNull List<String> autoInstallComponentNames,
                       @NotNull Map<String, String[]> replInitialCommands,
+                      @NotNull String replAdditionalArguments,
                       @NotNull Version courseVersion,
                       @NotNull Map<Long, Tutorial> tutorials) {
       super(id, name, aplusUrl, languages, modules, libraries, exerciseModules, resourceUrls, vmOptions,
-          optionalCategories, autoInstallComponentNames, replInitialCommands, courseVersion, tutorials);
+          optionalCategories, autoInstallComponentNames, replInitialCommands,
+          replAdditionalArguments, courseVersion, tutorials);
       exerciseDataSource = new TestExerciseDataSource();
     }
 
@@ -181,6 +183,8 @@ public class ModelExtensions {
           Collections.emptyList(),
           // replInitialCommands
           Collections.emptyMap(),
+          // replAdditionalArguments
+          "",
           // courseVersion
           BuildInfo.INSTANCE.courseVersion,
           // tutorials
@@ -233,6 +237,8 @@ public class ModelExtensions {
           Collections.emptyList(),
           // replInitialCommands
           Collections.emptyMap(),
+          // replAdditionalArguments
+          "",
           // courseVersion
           BuildInfo.INSTANCE.courseVersion,
           project,
@@ -414,6 +420,7 @@ public class ModelExtensions {
                                @NotNull Set<String> optionalCategories,
                                @NotNull List<String> autoInstallComponentNames,
                                @NotNull Map<String, String[]> replInitialCommands,
+                               @NotNull String replAdditionalArguments,
                                @NotNull Version courseVersion,
                                @NotNull Map<Long, Tutorial> tutorials) {
       return new ModelExtensions.TestCourse(
@@ -429,6 +436,7 @@ public class ModelExtensions {
           optionalCategories,
           autoInstallComponentNames,
           replInitialCommands,
+          replAdditionalArguments,
           courseVersion,
           tutorials
       );
