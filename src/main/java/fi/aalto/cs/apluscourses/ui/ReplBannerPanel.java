@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.ui;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import com.intellij.ui.JBColor;
 import com.intellij.ui.components.panels.OpaquePanel;
 import com.intellij.util.ui.JBUI;
@@ -29,9 +31,9 @@ public class ReplBannerPanel extends JPanel {
     panel.setBorder(JBUI.Borders.empty(5, 0, 5, 5));
     panel.setMinimumSize(new Dimension(0, 0));
 
-    final JLabel infoText = new JLabel("You need to restart the REPL for the code changes to be applied.");
-    final JLabel dontShowOnceText = new JLabel("Ignore for this session");
-    final JLabel neverAskAgainText = new JLabel("Never ask again");
+    final JLabel infoText = new JLabel(getText("ui.repl.warning.description"));
+    final JLabel dontShowOnceText = new JLabel("ui.repl.warning.ignoreOnce");
+    final JLabel neverAskAgainText = new JLabel("ui.repl.warning.ignoreAlways");
 
     dontShowOnceText.setForeground(JBColor.BLUE);
     dontShowOnceText.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
