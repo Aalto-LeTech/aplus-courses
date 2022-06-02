@@ -32,8 +32,8 @@ public class ReplBannerPanel extends JPanel {
     panel.setMinimumSize(new Dimension(0, 0));
 
     final JLabel infoText = new JLabel(getText("ui.repl.warning.description"));
-    final JLabel dontShowOnceText = new JLabel("ui.repl.warning.ignoreOnce");
-    final JLabel neverAskAgainText = new JLabel("ui.repl.warning.ignoreAlways");
+    final JLabel dontShowOnceText = new JLabel(getText("ui.repl.warning.ignoreOnce"));
+    final JLabel neverAskAgainText = new JLabel(getText("ui.repl.warning.ignoreAlways"));
 
     dontShowOnceText.setForeground(JBColor.BLUE);
     dontShowOnceText.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));

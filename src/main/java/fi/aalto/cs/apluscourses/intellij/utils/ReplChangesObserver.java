@@ -69,12 +69,14 @@ public class ReplChangesObserver {
         return;
       }
 
-      Module module = ProjectFileIndex.getInstance(project).getModuleForFile(file);
-      if (module == null) {
-        return;
-      }
+      if (!project.isDisposed() && project.isOpen()) {
+        Module module = ProjectFileIndex.getInstance(project).getModuleForFile(file);
+        if (module == null) {
+          return;
+        }
 
-      ReplChangesObserver.onModuleChanged(module);
+        ReplChangesObserver.onModuleChanged(module);
+      }
     }
   }
 }
