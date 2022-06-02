@@ -40,12 +40,16 @@ public class ReplBannerPanel extends JPanel {
         isPermanentlyHidden = true;
         setVisible(false);
       }
+
       @Override
       public void mousePressed(MouseEvent e) {}
+
       @Override
       public void mouseReleased(MouseEvent e) {}
+
       @Override
       public void mouseEntered(MouseEvent e) {}
+
       @Override
       public void mouseExited(MouseEvent e) {}
     });
@@ -58,12 +62,16 @@ public class ReplBannerPanel extends JPanel {
         PluginSettings.getInstance().setHideReplModuleChangedWarning(true);
         setVisible(false);
       }
+      
       @Override
       public void mousePressed(MouseEvent e) {}
+
       @Override
       public void mouseReleased(MouseEvent e) {}
+
       @Override
       public void mouseEntered(MouseEvent e) {}
+
       @Override
       public void mouseExited(MouseEvent e) {}
     });
@@ -83,11 +91,11 @@ public class ReplBannerPanel extends JPanel {
   }
 
   @Override
-  public void setVisible(boolean aFlag) {
+  public void setVisible(boolean isVisible) {
     if (this.isPermanentlyHidden || PluginSettings.getInstance().shouldHideReplModuleChangedWarning()) {
-      aFlag = false;
+      isVisible = false;
     }
 
-    super.setVisible(aFlag);
+    super.setVisible(isVisible);
   }
 }
