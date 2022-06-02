@@ -107,10 +107,7 @@ class ReplAction extends RunConsoleAction {
       }
 
       private class MyBuilder(module: Module) extends TextConsoleBuilderImpl(module.getProject) {
-        override def createConsole(): ConsoleView = {
-          ReplChangesObserver.onStartedRepl(module)
-          new Repl(module)
-        }
+        override def createConsole(): ConsoleView = new Repl(module)
       }
 
     }

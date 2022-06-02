@@ -3,10 +3,12 @@ package fi.aalto.cs.apluscourses.intellij
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.openapi.module.Module
 import fi.aalto.cs.apluscourses.intellij.utils.ModuleUtils.{getInitialReplCommands, getUpdatedText}
+import fi.aalto.cs.apluscourses.intellij.utils.ReplChangesObserver
 import fi.aalto.cs.apluscourses.ui.ReplBannerPanel
 import org.jetbrains.plugins.scala.console.ScalaLanguageConsole
 
-import java.awt.{BorderLayout, Color}
+import java.awt.{AWTEvent, BorderLayout, Color, Component, Toolkit}
+import javax.swing.SwingUtilities
 
 class Repl(module: Module) extends ScalaLanguageConsole(module: Module) {
   private var initialReplWelcomeMessageHasBeenReplaced: Boolean = false
@@ -15,7 +17,17 @@ class Repl(module: Module) extends ScalaLanguageConsole(module: Module) {
 
   private val banner = new ReplBannerPanel()
   banner.setBackground(new Color(100, 0, 0))
+  banner.setVisible(false)
   add(banner, BorderLayout.NORTH)
+
+  // creating a new REPL resets the "module changed" state
+  ReplChangesObserver.onStartedRepl(module)
+
+  Toolkit.getDefaultToolkit.addAWTEventListener((event: AWTEvent) => {
+    if (SwingUtilities.isDescendingFrom(event.getSource.asInstanceOf[Component], this)) {
+      banner.setVisible(ReplChangesObserver.hasModuleChanged(module))
+    }
+  }, AWTEvent.FOCUS_EVENT_MASK)
 
   override def print(text: String, contentType: ConsoleViewContentType): Unit = {
     var updatedText = text

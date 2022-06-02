@@ -6,6 +6,7 @@ import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalIde
 import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalIdeSettingsNames.A_PLUS_IS_ASSISTANT_MODE;
 import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalIdeSettingsNames.A_PLUS_READ_NEWS;
 import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalIdeSettingsNames.A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG;
+import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.LocalIdeSettingsNames.A_PLUS_HIDE_REPL_WARNING_BANNER;
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 import com.intellij.ide.util.PropertiesComponent;
@@ -70,6 +71,7 @@ public class PluginSettings implements MainViewModelProvider, DefaultGroupIdSett
 
   public enum LocalIdeSettingsNames {
     A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG("A+.showReplConfigDialog"),
+    A_PLUS_HIDE_REPL_WARNING_BANNER("A+.hideReplWarningBanner"),
     A_PLUS_IMPORTED_IDE_SETTINGS("A+.importedIdeSettings"),
     A_PLUS_DEFAULT_GROUP("A+.defaultGroup"),
     A_PLUS_SHOW_NON_SUBMITTABLE("A+.showNonSubmittable"),
@@ -282,6 +284,21 @@ public class PluginSettings implements MainViewModelProvider, DefaultGroupIdSett
         //  a String explicitly
         .setValue(A_PLUS_SHOW_REPL_CONFIGURATION_DIALOG.getName(),
             String.valueOf(showReplConfigDialog));
+  }
+
+  /**
+   * Whether the REPL window should inform the user that a module for which the REPL is running has changed.
+   */
+  public boolean shouldHideReplModuleChangedWarning() {
+    return Boolean.parseBoolean(applicationPropertiesManager.getValue(A_PLUS_HIDE_REPL_WARNING_BANNER.getName()));
+  }
+
+  /**
+   * Sets whether the REPL window should inform the user that a module for which the REPL is running has changed.
+   */
+  public void setHideReplModuleChangedWarning(boolean shouldShowWarning) {
+    applicationPropertiesManager
+        .setValue(A_PLUS_HIDE_REPL_WARNING_BANNER.getName(), String.valueOf(shouldShowWarning));
   }
 
   public String getImportedIdeSettingsId() {

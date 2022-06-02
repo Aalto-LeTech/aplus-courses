@@ -51,6 +51,10 @@ public class ReplChangesObserver {
     }
   }
 
+  public static boolean hasModuleChanged(@NotNull Module module) {
+    return modifiedModules.contains(module);
+  }
+
   private static class ChangesListener implements DocumentListener {
     private final @NotNull Project project;
 
