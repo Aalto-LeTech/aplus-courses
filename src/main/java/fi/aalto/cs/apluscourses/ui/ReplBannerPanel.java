@@ -24,13 +24,13 @@ public class ReplBannerPanel extends JPanel {
   public ReplBannerPanel() {
     super(new BorderLayout());
 
-    JPanel panel = new OpaquePanel(new FlowLayout(FlowLayout.LEFT));
+    final JPanel panel = new OpaquePanel(new FlowLayout(FlowLayout.LEFT));
     panel.setBorder(JBUI.Borders.empty(5, 0, 5, 5));
     panel.setMinimumSize(new Dimension(0, 0));
 
-    JLabel infoText = new JLabel("You need to restart the REPL for the code changes to be applied.");
-    JLabel dontShowOnceText = new JLabel("Ignore for this session");
-    JLabel neverAskAgainText = new JLabel("Never ask again");
+    final JLabel infoText = new JLabel("You need to restart the REPL for the code changes to be applied.");
+    final JLabel dontShowOnceText = new JLabel("Ignore for this session");
+    final JLabel neverAskAgainText = new JLabel("Never ask again");
 
     dontShowOnceText.setForeground(JBColor.BLUE);
     dontShowOnceText.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -62,7 +62,7 @@ public class ReplBannerPanel extends JPanel {
         PluginSettings.getInstance().setHideReplModuleChangedWarning(true);
         setVisible(false);
       }
-      
+
       @Override
       public void mousePressed(MouseEvent e) {}
 
