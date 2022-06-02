@@ -7,7 +7,10 @@ import fi.aalto.cs.apluscourses.intellij.utils.ReplChangesObserver
 import fi.aalto.cs.apluscourses.ui.ReplBannerPanel
 import org.jetbrains.plugins.scala.console.ScalaLanguageConsole
 
-import java.awt.{AWTEvent, BorderLayout, Color, Component, Toolkit}
+import java.awt.AWTEvent
+import java.awt.BorderLayout
+import java.awt.Component
+import java.awt.Toolkit
 import javax.swing.SwingUtilities
 
 class Repl(module: Module) extends ScalaLanguageConsole(module: Module) {
@@ -16,7 +19,6 @@ class Repl(module: Module) extends ScalaLanguageConsole(module: Module) {
     "Type in expressions for evaluation. Or try :help.\n"
 
   private val banner = new ReplBannerPanel()
-  banner.setBackground(new Color(100, 0, 0))
   banner.setVisible(false)
   add(banner, BorderLayout.NORTH)
 

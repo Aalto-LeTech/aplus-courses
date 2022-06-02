@@ -5,6 +5,7 @@ import com.intellij.ui.components.panels.OpaquePanel;
 import com.intellij.util.ui.JBUI;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -84,6 +85,7 @@ public class ReplBannerPanel extends JPanel {
 
     add(panel);
 
+    setBackground(new JBColor(new Color(200, 0, 0), new Color(100, 0, 0)));
     setBorder(BorderFactory.createCompoundBorder(
         BorderFactory.createMatteBorder(0, 0, 1, 0, JBColor.border()),
         BorderFactory.createEmptyBorder(0, 5, 0, 5))
