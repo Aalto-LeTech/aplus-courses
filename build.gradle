@@ -22,7 +22,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.jsoup:jsoup:1.14.3'
+    implementation 'org.jsoup:jsoup:1.15.1'
     implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
     implementation group: 'net.lingala.zip4j', name: 'zip4j', version: '2.10.0'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.8.2'
