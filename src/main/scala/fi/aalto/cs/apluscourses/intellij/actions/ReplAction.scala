@@ -13,7 +13,7 @@ import com.intellij.openapi.util.io.FileUtilRt.toSystemIndependentName
 import fi.aalto.cs.apluscourses.intellij.Repl
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings.MODULE_REPL_INITIAL_COMMANDS_FILE_NAME
-import fi.aalto.cs.apluscourses.intellij.utils.ModuleUtils
+import fi.aalto.cs.apluscourses.intellij.utils.{ModuleUtils, ReplChangesObserver}
 import fi.aalto.cs.apluscourses.presentation.ReplConfigurationFormModel
 import fi.aalto.cs.apluscourses.ui.repl.{ReplConfigurationDialog, ReplConfigurationForm}
 import fi.aalto.cs.apluscourses.utils.PluginResourceBundle.{getAndReplaceText, getText}
@@ -23,7 +23,6 @@ import org.jetbrains.plugins.scala.console.actions.RunConsoleAction
 import org.jetbrains.plugins.scala.console.configuration.ScalaConsoleRunConfiguration
 import org.jetbrains.plugins.scala.project.ProjectExt
 
-import scala.collection.mutable.StringBuilder
 import scala.jdk.CollectionConverters.ListHasAsScala
 
 /**
@@ -144,14 +143,14 @@ class ReplAction extends RunConsoleAction {
     configuration.setModule(module)
     configuration.setName(getAndReplaceText("ui.repl.console.name", module.getName))
 
-    val argsBuilder = new StringBuilder("-usejavacp " + getReplAdditionalArguments(module.getProject))
+    var args = "-usejavacp " + getReplAdditionalArguments(module.getProject)
 
     ModuleUtils.createInitialReplCommandsFile(module)
     if (ModuleUtils.initialReplCommandsFileExists(module)) {
-      argsBuilder.append(" -i " + MODULE_REPL_INITIAL_COMMANDS_FILE_NAME)
+      args += " -i " + MODULE_REPL_INITIAL_COMMANDS_FILE_NAME
     }
 
-    configuration.setMyConsoleArgs(argsBuilder.toString())
+    configuration.setMyConsoleArgs(args)
   }
 
   /**
