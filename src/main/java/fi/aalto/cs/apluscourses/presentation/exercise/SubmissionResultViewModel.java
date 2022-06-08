@@ -24,11 +24,14 @@ public class SubmissionResultViewModel extends SelectableNodeViewModel<Submissio
     this.submissionNumber = submissionNumber;
   }
 
+  /**
+   * Shows submission name, and if assistant mode is enabled, shows the id.
+   */
   @NotNull
   public String getPresentableName() {
-    return PluginSettings.getInstance().isAssistantMode() ?
-        getAndReplaceText("presentation.submissionResultViewModel.nameAssistant",
-            submissionNumber, String.valueOf(getId())) :
+    return PluginSettings.getInstance().isAssistantMode()
+        ? getAndReplaceText("presentation.submissionResultViewModel.nameAssistant",
+        submissionNumber, String.valueOf(getId())) :
         getAndReplaceText("presentation.submissionResultViewModel.name",
             submissionNumber);
   }
