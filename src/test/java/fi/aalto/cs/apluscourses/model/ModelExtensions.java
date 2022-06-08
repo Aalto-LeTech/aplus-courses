@@ -148,10 +148,13 @@ public class ModelExtensions {
                       @NotNull Set<String> optionalCategories,
                       @NotNull List<String> autoInstallComponentNames,
                       @NotNull Map<String, String[]> replInitialCommands,
+                      @NotNull String replAdditionalArguments,
                       @NotNull Version courseVersion,
                       @NotNull Map<Long, Tutorial> tutorials) {
       super(id, name, aplusUrl, languages, modules, libraries, exerciseModules, resourceUrls, vmOptions,
-          optionalCategories, autoInstallComponentNames, replInitialCommands, courseVersion, tutorials);
+          optionalCategories, autoInstallComponentNames, replInitialCommands,
+          replAdditionalArguments, courseVersion, tutorials, null,
+          "default");
       exerciseDataSource = new TestExerciseDataSource();
     }
 
@@ -189,10 +192,12 @@ public class ModelExtensions {
           Collections.emptyList(),
           // replInitialCommands
           Collections.emptyMap(),
+          // replAdditionalArguments
+          "",
           // courseVersion
           BuildInfo.INSTANCE.courseVersion,
           // tutorials
-          Collections.emptyMap());
+          Collections.emptyMap(), null, "default");
       this.exerciseDataSource = exerciseDataSource;
     }
 
@@ -241,12 +246,16 @@ public class ModelExtensions {
           Collections.emptyList(),
           // replInitialCommands
           Collections.emptyMap(),
+          // replAdditionalArguments
+          "",
           // courseVersion
           BuildInfo.INSTANCE.courseVersion,
           project,
           commonLibraryProvider,
           // tutorials
-          Collections.emptyMap());
+          Collections.emptyMap(),
+          null,
+          null);
     }
   }
 
@@ -422,8 +431,11 @@ public class ModelExtensions {
                                @NotNull Set<String> optionalCategories,
                                @NotNull List<String> autoInstallComponentNames,
                                @NotNull Map<String, String[]> replInitialCommands,
+                               @NotNull String replAdditionalArguments,
                                @NotNull Version courseVersion,
-                               @NotNull Map<Long, Tutorial> tutorials) {
+                               @NotNull Map<Long, Tutorial> tutorials,
+                               @Nullable String feedbackParser,
+                               @Nullable String newsParser) {
       return new ModelExtensions.TestCourse(
           id,
           name,
@@ -437,6 +449,7 @@ public class ModelExtensions {
           optionalCategories,
           autoInstallComponentNames,
           replInitialCommands,
+          replAdditionalArguments,
           courseVersion,
           tutorials
       );

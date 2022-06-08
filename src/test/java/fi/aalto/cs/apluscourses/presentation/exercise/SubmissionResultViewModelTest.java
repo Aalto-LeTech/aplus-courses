@@ -18,11 +18,14 @@ class SubmissionResultViewModelTest {
     SubmissionResult submissionResult
         = new SubmissionResult(123L, 15, 0.0, SubmissionResult.Status.WAITING, exercise, new SubmissionFileInfo[0], -1,
         -1);
-    SubmissionResultViewModel viewModel = new SubmissionResultViewModel(submissionResult, 34);
+    SubmissionResultViewModel viewModel = new SubmissionResultViewModel(submissionResult, 34, () -> true);
 
     Assertions.assertEquals("Submission 34 (123)", viewModel.getPresentableName());
     Assertions.assertEquals("In grading", viewModel.getStatusText());
     Assertions.assertTrue(viewModel.getChildren().isEmpty());
+
+    SubmissionResultViewModel viewModelNotAssistant = new SubmissionResultViewModel(submissionResult, 34, () -> false);
+    Assertions.assertEquals("Submission 34", viewModelNotAssistant.getPresentableName());
   }
 
 }

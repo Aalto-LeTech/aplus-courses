@@ -100,7 +100,7 @@ public class InitializationActivity implements Background {
     var progress = progressViewModel.start(3, getText("ui.ProgressBarView.loading"), false);
     progress.increment();
 
-    setCustomResources(project, course);
+    importSettings(project, course);
     progress.increment();
 
     var versionComparison = courseVersion.compareTo(course.getVersion());
@@ -172,13 +172,16 @@ public class InitializationActivity implements Background {
     }
   }
 
-  private void setCustomResources(@NotNull Project project, @NotNull Course course) {
+  private void importSettings(@NotNull Project project, @NotNull Course course) {
     var basePath = project.getBasePath();
     if (basePath != null) {
       try {
-        new SettingsImporter().importCustomProperties(Paths.get(project.getBasePath()), course, project);
+        var settingsImporter = new SettingsImporter();
+        settingsImporter.importCustomProperties(Paths.get(project.getBasePath()), course, project);
+        settingsImporter.importFeedbackCss(project, course);
       } catch (IOException e) {
-        // No custom resources.
+        logger.warn("Failed to import settings", e);
+        notifier.notify(new NetworkErrorNotification(e), project);
       }
     }
   }

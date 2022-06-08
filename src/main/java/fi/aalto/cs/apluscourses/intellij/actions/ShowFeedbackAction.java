@@ -26,11 +26,10 @@ import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
 
 public class ShowFeedbackAction extends AnAction {
   public static final String ACTION_ID = ShowFeedbackAction.class.getCanonicalName();
-
-  public static final List<String> SUPPORTED_COURSES = List.of("O1", "Programming Studio 2/A");
 
   @NotNull
   private final MainViewModelProvider mainViewModelProvider;
@@ -99,6 +98,10 @@ public class ShowFeedbackAction extends AnAction {
 
     var progress = mainViewModel.progressViewModel.start(1, "Loading Feedback...", true);
     try {
+      var feedbackCss = mainViewModel.getFeedbackCss();
+      if (feedbackCss == null) {
+        return;
+      }
 
       var feedbackString = exerciseDataSource.getSubmissionFeedback(submissionResult.getId(), authentication);
       var document = Jsoup.parseBodyFragment(feedbackString);
@@ -108,56 +111,23 @@ public class ShowFeedbackAction extends AnAction {
           String.format("#%02x%02x%02x", textColor.getRed(), textColor.getGreen(), textColor.getBlue());
       var fontName = JBFont.regular().getFontName();
 
-      switch (course.getName()) {
-        case "O1":
-          var style = document.select("style").first();
-          if (style != null) {
-            style.remove();
-          }
-          document.head().append(
-              "<style>body {  color: " + textColorString
-                  + ";  font-family: \"" + fontName
-                  + "\", sans-serif; font-weight: 500; padding: 30px; }"
-                  + ".glyphicon:before {  font-weight: bold;  font-size: 20; }"
-                  + ".glyphicon-minus:before {  content: \"-\"; }"
-                  + ".glyphicon-plus:before {  content: \"+\"; }"
-                  + ".label {  display: inline;  padding: .2em .6em .3em;  font-size: 75%;  font-weight: 700;"
-                  + "line-height: 1;  color: #fff;  text-align: center;  white-space: nowrap;"
-                  + "vertical-align: baseline;  border-radius: .25em; }"
-                  + ".label-success {  background-color: #00803c; }"
-                  + ".label-danger {  background-color: #a50000; }"
-                  + "pre {  display: block;  padding: 10.5px;  margin: 0 0 11px;  font-size: 15px;"
-                  + "line-height: 1.428571429;  color: #333;  word-break: break-all;  word-wrap: break-word;"
-                  + "background-color: #f5f5f5;  border: 1px solid #ccc;  border-radius: 4px;  width: fit-content; }"
-                  + "code { padding: 2px 4px; font-size: 90%; color: #c7254e; background-color: #f9f2f4;"
-                  + "border-radius: 4px }"
-                  + ".alert {  padding: 15px;  margin-bottom: 22px;  border: 1px solid transparent;"
-                  + "border-top-color: transparent;  border-right-color: transparent;"
-                  + "border-bottom-color: transparent;  border-left-color: transparent;  border-radius: 4px;"
-                  + " width: fit-content; }"
-                  + ".alert-warning {  color: #8a6d3b;  background-color: #fcf8e3;  border-color: #faebcc; }"
-                  + "ul.last-red>li:last-child {  width: fit-content;  padding: 2;  border-radius: .25em; "
-                  + "background-color: #a50000;  color: white; }</style>");
-          break;
-        case "Programming Studio 2/A":
-          document.head().append("<style>body {  color: " + textColorString
-              + ";  font-family: \"" + fontName + "\", sans-serif; font-weight: 500; padding: 30px; }"
-              + "pre { display: block; padding: 10.5px; margin: 0 0 11px; font-size: 15px; line-height: 1.428571429;"
-              + "color: #333; word-break: break-all; word-wrap: break-word; background-color: #f5f5f5;"
-              + "border: 1px solid #ccc; border-radius: 4px;}</style>");
-          break;
-        default:
-          throw new IllegalStateException("Unexpected value: " + course.getName());
-      }
+      document.head().append("<style>"
+          + Jsoup.clean(
+          feedbackCss
+              .replaceAll("TEXT_COLOR", textColorString)
+              .replaceAll("FONT_NAME", fontName),
+          Whitelist.none())
+          + "</style>");
 
       var fileEditorManager = FileEditorManager.getInstance(project);
 
       Arrays.stream(fileEditorManager.getAllEditors())
-          .filter(editor -> editor.getFile() != null && editor.getFile().getName().startsWith("Feedback")).findFirst()
+          .filter(editor -> editor.getFile() != null && editor.getFile().getName().startsWith("Feedback for "))
+          .findFirst()
           .ifPresent(editor -> fileEditorManager.closeFile(Objects.requireNonNull(editor.getFile())));
       HTMLEditorProvider.openEditor(project, getAndReplaceText("ui.ShowFeedbackAction.feedbackTitle",
               APlusLocalizationUtil.getEnglishName(submissionResult.getExercise().getName()),
-              submissionResult.getId()),
+              String.valueOf(submissionResult.getId())),
           document.html());
     } catch (IOException ex) {
       notifier.notify(new NetworkErrorNotification(ex), project);
@@ -177,8 +147,7 @@ public class ShowFeedbackAction extends AnAction {
     var exercisesViewModel = mainViewModel.exercisesViewModel.get();
     var courseViewModel = mainViewModel.courseViewModel.get();
 
-    if (courseViewModel == null || exercisesViewModel == null
-        || SUPPORTED_COURSES.stream().noneMatch(name -> name.equals(courseViewModel.getModel().getName()))) {
+    if (courseViewModel == null || exercisesViewModel == null || mainViewModel.getFeedbackCss() == null) {
       e.getPresentation().setVisible(false);
       return;
     }

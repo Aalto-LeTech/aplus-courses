@@ -22,11 +22,11 @@ public class JsonFileCache extends FileCache<String, JSONObject> {
     Map<String, CacheEntry<JSONObject>> entries = new HashMap<>();
     var json = new JSONObject(FileUtils.readFileToString(file, StandardCharsets.UTF_8));
     Iterable<String> keys = json::keys;
-    for (String url : keys) {
-      var entryJson = json.getJSONObject(url);
+    for (String key : keys) {
+      var entryJson = json.getJSONObject(key);
       var createdAt = ZonedDateTime.parse(entryJson.getString("createdAt"));
       var value = entryJson.getJSONObject("value");
-      entries.put(url, new CacheEntry<>(value, createdAt));
+      entries.put(key, new CacheEntry<>(value, createdAt));
     }
     return entries;
   }
@@ -35,11 +35,11 @@ public class JsonFileCache extends FileCache<String, JSONObject> {
   protected void toFile(@NotNull File file,
                         @NotNull Map<String, CacheEntry<JSONObject>> entries) throws IOException {
     var json = new JSONObject();
-    entries.forEach((url, entry) -> {
+    entries.forEach((key, entry) -> {
       var entryJson = new JSONObject();
       entryJson.put("createdAt", entry.getCreationTime().toString());
       entryJson.put("value", entry.getValue());
-      json.put(url, entryJson);
+      json.put(key, entryJson);
     });
     FileUtils.writeStringToFile(file, json.toString(), StandardCharsets.UTF_8);
   }

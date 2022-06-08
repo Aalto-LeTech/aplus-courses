@@ -5,7 +5,7 @@
             url="https://research.cs.aalto.fi/LeTech/">LeTech Group at Aalto University
     </vendor>
     <!--  this is the range of supported IntelliJ IDEA version the plugin can be used with  -->
-    <idea-version since-build="212.4746"/>
+    <idea-version since-build="213.5744.223"/>
 
     <description><![CDATA[
     This plugin supports the educational use of IntelliJ IDEA (and its Scala plugin) in programming
@@ -29,6 +29,10 @@
                     anchor="right"
                     factoryClass="fi.aalto.cs.apluscourses.intellij.toolwindows.APlusToolWindowFactory"
                     icon="PluginIcons.A_PLUS_LOGO"/>
+
+        <moduleType id="APLUS_MODULE_TYPE"
+                    implementationClass="fi.aalto.cs.apluscourses.intellij.generator.APlusModuleType"
+                    order="last"/>
 
         <errorHandler implementation="fi.aalto.cs.apluscourses.intellij.utils.ErrorHandler"/>
         <httpRequestHandler implementation="fi.aalto.cs.apluscourses.intellij.services.OpenSubmissionService"/>
@@ -124,6 +128,7 @@
                    text="Filter Assignments"
                    icon="PluginIcons.A_PLUS_FILTER">
             </group>
+            <separator/>
             <action id="fi.aalto.cs.apluscourses.intellij.actions.SelectStudentAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.SelectStudentAction"
                     text="Select Student"

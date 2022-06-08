@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.ui.module;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import fi.aalto.cs.apluscourses.intellij.toolwindows.APlusToolWindowFactory;
@@ -20,14 +22,21 @@ public class ModulesDialog extends DialogWrapper {
 
     this.modulesView = APlusToolWindowFactory.createModulesView(project);
 
-    init();
+    setModal(false);
 
+    init();
     setSize(400, 600);
   }
 
   @Override
   protected Action @NotNull [] createActions() {
-    return new Action[0];
+    return new Action[] {new DialogWrapperExitAction(getText("ui.close"), OK_EXIT_CODE)};
+  }
+
+  @Override
+  @Nullable
+  public JComponent getPreferredFocusedComponent() {
+    return modulesView.moduleListView;
   }
 
   @Override

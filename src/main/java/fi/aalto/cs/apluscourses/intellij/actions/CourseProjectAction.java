@@ -43,6 +43,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -203,7 +204,7 @@ public class CourseProjectAction extends AnAction {
     boolean importIdeSettings = courseProjectViewModel.shouldApplyNewIdeSettings();
     logger.info("Should apply new IDE settings: {}", importIdeSettings);
 
-    String basePath = project.getBasePath();
+    var basePath = Optional.ofNullable(project.getBasePath()).map(Paths::get).orElse(null);
     if (basePath == null) {
       logger.warn("Settings could not be imported because (default?) project does not have path.");
       return;
@@ -218,13 +219,15 @@ public class CourseProjectAction extends AnAction {
     Future<?> autoInstallDone = executor.submit(() -> startAutoInstalls(course, project));
 
     Future<Boolean> projectSettingsImported =
-        executor.submit(() -> tryImportProjectSettings(project, Paths.get(basePath), course));
+        executor.submit(() -> tryImportProjectSettings(project, basePath, course));
 
     Future<Boolean> ideSettingsImported =
         executor.submit(() -> importIdeSettings && tryImportIdeSettings(project, course));
 
     Future<Boolean> customPropertiesImported =
-        executor.submit(() -> tryImportCustomProperties(project, Paths.get(basePath), course));
+        executor.submit(() -> tryImportCustomProperties(project, basePath, course));
+
+    executor.submit(() -> tryImportFeedbackCss(project, course));
 
     ComponentDatabase.showToolWindow(ComponentDatabase.APLUS_TOOL_WINDOW, project);
 
@@ -410,6 +413,16 @@ public class CourseProjectAction extends AnAction {
       logger.warn("Failed to import custom properties", e);
       notifier.notify(new NetworkErrorNotification(e), project);
       return false;
+    }
+  }
+
+  private void tryImportFeedbackCss(@NotNull Project project,
+                                    @NotNull Course course) {
+    try {
+      settingsImporter.importFeedbackCss(project, course);
+    } catch (IOException e) {
+      logger.warn("Failed to import custom properties", e);
+      notifier.notify(new NetworkErrorNotification(e), project);
     }
   }
 }

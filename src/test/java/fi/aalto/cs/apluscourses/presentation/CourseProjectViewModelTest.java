@@ -40,6 +40,8 @@ class CourseProjectViewModelTest {
       Collections.emptyList(),
       // replInitialCommands
       Collections.emptyMap(),
+      // replAdditionalArguments
+      "",
       // courseVersion
       BuildInfo.INSTANCE.courseVersion,
       // tutorials

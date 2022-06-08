@@ -4,7 +4,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-public class O1NewsParser implements NewsParser {
+public class O1NewsParser extends NewsParser {
+
+  public static final String NAME = "O1";
+
   @NotNull
   private final String language;
 

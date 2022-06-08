@@ -84,13 +84,18 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
    */
   public void setViewModel(@Nullable BaseTreeViewModel<?> viewModel) {
     if (viewModel != null) {
+      var oldSelectedItem = Optional.ofNullable(this.viewModel)
+          .map(BaseTreeViewModel::getSelectedItem)
+          .orElse(null);
       synchronized (viewModelLock) {
         unregisterViewModel();
         this.viewModel = viewModel;
         registerViewModel();
       }
       update();
-      viewModel.setSelectedItem(null);
+      if (oldSelectedItem == null) {
+        viewModel.setSelectedItem(null);
+      }
     }
   }
 
