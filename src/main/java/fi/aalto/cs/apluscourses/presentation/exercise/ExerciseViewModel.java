@@ -18,6 +18,9 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
   public ExerciseViewModel(@NotNull Exercise exercise) {
     super(exercise, CollectionUtil.mapWithIndex(
         exercise.getSubmissionResults(), SubmissionResultViewModel::new, 1));
+    if (exercise.isSubmittable()) {
+      getChildren().add(new SubmitExerciseViewModel());
+    }
     Collections.reverse(getChildren());
   }
 

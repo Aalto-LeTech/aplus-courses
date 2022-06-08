@@ -10,6 +10,7 @@ import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseGroupViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionResultViewModel;
+import fi.aalto.cs.apluscourses.presentation.exercise.SubmitExerciseViewModel;
 import fi.aalto.cs.apluscourses.ui.base.TreeView;
 import icons.PluginIcons;
 import javax.swing.Icon;
@@ -91,6 +92,10 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
       append(" [" + resultViewModel.getStatusText() + "]", STATUS_TEXT_STYLE, false);
       setToolTipText(
           getAndReplaceText("ui.exercise.ExercisesTreeRenderer.tooltip", String.valueOf(resultViewModel.getId())));
+    } else if (viewModel instanceof SubmitExerciseViewModel) {
+      SubmitExerciseViewModel resultViewModel = (SubmitExerciseViewModel) viewModel;
+      setEnabled(true);
+      append(resultViewModel.getPresentableName(), SimpleTextAttributes.GRAY_ATTRIBUTES, true);
     }
   }
 }

@@ -85,6 +85,8 @@ public class APlusToolWindowFactory extends BaseToolWindowFactory implements Dum
     MainViewModel mainViewModel = PluginSettings.getInstance().getMainViewModel(project);
 
     ExercisesView exercisesView = new ExercisesView();
+    mainViewModel.courseViewModel.addValueObserver(exercisesView, ((observer, value) ->
+        observer.setSubmissionAction(mainViewModel.getFeedbackCss() != null)));
 
     mainViewModel.exercisesViewModel
         .addValueObserver(exercisesView, ExercisesView::viewModelChanged);
