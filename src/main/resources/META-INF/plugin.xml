@@ -98,6 +98,10 @@
                     class="fi.aalto.cs.apluscourses.intellij.actions.RefreshModulesAction"
                     text="Refresh Modules"
                     icon="PluginIcons.A_PLUS_REFRESH"/>
+            <action id="fi.aalto.cs.apluscourses.intellij.actions.OpenDocumentationAction"
+                    class="fi.aalto.cs.apluscourses.intellij.actions.OpenDocumentationAction"
+                    text="Open Documentation"
+                    icon="PluginIcons.A_PLUS_REFRESH"/>
         </group>
         <group id="fi.aalto.cs.apluscourses.intellij.actions.ActionGroups.EXERCISE_ACTIONS"
                text="A+ Assignment"

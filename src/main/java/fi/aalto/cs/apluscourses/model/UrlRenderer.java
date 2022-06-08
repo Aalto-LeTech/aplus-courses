@@ -8,7 +8,11 @@ import org.jetbrains.annotations.NotNull;
 public class UrlRenderer {
 
   public void show(@NotNull String url) throws URISyntaxException {
-    BrowserUtil.browse(new URI(url));
+    this.show(new URI(url));
+  }
+
+  public void show(@NotNull URI uri) {
+    BrowserUtil.browse(uri);
   }
 
 }
