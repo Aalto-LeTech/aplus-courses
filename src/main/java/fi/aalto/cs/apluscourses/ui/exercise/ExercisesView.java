@@ -95,7 +95,7 @@ public class ExercisesView implements ToolbarPanel {
     title = new JLabel();
     exerciseGroupsTree = new ExercisesTreeView();
     exerciseGroupsTree.setCellRenderer(new ExercisesTreeRenderer());
-    exerciseGroupsTree.addNodeAppliedListener(SubmitExerciseViewModel.class.getName(),
+    exerciseGroupsTree.addNodeAppliedListener(SubmitExerciseViewModel.class,
         ActionUtil.createOnEventLauncher(SubmitExerciseAction.ACTION_ID, exerciseGroupsTree));
 
     new TreeSpeedSearch(exerciseGroupsTree, treePath -> {
@@ -112,12 +112,12 @@ public class ExercisesView implements ToolbarPanel {
    * Sets the nodeAppliedListener as OpenExerciseItemAction if the course isn't supported in ShowFeedbackAction,
    * else ShowFeedbackAction.
    */
-  public void setCourseName(String courseName) {
-    if (ShowFeedbackAction.SUPPORTED_COURSES.stream().noneMatch(name -> name.equals(courseName))) {
-      exerciseGroupsTree.addNodeAppliedListener(SubmissionResultViewModel.class.getName(),
+  public void setSubmissionAction(boolean feedbackEnabled) {
+    if (!feedbackEnabled) {
+      exerciseGroupsTree.addNodeAppliedListener(SubmissionResultViewModel.class,
           ActionUtil.createOnEventLauncher(OpenExerciseItemAction.ACTION_ID, exerciseGroupsTree));
     } else {
-      exerciseGroupsTree.addNodeAppliedListener(SubmissionResultViewModel.class.getName(),
+      exerciseGroupsTree.addNodeAppliedListener(SubmissionResultViewModel.class,
           ActionUtil.createOnEventLauncher(ShowFeedbackAction.ACTION_ID, exerciseGroupsTree));
     }
   }

@@ -12,6 +12,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -127,8 +128,8 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
     setSelectionRows(selection);
   }
 
-  public void addNodeAppliedListener(@NotNull String key, @NotNull ActionListener listener) {
-    nodeAppliedListeners.put(key, listener);
+  public void addNodeAppliedListener(@NotNull Class<?> clazz, @NotNull ActionListener listener) {
+    nodeAppliedListeners.put(clazz.getName(), listener);
   }
 
   public void removeNodeAppliedListener(@NotNull String key) {
