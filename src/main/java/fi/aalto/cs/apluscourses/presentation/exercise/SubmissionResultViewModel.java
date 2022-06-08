@@ -4,6 +4,7 @@ import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getAndReplaceT
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
+import fi.aalto.cs.apluscourses.intellij.utils.Interfaces;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import fi.aalto.cs.apluscourses.presentation.base.Searchable;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
@@ -13,6 +14,9 @@ import org.jetbrains.annotations.NotNull;
 public class SubmissionResultViewModel extends SelectableNodeViewModel<SubmissionResult>
     implements Searchable {
 
+  @NotNull
+  private final Interfaces.AssistantModeProvider assistantModeProvider;
+
   private final int submissionNumber;
 
   /**
@@ -20,8 +24,18 @@ public class SubmissionResultViewModel extends SelectableNodeViewModel<Submissio
    */
   public SubmissionResultViewModel(@NotNull SubmissionResult submissionResult,
                                    int submissionNumber) {
+    this(submissionResult, submissionNumber, () -> PluginSettings.getInstance().isAssistantMode());
+  }
+
+  /**
+   * Construct a view model corresponding to the given submission result.
+   */
+  public SubmissionResultViewModel(@NotNull SubmissionResult submissionResult,
+                                   int submissionNumber,
+                                   @NotNull Interfaces.AssistantModeProvider assistantModeProvider) {
     super(submissionResult, null);
     this.submissionNumber = submissionNumber;
+    this.assistantModeProvider = assistantModeProvider;
   }
 
   /**
@@ -29,7 +43,7 @@ public class SubmissionResultViewModel extends SelectableNodeViewModel<Submissio
    */
   @NotNull
   public String getPresentableName() {
-    return PluginSettings.getInstance().isAssistantMode()
+    return assistantModeProvider.isAssistantMode()
         ? getAndReplaceText("presentation.submissionResultViewModel.nameAssistant",
         submissionNumber, String.valueOf(getId())) :
         getAndReplaceText("presentation.submissionResultViewModel.name",
