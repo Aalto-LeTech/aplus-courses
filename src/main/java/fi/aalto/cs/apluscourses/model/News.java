@@ -9,6 +9,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Arrays;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
@@ -59,16 +60,14 @@ public class News implements Browsable {
     var body = object.getString("body");
     var bodyElement = Jsoup.parseBodyFragment(body).body();
 
-    var parser = new NewsParser();
-    if (course.getNewsParser() != null) {
-      switch (course.getNewsParser()) {
-        case O1NewsParser.NAME:
-          parser = new O1NewsParser(language);
-          break;
-        default:
-      }
-    } else if (course.getName().equals(O1NewsParser.NAME)) {
-      parser = new O1NewsParser(language);
+    NewsParser parser;
+    var parserKey = Optional.ofNullable(course.getNewsParser()).orElse(course.getName());
+    switch (parserKey) {
+      case O1NewsParser.NAME:
+        parser = new O1NewsParser(language);
+        break;
+      default:
+        parser = new NewsParser();
     }
     var titleText = parser.parseTitle(titleElement);
     var bodyText = parser.parseBody(bodyElement);

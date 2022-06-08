@@ -112,8 +112,9 @@ public class ShowFeedbackAction extends AnAction {
 
       document.head().append("<style>"
           + Jsoup.clean(
-          feedbackCss.replaceFirst("TEXT_COLOR", textColorString)
-              .replaceFirst("FONT_NAME", fontName),
+          feedbackCss
+              .replaceAll("TEXT_COLOR", textColorString)
+              .replaceAll("FONT_NAME", fontName),
           Safelist.none())
           + "</style>");
 
