@@ -30,6 +30,9 @@ public class OpenDocumentationAction extends DumbAwareAction {
   @NotNull
   private final Notifier notifier;
 
+  /**
+   * Action constructor.
+   */
   public OpenDocumentationAction(@NotNull MainViewModelProvider mainViewModelProvider,
                                  @NotNull UrlRenderer urlRenderer,
                                  @NotNull Notifier notifier) {
