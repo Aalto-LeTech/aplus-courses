@@ -22,6 +22,7 @@ public interface ModelFactory {
                       @NotNull Set<String> optionalCategories,
                       @NotNull List<String> autoInstallComponentNames,
                       @NotNull Map<String, String[]> replInitialCommands,
+                      @NotNull String replAdditionalArguments,
                       @NotNull Version courseVersion,
                       @NotNull Map<Long, Tutorial> tutorials,
                       @Nullable String feedbackParser,

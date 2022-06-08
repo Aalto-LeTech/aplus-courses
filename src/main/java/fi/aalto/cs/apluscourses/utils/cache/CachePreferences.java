@@ -4,6 +4,8 @@ import java.time.Duration;
 
 public class CachePreferences {
 
+  public static final CachePreference PERMANENT =
+      new CachePreference(Duration.ofDays(10000), CachePreference.LONG_TIME_CACHE);
   public static final CachePreference GET_MAX_ONE_WEEK_OLD =
       new CachePreference(Duration.ofDays(7), CachePreference.LONG_TIME_CACHE);
   public static final CachePreference FOR_THIS_SESSION_ONLY =

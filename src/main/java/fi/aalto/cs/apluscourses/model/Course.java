@@ -75,6 +75,9 @@ public abstract class Course implements ComponentSource {
   private final Map<String, String[]> replInitialCommands;
 
   @NotNull
+  private final String replAdditionalArguments;
+
+  @NotNull
   private final Version courseVersion;
 
   @NotNull
@@ -108,6 +111,7 @@ public abstract class Course implements ComponentSource {
                    @NotNull Set<String> optionalCategories,
                    @NotNull List<String> autoInstallComponentNames,
                    @NotNull Map<String, String[]> replInitialCommands,
+                   @NotNull String replAdditionalArguments,
                    @NotNull Version courseVersion,
                    @NotNull Map<Long, Tutorial> tutorials,
                    @Nullable String feedbackParser,
@@ -129,6 +133,7 @@ public abstract class Course implements ComponentSource {
     this.components = Stream.concat(modules.stream(), libraries.stream())
         .collect(Collectors.toMap(Component::getName, Function.identity()));
     this.replInitialCommands = replInitialCommands;
+    this.replAdditionalArguments = replAdditionalArguments;
     this.courseVersion = courseVersion;
   }
 
@@ -183,6 +188,7 @@ public abstract class Course implements ComponentSource {
         = getCourseAutoInstallComponentNames(jsonObject, sourcePath);
     Map<String, String[]> replInitialCommands
         = getCourseReplInitialCommands(jsonObject, sourcePath);
+    String replAdditionalArguments = getCourseReplAdditionalArguments(jsonObject, sourcePath);
     Version courseVersion = getCourseVersion(jsonObject, sourcePath);
     Map<Long, Tutorial> tutorials = getTutorials(jsonObject);
     String feedbackParser = jsonObject.optString("feedbackParser", null);
@@ -200,6 +206,7 @@ public abstract class Course implements ComponentSource {
         optionalCategories,
         autoInstallComponentNames,
         replInitialCommands,
+        replAdditionalArguments,
         courseVersion,
         tutorials,
         feedbackParser,
@@ -599,6 +606,18 @@ public abstract class Course implements ComponentSource {
   }
 
   @NotNull
+  private static String getCourseReplAdditionalArguments(@NotNull JSONObject jsonObject,
+                                                         @NotNull String source)
+      throws MalformedCourseConfigurationException {
+    try {
+      return jsonObject.optString("replArguments", "");
+    } catch (JSONException ex) {
+      throw new MalformedCourseConfigurationException(source,
+              "Malformed or non-string \"replArguments\" key", ex);
+    }
+  }
+
+  @NotNull
   private static Version getCourseVersion(@NotNull JSONObject jsonObject,
                                           @NotNull String source)
       throws MalformedCourseConfigurationException {
@@ -683,6 +702,11 @@ public abstract class Course implements ComponentSource {
   @NotNull
   public Map<String, String[]> getReplInitialCommands() {
     return replInitialCommands;
+  }
+
+  @NotNull
+  public String getReplAdditionalArguments() {
+    return replAdditionalArguments;
   }
 
   @NotNull
