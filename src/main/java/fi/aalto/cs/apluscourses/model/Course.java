@@ -83,6 +83,12 @@ public abstract class Course implements ComponentSource {
   @NotNull
   private final Map<Long, Tutorial> tutorials;
 
+  @Nullable
+  private final String feedbackParser;
+
+  @Nullable
+  private final String newsParser;
+
   /**
    * Constructs a course with the given parameters.
    *
@@ -107,7 +113,9 @@ public abstract class Course implements ComponentSource {
                    @NotNull Map<String, String[]> replInitialCommands,
                    @NotNull String replAdditionalArguments,
                    @NotNull Version courseVersion,
-                   @NotNull Map<Long, Tutorial> tutorials) {
+                   @NotNull Map<Long, Tutorial> tutorials,
+                   @Nullable String feedbackParser,
+                   @Nullable String newsParser) {
     this.id = id;
     this.name = name;
     this.aplusUrl = aplusUrl;
@@ -120,6 +128,8 @@ public abstract class Course implements ComponentSource {
     this.optionalCategories = optionalCategories;
     this.autoInstallComponentNames = autoInstallComponentNames;
     this.tutorials = tutorials;
+    this.feedbackParser = feedbackParser;
+    this.newsParser = newsParser;
     this.components = Stream.concat(modules.stream(), libraries.stream())
         .collect(Collectors.toMap(Component::getName, Function.identity()));
     this.replInitialCommands = replInitialCommands;
@@ -181,6 +191,8 @@ public abstract class Course implements ComponentSource {
     String replAdditionalArguments = getCourseReplAdditionalArguments(jsonObject, sourcePath);
     Version courseVersion = getCourseVersion(jsonObject, sourcePath);
     Map<Long, Tutorial> tutorials = getTutorials(jsonObject);
+    String feedbackParser = jsonObject.optString("feedbackParser", null);
+    String newsParser = jsonObject.optString("newsParser", null);
     return factory.createCourse(
         courseId,
         courseName,
@@ -196,7 +208,9 @@ public abstract class Course implements ComponentSource {
         replInitialCommands,
         replAdditionalArguments,
         courseVersion,
-        tutorials
+        tutorials,
+        feedbackParser,
+        newsParser
     );
   }
 
@@ -519,7 +533,7 @@ public abstract class Course implements ComponentSource {
 
   @NotNull
   private static Set<String> getCourseOptionalCategories(@NotNull JSONObject jsonObject,
-                                                    @NotNull String source)
+                                                         @NotNull String source)
       throws MalformedCourseConfigurationException {
     JSONArray categoriesJson = jsonObject.optJSONArray("optionalCategories");
     if (categoriesJson == null) {
@@ -702,4 +716,14 @@ public abstract class Course implements ComponentSource {
 
   @NotNull
   public abstract ExerciseDataSource getExerciseDataSource();
+
+  @Nullable
+  public String getFeedbackParser() {
+    return feedbackParser;
+  }
+
+  @Nullable
+  public String getNewsParser() {
+    return newsParser;
+  }
 }

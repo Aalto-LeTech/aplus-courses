@@ -21,7 +21,6 @@ import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.model.Tutorial;
 import fi.aalto.cs.apluscourses.utils.Version;
 import java.net.URL;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -64,7 +63,9 @@ public class IntelliJCourse extends Course {
                         @NotNull Version courseVersion,
                         @NotNull APlusProject project,
                         @NotNull CommonLibraryProvider commonLibraryProvider,
-                        @NotNull Map<Long, Tutorial> tutorials) {
+                        @NotNull Map<Long, Tutorial> tutorials,
+                        @Nullable String feedbackParser,
+                        @Nullable String newsParser) {
     super(
         id,
         name,
@@ -80,7 +81,9 @@ public class IntelliJCourse extends Course {
         replInitialCommands,
         replAdditionalArguments,
         courseVersion,
-        tutorials);
+        tutorials,
+        feedbackParser,
+        newsParser);
 
     this.project = project;
     this.commonLibraryProvider = commonLibraryProvider;

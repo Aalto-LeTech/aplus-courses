@@ -101,7 +101,7 @@
         </group>
         <group id="fi.aalto.cs.apluscourses.intellij.actions.ActionGroups.EXERCISE_ACTIONS"
                text="A+ Assignment"
-               description="Actions for A+ modules">
+               description="Actions for A+ assignments">
             <action id="fi.aalto.cs.apluscourses.intellij.actions.SubmitExerciseAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.SubmitExerciseAction"
                     text="Submit A+ Assignment"
@@ -114,6 +114,10 @@
                     class="fi.aalto.cs.apluscourses.intellij.actions.OpenExerciseItemAction"
                     text="Open In Browser"
                     icon="PluginIcons.A_PLUS_BROWSE"/>
+            <action id="fi.aalto.cs.apluscourses.intellij.actions.ShowFeedbackAction"
+                    class="fi.aalto.cs.apluscourses.intellij.actions.ShowFeedbackAction"
+                    text="Show Feedback"
+                    icon="PluginIcons.A_PLUS_FEEDBACK"/>
             <action id="fi.aalto.cs.apluscourses.intellij.actions.ExercisesRefreshAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.RefreshExercisesAction"
                     text="Refresh Assignments"
@@ -124,6 +128,7 @@
                    text="Filter Assignments"
                    icon="PluginIcons.A_PLUS_FILTER">
             </group>
+            <separator/>
             <action id="fi.aalto.cs.apluscourses.intellij.actions.SelectStudentAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.SelectStudentAction"
                     text="Select Student"
