@@ -324,7 +324,7 @@ public class SubmitExerciseAction extends AnAction {
     logger.info("Submission url: {}", submissionUrl);
 
     new SubmissionStatusUpdater(
-        project, exerciseDataSource, authentication, submissionUrl, selectedExercise.getModel()
+        project, exerciseDataSource, authentication, submissionUrl, selectedExercise.getModel(), course
     ).start();
     notifier.notifyAndHide(new SubmissionSentNotification(), project);
 
@@ -393,7 +393,8 @@ public class SubmitExerciseAction extends AnAction {
     String submissionUrl = exerciseDataSource.submit(submission.buildSubmission(), authentication);
     logger.info("Tutorial submission url: {}", submissionUrl);
 
-    new SubmissionStatusUpdater(project, exerciseDataSource, authentication, submissionUrl, exercise).start();
+    new SubmissionStatusUpdater(project, exerciseDataSource, authentication, submissionUrl, exercise,
+        courseViewModel.getModel()).start();
     notifier.notifyAndHide(new SubmissionSentNotification(), project);
   }
 

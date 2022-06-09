@@ -7,6 +7,7 @@ import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import fi.aalto.cs.apluscourses.utils.Version;
 import fi.aalto.cs.apluscourses.utils.cache.CachePreference;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -79,11 +80,18 @@ public class ModelExtensions {
       );
     }
 
+    @Override
+    public @NotNull String getSubmissionFeedback(long submissionId, @NotNull Authentication authentication)
+        throws IOException {
+      return "";
+    }
+
     @NotNull
     @Override
     public SubmissionResult getSubmissionResult(@NotNull String submissionUrl,
                                                 @NotNull Exercise exercise,
                                                 @NotNull Authentication authentication,
+                                                @NotNull Course course,
                                                 @NotNull CachePreference cachePreference) {
       return new SubmissionResult(0, 20, 0.0, SubmissionResult.Status.GRADED, exercise);
     }
@@ -145,7 +153,8 @@ public class ModelExtensions {
                       @NotNull Map<Long, Tutorial> tutorials) {
       super(id, name, aplusUrl, languages, modules, libraries, exerciseModules, resourceUrls, vmOptions,
           optionalCategories, autoInstallComponentNames, replInitialCommands,
-          replAdditionalArguments, courseVersion, tutorials);
+          replAdditionalArguments, courseVersion, tutorials, null,
+          "default");
       exerciseDataSource = new TestExerciseDataSource();
     }
 
@@ -188,7 +197,7 @@ public class ModelExtensions {
           // courseVersion
           BuildInfo.INSTANCE.courseVersion,
           // tutorials
-          Collections.emptyMap());
+          Collections.emptyMap(), null, "default");
       this.exerciseDataSource = exerciseDataSource;
     }
 
@@ -244,7 +253,9 @@ public class ModelExtensions {
           project,
           commonLibraryProvider,
           // tutorials
-          Collections.emptyMap());
+          Collections.emptyMap(),
+          null,
+          null);
     }
   }
 
@@ -422,7 +433,9 @@ public class ModelExtensions {
                                @NotNull Map<String, String[]> replInitialCommands,
                                @NotNull String replAdditionalArguments,
                                @NotNull Version courseVersion,
-                               @NotNull Map<Long, Tutorial> tutorials) {
+                               @NotNull Map<Long, Tutorial> tutorials,
+                               @Nullable String feedbackParser,
+                               @Nullable String newsParser) {
       return new ModelExtensions.TestCourse(
           id,
           name,

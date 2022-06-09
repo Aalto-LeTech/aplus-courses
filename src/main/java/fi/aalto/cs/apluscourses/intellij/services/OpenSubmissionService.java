@@ -112,7 +112,7 @@ public class OpenSubmissionService extends RestService {
     try {
       var submissionResult = dataSource.getSubmissionResult(
           course.getApiUrl() + "submissions/" + submissionId + "/", exercise,
-          courseProject.getAuthentication(), CachePreferences.FOR_THIS_SESSION_ONLY);
+          courseProject.getAuthentication(), courseProject.getCourse(), CachePreferences.FOR_THIS_SESSION_ONLY);
 
       ApplicationManager.getApplication().invokeLater(
           () -> new SubmissionDownloader().downloadSubmission(project, course, exercise, submissionResult));
