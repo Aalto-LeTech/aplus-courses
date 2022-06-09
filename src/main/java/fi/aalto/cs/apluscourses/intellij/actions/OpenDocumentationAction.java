@@ -5,18 +5,11 @@ import com.intellij.openapi.project.DumbAwareAction;
 import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.UrlRenderingErrorNotification;
-import fi.aalto.cs.apluscourses.intellij.services.CourseProjectProvider;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Component;
-import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.UrlRenderer;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
-import fi.aalto.cs.apluscourses.presentation.base.BaseViewModel;
-import fi.aalto.cs.apluscourses.utils.StateMonitor;
-import java.nio.file.Path;
-import java.util.List;
-import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
 public class OpenDocumentationAction extends DumbAwareAction {
