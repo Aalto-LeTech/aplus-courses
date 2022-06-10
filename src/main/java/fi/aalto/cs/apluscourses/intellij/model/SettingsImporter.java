@@ -76,6 +76,7 @@ public class SettingsImporter {
   @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
   public void importVMOptions(@NotNull Course course) throws IOException {
     if (!VMOptions.canWriteOptions()) {
+      logger.warn("Cannot import VM options because the IDE is configured not to use them");
       return;
     }
 
