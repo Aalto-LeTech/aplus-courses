@@ -52,7 +52,6 @@ public final class PluginIcons {
       .getIcon("/META-INF/icons/refresh.svg", PluginIcons.class);
   public static final Icon A_PLUS_LOGO = IconLoader
       .getIcon("/META-INF/icons/aPlusLogo.svg", PluginIcons.class);
-
   public static final Icon A_PLUS_LOGO_COLOR = IconLoader
       .getIcon("/META-INF/icons/aPlusLogoColor.svg", PluginIcons.class);
   public static final Icon A_PLUS_REPL = IconLoader
@@ -81,4 +80,6 @@ public final class PluginIcons {
       .getIcon("/META-INF/icons/dummy.svg", PluginIcons.class);
   public static final Icon A_PLUS_CHECKED = IconLoader
       .getIcon("/META-INF/icons/checked.svg", PluginIcons.class);
+  public static final Icon A_PLUS_DOCS = IconLoader
+      .getIcon("/META-INF/icons/docs.svg", PluginIcons.class);
 }
