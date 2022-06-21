@@ -60,8 +60,8 @@ If you are a student in a course and you have discovered an issue you'd like to 
 assistants. You can also create an issue directly
 here: [Aalto-LeTech/aplus-courses/issues.](https://github.com/Aalto-LeTech/aplus-courses/issues)
 
-Once the bug report is made, the development team (**[@jaakkonarhi,](https://github.com/jaakkonarhi)**
-**[@OlliKiljunen,](https://github.com/OlliKiljunen)** **[@stellatsv,](https://github.com/stellatsv)**
+Once the bug report is made, the development team (**[@jaakkonakaza,](https://github.com/jaakkonakaza)**
+**[@OlliKiljunen,](https://github.com/OlliKiljunen)**
 **[@Taikelenn](https://github.com/Taikelenn)**) will handle it on a **best-effort basis:**
 
 1. The issue will be confirmed and prioritized within **two working days**.
@@ -110,7 +110,7 @@ University's [code of conduct.](https://www.aalto.fi/sites/g/files/flghsv161/fil
 ## Credits
 
 We would like to
-acknowledge **[Nikolas Drosdek,](https://github.com/nikke234)** **[@superseacat,](https://github.com/superseacat)** **[@valtonv2,](https://github.com/valtonv2)** **[@xiaoxiaobt,](https://github.com/xiaoxiaobt)**
+acknowledge **[Nikolas Drosdek,](https://github.com/nikke234)** **[@superseacat,](https://github.com/superseacat)** **[Styliani Tsovou,](https://github.com/stellatsv)** **[@valtonv2,](https://github.com/valtonv2)** **[@xiaoxiaobt,](https://github.com/xiaoxiaobt)**
 **Ida Iskala,** and **[@StanislavFranko](https://github.com/StanislavFranko)** for their help in testing and improving
 this project.
 
