@@ -290,8 +290,7 @@ public class SubmitExerciseAction extends AnAction {
     var exerciseDataSource = course.getExerciseDataSource();
 
     List<Group> groups = new ArrayList<>(exerciseDataSource.getGroups(course, authentication));
-    groups.add(0, new Group(-1, Collections
-        .singletonList(getText("ui.toolWindow.subTab.exercises.submission.submitAlone"))));
+    groups.add(0, Group.GROUP_ALONE);
 
     // Find the group from the available groups that matches the default group ID.
     // A group could be removed, so this way we check that the default group ID is still valid.
@@ -383,11 +382,9 @@ public class SubmitExerciseAction extends AnAction {
     Map<String, Path> files = Map.of(submittableFiles.get(0).getKey(), tutorialResultFile.toPath());
 
     // IDE activities are always submitted alone
-    var aloneGroup =
-        new Group(-1, Collections.singletonList(getText("ui.toolWindow.subTab.exercises.submission.submitAlone")));
-    List<Group> groups = List.of(aloneGroup);
+    List<Group> groups = List.of(Group.GROUP_ALONE);
 
-    SubmissionViewModel submission = new SubmissionViewModel(exercise, groups, aloneGroup, files, language);
+    SubmissionViewModel submission = new SubmissionViewModel(exercise, groups, Group.GROUP_ALONE, files, language);
 
     final var exerciseDataSource = courseViewModel.getModel().getExerciseDataSource();
     String submissionUrl = exerciseDataSource.submit(submission.buildSubmission(), authentication);

@@ -129,7 +129,7 @@ class SubmitExerciseActionTest {
     exercise = new Exercise(
         exerciseId, "Test exercise", "http://localhost:10000", submissionInfo, 0, 0,
         OptionalLong.empty(), null, false);
-    group = new Group(124, Collections.singletonList("Only you"));
+    group = new Group(124, Collections.singletonList(new Group.GroupMember(1, "Only you")));
     groups = Collections.singletonList(group);
     exerciseGroup = new ExerciseGroup(0, "Test EG", "", true, List.of(), List.of());
     exerciseGroup.addExercise(exercise);

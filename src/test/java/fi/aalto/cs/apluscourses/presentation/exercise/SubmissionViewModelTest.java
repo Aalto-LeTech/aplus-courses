@@ -30,10 +30,7 @@ class SubmissionViewModelTest {
 
   @Test
   void testValidation() {
-    List<String> names = new ArrayList<>();
-    names.add("Someone");
-
-    Group group = new Group(200, names);
+    Group group = new Group(200, Collections.singletonList(new Group.GroupMember(1, "Someone")));
     List<Group> groups = new ArrayList<>();
     groups.add(group);
 
@@ -125,7 +122,9 @@ class SubmissionViewModelTest {
     Exercise exercise = new Exercise(
         1000, "wow", "http://www.fi", new SubmissionInfo(Collections.emptyMap()), 0, 0,
         OptionalLong.empty(), null, false);
-    Group group = new Group(1, List.of("Jyrki", "Jorma"));
+    Group group = new Group(1, List.of(
+        new Group.GroupMember(1, "Jyrki"),
+        new Group.GroupMember(1, "Jorma")));
     List<Group> availableGroups = Collections.singletonList(group);
 
     SubmissionViewModel viewModel1 = new SubmissionViewModel(

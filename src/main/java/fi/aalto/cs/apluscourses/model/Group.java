@@ -1,19 +1,43 @@
 package fi.aalto.cs.apluscourses.model;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class Group {
 
+  public static class GroupMember {
+    private final long id;
+    private final @NotNull String name;
+
+    public long getId() {
+      return id;
+    }
+
+    @NotNull
+    public String getName() {
+      return name;
+    }
+
+    public GroupMember(long id, @NotNull String name) {
+      this.id = id;
+      this.name = name;
+    }
+  }
+
+  public static final @NotNull Group GROUP_ALONE = new Group(-1, Collections
+      .singletonList(new GroupMember(-1, getText("ui.toolWindow.subTab.exercises.submission.submitAlone"))));
+
   private final long id;
 
-  private final List<String> memberNames;
+  private final List<GroupMember> memberNames;
 
-  public Group(long id, @NotNull List<String> memberNames) {
+  public Group(long id, @NotNull List<GroupMember> memberNames) {
     this.id = id;
     this.memberNames = memberNames;
   }
@@ -27,9 +51,11 @@ public class Group {
   public static Group fromJsonObject(@NotNull JSONObject jsonObject) {
     long id = jsonObject.getLong("id");
     JSONArray members = jsonObject.getJSONArray("members");
-    List<String> memberNames = new ArrayList<>(members.length());
+    List<GroupMember> memberNames = new ArrayList<>(members.length());
     for (int i = 0; i < members.length(); ++i) {
-      memberNames.add(members.getJSONObject(i).getString("full_name"));
+      GroupMember member = new GroupMember(members.getJSONObject(i).getInt("id"),
+          members.getJSONObject(i).getString("full_name"));
+      memberNames.add(member);
     }
     return new Group(id, memberNames);
   }
@@ -40,9 +66,8 @@ public class Group {
 
   @NotNull
   public List<String> getMemberNames() {
-    return Collections.unmodifiableList(memberNames);
+    return memberNames.stream().map(x -> x.name).collect(Collectors.toUnmodifiableList());
   }
-
 
   @Override
   public int hashCode() {
@@ -56,6 +81,6 @@ public class Group {
 
   @Override
   public String toString() {
-    return "Group{" + memberNames + '}';
+    return "Group{" + getMemberNames() + '}';
   }
 }

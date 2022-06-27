@@ -17,7 +17,9 @@ class GroupTest {
 
   @Test
   void testGroup() {
-    Group group = new Group(123, List.of("John", "Catherine"));
+    Group group = new Group(123, List.of(
+        new Group.GroupMember(1, "John"),
+        new Group.GroupMember(2, "Catherine")));
     Assertions.assertEquals(123, group.getId(), "The ID should be equal to the one given to the constructor");
     Assertions.assertEquals("John", group.getMemberNames().get(0),
         "The member names should be equal to those given to the constructor");

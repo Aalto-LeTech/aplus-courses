@@ -9,6 +9,7 @@ import com.intellij.openapi.vfs.newvfs.RefreshQueue;
 import fi.aalto.cs.apluscourses.intellij.actions.SubmitExerciseAction;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Authentication;
+import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.ui.DuplicateSubmissionDialog;
 import fi.aalto.cs.apluscourses.utils.cache.Cache;
 import fi.aalto.cs.apluscourses.utils.cache.CachePreferences;
@@ -58,6 +59,13 @@ public class Interfaces {
   public interface DuplicateSubmissionChecker {
     boolean checkForDuplicateSubmission(@NotNull Project project, @NotNull String courseId, long exerciseId,
                                         @NotNull Map<String, Path> files);
+  }
+
+  public interface SubmissionGroupSelector {
+    boolean isGroupAllowedForExercise(@NotNull Project project, @NotNull String courseId, long exerciseId,
+                                      @NotNull Group group);
+    void onAssignmentSubmitted(@NotNull Project project, @NotNull String courseId, long exerciseId,
+                               @NotNull Group group);
   }
 
   @FunctionalInterface
@@ -266,7 +274,6 @@ public class Interfaces {
   }
 
   public static class CollapsedPanelsImpl implements Interfaces.CollapsedPanels {
-
     @Override
     public void setCollapsed(@NotNull String title) {
       PluginSettings.getInstance().setCollapsed(title);
@@ -287,6 +294,36 @@ public class Interfaces {
     @Override
     public String getReadNews() {
       return PluginSettings.getInstance().getReadNews();
+    }
+  }
+
+  public static class SubmissionGroupSelectorImpl implements SubmissionGroupSelector {
+    private static Cache<String, JSONObject> groupsCache;
+
+    @Override
+    public boolean isGroupAllowedForExercise(@NotNull Project project, @NotNull String courseId, long exerciseId,
+                                             @NotNull Group group) {
+      if (groupsCache == null) {
+        return true;
+      }
+
+      return true;
+    }
+
+    @Override
+    public void onAssignmentSubmitted(@NotNull Project project, @NotNull String courseId, long exerciseId,
+                                      @NotNull Group group) {
+      if (groupsCache == null) {
+        Path projectPath = Path.of(Objects.requireNonNull(project.getBasePath()));
+        groupsCache = new JsonFileCache(
+            projectPath.resolve(Path.of(Project.DIRECTORY_STORE_FOLDER, "a-plus-groups.json")));
+      }
+
+      final String cacheKey = "lastGroup_c" + courseId + "_e" + exerciseId;
+    }
+
+    private SubmissionGroupSelectorImpl() {
+
     }
   }
 }
