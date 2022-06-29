@@ -15,6 +15,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.module.Module;
@@ -223,8 +224,11 @@ class SubmitExerciseActionTest {
     Interfaces.ModuleDirGuesser moduleDirGuesser = m -> moduleDir;
     Interfaces.DuplicateSubmissionChecker duplicateChecker = (p, c, e, f) -> true;
 
+    Interfaces.SubmissionGroupSelector groupSelector = mock(Interfaces.SubmissionGroupSelector.class);
+
     action = new SubmitExerciseAction(mainVmProvider, authProvider, fileFinder, moduleSource, dialogs, notifier,
-        tagger, documentSaver, languageSource, defaultGroupIdSetting, moduleDirGuesser, duplicateChecker);
+        tagger, documentSaver, languageSource, defaultGroupIdSetting, moduleDirGuesser, duplicateChecker,
+        groupSelector);
   }
 
   @Test
