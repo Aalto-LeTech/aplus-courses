@@ -38,8 +38,8 @@ class GroupTest {
     JSONObject json = new JSONObject()
         .put("id", 145)
         .put("members", new JSONArray()
-            .put(new JSONObject().put("full_name", "Erkki"))
-            .put(new JSONObject().put("full_name", "Henkka")));
+            .put(new JSONObject().put("full_name", "Erkki").put("id", 4))
+            .put(new JSONObject().put("full_name", "Henkka").put("id", 17)));
 
     Group group = Group.fromJsonObject(json);
 
@@ -48,6 +48,8 @@ class GroupTest {
         "The member names should be equal to those in the JSON object");
     Assertions.assertEquals("Henkka", group.getMemberNames().get(1),
         "The member names should be equal to those in the JSON object");
+    Assertions.assertEquals("4,17", group.getMemberwiseId(),
+        "The memberwise ID should be correct");
   }
 
   @Test
