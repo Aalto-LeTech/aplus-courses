@@ -64,6 +64,7 @@ public class Interfaces {
   public interface SubmissionGroupSelector {
     boolean isGroupAllowedForExercise(@NotNull Project project, @NotNull String courseId, long exerciseId,
                                       @NotNull Group group);
+    
     void onAssignmentSubmitted(@NotNull Project project, @NotNull String courseId, long exerciseId,
                                @NotNull Group group);
   }

@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.model;
 
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
