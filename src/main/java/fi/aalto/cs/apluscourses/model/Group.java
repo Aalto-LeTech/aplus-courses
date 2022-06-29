@@ -35,11 +35,12 @@ public class Group {
 
   private final long id;
 
-  private final List<GroupMember> memberNames;
+  @NotNull
+  private final List<GroupMember> members;
 
-  public Group(long id, @NotNull List<GroupMember> memberNames) {
+  public Group(long id, @NotNull List<GroupMember> members) {
     this.id = id;
-    this.memberNames = memberNames;
+    this.members = members;
   }
 
   /**
@@ -66,7 +67,17 @@ public class Group {
 
   @NotNull
   public List<String> getMemberNames() {
-    return memberNames.stream().map(x -> x.name).collect(Collectors.toUnmodifiableList());
+    return members.stream().map(x -> x.name).collect(Collectors.toUnmodifiableList());
+  }
+
+  /**
+   * Returns an identifier for the group, based on the members of the group. The difference between this and
+   * {@link #getId() getId} is that this method will return the same ID for two different groups if their
+   * members are the same.
+   */
+  @NotNull
+  public String getMemberwiseId() {
+    return members.stream().map(x -> x.id).sorted().map(String::valueOf).collect(Collectors.joining(","));
   }
 
   @Override

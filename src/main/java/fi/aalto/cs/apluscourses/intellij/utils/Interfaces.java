@@ -129,7 +129,6 @@ public class Interfaces {
      * and provides a simple interface for adding new hashes and checking for already existing hashes.
      */
     private static class SubmissionHashes {
-
       private static final String JSON_ENTRY_NAME = "hashes";
       private final @NotNull Set<String> hashes;
 
@@ -298,7 +297,25 @@ public class Interfaces {
   }
 
   public static class SubmissionGroupSelectorImpl implements SubmissionGroupSelector {
+    private static final String JSON_ENTRY_NAME = "lastGroup";
     private static Cache<String, JSONObject> groupsCache;
+
+    @NotNull
+    private String getCacheKey(@NotNull String courseId, long exerciseId) {
+      return "lastGroup_c" + courseId + "_e" + exerciseId;
+    }
+
+    private boolean isGroupAllowed(@NotNull JSONObject savedGroupData, @NotNull Group currentGroup) {
+      return currentGroup.getMemberwiseId().equals(savedGroupData.optString(JSON_ENTRY_NAME));
+    }
+
+    @NotNull
+    private JSONObject getGroupCacheObject(@NotNull Group currentGroup) {
+      final JSONObject jsonObject = new JSONObject();
+      jsonObject.put(JSON_ENTRY_NAME, currentGroup.getMemberwiseId());
+
+      return jsonObject;
+    }
 
     @Override
     public boolean isGroupAllowedForExercise(@NotNull Project project, @NotNull String courseId, long exerciseId,
@@ -307,7 +324,14 @@ public class Interfaces {
         return true;
       }
 
-      return true;
+      final String cacheKey = getCacheKey(courseId, exerciseId);
+      final JSONObject cachedGroupJson = groupsCache.getValue(cacheKey, CachePreferences.PERMANENT);
+
+      if (cachedGroupJson == null) {
+        return true;
+      }
+
+      return isGroupAllowed(cachedGroupJson, group);
     }
 
     @Override
@@ -319,11 +343,8 @@ public class Interfaces {
             projectPath.resolve(Path.of(Project.DIRECTORY_STORE_FOLDER, "a-plus-groups.json")));
       }
 
-      final String cacheKey = "lastGroup_c" + courseId + "_e" + exerciseId;
-    }
-
-    private SubmissionGroupSelectorImpl() {
-
+      final String cacheKey = getCacheKey(courseId, exerciseId);
+      groupsCache.putValue(cacheKey, getGroupCacheObject(group), CachePreferences.PERMANENT);
     }
   }
 }

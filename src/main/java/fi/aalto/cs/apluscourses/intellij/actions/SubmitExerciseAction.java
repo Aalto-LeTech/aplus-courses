@@ -124,7 +124,8 @@ public class SubmitExerciseAction extends AnAction {
         project -> PluginSettings.getInstance().getCourseFileManager(project).getLanguage(),
         PluginSettings.getInstance(),
         ProjectUtil::guessModuleDir,
-        Interfaces.DuplicateSubmissionCheckerImpl::checkForDuplicateSubmission
+        Interfaces.DuplicateSubmissionCheckerImpl::checkForDuplicateSubmission,
+        new Interfaces.SubmissionGroupSelectorImpl()
     );
   }
 
@@ -143,7 +144,8 @@ public class SubmitExerciseAction extends AnAction {
                               @NotNull Interfaces.LanguageSource languageSource,
                               @NotNull DefaultGroupIdSetting defaultGroupIdSetting,
                               @NotNull Interfaces.ModuleDirGuesser moduleDirGuesser,
-                              @NotNull Interfaces.DuplicateSubmissionChecker duplicateChecker) {
+                              @NotNull Interfaces.DuplicateSubmissionChecker duplicateChecker,
+                              @NotNull Interfaces.SubmissionGroupSelector groupSelector) {
     this.mainViewModelProvider = mainViewModelProvider;
     this.authenticationProvider = authenticationProvider;
     this.fileFinder = fileFinder;
