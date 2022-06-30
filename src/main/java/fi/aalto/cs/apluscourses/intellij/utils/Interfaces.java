@@ -62,8 +62,7 @@ public class Interfaces {
   }
 
   public interface SubmissionGroupSelector {
-    boolean isGroupAllowedForExercise(@NotNull Project project, @NotNull String courseId, long exerciseId,
-                                      @NotNull Group group);
+    boolean isGroupAllowedForExercise(@NotNull String courseId, long exerciseId, @NotNull Group group);
 
     void onAssignmentSubmitted(@NotNull Project project, @NotNull String courseId, long exerciseId,
                                @NotNull Group group);
@@ -319,8 +318,7 @@ public class Interfaces {
     }
 
     @Override
-    public boolean isGroupAllowedForExercise(@NotNull Project project, @NotNull String courseId, long exerciseId,
-                                             @NotNull Group group) {
+    public boolean isGroupAllowedForExercise(@NotNull String courseId, long exerciseId, @NotNull Group group) {
       if (groupsCache == null) {
         return true;
       }

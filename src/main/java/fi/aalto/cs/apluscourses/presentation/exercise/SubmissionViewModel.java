@@ -53,6 +53,7 @@ public class SubmissionViewModel {
   public SubmissionViewModel(@NotNull Exercise exercise,
                              @NotNull List<Group> availableGroups,
                              @Nullable Group defaultGroup,
+                             @Nullable Group lastSubmittedGroup,
                              @NotNull Map<String, Path> filePaths,
                              @NotNull String language) {
     this.exercise = exercise;

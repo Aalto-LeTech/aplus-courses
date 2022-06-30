@@ -48,7 +48,7 @@ class SubmissionViewModelTest {
         100, "Exercise", "http://localhost:1000", submissionInfo, 0, 0, OptionalLong.empty(), null, false);
 
     SubmissionViewModel submissionViewModel =
-        new SubmissionViewModel(exercise, groups, null, fileMap, language);
+        new SubmissionViewModel(exercise, groups, null, null, fileMap, language);
 
     Assertions.assertNotNull(submissionViewModel.selectedGroup.validate(),
         "The validation should fail when no group is yet selected");
@@ -62,7 +62,7 @@ class SubmissionViewModelTest {
         new SubmissionResult(i, 10, 0.0, SubmissionResult.Status.GRADED, exercise)));
 
     SubmissionViewModel submissionViewModel1 = new SubmissionViewModel(
-        exercise, Collections.emptyList(), null, Collections.emptyMap(), "");
+        exercise, Collections.emptyList(), null, null, Collections.emptyMap(), "");
 
     Assertions.assertEquals(4, submissionViewModel1.getCurrentSubmissionNumber());
     Assertions.assertEquals("You are about to make submission 4 out of 5.",
@@ -73,14 +73,14 @@ class SubmissionViewModelTest {
     exercise.addSubmissionResult(
         new SubmissionResult(3, 10, 0.0, SubmissionResult.Status.GRADED, exercise));
     SubmissionViewModel submissionViewModel2 = new SubmissionViewModel(
-        exercise, Collections.emptyList(), null, Collections.emptyMap(), "");
+        exercise, Collections.emptyList(), null, null, Collections.emptyMap(), "");
 
     Assertions.assertEquals("You are about to make submission 5 out of 5.",
         submissionViewModel2.getSubmissionCountText());
     Assertions.assertNotNull(submissionViewModel2.getSubmissionWarning(project));
 
     SubmissionViewModel submissionViewModel3 = new SubmissionViewModel(
-        exercise, Collections.emptyList(), null, Collections.emptyMap(), "");
+        exercise, Collections.emptyList(), null, null, Collections.emptyMap(), "");
 
     exercise.addSubmissionResult(
         new SubmissionResult(4, 10, 0.0, SubmissionResult.Status.GRADED, exercise));
@@ -91,7 +91,7 @@ class SubmissionViewModelTest {
     // Max submissions 0
     SubmissionViewModel submissionViewModel4 = new SubmissionViewModel(
         new Exercise(0, "", "", info, 0, 0, OptionalLong.empty(), null, false),
-        Collections.emptyList(), null, Collections.emptyMap(), "");
+        Collections.emptyList(), null, null, Collections.emptyMap(), "");
     Assertions.assertEquals("You are about to make submission 1.", submissionViewModel4.getSubmissionCountText());
     Assertions.assertNull(submissionViewModel4.getSubmissionWarning(project));
   }
@@ -110,7 +110,7 @@ class SubmissionViewModelTest {
         OptionalLong.empty(), null, false);
 
     SubmissionViewModel submission = new SubmissionViewModel(
-        exercise, Collections.emptyList(), null, Collections.emptyMap(), "fi"
+        exercise, Collections.emptyList(), null, null, Collections.emptyMap(), "fi"
     );
 
     Assertions.assertArrayEquals(new SubmittableFile[] {finnishFile1, finnishFile2}, submission.getFiles(),
@@ -128,10 +128,10 @@ class SubmissionViewModelTest {
     List<Group> availableGroups = Collections.singletonList(group);
 
     SubmissionViewModel viewModel1 = new SubmissionViewModel(
-        exercise, availableGroups, null, Collections.emptyMap(), "fi"
+        exercise, availableGroups, null, null, Collections.emptyMap(), "fi"
     );
     SubmissionViewModel viewModel2 = new SubmissionViewModel(
-        exercise, availableGroups, group, Collections.emptyMap(), "fi"
+        exercise, availableGroups, group, null, Collections.emptyMap(), "fi"
     );
 
     Assertions.assertNull(viewModel1.selectedGroup.get());

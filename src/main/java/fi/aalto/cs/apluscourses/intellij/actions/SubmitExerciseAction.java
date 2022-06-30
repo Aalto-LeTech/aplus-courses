@@ -107,6 +107,9 @@ public class SubmitExerciseAction extends AnAction {
   @NotNull
   private final Interfaces.DuplicateSubmissionChecker duplicateChecker;
 
+  @NotNull
+  private final Interfaces.SubmissionGroupSelector groupSelector;
+
   /**
    * Constructor with reasonable defaults.
    */
@@ -158,6 +161,7 @@ public class SubmitExerciseAction extends AnAction {
     this.defaultGroupIdSetting = defaultGroupIdSetting;
     this.moduleDirGuesser = moduleDirGuesser;
     this.duplicateChecker = duplicateChecker;
+    this.groupSelector = groupSelector;
   }
 
   @Override
@@ -304,7 +308,14 @@ public class SubmitExerciseAction extends AnAction {
             .findFirst())
         .orElse(null);
 
-    SubmissionViewModel submission = new SubmissionViewModel(exercise, groups, defaultGroup, files, language);
+    Group lastSubmittedGroup = groups
+        .stream()
+        .filter(g -> groupSelector.isGroupAllowedForExercise(course.getId(), exercise.getId(), g))
+        .findFirst()
+        .orElse(null);
+
+    SubmissionViewModel submission = new SubmissionViewModel(exercise, groups, defaultGroup,
+        lastSubmittedGroup, files, language);
 
     if (!dialogs.create(submission, project).showAndGet()) {
       return;
@@ -386,7 +397,8 @@ public class SubmitExerciseAction extends AnAction {
     // IDE activities are always submitted alone
     List<Group> groups = List.of(Group.GROUP_ALONE);
 
-    SubmissionViewModel submission = new SubmissionViewModel(exercise, groups, Group.GROUP_ALONE, files, language);
+    SubmissionViewModel submission = new SubmissionViewModel(exercise, groups,
+        Group.GROUP_ALONE, null, files, language);
 
     final var exerciseDataSource = courseViewModel.getModel().getExerciseDataSource();
     String submissionUrl = exerciseDataSource.submit(submission.buildSubmission(), authentication);
