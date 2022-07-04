@@ -96,7 +96,12 @@ public class SubmissionViewModel {
     return exercise.getSubmissionResults().size() + 1;
   }
 
+  /**
+   * Checks if the user is able to submit with the selected group.
+   */
   public boolean isAbleToSubmitWithGroup(@Nullable Group selectedGroup) {
+    // if the selectedGroup is null, there is no selection, so there's nothing to warn the user against
+    // if the lastSubmittedGroup is null, there have been no past submissions, so all groups are fine
     return selectedGroup == null || lastSubmittedGroup == null || selectedGroup == lastSubmittedGroup;
   }
 
