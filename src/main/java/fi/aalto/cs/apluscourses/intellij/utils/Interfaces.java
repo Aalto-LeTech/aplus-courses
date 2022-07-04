@@ -301,7 +301,7 @@ public class Interfaces {
     private static final String JSON_ENTRY_NAME = "lastGroup";
     private static Cache<String, JSONObject> groupsCache;
 
-    private void ensureCacheLoaded(@NotNull Project project) {
+    private static void ensureCacheLoaded(@NotNull Project project) {
       if (groupsCache == null) {
         Path projectPath = Path.of(Objects.requireNonNull(project.getBasePath()));
         groupsCache = new JsonFileCache(
@@ -310,12 +310,12 @@ public class Interfaces {
     }
 
     @NotNull
-    private String getCacheKey(@NotNull String courseId, long exerciseId) {
+    private static String getCacheKey(@NotNull String courseId, long exerciseId) {
       return "lastGroup_c" + courseId + "_e" + exerciseId;
     }
 
     @NotNull
-    private JSONObject createCacheObjectForGroup(@NotNull Group currentGroup) {
+    private static JSONObject createCacheObjectForGroup(@NotNull Group currentGroup) {
       final JSONObject jsonObject = new JSONObject();
       jsonObject.put(JSON_ENTRY_NAME, currentGroup.getMemberwiseId());
 
