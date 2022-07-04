@@ -62,9 +62,6 @@ public class Interfaces {
   }
 
   public interface SubmissionGroupSelector {
-    boolean isGroupAllowedForExercise(@NotNull Project project, @NotNull String courseId, long exerciseId,
-                                      @NotNull Group group);
-
     @Nullable
     String getLastSubmittedGroupId(@NotNull Project project, @NotNull String courseId, long exerciseId);
 
@@ -318,17 +315,11 @@ public class Interfaces {
     }
 
     @NotNull
-    private JSONObject getGroupCacheObject(@NotNull Group currentGroup) {
+    private JSONObject createCacheObjectForGroup(@NotNull Group currentGroup) {
       final JSONObject jsonObject = new JSONObject();
       jsonObject.put(JSON_ENTRY_NAME, currentGroup.getMemberwiseId());
 
       return jsonObject;
-    }
-
-    @Override
-    public boolean isGroupAllowedForExercise(@NotNull Project project, @NotNull String courseId, long exerciseId,
-                                             @NotNull Group group) {
-      return group.getMemberwiseId().equals(getLastSubmittedGroupId(project, courseId, exerciseId));
     }
 
     @Override
@@ -343,6 +334,7 @@ public class Interfaces {
         return null;
       }
 
+      // if null is returned, then there were no past submissions and any group is allowed
       return cachedGroupJson.optString(JSON_ENTRY_NAME);
     }
 
@@ -352,7 +344,7 @@ public class Interfaces {
       ensureCacheLoaded(project);
 
       final String cacheKey = getCacheKey(courseId, exerciseId);
-      groupsCache.putValue(cacheKey, getGroupCacheObject(group), CachePreferences.PERMANENT);
+      groupsCache.putValue(cacheKey, createCacheObjectForGroup(group), CachePreferences.PERMANENT);
     }
   }
 }
