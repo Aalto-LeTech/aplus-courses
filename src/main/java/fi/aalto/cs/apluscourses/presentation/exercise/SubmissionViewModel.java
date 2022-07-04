@@ -26,15 +26,23 @@ public class SubmissionViewModel {
 
   private static final Logger logger = APlusLogger.logger;
 
+  @NotNull
   private final Exercise exercise;
 
+  @NotNull
   private final List<Group> availableGroups;
 
+  @NotNull
   private final Map<String, Path> filePaths;
 
+  @NotNull
   private final SubmittableFile[] submittableFiles;
 
+  @NotNull
   private final String language;
+
+  @Nullable
+  private final Group lastSubmittedGroup;
 
   public final ObservableProperty<Group> selectedGroup =
       new ObservableReadWriteProperty<>(null, SubmissionViewModel::validateGroupSelection);
@@ -58,6 +66,7 @@ public class SubmissionViewModel {
                              @NotNull String language) {
     this.exercise = exercise;
     this.availableGroups = availableGroups;
+    this.lastSubmittedGroup = lastSubmittedGroup;
     this.filePaths = filePaths;
     this.language = language;
     this.submittableFiles = exercise
@@ -85,6 +94,10 @@ public class SubmissionViewModel {
 
   public int getCurrentSubmissionNumber() {
     return exercise.getSubmissionResults().size() + 1;
+  }
+
+  public boolean isAbleToSubmitWithGroup(@Nullable Group selectedGroup) {
+    return selectedGroup == null || lastSubmittedGroup == null || selectedGroup == lastSubmittedGroup;
   }
 
   /**

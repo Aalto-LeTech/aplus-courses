@@ -60,6 +60,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
@@ -310,7 +311,8 @@ public class SubmitExerciseAction extends AnAction {
 
     Group lastSubmittedGroup = groups
         .stream()
-        .filter(g -> groupSelector.isGroupAllowedForExercise(course.getId(), exercise.getId(), g))
+        .filter(g -> g.getMemberwiseId().equals(
+            groupSelector.getLastSubmittedGroupId(project, course.getId(), exercise.getId())))
         .findFirst()
         .orElse(null);
 
@@ -334,6 +336,9 @@ public class SubmitExerciseAction extends AnAction {
     logger.info("Submitting with group: {}", submission.selectedGroup.get());
     String submissionUrl = exerciseDataSource.submit(submission.buildSubmission(), authentication);
     logger.info("Submission url: {}", submissionUrl);
+
+    groupSelector.onAssignmentSubmitted(project, course.getId(), exercise.getId(),
+        Objects.requireNonNull(submission.selectedGroup.get()));
 
     new SubmissionStatusUpdater(
         project, exerciseDataSource, authentication, submissionUrl, selectedExercise.getModel(), course

@@ -62,7 +62,11 @@ public class Interfaces {
   }
 
   public interface SubmissionGroupSelector {
-    boolean isGroupAllowedForExercise(@NotNull String courseId, long exerciseId, @NotNull Group group);
+    boolean isGroupAllowedForExercise(@NotNull Project project, @NotNull String courseId, long exerciseId,
+                                      @NotNull Group group);
+
+    @Nullable
+    String getLastSubmittedGroupId(@NotNull Project project, @NotNull String courseId, long exerciseId);
 
     void onAssignmentSubmitted(@NotNull Project project, @NotNull String courseId, long exerciseId,
                                @NotNull Group group);
@@ -300,13 +304,17 @@ public class Interfaces {
     private static final String JSON_ENTRY_NAME = "lastGroup";
     private static Cache<String, JSONObject> groupsCache;
 
+    private void ensureCacheLoaded(@NotNull Project project) {
+      if (groupsCache == null) {
+        Path projectPath = Path.of(Objects.requireNonNull(project.getBasePath()));
+        groupsCache = new JsonFileCache(
+            projectPath.resolve(Path.of(Project.DIRECTORY_STORE_FOLDER, "a-plus-groups.json")));
+      }
+    }
+
     @NotNull
     private String getCacheKey(@NotNull String courseId, long exerciseId) {
       return "lastGroup_c" + courseId + "_e" + exerciseId;
-    }
-
-    private boolean isGroupAllowed(@NotNull JSONObject savedGroupData, @NotNull Group currentGroup) {
-      return currentGroup.getMemberwiseId().equals(savedGroupData.optString(JSON_ENTRY_NAME));
     }
 
     @NotNull
@@ -318,29 +326,30 @@ public class Interfaces {
     }
 
     @Override
-    public boolean isGroupAllowedForExercise(@NotNull String courseId, long exerciseId, @NotNull Group group) {
-      if (groupsCache == null) {
-        return true;
-      }
+    public boolean isGroupAllowedForExercise(@NotNull Project project, @NotNull String courseId, long exerciseId,
+                                             @NotNull Group group) {
+      return group.getMemberwiseId().equals(getLastSubmittedGroupId(project, courseId, exerciseId));
+    }
+
+    @Override
+    public @Nullable String getLastSubmittedGroupId(@NotNull Project project, @NotNull String courseId,
+                                                    long exerciseId) {
+      ensureCacheLoaded(project);
 
       final String cacheKey = getCacheKey(courseId, exerciseId);
       final JSONObject cachedGroupJson = groupsCache.getValue(cacheKey, CachePreferences.PERMANENT);
 
       if (cachedGroupJson == null) {
-        return true;
+        return null;
       }
 
-      return isGroupAllowed(cachedGroupJson, group);
+      return cachedGroupJson.optString(JSON_ENTRY_NAME);
     }
 
     @Override
     public void onAssignmentSubmitted(@NotNull Project project, @NotNull String courseId, long exerciseId,
                                       @NotNull Group group) {
-      if (groupsCache == null) {
-        Path projectPath = Path.of(Objects.requireNonNull(project.getBasePath()));
-        groupsCache = new JsonFileCache(
-            projectPath.resolve(Path.of(Project.DIRECTORY_STORE_FOLDER, "a-plus-groups.json")));
-      }
+      ensureCacheLoaded(project);
 
       final String cacheKey = getCacheKey(courseId, exerciseId);
       groupsCache.putValue(cacheKey, getGroupCacheObject(group), CachePreferences.PERMANENT);
