@@ -302,21 +302,22 @@ public class SubmitExerciseAction extends AnAction {
     // Find the group from the available groups that matches the default group ID.
     // A group could be removed, so this way we check that the default group ID is still valid.
     Optional<Long> defaultGroupId = defaultGroupIdSetting.getDefaultGroupId();
-    Group defaultGroup = defaultGroupId
+    final Group defaultGroup = defaultGroupId
         .flatMap(id -> groups
             .stream()
             .filter(group -> group.getId() == id)
             .findFirst())
         .orElse(null);
 
-    Group lastSubmittedGroup = groups
+    final String lastSubmittedGroupId =
+        groupSelector.getLastSubmittedGroupId(project, course.getId(), exercise.getId());
+    final Group lastSubmittedGroup = groups
         .stream()
-        .filter(g -> g.getMemberwiseId().equals(
-            groupSelector.getLastSubmittedGroupId(project, course.getId(), exercise.getId())))
+        .filter(g -> g.getMemberwiseId().equals(lastSubmittedGroupId))
         .findFirst()
         .orElse(null);
 
-    SubmissionViewModel submission = new SubmissionViewModel(exercise, groups, defaultGroup,
+    final SubmissionViewModel submission = new SubmissionViewModel(exercise, groups, defaultGroup,
         lastSubmittedGroup, files, language);
 
     if (!dialogs.create(submission, project).showAndGet()) {
@@ -327,18 +328,19 @@ public class SubmitExerciseAction extends AnAction {
       return;
     }
 
+    Group selectedGroup = Objects.requireNonNull(submission.selectedGroup.get());
+
     if (Boolean.TRUE.equals(submission.makeDefaultGroup.get())) {
-      defaultGroupIdSetting.setDefaultGroupId(submission.selectedGroup.get().getId());
+      defaultGroupIdSetting.setDefaultGroupId(selectedGroup.getId());
     } else {
       defaultGroupIdSetting.clearDefaultGroupId();
     }
 
-    logger.info("Submitting with group: {}", submission.selectedGroup.get());
+    logger.info("Submitting with group: {}", selectedGroup);
     String submissionUrl = exerciseDataSource.submit(submission.buildSubmission(), authentication);
     logger.info("Submission url: {}", submissionUrl);
 
-    groupSelector.onAssignmentSubmitted(project, course.getId(), exercise.getId(),
-        Objects.requireNonNull(submission.selectedGroup.get()));
+    groupSelector.onAssignmentSubmitted(project, course.getId(), exercise.getId(), selectedGroup);
 
     new SubmissionStatusUpdater(
         project, exerciseDataSource, authentication, submissionUrl, selectedExercise.getModel(), course
