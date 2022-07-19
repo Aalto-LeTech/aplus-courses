@@ -50,13 +50,13 @@ import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionResultViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionViewModel;
 import fi.aalto.cs.apluscourses.presentation.ideactivities.TutorialViewModel;
+import fi.aalto.cs.apluscourses.ui.DuplicateSubmissionDialog;
 import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -128,7 +128,7 @@ public class SubmitExerciseAction extends AnAction {
         project -> PluginSettings.getInstance().getCourseFileManager(project).getLanguage(),
         PluginSettings.getInstance(),
         ProjectUtil::guessModuleDir,
-        Interfaces.DuplicateSubmissionCheckerImpl::checkForDuplicateSubmission,
+        new Interfaces.DuplicateSubmissionCheckerImpl(),
         new Interfaces.SubmissionGroupSelectorImpl()
     );
   }
@@ -324,7 +324,8 @@ public class SubmitExerciseAction extends AnAction {
       return;
     }
 
-    if (!duplicateChecker.checkForDuplicateSubmission(project, course.getId(), exercise.getId(), files)) {
+    if (duplicateChecker.isDuplicateSubmission(project, course.getId(), exercise.getId(), files)
+        && !DuplicateSubmissionDialog.showDialog()) {
       return;
     }
 
@@ -341,6 +342,7 @@ public class SubmitExerciseAction extends AnAction {
     logger.info("Submission url: {}", submissionUrl);
 
     groupSelector.onAssignmentSubmitted(project, course.getId(), exercise.getId(), selectedGroup);
+    duplicateChecker.onAssignmentSubmitted(project, course.getId(), exercise.getId(), files);
 
     new SubmissionStatusUpdater(
         project, exerciseDataSource, authentication, submissionUrl, selectedExercise.getModel(), course
