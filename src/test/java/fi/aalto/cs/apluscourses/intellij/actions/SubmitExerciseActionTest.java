@@ -222,8 +222,7 @@ class SubmitExerciseActionTest {
     VirtualFile moduleDir = mock(VirtualFile.class);
     doReturn(filePath.getParent().toString()).when(moduleDir).getPath();
     Interfaces.ModuleDirGuesser moduleDirGuesser = m -> moduleDir;
-    Interfaces.DuplicateSubmissionChecker duplicateChecker = (p, c, e, f) -> true;
-
+    Interfaces.DuplicateSubmissionChecker duplicateChecker = mock(Interfaces.DuplicateSubmissionChecker.class);
     Interfaces.SubmissionGroupSelector groupSelector = mock(Interfaces.SubmissionGroupSelector.class);
 
     action = new SubmitExerciseAction(mainVmProvider, authProvider, fileFinder, moduleSource, dialogs, notifier,
