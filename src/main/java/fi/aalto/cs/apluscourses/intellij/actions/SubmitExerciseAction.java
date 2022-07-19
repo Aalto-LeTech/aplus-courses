@@ -60,6 +60,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
@@ -107,6 +108,9 @@ public class SubmitExerciseAction extends AnAction {
   @NotNull
   private final Interfaces.DuplicateSubmissionChecker duplicateChecker;
 
+  @NotNull
+  private final Interfaces.SubmissionGroupSelector groupSelector;
+
   /**
    * Constructor with reasonable defaults.
    */
@@ -124,7 +128,8 @@ public class SubmitExerciseAction extends AnAction {
         project -> PluginSettings.getInstance().getCourseFileManager(project).getLanguage(),
         PluginSettings.getInstance(),
         ProjectUtil::guessModuleDir,
-        Interfaces.DuplicateSubmissionCheckerImpl::checkForDuplicateSubmission
+        Interfaces.DuplicateSubmissionCheckerImpl::checkForDuplicateSubmission,
+        new Interfaces.SubmissionGroupSelectorImpl()
     );
   }
 
@@ -143,7 +148,8 @@ public class SubmitExerciseAction extends AnAction {
                               @NotNull Interfaces.LanguageSource languageSource,
                               @NotNull DefaultGroupIdSetting defaultGroupIdSetting,
                               @NotNull Interfaces.ModuleDirGuesser moduleDirGuesser,
-                              @NotNull Interfaces.DuplicateSubmissionChecker duplicateChecker) {
+                              @NotNull Interfaces.DuplicateSubmissionChecker duplicateChecker,
+                              @NotNull Interfaces.SubmissionGroupSelector groupSelector) {
     this.mainViewModelProvider = mainViewModelProvider;
     this.authenticationProvider = authenticationProvider;
     this.fileFinder = fileFinder;
@@ -156,6 +162,7 @@ public class SubmitExerciseAction extends AnAction {
     this.defaultGroupIdSetting = defaultGroupIdSetting;
     this.moduleDirGuesser = moduleDirGuesser;
     this.duplicateChecker = duplicateChecker;
+    this.groupSelector = groupSelector;
   }
 
   @Override
@@ -290,20 +297,28 @@ public class SubmitExerciseAction extends AnAction {
     var exerciseDataSource = course.getExerciseDataSource();
 
     List<Group> groups = new ArrayList<>(exerciseDataSource.getGroups(course, authentication));
-    groups.add(0, new Group(-1, Collections
-        .singletonList(getText("ui.toolWindow.subTab.exercises.submission.submitAlone"))));
+    groups.add(0, Group.GROUP_ALONE);
 
     // Find the group from the available groups that matches the default group ID.
     // A group could be removed, so this way we check that the default group ID is still valid.
     Optional<Long> defaultGroupId = defaultGroupIdSetting.getDefaultGroupId();
-    Group defaultGroup = defaultGroupId
+    final Group defaultGroup = defaultGroupId
         .flatMap(id -> groups
             .stream()
             .filter(group -> group.getId() == id)
             .findFirst())
         .orElse(null);
 
-    SubmissionViewModel submission = new SubmissionViewModel(exercise, groups, defaultGroup, files, language);
+    final String lastSubmittedGroupId =
+        groupSelector.getLastSubmittedGroupId(project, course.getId(), exercise.getId());
+    final Group lastSubmittedGroup = groups
+        .stream()
+        .filter(g -> g.getMemberwiseId().equals(lastSubmittedGroupId))
+        .findFirst()
+        .orElse(null);
+
+    final SubmissionViewModel submission = new SubmissionViewModel(exercise, groups, defaultGroup,
+        lastSubmittedGroup, files, language);
 
     if (!dialogs.create(submission, project).showAndGet()) {
       return;
@@ -313,15 +328,19 @@ public class SubmitExerciseAction extends AnAction {
       return;
     }
 
+    Group selectedGroup = Objects.requireNonNull(submission.selectedGroup.get());
+
     if (Boolean.TRUE.equals(submission.makeDefaultGroup.get())) {
-      defaultGroupIdSetting.setDefaultGroupId(submission.selectedGroup.get().getId());
+      defaultGroupIdSetting.setDefaultGroupId(selectedGroup.getId());
     } else {
       defaultGroupIdSetting.clearDefaultGroupId();
     }
 
-    logger.info("Submitting with group: {}", submission.selectedGroup.get());
+    logger.info("Submitting with group: {}", selectedGroup);
     String submissionUrl = exerciseDataSource.submit(submission.buildSubmission(), authentication);
     logger.info("Submission url: {}", submissionUrl);
+
+    groupSelector.onAssignmentSubmitted(project, course.getId(), exercise.getId(), selectedGroup);
 
     new SubmissionStatusUpdater(
         project, exerciseDataSource, authentication, submissionUrl, selectedExercise.getModel(), course
@@ -383,11 +402,10 @@ public class SubmitExerciseAction extends AnAction {
     Map<String, Path> files = Map.of(submittableFiles.get(0).getKey(), tutorialResultFile.toPath());
 
     // IDE activities are always submitted alone
-    var aloneGroup =
-        new Group(-1, Collections.singletonList(getText("ui.toolWindow.subTab.exercises.submission.submitAlone")));
-    List<Group> groups = List.of(aloneGroup);
+    List<Group> groups = List.of(Group.GROUP_ALONE);
 
-    SubmissionViewModel submission = new SubmissionViewModel(exercise, groups, aloneGroup, files, language);
+    SubmissionViewModel submission = new SubmissionViewModel(exercise, groups,
+        Group.GROUP_ALONE, null, files, language);
 
     final var exerciseDataSource = courseViewModel.getModel().getExerciseDataSource();
     String submissionUrl = exerciseDataSource.submit(submission.buildSubmission(), authentication);

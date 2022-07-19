@@ -26,15 +26,23 @@ public class SubmissionViewModel {
 
   private static final Logger logger = APlusLogger.logger;
 
+  @NotNull
   private final Exercise exercise;
 
+  @NotNull
   private final List<Group> availableGroups;
 
+  @NotNull
   private final Map<String, Path> filePaths;
 
+  @NotNull
   private final SubmittableFile[] submittableFiles;
 
+  @NotNull
   private final String language;
+
+  @Nullable
+  private final Group lastSubmittedGroup;
 
   public final ObservableProperty<Group> selectedGroup =
       new ObservableReadWriteProperty<>(null, SubmissionViewModel::validateGroupSelection);
@@ -53,10 +61,12 @@ public class SubmissionViewModel {
   public SubmissionViewModel(@NotNull Exercise exercise,
                              @NotNull List<Group> availableGroups,
                              @Nullable Group defaultGroup,
+                             @Nullable Group lastSubmittedGroup,
                              @NotNull Map<String, Path> filePaths,
                              @NotNull String language) {
     this.exercise = exercise;
     this.availableGroups = availableGroups;
+    this.lastSubmittedGroup = lastSubmittedGroup;
     this.filePaths = filePaths;
     this.language = language;
     this.submittableFiles = exercise
@@ -84,6 +94,15 @@ public class SubmissionViewModel {
 
   public int getCurrentSubmissionNumber() {
     return exercise.getSubmissionResults().size() + 1;
+  }
+
+  /**
+   * Checks if the user is able to submit with the selected group.
+   */
+  public boolean isAbleToSubmitWithGroup(@Nullable Group selectedGroup) {
+    // if the selectedGroup is null, there is no selection, so there's nothing to warn the user against
+    // if the lastSubmittedGroup is null, there have been no past submissions, so all groups are fine
+    return selectedGroup == null || lastSubmittedGroup == null || selectedGroup == lastSubmittedGroup;
   }
 
   /**

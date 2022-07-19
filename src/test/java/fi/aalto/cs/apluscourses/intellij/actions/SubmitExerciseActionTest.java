@@ -15,6 +15,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.module.Module;
@@ -129,7 +130,7 @@ class SubmitExerciseActionTest {
     exercise = new Exercise(
         exerciseId, "Test exercise", "http://localhost:10000", submissionInfo, 0, 0,
         OptionalLong.empty(), null, false);
-    group = new Group(124, Collections.singletonList("Only you"));
+    group = new Group(124, Collections.singletonList(new Group.GroupMember(1, "Only you")));
     groups = Collections.singletonList(group);
     exerciseGroup = new ExerciseGroup(0, "Test EG", "", true, List.of(), List.of());
     exerciseGroup.addExercise(exercise);
@@ -223,8 +224,11 @@ class SubmitExerciseActionTest {
     Interfaces.ModuleDirGuesser moduleDirGuesser = m -> moduleDir;
     Interfaces.DuplicateSubmissionChecker duplicateChecker = (p, c, e, f) -> true;
 
+    Interfaces.SubmissionGroupSelector groupSelector = mock(Interfaces.SubmissionGroupSelector.class);
+
     action = new SubmitExerciseAction(mainVmProvider, authProvider, fileFinder, moduleSource, dialogs, notifier,
-        tagger, documentSaver, languageSource, defaultGroupIdSetting, moduleDirGuesser, duplicateChecker);
+        tagger, documentSaver, languageSource, defaultGroupIdSetting, moduleDirGuesser, duplicateChecker,
+        groupSelector);
   }
 
   @Test

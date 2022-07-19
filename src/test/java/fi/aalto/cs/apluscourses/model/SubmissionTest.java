@@ -29,7 +29,7 @@ class SubmissionTest {
     Map<String, Path> files = new HashMap<>();
     files.put("fileA", Paths.get("some.file"));
     files.put("fileB", Paths.get("other.file"));
-    Group group = new Group(0, Collections.singletonList("Only me"));
+    Group group = new Group(0, Collections.singletonList(new Group.GroupMember(1, "Only me")));
 
     Submission submission = new Submission(exercise, files, group, language);
 

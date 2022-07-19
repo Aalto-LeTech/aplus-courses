@@ -37,7 +37,8 @@ public class ModelExtensions {
     @NotNull
     @Override
     public List<Group> getGroups(@NotNull Course course, @NotNull Authentication authentication) {
-      return Collections.singletonList(new Group(0, Collections.singletonList("Only you")));
+      return Collections.singletonList(new Group(0,
+          Collections.singletonList(new Group.GroupMember(1, "Only you"))));
     }
 
     @NotNull

@@ -2,7 +2,10 @@ package fi.aalto.cs.apluscourses.ui.exercise;
 
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.ui.Gray;
+import com.intellij.ui.JBColor;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.SubmittableFile;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionViewModel;
@@ -10,10 +13,13 @@ import fi.aalto.cs.apluscourses.ui.GuiObject;
 import fi.aalto.cs.apluscourses.ui.base.CheckBox;
 import fi.aalto.cs.apluscourses.ui.base.OurComboBox;
 import fi.aalto.cs.apluscourses.ui.base.OurDialogWrapper;
+import java.awt.Color;
+import java.awt.event.ItemEvent;
 import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,6 +41,7 @@ public class SubmissionDialog extends OurDialogWrapper {
   @GuiObject
   private JLabel filenames;
   private JLabel warning;
+  private JLabel groupWarning;
 
   /**
    * Construct a submission dialog with the given view model.
@@ -53,6 +60,9 @@ public class SubmissionDialog extends OurDialogWrapper {
 
     warning.setText(viewModel.getSubmissionWarning(project));
 
+    groupWarning.setText(getText("ui.toolWindow.subTab.exercises.submission.groupConflict"));
+    groupWarning.setForeground(new JBColor(new Color(192, 96, 0), new Color(192, 192, 0)));
+
     init();
   }
 
@@ -70,12 +80,20 @@ public class SubmissionDialog extends OurDialogWrapper {
 
   @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
   private void createUIComponents() {
-    exerciseName = new JLabel("<html><body><h2>" + viewModel.getPresentableExerciseName()
-        + "</h2></body></html>");
+    exerciseName = new JLabel("<html><body><h2>" + viewModel.getPresentableExerciseName() + "</h2></body></html>");
 
-    groupComboBox =
-        new OurComboBox<>(viewModel.getAvailableGroups().toArray(new Group[0]), Group.class);
+    groupComboBox = new OurComboBox<>(viewModel.getAvailableGroups().toArray(new Group[0]), Group.class);
     groupComboBox.setRenderer(new GroupRenderer());
+    groupComboBox.addItemListener(e -> {
+      if (e.getStateChange() == ItemEvent.SELECTED) {
+        Group selectedGroup = (Group) e.getItem();
+        groupWarning.setVisible(!viewModel.isAbleToSubmitWithGroup(selectedGroup));
+
+        // we need the resize operation to run after this handler is done executing
+        // otherwise the setVisible change won't be picked up by the layout manager
+        SwingUtilities.invokeLater(this::pack);
+      }
+    });
 
     StringBuilder filenamesHtml = new StringBuilder("<html><body>Files:<ul>");
     for (SubmittableFile file : viewModel.getFiles()) {
