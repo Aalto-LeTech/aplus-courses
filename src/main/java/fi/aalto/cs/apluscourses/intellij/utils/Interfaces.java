@@ -55,10 +55,12 @@ public class Interfaces {
     void saveAllDocuments();
   }
 
-  @FunctionalInterface
   public interface DuplicateSubmissionChecker {
-    boolean checkForDuplicateSubmission(@NotNull Project project, @NotNull String courseId, long exerciseId,
-                                        @NotNull Map<String, Path> files);
+    boolean isDuplicateSubmission(@NotNull Project project, @NotNull String courseId, long exerciseId,
+                                  @NotNull Map<String, Path> files);
+
+    void onAssignmentSubmitted(@NotNull Project project, @NotNull String courseId, long exerciseId,
+                                  @NotNull Map<String, Path> files);
   }
 
   public interface SubmissionGroupSelector {
@@ -123,7 +125,7 @@ public class Interfaces {
     }
   }
 
-  public static class DuplicateSubmissionCheckerImpl {
+  public static class DuplicateSubmissionCheckerImpl implements DuplicateSubmissionChecker {
 
     /**
      * A convenience class for handling the cached hashes - it facilitates conversion from and to a JSONObject,
@@ -173,8 +175,17 @@ public class Interfaces {
 
     private static Cache<String, JSONObject> submissionsCache;
 
-    private DuplicateSubmissionCheckerImpl() {
+    private static void ensureCacheLoaded(@NotNull Project project) {
+      if (submissionsCache == null) {
+        Path projectPath = Path.of(Objects.requireNonNull(project.getBasePath()));
+        submissionsCache = new JsonFileCache(
+            projectPath.resolve(Path.of(Project.DIRECTORY_STORE_FOLDER, "a-plus-hashes.json")));
+      }
+    }
 
+    @NotNull
+    private static String getCacheKey(@NotNull String courseId, long exerciseId) {
+      return "hash_c" + courseId + "_e" + exerciseId;
     }
 
     private static String hashFileToString(@NotNull MessageDigest digest, @NotNull Path path) {
@@ -186,6 +197,23 @@ public class Interfaces {
       }
     }
 
+    private static String hashAllFiles(@NotNull Map<String, Path> files)
+        throws NoSuchAlgorithmException {
+      final MessageDigest shaDigest = MessageDigest.getInstance("SHA-256");
+      final StringBuilder submissionString = new StringBuilder();
+
+      // the iteration order is important so that files always get concatenated in the same order
+      files.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEachOrdered(entry -> {
+        submissionString.append(entry.getKey());
+        submissionString.append('|'); // a separating character that is not in base-64 alphabet
+        submissionString.append(hashFileToString(shaDigest, entry.getValue()));
+        submissionString.append(',');
+      });
+
+      final byte[] finalHashBytes = shaDigest.digest(submissionString.toString().getBytes(StandardCharsets.UTF_8));
+      return Base64.getEncoder().encodeToString(finalHashBytes);
+    }
+
     /**
      * Checks whether the same submission has already been submitted by the user. If it is the case, the user
      * is asked whether they want to submit anyway or abort the submission.
@@ -195,50 +223,44 @@ public class Interfaces {
      * @param files A map of submittable files, as constructed in {@link SubmitExerciseAction}.
      * @return True if duplicate check succeeded and the submission should proceed; false if it should be cancelled.
      */
-    public static boolean checkForDuplicateSubmission(@NotNull Project project,
-                                                      @NotNull String courseId,
-                                                      long exerciseId,
-                                                      @NotNull Map<String, Path> files) {
+    @Override
+    public boolean isDuplicateSubmission(@NotNull Project project,
+                                         @NotNull String courseId,
+                                         long exerciseId,
+                                         @NotNull Map<String, Path> files) {
       // we want to defer creation of the cache until it's actually necessary
-      if (submissionsCache == null) {
-        Path projectPath = Path.of(Objects.requireNonNull(project.getBasePath()));
-        submissionsCache = new JsonFileCache(
-            projectPath.resolve(Path.of(Project.DIRECTORY_STORE_FOLDER, "a-plus-hashes.json")));
-      }
+      ensureCacheLoaded(project);
 
       try {
-        final MessageDigest shaDigest = MessageDigest.getInstance("SHA-256");
-        final StringBuilder submissionString = new StringBuilder();
-
-        // the iteration order is important so that files always get concatenated in the same order
-        files.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEachOrdered(entry -> {
-          submissionString.append(entry.getKey());
-          submissionString.append('|'); // a separating character that is not in base-64 alphabet
-          submissionString.append(hashFileToString(shaDigest, entry.getValue()));
-          submissionString.append(',');
-        });
-
-        final String cacheKey = "hash_c" + courseId + "_e" + exerciseId;
-        final byte[] finalHashBytes = shaDigest.digest(submissionString.toString().getBytes(StandardCharsets.UTF_8));
-        final String finalHash = Base64.getEncoder().encodeToString(finalHashBytes);
-
+        final String cacheKey = getCacheKey(courseId, exerciseId);
+        final String currentHash = hashAllFiles(files);
         final JSONObject cachedHashesJson = submissionsCache.getValue(cacheKey, CachePreferences.PERMANENT);
-        final SubmissionHashes cachedHashes = new SubmissionHashes(cachedHashesJson);
 
-        if (cachedHashes.containsHash(finalHash)) {
-          if (!DuplicateSubmissionDialog.showDialog()) {
-            return false;
-          }
-        } else {
-          cachedHashes.addHash(finalHash);
-        }
-
-        submissionsCache.putValue(cacheKey, cachedHashes.toJsonObject(), CachePreferences.PERMANENT);
-        return true;
+        return new SubmissionHashes(cachedHashesJson).containsHash(currentHash);
       } catch (UncheckedIOException | NoSuchAlgorithmException e) {
         // if an exception occurs, don't bother the user and just proceed with submitting as normal
         // it's highly probable that in such case, submitting will fail later on anyway, and the error will be logged
         return true;
+      }
+    }
+
+    @Override
+    public void onAssignmentSubmitted(@NotNull Project project,
+                                      @NotNull String courseId,
+                                      long exerciseId,
+                                      @NotNull Map<String, Path> files) {
+      ensureCacheLoaded(project);
+
+      try {
+        final String cacheKey = getCacheKey(courseId, exerciseId);
+        final String currentHash = hashAllFiles(files);
+        final JSONObject cachedHashesJson = submissionsCache.getValue(cacheKey, CachePreferences.PERMANENT);
+
+        final SubmissionHashes cachedHashes = new SubmissionHashes(cachedHashesJson);
+        cachedHashes.addHash(currentHash);
+        submissionsCache.putValue(cacheKey, cachedHashes.toJsonObject(), CachePreferences.PERMANENT);
+      } catch (UncheckedIOException | NoSuchAlgorithmException e) {
+        // ignore potential exceptions
       }
     }
   }
