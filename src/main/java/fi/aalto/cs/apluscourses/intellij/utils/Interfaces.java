@@ -10,7 +10,6 @@ import fi.aalto.cs.apluscourses.intellij.actions.SubmitExerciseAction;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.Group;
-import fi.aalto.cs.apluscourses.ui.DuplicateSubmissionDialog;
 import fi.aalto.cs.apluscourses.utils.cache.Cache;
 import fi.aalto.cs.apluscourses.utils.cache.CachePreferences;
 import fi.aalto.cs.apluscourses.utils.cache.JsonFileCache;
@@ -60,7 +59,7 @@ public class Interfaces {
                                   @NotNull Map<String, Path> files);
 
     void onAssignmentSubmitted(@NotNull Project project, @NotNull String courseId, long exerciseId,
-                                  @NotNull Map<String, Path> files);
+                               @NotNull Map<String, Path> files);
   }
 
   public interface SubmissionGroupSelector {
