@@ -11,7 +11,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Collections;
-import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -41,7 +41,7 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
         }
       };
 
-  private final Set<ActionListener> nodeAppliedListeners = ConcurrentHashMap.newKeySet();
+  private final Map<String, ActionListener> nodeAppliedListeners = new ConcurrentHashMap<>();
   private final Object popupMenuLock = new Object();
   private JPopupMenu popupMenu;
 
@@ -85,13 +85,18 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
    */
   public void setViewModel(@Nullable BaseTreeViewModel<?> viewModel) {
     if (viewModel != null) {
+      var oldSelectedItem = Optional.ofNullable(this.viewModel)
+          .map(BaseTreeViewModel::getSelectedItem)
+          .orElse(null);
       synchronized (viewModelLock) {
         unregisterViewModel();
         this.viewModel = viewModel;
         registerViewModel();
       }
       update();
-      viewModel.setSelectedItem(null);
+      if (oldSelectedItem == null) {
+        viewModel.setSelectedItem(null);
+      }
     }
   }
 
@@ -123,12 +128,12 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
     setSelectionRows(selection);
   }
 
-  public void addNodeAppliedListener(ActionListener listener) {
-    nodeAppliedListeners.add(listener);
+  public void addNodeAppliedListener(@NotNull Class<?> clazz, @NotNull ActionListener listener) {
+    nodeAppliedListeners.put(clazz.getName(), listener);
   }
 
-  public void removeNodeAppliedListener(ActionListener listener) {
-    nodeAppliedListeners.remove(listener);
+  public void removeNodeAppliedListener(@NotNull String key) {
+    nodeAppliedListeners.remove(key);
   }
 
   protected void showPopupMenu(@NotNull Point location) {
@@ -198,12 +203,12 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
 
     @Override
     public void mouseClicked(@NotNull MouseEvent e) {
-      // Double clicking items with no children
-      if (e.getClickCount() == 2
-          && Optional.ofNullable(viewModel.getSelectedItem())
-          .map(SelectableNodeViewModel::getChildren).map(List::isEmpty).orElse(false)) {
-        ActionEvent actionEvent = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null);
-        nodeAppliedListeners.forEach(listener -> listener.actionPerformed(actionEvent));
+      if (e.getClickCount() == 2 && viewModel.getSelectedItem() != null) {
+        var listener = nodeAppliedListeners.get(viewModel.getSelectedItem().getClass().getName());
+        if (listener != null) {
+          ActionEvent actionEvent = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null);
+          listener.actionPerformed(actionEvent);
+        }
       }
     }
   }

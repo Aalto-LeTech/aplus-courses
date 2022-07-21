@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public interface ModelFactory {
 
@@ -21,8 +22,11 @@ public interface ModelFactory {
                       @NotNull Set<String> optionalCategories,
                       @NotNull List<String> autoInstallComponentNames,
                       @NotNull Map<String, String[]> replInitialCommands,
+                      @NotNull String replAdditionalArguments,
                       @NotNull Version courseVersion,
-                      @NotNull Map<Long, Tutorial> tutorials);
+                      @NotNull Map<Long, Tutorial> tutorials,
+                      @Nullable String feedbackParser,
+                      @NotNull String newsParser);
 
   Module createModule(@NotNull String name, @NotNull URL url, @NotNull Version version,
                       @NotNull String changelog);

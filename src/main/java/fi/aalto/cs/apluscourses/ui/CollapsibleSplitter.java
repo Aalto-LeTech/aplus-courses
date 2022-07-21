@@ -51,8 +51,8 @@ public class CollapsibleSplitter {
       return;
     }
     Arrays.stream(titles.split(";"))
-            .forEach(title -> splitters.stream().filter(splitter -> title.equals(splitter.getTitle()))
-                    .forEach(Splitter::collapse));
+        .forEach(title -> splitters.stream().filter(splitter -> title.equals(splitter.getTitle()))
+            .forEach(Splitter::collapse));
   }
 
   public JBSplitter getFirstSplitter() {
@@ -72,6 +72,7 @@ public class CollapsibleSplitter {
     protected Splitter(@NotNull ToolbarPanel toolbarPanel) {
       this.toolbarPanel = toolbarPanel;
       var panel = toolbarPanel.getBasePanel();
+      panel.setBorder(null);
       var toolbar = toolbarPanel.getToolbar();
       panel.setMinimumSize(toolbar.getPreferredSize());
 

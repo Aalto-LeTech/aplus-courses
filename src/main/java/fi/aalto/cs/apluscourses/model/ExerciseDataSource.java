@@ -36,9 +36,14 @@ public interface ExerciseDataSource {
                        @NotNull CachePreference cachePreference) throws IOException;
 
   @NotNull
+  String getSubmissionFeedback(long submissionId,
+                               @NotNull Authentication authentication) throws IOException;
+
+  @NotNull
   SubmissionResult getSubmissionResult(@NotNull String submissionUrl,
                                        @NotNull Exercise exercise,
                                        @NotNull Authentication authentication,
+                                       @NotNull Course course,
                                        @NotNull CachePreference cachePreference) throws IOException;
 
   @NotNull

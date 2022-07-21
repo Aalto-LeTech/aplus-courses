@@ -1,7 +1,6 @@
 package fi.aalto.cs.apluscourses.model;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
+import static org.mockito.Mockito.mock;
 
 import java.util.Collections;
 import java.util.OptionalLong;
@@ -47,7 +46,7 @@ class SubmissionResultTest {
         .put("status", "ready")
         .put("late_penalty_applied", 0.6)
         .put("files", new JSONArray());
-    SubmissionResult submissionResult = SubmissionResult.fromJsonObject(jsonObject, exercise);
+    SubmissionResult submissionResult = SubmissionResult.fromJsonObject(jsonObject, exercise, mock(Course.class));
     exercise.addSubmissionResult(submissionResult);
 
     Assertions.assertEquals(234L, submissionResult.getId(), "The ID is the same as the one in the JSON object");

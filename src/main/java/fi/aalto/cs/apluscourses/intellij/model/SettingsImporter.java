@@ -15,6 +15,7 @@ import fi.aalto.cs.apluscourses.utils.PluginResourceBundle;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -75,6 +76,7 @@ public class SettingsImporter {
   @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
   public void importVMOptions(@NotNull Course course) throws IOException {
     if (!VMOptions.canWriteOptions()) {
+      logger.warn("Cannot import VM options because the IDE is configured not to use them");
       return;
     }
 
@@ -144,6 +146,27 @@ public class SettingsImporter {
 
     PluginResourceBundle.setCustomBundle(file, project);
     logger.info("Imported custom properties");
+  }
+
+  /**
+   * Downloads the feedback CSS and saves it to the MainViewModel.
+   *
+   * @throws IOException If an IO error occurs (e.g. network issues).
+   */
+  public void importFeedbackCss(@NotNull Project project, @NotNull Course course) throws IOException {
+    var cssUrl = course.getResourceUrls().get("feedbackCss");
+    if (cssUrl == null) {
+      return;
+    }
+
+    // TODO cache when string cache is available
+    var stream = CoursesClient.fetch(cssUrl);
+
+    var bytes = stream.readAllBytes();
+    var s = new String(bytes, StandardCharsets.UTF_8);
+
+    PluginSettings.getInstance().getMainViewModel(project).setFeedbackCss(s);
+    logger.info("Imported feedback CSS");
   }
 
   private static void extractZipTo(@NotNull ZipFile zipFile, @NotNull Path target)

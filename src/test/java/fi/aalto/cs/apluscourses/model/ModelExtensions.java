@@ -7,6 +7,7 @@ import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import fi.aalto.cs.apluscourses.utils.Version;
 import fi.aalto.cs.apluscourses.utils.cache.CachePreference;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -36,7 +37,8 @@ public class ModelExtensions {
     @NotNull
     @Override
     public List<Group> getGroups(@NotNull Course course, @NotNull Authentication authentication) {
-      return Collections.singletonList(new Group(0, Collections.singletonList("Only you")));
+      return Collections.singletonList(new Group(0,
+          Collections.singletonList(new Group.GroupMember(1, "Only you"))));
     }
 
     @NotNull
@@ -79,11 +81,18 @@ public class ModelExtensions {
       );
     }
 
+    @Override
+    public @NotNull String getSubmissionFeedback(long submissionId, @NotNull Authentication authentication)
+        throws IOException {
+      return "";
+    }
+
     @NotNull
     @Override
     public SubmissionResult getSubmissionResult(@NotNull String submissionUrl,
                                                 @NotNull Exercise exercise,
                                                 @NotNull Authentication authentication,
+                                                @NotNull Course course,
                                                 @NotNull CachePreference cachePreference) {
       return new SubmissionResult(0, 20, 0.0, SubmissionResult.Status.GRADED, exercise);
     }
@@ -140,10 +149,13 @@ public class ModelExtensions {
                       @NotNull Set<String> optionalCategories,
                       @NotNull List<String> autoInstallComponentNames,
                       @NotNull Map<String, String[]> replInitialCommands,
+                      @NotNull String replAdditionalArguments,
                       @NotNull Version courseVersion,
                       @NotNull Map<Long, Tutorial> tutorials) {
       super(id, name, aplusUrl, languages, modules, libraries, exerciseModules, resourceUrls, vmOptions,
-          optionalCategories, autoInstallComponentNames, replInitialCommands, courseVersion, tutorials);
+          optionalCategories, autoInstallComponentNames, replInitialCommands,
+          replAdditionalArguments, courseVersion, tutorials, null,
+          "default");
       exerciseDataSource = new TestExerciseDataSource();
     }
 
@@ -181,10 +193,12 @@ public class ModelExtensions {
           Collections.emptyList(),
           // replInitialCommands
           Collections.emptyMap(),
+          // replAdditionalArguments
+          "",
           // courseVersion
           BuildInfo.INSTANCE.courseVersion,
           // tutorials
-          Collections.emptyMap());
+          Collections.emptyMap(), null, "default");
       this.exerciseDataSource = exerciseDataSource;
     }
 
@@ -233,12 +247,16 @@ public class ModelExtensions {
           Collections.emptyList(),
           // replInitialCommands
           Collections.emptyMap(),
+          // replAdditionalArguments
+          "",
           // courseVersion
           BuildInfo.INSTANCE.courseVersion,
           project,
           commonLibraryProvider,
           // tutorials
-          Collections.emptyMap());
+          Collections.emptyMap(),
+          null,
+          null);
     }
   }
 
@@ -414,8 +432,11 @@ public class ModelExtensions {
                                @NotNull Set<String> optionalCategories,
                                @NotNull List<String> autoInstallComponentNames,
                                @NotNull Map<String, String[]> replInitialCommands,
+                               @NotNull String replAdditionalArguments,
                                @NotNull Version courseVersion,
-                               @NotNull Map<Long, Tutorial> tutorials) {
+                               @NotNull Map<Long, Tutorial> tutorials,
+                               @Nullable String feedbackParser,
+                               @Nullable String newsParser) {
       return new ModelExtensions.TestCourse(
           id,
           name,
@@ -429,6 +450,7 @@ public class ModelExtensions {
           optionalCategories,
           autoInstallComponentNames,
           replInitialCommands,
+          replAdditionalArguments,
           courseVersion,
           tutorials
       );
