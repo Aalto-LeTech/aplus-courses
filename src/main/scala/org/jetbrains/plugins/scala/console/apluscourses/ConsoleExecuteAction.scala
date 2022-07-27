@@ -1,4 +1,4 @@
-package fi.aalto.cs.apluscourses.intellij.actions
+package org.jetbrains.plugins.scala.console.apluscourses
 
 import com.intellij.openapi.actionSystem.{AnActionEvent, CommonDataKeys}
 import com.intellij.openapi.util.TextRange
@@ -35,15 +35,28 @@ class ConsoleExecuteAction extends ScalaConsoleExecuteAction {
       editor.getDocument.setText("")
     }
 
-    val finalText = text.split('\n').mkString("\n") + "\n"
     val outputStream: OutputStream = processHandler.getProcessInput
-    val bytes: Array[Byte] = finalText.getBytes
-    outputStream.write(bytes)
-    outputStream.flush()
+    val finalText = text.split('\n').mkString("\n")
 
-    // cannot do that directly because console is package-private?
-    // console.textSent(finalText)
-    val method = console.getClass.getSuperclass.getDeclaredMethod("textSent", classOf[String])
-    method.invoke(console, finalText)
+    if (finalText == "\n") {
+      outputStream.write(finalText.getBytes)
+    } else {
+      val textEndSequence = "\u001b[201~".getBytes
+
+      var bytes: Array[Byte] = finalText.getBytes
+      val contentLength = bytes.length + textEndSequence.length
+
+      if (contentLength % 64 != 0) {
+        bytes = bytes ++ Array.fill[Byte](64 - (contentLength % 64))(0x20)
+      }
+
+      outputStream.write("\u001b[200~".getBytes)
+      outputStream.flush()
+
+      outputStream.write(bytes ++ textEndSequence ++ "\n".getBytes)
+    }
+
+    outputStream.flush()
+    console.textSent(finalText)
   }
 }

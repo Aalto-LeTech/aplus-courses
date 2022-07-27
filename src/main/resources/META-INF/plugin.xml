@@ -174,7 +174,7 @@
             <keyboard-shortcut first-keystroke="control shift D" keymap="$default"/>
         </action>
         <action id="ScalaConsole.Execute"
-                class="fi.aalto.cs.apluscourses.intellij.actions.ConsoleExecuteAction"
+                class="org.jetbrains.plugins.scala.console.apluscourses.ConsoleExecuteAction"
                 overrides="true">
         </action>
     </actions>
