@@ -25,7 +25,7 @@ dependencies {
     implementation 'org.jsoup:jsoup:1.15.2'
     implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
     implementation group: 'net.lingala.zip4j', name: 'zip4j', version: '2.11.1'
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.8.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.0'
     test.useJUnitPlatform()
     compileOnly group: 'org.scala-lang', name: 'scala-library', version: '2.13.8'
     implementation group: 'org.json', name: 'json', version: '20220320'
