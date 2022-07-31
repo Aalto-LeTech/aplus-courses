@@ -6,9 +6,11 @@ package org.jetbrains.plugins.scala.console.apluscourses
 
 import com.intellij.openapi.actionSystem.{AnActionEvent, CommonDataKeys}
 import com.intellij.openapi.util.TextRange
+import fi.aalto.cs.apluscourses.intellij.Repl
 import org.jetbrains.plugins.scala.console.ScalaConsoleInfo
 import org.jetbrains.plugins.scala.console.actions.ScalaConsoleExecuteAction
 import org.jetbrains.plugins.scala.inWriteAction
+
 import java.io.OutputStream
 
 class ConsoleExecuteAction extends ScalaConsoleExecuteAction {
@@ -35,6 +37,8 @@ class ConsoleExecuteAction extends ScalaConsoleExecuteAction {
     var userInputBytes: Array[Byte] = text.getBytes
     val contentLength = userInputBytes.length + EndPaste.length
 
+    // We pad the input with some "neutral" character - a one that will have no side effects
+    // even if we add fifty of these. Space seems to be a good candidate.
     if (contentLength % JLineBufferLength != 0) {
       userInputBytes = userInputBytes ++
         Array.fill[Byte](JLineBufferLength - (contentLength % JLineBufferLength))(' ')
@@ -47,8 +51,16 @@ class ConsoleExecuteAction extends ScalaConsoleExecuteAction {
     val editor = e.getData(CommonDataKeys.EDITOR)
     if (editor == null) return
 
-    val console           = ScalaConsoleInfo.getConsole(editor)
-    val processHandler    = ScalaConsoleInfo.getProcessHandler(editor)
+    val console = ScalaConsoleInfo.getConsole(editor)
+
+    // We should perform our multiline fixing only for our custom REPL that is running Scala 3.
+    // Non-A+ REPLs or those that host Scala 2 should not be modified.
+    if (!console.isInstanceOf[Repl] || !console.asInstanceOf[Repl].isScala3REPL) {
+      super.actionPerformed(e)
+      return
+    }
+
+    val processHandler = ScalaConsoleInfo.getProcessHandler(editor)
     val historyController = ScalaConsoleInfo.getController(editor)
 
     val document = console.getEditorDocument
