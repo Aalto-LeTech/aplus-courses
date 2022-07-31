@@ -77,7 +77,7 @@
  <check level="warning" class="org.scalastyle.scalariform.NoWhitespaceBeforeLeftBracketChecker" enabled="true"></check>
  <check level="warning" class="org.scalastyle.scalariform.NoWhitespaceAfterLeftBracketChecker" enabled="true"></check>
  <check level="warning" class="org.scalastyle.scalariform.NoWhitespaceBeforeRightBracketChecker" enabled="true"></check>
- <check level="warning" class="org.scalastyle.scalariform.ReturnChecker" enabled="true"></check>
+ <check level="warning" class="org.scalastyle.scalariform.ReturnChecker" enabled="false"></check>
  <check level="warning" class="org.scalastyle.scalariform.NullChecker" enabled="true">
   <parameters>
    <parameter name="allowNullChecks"><![CDATA[true]]></parameter>
@@ -142,7 +142,7 @@
  <check level="warning" class="org.scalastyle.scalariform.ForBraceChecker" enabled="true"/>
  <check level="warning" class="org.scalastyle.scalariform.ForLoopChecker" enabled="true"/>
  <check level="warning" class="org.scalastyle.scalariform.SpaceAfterCommentStartChecker" enabled="true"/>
- <check level="warning" class="org.scalastyle.scalariform.FieldNamesChecker" enabled="true">
+ <check level="warning" class="org.scalastyle.scalariform.FieldNamesChecker" enabled="false">
   <parameters>
    <parameter name="regex"><![CDATA[^[a-z][A-Za-z]*$]]></parameter>
    <parameter name="objectFieldRegex"><![CDATA[^[A-Z][A-Za-z]*$]]></parameter>
@@ -153,7 +153,7 @@
    <parameter name="words"><![CDATA[TODO|FIXME]]></parameter>
   </parameters>
  </check>
- <check level="warning" class="org.scalastyle.scalariform.NamedArgumentChecker" enabled="true">
+ <check level="warning" class="org.scalastyle.scalariform.NamedArgumentChecker" enabled="false">
   <parameters>
    <parameter name="checkString"><![CDATA[false]]></parameter>
    <parameter name="ignoreMethod"><![CDATA[^set.+$]]></parameter>

@@ -1,3 +1,7 @@
+// The reason for this class being in a separate package is that the ConsoleExecuteAction class
+// uses the ScalaLanguageConsole.textSent() method, which is package private. Therefore, in order to
+// call it, we must be in the same package as the console: org.jetbrains.plugins.scala.console.
+
 package org.jetbrains.plugins.scala.console.apluscourses
 
 import com.intellij.openapi.actionSystem.{AnActionEvent, CommonDataKeys}
@@ -8,6 +12,37 @@ import org.jetbrains.plugins.scala.inWriteAction
 import java.io.OutputStream
 
 class ConsoleExecuteAction extends ScalaConsoleExecuteAction {
+  // We achieve proper multiline support by surrounding the REPL commands by special
+  // ANSI sequences indicating "bracketed paste". We exploit the fact that Scala 3 REPL
+  // uses the JLine 3 library, which explicitly supports the bracketed paste sequences.
+
+  // "Bracketed paste" means that newlines encountered in the string surrounded by paste markers
+  // should not be treated as end-of-statement markers, but rather mere parts of the statement.
+  // See https://cirw.in/blog/bracketed-paste for details.
+  private val BeginPaste = "\u001b[200~".getBytes
+  private val EndPaste = "\u001b[201~".getBytes
+
+  // This is yet another quirk of JLine - it supports various terminals, but IntelliJ's console
+  // isn't one, and therefore JLine defaults to "DumbTerminal", which is a terminal with no
+  // special features.
+  // When inserting bracketed paste sequences, the JLine library scans the input for the
+  // "bracketed paste end" sequence by reading from the terminal in 64-byte chunks.
+  // JLine erroneously blocks until the whole chunk is read, therefore we need to pad the data
+  // to 64 characters in order to appease JLine.
+  private val JLineBufferLength = 64
+
+  private def padTextToBlockLength(text: String): Array[Byte] = {
+    var userInputBytes: Array[Byte] = text.getBytes
+    val contentLength = userInputBytes.length + EndPaste.length
+
+    if (contentLength % JLineBufferLength != 0) {
+      userInputBytes = userInputBytes ++
+        Array.fill[Byte](JLineBufferLength - (contentLength % JLineBufferLength))(' ')
+    }
+
+    userInputBytes
+  }
+
   override def actionPerformed(e: AnActionEvent): Unit = {
     val editor = e.getData(CommonDataKeys.EDITOR)
     if (editor == null) return
@@ -41,19 +76,14 @@ class ConsoleExecuteAction extends ScalaConsoleExecuteAction {
     if (finalText == "\n") {
       outputStream.write(finalText.getBytes)
     } else {
-      val textEndSequence = "\u001b[201~".getBytes
+      val paddedInput = padTextToBlockLength(finalText)
 
-      var bytes: Array[Byte] = finalText.getBytes
-      val contentLength = bytes.length + textEndSequence.length
-
-      if (contentLength % 64 != 0) {
-        bytes = bytes ++ Array.fill[Byte](64 - (contentLength % 64))(0x20)
-      }
-
-      outputStream.write("\u001b[200~".getBytes)
+      // the "start paste" sequence has to be in a separate write call, otherwise JLine won't
+      // pick it up properly; it seems to be yet another quirk of JLine and DumbTerminal
+      outputStream.write(BeginPaste)
       outputStream.flush()
 
-      outputStream.write(bytes ++ textEndSequence ++ "\n".getBytes)
+      outputStream.write(paddedInput ++ EndPaste ++ "\n".getBytes)
     }
 
     outputStream.flush()
