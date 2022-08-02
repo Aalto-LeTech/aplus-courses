@@ -75,7 +75,7 @@ published version.
 
 **2.1** In the startup window, click **New Project**.
 
-**2.2** In **New Project** window, choose **Empty Project** on a left-hand side list.
+**2.2** In **New Project** window, choose **A+ Project** on a left-hand side list.
 
 **2.3** Click **Next**.
 
@@ -165,15 +165,15 @@ published version.
 
 ### 5 Installing modules
 
-**5.1** On **Modules** list tool window, double-click **RobotTribes**.
+**5.1** In the **Modules** list, double-click **RobotTribes**.
 
 **5.2** ASSERTION: **RobotTribes** and **Robots** appear as modules in the project tree.
 
-**5.3** ASSERTION: **RobotTribes** and **Robots** are marked **Installed** in **Modules** list.
+**5.3** ASSERTION: **RobotTribes** and **Robots** are marked **Installed** in the **Modules** list.
 
-**5.4** On **Modules** list, right-click **SwingExamples**.
+**5.4** In the **Modules** list, right-click **SwingExamples**.
 
-**5.5** On the context menu that appears, choose **Install A+ module**.
+**5.5** In the context menu that appears, choose **Install A+ module**.
 
 **5.6** ASSERTION: **SwingExamples** appears as a module in the project tree.
 
@@ -181,7 +181,7 @@ published version.
 
 **5.7** ASSERTION: **SwingExamples** is marked **Installed** in the modules list.
 
-**5.8** On **Modules** list, select multiple uninstalled modules.
+**5.8** In the **Modules** list, select multiple uninstalled modules.
 
 - Hold **Ctrl**/**Cmd** key down while clicking to select many items.
 
@@ -189,7 +189,7 @@ published version.
 
 **5.10** ASSERTION: The chosen modules appear in the project tree.
 
-**5.11** ASSERTION: The chosen modules are marked **Installed** in **Modules** list.
+**5.11** ASSERTION: The chosen modules are marked **Installed** in the **Modules** list.
 
 **5.12** ASSERTION: All the installed modules have their dependencies correctly configured.
 
@@ -206,6 +206,12 @@ published version.
 **5.16** Press **Escape**.
 
 **5.17** ASSERTION: The substring **Vii** should no longer be highlighted.
+
+**5.18** In the **Modules** list, right-click **O1Library**.
+
+**5.19** Choose **Open Documentation** in the context menu.
+
+**5.20** ASSERTION: Scaladoc documentation opens for the **O1Library** module.
 
 ### 6 Using Scala REPL
 
@@ -343,6 +349,30 @@ Terminate**.
 **6.50** Close the window by clicking **Cancel**.
 
 **6.51** ASSERTION: No REPL opens.
+
+#### Part VI: Detecting module changes.
+
+**6.52** Open the Scala REPL for **O1Library**.
+
+**6.53** Click **OK** in the **REPL Configuration** window.
+
+**6.54** ASSERTION: Scala REPL opens.
+
+**6.55** Go to any .scala file within the **O1Library** and edit its contents (for example, change one character in some comment, or add whitespace)
+
+**6.56** Save the file and click back on the REPL window.
+
+**6.57** ASSERTION: A warning banner appears on top of the REPL, prompting the user to restart the REPL.
+
+**6.58** Click on **Ignore for this session**.
+
+**6.59** ASSERTION: The banner disappears.
+
+**6.60** Go back to the modified .scala file and edit the file again.
+
+**6.61** Save the file and click back on the REPL window.
+
+**6.62** ASSERTION: The warning banner does not appear.
 
 ### 7 Removing a module
 
