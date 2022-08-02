@@ -3,6 +3,7 @@ package fi.aalto.cs.apluscourses.intellij
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.roots.ModuleRootManager
+import fi.aalto.cs.apluscourses.intellij.services.PluginSettings
 import fi.aalto.cs.apluscourses.intellij.utils.ModuleUtils.{getInitialReplCommands, getUpdatedText}
 import fi.aalto.cs.apluscourses.intellij.utils.{ModuleUtils, ReplChangesObserver}
 import fi.aalto.cs.apluscourses.ui.ReplBannerPanel
@@ -23,14 +24,17 @@ class Repl(module: Module) extends ScalaLanguageConsole(module: Module) {
   banner.setVisible(false)
   add(banner, BorderLayout.NORTH)
 
-  // creating a new REPL resets the "module changed" state
-  ReplChangesObserver.onStartedRepl(module)
+  // Do not show the warning banner for non-A+ courses
+  if (PluginSettings.getInstance.getCourseProject(module.getProject) != null) {
+    // creating a new REPL resets the "module changed" state
+    ReplChangesObserver.onStartedRepl(module)
 
-  Toolkit.getDefaultToolkit.addAWTEventListener((event: AWTEvent) => {
-    if (SwingUtilities.isDescendingFrom(event.getSource.asInstanceOf[Component], this)) {
-      banner.setVisible(ReplChangesObserver.hasModuleChanged(module))
-    }
-  }, AWTEvent.FOCUS_EVENT_MASK)
+    Toolkit.getDefaultToolkit.addAWTEventListener((event: AWTEvent) => {
+      if (SwingUtilities.isDescendingFrom(event.getSource.asInstanceOf[Component], this)) {
+        banner.setVisible(ReplChangesObserver.hasModuleChanged(module))
+      }
+    }, AWTEvent.FOCUS_EVENT_MASK)
+  }
 
   // We need this here because the overridden ConsoleExecuteAction needs to determine whether
   // the console is hosting a Scala 3 REPL or something else
