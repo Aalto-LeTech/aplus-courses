@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.intellij
 
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.openapi.module.Module
+import fi.aalto.cs.apluscourses.intellij.services.PluginSettings
 import fi.aalto.cs.apluscourses.intellij.utils.ModuleUtils.{getInitialReplCommands, getUpdatedText}
 import fi.aalto.cs.apluscourses.intellij.utils.ReplChangesObserver
 import fi.aalto.cs.apluscourses.ui.ReplBannerPanel
@@ -22,14 +23,17 @@ class Repl(module: Module) extends ScalaLanguageConsole(module: Module) {
   banner.setVisible(false)
   add(banner, BorderLayout.NORTH)
 
-  // creating a new REPL resets the "module changed" state
-  ReplChangesObserver.onStartedRepl(module)
+  // Do not show the warning banner for non-A+ courses
+  if (PluginSettings.getInstance.getCourseProject(module.getProject) != null) {
+    // creating a new REPL resets the "module changed" state
+    ReplChangesObserver.onStartedRepl(module)
 
-  Toolkit.getDefaultToolkit.addAWTEventListener((event: AWTEvent) => {
-    if (SwingUtilities.isDescendingFrom(event.getSource.asInstanceOf[Component], this)) {
-      banner.setVisible(ReplChangesObserver.hasModuleChanged(module))
-    }
-  }, AWTEvent.FOCUS_EVENT_MASK)
+    Toolkit.getDefaultToolkit.addAWTEventListener((event: AWTEvent) => {
+      if (SwingUtilities.isDescendingFrom(event.getSource.asInstanceOf[Component], this)) {
+        banner.setVisible(ReplChangesObserver.hasModuleChanged(module))
+      }
+    }, AWTEvent.FOCUS_EVENT_MASK)
+  }
 
   override def print(text: String, contentType: ConsoleViewContentType): Unit = {
     var updatedText = text
