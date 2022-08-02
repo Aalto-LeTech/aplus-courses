@@ -1,3 +1,6 @@
+// This file uses modified code based on the IntelliJ Scala plugin. Original code can be found here:
+// https://github.com/JetBrains/intellij-scala/blob/bd2ec19ced511fd2f27459ca733dde5cb432aba6/scala/scala-impl/src/org/jetbrains/plugins/scala/console/actions/ScalaConsoleExecuteAction.scala
+
 // The reason for this class being in a separate package is that the ConsoleExecuteAction class
 // uses the ScalaLanguageConsole.textSent() method, which is package private. Therefore, in order to
 // call it, we must be in the same package as the console: org.jetbrains.plugins.scala.console.
