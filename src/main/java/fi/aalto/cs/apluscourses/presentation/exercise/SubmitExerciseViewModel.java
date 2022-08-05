@@ -2,10 +2,12 @@ package fi.aalto.cs.apluscourses.presentation.exercise;
 
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
+import fi.aalto.cs.apluscourses.presentation.base.Searchable;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
 import org.jetbrains.annotations.NotNull;
 
-public class SubmitExerciseViewModel extends SelectableNodeViewModel<Object> {
+public class SubmitExerciseViewModel extends SelectableNodeViewModel<Object>
+    implements Searchable {
   protected SubmitExerciseViewModel() {
     super(new Object(), null);
   }
