@@ -5,8 +5,10 @@ import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
+import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.actions.OpenSubmissionNotificationAction;
 import fi.aalto.cs.apluscourses.intellij.actions.ShowFeedbackNotificationAction;
+import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
@@ -22,7 +24,9 @@ public class FeedbackAvailableNotification extends Notification {
    * points the submission got.
    */
   public FeedbackAvailableNotification(@NotNull SubmissionResult submissionResult,
-                                       @NotNull Exercise exercise) {
+                                       @NotNull Exercise exercise,
+                                       @NotNull MainViewModelProvider mainViewModelProvider,
+                                       @NotNull Project project) {
     super(
         PluginSettings.A_PLUS,
         getText("notification.FeedbackAvailableNotification.title"),
@@ -31,8 +35,17 @@ public class FeedbackAvailableNotification extends Notification {
             SubmissionResultUtil.getStatus(submissionResult)),
         NotificationType.INFORMATION
     );
-    super.addAction(new ShowFeedbackNotificationAction(submissionResult));
+    if (mainViewModelProvider.getMainViewModel(project).getFeedbackCss() != null) {
+      super.addAction(new ShowFeedbackNotificationAction(submissionResult));
+    }
     super.addAction(new OpenSubmissionNotificationAction(submissionResult));
+  }
+
+
+  public FeedbackAvailableNotification(@NotNull SubmissionResult submissionResult,
+                                       @NotNull Exercise exercise,
+                                       @NotNull Project project) {
+    this(submissionResult, exercise, PluginSettings.getInstance(), project);
   }
 
 }
