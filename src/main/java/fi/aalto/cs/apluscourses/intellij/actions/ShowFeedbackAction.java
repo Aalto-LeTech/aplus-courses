@@ -20,13 +20,12 @@ import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jsoup.Jsoup;
-import org.jsoup.safety.Whitelist;
+import org.jsoup.safety.Safelist;
 
 public class ShowFeedbackAction extends AnAction {
   public static final String ACTION_ID = ShowFeedbackAction.class.getCanonicalName();
@@ -116,7 +115,7 @@ public class ShowFeedbackAction extends AnAction {
           feedbackCss
               .replaceAll("TEXT_COLOR", textColorString)
               .replaceAll("FONT_NAME", fontName),
-          Whitelist.none())
+          Safelist.none())
           + "</style>");
 
       var fileEditorManager = FileEditorManager.getInstance(project);
