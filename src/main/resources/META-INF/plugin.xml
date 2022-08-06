@@ -15,7 +15,7 @@
     ]]></description>
 
     <change-notes>
-        Added support for Programming Studio 2, 2022 edition.
+        UI improvements and bug fixes.
     </change-notes>
 
     <depends>com.intellij.modules.java</depends>
