@@ -1,5 +1,7 @@
+// scalastyle:off
 // This file uses modified code based on the IntelliJ Scala plugin. Original code can be found here:
 // https://github.com/JetBrains/intellij-scala/blob/bd2ec19ced511fd2f27459ca733dde5cb432aba6/scala/scala-impl/src/org/jetbrains/plugins/scala/console/actions/ScalaConsoleExecuteAction.scala
+// scalastyle:on
 
 // The reason for this class being in a separate package is that the ConsoleExecuteAction class
 // uses the ScalaLanguageConsole.textSent() method, which is package private. Therefore, in order to
@@ -27,13 +29,13 @@ class ConsoleExecuteAction extends ScalaConsoleExecuteAction {
   private val BeginPaste = "\u001b[200~".getBytes
   private val EndPaste = "\u001b[201~".getBytes
 
-  // This is yet another quirk of JLine - it supports various terminals, but IntelliJ's console
-  // isn't one, and therefore JLine defaults to "DumbTerminal", which is a terminal with no
+  // This is a "feature" of JLine - it has support for various terminals, but for IntelliJ console
+  // there isn't one, and therefore JLine defaults to "DumbTerminal", which is a terminal with no
   // special features.
   // When inserting bracketed paste sequences, the JLine library scans the input for the
   // "bracketed paste end" sequence by reading from the terminal in 64-byte chunks.
   // JLine erroneously blocks until the whole chunk is read, therefore we need to pad the data
-  // to 64 characters in order to appease JLine.
+  // to 64 characters in order to appease JLine. (This only occurs for DumbTerminals)
   private val JLineBufferLength = 64
 
   private def padTextToBlockLength(text: String): Array[Byte] = {
@@ -52,22 +54,25 @@ class ConsoleExecuteAction extends ScalaConsoleExecuteAction {
 
   override def actionPerformed(e: AnActionEvent): Unit = {
     val editor = e.getData(CommonDataKeys.EDITOR)
-    if (editor == null) return
-
-    val console = ScalaConsoleInfo.getConsole(editor)
-
-    // We should perform our multiline fixing only for our custom REPL that is running Scala 3.
-    // Non-A+ REPLs or those that host Scala 2 should not be modified.
-    if (!console.isInstanceOf[Repl] || !console.asInstanceOf[Repl].isScala3REPL) {
-      super.actionPerformed(e)
-      return
+    if (editor == null) {
+      return // scalastyle:ignore
     }
 
+    val console = ScalaConsoleInfo.getConsole(editor)
     val processHandler = ScalaConsoleInfo.getProcessHandler(editor)
     val historyController = ScalaConsoleInfo.getController(editor)
 
     val document = console.getEditorDocument
     val text = document.getText
+
+    // We should perform our multiline fixing only for our custom REPL that is running Scala 3.
+    // Non-A+ REPLs or those that host Scala 2 should not be modified.
+    // Additionally, if the text has no newlines, we don't need to do the bracketed paste.
+    if (!console.isInstanceOf[Repl] || !console.asInstanceOf[Repl].isScala3REPL ||
+        !text.exists(c => c == '\n' || c == '\r')) {
+      super.actionPerformed(e)
+      return // scalastyle:ignore
+    }
 
     // Process input and add to history
     inWriteAction {
@@ -85,23 +90,15 @@ class ConsoleExecuteAction extends ScalaConsoleExecuteAction {
       editor.getDocument.setText("")
     }
 
+    // the "start paste" sequence has to be in a separate write call, otherwise JLine won't
+    // pick it up properly; it seems to be yet another quirk of JLine and DumbTerminal
     val outputStream: OutputStream = processHandler.getProcessInput
-    val finalText = text.split('\n').mkString("\n")
-
-    if (finalText == "\n") {
-      outputStream.write(finalText.getBytes)
-    } else {
-      val paddedInput = padTextToBlockLength(finalText)
-
-      // the "start paste" sequence has to be in a separate write call, otherwise JLine won't
-      // pick it up properly; it seems to be yet another quirk of JLine and DumbTerminal
-      outputStream.write(BeginPaste)
-      outputStream.flush()
-
-      outputStream.write(paddedInput ++ EndPaste ++ "\n".getBytes)
-    }
-
+    outputStream.write(BeginPaste)
     outputStream.flush()
-    console.textSent(finalText)
+
+    outputStream.write(padTextToBlockLength(text) ++ EndPaste ++ "\n".getBytes)
+    outputStream.flush()
+
+    console.textSent(text)
   }
 }
