@@ -58,9 +58,10 @@ class Repl(module: Module) extends ScalaLanguageConsole(module: Module) {
     // In Scala 3 REPL, the "scala>" prompt is colored blue by sending appropriate ANSI sequences
     // This is not handled correctly by Scala plugin which expects the prompt to be sent with
     // the NORMAL_OUTPUT attributes; this breaks the REPL state machine
-    // Therefore we override the text attributes for the prompt. The only unintended consequence
+    // Therefore we override the text attributes for the prompt. The unintended consequence
     // of this fix is that output lines equal to the prompt will also lose their text attributes.
-    super.print(updatedText, if (text.trim == "scala>")
-      ConsoleViewContentType.NORMAL_OUTPUT else contentType)
+    super.print(updatedText,
+      if (text.trim == "scala>") ConsoleViewContentType.NORMAL_OUTPUT else contentType
+    )
   }
 }
