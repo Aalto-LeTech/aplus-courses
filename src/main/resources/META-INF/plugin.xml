@@ -94,8 +94,8 @@
                     class="fi.aalto.cs.apluscourses.intellij.actions.RefreshModulesAction"
                     text="Refresh Modules"
                     icon="PluginIcons.A_PLUS_REFRESH"/>
-            <group id="fi.aalto.cs.apluscourses.intellij.actions.ModuleFilterOptionsActionGroup"
-                   class="fi.aalto.cs.apluscourses.intellij.actions.ModuleFilterOptionsActionGroup"
+            <group id="fi.aalto.cs.apluscourses.intellij.actions.OptionsActionGroup.ForModules"
+                   class="fi.aalto.cs.apluscourses.intellij.actions.APlusOptionsActionGroup$ForModules"
                    popup="true"
                    text="Filter Modules"
                    icon="PluginIcons.A_PLUS_FILTER">
@@ -120,8 +120,8 @@
                     class="fi.aalto.cs.apluscourses.intellij.actions.RefreshExercisesAction"
                     text="Refresh Assignments"
                     icon="PluginIcons.A_PLUS_REFRESH"/>
-            <group id="fi.aalto.cs.apluscourses.intellij.actions.FilterOptionsActionGroup"
-                   class="fi.aalto.cs.apluscourses.intellij.actions.FilterOptionsActionGroup"
+            <group id="fi.aalto.cs.apluscourses.intellij.actions.OptionsActionGroup.ForExercises"
+                   class="fi.aalto.cs.apluscourses.intellij.actions.APlusOptionsActionGroup$ForExercises"
                    popup="true"
                    text="Filter Assignments"
                    icon="PluginIcons.A_PLUS_FILTER">

@@ -2,7 +2,7 @@ package fi.aalto.cs.apluscourses.presentation.module;
 
 import fi.aalto.cs.apluscourses.presentation.filter.TypedFilter;
 
-public abstract class ModuleFilter  extends TypedFilter<ModuleListElementViewModel> {
+public abstract class ModuleFilter extends TypedFilter<ModuleListElementViewModel> {
   protected ModuleFilter() {
     super(ModuleListElementViewModel.class);
   }

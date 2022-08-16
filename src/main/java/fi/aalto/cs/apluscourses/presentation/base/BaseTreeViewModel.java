@@ -1,18 +1,18 @@
 package fi.aalto.cs.apluscourses.presentation.base;
 
-import fi.aalto.cs.apluscourses.presentation.filter.Filter;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import fi.aalto.cs.apluscourses.utils.Event;
+import fi.aalto.cs.apluscourses.utils.RestartableTask;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class BaseTreeViewModel<T> extends SelectableNodeViewModel<T> implements FilterEngine.FilterApplier {
+public class BaseTreeViewModel<T> extends SelectableNodeViewModel<T> {
 
   @NotNull
   public final Event filtered = new Event();
-  private final @Nullable Options filterOptions;
-  private final @NotNull FilterEngine filterEngine;
+  private final @NotNull RestartableTask filterTask;
+  private final @NotNull Options options;
   @Nullable
   protected volatile SelectableNodeViewModel<?> selectedItem = null; //  NOSONAR
 
@@ -29,22 +29,16 @@ public class BaseTreeViewModel<T> extends SelectableNodeViewModel<T> implements 
    */
   public BaseTreeViewModel(@NotNull T model,
                            @Nullable List<SelectableNodeViewModel<?>> children,
-                           @Nullable Options filterOptions) {
+                           @NotNull Options options) {
     super(model, children);
-    this.filterOptions = filterOptions;
-    this.filterEngine = new FilterEngine(filterOptions, this, filtered::trigger);
-    filterEngine.filter();
-    if (this.filterOptions != null) {
-      this.filterOptions.optionsChanged.addListener(this, BaseTreeViewModel::filter);
-    }
+    this.filterTask = new RestartableTask(this::doFilter, filtered::trigger);
+    this.options = options;
+    options.optionsChanged.addListener(this, BaseTreeViewModel::filter);
+    filter();
   }
 
   private void filter() {
-    filterEngine.filter();
-  }
-
-  public @Nullable Options getFilterOptions() {
-    return filterOptions;
+    filterTask.restart();
   }
 
   /**
@@ -65,9 +59,8 @@ public class BaseTreeViewModel<T> extends SelectableNodeViewModel<T> implements 
     return new Selection(traverseAndFind(SelectableNodeViewModel::isSelected));
   }
 
-  @Override
-  public void applyFilter(@NotNull Filter filter) throws InterruptedException {
-    applyFilterRecursive(filter);
+  private void doFilter() throws InterruptedException {
+    applyFilterRecursive(options);
   }
 
   public static class Selection {

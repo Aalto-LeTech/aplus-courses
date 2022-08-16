@@ -50,17 +50,17 @@ public class MainViewModel {
       new ObservableReadWriteProperty<>(null);
 
   @NotNull
-  private final Options exerciseFilterOptions;
+  private final Options exerciseOptions;
 
   @NotNull
-  private final Options moduleFilterOptions;
+  private final Options moduleOptions;
 
   /**
    * Instantiates a class representing the whole main view of the plugin.
    */
-  public MainViewModel(@NotNull Options exerciseFilterOptions, @NotNull Options moduleFilterOptions) {
-    this.exerciseFilterOptions = exerciseFilterOptions;
-    this.moduleFilterOptions = moduleFilterOptions;
+  public MainViewModel(@NotNull Options exerciseOptions, @NotNull Options moduleOptions) {
+    this.exerciseOptions = exerciseOptions;
+    this.moduleOptions = moduleOptions;
   }
 
   /**
@@ -69,13 +69,13 @@ public class MainViewModel {
    */
   public void updateExercisesViewModel(@NotNull CourseProject courseProject) {
     exercisesViewModel.set(
-        ExercisesTreeViewModel.createExerciseTreeViewModel(courseProject.getExerciseTree(), exerciseFilterOptions,
+        ExercisesTreeViewModel.createExerciseTreeViewModel(courseProject.getExerciseTree(), exerciseOptions,
             courseProject));
   }
 
   public void updateCourseViewModel(@NotNull CourseProject courseProject) {
     courseViewModel.set(
-        new CourseViewModel(courseProject.getCourse(), moduleFilterOptions));
+        new CourseViewModel(courseProject.getCourse(), moduleOptions));
   }
 
   /**
@@ -105,13 +105,13 @@ public class MainViewModel {
   }
 
   @NotNull
-  public Options getExerciseFilterOptions() {
-    return exerciseFilterOptions;
+  public Options getExerciseOptions() {
+    return exerciseOptions;
   }
 
   @NotNull
-  public Options getModuleFilterOptions() {
-    return moduleFilterOptions;
+  public Options getModuleOptions() {
+    return moduleOptions;
   }
 
   /**

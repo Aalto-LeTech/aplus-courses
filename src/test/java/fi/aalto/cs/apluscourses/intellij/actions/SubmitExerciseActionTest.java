@@ -151,10 +151,10 @@ class SubmitExerciseActionTest {
         .when(exerciseDataSource)
         .submit(any(Submission.class), any(Authentication.class));
 
-    courseViewModel = new CourseViewModel(course, null);
+    courseViewModel = new CourseViewModel(course, Options.EMPTY);
     mainViewModel.courseViewModel.set(courseViewModel);
 
-    exercises = new ExercisesTreeViewModel(new ExercisesTree(exerciseGroups), new Options());
+    exercises = new ExercisesTreeViewModel(new ExercisesTree(exerciseGroups), Options.EMPTY);
     exercises.getChildren().get(0).getChildren().get(0).setSelected(true);
     mainViewModel.exercisesViewModel.set(exercises);
 

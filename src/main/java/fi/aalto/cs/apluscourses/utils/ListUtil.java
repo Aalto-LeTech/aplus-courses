@@ -2,6 +2,9 @@ package fi.aalto.cs.apluscourses.utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.IntConsumer;
 import org.jetbrains.annotations.NotNull;
 
 public class ListUtil {
@@ -19,4 +22,18 @@ public class ListUtil {
     return both;
   }
 
+  /**
+   * Calls the given action for each item in the list.
+   */
+  public static <T> void forEachWithIndex(@NotNull List<T> list,
+                                          @NotNull IndexedConsumer<? super T> action) {
+    for (int i = 0; i < list.size(); i++) {
+      action.accept(list.get(i), i);
+    }
+  }
+
+  @FunctionalInterface
+  public interface IndexedConsumer<T> {
+    void accept(T item, int index);
+  }
 }

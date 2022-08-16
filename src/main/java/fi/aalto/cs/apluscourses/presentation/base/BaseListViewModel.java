@@ -1,45 +1,27 @@
 package fi.aalto.cs.apluscourses.presentation.base;
 
-import fi.aalto.cs.apluscourses.presentation.filter.Filter;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import fi.aalto.cs.apluscourses.utils.Event;
-import java.util.ArrayList;
+import fi.aalto.cs.apluscourses.utils.RestartableTask;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.swing.AbstractListModel;
-import javax.swing.DefaultListSelectionModel;
-import javax.swing.ListModel;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
- * An abstract extension to {@link ListModel} that co-operates with {@link ListElementViewModel}.
- * Provides the following functionality:
- * <ul>
- * <li>selection state to be stored inside the element objects</li>
- * <li>the view to be informed about changes in the presentation model</li>
- * </ul>
+ * Base class for list view models.
  *
  * @param <E> Type of the list elements (presentation models), subtype of
  *            {@link ListElementViewModel}
  */
-public class BaseListViewModel<E extends ListElementViewModel<?>> extends AbstractListModel<E>
-    implements SelectableListModel<E>, FilterEngine.FilterApplier {
+public class BaseListViewModel<E extends ListElementViewModel<?>> {
 
-  public final transient Event filtered = new Event();
+  public final Event filtered = new Event();
 
-  @NotNull
-  private final ListSelectionModel selectionModel;
-
-  @NotNull
-  protected final List<E> elements;
-  private final @Nullable Options filterOptions;
-  private final transient @NotNull FilterEngine filterEngine;
+  private final transient @NotNull RestartableTask filterTask;
+  private final @NotNull Options options;
+  protected final @NotNull List<E> elements;
 
 
   /**
@@ -50,35 +32,21 @@ public class BaseListViewModel<E extends ListElementViewModel<?>> extends Abstra
    *                                    a model object.
    */
   public <M> BaseListViewModel(@NotNull List<M> models,
-                               @Nullable Options filterOptions,
+                               @NotNull Options options,
                                @NotNull Function<M, E> listElementViewModelFactory) {
-    this.selectionModel = new SelectionModel();
-    this.elements = new ArrayList<>(models.size());
-    int index = 0;
-    for (M model : models) {
-      E element = listElementViewModelFactory.apply(model);
-      element.setListModel(this);
-      element.setIndex(index++);
-      elements.add(element);
-    }
-    this.filterOptions = filterOptions;
-    this.filterEngine = new FilterEngine(filterOptions, this, filtered::trigger);
-    filterEngine.filter();
-    if (this.filterOptions != null) {
-      this.filterOptions.optionsChanged.addListener(this, BaseListViewModel::filter);
-    }
+    this.elements = models.stream().map(listElementViewModelFactory).collect(Collectors.toList());
+    this.filterTask = new RestartableTask(this::doFilter, filtered::trigger);
+    this.options = options;
+    options.optionsChanged.addListener(this, BaseListViewModel::filter);
+    filter();
   }
 
   private void filter() {
-    filterEngine.filter();
+    filterTask.restart();
   }
 
   public Stream<E> streamVisibleItems() {
     return elements.stream().filter(ListElementViewModel::isVisible);
-  }
-
-  public void onElementChanged(int index) {
-    fireContentsChanged(this, index, index);
   }
 
   /**
@@ -94,58 +62,16 @@ public class BaseListViewModel<E extends ListElementViewModel<?>> extends Abstra
         .collect(Collectors.toList());
   }
 
-  @Override
-  @NotNull
-  public ListSelectionModel getSelectionModel() {
-    return selectionModel;
-  }
-
-  @Override
-  public int getSize() {
-    return elements.size();
-  }
-
-  @Override
-  @Nullable
-  public E getElementAt(int i) {
-    try {
-      return elements.get(i);
-    } catch (IndexOutOfBoundsException e) {
-      return null;
-    }
-  }
-
-  @Override
-  public void applyFilter(@NotNull Filter filter) throws InterruptedException {
+  private void doFilter() throws InterruptedException {
     for (var elem : elements) {
       if (Thread.interrupted()) {
         throw new InterruptedException();
       }
-      elem.applyFilter(filter);
+      elem.applyFilter(options);
     }
   }
 
-  public @Nullable Options getFilterOptions() {
-    return filterOptions;
-  }
-
-  private class SelectionModel extends DefaultListSelectionModel implements ListSelectionListener {
-
-    public SelectionModel() {
-      addListSelectionListener(this);
-    }
-
-    @Override
-    public void valueChanged(ListSelectionEvent selectionEvent) {
-      int firstIndex = selectionEvent.getFirstIndex();
-      int lastIndex = selectionEvent.getLastIndex();
-      for (int index = firstIndex; index <= lastIndex; index++) {
-        E element = BaseListViewModel.this.getElementAt(index);
-        if (element != null) {
-          boolean selected = isSelectedIndex(index);
-          element.setSelected(selected);
-        }
-      }
-    }
+  public boolean isSelectionEmpty() {
+    return elements.stream().filter(ListElementViewModel::isSelected).findAny().isEmpty();
   }
 }

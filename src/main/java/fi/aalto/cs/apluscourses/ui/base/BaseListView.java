@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.ui.base;
 
 import com.intellij.ui.components.JBList;
+import com.intellij.util.concurrency.annotations.RequiresEdt;
 import fi.aalto.cs.apluscourses.presentation.base.BaseListViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.ListElementViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableListModel;
@@ -23,6 +24,7 @@ import javax.swing.ListModel;
 import javax.swing.SwingUtilities;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 
 /**
  * An abstract base class that co-operates with {@link ListElementViewModel}s and provides some
@@ -47,8 +49,7 @@ public abstract class BaseListView<E extends ListElementViewModel<?>>
   private final Set<ActionListener> listActionListeners = ConcurrentHashMap.newKeySet();
   private final Object popupMenuLock = new Object[0];
   private JPopupMenu popupMenu;
-  private final Object viewModelLock = new Object();
-  private BaseListViewModel<E> viewModel = null;
+  private BaseListViewModel<E> viewModel = null; // Access only from the EDT
 
   /**
    * A constructor.
@@ -97,46 +98,35 @@ public abstract class BaseListView<E extends ListElementViewModel<?>>
   }
 
   /**
-  * Set the model of the this tree to the given view model, or do nothing if the given view model
-  * is {@code null}.
+  * Set the model of this list to the given view model, or do nothing if the given view model is {@code null}.
   */
+  @RequiresEdt
   public void setViewModel(@Nullable BaseListViewModel<E> viewModel) {
     if (viewModel != null) {
-      synchronized (viewModelLock) {
-        unregisterViewModel();
-        this.viewModel = viewModel;
-        registerViewModel();
-      }
+      unregisterViewModel();
+      this.viewModel = viewModel;
+      registerViewModel();
       update();
-      viewModel.getSelectionModel().clearSelection();
     }
   }
 
+  @RequiresEdt
   private void unregisterViewModel() {
-    synchronized (viewModelLock) {
-      if (viewModel != null) {
-        viewModel.filtered.removeCallback(this);
-      }
+    if (viewModel != null) {
+      viewModel.filtered.removeCallback(this);
     }
   }
 
+  @RequiresEdt
   private void registerViewModel() {
-    synchronized (viewModelLock) {
-      if (viewModel != null) {
-        viewModel.filtered.addListener(this, BaseListView::update, SwingUtilities::invokeLater);
-      }
+    if (viewModel != null) {
+      viewModel.filtered.addListener(this, BaseListView::update, SwingUtilities::invokeLater);
     }
   }
 
+  @RequiresEdt
   private void update() {
-    BaseListViewModel<E> localViewModel;
-    synchronized (viewModelLock) {
-      localViewModel = this.viewModel;
-    }
-    var listModel = new DefaultListModel<E>();
-    //keeping selection
-    listModel.addAll(localViewModel.streamVisibleItems().collect(Collectors.toList()));
-    setModel(listModel);
+    setModel(new OurListModel<>(viewModel.streamVisibleItems().collect(Collectors.toList())));
   }
 
   /**

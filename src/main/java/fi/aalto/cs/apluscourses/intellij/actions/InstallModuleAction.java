@@ -59,7 +59,7 @@ public class InstallModuleAction extends DumbAwareAction {
     CourseViewModel courseViewModel =
         mainViewModelProvider.getMainViewModel(e.getProject()).courseViewModel.get();
     boolean isModuleSelected = courseViewModel != null
-        && !courseViewModel.getModules().getSelectionModel().isSelectionEmpty();
+        && !courseViewModel.getModules().isSelectionEmpty();
     e.getPresentation().setEnabled(isModuleSelected);
   }
 

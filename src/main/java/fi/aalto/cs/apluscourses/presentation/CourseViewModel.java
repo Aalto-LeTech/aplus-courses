@@ -12,9 +12,9 @@ public class CourseViewModel extends BaseViewModel<Course> {
   @NotNull
   private final ModuleListViewModel modules;
 
-  public CourseViewModel(@NotNull Course course, @Nullable Options moduleFilterOptions) {
+  public CourseViewModel(@NotNull Course course, @Nullable Options moduleOptions) {
     super(course);
-    modules = new ModuleListViewModel(course.getModules(), moduleFilterOptions);
+    modules = new ModuleListViewModel(course.getModules(), moduleOptions);
   }
 
   @NotNull

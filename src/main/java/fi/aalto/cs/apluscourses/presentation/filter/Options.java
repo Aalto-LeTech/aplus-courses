@@ -12,6 +12,8 @@ public class Options extends AndFilter implements Streamable<Option> {
   public final Event optionsChanged = new Event();
   private final List<Option> optionList;
 
+  public static final Options EMPTY = new Options();
+
   public Options(Option... options) {
     this(List.of(options));
   }
@@ -48,14 +50,5 @@ public class Options extends AndFilter implements Streamable<Option> {
           var selected = option.isSelected.get();
           return selected != null && !selected;
         });
-  }
-
-  /**
-   * The text description for toggling all options.
-   */
-  public String getSelectText() {
-    return this.isAnyActive()
-        ? getText("presentation.filter.selectAll")
-        : getText("presentation.filter.deselectAll");
   }
 }
