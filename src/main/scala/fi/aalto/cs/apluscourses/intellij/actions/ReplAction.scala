@@ -145,9 +145,14 @@ class ReplAction extends RunConsoleAction {
 
     var args = "-usejavacp " + getReplAdditionalArguments(module.getProject)
 
-    ModuleUtils.createInitialReplCommandsFile(module)
-    if (ModuleUtils.initialReplCommandsFileExists(module)) {
-      args += " -i " + MODULE_REPL_INITIAL_COMMANDS_FILE_NAME
+    // Scala 3 no longer has an option for preloading REPL commands, so there's no point
+    // in adding this command-line switch anymore
+    // Instead, we use an alternative method of preloading commands by using ScalaExecutor
+    if (!ModuleUtils.isScala3Module(module)) {
+      ModuleUtils.createInitialReplCommandsFile(module)
+      if (ModuleUtils.initialReplCommandsFileExists(module)) {
+        args += " -i " + MODULE_REPL_INITIAL_COMMANDS_FILE_NAME
+      }
     }
 
     configuration.setMyConsoleArgs(args)

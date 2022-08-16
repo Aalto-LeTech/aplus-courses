@@ -39,12 +39,7 @@ class Repl(module: Module) extends ScalaLanguageConsole(module: Module) {
 
   // We need this here because the overridden ConsoleExecuteAction needs to determine whether
   // the console is hosting a Scala 3 REPL or something else
-  val isScala3REPL: Boolean = ModuleUtils.nonEmpty(
-    ModuleRootManager.getInstance(module)
-      .orderEntries()
-      .librariesOnly()
-      .satisfying(x => x.getPresentableName.contains("scala3-") || x.getPresentableName.contains("scala-sdk-3."))
-  )
+  val isScala3REPL: Boolean = ModuleUtils.isScala3Module(module)
 
   override def print(text: String, contentType: ConsoleViewContentType): Unit = {
     var updatedText = text
@@ -57,7 +52,7 @@ class Repl(module: Module) extends ScalaLanguageConsole(module: Module) {
       // Normally, in Scala 2, we would have used the "-i" argument to pass initial REPL commands
       // Unfortunately, this has not been ported into Scala 3
       if (isScala3REPL) {
-        commands.foreach(cmd => ConsoleExecuteAction.runLine(this, cmd))
+        commands.foreach(cmd => ScalaExecutor.runLine(this, cmd))
       }
 
       initialReplWelcomeMessageHasBeenReplaced = true

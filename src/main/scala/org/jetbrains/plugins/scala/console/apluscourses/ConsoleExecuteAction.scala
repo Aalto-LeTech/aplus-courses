@@ -16,9 +16,6 @@ import org.jetbrains.plugins.scala.console.ScalaConsoleInfo
 import org.jetbrains.plugins.scala.console.actions.ScalaConsoleExecuteAction
 import org.jetbrains.plugins.scala.inWriteAction
 
-import java.io.OutputStream
-import javax.swing.SwingUtilities
-
 class ConsoleExecuteAction extends ScalaConsoleExecuteAction {
   // We achieve proper multiline support by surrounding the REPL commands by special
   // ANSI sequences indicating "bracketed paste". We exploit the fact that Scala 3 REPL
@@ -101,26 +98,5 @@ class ConsoleExecuteAction extends ScalaConsoleExecuteAction {
     outputStream.flush()
 
     console.textSent(text)
-  }
-}
-
-object ConsoleExecuteAction {
-  /**
-   * Runs a single line of Scala code in the context of the provided REPL console.
-   * @param console An instance of our A+ enhanced REPL.
-   * @param command A single line (no newlines) of Scala code to execute.
-   */
-  def runLine(console: Repl, command: String): Unit = {
-    val processHandler = ScalaConsoleInfo.getProcessHandler(console.getConsoleEditor)
-    if (processHandler == null) {
-      return // scalastyle:ignore
-    }
-
-    val outputStream = processHandler.getProcessInput
-    outputStream.write((command + "\n").getBytes)
-    outputStream.flush()
-
-    // this must be invoked from EDT because it accesses the IntelliJ PSI
-    SwingUtilities.invokeLater(() => console.textSent(command))
   }
 }
