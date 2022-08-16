@@ -110,12 +110,17 @@ public class ShowFeedbackAction extends AnAction {
       var textColor = JBColor.black;
       var textColorString =
           String.format("#%02x%02x%02x", textColor.getRed(), textColor.getGreen(), textColor.getBlue());
+      var backgroundColor = JBColor.background();
+      var backgroundColorString =
+          String.format("#%02x%02x%02x", backgroundColor.getRed(), backgroundColor.getGreen(),
+              backgroundColor.getBlue());
       var fontName = JBFont.regular().getFontName();
 
       document.head().append("<style>"
           + Jsoup.clean(
           feedbackCss
               .replaceAll("TEXT_COLOR", textColorString)
+              .replaceAll("BG_COLOR", backgroundColorString)
               .replaceAll("FONT_NAME", fontName),
           Whitelist.none())
           + "</style>");
