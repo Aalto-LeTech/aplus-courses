@@ -8,6 +8,7 @@ import fi.aalto.cs.apluscourses.intellij.utils.ModuleUtils.{getInitialReplComman
 import fi.aalto.cs.apluscourses.intellij.utils.{ModuleUtils, ReplChangesObserver}
 import fi.aalto.cs.apluscourses.ui.ReplBannerPanel
 import org.jetbrains.plugins.scala.console.ScalaLanguageConsole
+import org.jetbrains.plugins.scala.console.apluscourses.ConsoleExecuteAction
 
 import java.awt.AWTEvent
 import java.awt.BorderLayout
@@ -52,6 +53,13 @@ class Repl(module: Module) extends ScalaLanguageConsole(module: Module) {
       && !initialReplWelcomeMessageHasBeenReplaced) {
       val commands = getInitialReplCommands(module)
       updatedText = getUpdatedText(module, commands, text)
+
+      // Normally, in Scala 2, we would have used the "-i" argument to pass initial REPL commands
+      // Unfortunately, this has not been ported into Scala 3
+      if (isScala3REPL) {
+        commands.foreach(cmd => ConsoleExecuteAction.runLine(this, cmd))
+      }
+
       initialReplWelcomeMessageHasBeenReplaced = true
     }
 
