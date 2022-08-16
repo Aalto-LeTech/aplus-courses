@@ -59,6 +59,7 @@ public class SubmissionDialog extends OurDialogWrapper {
     defaultGroupCheckBox.isCheckedBindable.bindToSource(viewModel.makeDefaultGroup);
 
     warning.setText(viewModel.getSubmissionWarning(project));
+    warning.setForeground(new JBColor(new Color(192, 96, 0), new Color(192, 192, 0)));
 
     groupWarning.setText(getText("ui.toolWindow.subTab.exercises.submission.groupConflict"));
     groupWarning.setForeground(new JBColor(new Color(192, 96, 0), new Color(192, 192, 0)));
