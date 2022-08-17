@@ -63,8 +63,10 @@ class Repl(module: Module) extends ScalaLanguageConsole(module: Module) {
 
     // When auto-executing commands in Scala 3 using ScalaExecutor, the prompt is printed
     // after every execution. We hide these prompts so as not to confuse the user
-    if (remainingPromptsToSkip > 0 && text.trim == scalaPromptText) {
-      remainingPromptsToSkip -= 1
+    if (remainingPromptsToSkip > 0 && (text.trim == scalaPromptText || text.trim == "")) {
+      if (text.trim == scalaPromptText) {
+        remainingPromptsToSkip -= 1
+      }
       return // scalastyle:ignore
     }
 
