@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.intellij.model;
 
 import fi.aalto.cs.apluscourses.utils.content.Content;
 import fi.aalto.cs.apluscourses.utils.content.RemoteZippedDir;
+import java.util.Arrays;
 import org.jetbrains.annotations.NotNull;
 
 public class Scala3Sdk extends ScalaSdk {
@@ -29,6 +30,8 @@ public class Scala3Sdk extends ScalaSdk {
   @Override
   @NotNull
   protected String @NotNull [] getClassRoots() {
-    return new String[] {"scala3-library_3-" + scalaVersion + ".jar"};
+    return Arrays.stream(getJarFiles())
+        .filter(lib -> lib.startsWith("scala-library") || lib.startsWith("scala3-library"))
+        .toArray(String[]::new);
   }
 }
