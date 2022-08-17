@@ -65,7 +65,7 @@ class Repl(module: Module) extends ScalaLanguageConsole(module: Module) {
     // after every execution. We hide these prompts so as not to confuse the user
     if (remainingPromptsToSkip > 0 && text.trim == scalaPromptText) {
       remainingPromptsToSkip -= 1
-      return // scalastyle: off
+      return // scalastyle:ignore
     }
 
     // In Scala 3 REPL, the "scala>" prompt is colored blue by sending appropriate ANSI sequences
