@@ -47,13 +47,13 @@ object ModuleUtils {
 
   // O1_SPECIFIC
   def naiveValidate(@NotNull command: String): Boolean =
-    command.matches("import\\so1\\.[a-z]*(\\_|\\._)$")
+    command.matches("import\\so1\\.[a-z]*(\\*|\\.\\*)$")
 
   def clearCommands(@NotNull imports: Array[String]): Array[String] =
     imports
       .clone
       .map(_.replace("import ", ""))
-      .map(_.replace("._", ""))
+      .map(_.replace(".*", ""))
 
   def getCommandsText(@NotNull imports: Array[String]): String =
     imports.length match {

@@ -35,7 +35,7 @@ class CourseTest {
     List<String> autoInstallComponents = List.of(module1name);
     Map<String, String[]> replInitialCommands = new HashMap<>();
     String replAdditionalArguments = "-test";
-    replInitialCommands.put("Module1", new String[] {"import o1._"});
+    replInitialCommands.put("Module1", new String[] {"import o1.*"});
     Course course = new ModelExtensions.TestCourse(
         "13",
         "Tester Course",
@@ -79,7 +79,7 @@ class CourseTest {
         "The optional categories should be the same as those given to the constructor");
     Assertions.assertEquals(module1name, course.getAutoInstallComponents().get(0).getName(),
         "The auto-install components should be the same as those given to the constructor");
-    Assertions.assertEquals("import o1._", course.getReplInitialCommands().get("Module1")[0],
+    Assertions.assertEquals("import o1.*", course.getReplInitialCommands().get("Module1")[0],
         "The REPL initial commands for Module1 are correct.");
     Assertions.assertEquals("-test", course.getReplAdditionalArguments(),
             "The REPL arguments should be the same as that given to the constructor");
@@ -183,7 +183,7 @@ class CourseTest {
   private static final String vmOptionsJson = "\"vmOptions\":{\"a\":\"bcd\"}";
   private static final String autoInstallJson = "\"autoInstall\":[\"O1Library\"]";
   private static final String replInitialCommands = "\"repl\": {\"initialCommands\": {\"GoodStuff\": ["
-      + "\"import o1._\",\"import o1.goodstuff._\"]}}";
+      + "\"import o1.*\",\"import o1.goodstuff.*\"]}}";
   private static final String replAdditionalArgumentsJson = "\"replArguments\": \"-test\"";
   private static final String courseVersion = "\"version\": \"5.8\"";
 
@@ -217,9 +217,9 @@ class CourseTest {
         "The course should have the VM options of the configuration JSON");
     Assertions.assertEquals("O1Library", course.getAutoInstallComponents().get(0).getName(),
         "The course should have the auto-install components of the configuration JSON");
-    Assertions.assertEquals("import o1._", course.getReplInitialCommands().get("GoodStuff")[0],
+    Assertions.assertEquals("import o1.*", course.getReplInitialCommands().get("GoodStuff")[0],
         "The course should have the REPL initial commands of the configuration JSON");
-    Assertions.assertEquals("import o1.goodstuff._", course.getReplInitialCommands().get("GoodStuff")[1],
+    Assertions.assertEquals("import o1.goodstuff.*", course.getReplInitialCommands().get("GoodStuff")[1],
         "The course should have the REPL initial commands of the configuration JSON");
     Assertions.assertEquals("-test", course.getReplAdditionalArguments(),
         "The course should have the REPL arguments of the configuration JSON");
