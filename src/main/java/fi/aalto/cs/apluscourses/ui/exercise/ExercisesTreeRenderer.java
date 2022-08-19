@@ -95,7 +95,8 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
     } else if (viewModel instanceof SubmitExerciseViewModel) {
       SubmitExerciseViewModel resultViewModel = (SubmitExerciseViewModel) viewModel;
       setEnabled(true);
-      append(resultViewModel.getPresentableName(), SimpleTextAttributes.GRAY_ATTRIBUTES, true);
+      append(resultViewModel.getPresentableName(), SimpleTextAttributes.REGULAR_ITALIC_ATTRIBUTES, true);
+      setIcon(PluginIcons.A_PLUS_PLUS);
     }
   }
 }

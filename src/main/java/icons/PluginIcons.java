@@ -82,4 +82,6 @@ public final class PluginIcons {
       .getIcon("/META-INF/icons/checked.svg", PluginIcons.class);
   public static final Icon A_PLUS_DOCS = IconLoader
       .getIcon("/META-INF/icons/docs.svg", PluginIcons.class);
+  public static final Icon A_PLUS_PLUS = IconLoader
+      .getIcon("/META-INF/icons/plus.svg", PluginIcons.class);
 }
