@@ -41,11 +41,11 @@ public class EventWithArg<A> {
   }
 
   /**
-   * Removes an object from the listener.  If the listener is not there, does nothing.
+   * Removes a listener.  If the listener is not there, does nothing.
    *
    * @param listener A listener object to be removed.
    */
-  public void removeCallback(@NotNull Object listener) {
+  public void removeListener(@NotNull Object listener) {
     synchronized (callbacks) {
       callbacks.remove(listener);
     }

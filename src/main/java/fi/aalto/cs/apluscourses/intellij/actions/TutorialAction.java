@@ -190,7 +190,7 @@ public class TutorialAction extends AnAction implements DumbAware {
                                   @NotNull Project project) {
     TutorialViewModel viewModel = mainViewModel.tutorialViewModel.get();
     if (viewModel != null) {
-      viewModel.getTutorial().tutorialCompleted.removeCallback(mainViewModel);
+      viewModel.getTutorial().tutorialCompleted.removeListener(mainViewModel);
       if (viewModel.isCompleted() && dialogs.finishAndSubmit(viewModel)) {
         new SubmitExerciseAction().submitTutorial(project, viewModel);
       }

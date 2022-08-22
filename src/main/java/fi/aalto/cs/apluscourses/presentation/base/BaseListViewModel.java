@@ -1,8 +1,9 @@
 package fi.aalto.cs.apluscourses.presentation.base;
 
+import fi.aalto.cs.apluscourses.presentation.filter.Filter;
+import fi.aalto.cs.apluscourses.presentation.filter.FilterEngine;
+import fi.aalto.cs.apluscourses.presentation.filter.Filterable;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
-import fi.aalto.cs.apluscourses.utils.Event;
-import fi.aalto.cs.apluscourses.utils.RestartableTask;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -15,14 +16,9 @@ import org.jetbrains.annotations.NotNull;
  * @param <E> Type of the list elements (presentation models), subtype of
  *            {@link ListElementViewModel}
  */
-public class BaseListViewModel<E extends ListElementViewModel<?>> {
-
-  public final Event filtered = new Event();
-
-  private final transient @NotNull RestartableTask filterTask;
-  private final @NotNull Options options;
+public class BaseListViewModel<E extends ListElementViewModel<?>> implements Filterable {
+  private final @NotNull FilterEngine filterEngine;
   protected final @NotNull List<E> elements;
-
 
   /**
    * A constructor.
@@ -35,14 +31,8 @@ public class BaseListViewModel<E extends ListElementViewModel<?>> {
                                @NotNull Options options,
                                @NotNull Function<M, E> listElementViewModelFactory) {
     this.elements = models.stream().map(listElementViewModelFactory).collect(Collectors.toList());
-    this.filterTask = new RestartableTask(this::doFilter, filtered::trigger);
-    this.options = options;
-    options.optionsChanged.addListener(this, BaseListViewModel::filter);
-    filter();
-  }
-
-  private void filter() {
-    filterTask.restart();
+    filterEngine = new FilterEngine(options, this);
+    filterEngine.filter();
   }
 
   public Stream<E> streamVisibleItems() {
@@ -62,12 +52,17 @@ public class BaseListViewModel<E extends ListElementViewModel<?>> {
         .collect(Collectors.toList());
   }
 
-  private void doFilter() throws InterruptedException {
+  public @NotNull FilterEngine getFilterEngine() {
+    return filterEngine;
+  }
+
+  @Override
+  public void applyFilter(@NotNull Filter filter) throws InterruptedException {
     for (var elem : elements) {
       if (Thread.interrupted()) {
         throw new InterruptedException();
       }
-      elem.applyFilter(options);
+      elem.applyFilter(filter);
     }
   }
 

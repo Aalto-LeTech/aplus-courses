@@ -1,18 +1,17 @@
 package fi.aalto.cs.apluscourses.presentation.base;
 
+import fi.aalto.cs.apluscourses.presentation.filter.Filter;
+import fi.aalto.cs.apluscourses.presentation.filter.FilterEngine;
+import fi.aalto.cs.apluscourses.presentation.filter.Filterable;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
-import fi.aalto.cs.apluscourses.utils.Event;
-import fi.aalto.cs.apluscourses.utils.RestartableTask;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class BaseTreeViewModel<T> extends SelectableNodeViewModel<T> {
+public class BaseTreeViewModel<T> extends SelectableNodeViewModel<T> implements Filterable {
 
-  @NotNull
-  public final Event filtered = new Event();
-  private final @NotNull RestartableTask filterTask;
-  private final @NotNull Options options;
+  private final @NotNull FilterEngine filterEngine;
+
   @Nullable
   protected volatile SelectableNodeViewModel<?> selectedItem = null; //  NOSONAR
 
@@ -31,14 +30,12 @@ public class BaseTreeViewModel<T> extends SelectableNodeViewModel<T> {
                            @Nullable List<SelectableNodeViewModel<?>> children,
                            @NotNull Options options) {
     super(model, children);
-    this.filterTask = new RestartableTask(this::doFilter, filtered::trigger);
-    this.options = options;
-    options.optionsChanged.addListener(this, BaseTreeViewModel::filter);
-    filter();
+    filterEngine = new FilterEngine(options, this);
+    filterEngine.filter();
   }
 
-  private void filter() {
-    filterTask.restart();
+  public @NotNull FilterEngine getFilterEngine() {
+    return filterEngine;
   }
 
   /**
@@ -46,7 +43,7 @@ public class BaseTreeViewModel<T> extends SelectableNodeViewModel<T> {
    */
   public BaseTreeViewModel(@NotNull T model,
                            @Nullable List<SelectableNodeViewModel<?>> children) {
-    this(model, children, null);
+    this(model, children, Options.EMPTY);
   }
 
   @Override
@@ -59,8 +56,9 @@ public class BaseTreeViewModel<T> extends SelectableNodeViewModel<T> {
     return new Selection(traverseAndFind(SelectableNodeViewModel::isSelected));
   }
 
-  private void doFilter() throws InterruptedException {
-    applyFilterRecursive(options);
+  @Override
+  public void applyFilter(@NotNull Filter filter) throws InterruptedException {
+    applyFilterRecursive(filter);
   }
 
   public static class Selection {

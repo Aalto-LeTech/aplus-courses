@@ -113,14 +113,14 @@ public abstract class BaseListView<E extends ListElementViewModel<?>>
   @RequiresEdt
   private void unregisterViewModel() {
     if (viewModel != null) {
-      viewModel.filtered.removeCallback(this);
+      viewModel.getFilterEngine().filtered.removeListener(this);
     }
   }
 
   @RequiresEdt
   private void registerViewModel() {
     if (viewModel != null) {
-      viewModel.filtered.addListener(this, BaseListView::update, SwingUtilities::invokeLater);
+      viewModel.getFilterEngine().filtered.addListener(this, BaseListView::update, SwingUtilities::invokeLater);
     }
   }
 
