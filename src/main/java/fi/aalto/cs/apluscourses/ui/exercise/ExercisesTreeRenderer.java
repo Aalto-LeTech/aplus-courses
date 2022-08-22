@@ -97,6 +97,7 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
       setEnabled(true);
       append(resultViewModel.getPresentableName(), SimpleTextAttributes.REGULAR_ITALIC_ATTRIBUTES, true);
       setIcon(PluginIcons.A_PLUS_PLUS);
+      setToolTipText(getText("ui.exercise.ExercisesTreeRenderer.submit"));
     }
   }
 }
