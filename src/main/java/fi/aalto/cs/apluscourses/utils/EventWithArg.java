@@ -27,17 +27,17 @@ public class EventWithArg<A> {
    *                 {@code equals} function follows the default paradigm, that is, checks the reference
    *                 identity.
    */
-  public <T> void addListener(@NotNull T listener,
-                              @NotNull Callback<T, A> callback,
-                              @Nullable Executor executor) {
+  public <T> void addListenerWithArg(@NotNull T listener,
+                                     @NotNull Callback<T, A> callback,
+                                     @Nullable Executor executor) {
     synchronized (callbacks) {
       callbacks.put(listener,
               executor == null ? callback : new EventWithArg.CustomExecutorCallbackWrapper<>(executor, callback));
     }
   }
 
-  public <T> void addListener(@NotNull T listener, @NotNull Callback<T, A> callback) {
-    addListener(listener, callback, null);
+  public <T> void addListenerWithArg(@NotNull T listener, @NotNull Callback<T, A> callback) {
+    addListenerWithArg(listener, callback, null);
   }
 
   /**

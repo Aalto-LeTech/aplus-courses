@@ -8,11 +8,11 @@ public class Event extends EventWithArg<Void> {
   public <T> void addListener(@NotNull T listener,
                               @NotNull Callback<T> callback,
                               @Nullable Executor executor) {
-    super.addListener(listener, callback, executor);
+    addListenerWithArg(listener, callback, executor);
   }
 
   public <T> void addListener(@NotNull T listener, @NotNull Callback<T> callback) {
-    super.addListener(listener, callback, null);
+    addListenerWithArg(listener, callback, null);
   }
 
   public void trigger() {
