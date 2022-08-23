@@ -24,11 +24,12 @@ class SubmissionTest {
     var fileB = new SubmittableFile("keyB", "fileB");
     var language = "de";
     var info = new SubmissionInfo(Collections.singletonMap(language, List.of(fileA, fileB)));
-    Exercise exercise = new Exercise(85678, "ex", "http://localhost:1000", info, 0, 0, OptionalLong.empty(), null);
+    Exercise exercise = new Exercise(85678, "ex", "http://localhost:1000", info, 0, 0,
+        OptionalLong.empty(), null, false);
     Map<String, Path> files = new HashMap<>();
     files.put("fileA", Paths.get("some.file"));
     files.put("fileB", Paths.get("other.file"));
-    Group group = new Group(0, Collections.singletonList("Only me"));
+    Group group = new Group(0, Collections.singletonList(new Group.GroupMember(1, "Only me")));
 
     Submission submission = new Submission(exercise, files, group, language);
 

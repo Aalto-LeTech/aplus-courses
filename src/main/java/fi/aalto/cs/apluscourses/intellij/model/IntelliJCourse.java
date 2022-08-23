@@ -21,19 +21,19 @@ import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.model.Tutorial;
 import fi.aalto.cs.apluscourses.utils.Version;
 import java.net.URL;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-class IntelliJCourse extends Course {
+public class IntelliJCourse extends Course {
 
   @NotNull
   private final APlusProject project;
@@ -44,6 +44,9 @@ class IntelliJCourse extends Course {
 
   private final ExerciseDataSource exerciseDataSource;
 
+  /**
+   * Constructor.
+   */
   public IntelliJCourse(@NotNull String id,
                         @NotNull String name,
                         @NotNull String aplusUrl,
@@ -53,12 +56,16 @@ class IntelliJCourse extends Course {
                         @NotNull Map<Long, Map<String, String>> exerciseModules,
                         @NotNull Map<String, URL> resourceUrls,
                         @NotNull Map<String, String> vmOptions,
+                        @NotNull Set<String> optionalCategories,
                         @NotNull List<String> autoInstallComponentNames,
                         @NotNull Map<String, String[]> replInitialCommands,
+                        @NotNull String replAdditionalArguments,
                         @NotNull Version courseVersion,
                         @NotNull APlusProject project,
                         @NotNull CommonLibraryProvider commonLibraryProvider,
-                        @NotNull Map<Long, Tutorial> tutorials) {
+                        @NotNull Map<Long, Tutorial> tutorials,
+                        @Nullable String feedbackParser,
+                        @Nullable String newsParser) {
     super(
         id,
         name,
@@ -69,10 +76,14 @@ class IntelliJCourse extends Course {
         exerciseModules,
         resourceUrls,
         vmOptions,
+        optionalCategories,
         autoInstallComponentNames,
         replInitialCommands,
+        replAdditionalArguments,
         courseVersion,
-        tutorials);
+        tutorials,
+        feedbackParser,
+        newsParser);
 
     this.project = project;
     this.commonLibraryProvider = commonLibraryProvider;
@@ -101,8 +112,7 @@ class IntelliJCourse extends Course {
   @Nullable
   public Component getComponentIfExists(VirtualFile file) {
     Component component = getComponentIfExists(file.getName());
-    Path pathOfTheFile = Paths.get(file.getPath());
-    return component != null && component.getFullPath().equals(pathOfTheFile) ? component : null;
+    return component != null && component.getFullPath().equals(Paths.get(file.getPath())) ? component : null;
   }
 
   @NotNull

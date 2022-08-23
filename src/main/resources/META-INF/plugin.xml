@@ -5,7 +5,7 @@
             url="https://research.cs.aalto.fi/LeTech/">LeTech Group at Aalto University
     </vendor>
     <!--  this is the range of supported IntelliJ IDEA version the plugin can be used with  -->
-    <idea-version since-build="212.4746"/>
+    <idea-version since-build="213.5744.223"/>
 
     <description><![CDATA[
     This plugin supports the educational use of IntelliJ IDEA (and its Scala plugin) in programming
@@ -15,7 +15,7 @@
     ]]></description>
 
     <change-notes>
-        Added support for Programming Studio 2, 2022 edition.
+        UI improvements and bug fixes.
     </change-notes>
 
     <depends>com.intellij.modules.java</depends>
@@ -29,6 +29,10 @@
                     anchor="right"
                     factoryClass="fi.aalto.cs.apluscourses.intellij.toolwindows.APlusToolWindowFactory"
                     icon="PluginIcons.A_PLUS_LOGO"/>
+
+        <moduleType id="APLUS_MODULE_TYPE"
+                    implementationClass="fi.aalto.cs.apluscourses.intellij.generator.APlusModuleType"
+                    order="last"/>
 
         <errorHandler implementation="fi.aalto.cs.apluscourses.intellij.utils.ErrorHandler"/>
         <httpRequestHandler implementation="fi.aalto.cs.apluscourses.intellij.services.OpenSubmissionService"/>
@@ -94,6 +98,10 @@
                     class="fi.aalto.cs.apluscourses.intellij.actions.RefreshModulesAction"
                     text="Refresh Modules"
                     icon="PluginIcons.A_PLUS_REFRESH"/>
+            <action id="fi.aalto.cs.apluscourses.intellij.actions.OpenDocumentationAction"
+                    class="fi.aalto.cs.apluscourses.intellij.actions.OpenDocumentationAction"
+                    text="Open Documentation"
+                    icon="PluginIcons.A_PLUS_DOCS"/>
             <group id="fi.aalto.cs.apluscourses.intellij.actions.OptionsActionGroup.ForModules"
                    class="fi.aalto.cs.apluscourses.intellij.actions.APlusOptionsActionGroup$ForModules"
                    popup="true"
@@ -103,7 +111,7 @@
         </group>
         <group id="fi.aalto.cs.apluscourses.intellij.actions.ActionGroups.EXERCISE_ACTIONS"
                text="A+ Assignment"
-               description="Actions for A+ modules">
+               description="Actions for A+ assignments">
             <action id="fi.aalto.cs.apluscourses.intellij.actions.SubmitExerciseAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.SubmitExerciseAction"
                     text="Submit A+ Assignment"
@@ -116,6 +124,10 @@
                     class="fi.aalto.cs.apluscourses.intellij.actions.OpenExerciseItemAction"
                     text="Open In Browser"
                     icon="PluginIcons.A_PLUS_BROWSE"/>
+            <action id="fi.aalto.cs.apluscourses.intellij.actions.ShowFeedbackAction"
+                    class="fi.aalto.cs.apluscourses.intellij.actions.ShowFeedbackAction"
+                    text="Show Feedback"
+                    icon="PluginIcons.A_PLUS_FEEDBACK"/>
             <action id="fi.aalto.cs.apluscourses.intellij.actions.ExercisesRefreshAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.RefreshExercisesAction"
                     text="Refresh Assignments"
@@ -126,6 +138,7 @@
                    text="Filter Assignments"
                    icon="PluginIcons.A_PLUS_FILTER">
             </group>
+            <separator/>
             <action id="fi.aalto.cs.apluscourses.intellij.actions.SelectStudentAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.SelectStudentAction"
                     text="Select Student"
@@ -165,6 +178,10 @@
                 overrides="true"
                 icon="PluginIcons.A_PLUS_REPL">
             <keyboard-shortcut first-keystroke="control shift D" keymap="$default"/>
+        </action>
+        <action id="ScalaConsole.Execute"
+                class="org.jetbrains.plugins.scala.console.apluscourses.ConsoleExecuteAction"
+                overrides="true">
         </action>
     </actions>
     <applicationListeners>

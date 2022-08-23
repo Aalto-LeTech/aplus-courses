@@ -30,6 +30,9 @@ public class SubmissionStatusUpdater {
   @NotNull
   private final Exercise exercise;
 
+  @NotNull
+  private final Course course;
+
   private long interval;
 
   private final long increment;
@@ -58,6 +61,7 @@ public class SubmissionStatusUpdater {
                                  @NotNull Notifier notifier,
                                  @NotNull String submissionUrl,
                                  @NotNull Exercise exercise,
+                                 @NotNull Course course,
                                  long interval,
                                  long increment,
                                  long timeLimit) {
@@ -67,6 +71,7 @@ public class SubmissionStatusUpdater {
     this.notifier = notifier;
     this.submissionUrl = submissionUrl;
     this.exercise = exercise;
+    this.course = course;
     this.interval = interval;
     this.increment = increment;
     this.timeLimit = timeLimit;
@@ -81,7 +86,8 @@ public class SubmissionStatusUpdater {
                                  @NotNull ExerciseDataSource dataSource,
                                  @NotNull Authentication authentication,
                                  @NotNull String submissionUrl,
-                                 @NotNull Exercise exercise) {
+                                 @NotNull Exercise exercise,
+                                 @NotNull Course course) {
     this(
         project,
         dataSource,
@@ -89,6 +95,7 @@ public class SubmissionStatusUpdater {
         new DefaultNotifier(),
         submissionUrl,
         exercise,
+        course,
         DEFAULT_INTERVAL,
         DEFAULT_INCREMENT,
         DEFAULT_TIME_LIMIT
@@ -127,10 +134,10 @@ public class SubmissionStatusUpdater {
     SubmissionResult submissionResult;
     try {
       submissionResult = dataSource.getSubmissionResult(
-          submissionUrl, exercise, authentication, CachePreferences.GET_NEW_AND_KEEP);
+          submissionUrl, exercise, authentication, course, CachePreferences.GET_NEW_AND_KEEP);
       var status = submissionResult.getStatus();
-      if (status != SubmissionResult.Status.WAITING && status != SubmissionResult.Status.UNKNOWN) {
-        notifier.notify(new FeedbackAvailableNotification(submissionResult, exercise), project);
+      if (status != SubmissionResult.Status.WAITING && status != SubmissionResult.Status.UNKNOWN && project != null) {
+        notifier.notify(new FeedbackAvailableNotification(submissionResult, exercise, project), project);
         var courseProject = PluginSettings.getInstance().getCourseProject(project);
         if (courseProject != null) {
           courseProject.getExercisesUpdater().restart();

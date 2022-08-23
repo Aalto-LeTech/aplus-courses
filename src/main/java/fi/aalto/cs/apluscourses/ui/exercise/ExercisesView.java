@@ -10,10 +10,14 @@ import com.intellij.ui.TreeSpeedSearch;
 import com.intellij.util.ui.tree.TreeUtil;
 import fi.aalto.cs.apluscourses.intellij.actions.ActionUtil;
 import fi.aalto.cs.apluscourses.intellij.actions.OpenExerciseItemAction;
+import fi.aalto.cs.apluscourses.intellij.actions.ShowFeedbackAction;
+import fi.aalto.cs.apluscourses.intellij.actions.SubmitExerciseAction;
 import fi.aalto.cs.apluscourses.model.ExercisesTree;
 import fi.aalto.cs.apluscourses.presentation.base.BaseTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.Searchable;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
+import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionResultViewModel;
+import fi.aalto.cs.apluscourses.presentation.exercise.SubmitExerciseViewModel;
 import fi.aalto.cs.apluscourses.ui.GuiObject;
 import fi.aalto.cs.apluscourses.ui.ToolbarPanel;
 import fi.aalto.cs.apluscourses.ui.base.TreeView;
@@ -91,8 +95,8 @@ public class ExercisesView implements ToolbarPanel {
     title = new JLabel();
     exerciseGroupsTree = new ExercisesTreeView();
     exerciseGroupsTree.setCellRenderer(new ExercisesTreeRenderer());
-    exerciseGroupsTree.addNodeAppliedListener(
-        ActionUtil.createOnEventLauncher(OpenExerciseItemAction.ACTION_ID, exerciseGroupsTree));
+    exerciseGroupsTree.addNodeAppliedListener(SubmitExerciseViewModel.class,
+        ActionUtil.createOnEventLauncher(SubmitExerciseAction.ACTION_ID, exerciseGroupsTree));
 
     new TreeSpeedSearch(exerciseGroupsTree, treePath -> {
       Searchable treeObject = (Searchable) TreeView.getViewModel(treePath.getLastPathComponent());
@@ -102,6 +106,20 @@ public class ExercisesView implements ToolbarPanel {
 
   public TreeView getExerciseGroupsTree() {
     return exerciseGroupsTree;
+  }
+
+  /**
+   * Sets the nodeAppliedListener as OpenExerciseItemAction if the course isn't supported in ShowFeedbackAction,
+   * else ShowFeedbackAction.
+   */
+  public void setSubmissionAction(boolean feedbackEnabled) {
+    if (!feedbackEnabled) {
+      exerciseGroupsTree.addNodeAppliedListener(SubmissionResultViewModel.class,
+          ActionUtil.createOnEventLauncher(OpenExerciseItemAction.ACTION_ID, exerciseGroupsTree));
+    } else {
+      exerciseGroupsTree.addNodeAppliedListener(SubmissionResultViewModel.class,
+          ActionUtil.createOnEventLauncher(ShowFeedbackAction.ACTION_ID, exerciseGroupsTree));
+    }
   }
 
   private static class ExercisesTreeView extends TreeView {

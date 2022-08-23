@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.ui.exercise;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getAndReplaceText;
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 import static fi.aalto.cs.apluscourses.utils.TreeRendererUtil.isIrrelevantNode;
 
@@ -9,6 +10,7 @@ import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseGroupViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionResultViewModel;
+import fi.aalto.cs.apluscourses.presentation.exercise.SubmitExerciseViewModel;
 import fi.aalto.cs.apluscourses.ui.base.TreeView;
 import icons.PluginIcons;
 import javax.swing.Icon;
@@ -88,7 +90,14 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
       setEnabled(true);
       append(resultViewModel.getPresentableName(), SimpleTextAttributes.REGULAR_ATTRIBUTES, true);
       append(" [" + resultViewModel.getStatusText() + "]", STATUS_TEXT_STYLE, false);
-      setToolTipText(getText("ui.exercise.ExercisesTreeRenderer.doubleClickToOpenBrowser"));
+      setToolTipText(
+          getAndReplaceText("ui.exercise.ExercisesTreeRenderer.tooltip", String.valueOf(resultViewModel.getId())));
+    } else if (viewModel instanceof SubmitExerciseViewModel) {
+      SubmitExerciseViewModel resultViewModel = (SubmitExerciseViewModel) viewModel;
+      setEnabled(true);
+      append(resultViewModel.getPresentableName(), SimpleTextAttributes.REGULAR_ITALIC_ATTRIBUTES, true);
+      setIcon(PluginIcons.A_PLUS_PLUS);
+      setToolTipText(getText("ui.exercise.ExercisesTreeRenderer.submit"));
     }
   }
 }

@@ -101,5 +101,11 @@ public class ExercisesTreeViewModel extends BaseTreeViewModel<ExercisesTree>
       var selection = getLevel(2);
       return selection instanceof ExerciseViewModel ? (ExerciseViewModel) selection : null;
     }
+
+    @Nullable
+    public SubmissionResultViewModel getSubmissionResult() {
+      var selection = getLevel(3);
+      return selection instanceof SubmissionResultViewModel ? (SubmissionResultViewModel) selection : null;
+    }
   }
 }

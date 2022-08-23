@@ -14,7 +14,9 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class IntelliJModelFactory implements ModelFactory {
 
@@ -45,15 +47,20 @@ public class IntelliJModelFactory implements ModelFactory {
                              @NotNull Map<Long, Map<String, String>> exerciseModules,
                              @NotNull Map<String, URL> resourceUrls,
                              @NotNull Map<String, String> vmOptions,
+                             @NotNull Set<String> optionalCategories,
                              @NotNull List<String> autoInstallComponentNames,
                              @NotNull Map<String, String[]> replInitialCommands,
+                             @NotNull String replAdditionalArguments,
                              @NotNull Version courseVersion,
-                             @NotNull Map<Long, Tutorial> tutorials) {
+                             @NotNull Map<Long, Tutorial> tutorials,
+                             @Nullable String feedbackParser,
+                             @Nullable String newsParser) {
 
     IntelliJCourse course =
         new IntelliJCourse(id, name, aplusUrl, languages, modules, libraries, exerciseModules,
-            resourceUrls, vmOptions, autoInstallComponentNames, replInitialCommands, courseVersion,
-            project, new CommonLibraryProvider(project), tutorials);
+            resourceUrls, vmOptions, optionalCategories, autoInstallComponentNames, replInitialCommands,
+            replAdditionalArguments, courseVersion, project, new CommonLibraryProvider(project), tutorials,
+            feedbackParser, newsParser);
 
     Component.InitializationCallback componentInitializationCallback =
         component -> registerComponentToCourse(component, course);

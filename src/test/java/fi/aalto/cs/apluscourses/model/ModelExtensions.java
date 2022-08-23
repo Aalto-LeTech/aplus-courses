@@ -1,9 +1,13 @@
 package fi.aalto.cs.apluscourses.model;
 
+import fi.aalto.cs.apluscourses.intellij.model.APlusProject;
+import fi.aalto.cs.apluscourses.intellij.model.CommonLibraryProvider;
+import fi.aalto.cs.apluscourses.intellij.model.IntelliJCourse;
 import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import fi.aalto.cs.apluscourses.utils.Version;
 import fi.aalto.cs.apluscourses.utils.cache.CachePreference;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -15,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.OptionalLong;
+import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -32,7 +37,8 @@ public class ModelExtensions {
     @NotNull
     @Override
     public List<Group> getGroups(@NotNull Course course, @NotNull Authentication authentication) {
-      return Collections.singletonList(new Group(0, Collections.singletonList("Only you")));
+      return Collections.singletonList(new Group(0,
+          Collections.singletonList(new Group.GroupMember(1, "Only you"))));
     }
 
     @NotNull
@@ -66,12 +72,19 @@ public class ModelExtensions {
     @Override
     public Exercise getExercise(long exerciseId,
                                 @NotNull Points points,
+                                @NotNull Set<String> optionalCategories,
                                 @NotNull Map<Long, Tutorial> tutorials,
                                 @NotNull Authentication authentication,
                                 @NotNull CachePreference cachePreference) {
       return new Exercise(1, "lol", "http://example.com",
-          new SubmissionInfo(Collections.emptyMap()), 20, 10, OptionalLong.empty(), null
+          new SubmissionInfo(Collections.emptyMap()), 20, 10, OptionalLong.empty(), null, false
       );
+    }
+
+    @Override
+    public @NotNull String getSubmissionFeedback(long submissionId, @NotNull Authentication authentication)
+        throws IOException {
+      return "";
     }
 
     @NotNull
@@ -79,6 +92,7 @@ public class ModelExtensions {
     public SubmissionResult getSubmissionResult(@NotNull String submissionUrl,
                                                 @NotNull Exercise exercise,
                                                 @NotNull Authentication authentication,
+                                                @NotNull Course course,
                                                 @NotNull CachePreference cachePreference) {
       return new SubmissionResult(0, 20, 0.0, SubmissionResult.Status.GRADED, exercise);
     }
@@ -132,12 +146,16 @@ public class ModelExtensions {
                       @NotNull Map<Long, Map<String, String>> exerciseModules,
                       @NotNull Map<String, URL> resourceUrls,
                       @NotNull Map<String, String> vmOptions,
+                      @NotNull Set<String> optionalCategories,
                       @NotNull List<String> autoInstallComponentNames,
                       @NotNull Map<String, String[]> replInitialCommands,
+                      @NotNull String replAdditionalArguments,
                       @NotNull Version courseVersion,
                       @NotNull Map<Long, Tutorial> tutorials) {
-      super(id, name, aplusUrl, languages, modules, libraries, exerciseModules, resourceUrls,
-          vmOptions, autoInstallComponentNames, replInitialCommands, courseVersion, tutorials);
+      super(id, name, aplusUrl, languages, modules, libraries, exerciseModules, resourceUrls, vmOptions,
+          optionalCategories, autoInstallComponentNames, replInitialCommands,
+          replAdditionalArguments, courseVersion, tutorials, null,
+          "default");
       exerciseDataSource = new TestExerciseDataSource();
     }
 
@@ -169,14 +187,18 @@ public class ModelExtensions {
           Collections.emptyMap(),
           // vmOptions
           Collections.emptyMap(),
+          // optionalCategories
+          Collections.emptySet(),
           // autoInstallComponentNames
           Collections.emptyList(),
           // replInitialCommands
           Collections.emptyMap(),
+          // replAdditionalArguments
+          "",
           // courseVersion
           BuildInfo.INSTANCE.courseVersion,
           // tutorials
-          Collections.emptyMap());
+          Collections.emptyMap(), null, "default");
       this.exerciseDataSource = exerciseDataSource;
     }
 
@@ -184,6 +206,57 @@ public class ModelExtensions {
     @Override
     public ExerciseDataSource getExerciseDataSource() {
       return exerciseDataSource;
+    }
+  }
+
+  public static class TestIntelliJCourse extends IntelliJCourse {
+
+    public TestIntelliJCourse(@NotNull String id,
+                              @NotNull String name,
+                              @NotNull APlusProject project,
+                              @NotNull CommonLibraryProvider commonLibraryProvider) {
+      this(id, name, Collections.emptyList(), project, commonLibraryProvider);
+    }
+
+    /**
+     * Constructor for testing purposes that assumes reasonable defaults for most arguments.
+     */
+    public TestIntelliJCourse(@NotNull String id,
+                              @NotNull String name,
+                              @NotNull List<Module> modules,
+                              @NotNull APlusProject project,
+                              @NotNull CommonLibraryProvider commonLibraryProvider) {
+      super(
+          id,
+          name,
+          "",
+          // languages
+          Collections.emptyList(),
+          modules,
+          // libraries
+          Collections.emptyList(),
+          // exerciseModules
+          Collections.emptyMap(),
+          // resourceUrls
+          Collections.emptyMap(),
+          // vmOptions
+          Collections.emptyMap(),
+          // optionalCategories
+          Collections.emptySet(),
+          // autoInstallComponentNames
+          Collections.emptyList(),
+          // replInitialCommands
+          Collections.emptyMap(),
+          // replAdditionalArguments
+          "",
+          // courseVersion
+          BuildInfo.INSTANCE.courseVersion,
+          project,
+          commonLibraryProvider,
+          // tutorials
+          Collections.emptyMap(),
+          null,
+          null);
     }
   }
 
@@ -356,10 +429,14 @@ public class ModelExtensions {
                                @NotNull Map<Long, Map<String, String>> exerciseModules,
                                @NotNull Map<String, URL> resourceUrls,
                                @NotNull Map<String, String> vmOptions,
+                               @NotNull Set<String> optionalCategories,
                                @NotNull List<String> autoInstallComponentNames,
                                @NotNull Map<String, String[]> replInitialCommands,
+                               @NotNull String replAdditionalArguments,
                                @NotNull Version courseVersion,
-                               @NotNull Map<Long, Tutorial> tutorials) {
+                               @NotNull Map<Long, Tutorial> tutorials,
+                               @Nullable String feedbackParser,
+                               @Nullable String newsParser) {
       return new ModelExtensions.TestCourse(
           id,
           name,
@@ -370,8 +447,10 @@ public class ModelExtensions {
           exerciseModules,
           resourceUrls,
           vmOptions,
+          optionalCategories,
           autoInstallComponentNames,
           replInitialCommands,
+          replAdditionalArguments,
           courseVersion,
           tutorials
       );

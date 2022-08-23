@@ -87,6 +87,7 @@ public class NewsView implements ToolbarPanel {
     title = new JLabel();
     newsTree = new TreeView();
     newsTree.setCellRenderer(new NewsTreeRenderer());
+    newsTree.setRowHeight(-1);
   }
 
   public TreeView getNewsTree() {

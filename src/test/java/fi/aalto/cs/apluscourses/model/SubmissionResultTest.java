@@ -1,7 +1,6 @@
 package fi.aalto.cs.apluscourses.model;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
+import static org.mockito.Mockito.mock;
 
 import java.util.Collections;
 import java.util.OptionalLong;
@@ -15,7 +14,8 @@ class SubmissionResultTest {
   @Test
   void testSubmissionResult() {
     var info = new SubmissionInfo(Collections.emptyMap());
-    Exercise exercise = new Exercise(444L, "someEx", "http://example.com/", info, 20, 10, OptionalLong.of(123L), null);
+    Exercise exercise = new Exercise(444L, "someEx", "http://example.com/", info, 20, 10,
+        OptionalLong.of(123L), null, false);
     SubmissionResult submissionResult
         = new SubmissionResult(123L, 13, 0.5, SubmissionResult.Status.GRADED, exercise);
     exercise.addSubmissionResult(submissionResult);
@@ -36,7 +36,8 @@ class SubmissionResultTest {
   @Test
   void testFromJsonObject() {
     var info = new SubmissionInfo(Collections.emptyMap());
-    Exercise exercise = new Exercise(555L, "myEx", "https://example.org/", info, 20, 10, OptionalLong.of(234), null);
+    Exercise exercise = new Exercise(555L, "myEx", "https://example.org/", info, 20, 10,
+        OptionalLong.of(234), null, false);
     JSONObject jsonObject = new JSONObject()
         .put("id", 234)
         .put("grade", 30)
@@ -45,7 +46,7 @@ class SubmissionResultTest {
         .put("status", "ready")
         .put("late_penalty_applied", 0.6)
         .put("files", new JSONArray());
-    SubmissionResult submissionResult = SubmissionResult.fromJsonObject(jsonObject, exercise);
+    SubmissionResult submissionResult = SubmissionResult.fromJsonObject(jsonObject, exercise, mock(Course.class));
     exercise.addSubmissionResult(submissionResult);
 
     Assertions.assertEquals(234L, submissionResult.getId(), "The ID is the same as the one in the JSON object");

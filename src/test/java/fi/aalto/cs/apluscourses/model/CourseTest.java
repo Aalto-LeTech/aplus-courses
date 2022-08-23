@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -30,8 +31,10 @@ class CourseTest {
     resourceUrls.put("ideSettings", new URL("http://localhost:23333"));
     Map<String, String> vmOptions = new HashMap<>();
     vmOptions.put("some-option", "nice-value");
+    Set<String> optionalCategories = Set.of("optional-category");
     List<String> autoInstallComponents = List.of(module1name);
     Map<String, String[]> replInitialCommands = new HashMap<>();
+    String replAdditionalArguments = "-test";
     replInitialCommands.put("Module1", new String[] {"import o1._"});
     Course course = new ModelExtensions.TestCourse(
         "13",
@@ -45,8 +48,10 @@ class CourseTest {
         Collections.emptyMap(),
         resourceUrls,
         vmOptions,
+        optionalCategories,
         autoInstallComponents,
         replInitialCommands,
+        replAdditionalArguments,
         BuildInfo.INSTANCE.courseVersion,
         Collections.emptyMap());
     Assertions.assertEquals("13", course.getId(),
@@ -70,10 +75,14 @@ class CourseTest {
         "The IDE settings path should be the same as the one given to the constructor");
     Assertions.assertEquals("nice-value", course.getVMOptions().get("some-option"),
         "The VM options should be the same as those given to the constructor");
+    Assertions.assertEquals("optional-category", course.getOptionalCategories().stream().findFirst().get(),
+        "The optional categories should be the same as those given to the constructor");
     Assertions.assertEquals(module1name, course.getAutoInstallComponents().get(0).getName(),
         "The auto-install components should be the same as those given to the constructor");
     Assertions.assertEquals("import o1._", course.getReplInitialCommands().get("Module1")[0],
         "The REPL initial commands for Module1 are correct.");
+    Assertions.assertEquals("-test", course.getReplAdditionalArguments(),
+            "The REPL arguments should be the same as that given to the constructor");
   }
 
   @Test
@@ -97,10 +106,14 @@ class CourseTest {
         Collections.emptyMap(),
         // vmOptions
         Collections.emptyMap(),
+        // optionalCategories
+        Collections.emptySet(),
         // autoInstallComponentNames
         Collections.emptyList(),
         // replInitialCommands
         Collections.emptyMap(),
+        // replAdditionalArguments
+        "",
         // courseVersion
         BuildInfo.INSTANCE.courseVersion,
         // tutorials
@@ -133,10 +146,14 @@ class CourseTest {
         Collections.emptyMap(),
         // vmOptions
         Collections.emptyMap(),
+        // optionalCategories
+        Collections.emptySet(),
         // autoInstallComponentNames
         List.of("test-module", "test-library"),
         // replInitialCommands
         Collections.emptyMap(),
+        // replAdditionalArguments
+        "",
         // courseVersion
         BuildInfo.INSTANCE.courseVersion,
         // tutorials
@@ -148,30 +165,8 @@ class CourseTest {
   }
 
   @Test
-  void testGetModuleWithMissingModule() throws NoSuchComponentException {
-    Course course = new ModelExtensions.TestCourse(
-        "Just some ID",
-        "Just some course",
-        "http://localhost:1951",
-        Collections.emptyList(),
-        // modules
-        Collections.emptyList(),
-        // libraries
-        Collections.emptyList(),
-        // exerciseModules
-        Collections.emptyMap(),
-        // resourceUrls
-        Collections.emptyMap(),
-        // vmOptions
-        Collections.emptyMap(),
-        // autoInstallComponentNames
-        Collections.emptyList(),
-        // replInitialCommands
-        Collections.emptyMap(),
-        // courseVersion
-        BuildInfo.INSTANCE.courseVersion,
-        // tutorials
-        Collections.emptyMap());
+  void testGetModuleWithMissingModule() {
+    Course course = new ModelExtensions.TestCourse("Some ID");
     assertThrows(NoSuchComponentException.class, () ->
         course.getComponent("Test Module"));
   }
@@ -189,13 +184,15 @@ class CourseTest {
   private static final String autoInstallJson = "\"autoInstall\":[\"O1Library\"]";
   private static final String replInitialCommands = "\"repl\": {\"initialCommands\": {\"GoodStuff\": ["
       + "\"import o1._\",\"import o1.goodstuff._\"]}}";
+  private static final String replAdditionalArgumentsJson = "\"replArguments\": \"-test\"";
   private static final String courseVersion = "\"version\": \"5.8\"";
 
   @Test
   void testFromConfigurationFile() throws MalformedCourseConfigurationException {
     StringReader stringReader = new StringReader("{" + idJson + "," + nameJson + "," + urlJson
         + "," + languagesJson + "," + modulesJson + "," + exerciseModulesJson + "," + resourcesJson
-        + "," + vmOptionsJson + "," + autoInstallJson + "," + replInitialCommands + "," + courseVersion + "}");
+        + "," + vmOptionsJson + "," + autoInstallJson + "," + replInitialCommands
+        + "," + replAdditionalArgumentsJson + "," + courseVersion + "}");
     Course course = Course.fromConfigurationData(stringReader, "./path/to/file", MODEL_FACTORY);
     Assertions.assertEquals("1238", course.getId(), "Course should have the same ID as that in the configuration JSON");
     Assertions.assertEquals("Awesome Course", course.getName(),
@@ -224,13 +221,14 @@ class CourseTest {
         "The course should have the REPL initial commands of the configuration JSON");
     Assertions.assertEquals("import o1.goodstuff._", course.getReplInitialCommands().get("GoodStuff")[1],
         "The course should have the REPL initial commands of the configuration JSON");
+    Assertions.assertEquals("-test", course.getReplAdditionalArguments(),
+        "The course should have the REPL arguments of the configuration JSON");
     Assertions.assertEquals("5.8", course.getVersion().toString(),
-        "Course should have the same version as that in the configuration JSON");
+        "The course should have the same version as that in the configuration JSON");
   }
 
   @Test
-  void testFromConfigurationFileMissingId()
-      throws MalformedCourseConfigurationException {
+  void testFromConfigurationFileMissingId() {
     StringReader stringReader = new StringReader(
         "{" + nameJson + "," + urlJson + "," + languagesJson + "," + modulesJson + "}");
     assertThrows(MalformedCourseConfigurationException.class, () ->
@@ -238,8 +236,7 @@ class CourseTest {
   }
 
   @Test
-  void testFromConfigurationFileMissingName()
-      throws MalformedCourseConfigurationException {
+  void testFromConfigurationFileMissingName() {
     StringReader stringReader = new StringReader(
         "{" + idJson + "," + urlJson + "," + languagesJson + "," + modulesJson + "}");
     assertThrows(MalformedCourseConfigurationException.class, () ->
@@ -247,8 +244,7 @@ class CourseTest {
   }
 
   @Test
-  void testFromConfigurationFileMissingUrl()
-      throws MalformedCourseConfigurationException {
+  void testFromConfigurationFileMissingUrl() {
     StringReader stringReader = new StringReader(
         "{" + idJson + "," + nameJson + "," + languagesJson + "," + modulesJson + "}");
     assertThrows(MalformedCourseConfigurationException.class, () ->
@@ -256,8 +252,7 @@ class CourseTest {
   }
 
   @Test
-  void testFromConfigurationFileMissingLanguages()
-      throws MalformedCourseConfigurationException {
+  void testFromConfigurationFileMissingLanguages() {
     StringReader stringReader = new StringReader(
         "{" + idJson + "," + nameJson + "," + urlJson + "," + modulesJson + "}");
     assertThrows(MalformedCourseConfigurationException.class, () ->
@@ -265,8 +260,7 @@ class CourseTest {
   }
 
   @Test
-  void testFromConfigurationFileMissingModules()
-      throws MalformedCourseConfigurationException {
+  void testFromConfigurationFileMissingModules() {
     StringReader stringReader = new StringReader(
         "{" + idJson + "," + nameJson + "," + languagesJson + "," + urlJson + "}");
     assertThrows(MalformedCourseConfigurationException.class, () ->
@@ -274,16 +268,14 @@ class CourseTest {
   }
 
   @Test
-  void testFromConfigurationFileWithoutJson()
-      throws MalformedCourseConfigurationException {
+  void testFromConfigurationFileWithoutJson() {
     StringReader stringReader = new StringReader("random text");
     assertThrows(MalformedCourseConfigurationException.class, () ->
         Course.fromConfigurationData(stringReader, MODEL_FACTORY));
   }
 
   @Test
-  void testFromConfigurationFileWithInvalidModules()
-      throws MalformedCourseConfigurationException {
+  void testFromConfigurationFileWithInvalidModules() {
     String modules = "\"modules\":[1,2,3,4]";
     StringReader stringReader = new StringReader(
         "{" + idJson + "," + nameJson + "," + urlJson + "," + languagesJson + "," + modules + "}");
@@ -292,8 +284,7 @@ class CourseTest {
   }
 
   @Test
-  void testFromConfigurationFileWithInvalidAutoInstalls()
-      throws MalformedCourseConfigurationException {
+  void testFromConfigurationFileWithInvalidAutoInstalls() {
     String autoInstalls = "\"autoInstall\":[1,2,3,4]";
     StringReader stringReader = new StringReader("{" + idJson + "," + nameJson + "," + urlJson
         + "," + languagesJson + "," + modulesJson + "," + autoInstalls + "}");
@@ -302,8 +293,7 @@ class CourseTest {
   }
 
   @Test
-  void testFromConfigurationWithMalformedReplInitialCommands()
-      throws MalformedCourseConfigurationException {
+  void testFromConfigurationWithMalformedReplInitialCommands() {
     String replJson = "\"repl\": {\"initialCommands\": []}";
     StringReader stringReader = new StringReader("{" + idJson + "," + nameJson + "," + urlJson
         + "," + languagesJson + "," + replJson + "}");

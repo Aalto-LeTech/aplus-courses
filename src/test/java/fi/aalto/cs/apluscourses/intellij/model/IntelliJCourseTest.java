@@ -1,9 +1,5 @@
 package fi.aalto.cs.apluscourses.intellij.model;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -14,11 +10,9 @@ import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.Library;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.model.Module;
-import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -37,28 +31,7 @@ class IntelliJCourseTest {
     doReturn(Paths.get("")).when(project).getBasePath();
     when(project.getMessageBus()).thenReturn(mock(MessageBus.class));
     CommonLibraryProvider commonLibraryProvider = new CommonLibraryProvider(project);
-    IntelliJCourse course = new IntelliJCourse(id, name,
-        "http://localhost:1355",
-        Collections.emptyList(),
-        // modules
-        Collections.emptyList(),
-        // libraries
-        Collections.emptyList(),
-        // exerciseModules
-        Collections.emptyMap(),
-        // resourceUrls
-        Collections.emptyMap(),
-        // vmOptions
-        Collections.emptyMap(),
-        // autoInstallComponentNames
-        Collections.emptyList(),
-        // replInitialCommands
-        Collections.emptyMap(),
-        // courseVersion
-        BuildInfo.INSTANCE.courseVersion,
-        project,
-        commonLibraryProvider,
-        Collections.emptyMap());
+    IntelliJCourse course = new ModelExtensions.TestIntelliJCourse(id, name, project, commonLibraryProvider);
     Assertions.assertEquals(id, course.getId());
     Assertions.assertEquals(name, course.getName());
     Assertions.assertSame(project, course.getProject());
@@ -85,28 +58,8 @@ class IntelliJCourseTest {
       }
     };
 
-    IntelliJCourse course = new IntelliJCourse("cool id",
-        "testProject",
-        "https://example.com",
-        Collections.emptyList(),
-        modules,
-        // libraries
-        Collections.emptyList(),
-        // exerciseModules
-        Collections.emptyMap(),
-        // resourceUrls
-        Collections.emptyMap(),
-        // vmOptions
-        Collections.emptyMap(),
-        // autoInstallComponentNames
-        Collections.emptyList(),
-        // replInitialCommands
-        Collections.emptyMap(),
-        // courseVersion
-        BuildInfo.INSTANCE.courseVersion,
-        project,
-        commonLibraryProvider,
-        Collections.emptyMap());
+    IntelliJCourse course = new ModelExtensions.TestIntelliJCourse("cool id", "testProject",
+        modules, project, commonLibraryProvider);
 
     Collection<Component> components1 = course.getComponents();
     Assertions.assertEquals(1, components1.size());
@@ -136,28 +89,8 @@ class IntelliJCourseTest {
     List<Module> modules = new ArrayList<>();
     modules.add(module);
 
-    IntelliJCourse course = new IntelliJCourse("courseId",
-        "testtesttest",
-        "http://localhost:2000",
-        Collections.emptyList(),
-        modules,
-        // libraries
-        Collections.emptyList(),
-        // exerciseModules
-        Collections.emptyMap(),
-        // resourceUrls
-        Collections.emptyMap(),
-        // vmOptions
-        Collections.emptyMap(),
-        // autoInstallComponentNames
-        Collections.emptyList(),
-        // replInitialCommands
-        Collections.emptyMap(),
-        // courseVersion
-        BuildInfo.INSTANCE.courseVersion,
-        project,
-        mock(CommonLibraryProvider.class),
-        Collections.emptyMap());
+    IntelliJCourse course = new ModelExtensions.TestIntelliJCourse("courseId", "testtesttest",
+        modules, project, mock(CommonLibraryProvider.class));
 
     Assertions.assertSame(module, course.getComponentIfExists(file));
   }
@@ -176,28 +109,9 @@ class IntelliJCourseTest {
     when(file2.getName()).thenReturn(moduleName);
     when(file2.getPath()).thenReturn("someOtherPath");
 
-    IntelliJCourse course = new IntelliJCourse("testId",
-        "testProject",
-        "http://localhost:2200",
-        Collections.emptyList(),
+    IntelliJCourse course = new ModelExtensions.TestIntelliJCourse("testId", "testProject",
         Stream.of(new ModelExtensions.TestModule(moduleName)).collect(Collectors.toList()),
-        // libraries
-        Collections.emptyList(),
-        // exerciseModules
-        Collections.emptyMap(),
-        // resourceUrls
-        Collections.emptyMap(),
-        // vmOptions
-        Collections.emptyMap(),
-        // autoInstallComponentNames
-        Collections.emptyList(),
-        // replInitialCommands
-        Collections.emptyMap(),
-        // courseVersion
-        BuildInfo.INSTANCE.courseVersion,
-        project,
-        mock(CommonLibraryProvider.class),
-        Collections.emptyMap());
+        project, mock(CommonLibraryProvider.class));
 
     Assertions.assertNull(course.getComponentIfExists(file1));
     Assertions.assertNull(course.getComponentIfExists(file2));

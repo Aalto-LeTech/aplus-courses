@@ -4,8 +4,10 @@ import fi.aalto.cs.apluscourses.utils.Event;
 import fi.aalto.cs.apluscourses.utils.StateMonitor;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class Component {
   public static final int NOT_INSTALLED = StateMonitor.INITIAL;
@@ -105,6 +107,11 @@ public abstract class Component {
 
   @NotNull
   public abstract Path getFullPath();
+
+  @NotNull
+  public Path getDocumentationIndexFullPath() {
+    return Paths.get(getFullPath().toString(), "doc/index.html");
+  }
 
   protected abstract int resolveStateInternal();
 

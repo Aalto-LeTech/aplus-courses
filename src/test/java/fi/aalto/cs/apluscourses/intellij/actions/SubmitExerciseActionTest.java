@@ -127,8 +127,9 @@ class SubmitExerciseActionTest {
     String language = "fi";
     submissionInfo = new SubmissionInfo(Map.of(language, Collections.singletonList(file)));
     exercise = new Exercise(
-        exerciseId, "Test exercise", "http://localhost:10000", submissionInfo, 0, 0, OptionalLong.empty(), null);
-    group = new Group(124, Collections.singletonList("Only you"));
+        exerciseId, "Test exercise", "http://localhost:10000", submissionInfo, 0, 0,
+        OptionalLong.empty(), null, false);
+    group = new Group(124, Collections.singletonList(new Group.GroupMember(1, "Only you")));
     groups = Collections.singletonList(group);
     exerciseGroup = new ExerciseGroup(0, "Test EG", "", true, List.of(), List.of());
     exerciseGroup.addExercise(exercise);
@@ -220,9 +221,12 @@ class SubmitExerciseActionTest {
     VirtualFile moduleDir = mock(VirtualFile.class);
     doReturn(filePath.getParent().toString()).when(moduleDir).getPath();
     Interfaces.ModuleDirGuesser moduleDirGuesser = m -> moduleDir;
+    Interfaces.DuplicateSubmissionChecker duplicateChecker = mock(Interfaces.DuplicateSubmissionChecker.class);
+    Interfaces.SubmissionGroupSelector groupSelector = mock(Interfaces.SubmissionGroupSelector.class);
 
-    action = new SubmitExerciseAction(mainVmProvider, authProvider, fileFinder, moduleSource,
-        dialogs, notifier, tagger, documentSaver, languageSource, defaultGroupIdSetting, moduleDirGuesser);
+    action = new SubmitExerciseAction(mainVmProvider, authProvider, fileFinder, moduleSource, dialogs, notifier,
+        tagger, documentSaver, languageSource, defaultGroupIdSetting, moduleDirGuesser, duplicateChecker,
+        groupSelector);
   }
 
   @Test
@@ -309,7 +313,7 @@ class SubmitExerciseActionTest {
   @Test
   void testNotifiesExerciseNotSubmittable() throws IOException {
     var exercise = new Exercise(0, "", "", new SubmissionInfo(Map.of()), 0, 0,
-        OptionalLong.empty(), null);
+        OptionalLong.empty(), null, false);
     var exerciseGroup = new ExerciseGroup(0, "", "", true, List.of(), List.of());
     exerciseGroup.addExercise(exercise);
     mainViewModel.exercisesViewModel.set(

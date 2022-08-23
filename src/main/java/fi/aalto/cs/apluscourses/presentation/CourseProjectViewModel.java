@@ -54,7 +54,7 @@ public class CourseProjectViewModel {
   }
 
   public boolean shouldShowSettingsSegment() {
-    return course.getAppropriateIdeSettingsUrl() != null;
+    return course.getAppropriateIdeSettingsUrl() != null || !course.getVMOptions().isEmpty();
   }
 
   public boolean userOptsOutOfSettings() {

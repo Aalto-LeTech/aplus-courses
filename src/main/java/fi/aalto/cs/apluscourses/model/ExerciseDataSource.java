@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,14 +30,20 @@ public interface ExerciseDataSource {
   @NotNull
   Exercise getExercise(long exerciseId,
                        @NotNull Points points,
+                       @NotNull Set<String> optionalCategories,
                        @NotNull Map<Long, Tutorial> tutorials,
                        @NotNull Authentication authentication,
                        @NotNull CachePreference cachePreference) throws IOException;
 
   @NotNull
+  String getSubmissionFeedback(long submissionId,
+                               @NotNull Authentication authentication) throws IOException;
+
+  @NotNull
   SubmissionResult getSubmissionResult(@NotNull String submissionUrl,
                                        @NotNull Exercise exercise,
                                        @NotNull Authentication authentication,
+                                       @NotNull Course course,
                                        @NotNull CachePreference cachePreference) throws IOException;
 
   @NotNull

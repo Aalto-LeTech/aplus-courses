@@ -36,7 +36,7 @@ public class MainViewModel {
 
   @NotNull
   public final ObservableProperty<NewsTreeViewModel> newsTreeViewModel =
-          new ObservableReadWriteProperty<>(null);
+      new ObservableReadWriteProperty<>(null);
 
   @NotNull
   public final ProgressViewModel progressViewModel = new ProgressViewModel();
@@ -54,6 +54,9 @@ public class MainViewModel {
 
   @NotNull
   private final Options moduleOptions;
+
+  @Nullable
+  private String feedbackCss;
 
   /**
    * Instantiates a class representing the whole main view of the plugin.
@@ -132,4 +135,14 @@ public class MainViewModel {
   public void userChanged(@Nullable User user) {
     setAuthenticated(user != null);
   }
+
+  @Nullable
+  public String getFeedbackCss() {
+    return feedbackCss;
+  }
+
+  public void setFeedbackCss(@Nullable String feedbackCss) {
+    this.feedbackCss = feedbackCss;
+  }
+
 }

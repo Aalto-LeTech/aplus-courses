@@ -75,7 +75,7 @@ published version.
 
 **2.1** In the startup window, click **New Project**.
 
-**2.2** In **New Project** window, choose **Empty Project** on a left-hand side list.
+**2.2** In **New Project** window, choose **A+ Project** on a left-hand side list.
 
 **2.3** Click **Next**.
 
@@ -165,15 +165,15 @@ published version.
 
 ### 5 Installing modules
 
-**5.1** On **Modules** list tool window, double-click **RobotTribes**.
+**5.1** In the **Modules** list, double-click **RobotTribes**.
 
 **5.2** ASSERTION: **RobotTribes** and **Robots** appear as modules in the project tree.
 
-**5.3** ASSERTION: **RobotTribes** and **Robots** are marked **Installed** in **Modules** list.
+**5.3** ASSERTION: **RobotTribes** and **Robots** are marked **Installed** in the **Modules** list.
 
-**5.4** On **Modules** list, right-click **SwingExamples**.
+**5.4** In the **Modules** list, right-click **SwingExamples**.
 
-**5.5** On the context menu that appears, choose **Install A+ module**.
+**5.5** In the context menu that appears, choose **Install A+ module**.
 
 **5.6** ASSERTION: **SwingExamples** appears as a module in the project tree.
 
@@ -181,7 +181,7 @@ published version.
 
 **5.7** ASSERTION: **SwingExamples** is marked **Installed** in the modules list.
 
-**5.8** On **Modules** list, select multiple uninstalled modules.
+**5.8** In the **Modules** list, select multiple uninstalled modules.
 
 - Hold **Ctrl**/**Cmd** key down while clicking to select many items.
 
@@ -189,7 +189,7 @@ published version.
 
 **5.10** ASSERTION: The chosen modules appear in the project tree.
 
-**5.11** ASSERTION: The chosen modules are marked **Installed** in **Modules** list.
+**5.11** ASSERTION: The chosen modules are marked **Installed** in the **Modules** list.
 
 **5.12** ASSERTION: All the installed modules have their dependencies correctly configured.
 
@@ -206,6 +206,12 @@ published version.
 **5.16** Press **Escape**.
 
 **5.17** ASSERTION: The substring **Vii** should no longer be highlighted.
+
+**5.18** In the **Modules** list, right-click **O1Library**.
+
+**5.19** Choose **Open Documentation** in the context menu.
+
+**5.20** ASSERTION: Scaladoc documentation opens for the **O1Library** module.
 
 ### 6 Using Scala REPL
 
@@ -326,19 +332,47 @@ Terminate**.
 
 **6.43** ASSERTION: A Scala REPL for **O1Library** opens.
 
-**6.44** Close the REPL.
+**6.44** Execute the following command in the REPL: `println("Myöhässä こんにちは世界")`
+
+**6.45** ASSERTION: The characters appear correctly, without any corruption (question marks, missing characters)
+
+**6.46** Close the REPL.
 
 #### Part V: Settings reset.
 
-**6.45** From the main menu, choose **A+ > Reset A+ Courses Plugin Settings**.
+**6.47** From the main menu, choose **A+ > Reset A+ Courses Plugin Settings**.
 
-**6.46** Open the Scala REPL for **O1Library**.
+**6.48** Open the Scala REPL for **O1Library**.
 
-**6.47** ASSERTION: **REPL Configuration** window shows up.
+**6.49** ASSERTION: **REPL Configuration** window shows up.
 
-**6.48** Close the window by clicking **Cancel**.
+**6.50** Close the window by clicking **Cancel**.
 
-**6.49** ASSERTION: No REPL opens.
+**6.51** ASSERTION: No REPL opens.
+
+#### Part VI: Detecting module changes.
+
+**6.52** Open the Scala REPL for **O1Library**.
+
+**6.53** Click **OK** in the **REPL Configuration** window.
+
+**6.54** ASSERTION: Scala REPL opens.
+
+**6.55** Go to any .scala file within the **O1Library** and edit its contents (for example, change one character in some comment, or add whitespace)
+
+**6.56** Save the file and click back on the REPL window.
+
+**6.57** ASSERTION: A warning banner appears on top of the REPL, prompting the user to restart the REPL.
+
+**6.58** Click on **Ignore for this session**.
+
+**6.59** ASSERTION: The banner disappears.
+
+**6.60** Go back to the modified .scala file and edit the file again.
+
+**6.61** Save the file and click back on the REPL window.
+
+**6.62** ASSERTION: The warning banner does not appear.
 
 ### 7 Removing a module
 
@@ -419,7 +453,13 @@ Submission...**
 
 **9.16** ASSERTION: A window with **Assignment 2 (GoodStuff)** appears.
 
-**9.17** Press **Cancel**.
+**9.17** Press **OK** to submit.
+
+**9.18** ASSERTION: A dialog "Duplicate submission detected" appears.
+
+**9.19** Press **Don't submit**.
+
+**9.20** ASSERTION: The dialog closes and no submission is created.
 
 ### 10 Refreshing Assignments
 

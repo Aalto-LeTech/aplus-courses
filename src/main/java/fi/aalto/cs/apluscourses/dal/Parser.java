@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.dal;
 
+import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.Points;
@@ -10,6 +11,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -32,10 +34,12 @@ public interface Parser {
 
   Exercise parseExercise(@NotNull JSONObject jsonObject,
                          @NotNull Points points,
+                         @NotNull Set<String> optionalCategories,
                          @NotNull Map<Long, Tutorial> tutorials);
 
   SubmissionResult parseSubmissionResult(@NotNull JSONObject jsonObject,
-                                         @NotNull Exercise exercise);
+                                         @NotNull Exercise exercise,
+                                         @NotNull Course course);
 
   String parseUserName(@NotNull JSONObject object);
 
