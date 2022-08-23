@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.utils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.function.BiFunction;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -92,5 +94,41 @@ public class CollectionUtil {
     }
     var elem = it.next();
     return it.hasNext() ? Optional.empty() : Optional.of(elem);
+  }
+
+  /**
+   * Returns a sub-stream of the given stream with those elements indicated by indexStream.
+   *
+   * @param stream A stream.
+   * @param indexStream An ascending stream of indices. An index can appear repeatedly.
+   * @return A stream of those elements of the given stream that have indices indicated by the given indexStream.
+   */
+  public static <E> Stream<E> get(@NotNull Stream<E> stream, @NotNull LongStream indexStream) {
+    long index = 0;
+    Stream.Builder<E> result = Stream.builder();
+    var iterator = stream.iterator();
+    var indexIterator = indexStream.iterator();
+    if (!indexIterator.hasNext()) {
+      return Stream.empty();
+    }
+    long expected = indexIterator.nextLong();
+    while (iterator.hasNext()) {
+      E current = iterator.next();
+      while (indexIterator.hasNext()) {
+        if (expected < index) {
+          throw new IllegalArgumentException("Indices must be non-negative and in ascending order.");
+        } else if (expected > index) {
+          break;
+        }
+        result.accept(current);
+        expected = indexIterator.nextLong();
+      }
+      index++;
+    }
+    return result.build();
+  }
+
+  public static <E> Stream<E> get(Stream<E> stream, long... indices) {
+    return get(stream, Arrays.stream(indices));
   }
 }
