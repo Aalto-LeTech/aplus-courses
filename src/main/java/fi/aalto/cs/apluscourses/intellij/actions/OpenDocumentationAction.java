@@ -43,7 +43,7 @@ public class OpenDocumentationAction extends DumbAwareAction {
     CourseViewModel courseViewModel =
         mainViewModelProvider.getMainViewModel(e.getProject()).courseViewModel.get();
     boolean isOneModuleSelected = courseViewModel != null
-        && courseViewModel.getModules().getSelectedElements().size() == 1;
+        && courseViewModel.getModules().isSingleSelection();
 
     if (isOneModuleSelected) {
       Component module = courseViewModel.getModules().getSelectedElements().get(0).getModel();

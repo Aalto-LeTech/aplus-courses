@@ -9,6 +9,7 @@ import java.util.function.BiFunction;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -73,5 +74,30 @@ public class CollectionUtil {
     }
     collection.removeAll(toBeRemoved);
     return toBeRemoved;
+  }
+
+  public static boolean lengthEquals(@NotNull Stream<?> stream, long value) {
+    return compareLength(value, stream) == 0;
+  }
+
+  /**
+   * Returns an integer value indicating whether the length of the given stream is less than, equal to, or greater than
+   * the given value.
+   * Only the sign of the return value matters; the absolute value of it should be considered arbitrary.
+   * This method is short-circuiting and, hence, preferable to calling {@code Stream.count()}.
+   *
+   * @param value  An integer that we compare the length to.
+   * @param stream A stream.
+   * @return A negative number, if the stream is shorter than the given value.
+   * Zero, if the length of the stream equals the given value.
+   * A positive number, if the stream is longer than the given value.
+   */
+  public static long compareLength(long value, @NotNull Stream<?> stream) {
+    for (var it = stream.iterator(); it.hasNext(); it.next()) {
+      if (--value < 0) {
+        return value;
+      }
+    }
+    return value;
   }
 }

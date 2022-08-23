@@ -4,6 +4,7 @@ import fi.aalto.cs.apluscourses.presentation.filter.Filter;
 import fi.aalto.cs.apluscourses.presentation.filter.FilterEngine;
 import fi.aalto.cs.apluscourses.presentation.filter.Filterable;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
+import fi.aalto.cs.apluscourses.utils.CollectionUtil;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -46,10 +47,11 @@ public class BaseListViewModel<E extends ListElementViewModel<?>> implements Fil
    * @return A {@link List}.
    */
   public List<E> getSelectedElements() {
-    return elements
-        .stream()
-        .filter(ListElementViewModel::isSelected)
-        .collect(Collectors.toList());
+    return streamSelectedElements().collect(Collectors.toList());
+  }
+
+  private Stream<E> streamSelectedElements() {
+    return elements.stream().filter(ListElementViewModel::isSelected);
   }
 
   public @NotNull FilterEngine getFilterEngine() {
@@ -68,5 +70,9 @@ public class BaseListViewModel<E extends ListElementViewModel<?>> implements Fil
 
   public boolean isSelectionEmpty() {
     return elements.stream().filter(ListElementViewModel::isSelected).findAny().isEmpty();
+  }
+
+  public boolean isSingleSelection() {
+    return CollectionUtil.lengthEquals(streamSelectedElements(), 1);
   }
 }
