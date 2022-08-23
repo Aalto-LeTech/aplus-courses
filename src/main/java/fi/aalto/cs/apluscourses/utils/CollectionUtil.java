@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -76,28 +77,20 @@ public class CollectionUtil {
     return toBeRemoved;
   }
 
-  public static boolean lengthEquals(@NotNull Stream<?> stream, long value) {
-    return compareLength(value, stream) == 0;
-  }
-
   /**
-   * Returns an integer value indicating whether the length of the given stream is less than, equal to, or greater than
-   * the given value.
-   * Only the sign of the return value matters; the absolute value of it should be considered arbitrary.
-   * This method is short-circuiting and, hence, preferable to calling {@code Stream.count()}.
+   * Returns the only element of the stream.
    *
-   * @param value  An integer that we compare the length to.
    * @param stream A stream.
-   * @return A negative number, if the stream is shorter than the given value.
-   * Zero, if the length of the stream equals the given value.
-   * A positive number, if the stream is longer than the given value.
+   * @param <E> Type of the elements in the stream.
+   * @return If the stream contains only one element, it is returned. If there are no elements or more than one element,
+   * empty is returned.
    */
-  public static long compareLength(long value, @NotNull Stream<?> stream) {
-    for (var it = stream.iterator(); it.hasNext(); it.next()) {
-      if (--value < 0) {
-        return value;
-      }
+  public static <E> Optional<E> findSingle(@NotNull Stream<E> stream) {
+    var it = stream.iterator();
+    if (!it.hasNext()) {
+      return Optional.empty();
     }
-    return value;
+    var elem = it.next();
+    return it.hasNext() ? Optional.empty() : Optional.of(elem);
   }
 }

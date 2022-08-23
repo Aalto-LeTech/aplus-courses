@@ -15,8 +15,12 @@ public class ModuleListViewModel extends BaseListViewModel<ModuleListElementView
    *
    * @param modules A list of modules (domain model objects).
    */
-  public ModuleListViewModel(@NotNull List<Module> modules, @Nullable Options options) {
+  public ModuleListViewModel(@NotNull List<Module> modules, @NotNull Options options) {
     super(modules, options, ModuleListElementViewModel::new);
+  }
+
+  public boolean canOpenDocumentation() {
+    return getSingleSelectedElement().filter(ModuleListElementViewModel::canOpenDocumentation).isPresent();
   }
 
 }

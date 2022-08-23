@@ -113,6 +113,10 @@ public abstract class Component {
     return Paths.get(getFullPath().toString(), "doc/index.html");
   }
 
+  public boolean documentationExists() {
+    return stateMonitor.get() == LOADED && getDocumentationIndexFullPath().toFile().exists();
+  }
+
   protected abstract int resolveStateInternal();
 
   /**

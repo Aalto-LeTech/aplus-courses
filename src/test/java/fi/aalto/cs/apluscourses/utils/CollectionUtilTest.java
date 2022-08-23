@@ -1,23 +1,21 @@
 package fi.aalto.cs.apluscourses.utils;
 
-import static fi.aalto.cs.apluscourses.OurMatchers.isNegative;
-import static fi.aalto.cs.apluscourses.OurMatchers.isPositive;
-import static fi.aalto.cs.apluscourses.OurMatchers.isZero;
+import static fi.aalto.cs.apluscourses.OurMatchers.hasValue;
+import static fi.aalto.cs.apluscourses.OurMatchers.isEmpty;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.util.ArrayDeque;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 
 class CollectionUtilTest {
@@ -66,26 +64,9 @@ class CollectionUtilTest {
   }
 
   @Test
-  void testCompareLength() {
-    String[] array = {"one", "two", "three"};
-    assertThat(CollectionUtil.compareLength(0, Arrays.stream(array)), isNegative());
-    assertThat(CollectionUtil.compareLength(2, Arrays.stream(array)), isNegative());
-    assertThat(CollectionUtil.compareLength(3, Arrays.stream(array)), isZero());
-    assertThat(CollectionUtil.compareLength(4, Arrays.stream(array)), isPositive());
-    assertThat(CollectionUtil.compareLength(100, Arrays.stream(array)), isPositive());
-    assertThat(CollectionUtil.compareLength(2, Arrays.stream(array).filter(s -> s.startsWith("t"))), isZero());
-  }
-
-  @Test
-  @SuppressWarnings("unchecked")
-  void testCompareLengthShortCircuits() {
-    var iterator = mock(Iterator.class);
-    doReturn(true).when(iterator).hasNext();
-    doReturn(null).when(iterator).next();
-    var infiniteStream = ((Streamable<?>) () -> iterator).stream();
-
-    assertThat(CollectionUtil.compareLength(10, infiniteStream), isNegative());
-
-    verify(iterator, times(11)).hasNext();
+  void testFindSingle() {
+    assertThat(CollectionUtil.findSingle(Stream.empty()), isEmpty());
+    assertThat(CollectionUtil.findSingle(Stream.of("alpha")), hasValue("alpha"));
+    assertThat(CollectionUtil.findSingle(Stream.of("alpha", "beta")), isEmpty());
   }
 }

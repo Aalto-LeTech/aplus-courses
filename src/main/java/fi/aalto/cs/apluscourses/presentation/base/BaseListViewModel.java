@@ -5,7 +5,9 @@ import fi.aalto.cs.apluscourses.presentation.filter.FilterEngine;
 import fi.aalto.cs.apluscourses.presentation.filter.Filterable;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import fi.aalto.cs.apluscourses.utils.CollectionUtil;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -40,17 +42,7 @@ public class BaseListViewModel<E extends ListElementViewModel<?>> implements Fil
     return elements.stream().filter(ListElementViewModel::isVisible);
   }
 
-  /**
-   * Get currently selected elements as a list.  The list is a snapshot of the current selection
-   * state and is not updated after this method call.
-   *
-   * @return A {@link List}.
-   */
-  public List<E> getSelectedElements() {
-    return streamSelectedElements().collect(Collectors.toList());
-  }
-
-  private Stream<E> streamSelectedElements() {
+  public Stream<E> streamSelectedElements() {
     return elements.stream().filter(ListElementViewModel::isSelected);
   }
 
@@ -69,10 +61,10 @@ public class BaseListViewModel<E extends ListElementViewModel<?>> implements Fil
   }
 
   public boolean isSelectionEmpty() {
-    return elements.stream().filter(ListElementViewModel::isSelected).findAny().isEmpty();
+    return streamSelectedElements().findAny().isEmpty();
   }
 
-  public boolean isSingleSelection() {
-    return CollectionUtil.lengthEquals(streamSelectedElements(), 1);
+  public Optional<E> getSingleSelectedElement() {
+    return CollectionUtil.findSingle(streamSelectedElements());
   }
 }

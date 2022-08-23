@@ -1,58 +1,48 @@
 package fi.aalto.cs.apluscourses;
 
+import java.util.Objects;
+import java.util.Optional;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
 public class OurMatchers {
-  private static class IsNegative extends TypeSafeMatcher<Long> {
 
+  private static class IsEmpty extends TypeSafeMatcher<Optional<?>> {
     @Override
-    protected boolean matchesSafely(Long value) {
-      return value < 0;
+    protected boolean matchesSafely(Optional<?> o) {
+      return o.isEmpty();
     }
 
     @Override
     public void describeTo(Description description) {
-      description.appendText("a negative number");
+      description.appendText("empty");
     }
   }
 
-  private static class IsPositive extends TypeSafeMatcher<Long> {
+  private static class HasValue extends TypeSafeMatcher<Optional<?>> {
+    private final Object expected;
 
-    @Override
-    protected boolean matchesSafely(Long value) {
-      return value > 0;
+    public HasValue(Object expected) {
+      this.expected = expected;
     }
 
     @Override
-    public void describeTo(Description description) {
-      description.appendText("a positive number");
-    }
-  }
-
-  private static class IsZero extends TypeSafeMatcher<Long> {
-
-    @Override
-    protected boolean matchesSafely(Long value) {
-      return value == 0;
+    protected boolean matchesSafely(Optional<?> value) {
+      return value.isPresent() && Objects.equals(expected, value.get());
     }
 
     @Override
     public void describeTo(Description description) {
-      description.appendValue(0);
+      description.appendValue(expected);
     }
   }
 
-  public static Matcher<Long> isNegative() {
-    return new IsNegative();
+  public static Matcher<Optional<?>> isEmpty() {
+    return new IsEmpty();
   }
 
-  public static Matcher<Long> isPositive() {
-    return new IsPositive();
-  }
-
-  public static Matcher<Long> isZero() {
-    return new IsZero();
+  public static <T> Matcher<Optional<?>> hasValue(Object expected) {
+    return new HasValue(expected);
   }
 }

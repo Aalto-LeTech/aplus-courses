@@ -55,6 +55,10 @@ public class ModuleListElementViewModel extends ListElementViewModel<Module>
     return getModel().isUpdatable();
   }
 
+  public boolean canOpenDocumentation() {
+    return getModel().documentationExists();
+  }
+
   @NotNull
   private String getErrorStatus() {
     switch (getModel().getErrorCause()) {
