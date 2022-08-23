@@ -175,9 +175,11 @@ public class PluginSettings implements MainViewModelProvider, DefaultGroupIdSett
     // ProjectKey takes care or project being null and avoids creating differing keys for null.
     ProjectKey key = new ProjectKey(project);
     return mainViewModels.computeIfAbsent(key, projectKey -> {
-      ProjectManager
-          .getInstance()
-          .addProjectManagerListener(project, projectManagerListener);
+      if (project != null) {
+        ProjectManager
+            .getInstance()
+            .addProjectManagerListener(project, projectManagerListener);
+      }
       return new MainViewModel(exerciseFilterOptions, moduleFilterOptions);
     });
   }
@@ -354,6 +356,7 @@ public class PluginSettings implements MainViewModelProvider, DefaultGroupIdSett
     if (!applicationPropertiesManager.isValueSet(A_PLUS_IMPORTED_IDE_SETTINGS.getName())) {
       setImportedIdeSettingsId("");
     }
+    moduleFilterOptions.forEach(Option::init);
     exerciseFilterOptions.forEach(Option::init);
   }
 
