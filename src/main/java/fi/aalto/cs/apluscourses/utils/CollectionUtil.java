@@ -108,19 +108,19 @@ public class CollectionUtil {
     Stream.Builder<E> result = Stream.builder();
     var iterator = stream.iterator();
     var indexIterator = indexStream.iterator();
-    if (!indexIterator.hasNext()) {
-      return Stream.empty();
-    }
     long expected = indexIterator.nextLong();
     while (iterator.hasNext()) {
       E current = iterator.next();
-      while (indexIterator.hasNext()) {
+      while (true) {
         if (expected < index) {
           throw new IllegalArgumentException("Indices must be non-negative and in ascending order.");
         } else if (expected > index) {
           break;
         }
         result.accept(current);
+        if (!indexIterator.hasNext()) {
+          return result.build();
+        }
         expected = indexIterator.nextLong();
       }
       index++;
