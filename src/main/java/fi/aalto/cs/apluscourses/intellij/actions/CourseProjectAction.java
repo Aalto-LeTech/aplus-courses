@@ -376,7 +376,7 @@ public class CourseProjectAction extends AnAction {
                                            @NotNull Path basePath,
                                            @NotNull Course course) {
     try {
-      settingsImporter.importProjectSettings(basePath, course);
+      settingsImporter.importProjectSettings(project, basePath, course);
       return true;
     } catch (IOException e) {
       logger.warn("Failed to import project settings", e);

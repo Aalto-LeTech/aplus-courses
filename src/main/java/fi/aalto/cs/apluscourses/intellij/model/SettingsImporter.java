@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.intellij.model;
 
+import com.intellij.compiler.CompilerWorkspaceConfiguration;
 import com.intellij.diagnostic.VMOptions;
 import com.intellij.ide.startup.StartupActionScriptManager;
 import com.intellij.openapi.application.PathManager;
@@ -10,7 +11,6 @@ import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
-import fi.aalto.cs.apluscourses.utils.DomUtil;
 import fi.aalto.cs.apluscourses.utils.PluginResourceBundle;
 import java.io.File;
 import java.io.IOException;
@@ -25,20 +25,10 @@ import net.lingala.zip4j.model.FileHeader;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.xml.sax.SAXException;
 
 public class SettingsImporter {
 
   private static final Logger logger = APlusLogger.logger;
-
-  // Some hard coded custom settings for workspace.xml. This information should eventually come from
-  // the course configuration file in some way.
-  private static final String WORKSPACE_XML_COMPONENT_NAME = "CompilerWorkspaceConfiguration";
-  private static final String WORKSPACE_XML_OPTION_NAME = "AUTO_SHOW_ERRORS_IN_EDITOR";
-  private static final String WORKSPACE_XML_OPTION_VALUE = "false";
 
   /**
    * Downloads the course IDE settings ZIP file to a temporary file. Also adds IDEA startup actions
@@ -104,7 +94,7 @@ public class SettingsImporter {
    *
    * @throws IOException If an IO error occurs (e.g. network issues).
    */
-  public void importProjectSettings(@NotNull Path basePath, @NotNull Course course)
+  public void importProjectSettings(@NotNull Project project, @NotNull Path basePath, @NotNull Course course)
       throws IOException {
     URL settingsUrl = course.getResourceUrls().get("projectSettings");
     if (settingsUrl == null) {
@@ -119,9 +109,9 @@ public class SettingsImporter {
 
     extractZipTo(zipFile, settingsPath);
 
-    Path workspaceXmlPath = settingsPath.resolve("workspace.xml");
-    Document workspaceXml = createCustomWorkspaceXml(workspaceXmlPath);
-    DomUtil.writeDocumentToFile(workspaceXml, workspaceXmlPath.toFile());
+    // a hard-coded workspace setting
+    CompilerWorkspaceConfiguration.getInstance(project).AUTO_SHOW_ERRORS_IN_EDITOR = false;
+
     logger.info("Imported project settings");
   }
 
@@ -200,47 +190,4 @@ public class SettingsImporter {
         .map(FileHeader::getFileName)
         .collect(Collectors.toList());
   }
-
-  /**
-   * Parses the XML file (usually the workspace.xml file stored in .idea) at the given path and
-   * returns a {@link Document} with file contents and an additional setting added.
-   *
-   * @param workspaceXmlPath The path pointing to the XML file.
-   * @throws IOException           If an IO error occurs while parsing the XML file.
-   * @throws IllegalStateException If the existing XML in the given file is malformed. In practice
-   *                               this would mean that the {@code workspace.xml} file is malformed,
-   *                               which shouldn't happen.
-   */
-  @NotNull
-  public static Document createCustomWorkspaceXml(@NotNull Path workspaceXmlPath) throws
-      IOException {
-    try {
-      Document document = DomUtil.parse(workspaceXmlPath.toFile());
-      Node projectNode = document.getDocumentElement();
-
-      // Check if a component with the given name already exists
-      List<Node> componentMatches = DomUtil.getNodesFromXPath(
-          "//component[@name=\"" + WORKSPACE_XML_COMPONENT_NAME + "\"]", projectNode);
-      Node compilerConfigurationNode;
-      if (componentMatches.isEmpty()) {
-        Element compilerConfigurationElement = document.createElement("component");
-        compilerConfigurationElement.setAttribute("name", WORKSPACE_XML_COMPONENT_NAME);
-        compilerConfigurationNode = compilerConfigurationElement;
-        projectNode.appendChild(compilerConfigurationNode);
-      } else {
-        // There should only be one match, otherwise the workspace.xml file is in a weird state
-        compilerConfigurationNode = componentMatches.get(0);
-      }
-
-      Element option = document.createElement("option");
-      option.setAttribute("name", WORKSPACE_XML_OPTION_NAME);
-      option.setAttribute("value", WORKSPACE_XML_OPTION_VALUE);
-      compilerConfigurationNode.appendChild(option);
-      return document;
-    } catch (SAXException ex) {
-      // If workspace.xml is malformed, then something is seriously wrong...
-      throw new IllegalStateException();
-    }
-  }
-
 }
