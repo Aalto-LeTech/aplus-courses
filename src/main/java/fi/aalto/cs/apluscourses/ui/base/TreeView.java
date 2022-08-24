@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.ui.base;
 
+import com.intellij.util.concurrency.annotations.RequiresEdt;
 import fi.aalto.cs.apluscourses.presentation.base.BaseTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
 import fi.aalto.cs.apluscourses.ui.utils.TreeModelBuilder;
@@ -55,7 +56,6 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
   }
 
   private BaseTreeViewModel<?> viewModel = null;
-  private final Object viewModelLock = new Object();
 
   /**
    * Construct an empty tree with no nodes and the root set to invisible.
@@ -83,16 +83,15 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
    * Set the model of the this tree to the given view model, or do nothing if the given view model
    * is {@code null}.
    */
+  @RequiresEdt
   public void setViewModel(@Nullable BaseTreeViewModel<?> viewModel) {
     if (viewModel != null) {
-      var oldSelectedItem = Optional.ofNullable(this.viewModel)
+      final var oldSelectedItem = Optional.ofNullable(this.viewModel)
           .map(BaseTreeViewModel::getSelectedItem)
           .orElse(null);
-      synchronized (viewModelLock) {
-        unregisterViewModel();
-        this.viewModel = viewModel;
-        registerViewModel();
-      }
+      unregisterViewModel();
+      this.viewModel = viewModel;
+      registerViewModel();
       update();
       if (oldSelectedItem == null) {
         viewModel.setSelectedItem(null);
@@ -100,30 +99,25 @@ public class TreeView extends com.intellij.ui.treeStructure.Tree {
     }
   }
 
+  @RequiresEdt
   private void unregisterViewModel() {
-    synchronized (viewModelLock) {
-      if (viewModel != null) {
-        viewModel.filtered.removeCallback(this);
-      }
+    if (viewModel != null) {
+      viewModel.getFilterEngine().filtered.removeListener(this);
     }
   }
 
+  @RequiresEdt
   private void registerViewModel() {
-    synchronized (viewModelLock) {
-      if (viewModel != null) {
-        viewModel.filtered.addListener(this, TreeView::update, SwingUtilities::invokeLater);
-      }
+    if (viewModel != null) {
+      viewModel.getFilterEngine().filtered.addListener(this, TreeView::update, SwingUtilities::invokeLater);
     }
   }
 
+  @RequiresEdt
   private void update() {
-    BaseTreeViewModel<?> localViewModel;
-    synchronized (viewModelLock) {
-      localViewModel = this.viewModel;
-    }
     var expandedState = getExpandedState();
     var selection = getSelectionRows();
-    setModel(TREE_MODEL_BUILDER.build(localViewModel));
+    setModel(TREE_MODEL_BUILDER.build(viewModel));
     restoreExpandedState(expandedState);
     setSelectionRows(selection);
   }

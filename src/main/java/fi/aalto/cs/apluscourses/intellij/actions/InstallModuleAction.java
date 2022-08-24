@@ -59,7 +59,7 @@ public class InstallModuleAction extends DumbAwareAction {
     CourseViewModel courseViewModel =
         mainViewModelProvider.getMainViewModel(e.getProject()).courseViewModel.get();
     boolean isModuleSelected = courseViewModel != null
-        && !courseViewModel.getModules().getSelectionModel().isSelectionEmpty();
+        && !courseViewModel.getModules().isSelectionEmpty();
     e.getPresentation().setEnabled(isModuleSelected);
   }
 
@@ -69,8 +69,7 @@ public class InstallModuleAction extends DumbAwareAction {
     CourseViewModel courseViewModel =
         mainViewModelProvider.getMainViewModel(e.getProject()).courseViewModel.get();
     if (courseViewModel != null) {
-      List<Component> modules = courseViewModel.getModules().getSelectedElements()
-          .stream()
+      List<Component> modules = courseViewModel.getModules().streamSelectedElements()
           .map(BaseViewModel::getModel)
           .collect(Collectors.toList());
       logger.info("Downloading modules: {}", modules);

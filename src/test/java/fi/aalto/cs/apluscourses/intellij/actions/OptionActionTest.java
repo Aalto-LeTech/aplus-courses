@@ -12,7 +12,7 @@ import javax.swing.ImageIcon;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-class FilterOptionActionTest {
+class OptionActionTest {
 
   @Test
   void testConstructor() {
@@ -20,7 +20,7 @@ class FilterOptionActionTest {
     Icon icon = new ImageIcon();
     Option filterOption = new Option(name, icon, item -> Optional.of(true)).init();
 
-    AnAction action = new FilterOptionAction(filterOption);
+    AnAction action = new OptionAction(filterOption);
 
     Assertions.assertEquals(name, action.getTemplateText());
     Assertions.assertEquals(icon, action.getTemplatePresentation().getIcon());
@@ -30,7 +30,7 @@ class FilterOptionActionTest {
   void testIsSelected() {
     Option filterOption = new Option("My filter", null, item -> Optional.of(true)).init();
 
-    ToggleAction action = new FilterOptionAction(filterOption);
+    ToggleAction action = new OptionAction(filterOption);
 
     AnActionEvent e = mock(AnActionEvent.class);
 
@@ -48,7 +48,7 @@ class FilterOptionActionTest {
   void testSetSelected() {
     Option filterOption = new Option("Your filter", null, item -> Optional.of(true)).init();
 
-    ToggleAction action = new FilterOptionAction(filterOption);
+    ToggleAction action = new OptionAction(filterOption);
 
     AnActionEvent e = mock(AnActionEvent.class);
 

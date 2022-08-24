@@ -1,6 +1,8 @@
 package fi.aalto.cs.apluscourses.ui.base;
 
 import com.intellij.ui.components.JBList;
+import com.intellij.util.concurrency.annotations.RequiresEdt;
+import fi.aalto.cs.apluscourses.presentation.base.BaseListViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.ListElementViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableListModel;
 import java.awt.Point;
@@ -12,14 +14,17 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 import javax.swing.AbstractAction;
 import javax.swing.DefaultListModel;
 import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
 import javax.swing.KeyStroke;
 import javax.swing.ListModel;
+import javax.swing.SwingUtilities;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 
 /**
  * An abstract base class that co-operates with {@link ListElementViewModel}s and provides some
@@ -44,6 +49,7 @@ public abstract class BaseListView<E extends ListElementViewModel<?>>
   private final Set<ActionListener> listActionListeners = ConcurrentHashMap.newKeySet();
   private final Object popupMenuLock = new Object[0];
   private JPopupMenu popupMenu;
+  private BaseListViewModel<E> viewModel = null; // Access only from the EDT
 
   /**
    * A constructor.
@@ -89,6 +95,38 @@ public abstract class BaseListView<E extends ListElementViewModel<?>>
     if (model instanceof SelectableListModel) {
       setSelectionModel(((SelectableListModel<E>) model).getSelectionModel());
     }
+  }
+
+  /**
+  * Set the model of this list to the given view model, or do nothing if the given view model is {@code null}.
+  */
+  @RequiresEdt
+  public void setViewModel(@Nullable BaseListViewModel<E> viewModel) {
+    if (viewModel != null) {
+      unregisterViewModel();
+      this.viewModel = viewModel;
+      registerViewModel();
+      update();
+    }
+  }
+
+  @RequiresEdt
+  private void unregisterViewModel() {
+    if (viewModel != null) {
+      viewModel.getFilterEngine().filtered.removeListener(this);
+    }
+  }
+
+  @RequiresEdt
+  private void registerViewModel() {
+    if (viewModel != null) {
+      viewModel.getFilterEngine().filtered.addListener(this, BaseListView::update, SwingUtilities::invokeLater);
+    }
+  }
+
+  @RequiresEdt
+  private void update() {
+    setModel(new OurListModel<>(viewModel.streamVisibleItems().collect(Collectors.toList())));
   }
 
   /**

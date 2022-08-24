@@ -22,8 +22,8 @@ public class ExercisesTreeViewModel extends BaseTreeViewModel<ExercisesTree>
    * Construct an exercises tree view model from the given exercise groups.
    */
   public ExercisesTreeViewModel(@NotNull ExercisesTree exercisesTree,
-                                @NotNull Options filterOptions) {
-    this(exercisesTree, filterOptions, null);
+                                @NotNull Options options) {
+    this(exercisesTree, options, null);
   }
 
 
@@ -31,14 +31,14 @@ public class ExercisesTreeViewModel extends BaseTreeViewModel<ExercisesTree>
    * Construct an exercises tree view model from the given exercise groups.
    */
   public ExercisesTreeViewModel(@NotNull ExercisesTree exercisesTree,
-                                @NotNull Options filterOptions,
+                                @NotNull Options options,
                                 @Nullable CourseProject courseProject) {
     super(exercisesTree,
         exercisesTree.getExerciseGroups()
             .stream()
             .map(exerciseGroup -> new ExerciseGroupViewModel(exerciseGroup, courseProject))
             .collect(Collectors.toList()),
-        filterOptions);
+        options);
     setLoaded(courseProject != null && courseProject.getAuthentication() != null);
   }
 
@@ -47,12 +47,12 @@ public class ExercisesTreeViewModel extends BaseTreeViewModel<ExercisesTree>
    */
   @NotNull
   public static ExercisesTreeViewModel createExerciseTreeViewModel(@Nullable ExercisesTree exercisesTree,
-                                                                   @NotNull Options filterOptions,
+                                                                   @NotNull Options options,
                                                                    @Nullable CourseProject courseProject) {
     if (exercisesTree == null) {
       return new EmptyExercisesTreeViewModel();
     }
-    return new ExercisesTreeViewModel(exercisesTree, filterOptions, courseProject);
+    return new ExercisesTreeViewModel(exercisesTree, options, courseProject);
   }
 
   public String getName() {

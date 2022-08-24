@@ -135,7 +135,7 @@ class SubmitExerciseActionTest {
     exerciseGroup.addExercise(exercise);
     exerciseGroups = Collections.singletonList(exerciseGroup);
 
-    mainViewModel = new MainViewModel(new Options());
+    mainViewModel = new MainViewModel(new Options(), new Options());
 
     authentication = mock(Authentication.class);
     points = new Points(
@@ -152,10 +152,10 @@ class SubmitExerciseActionTest {
         .when(exerciseDataSource)
         .submit(any(Submission.class), any(Authentication.class));
 
-    courseViewModel = new CourseViewModel(course);
+    courseViewModel = new CourseViewModel(course, Options.EMPTY);
     mainViewModel.courseViewModel.set(courseViewModel);
 
-    exercises = new ExercisesTreeViewModel(new ExercisesTree(exerciseGroups), new Options());
+    exercises = new ExercisesTreeViewModel(new ExercisesTree(exerciseGroups), Options.EMPTY);
     exercises.getChildren().get(0).getChildren().get(0).setSelected(true);
     mainViewModel.exercisesViewModel.set(exercises);
 

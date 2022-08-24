@@ -5,11 +5,11 @@ import com.intellij.openapi.project.DumbAwareToggleAction;
 import fi.aalto.cs.apluscourses.presentation.filter.Option;
 import org.jetbrains.annotations.NotNull;
 
-public class FilterOptionAction extends DumbAwareToggleAction {
+public class OptionAction extends DumbAwareToggleAction {
 
   private final Option option;
 
-  public FilterOptionAction(Option option) {
+  public OptionAction(Option option) {
     super(option::getName, () -> null, option.getIcon());
     this.option = option;
   }

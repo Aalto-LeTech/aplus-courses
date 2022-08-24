@@ -19,10 +19,10 @@ import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import fi.aalto.cs.apluscourses.ui.InstallerDialogs;
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
+import fi.aalto.cs.apluscourses.utils.CollectionUtil;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javax.swing.ListSelectionModel;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,7 +42,7 @@ class InstallModuleActionTest {
   void createMockObjects() {
     project = mock(Project.class);
 
-    mainViewModel = new MainViewModel(new Options());
+    mainViewModel = new MainViewModel(Options.EMPTY, Options.EMPTY);
     MainViewModelProvider mainViewModelProvider = mock(MainViewModelProvider.class);
     doReturn(mainViewModel).when(mainViewModelProvider).getMainViewModel(project);
 
@@ -77,7 +77,7 @@ class InstallModuleActionTest {
         BuildInfo.INSTANCE.courseVersion,
         // tutorials
         Collections.emptyMap());
-    mainViewModel.courseViewModel.set(new CourseViewModel(course));
+    mainViewModel.courseViewModel.set(new CourseViewModel(course, Options.EMPTY));
 
     installer = mock(ComponentInstaller.class);
 
@@ -98,15 +98,13 @@ class InstallModuleActionTest {
     action.update(e);
     Assertions.assertFalse(presentation.isEnabledAndVisible());
 
-    ListSelectionModel selectionModel = mainViewModel.courseViewModel.get()
-        .getModules()
-        .getSelectionModel();
+    var moduleListViewModel = mainViewModel.courseViewModel.get().getModules();
 
-    selectionModel.addSelectionInterval(1, 2);
+    CollectionUtil.get(moduleListViewModel.streamVisibleItems(), 1, 2).forEach(module -> module.setSelected(true));
     action.update(e);
     Assertions.assertTrue(presentation.isEnabledAndVisible());
 
-    selectionModel.clearSelection();
+    moduleListViewModel.streamVisibleItems().forEach(module -> module.setSelected(false));
     action.update(e);
     Assertions.assertFalse(presentation.isEnabledAndVisible());
   }
@@ -119,11 +117,9 @@ class InstallModuleActionTest {
 
     AnActionEvent e = mock(AnActionEvent.class);
 
-    ListSelectionModel selectionModel = mainViewModel.courseViewModel.get()
-        .getModules()
-        .getSelectionModel();
+    var moduleListViewModel = mainViewModel.courseViewModel.get().getModules();
 
-    selectionModel.addSelectionInterval(1, 2);
+    CollectionUtil.get(moduleListViewModel.streamVisibleItems(), 1, 2).forEach(module -> module.setSelected(true));
 
     action.actionPerformed(e);
 

@@ -55,6 +55,10 @@ public class ModuleListElementViewModel extends ListElementViewModel<Module>
     return getModel().isUpdatable();
   }
 
+  public boolean canOpenDocumentation() {
+    return getModel().documentationExists();
+  }
+
   @NotNull
   private String getErrorStatus() {
     switch (getModel().getErrorCause()) {
@@ -111,5 +115,9 @@ public class ModuleListElementViewModel extends ListElementViewModel<Module>
   public boolean isBoldface() {
     Module model = getModel();
     return !model.hasError() && model.stateMonitor.get() == Component.LOADED;
+  }
+
+  public boolean isDownloaded() {
+    return getModel().stateMonitor.get() == Component.LOADED;
   }
 }

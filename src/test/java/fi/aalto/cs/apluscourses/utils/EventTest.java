@@ -28,8 +28,8 @@ class EventTest {
 
     event.trigger();
 
-    verify(callback1).callbackUntyped(listener1);
-    verify(callback2).callbackUntyped(listener2);
+    verify(callback1).callbackUntyped(listener1, null);
+    verify(callback2).callbackUntyped(listener2, null);
 
     verifyNoMoreInteractions(callback1);
     verifyNoMoreInteractions(callback2);

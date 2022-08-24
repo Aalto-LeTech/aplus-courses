@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.stream.Collectors;
-import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.stubbing.answers.Returns;
@@ -105,13 +104,13 @@ class ExerciseGroupViewModelTest {
     ExerciseGroupViewModel groupViewModel = new ExerciseGroupViewModel(group);
 
     Filter filter = mock(Filter.class, new Returns(Optional.empty()));
-    groupViewModel.applyFilter(filter);
+    groupViewModel.applyFilterRecursive(filter);
     Assertions.assertTrue(groupViewModel.isVisible(), "Week with children is visible");
 
     ExerciseGroup emptyGroup = new ExerciseGroup(6, "", "", true, List.of(), List.of());
     ExerciseGroupViewModel emptyGroupViewModel = new ExerciseGroupViewModel(emptyGroup);
 
-    emptyGroupViewModel.applyFilter(filter);
+    emptyGroupViewModel.applyFilterRecursive(filter);
     Assertions.assertFalse(emptyGroupViewModel.isVisible(), "Week with no children is not visible");
   }
 

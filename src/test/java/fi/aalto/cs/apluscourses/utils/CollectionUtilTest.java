@@ -1,18 +1,21 @@
 package fi.aalto.cs.apluscourses.utils;
 
+import static fi.aalto.cs.apluscourses.OurMatchers.hasValue;
+import static fi.aalto.cs.apluscourses.OurMatchers.isEmpty;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
-import org.hamcrest.MatcherAssert;
-import org.junit.jupiter.api.Assertions;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 
 class CollectionUtilTest {
@@ -22,14 +25,14 @@ class CollectionUtilTest {
     List<String> source = List.of("a", "b", "c");
     List<String> result =
         CollectionUtil.mapWithIndex(source, (item, index) -> item + index.toString(), 4);
-    MatcherAssert.assertThat(result, is(List.of("a4", "b5", "c6")));
+    assertThat(result, is(List.of("a4", "b5", "c6")));
   }
 
   @Test
   void testIndexOf() {
     Object item = new Object();
     Iterator<Object> it = List.of(new Object(), new Object(), item, new Object()).iterator();
-    Assertions.assertEquals(2, CollectionUtil.indexOf(it, item));
+    assertEquals(2, CollectionUtil.indexOf(it, item));
   }
 
   @SuppressWarnings("unchecked")
@@ -48,15 +51,40 @@ class CollectionUtilTest {
     collection.add("Dodge");
 
     var removed = CollectionUtil.removeIf(collection, s -> s.startsWith("C"));
-    MatcherAssert.assertThat(removed, hasItem("Chevrolet"));
-    MatcherAssert.assertThat(removed, hasItem("Chrysler"));
+    assertThat(removed, hasItem("Chevrolet"));
+    assertThat(removed, hasItem("Chrysler"));
 
-    Assertions.assertEquals(6, collection.size());
-    MatcherAssert.assertThat(collection, hasItem("Audi"));
-    MatcherAssert.assertThat(collection, hasItem("BMW"));
-    MatcherAssert.assertThat(collection, hasItem("Daimler"));
-    MatcherAssert.assertThat(collection, hasItem("Alfa Romeo"));
-    MatcherAssert.assertThat(collection, hasItem("Bentley"));
-    MatcherAssert.assertThat(collection, hasItem("Dodge"));
+    assertEquals(6, collection.size());
+    assertThat(collection, hasItem("Audi"));
+    assertThat(collection, hasItem("BMW"));
+    assertThat(collection, hasItem("Daimler"));
+    assertThat(collection, hasItem("Alfa Romeo"));
+    assertThat(collection, hasItem("Bentley"));
+    assertThat(collection, hasItem("Dodge"));
+  }
+
+  @Test
+  void testFindSingle() {
+    assertThat(CollectionUtil.findSingle(Stream.empty()), isEmpty());
+    assertThat(CollectionUtil.findSingle(Stream.of("alpha")), hasValue("alpha"));
+    assertThat(CollectionUtil.findSingle(Stream.of("alpha", "beta")), isEmpty());
+  }
+
+  @Test
+  void testGet() {
+    final String[] alphabets = {
+        //0    1    2    3    4    5    6    7    8    9
+        "a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
+        "k", "l", "m", "n", "o", "p", "q", "r", "s", "t",
+        "u", "v", "w", "x", "y", "z"
+    };
+
+    String[] vowels = CollectionUtil.get(Arrays.stream(alphabets), 0, 4, 8, 14, 20, 24).toArray(String[]::new);
+    assertEquals("aeiouy", String.join("", vowels));
+
+    String[] boost = CollectionUtil.get(Arrays.stream(alphabets), 1, 14, 14, 18, 19).toArray(String[]::new);
+    assertEquals("boost", String.join("", boost));
+
+    assertThrows(IllegalArgumentException.class, () -> CollectionUtil.get(Arrays.stream(alphabets), 1, 3, 2));
   }
 }

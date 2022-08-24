@@ -74,7 +74,7 @@ public class ModulesView implements ToolbarPanel {
    */
   public void viewModelChanged(@Nullable CourseViewModel course) {
     ApplicationManager.getApplication().invokeLater(() -> {
-          moduleListView.setModel(course == null ? null : course.getModules());
+          moduleListView.setViewModel(course == null ? null : course.getModules());
           moduleListView.setEmptyText(
               course == null ? getText("ui.toolWindow.loading") : getText("ui.toolWindow.subTab.modules.noModules"));
         }, ModalityState.any()

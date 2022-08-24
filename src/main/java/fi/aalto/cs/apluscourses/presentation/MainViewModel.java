@@ -6,10 +6,12 @@ import fi.aalto.cs.apluscourses.presentation.exercise.EmptyExercisesTreeViewMode
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import fi.aalto.cs.apluscourses.presentation.ideactivities.TutorialViewModel;
+import fi.aalto.cs.apluscourses.presentation.module.ModuleListViewModel;
 import fi.aalto.cs.apluscourses.presentation.news.NewsTreeViewModel;
 import fi.aalto.cs.apluscourses.utils.Event;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -48,7 +50,10 @@ public class MainViewModel {
       new ObservableReadWriteProperty<>(null);
 
   @NotNull
-  private final Options exerciseFilterOptions;
+  private final Options exerciseOptions;
+
+  @NotNull
+  private final Options moduleOptions;
 
   @Nullable
   private String feedbackCss;
@@ -56,8 +61,9 @@ public class MainViewModel {
   /**
    * Instantiates a class representing the whole main view of the plugin.
    */
-  public MainViewModel(@NotNull Options exerciseFilterOptions) {
-    this.exerciseFilterOptions = exerciseFilterOptions;
+  public MainViewModel(@NotNull Options exerciseOptions, @NotNull Options moduleOptions) {
+    this.exerciseOptions = exerciseOptions;
+    this.moduleOptions = moduleOptions;
   }
 
   /**
@@ -66,8 +72,13 @@ public class MainViewModel {
    */
   public void updateExercisesViewModel(@NotNull CourseProject courseProject) {
     exercisesViewModel.set(
-        ExercisesTreeViewModel.createExerciseTreeViewModel(courseProject.getExerciseTree(), exerciseFilterOptions,
+        ExercisesTreeViewModel.createExerciseTreeViewModel(courseProject.getExerciseTree(), exerciseOptions,
             courseProject));
+  }
+
+  public void updateCourseViewModel(@NotNull CourseProject courseProject) {
+    courseViewModel.set(
+        new CourseViewModel(courseProject.getCourse(), moduleOptions));
   }
 
   /**
@@ -91,9 +102,19 @@ public class MainViewModel {
     return exercisesViewModel.get();
   }
 
+  @Nullable
+  public ModuleListViewModel getModules() {
+    return Optional.ofNullable(courseViewModel.get()).map(CourseViewModel::getModules).orElse(null);
+  }
+
   @NotNull
-  public Options getExerciseFilterOptions() {
-    return exerciseFilterOptions;
+  public Options getExerciseOptions() {
+    return exerciseOptions;
+  }
+
+  @NotNull
+  public Options getModuleOptions() {
+    return moduleOptions;
   }
 
   /**

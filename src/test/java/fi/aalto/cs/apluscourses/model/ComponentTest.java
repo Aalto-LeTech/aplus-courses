@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -37,7 +38,7 @@ class ComponentTest {
     Assertions.assertEquals(Component.UNRESOLVED, component.stateMonitor.get(),
         "Component should be initially in UNRESOLVED state");
     component.stateMonitor.set(Component.FETCHING);
-    verify(callback, times(1)).callbackUntyped(listener);
+    verify(callback).callbackUntyped(listener, null);
     verifyNoMoreInteractions(callback);
   }
 

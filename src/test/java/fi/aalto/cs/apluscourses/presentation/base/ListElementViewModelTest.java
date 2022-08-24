@@ -21,25 +21,4 @@ class ListElementViewModelTest {
     listElementViewModel.setSelected(false);
     Assertions.assertFalse(listElementViewModel.isSelected(), "isSelected() should return false.");
   }
-
-  @SuppressWarnings("unchecked")
-  @Test
-  void testIndexAndListModel() {
-    ListElementViewModel<Object> listElementViewModel = new ListElementViewModel<>(new Object());
-    Assertions.assertEquals(0, listElementViewModel.getIndex());
-
-    int index = 44;
-    listElementViewModel.setIndex(index);
-    Assertions.assertEquals(index, listElementViewModel.getIndex(), "getIndex() should return newly set index.");
-
-    listElementViewModel.onChanged(); // nothing should happen
-
-    BaseListViewModel<ListElementViewModel<Object>> listViewModel = mock(BaseListViewModel.class);
-    listElementViewModel.setListModel(listViewModel);
-
-    listElementViewModel.onChanged();
-    verify(listViewModel).onElementChanged(index);
-
-    verifyNoMoreInteractions(listViewModel);
-  }
 }

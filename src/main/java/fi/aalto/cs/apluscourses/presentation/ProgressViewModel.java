@@ -90,6 +90,6 @@ public class ProgressViewModel {
   }
 
   private void unregisterProgress(Progress progress) {
-    progress.updated.removeCallback(this);
+    progress.updated.removeListener(this);
   }
 }

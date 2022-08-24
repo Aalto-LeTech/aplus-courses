@@ -7,7 +7,6 @@ import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.UrlRenderingErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
-import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.UrlRenderer;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import org.jetbrains.annotations.NotNull;
@@ -42,29 +41,25 @@ public class OpenDocumentationAction extends DumbAwareAction {
   public void update(@NotNull AnActionEvent e) {
     CourseViewModel courseViewModel =
         mainViewModelProvider.getMainViewModel(e.getProject()).courseViewModel.get();
-    boolean isOneModuleSelected = courseViewModel != null
-        && courseViewModel.getModules().getSelectionModel().getSelectedIndices().length == 1;
-
-    if (isOneModuleSelected) {
-      Component module = courseViewModel.getModules().getSelectedElements().get(0).getModel();
-      isOneModuleSelected = module.stateMonitor.get() == Component.LOADED
-          && module.getDocumentationIndexFullPath().toFile().exists();
-    }
-
-    e.getPresentation().setEnabled(isOneModuleSelected);
+    e.getPresentation().setEnabled(courseViewModel != null && courseViewModel.getModules().canOpenDocumentation());
   }
 
   @Override
   public void actionPerformed(@NotNull AnActionEvent e) {
     CourseViewModel courseViewModel =
         mainViewModelProvider.getMainViewModel(e.getProject()).courseViewModel.get();
-    if (courseViewModel != null) {
-      Component module = courseViewModel.getModules().getSelectedElements().get(0).getModel();
-      try {
-        urlRenderer.show(module.getDocumentationIndexFullPath().toUri());
-      } catch (Exception ex) {
-        notifier.notify(new UrlRenderingErrorNotification(ex), e.getProject());
-      }
+    if (courseViewModel == null) {
+      return;
+    }
+    var selection = courseViewModel.getModules().getSingleSelectedElement();
+    if (selection.isEmpty()) {
+      return;
+    }
+    var module = selection.get().getModel();
+    try {
+      urlRenderer.show(module.getDocumentationIndexFullPath().toUri());
+    } catch (Exception ex) {
+      notifier.notify(new UrlRenderingErrorNotification(ex), e.getProject());
     }
   }
 }

@@ -1,21 +1,17 @@
 package fi.aalto.cs.apluscourses.presentation.base;
 
+import fi.aalto.cs.apluscourses.presentation.filter.Filter;
+import fi.aalto.cs.apluscourses.presentation.filter.FilterEngine;
+import fi.aalto.cs.apluscourses.presentation.filter.Filterable;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
-import fi.aalto.cs.apluscourses.utils.Event;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class BaseTreeViewModel<T> extends SelectableNodeViewModel<T> {
+public class BaseTreeViewModel<T> extends SelectableNodeViewModel<T> implements Filterable {
 
-  @NotNull
-  public final Event filtered = new Event();
-  @Nullable
-  protected final Options options;
-  @Nullable
-  private Thread filterThread = null;
-  @NotNull
-  private final Object filterLock = new Object();
+  private final @NotNull FilterEngine filterEngine;
+
   @Nullable
   protected volatile SelectableNodeViewModel<?> selectedItem = null; //  NOSONAR
 
@@ -32,13 +28,14 @@ public class BaseTreeViewModel<T> extends SelectableNodeViewModel<T> {
    */
   public BaseTreeViewModel(@NotNull T model,
                            @Nullable List<SelectableNodeViewModel<?>> children,
-                           @Nullable Options options) {
+                           @NotNull Options options) {
     super(model, children);
-    this.options = options;
-    if (options != null) {
-      this.options.optionsChanged.addListener(this, BaseTreeViewModel::filter);
-    }
-    filter();
+    filterEngine = new FilterEngine(options, this);
+    filterEngine.filter();
+  }
+
+  public @NotNull FilterEngine getFilterEngine() {
+    return filterEngine;
   }
 
   /**
@@ -46,19 +43,7 @@ public class BaseTreeViewModel<T> extends SelectableNodeViewModel<T> {
    */
   public BaseTreeViewModel(@NotNull T model,
                            @Nullable List<SelectableNodeViewModel<?>> children) {
-    this(model, children, null);
-  }
-
-  protected void filter() {
-    synchronized (filterLock) {
-      filterThread = new FilterThread(filterThread);
-      filterThread.start();
-    }
-  }
-
-  @Nullable
-  public Options getFilterOptions() {
-    return options;
+    this(model, children, Options.EMPTY);
   }
 
   @Override
@@ -66,46 +51,14 @@ public class BaseTreeViewModel<T> extends SelectableNodeViewModel<T> {
     return 0;
   }
 
-  private class FilterThread extends Thread {
-    @Nullable
-    private final Thread previous;
-
-    public FilterThread(@Nullable Thread previous) {
-      this.previous = previous;
-    }
-
-    @Override
-    public void run() {
-      try {
-        if (previous != null) {
-          previous.interrupt();
-          previous.join();
-        }
-        if (options != null) {
-          applyFilter(options);
-        }
-        if (done()) {
-          filtered.trigger();
-        }
-      } catch (InterruptedException e) {
-        interrupt();
-      }
-    }
-
-    private boolean done() {
-      synchronized (filterLock) {
-        if (filterThread == this) {
-          filterThread = null;
-          return true;
-        }
-      }
-      return false;
-    }
-  }
-
   @NotNull
   public Selection findSelected() {
     return new Selection(traverseAndFind(SelectableNodeViewModel::isSelected));
+  }
+
+  @Override
+  public void applyFilter(@NotNull Filter filter) throws InterruptedException {
+    applyFilterRecursive(filter);
   }
 
   public static class Selection {
