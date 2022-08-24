@@ -5,7 +5,7 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.keymap.KeymapManager
 import com.intellij.openapi.module.{Module, ModuleUtilCore}
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.OrderEnumerator
+import com.intellij.openapi.roots.{ModuleRootManager, OrderEnumerator}
 import com.intellij.openapi.util.io.FileUtilRt
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings
 import fi.aalto.cs.apluscourses.utils.PluginResourceBundle.{getAndReplaceText, getText}
@@ -47,13 +47,13 @@ object ModuleUtils {
 
   // O1_SPECIFIC
   def naiveValidate(@NotNull command: String): Boolean =
-    command.matches("import\\so1\\.[a-z]*(\\_|\\._)$")
+    command.matches("import\\so1\\.[a-z]*(\\*|\\.\\*)$")
 
   def clearCommands(@NotNull imports: Array[String]): Array[String] =
     imports
       .clone
       .map(_.replace("import ", ""))
-      .map(_.replace("._", ""))
+      .map(_.replace(".*", ""))
 
   def getCommandsText(@NotNull imports: Array[String]): String =
     imports.length match {
@@ -151,4 +151,11 @@ object ModuleUtils {
   }
 
   def isTopLevelModule(module: Module): Boolean = module.getName.equals(module.getProject.getName)
+
+  def isScala3Module(module: Module): Boolean = nonEmpty(
+    ModuleRootManager.getInstance(module)
+      .orderEntries()
+      .librariesOnly()
+      .satisfying(x => x.getPresentableName.contains("scala3-") || x.getPresentableName.contains("scala-sdk-3."))
+  )
 }

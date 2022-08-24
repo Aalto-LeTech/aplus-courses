@@ -16,8 +16,6 @@ import org.jetbrains.plugins.scala.console.ScalaConsoleInfo
 import org.jetbrains.plugins.scala.console.actions.ScalaConsoleExecuteAction
 import org.jetbrains.plugins.scala.inWriteAction
 
-import java.io.OutputStream
-
 class ConsoleExecuteAction extends ScalaConsoleExecuteAction {
   // We achieve proper multiline support by surrounding the REPL commands by special
   // ANSI sequences indicating "bracketed paste". We exploit the fact that Scala 3 REPL
@@ -92,7 +90,7 @@ class ConsoleExecuteAction extends ScalaConsoleExecuteAction {
 
     // the "start paste" sequence has to be in a separate write call, otherwise JLine won't
     // pick it up properly; it seems to be yet another quirk of JLine and DumbTerminal
-    val outputStream: OutputStream = processHandler.getProcessInput
+    val outputStream = processHandler.getProcessInput
     outputStream.write(BeginPaste)
     outputStream.flush()
 
