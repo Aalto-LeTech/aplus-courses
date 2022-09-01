@@ -1,15 +1,20 @@
 package fi.aalto.cs.apluscourses.intellij.model;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Component;
+import fi.aalto.cs.apluscourses.model.ComponentInstallerImpl;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Library;
 import fi.aalto.cs.apluscourses.model.ModelFactory;
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.model.ModuleMetadata;
 import fi.aalto.cs.apluscourses.model.Tutorial;
+import fi.aalto.cs.apluscourses.ui.InstallerDialogs;
 import fi.aalto.cs.apluscourses.utils.Version;
+import fi.aalto.cs.apluscourses.utils.async.SimpleAsyncTaskManager;
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
@@ -67,9 +72,23 @@ public class IntelliJModelFactory implements ModelFactory {
     course.getCommonLibraryProvider().setInitializationCallback(componentInitializationCallback);
     course.getComponents().forEach(componentInitializationCallback::initialize);
 
+    updateSdkForO1(course, componentInitializationCallback);
+
     course.resolve();
 
     return course;
+  }
+
+  private void updateSdkForO1(IntelliJCourse course, Component.InitializationCallback componentInitializationCallback) {
+    boolean updated = course.getModules().stream().anyMatch(Module::updateScalaVersionForO1);
+    if (updated) {
+      var library = course.getCommonLibraryProvider().getComponentIfExists("scala-sdk-3.2.0");
+      if (library == null) return;
+      InstallerDialogs.Factory dialogsFactory = InstallerDialogs::new;
+      new ComponentInstallerImpl.FactoryImpl<>(new SimpleAsyncTaskManager())
+          .getInstallerFor(course, dialogsFactory.getDialogs(project.getProject()))
+          .installAsync(List.of(library), course::validate);
+    }
   }
 
   private void registerComponentToCourse(@NotNull Component component, @NotNull Course course) {

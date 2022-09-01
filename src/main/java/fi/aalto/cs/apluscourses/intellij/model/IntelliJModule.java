@@ -1,8 +1,15 @@
 package fi.aalto.cs.apluscourses.intellij.model;
 
+import com.intellij.openapi.application.Application;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.application.WriteAction;
+import com.intellij.openapi.module.ModuleWithNameAlreadyExists;
+import com.intellij.openapi.roots.LibraryOrderEntry;
+import com.intellij.openapi.roots.ModuleOrderEntry;
 import com.intellij.openapi.roots.ModuleRootManager;
+import com.intellij.openapi.roots.OrderEntry;
+import com.intellij.openapi.roots.libraries.LibraryTablesRegistrar;
 import com.intellij.util.concurrency.annotations.RequiresReadLock;
 import com.intellij.util.concurrency.annotations.RequiresWriteLock;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
@@ -19,6 +26,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import org.apache.commons.io.FileUtils;
@@ -135,6 +143,32 @@ class IntelliJModule
         .withoutModuleSourceEntries()
         .productionOnly()
         .process(new ListDependenciesPolicy(), new ArrayList<>()));
+  }
+
+  @Override
+  public boolean updateScalaVersionForO1() {
+    ModuleRootManager moduleRootManager = project.getModuleRootManager(getName());
+    if (moduleRootManager == null) {
+      return false;
+    }
+    var model = moduleRootManager.getModifiableModel();
+    var entries = model.getOrderEntries();
+    for (var entry : entries) {
+      if (entry instanceof LibraryOrderEntry && "scala-sdk-3.2.0-RC4".equals(entry.getPresentableName())) {
+          model.removeOrderEntry(entry);
+          var newLib = model.addInvalidLibrary("scala-sdk-3.2.0", LibraryTablesRegistrar.PROJECT_LEVEL);
+          model.rearrangeOrderEntries(
+              Arrays
+                  .stream(entries)
+                  .map(e -> "scala-sdk-3.2.0-RC4".equals(e.getPresentableName()) ? newLib : e)
+                  .toArray(OrderEntry[]::new)
+          );
+          ApplicationManager.getApplication().invokeLater(() ->
+              ApplicationManager.getApplication().runWriteAction(model::commit));
+        return true;
+      }
+    }
+    return false;
   }
 
   @NotNull

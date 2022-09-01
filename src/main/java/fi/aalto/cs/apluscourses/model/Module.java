@@ -95,6 +95,8 @@ public abstract class Module extends Component {
     return factory.createModule(name, url, version, changelog);
   }
 
+  public abstract boolean updateScalaVersionForO1();
+
   @Override
   public void fetch() throws IOException {
     fetchInternal();
