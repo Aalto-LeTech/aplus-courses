@@ -137,6 +137,7 @@ class IntelliJModule
     if (moduleRootManager == null) {
       throw new IllegalStateException();
     }
+    updateScalaVersionForO1();
     return Objects.requireNonNull(moduleRootManager
         .orderEntries()
         .withoutSdk()
@@ -154,17 +155,17 @@ class IntelliJModule
     var model = moduleRootManager.getModifiableModel();
     var entries = model.getOrderEntries();
     for (var entry : entries) {
-      if (entry instanceof LibraryOrderEntry && "scala-sdk-3.2.0-RC4".equals(entry.getPresentableName())) {
-          model.removeOrderEntry(entry);
-          var newLib = model.addInvalidLibrary("scala-sdk-3.2.0", LibraryTablesRegistrar.PROJECT_LEVEL);
-          model.rearrangeOrderEntries(
-              Arrays
-                  .stream(entries)
-                  .map(e -> "scala-sdk-3.2.0-RC4".equals(e.getPresentableName()) ? newLib : e)
-                  .toArray(OrderEntry[]::new)
-          );
-          ApplicationManager.getApplication().invokeLater(() ->
-              ApplicationManager.getApplication().runWriteAction(model::commit));
+      if ("scala-sdk-3.2.0-RC4".equals(entry.getPresentableName())) {
+        model.removeOrderEntry(entry);
+        var newLib = model.addInvalidLibrary("scala-sdk-3.2.0", LibraryTablesRegistrar.PROJECT_LEVEL);
+        model.rearrangeOrderEntries(
+            Arrays
+                .stream(entries)
+                .map(e -> "scala-sdk-3.2.0-RC4".equals(e.getPresentableName()) ? newLib : e)
+                .toArray(OrderEntry[]::new)
+        );
+        ApplicationManager.getApplication().invokeAndWait(() ->
+            ApplicationManager.getApplication().runWriteAction(model::commit));
         return true;
       }
     }

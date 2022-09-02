@@ -346,6 +346,11 @@ public class ModelExtensions {
     }
 
     @Override
+    public boolean updateScalaVersionForO1() {
+      return false;
+    }
+
+    @Override
     public void fetchInternal() {
       // do nothing
     }

@@ -8,12 +8,16 @@ import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.NewModulesVersionsNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
+import fi.aalto.cs.apluscourses.model.ComponentInstallerImpl;
 import fi.aalto.cs.apluscourses.model.Course;
+import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.model.NewsTree;
+import fi.aalto.cs.apluscourses.ui.InstallerDialogs;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
 import fi.aalto.cs.apluscourses.utils.Event;
 import fi.aalto.cs.apluscourses.utils.Version;
 import fi.aalto.cs.apluscourses.utils.async.RepeatedTask;
+import fi.aalto.cs.apluscourses.utils.async.SimpleAsyncTaskManager;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -21,6 +25,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -123,7 +128,22 @@ public class CourseUpdater extends RepeatedTask {
     }
     notifyUpdatableModules();
     progress.finish();
+    updateSdkForO1((IntelliJCourse) course, project);
     eventToTrigger.trigger();
+  }
+
+  private void updateSdkForO1(IntelliJCourse course, Project project) {
+    boolean updated = course.getModules().stream().anyMatch(Module::updateScalaVersionForO1);
+    if (updated) {
+      var library = course.getCommonLibraryProvider().getComponentIfExists("scala-sdk-3.2.0");
+      if (library == null) {
+        return;
+      }
+      InstallerDialogs.Factory dialogsFactory = InstallerDialogs::new;
+      new ComponentInstallerImpl.FactoryImpl<>(new SimpleAsyncTaskManager())
+          .getInstallerFor(course, dialogsFactory.getDialogs(project))
+          .installAsync(List.of(library), course::validate);
+    }
   }
 
   private Map<URI, ModuleInfo> fetchModulesInfo() {

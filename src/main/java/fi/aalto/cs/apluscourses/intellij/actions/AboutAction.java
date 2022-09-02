@@ -15,11 +15,6 @@ public class AboutAction extends DumbAwareAction {
     if (e.getProject() == null) {
       return;
     }
-    var project = e.getProject();
-    var course =  PluginSettings.getInstance().getCourseProject(project).getCourse();
-    boolean updated = course.getModules().stream().anyMatch(Module::updateScalaVersionForO1);
-//    var sdkComponent = new CommonLibraryProvider(project).getComponentIfExists("scala-sdk-3.2.0");
-    course.validate();
-//    new AboutDialog(e.getProject()).show();
+    new AboutDialog(e.getProject()).show();
   }
 }
