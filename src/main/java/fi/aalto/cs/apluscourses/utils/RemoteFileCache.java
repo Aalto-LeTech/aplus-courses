@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class RemoteFileCache {
 
-  protected static final int DEFAULT_TIMEOUT_MILLIS = 5000;
+  protected static final int DEFAULT_TIMEOUT_MILLIS = 120000;
   private static final RemoteFileCache INSTANCE = new RemoteFileCache();
 
   protected final int timeout;
