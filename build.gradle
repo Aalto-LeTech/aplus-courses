@@ -23,7 +23,7 @@ repositories {
 
 dependencies {
     implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
-    implementation group: 'net.lingala.zip4j', name: 'zip4j', version: '2.11.1'
+    implementation group: 'net.lingala.zip4j', name: 'zip4j', version: '2.11.2'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.9.0'
     test.useJUnitPlatform()
     compileOnly group: 'org.scala-lang', name: 'scala-library', version: '2.13.8'
