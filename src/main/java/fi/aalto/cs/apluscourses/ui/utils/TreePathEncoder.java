@@ -25,7 +25,7 @@ public abstract class TreePathEncoder<T> {
     }
     T value = memo.get(treePath);
     if (value == null) {
-      value =  encodeInternal(treePath);
+      value = encodeInternal(treePath);
       // In parallel execution, it might happen that the value is calculated twice.
       // That doesn't, however, matter in the sense of correctness.
       memo.put(treePath, value);
