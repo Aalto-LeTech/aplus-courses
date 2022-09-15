@@ -1,9 +1,11 @@
 package fi.aalto.cs.apluscourses.ui.utils;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import javax.swing.tree.TreePath;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class TreePathEncoderTest {
@@ -21,10 +23,16 @@ class TreePathEncoderTest {
 
   @Test
   void testEncode() {
-    TreePathEncoder<String> encoder = new TestTreePathEncoder();
-    TreePath path = new TreePath(new Object[] {"foo", "bar", "baz"});
-    String code = encoder.encode(path);
+    TreePathEncoder<String> encoder = spy(new TestTreePathEncoder());
+    TreePath path1 = new TreePath(new Object[] {"foo", "bar", "baz"});
+    TreePath path2 = new TreePath(new Object[] {"foo", "bar", 2000});
 
-    Assertions.assertEquals("/foo/bar/baz", code);
+    String code1 = encoder.encode(path1);
+    String code2 = encoder.encode(path2);
+
+    assertEquals("/foo/bar/baz", code1);
+    assertEquals("/foo/bar/2000", code2);
+
+    verify(encoder, times(1)).encodeNode("/foo", "bar");
   }
 }
