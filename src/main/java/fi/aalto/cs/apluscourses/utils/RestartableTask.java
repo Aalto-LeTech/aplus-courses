@@ -8,7 +8,7 @@ public class RestartableTask {
   private final @NotNull InterruptibleTask task;
   private final @Nullable Runnable onFinish;
   @Nullable
-  private Thread thread = null;
+  private InterruptingThread thread = null;
   @NotNull
   private final Object lock = new Object();
 
@@ -28,29 +28,36 @@ public class RestartableTask {
   /**
    * Call this to (re-)start the task.
    */
-  public void restart() {
+  public Thread restart() {
     synchronized (lock) {
       thread = new InterruptingThread(thread);
       thread.start();
+      return thread;
+    }
+  }
+
+  private static void interruptAndJoin(@Nullable InterruptingThread thread) throws InterruptedException {
+    if (thread != null) {
+      interruptAndJoin(thread.previous);
+      thread.interrupt();
+      thread.join();
     }
   }
 
   private class InterruptingThread extends Thread {
 
     @Nullable
-    private final Thread previous;
+    private volatile InterruptingThread previous;
 
-    public InterruptingThread(@Nullable Thread previous) {
+    public InterruptingThread(@Nullable InterruptingThread previous) {
       this.previous = previous;
     }
 
     @Override
     public void run() {
       try {
-        if (previous != null) {
-          previous.interrupt();
-          previous.join();
-        }
+        interruptAndJoin(previous);
+        previous = null;
         task.run();
         if (done() && onFinish != null) {
           onFinish.run();
