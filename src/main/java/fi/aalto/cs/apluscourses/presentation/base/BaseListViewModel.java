@@ -5,7 +5,6 @@ import fi.aalto.cs.apluscourses.presentation.filter.FilterEngine;
 import fi.aalto.cs.apluscourses.presentation.filter.Filterable;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import fi.aalto.cs.apluscourses.utils.CollectionUtil;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
