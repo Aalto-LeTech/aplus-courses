@@ -89,11 +89,14 @@ public class APlusAuthenticationView extends DialogWrapper implements Dialog {
         lastValidationResult = new ValidationInfo(getText("ui.authenticationView.connectionError"),
             inputField).withOKEnabled();
       } finally {
-        enableDialog(true);
-        showValidationResult(lastValidationResult);
-        if (lastValidationResult == null) {
-          ApplicationManager.getApplication().invokeLater(() -> close(OK_EXIT_CODE), ModalityState.any());
-        }
+        final ValidationInfo finalLastValidationResult = lastValidationResult;
+        ApplicationManager.getApplication().invokeLater(() -> {
+          enableDialog(true);
+          showValidationResult(finalLastValidationResult);
+          if (finalLastValidationResult == null) {
+            close(OK_EXIT_CODE);
+          }
+        }, ModalityState.any());
       }
     });
   }
