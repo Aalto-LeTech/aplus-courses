@@ -4,6 +4,8 @@ import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.BrowserUtil;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
@@ -13,6 +15,8 @@ import fi.aalto.cs.apluscourses.presentation.AuthenticationViewModel;
 import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.Executors;
 import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -45,9 +49,59 @@ public class APlusAuthenticationView extends DialogWrapper implements Dialog {
     init();
   }
 
+  private void enableDialog(boolean isEnabled) {
+    inputField.setEnabled(isEnabled);
+    setOKActionEnabled(isEnabled);
+    if (isEnabled) {
+      inputField.requestFocusInWindow();
+    }
+  }
+
+  private void showValidationResult(@Nullable ValidationInfo result) {
+    updateErrorInfo(result == null ? List.of() : List.of(result));
+  }
+
+  private void checkToken() {
+    logger.debug("Validating token");
+
+    if (inputField.getPassword().length == 0) {
+      enableDialog(true);
+      showValidationResult(new ValidationInfo(getText("ui.authenticationView.noEmptyToken"),
+          inputField).withOKEnabled());
+      return;
+    }
+
+    var input = inputField.getPassword();
+    authenticationViewModel.setToken(input);
+    authenticationViewModel.build();
+    Arrays.fill(input, '\0');
+
+    Executors.newSingleThreadExecutor().submit(() -> {
+      ValidationInfo lastValidationResult = null;
+      try {
+        authenticationViewModel.tryGetUser(authenticationViewModel.getAuthentication());
+      } catch (UnexpectedResponseException e) {
+        logger.warn("Invalid token while authenticating", e);
+        lastValidationResult = new ValidationInfo(getText("ui.authenticationView.invalidToken"),
+            inputField).withOKEnabled();
+      } catch (IOException e) {
+        logger.warn("Connection error while authenticating", e);
+        lastValidationResult = new ValidationInfo(getText("ui.authenticationView.connectionError"),
+            inputField).withOKEnabled();
+      } finally {
+        enableDialog(true);
+        showValidationResult(lastValidationResult);
+        if (lastValidationResult == null) {
+          ApplicationManager.getApplication().invokeLater(() -> close(OK_EXIT_CODE), ModalityState.any());
+        }
+      }
+    });
+  }
+
   @Override
   protected void doOKAction() {
-    doValidate();
+    enableDialog(false);
+    checkToken();
   }
 
   @NotNull
@@ -60,33 +114,6 @@ public class APlusAuthenticationView extends DialogWrapper implements Dialog {
   @Override
   protected JComponent createCenterPanel() {
     return basePanel;
-  }
-
-  @Nullable
-  @Override
-  protected ValidationInfo doValidate() {
-    logger.debug("Validating token");
-    if (inputField.getPassword().length == 0) {
-      return new ValidationInfo(getText("ui.authenticationView.noEmptyToken"),
-          inputField).withOKEnabled();
-    }
-    try {
-      var input = inputField.getPassword();
-      authenticationViewModel.setToken(input);
-      Arrays.fill(input, '\0');
-      authenticationViewModel.build();
-      authenticationViewModel.tryGetUser(authenticationViewModel.getAuthentication());
-    } catch (UnexpectedResponseException e) {
-      logger.warn("Invalid token while authenticating", e);
-      return new ValidationInfo(getText("ui.authenticationView.invalidToken"),
-          inputField).withOKEnabled();
-    } catch (IOException e) {
-      logger.warn("Connection error while authenticating", e);
-      return new ValidationInfo(getText("ui.authenticationView.connectionError"),
-          inputField).withOKEnabled();
-    }
-    super.doOKAction();
-    return null;
   }
 
   @Override
