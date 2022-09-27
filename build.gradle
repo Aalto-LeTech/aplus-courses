@@ -7,7 +7,7 @@ plugins {
     id 'jacoco'
 }
 
-def pluginVersion = '3.8'
+def pluginVersion = '3.9'
 
 def courseVersion = '1.0'
 
