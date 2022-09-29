@@ -11,8 +11,7 @@ Manual testing
 
 ### 0 Setup
 
-**0.1** Make sure you are using a clean installation of
-**IntelliJ IDEA Community** version **2021.2**.
+**0.1** Make sure you are using a clean installation of the latest version of **IntelliJ IDEA Community**.
 
 - You can download IntelliJ IDEA Community from https://www.jetbrains.com/idea/download.
 - In case you use an existing install of IntelliJ IDEA, you can use one of the following ways to restore to the default
@@ -26,10 +25,7 @@ Manual testing
 
 - In the popup window, choose **Restore and restart**.
 
-**0.2** When the IntelliJ IDEA opens first time, choose **Light** UI theme and click **Skip Remaining and Set Defaults**
-.
-
-**0.3** Remove installed external plugins, if there are any.
+**0.2** Remove installed external plugins, if there are any.
 
 - In the startup window, choose **Configure > Plugins** and open **Installed** tab.
 - If there are **Downloaded** plugins on the top of the list, uninstall all of them, one by one.
@@ -75,11 +71,11 @@ published version.
 
 **2.1** In the startup window, click **New Project**.
 
-**2.2** In **New Project** window, choose **A+ Project** on a left-hand side list.
+**2.2** In **New Project** window, choose **A+ Courses** on a left-hand side list.
 
 **2.3** Click **Next**.
 
-**2.4** On the next view, click **Finish**.
+**2.4** On the next view, click **Create**.
 
 **2.5** If the **Tip of the Day** window is shown, check **Don't show tips** and click **Close**.
 
@@ -89,17 +85,18 @@ published version.
 
 **2.8** ASSERTION: **Project SDK** reads **\<No SDK\>**.
 
-**2.9** Choose JDK 11 as **Project SDK**.
+**2.9** Choose JDK 17 as **Project SDK**.
 
-- If JDK 11 is not installed on the computer, choose **Add SDK > Download JDK...**
-- On the window that opens, choose **AdoptOpenJDK (HotSpot)** as **Vendor**
-  and **11.x.x** as **Version**, and click **Download**.
+- If JDK 17 is not installed on the computer, choose **Add SDK > Download JDK...**
+- On the window that opens, choose **Eclipse Temurin** as **Vendor**
+  and **17** as **Version**, and click **Download**.
 
 **2.10** Click **OK** to close **Project Structure** window.
 
 **2.11** Click the **A+ Courses** tab on the right.
 
-**2.12** ASSERTION: There should be 2 labels that inform the user to turn the project into an A+ Project.
+**2.12** ASSERTION: There should be a label that informs the user to turn the project into an A+ Project,
+as well as a button allowing user to do so.
 
 ### 3 About window
 
@@ -113,7 +110,7 @@ published version.
 
 **3.5** ASSERTION: Each linked page opens in the browser and is relevant.
 
-**3.6** Close the window by clicking **OK**.
+**3.6** Close the window by clicking **Close**.
 
 ### 4 Turn project into A+ project
 
@@ -157,11 +154,12 @@ published version.
 
 **4.18** The IDE restarts.
 
-**4.19** ASSERTION: The theme has changed to dark.
+**4.19** ASSERTION: The theme has changed to dark (if it wasn't already dark).
 
 **4.20** Click the **A+ Courses** tab on the right.
 
-**4.21** ASSERTION: There should be one label inside the Assignments view informing the user to set the A+ Token.
+**4.21** ASSERTION: There should be a label inside the Assignments view informing the user to set the A+ Token,
+as well as two buttons: **Set A+ Token** and **Modules**.
 
 ### 5 Installing modules
 
