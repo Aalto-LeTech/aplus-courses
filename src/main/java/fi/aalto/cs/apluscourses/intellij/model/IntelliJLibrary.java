@@ -73,6 +73,7 @@ public abstract class IntelliJLibrary
 
     library.commit();
     libraryTable.commit();
+    VirtualFileManager.getInstance().syncRefresh();
   }
 
   @Override
