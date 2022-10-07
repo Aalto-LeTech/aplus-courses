@@ -43,11 +43,11 @@ public class SubmissionStatusUpdater {
 
   private long totalTime;
 
-  // 10 seconds in milliseconds
-  private static final long DEFAULT_INTERVAL = 10L * 1000;
-
   // 5 seconds in milliseconds
-  private static final long DEFAULT_INCREMENT = 5L * 1000;
+  private static final long DEFAULT_INTERVAL = 5L * 1000;
+
+  // 2 seconds in milliseconds
+  private static final long DEFAULT_INCREMENT = 2L * 1000;
 
   // 3 minutes in milliseconds
   private static final long DEFAULT_TIME_LIMIT = 3L * 60 * 1000;
