@@ -76,13 +76,11 @@ public class ExercisesUpdater extends RepeatedTask {
     try {
       progress.increment();
       if (Thread.interrupted()) {
-        progress.finish();
         return;
       }
       var exerciseGroups = dataSource.getExerciseGroups(course, authentication);
       logger.info("Exercise groups count: {}", exerciseGroups.size());
       if (Thread.interrupted()) {
-        progress.finish();
         return;
       }
       progress.increment();
@@ -97,7 +95,6 @@ public class ExercisesUpdater extends RepeatedTask {
 
       addDummySubmissionResults(exerciseGroups, points);
       if (Thread.interrupted()) {
-        progress.finish();
         return;
       }
 
@@ -105,7 +102,6 @@ public class ExercisesUpdater extends RepeatedTask {
           + exercisesToBeLoadedCount(exerciseGroups));
       addExercises(exerciseGroups, points, authentication, progress);
 
-      progress.finish();
       if (Thread.interrupted()) {
         return;
       }
@@ -113,13 +109,10 @@ public class ExercisesUpdater extends RepeatedTask {
       eventToTrigger.trigger();
       logger.debug("Exercises update done");
     } catch (IOException e) {
-      var mainVm = PluginSettings
-          .getInstance()
-          .getMainViewModel(courseProject.getProject());
-      var cardVm = mainVm.toolWindowCardViewModel;
-      cardVm.setAuthenticated(false);
-      progress.finish();
+      logger.warn("Network error during exercise update", e);
       notifier.notify(new NetworkErrorNotification(e), courseProject.getProject());
+    } finally {
+      progress.finish();
     }
   }
 
