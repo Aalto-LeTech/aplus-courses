@@ -214,7 +214,7 @@ public class CoursesClient {
       authentication.addToRequest(request);
     }
 
-    HttpResponse response = createClient().execute(request);
+    HttpResponse response = getClient().execute(request);
     requireSuccessStatusCode(response);
     return mapper.map(response);
   }
@@ -239,7 +239,7 @@ public class CoursesClient {
    */
   private static <T> T mapResponse(@NotNull HttpUriRequest request,
                                    @NotNull ResponseMapper<T> mapper) throws IOException {
-    HttpResponse response = createClient().execute(request);
+    HttpResponse response = getClient().execute(request);
     requireSuccessStatusCode(response);
     return mapper.map(response);
   }
@@ -250,7 +250,7 @@ public class CoursesClient {
    */
   private static void consumeResponse(@NotNull HttpUriRequest request,
                                       @NotNull ResponseConsumer consumer) throws IOException {
-    HttpResponse response = createClient().execute(request);
+    HttpResponse response = getClient().execute(request);
     requireSuccessStatusCode(response);
     consumer.consume(response);
   }
@@ -304,7 +304,7 @@ public class CoursesClient {
   }
 
   @NotNull
-  private static synchronized HttpClient createClient() {
+  private static synchronized HttpClient getClient() {
     if (httpClient == null) {
       httpClient = HttpClients.custom().setUserAgent(getUserAgent()).build();
     }
