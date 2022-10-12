@@ -15,7 +15,7 @@
     ]]></description>
 
     <change-notes>
-        Quality of life fixes for O1 2022 students.
+        Network-related bug fixed and performance improvements.
     </change-notes>
 
     <depends>com.intellij.modules.java</depends>
