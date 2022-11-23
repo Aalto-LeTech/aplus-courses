@@ -5,7 +5,7 @@
             url="https://research.cs.aalto.fi/LeTech/">LeTech Group at Aalto University
     </vendor>
     <!--  this is the range of supported IntelliJ IDEA version the plugin can be used with  -->
-    <idea-version since-build="213.5744.223"/>
+    <idea-version since-build="222.2680.4"/>
 
     <description><![CDATA[
     This plugin supports the educational use of IntelliJ IDEA (and its Scala plugin) in programming
@@ -51,10 +51,6 @@
                     class="fi.aalto.cs.apluscourses.intellij.actions.APlusAuthenticationAction"
                     text="Set A+ Token"
                     description="Set an access token for submitting assignments to A+."/>
-            <!--            <action id="fi.aalto.cs.apluscourses.intellij.actions.ResetProjectAction"-->
-            <!--                    class="fi.aalto.cs.apluscourses.intellij.actions.ResetProjectAction"-->
-            <!--                    text="Reset A+ Project"-->
-            <!--                    description="Resets the open A+ course project."/>-->
             <separator/>
             <action id="fi.aalto.cs.apluscourses.intellij.actions.ExportModuleAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.ExportModuleAction"

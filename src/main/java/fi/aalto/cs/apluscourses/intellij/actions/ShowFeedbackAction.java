@@ -25,7 +25,6 @@ import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jsoup.Jsoup;
-import org.jsoup.safety.Cleaner;
 import org.jsoup.safety.Safelist;
 import org.jsoup.safety.Whitelist;
 
@@ -122,7 +121,7 @@ public class ShowFeedbackAction extends AnAction {
               .replaceAll("TEXT_COLOR", textColorString)
               .replaceAll("BG_COLOR", backgroundColorString)
               .replaceAll("FONT_NAME", fontName),
-          Whitelist.none())
+          Safelist.none())
           + "</style>");
 
       var fileEditorManager = FileEditorManager.getInstance(project);
