@@ -22,7 +22,6 @@ repositories {
 }
 
 dependencies {
-    implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
     implementation group: 'net.lingala.zip4j', name: 'zip4j', version: '2.11.2'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.9.1'
     test.useJUnitPlatform()
@@ -39,7 +38,7 @@ dependencies {
 
 intellij {
     // this is the version of the IntelliJ IDEA API (SDK) used to build the plugin
-    version = '221.5080.210'
+    version = '222.4345.14'
     updateSinceUntilBuild = false
     plugins = ['java', 'org.intellij.scala:2022.1.13']
 }

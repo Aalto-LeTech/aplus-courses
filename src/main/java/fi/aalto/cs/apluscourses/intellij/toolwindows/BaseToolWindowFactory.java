@@ -16,7 +16,7 @@ public abstract class BaseToolWindowFactory implements ToolWindowFactory {
   @Override
   public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
     JComponent component = createToolWindowContentInternal(project);
-    ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
+    ContentFactory contentFactory = ContentFactory.getInstance();
     Content content = contentFactory.createContent(component, "", true);
     toolWindow.getContentManager().addContent(content);
     ActionManager actionManager = ActionManager.getInstance();
