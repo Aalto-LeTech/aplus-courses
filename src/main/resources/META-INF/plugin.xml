@@ -15,7 +15,7 @@
     ]]></description>
 
     <change-notes>
-        Network-related bug fixed and performance improvements.
+        Improved compatibility with the latest IntelliJ update.
     </change-notes>
 
     <depends>com.intellij.modules.java</depends>
