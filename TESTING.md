@@ -112,15 +112,15 @@ as well as a button allowing user to do so.
 
 **3.6** Close the window by clicking **Close**.
 
-### 4 Turn project into A+ project
+### 4 Link project to an A+ Course
 
-**4.1** From the main menu, choose **A+ > Turn project into A+ course project**.
+**4.1** From the main menu, choose **A+ > Link Project to an A+ Course**.
 
 **4.2** On the dialog that opens, click **Cancel**.
 
 **4.3** ASSERTION: The dialog closes and nothing else seems to happen.
 
-**4.4** Open **A+ > Turn project into A+ course project** again.
+**4.4** Open **A+ > Link Project to an A+ Course** again.
 
 **4.5** ASSERTION: You see a course selection dialog.
 
@@ -142,7 +142,7 @@ as well as a button allowing user to do so.
 
 **4.12** ASSERTION: **O1Library** is marked **Installed** in **Modules** list.
 
-**4.13** Once again, navigate to **A+ > Turn project into A+ course project**.
+**4.13** Once again, navigate to **A+ > Link Project to an A+ Course**.
 
 **4.14** ASSERTION: this time the course selection dialog isn't shown, since the project is already a course project.
 
