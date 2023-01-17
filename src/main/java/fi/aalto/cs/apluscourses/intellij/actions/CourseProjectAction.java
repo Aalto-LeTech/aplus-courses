@@ -88,8 +88,8 @@ public class CourseProjectAction extends AnAction {
       "https://version.aalto.fi/gitlab/aplus-courses/course-config-urls/-/raw/main/courses.yaml";
 
   private static final List<CourseItemViewModel> FALLBACK_COURSES = List.of(
-      new CourseItemViewModel("Ohjelmointistudio 2 / Programming Studio A", "Spring 2022",
-          "https://gitmanager.cs.aalto.fi/static/studio2_k2022dev2-horrible-gitmanager-interface/projects/s2_course_config.json"),
+      new CourseItemViewModel("Ohjelmointistudio 2 / Programming Studio A", "Spring 2023",
+          "https://gitmanager.cs.aalto.fi/static/studios-spring-2023/modules/s2_course_config.json"),
       new CourseItemViewModel("O1", "Fall 2022",
           "https://gitmanager.cs.aalto.fi/static/O1_2022/modules/o1_course_config.json")
   );
