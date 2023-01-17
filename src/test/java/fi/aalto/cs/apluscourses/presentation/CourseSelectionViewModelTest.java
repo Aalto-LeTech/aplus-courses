@@ -10,8 +10,8 @@ class CourseSelectionViewModelTest {
   void testCourseSelectionViewModel() {
     CourseSelectionViewModel viewModel = new CourseSelectionViewModel();
     viewModel.courses.set(new CourseItemViewModel[] {
-        new CourseItemViewModel("A", "A", "http://example.com"),
-        new CourseItemViewModel("B", "B", "http://example.com")
+        new CourseItemViewModel("A", "A", "http://example.com", null),
+        new CourseItemViewModel("B", "B", "http://example.com", "Scala")
     });
 
     Assertions.assertTrue(Objects.requireNonNull(viewModel.selectedCourseUrl.get()).isEmpty(),
@@ -20,6 +20,8 @@ class CourseSelectionViewModelTest {
         "The view model contains the given courses");
     Assertions.assertEquals("B", Objects.requireNonNull(viewModel.courses.get())[1].getName(),
         "The view model contains the given courses");
+    Assertions.assertEquals(CourseItemViewModel.ProgrammingLanguage.Scala, Objects.requireNonNull(
+        viewModel.courses.get())[1].getLanguage());
   }
 
   @Test

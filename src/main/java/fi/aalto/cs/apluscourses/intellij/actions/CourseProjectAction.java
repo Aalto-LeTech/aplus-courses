@@ -89,9 +89,9 @@ public class CourseProjectAction extends AnAction {
 
   private static final List<CourseItemViewModel> FALLBACK_COURSES = List.of(
       new CourseItemViewModel("Ohjelmointistudio 2 / Programming Studio A", "Spring 2023",
-          "https://gitmanager.cs.aalto.fi/static/studios-spring-2023/modules/s2_course_config.json"),
+          "https://gitmanager.cs.aalto.fi/static/studios-spring-2023/modules/s2_course_config.json", "Scala"),
       new CourseItemViewModel("O1", "Fall 2022",
-          "https://gitmanager.cs.aalto.fi/static/O1_2022/modules/o1_course_config.json")
+          "https://gitmanager.cs.aalto.fi/static/O1_2022/modules/o1_course_config.json", "Scala")
   );
 
   /**
