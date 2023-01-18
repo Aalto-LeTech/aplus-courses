@@ -30,4 +30,10 @@ public class DualCache<K, V> implements Cache<K, V> {
   public void putValue(K key, V value, @NotNull CachePreference cachePreference) {
     getAppropriateCache(cachePreference).putValue(key, value, cachePreference);
   }
+
+  @Override
+  public void clearAll() {
+    longTimeCache.clearAll();
+    shortTimeCache.clearAll();
+  }
 }

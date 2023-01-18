@@ -132,6 +132,11 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
     return getPaginatedResults(url, authentication, Group::fromJsonObject);
   }
 
+  @Override
+  public void clearCache() {
+    client.clearCache();
+  }
+
   /**
    * Get all of the exercise groups in the given course by making a request to the A+ API.
    *
@@ -397,6 +402,11 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
     @Override
     public ZonedDateTime parseEndingTime(@NotNull JSONObject object) {
       return ZonedDateTime.parse(object.getString("ending_time"));
+    }
+
+    @Override
+    public void clearCache() {
+      cache.clearAll();
     }
   }
 }

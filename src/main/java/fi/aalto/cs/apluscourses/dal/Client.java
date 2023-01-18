@@ -22,4 +22,6 @@ public interface Client {
   String post(@NotNull String url,
               @NotNull Authentication authentication,
               @NotNull Map<String, Object> data) throws IOException;
+
+  default void clearCache() {}
 }

@@ -33,6 +33,9 @@ public class RefreshExercisesAction extends DumbAwareAction {
     if (courseProject == null) {
       return;
     }
+    if (e.getInputEvent().isShiftDown()) {
+      courseProject.getCourse().getExerciseDataSource().clearCache();
+    }
     courseProject.getExercisesUpdater().restart();
   }
 }
