@@ -76,7 +76,7 @@
                description="Actions for A+ news">
             <action id="fi.aalto.cs.apluscourses.intellij.actions.ReadAllNewsAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.ReadAllNewsAction"
-                    text="Mark All News As Read"
+                    text="Mark All News as Read"
                     icon="PluginIcons.A_PLUS_CHECKED"/>
             <action id="fi.aalto.cs.apluscourses.intellij.actions.NewsRefreshAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.RefreshModulesAction"
@@ -118,7 +118,7 @@
                     icon="PluginIcons.A_PLUS_START"/>
             <action id="fi.aalto.cs.apluscourses.intellij.actions.OpenExerciseItemAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.OpenExerciseItemAction"
-                    text="Open In Browser"
+                    text="Open in Browser"
                     icon="PluginIcons.A_PLUS_BROWSE"/>
             <action id="fi.aalto.cs.apluscourses.intellij.actions.ShowFeedbackAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.ShowFeedbackAction"
@@ -126,13 +126,13 @@
                     icon="PluginIcons.A_PLUS_FEEDBACK"/>
             <action id="fi.aalto.cs.apluscourses.intellij.actions.ExercisesRefreshAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.RefreshExercisesAction"
-                    text="Refresh Assignments"
+                    text="Refresh Assignments&lt;br&gt;(hold Shift to purge cache)"
                     icon="PluginIcons.A_PLUS_REFRESH"/>
             <group id="fi.aalto.cs.apluscourses.intellij.actions.OptionsActionGroup.ForExercises"
-                   class="fi.aalto.cs.apluscourses.intellij.actions.APlusOptionsActionGroup$ForExercises"
-                   popup="true"
-                   text="Filter Assignments"
-                   icon="PluginIcons.A_PLUS_FILTER">
+                    class="fi.aalto.cs.apluscourses.intellij.actions.APlusOptionsActionGroup$ForExercises"
+                    popup="true"
+                    text="Filter Assignments"
+                    icon="PluginIcons.A_PLUS_FILTER">
             </group>
             <separator/>
             <action id="fi.aalto.cs.apluscourses.intellij.actions.SelectStudentAction"
