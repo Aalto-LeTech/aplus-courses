@@ -4,9 +4,13 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAwareAction;
 import fi.aalto.cs.apluscourses.intellij.services.CourseProjectProvider;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
+import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
 
 public class RefreshExercisesAction extends DumbAwareAction {
+
+  private static final Logger logger = APlusLogger.logger;
 
   @NotNull
   private final CourseProjectProvider courseProjectProvider;
@@ -34,6 +38,7 @@ public class RefreshExercisesAction extends DumbAwareAction {
       return;
     }
     if (e.getInputEvent().isShiftDown()) {
+      logger.info("Requested manual cache purge");
       courseProject.getCourse().getExerciseDataSource().clearCache();
     }
     courseProject.getExercisesUpdater().restart();
