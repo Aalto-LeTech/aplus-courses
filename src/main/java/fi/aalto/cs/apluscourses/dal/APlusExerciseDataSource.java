@@ -68,8 +68,9 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   /**
    * Default constructor.
    */
-  public APlusExerciseDataSource(@NotNull String apiUrl, @NotNull Path cacheFile) {
+  public APlusExerciseDataSource(@NotNull String apiUrl, @NotNull Path cacheFile, long courseLastModified) {
     var dataAccess = new DefaultDataAccess(new DualCache<>(new JsonFileCache(cacheFile)));
+    dataAccess.updateCacheExpiration(courseLastModified);
     this.client = dataAccess;
     this.parser = dataAccess;
     this.apiUrl = apiUrl;
@@ -135,6 +136,11 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   @Override
   public void clearCache() {
     client.clearCache();
+  }
+
+  @Override
+  public void updateCacheExpiration(long courseLastModified) {
+    client.updateCacheExpiration(courseLastModified);
   }
 
   /**
@@ -407,6 +413,11 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
     @Override
     public void clearCache() {
       cache.clearAll();
+    }
+
+    @Override
+    public void updateCacheExpiration(long courseLastModified) {
+      cache.updateExpirationTimestamp(courseLastModified);
     }
   }
 }

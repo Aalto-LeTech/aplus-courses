@@ -68,4 +68,6 @@ public interface ExerciseDataSource {
       throws IOException;
 
   default void clearCache() {}
+
+  default void updateCacheExpiration(long courseLastModified) {}
 }

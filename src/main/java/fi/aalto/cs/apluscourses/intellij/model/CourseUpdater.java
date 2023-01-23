@@ -98,7 +98,7 @@ public class CourseUpdater extends RepeatedTask {
     var progressViewModel =
         PluginSettings.getInstance().getMainViewModel(project).progressViewModel;
     var progress =
-        progressViewModel.start(2, getText("ui.ProgressBarView.refreshingCourse"), false);
+        progressViewModel.start(3, getText("ui.ProgressBarView.refreshingCourse"), false);
     var selectedLanguage = PluginSettings
         .getInstance()
         .getCourseFileManager(project).getLanguage();
@@ -116,7 +116,16 @@ public class CourseUpdater extends RepeatedTask {
       return;
     }
     progress.increment();
-    updateModules(fetchModulesInfo());
+    JSONObject newCourseConfig = null;
+    try {
+      newCourseConfig = fetchCourseConfiguration();
+    } catch (IOException e) {
+      progress.finish();
+      return;
+    }
+    progress.increment();
+    updateModules(fetchModulesInfo(newCourseConfig));
+    course.getExerciseDataSource().updateCacheExpiration(newCourseConfig.optLong("courseLastModified"));
     if (Thread.interrupted()) {
       progress.finish();
       return;
@@ -126,12 +135,15 @@ public class CourseUpdater extends RepeatedTask {
     eventToTrigger.trigger();
   }
 
-  private Map<URI, ModuleInfo> fetchModulesInfo() {
+  private @NotNull JSONObject fetchCourseConfiguration() throws IOException {
+    var inputStream = configurationFetcher.fetch(courseUrl);
+    var tokenizer = new JSONTokener(inputStream);
+    return new JSONObject(tokenizer);
+  }
+
+  private Map<URI, ModuleInfo> fetchModulesInfo(JSONObject courseConfiguration) {
     try {
-      var inputStream = configurationFetcher.fetch(courseUrl);
-      var tokenizer = new JSONTokener(inputStream);
-      var object = new JSONObject(tokenizer);
-      var array = object.getJSONArray("modules");
+      var array = courseConfiguration.getJSONArray("modules");
       // The equals and hashCode methods of the URL class can cause DNS lookups, so URI instances
       // are preferred in maps.
       Map<URI, ModuleInfo> mapping = new HashMap<>();

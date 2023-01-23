@@ -89,6 +89,8 @@ public abstract class Course implements ComponentSource {
   @Nullable
   private final String newsParser;
 
+  private long courseLastModified;
+
   /**
    * Constructs a course with the given parameters.
    *
@@ -115,7 +117,8 @@ public abstract class Course implements ComponentSource {
                    @NotNull Version courseVersion,
                    @NotNull Map<Long, Tutorial> tutorials,
                    @Nullable String feedbackParser,
-                   @Nullable String newsParser) {
+                   @Nullable String newsParser,
+                   long courseLastModified) {
     this.id = id;
     this.name = name;
     this.aplusUrl = aplusUrl;
@@ -135,6 +138,7 @@ public abstract class Course implements ComponentSource {
     this.replInitialCommands = replInitialCommands;
     this.replAdditionalArguments = replAdditionalArguments;
     this.courseVersion = courseVersion;
+    this.courseLastModified = courseLastModified;
   }
 
   @NotNull
@@ -193,6 +197,7 @@ public abstract class Course implements ComponentSource {
     Map<Long, Tutorial> tutorials = getTutorials(jsonObject);
     String feedbackParser = jsonObject.optString("feedbackParser", null);
     String newsParser = jsonObject.optString("newsParser", null);
+    long courseLastModified = jsonObject.optLong("courseLastModified");
     return factory.createCourse(
         courseId,
         courseName,
@@ -210,7 +215,8 @@ public abstract class Course implements ComponentSource {
         courseVersion,
         tutorials,
         feedbackParser,
-        newsParser
+        newsParser,
+        courseLastModified
     );
   }
 

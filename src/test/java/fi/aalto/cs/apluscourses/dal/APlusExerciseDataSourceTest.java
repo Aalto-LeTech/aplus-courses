@@ -54,7 +54,7 @@ class APlusExerciseDataSourceTest {
   @Test
   void testDefaultConstructor() {
     var exerciseDataSource = new APlusExerciseDataSource(
-        url, Paths.get(FileUtilRt.getTempDirectory()));
+        url, Paths.get(FileUtilRt.getTempDirectory()), 0);
     Assertions.assertEquals(url, exerciseDataSource.getApiUrl());
     Assertions.assertTrue(exerciseDataSource.getClient() instanceof APlusExerciseDataSource.DefaultDataAccess);
     Assertions.assertTrue(exerciseDataSource.getParser() instanceof APlusExerciseDataSource.DefaultDataAccess);

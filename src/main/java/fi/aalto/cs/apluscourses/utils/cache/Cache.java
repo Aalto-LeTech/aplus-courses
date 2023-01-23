@@ -9,4 +9,6 @@ public interface Cache<K, V> {
   void putValue(K key, V value, @NotNull CachePreference cachePreference);
 
   void clearAll();
+
+  void updateExpirationTimestamp(long expirationTimestamp);
 }
