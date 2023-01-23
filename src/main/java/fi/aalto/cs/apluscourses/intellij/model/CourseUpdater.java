@@ -119,7 +119,7 @@ public class CourseUpdater extends RepeatedTask {
     JSONObject newCourseConfig = null;
     try {
       newCourseConfig = fetchCourseConfiguration();
-    } catch (IOException e) {
+    } catch (JSONException | IOException e) {
       progress.finish();
       return;
     }
