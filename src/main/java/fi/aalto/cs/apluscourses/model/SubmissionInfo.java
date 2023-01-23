@@ -41,8 +41,8 @@ public class SubmissionInfo {
 
     for (int i = 0; i < formSpec.length(); ++i) {
       JSONObject spec = formSpec.getJSONObject(i);
-      String type = spec.getString("type");
-      if (!type.equals("file")) {
+      String type = spec.optString("type");
+      if (!"file".equals(type)) {
         continue;
       }
 
