@@ -9,7 +9,7 @@ Troubleshooting the plugin
 
 **2.** create a new project: [**File -> New -> Project...** and then **Empty Project**](https://plus.cs.aalto.fi/o1/2020/w01/ch02/#launch-intellij).
 
-**3.** Turn project into an A+ Project: [**A+ -> Turn Project Into A+ Project**](https://plus.cs.aalto.fi/o1/2020/w01/ch02/#the-a-courses-plugin) (and choose the rest of the settings asked for in the pop-up dialog).
+**3.** Link project to an A+ Course: [**A+ -> Link Project to an A+ Course**](https://plus.cs.aalto.fi/o1/2020/w01/ch02/#the-a-courses-plugin) (and choose the rest of the settings asked for in the pop-up dialog).
 
 **4.** check the IDE for not having errors (you **should not** see the blinking red icon in the bottom-right corner as shown). If there are errors, please share the "stacktrace" text with the course staff.
 
