@@ -49,4 +49,11 @@ public class CacheImpl<K, V> implements Cache<K, V> {
       putEntry(key, new CacheEntry<>(value));
     }
   }
+
+  @Override
+  public void clearAll() {
+    synchronized (lock) {
+      entries.clear();
+    }
+  }
 }

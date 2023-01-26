@@ -66,4 +66,6 @@ public interface ExerciseDataSource {
   @Nullable
   String submit(@NotNull Submission submission, @NotNull Authentication authentication)
       throws IOException;
+
+  default void clearCache() {}
 }

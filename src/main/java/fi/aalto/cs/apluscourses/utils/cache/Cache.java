@@ -7,4 +7,6 @@ public interface Cache<K, V> {
   @Nullable V getValue(K key, @NotNull CachePreference cachePreference);
 
   void putValue(K key, V value, @NotNull CachePreference cachePreference);
+
+  void clearAll();
 }
