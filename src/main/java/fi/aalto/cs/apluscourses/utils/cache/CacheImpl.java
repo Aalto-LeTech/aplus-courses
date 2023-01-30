@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 public class CacheImpl<K, V> implements Cache<K, V> {
   private @NotNull Map<K, CacheEntry<V>> entries = new HashMap<>();
   private final @NotNull Object lock = new Object();
+  private long expirationTimestamp = 0;
 
   @Nullable
   protected CacheEntry<V> getEntry(K key) {
@@ -40,6 +41,7 @@ public class CacheImpl<K, V> implements Cache<K, V> {
     var entry = getEntry(key);
     return entry == null
         || entry.getCreationTime().plus(cachePreference.allowedCacheAge).isBefore(ZonedDateTime.now())
+        || entry.getCreationTime().toEpochSecond() < expirationTimestamp
         ? null : entry.getValue();
   }
 
@@ -55,5 +57,10 @@ public class CacheImpl<K, V> implements Cache<K, V> {
     synchronized (lock) {
       entries.clear();
     }
+  }
+
+  @Override
+  public void updateExpirationTimestamp(long expirationTimestamp) {
+    this.expirationTimestamp = expirationTimestamp;
   }
 }

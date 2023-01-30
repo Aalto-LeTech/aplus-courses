@@ -24,4 +24,6 @@ public interface Client {
               @NotNull Map<String, Object> data) throws IOException;
 
   default void clearCache() {}
+
+  default void updateCacheExpiration(long courseLastModified) {}
 }

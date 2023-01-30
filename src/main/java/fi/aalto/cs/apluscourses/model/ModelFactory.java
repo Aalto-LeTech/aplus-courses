@@ -26,7 +26,8 @@ public interface ModelFactory {
                       @NotNull Version courseVersion,
                       @NotNull Map<Long, Tutorial> tutorials,
                       @Nullable String feedbackParser,
-                      @NotNull String newsParser);
+                      @NotNull String newsParser,
+                      long courseLastModified);
 
   Module createModule(@NotNull String name, @NotNull URL url, @NotNull Version version,
                       @NotNull String changelog);

@@ -65,7 +65,8 @@ public class IntelliJCourse extends Course {
                         @NotNull CommonLibraryProvider commonLibraryProvider,
                         @NotNull Map<Long, Tutorial> tutorials,
                         @Nullable String feedbackParser,
-                        @Nullable String newsParser) {
+                        @Nullable String newsParser,
+                        long courseLastModified) {
     super(
         id,
         name,
@@ -83,13 +84,14 @@ public class IntelliJCourse extends Course {
         courseVersion,
         tutorials,
         feedbackParser,
-        newsParser);
+        newsParser,
+        courseLastModified);
 
     this.project = project;
     this.commonLibraryProvider = commonLibraryProvider;
     this.platformListener = new PlatformListener();
     this.exerciseDataSource = new APlusExerciseDataSource(getApiUrl(), project.getBasePath()
-        .resolve(Paths.get(Project.DIRECTORY_STORE_FOLDER, "a-plus-cache.json")));
+        .resolve(Paths.get(Project.DIRECTORY_STORE_FOLDER, "a-plus-cache.json")), courseLastModified);
   }
 
   @NotNull

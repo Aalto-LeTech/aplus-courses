@@ -36,4 +36,10 @@ public class DualCache<K, V> implements Cache<K, V> {
     longTimeCache.clearAll();
     shortTimeCache.clearAll();
   }
+
+  @Override
+  public void updateExpirationTimestamp(long expirationTimestamp) {
+    longTimeCache.updateExpirationTimestamp(expirationTimestamp);
+    shortTimeCache.updateExpirationTimestamp(expirationTimestamp);
+  }
 }
