@@ -126,7 +126,7 @@
                     icon="PluginIcons.A_PLUS_FEEDBACK"/>
             <action id="fi.aalto.cs.apluscourses.intellij.actions.ExercisesRefreshAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.RefreshExercisesAction"
-                    text="Refresh Assignments&lt;br&gt;(hold Shift to purge cache)"
+                    text="Refresh Assignments"
                     icon="PluginIcons.A_PLUS_REFRESH"/>
             <group id="fi.aalto.cs.apluscourses.intellij.actions.OptionsActionGroup.ForExercises"
                     class="fi.aalto.cs.apluscourses.intellij.actions.APlusOptionsActionGroup$ForExercises"
