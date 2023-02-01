@@ -84,8 +84,8 @@ public class IntelliJCourse extends Course {
         courseVersion,
         tutorials,
         feedbackParser,
-        newsParser,
-        courseLastModified);
+        newsParser
+    );
 
     this.project = project;
     this.commonLibraryProvider = commonLibraryProvider;

@@ -155,7 +155,7 @@ public class ModelExtensions {
       super(id, name, aplusUrl, languages, modules, libraries, exerciseModules, resourceUrls, vmOptions,
           optionalCategories, autoInstallComponentNames, replInitialCommands,
           replAdditionalArguments, courseVersion, tutorials, null,
-          "default", 0);
+          "default");
       exerciseDataSource = new TestExerciseDataSource();
     }
 
@@ -198,7 +198,7 @@ public class ModelExtensions {
           // courseVersion
           BuildInfo.INSTANCE.courseVersion,
           // tutorials
-          Collections.emptyMap(), null, "default", 0);
+          Collections.emptyMap(), null, "default");
       this.exerciseDataSource = exerciseDataSource;
     }
 
