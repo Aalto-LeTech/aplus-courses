@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAwareAction;
 import fi.aalto.cs.apluscourses.intellij.services.CourseProjectProvider;
@@ -27,6 +29,9 @@ public class RefreshExercisesAction extends DumbAwareAction {
   public void update(@NotNull AnActionEvent e) {
     var project = e.getProject();
     var courseProject = courseProjectProvider.getCourseProject(project);
+    if (e.isFromActionToolbar()) {
+      e.getPresentation().setText(getText("intellij.actions.RefreshExerciseAction.tooltip"));
+    }
     e.getPresentation().setEnabled(
         project != null && courseProject != null && courseProject.getAuthentication() != null);
   }
@@ -37,7 +42,8 @@ public class RefreshExercisesAction extends DumbAwareAction {
     if (courseProject == null) {
       return;
     }
-    if (e.getInputEvent().isShiftDown()) {
+    var inputEvent = e.getInputEvent();
+    if (inputEvent != null && inputEvent.isShiftDown()) {
       logger.info("Requested manual cache purge");
       courseProject.getCourse().getExerciseDataSource().clearCache();
     }
