@@ -21,6 +21,6 @@ public class ProjectViewUtil {
                                              @NotNull Project project) {
     FileTypeManager fileTypeManager = FileTypeManager.getInstance();
     WriteCommandAction.runWriteCommandAction(project, () -> fileTypeManager
-        .setIgnoredFilesList(fileTypeManager.getIgnoredFilesList() + ignoredFileName + ";"));
+        .setIgnoredFilesList(fileTypeManager.getIgnoredFilesList() + ";" + ignoredFileName));
   }
 }
