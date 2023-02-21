@@ -29,9 +29,11 @@ import fi.aalto.cs.apluscourses.ui.InstallerDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogsImpl;
 import fi.aalto.cs.apluscourses.ui.ideactivities.ComponentDatabase;
+import fi.aalto.cs.apluscourses.ui.utils.PluginInstallerCallback;
 import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
+import fi.aalto.cs.apluscourses.utils.PluginAutoInstaller;
 import fi.aalto.cs.apluscourses.utils.PostponedRunnable;
 import fi.aalto.cs.apluscourses.utils.Version;
 import fi.aalto.cs.apluscourses.utils.async.SimpleAsyncTaskManager;
@@ -172,6 +174,9 @@ public class CourseProjectAction extends AnAction {
     if (course == null) {
       return;
     }
+
+    PluginAutoInstaller.ensureDependenciesInstalled(project, notifier, List.of("PythonCore", "org.intellij.scala"),
+        (x) -> PluginInstallerCallback.ConsentResult.ACCEPTED);
 
     var version = BuildInfo.INSTANCE.courseVersion;
     var versionComparison = version.compareTo(course.getVersion());
