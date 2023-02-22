@@ -23,8 +23,10 @@ import fi.aalto.cs.apluscourses.intellij.utils.ProjectViewUtil;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationException;
 import fi.aalto.cs.apluscourses.model.UnexpectedResponseException;
+import fi.aalto.cs.apluscourses.ui.utils.PluginInstallerCallback;
 import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
+import fi.aalto.cs.apluscourses.utils.PluginAutoInstaller;
 import fi.aalto.cs.apluscourses.utils.Version;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
@@ -97,10 +99,13 @@ public class InitializationActivity implements Background {
 
       return;
     }
-    var progress = progressViewModel.start(3, getText("ui.ProgressBarView.loading"), false);
+    var progress = progressViewModel.start(4, getText("ui.ProgressBarView.loading"), false);
     progress.increment();
 
     importSettings(project, course);
+    progress.increment();
+
+    PluginAutoInstaller.ensureDependenciesInstalled(project, notifier, course.getRequiredPlugins(), (x) -> PluginInstallerCallback.ConsentResult.ACCEPTED);
     progress.increment();
 
     var versionComparison = courseVersion.compareTo(course.getVersion());

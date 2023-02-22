@@ -175,7 +175,7 @@ public class CourseProjectAction extends AnAction {
       return;
     }
 
-    PluginAutoInstaller.ensureDependenciesInstalled(project, notifier, List.of("PythonCore", "org.intellij.scala"),
+    PluginAutoInstaller.ensureDependenciesInstalled(project, notifier, course.getRequiredPlugins(),
         (x) -> PluginInstallerCallback.ConsentResult.ACCEPTED);
 
     var version = BuildInfo.INSTANCE.courseVersion;

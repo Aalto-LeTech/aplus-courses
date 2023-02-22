@@ -52,9 +52,9 @@ public class PluginAutoInstaller {
   @RequiresEdt
   public static Boolean ensureDependenciesInstalled(@Nullable Project project,
                                                     @Nullable Notifier notifier,
-                                                    @NotNull List<String> pluginNames,
+                                                    @NotNull List<PluginDependency> pluginNames,
                                                     @NotNull PluginInstallerCallback callback) {
-    final var pluginIDs = pluginNames.stream().map(PluginId::getId).collect(Collectors.toList());
+    final var pluginIDs = pluginNames.stream().map(p -> PluginId.getId(p.getId())).collect(Collectors.toList());
 
     // Downloading and enabling plugins are different operations, so we handle these separately.
     final var pluginsToDownload = pluginIDs.stream()
@@ -69,8 +69,11 @@ public class PluginAutoInstaller {
       return true;
     }
 
-    final var allPluginNames = Stream.concat(pluginsToDownload.stream(), pluginsToEnable.stream())
-        .map(PluginId::getIdString).collect(Collectors.toList());
+    // allPluginNames = list of PluginDependencies for all plugins in pluginsToDownload or pluginsToEnable
+    final var missingPluginsStream = Stream.concat(pluginsToDownload.stream(), pluginsToEnable.stream());
+    final var allPluginNames = pluginNames.stream()
+        .filter(p -> missingPluginsStream.anyMatch(id -> id.getIdString().equals(p.getId())))
+        .collect(Collectors.toList());
 
     final var consentResult = callback.askForInstallationConsent(allPluginNames);
     if (consentResult == PluginInstallerCallback.ConsentResult.IGNORE_INSTALL) {

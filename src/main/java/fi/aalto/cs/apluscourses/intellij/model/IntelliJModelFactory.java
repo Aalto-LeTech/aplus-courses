@@ -9,6 +9,7 @@ import fi.aalto.cs.apluscourses.model.ModelFactory;
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.model.ModuleMetadata;
 import fi.aalto.cs.apluscourses.model.Tutorial;
+import fi.aalto.cs.apluscourses.utils.PluginDependency;
 import fi.aalto.cs.apluscourses.utils.Version;
 import java.net.URL;
 import java.util.List;
@@ -53,6 +54,7 @@ public class IntelliJModelFactory implements ModelFactory {
                              @NotNull String replAdditionalArguments,
                              @NotNull Version courseVersion,
                              @NotNull Map<Long, Tutorial> tutorials,
+                             @NotNull List<PluginDependency> pluginDependencies,
                              @Nullable String feedbackParser,
                              @Nullable String newsParser,
                              long courseLastModified) {
