@@ -2,9 +2,6 @@ package fi.aalto.cs.apluscourses.utils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.IntConsumer;
 import org.jetbrains.annotations.NotNull;
 
 public class ListUtil {

@@ -1,9 +1,6 @@
 package fi.aalto.cs.apluscourses.model;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThat;
 
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Assertions;

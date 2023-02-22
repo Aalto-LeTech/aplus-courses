@@ -1,7 +1,6 @@
 package fi.aalto.cs.apluscourses.utils;
 
 import java.util.concurrent.atomic.AtomicInteger;
-import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

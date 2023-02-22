@@ -7,7 +7,6 @@ import fi.aalto.cs.apluscourses.model.SubmittableFile;
 import java.util.Collections;
 import java.util.List;
 import java.util.OptionalLong;
-import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

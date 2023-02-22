@@ -3,7 +3,6 @@ package fi.aalto.cs.apluscourses.presentation;
 import static org.mockito.Mockito.mock;
 
 import com.intellij.openapi.vfs.VirtualFile;
-import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
