@@ -1,7 +1,5 @@
 package fi.aalto.cs.apluscourses.model;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

@@ -1,8 +1,5 @@
 package fi.aalto.cs.apluscourses.utils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-
 import com.intellij.openapi.util.io.FileUtilRt;
 import java.io.File;
 import java.io.IOException;
