@@ -21,10 +21,17 @@ public class PluginInstallerDialogs {
         "Cancel"
     };
 
-    JOptionPane.showOptionDialog(null, "<html>This course requires the following additional IntelliJ plugins:<br>" + pluginListToString(pluginNames) + "</html>",
+    final int result = JOptionPane.showOptionDialog(null, "<html>This course requires the following additional IntelliJ plugins:<br>" + pluginListToString(pluginNames) + "</html>",
         "Additional dependencies", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
 
-    return PluginInstallerCallback.ConsentResult.ACCEPTED;
+    switch (result) {
+      case 0:
+        return PluginInstallerCallback.ConsentResult.ACCEPTED;
+      case 1:
+        return PluginInstallerCallback.ConsentResult.IGNORE_INSTALL;
+      default:
+        return PluginInstallerCallback.ConsentResult.REJECTED;
+    }
   }
 
   public static boolean askForIDERestart() {

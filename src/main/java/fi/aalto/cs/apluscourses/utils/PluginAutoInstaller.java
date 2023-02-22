@@ -4,7 +4,9 @@ import com.intellij.ide.plugins.PluginEnabler;
 import com.intellij.ide.plugins.PluginManagerCore;
 import com.intellij.ide.plugins.PluginManagerMain;
 import com.intellij.ide.plugins.PluginNode;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
+import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
@@ -17,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
@@ -88,7 +91,7 @@ public class PluginAutoInstaller {
     final var downloadablePluginNodes = pluginsToDownload.stream()
         .map(PluginNode::new).collect(Collectors.toList());
 
-    ProgressManager.getInstance().runProcessWithProgressSynchronously(() -> {
+    return ProgressManager.getInstance().runProcessWithProgressSynchronously(() -> {
       final var indicator = Objects.requireNonNull(ProgressManager.getInstance().getProgressIndicator());
       indicator.setIndeterminate(true);
 
@@ -96,25 +99,34 @@ public class PluginAutoInstaller {
       // Only when the semaphore's permit count reaches 1, this function can return.
       final Semaphore lock = new Semaphore(-downloadablePluginNodes.size() + 1);
 
-      try {
-        PluginManagerMain.downloadPlugins(downloadablePluginNodes, Collections.emptyList(), true, null,
-            PluginEnabler.getInstance(), ModalityState.defaultModalityState(), (res) -> lock.release());
-      } catch (IOException ex) {
-        if (notifier != null) {
-          notifier.notify(new NetworkErrorNotification(ex), project);
-        }
+      // "true" means that installation is successful (so far)
+      AtomicBoolean installationResult = new AtomicBoolean(true);
 
-        return null;
-      }
+      ApplicationManager.getApplication().invokeLater(() -> {
+        try {
+          WriteAction.run(() -> PluginManagerMain.downloadPlugins(downloadablePluginNodes, Collections.emptyList(),
+              false, null, PluginEnabler.getInstance(), ModalityState.defaultModalityState(),
+              (res) -> { installationResult.set(installationResult.get() & res); lock.release(); }));
+        } catch (IOException ex) {
+          if (notifier != null) {
+            notifier.notify(new NetworkErrorNotification(ex), project);
+          }
+
+          installationResult.set(false);
+        }
+      });
 
       for (;;) {
         // Semaphore acquisition will succeed once all plugins have been installed.
         if (lock.tryAcquire()) {
-          return false;
+          // If plugin installation failed at any point (for example: an attempt to install a non-existent plugin),
+          // we return null to indicate a failed operation.
+          return installationResult.get() ? false : null;
         }
 
         // This will throw an exception if a user has cancelled the operation. It won't actually cancel
-        // the installation of the current plugin, that would corrupt the IDE.
+        // the installation of the current plugin; that would corrupt the IDE. But it will at least return
+        // from this function and close the progress bar.
         indicator.checkCanceled();
 
         // In practice, an interruption should never happen.
@@ -126,8 +138,6 @@ public class PluginAutoInstaller {
       }
 
     }, "Downloading required plugins", true, project);
-
-    return false;
   }
 
   private PluginAutoInstaller() {
