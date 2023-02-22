@@ -1,7 +1,5 @@
 package fi.aalto.cs.apluscourses.model;
 
-import static org.junit.Assert.assertEquals;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.junit.jupiter.api.Assertions;

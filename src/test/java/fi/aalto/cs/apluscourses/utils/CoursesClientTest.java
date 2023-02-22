@@ -13,7 +13,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.hamcrest.MatcherAssert;
 import org.jetbrains.annotations.NotNull;
-import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

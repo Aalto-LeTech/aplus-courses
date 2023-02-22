@@ -1,7 +1,5 @@
 package fi.aalto.cs.apluscourses.presentation.filter;
 
-import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
-
 import fi.aalto.cs.apluscourses.utils.Event;
 import fi.aalto.cs.apluscourses.utils.Streamable;
 import java.util.Iterator;

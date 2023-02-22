@@ -4,7 +4,6 @@ import static org.hamcrest.Matchers.containsString;
 
 import java.io.IOException;
 import org.hamcrest.MatcherAssert;
-import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

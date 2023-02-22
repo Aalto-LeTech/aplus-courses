@@ -1,8 +1,6 @@
 package fi.aalto.cs.apluscourses.intellij.notifications;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;

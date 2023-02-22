@@ -5,7 +5,6 @@ import fi.aalto.cs.apluscourses.presentation.base.BaseListViewModel;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class ModuleListViewModel extends BaseListViewModel<ModuleListElementViewModel> {
 

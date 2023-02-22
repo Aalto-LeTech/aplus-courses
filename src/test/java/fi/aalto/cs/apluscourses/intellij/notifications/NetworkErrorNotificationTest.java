@@ -1,8 +1,6 @@
 package fi.aalto.cs.apluscourses.intellij.notifications;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Assertions;
