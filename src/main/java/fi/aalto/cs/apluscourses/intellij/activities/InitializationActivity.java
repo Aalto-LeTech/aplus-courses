@@ -3,6 +3,8 @@ package fi.aalto.cs.apluscourses.intellij.activities;
 import static fi.aalto.cs.apluscourses.intellij.services.PluginSettings.MODULE_REPL_INITIAL_COMMANDS_FILE_NAME;
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ex.ApplicationEx;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.project.ProjectManagerListener;
@@ -24,6 +26,7 @@ import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationException;
 import fi.aalto.cs.apluscourses.model.UnexpectedResponseException;
 import fi.aalto.cs.apluscourses.ui.utils.PluginInstallerCallback;
+import fi.aalto.cs.apluscourses.ui.utils.PluginInstallerDialogs;
 import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import fi.aalto.cs.apluscourses.utils.PluginAutoInstaller;
@@ -99,14 +102,18 @@ public class InitializationActivity implements Background {
 
       return;
     }
-    var progress = progressViewModel.start(4, getText("ui.ProgressBarView.loading"), false);
+    var progress = progressViewModel.start(3, getText("ui.ProgressBarView.loading"), false);
     progress.increment();
 
     importSettings(project, course);
     progress.increment();
 
-    PluginAutoInstaller.ensureDependenciesInstalled(project, notifier, course.getRequiredPlugins(), (x) -> PluginInstallerCallback.ConsentResult.ACCEPTED);
-    progress.increment();
+    ApplicationManager.getApplication().invokeLater(() -> {
+      if (Boolean.FALSE.equals(PluginAutoInstaller.ensureDependenciesInstalled(project, notifier, course.getRequiredPlugins(),
+          PluginInstallerDialogs::askForInstallationConsentOnInit)) && PluginInstallerDialogs.askForIDERestart()) {
+        ((ApplicationEx) ApplicationManager.getApplication()).restart(true);
+      }
+    });
 
     var versionComparison = courseVersion.compareTo(course.getVersion());
 

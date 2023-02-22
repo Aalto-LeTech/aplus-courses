@@ -14,7 +14,8 @@ public class PluginInstallerDialogs {
     return pluginNames.stream().map(x -> " - " + x.getDisplayName()).collect(Collectors.joining("<br>"));
   }
 
-  public static PluginInstallerCallback.ConsentResult askForInstallationConsentOnCreation(@NotNull List<PluginDependency> pluginNames) {
+  public static PluginInstallerCallback.ConsentResult askForInstallationConsentOnCreation(
+      @NotNull List<PluginDependency> pluginNames) {
     Object[] options = {
         "Install",
         "Ignore",
@@ -32,6 +33,21 @@ public class PluginInstallerDialogs {
       default:
         return PluginInstallerCallback.ConsentResult.REJECTED;
     }
+  }
+
+  public static PluginInstallerCallback.ConsentResult askForInstallationConsentOnInit(
+      @NotNull List<PluginDependency> pluginNames) {
+    Object[] options = {
+        "Install",
+        "Ignore"
+    };
+
+    final int result = JOptionPane.showOptionDialog(null, "<html>Opening this project requires the following additional IntelliJ plugins:<br>" + pluginListToString(pluginNames) + "</html>",
+        "Additional dependencies", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE, null,
+        options, options[0]);
+
+    return result == 0 ? PluginInstallerCallback.ConsentResult.ACCEPTED
+        : PluginInstallerCallback.ConsentResult.IGNORE_INSTALL;
   }
 
   public static boolean askForIDERestart() {
