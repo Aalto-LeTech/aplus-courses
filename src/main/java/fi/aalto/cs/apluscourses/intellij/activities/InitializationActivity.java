@@ -109,8 +109,9 @@ public class InitializationActivity implements Background {
     progress.increment();
 
     ApplicationManager.getApplication().invokeLater(() -> {
-      if (Boolean.FALSE.equals(PluginAutoInstaller.ensureDependenciesInstalled(project, notifier, course.getRequiredPlugins(),
-          PluginInstallerDialogs::askForInstallationConsentOnInit)) && PluginInstallerDialogs.askForIDERestart()) {
+      if (Boolean.FALSE.equals(PluginAutoInstaller.ensureDependenciesInstalled(project, notifier,
+          course.getRequiredPlugins(), PluginInstallerDialogs::askForInstallationConsentOnInit))
+          && PluginInstallerDialogs.askForIDERestart()) {
         ((ApplicationEx) ApplicationManager.getApplication()).restart(true);
       }
     });

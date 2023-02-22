@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
@@ -104,9 +105,13 @@ public class PluginAutoInstaller {
 
       ApplicationManager.getApplication().invokeLater(() -> {
         try {
+          final Consumer<Boolean> onInstallationComplete = (result) -> {
+            installationResult.set(installationResult.get() & result);
+            lock.release();
+          };
+
           WriteAction.run(() -> PluginManagerMain.downloadPlugins(downloadablePluginNodes, Collections.emptyList(),
-              false, null, PluginEnabler.getInstance(), ModalityState.defaultModalityState(),
-              (res) -> { installationResult.set(installationResult.get() & res); lock.release(); }));
+              false, null, PluginEnabler.getInstance(), ModalityState.defaultModalityState(), onInstallationComplete));
         } catch (IOException ex) {
           if (notifier != null) {
             notifier.notify(new NetworkErrorNotification(ex), project);

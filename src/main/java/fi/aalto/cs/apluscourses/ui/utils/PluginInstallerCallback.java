@@ -6,8 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 @FunctionalInterface
 public interface PluginInstallerCallback {
-  enum ConsentResult
-  {
+  enum ConsentResult {
     REJECTED, // User refused, fail the operation
     ACCEPTED, // User accepted, install plugins and succeed
     IGNORE_INSTALL // User refused, skip installation and return success anyway

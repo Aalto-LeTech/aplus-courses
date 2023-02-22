@@ -196,8 +196,8 @@ public abstract class Course implements ComponentSource {
         = getCourseReplInitialCommands(jsonObject, sourcePath);
     String replAdditionalArguments = getCourseReplAdditionalArguments(jsonObject, sourcePath);
     Version courseVersion = getCourseVersion(jsonObject, sourcePath);
-    Map<Long, Tutorial> tutorials = getTutorials(jsonObject);
-    List<PluginDependency> pluginDependencies = getPluginDependencies(jsonObject, sourcePath);
+    Map<Long, Tutorial> tutorials = getCourseTutorials(jsonObject);
+    List<PluginDependency> pluginDependencies = getCoursePluginDependencies(jsonObject, sourcePath);
     String feedbackParser = jsonObject.optString("feedbackParser", null);
     String newsParser = jsonObject.optString("newsParser", null);
     long courseLastModified = jsonObject.optLong("courseLastModified");
@@ -644,7 +644,7 @@ public abstract class Course implements ComponentSource {
     }
   }
 
-  private static Map<Long, Tutorial> getTutorials(@NotNull JSONObject jsonObject) {
+  private static Map<Long, Tutorial> getCourseTutorials(@NotNull JSONObject jsonObject) {
     JSONObject tutorialsJson = jsonObject.optJSONObject("tutorials");
     return tutorialsJson == null ? Collections.emptyMap()
         : JsonUtil.parseObject(tutorialsJson, JSONObject::getJSONObject,
@@ -652,7 +652,7 @@ public abstract class Course implements ComponentSource {
   }
 
   @NotNull
-  private static List<PluginDependency> getPluginDependencies(@NotNull JSONObject jsonObject,
+  private static List<PluginDependency> getCoursePluginDependencies(@NotNull JSONObject jsonObject,
                                                               @NotNull String source)
       throws MalformedCourseConfigurationException {
     JSONArray pluginsJson = jsonObject.optJSONArray("requiredPlugins");

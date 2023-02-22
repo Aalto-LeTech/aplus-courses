@@ -8,7 +8,7 @@ class CourseItemViewModelTest {
   @Test
   void testCourseItemViewModel() {
     CourseItemViewModel viewModel = new CourseItemViewModel(
-        "Cool Course", "Summer 1980", "http://www.fi", "Python"
+        "Cool Course", "Summer 1980", "http://www.fi"
     );
 
     Assertions.assertEquals("Cool Course", viewModel.getName(),
@@ -17,8 +17,6 @@ class CourseItemViewModelTest {
         "The semester is the same as the one given to the constructor");
     Assertions.assertEquals("http://www.fi", viewModel.getUrl(),
         "The URL is the same as the one given to the constructor");
-    Assertions.assertEquals(CourseItemViewModel.ProgrammingLanguage.Python, viewModel.getLanguage(),
-        "The language is the same as the one given to the constructor");
   }
 
 }
