@@ -20,7 +20,12 @@ public class ProjectViewUtil {
   public static void ignoreFileInProjectView(@NotNull String ignoredFileName,
                                              @NotNull Project project) {
     FileTypeManager fileTypeManager = FileTypeManager.getInstance();
+
+    // The below is a fix for a past bug, see issue #996
+    String ignoredFiles = fileTypeManager.getIgnoredFilesList()
+        .replaceAll("([^;])(?:\\.repl-commands)+", "$1");
+
     WriteCommandAction.runWriteCommandAction(project, () -> fileTypeManager
-        .setIgnoredFilesList(fileTypeManager.getIgnoredFilesList() + ignoredFileName + ";"));
+        .setIgnoredFilesList(ignoredFiles + ";" + ignoredFileName));
   }
 }
