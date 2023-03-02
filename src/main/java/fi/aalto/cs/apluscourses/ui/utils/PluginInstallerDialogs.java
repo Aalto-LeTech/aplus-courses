@@ -16,6 +16,10 @@ public class PluginInstallerDialogs {
     return pluginNames.stream().map(x -> " - " + x.getDisplayName()).collect(Collectors.joining("<br>"));
   }
 
+  /**
+   * Shows a dialog asking the user to install required plugins. The dialog is supposed to be shown
+   * during linking a project to an A+ course.
+   */
   public static PluginInstallerCallback.ConsentResult askForInstallationConsentOnCreation(
       @NotNull List<PluginDependency> pluginNames) {
     Object[] options = {
@@ -39,6 +43,10 @@ public class PluginInstallerDialogs {
     }
   }
 
+  /**
+   * Shows a dialog asking the user to install required plugins. The dialog is supposed to be shown
+   * when opening an A+ project.
+   */
   public static PluginInstallerCallback.ConsentResult askForInstallationConsentOnInit(
       @NotNull List<PluginDependency> pluginNames) {
     Object[] options = {
@@ -55,6 +63,11 @@ public class PluginInstallerDialogs {
         : PluginInstallerCallback.ConsentResult.IGNORE_INSTALL;
   }
 
+  /**
+   * Shows a dialog asking the user to restart the IDE. The dialog is supposed to be shown
+   * when new plugins have been automatically installed or enabled, and an IDE restart is required.
+   */
+  @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
   public static boolean askForIDERestart() {
     return Messages.showOkCancelDialog(
         getText("ui.pluginInstallationDialog.askForIDERestart.message"),
