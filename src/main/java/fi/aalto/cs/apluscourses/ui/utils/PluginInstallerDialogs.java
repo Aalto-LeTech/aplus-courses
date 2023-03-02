@@ -1,6 +1,8 @@
 package fi.aalto.cs.apluscourses.ui.utils;
 
+import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getAndReplaceText;
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
+
 import com.intellij.openapi.ui.Messages;
 import fi.aalto.cs.apluscourses.utils.PluginDependency;
 import java.util.List;
@@ -17,13 +19,15 @@ public class PluginInstallerDialogs {
   public static PluginInstallerCallback.ConsentResult askForInstallationConsentOnCreation(
       @NotNull List<PluginDependency> pluginNames) {
     Object[] options = {
-        "Install",
-        "Ignore",
-        "Cancel"
+        getText("ui.pluginInstallationDialog.courseCreateDialog.yesText"),
+        getText("ui.pluginInstallationDialog.courseCreateDialog.noText"),
+        getText("ui.pluginInstallationDialog.courseCreateDialog.cancelText")
     };
 
-    final int result = JOptionPane.showOptionDialog(null, "<html>This course requires the following additional IntelliJ plugins:<br>" + pluginListToString(pluginNames) + "</html>",
-        "Additional dependencies", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+    final int result = JOptionPane.showOptionDialog(null,
+        getAndReplaceText("ui.pluginInstallationDialog.courseCreateDialog.message", pluginListToString(pluginNames)),
+        getText("ui.pluginInstallationDialog.courseCreateDialog.title"), JOptionPane.YES_NO_CANCEL_OPTION,
+        JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
 
     switch (result) {
       case 0:
@@ -38,13 +42,14 @@ public class PluginInstallerDialogs {
   public static PluginInstallerCallback.ConsentResult askForInstallationConsentOnInit(
       @NotNull List<PluginDependency> pluginNames) {
     Object[] options = {
-        "Install",
-        "Ignore"
+        getText("ui.pluginInstallationDialog.courseOpenDialog.yesText"),
+        getText("ui.pluginInstallationDialog.courseOpenDialog.noText")
     };
 
-    final int result = JOptionPane.showOptionDialog(null, "<html>Opening this project requires the following additional IntelliJ plugins:<br>" + pluginListToString(pluginNames) + "</html>",
-        "Additional dependencies", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE, null,
-        options, options[0]);
+    final int result = JOptionPane.showOptionDialog(null,
+        getAndReplaceText("ui.pluginInstallationDialog.courseOpenDialog.message", pluginListToString(pluginNames)),
+        getText("ui.pluginInstallationDialog.courseOpenDialog.title"), JOptionPane.YES_NO_OPTION,
+        JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
 
     return result == 0 ? PluginInstallerCallback.ConsentResult.ACCEPTED
         : PluginInstallerCallback.ConsentResult.IGNORE_INSTALL;
