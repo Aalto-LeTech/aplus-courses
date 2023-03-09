@@ -39,7 +39,9 @@ class CourseProjectViewModelTest {
       // courseVersion
       BuildInfo.INSTANCE.courseVersion,
       // tutorials
-      Collections.emptyMap()
+      Collections.emptyMap(),
+      // pluginDependencies
+      Collections.emptyList()
   );
 
   @Test

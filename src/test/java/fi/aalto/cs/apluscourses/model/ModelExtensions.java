@@ -259,6 +259,8 @@ public class ModelExtensions {
           commonLibraryProvider,
           // tutorials
           Collections.emptyMap(),
+          // pluginDependencies
+          Collections.emptyList(),
           null,
           null,
           0);

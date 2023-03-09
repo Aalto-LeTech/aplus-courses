@@ -76,7 +76,9 @@ class InstallModuleActionTest {
         // courseVersion
         BuildInfo.INSTANCE.courseVersion,
         // tutorials
-        Collections.emptyMap());
+        Collections.emptyMap(),
+        // pluginDependencies
+        Collections.emptyList());
     mainViewModel.courseViewModel.set(new CourseViewModel(course, Options.EMPTY));
 
     installer = mock(ComponentInstaller.class);
