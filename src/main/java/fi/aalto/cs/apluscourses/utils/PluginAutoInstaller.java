@@ -93,6 +93,7 @@ public class PluginAutoInstaller {
         try {
           Thread.sleep(50);
         } catch (InterruptedException ex) {
+          Thread.currentThread().interrupt();
           return null;
         }
       }
