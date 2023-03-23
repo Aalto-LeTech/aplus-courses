@@ -74,9 +74,10 @@ public class PluginAutoInstaller {
     }
 
     // allPluginNames = list of PluginDependencies for all plugins in pluginsToDownload or pluginsToEnable
-    final var missingPluginsStream = Stream.concat(pluginsToDownload.stream(), pluginsToEnable.stream());
+    final var missingPluginIds = Stream.concat(pluginsToDownload.stream(), pluginsToEnable.stream())
+        .map(PluginId::getIdString).collect(Collectors.toSet());
     final var allPluginNames = pluginNames.stream()
-        .filter(p -> missingPluginsStream.anyMatch(id -> id.getIdString().equals(p.getId())))
+        .filter(p -> missingPluginIds.contains(p.getId()))
         .collect(Collectors.toList());
 
     final var consentResult = callback.askForInstallationConsent(allPluginNames);
