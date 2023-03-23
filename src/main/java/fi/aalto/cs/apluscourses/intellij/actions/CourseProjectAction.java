@@ -29,9 +29,12 @@ import fi.aalto.cs.apluscourses.ui.InstallerDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogsImpl;
 import fi.aalto.cs.apluscourses.ui.ideactivities.ComponentDatabase;
+import fi.aalto.cs.apluscourses.ui.utils.PluginInstallerCallback;
+import fi.aalto.cs.apluscourses.ui.utils.PluginInstallerDialogs;
 import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
+import fi.aalto.cs.apluscourses.utils.PluginAutoInstaller;
 import fi.aalto.cs.apluscourses.utils.PostponedRunnable;
 import fi.aalto.cs.apluscourses.utils.Version;
 import fi.aalto.cs.apluscourses.utils.async.SimpleAsyncTaskManager;
@@ -170,6 +173,22 @@ public class CourseProjectAction extends AnAction {
 
     Course course = tryGetCourse(project, courseUrl);
     if (course == null) {
+      return;
+    }
+
+    final Boolean pluginDependencyResult = PluginAutoInstaller.ensureDependenciesInstalled(project, notifier,
+        course.getRequiredPlugins(), PluginInstallerDialogs::askForInstallationConsentOnCreation);
+
+    if (pluginDependencyResult == null) {
+      // the user cancelled dependency installation
+      return;
+    } else if (!pluginDependencyResult) {
+      // new plugins installed, we must restart
+      if (!PluginInstallerDialogs.askForIDERestart()) {
+        return;
+      }
+
+      ((ApplicationEx) ApplicationManager.getApplication()).restart(true);
       return;
     }
 

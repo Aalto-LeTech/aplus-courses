@@ -4,6 +4,7 @@ import com.intellij.openapi.util.SystemInfoRt;
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
 import fi.aalto.cs.apluscourses.utils.JsonUtil;
+import fi.aalto.cs.apluscourses.utils.PluginDependency;
 import fi.aalto.cs.apluscourses.utils.ResourceException;
 import fi.aalto.cs.apluscourses.utils.Resources;
 import fi.aalto.cs.apluscourses.utils.Version;
@@ -83,6 +84,9 @@ public abstract class Course implements ComponentSource {
   @NotNull
   private final Map<Long, Tutorial> tutorials;
 
+  @NotNull
+  private final List<PluginDependency> pluginDependencies;
+
   @Nullable
   private final String feedbackParser;
 
@@ -114,6 +118,7 @@ public abstract class Course implements ComponentSource {
                    @NotNull String replAdditionalArguments,
                    @NotNull Version courseVersion,
                    @NotNull Map<Long, Tutorial> tutorials,
+                   @NotNull List<PluginDependency> pluginDependencies,
                    @Nullable String feedbackParser,
                    @Nullable String newsParser) {
     this.id = id;
@@ -128,6 +133,7 @@ public abstract class Course implements ComponentSource {
     this.optionalCategories = optionalCategories;
     this.autoInstallComponentNames = autoInstallComponentNames;
     this.tutorials = tutorials;
+    this.pluginDependencies = pluginDependencies;
     this.feedbackParser = feedbackParser;
     this.newsParser = newsParser;
     this.components = Stream.concat(modules.stream(), libraries.stream())
@@ -190,7 +196,8 @@ public abstract class Course implements ComponentSource {
         = getCourseReplInitialCommands(jsonObject, sourcePath);
     String replAdditionalArguments = getCourseReplAdditionalArguments(jsonObject, sourcePath);
     Version courseVersion = getCourseVersion(jsonObject, sourcePath);
-    Map<Long, Tutorial> tutorials = getTutorials(jsonObject);
+    Map<Long, Tutorial> tutorials = getCourseTutorials(jsonObject);
+    List<PluginDependency> pluginDependencies = getCoursePluginDependencies(jsonObject, sourcePath);
     String feedbackParser = jsonObject.optString("feedbackParser", null);
     String newsParser = jsonObject.optString("newsParser", null);
     long courseLastModified = jsonObject.optLong("courseLastModified");
@@ -210,6 +217,7 @@ public abstract class Course implements ComponentSource {
         replAdditionalArguments,
         courseVersion,
         tutorials,
+        pluginDependencies,
         feedbackParser,
         newsParser,
         courseLastModified
@@ -636,11 +644,35 @@ public abstract class Course implements ComponentSource {
     }
   }
 
-  private static Map<Long, Tutorial> getTutorials(@NotNull JSONObject jsonObject) {
+  private static Map<Long, Tutorial> getCourseTutorials(@NotNull JSONObject jsonObject) {
     JSONObject tutorialsJson = jsonObject.optJSONObject("tutorials");
     return tutorialsJson == null ? Collections.emptyMap()
         : JsonUtil.parseObject(tutorialsJson, JSONObject::getJSONObject,
         Tutorial::fromJsonObject, Long::valueOf);
+  }
+
+  @NotNull
+  private static List<PluginDependency> getCoursePluginDependencies(@NotNull JSONObject jsonObject,
+                                                              @NotNull String source)
+      throws MalformedCourseConfigurationException {
+    JSONArray pluginsJson = jsonObject.optJSONArray("requiredPlugins");
+    if (pluginsJson == null) {
+      return Collections.emptyList();
+    }
+
+    List<PluginDependency> result = new ArrayList<>();
+
+    try {
+      for (int i = 0; i < pluginsJson.length(); ++i) {
+        JSONObject currentPluginJson = pluginsJson.getJSONObject(i);
+        result.add(new PluginDependency(currentPluginJson.getString("name"), currentPluginJson.getString("id")));
+      }
+    } catch (JSONException ex) {
+      throw new MalformedCourseConfigurationException(source,
+          "Malformed \"requiredPlugins\" array", ex);
+    }
+
+    return result;
   }
 
   public Map<Long, Tutorial> getTutorials() {
@@ -714,6 +746,11 @@ public abstract class Course implements ComponentSource {
   @NotNull
   public List<String> getAutoInstallComponentNames() {
     return Collections.unmodifiableList(autoInstallComponentNames);
+  }
+
+  @NotNull
+  public List<PluginDependency> getRequiredPlugins() {
+    return Collections.unmodifiableList(pluginDependencies);
   }
 
   @NotNull

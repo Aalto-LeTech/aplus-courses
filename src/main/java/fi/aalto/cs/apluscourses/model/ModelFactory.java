@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.model;
 
+import fi.aalto.cs.apluscourses.utils.PluginDependency;
 import fi.aalto.cs.apluscourses.utils.Version;
 import java.net.URL;
 import java.util.List;
@@ -25,6 +26,7 @@ public interface ModelFactory {
                       @NotNull String replAdditionalArguments,
                       @NotNull Version courseVersion,
                       @NotNull Map<Long, Tutorial> tutorials,
+                      @NotNull List<PluginDependency> pluginDependencies,
                       @Nullable String feedbackParser,
                       @NotNull String newsParser,
                       long courseLastModified);

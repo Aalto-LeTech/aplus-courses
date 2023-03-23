@@ -53,7 +53,8 @@ class CourseTest {
         replInitialCommands,
         replAdditionalArguments,
         BuildInfo.INSTANCE.courseVersion,
-        Collections.emptyMap());
+        Collections.emptyMap(),
+        Collections.emptyList());
     Assertions.assertEquals("13", course.getId(),
         "The ID of the course should be the same as that given to the constructor");
     Assertions.assertEquals("Tester Course", course.getName(),
@@ -117,7 +118,8 @@ class CourseTest {
         // courseVersion
         BuildInfo.INSTANCE.courseVersion,
         // tutorials
-        Collections.emptyMap());
+        Collections.emptyMap(),
+        Collections.emptyList());
     Assertions.assertSame(module2, course.getComponent("Awesome Module"),
         "Course#getModule should return the correct module");
   }
@@ -157,7 +159,8 @@ class CourseTest {
         // courseVersion
         BuildInfo.INSTANCE.courseVersion,
         // tutorials
-        Collections.emptyMap());
+        Collections.emptyMap(),
+        Collections.emptyList());
     List<Component> autoInstalls = course.getAutoInstallComponents();
     Assertions.assertEquals(2, autoInstalls.size(), "The course has the correct auto-install components");
     Assertions.assertEquals(moduleName, autoInstalls.get(0).getName());

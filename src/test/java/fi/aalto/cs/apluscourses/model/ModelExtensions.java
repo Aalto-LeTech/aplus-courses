@@ -5,6 +5,7 @@ import fi.aalto.cs.apluscourses.intellij.model.CommonLibraryProvider;
 import fi.aalto.cs.apluscourses.intellij.model.IntelliJCourse;
 import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
+import fi.aalto.cs.apluscourses.utils.PluginDependency;
 import fi.aalto.cs.apluscourses.utils.Version;
 import fi.aalto.cs.apluscourses.utils.cache.CachePreference;
 import java.io.IOException;
@@ -151,10 +152,11 @@ public class ModelExtensions {
                       @NotNull Map<String, String[]> replInitialCommands,
                       @NotNull String replAdditionalArguments,
                       @NotNull Version courseVersion,
-                      @NotNull Map<Long, Tutorial> tutorials) {
+                      @NotNull Map<Long, Tutorial> tutorials,
+                      @NotNull List<PluginDependency> pluginDependencies) {
       super(id, name, aplusUrl, languages, modules, libraries, exerciseModules, resourceUrls, vmOptions,
           optionalCategories, autoInstallComponentNames, replInitialCommands,
-          replAdditionalArguments, courseVersion, tutorials, null,
+          replAdditionalArguments, courseVersion, tutorials, pluginDependencies, null,
           "default");
       exerciseDataSource = new TestExerciseDataSource();
     }
@@ -198,7 +200,9 @@ public class ModelExtensions {
           // courseVersion
           BuildInfo.INSTANCE.courseVersion,
           // tutorials
-          Collections.emptyMap(), null, "default");
+          Collections.emptyMap(),
+          // pluginDependencies
+          Collections.emptyList(), null, "default");
       this.exerciseDataSource = exerciseDataSource;
     }
 
@@ -255,6 +259,8 @@ public class ModelExtensions {
           commonLibraryProvider,
           // tutorials
           Collections.emptyMap(),
+          // pluginDependencies
+          Collections.emptyList(),
           null,
           null,
           0);
@@ -436,6 +442,7 @@ public class ModelExtensions {
                                @NotNull String replAdditionalArguments,
                                @NotNull Version courseVersion,
                                @NotNull Map<Long, Tutorial> tutorials,
+                               @NotNull List<PluginDependency> pluginDependencies,
                                @Nullable String feedbackParser,
                                @Nullable String newsParser,
                                long courseLastModified) {
@@ -454,7 +461,8 @@ public class ModelExtensions {
           replInitialCommands,
           replAdditionalArguments,
           courseVersion,
-          tutorials
+          tutorials,
+          pluginDependencies
       );
     }
 
