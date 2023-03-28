@@ -17,7 +17,7 @@ class ExerciseViewModelTest {
     var info = new SubmissionInfo(Collections.emptyMap());
 
     Exercise exercise1 = new Exercise(
-        123, "|en:Assignment|fi:Tehtava|", "http://localhost:1000", info, 0, 0,
+        123, "Assignment", "http://localhost:1000", info, 0, 0,
         OptionalLong.empty(), null, false);
     ExerciseViewModel viewModel1 = new ExerciseViewModel(exercise1);
 

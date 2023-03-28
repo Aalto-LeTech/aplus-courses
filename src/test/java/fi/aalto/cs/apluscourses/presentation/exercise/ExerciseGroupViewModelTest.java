@@ -19,7 +19,7 @@ class ExerciseGroupViewModelTest {
 
   @Test
   void testGetPresentableName() {
-    var group1 = new ExerciseGroup(1, "|fi:Ryhma|en:Group|", "", true, List.of(), List.of());
+    var group1 = new ExerciseGroup(1, "Group", "", true, List.of(), List.of());
     ExerciseGroupViewModel viewModel1 = new ExerciseGroupViewModel(group1);
 
     var group2 = new ExerciseGroup(2, "group name", "", true, List.of(), List.of());
