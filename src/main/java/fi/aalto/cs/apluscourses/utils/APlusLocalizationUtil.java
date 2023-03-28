@@ -3,6 +3,7 @@ package fi.aalto.cs.apluscourses.utils;
 import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class APlusLocalizationUtil {
 
@@ -17,6 +18,18 @@ public class APlusLocalizationUtil {
     String englishName = StringUtils.substringBetween(name, "|en:", "|");
     // The name seems to not contain localization
     return Objects.requireNonNullElse(englishName, name);
+  }
+
+  private static String extractLocalizedText(@NotNull String localizedString, @NotNull String languageCode) {
+    return StringUtils.substringBetween(localizedString, "|" + languageCode + ":", "|");
+  }
+
+  @NotNull
+  public static String getLocalizedName(@NotNull String localizedString, @NotNull String languageCode) {
+    // First, try to get the text in the requested language. If that fails, try English.
+    // If that fails too, return the raw string.
+    return Objects.requireNonNullElse(extractLocalizedText(localizedString, languageCode),
+        Objects.requireNonNullElse(extractLocalizedText(localizedString, "en"), localizedString));
   }
 
   /**
