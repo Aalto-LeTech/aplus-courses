@@ -152,11 +152,13 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   @Override
   @NotNull
   public List<ExerciseGroup> getExerciseGroups(@NotNull Course course,
-                                               @NotNull Authentication authentication)
+                                               @NotNull Authentication authentication,
+                                               @NotNull String languageCode)
       throws IOException {
     String url = apiUrl + COURSES + "/" + course.getId() + "/" + EXERCISES + "/";
     var exerciseOrder = getExerciseOrder(course, authentication);
-    return getPaginatedResults(url, authentication, object -> ExerciseGroup.fromJsonObject(object, exerciseOrder));
+    return getPaginatedResults(url, authentication,
+        object -> ExerciseGroup.fromJsonObject(object, exerciseOrder, languageCode));
   }
 
   /**
@@ -201,10 +203,11 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
                               @NotNull Set<String> optionalCategories,
                               @NotNull Map<Long, Tutorial> tutorials,
                               @NotNull Authentication authentication,
-                              @NotNull CachePreference cachePreference) throws IOException {
+                              @NotNull CachePreference cachePreference,
+                              @NotNull String languageCode) throws IOException {
     var url = apiUrl + "exercises/" + exerciseId + "/";
     var response = client.fetch(url, authentication, cachePreference);
-    return parser.parseExercise(response, points, optionalCategories, tutorials);
+    return parser.parseExercise(response, points, optionalCategories, tutorials, languageCode);
   }
 
   @Override
@@ -387,8 +390,9 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
     public Exercise parseExercise(@NotNull JSONObject jsonObject,
                                   @NotNull Points points,
                                   @NotNull Set<String> optionalCategories,
-                                  @NotNull Map<Long, Tutorial> tutorials) {
-      return Exercise.fromJsonObject(jsonObject, points, optionalCategories, tutorials);
+                                  @NotNull Map<Long, Tutorial> tutorials,
+                                  @NotNull String languageCode) {
+      return Exercise.fromJsonObject(jsonObject, points, optionalCategories, tutorials, languageCode);
     }
 
     @Override

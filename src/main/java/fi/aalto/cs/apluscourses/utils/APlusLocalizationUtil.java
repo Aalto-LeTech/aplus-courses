@@ -7,27 +7,21 @@ import org.jetbrains.annotations.Nullable;
 
 public class APlusLocalizationUtil {
 
-  /**
-   * Parses the English name from the given string, or returns the string if the string contains
-   * no localization. An example of a valid string is {@code "|en:hello|fi:terve|"}.
-   *
-   * @param name A string with a name in multiple languages, or just a single name.
-   */
-  @NotNull
-  public static String getEnglishName(@NotNull String name) {
-    String englishName = StringUtils.substringBetween(name, "|en:", "|");
-    // The name seems to not contain localization
-    return Objects.requireNonNullElse(englishName, name);
-  }
-
   private static String extractLocalizedText(@NotNull String localizedString, @NotNull String languageCode) {
     return StringUtils.substringBetween(localizedString, "|" + languageCode + ":", "|");
   }
 
+  /**
+   * Parses the given localized string and returns the text corresponding to the specified language.
+   * If the entry in the requested language does not exist, the method attempts to localize the string in English.
+   * If that fails too, the whole raw string is returned.
+   * An example of a valid localized string is {@code "|en:hello|fi:terve|"}.
+   *
+   * @param localizedString The input string, which may be localized or not.
+   * @param languageCode The requested language code, e.g. "fi" or "en".
+   */
   @NotNull
   public static String getLocalizedName(@NotNull String localizedString, @NotNull String languageCode) {
-    // First, try to get the text in the requested language. If that fails, try English.
-    // If that fails too, return the raw string.
     return Objects.requireNonNullElse(extractLocalizedText(localizedString, languageCode),
         Objects.requireNonNullElse(extractLocalizedText(localizedString, "en"), localizedString));
   }

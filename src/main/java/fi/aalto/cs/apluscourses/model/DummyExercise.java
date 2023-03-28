@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.model;
 
+import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
 import java.util.OptionalLong;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,10 +27,11 @@ public class DummyExercise extends Exercise {
    * Constructs a DummyExercise from a JsonObject.
    */
   @NotNull
-  public static DummyExercise fromJsonObject(@NotNull JSONObject jsonObject) {
+  public static DummyExercise fromJsonObject(@NotNull JSONObject jsonObject,
+                                             @NotNull String languageCode) {
     long id = jsonObject.getLong("id");
 
-    String name = jsonObject.getString("display_name");
+    String name = APlusLocalizationUtil.getLocalizedName(jsonObject.getString("display_name"), languageCode);
     String htmlUrl = jsonObject.getString("html_url");
 
     int maxPoints = jsonObject.getInt("max_points");

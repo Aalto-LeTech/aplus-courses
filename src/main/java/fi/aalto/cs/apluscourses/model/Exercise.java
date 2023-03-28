@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.model;
 
+import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -81,10 +82,11 @@ public class Exercise implements Browsable {
   public static Exercise fromJsonObject(@NotNull JSONObject jsonObject,
                                         @NotNull Points points,
                                         @NotNull Set<String> optionalCategories,
-                                        @NotNull Map<Long, Tutorial> tutorials) {
+                                        @NotNull Map<Long, Tutorial> tutorials,
+                                        @NotNull String languageCode) {
     long id = jsonObject.getLong("id");
 
-    String name = jsonObject.getString("display_name");
+    String name = APlusLocalizationUtil.getLocalizedName(jsonObject.getString("display_name"), languageCode);
     String htmlUrl = jsonObject.getString("html_url");
 
     var bestSubmissionId = points.getBestSubmissionIds().get(id);

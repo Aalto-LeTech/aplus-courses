@@ -79,7 +79,7 @@ public class SubmissionViewModel {
 
   @NotNull
   public String getPresentableExerciseName() {
-    return APlusLocalizationUtil.getEnglishName(exercise.getName());
+    return exercise.getName();
   }
 
   @NotNull

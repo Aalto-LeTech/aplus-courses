@@ -59,14 +59,15 @@ class ExerciseTest {
   void testExerciseFromJsonObject() {
     JSONObject json = new JSONObject()
         .put(ID_KEY, 11L)
-        .put(NAME_KEY, "Cool name")
+        .put(NAME_KEY, "|en:Cool name|")
         .put(HTML_KEY, "http://localhost:1000")
         .put(MAX_POINTS_KEY, 99)
         .put(MAX_SUBMISSIONS_KEY, 5)
         .put(DIFFICULTY_KEY, "ha")
         .put("additional key", "which shouldn't cause errors");
 
-    Exercise exercise = Exercise.fromJsonObject(json, TEST_POINTS, Collections.emptySet(), Collections.emptyMap());
+    Exercise exercise = Exercise.fromJsonObject(json, TEST_POINTS,
+        Collections.emptySet(), Collections.emptyMap(), "fi");
     exercise.addSubmissionResult(
         new SubmissionResult(2, 0, 0.0, SubmissionResult.Status.GRADED, exercise));
 
@@ -93,7 +94,7 @@ class ExerciseTest {
         .put(MAX_SUBMISSIONS_KEY, 3);
 
     assertThrows(JSONException.class, () ->
-        Exercise.fromJsonObject(json, TEST_POINTS, Collections.emptySet(), Collections.emptyMap()));
+        Exercise.fromJsonObject(json, TEST_POINTS, Collections.emptySet(), Collections.emptyMap(), "fi"));
   }
 
   @Test
@@ -105,7 +106,7 @@ class ExerciseTest {
         .put(MAX_SUBMISSIONS_KEY, 4);
 
     assertThrows(JSONException.class, () ->
-        Exercise.fromJsonObject(json, TEST_POINTS, Collections.emptySet(), Collections.emptyMap()));
+        Exercise.fromJsonObject(json, TEST_POINTS, Collections.emptySet(), Collections.emptyMap(), "fi"));
   }
 
   @Test
@@ -117,7 +118,7 @@ class ExerciseTest {
         .put(MAX_SUBMISSIONS_KEY, 4);
 
     assertThrows(JSONException.class, () ->
-        Exercise.fromJsonObject(json, TEST_POINTS, Collections.emptySet(), Collections.emptyMap()));
+        Exercise.fromJsonObject(json, TEST_POINTS, Collections.emptySet(), Collections.emptyMap(), "fi"));
   }
 
   @Test
@@ -129,7 +130,7 @@ class ExerciseTest {
         .put(MAX_POINTS_KEY, 4);
 
     assertThrows(JSONException.class, () ->
-        Exercise.fromJsonObject(json, TEST_POINTS, Collections.emptySet(), Collections.emptyMap()));
+        Exercise.fromJsonObject(json, TEST_POINTS, Collections.emptySet(), Collections.emptyMap(), "fi"));
   }
 
   @Test

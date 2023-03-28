@@ -57,20 +57,20 @@ class ExerciseGroupTest {
   void testFromJsonObject() {
     JSONObject json = new JSONObject()
         .put(ID_KEY, 567)
-        .put(NAME_KEY, "group name")
+        .put(NAME_KEY, "|abcd:group name|")
         .put(HTML_KEY, "http://example.com/w01")
         .put(OPEN_KEY, true)
         .put(EXERCISES_KEY, new JSONArray()
             .put(new JSONObject()
                 .put(ID_KEY, 567)
-                .put(NAME_KEY, "exercise name")
+                .put(NAME_KEY, "|fi:harjoituksen nimi|en:exercise name|")
                 .put(HTML_KEY, "http://localhost:7000")
                 .put(MAX_POINTS_KEY, 50)
                 .put(MAX_SUBMISSIONS_KEY, 10)));
-    ExerciseGroup group = ExerciseGroup.fromJsonObject(json, Map.of(567L, List.of()));
+    ExerciseGroup group = ExerciseGroup.fromJsonObject(json, Map.of(567L, List.of()), "en");
 
     Assertions.assertEquals(567, group.getId());
-    Assertions.assertEquals("group name", group.getName(),
+    Assertions.assertEquals("|abcd:group name|", group.getName(),
         "The exercise group has the same name as in the JSON object");
     Assertions.assertEquals("http://example.com/w01", group.getHtmlUrl());
     Assertions.assertTrue(group.isOpen());
@@ -82,7 +82,7 @@ class ExerciseGroupTest {
   void testFromJsonObjectMissingExercises() {
     JSONObject json = new JSONObject().put(NAME_KEY, "group test name");
     assertThrows(JSONException.class, () ->
-        ExerciseGroup.fromJsonObject(json, new HashMap<>()));
+        ExerciseGroup.fromJsonObject(json, new HashMap<>(), "en"));
   }
 
   @Test
@@ -90,7 +90,7 @@ class ExerciseGroupTest {
     JSONObject json = new JSONObject()
         .put(ID_KEY, 100);
     assertThrows(JSONException.class, () ->
-        ExerciseGroup.fromJsonObject(json, new HashMap<>()));
+        ExerciseGroup.fromJsonObject(json, new HashMap<>(), "en"));
   }
 
 }

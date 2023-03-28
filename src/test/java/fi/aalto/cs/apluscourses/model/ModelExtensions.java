@@ -45,7 +45,8 @@ public class ModelExtensions {
     @NotNull
     @Override
     public List<ExerciseGroup> getExerciseGroups(@NotNull Course course,
-                                                 @NotNull Authentication authentication) {
+                                                 @NotNull Authentication authentication,
+                                                 @NotNull String languageCode) {
       return Collections.emptyList();
     }
 
@@ -76,7 +77,8 @@ public class ModelExtensions {
                                 @NotNull Set<String> optionalCategories,
                                 @NotNull Map<Long, Tutorial> tutorials,
                                 @NotNull Authentication authentication,
-                                @NotNull CachePreference cachePreference) {
+                                @NotNull CachePreference cachePreference,
+                                @NotNull String languageCode) {
       return new Exercise(1, "lol", "http://example.com",
           new SubmissionInfo(Collections.emptyMap()), 20, 10, OptionalLong.empty(), null, false
       );

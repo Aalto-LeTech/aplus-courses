@@ -31,8 +31,7 @@ public class FeedbackAvailableNotification extends Notification {
         PluginSettings.A_PLUS,
         getText("notification.FeedbackAvailableNotification.title"),
         getAndReplaceText("notification.FeedbackAvailableNotification.content",
-            APlusLocalizationUtil.getEnglishName(exercise.getName()),
-            SubmissionResultUtil.getStatus(submissionResult)),
+            exercise.getName(), SubmissionResultUtil.getStatus(submissionResult)),
         NotificationType.INFORMATION
     );
     if (mainViewModelProvider.getMainViewModel(project).getFeedbackCss() != null) {

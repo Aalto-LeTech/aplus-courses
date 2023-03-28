@@ -26,7 +26,7 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
   }
 
   public String getPresentableName() {
-    return APlusLocalizationUtil.getEnglishName(getModel().getName());
+    return getModel().getName();
   }
 
   @Override

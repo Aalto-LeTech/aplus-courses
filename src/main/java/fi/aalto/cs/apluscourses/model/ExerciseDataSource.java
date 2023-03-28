@@ -17,7 +17,8 @@ public interface ExerciseDataSource {
 
   @NotNull
   List<ExerciseGroup> getExerciseGroups(@NotNull Course course,
-                                        @NotNull Authentication authentication) throws IOException;
+                                        @NotNull Authentication authentication,
+                                        @NotNull String languageCode) throws IOException;
 
   @NotNull
   Points getPoints(@NotNull Course course, @NotNull Authentication authentication)
@@ -33,7 +34,8 @@ public interface ExerciseDataSource {
                        @NotNull Set<String> optionalCategories,
                        @NotNull Map<Long, Tutorial> tutorials,
                        @NotNull Authentication authentication,
-                       @NotNull CachePreference cachePreference) throws IOException;
+                       @NotNull CachePreference cachePreference,
+                       @NotNull String languageCode) throws IOException;
 
   @NotNull
   String getSubmissionFeedback(long submissionId,
