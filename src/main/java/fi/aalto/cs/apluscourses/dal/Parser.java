@@ -35,7 +35,8 @@ public interface Parser {
   Exercise parseExercise(@NotNull JSONObject jsonObject,
                          @NotNull Points points,
                          @NotNull Set<String> optionalCategories,
-                         @NotNull Map<Long, Tutorial> tutorials);
+                         @NotNull Map<Long, Tutorial> tutorials,
+                         @NotNull String languageCode);
 
   SubmissionResult parseSubmissionResult(@NotNull JSONObject jsonObject,
                                          @NotNull Exercise exercise,

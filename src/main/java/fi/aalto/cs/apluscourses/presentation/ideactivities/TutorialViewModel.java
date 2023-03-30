@@ -153,7 +153,7 @@ public class TutorialViewModel implements Task.Observer {
   }
 
   public @NotNull String getTitle() {
-    return APlusLocalizationUtil.getEnglishName(tutorialExercise.getName());
+    return tutorialExercise.getName();
   }
 
   public @NotNull Tutorial getTutorial() {

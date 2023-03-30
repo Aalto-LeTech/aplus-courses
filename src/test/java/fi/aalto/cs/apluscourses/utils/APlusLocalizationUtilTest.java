@@ -6,17 +6,25 @@ import org.junit.jupiter.api.Test;
 class APlusLocalizationUtilTest {
 
   @Test
-  void testGetEnglishName() {
-    String multilingualName = "|fi:hei|en:hello|se:hej|";
-    Assertions.assertEquals("hello", APlusLocalizationUtil.getEnglishName(multilingualName),
-        "Correctly parses the English name");
-  }
+  void testGetLocalizedName() {
+    String multilingualName = "|fi:hei|en:hello|se:och samma på svenska|";
+    Assertions.assertEquals("hei", APlusLocalizationUtil.getLocalizedName(multilingualName, "fi"),
+        "Correctly parses the localized name in Finnish");
+    Assertions.assertEquals("hello", APlusLocalizationUtil.getLocalizedName(multilingualName, "en"),
+        "Correctly parses the localized name in English");
+    Assertions.assertEquals("och samma på svenska", APlusLocalizationUtil.getLocalizedName(multilingualName, "se"),
+        "Correctly parses the localized name in Swedish");
+    Assertions.assertEquals("hello", APlusLocalizationUtil.getLocalizedName(multilingualName, "ee"),
+        "Correctly returns the English text if the request language is unavailable");
 
-  @Test
-  void testGetEnglishNameWithoutLocalization() {
-    String name = "abcdefg";
-    Assertions.assertEquals("abcdefg", APlusLocalizationUtil.getEnglishName(name),
-        "Returns the given string when the string doesn't contain localization");
+    String nonEnglishText = "|fi:antauduttuaan|";
+    Assertions.assertEquals("antauduttuaan", APlusLocalizationUtil.getLocalizedName(nonEnglishText, "fi"),
+        "Correctly parses the localized name in Finnish");
+    Assertions.assertEquals(nonEnglishText, APlusLocalizationUtil.getLocalizedName(nonEnglishText, "lv"),
+        "Correctly returns the whole text if neither the requested nor English versions are available");
+
+    Assertions.assertEquals("xyz", APlusLocalizationUtil.getLocalizedName("xyz", "en"),
+        "Correctly returns the whole text if there is no localization information");
   }
 
   @Test

@@ -130,8 +130,7 @@ public class ShowFeedbackAction extends AnAction {
           .findFirst()
           .ifPresent(editor -> fileEditorManager.closeFile(Objects.requireNonNull(editor.getFile())));
       HTMLEditorProvider.openEditor(project, getAndReplaceText("ui.ShowFeedbackAction.feedbackTitle",
-              APlusLocalizationUtil.getEnglishName(submissionResult.getExercise().getName()),
-              String.valueOf(submissionResult.getId())),
+              submissionResult.getExercise().getName(), String.valueOf(submissionResult.getId())),
           document.html());
     } catch (IOException ex) {
       notifier.notify(new NetworkErrorNotification(ex), project);

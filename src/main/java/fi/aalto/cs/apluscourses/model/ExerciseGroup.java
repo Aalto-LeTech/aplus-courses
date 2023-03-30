@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.model;
 
+import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
 import fi.aalto.cs.apluscourses.utils.JsonUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,15 +56,16 @@ public class ExerciseGroup implements Browsable {
    */
   @NotNull
   public static ExerciseGroup fromJsonObject(@NotNull JSONObject jsonObject,
-                                             @NotNull Map<Long, List<Long>> exerciseOrder) {
+                                             @NotNull Map<Long, List<Long>> exerciseOrder,
+                                             @NotNull String languageCode) {
     long id = jsonObject.getLong("id");
-    String name = jsonObject.getString("display_name");
+    String name = APlusLocalizationUtil.getLocalizedName(jsonObject.getString("display_name"), languageCode);
     String htmlUrl = jsonObject.getString("html_url");
     boolean isOpen = jsonObject.getBoolean("is_open");
     JSONArray exercisesArray = jsonObject.getJSONArray("exercises");
     DummyExercise[] dummyExercises = JsonUtil.parseArray(exercisesArray,
         JSONArray::getJSONObject,
-        DummyExercise::fromJsonObject,
+        (obj) -> DummyExercise.fromJsonObject(obj, languageCode),
         DummyExercise[]::new);
     return new ExerciseGroup(id, name, htmlUrl, isOpen, Arrays.stream(dummyExercises).collect(Collectors.toList()),
         exerciseOrder.get(id));

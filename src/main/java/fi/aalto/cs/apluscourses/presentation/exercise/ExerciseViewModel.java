@@ -26,7 +26,7 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
   }
 
   public String getPresentableName() {
-    return APlusLocalizationUtil.getEnglishName(getModel().getName());
+    return getModel().getName();
   }
 
   @Override
@@ -93,7 +93,7 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
    */
   @NotNull
   public String getStatusText() {
-    if ("Feedback".equals(getPresentableName())) { // O1_SPECIFIC
+    if ("Feedback".equals(getPresentableName()) || "Palaute".equals(getPresentableName())) { // O1_SPECIFIC
       return "";
     }
     if (getStatus() == Status.OPTIONAL_PRACTICE) {

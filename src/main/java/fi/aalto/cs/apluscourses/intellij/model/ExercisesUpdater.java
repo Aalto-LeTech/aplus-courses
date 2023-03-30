@@ -71,6 +71,8 @@ public class ExercisesUpdater extends RepeatedTask {
     }
     var progressViewModel =
         PluginSettings.getInstance().getMainViewModel(courseProject.getProject()).progressViewModel;
+    var selectedLanguage = PluginSettings.getInstance()
+        .getCourseFileManager(courseProject.getProject()).getLanguage();
     var progress =
         progressViewModel.start(3, getText("ui.ProgressBarView.refreshingAssignments"), false);
     try {
@@ -78,7 +80,7 @@ public class ExercisesUpdater extends RepeatedTask {
       if (Thread.interrupted()) {
         return;
       }
-      var exerciseGroups = dataSource.getExerciseGroups(course, authentication);
+      var exerciseGroups = dataSource.getExerciseGroups(course, authentication, selectedLanguage);
       logger.info("Exercise groups count: {}", exerciseGroups.size());
       if (Thread.interrupted()) {
         return;
@@ -100,7 +102,7 @@ public class ExercisesUpdater extends RepeatedTask {
 
       progress.incrementMaxValue(submissionsToBeLoadedCount(exerciseGroups, points)
           + exercisesToBeLoadedCount(exerciseGroups));
-      addExercises(exerciseGroups, points, authentication, progress);
+      addExercises(exerciseGroups, points, authentication, progress, selectedLanguage);
 
       if (Thread.interrupted()) {
         return;
@@ -119,12 +121,14 @@ public class ExercisesUpdater extends RepeatedTask {
   private void addExercises(@NotNull List<ExerciseGroup> exerciseGroups,
                             @NotNull Points points,
                             @NotNull Authentication authentication,
-                            @NotNull Progress progress) throws IOException {
+                            @NotNull Progress progress,
+                            @NotNull String selectedLanguage) throws IOException {
     var course = courseProject.getCourse();
     var dataSource = course.getExerciseDataSource();
     var selectedStudent = courseProject.getSelectedStudent();
     var exercisesTree = new ExercisesTree(exerciseGroups, selectedStudent);
     courseProject.setExerciseTree(exercisesTree);
+
     for (var exerciseGroup : exerciseGroups) {
 
       if (courseProject.isLazyLoadedGroup(exerciseGroup.getId())) {
@@ -133,7 +137,7 @@ public class ExercisesUpdater extends RepeatedTask {
             return;
           }
           var exercise = dataSource.getExercise(exerciseId, points, course.getOptionalCategories(),
-              course.getTutorials(), authentication, CachePreferences.GET_MAX_ONE_WEEK_OLD);
+              course.getTutorials(), authentication, CachePreferences.GET_MAX_ONE_WEEK_OLD, selectedLanguage);
           exerciseGroup.addExercise(exercise);
 
           progress.increment();
