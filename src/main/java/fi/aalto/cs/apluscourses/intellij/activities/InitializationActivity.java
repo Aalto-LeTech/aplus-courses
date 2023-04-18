@@ -25,7 +25,7 @@ import fi.aalto.cs.apluscourses.intellij.utils.ProjectViewUtil;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationException;
 import fi.aalto.cs.apluscourses.model.UnexpectedResponseException;
-import fi.aalto.cs.apluscourses.ui.utils.PluginInstallerCallback;
+import fi.aalto.cs.apluscourses.ui.IntegrityCheckDialog;
 import fi.aalto.cs.apluscourses.ui.utils.PluginInstallerDialogs;
 import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
@@ -67,6 +67,7 @@ public class InitializationActivity implements Background {
   public void runActivity(@NotNull Project project) {
     var courseVersion = BuildInfo.INSTANCE.courseVersion;
     logger.info("Starting initialization, course version {}", courseVersion);
+    ApplicationManager.getApplication().invokeLater(IntegrityCheckDialog::show);
     if (!PluginIntegrityChecker.isPluginCorrectlyInstalled()) {
       logger.warn("Missing one or more dependencies");
       return;
