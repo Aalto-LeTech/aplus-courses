@@ -30,6 +30,7 @@ import fi.aalto.cs.apluscourses.ui.utils.PluginInstallerDialogs;
 import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import fi.aalto.cs.apluscourses.utils.PluginAutoInstaller;
+import fi.aalto.cs.apluscourses.utils.PluginIntegrityChecker;
 import fi.aalto.cs.apluscourses.utils.Version;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty;
@@ -66,6 +67,11 @@ public class InitializationActivity implements Background {
   public void runActivity(@NotNull Project project) {
     var courseVersion = BuildInfo.INSTANCE.courseVersion;
     logger.info("Starting initialization, course version {}", courseVersion);
+    if (!PluginIntegrityChecker.isPluginCorrectlyInstalled()) {
+      logger.warn("Missing one or more dependencies");
+      return;
+    }
+
     PluginSettings pluginSettings = PluginSettings.getInstance();
     pluginSettings.initializeLocalIdeSettings();
 
