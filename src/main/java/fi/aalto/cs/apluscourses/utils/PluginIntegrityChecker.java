@@ -12,10 +12,11 @@ public class PluginIntegrityChecker {
    */
   public static boolean isPluginCorrectlyInstalled() {
     try {
+      // reference the dependencies' classes; an exception will be thrown if any of these is missing
       return !ZipFile.class.toString().isEmpty() && !JSONObject.class.toString().isEmpty()
           && !Safelist.class.toString().isEmpty() && !HttpClient.class.toString().isEmpty();
-    } catch (Exception ignored) {
-      // the potential exception here is some kind of ReflectiveOperationException, which
+    } catch (Throwable ignored) {
+      // the potential exception here is usually NoClassDefFoundError, which
       // could only be caused by a missing class (= missing dependency)
     }
 

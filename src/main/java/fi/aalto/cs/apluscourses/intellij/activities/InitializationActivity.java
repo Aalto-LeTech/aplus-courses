@@ -67,10 +67,10 @@ public class InitializationActivity implements Background {
   public void runActivity(@NotNull Project project) {
     var courseVersion = BuildInfo.INSTANCE.courseVersion;
     logger.info("Starting initialization, course version {}", courseVersion);
-    ApplicationManager.getApplication().invokeLater(IntegrityCheckDialog::show);
+
     if (!PluginIntegrityChecker.isPluginCorrectlyInstalled()) {
       logger.warn("Missing one or more dependencies");
-      return;
+      ApplicationManager.getApplication().invokeLater(IntegrityCheckDialog::show);
     }
 
     PluginSettings pluginSettings = PluginSettings.getInstance();
