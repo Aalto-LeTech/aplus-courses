@@ -40,6 +40,10 @@ public class ArrayUtil {
     R apply(T arg) throws E;
   }
 
+  public static <T> boolean containsIndex(@NotNull T[] array, int index) {
+    return index >= 0 && index < array.length;
+  }
+
   public static <T> Set<T> toSet(T[] array) {
     return new HashSet<>(Arrays.asList(array));
   }

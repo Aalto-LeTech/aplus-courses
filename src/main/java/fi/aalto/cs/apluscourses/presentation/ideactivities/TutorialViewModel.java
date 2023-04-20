@@ -1,10 +1,10 @@
 package fi.aalto.cs.apluscourses.presentation.ideactivities;
 
 import fi.aalto.cs.apluscourses.intellij.notifications.TaskNotifier;
-import fi.aalto.cs.apluscourses.model.Tutorial;
 import fi.aalto.cs.apluscourses.model.TutorialExercise;
 import fi.aalto.cs.apluscourses.model.task.ActivityFactory;
 import fi.aalto.cs.apluscourses.model.task.Task;
+import fi.aalto.cs.apluscourses.model.tutorial.Tutorial;
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
@@ -43,17 +43,11 @@ public class TutorialViewModel implements Task.Observer {
                            @NotNull TaskNotifier taskNotifier,
                            @NotNull TutorialDialogs dialogs) {
     this.tutorialExercise = tutorialExercise;
-    this.dialogs = dialogs;
-    List<Task> tasks = tutorialExercise.getTutorial().getTasks();
-    if (!tasks.isEmpty()) {
-      this.currentTask = tasks.get(0);
-    }
-    isCompleted = false;
-    currentTaskIndex = 1;
-    unlockedIndex = 1;
-    tasksAmount = tasks.size();
     this.activityFactory = activityFactory;
     this.taskNotifier = taskNotifier;
+    this.dialogs = dialogs;
+    this.tasksAmount = 0;
+
   }
 
   /**
@@ -88,17 +82,12 @@ public class TutorialViewModel implements Task.Observer {
 
   @Override
   public void onAutoCompleted() {
-    if (!currentTask.isAlreadyCompleted()) {
-      endCurrentTask();
-      currentTask = getTutorial().setTaskAlreadyCompleted(currentTask);
-      startCurrentTask();
-    }
+
   }
 
   @Override
   public void onCompleted() {
-    taskNotifier.notifyEndTask(tutorialExercise.getTutorial().getTasks().indexOf(currentTask));
-    currentTaskCompleted();
+
   }
 
   /**
@@ -107,18 +96,7 @@ public class TutorialViewModel implements Task.Observer {
    * if not, then the currentTask is set to point to the next Task to be done.
    */
   public void currentTaskCompleted() {
-    synchronized (lock) {
-      endCurrentTask();
-      Tutorial tutorial = tutorialExercise.getTutorial();
-      currentTask = tutorial.getNextTask(currentTask);
-      if (currentTask == null) {
-        isCompleted = true;
-        tutorial.onComplete();
-      } else {
-        incrementTaskIndex();
-        startCurrentTask();
-      }
-    }
+
   }
 
   /**
@@ -126,26 +104,14 @@ public class TutorialViewModel implements Task.Observer {
    * CurrentTask is set to the task with the given index.
    */
   public void changeTask(int newTaskIndex) {
-    synchronized (lock) {
-      endCurrentTask();
-      Tutorial tutorial = tutorialExercise.getTutorial();
-      currentTask = tutorial.getTasks().get(newTaskIndex - 1);
-      this.currentTaskIndex = newTaskIndex;
-      startCurrentTask();
-    }
+
   }
 
   /**
    * Functionality for canceling the Tutorial, mainly frees up resources.
    */
   public void cancelTutorial() {
-    synchronized (lock) {
-      if (currentTask != null) {
-        endCurrentTask();
-        currentTask = null;
-        tutorialExercise.getTutorial().onComplete();
-      }
-    }
+
   }
 
   public @NotNull TutorialExercise getExercise() {

@@ -3,6 +3,8 @@ package fi.aalto.cs.apluscourses.model;
 import fi.aalto.cs.apluscourses.intellij.model.APlusProject;
 import fi.aalto.cs.apluscourses.intellij.model.CommonLibraryProvider;
 import fi.aalto.cs.apluscourses.intellij.model.IntelliJCourse;
+import fi.aalto.cs.apluscourses.model.tutorial.Tutorial;
+import fi.aalto.cs.apluscourses.model.tutorial.TutorialFactory;
 import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import fi.aalto.cs.apluscourses.utils.PluginDependency;
@@ -479,6 +481,11 @@ public class ModelExtensions {
     @Override
     public Library createLibrary(@NotNull String name) {
       throw new UnsupportedOperationException("Only common libraries are supported.");
+    }
+
+    @Override
+    public TutorialFactory getTutorialFactory() {
+      throw new UnsupportedOperationException("Tutorials are not supported.");
     }
   }
 

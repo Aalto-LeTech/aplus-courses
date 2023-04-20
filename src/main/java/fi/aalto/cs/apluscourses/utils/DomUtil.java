@@ -4,11 +4,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.AbstractList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -22,9 +24,11 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -168,6 +172,28 @@ public class DomUtil {
       transformerFactory.newTransformer().transform(source, result);
     } catch (TransformerException ex) {
       throw new IOException(ex);
+    }
+  }
+
+  public static @NotNull Stream<@NotNull Element> streamElements(@NotNull NodeList nodeList) {
+    return CollectionUtil.ofType(new NodeListWrapper(nodeList).stream(), Element.class);
+  }
+
+  public static class NodeListWrapper extends AbstractList<Node> {
+    private final @NotNull NodeList nodeList;
+
+    public NodeListWrapper(@NotNull NodeList nodeList) {
+      this.nodeList = nodeList;
+    }
+
+    @Override
+    public Node get(int index) {
+      return nodeList.item(index);
+    }
+
+    @Override
+    public int size() {
+      return nodeList.getLength();
     }
   }
 }

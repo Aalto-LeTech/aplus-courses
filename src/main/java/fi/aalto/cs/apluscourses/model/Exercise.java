@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.model;
 
+import fi.aalto.cs.apluscourses.model.tutorial.Tutorial;
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
 import java.util.ArrayList;
 import java.util.Collections;

@@ -91,7 +91,7 @@ public class ExportModuleAction extends AnAction {
 
     ModuleSelectionViewModel moduleSelectionViewModel = new ModuleSelectionViewModel(
         availableModules, getText("ui.exportModule.selectModule"), project, moduleDirGuesser);
-    if (!dialogs.create(moduleSelectionViewModel, project).showAndGet()) {
+    if (!dialogs.call(moduleSelectionViewModel, project).showAndGet()) {
       return;
     }
 
@@ -108,7 +108,7 @@ public class ExportModuleAction extends AnAction {
         selectedModule.getName() + ".zip"
     );
 
-    if (!dialogs.create(fileViewModel, project).showAndGet()) {
+    if (!dialogs.call(fileViewModel, project).showAndGet()) {
       return;
     }
 

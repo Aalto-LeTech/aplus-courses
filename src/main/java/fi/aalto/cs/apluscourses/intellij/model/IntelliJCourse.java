@@ -18,7 +18,7 @@ import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.ExerciseDataSource;
 import fi.aalto.cs.apluscourses.model.Library;
 import fi.aalto.cs.apluscourses.model.Module;
-import fi.aalto.cs.apluscourses.model.Tutorial;
+import fi.aalto.cs.apluscourses.model.tutorial.Tutorial;
 import fi.aalto.cs.apluscourses.utils.PluginDependency;
 import fi.aalto.cs.apluscourses.utils.Version;
 import java.net.URL;
@@ -87,8 +87,7 @@ public class IntelliJCourse extends Course {
         tutorials,
         pluginDependencies,
         feedbackParser,
-        newsParser
-    );
+        newsParser);
 
     this.project = project;
     this.commonLibraryProvider = commonLibraryProvider;

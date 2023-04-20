@@ -65,7 +65,7 @@ public class SelectStudentAction extends AnAction {
       var students = course.getExerciseDataSource()
           .getStudents(course, auth, CachePreferences.GET_MAX_ONE_WEEK_OLD);
       var studentListViewModel = new SelectStudentViewModel(students, course, auth);
-      if (!dialogs.create(studentListViewModel, e.getProject()).showAndGet()) {
+      if (!dialogs.call(studentListViewModel, e.getProject()).showAndGet()) {
         return;
       }
       courseProject.setSelectedStudent(studentListViewModel.selectedStudent.get());

@@ -1,6 +1,9 @@
 package fi.aalto.cs.apluscourses.model;
 
 import com.intellij.openapi.util.SystemInfoRt;
+import fi.aalto.cs.apluscourses.model.tutorial.Tutorial;
+import fi.aalto.cs.apluscourses.model.tutorial.TutorialFactory;
+import fi.aalto.cs.apluscourses.model.tutorial.TutorialSource;
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
 import fi.aalto.cs.apluscourses.utils.JsonUtil;
@@ -196,8 +199,8 @@ public abstract class Course implements ComponentSource {
         = getCourseReplInitialCommands(jsonObject, sourcePath);
     String replAdditionalArguments = getCourseReplAdditionalArguments(jsonObject, sourcePath);
     Version courseVersion = getCourseVersion(jsonObject, sourcePath);
-    Map<Long, Tutorial> tutorials = getCourseTutorials(jsonObject);
     List<PluginDependency> pluginDependencies = getCoursePluginDependencies(jsonObject, sourcePath);
+    Map<Long, Tutorial> tutorials = getTutorials(jsonObject, factory.getTutorialFactory());
     String feedbackParser = jsonObject.optString("feedbackParser", null);
     String newsParser = jsonObject.optString("newsParser", null);
     long courseLastModified = jsonObject.optLong("courseLastModified");
@@ -644,11 +647,12 @@ public abstract class Course implements ComponentSource {
     }
   }
 
-  private static Map<Long, Tutorial> getCourseTutorials(@NotNull JSONObject jsonObject) {
+  private static Map<Long, Tutorial> getTutorials(@NotNull JSONObject jsonObject, TutorialFactory factory) {
+    var tutorialSource = new TutorialSource(factory, CoursesClient::fetch);
     JSONObject tutorialsJson = jsonObject.optJSONObject("tutorials");
     return tutorialsJson == null ? Collections.emptyMap()
-        : JsonUtil.parseObject(tutorialsJson, JSONObject::getJSONObject,
-        Tutorial::fromJsonObject, Long::valueOf);
+        : JsonUtil.parseObject(tutorialsJson, JSONObject::getString,
+        tutorialSource::getTutorialOrDie, Long::valueOf);
   }
 
   @NotNull

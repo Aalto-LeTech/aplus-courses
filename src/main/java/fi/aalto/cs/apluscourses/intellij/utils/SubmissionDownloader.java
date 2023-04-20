@@ -126,7 +126,7 @@ public class SubmissionDownloader {
 
     WindowUtil.bringWindowToFront(project);
 
-    if (!dialogs.create(downloadSubmissionViewModel, project).showAndGet()) {
+    if (!dialogs.call(downloadSubmissionViewModel, project).showAndGet()) {
       return;
     }
 

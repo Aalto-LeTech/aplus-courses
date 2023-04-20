@@ -38,7 +38,7 @@ import fi.aalto.cs.apluscourses.model.FileFinder;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.SubmissionStatusUpdater;
 import fi.aalto.cs.apluscourses.model.SubmittableFile;
-import fi.aalto.cs.apluscourses.model.Tutorial;
+import fi.aalto.cs.apluscourses.model.tutorial.Tutorial;
 import fi.aalto.cs.apluscourses.model.TutorialExercise;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
@@ -270,7 +270,7 @@ public class SubmitExerciseAction extends AnAction {
 
       ModuleSelectionViewModel moduleSelectionViewModel = new ModuleSelectionViewModel(
           modules, getText("ui.toolWindow.subTab.exercises.submission.selectModule"), project, moduleDirGuesser);
-      if (!dialogs.create(moduleSelectionViewModel, project).showAndGet()) {
+      if (!dialogs.call(moduleSelectionViewModel, project).showAndGet()) {
         return;
       }
       selectedModule = moduleSelectionViewModel.selectedModule.get();
@@ -320,7 +320,7 @@ public class SubmitExerciseAction extends AnAction {
     final SubmissionViewModel submission = new SubmissionViewModel(exercise, groups, defaultGroup,
         lastSubmittedGroup, files, language);
 
-    if (!dialogs.create(submission, project).showAndGet()) {
+    if (!dialogs.call(submission, project).showAndGet()) {
       return;
     }
 

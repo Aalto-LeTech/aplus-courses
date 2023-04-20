@@ -31,7 +31,7 @@ public class DialogHelper<T> {
 
     @NotNull
     @Override
-    public Dialog create(@NotNull T viewModel, @Nullable Project project) {
+    public Dialog callFor(@NotNull T viewModel, @Nullable Project project) {
       if (project != expectedProject) {
         throw new IllegalArgumentException();
       }

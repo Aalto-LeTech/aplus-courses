@@ -5,7 +5,7 @@ from pathlib import Path
 api = Flask(__name__)
 
 modules = [Path(path).stem for path in glob('modules/*.zip')]
-tutorials = [int(Path(path).stem) for path in glob('tutorials/*.json')]
+tutorials = [int(Path(path).stem) for path in glob('tutorials/*.xml')]
 
 @api.route('/')
 def index():
@@ -32,11 +32,7 @@ def config():
         'tutorials': {}
     }
     for tutorial in tutorials:
-        with open('tutorials/{}.json'.format(tutorial)) as f:
-            conf['tutorials'][str(tutorial)] = {
-                'moduleDependencies': [],
-                'tasks': json.load(f)
-            }
+        conf['tutorials'][str(tutorial)] = url_for('tutorial', id=tutorial, _external=True)
     return json.dumps(conf)
 
 @api.route('/<name>.zip')
@@ -159,6 +155,7 @@ def news():
 @api.route('/exercise_<int:id>/')
 def exercise_html(id):
     return "Exercise " + str(id)
+
 @api.route('/exercise_<int:id>/submissions/9999/')
 def submission_html(id):
     return 'Submission feedback: ok'
@@ -166,6 +163,10 @@ def submission_html(id):
 @api.route('/week_1/')
 def week_html():
     return "Week 1"
+
+@api.route('/tutorials/<id>/')
+def tutorial(id):
+    return send_from_directory('tutorials', id + ".xml")
 
 if __name__ == '__main__':
     api.run()

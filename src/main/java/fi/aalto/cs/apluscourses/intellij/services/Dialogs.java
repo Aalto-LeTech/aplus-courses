@@ -14,9 +14,9 @@ import fi.aalto.cs.apluscourses.ui.SelectStudentDialog;
 import fi.aalto.cs.apluscourses.ui.exercise.DownloadSubmissionDialog;
 import fi.aalto.cs.apluscourses.ui.exercise.ModuleSelectionDialog;
 import fi.aalto.cs.apluscourses.ui.exercise.SubmissionDialog;
-import fi.aalto.cs.apluscourses.utils.FactorySelector;
+import fi.aalto.cs.apluscourses.utils.Dispatcher;
 
-public class Dialogs extends FactorySelector<Project, Dialog> {
+public class Dialogs extends Dispatcher<Project, Dialog> {
   public static final Dialogs DEFAULT = new Dialogs();
 
   static {
@@ -28,7 +28,7 @@ public class Dialogs extends FactorySelector<Project, Dialog> {
     DEFAULT.register(SelectStudentViewModel.class, SelectStudentDialog::new);
   }
 
-  public interface Factory<T> extends FactorySelector.Factory<T, Project, Dialog> {
+  public interface Factory<T> extends Dispatcher.FunctionDelegate<T, Project, Dialog> {
 
   }
 }

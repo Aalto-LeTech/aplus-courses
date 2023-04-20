@@ -52,6 +52,10 @@ public class VfsUtil {
     return visitor.getPath();
   }
 
+  public static @Nullable Path getNioPath(@NotNull VirtualFile file) {
+    return file.getFileSystem().getNioPath(file); // we avoid file.getNioPath() because it may throw exception
+  }
+
   static class FileFinderVirtualFileVisitor extends VirtualFileVisitor<Object> {
     private String filename;
     private Path path;

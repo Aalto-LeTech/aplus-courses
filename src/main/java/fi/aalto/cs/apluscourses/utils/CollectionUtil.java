@@ -3,10 +3,12 @@ package fi.aalto.cs.apluscourses.utils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -130,5 +132,33 @@ public class CollectionUtil {
 
   public static <E> Stream<E> get(Stream<E> stream, long... indices) {
     return get(stream, Arrays.stream(indices));
+  }
+
+  public static <E, R> @NotNull Stream<R> ofType(@NotNull Stream<E> stream, @NotNull Class<R> type) {
+    return stream.filter(type::isInstance).map(type::cast);
+  }
+
+  public static <E, R> @NotNull List<R> ofType(@NotNull List<E> list, @NotNull Class<R> type) {
+    return ofType(list.stream(), type).collect(Collectors.toList());
+  }
+
+  public static <E> Stream<E> without(@NotNull Stream<E> stream, @NotNull Collection<? extends E> toBeExcluded) {
+    var exSet = toBeExcluded instanceof Set ? (Set<?>) toBeExcluded : new HashSet<>(toBeExcluded);
+    return stream.filter(e -> !exSet.contains(e));
+  }
+
+  public static <T> boolean equals(@NotNull Iterable<T> iterable1,
+                                   @NotNull Iterable<T> iterable2,
+                                   @NotNull EqualityComparator<T> equalityComparator) {
+    var i1 = iterable1.iterator();
+    var i2 = iterable2.iterator();
+    while (i1.hasNext() && i2.hasNext()) {
+      T o1 = i1.next();
+      T o2 = i2.next();
+      if (!equalityComparator.equals(o1, o2)) {
+        return false;
+      }
+    }
+    return !i1.hasNext() && !i2.hasNext();
   }
 }

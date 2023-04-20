@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.model;
 
+import fi.aalto.cs.apluscourses.model.tutorial.Tutorial;
+import fi.aalto.cs.apluscourses.model.tutorial.TutorialFactory;
 import fi.aalto.cs.apluscourses.utils.PluginDependency;
 import fi.aalto.cs.apluscourses.utils.Version;
 import java.net.URL;
@@ -35,4 +37,6 @@ public interface ModelFactory {
                       @NotNull String changelog);
 
   Library createLibrary(@NotNull String name);
+
+  TutorialFactory getTutorialFactory();
 }

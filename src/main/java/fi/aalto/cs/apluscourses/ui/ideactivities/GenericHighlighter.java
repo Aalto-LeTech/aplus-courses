@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.ui.ideactivities;
 
+import fi.aalto.cs.apluscourses.ui.tutorials.OverlayPane;
 import java.awt.Component;
 import java.awt.Rectangle;
 import java.awt.geom.RectangularShape;

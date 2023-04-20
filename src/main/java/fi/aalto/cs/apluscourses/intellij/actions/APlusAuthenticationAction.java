@@ -87,7 +87,7 @@ public class APlusAuthenticationAction extends DumbAwareAction {
         course.getExerciseDataSource()
     );
 
-    if (!dialogs.create(authenticationViewModel, project).showAndGet()) {
+    if (!dialogs.call(authenticationViewModel, project).showAndGet()) {
       logger.info("Authentication cancelled");
       return;
     }

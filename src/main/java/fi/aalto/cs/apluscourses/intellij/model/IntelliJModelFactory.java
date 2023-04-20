@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.intellij.model;
 
 import com.intellij.openapi.project.Project;
+import fi.aalto.cs.apluscourses.intellij.model.tutorial.IntelliJTutorialFactory;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.Course;
@@ -8,7 +9,9 @@ import fi.aalto.cs.apluscourses.model.Library;
 import fi.aalto.cs.apluscourses.model.ModelFactory;
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.model.ModuleMetadata;
-import fi.aalto.cs.apluscourses.model.Tutorial;
+import fi.aalto.cs.apluscourses.model.tutorial.Tutorial;
+import fi.aalto.cs.apluscourses.model.tutorial.TutorialFactory;
+import fi.aalto.cs.apluscourses.ui.tutorials.OverlayPane;
 import fi.aalto.cs.apluscourses.utils.PluginDependency;
 import fi.aalto.cs.apluscourses.utils.Version;
 import java.net.URL;
@@ -94,5 +97,10 @@ public class IntelliJModelFactory implements ModelFactory {
   public Library createLibrary(@NotNull String name) {
     throw new UnsupportedOperationException(
         "Only common libraries like Scala SDK are currently supported.");
+  }
+
+  @Override
+  public TutorialFactory getTutorialFactory() {
+    return new IntelliJTutorialFactory(new OverlayPane(), project.getProject());
   }
 }
