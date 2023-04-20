@@ -652,7 +652,7 @@ public abstract class Course implements ComponentSource {
     JSONObject tutorialsJson = jsonObject.optJSONObject("tutorials");
     return tutorialsJson == null ? Collections.emptyMap()
         : JsonUtil.parseObject(tutorialsJson, JSONObject::getString,
-        tutorialSource::getTutorialOrDie, Long::valueOf);
+        tutorialSource::getTutorialOrDie, Long::valueOf); // TODO: proper exception handling
   }
 
   @NotNull

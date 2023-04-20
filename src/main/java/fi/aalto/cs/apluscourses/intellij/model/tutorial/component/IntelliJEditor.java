@@ -19,7 +19,7 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class IntelliJEditor extends IntelliJTutorialComponent<Component> implements TutorialComponent {
+public class IntelliJEditor extends IntelliJTutorialComponent<Component> {
 
   private final @Nullable Path path;
 
