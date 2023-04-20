@@ -18,7 +18,7 @@ import javax.swing.SwingUtilities;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class IntelliJTutorialComponent<C extends Component> implements TutorialComponent, SupportedPiece {
+public abstract class IntelliJTutorialComponent<C extends Component> implements SupportedPiece {
   private static final int MARGIN = 15;
   private final @Nullable Project project;
   private final @NotNull Set<@NotNull Object> supporters = new HashSet<>();
