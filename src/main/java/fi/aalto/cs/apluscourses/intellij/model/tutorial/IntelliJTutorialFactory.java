@@ -4,6 +4,7 @@ import com.intellij.ide.projectView.ProjectView;
 import com.intellij.ide.projectView.impl.AbstractProjectViewPane;
 import com.intellij.openapi.project.Project;
 import com.intellij.xdebugger.XSourcePosition;
+import fi.aalto.cs.apluscourses.intellij.model.tutorial.component.IntelliJBuildButton;
 import fi.aalto.cs.apluscourses.intellij.model.tutorial.component.IntelliJEditor;
 import fi.aalto.cs.apluscourses.intellij.model.tutorial.component.IntelliJEditorBlock;
 import fi.aalto.cs.apluscourses.intellij.model.tutorial.component.IntelliJTutorialComponent;
@@ -102,6 +103,11 @@ public class IntelliJTutorialFactory extends TutorialFactoryBase<IntelliJTutoria
   @Override
   public @NotNull TutorialComponent createEditorBlock(@Nullable Path path, @NotNull LineRange lineRange) {
     return new IntelliJEditorBlock(path, lineRange, project);
+  }
+
+  @Override
+  public @NotNull TutorialComponent createBuildButton() {
+    return new IntelliJBuildButton(project);
   }
 
   @Override

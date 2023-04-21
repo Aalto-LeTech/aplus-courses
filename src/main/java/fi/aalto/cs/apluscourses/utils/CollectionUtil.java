@@ -134,12 +134,12 @@ public class CollectionUtil {
     return get(stream, Arrays.stream(indices));
   }
 
-  public static <E, R> @NotNull Stream<R> ofType(@NotNull Stream<E> stream, @NotNull Class<R> type) {
+  public static <E, R> @NotNull Stream<R> ofType(@NotNull Class<R> type, @NotNull Stream<E> stream) {
     return stream.filter(type::isInstance).map(type::cast);
   }
 
-  public static <E, R> @NotNull List<R> ofType(@NotNull List<E> list, @NotNull Class<R> type) {
-    return ofType(list.stream(), type).collect(Collectors.toList());
+  public static <E, R> @NotNull List<R> ofType(@NotNull Class<R> type, @NotNull List<E> list) {
+    return ofType(type, list.stream()).collect(Collectors.toList());
   }
 
   public static <E> Stream<E> without(@NotNull Stream<E> stream, @NotNull Collection<? extends E> toBeExcluded) {
@@ -147,6 +147,9 @@ public class CollectionUtil {
     return stream.filter(e -> !exSet.contains(e));
   }
 
+  public static <E> @NotNull Stream<E> consStream(E head, @NotNull Stream<E> tail) {
+    return Stream.concat(Stream.of(head), tail);
+  }
   public static <T> boolean equals(@NotNull Iterable<T> iterable1,
                                    @NotNull Iterable<T> iterable2,
                                    @NotNull EqualityComparator<T> equalityComparator) {

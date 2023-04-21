@@ -52,15 +52,15 @@ public abstract class TutorialParserBase<S extends TutorialScope>
   @Override
   public @Nullable Tutorial parse(@NotNull Node rootNode, @NotNull TutorialComponent rootComponent) {
     var result = CollectionUtil.findSingle(
-        CollectionUtil.ofType(parse(rootNode, createInitialScope(rootComponent)), Tutorial.class));
+        CollectionUtil.ofType(Tutorial.class, parse(rootNode, createInitialScope(rootComponent))));
     return result.orElse(null);
   }
 
   private @NotNull Tutorial parseTutorial(@NotNull Node node,
                                           @NotNull List<@NotNull TutorialObject> children,
                                           @NotNull S scope) {
-    var states = CollectionUtil.ofType(children, TutorialState.class);
-    var objects = CollectionUtil.ofType(children, TutorialClientObject.class);
+    var states = CollectionUtil.ofType(TutorialState.class, children);
+    var objects = CollectionUtil.ofType(TutorialClientObject.class, children);
     var initialStateKey = node.getProp("start");
     var tutorial = factory.createTutorial(states, objects, initialStateKey);
     scope.getStateSwitch().connect(tutorial);
@@ -71,8 +71,8 @@ public abstract class TutorialParserBase<S extends TutorialScope>
                                             @NotNull List<@NotNull TutorialObject> children,
                                             @NotNull S scope) {
     var key = node.getProp("key");
-    var scenes = CollectionUtil.ofType(children, TutorialScene.class);
-    var objects = CollectionUtil.ofType(children, TutorialClientObject.class);
+    var scenes = CollectionUtil.ofType(TutorialScene.class, children);
+    var objects = CollectionUtil.ofType(TutorialClientObject.class, children);
     var state = factory.createState(key, scenes, objects);
     scope.getSceneSwitch().connect(state);
     return state;
@@ -81,7 +81,7 @@ public abstract class TutorialParserBase<S extends TutorialScope>
   private TutorialObject parseScene(@NotNull Node node,
                                     @NotNull List<TutorialObject> children,
                                     @NotNull S scope) {
-    var objects = CollectionUtil.ofType(children, TutorialClientObject.class);
+    var objects = CollectionUtil.ofType(TutorialClientObject.class, children);
     return factory.createScene(objects);
   }
 
@@ -101,7 +101,7 @@ public abstract class TutorialParserBase<S extends TutorialScope>
     var goTo = node.getProp("goto");
     var component = scope.getComponent();
     var stateSwitch = scope.getStateSwitch();
-    var observers = CollectionUtil.ofType(children, Observer.class);
+    var observers = CollectionUtil.ofType(Observer.class, children);
     return factory.createTransition(goTo, stateSwitch, observers, component);
   }
 

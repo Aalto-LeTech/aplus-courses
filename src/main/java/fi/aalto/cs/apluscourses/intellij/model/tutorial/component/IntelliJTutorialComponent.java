@@ -45,12 +45,11 @@ public abstract class IntelliJTutorialComponent<C extends Component> implements 
   @Override
   public @NotNull Area getArea(@NotNull Component destination) {
     var component = getAwtComponent();
-    var area = Optional.ofNullable(component)
-        .map(this::getBounds)
-        .map(r -> GeometryUtil.withMargin(r, MARGIN))
-        .map(Area::new)
-        .orElseGet(Area::new);
-    var offset = SwingUtilities.convertPoint(component, 0, 0, destination);
+    if (component == null) {
+      return new Area();
+    }
+    var area = new Area(GeometryUtil.withMargin(getBounds(component), MARGIN));
+    var offset = SwingUtilities.convertPoint(component.getParent(), 0, 0, destination);
     area.transform(AffineTransform.getTranslateInstance(offset.x, offset.y));
     return area;
   }

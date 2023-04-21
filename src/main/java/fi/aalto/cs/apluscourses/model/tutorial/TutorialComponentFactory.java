@@ -12,4 +12,6 @@ public interface TutorialComponentFactory {
   @NotNull TutorialComponent createProjectTree();
 
   @NotNull TutorialComponent createEditorBlock(@Nullable Path path, @NotNull LineRange lineRange);
+
+  @NotNull TutorialComponent createBuildButton();
 }

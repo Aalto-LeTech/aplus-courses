@@ -34,12 +34,12 @@ public class IntelliJEditorBlock extends IntelliJTutorialComponent<JComponent> {
     }
     var start = editor.logicalPositionToXY(new LogicalPosition(lineRange.getFirst() - 1, 0));
     var end = editor.logicalPositionToXY(new LogicalPosition(lineRange.getLast() - 1, 0));
-    Rectangle rect = new Rectangle(
+    var rect = component.getVisibleRect().createIntersection(new Rectangle(
         0,
         start.y,
         component.getWidth(),
-        end.y - start.y + editor.getLineHeight());
-    return component.getVisibleRect().createIntersection(rect).getBounds();
+        end.y - start.y + editor.getLineHeight())).getBounds();
+    return SwingUtilities.convertRectangle(component, rect, component.getParent());
   }
 
   @Override

@@ -47,6 +47,8 @@ public abstract class TutorialFactoryBase<C extends TutorialComponent> implement
         return tutorialComponentFactory.createWindow();
       case "project-tree":
         return tutorialComponentFactory.createProjectTree();
+      case "build-button":
+        return tutorialComponentFactory.createBuildButton();
       default:
         throw new IllegalArgumentException("Unknown component type.");
     }

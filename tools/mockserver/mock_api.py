@@ -7,17 +7,20 @@ api = Flask(__name__)
 modules = [Path(path).stem for path in glob('modules/*.zip')]
 tutorials = [int(Path(path).stem) for path in glob('tutorials/*.xml')]
 
+
 @api.route('/')
 def index():
     return 'Hooray, the server is running!'
+
 
 @api.route('/accounts/accounts/')
 def account():
     return 'Your token is: WHATEVER'
 
+
 @api.route('/config/')
 def config():
-    conf = {
+    return json.dumps({
         'id': '101',
         'name': 'Mock Course',
         'aPlusUrl': url_for('index', _external=True),
@@ -29,15 +32,15 @@ def config():
             'version': '1.0'
         } for module in modules],
         'exerciseModules': {},
-        'tutorials': {}
-    }
-    for tutorial in tutorials:
-        conf['tutorials'][str(tutorial)] = url_for('tutorial', id=tutorial, _external=True)
-    return json.dumps(conf)
+        'tutorials': dict(zip(map(str, tutorials),
+                              [url_for('tutorial', id=tutorial, _external=True) for tutorial in tutorials]))
+    })
+
 
 @api.route('/<name>.zip')
 def module_zip(name):
     return send_from_directory('modules', name + '.zip')
+
 
 @api.route('/api/v2/courses/101/exercises/')
 def exercises():
@@ -52,6 +55,7 @@ def exercises():
             },
         ]
     })
+
 
 @api.route('/api/v2/courses/101/tree/')
 def tree():
@@ -71,6 +75,7 @@ def tree():
         ]
     })
 
+
 @api.route('/api/v2/courses/101/')
 def course():
     return json.dumps({
@@ -78,9 +83,11 @@ def course():
         'ending_time': '2029-12-31T12:00:00+02:00'
     })
 
+
 @api.route('/api/v2/courses/101/mygroups/')
 def groups():
     return json.dumps({ 'results': [] })
+
 
 @api.route('/api/v2/courses/101/points/me/')
 def points():
@@ -97,6 +104,7 @@ def points():
             }
         ]
     })
+
 
 @api.route('/api/v2/exercises/<int:id>/')
 def exercise(id):
@@ -125,15 +133,18 @@ def exercise(id):
         },
     })
 
+
 @api.route('/api/v2/exercises/<int:id>/submissions/submit/', methods=['POST'])
 def submit(id):
     resp = Response('{}')
     resp.headers['Location'] = url_for('submission', _external=True)
     return resp
 
+
 @api.route('/api/v2/users/me/')
 def user():
     return json.dumps({ 'username': 'Tester' })
+
 
 @api.route('/api/v2/submissions/9999/')
 def submission():
@@ -144,25 +155,31 @@ def submission():
         "files": []
     })
 
+
 @api.route('/api/v2/courses/101/students/')
 def students():
     return json.dumps({ 'results': [] })
+
 
 @api.route('/api/v2/courses/101/news/')
 def news():
     return json.dumps({ 'results': [] })
 
+
 @api.route('/exercise_<int:id>/')
 def exercise_html(id):
     return "Exercise " + str(id)
+
 
 @api.route('/exercise_<int:id>/submissions/9999/')
 def submission_html(id):
     return 'Submission feedback: ok'
 
+
 @api.route('/week_1/')
 def week_html():
     return "Week 1"
+
 
 @api.route('/tutorials/<id>/')
 def tutorial(id):

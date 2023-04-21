@@ -24,7 +24,6 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -176,7 +175,7 @@ public class DomUtil {
   }
 
   public static @NotNull Stream<@NotNull Element> streamElements(@NotNull NodeList nodeList) {
-    return CollectionUtil.ofType(new NodeListWrapper(nodeList).stream(), Element.class);
+    return CollectionUtil.ofType(Element.class, new NodeListWrapper(nodeList).stream());
   }
 
   public static class NodeListWrapper extends AbstractList<Node> {
