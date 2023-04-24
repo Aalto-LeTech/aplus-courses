@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
+import java.util.function.IntFunction;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -150,6 +151,22 @@ public class CollectionUtil {
   public static <E> @NotNull Stream<E> consStream(E head, @NotNull Stream<E> tail) {
     return Stream.concat(Stream.of(head), tail);
   }
+
+  @SafeVarargs
+  public static <E> E @NotNull[] concat(IntFunction<E @NotNull[]> generator, E @NotNull[]... arrays) {
+    int pos = 0;
+    for (E[] array : arrays) {
+      pos += array.length;
+    }
+    E[] result = generator.apply(pos);
+    pos = 0;
+    for (E[] array : arrays) {
+      System.arraycopy(array, 0, result, pos, array.length);
+      pos += array.length;
+    }
+    return result;
+  }
+
   public static <T> boolean equals(@NotNull Iterable<T> iterable1,
                                    @NotNull Iterable<T> iterable2,
                                    @NotNull EqualityComparator<T> equalityComparator) {
@@ -163,5 +180,9 @@ public class CollectionUtil {
       }
     }
     return !i1.hasNext() && !i2.hasNext();
+  }
+
+  public static <E> int getLength(E @NotNull[] array) {
+    return array.length;
   }
 }

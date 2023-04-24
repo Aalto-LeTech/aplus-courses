@@ -40,6 +40,7 @@ public abstract class TutorialParserBase<S extends TutorialScope>
     registerObjectParser("breakpoint", this::parseBreakpointObserver);
     registerObjectParser("debug", this::parseDebugObserver);
     registerObjectParser("debugger", this::parseDebuggerObserver);
+    registerObjectParser("run", this::parseRunObserver);
 
     registerScopeParser("component", this::parseComponentScope);
     registerScopeParser("state", this::parseStateScope);
@@ -89,20 +90,22 @@ public abstract class TutorialParserBase<S extends TutorialScope>
                                   @NotNull List<@NotNull TutorialObject> children,
                                   @NotNull S scope) {
     var content = node.getContent();
+    var transitions = CollectionUtil.ofType(Transition.class, children);
     var title = node.optProp("title");
     boolean isNavigable = node.parseProp("navigable", Boolean::parseBoolean, false);
     var component = scope.getComponent();
-    return factory.createHint(content, title, isNavigable ? scope.getSceneSwitch() : null, component);
+    return factory.createHint(content, title, transitions, isNavigable ? scope.getSceneSwitch() : null, component);
   }
 
   private @NotNull Transition parseTransition(@NotNull Node node,
                                               @NotNull List<@NotNull TutorialObject> children,
                                               @NotNull S scope) {
+    var label = node.optProp("label");
     var goTo = node.getProp("goto");
     var component = scope.getComponent();
     var stateSwitch = scope.getStateSwitch();
     var observers = CollectionUtil.ofType(Observer.class, children);
-    return factory.createTransition(goTo, stateSwitch, observers, component);
+    return factory.createTransition(label, goTo, stateSwitch, observers, component);
   }
 
   private @NotNull Highlight parseHighlight(@NotNull Node node,
@@ -160,6 +163,13 @@ public abstract class TutorialParserBase<S extends TutorialScope>
     var action = node.getProp("action");
     var component = scope.getComponent();
     return factory.createDebuggerObserver(action, component);
+  }
+
+  private @NotNull Observer parseRunObserver(@NotNull Node node,
+                                             @NotNull List<@NotNull TutorialObject> tutorialObjects,
+                                             @NotNull S scope) {
+    var component = scope.getComponent();
+    return factory.createRunObserver(component);
   }
 
   private @NotNull S parseComponentScope(@NotNull Node node, @NotNull S scope) {

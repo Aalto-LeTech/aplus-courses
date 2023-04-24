@@ -14,4 +14,8 @@ public interface TutorialComponentFactory {
   @NotNull TutorialComponent createEditorBlock(@Nullable Path path, @NotNull LineRange lineRange);
 
   @NotNull TutorialComponent createBuildButton();
+
+  @NotNull TutorialComponent createRunLineButton(@Nullable Path path, int line);
+
+  @NotNull TutorialComponent createRunWindow();
 }

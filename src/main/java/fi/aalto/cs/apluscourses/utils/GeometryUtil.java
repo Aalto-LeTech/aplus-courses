@@ -12,6 +12,12 @@ public class GeometryUtil {
   }
 
   public static @NotNull Shape withMargin(@NotNull Rectangle r, double margin) {
-    return new RoundRectangle2D.Double(r.x - margin, r.y - margin, r.width + margin * 2, r.height + margin * 2, margin, margin);
+    return new RoundRectangle2D.Double(
+        r.x - margin,
+        r.y - margin,
+        r.width + margin * 2,
+        r.height + margin * 2, margin,
+        margin
+    );
   }
 }

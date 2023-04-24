@@ -5,17 +5,21 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class Transition extends TutorialClientObjectBase {
+  private final @Nullable String label;
   private final @NotNull String goTo;
   private final @NotNull StateSwitch stateSwitch;
   private final @NotNull Collection<@NotNull Observer> observers;
 
-  public Transition(@NotNull String goTo,
+  public Transition(@Nullable String label,
+                    @NotNull String goTo,
                     @NotNull StateSwitch stateSwitch,
                     @NotNull Collection<@NotNull Observer> observers,
                     @NotNull TutorialComponent component) {
     super(component);
+    this.label = label;
     this.goTo = goTo;
     this.stateSwitch = stateSwitch;
     this.observers = observers;
@@ -24,7 +28,11 @@ public class Transition extends TutorialClientObjectBase {
     }
   }
 
-  protected void go() {
+  public @Nullable String getLabel() {
+    return label;
+  }
+
+  public void go() {
     stateSwitch.goTo(goTo);
   }
 

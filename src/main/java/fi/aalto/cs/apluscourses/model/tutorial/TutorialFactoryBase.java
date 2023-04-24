@@ -49,6 +49,11 @@ public abstract class TutorialFactoryBase<C extends TutorialComponent> implement
         return tutorialComponentFactory.createProjectTree();
       case "build-button":
         return tutorialComponentFactory.createBuildButton();
+      case "run-line-button":
+        return tutorialComponentFactory.createRunLineButton(props.parseProp("path", Path::of, null),
+                                                            props.parseProp("line", Integer::parseInt));
+      case "run-window":
+        return tutorialComponentFactory.createRunWindow();
       default:
         throw new IllegalArgumentException("Unknown component type.");
     }
@@ -57,17 +62,19 @@ public abstract class TutorialFactoryBase<C extends TutorialComponent> implement
   @Override
   public @NotNull Hint createHint(@NotNull String content,
                                   @Nullable String title,
+                                  @NotNull List<@NotNull Transition> transitions,
                                   @Nullable SceneSwitch sceneSwitch,
                                   @NotNull TutorialComponent component) {
-    return createHintOverride(content, title, sceneSwitch, castTutorialComponent(component));
+    return createHintOverride(content, title, transitions, sceneSwitch, castTutorialComponent(component));
   }
 
   @Override
-  public @NotNull Transition createTransition(@NotNull String goTo,
+  public @NotNull Transition createTransition(@Nullable String label,
+                                              @NotNull String goTo,
                                               @NotNull StateSwitch stateSwitch,
                                               @NotNull Collection<@NotNull Observer> observers,
                                               @NotNull TutorialComponent component) {
-    return new Transition(goTo, stateSwitch, observers, component);
+    return new Transition(label, goTo, stateSwitch, observers, component);
   }
 
   @Override
@@ -112,8 +119,14 @@ public abstract class TutorialFactoryBase<C extends TutorialComponent> implement
     return createDebuggerObserverOverride(action, castTutorialComponent(component));
   }
 
+  @Override
+  public @NotNull Observer createRunObserver(@NotNull TutorialComponent component) {
+    return createRunObserverOverride(castTutorialComponent(component));
+  }
+
   protected abstract @NotNull Hint createHintOverride(@NotNull String content,
                                                       @Nullable String title,
+                                                      @NotNull List<@NotNull Transition> transitions,
                                                       @Nullable SceneSwitch sceneSwitch,
                                                       @NotNull C component);
 
@@ -141,4 +154,5 @@ public abstract class TutorialFactoryBase<C extends TutorialComponent> implement
   protected abstract @NotNull Observer createDebuggerObserverOverride(@NotNull String action,
                                                                       @NotNull C component);
 
+  protected abstract @NotNull Observer createRunObserverOverride(@NotNull C component);
 }

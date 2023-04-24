@@ -22,10 +22,12 @@ public interface TutorialFactory {
 
   @NotNull Hint createHint(@NotNull String content,
                            @Nullable String title,
+                           @NotNull List<@NotNull Transition> transitions,
                            @Nullable SceneSwitch sceneSwitch,
                            @NotNull TutorialComponent component);
 
-  @NotNull Transition createTransition(@NotNull String goTo,
+  @NotNull Transition createTransition(@Nullable String label,
+                                       @NotNull String goTo,
                                        @NotNull StateSwitch stateSwitch,
                                        @NotNull Collection<@NotNull Observer> observers,
                                        @NotNull TutorialComponent component);
@@ -48,4 +50,6 @@ public interface TutorialFactory {
   @NotNull Observer createDebugObserver(@NotNull String action, @NotNull TutorialComponent component);
 
   @NotNull Observer createDebuggerObserver(@NotNull String action, @NotNull TutorialComponent component);
+
+  @NotNull Observer createRunObserver(@NotNull TutorialComponent component);
 }
