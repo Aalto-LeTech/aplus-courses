@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<tutorial start="1-OPEN-FILE">
+
+    <state key="1-OPEN-FILE">
+        <component type="project-tree">
+            <highlight degree="normal"/>
+            <hint title="Open CategoryDisplayWindow.scala">
+                Select the file and double-click to open it.
+            </hint>
+        </component>
+        <transition goto="2-MODIFY-FILE">
+            <observer type="file" action="open" path="GoodStuff/o1/goodstuff/gui/CategoryDisplayWindow.scala"/>
+        </transition>
+    </state>
+
+    <state key="2-MODIFY-FILE">
+        <component type="editor" path="GoodStuff/o1/goodstuff/gui/CategoryDisplayWindow.scala">
+            <highlight degree="normal"/>
+            <hint title="Correct the typo!">
+                You can modify the file contents in this editor.
+            </hint>
+        </component>
+        <scene>
+            <component type="editor-block"  path="GoodStuff/o1/goodstuff/gui/CategoryDisplayWindow.scala" lines="14-18">
+                <highlight degree="focus"/>
+                <hint navigable="true">
+                    You can ignore most of the stuff in this file.
+                </hint>
+            </component>
+        </scene>
+        <component type="editor-block" path="GoodStuff/o1/goodstuff/gui/CategoryDisplayWindow.scala" lines="35">
+            <scene>
+                <highlight degree="focus"/>
+                <hint navigable="true">
+                    Check out this line.
+                </hint>
+            </scene>
+            <transition goto="3-BUILD">
+                <observer type="code" lang="scala3">
+                    this.title = "GoodStuff Diary - Category: " + category.name + " Experiences"
+                </observer>
+            </transition>
+        </component>
+    </state>
+
+    <state key="3-BUILD">
+        <component type="build-button">
+            <highlight degree="normal"/>
+            <hint>
+                Now try to build the project!
+            </hint>
+        </component>
+        <transition goto="4-WAIT-FOR-BUILD">
+            <observer type="build" action="start"/>
+        </transition>
+    </state>
+
+    <state key="4-WAIT-FOR-BUILD">
+        <component type="editor">
+            <highlight degree="normal"/>
+            <hint>
+                Wait for build to finish.
+            </hint>
+        </component>
+        <transition goto="5-DONE">
+            <observer type ="build" action="finish"/>
+        </transition>
+    </state>
+
+</tutorial>

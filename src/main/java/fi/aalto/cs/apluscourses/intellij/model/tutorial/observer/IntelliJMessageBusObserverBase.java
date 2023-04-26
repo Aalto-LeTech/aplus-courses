@@ -8,11 +8,12 @@ import fi.aalto.cs.apluscourses.model.tutorial.Observer;
 import fi.aalto.cs.apluscourses.model.tutorial.TutorialComponent;
 import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class IntelliJMessageBusObserverBase<T> extends Observer implements IntelliJTutorialClientObject {
 
   private final Topic<T> topic;
-  private MessageBusConnection connection;
+  private @Nullable MessageBusConnection connection;
 
   protected IntelliJMessageBusObserverBase(@NotNull Topic<T> topic, @NotNull TutorialComponent component) {
     super(component);

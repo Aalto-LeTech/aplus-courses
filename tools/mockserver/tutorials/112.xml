@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<tutorial start="OPEN-FILE">
+
+    <state key="OPEN-FILE">
+        <component type="project-tree">
+            <highlight degree="normal"/>
+            <hint title="Open Table.scala">
+                Select the file and double-click to open it.
+            </hint>
+        </component>
+        <transition goto="INSPECT-CODE">
+            <observer type="file" action="open" path="Table/src/Table.scala"/>
+        </transition>
+    </state>
+
+    <state key="INSPECT-CODE">
+        <component type="editor" path="Table/src/Table.scala">
+            <hint>
+                Here, you see a small program
+                that arranges its input into a table
+                and prints the output in to the console.
+            </hint>
+            <highlight degree="normal"/>
+        </component>
+        <scene>
+            <component type="editor-block" path="Table/src/Table.scala" lines="2-6">
+                <highlight degree="focus"/>
+                <hint navigable="true">
+                    There are two test cases already written for our program.
+                </hint>
+            </component>
+        </scene>
+        <scene>
+            <component type="editor-block" path="Table/src/Table.scala" lines="8">
+                <highlight degree="focus"/>
+                <hint navigable="true">
+                    The function that draws the table takes two arguments:
+                    the number of columns in the table and the list of the data
+                    that is put to the table.
+                    <transition label="OK" goto="RUN-FIRST"/>
+                </hint>
+            </component>
+        </scene>
+    </state>
+
+    <state key="RUN-FIRST">
+        <component type="editor" path="Table/src/Table.scala">
+            <highlight degree="normal"/>
+            <hint>
+                Run the first test case.
+            </hint>
+        </component>
+        <component type="run-line-button" path="Table/src/Table.scala" line="2">
+            <highlight degree="focus"/>
+            <hint>
+                Select "Run natoAlphabets".
+            </hint>
+        </component>
+        <transition goto="WAIT-FOR-FINISH">
+            <observer type="run" action="launch"/>
+        </transition>
+    </state>
+
+    <state key="WAIT-FOR-FINISH">
+        <transition goto="INSPECT-RESULT">
+            <observer type="run" action="finish"/>
+        </transition>
+        <hint>
+            Wait for the run to finish.
+        </hint>
+    </state>
+
+    <state key="INSPECT-RESULT">
+        <component type="run-window">
+            <highlight degree="normal"/>
+            <hint>
+                Consider the output.
+                <transition label="OK" goto="SOMETHING"/>
+            </hint>
+        </component>
+    </state>
+
+</tutorial>

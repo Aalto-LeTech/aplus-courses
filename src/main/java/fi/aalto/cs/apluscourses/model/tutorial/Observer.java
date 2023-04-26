@@ -13,6 +13,9 @@ public abstract class Observer extends TutorialClientObjectBase {
   public static final String DEBUG_STOP = "stop";
   public static final String DEBUGGER_PAUSE = "pause";
   public static final String DEBUGGER_RESUME = "resume";
+  public static final String RUN_LAUNCH = "launch";
+  public static final String RUN_START = "start";
+  public static final String RUN_FINISH = "finish";
 
   private @Nullable Runnable handler;
 

@@ -18,11 +18,11 @@ public class IntelliJRunObserver extends IntelliJMessageBusObserverBase<Executio
 
   private @NotNull ExecutionListener chooseListener(@NotNull String action) {
     switch (action) {
-      case "launch":
+      case RUN_LAUNCH:
         return new StartScheduledListener();
-      case "start":
+      case RUN_START:
         return new StartedListener();
-      case "finish":
+      case RUN_FINISH:
         return new FinishedListener();
       default:
         throw new IllegalArgumentException("Unknown execution action: " + action);
