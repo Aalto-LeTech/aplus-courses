@@ -34,13 +34,7 @@ public abstract class TutorialParserBase<S extends TutorialScope>
     registerObjectParser("hint", this::parseHint);
     registerObjectParser("transition", this::parseTransition);
     registerObjectParser("highlight", this::parseHighlight);
-    registerObjectParser("code", this::parseCodeObserver);
-    registerObjectParser("file", this::parseFileObserver);
-    registerObjectParser("build", this::parseBuildObserver);
-    registerObjectParser("breakpoint", this::parseBreakpointObserver);
-    registerObjectParser("debug", this::parseDebugObserver);
-    registerObjectParser("debugger", this::parseDebuggerObserver);
-    registerObjectParser("run", this::parseRunObserver);
+    registerObjectParser("observer", this::parseObserver);
 
     registerScopeParser("component", this::parseComponentScope);
     registerScopeParser("state", this::parseStateScope);
@@ -116,60 +110,13 @@ public abstract class TutorialParserBase<S extends TutorialScope>
     return factory.createHighlight(degree, component);
   }
 
-  private @NotNull Observer parseCodeObserver(@NotNull Node node,
-                                              @NotNull List<@NotNull TutorialObject> children,
-                                              @NotNull S scope) {
-    var lang = node.getProp("lang");
-    var code = node.getContent();
+  private @NotNull Observer parseObserver(@NotNull Node node,
+                                          @NotNull List<@NotNull TutorialObject> children,
+                                          @NotNull S scope) {
+    var type = node.getProp("type");
+    var content = node.getContent();
     var component = scope.getComponent();
-    return factory.createCodeObserver(lang, code, component);
-  }
-
-  private @NotNull Observer parseFileObserver(@NotNull Node node,
-                                              @NotNull List<@NotNull TutorialObject> children,
-                                              @NotNull S scope) {
-    var action = node.getProp("action");
-    var path = node.getProp("path");
-    var component = scope.getComponent();
-    return factory.createFileObserver(action, path, component);
-  }
-
-  private @NotNull Observer parseBuildObserver(@NotNull Node node,
-                                               @NotNull List<@NotNull TutorialObject> children,
-                                               @NotNull S scope) {
-    var action = node.getProp("action");
-    var component = scope.getComponent();
-    return factory.createBuildObserver(action, component);
-  }
-
-  private @NotNull Observer parseBreakpointObserver(@NotNull Node node,
-                                                          @NotNull List<@NotNull TutorialObject> children,
-                                                          @NotNull S scope) {
-    var component = scope.getComponent();
-    return factory.createBreakpointObserver(component);
-  }
-
-  private @NotNull Observer parseDebugObserver(@NotNull Node node,
-                                               @NotNull List<@NotNull TutorialObject> tutorialObjects,
-                                               @NotNull S scope) {
-    var action = node.getProp("action");
-    var component = scope.getComponent();
-    return factory.createDebugObserver(action, component);
-  }
-
-  private @NotNull Observer parseDebuggerObserver(@NotNull Node node,
-                                                  @NotNull List<@NotNull TutorialObject> tutorialObjects,
-                                                  @NotNull S scope) {
-    var action = node.getProp("action");
-    var component = scope.getComponent();
-    return factory.createDebuggerObserver(action, component);
-  }
-
-  private @NotNull Observer parseRunObserver(@NotNull Node node,
-                                             @NotNull List<@NotNull TutorialObject> tutorialObjects,
-                                             @NotNull S scope) {
-    var component = scope.getComponent();
-    return factory.createRunObserver(component);
+    return factory.createObserver(type, content, node, component);
   }
 
   private @NotNull S parseComponentScope(@NotNull Node node, @NotNull S scope) {

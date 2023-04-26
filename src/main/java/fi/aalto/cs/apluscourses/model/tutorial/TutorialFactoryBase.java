@@ -11,6 +11,8 @@ import org.jetbrains.annotations.Nullable;
 public abstract class TutorialFactoryBase<C extends TutorialComponent> implements TutorialFactory {
   protected abstract @NotNull TutorialComponentFactory getComponentFactory();
 
+  protected abstract @NotNull TutorialObserverFactory<C> getObserverFactory();
+
   @Override
   public @NotNull Tutorial createTutorial(@NotNull Collection<@NotNull TutorialState> states,
                                           @NotNull Collection<@NotNull TutorialClientObject> objects,
@@ -36,26 +38,61 @@ public abstract class TutorialFactoryBase<C extends TutorialComponent> implement
   }
 
   private @NotNull TutorialComponent createComponentInternal(@NotNull String type, @NotNull Props props) {
-    var tutorialComponentFactory = getComponentFactory();
+    var factory = getComponentFactory();
     switch (type) {
       case "editor":
-        return tutorialComponentFactory.createEditor(props.parseProp("path", Path::of, null));
+        return factory.createEditor(props.parseProp("path", Path::of, null));
       case "editor-block":
-        return tutorialComponentFactory.createEditorBlock(props.parseProp("path", Path::of, null),
-                                                          props.parseProp("lines", LineRange::parse));
+        return factory.createEditorBlock(props.parseProp("path", Path::of, null),
+                                         props.parseProp("lines", LineRange::parse));
       case "window":
-        return tutorialComponentFactory.createWindow();
+        return factory.createWindow();
       case "project-tree":
-        return tutorialComponentFactory.createProjectTree();
+        return factory.createProjectTree();
       case "build-button":
-        return tutorialComponentFactory.createBuildButton();
+        return factory.createBuildButton();
       case "run-line-button":
-        return tutorialComponentFactory.createRunLineButton(props.parseProp("path", Path::of, null),
-                                                            props.parseProp("line", Integer::parseInt));
+        return factory.createRunLineButton(props.parseProp("path", Path::of, null),
+                                           props.parseProp("line", Integer::parseInt));
       case "run-window":
-        return tutorialComponentFactory.createRunWindow();
+        return factory.createRunWindow();
       default:
-        throw new IllegalArgumentException("Unknown component type.");
+        throw new IllegalArgumentException("Unknown component type: " + type);
+    }
+  }
+
+  @Override
+  public @NotNull Observer createObserver(@NotNull String type,
+                                          @NotNull String content,
+                                          @NotNull Props props,
+                                          @NotNull TutorialComponent component) {
+    return createObserverInternal(type, content, props, castTutorialComponent(component));
+  }
+
+  private @NotNull Observer createObserverInternal(@NotNull String type,
+                                                   @NotNull String content,
+                                                   @NotNull Props props,
+                                                   @NotNull C component) {
+    var factory = getObserverFactory();
+    switch (type) {
+      case "code":
+        return factory.createCodeObserver(props.getProp("lang"), content, component);
+      case "file":
+        return factory.createFileObserver(props.getProp("action"),
+                                          props.getProp("path"),
+                                          component);
+      case "build":
+        return factory.createBuildObserver(props.getProp("action"), component);
+      case "breakpoint":
+        return factory.createBreakpointObserver(component);
+      case "debug":
+        return factory.createDebugObserver(props.getProp("action"), component);
+      case "debugger":
+        return factory.createDebuggerObserver(props.getProp("action"), component);
+      case "run":
+        return factory.createRunObserver(props.getProp("action"), component);
+      default:
+        throw new IllegalArgumentException("Unknown observer type: " + type);
     }
   }
 
@@ -82,48 +119,6 @@ public abstract class TutorialFactoryBase<C extends TutorialComponent> implement
     return createHighlightOverride(degree, castTutorialComponent(component));
   }
 
-  @Override
-  public @NotNull Observer createCodeObserver(@NotNull String lang,
-                                              @NotNull String code,
-                                              @NotNull TutorialComponent component) {
-    return createCodeObserverOverride(lang, code, castTutorialComponent(component));
-  }
-
-  @Override
-  public @NotNull Observer createFileObserver(@NotNull String action,
-                                              @NotNull String pathSuffix,
-                                              @NotNull TutorialComponent component) {
-    return createFileObserverOverride(action, pathSuffix, castTutorialComponent(component));
-  }
-
-  @Override
-  public @NotNull Observer createBuildObserver(@NotNull String action,
-                                               @NotNull TutorialComponent component) {
-    return createBuildObserverOverride(action, castTutorialComponent(component));
-  }
-
-  @Override
-  public @NotNull Observer createBreakpointObserver(@NotNull TutorialComponent component) {
-    return createBreakpointObserverOverride(castTutorialComponent(component));
-  }
-
-  @Override
-  public @NotNull Observer createDebugObserver(@NotNull String action,
-                                               @NotNull TutorialComponent component) {
-    return createDebugObserverOverride(action, castTutorialComponent(component));
-  }
-
-  @Override
-  public @NotNull Observer createDebuggerObserver(@NotNull String action,
-                                                  @NotNull TutorialComponent component) {
-    return createDebuggerObserverOverride(action, castTutorialComponent(component));
-  }
-
-  @Override
-  public @NotNull Observer createRunObserver(@NotNull TutorialComponent component) {
-    return createRunObserverOverride(castTutorialComponent(component));
-  }
-
   protected abstract @NotNull Hint createHintOverride(@NotNull String content,
                                                       @Nullable String title,
                                                       @NotNull List<@NotNull Transition> transitions,
@@ -134,25 +129,4 @@ public abstract class TutorialFactoryBase<C extends TutorialComponent> implement
                                                                 @NotNull C castTutorialComponent);
 
   protected abstract @NotNull C castTutorialComponent(@NotNull TutorialComponent component);
-
-  protected abstract @NotNull Observer createCodeObserverOverride(@NotNull String lang,
-                                                                  @NotNull String code,
-                                                                  @NotNull C component);
-
-  protected abstract @NotNull Observer createFileObserverOverride(@NotNull String action,
-                                                                  @NotNull String pathSuffix,
-                                                                  @NotNull C castTutorialComponent);
-
-  protected abstract @NotNull Observer createBuildObserverOverride(@NotNull String action,
-                                                                   @NotNull C component);
-
-  protected abstract @NotNull Observer createBreakpointObserverOverride(@NotNull C component);
-
-  protected abstract @NotNull Observer createDebugObserverOverride(@NotNull String action,
-                                                                   @NotNull C component);
-
-  protected abstract @NotNull Observer createDebuggerObserverOverride(@NotNull String action,
-                                                                      @NotNull C component);
-
-  protected abstract @NotNull Observer createRunObserverOverride(@NotNull C component);
 }

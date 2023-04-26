@@ -34,22 +34,8 @@ public interface TutorialFactory {
 
   @NotNull Highlight createHighlight(@NotNull Highlight.Degree degree, @NotNull TutorialComponent component);
 
-  @NotNull Observer createCodeObserver(@NotNull String lang,
-                                       @NotNull String code,
-                                       @NotNull TutorialComponent component);
-
-  @NotNull Observer createFileObserver(@NotNull String action,
-                                       @NotNull String pathSuffix,
-                                       @NotNull TutorialComponent component);
-
-  @NotNull Observer createBuildObserver(@NotNull String action,
-                                        @NotNull TutorialComponent component);
-
-  @NotNull Observer createBreakpointObserver(@NotNull TutorialComponent component);
-
-  @NotNull Observer createDebugObserver(@NotNull String action, @NotNull TutorialComponent component);
-
-  @NotNull Observer createDebuggerObserver(@NotNull String action, @NotNull TutorialComponent component);
-
-  @NotNull Observer createRunObserver(@NotNull TutorialComponent component);
+  @NotNull Observer createObserver(@NotNull String type,
+                                   @NotNull String content,
+                                   @NotNull Props props,
+                                   @NotNull TutorialComponent component);
 }

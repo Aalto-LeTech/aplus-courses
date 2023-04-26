@@ -11,9 +11,26 @@ public class IntelliJRunObserver extends IntelliJMessageBusObserverBase<Executio
 
   private final @NotNull ExecutionListener listener;
 
-  public IntelliJRunObserver(@NotNull TutorialComponent component) {
+  public IntelliJRunObserver(@NotNull String action, @NotNull TutorialComponent component) {
     super(ExecutionManager.EXECUTION_TOPIC, component);
-    listener = new MyListener();
+    listener = chooseListener(action);
+  }
+
+  private @NotNull ExecutionListener chooseListener(@NotNull String action) {
+    switch (action) {
+      case "launch":
+        return new StartScheduledListener();
+      case "start":
+        return new StartedListener();
+      case "finish":
+        return new FinishedListener();
+      default:
+        throw new IllegalArgumentException("Unknown execution action: " + action);
+    }
+  }
+
+  private void onAction() {
+    fire();
   }
 
   @Override
@@ -21,12 +38,29 @@ public class IntelliJRunObserver extends IntelliJMessageBusObserverBase<Executio
     return listener;
   }
 
-  private class MyListener implements ExecutionListener {
+  private class StartScheduledListener implements ExecutionListener {
+    @Override
+    public void processStartScheduled(@NotNull String executorId, @NotNull ExecutionEnvironment env) {
+      onAction();
+    }
+  }
+
+  private class StartedListener implements ExecutionListener {
     @Override
     public void processStarted(@NotNull String executorId,
                                @NotNull ExecutionEnvironment env,
                                @NotNull ProcessHandler handler) {
-      fire();
+      onAction();
+    }
+  }
+
+  private class FinishedListener implements ExecutionListener {
+    @Override
+    public void processTerminated(@NotNull String executorId,
+                                  @NotNull ExecutionEnvironment env,
+                                  @NotNull ProcessHandler handler,
+                                  int exitCode) {
+      onAction();
     }
   }
 }

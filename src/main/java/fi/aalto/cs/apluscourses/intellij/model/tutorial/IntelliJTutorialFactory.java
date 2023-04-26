@@ -27,6 +27,7 @@ import fi.aalto.cs.apluscourses.model.tutorial.TutorialClientObject;
 import fi.aalto.cs.apluscourses.model.tutorial.TutorialComponent;
 import fi.aalto.cs.apluscourses.model.tutorial.TutorialComponentFactory;
 import fi.aalto.cs.apluscourses.model.tutorial.TutorialFactoryBase;
+import fi.aalto.cs.apluscourses.model.tutorial.TutorialObserverFactory;
 import fi.aalto.cs.apluscourses.model.tutorial.TutorialState;
 import fi.aalto.cs.apluscourses.model.tutorial.switching.SceneSwitch;
 import fi.aalto.cs.apluscourses.ui.tutorials.OverlayPane;
@@ -37,7 +38,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class IntelliJTutorialFactory extends TutorialFactoryBase<IntelliJTutorialComponent<?>>
-    implements TutorialComponentFactory {
+    implements TutorialComponentFactory, TutorialObserverFactory<IntelliJTutorialComponent<?>> {
   private final @NotNull OverlayPane overlayPane;
   private final @Nullable Project project;
 
@@ -48,6 +49,11 @@ public class IntelliJTutorialFactory extends TutorialFactoryBase<IntelliJTutoria
 
   @Override
   protected @NotNull TutorialComponentFactory getComponentFactory() {
+    return this;
+  }
+
+  @Override
+  protected @NotNull TutorialObserverFactory<IntelliJTutorialComponent<?>> getObserverFactory() {
     return this;
   }
 
@@ -114,44 +120,45 @@ public class IntelliJTutorialFactory extends TutorialFactoryBase<IntelliJTutoria
   }
 
   @Override
-  public @NotNull Observer createCodeObserverOverride(@NotNull String lang,
-                                                      @NotNull String code,
-                                                      @NotNull IntelliJTutorialComponent<?> component) {
+  public @NotNull Observer createCodeObserver(@NotNull String lang,
+                                              @NotNull String code,
+                                              @NotNull IntelliJTutorialComponent<?> component) {
     return new IntelliJCodeObserver(lang, code, component);
   }
 
   @Override
-  protected @NotNull Observer createFileObserverOverride(@NotNull String action,
-                                                         @NotNull String pathSuffix,
-                                                         @NotNull IntelliJTutorialComponent<?> component) {
+  public @NotNull Observer createFileObserver(@NotNull String action,
+                                              @NotNull String pathSuffix,
+                                              @NotNull IntelliJTutorialComponent<?> component) {
     return new IntelliJFileObserver(action, pathSuffix, component);
   }
 
   @Override
-  protected @NotNull Observer createBuildObserverOverride(@NotNull String action,
-                                                          @NotNull IntelliJTutorialComponent<?> component) {
+  public @NotNull Observer createBuildObserver(@NotNull String action,
+                                               @NotNull IntelliJTutorialComponent<?> component) {
     return new IntelliJBuildObserver(action, component);
   }
 
   @Override
-  protected @NotNull Observer createBreakpointObserverOverride(@NotNull IntelliJTutorialComponent<?> component) {
+  public @NotNull Observer createBreakpointObserver(@NotNull IntelliJTutorialComponent<?> component) {
     return new IntelliJBreakpointObserver(component);
   }
 
   @Override
-  protected @NotNull Observer createDebugObserverOverride(@NotNull String action,
-                                                          @NotNull IntelliJTutorialComponent<?> component) {
+  public @NotNull Observer createDebugObserver(@NotNull String action,
+                                               @NotNull IntelliJTutorialComponent<?> component) {
     return new IntelliJDebugObserver(action, component);
   }
 
   @Override
-  protected @NotNull Observer createDebuggerObserverOverride(@NotNull String action,
-                                                             @NotNull IntelliJTutorialComponent<?> component) {
+  public @NotNull Observer createDebuggerObserver(@NotNull String action,
+                                                  @NotNull IntelliJTutorialComponent<?> component) {
     return new IntelliJDebuggerObserver(action, component);
   }
 
   @Override
-  protected @NotNull Observer createRunObserverOverride(@NotNull IntelliJTutorialComponent<?> component) {
-    return new IntelliJRunObserver(component);
+  public @NotNull Observer createRunObserver(@NotNull String action,
+                                             @NotNull IntelliJTutorialComponent<?> component) {
+    return new IntelliJRunObserver(action, component);
   }
 }
