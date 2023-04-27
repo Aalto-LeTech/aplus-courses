@@ -19,27 +19,27 @@
             <hint title="Correct the typo!">
                 You can modify the file contents in this editor.
             </hint>
-        </component>
-        <scene>
-            <component type="editor-block"  path="GoodStuff/o1/goodstuff/gui/CategoryDisplayWindow.scala" lines="14-18">
-                <highlight degree="focus"/>
-                <hint navigable="true">
-                    You can ignore most of the stuff in this file.
-                </hint>
-            </component>
-        </scene>
-        <component type="editor-block" path="GoodStuff/o1/goodstuff/gui/CategoryDisplayWindow.scala" lines="35">
             <scene>
-                <highlight degree="focus"/>
-                <hint navigable="true">
-                    Check out this line.
-                </hint>
+                <component type="editor.block" lines="14-18">
+                    <highlight degree="focus"/>
+                    <hint navigable="true">
+                        You can ignore most of the stuff in this file.
+                    </hint>
+                </component>
             </scene>
-            <transition goto="3-BUILD">
-                <observer type="code" lang="scala3">
-                    this.title = "GoodStuff Diary - Category: " + category.name + " Experiences"
-                </observer>
-            </transition>
+            <component type="editor.block" lines="35">
+                <scene>
+                    <highlight degree="focus"/>
+                    <hint navigable="true">
+                        Check out this line.
+                    </hint>
+                </scene>
+                <transition goto="3-BUILD">
+                    <observer type="code" lang="scala3">
+                        this.title = "GoodStuff Diary - Category: " + category.name + " Experiences"
+                    </observer>
+                </transition>
+            </component>
         </component>
     </state>
 

@@ -86,9 +86,15 @@ public abstract class TutorialParserBase<S extends TutorialScope>
     var content = node.getContent();
     var transitions = CollectionUtil.ofType(Transition.class, children);
     var title = node.optProp("title");
-    boolean isNavigable = node.parseProp("navigable", Boolean::parseBoolean, false);
+    boolean keepVisible = node.parseProp("keep-visible", Boolean::parseBoolean, false);
+    boolean navigable = node.parseProp("navigable", Boolean::parseBoolean, false);
     var component = scope.getComponent();
-    return factory.createHint(content, title, transitions, isNavigable ? scope.getSceneSwitch() : null, component);
+    return factory.createHint(content,
+        title,
+        keepVisible,
+        transitions,
+        navigable ? scope.getSceneSwitch() : null,
+        component);
   }
 
   private @NotNull Transition parseTransition(@NotNull Node node,
@@ -120,7 +126,8 @@ public abstract class TutorialParserBase<S extends TutorialScope>
   }
 
   private @NotNull S parseComponentScope(@NotNull Node node, @NotNull S scope) {
-    var component = factory.createComponent(node.getProp("type"), node);
+    var parent = scope.getComponent();
+    var component = factory.createComponent(node.getProp("type"), node, parent);
     return createModifiedScope(component, null, null, scope);
   }
 

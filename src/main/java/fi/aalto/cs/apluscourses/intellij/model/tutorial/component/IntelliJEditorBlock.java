@@ -7,28 +7,27 @@ import com.intellij.openapi.editor.LogicalPosition;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.model.tutorial.CodeContext;
 import fi.aalto.cs.apluscourses.model.tutorial.LineRange;
-import java.awt.Component;
+import fi.aalto.cs.apluscourses.model.tutorial.TutorialComponent;
 import java.awt.Rectangle;
-import java.nio.file.Path;
 import java.util.Optional;
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class IntelliJEditorBlock extends IntelliJTutorialComponent<JComponent> {
+public class IntelliJEditorBlock extends IntelliJTutorialComponent<JComponent> implements IntelliJEditorDescendant {
   private final @NotNull LineRange lineRange;
-  private final @NotNull IntelliJEditor editorComponent;
 
-  public IntelliJEditorBlock(@Nullable Path path, @NotNull LineRange lineRange, @Nullable Project project) {
-    super(project);
+  public IntelliJEditorBlock(@NotNull LineRange lineRange,
+                             @Nullable TutorialComponent parent,
+                             @Nullable Project project) {
+    super(parent, project);
     this.lineRange = lineRange;
-    editorComponent = new IntelliJEditor(path, project);
   }
 
   @Override
   protected @NotNull Rectangle getBounds(@NotNull JComponent component) {
-    var editor = editorComponent.getEditor();
+    var editor = getEditor();
     if (editor == null) {
       return new Rectangle();
     }
@@ -45,7 +44,7 @@ public class IntelliJEditorBlock extends IntelliJTutorialComponent<JComponent> {
   @Override
   protected boolean hasFocusInternal() {
     return super.hasFocusInternal()
-        && Optional.ofNullable(editorComponent.getEditor())
+        && Optional.ofNullable(getEditor())
         .map(Editor::getCaretModel)
         .map(CaretModel::getLogicalPosition)
         .map(this::isInRange)
@@ -54,18 +53,18 @@ public class IntelliJEditorBlock extends IntelliJTutorialComponent<JComponent> {
 
   @Override
   protected @Nullable JComponent getAwtComponent() {
-    return Optional.ofNullable(editorComponent.getEditor()).map(Editor::getContentComponent).orElse(null);
+    return Optional.ofNullable(getEditor()).map(Editor::getContentComponent).orElse(null);
   }
 
   @Override
   public @NotNull CodeContext getCodeContext() {
-    return editorComponent.new EditorCodeContext(lineRange);
+    return getEditorComponent().new EditorCodeContext(lineRange);
   }
 
   @Override
   @Nullable
   public Document getDocument() {
-    return editorComponent.getDocument();
+    return getEditorComponent().getDocument();
   }
 
   private boolean isInRange(@NotNull LogicalPosition logicalPosition) {

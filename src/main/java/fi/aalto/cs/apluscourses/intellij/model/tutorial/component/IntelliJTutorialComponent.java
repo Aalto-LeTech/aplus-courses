@@ -20,10 +20,12 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class IntelliJTutorialComponent<C extends Component> implements TutorialComponent, SupportedPiece {
   private static final int MARGIN = 15;
+  private final @Nullable TutorialComponent parent;
   private final @Nullable Project project;
   private final @NotNull Set<@NotNull Object> supporters = new HashSet<>();
 
-  protected IntelliJTutorialComponent(@Nullable Project project) {
+  protected IntelliJTutorialComponent(@Nullable TutorialComponent parent, @Nullable Project project) {
+    this.parent = parent;
     this.project = project;
   }
 
@@ -94,5 +96,10 @@ public abstract class IntelliJTutorialComponent<C extends Component> implements 
   @Override
   public boolean hasSupporters() {
     return !supporters.isEmpty();
+  }
+
+  @Override
+  public @Nullable TutorialComponent getParent() {
+    return parent;
   }
 }

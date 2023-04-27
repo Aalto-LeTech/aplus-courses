@@ -8,6 +8,8 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.MouseInfo;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.event.AWTEventListener;
@@ -25,9 +27,12 @@ import org.jetbrains.annotations.NotNull;
 
 public class NormalBalloon extends JPanel implements Balloon {
   public static final int POPUP_MARGIN = 20;
+  public static final int PROXIMITY_DISTANCE = 40;
 
   private static final Color COLOR = new Color(PluginIcons.ACCENT_COLOR).darker().darker();
+  private static final int MAX_WIDTH = 300;
 
+  private final boolean keepVisible;
   private final @NotNull SupportedPiece anchor;
   private final @NotNull JLabel titleLabel;
   private final @NotNull JLabel messageLabel;
@@ -36,10 +41,12 @@ public class NormalBalloon extends JPanel implements Balloon {
   private final @NotNull NormalBalloon.MouseEventListener mouseEventListener = new MouseEventListener();
   private boolean isReleased = false;
 
-  public NormalBalloon(@NotNull SupportedPiece anchor,
+  public NormalBalloon(boolean keepVisible,
+                       @NotNull SupportedPiece anchor,
                        @NotNull String title,
                        @NotNull String message,
                        @NotNull Action @NotNull [] actions) {
+    this.keepVisible = keepVisible;
     this.anchor = anchor;
     mOpacity = new AnimatedValueImpl(50, this::repaint);
 
@@ -50,8 +57,7 @@ public class NormalBalloon extends JPanel implements Balloon {
     setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
     // introduce a limit to the popup's width (so it doesn't take the entire screen width)
-    setMaximumSize(new Dimension(500, 0));
-    titleLabel = new JLabel("<html><h1>" + title + "</h1></html>");
+    titleLabel = new JLabel("<html><h3>" + title + "</h3></html>");
     //titleLabel.setIcon(icon);
 
     var titleBox = Box.createHorizontalBox();
@@ -95,7 +101,7 @@ public class NormalBalloon extends JPanel implements Balloon {
 
     final var windowSize = JOptionPane.getRootFrame().getSize();
 
-    final int popupWidth = getPreferredSize().width;
+    final int popupWidth = Math.min(getPreferredSize().width, MAX_WIDTH);
     final int popupHeight = getMinimumSize().height;
 
     final int availableSizeLeft = anchorBounds.x;
@@ -146,6 +152,8 @@ public class NormalBalloon extends JPanel implements Balloon {
     }
     if (anchor.isActive()) {
       opacity().fadeIn();
+    } else if (keepVisible) {
+      opacity().dim();
     } else {
       opacity().fadeOut();
     }
@@ -186,14 +194,19 @@ public class NormalBalloon extends JPanel implements Balloon {
     return mOpacity;
   }
 
+  private boolean isCloseTo(@NotNull Point point) {
+    var bounds = new Rectangle(getSize());
+    bounds.grow(PROXIMITY_DISTANCE, PROXIMITY_DISTANCE);
+    return bounds.contains(point);
+  }
+
   private class MouseEventListener implements AWTEventListener {
     @Override
     public void eventDispatched(AWTEvent event) {
       var mouseEvent = (MouseEvent) event;
       var point = mouseEvent.getLocationOnScreen();
       SwingUtilities.convertPointFromScreen(point, NormalBalloon.this);
-      var destination = SwingUtilities.getDeepestComponentAt(NormalBalloon.this, point.x, point.y);
-      if (destination != null && opacity().get() > 0f) {
+      if (isCloseTo(point) && opacity().get() > 0f) {
         anchor.addSupporter(NormalBalloon.this);
       } else {
         anchor.removeSupporter(NormalBalloon.this);

@@ -7,6 +7,8 @@ import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiDocumentManager;
+import com.intellij.psi.PsiFile;
 import fi.aalto.cs.apluscourses.intellij.model.tutorial.IntelliJDocumentLineRange;
 import fi.aalto.cs.apluscourses.model.tutorial.CodeContext;
 import fi.aalto.cs.apluscourses.model.tutorial.LineRange;
@@ -23,8 +25,8 @@ public class IntelliJEditor extends IntelliJTutorialComponent<Component> {
 
   private final @Nullable Path path;
 
-  public IntelliJEditor(@Nullable Path path, @Nullable Project project) {
-    super(project);
+  public IntelliJEditor(@Nullable Path path, @Nullable TutorialComponent parent, @Nullable Project project) {
+    super(parent, project);
     var basePath = Optional.ofNullable(project).map(Project::getBasePath).map(Path::of).orElse(Path.of(""));
     this.path = Optional.ofNullable(path).map(basePath::resolve).orElse(null);
   }

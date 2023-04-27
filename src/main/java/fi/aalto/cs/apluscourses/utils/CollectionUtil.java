@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -184,5 +185,10 @@ public class CollectionUtil {
 
   public static <E> int getLength(E @NotNull[] array) {
     return array.length;
+  }
+
+  @Contract(pure = true)
+  public static <E> @NotNull Optional<E> getFirst(@NotNull Iterable<E> iterable) {
+    return Optional.of(iterable.iterator()).filter(Iterator::hasNext).map(Iterator::next);
   }
 }

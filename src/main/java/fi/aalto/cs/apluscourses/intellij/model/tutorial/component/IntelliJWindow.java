@@ -1,13 +1,14 @@
 package fi.aalto.cs.apluscourses.intellij.model.tutorial.component;
 
 import com.intellij.openapi.project.Project;
+import fi.aalto.cs.apluscourses.model.tutorial.TutorialComponent;
 import java.awt.Component;
 import javax.swing.JOptionPane;
 import org.jetbrains.annotations.Nullable;
 
 public class IntelliJWindow extends IntelliJTutorialComponent<Component> {
-  public IntelliJWindow(@Nullable Project project) {
-    super(project);
+  public IntelliJWindow(@Nullable TutorialComponent parent, @Nullable Project project) {
+    super(parent, project);
   }
 
   @Override

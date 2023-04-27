@@ -16,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class IntelliJHint extends Hint implements IntelliJTutorialClientObject {
+  private final boolean keepVisible;
   private final @NotNull List<@NotNull Transition> transitions;
   private final @NotNull SceneControl sceneControl;
   private final @NotNull OverlayPane overlayPane;
@@ -23,11 +24,13 @@ public class IntelliJHint extends Hint implements IntelliJTutorialClientObject {
 
   public IntelliJHint(@NotNull String content,
                       @Nullable String title,
+                      boolean keepVisible,
                       @NotNull List<@NotNull Transition> transitions,
                       @Nullable SceneSwitch sceneSwitch,
                       @NotNull IntelliJTutorialComponent<?> component,
                       @NotNull OverlayPane overlayPane) {
     super(title, content, component);
+    this.keepVisible = keepVisible;
     this.transitions = transitions;
     this.sceneControl = sceneSwitch == null ? NullSceneControl.INSTANCE : new SceneControlImpl(sceneSwitch);
     this.overlayPane = overlayPane;
@@ -36,14 +39,15 @@ public class IntelliJHint extends Hint implements IntelliJTutorialClientObject {
   @Override
   public void activate() {
     balloon = new NormalBalloon(
-      getIntelliJComponent(),
-      Optional.ofNullable(getTitle()).orElse(""),
-      getContent(),
-      CollectionUtil.concat(Action[]::new,
-          transitions.stream().map(TransitionAction::new).toArray(Action[]::new),
-          sceneControl.getActions()
-      )
-    );
+        keepVisible,
+        getIntelliJComponent(),
+        Optional.ofNullable(getTitle()).orElse(""),
+        getContent(),
+        CollectionUtil.concat(Action[]::new,
+            transitions.stream().map(TransitionAction::new).toArray(Action[]::new),
+            sceneControl.getActions()
+        )
+      );
     overlayPane.addBalloon(balloon);
     balloon.init();
   }

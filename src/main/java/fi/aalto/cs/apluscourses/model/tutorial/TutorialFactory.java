@@ -18,10 +18,13 @@ public interface TutorialFactory {
 
   @NotNull TutorialScene createScene(@NotNull Collection<TutorialClientObject> objects);
 
-  @NotNull TutorialComponent createComponent(@NotNull String type, @NotNull Props props);
+  @NotNull TutorialComponent createComponent(@NotNull String type,
+                                             @NotNull Props props,
+                                             @Nullable TutorialComponent parent);
 
   @NotNull Hint createHint(@NotNull String content,
                            @Nullable String title,
+                           boolean keepVisible,
                            @NotNull List<@NotNull Transition> transitions,
                            @Nullable SceneSwitch sceneSwitch,
                            @NotNull TutorialComponent component);

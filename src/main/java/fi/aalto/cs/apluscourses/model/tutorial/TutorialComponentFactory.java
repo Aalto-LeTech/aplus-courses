@@ -5,17 +5,18 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public interface TutorialComponentFactory {
-  @NotNull TutorialComponent createEditor(@Nullable Path path);
+  @NotNull TutorialComponent createEditor(@Nullable Path path, @Nullable TutorialComponent parent);
 
-  @NotNull TutorialComponent createWindow();
+  @NotNull TutorialComponent createWindow(@Nullable TutorialComponent parent);
 
-  @NotNull TutorialComponent createProjectTree();
+  @NotNull TutorialComponent createProjectTree(@Nullable TutorialComponent parent);
 
-  @NotNull TutorialComponent createEditorBlock(@Nullable Path path, @NotNull LineRange lineRange);
+  @NotNull TutorialComponent createEditorBlock(@NotNull LineRange lineRange,
+                                               @Nullable TutorialComponent parent);
 
-  @NotNull TutorialComponent createBuildButton();
+  @NotNull TutorialComponent createBuildButton(@Nullable TutorialComponent parent);
 
-  @NotNull TutorialComponent createRunLineButton(@Nullable Path path, int line);
+  @NotNull TutorialComponent createRunLineButton(int line, @Nullable TutorialComponent parent);
 
-  @NotNull TutorialComponent createRunWindow();
+  @NotNull TutorialComponent createRunWindow(@Nullable TutorialComponent parent);
 }

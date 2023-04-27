@@ -9,6 +9,7 @@ import com.intellij.openapi.wm.impl.IdeRootPane;
 import com.intellij.openapi.wm.impl.WindowManagerImpl;
 import com.intellij.openapi.wm.impl.status.IdeStatusBarImpl;
 import fi.aalto.cs.apluscourses.intellij.model.tutorial.util.ActionUtil;
+import fi.aalto.cs.apluscourses.model.tutorial.TutorialComponent;
 import fi.aalto.cs.apluscourses.utils.Cast;
 import java.awt.Component;
 import java.util.Optional;
@@ -17,8 +18,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class IntelliJBuildButton extends IntelliJTutorialComponent<Component> {
 
-  public IntelliJBuildButton(@Nullable Project project) {
-    super(project);
+  public IntelliJBuildButton(@Nullable TutorialComponent parent, @Nullable Project project) {
+    super(parent, project);
   }
 
   @Override

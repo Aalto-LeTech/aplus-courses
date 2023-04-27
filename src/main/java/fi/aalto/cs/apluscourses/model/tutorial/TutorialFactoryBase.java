@@ -33,29 +33,32 @@ public abstract class TutorialFactoryBase<C extends TutorialComponent> implement
   }
 
   @Override
-  public @NotNull C createComponent(@NotNull String type, @NotNull Props props) {
-    return castTutorialComponent(createComponentInternal(type, props));
+  public @NotNull C createComponent(@NotNull String type, @NotNull Props props, @Nullable TutorialComponent parent) {
+    return castTutorialComponent(createComponentInternal(type, props, parent));
   }
 
-  private @NotNull TutorialComponent createComponentInternal(@NotNull String type, @NotNull Props props) {
+  private @NotNull TutorialComponent createComponentInternal(@NotNull String type,
+                                                             @NotNull Props props,
+                                                             @Nullable TutorialComponent parent) {
     var factory = getComponentFactory();
     switch (type) {
       case "editor":
-        return factory.createEditor(props.parseProp("path", Path::of, null));
-      case "editor-block":
-        return factory.createEditorBlock(props.parseProp("path", Path::of, null),
-                                         props.parseProp("lines", LineRange::parse));
+        return factory.createEditor(props.parseProp("path", Path::of, null), parent);
+      case "editor.block":
+        return factory.createEditorBlock(props.parseProp("lines", LineRange::parse),
+                                         parent);
       case "window":
-        return factory.createWindow();
+        return factory.createWindow(parent);
       case "project-tree":
-        return factory.createProjectTree();
+        return factory.createProjectTree(parent);
       case "build-button":
-        return factory.createBuildButton();
-      case "run-line-button":
-        return factory.createRunLineButton(props.parseProp("path", Path::of, null),
-                                           props.parseProp("line", Integer::parseInt));
+        return factory.createBuildButton(parent);
+      case "editor.run":
+        return factory.createRunLineButton(
+            props.parseProp("line", Integer::parseInt),
+                                           parent);
       case "run-window":
-        return factory.createRunWindow();
+        return factory.createRunWindow(parent);
       default:
         throw new IllegalArgumentException("Unknown component type: " + type);
     }
@@ -99,10 +102,11 @@ public abstract class TutorialFactoryBase<C extends TutorialComponent> implement
   @Override
   public @NotNull Hint createHint(@NotNull String content,
                                   @Nullable String title,
+                                  boolean keepVisible,
                                   @NotNull List<@NotNull Transition> transitions,
                                   @Nullable SceneSwitch sceneSwitch,
                                   @NotNull TutorialComponent component) {
-    return createHintOverride(content, title, transitions, sceneSwitch, castTutorialComponent(component));
+    return createHintOverride(content, title, keepVisible, transitions, sceneSwitch, castTutorialComponent(component));
   }
 
   @Override
@@ -121,6 +125,7 @@ public abstract class TutorialFactoryBase<C extends TutorialComponent> implement
 
   protected abstract @NotNull Hint createHintOverride(@NotNull String content,
                                                       @Nullable String title,
+                                                      boolean keepVisible,
                                                       @NotNull List<@NotNull Transition> transitions,
                                                       @Nullable SceneSwitch sceneSwitch,
                                                       @NotNull C component);

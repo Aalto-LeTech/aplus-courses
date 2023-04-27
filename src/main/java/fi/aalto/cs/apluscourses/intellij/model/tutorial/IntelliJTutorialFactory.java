@@ -67,10 +67,11 @@ public class IntelliJTutorialFactory extends TutorialFactoryBase<IntelliJTutoria
   @Override
   protected @NotNull Hint createHintOverride(@NotNull String content,
                                              @Nullable String title,
+                                             boolean keepVisible,
                                              @NotNull List<@NotNull Transition> transitions,
                                              @Nullable SceneSwitch sceneSwitch,
                                              @NotNull IntelliJTutorialComponent<?> component) {
-    return new IntelliJHint(content, title, transitions, sceneSwitch, component, overlayPane);
+    return new IntelliJHint(content, title, keepVisible, transitions, sceneSwitch, component, overlayPane);
   }
 
   @Override
@@ -85,38 +86,40 @@ public class IntelliJTutorialFactory extends TutorialFactoryBase<IntelliJTutoria
   }
 
   @Override
-  public @NotNull TutorialComponent createEditor(@Nullable Path path) {
-    return new IntelliJEditor(path, project);
+  public @NotNull TutorialComponent createEditor(@Nullable Path path, @Nullable TutorialComponent parent) {
+    return new IntelliJEditor(path, parent, project);
   }
 
   @Override
-  public @NotNull TutorialComponent createWindow() {
-    return new IntelliJWindow(project);
+  public @NotNull TutorialComponent createWindow(@Nullable TutorialComponent parent) {
+    return new IntelliJWindow(parent, project);
   }
 
   @Override
-  public @NotNull TutorialComponent createProjectTree() {
-    return new IntelliJProjectTree(project);
+  public @NotNull TutorialComponent createProjectTree(@Nullable TutorialComponent parent) {
+    return new IntelliJProjectTree(parent, project);
   }
 
   @Override
-  public @NotNull TutorialComponent createEditorBlock(@Nullable Path path, @NotNull LineRange lineRange) {
-    return new IntelliJEditorBlock(path, lineRange, project);
+  public @NotNull TutorialComponent createEditorBlock(@NotNull LineRange lineRange,
+                                                      @Nullable TutorialComponent parent) {
+    return new IntelliJEditorBlock(lineRange, parent, project);
   }
 
   @Override
-  public @NotNull TutorialComponent createBuildButton() {
-    return new IntelliJBuildButton(project);
+  public @NotNull TutorialComponent createBuildButton(@Nullable TutorialComponent parent) {
+    return new IntelliJBuildButton(parent, project);
   }
   
   @Override
-  public @NotNull TutorialComponent createRunLineButton(@Nullable Path path, int line) {
-    return new IntelliJEditorGutter(path, line, IntelliJEditorGutter.RUN, project);
+  public @NotNull TutorialComponent createRunLineButton(int line,
+                                                        @Nullable TutorialComponent parent) {
+    return new IntelliJEditorGutter(line, IntelliJEditorGutter.RUN,  parent, project);
   }
 
   @Override
-  public @NotNull TutorialComponent createRunWindow() {
-    return new IntelliJToolWindow(ToolWindowId.RUN, project);
+  public @NotNull TutorialComponent createRunWindow(@Nullable TutorialComponent parent) {
+    return new IntelliJToolWindow(ToolWindowId.RUN, parent, project);
   }
 
   @Override

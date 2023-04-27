@@ -34,6 +34,7 @@ public class AnimatedValueImpl implements AnimatedValue, ActionListener {
     repeatMode = NO_REPEAT;
     end = 0;
   }
+
   @Override
   public void animate(float from, float to, int duration, int repeatMode) {
     //timer.stop();

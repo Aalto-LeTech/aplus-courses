@@ -6,6 +6,7 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.ex.EditorGutterComponentEx;
 import com.intellij.openapi.editor.markup.GutterIconRenderer;
 import com.intellij.openapi.project.Project;
+import fi.aalto.cs.apluscourses.model.tutorial.TutorialComponent;
 import fi.aalto.cs.apluscourses.utils.Cast;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -17,18 +18,18 @@ import javax.swing.SwingUtilities;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class IntelliJEditorGutter extends IntelliJTutorialComponent<JComponent> {
+public class IntelliJEditorGutter extends IntelliJTutorialComponent<JComponent> implements IntelliJEditorDescendant {
   public static final @NotNull String RUN = "run";
-
-  private final @NotNull IntelliJEditor editorComponent;
   private final int line;
   private final @NotNull Icon expectedIcon;
 
-  public IntelliJEditorGutter(@Nullable Path path, int line, @NotNull String command, @Nullable Project project) {
-    super(project);
+  public IntelliJEditorGutter(int line,
+                              @NotNull String command,
+                              @Nullable TutorialComponent parent,
+                              @Nullable Project project) {
+    super(parent, project);
     this.line = line;
     expectedIcon = getIcon(command);
-    editorComponent = new IntelliJEditor(path, project);
   }
 
   @Override
@@ -37,7 +38,7 @@ public class IntelliJEditorGutter extends IntelliJTutorialComponent<JComponent> 
     Editor editor;
     GutterIconRenderer renderer;
     Point center;
-    if ((editor = editorComponent.getEditor()) == null
+    if ((editor = getEditor()) == null
         || (gutter = getGutter(editor)) == null
         || (renderer = getRenderer(gutter)) == null
         || (center = gutter.getCenterPoint(renderer)) == null) {
@@ -81,7 +82,7 @@ public class IntelliJEditorGutter extends IntelliJTutorialComponent<JComponent> 
 
   @Override
   protected @Nullable JComponent getAwtComponent() {
-    return Optional.ofNullable(editorComponent.getEditor())
+    return Optional.ofNullable(getEditor())
         .map(IntelliJEditorGutter::getGutter)
         .orElse(null);
   }

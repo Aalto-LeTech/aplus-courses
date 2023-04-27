@@ -75,7 +75,7 @@ public class Tutorial implements TutorialObject, StateSwitch {
     try {
       return new DefaultTutorialParser(tutorialFactory)
           .parse(XmlDomNode.read(stream),
-                 tutorialFactory.createComponent("window", Props.EMPTY));
+                 tutorialFactory.createComponent("window", Props.EMPTY, null));
     } catch (ParserConfigurationException | SAXException e) {
       throw new IOException(e);
     }

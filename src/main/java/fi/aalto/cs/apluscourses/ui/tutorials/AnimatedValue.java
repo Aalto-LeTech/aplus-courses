@@ -11,6 +11,10 @@ public interface AnimatedValue {
 
   void animate(float from, float to, int duration, int repeatMode);
 
+  default void dim() {
+    animate(1.0f, 0.67f, 100, NO_REPEAT);
+  }
+
   default void fadeOut() {
     animate(1.0f, 0.0f, 300, NO_REPEAT);
   }
