@@ -23,7 +23,7 @@ repositories {
 
 dependencies {
     implementation group: 'net.lingala.zip4j', name: 'zip4j', version: '2.11.5'
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.3'
     test.useJUnitPlatform()
     compileOnly group: 'org.scala-lang', name: 'scala-library', version: '2.13.10'
     implementation group: 'org.json', name: 'json', version: '20230227'
