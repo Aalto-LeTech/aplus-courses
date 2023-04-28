@@ -6,11 +6,12 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.ex.EditorGutterComponentEx;
 import com.intellij.openapi.editor.markup.GutterIconRenderer;
 import com.intellij.openapi.project.Project;
+import fi.aalto.cs.apluscourses.model.tutorial.LineRange;
 import fi.aalto.cs.apluscourses.model.tutorial.TutorialComponent;
 import fi.aalto.cs.apluscourses.utils.Cast;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.nio.file.Path;
+import java.util.List;
 import java.util.Optional;
 import javax.swing.Icon;
 import javax.swing.JComponent;
@@ -20,20 +21,20 @@ import org.jetbrains.annotations.Nullable;
 
 public class IntelliJEditorGutter extends IntelliJTutorialComponent<JComponent> implements IntelliJEditorDescendant {
   public static final @NotNull String RUN = "run";
-  private final int line;
+  private final @NotNull LineRange lineRange;
   private final @NotNull Icon expectedIcon;
 
-  public IntelliJEditorGutter(int line,
+  public IntelliJEditorGutter(@NotNull LineRange lineRange,
                               @NotNull String command,
                               @Nullable TutorialComponent parent,
                               @Nullable Project project) {
     super(parent, project);
-    this.line = line;
+    this.lineRange = lineRange;
     expectedIcon = getIcon(command);
   }
 
   @Override
-  protected @NotNull Rectangle getBounds(@NotNull JComponent component) {
+  protected @Nullable Rectangle getBounds(@NotNull JComponent component) {
     EditorGutterComponentEx gutter;
     Editor editor;
     GutterIconRenderer renderer;
@@ -69,7 +70,10 @@ public class IntelliJEditorGutter extends IntelliJTutorialComponent<JComponent> 
   }
 
   private @Nullable GutterIconRenderer getRenderer(@NotNull EditorGutterComponentEx gutter) {
-    return gutter.getGutterRenderers(line - 1).stream()
+    return lineRange.stream()
+        .map(i -> i - 1)
+        .mapToObj(gutter::getGutterRenderers)
+        .flatMap(List::stream)
         .filter(this::doesGutterMarkMatch)
         .findFirst()
         .map(Cast.to(GutterIconRenderer.class)::orNull)

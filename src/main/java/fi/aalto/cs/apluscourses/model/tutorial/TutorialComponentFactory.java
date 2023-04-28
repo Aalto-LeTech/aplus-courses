@@ -16,7 +16,7 @@ public interface TutorialComponentFactory {
 
   @NotNull TutorialComponent createBuildButton(@Nullable TutorialComponent parent);
 
-  @NotNull TutorialComponent createRunLineButton(int line, @Nullable TutorialComponent parent);
+  @NotNull TutorialComponent createRunLineButton(@NotNull LineRange lineRange, @Nullable TutorialComponent parent);
 
   @NotNull TutorialComponent createRunWindow(@Nullable TutorialComponent parent);
 }

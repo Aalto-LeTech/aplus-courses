@@ -41,12 +41,13 @@ public abstract class TutorialFactoryBase<C extends TutorialComponent> implement
                                                              @NotNull Props props,
                                                              @Nullable TutorialComponent parent) {
     var factory = getComponentFactory();
+    LineRange lineRange;
     switch (type) {
       case "editor":
         return factory.createEditor(props.parseProp("path", Path::of, null), parent);
       case "editor.block":
-        return factory.createEditorBlock(props.parseProp("lines", LineRange::parse),
-                                         parent);
+        lineRange = parseLineRange(props.getProp("lines"), parent);
+        return factory.createEditorBlock(lineRange, parent);
       case "window":
         return factory.createWindow(parent);
       case "project-tree":
@@ -54,14 +55,17 @@ public abstract class TutorialFactoryBase<C extends TutorialComponent> implement
       case "build-button":
         return factory.createBuildButton(parent);
       case "editor.run":
-        return factory.createRunLineButton(
-            props.parseProp("line", Integer::parseInt),
-                                           parent);
+        lineRange = parseLineRange(props.getProp("lines"), parent);
+        return factory.createRunLineButton(lineRange, parent);
       case "run-window":
         return factory.createRunWindow(parent);
       default:
         throw new IllegalArgumentException("Unknown component type: " + type);
     }
+  }
+
+  protected @NotNull LineRange parseLineRange(@NotNull String s, @Nullable TutorialComponent parent) {
+    return LineRange.parse(s);
   }
 
   @Override

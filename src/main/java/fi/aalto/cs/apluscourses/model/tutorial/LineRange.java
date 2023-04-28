@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.model.tutorial;
 
 import java.util.regex.Pattern;
+import java.util.stream.IntStream;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class LineRange {
@@ -8,7 +9,7 @@ public abstract class LineRange {
 
   public static @NotNull LineRange parse(@NotNull String lines) {
     var matcher = PATTERN.matcher(lines);
-    return matcher.find()
+    return matcher.matches()
         ? between(Integer.parseInt(matcher.group(1)), Integer.parseInt(matcher.group(2)))
         : from(Integer.parseInt(lines));
   }
@@ -28,6 +29,10 @@ public abstract class LineRange {
   public abstract int getFirst();
 
   public abstract int getLast();
+
+  public IntStream stream() {
+    return IntStream.range(getFirst(), getLast() + 1);
+  }
 
   public int lineCount() {
     return getLast() - getFirst() + 1;

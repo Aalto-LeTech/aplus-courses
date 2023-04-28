@@ -5,6 +5,7 @@ import com.intellij.openapi.wm.ToolWindowId;
 import fi.aalto.cs.apluscourses.intellij.model.tutorial.component.IntelliJBuildButton;
 import fi.aalto.cs.apluscourses.intellij.model.tutorial.component.IntelliJEditor;
 import fi.aalto.cs.apluscourses.intellij.model.tutorial.component.IntelliJEditorBlock;
+import fi.aalto.cs.apluscourses.intellij.model.tutorial.component.IntelliJEditorDescendant;
 import fi.aalto.cs.apluscourses.intellij.model.tutorial.component.IntelliJEditorGutter;
 import fi.aalto.cs.apluscourses.intellij.model.tutorial.component.IntelliJProjectTree;
 import fi.aalto.cs.apluscourses.intellij.model.tutorial.component.IntelliJToolWindow;
@@ -17,6 +18,7 @@ import fi.aalto.cs.apluscourses.intellij.model.tutorial.observer.IntelliJDebugOb
 import fi.aalto.cs.apluscourses.intellij.model.tutorial.observer.IntelliJDebuggerObserver;
 import fi.aalto.cs.apluscourses.intellij.model.tutorial.observer.IntelliJFileObserver;
 import fi.aalto.cs.apluscourses.intellij.model.tutorial.observer.IntelliJRunObserver;
+import fi.aalto.cs.apluscourses.intellij.model.tutorial.util.PsiSelector;
 import fi.aalto.cs.apluscourses.model.tutorial.Highlight;
 import fi.aalto.cs.apluscourses.model.tutorial.Hint;
 import fi.aalto.cs.apluscourses.model.tutorial.LineRange;
@@ -34,8 +36,12 @@ import fi.aalto.cs.apluscourses.ui.tutorials.OverlayPane;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import javax.lang.model.SourceVersion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunctionDefinition;
 
 public class IntelliJTutorialFactory extends TutorialFactoryBase<IntelliJTutorialComponent<?>>
     implements TutorialComponentFactory, TutorialObserverFactory<IntelliJTutorialComponent<?>> {
@@ -45,6 +51,11 @@ public class IntelliJTutorialFactory extends TutorialFactoryBase<IntelliJTutoria
   public IntelliJTutorialFactory(@NotNull OverlayPane overlayPane, @Nullable Project project) {
     this.overlayPane = overlayPane;
     this.project = project;
+  }
+
+  @Override
+  protected @NotNull LineRange parseLineRange(@NotNull String s, @Nullable TutorialComponent parent) {
+    return new PsiLineRange<>(PsiSelector.parse(s), IntelliJEditorDescendant.getEditorComponent(parent));
   }
 
   @Override
@@ -112,9 +123,9 @@ public class IntelliJTutorialFactory extends TutorialFactoryBase<IntelliJTutoria
   }
   
   @Override
-  public @NotNull TutorialComponent createRunLineButton(int line,
+  public @NotNull TutorialComponent createRunLineButton(@NotNull LineRange lineRange,
                                                         @Nullable TutorialComponent parent) {
-    return new IntelliJEditorGutter(line, IntelliJEditorGutter.RUN,  parent, project);
+    return new IntelliJEditorGutter(lineRange, IntelliJEditorGutter.RUN,  parent, project);
   }
 
   @Override

@@ -12,7 +12,6 @@ import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 import javax.swing.SwingUtilities;
 import org.jetbrains.annotations.NotNull;
@@ -36,7 +35,7 @@ public abstract class IntelliJTutorialComponent<C extends Component> implements 
     return null;
   }
 
-  protected @NotNull Rectangle getBounds(@NotNull C component) {
+  protected @Nullable Rectangle getBounds(@NotNull C component) {
     return component.getBounds();
   }
 
@@ -46,11 +45,13 @@ public abstract class IntelliJTutorialComponent<C extends Component> implements 
 
   @Override
   public @NotNull Area getArea(@NotNull Component destination) {
-    var component = getAwtComponent();
-    if (component == null) {
+    C component;
+    Rectangle bounds;
+    if ((component = getAwtComponent()) == null
+        || (bounds = getBounds(component)) == null) {
       return new Area();
     }
-    var area = new Area(GeometryUtil.withMargin(getBounds(component), MARGIN));
+    var area = new Area(GeometryUtil.withMargin(bounds, MARGIN));
     var offset = SwingUtilities.convertPoint(component.getParent(), 0, 0, destination);
     area.transform(AffineTransform.getTranslateInstance(offset.x, offset.y));
     return area;
@@ -74,13 +75,15 @@ public abstract class IntelliJTutorialComponent<C extends Component> implements 
     if (point == null) {
       return false;
     }
-    var component = getAwtComponent();
-    if (component == null) {
+    C component;
+    Rectangle bounds;
+    if ((component = getAwtComponent()) == null
+        || (bounds = getBounds(component)) == null) {
       return false;
     }
     var newPoint = new Point(point);
     SwingUtilities.convertPointFromScreen(newPoint, component);
-    return getBounds(component).contains(newPoint);
+    return bounds.contains(newPoint);
   }
 
   @Override

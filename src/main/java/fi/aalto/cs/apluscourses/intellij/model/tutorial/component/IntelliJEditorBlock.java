@@ -26,13 +26,18 @@ public class IntelliJEditorBlock extends IntelliJTutorialComponent<JComponent> i
   }
 
   @Override
-  protected @NotNull Rectangle getBounds(@NotNull JComponent component) {
+  protected @Nullable Rectangle getBounds(@NotNull JComponent component) {
     var editor = getEditor();
     if (editor == null) {
-      return new Rectangle();
+      return null;
     }
-    var start = editor.logicalPositionToXY(new LogicalPosition(lineRange.getFirst() - 1, 0));
-    var end = editor.logicalPositionToXY(new LogicalPosition(lineRange.getLast() - 1, 0));
+    var first = lineRange.getFirst() - 1;
+    var last = lineRange.getLast() - 1;
+    if (first > last) {
+      return null;
+    }
+    var start = editor.logicalPositionToXY(new LogicalPosition(first, 0));
+    var end = editor.logicalPositionToXY(new LogicalPosition(last, 0));
     var rect = component.getVisibleRect().createIntersection(new Rectangle(
         0,
         start.y,
