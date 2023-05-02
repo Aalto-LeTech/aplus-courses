@@ -67,8 +67,7 @@ public class IntelliJEditorBlock extends IntelliJTutorialComponent<JComponent> i
   }
 
   @Override
-  @Nullable
-  public Document getDocument() {
+  public @Nullable Document getDocument() {
     return getEditorComponent().getDocument();
   }
 

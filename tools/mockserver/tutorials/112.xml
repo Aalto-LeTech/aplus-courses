@@ -133,14 +133,30 @@
                     Let's take a closer look at the code that prints the table.
                 </hint>
             </scene>
-            <scene>
-                <component type="editor.block" lines="printTable>for">
-                    <highlight degree="focus"/>
+            <component type="editor.block" lines="printTable>for">
+                <highlight degree="focus"/>
+                <scene>
                     <hint navigable="true">
-                        What's here?
+                        Here's the for-loop that prints both the cells and lines separating them.
+                        Considering that there seems to be one extra row in the output, we could try to make the loop
+                        run one time fewer than it currently does.
                     </hint>
-                </component>
-            </scene>
+                </scene>
+                <scene>
+                    <hint navigable="true">
+                        Edit the 'until' clause so that it runs one time fewer. Notice that the size of one step is not
+                        1 as usual but a variable. So, you should subtract that from the clause to make the loop stop
+                        one step earlier.
+                    </hint>
+                </scene>
+                <transition goto="TRY-RUN-FIXED">
+                    <observer type="code" lang="scala3">
+
+                    </observer>
+                </transition>
+            </component>
         </component>
     </state>
+
+
 </tutorial>

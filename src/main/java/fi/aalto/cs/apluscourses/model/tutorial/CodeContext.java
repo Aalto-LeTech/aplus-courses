@@ -9,10 +9,12 @@ public interface CodeContext {
 
   @Nullable Path getPath();
 
-  @NotNull LineRange getLineRange();
+  int getStartOffset();
 
-  default boolean contains(@Nullable Path path, int line) {
-    return concernsPath(path) && getLineRange().contains(line);
+  int getEndOffset();
+
+  default boolean contains(@Nullable Path path, int offset) {
+    return concernsPath(path) && getStartOffset() < offset && offset < getEndOffset();
   }
 
   private boolean concernsPath(@Nullable Path path) {

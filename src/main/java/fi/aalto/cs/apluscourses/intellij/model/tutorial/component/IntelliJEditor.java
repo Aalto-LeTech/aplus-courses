@@ -7,9 +7,6 @@ import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiDocumentManager;
-import com.intellij.psi.PsiFile;
-import fi.aalto.cs.apluscourses.intellij.model.tutorial.IntelliJDocumentLineRange;
 import fi.aalto.cs.apluscourses.model.tutorial.CodeContext;
 import fi.aalto.cs.apluscourses.model.tutorial.LineRange;
 import fi.aalto.cs.apluscourses.model.tutorial.TutorialComponent;
@@ -89,8 +86,23 @@ public class IntelliJEditor extends IntelliJTutorialComponent<Component> {
     }
 
     @Override
-    public @NotNull LineRange getLineRange() {
-      return new IntelliJDocumentLineRange(IntelliJEditor.this::getDocument, lineRange);
+    public int getStartOffset() {
+      var document = getDocument();
+      if (document == null) {
+        return 0;
+      }
+      int line = Optional.ofNullable(lineRange).map(LineRange::getFirst).orElse(1) - 1;
+      return document.getLineStartOffset(line);
+    }
+
+    @Override
+    public int getEndOffset() {
+      var document = getDocument();
+      if (document == null) {
+        return 0;
+      }
+      int line = Optional.ofNullable(lineRange).map(LineRange::getLast).orElse(document.getLineCount()) - 1;
+      return document.getLineEndOffset(line);
     }
   }
 }

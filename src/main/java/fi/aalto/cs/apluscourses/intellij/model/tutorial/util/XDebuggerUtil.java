@@ -7,6 +7,6 @@ import org.jetbrains.annotations.Nullable;
 
 public class XDebuggerUtil {
   public static boolean containsSourcePosition(@NotNull CodeContext codeContext, @Nullable XSourcePosition position) {
-    return position != null && codeContext.contains(position.getFile().toNioPath(), position.getLine() + 1);
+    return position != null && codeContext.contains(position.getFile().toNioPath(), position.getOffset());
   }
 }

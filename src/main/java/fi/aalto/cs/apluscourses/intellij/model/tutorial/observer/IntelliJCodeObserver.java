@@ -86,12 +86,7 @@ public class IntelliJCodeObserver extends Observer implements IntelliJTutorialCl
 
     @Override
     public @NotNull CharSequence getCode(@NotNull Document document) {
-      var lineRange = codeContext.getLineRange();
-      var firstLine = lineRange.getFirst() - 1;
-      var lastLine = lineRange.getLast() - 1;
-      var start = document.getLineStartOffset(firstLine);
-      var end = document.getLineEndOffset(lastLine);
-      return document.getText(TextRange.create(start, end));
+      return document.getText(TextRange.create(codeContext.getStartOffset(), codeContext.getEndOffset()));
     }
   }
 
