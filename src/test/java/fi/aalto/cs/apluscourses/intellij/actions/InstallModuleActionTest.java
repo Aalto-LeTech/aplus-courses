@@ -20,6 +20,7 @@ import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import fi.aalto.cs.apluscourses.ui.InstallerDialogs;
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import fi.aalto.cs.apluscourses.utils.CollectionUtil;
+import fi.aalto.cs.apluscourses.utils.CourseHiddenElements;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -78,7 +79,9 @@ class InstallModuleActionTest {
         // tutorials
         Collections.emptyMap(),
         // pluginDependencies
-        Collections.emptyList());
+        Collections.emptyList(),
+        // hiddenElements
+        new CourseHiddenElements());
     mainViewModel.courseViewModel.set(new CourseViewModel(course, Options.EMPTY));
 
     installer = mock(ComponentInstaller.class);

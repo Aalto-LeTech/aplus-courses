@@ -20,14 +20,21 @@ public class CourseHiddenElements {
 
   private final @NotNull Map<String, List<Pattern>> hiddenLanguageSpecificRegexes = new HashMap<>();
 
+  /**
+   * Constructs the CourseHiddenElements object from an array of JSON objects.
+   * Each JSON object must either have a "byId" integer-valued element (in order to
+   * hide the element by its ID), a "byRegex" string-valued element (to hide the element
+   * by a case-insensitive regex match), or a "byRegex" object-valued element (same as string,
+   * but language-specific).
+   */
   @NotNull
-  public static CourseHiddenElements fromJsonObject(@NotNull JSONArray hiddenEntriesArray) {
+  public static CourseHiddenElements fromJsonObject(@NotNull JSONArray hiddenElementsArray) {
     List<Long> hiddenIDs = new ArrayList<>();
     List<Pattern> hiddenRegexes = new ArrayList<>();
     Map<String, List<Pattern>> hiddenLanguageSpecificRegexes = new HashMap<>();
 
-    for (int i = 0; i < hiddenEntriesArray.length(); ++i) {
-      JSONObject entryInfo = hiddenEntriesArray.getJSONObject(i);
+    for (int i = 0; i < hiddenElementsArray.length(); ++i) {
+      JSONObject entryInfo = hiddenElementsArray.getJSONObject(i);
 
       long hiddenID = entryInfo.optLong("byId", -1);
       if (hiddenID != -1) {
@@ -43,7 +50,7 @@ public class CourseHiddenElements {
         continue;
       } else if (hiddenRegex instanceof JSONObject) {
         // Hide by language-dependent regex
-        JSONObject hiddenRegexObject = (JSONObject)hiddenRegex;
+        JSONObject hiddenRegexObject = (JSONObject) hiddenRegex;
         for (String key : hiddenRegexObject.keySet()) {
           String regex = hiddenRegexObject.getString(key);
 
@@ -54,12 +61,17 @@ public class CourseHiddenElements {
         continue;
       }
 
-      throw new JSONException("Element number " + i + " in the \"hiddenEntries\" array is of an unsupported format");
+      throw new JSONException("Element number " + i + " in the \"hiddenElements\" array is of an unsupported format");
     }
 
     return new CourseHiddenElements(hiddenIDs, hiddenRegexes, hiddenLanguageSpecificRegexes);
   }
 
+  /**
+   * Checks if the object (e.g. exercise) ID or string match at least one of hiding rules.
+   *
+   * @return True of the object is supposed to be hidden, false otherwise.
+   */
   public boolean shouldHideObject(long objectId, @NotNull String objectName, @Nullable String currentLanguage) {
     if (hiddenIDs.contains(objectId)) {
       return true;
@@ -73,10 +85,16 @@ public class CourseHiddenElements {
         .stream().anyMatch(r -> r.matcher(objectName).find());
   }
 
+  /**
+   * Constructor without any hiding rules.
+   */
   public CourseHiddenElements() {
     this(null, null, null);
   }
 
+  /**
+   * Constructor.
+   */
   public CourseHiddenElements(@Nullable List<Long> hiddenIDs,
                               @Nullable List<Pattern> hiddenRegexes,
                               @Nullable Map<String, List<Pattern>> hiddenLanguageSpecificRegexes) {

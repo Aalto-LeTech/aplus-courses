@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.containsString;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.ModelExtensions;
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
+import fi.aalto.cs.apluscourses.utils.CourseHiddenElements;
 import fi.aalto.cs.apluscourses.utils.observable.ValidationError;
 import java.util.Collections;
 import org.hamcrest.MatcherAssert;
@@ -41,7 +42,9 @@ class CourseProjectViewModelTest {
       // tutorials
       Collections.emptyMap(),
       // pluginDependencies
-      Collections.emptyList()
+      Collections.emptyList(),
+      // hiddenElements
+      new CourseHiddenElements()
   );
 
   @Test

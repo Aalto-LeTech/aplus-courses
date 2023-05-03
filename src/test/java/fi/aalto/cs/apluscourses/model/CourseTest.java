@@ -3,6 +3,7 @@ package fi.aalto.cs.apluscourses.model;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
+import fi.aalto.cs.apluscourses.utils.CourseHiddenElements;
 import fi.aalto.cs.apluscourses.utils.Version;
 import java.io.StringReader;
 import java.net.MalformedURLException;
@@ -54,7 +55,8 @@ class CourseTest {
         replAdditionalArguments,
         BuildInfo.INSTANCE.courseVersion,
         Collections.emptyMap(),
-        Collections.emptyList());
+        Collections.emptyList(),
+        new CourseHiddenElements());
     Assertions.assertEquals("13", course.getId(),
         "The ID of the course should be the same as that given to the constructor");
     Assertions.assertEquals("Tester Course", course.getName(),
@@ -119,7 +121,10 @@ class CourseTest {
         BuildInfo.INSTANCE.courseVersion,
         // tutorials
         Collections.emptyMap(),
-        Collections.emptyList());
+        // pluginDependencies
+        Collections.emptyList(),
+        // hiddenElements
+        new CourseHiddenElements());
     Assertions.assertSame(module2, course.getComponent("Awesome Module"),
         "Course#getModule should return the correct module");
   }
@@ -160,7 +165,10 @@ class CourseTest {
         BuildInfo.INSTANCE.courseVersion,
         // tutorials
         Collections.emptyMap(),
-        Collections.emptyList());
+        // pluginDependencies
+        Collections.emptyList(),
+        // hiddenElements
+        new CourseHiddenElements());
     List<Component> autoInstalls = course.getAutoInstallComponents();
     Assertions.assertEquals(2, autoInstalls.size(), "The course has the correct auto-install components");
     Assertions.assertEquals(moduleName, autoInstalls.get(0).getName());
