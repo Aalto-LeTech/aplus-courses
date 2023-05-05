@@ -30,8 +30,7 @@ public abstract class IntelliJTutorialComponent<C extends Component> implements 
 
   protected abstract @Nullable C getAwtComponent();
 
-  @Nullable
-  public Document getDocument() {
+  public @Nullable Document getDocument() {
     return null;
   }
 

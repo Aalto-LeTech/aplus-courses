@@ -21,7 +21,7 @@ import fi.aalto.cs.apluscourses.intellij.model.tutorial.observer.IntelliJRunObse
 import fi.aalto.cs.apluscourses.intellij.model.tutorial.util.PsiSelector;
 import fi.aalto.cs.apluscourses.model.tutorial.Highlight;
 import fi.aalto.cs.apluscourses.model.tutorial.Hint;
-import fi.aalto.cs.apluscourses.model.tutorial.LineRange;
+import fi.aalto.cs.apluscourses.model.tutorial.CodeRange;
 import fi.aalto.cs.apluscourses.model.tutorial.Observer;
 import fi.aalto.cs.apluscourses.model.tutorial.Transition;
 import fi.aalto.cs.apluscourses.model.tutorial.Tutorial;
@@ -36,12 +36,8 @@ import fi.aalto.cs.apluscourses.ui.tutorials.OverlayPane;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import javax.lang.model.SourceVersion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.plugins.scala.lang.psi.api.statements.ScFunctionDefinition;
 
 public class IntelliJTutorialFactory extends TutorialFactoryBase<IntelliJTutorialComponent<?>>
     implements TutorialComponentFactory, TutorialObserverFactory<IntelliJTutorialComponent<?>> {
@@ -54,8 +50,8 @@ public class IntelliJTutorialFactory extends TutorialFactoryBase<IntelliJTutoria
   }
 
   @Override
-  protected @NotNull LineRange parseLineRange(@NotNull String s, @Nullable TutorialComponent parent) {
-    return new PsiLineRange<>(PsiSelector.parse(s), IntelliJEditorDescendant.getEditorComponent(parent));
+  protected @NotNull CodeRange parseLineRange(@NotNull String s, @Nullable TutorialComponent parent) {
+    return new PsiCodeRange<>(PsiSelector.parse(s), IntelliJEditorDescendant.getEditorComponent(parent)::getPsiFile);
   }
 
   @Override
@@ -112,9 +108,9 @@ public class IntelliJTutorialFactory extends TutorialFactoryBase<IntelliJTutoria
   }
 
   @Override
-  public @NotNull TutorialComponent createEditorBlock(@NotNull LineRange lineRange,
+  public @NotNull TutorialComponent createEditorBlock(@NotNull CodeRange codeRange,
                                                       @Nullable TutorialComponent parent) {
-    return new IntelliJEditorBlock(lineRange, parent, project);
+    return new IntelliJEditorBlock(codeRange, parent, project);
   }
 
   @Override
@@ -123,9 +119,9 @@ public class IntelliJTutorialFactory extends TutorialFactoryBase<IntelliJTutoria
   }
   
   @Override
-  public @NotNull TutorialComponent createRunLineButton(@NotNull LineRange lineRange,
+  public @NotNull TutorialComponent createRunLineButton(@NotNull CodeRange codeRange,
                                                         @Nullable TutorialComponent parent) {
-    return new IntelliJEditorGutter(lineRange, IntelliJEditorGutter.RUN,  parent, project);
+    return new IntelliJEditorGutter(codeRange, IntelliJEditorGutter.RUN,  parent, project);
   }
 
   @Override

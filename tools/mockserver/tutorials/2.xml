@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<tutorial start="1">
+
+    <state key="1">
+        <component type="project-tree">
+            <highlight degree="normal"/>
+            <hint title="Open Collatz.scala">
+                Select the file and double-click to open it.
+            </hint>
+        </component>
+        <transition goto="2">
+            <observer type="file" action="open" path="Collatz/src/Collatz.scala"/>
+        </transition>
+    </state>
+
+    <state key="2">
+        <component type="editor" path="Collatz/src/Collatz.scala">
+            <highlight degree="normal"/>
+            <scene>
+                <component type="editor.block" lines="easyTestCase">
+                    <highlight degree="focus"/>
+                    <hint navigable="true">
+                        Here is a simple test case.
+                    </hint>
+                </component>
+            </scene>
+            <scene>
+                <component type="editor.block" lines="collatz">
+                    <highlight degree="focus">
+                        <hint navigable="true">
+                            Here is the function.
+                        </hint>
+                    </highlight>
+                </component>
+            </scene>
+        </component>
+    </state>
+
+</tutorial>

@@ -1,8 +1,10 @@
 package fi.aalto.cs.apluscourses.utils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.stream.IntStream;
 import org.jetbrains.annotations.NotNull;
 
 public class StringUtil {
@@ -59,5 +61,13 @@ public class StringUtil {
       index--;
     }
     return index > 0 ? string.substring(0, index) : "";
+  }
+
+  public static int indexOfAny(String string, char... characters) {
+    return indexOfAny(string, String.valueOf(characters).chars());
+  }
+
+  public static int indexOfAny(String string, @NotNull IntStream chars) {
+    return chars.map(string::indexOf).filter(i -> i >= 0).min().orElse(-1);
   }
 }

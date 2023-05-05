@@ -11,7 +11,7 @@ public abstract class SelectorBase<E> implements Selector<E> {
     this.subSelector = subSelector;
   }
 
-  protected abstract @NotNull Stream<? extends @NotNull E> stream(@NotNull E elem);
+  protected abstract @NotNull Stream<? extends @NotNull E> stream(@NotNull E root);
 
   @Override
   public @NotNull Optional<? extends E> select(@NotNull E root) {

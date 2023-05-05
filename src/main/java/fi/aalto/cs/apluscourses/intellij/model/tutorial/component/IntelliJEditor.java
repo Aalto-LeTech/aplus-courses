@@ -7,8 +7,10 @@ import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiDocumentManager;
+import com.intellij.psi.PsiFile;
 import fi.aalto.cs.apluscourses.model.tutorial.CodeContext;
-import fi.aalto.cs.apluscourses.model.tutorial.LineRange;
+import fi.aalto.cs.apluscourses.model.tutorial.CodeRange;
 import fi.aalto.cs.apluscourses.model.tutorial.TutorialComponent;
 import java.awt.Component;
 import java.nio.file.Path;
@@ -60,6 +62,16 @@ public class IntelliJEditor extends IntelliJTutorialComponent<Component> {
     return Optional.ofNullable(getEditor()).map(Editor::getDocument).orElse(null);
   }
 
+  public @Nullable PsiFile getPsiFile() {
+    Document document;
+    Project project;
+    if ((project = getProject()) == null
+        || (document = getDocument()) == null) {
+      return null;
+    }
+    return PsiDocumentManager.getInstance(project).getPsiFile(document);
+  }
+
   @Override
   public @Nullable Component getAwtComponent() {
     return Optional.ofNullable(getEditor())
@@ -74,10 +86,10 @@ public class IntelliJEditor extends IntelliJTutorialComponent<Component> {
 
   public class EditorCodeContext implements CodeContext {
 
-    private final @Nullable LineRange lineRange;
+    private final @Nullable CodeRange codeRange;
 
-    public EditorCodeContext(@Nullable LineRange lineRange) {
-      this.lineRange = lineRange;
+    public EditorCodeContext(@Nullable CodeRange codeRange) {
+      this.codeRange = codeRange;
     }
 
     @Override
@@ -86,23 +98,17 @@ public class IntelliJEditor extends IntelliJTutorialComponent<Component> {
     }
 
     @Override
-    public int getStartOffset() {
-      var document = getDocument();
-      if (document == null) {
-        return 0;
-      }
-      int line = Optional.ofNullable(lineRange).map(LineRange::getFirst).orElse(1) - 1;
-      return document.getLineStartOffset(line);
+    public int getStartInclusive() {
+      return Optional.ofNullable(codeRange).map(CodeRange::getStartInclusive).orElse(0);
     }
 
     @Override
-    public int getEndOffset() {
+    public int getEndExclusive() {
       var document = getDocument();
       if (document == null) {
         return 0;
       }
-      int line = Optional.ofNullable(lineRange).map(LineRange::getLast).orElse(document.getLineCount()) - 1;
-      return document.getLineEndOffset(line);
+      return Optional.ofNullable(codeRange).map(CodeRange::getEndExclusive).orElse(document.getTextLength());
     }
   }
 }

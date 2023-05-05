@@ -6,7 +6,7 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.LogicalPosition;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.model.tutorial.CodeContext;
-import fi.aalto.cs.apluscourses.model.tutorial.LineRange;
+import fi.aalto.cs.apluscourses.model.tutorial.CodeRange;
 import fi.aalto.cs.apluscourses.model.tutorial.TutorialComponent;
 import java.awt.Rectangle;
 import java.util.Optional;
@@ -16,13 +16,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class IntelliJEditorBlock extends IntelliJTutorialComponent<JComponent> implements IntelliJEditorDescendant {
-  private final @NotNull LineRange lineRange;
+  private final @NotNull CodeRange codeRange;
 
-  public IntelliJEditorBlock(@NotNull LineRange lineRange,
+  public IntelliJEditorBlock(@NotNull CodeRange codeRange,
                              @Nullable TutorialComponent parent,
                              @Nullable Project project) {
     super(parent, project);
-    this.lineRange = lineRange;
+    this.codeRange = codeRange;
   }
 
   @Override
@@ -31,18 +31,19 @@ public class IntelliJEditorBlock extends IntelliJTutorialComponent<JComponent> i
     if (editor == null) {
       return null;
     }
-    var first = lineRange.getFirst() - 1;
-    var last = lineRange.getLast() - 1;
-    if (first > last) {
+    var start = codeRange.getStartInclusive();
+    var end = codeRange.getEndExclusive();
+    if (start > end) {
       return null;
     }
-    var start = editor.logicalPositionToXY(new LogicalPosition(first, 0));
-    var end = editor.logicalPositionToXY(new LogicalPosition(last, 0));
+    var startPoint = editor.offsetToXY(start, true, false);
+    var endPoint = editor.offsetToXY(end, false, true);
+    boolean inline = startPoint.y == endPoint.y;
     var rect = component.getVisibleRect().createIntersection(new Rectangle(
-        0,
-        start.y,
-        component.getWidth(),
-        end.y - start.y + editor.getLineHeight())).getBounds();
+        inline ? startPoint.x : 0,
+        startPoint.y,
+        inline ? endPoint.x - startPoint.x : component.getWidth(),
+        endPoint.y - startPoint.y + editor.getLineHeight())).getBounds();
     return SwingUtilities.convertRectangle(component, rect, component.getParent());
   }
 
@@ -51,7 +52,7 @@ public class IntelliJEditorBlock extends IntelliJTutorialComponent<JComponent> i
     return super.hasFocusInternal()
         && Optional.ofNullable(getEditor())
         .map(Editor::getCaretModel)
-        .map(CaretModel::getLogicalPosition)
+        .map(CaretModel::getOffset)
         .map(this::isInRange)
         .orElse(false);
   }
@@ -63,7 +64,7 @@ public class IntelliJEditorBlock extends IntelliJTutorialComponent<JComponent> i
 
   @Override
   public @NotNull CodeContext getCodeContext() {
-    return getEditorComponent().new EditorCodeContext(lineRange);
+    return getEditorComponent().new EditorCodeContext(codeRange);
   }
 
   @Override
@@ -71,8 +72,7 @@ public class IntelliJEditorBlock extends IntelliJTutorialComponent<JComponent> i
     return getEditorComponent().getDocument();
   }
 
-  private boolean isInRange(@NotNull LogicalPosition logicalPosition) {
-    int line = logicalPosition.line + 1;
-    return lineRange.contains(line);
+  private boolean isInRange(int offset) {
+    return codeRange.contains(offset);
   }
 }

@@ -11,12 +11,12 @@ public interface TutorialComponentFactory {
 
   @NotNull TutorialComponent createProjectTree(@Nullable TutorialComponent parent);
 
-  @NotNull TutorialComponent createEditorBlock(@NotNull LineRange lineRange,
+  @NotNull TutorialComponent createEditorBlock(@NotNull CodeRange codeRange,
                                                @Nullable TutorialComponent parent);
 
   @NotNull TutorialComponent createBuildButton(@Nullable TutorialComponent parent);
 
-  @NotNull TutorialComponent createRunLineButton(@NotNull LineRange lineRange, @Nullable TutorialComponent parent);
+  @NotNull TutorialComponent createRunLineButton(@NotNull CodeRange codeRange, @Nullable TutorialComponent parent);
 
   @NotNull TutorialComponent createRunWindow(@Nullable TutorialComponent parent);
 }

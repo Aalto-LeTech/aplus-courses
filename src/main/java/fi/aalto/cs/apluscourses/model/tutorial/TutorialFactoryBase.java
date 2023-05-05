@@ -41,13 +41,13 @@ public abstract class TutorialFactoryBase<C extends TutorialComponent> implement
                                                              @NotNull Props props,
                                                              @Nullable TutorialComponent parent) {
     var factory = getComponentFactory();
-    LineRange lineRange;
+    CodeRange codeRange;
     switch (type) {
       case "editor":
         return factory.createEditor(props.parseProp("path", Path::of, null), parent);
       case "editor.block":
-        lineRange = parseLineRange(props.getProp("lines"), parent);
-        return factory.createEditorBlock(lineRange, parent);
+        codeRange = parseLineRange(props.getProp("lines"), parent);
+        return factory.createEditorBlock(codeRange, parent);
       case "window":
         return factory.createWindow(parent);
       case "project-tree":
@@ -55,8 +55,8 @@ public abstract class TutorialFactoryBase<C extends TutorialComponent> implement
       case "build-button":
         return factory.createBuildButton(parent);
       case "editor.run":
-        lineRange = parseLineRange(props.getProp("lines"), parent);
-        return factory.createRunLineButton(lineRange, parent);
+        codeRange = parseLineRange(props.getProp("lines"), parent);
+        return factory.createRunLineButton(codeRange, parent);
       case "run-window":
         return factory.createRunWindow(parent);
       default:
@@ -64,9 +64,7 @@ public abstract class TutorialFactoryBase<C extends TutorialComponent> implement
     }
   }
 
-  protected @NotNull LineRange parseLineRange(@NotNull String s, @Nullable TutorialComponent parent) {
-    return LineRange.parse(s);
-  }
+  protected abstract @NotNull CodeRange parseLineRange(@NotNull String s, @Nullable TutorialComponent parent);
 
   @Override
   public @NotNull Observer createObserver(@NotNull String type,
