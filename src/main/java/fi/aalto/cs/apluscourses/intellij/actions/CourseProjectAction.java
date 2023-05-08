@@ -29,7 +29,6 @@ import fi.aalto.cs.apluscourses.ui.InstallerDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogsImpl;
 import fi.aalto.cs.apluscourses.ui.ideactivities.ComponentDatabase;
-import fi.aalto.cs.apluscourses.ui.utils.PluginInstallerCallback;
 import fi.aalto.cs.apluscourses.ui.utils.PluginInstallerDialogs;
 import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import fi.aalto.cs.apluscourses.utils.BuildInfo;

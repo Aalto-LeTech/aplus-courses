@@ -17,7 +17,6 @@ import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.intellij.utils.Interfaces;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
-import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Objects;
