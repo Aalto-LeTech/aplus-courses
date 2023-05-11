@@ -19,4 +19,9 @@ public interface TutorialComponentFactory {
   @NotNull TutorialComponent createRunLineButton(@NotNull CodeRange codeRange, @Nullable TutorialComponent parent);
 
   @NotNull TutorialComponent createRunWindow(@Nullable TutorialComponent parent);
+
+  @NotNull TutorialComponent createLineBreakpointButton(@NotNull CodeRange codeRange,
+                                                        @Nullable TutorialComponent parent);
+
+  @NotNull TutorialComponent createBalloon(@Nullable TutorialComponent parent);
 }

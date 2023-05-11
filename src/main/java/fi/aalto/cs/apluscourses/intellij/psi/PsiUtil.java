@@ -1,10 +1,14 @@
 package fi.aalto.cs.apluscourses.intellij.psi;
 
+import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiErrorElement;
 import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.SyntaxTraverser;
 import com.intellij.psi.impl.source.tree.LeafPsiElement;
+import com.intellij.psi.tree.IElementType;
+import com.intellij.psi.tree.TokenSet;
+import fi.aalto.cs.apluscourses.utils.FuncUtil;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -90,6 +94,24 @@ public class PsiUtil {
       }
     }
     return null;
+  }
+
+  public static boolean isNotWhitespace(@NotNull PsiElement element) {
+    var node = element.getNode();
+    return node != null && !isWhitespace(node);
+  }
+
+  public static boolean isWhitespace(@NotNull PsiElement element) {
+    var node = element.getNode();
+    return node != null && isWhitespace(node);
+  }
+
+  public static boolean isWhitespace(@NotNull ASTNode node) {
+    return isWhitespace(node.getElementType());
+  }
+
+  public static boolean isWhitespace(@NotNull IElementType elementType) {
+    return TokenSet.WHITE_SPACE.contains(elementType);
   }
 }
 

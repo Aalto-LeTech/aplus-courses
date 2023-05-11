@@ -5,16 +5,14 @@ import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.SyntaxTraverser;
 import com.intellij.psi.tree.TokenSet;
 import com.intellij.util.containers.TreeTraversal;
+import fi.aalto.cs.apluscourses.intellij.psi.PsiUtil;
 import fi.aalto.cs.apluscourses.utils.CollectionUtil;
+import fi.aalto.cs.apluscourses.utils.CustomIterable;
 import fi.aalto.cs.apluscourses.utils.StringUtil;
-import java.util.Iterator;
-import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 import javax.lang.model.SourceVersion;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaPsiElement;
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScFor;
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScIf;
@@ -55,7 +53,9 @@ public class PsiSelector<T extends PsiElement> extends SelectorBase<PsiElement> 
     return parse(s, axis, subSelector);
   }
 
-  public static @NotNull PsiSelector<?> parse(@NotNull String string, char axis, @NotNull Selector<PsiElement> subSelector) {
+  public static @NotNull PsiSelector<?> parse(@NotNull String string,
+                                              char axis,
+                                              @NotNull Selector<PsiElement> subSelector) {
     var matcher = PATTERN.matcher(string);
     boolean ref;
     String id;
@@ -89,6 +89,7 @@ public class PsiSelector<T extends PsiElement> extends SelectorBase<PsiElement> 
   @Override
   protected @NotNull Stream<? extends @NotNull PsiElement> stream(@NotNull PsiElement root) {
     return CollectionUtil.ofType(clazz, streamInternal(root))
+        .skip(1) // do not include root
         .filter(this::test)
         .skip(index);
   }
@@ -105,18 +106,19 @@ public class PsiSelector<T extends PsiElement> extends SelectorBase<PsiElement> 
   }
 
   private @NotNull Stream<? extends @NotNull PsiElement> streamDescend(@NotNull PsiElement root) {
-    return StreamSupport.stream(
-        SyntaxTraverser
+    return CollectionUtil.stream(
+          SyntaxTraverser
             .psiTraverser(root)
             .withTraversal(TreeTraversal.PLAIN_BFS)
             .forceDisregardTypes(TokenSet.WHITE_SPACE::contains)
-            .spliterator(),
-        false)
-        .skip(1); // do not include root
+        );
   }
 
   private @NotNull Stream<? extends @NotNull PsiElement> streamSibling(@NotNull PsiElement root) {
-    return StreamSupport.stream(new SiblingIterable(root).spliterator(), false);
+    return CollectionUtil.stream(
+          CustomIterable.from(root, PsiElement::getNextSibling)
+        )
+        .filter(PsiUtil::isNotWhitespace);
   }
 
   protected boolean test(@NotNull T elem) {
@@ -150,36 +152,6 @@ public class PsiSelector<T extends PsiElement> extends SelectorBase<PsiElement> 
     @Override
     protected boolean test(@NotNull PsiNamedElement elem) {
       return name.equals(elem.getName());
-    }
-  }
-
-  private static class SiblingIterable implements Iterable<@NotNull PsiElement> {
-
-    private final @NotNull PsiElement first;
-
-    private SiblingIterable(@NotNull PsiElement first) {
-      this.first = first;
-    }
-
-    @Override
-    public @NotNull Iterator<@NotNull PsiElement> iterator() {
-      return new MyIterator();
-    }
-
-    private class MyIterator implements Iterator<@NotNull PsiElement> {
-      private @Nullable PsiElement next = first.getNextSibling();
-
-      @Override
-      public boolean hasNext() {
-        return next != null;
-      }
-
-      @Override
-      public PsiElement next() {
-        var current = Objects.requireNonNull(next);
-        next = current.getNextSibling();
-        return current;
-      }
     }
   }
 }

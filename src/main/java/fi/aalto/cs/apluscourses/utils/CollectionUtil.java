@@ -10,12 +10,14 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -168,6 +170,10 @@ public class CollectionUtil {
     return result;
   }
 
+  public static <T> boolean equals(@NotNull Iterable<T> iterable1, @NotNull Iterable<T> iterable2) {
+    return equals(iterable1, iterable2, Objects::equals);
+  }
+
   public static <T> boolean equals(@NotNull Iterable<T> iterable1,
                                    @NotNull Iterable<T> iterable2,
                                    @NotNull EqualityComparator<T> equalityComparator) {
@@ -190,5 +196,9 @@ public class CollectionUtil {
   @Contract(pure = true)
   public static <E> @NotNull Optional<E> getFirst(@NotNull Iterable<E> iterable) {
     return Optional.of(iterable.iterator()).filter(Iterator::hasNext).map(Iterator::next);
+  }
+
+  public static <E> @NotNull Stream<E> stream(@NotNull Iterable<E> iterable) {
+    return StreamSupport.stream(iterable.spliterator(), false);
   }
 }

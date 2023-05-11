@@ -59,6 +59,11 @@ public abstract class TutorialFactoryBase<C extends TutorialComponent> implement
         return factory.createRunLineButton(codeRange, parent);
       case "run-window":
         return factory.createRunWindow(parent);
+      case "editor.breakpoint":
+        codeRange = parseLineRange(props.getProp("lines"), parent);
+        return factory.createLineBreakpointButton(codeRange, parent);
+      case "balloon":
+        return factory.createBalloon(parent);
       default:
         throw new IllegalArgumentException("Unknown component type: " + type);
     }

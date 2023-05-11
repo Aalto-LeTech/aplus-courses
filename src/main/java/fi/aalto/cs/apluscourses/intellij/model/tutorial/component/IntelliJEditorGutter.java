@@ -23,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class IntelliJEditorGutter extends IntelliJTutorialComponent<JComponent> implements IntelliJEditorDescendant {
   public static final @NotNull String RUN = "run";
+  public static final @NotNull String BREAKPOINT = "breakpoint";
   private final @NotNull CodeRange codeRange;
   private final @NotNull Icon expectedIcon;
 
@@ -60,6 +61,8 @@ public class IntelliJEditorGutter extends IntelliJTutorialComponent<JComponent> 
     switch (type) {
       case RUN:
         return AllIcons.RunConfigurations.TestState.Run;
+      case BREAKPOINT:
+        return AllIcons.Debugger.Db_set_breakpoint;
       default:
         throw new IllegalArgumentException("Unknown gutter type: " + type);
     }

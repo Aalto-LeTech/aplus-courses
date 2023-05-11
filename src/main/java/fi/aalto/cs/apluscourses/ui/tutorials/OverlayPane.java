@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.ui.tutorials;
 
+import fi.aalto.cs.apluscourses.intellij.utils.IntelliJUIUtil;
 import java.awt.AWTEvent;
 import java.awt.Color;
 import java.awt.Component;
@@ -91,8 +92,8 @@ public class OverlayPane extends JComponent implements AWTEventListener {
     return true;
   }
 
-  public void init() {
-    layeredPane = ((JFrame) JOptionPane.getRootFrame()).getLayeredPane();
+  public void init(@NotNull JFrame rootFrame) {
+    layeredPane = rootFrame.getLayeredPane();
     layeredPane.setLayer(this, PANE_Z_ORDER);
     layeredPane.add(this);
     revalidatePane();

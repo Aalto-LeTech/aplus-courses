@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.intellij.model.tutorial;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindowId;
+import fi.aalto.cs.apluscourses.intellij.model.tutorial.component.IntelliJBalloon;
 import fi.aalto.cs.apluscourses.intellij.model.tutorial.component.IntelliJBuildButton;
 import fi.aalto.cs.apluscourses.intellij.model.tutorial.component.IntelliJEditor;
 import fi.aalto.cs.apluscourses.intellij.model.tutorial.component.IntelliJEditorBlock;
@@ -68,7 +69,7 @@ public class IntelliJTutorialFactory extends TutorialFactoryBase<IntelliJTutoria
   public @NotNull Tutorial createTutorial(@NotNull Collection<@NotNull TutorialState> states,
                                           @NotNull Collection<@NotNull TutorialClientObject> objects,
                                           @NotNull String initialStateKey) {
-    return new IntelliJTutorial(states, objects, initialStateKey, overlayPane);
+    return new IntelliJTutorial(states, objects, initialStateKey, overlayPane, project);
   }
 
   @Override
@@ -127,6 +128,17 @@ public class IntelliJTutorialFactory extends TutorialFactoryBase<IntelliJTutoria
   @Override
   public @NotNull TutorialComponent createRunWindow(@Nullable TutorialComponent parent) {
     return new IntelliJToolWindow(ToolWindowId.RUN, parent, project);
+  }
+
+  @Override
+  public @NotNull TutorialComponent createLineBreakpointButton(@NotNull CodeRange codeRange,
+                                                               @Nullable TutorialComponent parent) {
+    return new IntelliJEditorGutter(codeRange, IntelliJEditorGutter.BREAKPOINT, parent, project);
+  }
+
+  @Override
+  public @NotNull TutorialComponent createBalloon(@Nullable TutorialComponent parent) {
+    return new IntelliJBalloon(parent, project);
   }
 
   @Override
