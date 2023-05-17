@@ -35,6 +35,10 @@ public class BasicAreaPainter implements AreaPainter {
 
   @Override
   public void paint(@NotNull Graphics graphics, @NotNull Area area) {
+    if (area.isEmpty()) {
+      return;
+    }
+
     Graphics2D g = (Graphics2D) graphics.create();
 
     prepareGraphics(g);

@@ -101,6 +101,8 @@ public abstract class TutorialFactoryBase<C extends TutorialComponent> implement
         return factory.createDebuggerObserver(props.getProp("action"), component);
       case "run":
         return factory.createRunObserver(props.getProp("action"), component);
+      case "balloon":
+        return factory.createBalloonObserver(component);
       default:
         throw new IllegalArgumentException("Unknown observer type: " + type);
     }

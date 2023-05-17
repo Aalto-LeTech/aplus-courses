@@ -47,7 +47,8 @@ public abstract class IntelliJTutorialComponent<C extends Component> implements 
     C component;
     Rectangle bounds;
     if ((component = getAwtComponent()) == null
-        || (bounds = getBounds(component)) == null) {
+        || (bounds = getBounds(component)) == null
+        || bounds.isEmpty()) {
       return new Area();
     }
     var area = new Area(GeometryUtil.withMargin(bounds, MARGIN));

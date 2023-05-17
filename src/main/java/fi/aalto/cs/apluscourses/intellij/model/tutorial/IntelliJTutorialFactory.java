@@ -12,6 +12,7 @@ import fi.aalto.cs.apluscourses.intellij.model.tutorial.component.IntelliJProjec
 import fi.aalto.cs.apluscourses.intellij.model.tutorial.component.IntelliJToolWindow;
 import fi.aalto.cs.apluscourses.intellij.model.tutorial.component.IntelliJTutorialComponent;
 import fi.aalto.cs.apluscourses.intellij.model.tutorial.component.IntelliJWindow;
+import fi.aalto.cs.apluscourses.intellij.model.tutorial.observer.IntelliJBalloonObserver;
 import fi.aalto.cs.apluscourses.intellij.model.tutorial.observer.IntelliJBreakpointObserver;
 import fi.aalto.cs.apluscourses.intellij.model.tutorial.observer.IntelliJBuildObserver;
 import fi.aalto.cs.apluscourses.intellij.model.tutorial.observer.IntelliJCodeObserver;
@@ -182,5 +183,10 @@ public class IntelliJTutorialFactory extends TutorialFactoryBase<IntelliJTutoria
   public @NotNull Observer createRunObserver(@NotNull String action,
                                              @NotNull IntelliJTutorialComponent<?> component) {
     return new IntelliJRunObserver(action, component);
+  }
+
+  @Override
+  public @NotNull Observer createBalloonObserver(@NotNull IntelliJTutorialComponent<?> component) {
+    return new IntelliJBalloonObserver(component);
   }
 }

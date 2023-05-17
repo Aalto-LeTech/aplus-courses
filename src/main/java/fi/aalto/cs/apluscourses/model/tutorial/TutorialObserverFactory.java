@@ -21,4 +21,6 @@ public interface TutorialObserverFactory<C extends TutorialComponent> {
   @NotNull Observer createDebuggerObserver(@NotNull String action, @NotNull C component);
 
   @NotNull Observer createRunObserver(@NotNull String action, @NotNull C component);
+
+  @NotNull Observer createBalloonObserver(@NotNull C component);
 }
