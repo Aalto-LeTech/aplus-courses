@@ -127,6 +127,7 @@ public class ExercisesUpdater extends RepeatedTask {
     var dataSource = course.getExerciseDataSource();
     var selectedStudent = courseProject.getSelectedStudent();
     var exercisesTree = new ExercisesTree(exerciseGroups, selectedStudent);
+    var hiddenElements = course.getHiddenElements();
     courseProject.setExerciseTree(exercisesTree);
 
     for (var exerciseGroup : exerciseGroups) {
@@ -138,7 +139,9 @@ public class ExercisesUpdater extends RepeatedTask {
           }
           var exercise = dataSource.getExercise(exerciseId, points, course.getOptionalCategories(),
               course.getTutorials(), authentication, CachePreferences.GET_MAX_ONE_WEEK_OLD, selectedLanguage);
-          exerciseGroup.addExercise(exercise);
+          if (!hiddenElements.shouldHideObject(exercise.getId(), exercise.getName(), selectedLanguage)) {
+            exerciseGroup.addExercise(exercise);
+          }
 
           progress.increment();
 
