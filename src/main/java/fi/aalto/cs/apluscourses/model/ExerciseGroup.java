@@ -60,7 +60,7 @@ public class ExerciseGroup implements Browsable {
   public static ExerciseGroup fromJsonObject(@NotNull JSONObject jsonObject,
                                              @NotNull Map<Long, List<Long>> exerciseOrder,
                                              @NotNull String languageCode,
-                                             @Nullable CourseHiddenElements hiddenElements) {
+                                             @NotNull CourseHiddenElements hiddenElements) {
     long id = jsonObject.getLong("id");
     String name = APlusLocalizationUtil.getLocalizedName(jsonObject.getString("display_name"), languageCode);
     String htmlUrl = jsonObject.getString("html_url");
@@ -70,7 +70,7 @@ public class ExerciseGroup implements Browsable {
             JSONArray::getJSONObject,
             (obj) -> DummyExercise.fromJsonObject(obj, languageCode),
             DummyExercise[]::new))
-        .filter(e -> hiddenElements == null || !hiddenElements.shouldHideObject(e.getId(), e.getName(), languageCode))
+        .filter(e -> !hiddenElements.shouldHideObject(e.getId(), e.getName(), languageCode))
         .collect(Collectors.toList());
     return new ExerciseGroup(id, name, htmlUrl, isOpen, dummyExercises, exerciseOrder.get(id));
   }
