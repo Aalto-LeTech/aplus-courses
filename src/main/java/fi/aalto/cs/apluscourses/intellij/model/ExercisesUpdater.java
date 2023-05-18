@@ -88,7 +88,7 @@ public class ExercisesUpdater extends RepeatedTask {
         return;
       }
       exerciseGroups = exerciseGroups.stream()
-          .filter(group -> hiddenElements.shouldHideObject(group.getId(), group.getName(), selectedLanguage))
+          .filter(group -> !hiddenElements.shouldHideObject(group.getId(), group.getName(), selectedLanguage))
           .collect(Collectors.toList());
       progress.increment();
       var selectedStudent = courseProject.getSelectedStudent();
