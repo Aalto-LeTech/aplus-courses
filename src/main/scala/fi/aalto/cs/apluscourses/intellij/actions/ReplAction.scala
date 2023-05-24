@@ -1,6 +1,6 @@
 package fi.aalto.cs.apluscourses.intellij.actions
 
-import com.intellij.execution.configurations.{ConfigurationFactory, JavaCommandLineState, RunProfileState}
+import com.intellij.execution.configurations.{ConfigurationFactory, JavaCommandLineState, ModuleBasedConfiguration, RunConfigurationModule, RunProfileState}
 import com.intellij.execution.filters.TextConsoleBuilderImpl
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.ui.ConsoleView
@@ -105,6 +105,8 @@ class ReplAction extends RunConsoleAction {
 
         state
       }
+
+      override def clone(): ModuleBasedConfiguration[_ <: RunConfigurationModule, _] = super.clone()
 
       private class MyBuilder(module: Module) extends TextConsoleBuilderImpl(module.getProject) {
         override def createConsole(): ConsoleView = new Repl(module)
