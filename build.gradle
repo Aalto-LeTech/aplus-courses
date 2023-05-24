@@ -26,7 +26,6 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.3'
     testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.7.2")
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.3'
-    testRuntimeOnly 'org.junit.vintage:junit-vintage-engine:5.9.3'
     test.useJUnitPlatform()
     compileOnly group: 'org.scala-lang', name: 'scala-library', version: '2.13.10'
     implementation group: 'org.json', name: 'json', version: '20230227'
