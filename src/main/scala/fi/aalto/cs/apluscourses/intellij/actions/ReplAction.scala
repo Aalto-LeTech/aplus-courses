@@ -1,6 +1,6 @@
 package fi.aalto.cs.apluscourses.intellij.actions
 
-import com.intellij.execution.configurations.{ConfigurationFactory, JavaCommandLineState, ModuleBasedConfiguration, RunConfigurationModule, RunProfileState}
+import com.intellij.execution.configurations.{ConfigurationFactory, JavaCommandLineState, RunProfileState}
 import com.intellij.execution.filters.TextConsoleBuilderImpl
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.ui.ConsoleView
@@ -13,7 +13,7 @@ import com.intellij.openapi.util.io.FileUtilRt.toSystemIndependentName
 import fi.aalto.cs.apluscourses.intellij.Repl
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings.MODULE_REPL_INITIAL_COMMANDS_FILE_NAME
-import fi.aalto.cs.apluscourses.intellij.utils.{ModuleUtils, ReplChangesObserver}
+import fi.aalto.cs.apluscourses.intellij.utils.ModuleUtils
 import fi.aalto.cs.apluscourses.presentation.ReplConfigurationFormModel
 import fi.aalto.cs.apluscourses.ui.repl.{ReplConfigurationDialog, ReplConfigurationForm}
 import fi.aalto.cs.apluscourses.utils.PluginResourceBundle.{getAndReplaceText, getText}
@@ -105,8 +105,6 @@ class ReplAction extends RunConsoleAction {
 
         state
       }
-
-      override def clone(): ModuleBasedConfiguration[_ <: RunConfigurationModule, _] = super.clone()
 
       private class MyBuilder(module: Module) extends TextConsoleBuilderImpl(module.getProject) {
         override def createConsole(): ConsoleView = new Repl(module)
