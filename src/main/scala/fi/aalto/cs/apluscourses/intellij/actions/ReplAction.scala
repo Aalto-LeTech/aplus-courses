@@ -1,6 +1,6 @@
 package fi.aalto.cs.apluscourses.intellij.actions
 
-import com.intellij.execution.configurations.{ConfigurationFactory, JavaCommandLineState, RunProfileState}
+import com.intellij.execution.configurations._
 import com.intellij.execution.filters.TextConsoleBuilderImpl
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.ui.ConsoleView
@@ -87,6 +87,7 @@ class ReplAction extends RunConsoleAction {
 
     override def getId: String = getText("ui.repl.console.scala.repl.extended")
 
+    // scalastyle:off no.clone
     private class ReplConfiguration(project: Project,
                                     configurationFactory: ConfigurationFactory,
                                     name: String)
@@ -106,12 +107,14 @@ class ReplAction extends RunConsoleAction {
         state
       }
 
+      override def clone(): ModuleBasedConfiguration[_ <: RunConfigurationModule, _] = super.clone()
+
       private class MyBuilder(module: Module) extends TextConsoleBuilderImpl(module.getProject) {
         override def createConsole(): ConsoleView = new Repl(module)
       }
 
     }
-
+    // scalastyle:on no.clone
   }
 
   def getDefaultModule(@NotNull project: Project): Option[Module] = {
