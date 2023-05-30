@@ -14,7 +14,7 @@ def courseVersion = '1.0'
 group 'fi.aalto.cs'
 version pluginVersion
 
-sourceCompatibility = 11
+sourceCompatibility = 17
 
 repositories {
     mavenCentral()

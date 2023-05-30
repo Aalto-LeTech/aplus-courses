@@ -34,34 +34,21 @@ public class CourseHiddenElements {
     Map<String, List<Pattern>> hiddenLanguageSpecificRegexes = new HashMap<>();
 
     for (int i = 0; i < hiddenElementsArray.length(); ++i) {
-      JSONObject entryInfo = hiddenElementsArray.getJSONObject(i);
+      Object hiddenObject = hiddenElementsArray.get(i);
 
-      long hiddenID = entryInfo.optLong("byId", -1);
-      if (hiddenID != -1) {
-        // Hide by exercise/group ID
-        hiddenIDs.add(hiddenID);
-        continue;
-      }
-
-      Object hiddenRegex = entryInfo.get("byRegex");
-      if (hiddenRegex instanceof String) {
-        // Hide by language-independent regex
-        hiddenRegexes.add(Pattern.compile((String) hiddenRegex, Pattern.CASE_INSENSITIVE));
-        continue;
-      } else if (hiddenRegex instanceof JSONObject) {
-        // Hide by language-dependent regex
-        JSONObject hiddenRegexObject = (JSONObject) hiddenRegex;
-        for (String key : hiddenRegexObject.keySet()) {
+      if (hiddenObject instanceof Long hiddenID) {
+        hiddenIDs.add(hiddenID); // hiding by object ID
+      } else if (hiddenObject instanceof String hiddenRegex) {
+        hiddenRegexes.add(Pattern.compile(hiddenRegex, Pattern.CASE_INSENSITIVE)); // hiding by regex
+      } else if (hiddenObject instanceof JSONObject hiddenRegexObject) {
+        for (String key : hiddenRegexObject.keySet()) { // hiding by language-specific regex
           String regex = hiddenRegexObject.getString(key);
-
           hiddenLanguageSpecificRegexes.computeIfAbsent(key, k -> new ArrayList<>())
               .add(Pattern.compile(regex, Pattern.CASE_INSENSITIVE));
         }
-
-        continue;
+      } else {
+        throw new JSONException("Element number " + i + " in the \"hiddenElements\" array is of an unsupported type");
       }
-
-      throw new JSONException("Element number " + i + " in the \"hiddenElements\" array is of an unsupported format");
     }
 
     return new CourseHiddenElements(hiddenIDs, hiddenRegexes, hiddenLanguageSpecificRegexes);
