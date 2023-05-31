@@ -77,17 +77,17 @@ public class AboutDialog extends DialogWrapper {
     var about = createAboutTextLabel();
     var authors = createAuthorsTextLabel();
     var attributes = createAttributesTextLabel();
-    LinkLabel<Object> linkLabel = createPluginWebsiteLinkLabel();
-    LinkLabel<Object> linkLabelGithub = createGithubWebsiteLinkLabel();
-    LinkLabel<Object> linkLabelAPlus = createAPlusWebsiteLinkLabel();
-    var items = List.of(version, about, authors, attributes, linkLabel, linkLabelGithub, linkLabelAPlus);
+    LinkLabel<Object> linkLabelPlugin = createLinkLabel(getText("ui.aboutDialog.website"), A_COURSES_PLUGIN_PAGE);
+    LinkLabel<Object> linkLabelGithub = createLinkLabel(getText("ui.aboutDialog.GithubWebsite"), GITHUB_PAGE);
+    LinkLabel<Object> linkLabelAPlus = createLinkLabel(getText("ui.aboutDialog.APlusWebsite"), A_PLUS_PAGE);
+    var items = List.of(version, about, authors, attributes, linkLabelPlugin, linkLabelGithub, linkLabelAPlus);
     items.forEach(item -> item.setAlignmentX(Component.LEFT_ALIGNMENT));
     box.add(createFiller());
     box.add(version);
     box.add(createFiller());
     box.add(about);
     box.add(createFiller());
-    box.add(linkLabel);
+    box.add(linkLabelPlugin);
     box.add(linkLabelGithub);
     box.add(linkLabelAPlus);
     box.add(createFiller());
@@ -129,38 +129,9 @@ public class AboutDialog extends DialogWrapper {
   }
 
   @NotNull
-  private LinkLabel<Object> createPluginWebsiteLinkLabel() {
-    LinkLabel<Object> linkLabel = new LinkLabel<>(
-        getText("ui.aboutDialog.website"),
-        AllIcons.Ide.External_link_arrow,
-        (first, second) ->
-            BrowserUtil.browse(A_COURSES_PLUGIN_PAGE));
-    linkLabel.setIconTextGap(0);
-    linkLabel.setHorizontalTextPosition(SwingConstants.LEFT);
-
-    return linkLabel;
-  }
-
-  @NotNull
-  private LinkLabel<Object> createAPlusWebsiteLinkLabel() {
-    LinkLabel<Object> linkLabel = new LinkLabel<>(
-        getText("ui.aboutDialog.APlusWebsite"),
-        AllIcons.Ide.External_link_arrow,
-        (first, second) ->
-            BrowserUtil.browse(A_PLUS_PAGE));
-    linkLabel.setIconTextGap(0);
-    linkLabel.setHorizontalTextPosition(SwingConstants.LEFT);
-
-    return linkLabel;
-  }
-
-  @NotNull
-  private LinkLabel<Object> createGithubWebsiteLinkLabel() {
-    LinkLabel<Object> linkLabel = new LinkLabel<>(
-        getText("ui.aboutDialog.GithubWebsite"),
-        AllIcons.Ide.External_link_arrow,
-        (first, second) ->
-            BrowserUtil.browse(GITHUB_PAGE));
+  private LinkLabel<Object> createLinkLabel(@NotNull String text, @NotNull String link) {
+    LinkLabel<Object> linkLabel = new LinkLabel<>(text, AllIcons.Ide.External_link_arrow,
+        (first, second) -> BrowserUtil.browse(link));
     linkLabel.setIconTextGap(0);
     linkLabel.setHorizontalTextPosition(SwingConstants.LEFT);
 

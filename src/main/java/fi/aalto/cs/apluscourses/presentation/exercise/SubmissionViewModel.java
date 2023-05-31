@@ -7,7 +7,6 @@ import fi.aalto.cs.apluscourses.model.Exercise;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.Submission;
 import fi.aalto.cs.apluscourses.model.SubmittableFile;
-import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
 import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import fi.aalto.cs.apluscourses.utils.FileDateFormatter;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
