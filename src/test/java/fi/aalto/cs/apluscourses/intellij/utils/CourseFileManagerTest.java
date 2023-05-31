@@ -80,7 +80,7 @@ class CourseFileManagerTest {
     var notifier = mock(Notifier.class);
 
     ModuleManager moduleManager = mock(ModuleManager.class);
-    when(project.getComponent(ModuleManager.class)).thenReturn(moduleManager);
+    when(project.getService(ModuleManager.class)).thenReturn(moduleManager);
     when(moduleManager.getModules()).thenReturn(new com.intellij.openapi.module.Module[0]);
     manager = new CourseFileManager(project, notifier);
   }
