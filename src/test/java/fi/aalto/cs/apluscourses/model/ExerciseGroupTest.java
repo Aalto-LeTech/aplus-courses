@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.model;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import fi.aalto.cs.apluscourses.utils.CourseHiddenElements;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -67,7 +68,8 @@ class ExerciseGroupTest {
                 .put(HTML_KEY, "http://localhost:7000")
                 .put(MAX_POINTS_KEY, 50)
                 .put(MAX_SUBMISSIONS_KEY, 10)));
-    ExerciseGroup group = ExerciseGroup.fromJsonObject(json, Map.of(567L, List.of()), "en");
+    ExerciseGroup group = ExerciseGroup.fromJsonObject(
+        json, Map.of(567L, List.of()), "en", new CourseHiddenElements());
 
     Assertions.assertEquals(567, group.getId());
     Assertions.assertEquals("|abcd:group name|", group.getName(),
@@ -82,7 +84,7 @@ class ExerciseGroupTest {
   void testFromJsonObjectMissingExercises() {
     JSONObject json = new JSONObject().put(NAME_KEY, "group test name");
     assertThrows(JSONException.class, () ->
-        ExerciseGroup.fromJsonObject(json, new HashMap<>(), "en"));
+        ExerciseGroup.fromJsonObject(json, new HashMap<>(), "en", new CourseHiddenElements()));
   }
 
   @Test
@@ -90,7 +92,7 @@ class ExerciseGroupTest {
     JSONObject json = new JSONObject()
         .put(ID_KEY, 100);
     assertThrows(JSONException.class, () ->
-        ExerciseGroup.fromJsonObject(json, new HashMap<>(), "en"));
+        ExerciseGroup.fromJsonObject(json, new HashMap<>(), "en", new CourseHiddenElements()));
   }
 
 }

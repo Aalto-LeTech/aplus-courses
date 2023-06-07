@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
@@ -61,6 +62,7 @@ public class ExercisesUpdater extends RepeatedTask {
     var course = courseProject.getCourse();
     var dataSource = course.getExerciseDataSource();
     var authentication = courseProject.getAuthentication();
+    var hiddenElements = course.getHiddenElements();
     if (authentication == null) {
       if (courseProject.getExerciseTree() != null) {
         courseProject.setExerciseTree(new ExercisesTree());
@@ -85,6 +87,9 @@ public class ExercisesUpdater extends RepeatedTask {
       if (Thread.interrupted()) {
         return;
       }
+      exerciseGroups = exerciseGroups.stream()
+          .filter(group -> !hiddenElements.shouldHideObject(group.getId(), group.getName(), selectedLanguage))
+          .collect(Collectors.toList());
       progress.increment();
       var selectedStudent = courseProject.getSelectedStudent();
       logger.info("Selected student: {}", selectedStudent);
@@ -127,6 +132,7 @@ public class ExercisesUpdater extends RepeatedTask {
     var dataSource = course.getExerciseDataSource();
     var selectedStudent = courseProject.getSelectedStudent();
     var exercisesTree = new ExercisesTree(exerciseGroups, selectedStudent);
+    var hiddenElements = course.getHiddenElements();
     courseProject.setExerciseTree(exercisesTree);
 
     for (var exerciseGroup : exerciseGroups) {
@@ -138,7 +144,9 @@ public class ExercisesUpdater extends RepeatedTask {
           }
           var exercise = dataSource.getExercise(exerciseId, points, course.getOptionalCategories(),
               course.getTutorials(), authentication, CachePreferences.GET_MAX_ONE_WEEK_OLD, selectedLanguage);
-          exerciseGroup.addExercise(exercise);
+          if (!hiddenElements.shouldHideObject(exercise.getId(), exercise.getName(), selectedLanguage)) {
+            exerciseGroup.addExercise(exercise);
+          }
 
           progress.increment();
 

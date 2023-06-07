@@ -158,7 +158,7 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
     String url = apiUrl + COURSES + "/" + course.getId() + "/" + EXERCISES + "/";
     var exerciseOrder = getExerciseOrder(course, authentication);
     return getPaginatedResults(url, authentication,
-        object -> ExerciseGroup.fromJsonObject(object, exerciseOrder, languageCode));
+        object -> ExerciseGroup.fromJsonObject(object, exerciseOrder, languageCode, course.getHiddenElements()));
   }
 
   /**

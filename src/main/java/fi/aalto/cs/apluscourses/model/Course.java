@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.model;
 
 import com.intellij.openapi.util.SystemInfoRt;
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
+import fi.aalto.cs.apluscourses.utils.CourseHiddenElements;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
 import fi.aalto.cs.apluscourses.utils.JsonUtil;
 import fi.aalto.cs.apluscourses.utils.PluginDependency;
@@ -87,6 +88,9 @@ public abstract class Course implements ComponentSource {
   @NotNull
   private final List<PluginDependency> pluginDependencies;
 
+  @NotNull
+  private final CourseHiddenElements hiddenElements;
+
   @Nullable
   private final String feedbackParser;
 
@@ -119,6 +123,7 @@ public abstract class Course implements ComponentSource {
                    @NotNull Version courseVersion,
                    @NotNull Map<Long, Tutorial> tutorials,
                    @NotNull List<PluginDependency> pluginDependencies,
+                   @NotNull CourseHiddenElements hiddenElements,
                    @Nullable String feedbackParser,
                    @Nullable String newsParser) {
     this.id = id;
@@ -134,6 +139,7 @@ public abstract class Course implements ComponentSource {
     this.autoInstallComponentNames = autoInstallComponentNames;
     this.tutorials = tutorials;
     this.pluginDependencies = pluginDependencies;
+    this.hiddenElements = hiddenElements;
     this.feedbackParser = feedbackParser;
     this.newsParser = newsParser;
     this.components = Stream.concat(modules.stream(), libraries.stream())
@@ -198,6 +204,7 @@ public abstract class Course implements ComponentSource {
     Version courseVersion = getCourseVersion(jsonObject, sourcePath);
     Map<Long, Tutorial> tutorials = getCourseTutorials(jsonObject);
     List<PluginDependency> pluginDependencies = getCoursePluginDependencies(jsonObject, sourcePath);
+    CourseHiddenElements hiddenElements = getCourseHiddenElements(jsonObject, sourcePath);
     String feedbackParser = jsonObject.optString("feedbackParser", null);
     String newsParser = jsonObject.optString("newsParser", null);
     long courseLastModified = jsonObject.optLong("courseLastModified");
@@ -218,6 +225,7 @@ public abstract class Course implements ComponentSource {
         courseVersion,
         tutorials,
         pluginDependencies,
+        hiddenElements,
         feedbackParser,
         newsParser,
         courseLastModified
@@ -653,7 +661,7 @@ public abstract class Course implements ComponentSource {
 
   @NotNull
   private static List<PluginDependency> getCoursePluginDependencies(@NotNull JSONObject jsonObject,
-                                                              @NotNull String source)
+                                                                    @NotNull String source)
       throws MalformedCourseConfigurationException {
     JSONArray pluginsJson = jsonObject.optJSONArray("requiredPlugins");
     if (pluginsJson == null) {
@@ -668,11 +676,26 @@ public abstract class Course implements ComponentSource {
         result.add(new PluginDependency(currentPluginJson.getString("name"), currentPluginJson.getString("id")));
       }
     } catch (JSONException ex) {
-      throw new MalformedCourseConfigurationException(source,
-          "Malformed \"requiredPlugins\" array", ex);
+      throw new MalformedCourseConfigurationException(source, "Malformed \"requiredPlugins\" array", ex);
     }
 
     return result;
+  }
+
+  @NotNull
+  private static CourseHiddenElements getCourseHiddenElements(@NotNull JSONObject jsonObject,
+                                                              @NotNull String source)
+      throws MalformedCourseConfigurationException {
+    JSONArray hiddenElements = jsonObject.optJSONArray("hiddenElements");
+    if (hiddenElements == null) {
+      return new CourseHiddenElements();
+    }
+
+    try {
+      return CourseHiddenElements.fromJsonObject(hiddenElements);
+    } catch (JSONException ex) {
+      throw new MalformedCourseConfigurationException(source, "Malformed \"hiddenElements\" array", ex);
+    }
   }
 
   public Map<Long, Tutorial> getTutorials() {
@@ -751,6 +774,11 @@ public abstract class Course implements ComponentSource {
   @NotNull
   public List<PluginDependency> getRequiredPlugins() {
     return Collections.unmodifiableList(pluginDependencies);
+  }
+
+  @NotNull
+  public CourseHiddenElements getHiddenElements() {
+    return hiddenElements;
   }
 
   @NotNull

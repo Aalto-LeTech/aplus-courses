@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.model;
 
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
+import fi.aalto.cs.apluscourses.utils.CourseHiddenElements;
 import fi.aalto.cs.apluscourses.utils.JsonUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -57,18 +59,20 @@ public class ExerciseGroup implements Browsable {
   @NotNull
   public static ExerciseGroup fromJsonObject(@NotNull JSONObject jsonObject,
                                              @NotNull Map<Long, List<Long>> exerciseOrder,
-                                             @NotNull String languageCode) {
+                                             @NotNull String languageCode,
+                                             @NotNull CourseHiddenElements hiddenElements) {
     long id = jsonObject.getLong("id");
     String name = APlusLocalizationUtil.getLocalizedName(jsonObject.getString("display_name"), languageCode);
     String htmlUrl = jsonObject.getString("html_url");
     boolean isOpen = jsonObject.getBoolean("is_open");
     JSONArray exercisesArray = jsonObject.getJSONArray("exercises");
-    DummyExercise[] dummyExercises = JsonUtil.parseArray(exercisesArray,
-        JSONArray::getJSONObject,
-        (obj) -> DummyExercise.fromJsonObject(obj, languageCode),
-        DummyExercise[]::new);
-    return new ExerciseGroup(id, name, htmlUrl, isOpen, Arrays.stream(dummyExercises).collect(Collectors.toList()),
-        exerciseOrder.get(id));
+    List<DummyExercise> dummyExercises = Arrays.stream(JsonUtil.parseArray(exercisesArray,
+            JSONArray::getJSONObject,
+            (obj) -> DummyExercise.fromJsonObject(obj, languageCode),
+            DummyExercise[]::new))
+        .filter(e -> !hiddenElements.shouldHideObject(e.getId(), e.getName(), languageCode))
+        .collect(Collectors.toList());
+    return new ExerciseGroup(id, name, htmlUrl, isOpen, dummyExercises, exerciseOrder.get(id));
   }
 
   public long getId() {
