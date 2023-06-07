@@ -3,6 +3,8 @@ package fi.aalto.cs.apluscourses.utils;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -59,5 +61,22 @@ class CourseHiddenElementsTest {
     Assertions.assertTrue(hidingRules.shouldHideObject(1, "Tehtävä 12 (asdfgh)", "fi"));
     Assertions.assertFalse(hidingRules.shouldHideObject(1, "eiku Tehtävä  12", "fi"));
     Assertions.assertTrue(hidingRules.shouldHideObject(1, "Kurssipalautekyselyn tulokset", "fi"));
+  }
+
+  @Test
+  void testDeserialization() {
+    JSONArray testRules1 = new JSONArray("[1, 3, \"test\", {\"en\": \"en1\", \"fi\": \"fi1\"}]");
+    var testObj1 = CourseHiddenElements.fromJsonObject(testRules1);
+
+    Assertions.assertFalse(testObj1.shouldHideObject(2, "hello", null));
+    Assertions.assertTrue(testObj1.shouldHideObject(3, "hello", null));
+    Assertions.assertTrue(testObj1.shouldHideObject(4, "test", null));
+    Assertions.assertTrue(testObj1.shouldHideObject(1, "test", null));
+
+    Assertions.assertFalse(testObj1.shouldHideObject(2, "en1fi1", null));
+    Assertions.assertTrue(testObj1.shouldHideObject(5, "hello en1", "en"));
+    Assertions.assertTrue(testObj1.shouldHideObject(3, "hello en1", "fi"));
+    Assertions.assertFalse(testObj1.shouldHideObject(5, "hello en1", "fi"));
+    Assertions.assertFalse(testObj1.shouldHideObject(5, "hello fi", "fi"));
   }
 }

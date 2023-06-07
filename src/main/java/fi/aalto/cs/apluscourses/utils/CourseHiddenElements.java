@@ -36,8 +36,8 @@ public class CourseHiddenElements {
     for (int i = 0; i < hiddenElementsArray.length(); ++i) {
       Object hiddenObject = hiddenElementsArray.get(i);
 
-      if (hiddenObject instanceof Long hiddenID) {
-        hiddenIDs.add(hiddenID); // hiding by object ID
+      if (hiddenObject instanceof Integer hiddenID) {
+        hiddenIDs.add((long) hiddenID); // hiding by object ID
       } else if (hiddenObject instanceof String hiddenRegex) {
         hiddenRegexes.add(Pattern.compile(hiddenRegex, Pattern.CASE_INSENSITIVE)); // hiding by regex
       } else if (hiddenObject instanceof JSONObject hiddenRegexObject) {
