@@ -6,7 +6,7 @@
 
 <p align="center">
    <a href="https://github.com/Aalto-LeTech/aplus-courses/actions?query=workflow%3Abuild">
-      <img alt="Build" src="https://github.com/Aalto-LeTech/aplus-courses/workflows/build/badge.svg"/>
+      <img alt="Build" src="https://github.com/Aalto-LeTech/aplus-courses/actions/workflows/push.yml/badge.svg"/>
    </a>
    <a href="https://snyk.io/test/github/Aalto-LeTech/aplus-courses?targetFile=build.gradle">
       <img alt="Known Vulnerabilities" src="https://snyk.io/test/github/Aalto-LeTech/aplus-courses/badge.svg?targetFile=build.gradle"/>
