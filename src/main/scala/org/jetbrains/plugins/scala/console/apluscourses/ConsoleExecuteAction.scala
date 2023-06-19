@@ -14,7 +14,7 @@ import com.intellij.openapi.util.TextRange
 import fi.aalto.cs.apluscourses.intellij.Repl
 import org.jetbrains.plugins.scala.console.ScalaConsoleInfo
 import org.jetbrains.plugins.scala.console.actions.ScalaConsoleExecuteAction
-import org.jetbrains.plugins.scala.inWriteAction
+import org.jetbrains.plugins.scala.extensions.inWriteAction
 
 class ConsoleExecuteAction extends ScalaConsoleExecuteAction {
   // We achieve proper multiline support by surrounding the REPL commands by special
