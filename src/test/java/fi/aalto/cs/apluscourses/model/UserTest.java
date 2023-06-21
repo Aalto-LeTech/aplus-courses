@@ -13,6 +13,8 @@ class UserTest {
     var exerciseDataSource = new ModelExtensions.TestExerciseDataSource();
     var user = exerciseDataSource.getUser(auth);
     Assertions.assertSame("test", user.getUserName());
+    Assertions.assertSame("123456", user.getStudentId());
+    Assertions.assertSame(3333, user.getId());
     Assertions.assertSame(auth, user.getAuthentication());
   }
 }

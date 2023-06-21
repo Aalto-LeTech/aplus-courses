@@ -151,6 +151,20 @@ public class CourseProject implements ExercisesLazyLoader {
   }
 
   @NotNull
+  public String getUserStudentId() {
+    return Optional.ofNullable(user.get()).map(User::getStudentId).orElse("");
+  }
+
+  public int getUserAPlusId() {
+    return Optional.ofNullable(user.get()).map(User::getId).orElse(0);
+  }
+
+  @Nullable
+  public User getUser() {
+    return user.get();
+  }
+
+  @NotNull
   public Course getCourse() {
     return course;
   }

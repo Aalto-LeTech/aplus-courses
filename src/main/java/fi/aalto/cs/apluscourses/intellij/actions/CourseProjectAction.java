@@ -86,7 +86,8 @@ public class CourseProjectAction extends AnAction {
 
   private final ExecutorService executor;
 
-  private static final String COURSE_LIST_URL =
+  // TODO: change this back
+  public static String COURSE_LIST_URL =
       "https://version.aalto.fi/gitlab/aplus-courses/course-config-urls/-/raw/main/courses.yaml";
 
   private static final List<CourseItemViewModel> FALLBACK_COURSES = List.of(
@@ -163,6 +164,13 @@ public class CourseProjectAction extends AnAction {
 
     if (project == null) {
       return;
+    }
+
+    // TODO: remove this debugging helper
+    if (e.getInputEvent().isControlDown()) {
+      COURSE_LIST_URL = "http://192.168.177.11:8989/courses.yaml";
+    } else {
+      COURSE_LIST_URL = "https://version.aalto.fi/gitlab/aplus-courses/course-config-urls/-/raw/main/courses.yaml";
     }
 
     URL courseUrl = tryGetCourseUrl(project);
@@ -361,7 +369,7 @@ public class CourseProjectAction extends AnAction {
 
   private void startAutoInstalls(@NotNull Course course, @NotNull Project project) {
     ComponentInstaller.Dialogs installerDialogs = installerDialogsFactory.getDialogs(project);
-    ComponentInstaller installer = installerFactory.getInstallerFor(course, installerDialogs);
+    ComponentInstaller installer = installerFactory.getInstallerFor(course, installerDialogs, course.getCallbacks());
     installer.install(course.getAutoInstallComponents());
   }
 

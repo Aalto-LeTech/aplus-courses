@@ -19,6 +19,7 @@ import fi.aalto.cs.apluscourses.model.ExerciseDataSource;
 import fi.aalto.cs.apluscourses.model.Library;
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.model.Tutorial;
+import fi.aalto.cs.apluscourses.utils.Callbacks;
 import fi.aalto.cs.apluscourses.utils.CourseHiddenElements;
 import fi.aalto.cs.apluscourses.utils.PluginDependency;
 import fi.aalto.cs.apluscourses.utils.Version;
@@ -68,6 +69,7 @@ public class IntelliJCourse extends Course {
                         @NotNull Map<Long, Tutorial> tutorials,
                         @NotNull List<PluginDependency> pluginDependencies,
                         @NotNull CourseHiddenElements hiddenElements,
+                        @NotNull Callbacks callbacks,
                         @Nullable String feedbackParser,
                         @Nullable String newsParser,
                         long courseLastModified) {
@@ -89,6 +91,7 @@ public class IntelliJCourse extends Course {
         tutorials,
         pluginDependencies,
         hiddenElements,
+        callbacks,
         feedbackParser,
         newsParser
     );

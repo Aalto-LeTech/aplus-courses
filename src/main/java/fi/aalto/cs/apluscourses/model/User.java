@@ -9,13 +9,22 @@ public class User {
   @NotNull
   private final String userName;
 
+  @NotNull
+  private final String studentId;
+
+  private final int id;
+
   /**
    * A constructor.
    */
   public User(@NotNull Authentication authentication,
-              @NotNull String userName) {
+              @NotNull String userName,
+              @NotNull String studentId,
+              int id) {
     this.authentication = authentication;
     this.userName = userName;
+    this.studentId = studentId;
+    this.id = id;
   }
 
   @NotNull
@@ -26,5 +35,14 @@ public class User {
   @NotNull
   public String getUserName() {
     return userName;
+  }
+
+  @NotNull
+  public String getStudentId() {
+    return studentId;
+  }
+
+  public int getId() {
+    return id;
   }
 }

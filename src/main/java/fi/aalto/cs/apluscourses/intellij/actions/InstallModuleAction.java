@@ -74,7 +74,8 @@ public class InstallModuleAction extends DumbAwareAction {
           .collect(Collectors.toList());
       logger.info("Downloading modules: {}", modules);
       Course course = courseViewModel.getModel();
-      componentInstallerFactory.getInstallerFor(course, dialogsFactory.getDialogs(e.getProject()))
+      componentInstallerFactory.getInstallerFor(course,
+              dialogsFactory.getDialogs(e.getProject()), course.getCallbacks())
           .installAsync(modules, () -> downloadDone(course));
     }
   }

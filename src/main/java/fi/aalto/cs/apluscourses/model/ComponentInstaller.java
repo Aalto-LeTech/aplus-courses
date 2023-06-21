@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.model;
 
+import fi.aalto.cs.apluscourses.utils.Callbacks;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -18,7 +19,8 @@ public interface ComponentInstaller {
   interface Factory {
     @NotNull
     ComponentInstaller getInstallerFor(@NotNull ComponentSource componentSource,
-                                       @NotNull Dialogs dialogs);
+                                       @NotNull Dialogs dialogs,
+                                       @NotNull Callbacks callbacks);
   }
 
   interface Dialogs {

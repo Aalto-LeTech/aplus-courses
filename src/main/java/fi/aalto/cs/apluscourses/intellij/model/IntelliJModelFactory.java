@@ -9,6 +9,7 @@ import fi.aalto.cs.apluscourses.model.ModelFactory;
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.model.ModuleMetadata;
 import fi.aalto.cs.apluscourses.model.Tutorial;
+import fi.aalto.cs.apluscourses.utils.Callbacks;
 import fi.aalto.cs.apluscourses.utils.CourseHiddenElements;
 import fi.aalto.cs.apluscourses.utils.PluginDependency;
 import fi.aalto.cs.apluscourses.utils.Version;
@@ -57,6 +58,7 @@ public class IntelliJModelFactory implements ModelFactory {
                              @NotNull Map<Long, Tutorial> tutorials,
                              @NotNull List<PluginDependency> pluginDependencies,
                              @NotNull CourseHiddenElements hiddenElements,
+                             @NotNull Callbacks callbacks,
                              @Nullable String feedbackParser,
                              @Nullable String newsParser,
                              long courseLastModified) {
@@ -65,7 +67,7 @@ public class IntelliJModelFactory implements ModelFactory {
         new IntelliJCourse(id, name, aplusUrl, languages, modules, libraries, exerciseModules,
             resourceUrls, vmOptions, optionalCategories, autoInstallComponentNames, replInitialCommands,
             replAdditionalArguments, courseVersion, project, new CommonLibraryProvider(project), tutorials,
-            pluginDependencies, hiddenElements, feedbackParser, newsParser, courseLastModified);
+            pluginDependencies, hiddenElements, callbacks, feedbackParser, newsParser, courseLastModified);
 
     Component.InitializationCallback componentInitializationCallback =
         component -> registerComponentToCourse(component, course);

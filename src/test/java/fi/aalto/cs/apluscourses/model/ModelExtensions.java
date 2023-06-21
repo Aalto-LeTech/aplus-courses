@@ -5,6 +5,7 @@ import fi.aalto.cs.apluscourses.intellij.model.CommonLibraryProvider;
 import fi.aalto.cs.apluscourses.intellij.model.IntelliJCourse;
 import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
+import fi.aalto.cs.apluscourses.utils.Callbacks;
 import fi.aalto.cs.apluscourses.utils.CourseHiddenElements;
 import fi.aalto.cs.apluscourses.utils.PluginDependency;
 import fi.aalto.cs.apluscourses.utils.Version;
@@ -103,7 +104,7 @@ public class ModelExtensions {
 
     @Override
     public @NotNull User getUser(@NotNull Authentication authentication) {
-      return new User(authentication, "test");
+      return new User(authentication, "test", "123456", 3333);
     }
 
     @Override
@@ -157,10 +158,11 @@ public class ModelExtensions {
                       @NotNull Version courseVersion,
                       @NotNull Map<Long, Tutorial> tutorials,
                       @NotNull List<PluginDependency> pluginDependencies,
-                      @NotNull CourseHiddenElements hiddenElements) {
+                      @NotNull CourseHiddenElements hiddenElements,
+                      @NotNull Callbacks callbacks) {
       super(id, name, aplusUrl, languages, modules, libraries, exerciseModules, resourceUrls, vmOptions,
           optionalCategories, autoInstallComponentNames, replInitialCommands, replAdditionalArguments,
-          courseVersion, tutorials, pluginDependencies, hiddenElements, null, "default");
+          courseVersion, tutorials, pluginDependencies, hiddenElements, callbacks, null, "default");
       exerciseDataSource = new TestExerciseDataSource();
     }
 
@@ -208,6 +210,8 @@ public class ModelExtensions {
           Collections.emptyList(),
           // hiddenElements
           new CourseHiddenElements(),
+          // callbacks
+          new Callbacks(),
           null, "default");
       this.exerciseDataSource = exerciseDataSource;
     }
@@ -269,6 +273,8 @@ public class ModelExtensions {
           Collections.emptyList(),
           // hiddenElements
           new CourseHiddenElements(),
+          // callbacks
+          new Callbacks(),
           null,
           null,
           0);
@@ -452,6 +458,7 @@ public class ModelExtensions {
                                @NotNull Map<Long, Tutorial> tutorials,
                                @NotNull List<PluginDependency> pluginDependencies,
                                @NotNull CourseHiddenElements hiddenElements,
+                               @NotNull Callbacks callbacks,
                                @Nullable String feedbackParser,
                                @Nullable String newsParser,
                                long courseLastModified) {
@@ -472,7 +479,8 @@ public class ModelExtensions {
           courseVersion,
           tutorials,
           pluginDependencies,
-          hiddenElements
+          hiddenElements,
+          callbacks
       );
     }
 
