@@ -1,6 +1,6 @@
 ## Installing IntelliJ with A+ & Python support
 
-### Step 1/5 - Install IntelliJ
+### Step 1/7 - Installing IntelliJ
 
 Download [IntelliJ IDEA Community](https://www.jetbrains.com/idea/download/other.html). **Make sure to pick the Community edition, not the commercial Ultimate edition.** Select the latest available version from the drop-down checkbox **(1)** and choose the **Windows x64 .exe (2)** installer.
 
@@ -14,13 +14,13 @@ Unless you have a particular reason to do otherwise, the default responses to th
 
 If you’re going to continue to the next step right away, you may as well check the **Run IntelliJ** checkbox in the last screen.
 
-### Step 2/5 - Launch IntelliJ
+### Step 2/7 - Launching IntelliJ
 
 If you didn't already start IntelliJ at the end of the previous step, do it now. You can do that via the Start menu, for example (or via the file `idea64.exe` that is under the folder where you installed IntelliJ, in the bin subfolder).
 
 On first launch, IntelliJ may ask you about sharing usage data and importing old settings. You can pick **Do not import settings** and press **OK**. Press **Start using IntelliJ IDEA**.
 
-### Step 3/5 - Install required plugins
+### Step 3/7 - Installing required plugins
 
 On the left side of the newly opened IntelliJ window, there will be a **Plugins (3)** section. Click it to open the plugin marketplace.
 
@@ -50,7 +50,7 @@ Press **Restart IDE** to finish up the installation.
 
 ![Restarting IntelliJ](images/installation/8.png)
 
-### Step 4/5 - Creating a project
+### Step 4/7 - Creating a project
 
 After restarting IntelliJ, you will be prompted to create or select a **project** for your work. Select **New Project (10)**.
 
@@ -66,7 +66,7 @@ Press **Create (15)**. IntelliJ launches and shows you a tip-of-the-day, which y
 
 ![Filling project name and path](images/installation/11.png)
 
-### Step 5/5 - Selecting the Python SDK
+### Step 5/7 - Selecting the Python SDK
 
 After creating a new IntelliJ project, a **Project Structure** window will automatically open. If it did not, go to **File -> Project Structure**.
 
@@ -80,4 +80,42 @@ A new window will open. The default options will do fine, but you might need to 
 
 Close the **Project Structure** window by pressing OK.
 
-Congratulations! You have successfully created an IntelliJ project with Python support.
+### Step 6/7 - Install IntelliJ
+
+Once you have created an IntelliJ project, look at the main menu bar at the top. You’ll find a new **A+** menu. Click on it and select **A+ -> Link Project to an A+ Course (19)**.
+
+![Linking course](images/installation/14.png)
+
+A small dialog window pops up for selecting the course you are taking. **Select the desired course (20)** and press **OK (21)**.
+
+![Linking course](images/installation/15.png)
+
+A language menu appears; select the **English version (22)** and press **OK (23)**.
+
+![Linking course](images/installation/16.png)
+
+IntelliJ suggests a restart to apply the new settings; accept the prompt. After IntelliJ restarts, you will be greeted with an IntelliJ project linked to an A+ course.
+
+### Step 7/7 - Configuring A+ access in IntelliJ
+
+Before you can download modules and submit assignments, you’ll need to give IntelliJ permission to act in your name in A+. You do that by giving IntelliJ a "passcode" (properly known as an _API Access Token_).
+
+On the right side of the IntelliJ window, there will be a section dedicated to the A+ courses plugin. Press the **Set A+ Token (24)** button.
+
+![Linking course](images/installation/17.png)
+
+In the newly opened dialog box, press the **"What is my token" link (25)**.
+
+![Linking course](images/installation/18.png)
+
+The A+ profile page will open; if it didn't, [click here.](https://plus.cs.aalto.fi/accounts/accounts/) **Copy the API token (26)** from the page and paste it into the dialog box inside IntelliJ.
+
+![Linking course](images/installation/19.png)
+
+After pasting the token, press **OK (27)**.
+
+![Linking course](images/installation/20.png)
+
+Congratulations! You have successfully created an IntelliJ project with Python support. The configuration is now complete.
+
+<sub><sup>Note: font used for screenshot markings: Lucida Sans Unicode, size 18</sup></sub>
