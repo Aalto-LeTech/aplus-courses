@@ -34,7 +34,7 @@ public class BannerView {
       panel.setVisible(text != null);
     }, true);
 
-    this.colorBindable = new Bindable<>(banner, BannerPanel::setBackground, true);
+    this.colorBindable = new Bindable<>(banner, BannerPanel::setBannerColor, true);
   }
 
   /**
