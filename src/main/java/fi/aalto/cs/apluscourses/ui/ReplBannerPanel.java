@@ -16,20 +16,20 @@ import java.awt.event.MouseEvent;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import org.jetbrains.annotations.NotNull;
 
 public class ReplBannerPanel extends JPanel {
 
   private boolean isPermanentlyHidden = false;
+
+  @NotNull
+  private final JPanel containerPanel;
 
   /**
    * Constructor for the banner.
    */
   public ReplBannerPanel() {
     super(new BorderLayout());
-
-    final JPanel panel = new OpaquePanel(new FlowLayout(FlowLayout.LEFT));
-    panel.setBorder(JBUI.Borders.empty(5, 0, 5, 5));
-    panel.setMinimumSize(new Dimension(0, 0));
 
     final JLabel infoText = new JLabel(getText("ui.repl.warning.description"));
     final JLabel dontShowOnceText = new JLabel(getText("ui.repl.warning.ignoreOnce"));
@@ -55,15 +55,17 @@ public class ReplBannerPanel extends JPanel {
       }
     });
 
-    panel.add(infoText);
-    panel.add(new JLabel("|"));
-    panel.add(dontShowOnceText);
-    panel.add(new JLabel("|"));
-    panel.add(neverAskAgainText);
+    containerPanel = new OpaquePanel(new FlowLayout(FlowLayout.LEFT));
+    containerPanel.setBorder(JBUI.Borders.empty(5, 0, 5, 5));
+    containerPanel.setMinimumSize(new Dimension(0, 0));
+    containerPanel.add(infoText);
+    containerPanel.add(new JLabel("|"));
+    containerPanel.add(dontShowOnceText);
+    containerPanel.add(new JLabel("|"));
+    containerPanel.add(neverAskAgainText);
 
-    add(panel);
+    add(containerPanel);
 
-    setBackground(new JBColor(new Color(200, 0, 0), new Color(100, 0, 0)));
     setBorder(BorderFactory.createCompoundBorder(
         BorderFactory.createMatteBorder(0, 0, 1, 0, JBColor.border()),
         BorderFactory.createEmptyBorder(0, 5, 0, 5))
@@ -72,8 +74,14 @@ public class ReplBannerPanel extends JPanel {
 
   @Override
   public void setVisible(boolean isVisible) {
+    if (isVisible) {
+      final JBColor bgColor = new JBColor(new Color(200, 0, 0), new Color(100, 0, 0));
+      containerPanel.setBackground(bgColor);
+      setBackground(bgColor);
+    }
+
     super.setVisible(isVisible
-        && !this.isPermanentlyHidden
+        && !isPermanentlyHidden
         && !PluginSettings.getInstance().shouldHideReplModuleChangedWarning());
   }
 }
