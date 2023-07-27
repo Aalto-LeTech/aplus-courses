@@ -15,7 +15,7 @@
     ]]></description>
 
     <change-notes>
-        Cache-related improvements and minor bug fixes.
+        Compatibility fixes.
     </change-notes>
 
     <depends>com.intellij.modules.java</depends>
