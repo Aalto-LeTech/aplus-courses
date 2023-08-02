@@ -7,8 +7,7 @@ wget https://github.com/mikefarah/yq/releases/download/v4.16.2/yq_linux_amd64 &&
 ./yq_linux_amd64 eval -i '.services.plus.volumes += ["../tools/aplus-init.sh:/srv/aplus-init.sh:ro", "../tools/simple_course.py:/srv/simple_course.py:ro"]' docker-compose.yml &&
 git submodule init &&
 git submodule update &&
-git checkout ea39d0144dc97e5438f6c19a70085a03708ccdee &&
-chmod +x docker-fast-compile.sh && ./docker-fast-compile.sh &&
+chmod +x docker-compile.sh && ./docker-compile.sh &&
 # modifying the initial script (just cutting off the last part of it), so it would run in the background
 head -102 docker-up.sh > docker-up-custom.sh &&
 # adding an execution permission to the newly created script

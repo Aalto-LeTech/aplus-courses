@@ -97,7 +97,7 @@ def main():
 
     course0 = Course()
     course0.name = 'Test Course'
-    course0.url = 'test-course'
+    course0.url = 'test-aplus-course'
     course0.save()
 
     instance0 = CourseInstance(id=100, course=course0)
