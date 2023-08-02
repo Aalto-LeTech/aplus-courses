@@ -166,13 +166,6 @@ public class CourseProjectAction extends AnAction {
       return;
     }
 
-    // TODO: remove this debugging helper
-    if (e.getInputEvent().isControlDown()) {
-      COURSE_LIST_URL = "http://192.168.177.11:8989/courses.yaml";
-    } else {
-      COURSE_LIST_URL = "https://version.aalto.fi/gitlab/aplus-courses/course-config-urls/-/raw/main/courses.yaml";
-    }
-
     URL courseUrl = tryGetCourseUrl(project);
     if (courseUrl == null) {
       return;
