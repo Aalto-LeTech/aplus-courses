@@ -95,7 +95,7 @@ class InstallModuleActionTest {
   @SuppressWarnings({"ConstantConditions"})
   @Test
   void testUpdate() {
-    InstallModuleAction action = new InstallModuleAction(p -> mainViewModel, (c, d) -> installer,
+    InstallModuleAction action = new InstallModuleAction(p -> mainViewModel, (c, d, e) -> installer,
         dialogsFactory);
 
     Presentation presentation = new Presentation();
@@ -120,7 +120,7 @@ class InstallModuleActionTest {
   @SuppressWarnings({"unchecked", "ConstantConditions"})
   @Test
   void testActionPerformed() {
-    InstallModuleAction action = new InstallModuleAction(p -> mainViewModel, (c, d) -> installer,
+    InstallModuleAction action = new InstallModuleAction(p -> mainViewModel, (c, d, e) -> installer,
         dialogsFactory);
 
     AnActionEvent e = mock(AnActionEvent.class);
