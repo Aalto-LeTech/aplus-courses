@@ -6,6 +6,7 @@ import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.model.User;
 import fi.aalto.cs.apluscourses.utils.APlusLogger;
+import fi.aalto.cs.apluscourses.utils.Callbacks;
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;

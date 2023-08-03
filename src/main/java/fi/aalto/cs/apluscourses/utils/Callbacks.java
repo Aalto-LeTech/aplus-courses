@@ -2,10 +2,10 @@ package fi.aalto.cs.apluscourses.utils;
 
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.model.Module;
-import java.lang.reflect.Method;
+import fi.aalto.cs.apluscourses.utils.callbacks.AddModuleWatermark;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
@@ -13,49 +13,44 @@ import org.json.JSONObject;
 
 public class Callbacks {
 
-  @NotNull
-  private final List<Method> postDownloadModuleCallbacks = new ArrayList<>();
+  @FunctionalInterface
+  public interface PostDownloadModuleCallback {
+    void postDownloadModule(@NotNull Project project, @NotNull Module module);
+  }
 
-  private static void addCallbacksFromArray(@Nullable JSONArray callbackArray,
-                                            @NotNull String methodName,
-                                            @NotNull List<Method> callbackList) throws ClassNotFoundException {
+  @NotNull
+  private static final Map<String, PostDownloadModuleCallback> availablePostDownloadModuleCallbacks = Map.of(
+      "AddModuleWatermark", AddModuleWatermark::postDownloadModule
+  );
+
+  @NotNull
+  private final List<PostDownloadModuleCallback> postDownloadModuleCallbacks = new ArrayList<>();
+
+  private static <T> void addCallbacksFromArray(@Nullable JSONArray callbackArray,
+                                                @NotNull Map<String, T> sourceCallbacks,
+                                                @NotNull List<T> targetCallbackList) {
     if (callbackArray == null) {
       return;
     }
 
     for (int i = 0; i < callbackArray.length(); i++) {
-      String className = callbackArray.getString(i);
-
-      Class<?> callbackClass = Class.forName("fi.aalto.cs.apluscourses.utils.callbacks." + className);
-      Method method = Arrays.stream(callbackClass.getDeclaredMethods())
-          .filter(m -> m.getName().equals(methodName))
-          .findFirst()
-          .orElseThrow();
-
-      callbackList.add(method);
+      String callbackName = callbackArray.getString(i);
+      T callback = sourceCallbacks.get(callbackName);
+      if (callback != null) {
+        targetCallbackList.add(callback);
+      }
     }
   }
 
   public void invokePostDownloadModuleCallbacks(@NotNull Project project, @NotNull Module module) {
-    postDownloadModuleCallbacks.forEach(method -> {
-      try {
-        method.invoke(null, project, module);
-      } catch (ReflectiveOperationException e) {
-        throw new RuntimeException(e);
-      }
-    });
+    postDownloadModuleCallbacks.forEach(callback -> callback.postDownloadModule(project, module));
   }
 
   @NotNull
   public static Callbacks fromJsonObject(@NotNull JSONObject callbacksObject) {
-    List<Method> postDownloadModuleCallbacks = new ArrayList<>();
-
-    try {
-      addCallbacksFromArray(callbacksObject.optJSONArray("postDownloadModule"),
-          "postDownloadModule", postDownloadModuleCallbacks);
-    } catch (ReflectiveOperationException e) {
-      throw new RuntimeException(e);
-    }
+    List<PostDownloadModuleCallback> postDownloadModuleCallbacks = new ArrayList<>();
+    addCallbacksFromArray(callbacksObject.optJSONArray("postDownloadModule"),
+        availablePostDownloadModuleCallbacks, postDownloadModuleCallbacks);
 
     return new Callbacks(postDownloadModuleCallbacks);
   }
@@ -64,7 +59,7 @@ public class Callbacks {
     this(null);
   }
 
-  public Callbacks(@Nullable List<Method> postDownloadModuleCallbacks) {
+  public Callbacks(@Nullable List<PostDownloadModuleCallback> postDownloadModuleCallbacks) {
     if (postDownloadModuleCallbacks != null) {
       this.postDownloadModuleCallbacks.addAll(postDownloadModuleCallbacks);
     }
