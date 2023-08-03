@@ -21,8 +21,6 @@ import org.slf4j.Logger;
 
 public class AddModuleWatermark {
 
-  private static final Logger logger = APlusLogger.logger;
-
   private static final String ENCODING_LINE = "# -*- coding: utf-8 -*-";
   private static final String ENCODING_LINE_WITH_UNICODE = "#​‌​​​​‌‌​‌​‌‌​ *-* coding: utf-8 *-*";
 
@@ -63,6 +61,11 @@ public class AddModuleWatermark {
     }
   }
 
+  /**
+   * Adds a watermark to a freshly downloaded module. This is used in TRAKY courses.
+   * @param project The project
+   * @param module The currently extracted module
+   */
   public static void postDownloadModule(@NotNull Project project, @NotNull Module module) {
     final CourseProject courseProject = PluginSettings.getInstance().getCourseProject(project);
     final User user = courseProject != null ? courseProject.getUser() : null;

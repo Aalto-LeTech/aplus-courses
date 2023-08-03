@@ -46,6 +46,9 @@ public class Callbacks {
     postDownloadModuleCallbacks.forEach(callback -> callback.postDownloadModule(project, module));
   }
 
+  /**
+   * Constructs an instance of callbacks from the given JSON object.
+   */
   @NotNull
   public static Callbacks fromJsonObject(@NotNull JSONObject callbacksObject) {
     List<PostDownloadModuleCallback> postDownloadModuleCallbacks = new ArrayList<>();
@@ -55,13 +58,16 @@ public class Callbacks {
     return new Callbacks(postDownloadModuleCallbacks);
   }
 
-  public Callbacks() {
-    this(null);
-  }
-
-  public Callbacks(@Nullable List<PostDownloadModuleCallback> postDownloadModuleCallbacks) {
+  private Callbacks(@Nullable List<PostDownloadModuleCallback> postDownloadModuleCallbacks) {
     if (postDownloadModuleCallbacks != null) {
       this.postDownloadModuleCallbacks.addAll(postDownloadModuleCallbacks);
     }
+  }
+
+  /**
+   * Constructor without any callbacks.
+   */
+  public Callbacks() {
+    this(null);
   }
 }
