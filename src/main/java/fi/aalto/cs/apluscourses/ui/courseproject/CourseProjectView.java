@@ -97,5 +97,8 @@ public class CourseProjectView extends OurDialogWrapper {
         APlusLocalizationUtil::languageCodeToName,
         null));
     languageComboBox.selectedItemBindable.bindToSource(viewModel.languageProperty);
+    if (languageComboBox.getItemCount() == 1) {
+      languageComboBox.setSelectedIndex(0);
+    }
   }
 }
