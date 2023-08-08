@@ -84,7 +84,9 @@ class InstallModuleActionTest {
         // hiddenElements
         new CourseHiddenElements(),
         // callbacks
-        new Callbacks());
+        new Callbacks(),
+        // requireAuthenticationForModules
+        false);
     mainViewModel.courseViewModel.set(new CourseViewModel(course, Options.EMPTY));
 
     installer = mock(ComponentInstaller.class);

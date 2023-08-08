@@ -101,6 +101,8 @@ public abstract class Course implements ComponentSource {
   @Nullable
   private final String newsParser;
 
+  private boolean requireAuthenticationForModules;
+
   /**
    * Constructs a course with the given parameters.
    *
@@ -129,6 +131,7 @@ public abstract class Course implements ComponentSource {
                    @NotNull List<PluginDependency> pluginDependencies,
                    @NotNull CourseHiddenElements hiddenElements,
                    @NotNull Callbacks callbacks,
+                   boolean requireAuthenticationForModules,
                    @Nullable String feedbackParser,
                    @Nullable String newsParser) {
     this.id = id;
@@ -146,6 +149,7 @@ public abstract class Course implements ComponentSource {
     this.pluginDependencies = pluginDependencies;
     this.hiddenElements = hiddenElements;
     this.callbacks = callbacks;
+    this.requireAuthenticationForModules = requireAuthenticationForModules;
     this.feedbackParser = feedbackParser;
     this.newsParser = newsParser;
     this.components = Stream.concat(modules.stream(), libraries.stream())
@@ -212,6 +216,7 @@ public abstract class Course implements ComponentSource {
     List<PluginDependency> pluginDependencies = getCoursePluginDependencies(jsonObject, sourcePath);
     CourseHiddenElements hiddenElements = getCourseHiddenElements(jsonObject, sourcePath);
     Callbacks callbacks = getCourseCallbacks(jsonObject, sourcePath);
+    boolean requireAuthenticationForModules = jsonObject.optBoolean("requireAuthenticationForModules", false);
     String feedbackParser = jsonObject.optString("feedbackParser", null);
     String newsParser = jsonObject.optString("newsParser", null);
     long courseLastModified = jsonObject.optLong("courseLastModified");
@@ -234,6 +239,7 @@ public abstract class Course implements ComponentSource {
         pluginDependencies,
         hiddenElements,
         callbacks,
+        requireAuthenticationForModules,
         feedbackParser,
         newsParser,
         courseLastModified
@@ -809,6 +815,8 @@ public abstract class Course implements ComponentSource {
   public Callbacks getCallbacks() {
     return callbacks;
   }
+
+  public boolean requiresLoginForModules() { return requireAuthenticationForModules; }
 
   @NotNull
   public abstract ExerciseDataSource getExerciseDataSource();

@@ -70,6 +70,7 @@ public class IntelliJCourse extends Course {
                         @NotNull List<PluginDependency> pluginDependencies,
                         @NotNull CourseHiddenElements hiddenElements,
                         @NotNull Callbacks callbacks,
+                        boolean requireAuthenticationForModules,
                         @Nullable String feedbackParser,
                         @Nullable String newsParser,
                         long courseLastModified) {
@@ -92,6 +93,7 @@ public class IntelliJCourse extends Course {
         pluginDependencies,
         hiddenElements,
         callbacks,
+        requireAuthenticationForModules,
         feedbackParser,
         newsParser
     );

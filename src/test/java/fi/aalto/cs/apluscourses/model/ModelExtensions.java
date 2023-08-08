@@ -159,10 +159,12 @@ public class ModelExtensions {
                       @NotNull Map<Long, Tutorial> tutorials,
                       @NotNull List<PluginDependency> pluginDependencies,
                       @NotNull CourseHiddenElements hiddenElements,
-                      @NotNull Callbacks callbacks) {
+                      @NotNull Callbacks callbacks,
+                      boolean requireAuthenticationForModules) {
       super(id, name, aplusUrl, languages, modules, libraries, exerciseModules, resourceUrls, vmOptions,
           optionalCategories, autoInstallComponentNames, replInitialCommands, replAdditionalArguments,
-          courseVersion, tutorials, pluginDependencies, hiddenElements, callbacks, null, "default");
+          courseVersion, tutorials, pluginDependencies, hiddenElements, callbacks, requireAuthenticationForModules,
+          null, "default");
       exerciseDataSource = new TestExerciseDataSource();
     }
 
@@ -212,6 +214,8 @@ public class ModelExtensions {
           new CourseHiddenElements(),
           // callbacks
           new Callbacks(),
+          // requireAuthenticationForModules
+          false,
           null, "default");
       this.exerciseDataSource = exerciseDataSource;
     }
@@ -275,6 +279,8 @@ public class ModelExtensions {
           new CourseHiddenElements(),
           // callbacks
           new Callbacks(),
+          // requireAuthenticationForModules
+          false,
           null,
           null,
           0);
@@ -459,6 +465,7 @@ public class ModelExtensions {
                                @NotNull List<PluginDependency> pluginDependencies,
                                @NotNull CourseHiddenElements hiddenElements,
                                @NotNull Callbacks callbacks,
+                               boolean requireAuthenticationForModules,
                                @Nullable String feedbackParser,
                                @Nullable String newsParser,
                                long courseLastModified) {
@@ -480,7 +487,8 @@ public class ModelExtensions {
           tutorials,
           pluginDependencies,
           hiddenElements,
-          callbacks
+          callbacks,
+          requireAuthenticationForModules
       );
     }
 

@@ -59,6 +59,7 @@ public class IntelliJModelFactory implements ModelFactory {
                              @NotNull List<PluginDependency> pluginDependencies,
                              @NotNull CourseHiddenElements hiddenElements,
                              @NotNull Callbacks callbacks,
+                             boolean requireAuthenticationForModules,
                              @Nullable String feedbackParser,
                              @Nullable String newsParser,
                              long courseLastModified) {
@@ -67,7 +68,8 @@ public class IntelliJModelFactory implements ModelFactory {
         new IntelliJCourse(id, name, aplusUrl, languages, modules, libraries, exerciseModules,
             resourceUrls, vmOptions, optionalCategories, autoInstallComponentNames, replInitialCommands,
             replAdditionalArguments, courseVersion, project, new CommonLibraryProvider(project), tutorials,
-            pluginDependencies, hiddenElements, callbacks, feedbackParser, newsParser, courseLastModified);
+            pluginDependencies, hiddenElements, callbacks, requireAuthenticationForModules,
+            feedbackParser, newsParser, courseLastModified);
 
     Component.InitializationCallback componentInitializationCallback =
         component -> registerComponentToCourse(component, course);

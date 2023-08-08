@@ -31,6 +31,7 @@ public interface ModelFactory {
                       @NotNull List<PluginDependency> pluginDependencies,
                       @NotNull CourseHiddenElements hiddenElements,
                       @NotNull Callbacks callbacks,
+                      boolean requireAuthenticationForModules,
                       @Nullable String feedbackParser,
                       @NotNull String newsParser,
                       long courseLastModified);

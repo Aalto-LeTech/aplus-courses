@@ -38,7 +38,7 @@ public class ToolWindowCardView extends JPanel {
     this.add(toolWindowPanel);
     this.cl.addLayoutComponent(toolWindowPanel, MAIN_CARD);
 
-    var noTokenView = new NoTokenCard(project);
+    var noTokenView = new NoTokenCard(project, viewModel.moduleButtonRequiresLogin());
     this.add(noTokenView.getPanel());
     this.cl.addLayoutComponent(noTokenView.getPanel(), NO_TOKEN_CARD);
 

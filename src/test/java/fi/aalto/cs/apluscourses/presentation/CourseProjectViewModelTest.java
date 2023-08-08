@@ -47,7 +47,9 @@ class CourseProjectViewModelTest {
       // hiddenElements
       new CourseHiddenElements(),
       // callbacks
-      new Callbacks()
+      new Callbacks(),
+      // requireAuthenticationForModules
+      false
   );
 
   @Test
