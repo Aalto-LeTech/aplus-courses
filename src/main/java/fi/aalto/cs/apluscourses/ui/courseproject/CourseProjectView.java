@@ -97,5 +97,10 @@ public class CourseProjectView extends OurDialogWrapper {
         APlusLocalizationUtil::languageCodeToName,
         null));
     languageComboBox.selectedItemBindable.bindToSource(viewModel.languageProperty);
+
+    // If there is only one language available, select it by default.
+    if (languageComboBox.getItemCount() == 1) {
+      languageComboBox.setSelectedIndex(0);
+    }
   }
 }

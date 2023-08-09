@@ -48,7 +48,7 @@ class UserNameActionTest {
   @Test
   void testUserNameAction() {
     action.update(event);
-    Assertions.assertEquals("Not Logged In", event.getPresentation().getText());
+    Assertions.assertEquals("Not logged in", event.getPresentation().getText());
     var authentication = mock(Authentication.class);
     courseProject.setAuthentication(authentication);
     action.update(event);

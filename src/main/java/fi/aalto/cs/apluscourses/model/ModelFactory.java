@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.model;
 
+import fi.aalto.cs.apluscourses.utils.Callbacks;
 import fi.aalto.cs.apluscourses.utils.CourseHiddenElements;
 import fi.aalto.cs.apluscourses.utils.PluginDependency;
 import fi.aalto.cs.apluscourses.utils.Version;
@@ -29,6 +30,8 @@ public interface ModelFactory {
                       @NotNull Map<Long, Tutorial> tutorials,
                       @NotNull List<PluginDependency> pluginDependencies,
                       @NotNull CourseHiddenElements hiddenElements,
+                      @NotNull Callbacks callbacks,
+                      boolean requireAuthenticationForModules,
                       @Nullable String feedbackParser,
                       @NotNull String newsParser,
                       long courseLastModified);

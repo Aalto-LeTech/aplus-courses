@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.model;
 
 import com.intellij.openapi.util.SystemInfoRt;
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
+import fi.aalto.cs.apluscourses.utils.Callbacks;
 import fi.aalto.cs.apluscourses.utils.CourseHiddenElements;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
 import fi.aalto.cs.apluscourses.utils.JsonUtil;
@@ -91,11 +92,16 @@ public abstract class Course implements ComponentSource {
   @NotNull
   private final CourseHiddenElements hiddenElements;
 
+  @NotNull
+  private final Callbacks callbacks;
+
   @Nullable
   private final String feedbackParser;
 
   @Nullable
   private final String newsParser;
+
+  private boolean requireAuthenticationForModules;
 
   /**
    * Constructs a course with the given parameters.
@@ -124,6 +130,8 @@ public abstract class Course implements ComponentSource {
                    @NotNull Map<Long, Tutorial> tutorials,
                    @NotNull List<PluginDependency> pluginDependencies,
                    @NotNull CourseHiddenElements hiddenElements,
+                   @NotNull Callbacks callbacks,
+                   boolean requireAuthenticationForModules,
                    @Nullable String feedbackParser,
                    @Nullable String newsParser) {
     this.id = id;
@@ -140,6 +148,8 @@ public abstract class Course implements ComponentSource {
     this.tutorials = tutorials;
     this.pluginDependencies = pluginDependencies;
     this.hiddenElements = hiddenElements;
+    this.callbacks = callbacks;
+    this.requireAuthenticationForModules = requireAuthenticationForModules;
     this.feedbackParser = feedbackParser;
     this.newsParser = newsParser;
     this.components = Stream.concat(modules.stream(), libraries.stream())
@@ -205,6 +215,8 @@ public abstract class Course implements ComponentSource {
     Map<Long, Tutorial> tutorials = getCourseTutorials(jsonObject);
     List<PluginDependency> pluginDependencies = getCoursePluginDependencies(jsonObject, sourcePath);
     CourseHiddenElements hiddenElements = getCourseHiddenElements(jsonObject, sourcePath);
+    Callbacks callbacks = getCourseCallbacks(jsonObject, sourcePath);
+    boolean requireAuthenticationForModules = jsonObject.optBoolean("requireAuthenticationForModules", false);
     String feedbackParser = jsonObject.optString("feedbackParser", null);
     String newsParser = jsonObject.optString("newsParser", null);
     long courseLastModified = jsonObject.optLong("courseLastModified");
@@ -226,6 +238,8 @@ public abstract class Course implements ComponentSource {
         tutorials,
         pluginDependencies,
         hiddenElements,
+        callbacks,
+        requireAuthenticationForModules,
         feedbackParser,
         newsParser,
         courseLastModified
@@ -698,6 +712,22 @@ public abstract class Course implements ComponentSource {
     }
   }
 
+  @NotNull
+  private static Callbacks getCourseCallbacks(@NotNull JSONObject jsonObject,
+                                              @NotNull String source)
+      throws MalformedCourseConfigurationException {
+    JSONObject callbacksJsonObj = jsonObject.optJSONObject("callbacks");
+    if (callbacksJsonObj == null) {
+      return new Callbacks();
+    }
+
+    try {
+      return Callbacks.fromJsonObject(callbacksJsonObj);
+    } catch (JSONException ex) {
+      throw new MalformedCourseConfigurationException(source, "Malformed \"callbacks\" object", ex);
+    }
+  }
+
   public Map<Long, Tutorial> getTutorials() {
     return Collections.unmodifiableMap(tutorials);
   }
@@ -779,6 +809,15 @@ public abstract class Course implements ComponentSource {
   @NotNull
   public CourseHiddenElements getHiddenElements() {
     return hiddenElements;
+  }
+
+  @NotNull
+  public Callbacks getCallbacks() {
+    return callbacks;
+  }
+
+  public boolean requiresLoginForModules() {
+    return requireAuthenticationForModules;
   }
 
   @NotNull

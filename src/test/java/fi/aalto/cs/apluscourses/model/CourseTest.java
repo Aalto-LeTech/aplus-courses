@@ -3,6 +3,7 @@ package fi.aalto.cs.apluscourses.model;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
+import fi.aalto.cs.apluscourses.utils.Callbacks;
 import fi.aalto.cs.apluscourses.utils.CourseHiddenElements;
 import fi.aalto.cs.apluscourses.utils.Version;
 import java.io.StringReader;
@@ -56,7 +57,9 @@ class CourseTest {
         BuildInfo.INSTANCE.courseVersion,
         Collections.emptyMap(),
         Collections.emptyList(),
-        new CourseHiddenElements());
+        new CourseHiddenElements(),
+        new Callbacks(),
+        false);
     Assertions.assertEquals("13", course.getId(),
         "The ID of the course should be the same as that given to the constructor");
     Assertions.assertEquals("Tester Course", course.getName(),
@@ -124,7 +127,11 @@ class CourseTest {
         // pluginDependencies
         Collections.emptyList(),
         // hiddenElements
-        new CourseHiddenElements());
+        new CourseHiddenElements(),
+        // callbacks
+        new Callbacks(),
+        // requireAuthenticationForModules
+        false);
     Assertions.assertSame(module2, course.getComponent("Awesome Module"),
         "Course#getModule should return the correct module");
   }
@@ -168,7 +175,11 @@ class CourseTest {
         // pluginDependencies
         Collections.emptyList(),
         // hiddenElements
-        new CourseHiddenElements());
+        new CourseHiddenElements(),
+        // callbacks
+        new Callbacks(),
+        // requireAuthenticationForModules
+        false);
     List<Component> autoInstalls = course.getAutoInstallComponents();
     Assertions.assertEquals(2, autoInstalls.size(), "The course has the correct auto-install components");
     Assertions.assertEquals(moduleName, autoInstalls.get(0).getName());

@@ -143,7 +143,7 @@ public class SubmissionDownloader {
 
     var moduleVf = virtualFileFinder.findFile(moduleCopy.getFullPath().toFile());
 
-    componentInstallerFactory.getInstallerFor(course, dialogsFactory.getDialogs(project))
+    componentInstallerFactory.getInstallerFor(course, dialogsFactory.getDialogs(project), course.getCallbacks())
         .installAsync(List.of(moduleCopy),
             () -> fileRefresher.refreshPath(moduleVf,
                 () -> downloadFiles(project,

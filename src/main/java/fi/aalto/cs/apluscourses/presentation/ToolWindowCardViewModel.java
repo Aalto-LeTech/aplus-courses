@@ -19,6 +19,8 @@ public class ToolWindowCardViewModel {
 
   private boolean isAPlusProject;
 
+  private boolean moduleButtonRequiresLogin;
+
   @NotNull
   private final AtomicBoolean isProjectReady = new AtomicBoolean(false);
 
@@ -62,20 +64,12 @@ public class ToolWindowCardViewModel {
     updated.trigger();
   }
 
-  /**
-   * Returns the name of the current card.
-   */
-  @NotNull
-  public String getCurrentCard() {
-    if (!isProjectReady()) {
-      return LOADING_CARD;
-    } else if (isNetworkError()) {
-      return ERROR_CARD;
-    } else if (!isAPlusProject()) {
-      return PROJECT_CARD;
-    } else if (isAuthenticated()) {
-      return MAIN_CARD;
-    }
-    return NO_TOKEN_CARD;
+  public boolean moduleButtonRequiresLogin() {
+    return moduleButtonRequiresLogin;
+  }
+
+  public void setModuleButtonRequiresLogin(boolean requiresLogin) {
+    moduleButtonRequiresLogin = requiresLogin;
+    updated.trigger();
   }
 }

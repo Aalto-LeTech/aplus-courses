@@ -29,6 +29,10 @@ public class NoTokenCard {
     });
   }
 
+  public void setModulesButtonHidden(boolean isHidden) {
+    modulesButton.setVisible(!isHidden);
+  }
+
   public JPanel getPanel() {
     return panel;
   }

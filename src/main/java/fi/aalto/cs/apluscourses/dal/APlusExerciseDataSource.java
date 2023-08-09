@@ -224,7 +224,7 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   public User getUser(@NotNull Authentication authentication) throws IOException {
     String url = apiUrl + USERS + "/" + ME + "/";
     JSONObject response = client.fetch(url, authentication);
-    return new User(authentication, parser.parseUserName(response));
+    return parser.parseUser(authentication, response);
   }
 
   @Override
@@ -403,10 +403,14 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
     }
 
     @Override
-    public String parseUserName(@NotNull JSONObject object) {
+    public User parseUser(@NotNull Authentication authentication,
+                          @NotNull JSONObject object) {
       var fullName = object.optString("full_name");
       var username = object.optString("username");
-      return fullName.equals("") ? username : fullName;
+      var studentId = object.optString("student_id");
+      var id = object.optInt("id");
+
+      return new User(authentication, fullName.equals("") ? username : fullName, studentId, id);
     }
 
     @Override

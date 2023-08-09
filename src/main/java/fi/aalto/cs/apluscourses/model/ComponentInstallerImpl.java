@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.model;
 
 import fi.aalto.cs.apluscourses.utils.APlusLogger;
+import fi.aalto.cs.apluscourses.utils.Callbacks;
 import fi.aalto.cs.apluscourses.utils.async.TaskManager;
 import java.io.IOException;
 import java.util.List;
@@ -13,9 +14,10 @@ public class ComponentInstallerImpl<T> implements ComponentInstaller {
 
   private static final Logger logger = APlusLogger.logger;
 
-  private final ComponentSource componentSource;
-  private final TaskManager<T> taskManager;
-  private final Dialogs dialogs;
+  private final @NotNull ComponentSource componentSource;
+  private final @NotNull TaskManager<T> taskManager;
+  private final @NotNull Dialogs dialogs;
+  private final @NotNull Callbacks callbacks;
 
   /**
    * Constructor.
@@ -26,10 +28,12 @@ public class ComponentInstallerImpl<T> implements ComponentInstaller {
    */
   public ComponentInstallerImpl(@NotNull ComponentSource componentSource,
                                 @NotNull TaskManager<T> taskManager,
-                                @NotNull Dialogs dialogs) {
+                                @NotNull Dialogs dialogs,
+                                @NotNull Callbacks callbacks) {
     this.componentSource = componentSource;
     this.taskManager = taskManager;
     this.dialogs = dialogs;
+    this.callbacks = callbacks;
   }
 
   protected T waitUntilLoadedAsync(Component component) {
@@ -174,8 +178,9 @@ public class ComponentInstallerImpl<T> implements ComponentInstaller {
     @Override
     @NotNull
     public ComponentInstaller getInstallerFor(@NotNull ComponentSource componentSource,
-                                              @NotNull Dialogs dialogs) {
-      return new ComponentInstallerImpl<>(componentSource, taskManager, dialogs);
+                                              @NotNull Dialogs dialogs,
+                                              @NotNull Callbacks callbacks) {
+      return new ComponentInstallerImpl<>(componentSource, taskManager, dialogs, callbacks);
     }
   }
 }

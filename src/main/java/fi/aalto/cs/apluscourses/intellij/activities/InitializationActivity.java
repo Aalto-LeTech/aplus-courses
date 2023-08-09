@@ -109,6 +109,9 @@ public class InitializationActivity implements Background {
 
       return;
     }
+
+    cardVm.setModuleButtonRequiresLogin(course.requiresLoginForModules());
+
     var progress = progressViewModel.start(3, getText("ui.ProgressBarView.loading"), false);
     progress.increment();
 

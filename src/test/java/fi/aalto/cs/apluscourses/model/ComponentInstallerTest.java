@@ -9,6 +9,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import fi.aalto.cs.apluscourses.utils.Callbacks;
 import fi.aalto.cs.apluscourses.utils.async.SimpleAsyncTaskManager;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,7 +41,7 @@ class ComponentInstallerTest {
     ComponentInstaller.Dialogs dialogs = mock(ComponentInstaller.Dialogs.class);
 
     ComponentInstaller installer = new ComponentInstallerImpl<>(
-        new ModelExtensions.TestComponentSource(), new SimpleAsyncTaskManager(), dialogs);
+        new ModelExtensions.TestComponentSource(), new SimpleAsyncTaskManager(), dialogs, new Callbacks());
 
     installer.install(module);
 
@@ -81,7 +82,7 @@ class ComponentInstallerTest {
 
     ComponentInstaller installer =
         new ComponentInstallerImpl<>(componentSource, new SimpleAsyncTaskManager(),
-            mock(ComponentInstaller.Dialogs.class));
+            mock(ComponentInstaller.Dialogs.class), new Callbacks());
 
     installer.install(module1);
 
@@ -120,7 +121,7 @@ class ComponentInstallerTest {
 
     ComponentInstaller installer =
         new ComponentInstallerImpl<>(componentSource, new SimpleAsyncTaskManager(),
-            mock(ComponentInstaller.Dialogs.class));
+            mock(ComponentInstaller.Dialogs.class), new Callbacks());
 
     List<Component> modules = new ArrayList<>();
     modules.add(module1);
@@ -154,7 +155,7 @@ class ComponentInstallerTest {
 
     ComponentInstaller installer = new ComponentInstallerImpl<>(
         new ModelExtensions.TestComponentSource(), new SimpleAsyncTaskManager(),
-        mock(ComponentInstaller.Dialogs.class));
+        mock(ComponentInstaller.Dialogs.class), new Callbacks());
 
     installer.install(module);
 
@@ -177,7 +178,7 @@ class ComponentInstallerTest {
 
     ComponentInstaller installer = new ComponentInstallerImpl<>(
         new ModelExtensions.TestComponentSource(), new SimpleAsyncTaskManager(),
-        mock(ComponentInstaller.Dialogs.class));
+        mock(ComponentInstaller.Dialogs.class), new Callbacks());
 
     installer.install(module);
 
@@ -201,7 +202,7 @@ class ComponentInstallerTest {
 
     ComponentInstaller installer =
         new ComponentInstallerImpl<>(componentSource, new SimpleAsyncTaskManager(),
-            mock(ComponentInstaller.Dialogs.class));
+            mock(ComponentInstaller.Dialogs.class), new Callbacks());
 
     installer.install(module);
 
@@ -234,7 +235,7 @@ class ComponentInstallerTest {
 
     ComponentInstaller installer =
         new ComponentInstallerImpl<>(componentSource, new SimpleAsyncTaskManager(),
-            mock(ComponentInstaller.Dialogs.class));
+            mock(ComponentInstaller.Dialogs.class), new Callbacks());
 
     List<Component> modules = new ArrayList<>();
     modules.add(dependentModule);
@@ -277,7 +278,7 @@ class ComponentInstallerTest {
 
     ComponentInstaller installer =
         new ComponentInstallerImpl<>(componentSource, new SimpleAsyncTaskManager(),
-            mock(ComponentInstaller.Dialogs.class));
+            mock(ComponentInstaller.Dialogs.class), new Callbacks());
 
     List<Component> modules = new ArrayList<>();
     modules.add(moduleA);
@@ -307,7 +308,7 @@ class ComponentInstallerTest {
     doReturn(true).when(dialogs).shouldOverwrite(component);
 
     ComponentInstaller installer = new ComponentInstallerImpl<>(
-        new ModelExtensions.TestComponentSource(), new SimpleAsyncTaskManager(), dialogs);
+        new ModelExtensions.TestComponentSource(), new SimpleAsyncTaskManager(), dialogs, new Callbacks());
     installer.install(component);
 
     verify(component).fetch();
@@ -329,7 +330,7 @@ class ComponentInstallerTest {
     doReturn(false).when(dialogs).shouldOverwrite(component);
 
     ComponentInstaller installer = new ComponentInstallerImpl<>(
-        new ModelExtensions.TestComponentSource(), new SimpleAsyncTaskManager(), dialogs);
+        new ModelExtensions.TestComponentSource(), new SimpleAsyncTaskManager(), dialogs, new Callbacks());
     installer.install(component);
 
     verify(component, never()).fetch();
@@ -349,7 +350,7 @@ class ComponentInstallerTest {
     ComponentInstaller.Dialogs dialogs = mock(ComponentInstaller.Dialogs.class);
 
     ComponentInstaller installer = new ComponentInstallerImpl<>(
-        new ModelExtensions.TestComponentSource(), new SimpleAsyncTaskManager(), dialogs);
+        new ModelExtensions.TestComponentSource(), new SimpleAsyncTaskManager(), dialogs, new Callbacks());
     installer.install(component);
 
     verify(dialogs, never()).shouldOverwrite(any());
