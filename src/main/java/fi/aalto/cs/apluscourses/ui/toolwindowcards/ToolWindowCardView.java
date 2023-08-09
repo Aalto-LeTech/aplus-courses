@@ -21,6 +21,8 @@ public class ToolWindowCardView extends JPanel {
   private final Project project;
   @NotNull
   private final ToolWindowCardViewModel viewModel;
+  @NotNull
+  private final NoTokenCard noTokenCard;
 
   /**
    * Constructor.
@@ -38,9 +40,9 @@ public class ToolWindowCardView extends JPanel {
     this.add(toolWindowPanel);
     this.cl.addLayoutComponent(toolWindowPanel, MAIN_CARD);
 
-    var noTokenView = new NoTokenCard(project, viewModel.moduleButtonRequiresLogin());
-    this.add(noTokenView.getPanel());
-    this.cl.addLayoutComponent(noTokenView.getPanel(), NO_TOKEN_CARD);
+    noTokenCard = new NoTokenCard(project);
+    this.add(noTokenCard.getPanel());
+    this.cl.addLayoutComponent(noTokenCard.getPanel(), NO_TOKEN_CARD);
 
     var notAPlusProjectView = new NotAPlusProjectCard();
     this.add(notAPlusProjectView.getPanel());
@@ -71,6 +73,7 @@ public class ToolWindowCardView extends JPanel {
           } else if (viewModel.isAuthenticated()) {
             cl.show(this, MAIN_CARD);
           } else {
+            noTokenCard.setModulesButtonHidden(viewModel.moduleButtonRequiresLogin());
             cl.show(this, NO_TOKEN_CARD);
           }
         }, ModalityState.any()

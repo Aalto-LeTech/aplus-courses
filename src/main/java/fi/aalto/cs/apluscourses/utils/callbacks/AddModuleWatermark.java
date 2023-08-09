@@ -22,7 +22,7 @@ import org.slf4j.Logger;
 public class AddModuleWatermark {
 
   private static final String ENCODING_LINE = "# -*- coding: utf-8 -*-";
-  private static final String ENCODING_LINE_WITH_UNICODE = "#​‌​​​​‌‌​‌​‌‌​ *-* coding: utf-8 *-*";
+  private static final String ENCODING_LINE_WITH_UNICODE = "#\u200b\u200c\u200b\u200b\u200b\u200b\u200c\u200c\u200b\u200c\u200b\u200c\u200c\u200b *-* coding: utf-8 *-*";
 
   private AddModuleWatermark() {
 
@@ -30,8 +30,8 @@ public class AddModuleWatermark {
 
   private static String createWatermark(int userId) {
     return Integer.toBinaryString(userId)
-        .replace('1', '\u200B')
-        .replace('0', '\u200C');
+        .replace('1', '\u200b')
+        .replace('0', '\u200c');
   }
 
   private static void addWatermark(@NotNull Path path, @Nullable User user) throws IOException {

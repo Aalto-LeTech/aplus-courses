@@ -816,7 +816,9 @@ public abstract class Course implements ComponentSource {
     return callbacks;
   }
 
-  public boolean requiresLoginForModules() { return requireAuthenticationForModules; }
+  public boolean requiresLoginForModules() {
+    return requireAuthenticationForModules;
+  }
 
   @NotNull
   public abstract ExerciseDataSource getExerciseDataSource();

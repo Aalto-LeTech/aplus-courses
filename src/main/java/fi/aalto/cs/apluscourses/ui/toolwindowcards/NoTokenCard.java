@@ -18,7 +18,7 @@ public class NoTokenCard {
   /**
    * Constructor.
    */
-  public NoTokenCard(@NotNull Project project, boolean hideModulesButton) {
+  public NoTokenCard(@NotNull Project project) {
     setATokenButton.addActionListener(e -> {
       DataContext context = DataManager.getInstance().getDataContext(setATokenButton);
       ActionUtil.launch(APlusAuthenticationAction.ACTION_ID, context);
@@ -27,7 +27,10 @@ public class NoTokenCard {
       var modulesDialog = new ModulesDialog(project);
       modulesDialog.show();
     });
-    modulesButton.setVisible(!hideModulesButton);
+  }
+
+  public void setModulesButtonHidden(boolean isHidden) {
+    modulesButton.setVisible(!isHidden);
   }
 
   public JPanel getPanel() {

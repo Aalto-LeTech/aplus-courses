@@ -70,5 +70,6 @@ public class ToolWindowCardViewModel {
 
   public void setModuleButtonRequiresLogin(boolean requiresLogin) {
     moduleButtonRequiresLogin = requiresLogin;
+    updated.trigger();
   }
 }

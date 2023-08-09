@@ -86,11 +86,14 @@ public class CourseProjectAction extends AnAction {
 
   private final ExecutorService executor;
 
-  // TODO: change this back
-  public static String COURSE_LIST_URL =
+  private static final String COURSE_LIST_URL =
       "https://version.aalto.fi/gitlab/aplus-courses/course-config-urls/-/raw/main/courses.yaml";
 
   private static final List<CourseItemViewModel> FALLBACK_COURSES = List.of(
+      new CourseItemViewModel("CS-A1141 Tietorakenteet ja algoritmit Y", "Fall 2023",
+          "https://gitmanager.cs.aalto.fi/static/CS-A1141_2023Autumn/_static/apluscourses/a1141_course_config.json"),
+      new CourseItemViewModel("CS-A1143 Data Structures and Algorithms Y", "Fall 2023",
+          "https://gitmanager.cs.aalto.fi/static/CS-A1143_2023Autumn/_static/apluscourses/a1143_course_config.json"),
       new CourseItemViewModel("Ohjelmointistudio 2 / Programming Studio A", "Spring 2023",
           "https://gitmanager.cs.aalto.fi/static/studios-spring-2023/modules/s2_course_config.json"),
       new CourseItemViewModel("O1", "Fall 2022",
