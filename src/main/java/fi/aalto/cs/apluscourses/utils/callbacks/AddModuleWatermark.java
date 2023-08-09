@@ -22,7 +22,8 @@ import org.slf4j.Logger;
 public class AddModuleWatermark {
 
   private static final String ENCODING_LINE = "# -*- coding: utf-8 -*-";
-  private static final String ENCODING_LINE_WITH_UNICODE = "#\u200b\u200c\u200b\u200b\u200b\u200b\u200c\u200c\u200b\u200c\u200b\u200c\u200c\u200b *-* coding: utf-8 *-*";
+  private static final String ENCODING_LINE_WITH_UNICODE =
+      "#\u200b\u200c\u200b\u200b\u200b\u200b\u200c\u200c\u200b\u200c\u200b\u200c\u200c\u200b *-* coding: utf-8 *-*";
 
   private AddModuleWatermark() {
 
