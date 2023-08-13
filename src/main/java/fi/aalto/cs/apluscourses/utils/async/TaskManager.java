@@ -44,9 +44,16 @@ public interface TaskManager<T> {
    * given to this function, are joined.
    */
   default T all(List<T> tasks) {
-    return fork(() -> {
-      for (T task : tasks) {
-        join(task);
+    // Please do not change the "new Runnable" construction to a lambda, even if IntelliJ suggests it.
+    // Functionality-wise nothing would change, but calling default interface methods from a lambda triggers
+    // a false positive in the JetBrains Plugin Verifier.
+    // If you change this anyway, run the Plugin Verifier locally to ensure that it does not erroneously complain.
+    return fork(new Runnable() {
+      @Override
+      public void run() {
+        for (T task : tasks) {
+          join(task);
+        }
       }
     });
   }

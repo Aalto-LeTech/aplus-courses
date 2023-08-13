@@ -19,9 +19,16 @@ public interface FileFinder {
         .orElseThrow(() -> new FileDoesNotExistException(directory, filename));
   }
 
+  /**
+   * Resolves an array of filenames to an array of Paths.
+   */
   @NotNull
   default Path[] findFiles(@NotNull Path directory, @NotNull String[] filenames)
       throws FileDoesNotExistException {
-    return ArrayUtil.mapArray(filenames, filename -> findFile(directory, filename), Path[]::new);
+    Path[] paths = new Path[filenames.length];
+    for (int i = 0; i < filenames.length; i++) {
+      paths[i] = findFile(directory, filenames[i]);
+    }
+    return paths;
   }
 }

@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -43,16 +44,14 @@ public class AddModuleWatermark {
     final String watermark = createWatermark(userId);
 
     try (Stream<String> lineStream = Files.lines(path)) {
-      var newLines = lineStream.map(line -> {
+      var newLinesMutable = lineStream.map(line -> {
         if (line.equals(ENCODING_LINE) || line.equals(ENCODING_LINE_WITH_UNICODE)) {
           return "";
         } else if (line.trim().startsWith("#")) {
           return line.replaceFirst("#", "#" + watermark);
         }
         return line;
-      }).toList();
-
-      var newLinesMutable = new ArrayList<>(newLines);
+      }).collect(Collectors.toCollection(ArrayList::new));
 
       newLinesMutable.add(0, ENCODING_LINE);
       newLinesMutable.add(1, "# Nimi: " + studentName);
