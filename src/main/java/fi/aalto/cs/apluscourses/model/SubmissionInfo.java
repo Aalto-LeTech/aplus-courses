@@ -35,7 +35,13 @@ public class SubmissionInfo {
       return new SubmissionInfo(Collections.emptyMap());
     }
 
-    JSONArray formSpec = exerciseInfo.getJSONArray("form_spec");
+    JSONArray formSpec = exerciseInfo.optJSONArray("form_spec");
+    if (formSpec == null) {
+      // Some assignments, such as https://plus.cs.aalto.fi/api/v2/exercises/50181/ don't have the
+      // form_spec field despite having exercise_info.
+      return new SubmissionInfo(Collections.emptyMap());
+    }
+
     JSONObject localizationInfo = exerciseInfo.getJSONObject("form_i18n");
     Map<String, List<SubmittableFile>> files = new HashMap<>();
 
