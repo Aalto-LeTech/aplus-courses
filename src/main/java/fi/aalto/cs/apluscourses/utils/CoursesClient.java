@@ -15,7 +15,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -24,6 +24,7 @@ import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.ContentBody;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.apache.http.util.VersionInfo;
@@ -43,7 +44,7 @@ public class CoursesClient {
 
   private static final AtomicReference<String> userAgent = new AtomicReference<>(null);
 
-  private static HttpClient httpClient;
+  private static CloseableHttpClient httpClient;
 
   /**
    * Makes a GET request to the given URL and returns the response body in a
@@ -214,9 +215,7 @@ public class CoursesClient {
       authentication.addToRequest(request);
     }
 
-    HttpResponse response = getClient().execute(request);
-    requireSuccessStatusCode(response);
-    return mapper.map(response);
+    return mapResponse(request, mapper);
   }
 
   @NotNull
@@ -239,9 +238,10 @@ public class CoursesClient {
    */
   private static <T> T mapResponse(@NotNull HttpUriRequest request,
                                    @NotNull ResponseMapper<T> mapper) throws IOException {
-    HttpResponse response = getClient().execute(request);
-    requireSuccessStatusCode(response);
-    return mapper.map(response);
+    try (CloseableHttpResponse response = getClient().execute(request)) {
+      requireSuccessStatusCode(response);
+      return mapper.map(response);
+    }
   }
 
   /**
@@ -250,9 +250,10 @@ public class CoursesClient {
    */
   private static void consumeResponse(@NotNull HttpUriRequest request,
                                       @NotNull ResponseConsumer consumer) throws IOException {
-    HttpResponse response = getClient().execute(request);
-    requireSuccessStatusCode(response);
-    consumer.consume(response);
+    try (CloseableHttpResponse response = getClient().execute(request)) {
+      requireSuccessStatusCode(response);
+      consumer.consume(response);
+    }
   }
 
   /**
@@ -304,7 +305,7 @@ public class CoursesClient {
   }
 
   @NotNull
-  private static synchronized HttpClient getClient() {
+  private static synchronized CloseableHttpClient getClient() {
     if (httpClient == null) {
       httpClient = HttpClients.custom().setUserAgent(getUserAgent()).build();
     }
