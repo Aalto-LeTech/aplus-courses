@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAwareAction;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
@@ -41,5 +42,10 @@ public class ReadAllNewsAction extends DumbAwareAction {
     var project = e.getProject();
     var mainViewModel = mainViewModelProvider.getMainViewModel(project);
     e.getPresentation().setEnabled(mainViewModel.newsTreeViewModel.get() != null);
+  }
+
+  @Override
+  public @NotNull ActionUpdateThread getActionUpdateThread() {
+    return ActionUpdateThread.BGT;
   }
 }

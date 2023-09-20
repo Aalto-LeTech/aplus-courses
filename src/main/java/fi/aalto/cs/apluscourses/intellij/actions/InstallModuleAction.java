@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAwareAction;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
@@ -61,6 +62,11 @@ public class InstallModuleAction extends DumbAwareAction {
     boolean isModuleSelected = courseViewModel != null
         && !courseViewModel.getModules().isSelectionEmpty();
     e.getPresentation().setEnabled(isModuleSelected);
+  }
+
+  @Override
+  public @NotNull ActionUpdateThread getActionUpdateThread() {
+    return ActionUpdateThread.BGT;
   }
 
   @Override

@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
@@ -80,5 +81,10 @@ public class SelectStudentAction extends AnAction {
     e.getPresentation().setVisible(assistantModeProvider.isAssistantMode());
     var courseProject = courseProjectProvider.getCourseProject(e.getProject());
     e.getPresentation().setEnabled(courseProject != null && courseProject.getAuthentication() != null);
+  }
+
+  @Override
+  public @NotNull ActionUpdateThread getActionUpdateThread() {
+    return ActionUpdateThread.BGT;
   }
 }
