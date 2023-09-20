@@ -9,7 +9,7 @@
 
 package org.jetbrains.plugins.scala.console.apluscourses
 
-import com.intellij.openapi.actionSystem.{AnActionEvent, CommonDataKeys}
+import com.intellij.openapi.actionSystem.{ActionUpdateThread, AnActionEvent, CommonDataKeys}
 import com.intellij.openapi.util.TextRange
 import fi.aalto.cs.apluscourses.intellij.Repl
 import org.jetbrains.plugins.scala.console.ScalaConsoleInfo
@@ -99,4 +99,6 @@ class ConsoleExecuteAction extends ScalaConsoleExecuteAction {
 
     console.textSent(text)
   }
+
+  override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT
 }
