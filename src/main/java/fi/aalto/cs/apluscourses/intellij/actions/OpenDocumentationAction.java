@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAwareAction;
 import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
@@ -42,6 +43,11 @@ public class OpenDocumentationAction extends DumbAwareAction {
     CourseViewModel courseViewModel =
         mainViewModelProvider.getMainViewModel(e.getProject()).courseViewModel.get();
     e.getPresentation().setEnabled(courseViewModel != null && courseViewModel.getModules().canOpenDocumentation());
+  }
+
+  @Override
+  public @NotNull ActionUpdateThread getActionUpdateThread() {
+    return ActionUpdateThread.BGT;
   }
 
   @Override

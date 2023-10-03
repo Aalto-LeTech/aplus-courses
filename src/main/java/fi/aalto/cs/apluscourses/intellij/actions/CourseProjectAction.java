@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
 import com.intellij.concurrency.JobScheduler;
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
@@ -279,6 +280,11 @@ public class CourseProjectAction extends AnAction {
     // This action is available only if a non-default project is open
     Project project = e.getProject();
     e.getPresentation().setEnabledAndVisible(project != null && !project.isDefault());
+  }
+
+  @Override
+  public @NotNull ActionUpdateThread getActionUpdateThread() {
+    return ActionUpdateThread.BGT;
   }
 
   @FunctionalInterface

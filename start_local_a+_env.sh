@@ -9,7 +9,7 @@ git submodule init &&
 git submodule update &&
 chmod +x docker-compile.sh && ./docker-compile.sh &&
 # modifying the initial script (just cutting off the last part of it), so it would run in the background
-head -103 docker-up.sh > docker-up-custom.sh &&
+head -104 docker-up.sh > docker-up-custom.sh &&
 # adding an execution permission to the newly created script
 chmod +x docker-up-custom.sh &&
 ./docker-up-custom.sh &&

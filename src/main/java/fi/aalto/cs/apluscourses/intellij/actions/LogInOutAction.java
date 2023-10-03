@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.intellij.actions;
 
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAwareAction;
 import fi.aalto.cs.apluscourses.dal.PasswordStorage;
@@ -49,6 +50,11 @@ public class LogInOutAction extends DumbAwareAction {
         ? getText("presentation.userDropdown.logOut")
         : getText("presentation.userDropdown.logIn");
     e.getPresentation().setText(text);
+  }
+
+  @Override
+  public @NotNull ActionUpdateThread getActionUpdateThread() {
+    return ActionUpdateThread.BGT;
   }
 
   private boolean isLoggedIn(@NotNull AnActionEvent e) {

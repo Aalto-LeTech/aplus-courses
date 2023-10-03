@@ -3,6 +3,7 @@ package fi.aalto.cs.apluscourses.intellij.actions;
 import static com.intellij.openapi.actionSystem.ex.ActionUtil.isDumbMode;
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl;
@@ -146,6 +147,11 @@ public class TutorialAction extends AnAction implements DumbAware {
     } else {
       e.getPresentation().setText(getText("intellij.action.TutorialAction.startTutorial"));
     }
+  }
+
+  @Override
+  public @NotNull ActionUpdateThread getActionUpdateThread() {
+    return ActionUpdateThread.BGT;
   }
 
   @FunctionalInterface

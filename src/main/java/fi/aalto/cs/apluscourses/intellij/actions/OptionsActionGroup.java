@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.intellij.actions;
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
@@ -32,6 +33,11 @@ public abstract class OptionsActionGroup extends DefaultActionGroup implements D
   public void update(@NotNull AnActionEvent e) {
     e.getPresentation().setEnabled(isAvailable(e.getProject()));
     Toggleable.setSelected(e.getPresentation(), getOptionsInternal(e).isAnyActive());
+  }
+
+  @Override
+  public @NotNull ActionUpdateThread getActionUpdateThread() {
+    return ActionUpdateThread.BGT;
   }
 
   private @NotNull Options getOptionsInternal(@Nullable AnActionEvent e) {

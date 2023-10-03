@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.intellij.actions;
 
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAwareAction;
 import fi.aalto.cs.apluscourses.intellij.services.CourseProjectProvider;
@@ -34,6 +35,11 @@ public class RefreshExercisesAction extends DumbAwareAction {
     }
     e.getPresentation().setEnabled(
         project != null && courseProject != null && courseProject.getAuthentication() != null);
+  }
+
+  @Override
+  public @NotNull ActionUpdateThread getActionUpdateThread() {
+    return ActionUpdateThread.BGT;
   }
 
   @Override

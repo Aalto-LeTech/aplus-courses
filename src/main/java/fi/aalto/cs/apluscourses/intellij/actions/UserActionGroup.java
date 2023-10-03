@@ -3,6 +3,7 @@ package fi.aalto.cs.apluscourses.intellij.actions;
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getAndReplaceText;
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.actionSystem.impl.ActionButton;
@@ -38,5 +39,10 @@ public class UserActionGroup extends DefaultActionGroup implements DumbAware {
       e.getPresentation().setIcon(icon);
       e.getPresentation().setText(text);
     }
+  }
+
+  @Override
+  public @NotNull ActionUpdateThread getActionUpdateThread() {
+    return ActionUpdateThread.BGT;
   }
 }

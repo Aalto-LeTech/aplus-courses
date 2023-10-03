@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.intellij.actions;
 
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getAndReplaceText;
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.actionSystem.Presentation;
@@ -51,6 +52,11 @@ public class TutorialProgressAction extends ComboBoxAction implements DumbAware,
       e.getPresentation().setText(getAndReplaceText("presentation.navbar.progress",
           tutorialViewModel.getCurrentTaskIndex(), tutorialViewModel.getTasksAmount()));
     }
+  }
+
+  @Override
+  public @NotNull ActionUpdateThread getActionUpdateThread() {
+    return ActionUpdateThread.BGT;
   }
 
   @NotNull
