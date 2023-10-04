@@ -15,7 +15,7 @@
     ]]></description>
 
     <change-notes>
-        Compatibility fixes.
+        Threading-related updates for the latest IntelliJ Platform guidelines.
     </change-notes>
 
     <depends>com.intellij.modules.java</depends>
