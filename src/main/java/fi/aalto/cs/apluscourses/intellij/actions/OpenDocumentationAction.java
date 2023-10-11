@@ -3,6 +3,8 @@ package fi.aalto.cs.apluscourses.intellij.actions;
 import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAwareAction;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.LocalFileSystem;
 import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.UrlRenderingErrorNotification;
@@ -52,8 +54,12 @@ public class OpenDocumentationAction extends DumbAwareAction {
 
   @Override
   public void actionPerformed(@NotNull AnActionEvent e) {
+    Project project = e.getProject();
+    if (project == null) {
+      return;
+    }
     CourseViewModel courseViewModel =
-        mainViewModelProvider.getMainViewModel(e.getProject()).courseViewModel.get();
+        mainViewModelProvider.getMainViewModel(project).courseViewModel.get();
     if (courseViewModel == null) {
       return;
     }
@@ -62,10 +68,14 @@ public class OpenDocumentationAction extends DumbAwareAction {
       return;
     }
     var module = selection.get().getModel();
+    var virtualFile = LocalFileSystem.getInstance().findFileByIoFile(module.getDocumentationIndexFullPath().toFile());
+    if (virtualFile == null) {
+      return;
+    }
     try {
-      urlRenderer.show(module.getDocumentationIndexFullPath().toUri());
+      urlRenderer.show(project, virtualFile);
     } catch (Exception ex) {
-      notifier.notify(new UrlRenderingErrorNotification(ex), e.getProject());
+      notifier.notify(new UrlRenderingErrorNotification(ex), project);
     }
   }
 }
