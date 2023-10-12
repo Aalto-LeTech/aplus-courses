@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.presentation;
 
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
+import com.intellij.openapi.module.ModuleType;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.ui.repl.ReplConfigurationForm;
 import java.util.Arrays;
@@ -45,10 +46,9 @@ public class ReplConfigurationFormModel {
   public static List<String> getScalaModuleNames(@NotNull Module[] modules) {
     return Arrays.stream(modules)
         .filter(module -> {
-          String name = module.getModuleTypeName();
           //  Scala modules are of a "JAVA_MODULE" type,
           //  so it the way to distinct them from SBT-built ones.
-          return name != null && name.equals("JAVA_MODULE");
+          return ModuleType.get(module).getName().equals("JAVA_MODULE");
         })
         .map(Module::getName)
         .collect(Collectors.toList());

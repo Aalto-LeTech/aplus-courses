@@ -129,13 +129,13 @@ public class PluginAutoInstaller {
                                                     @Nullable Notifier notifier,
                                                     @NotNull List<PluginDependency> pluginNames,
                                                     @NotNull PluginInstallerCallback callback) {
-    final var pluginIDs = pluginNames.stream().map(p -> PluginId.getId(p.getId())).collect(Collectors.toList());
+    final var pluginIDs = pluginNames.stream().map(p -> PluginId.getId(p.getId())).collect(Collectors.toSet());
 
     // Downloading and enabling plugins are different operations, so we handle these separately.
     final var pluginsToDownload = pluginIDs.stream()
-        .filter(PluginAutoInstaller::shouldDownloadPlugin).collect(Collectors.toList());
+        .filter(PluginAutoInstaller::shouldDownloadPlugin).collect(Collectors.toSet());
     final var pluginsToEnable = pluginIDs.stream()
-        .filter(PluginAutoInstaller::shouldEnablePlugin).collect(Collectors.toList());
+        .filter(PluginAutoInstaller::shouldEnablePlugin).collect(Collectors.toSet());
 
     pluginsToDownload.forEach(id -> logger.info("Plugin to download: {}", id.getIdString()));
     pluginsToEnable.forEach(id -> logger.info("Plugin to enable: {}", id.getIdString()));
@@ -159,7 +159,7 @@ public class PluginAutoInstaller {
     }
 
     // Enable all requires plugins that are installed, but disabled.
-    pluginsToEnable.forEach(PluginManagerCore::enablePlugin);
+    PluginEnabler.getInstance().enableById(pluginsToEnable);
 
     final var downloadablePluginNodes = pluginsToDownload.stream()
         .map(PluginNode::new).collect(Collectors.toList());
