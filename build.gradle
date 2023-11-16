@@ -40,9 +40,10 @@ dependencies {
 
 intellij {
     // this is the version of the IntelliJ IDEA API (SDK) used to build the plugin
-    version = '231.9011.34'
+    // https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html#intellij-extension-version
+    version = '233.11799.30-EAP-SNAPSHOT'
     updateSinceUntilBuild = false
-    plugins = ['java', 'org.intellij.scala:2023.1.18']
+    plugins = ['java', 'org.intellij.scala:2023.3.10']
 }
 
 patchPluginXml {
