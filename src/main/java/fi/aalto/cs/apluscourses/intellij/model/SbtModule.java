@@ -1,0 +1,77 @@
+package fi.aalto.cs.apluscourses.intellij.model;
+
+import com.intellij.openapi.externalSystem.importing.ImportSpecBuilder;
+import com.intellij.openapi.externalSystem.model.ProjectSystemId;
+import com.intellij.openapi.externalSystem.settings.AbstractExternalSystemSettings;
+import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil;
+import com.intellij.openapi.externalSystem.util.ExternalSystemUtil;
+import com.intellij.openapi.fileEditor.FileDocumentManager;
+import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
+import fi.aalto.cs.apluscourses.model.ComponentLoadException;
+import fi.aalto.cs.apluscourses.utils.Version;
+import fi.aalto.cs.apluscourses.utils.content.RemoteZippedDir;
+import java.io.IOException;
+import java.net.URL;
+import java.time.ZonedDateTime;
+import java.util.List;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.sbt.project.settings.SbtProjectSettings;
+
+public class SbtModule extends IntelliJModule {
+  SbtModule(@NotNull String name,
+              @NotNull URL url,
+              @NotNull String changelog,
+              @NotNull Version version,
+              @Nullable Version localVersion,
+              @Nullable ZonedDateTime downloadedAt,
+              @NotNull APlusProject project,
+              @NotNull String originalName) {
+    super(name, url, changelog, version, localVersion, downloadedAt, project, originalName);
+  }
+
+  SbtModule(@NotNull String name,
+            @NotNull URL url,
+            @NotNull String changelog,
+            @NotNull Version version,
+            @Nullable Version localVersion,
+            @Nullable ZonedDateTime downloadedAt,
+            @NotNull APlusProject project) {
+    super(name, url, changelog, version, localVersion, downloadedAt, project);
+  }
+
+  @Override
+  public void fetchInternal() throws IOException {
+    new RemoteZippedDir(getUrl().toString(), getOriginalName()).copyTo(getFullPath(), project.getProject());
+
+    CourseProject courseProject = PluginSettings.getInstance().getCourseProject(project.getProject());
+    if (courseProject != null) {
+      courseProject.getCourse().getCallbacks().invokePostDownloadModuleCallbacks(project.getProject(), this);
+    }
+  }
+
+  @Override
+  protected void loadInternal() throws ComponentLoadException {
+    var settings = new SbtProjectSettings();
+    settings.setupNewProjectDefault();
+    settings.setExternalProjectPath(ExternalSystemApiUtil.normalizePath(getFullPath().toString()));
+    var id = ProjectSystemId.findById("SBT");
+    var x = ExternalSystemApiUtil.getManager(id);
+    AbstractExternalSystemSettings<?, SbtProjectSettings, ?> extSettings = (AbstractExternalSystemSettings<?, SbtProjectSettings, ?>) x.getSettingsProvider().fun(project.getProject());
+    extSettings.linkProject(settings);
+
+    FileDocumentManager.getInstance().saveAllDocuments();
+    ExternalSystemUtil.refreshProjects(new ImportSpecBuilder(project.getProject(), id));
+
+    try {
+      PluginSettings.getInstance().getCourseFileManager(project.getProject()).addModuleEntry(this);
+    } catch (Exception e) {
+      throw new ComponentLoadException(getName(), e);
+    }
+  }
+
+  @Override
+  protected @NotNull List<String> computeDependencies() {
+    return List.of();
+  }
+}
