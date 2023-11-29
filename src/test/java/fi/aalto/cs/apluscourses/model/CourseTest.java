@@ -55,7 +55,6 @@ class CourseTest {
         replInitialCommands,
         replAdditionalArguments,
         BuildInfo.INSTANCE.courseVersion,
-        Collections.emptyMap(),
         Collections.emptyList(),
         new CourseHiddenElements(),
         new Callbacks(),

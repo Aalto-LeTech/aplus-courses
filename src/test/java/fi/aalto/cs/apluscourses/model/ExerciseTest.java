@@ -67,7 +67,7 @@ class ExerciseTest {
         .put("additional key", "which shouldn't cause errors");
 
     Exercise exercise = Exercise.fromJsonObject(json, TEST_POINTS,
-        Collections.emptySet(), Collections.emptyMap(), "fi");
+        Collections.emptySet(), "fi");
     exercise.addSubmissionResult(
         new SubmissionResult(2, 0, 0.0, SubmissionResult.Status.GRADED, exercise));
 
@@ -94,7 +94,7 @@ class ExerciseTest {
         .put(MAX_SUBMISSIONS_KEY, 3);
 
     assertThrows(JSONException.class, () ->
-        Exercise.fromJsonObject(json, TEST_POINTS, Collections.emptySet(), Collections.emptyMap(), "fi"));
+        Exercise.fromJsonObject(json, TEST_POINTS, Collections.emptySet(), "fi"));
   }
 
   @Test
@@ -106,7 +106,7 @@ class ExerciseTest {
         .put(MAX_SUBMISSIONS_KEY, 4);
 
     assertThrows(JSONException.class, () ->
-        Exercise.fromJsonObject(json, TEST_POINTS, Collections.emptySet(), Collections.emptyMap(), "fi"));
+        Exercise.fromJsonObject(json, TEST_POINTS, Collections.emptySet(), "fi"));
   }
 
   @Test
@@ -118,7 +118,7 @@ class ExerciseTest {
         .put(MAX_SUBMISSIONS_KEY, 4);
 
     assertThrows(JSONException.class, () ->
-        Exercise.fromJsonObject(json, TEST_POINTS, Collections.emptySet(), Collections.emptyMap(), "fi"));
+        Exercise.fromJsonObject(json, TEST_POINTS, Collections.emptySet(), "fi"));
   }
 
   @Test
@@ -130,7 +130,7 @@ class ExerciseTest {
         .put(MAX_POINTS_KEY, 4);
 
     assertThrows(JSONException.class, () ->
-        Exercise.fromJsonObject(json, TEST_POINTS, Collections.emptySet(), Collections.emptyMap(), "fi"));
+        Exercise.fromJsonObject(json, TEST_POINTS, Collections.emptySet(), "fi"));
   }
 
   @Test
