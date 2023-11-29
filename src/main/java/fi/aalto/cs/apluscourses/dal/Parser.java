@@ -7,7 +7,6 @@ import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.Points;
 import fi.aalto.cs.apluscourses.model.SubmissionInfo;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
-import fi.aalto.cs.apluscourses.model.Tutorial;
 import fi.aalto.cs.apluscourses.model.User;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -37,7 +36,6 @@ public interface Parser {
   Exercise parseExercise(@NotNull JSONObject jsonObject,
                          @NotNull Points points,
                          @NotNull Set<String> optionalCategories,
-                         @NotNull Map<Long, Tutorial> tutorials,
                          @NotNull String languageCode);
 
   SubmissionResult parseSubmissionResult(@NotNull JSONObject jsonObject,

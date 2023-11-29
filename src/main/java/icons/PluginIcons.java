@@ -58,8 +58,6 @@ public final class PluginIcons {
       .getIcon("/META-INF/icons/repl.svg", PluginIcons.class);
   public static final Icon A_PLUS_FILTER = IconLoader
       .getIcon("/META-INF/icons/filter.svg", PluginIcons.class);
-  public static final Icon A_PLUS_COURSES = IconLoader
-      .getIcon("/META-INF/icons/logo_courses.svg", PluginIcons.class);
   public static final Icon A_PLUS_COURSES_BANNER = IconLoader
       .getIcon("/META-INF/images/courses-banner.png", PluginIcons.class);
   public static final Icon A_PLUS_COURSES_FOOTER = IconLoader
@@ -70,10 +68,6 @@ public final class PluginIcons {
       .getIcon("/META-INF/icons/user.svg", PluginIcons.class);
   public static final Icon A_PLUS_USER_ACTIVE = IconLoader
       .getIcon("/META-INF/icons/user_pink.svg", PluginIcons.class);
-  public static final Icon A_PLUS_START = IconLoader
-      .getIcon("/META-INF/icons/start.svg", PluginIcons.class);
-  public static final Icon A_PLUS_TUTORIAL = IconLoader
-      .getIcon("/META-INF/icons/tutorial.svg", PluginIcons.class);
   public static final Icon A_PLUS_INFO = IconLoader
       .getIcon("/META-INF/icons/info.svg", PluginIcons.class);
   public static final Icon A_PLUS_DUMMY = IconLoader

@@ -2,7 +2,6 @@ package fi.aalto.cs.apluscourses.presentation.exercise;
 
 import fi.aalto.cs.apluscourses.model.DummyExercise;
 import fi.aalto.cs.apluscourses.model.Exercise;
-import fi.aalto.cs.apluscourses.model.TutorialExercise;
 import fi.aalto.cs.apluscourses.presentation.base.Searchable;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
 import fi.aalto.cs.apluscourses.utils.CollectionUtil;
@@ -57,7 +56,6 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
     FULL_POINTS,
     IN_GRADING,
     LATE,
-    TUTORIAL,
     DUMMY
   }
 
@@ -70,8 +68,6 @@ public class ExerciseViewModel extends SelectableNodeViewModel<Exercise> impleme
       return Status.DUMMY;
     } else if (exercise.isInGrading()) {
       return Status.IN_GRADING;
-    } else if (exercise instanceof TutorialExercise) {
-      return Status.TUTORIAL;
     } else if (exercise.isOptional()) {
       return Status.OPTIONAL_PRACTICE;
     } else if (exercise.getSubmissionResults().isEmpty()) {

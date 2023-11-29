@@ -14,7 +14,6 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectUtil;
-import com.intellij.openapi.util.io.FileUtilRt;
 import com.intellij.openapi.vfs.VirtualFile;
 import fi.aalto.cs.apluscourses.intellij.model.CourseProject;
 import fi.aalto.cs.apluscourses.intellij.model.ProjectModuleSource;
@@ -39,8 +38,6 @@ import fi.aalto.cs.apluscourses.model.FileFinder;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.SubmissionStatusUpdater;
 import fi.aalto.cs.apluscourses.model.SubmittableFile;
-import fi.aalto.cs.apluscourses.model.Tutorial;
-import fi.aalto.cs.apluscourses.model.TutorialExercise;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import fi.aalto.cs.apluscourses.presentation.ModuleSelectionViewModel;
@@ -50,11 +47,9 @@ import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionResultViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionViewModel;
-import fi.aalto.cs.apluscourses.presentation.ideactivities.TutorialViewModel;
 import fi.aalto.cs.apluscourses.ui.DuplicateSubmissionDialog;
 import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -63,7 +58,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -191,10 +185,7 @@ public class SubmitExerciseAction extends AnAction {
       } else {
         e.getPresentation().setText(getText("intellij.actions.SubmitExerciseAction.submitAssignment"));
       }
-      var selectedEx = exercisesViewModel.findSelected().getLevel(2);
-      var isTutorial = selectedEx instanceof ExerciseViewModel
-          && ExerciseViewModel.Status.TUTORIAL.equals(((ExerciseViewModel) selectedEx).getStatus());
-      e.getPresentation().setVisible(!isTutorial);
+      e.getPresentation().setVisible(true);
     }
     if ((ActionPlaces.TOOLWINDOW_POPUP).equals(e.getPlace()) && !e.getPresentation().isEnabled()) {
       e.getPresentation().setVisible(false);
@@ -361,67 +352,6 @@ public class SubmitExerciseAction extends AnAction {
         submission.getCurrentSubmissionNumber());
     addLocalHistoryTag(project, tag);
     logger.debug("Finished submitting exercise");
-  }
-
-  /**
-   * Submits a tutorial.
-   */
-  public void submitTutorial(@NotNull Project project,
-                             @NotNull TutorialViewModel tutorialViewModel) {
-    try {
-      trySubmitTutorial(project, tutorialViewModel);
-    } catch (IOException ex) {
-      notifyNetworkError(ex, project);
-    }
-  }
-
-  private void trySubmitTutorial(@NotNull Project project,
-                                 @NotNull TutorialViewModel tutorialViewModel)
-      throws IOException {
-    MainViewModel mainViewModel = mainViewModelProvider.getMainViewModel(project);
-    CourseViewModel courseViewModel = mainViewModel.courseViewModel.get();
-    Authentication authentication = authenticationProvider.getAuthentication(project);
-
-    if (courseViewModel == null || authentication == null) {
-      return;
-    }
-
-    Tutorial tutorial = tutorialViewModel.getTutorial();
-    TutorialExercise exercise = tutorialViewModel.getExercise();
-
-    // a submission for an IDE activity only has one file with a magic file name
-    var tutorialResultFile = FileUtilRt.createTempFile(Tutorial.TUTORIAL_SUBMIT_FILE_NAME, null);
-    String payload = tutorial.getSubmissionPayload();
-    FileUtils.writeStringToFile(tutorialResultFile, payload, StandardCharsets.UTF_8);
-
-    var submissionInfo = exercise.getSubmissionInfo();
-    String language = "en";
-
-    if (!submissionInfo.isSubmittable(language)) {
-      logger.warn("Tutorial {} not submittable", exercise);
-      notifier.notify(new NotSubmittableNotification(), project);
-      return;
-    }
-    var submittableFiles = submissionInfo.getFiles(language);
-    if (submittableFiles.size() != 1) {
-      logger.warn("Tutorial {} doesn't have one submittable file", exercise);
-      return;
-    }
-    Map<String, Path> files = Map.of(submittableFiles.get(0).getKey(), tutorialResultFile.toPath());
-
-    // IDE activities are always submitted alone
-    List<Group> groups = List.of(Group.GROUP_ALONE);
-
-    SubmissionViewModel submission = new SubmissionViewModel(exercise, groups,
-        Group.GROUP_ALONE, null, files, language);
-
-    final var exerciseDataSource = courseViewModel.getModel().getExerciseDataSource();
-    String submissionUrl = exerciseDataSource.submit(submission.buildSubmission(), authentication);
-    logger.info("Tutorial submission url: {}", submissionUrl);
-
-    new SubmissionStatusUpdater(project, exerciseDataSource, authentication, submissionUrl, exercise,
-        courseViewModel.getModel()).start();
-    notifier.notifyAndHide(new SubmissionSentNotification(), project);
   }
 
   private void notifyNetworkError(@NotNull IOException exception, @Nullable Project project) {

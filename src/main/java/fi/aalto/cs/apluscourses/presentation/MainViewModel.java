@@ -5,7 +5,6 @@ import fi.aalto.cs.apluscourses.model.User;
 import fi.aalto.cs.apluscourses.presentation.exercise.EmptyExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
 import fi.aalto.cs.apluscourses.presentation.filter.Options;
-import fi.aalto.cs.apluscourses.presentation.ideactivities.TutorialViewModel;
 import fi.aalto.cs.apluscourses.presentation.module.ModuleListViewModel;
 import fi.aalto.cs.apluscourses.presentation.news.NewsTreeViewModel;
 import fi.aalto.cs.apluscourses.utils.Event;
@@ -43,10 +42,6 @@ public class MainViewModel {
 
   @NotNull
   public final ObservableProperty<BannerViewModel> bannerViewModel =
-      new ObservableReadWriteProperty<>(null);
-
-  @NotNull
-  public final ObservableProperty<TutorialViewModel> tutorialViewModel =
       new ObservableReadWriteProperty<>(null);
 
   @NotNull

@@ -8,7 +8,6 @@ import fi.aalto.cs.apluscourses.model.Library;
 import fi.aalto.cs.apluscourses.model.ModelFactory;
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.model.ModuleMetadata;
-import fi.aalto.cs.apluscourses.model.Tutorial;
 import fi.aalto.cs.apluscourses.utils.Callbacks;
 import fi.aalto.cs.apluscourses.utils.CourseHiddenElements;
 import fi.aalto.cs.apluscourses.utils.PluginDependency;
@@ -55,7 +54,6 @@ public class IntelliJModelFactory implements ModelFactory {
                              @NotNull Map<String, String[]> replInitialCommands,
                              @NotNull String replAdditionalArguments,
                              @NotNull Version courseVersion,
-                             @NotNull Map<Long, Tutorial> tutorials,
                              @NotNull List<PluginDependency> pluginDependencies,
                              @NotNull CourseHiddenElements hiddenElements,
                              @NotNull Callbacks callbacks,
@@ -67,7 +65,7 @@ public class IntelliJModelFactory implements ModelFactory {
     IntelliJCourse course =
         new IntelliJCourse(id, name, aplusUrl, languages, modules, libraries, exerciseModules,
             resourceUrls, vmOptions, optionalCategories, autoInstallComponentNames, replInitialCommands,
-            replAdditionalArguments, courseVersion, project, new CommonLibraryProvider(project), tutorials,
+            replAdditionalArguments, courseVersion, project, new CommonLibraryProvider(project),
             pluginDependencies, hiddenElements, callbacks, requireAuthenticationForModules,
             feedbackParser, newsParser, courseLastModified);
 

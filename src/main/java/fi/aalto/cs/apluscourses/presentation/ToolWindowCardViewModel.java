@@ -1,11 +1,5 @@
 package fi.aalto.cs.apluscourses.presentation;
 
-import static fi.aalto.cs.apluscourses.ui.toolwindowcards.ToolWindowCardView.ERROR_CARD;
-import static fi.aalto.cs.apluscourses.ui.toolwindowcards.ToolWindowCardView.LOADING_CARD;
-import static fi.aalto.cs.apluscourses.ui.toolwindowcards.ToolWindowCardView.MAIN_CARD;
-import static fi.aalto.cs.apluscourses.ui.toolwindowcards.ToolWindowCardView.NO_TOKEN_CARD;
-import static fi.aalto.cs.apluscourses.ui.toolwindowcards.ToolWindowCardView.PROJECT_CARD;
-
 import fi.aalto.cs.apluscourses.utils.Event;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.jetbrains.annotations.NotNull;

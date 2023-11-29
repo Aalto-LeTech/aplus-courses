@@ -77,7 +77,6 @@ public class ModelExtensions {
     public Exercise getExercise(long exerciseId,
                                 @NotNull Points points,
                                 @NotNull Set<String> optionalCategories,
-                                @NotNull Map<Long, Tutorial> tutorials,
                                 @NotNull Authentication authentication,
                                 @NotNull CachePreference cachePreference,
                                 @NotNull String languageCode) {
@@ -156,14 +155,13 @@ public class ModelExtensions {
                       @NotNull Map<String, String[]> replInitialCommands,
                       @NotNull String replAdditionalArguments,
                       @NotNull Version courseVersion,
-                      @NotNull Map<Long, Tutorial> tutorials,
                       @NotNull List<PluginDependency> pluginDependencies,
                       @NotNull CourseHiddenElements hiddenElements,
                       @NotNull Callbacks callbacks,
                       boolean requireAuthenticationForModules) {
       super(id, name, aplusUrl, languages, modules, libraries, exerciseModules, resourceUrls, vmOptions,
           optionalCategories, autoInstallComponentNames, replInitialCommands, replAdditionalArguments,
-          courseVersion, tutorials, pluginDependencies, hiddenElements, callbacks, requireAuthenticationForModules,
+          courseVersion, pluginDependencies, hiddenElements, callbacks, requireAuthenticationForModules,
           null, "default");
       exerciseDataSource = new TestExerciseDataSource();
     }
@@ -206,8 +204,6 @@ public class ModelExtensions {
           "",
           // courseVersion
           BuildInfo.INSTANCE.courseVersion,
-          // tutorials
-          Collections.emptyMap(),
           // pluginDependencies
           Collections.emptyList(),
           // hiddenElements
@@ -271,8 +267,6 @@ public class ModelExtensions {
           BuildInfo.INSTANCE.courseVersion,
           project,
           commonLibraryProvider,
-          // tutorials
-          Collections.emptyMap(),
           // pluginDependencies
           Collections.emptyList(),
           // hiddenElements
@@ -461,7 +455,6 @@ public class ModelExtensions {
                                @NotNull Map<String, String[]> replInitialCommands,
                                @NotNull String replAdditionalArguments,
                                @NotNull Version courseVersion,
-                               @NotNull Map<Long, Tutorial> tutorials,
                                @NotNull List<PluginDependency> pluginDependencies,
                                @NotNull CourseHiddenElements hiddenElements,
                                @NotNull Callbacks callbacks,
@@ -484,7 +477,6 @@ public class ModelExtensions {
           replInitialCommands,
           replAdditionalArguments,
           courseVersion,
-          tutorials,
           pluginDependencies,
           hiddenElements,
           callbacks,

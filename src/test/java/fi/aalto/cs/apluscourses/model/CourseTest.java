@@ -122,8 +122,6 @@ class CourseTest {
         "",
         // courseVersion
         BuildInfo.INSTANCE.courseVersion,
-        // tutorials
-        Collections.emptyMap(),
         // pluginDependencies
         Collections.emptyList(),
         // hiddenElements
@@ -170,8 +168,6 @@ class CourseTest {
         "",
         // courseVersion
         BuildInfo.INSTANCE.courseVersion,
-        // tutorials
-        Collections.emptyMap(),
         // pluginDependencies
         Collections.emptyList(),
         // hiddenElements

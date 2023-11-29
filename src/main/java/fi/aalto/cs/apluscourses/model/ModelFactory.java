@@ -27,7 +27,6 @@ public interface ModelFactory {
                       @NotNull Map<String, String[]> replInitialCommands,
                       @NotNull String replAdditionalArguments,
                       @NotNull Version courseVersion,
-                      @NotNull Map<Long, Tutorial> tutorials,
                       @NotNull List<PluginDependency> pluginDependencies,
                       @NotNull CourseHiddenElements hiddenElements,
                       @NotNull Callbacks callbacks,
