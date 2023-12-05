@@ -82,7 +82,6 @@ public class Exercise implements Browsable {
   public static Exercise fromJsonObject(@NotNull JSONObject jsonObject,
                                         @NotNull Points points,
                                         @NotNull Set<String> optionalCategories,
-                                        @NotNull Map<Long, Tutorial> tutorials,
                                         @NotNull String languageCode) {
     long id = jsonObject.getLong("id");
 
@@ -97,18 +96,11 @@ public class Exercise implements Browsable {
 
     var submissionInfo = SubmissionInfo.fromJsonObject(jsonObject);
 
-    var tutorial = tutorials.get(id);
     var optionalBestSubmission = bestSubmissionId == null ? OptionalLong.empty()
         : OptionalLong.of(bestSubmissionId);
-    if (tutorial == null) {
-      return new Exercise(
-          id, name, htmlUrl, submissionInfo, maxPoints, maxSubmissions, optionalBestSubmission,
-          difficulty, isOptional);
-    } else {
-      return new TutorialExercise(
-          id, name, htmlUrl, submissionInfo, maxPoints, maxSubmissions, optionalBestSubmission,
-          difficulty, isOptional, tutorial);
-    }
+
+    return new Exercise(id, name, htmlUrl, submissionInfo, maxPoints, maxSubmissions, optionalBestSubmission,
+      difficulty, isOptional);
   }
 
   public long getId() {

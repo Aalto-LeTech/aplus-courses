@@ -38,8 +38,6 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
         return PluginIcons.A_PLUS_LATE;
       case IN_GRADING:
         return PluginIcons.A_PLUS_IN_GRADING;
-      case TUTORIAL:
-        return PluginIcons.A_PLUS_TUTORIAL;
       default:
         throw new IllegalStateException("Invalid exercise view model status");
     }
@@ -67,11 +65,8 @@ public class ExercisesTreeRenderer extends ColoredTreeCellRenderer {
         append(" [" + exerciseViewModel.getStatusText() + "]", STATUS_TEXT_STYLE);
       }
       setEnabled(exerciseViewModel.isSubmittable());
-      String submittable = ExerciseViewModel.Status.TUTORIAL.equals(exerciseViewModel.getStatus())
-          ? getText("ui.exercise.ExercisesTreeRenderer.useStartButtonTutorial")
-          : getText("ui.exercise.ExercisesTreeRenderer.useUploadButton");
       setToolTipText(exerciseViewModel.isSubmittable()
-          ? submittable
+          ? getText("ui.exercise.ExercisesTreeRenderer.useUploadButton")
           : getText("ui.exercise.ExercisesTreeRenderer.cannotSubmit"));
       setIcon(statusToIcon(exerciseViewModel.getStatus()));
     } else if (viewModel instanceof ExerciseGroupViewModel) {
