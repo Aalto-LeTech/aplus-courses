@@ -15,7 +15,7 @@
     ]]></description>
 
     <change-notes>
-        Threading-related updates for the latest IntelliJ Platform guidelines.
+        Compatibility with IntelliJ 2023.3.
     </change-notes>
 
     <depends>com.intellij.modules.java</depends>
