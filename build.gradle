@@ -2,7 +2,7 @@ plugins {
     id 'scala'
     id 'checkstyle'
     id 'com.github.alisiikh.scalastyle' version '3.5.0'
-    id 'org.jetbrains.intellij' version '1.15.0'
+    id 'org.jetbrains.intellij' version '1.16.1'
     id 'org.sonarqube' version '4.4.1.3373'
     id 'jacoco'
 }
@@ -41,9 +41,9 @@ dependencies {
 intellij {
     // this is the version of the IntelliJ IDEA API (SDK) used to build the plugin
     // https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html#intellij-extension-version
-    version = '233.11799.30-EAP-SNAPSHOT'
+    version = '2023.3'
     updateSinceUntilBuild = false
-    plugins = ['java', 'org.intellij.scala:2023.3.10']
+    plugins = ['java', 'org.intellij.scala:2023.3.17']
 }
 
 patchPluginXml {
