@@ -15,7 +15,6 @@ import fi.aalto.cs.apluscourses.model.Student;
 import fi.aalto.cs.apluscourses.model.Submission;
 import fi.aalto.cs.apluscourses.model.SubmissionInfo;
 import fi.aalto.cs.apluscourses.model.SubmissionResult;
-import fi.aalto.cs.apluscourses.model.Tutorial;
 import fi.aalto.cs.apluscourses.model.User;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
 import fi.aalto.cs.apluscourses.utils.cache.Cache;
@@ -201,13 +200,12 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   public Exercise getExercise(long exerciseId,
                               @NotNull Points points,
                               @NotNull Set<String> optionalCategories,
-                              @NotNull Map<Long, Tutorial> tutorials,
                               @NotNull Authentication authentication,
                               @NotNull CachePreference cachePreference,
                               @NotNull String languageCode) throws IOException {
     var url = apiUrl + "exercises/" + exerciseId + "/";
     var response = client.fetch(url, authentication, cachePreference);
-    return parser.parseExercise(response, points, optionalCategories, tutorials, languageCode);
+    return parser.parseExercise(response, points, optionalCategories, languageCode);
   }
 
   @Override
@@ -390,9 +388,8 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
     public Exercise parseExercise(@NotNull JSONObject jsonObject,
                                   @NotNull Points points,
                                   @NotNull Set<String> optionalCategories,
-                                  @NotNull Map<Long, Tutorial> tutorials,
                                   @NotNull String languageCode) {
-      return Exercise.fromJsonObject(jsonObject, points, optionalCategories, tutorials, languageCode);
+      return Exercise.fromJsonObject(jsonObject, points, optionalCategories, languageCode);
     }
 
     @Override

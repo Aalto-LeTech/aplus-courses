@@ -1,6 +1,5 @@
 package fi.aalto.cs.apluscourses.utils;
 
-import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

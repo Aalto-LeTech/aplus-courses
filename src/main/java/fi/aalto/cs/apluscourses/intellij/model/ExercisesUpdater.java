@@ -143,7 +143,7 @@ public class ExercisesUpdater extends RepeatedTask {
             return;
           }
           var exercise = dataSource.getExercise(exerciseId, points, course.getOptionalCategories(),
-              course.getTutorials(), authentication, CachePreferences.GET_MAX_ONE_WEEK_OLD, selectedLanguage);
+              authentication, CachePreferences.GET_MAX_ONE_WEEK_OLD, selectedLanguage);
           if (!hiddenElements.shouldHideObject(exercise.getId(), exercise.getName(), selectedLanguage)) {
             exerciseGroup.addExercise(exercise);
           }

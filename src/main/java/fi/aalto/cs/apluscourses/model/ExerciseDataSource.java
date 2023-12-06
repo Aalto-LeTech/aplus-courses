@@ -32,7 +32,6 @@ public interface ExerciseDataSource {
   Exercise getExercise(long exerciseId,
                        @NotNull Points points,
                        @NotNull Set<String> optionalCategories,
-                       @NotNull Map<Long, Tutorial> tutorials,
                        @NotNull Authentication authentication,
                        @NotNull CachePreference cachePreference,
                        @NotNull String languageCode) throws IOException;

@@ -55,7 +55,6 @@ class CourseTest {
         replInitialCommands,
         replAdditionalArguments,
         BuildInfo.INSTANCE.courseVersion,
-        Collections.emptyMap(),
         Collections.emptyList(),
         new CourseHiddenElements(),
         new Callbacks(),
@@ -122,8 +121,6 @@ class CourseTest {
         "",
         // courseVersion
         BuildInfo.INSTANCE.courseVersion,
-        // tutorials
-        Collections.emptyMap(),
         // pluginDependencies
         Collections.emptyList(),
         // hiddenElements
@@ -170,8 +167,6 @@ class CourseTest {
         "",
         // courseVersion
         BuildInfo.INSTANCE.courseVersion,
-        // tutorials
-        Collections.emptyMap(),
         // pluginDependencies
         Collections.emptyList(),
         // hiddenElements

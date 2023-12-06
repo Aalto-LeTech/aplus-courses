@@ -84,9 +84,6 @@ public abstract class Course implements ComponentSource {
   private final Version courseVersion;
 
   @NotNull
-  private final Map<Long, Tutorial> tutorials;
-
-  @NotNull
   private final List<PluginDependency> pluginDependencies;
 
   @NotNull
@@ -127,7 +124,6 @@ public abstract class Course implements ComponentSource {
                    @NotNull Map<String, String[]> replInitialCommands,
                    @NotNull String replAdditionalArguments,
                    @NotNull Version courseVersion,
-                   @NotNull Map<Long, Tutorial> tutorials,
                    @NotNull List<PluginDependency> pluginDependencies,
                    @NotNull CourseHiddenElements hiddenElements,
                    @NotNull Callbacks callbacks,
@@ -145,7 +141,6 @@ public abstract class Course implements ComponentSource {
     this.exerciseModules = exerciseModules;
     this.optionalCategories = optionalCategories;
     this.autoInstallComponentNames = autoInstallComponentNames;
-    this.tutorials = tutorials;
     this.pluginDependencies = pluginDependencies;
     this.hiddenElements = hiddenElements;
     this.callbacks = callbacks;
@@ -212,7 +207,6 @@ public abstract class Course implements ComponentSource {
         = getCourseReplInitialCommands(jsonObject, sourcePath);
     String replAdditionalArguments = getCourseReplAdditionalArguments(jsonObject, sourcePath);
     Version courseVersion = getCourseVersion(jsonObject, sourcePath);
-    Map<Long, Tutorial> tutorials = getCourseTutorials(jsonObject);
     List<PluginDependency> pluginDependencies = getCoursePluginDependencies(jsonObject, sourcePath);
     CourseHiddenElements hiddenElements = getCourseHiddenElements(jsonObject, sourcePath);
     Callbacks callbacks = getCourseCallbacks(jsonObject, sourcePath);
@@ -235,7 +229,6 @@ public abstract class Course implements ComponentSource {
         replInitialCommands,
         replAdditionalArguments,
         courseVersion,
-        tutorials,
         pluginDependencies,
         hiddenElements,
         callbacks,
@@ -666,13 +659,6 @@ public abstract class Course implements ComponentSource {
     }
   }
 
-  private static Map<Long, Tutorial> getCourseTutorials(@NotNull JSONObject jsonObject) {
-    JSONObject tutorialsJson = jsonObject.optJSONObject("tutorials");
-    return tutorialsJson == null ? Collections.emptyMap()
-        : JsonUtil.parseObject(tutorialsJson, JSONObject::getJSONObject,
-        Tutorial::fromJsonObject, Long::valueOf);
-  }
-
   @NotNull
   private static List<PluginDependency> getCoursePluginDependencies(@NotNull JSONObject jsonObject,
                                                                     @NotNull String source)
@@ -726,10 +712,6 @@ public abstract class Course implements ComponentSource {
     } catch (JSONException ex) {
       throw new MalformedCourseConfigurationException(source, "Malformed \"callbacks\" object", ex);
     }
-  }
-
-  public Map<Long, Tutorial> getTutorials() {
-    return Collections.unmodifiableMap(tutorials);
   }
 
   @Nullable
