@@ -5,12 +5,12 @@ import com.intellij.credentialStore.CredentialAttributesKt;
 import com.intellij.credentialStore.Credentials;
 import com.intellij.credentialStore.OneTimeString;
 import com.intellij.ide.passwordSafe.PasswordSafe;
-import fi.aalto.cs.apluscourses.dal.PasswordStorage;
+import com.intellij.util.concurrency.annotations.RequiresBackgroundThread;
 import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class IntelliJPasswordStorage implements PasswordStorage {
+public class IntelliJPasswordStorage extends BackgroundThreadPasswordStorage {
 
   public static final String A_COURSES_PLUGIN = "A+ Courses Plugin";
 
@@ -38,19 +38,22 @@ public class IntelliJPasswordStorage implements PasswordStorage {
   }
 
   @Override
-  public boolean store(@NotNull String user, char @Nullable [] password) {
+  @RequiresBackgroundThread
+  public boolean storeInternal(@NotNull String user, char @Nullable [] password) {
     Credentials credentials = password == null ? null : new Credentials(user, password);
     passwordSafe.set(credentialAttributes, credentials);
     return !passwordSafe.isPasswordStoredOnlyInMemory(credentialAttributes, credentials);
   }
 
   @Override
-  public void remove() {
+  @RequiresBackgroundThread
+  public void removeInternal() {
     passwordSafe.set(credentialAttributes, null);
   }
 
   @Override
-  public char[] restorePassword() {
+  @RequiresBackgroundThread
+  public char[] restorePasswordInternal() {
     return Optional.ofNullable(passwordSafe.get(credentialAttributes))
         .map(Credentials::getPassword)
         .map(OneTimeString::toCharArray)

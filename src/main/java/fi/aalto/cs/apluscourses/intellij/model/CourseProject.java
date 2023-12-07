@@ -129,10 +129,9 @@ public class CourseProject implements ExercisesLazyLoader {
     if (hasTriedToReadAuthenticationFromStorage.getAndSet(true) || user.get() != null) {
       return;
     }
-    Optional.ofNullable(passwordStorage)
-            .map(PasswordStorage::restorePassword)
-            .map(factory::create)
-            .ifPresent(this::setAuthentication);
+    if (passwordStorage != null) {
+      passwordStorage.restorePassword(password -> setAuthentication(factory.create(password)), () -> {});
+    }
   }
 
   /**

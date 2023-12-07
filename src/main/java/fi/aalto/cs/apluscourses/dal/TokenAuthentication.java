@@ -28,8 +28,10 @@ public abstract class TokenAuthentication implements Authentication {
   }
 
   @Override
-  public boolean persist() {
-    return passwordStorage != null && passwordStorage.store(user, token);
+  public void persist(@NotNull Runnable onSuccess, @NotNull Runnable onFailure) {
+    if (passwordStorage != null) {
+      passwordStorage.store(user, token, onSuccess, onFailure);
+    }
   }
 
   /**
@@ -49,6 +51,6 @@ public abstract class TokenAuthentication implements Authentication {
 
   public interface Factory {
     @NotNull
-    TokenAuthentication create(char[] token);
+    TokenAuthentication create(char @NotNull[] token);
   }
 }
