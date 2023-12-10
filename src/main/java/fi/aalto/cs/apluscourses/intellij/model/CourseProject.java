@@ -130,7 +130,11 @@ public class CourseProject implements ExercisesLazyLoader {
       return;
     }
     if (passwordStorage != null) {
-      passwordStorage.restorePassword(password -> setAuthentication(factory.create(password)), () -> {});
+      passwordStorage.restorePassword((password) -> {
+        setAuthentication(factory.create(password));
+        getCourseUpdater().restart();
+        getExercisesUpdater().restart();
+      }, () -> {});
     }
   }
 
