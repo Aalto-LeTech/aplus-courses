@@ -33,11 +33,7 @@ class ReplAction extends RunConsoleAction {
   override def update(e: AnActionEvent): Unit = {
     if (e.getProject == null || e.getProject.isDisposed) return // scalastyle:ignore
 
-    if (e.getProject.hasScala) {
-      ScalaActionUtil.enablePresentation(e)
-    } else {
-      ScalaActionUtil.disablePresentation(e)
-    }
+    e.getPresentation.setEnabledAndVisible(e.getProject.hasScala)
   }
 
   override def actionPerformed(@NotNull e: AnActionEvent): Unit = {
