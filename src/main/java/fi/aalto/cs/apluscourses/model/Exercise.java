@@ -4,7 +4,6 @@ import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.OptionalLong;
 import java.util.Set;
 import org.jetbrains.annotations.NotNull;

@@ -5,7 +5,6 @@ import fi.aalto.cs.apluscourses.utils.BuildInfo;
 import fi.aalto.cs.apluscourses.utils.Callbacks;
 import fi.aalto.cs.apluscourses.utils.CourseHiddenElements;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
-import fi.aalto.cs.apluscourses.utils.JsonUtil;
 import fi.aalto.cs.apluscourses.utils.PluginDependency;
 import fi.aalto.cs.apluscourses.utils.ResourceException;
 import fi.aalto.cs.apluscourses.utils.Resources;
