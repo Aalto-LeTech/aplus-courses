@@ -46,9 +46,10 @@ public class ReplConfigurationFormModel {
   public static List<String> getScalaModuleNames(@NotNull Module[] modules) {
     return Arrays.stream(modules)
         .filter(module -> {
-          //  Scala modules are of a "JAVA_MODULE" type,
-          //  so it the way to distinct them from SBT-built ones.
-          return ModuleType.get(module).getName().equals("JAVA_MODULE");
+          // Java and Scala modules used to be called "JAVA_MODULE".
+          // Then, it was changes to "Java Module". We will check for both.
+          String moduleName = ModuleType.get(module).getName();
+          return moduleName.equalsIgnoreCase("JAVA_MODULE") || moduleName.equalsIgnoreCase("Java Module");
         })
         .map(Module::getName)
         .collect(Collectors.toList());
