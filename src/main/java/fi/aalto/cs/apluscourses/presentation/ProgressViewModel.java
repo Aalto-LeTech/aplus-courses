@@ -44,7 +44,7 @@ public class ProgressViewModel {
    */
   public void stopAll() {
     synchronized (lock) {
-      progresses.forEach(Progress::finish);
+      new ArrayDeque<>(progresses).forEach(Progress::finish);
     }
     this.updateValues();
   }

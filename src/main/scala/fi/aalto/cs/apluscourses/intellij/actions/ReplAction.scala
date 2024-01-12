@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.intellij.actions
 
+import com.intellij.concurrency.ThreadContext
 import com.intellij.execution.configurations._
 import com.intellij.execution.filters.TextConsoleBuilderImpl
 import com.intellij.execution.runners.ExecutionEnvironment
@@ -24,6 +25,7 @@ import org.jetbrains.plugins.scala.console.configuration.ScalaConsoleRunConfigur
 import org.jetbrains.plugins.scala.project.ProjectExt
 
 import scala.jdk.CollectionConverters.ListHasAsScala
+import scala.util.Using
 
 /**
  * Custom class that adjusts Scala Plugin's own RunConsoleAction with A+ requirements.
@@ -197,9 +199,18 @@ class ReplAction extends RunConsoleAction {
                              @NotNull module: Module): ReplConfigurationFormModel = {
     val configModel = new ReplConfigurationFormModel(project, ModuleUtils.getModuleDirectory(module), module.getName)
     val configForm = new ReplConfigurationForm(configModel, project)
-    val configDialog = new ReplConfigurationDialog
-    configDialog.setReplConfigurationForm(configForm)
-    configDialog.setVisible(true)
+
+    // This will reset the current thread context. We need to do this because
+    // we have been invoked from an UI event processing loop, and we are about
+    // to spawn a dialog box with its own processing loop (which sets a thread context).
+    // This makes IntelliJ unhappy because a thread context can only be set once.
+    // Once the Using block exits (i.e. the dialog box closes), the original thread context is restored.
+    Using(ThreadContext.resetThreadContext()) { _ => {
+      val configDialog = new ReplConfigurationDialog
+      configDialog.setReplConfigurationForm(configForm)
+      configDialog.setVisible(true)
+    }}
+
     configModel
   }
 

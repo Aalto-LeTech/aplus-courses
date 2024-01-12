@@ -41,7 +41,8 @@
     <actions>
         <group id="fi.aalto.cs.apluscourses.intellij.actions.ActionGroups.MENU_ACTIONS"
                text="A+"
-               description="Actions for A+ menu">
+               description="Actions for A+ menu"
+               popup="true">
             <add-to-group group-id="MainMenu" anchor="last"/>
             <action id="fi.aalto.cs.apluscourses.intellij.actions.CourseProjectAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.CourseProjectAction"
