@@ -8,6 +8,7 @@ import com.intellij.openapi.externalSystem.util.ExternalSystemUtil;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.ComponentLoadException;
+import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.utils.Version;
 import fi.aalto.cs.apluscourses.utils.content.RemoteZippedDir;
 import java.io.IOException;
@@ -73,5 +74,10 @@ public class SbtModule extends IntelliJModule {
   @Override
   protected @NotNull List<String> computeDependencies() {
     return List.of();
+  }
+
+  @Override
+  public Module copy(@NotNull String newName) {
+    return new SbtModule(newName, url, changelog, version, localVersion, downloadedAt, project, originalName);
   }
 }

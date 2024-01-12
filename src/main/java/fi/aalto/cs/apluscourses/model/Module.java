@@ -92,7 +92,8 @@ public abstract class Module extends Component {
     URL url = new URL(jsonObject.getString("url"));
     Version version = Version.fromString(jsonObject.optString("version", "1.0"));
     String changelog = jsonObject.optString("changelog", "");
-    return factory.createModule(name, url, version, changelog);
+    boolean isSbt = jsonObject.optBoolean("isSbt", false);
+    return factory.createModule(name, url, version, changelog, isSbt);
   }
 
   @Override
