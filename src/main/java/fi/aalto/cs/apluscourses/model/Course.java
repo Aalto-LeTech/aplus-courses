@@ -768,7 +768,7 @@ public abstract class Course implements ComponentSource {
   }
 
   public @NotNull String getCourseApiUrl() {
-    return getApiUrl() + getId();
+    return getApiUrl() + "courses/" + getId();
   }
 
   @NotNull
