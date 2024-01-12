@@ -44,6 +44,7 @@ def save_report(client_address, report_string):
         report_file.write(f"JVM version: {_get_string_safe(report_data, 'jvmName')} ({_get_string_safe(report_data, 'jvmVersion')})\n\n")
         report_file.write(f"Plugin version: {_get_string_safe(report_data, 'pluginVersion')}\n")
         report_file.write(f"Last action performed by user: {_get_string_safe(report_data, 'lastAction')}\n")
+        report_file.write(f"Open courses: {_get_string_safe(report_data, 'course')}\n")
         report_file.write(f"Additional error details: {_get_string_safe(report_data, 'errorInfo')}\n\n")
         report_file.write(f"Active plugins: (count: {len(active_plugins)}):\n")
         for plugin in active_plugins:

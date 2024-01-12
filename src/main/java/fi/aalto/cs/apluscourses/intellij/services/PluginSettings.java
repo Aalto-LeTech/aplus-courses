@@ -21,6 +21,7 @@ import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.utils.CourseFileManager;
 import fi.aalto.cs.apluscourses.intellij.utils.IntelliJFilterOption;
 import fi.aalto.cs.apluscourses.intellij.utils.ProjectKey;
+import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.ExercisesTree;
 import fi.aalto.cs.apluscourses.model.NewsTree;
 import fi.aalto.cs.apluscourses.presentation.CourseEndedBannerViewModel;
@@ -33,7 +34,9 @@ import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import fi.aalto.cs.apluscourses.presentation.module.ModuleFilter;
 import fi.aalto.cs.apluscourses.presentation.news.NewsTreeViewModel;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -230,6 +233,14 @@ public class PluginSettings implements MainViewModelProvider, DefaultGroupIdSett
   }
 
   /**
+   * Returns a list of all open course projects. The order is arbitrary.
+   * @return A list.
+   */
+  private @NotNull List<@NotNull CourseProject> getAllCourseProjects() {
+    return new ArrayList<>(courseProjects.values());
+  }
+
+  /**
    * Returns the {@link CourseFileManager} instance corresponding to the given project. A new
    * instance is created if no instance exists yet.
    */
@@ -377,6 +388,18 @@ public class PluginSettings implements MainViewModelProvider, DefaultGroupIdSett
     Arrays.stream(LocalIdeSettingsNames.values())
         .map(LocalIdeSettingsNames::getName)
         .forEach(applicationPropertiesManager::unsetValue);
+  }
+
+  /**
+   * Returns a string that holds technical info about the course projects that are open in the IDE.
+   * @return A string.
+   */
+  public @NotNull String getTechnicalCourseDescription() {
+    return String.join(",", getAllCourseProjects()
+            .stream()
+            .map(CourseProject::getCourse)
+            .map(Course::getTechnicalDescription)
+            .toList());
   }
 
   public interface PropertiesManager {
