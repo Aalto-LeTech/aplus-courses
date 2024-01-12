@@ -767,6 +767,10 @@ public abstract class Course implements ComponentSource {
     return aplusUrl + "api/v2/";
   }
 
+  public @NotNull String getCourseApiUrl() {
+    return getApiUrl() + getId();
+  }
+
   @NotNull
   public Map<String, String[]> getReplInitialCommands() {
     return replInitialCommands;
@@ -812,5 +816,9 @@ public abstract class Course implements ComponentSource {
   @Nullable
   public String getNewsParser() {
     return newsParser;
+  }
+
+  public @NotNull String getTechnicalDescription() {
+    return String.format("%s <%s>", getName(), getCourseApiUrl());
   }
 }
