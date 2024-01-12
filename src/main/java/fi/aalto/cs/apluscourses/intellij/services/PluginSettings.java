@@ -34,8 +34,11 @@ import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import fi.aalto.cs.apluscourses.presentation.module.ModuleFilter;
 import fi.aalto.cs.apluscourses.presentation.news.NewsTreeViewModel;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
@@ -387,6 +390,10 @@ public class PluginSettings implements MainViewModelProvider, DefaultGroupIdSett
         .forEach(applicationPropertiesManager::unsetValue);
   }
 
+  /**
+   * Returns a string that holds technical info about the course projects that are open in the IDE.
+   * @return A string.
+   */
   public @NotNull String getTechnicalCourseDescription() {
     return String.join(",", getAllCourseProjects()
             .stream()
