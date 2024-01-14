@@ -97,7 +97,7 @@ public abstract class Course implements ComponentSource {
   @Nullable
   private final String newsParser;
 
-  private boolean requireAuthenticationForModules;
+  private final boolean requireAuthenticationForModules;
 
   /**
    * Constructs a course with the given parameters.
