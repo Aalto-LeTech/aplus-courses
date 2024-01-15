@@ -15,7 +15,7 @@
     ]]></description>
 
     <change-notes>
-        Compatibility with IntelliJ 2023.3.
+        Minor bug fixes.
     </change-notes>
 
     <depends>com.intellij.modules.java</depends>
