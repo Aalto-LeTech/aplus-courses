@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.ui;
 
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
+import com.intellij.concurrency.ThreadContext;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.ui.components.JBLabel;
@@ -33,7 +34,12 @@ public class IntegrityCheckDialog {
     box.add(Box.createVerticalStrut(10));
     box.add(linkLabel);
 
-    JOptionPane.showMessageDialog(null, JBUI.Panels.simplePanel(box), getText("ui.integrityDialog.title"),
-        JOptionPane.ERROR_MESSAGE);
+    // This dialog box cannot be easily converted to Messages.showErrorDialog because the latter only accepts a string
+    // as message text. Here we have a Swing component that includes a clickable link.
+    // We'll go with the second-best solution, which is to reset the thread context manually.
+    try (var ignored = ThreadContext.resetThreadContext()) {
+      JOptionPane.showMessageDialog(null, JBUI.Panels.simplePanel(box), getText("ui.integrityDialog.title"),
+          JOptionPane.ERROR_MESSAGE);
+    }
   }
 }

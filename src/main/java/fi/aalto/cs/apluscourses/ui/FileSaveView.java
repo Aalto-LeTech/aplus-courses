@@ -7,10 +7,10 @@ import com.intellij.openapi.fileChooser.FileChooserFactory;
 import com.intellij.openapi.fileChooser.FileSaverDescriptor;
 import com.intellij.openapi.fileChooser.FileSaverDialog;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFileWrapper;
 import fi.aalto.cs.apluscourses.presentation.FileSaveViewModel;
 import java.nio.file.InvalidPathException;
-import javax.swing.JOptionPane;
 import org.jetbrains.annotations.NotNull;
 
 public class FileSaveView implements Dialog {
@@ -44,10 +44,9 @@ public class FileSaveView implements Dialog {
           viewModel.setPath(file.getFile().toPath());
           return true;
         } catch (InvalidPathException e) {
-          JOptionPane.showMessageDialog(null,
+          Messages.showErrorDialog(
               getAndReplaceText("ui.exportModule.invalidPath.message", e.getReason()),
-              getText("ui.exportModule.invalidPath.title"),
-              JOptionPane.ERROR_MESSAGE);
+              getText("ui.exportModule.invalidPath.title"));
           continue;
         }
       }
