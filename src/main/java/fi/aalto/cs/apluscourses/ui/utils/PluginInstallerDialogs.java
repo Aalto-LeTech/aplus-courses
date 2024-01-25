@@ -7,7 +7,6 @@ import com.intellij.openapi.ui.Messages;
 import fi.aalto.cs.apluscourses.utils.PluginDependency;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.swing.JOptionPane;
 import org.jetbrains.annotations.NotNull;
 
 public class PluginInstallerDialogs {
@@ -22,25 +21,24 @@ public class PluginInstallerDialogs {
    */
   public static PluginInstallerCallback.ConsentResult askForInstallationConsentOnCreation(
       @NotNull List<PluginDependency> pluginNames) {
-    Object[] options = {
+    String[] options = {
         getText("ui.pluginInstallationDialog.courseCreateDialog.yesText"),
         getText("ui.pluginInstallationDialog.courseCreateDialog.noText"),
         getText("ui.pluginInstallationDialog.courseCreateDialog.cancelText")
     };
 
-    final int result = JOptionPane.showOptionDialog(null,
+    final int result = Messages.showDialog(
         getAndReplaceText("ui.pluginInstallationDialog.courseCreateDialog.message", pluginListToString(pluginNames)),
-        getText("ui.pluginInstallationDialog.courseCreateDialog.title"), JOptionPane.YES_NO_CANCEL_OPTION,
-        JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+        getText("ui.pluginInstallationDialog.courseCreateDialog.title"),
+        options,
+        0,
+        null);
 
-    switch (result) {
-      case 0:
-        return PluginInstallerCallback.ConsentResult.ACCEPTED;
-      case 1:
-        return PluginInstallerCallback.ConsentResult.IGNORE_INSTALL;
-      default:
-        return PluginInstallerCallback.ConsentResult.REJECTED;
-    }
+    return switch (result) {
+      case 0 -> PluginInstallerCallback.ConsentResult.ACCEPTED;
+      case 1 -> PluginInstallerCallback.ConsentResult.IGNORE_INSTALL;
+      default -> PluginInstallerCallback.ConsentResult.REJECTED;
+    };
   }
 
   /**
@@ -49,15 +47,17 @@ public class PluginInstallerDialogs {
    */
   public static PluginInstallerCallback.ConsentResult askForInstallationConsentOnInit(
       @NotNull List<PluginDependency> pluginNames) {
-    Object[] options = {
+    String[] options = {
         getText("ui.pluginInstallationDialog.courseOpenDialog.yesText"),
         getText("ui.pluginInstallationDialog.courseOpenDialog.noText")
     };
 
-    final int result = JOptionPane.showOptionDialog(null,
+    final int result = Messages.showDialog(
         getAndReplaceText("ui.pluginInstallationDialog.courseOpenDialog.message", pluginListToString(pluginNames)),
-        getText("ui.pluginInstallationDialog.courseOpenDialog.title"), JOptionPane.YES_NO_OPTION,
-        JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+        getText("ui.pluginInstallationDialog.courseOpenDialog.title"),
+        options,
+        0,
+        null);
 
     return result == 0 ? PluginInstallerCallback.ConsentResult.ACCEPTED
         : PluginInstallerCallback.ConsentResult.IGNORE_INSTALL;

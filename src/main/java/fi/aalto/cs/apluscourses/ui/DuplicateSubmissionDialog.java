@@ -2,7 +2,7 @@ package fi.aalto.cs.apluscourses.ui;
 
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
-import javax.swing.JOptionPane;
+import com.intellij.openapi.ui.Messages;
 
 public class DuplicateSubmissionDialog {
 
@@ -17,14 +17,10 @@ public class DuplicateSubmissionDialog {
   public static boolean showDialog() {
     final String[] options = { getText("ui.duplicateDialog.yesOption"), getText("ui.duplicateDialog.noOption") };
 
-    return JOptionPane.showOptionDialog(null,
-        getText("ui.duplicateDialog.content"),
+    return Messages.showDialog(getText("ui.duplicateDialog.content"),
         getText("ui.duplicateDialog.title"),
-        JOptionPane.YES_NO_OPTION,
-        JOptionPane.QUESTION_MESSAGE,
-        null,
         options,
-        options[1]
-    ) == 0;
+        1,
+        null) == 0;
   }
 }
