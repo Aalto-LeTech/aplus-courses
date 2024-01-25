@@ -13,6 +13,7 @@ import fi.aalto.cs.apluscourses.ui.base.OurDialogWrapper;
 import fi.aalto.cs.apluscourses.ui.base.TemplateLabel;
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil;
 import fi.aalto.cs.apluscourses.utils.PluginResourceBundle;
+import java.util.Arrays;
 import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -72,7 +73,10 @@ public class CourseProjectView extends OurDialogWrapper {
 
     updateLabel.setVisible(viewModel.shouldDisplayVersionWarning());
 
-    languagePrompt.setText(getText("ui.courseProject.view.languagePrompt", project));
+    languagePrompt.setText(getText(Arrays.asList(viewModel.getLanguages()).contains("fi")
+        ? "ui.courseProject.view.languagePromptRecommendFinnish"
+        : "ui.courseProject.view.languagePrompt",
+      project));
 
     init();
   }
