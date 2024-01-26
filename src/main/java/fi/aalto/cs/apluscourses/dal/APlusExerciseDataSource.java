@@ -361,6 +361,24 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
       return Points.fromJsonObject(object);
     }
 
+    private void parseExerciseOrderInternal(@NotNull JSONObject object, @NotNull ArrayList<Long> exerciseIds) {
+      // if this object is an exercise, just add it to the ordering array and skip further processing
+      // this assumes that exercises don't have children
+      if ("exercise".equals(object.optString("type"))) {
+        exerciseIds.add(object.getLong("id"));
+        return;
+      }
+
+      var children = object.optJSONArray("children");
+      if (children == null) {
+        return;
+      }
+
+      for (int i = 0; i < children.length(); i++) {
+        parseExerciseOrderInternal(children.getJSONObject(i), exerciseIds);
+      }
+    }
+
     @Override
     public Map<Long, List<Long>> parseExerciseOrder(@NotNull JSONObject object) {
       var modules = object.getJSONArray("modules");
@@ -368,19 +386,14 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
 
       for (int i = 0; i < modules.length(); i++) {
         var module = modules.getJSONObject(i);
-        var moduleChildren = module.getJSONArray("children");
+        var moduleId = module.getLong("id");
         var moduleExerciseIds = new ArrayList<Long>();
 
-        for (int j = 0; j < moduleChildren.length(); j++) {
-          var chapterChildren = moduleChildren.getJSONObject(j).getJSONArray("children");
-          for (int k = 0; k < chapterChildren.length(); k++) {
-            moduleExerciseIds.add(chapterChildren.getJSONObject(k).getLong("id"));
-          }
-        }
-
-        var moduleId = module.getLong("id");
+        // we use a helper function to make recursion easier to implement
+        parseExerciseOrderInternal(module, moduleExerciseIds);
         exerciseIds.put(moduleId, moduleExerciseIds);
       }
+
       return exerciseIds;
     }
 
