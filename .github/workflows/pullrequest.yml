@@ -16,7 +16,7 @@ jobs:
       - name: Setup A+ LMS locally
         run: chmod +x start_local_a+_env.sh && ./start_local_a+_env.sh
       - name: Build & Analyze
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           gradle-version: wrapper
           arguments: build sonarqube --info --stacktrace --build-cache
