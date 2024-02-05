@@ -59,15 +59,22 @@ public class SbtModule extends IntelliJModule {
     var id = ProjectSystemId.findById("SBT");
     var x = ExternalSystemApiUtil.getManager(id);
     AbstractExternalSystemSettings<?, SbtProjectSettings, ?> extSettings = (AbstractExternalSystemSettings<?, SbtProjectSettings, ?>) x.getSettingsProvider().fun(project.getProject());
-    extSettings.linkProject(settings);
+
+    try {
+      extSettings.linkProject(settings);
+    } catch (AbstractExternalSystemSettings.AlreadyImportedProjectException ex) {
+      // this SBT module is already imported; a project-wide refresh is all that is required
+    } catch (Exception ex) {
+      throw new ComponentLoadException(getName(), ex);
+    }
 
     FileDocumentManager.getInstance().saveAllDocuments();
     ExternalSystemUtil.refreshProjects(new ImportSpecBuilder(project.getProject(), id));
 
     try {
       PluginSettings.getInstance().getCourseFileManager(project.getProject()).addModuleEntry(this);
-    } catch (Exception e) {
-      throw new ComponentLoadException(getName(), e);
+    } catch (Exception ex) {
+      throw new ComponentLoadException(getName(), ex);
     }
   }
 
