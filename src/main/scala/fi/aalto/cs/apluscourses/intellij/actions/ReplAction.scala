@@ -9,7 +9,7 @@ import com.intellij.execution.{Executor, RunManagerEx}
 import com.intellij.openapi.actionSystem.{AnActionEvent, CommonDataKeys, DataContext}
 import com.intellij.openapi.module.{Module, ModuleManager}
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.ModuleRootManager
+import com.intellij.openapi.roots.{ExternalProjectSystemRegistry, ModuleRootManager}
 import com.intellij.openapi.util.io.FileUtilRt.toSystemIndependentName
 import fi.aalto.cs.apluscourses.intellij.Repl
 import fi.aalto.cs.apluscourses.intellij.services.PluginSettings
@@ -117,15 +117,12 @@ class ReplAction extends RunConsoleAction {
 
   def getDefaultModule(@NotNull project: Project): Option[Module] = {
     Option(PluginSettings.getInstance().getMainViewModel(project).courseViewModel.get) match {
-      case Some(courseViewModel) =>
-        Option(ModuleManager.getInstance(project).findModuleByName(
-          courseViewModel
-            .getModel
-            .getAutoInstallComponentNames
-            .asScala
-            //  we, hereby, commonly agree, that the first in the list auto install component (module)
-            //  is ultimately REPL's default module (as it's most likely to exist). sorry :pensive:
-            .head))
+      case Some(courseViewModel) => courseViewModel
+        .getModel
+        .getAutoInstallComponentNames
+        .asScala
+        .headOption
+        .map(ModuleManager.getInstance(project).findModuleByName(_))
       case None => None
     }
   }
@@ -216,16 +213,18 @@ class ReplAction extends RunConsoleAction {
 
   private def getScalaModuleOfEditorFile(@NotNull project: Project,
                                          @NotNull context: DataContext): Option[Module] =
-    ModuleUtils.getModuleOfEditorFile(project, context).filter(hasScalaSdkLibrary)
+    ModuleUtils.getModuleOfEditorFile(project, context).filter(isScalaModule)
 
   private def getScalaModuleOfSelectedFile(@NotNull project: Project,
                                            @NotNull context: DataContext): Option[Module] =
-    ModuleUtils.getModuleOfSelectedFile(project, context).filter(hasScalaSdkLibrary)
+    ModuleUtils.getModuleOfSelectedFile(project, context).filter(isScalaModule)
 
-  private def hasScalaSdkLibrary(@NotNull module: Module): Boolean = ModuleUtils.nonEmpty(
-    ModuleRootManager.getInstance(module)
-      .orderEntries()
-      .librariesOnly()
-      .satisfying(_.getPresentableName.startsWith("scala-sdk-")))
-
+  private def isScalaModule(@NotNull module: Module): Boolean = {
+    val externalSource = ExternalProjectSystemRegistry.getInstance.getExternalSource(module)
+    (externalSource != null && externalSource.getId == "SBT") || ModuleUtils.nonEmpty(
+      ModuleRootManager.getInstance(module)
+        .orderEntries()
+        .librariesOnly()
+        .satisfying(_.getPresentableName.startsWith("scala-sdk-")))
+  }
 }

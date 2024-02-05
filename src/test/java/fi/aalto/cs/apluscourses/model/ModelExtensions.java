@@ -488,7 +488,8 @@ public class ModelExtensions {
     public Module createModule(@NotNull String name,
                                @NotNull URL url,
                                @NotNull Version version,
-                               @NotNull String changelog) {
+                               @NotNull String changelog,
+                               boolean isSbtModule) {
       return new TestModule(name, url, version, null, changelog, null);
     }
 

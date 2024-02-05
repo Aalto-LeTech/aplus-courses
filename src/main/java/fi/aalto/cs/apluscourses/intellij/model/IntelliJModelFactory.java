@@ -87,11 +87,17 @@ public class IntelliJModelFactory implements ModelFactory {
   public Module createModule(@NotNull String name,
                              @NotNull URL url,
                              @NotNull Version version,
-                             @NotNull String changelog) {
+                             @NotNull String changelog,
+                             boolean isSbtModule) {
     ModuleMetadata moduleMetadata = Optional.ofNullable(modulesMetadata.get(name))
         .orElse(new ModuleMetadata(null, null));
-    return new IntelliJModule(name, url, changelog, version, moduleMetadata.getVersion(),
+    if (isSbtModule) {
+      return new SbtModule(name, url, changelog, version, moduleMetadata.getVersion(),
         moduleMetadata.getDownloadedAt(), project);
+    } else {
+      return new IntelliJModule(name, url, changelog, version, moduleMetadata.getVersion(),
+        moduleMetadata.getDownloadedAt(), project);
+    }
   }
 
   @Override
