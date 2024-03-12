@@ -27,12 +27,12 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.10.2")
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.2'
     test.useJUnitPlatform()
-    compileOnly group: 'org.scala-lang', name: 'scala-library', version: '2.13.12'
+    compileOnly group: 'org.scala-lang', name: 'scala-library', version: '2.13.13'
     implementation group: 'org.json', name: 'json', version: '20240303'
     testImplementation group: 'junit', name: 'junit', version: '4.13.2'
     testImplementation group: 'org.hamcrest', name: 'hamcrest', version: '2.2'
     testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.11.0'
-    testImplementation group: 'org.scala-lang', name: 'scala-library', version: '2.13.12'
+    testImplementation group: 'org.scala-lang', name: 'scala-library', version: '2.13.13'
     testImplementation(group: 'io.rest-assured', name: 'rest-assured', version: '4.2.0') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-xml'
     }
