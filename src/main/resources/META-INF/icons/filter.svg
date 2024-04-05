@@ -1,6 +1,3 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
-    <g fill="none">
-        <polygon fill="#FF0090" points="2 2 14 2 14 2.857 9.5 8 6.5 8 2 2.857"/>
-        <rect width="3" height="6" x="6.5" y="8" fill="#FF0090"/>
-    </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+<path fill="none" stroke="#FF0090" stroke-linejoin="round" d="M13.5,2.5h-11l4,5V14l3-2V7.5L13.5,2.5z"/>
 </svg>
