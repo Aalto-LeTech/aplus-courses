@@ -4,22 +4,13 @@
     <vendor email="intellij-plugin-letech@aalto.fi"
             url="https://research.cs.aalto.fi/LeTech/">LeTech Group at Aalto University
     </vendor>
-    <!--  this is the range of supported IntelliJ IDEA version the plugin can be used with  -->
-    <idea-version since-build="233.11799.241"/>
-
-    <description><![CDATA[
-    This plugin supports the educational use of IntelliJ IDEA (and its Scala plugin) in programming
-    courses that rely on the A+ LMS developed at Aalto University. The plugin accesses programming
-    assignments and automated grading services provided by A+ and otherwise enhances the student
-    experience.
-    ]]></description>
-
-    <change-notes>
-        Minor bug fixes.
-    </change-notes>
 
     <depends>com.intellij.modules.java</depends>
     <depends>org.intellij.scala</depends>
+
+    <resource-bundle>resources</resource-bundle>
+
+
 
     <extensions defaultExtensionNs="com.intellij">
         <backgroundPostStartupActivity
@@ -29,11 +20,7 @@
                     anchor="right"
                     factoryClass="fi.aalto.cs.apluscourses.intellij.toolwindows.APlusToolWindowFactory"
                     icon="PluginIcons.A_PLUS_LOGO"/>
-
-        <moduleType id="APLUS_MODULE_TYPE"
-                    implementationClass="fi.aalto.cs.apluscourses.intellij.generator.APlusModuleType"
-                    order="last"/>
-
+        <moduleBuilder builderClass="fi.aalto.cs.apluscourses.intellij.generator.APlusModuleBuilder"/>
         <errorHandler implementation="fi.aalto.cs.apluscourses.intellij.utils.ErrorHandler"/>
         <httpRequestHandler implementation="fi.aalto.cs.apluscourses.intellij.services.OpenSubmissionService"/>
     </extensions>
@@ -43,7 +30,7 @@
                text="A+"
                description="Actions for A+ menu"
                popup="true">
-            <add-to-group group-id="MainMenu" anchor="last"/>
+<!--            <add-to-group group-id="MainMenu" anchor="last"/>-->
             <action id="fi.aalto.cs.apluscourses.intellij.actions.CourseProjectAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.CourseProjectAction"
                     text="Link Project to an A+ Course"
@@ -154,7 +141,7 @@
                         text="Not Logged In"/>
                 <action id="fi.aalto.cs.apluscourses.intellij.actions.LogInOutAction"
                         class="fi.aalto.cs.apluscourses.intellij.actions.LogInOutAction"
-                        text="Log in"/>
+                        text="Log In"/>
             </group>
         </group>
         <action id="Scala.RunConsole"

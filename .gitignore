@@ -29,6 +29,13 @@
 .idea/**/gradle.xml
 .idea/**/libraries
 
+.idea/*
+!.idea/codeStyles/
+!.idea/inspectionProfiles
+!.idea/icon.svg
+
+.intellijPlatform
+
 # Gradle and Maven with auto-import
 # When using Gradle or Maven with auto-import, you should exclude module files,
 # since they will be recreated, and may cause churn.  Uncomment if using
@@ -136,6 +143,3 @@ gradle-app.setting
 
 # End of https://www.gitignore.io/api/java,gradle,intellij
 
-### The entire IntelliJ IDEA settings directory ###
-# Please note that this makes many of the rules above (created with gitignore.io) redundant.
-.idea/
