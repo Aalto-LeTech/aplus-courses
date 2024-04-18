@@ -32,6 +32,13 @@
 
 <img width="300px" align="right" src="images/image_4_readme.webp" alt="Screenshot"/>
 
+<!-- Plugin description -->
+This plugin supports the educational use of IntelliJ IDEA (and its Scala plugin) in programming
+courses that rely on the A+ LMS developed at Aalto University. The plugin accesses programming
+assignments and automated grading services provided by A+ and otherwise enhances the student
+experience.
+<!-- Plugin description end -->
+
 This repository hosts the source code for the A+ Courses [IntelliJ IDEA](https://www.jetbrains.com/idea/) plugin
 communicating with the [A+ LMS](https://apluslms.github.io/). It allows users to download code modules, submit
 assignments, and use the Scala REPL more conveniently among other learning experience improvements. The plugin is
