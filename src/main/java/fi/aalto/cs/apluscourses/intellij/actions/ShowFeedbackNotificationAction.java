@@ -6,7 +6,7 @@ import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationAction;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import fi.aalto.cs.apluscourses.model.SubmissionResult;
+import fi.aalto.cs.apluscourses.model.exercise.SubmissionResult;
 import org.jetbrains.annotations.NotNull;
 
 public class ShowFeedbackNotificationAction extends NotificationAction {
@@ -19,9 +19,9 @@ public class ShowFeedbackNotificationAction extends NotificationAction {
 
   @Override
   public void actionPerformed(@NotNull AnActionEvent e, @NotNull Notification notification) {
-    ShowFeedbackAction action =
-        (ShowFeedbackAction) ActionManager.getInstance().getAction(ShowFeedbackAction.ACTION_ID);
-    action.setSubmissionResult(submissionResult);
-    action.actionPerformed(e);
+//    ShowFeedbackAction action =
+//        (ShowFeedbackAction) ActionManager.getInstance().getAction(ShowFeedbackAction.ACTION_ID);
+//    action.setSubmissionResult(submissionResult);
+//    action.actionPerformed(e);
   }
 }

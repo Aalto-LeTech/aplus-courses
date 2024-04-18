@@ -5,10 +5,11 @@ import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.util.concurrency.annotations.RequiresReadLock;
 import com.intellij.util.concurrency.annotations.RequiresWriteLock;
-import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
+import fi.aalto.cs.apluscourses.services.PluginSettings;
 import fi.aalto.cs.apluscourses.intellij.utils.ListDependenciesPolicy;
 import fi.aalto.cs.apluscourses.intellij.utils.VfsUtil;
 import fi.aalto.cs.apluscourses.model.ComponentLoadException;
+import fi.aalto.cs.apluscourses.model.CourseProject;
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.utils.Version;
 import fi.aalto.cs.apluscourses.utils.content.RemoteZippedDir;
@@ -76,7 +77,7 @@ class IntelliJModule
 
     CourseProject courseProject = PluginSettings.getInstance().getCourseProject(project.getProject());
     if (courseProject != null) {
-      courseProject.getCourse().getCallbacks().invokePostDownloadModuleCallbacks(project.getProject(), this);
+      courseProject.course.getCallbacks().invokePostDownloadModuleCallbacks(project.getProject(), this);
     }
   }
 

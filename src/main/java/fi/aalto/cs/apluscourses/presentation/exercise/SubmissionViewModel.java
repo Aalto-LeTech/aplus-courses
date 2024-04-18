@@ -3,10 +3,10 @@ package fi.aalto.cs.apluscourses.presentation.exercise;
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 import com.intellij.openapi.project.Project;
-import fi.aalto.cs.apluscourses.model.Exercise;
+import fi.aalto.cs.apluscourses.model.exercise.Exercise;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.Submission;
-import fi.aalto.cs.apluscourses.model.SubmittableFile;
+import fi.aalto.cs.apluscourses.model.exercise.SubmittableFile;
 import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import fi.aalto.cs.apluscourses.utils.FileDateFormatter;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty;
@@ -68,8 +68,7 @@ public class SubmissionViewModel {
     this.lastSubmittedGroup = lastSubmittedGroup;
     this.filePaths = filePaths;
     this.language = language;
-    this.submittableFiles = exercise
-        .getSubmissionInfo().getFiles(language).toArray(new SubmittableFile[0]);
+    this.submittableFiles = exercise.getSubmissionInfo().getFiles(language).toArray(new SubmittableFile[0]);
     if (defaultGroup != null) {
       selectedGroup.set(defaultGroup);
       makeDefaultGroup.set(true);

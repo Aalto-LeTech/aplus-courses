@@ -1,7 +1,7 @@
 package fi.aalto.cs.apluscourses.intellij.model;
 
 import com.intellij.openapi.project.Project;
-import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
+import fi.aalto.cs.apluscourses.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.model.Library;

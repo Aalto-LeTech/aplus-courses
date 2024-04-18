@@ -2,22 +2,22 @@ package fi.aalto.cs.apluscourses.intellij.utils;
 
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
-import fi.aalto.cs.apluscourses.intellij.model.CourseProject;
+import fi.aalto.cs.apluscourses.model.CourseProject;
 import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.MissingFileNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.services.Dialogs;
-import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
+import fi.aalto.cs.apluscourses.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.ComponentInstaller;
 import fi.aalto.cs.apluscourses.model.ComponentInstallerImpl;
 import fi.aalto.cs.apluscourses.model.Course;
-import fi.aalto.cs.apluscourses.model.Exercise;
+import fi.aalto.cs.apluscourses.model.exercise.Exercise;
 import fi.aalto.cs.apluscourses.model.FileDoesNotExistException;
 import fi.aalto.cs.apluscourses.model.FileFinder;
 import fi.aalto.cs.apluscourses.model.Module;
-import fi.aalto.cs.apluscourses.model.SubmissionFileInfo;
-import fi.aalto.cs.apluscourses.model.SubmissionResult;
+import fi.aalto.cs.apluscourses.model.exercise.SubmissionFileInfo;
+import fi.aalto.cs.apluscourses.model.exercise.SubmissionResult;
 import fi.aalto.cs.apluscourses.presentation.exercise.DownloadSubmissionViewModel;
 import fi.aalto.cs.apluscourses.ui.InstallerDialogs;
 import fi.aalto.cs.apluscourses.utils.APlusLogger;
@@ -148,7 +148,7 @@ public class SubmissionDownloader {
             () -> fileRefresher.refreshPath(moduleVf,
                 () -> downloadFiles(project,
                     course,
-                    submissionResult.getFilesInfo(),
+                    submissionResult.getFilesInfo().toArray(new SubmissionFileInfo[0]),
                     moduleCopy)));
   }
 

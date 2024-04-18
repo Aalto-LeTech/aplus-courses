@@ -20,8 +20,8 @@ public class SubmissionFileInfo {
     this.url = url;
   }
 
-  public static SubmissionFileInfo fromJsonObject(@NotNull JSONObject jsonObject) {
-    return new SubmissionFileInfo(jsonObject.getString("filename"), jsonObject.getString("url"));
+  public static fi.aalto.cs.apluscourses.model.exercise.SubmissionFileInfo fromJsonObject(@NotNull JSONObject jsonObject) {
+    return new fi.aalto.cs.apluscourses.model.exercise.SubmissionFileInfo(jsonObject.getString("filename"), jsonObject.getString("url"));
   }
 
   @NotNull

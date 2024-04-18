@@ -21,8 +21,8 @@ public class O1NewsParser extends NewsParser {
   }
 
   @Override
-  public @NotNull String[] parseBody(@NotNull Element bodyElement) {
-    return getElementsByLanguage(bodyElement).stream().map(Element::text).toArray(String[]::new);
+  public @NotNull String parseBody(@NotNull Element bodyElement) {
+    return getElementsByLanguage(bodyElement).html();
   }
 
   private Elements getElementsByLanguage(@NotNull Element element) {

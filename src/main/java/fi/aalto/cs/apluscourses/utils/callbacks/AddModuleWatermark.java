@@ -1,8 +1,8 @@
 package fi.aalto.cs.apluscourses.utils.callbacks;
 
 import com.intellij.openapi.project.Project;
-import fi.aalto.cs.apluscourses.intellij.model.CourseProject;
-import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
+import fi.aalto.cs.apluscourses.model.CourseProject;
+import fi.aalto.cs.apluscourses.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Module;
 import fi.aalto.cs.apluscourses.model.User;
 import java.io.File;

@@ -7,7 +7,7 @@ import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.updateSettings.impl.UpdateSettings;
 import com.intellij.openapi.util.io.FileUtilRt;
-import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
+import fi.aalto.cs.apluscourses.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
@@ -155,7 +155,7 @@ public class SettingsImporter {
     var bytes = stream.readAllBytes();
     var s = new String(bytes, StandardCharsets.UTF_8);
 
-    PluginSettings.getInstance().getMainViewModel(project).setFeedbackCss(s);
+    PluginSettings.getInstance().getMainViewModel(project).feedbackCss = s;
     logger.info("Imported feedback CSS");
   }
 

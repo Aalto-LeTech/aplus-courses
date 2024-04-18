@@ -2,8 +2,7 @@ package fi.aalto.cs.apluscourses.utils;
 
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getAndReplaceText;
 
-import fi.aalto.cs.apluscourses.model.DummySubmissionResult;
-import fi.aalto.cs.apluscourses.model.SubmissionResult;
+import fi.aalto.cs.apluscourses.model.exercise.SubmissionResult;
 import org.jetbrains.annotations.NotNull;
 
 public class SubmissionResultUtil {
@@ -19,8 +18,7 @@ public class SubmissionResultUtil {
     var testsFailedResourceKey = testsFailed == 1 ? "presentation.submissionResultViewModel.testFailed" :
         "presentation.submissionResultViewModel.testsFailed";
     var testsFailedString = testsFailed < 1 ? "" : getAndReplaceText(testsFailedResourceKey, testsFailed);
-    return submissionResult instanceof DummySubmissionResult ? "???"
-        : getAndReplaceText("presentation.submissionResultViewModel.points",
-        submissionResult.getPoints(), submissionResult.getExercise().getMaxPoints()) + testsFailedString;
+    return getAndReplaceText("presentation.submissionResultViewModel.points",
+        submissionResult.getUserPoints(), submissionResult.getMaxPoints()) + testsFailedString;
   }
 }

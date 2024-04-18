@@ -10,7 +10,7 @@ public abstract class TokenAuthentication implements Authentication {
   protected final String user;
   protected final char @NotNull [] token;
   @Nullable
-  protected final PasswordStorage passwordStorage;
+  protected final TokenStorage passwordStorage;
 
   /**
    * Base class constructor.
@@ -21,7 +21,7 @@ public abstract class TokenAuthentication implements Authentication {
    */
   protected TokenAuthentication(@NotNull String user,
                                 char @NotNull [] token,
-                                @Nullable PasswordStorage passwordStorage) {
+                                @Nullable TokenStorage passwordStorage) {
     this.user = user;
     this.token = token.clone();
     this.passwordStorage = passwordStorage;
@@ -29,7 +29,7 @@ public abstract class TokenAuthentication implements Authentication {
 
   @Override
   public boolean persist() {
-    return passwordStorage != null && passwordStorage.store(user, token);
+    return false;//passwordStorage != null && passwordStorage.store(user, token);
   }
 
   /**

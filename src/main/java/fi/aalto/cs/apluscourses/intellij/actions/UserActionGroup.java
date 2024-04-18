@@ -9,7 +9,7 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.actionSystem.impl.ActionButton;
 import com.intellij.openapi.project.DumbAware;
 import fi.aalto.cs.apluscourses.intellij.services.CourseProjectProvider;
-import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
+import fi.aalto.cs.apluscourses.services.PluginSettings;
 import icons.PluginIcons;
 import org.jetbrains.annotations.NotNull;
 

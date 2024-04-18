@@ -1,6 +1,5 @@
 package fi.aalto.cs.apluscourses.intellij.notifications;
 
-import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getAndReplaceText;
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 import com.intellij.notification.Notification;
@@ -9,10 +8,9 @@ import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.actions.OpenSubmissionNotificationAction;
 import fi.aalto.cs.apluscourses.intellij.actions.ShowFeedbackNotificationAction;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
-import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
-import fi.aalto.cs.apluscourses.model.Exercise;
-import fi.aalto.cs.apluscourses.model.SubmissionResult;
-import fi.aalto.cs.apluscourses.utils.SubmissionResultUtil;
+import fi.aalto.cs.apluscourses.model.exercise.Exercise;
+import fi.aalto.cs.apluscourses.model.exercise.SubmissionResult;
+import fi.aalto.cs.apluscourses.services.PluginSettings;
 import org.jetbrains.annotations.NotNull;
 
 public class FeedbackAvailableNotification extends Notification {
@@ -29,11 +27,11 @@ public class FeedbackAvailableNotification extends Notification {
     super(
         PluginSettings.A_PLUS,
         getText("notification.FeedbackAvailableNotification.title"),
-        getAndReplaceText("notification.FeedbackAvailableNotification.content",
-            exercise.getName(), SubmissionResultUtil.getStatus(submissionResult)),
+//        getAndReplaceText("notification.FeedbackAvailableNotification.content",
+//            exercise.name, SubmissionResultUtil.getStatus(submissionResult)),
         NotificationType.INFORMATION
     );
-    if (mainViewModelProvider.getMainViewModel(project).getFeedbackCss() != null) {
+    if (mainViewModelProvider.getMainViewModel(project).feedbackCss != null) {
       super.addAction(new ShowFeedbackNotificationAction(submissionResult));
     }
     super.addAction(new OpenSubmissionNotificationAction(submissionResult));

@@ -6,8 +6,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.newvfs.RefreshQueue;
-import fi.aalto.cs.apluscourses.intellij.actions.SubmitExerciseAction;
-import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
+import fi.aalto.cs.apluscourses.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.utils.cache.Cache;
@@ -219,7 +218,7 @@ public class Interfaces {
      * @param project The current IntelliJ project.
      * @param courseId ID of the course which contains the exercise in question.
      * @param exerciseId ID of the exercise.
-     * @param files A map of submittable files, as constructed in {@link SubmitExerciseAction}.
+     * @param files A map of submittable files, as constructed in {@lin k SubmitExerciseAction}.
      * @return True if duplicate check succeeded and the submission should proceed; false if it should be cancelled.
      */
     @Override

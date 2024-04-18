@@ -4,7 +4,7 @@ import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
-import fi.aalto.cs.apluscourses.intellij.toolwindows.APlusToolWindowFactory;
+import fi.aalto.cs.apluscourses.toolwindows.APlusToolWindowFactoryKt;
 import javax.swing.Action;
 import javax.swing.JComponent;
 import org.jetbrains.annotations.NotNull;
@@ -20,7 +20,7 @@ public class ModulesDialog extends DialogWrapper {
   public ModulesDialog(@NotNull Project project) {
     super(project);
 
-    this.modulesView = APlusToolWindowFactory.createModulesView(project);
+    this.modulesView = APlusToolWindowFactoryKt.createModulesView(project);
 
     setModal(false);
 
@@ -41,6 +41,6 @@ public class ModulesDialog extends DialogWrapper {
 
   @Override
   protected @Nullable JComponent createCenterPanel() {
-    return modulesView.getBasePanel();
+    return modulesView.getContent();
   }
 }

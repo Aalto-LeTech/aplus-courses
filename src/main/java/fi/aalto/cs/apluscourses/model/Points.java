@@ -88,12 +88,12 @@ public class Points {
   }
 
   /**
-   * Constructs a {@link Points} instance from the given JSON object.
+   * Constructs a {@link fi.aalto.cs.apluscourses.model.exercise.Points} instance from the given JSON object.
    *
-   * @param jsonObject The JSON object from which the {@link Points} instance is constructed.
+   * @param jsonObject The JSON object from which the {@link fi.aalto.cs.apluscourses.model.exercise.Points} instance is constructed.
    */
   @NotNull
-  public static Points fromJsonObject(@NotNull JSONObject jsonObject) {
+  public static fi.aalto.cs.apluscourses.model.exercise.Points fromJsonObject(@NotNull JSONObject jsonObject) {
     JSONArray modulesArray = jsonObject.getJSONArray("modules");
     Map<Long, List<Long>> exercises = new HashMap<>();
     Map<Long, List<Long>> submissions = new HashMap<>();
@@ -116,7 +116,7 @@ public class Points {
       }
       exercises.put(exerciseGroupId, exerciseIds);
     }
-    return new Points(exercises, submissions, bestSubmissions);
+    return new fi.aalto.cs.apluscourses.model.exercise.Points(exercises, submissions, bestSubmissions);
   }
 
   /*

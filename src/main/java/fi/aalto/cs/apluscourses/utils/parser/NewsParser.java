@@ -10,7 +10,7 @@ public class NewsParser {
   }
 
   @NotNull
-  public String[] parseBody(@NotNull Element bodyElement) {
-    return new String[] {bodyElement.text()};
+  public String parseBody(@NotNull Element bodyElement) {
+    return bodyElement.html();
   }
 }

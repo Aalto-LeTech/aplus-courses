@@ -1,9 +1,7 @@
 package fi.aalto.cs.apluscourses.presentation.base;
 
 import fi.aalto.cs.apluscourses.presentation.filter.Filter;
-import fi.aalto.cs.apluscourses.presentation.filter.FilterEngine;
 import fi.aalto.cs.apluscourses.presentation.filter.Filterable;
-import fi.aalto.cs.apluscourses.presentation.filter.Options;
 import fi.aalto.cs.apluscourses.utils.CollectionUtil;
 import java.util.List;
 import java.util.Optional;
@@ -19,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
  *            {@link ListElementViewModel}
  */
 public class BaseListViewModel<E extends ListElementViewModel<?>> implements Filterable {
-  private final @NotNull FilterEngine filterEngine;
+  //  private final @NotNull FilterEngine filterEngine;
   protected final @NotNull List<E> elements;
 
   /**
@@ -29,12 +27,10 @@ public class BaseListViewModel<E extends ListElementViewModel<?>> implements Fil
    * @param listElementViewModelFactory A function that creates a list element view model object of
    *                                    a model object.
    */
-  public <M> BaseListViewModel(@NotNull List<M> models,
-                               @NotNull Options options,
-                               @NotNull Function<M, E> listElementViewModelFactory) {
+  public <M> BaseListViewModel(@NotNull List<M> models, @NotNull Function<M, E> listElementViewModelFactory) {
     this.elements = models.stream().map(listElementViewModelFactory).collect(Collectors.toList());
-    filterEngine = new FilterEngine(options, this);
-    filterEngine.filter();
+//    filterEngine = new FilterEngine(options, this);
+//    filterEngine.filter();
   }
 
   public Stream<E> streamVisibleItems() {
@@ -45,9 +41,9 @@ public class BaseListViewModel<E extends ListElementViewModel<?>> implements Fil
     return elements.stream().filter(ListElementViewModel::isSelected);
   }
 
-  public @NotNull FilterEngine getFilterEngine() {
-    return filterEngine;
-  }
+//  public @NotNull FilterEngine getFilterEngine() {
+//    return filterEngine;
+//  }
 
   @Override
   public void applyFilter(@NotNull Filter filter) throws InterruptedException {

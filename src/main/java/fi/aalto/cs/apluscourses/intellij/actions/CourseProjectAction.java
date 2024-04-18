@@ -7,7 +7,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ex.ApplicationEx;
 import com.intellij.openapi.project.Project;
-import fi.aalto.cs.apluscourses.intellij.model.CourseProject;
+import fi.aalto.cs.apluscourses.model.CourseProject;
 import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory;
 import fi.aalto.cs.apluscourses.intellij.model.SettingsImporter;
 import fi.aalto.cs.apluscourses.intellij.notifications.CourseConfigListErrorNotification;
@@ -18,7 +18,7 @@ import fi.aalto.cs.apluscourses.intellij.notifications.CourseVersionTooNewError;
 import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
-import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
+import fi.aalto.cs.apluscourses.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.ComponentInstaller;
 import fi.aalto.cs.apluscourses.model.ComponentInstallerImpl;
 import fi.aalto.cs.apluscourses.model.Course;
@@ -237,8 +237,8 @@ public class CourseProjectAction extends AnAction {
       // The course file not created in testing.
       var currentProject = PluginSettings.getInstance().getCourseProject(project);
       if (currentProject != null) {
-        currentProject.getCourseUpdater().restart();
-        currentProject.getExercisesUpdater().restart();
+//        currentProject.courseUpdater.restart();
+//        currentProject.exercisesUpdater.restart(currentProject);
       } else {
         var courseProject = new CourseProject(course, courseUrl, project, notifier);
         PluginSettings.getInstance().registerCourseProject(courseProject);

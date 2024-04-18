@@ -8,7 +8,7 @@ import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.services.CourseProjectProvider;
 import fi.aalto.cs.apluscourses.intellij.services.Dialogs;
-import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
+import fi.aalto.cs.apluscourses.services.PluginSettings;
 import fi.aalto.cs.apluscourses.intellij.utils.Interfaces;
 import fi.aalto.cs.apluscourses.presentation.SelectStudentViewModel;
 import fi.aalto.cs.apluscourses.utils.cache.CachePreferences;
@@ -57,7 +57,7 @@ public class SelectStudentAction extends AnAction {
     if (courseProject == null) {
       return;
     }
-    var course = courseProject.getCourse();
+    var course = courseProject.course;
     var auth = courseProject.getAuthentication();
     if (auth == null) {
       return;
@@ -70,7 +70,7 @@ public class SelectStudentAction extends AnAction {
         return;
       }
       courseProject.setSelectedStudent(studentListViewModel.selectedStudent.get());
-      courseProject.getExercisesUpdater().restart();
+//      courseProject.exercisesUpdater.restart(courseProject);
     } catch (IOException ex) {
       notifier.notifyAndHide(new NetworkErrorNotification(ex), e.getProject());
     }

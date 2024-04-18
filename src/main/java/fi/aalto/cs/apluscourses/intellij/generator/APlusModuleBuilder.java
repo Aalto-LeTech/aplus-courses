@@ -4,6 +4,8 @@ import com.intellij.ide.util.projectWizard.ModuleBuilder;
 import com.intellij.ide.util.projectWizard.ModuleWizardStep;
 import com.intellij.ide.util.projectWizard.WizardContext;
 import com.intellij.openapi.Disposable;
+import com.intellij.openapi.actionSystem.impl.ActionManagerImpl;
+import java.util.Objects;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import org.jetbrains.annotations.Nullable;
@@ -11,7 +13,21 @@ import org.jetbrains.annotations.Nullable;
 public class APlusModuleBuilder extends ModuleBuilder {
   @Override
   public APlusModuleType getModuleType() {
-    return APlusModuleType.getInstance();
+    return new APlusModuleType();
+  }
+
+  @Override
+  public int getWeight() {
+    return 100000;
+  }
+
+  @Override
+  public boolean isAvailable() {
+    // Only show the builder when creating a new project
+    return Objects.equals(
+        ((ActionManagerImpl) ActionManagerImpl.getInstance())
+            .getLastPreformedActionId(),
+        "NewProject");
   }
 
   @Override

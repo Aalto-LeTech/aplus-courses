@@ -4,17 +4,17 @@ import static fi.aalto.cs.apluscourses.utils.ListUtil.appendTwoLists;
 
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.Course;
-import fi.aalto.cs.apluscourses.model.Exercise;
+import fi.aalto.cs.apluscourses.model.exercise.Exercise;
 import fi.aalto.cs.apluscourses.model.ExerciseDataSource;
-import fi.aalto.cs.apluscourses.model.ExerciseGroup;
+import fi.aalto.cs.apluscourses.model.exercise.ExerciseGroup;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.InvalidAuthenticationException;
 import fi.aalto.cs.apluscourses.model.News;
-import fi.aalto.cs.apluscourses.model.Points;
+import fi.aalto.cs.apluscourses.model.exercise.Points;
 import fi.aalto.cs.apluscourses.model.Student;
 import fi.aalto.cs.apluscourses.model.Submission;
-import fi.aalto.cs.apluscourses.model.SubmissionInfo;
-import fi.aalto.cs.apluscourses.model.SubmissionResult;
+import fi.aalto.cs.apluscourses.model.exercise.SubmissionInfo;
+import fi.aalto.cs.apluscourses.model.exercise.SubmissionResult;
 import fi.aalto.cs.apluscourses.model.User;
 import fi.aalto.cs.apluscourses.utils.CoursesClient;
 import fi.aalto.cs.apluscourses.utils.cache.Cache;
@@ -29,6 +29,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -154,10 +155,12 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
                                                @NotNull Authentication authentication,
                                                @NotNull String languageCode)
       throws IOException {
-    String url = apiUrl + COURSES + "/" + course.getId() + "/" + EXERCISES + "/";
-    var exerciseOrder = getExerciseOrder(course, authentication);
-    return getPaginatedResults(url, authentication,
-        object -> ExerciseGroup.fromJsonObject(object, exerciseOrder, languageCode, course.getHiddenElements()));
+    return Collections.emptyList();
+//    String url = apiUrl + COURSES + "/" + course.getId() + "/" + EXERCISES + "/";
+//    var exerciseOrder = getExerciseOrder(course, authentication);
+//    return getPaginatedResults(url, authentication,
+//        object -> ExerciseGroup.Companion.fromJsonObject(object, exerciseOrder, languageCode,
+//            course.getHiddenElements()));
   }
 
   /**
@@ -348,8 +351,13 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
 
     @Override
     public SubmissionInfo parseSubmissionInfo(@NotNull JSONObject object) {
-      return SubmissionInfo.fromJsonObject(object);
+      return null;
     }
+
+//    @Override
+//    public SubmissionInfo parseSubmissionInfo(@NotNull JSONObject object) {
+//      return SubmissionInfo.fromJsonObject(object);
+//    }
 
     @Override
     public Group parseGroup(@NotNull JSONObject object) {
@@ -358,8 +366,13 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
 
     @Override
     public Points parsePoints(@NotNull JSONObject object) {
-      return Points.fromJsonObject(object);
+      return null;
     }
+
+//    @Override
+//    public Points parsePoints(@NotNull JSONObject object) {
+//      return Points.fromJsonObject(object);
+//    }
 
     @Override
     public Map<Long, List<Long>> parseExerciseOrder(@NotNull JSONObject object) {
@@ -385,19 +398,31 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
     }
 
     @Override
-    public Exercise parseExercise(@NotNull JSONObject jsonObject,
-                                  @NotNull Points points,
-                                  @NotNull Set<String> optionalCategories,
-                                  @NotNull String languageCode) {
-      return Exercise.fromJsonObject(jsonObject, points, optionalCategories, languageCode);
+    public Exercise parseExercise(@NotNull JSONObject jsonObject, @NotNull Points points,
+                                  @NotNull Set<String> optionalCategories, @NotNull String languageCode) {
+      return null;
     }
 
     @Override
-    public SubmissionResult parseSubmissionResult(@NotNull JSONObject object,
-                                                  @NotNull Exercise exercise,
+    public SubmissionResult parseSubmissionResult(@NotNull JSONObject jsonObject, @NotNull Exercise exercise,
                                                   @NotNull Course course) {
-      return SubmissionResult.fromJsonObject(object, exercise, course);
+      return null;
     }
+
+//    @Override
+//    public Exercise parseExercise(@NotNull JSONObject jsonObject,
+//                                  @NotNull Points points,
+//                                  @NotNull Set<String> optionalCategories,
+//                                  @NotNull String languageCode) {
+//      return Exercise.Companion.fromJsonObject(jsonObject, points, optionalCategories, languageCode);
+//    }
+
+//    @Override
+//    public SubmissionResult parseSubmissionResult(@NotNull JSONObject object,
+//                                                  @NotNull Exercise exercise,
+//                                                  @NotNull Course course) {
+//      return SubmissionResult.fromJsonObject(object, exercise, course);
+//    }
 
     @Override
     public User parseUser(@NotNull Authentication authentication,

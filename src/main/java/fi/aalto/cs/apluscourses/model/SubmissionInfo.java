@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.model;
 
+import fi.aalto.cs.apluscourses.model.exercise.SubmittableFile;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -11,7 +12,7 @@ import org.json.JSONObject;
 
 public class SubmissionInfo {
   @NotNull
-  private final Map<String, List<SubmittableFile>> files;
+  private final Map<String, List<fi.aalto.cs.apluscourses.model.exercise.SubmittableFile>> files;
 
   /**
    * Construct a submission info instance with the given files.
@@ -19,7 +20,7 @@ public class SubmissionInfo {
    * @param files A map from language codes to list of submittable files corresponding to the
    *              language.
    */
-  public SubmissionInfo(@NotNull Map<String, List<SubmittableFile>> files) {
+  public SubmissionInfo(@NotNull Map<String, List<fi.aalto.cs.apluscourses.model.exercise.SubmittableFile>> files) {
     this.files = files;
   }
 
@@ -27,23 +28,23 @@ public class SubmissionInfo {
    * Construct a submission info instance from the given JSON object.
    */
   @NotNull
-  public static SubmissionInfo fromJsonObject(@NotNull JSONObject jsonObject) {
+  public static fi.aalto.cs.apluscourses.model.exercise.SubmissionInfo fromJsonObject(@NotNull JSONObject jsonObject) {
     var exerciseInfo = jsonObject.optJSONObject("exercise_info");
     if (exerciseInfo == null) {
       // Some assignments, such as https://plus.cs.aalto.fi/api/v2/exercises/24882/ don't have the
       // exercise info at all.
-      return new SubmissionInfo(Collections.emptyMap());
+      return new fi.aalto.cs.apluscourses.model.exercise.SubmissionInfo(Collections.emptyMap());
     }
 
     JSONArray formSpec = exerciseInfo.optJSONArray("form_spec");
     if (formSpec == null) {
       // Some assignments, such as https://plus.cs.aalto.fi/api/v2/exercises/50181/ don't have the
       // form_spec field despite having exercise_info.
-      return new SubmissionInfo(Collections.emptyMap());
+      return new fi.aalto.cs.apluscourses.model.exercise.SubmissionInfo(Collections.emptyMap());
     }
 
     JSONObject localizationInfo = exerciseInfo.getJSONObject("form_i18n");
-    Map<String, List<SubmittableFile>> files = new HashMap<>();
+    Map<String, List<fi.aalto.cs.apluscourses.model.exercise.SubmittableFile>> files = new HashMap<>();
 
     for (int i = 0; i < formSpec.length(); ++i) {
       JSONObject spec = formSpec.getJSONObject(i);
@@ -58,12 +59,12 @@ public class SubmissionInfo {
 
       Iterable<String> languages = localizedFilenames::keys;
       for (String language : languages) {
-        List<SubmittableFile> filesForLanguage = files.getOrDefault(language, new ArrayList<>());
-        filesForLanguage.add(new SubmittableFile(key, localizedFilenames.getString(language)));
+        List<fi.aalto.cs.apluscourses.model.exercise.SubmittableFile> filesForLanguage = files.getOrDefault(language, new ArrayList<>());
+        filesForLanguage.add(new fi.aalto.cs.apluscourses.model.exercise.SubmittableFile(key, localizedFilenames.getString(language)));
         files.putIfAbsent(language, filesForLanguage);
       }
     }
-    return new SubmissionInfo(files);
+    return new fi.aalto.cs.apluscourses.model.exercise.SubmissionInfo(files);
   }
 
   /**

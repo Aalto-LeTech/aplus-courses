@@ -691,7 +691,7 @@ public abstract class Course implements ComponentSource {
     }
 
     try {
-      return CourseHiddenElements.fromJsonObject(hiddenElements);
+      return new CourseHiddenElements();//CourseHiddenElements.fromJsonObject(hiddenElements); //TODO
     } catch (JSONException ex) {
       throw new MalformedCourseConfigurationException(source, "Malformed \"hiddenElements\" array", ex);
     }

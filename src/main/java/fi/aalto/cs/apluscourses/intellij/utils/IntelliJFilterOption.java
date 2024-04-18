@@ -1,6 +1,6 @@
 package fi.aalto.cs.apluscourses.intellij.utils;
 
-import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
+import fi.aalto.cs.apluscourses.services.PluginSettings;
 import fi.aalto.cs.apluscourses.presentation.filter.Filter;
 import fi.aalto.cs.apluscourses.presentation.filter.Option;
 import javax.swing.Icon;
@@ -29,13 +29,13 @@ public class IntelliJFilterOption extends Option {
 
   @Override
   public IntelliJFilterOption init() {
-    isSelected.set(propertiesManager.getBoolean(setting.getName(), true), this);
+    isSelected.set(propertiesManager.getBoolean(setting.getId(), true), this);
     return this;
   }
 
   private void selectionChanged(@Nullable Boolean value) {
     if (value != null) { // if initialized
-      propertiesManager.setValue(setting.getName(), value, true);
+      propertiesManager.setValue(setting.getId(), value, true);
     }
   }
 }

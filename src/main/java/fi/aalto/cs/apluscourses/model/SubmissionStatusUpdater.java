@@ -2,11 +2,9 @@ package fi.aalto.cs.apluscourses.model;
 
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
-import fi.aalto.cs.apluscourses.intellij.notifications.FeedbackAvailableNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
-import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
-import fi.aalto.cs.apluscourses.utils.cache.CachePreferences;
-import java.io.IOException;
+import fi.aalto.cs.apluscourses.model.exercise.Exercise;
+import fi.aalto.cs.apluscourses.services.PluginSettings;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -110,7 +108,7 @@ public class SubmissionStatusUpdater {
     try {
       var courseProject = PluginSettings.getInstance().getCourseProject(project);
       if (courseProject != null) {
-        courseProject.getExercisesUpdater().restart();
+        courseProject.exercisesUpdater.restart();
       }
       while (true) { //  NOSONAR
         if (totalTime >= timeLimit) {
@@ -131,22 +129,22 @@ public class SubmissionStatusUpdater {
   }
 
   private boolean fetchResultsAndNotify() {
-    SubmissionResult submissionResult;
-    try {
-      submissionResult = dataSource.getSubmissionResult(
-          submissionUrl, exercise, authentication, course, CachePreferences.GET_NEW_AND_KEEP);
-      var status = submissionResult.getStatus();
-      if (status != SubmissionResult.Status.WAITING && status != SubmissionResult.Status.UNKNOWN && project != null) {
-        notifier.notify(new FeedbackAvailableNotification(submissionResult, exercise, project), project);
-        var courseProject = PluginSettings.getInstance().getCourseProject(project);
-        if (courseProject != null) {
-          courseProject.getExercisesUpdater().restart();
-        }
-        return true;
-      }
-    } catch (IOException e) {
-      // Fail silently
-    }
+//    SubmissionResult submissionResult;
+//    try {
+//      submissionResult = dataSource.getSubmissionResult(
+//          submissionUrl, exercise, authentication, course, CachePreferences.GET_NEW_AND_KEEP);
+//      var status = submissionResult.getStatus();
+////      if (status != SubmissionResult.Status.WAITING && status != SubmissionResult.Status.UNKNOWN && project != null) {
+////        notifier.notify(new FeedbackAvailableNotification(submissionResult, exercise, project), project);
+////        var courseProject = PluginSettings.getInstance().getCourseProject(project);
+////        if (courseProject != null) {
+////          courseProject.exercisesUpdater.restart(courseProject);
+////        }
+////        return true;
+//      }
+//    } catch (IOException e) {
+//      // Fail silently
+//    }
     return false;
   }
 

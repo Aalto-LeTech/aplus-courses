@@ -24,7 +24,7 @@ public class News implements Browsable {
   private final String title;
 
   @NotNull
-  private final String[] body;
+  private final String body;
 
   @NotNull
   private final ZonedDateTime publish;
@@ -36,7 +36,7 @@ public class News implements Browsable {
   public News(long id,
               @NotNull String url,
               @NotNull String title,
-              @NotNull String[] body,
+              @NotNull String body,
               @NotNull ZonedDateTime publish,
               @NotNull Interfaces.ReadNews readNews) {
     this.id = id;
@@ -92,7 +92,7 @@ public class News implements Browsable {
   }
 
   @NotNull
-  public String[] getBody() {
+  public String getBody() {
     return body;
   }
 

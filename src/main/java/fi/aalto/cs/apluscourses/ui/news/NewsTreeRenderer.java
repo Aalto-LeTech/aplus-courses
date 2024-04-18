@@ -19,8 +19,7 @@ public class NewsTreeRenderer extends MultilineTreeCellRenderer {
       return;
     }
     SelectableNodeViewModel<?> viewModel = TreeView.getViewModel(value);
-    if (viewModel instanceof NewsTitleViewModel) {
-      var titleViewModel = (NewsTitleViewModel) viewModel;
+    if (viewModel instanceof NewsTitleViewModel titleViewModel) {
       String[] text = {titleViewModel.getPresentableName()};
       setText(text, "");
       setEnabled(true);
@@ -30,10 +29,9 @@ public class NewsTreeRenderer extends MultilineTreeCellRenderer {
         setIcon(PluginIcons.A_PLUS_INFO);
       }
       setToolTipText(titleViewModel.getModel().getPublishTimeInfo());
-    } else if (viewModel instanceof NewsBodyViewModel) {
-      var bodyViewModel = (NewsBodyViewModel) viewModel;
-      String[] text = bodyViewModel.getPresentableName();
-      setText(text, "");
+    } else if (viewModel instanceof NewsBodyViewModel bodyViewModel) {
+      String text = bodyViewModel.getPresentableName();
+//      setText(text, "");
       setEnabled(true);
       setIcon(null);
       setToolTipText(bodyViewModel.getModel().getPublishTimeInfo());

@@ -2,7 +2,7 @@ package fi.aalto.cs.apluscourses.intellij.utils;
 
 import com.intellij.ide.plugins.DynamicPluginListener;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
-import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
+import fi.aalto.cs.apluscourses.services.PluginSettings;
 import org.jetbrains.annotations.NotNull;
 
 public class PluginLoadUnloadEventsListener implements DynamicPluginListener {

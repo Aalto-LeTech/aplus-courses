@@ -3,7 +3,7 @@ package fi.aalto.cs.apluscourses.presentation;
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 import com.intellij.ui.LightColors;
-import fi.aalto.cs.apluscourses.intellij.model.CourseProject;
+import fi.aalto.cs.apluscourses.model.CourseProject;
 import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.utils.observable.ObservableCachedReadOnlyProperty;
@@ -18,7 +18,7 @@ public class CourseEndedBannerViewModel extends BannerViewModel {
   public CourseEndedBannerViewModel(@NotNull CourseProject courseProject,
                                     @NotNull Notifier notifier) {
     super(new ObservableCachedReadOnlyProperty<>(() -> {
-      var course = courseProject.getCourse();
+      var course = courseProject.course;
       var authentication = courseProject.getAuthentication();
       if (authentication == null) {
         return null;
@@ -27,10 +27,10 @@ public class CourseEndedBannerViewModel extends BannerViewModel {
       try {
         var endingTime = course.getExerciseDataSource().getEndingTime(course, authentication);
         if (endingTime.compareTo(ZonedDateTime.now()) < 0) {
-          text = getText("ui.BannerView.courseEnded", courseProject.getProject());
+          text = getText("ui.BannerView.courseEnded", courseProject.project);
         }
       } catch (IOException e) {
-        notifier.notify(new NetworkErrorNotification(e), courseProject.getProject());
+        notifier.notify(new NetworkErrorNotification(e), courseProject.project);
       }
       return text;
     }), LightColors.RED);

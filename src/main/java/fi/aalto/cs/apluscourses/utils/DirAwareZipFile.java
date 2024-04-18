@@ -4,7 +4,7 @@ import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getAndReplaceT
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
 import com.intellij.openapi.project.Project;
-import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
+import fi.aalto.cs.apluscourses.services.PluginSettings;
 import java.io.File;
 import java.util.Objects;
 import net.lingala.zip4j.ZipFile;

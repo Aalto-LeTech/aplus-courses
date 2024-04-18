@@ -4,7 +4,7 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAwareAction;
 import fi.aalto.cs.apluscourses.intellij.services.CourseProjectProvider;
-import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
+import fi.aalto.cs.apluscourses.services.PluginSettings;
 import org.jetbrains.annotations.NotNull;
 
 public class RefreshModulesAction extends DumbAwareAction {
@@ -38,6 +38,6 @@ public class RefreshModulesAction extends DumbAwareAction {
     if (courseProject == null) {
       return;
     }
-    courseProject.getCourseUpdater().restart();
+    courseProject.courseUpdater.restart();
   }
 }

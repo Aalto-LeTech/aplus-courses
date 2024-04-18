@@ -15,7 +15,7 @@ public class APlusTokenAuthentication extends TokenAuthentication {
    * or overwritten.
    */
   public APlusTokenAuthentication(char @NotNull [] token,
-                                  @Nullable PasswordStorage passwordStorage) {
+                                  @Nullable TokenStorage passwordStorage) {
     super(APLUS_USER, token, passwordStorage);
   }
 
@@ -33,7 +33,7 @@ public class APlusTokenAuthentication extends TokenAuthentication {
     request.addHeader(AUTHORIZATION_HEADER, "Token " + new String(token));
   }
 
-  public static Factory getFactoryFor(@Nullable PasswordStorage passwordStorage) {
+  public static Factory getFactoryFor(@Nullable TokenStorage passwordStorage) {
     return token -> new APlusTokenAuthentication(token, passwordStorage);
   }
 }

@@ -2,11 +2,11 @@ package fi.aalto.cs.apluscourses.dal;
 
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.model.Course;
-import fi.aalto.cs.apluscourses.model.Exercise;
+import fi.aalto.cs.apluscourses.model.exercise.Exercise;
 import fi.aalto.cs.apluscourses.model.Group;
-import fi.aalto.cs.apluscourses.model.Points;
-import fi.aalto.cs.apluscourses.model.SubmissionInfo;
-import fi.aalto.cs.apluscourses.model.SubmissionResult;
+import fi.aalto.cs.apluscourses.model.exercise.Points;
+import fi.aalto.cs.apluscourses.model.exercise.SubmissionInfo;
+import fi.aalto.cs.apluscourses.model.exercise.SubmissionResult;
 import fi.aalto.cs.apluscourses.model.User;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;

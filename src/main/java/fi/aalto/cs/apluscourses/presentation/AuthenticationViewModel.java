@@ -9,8 +9,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class AuthenticationViewModel {
-  @NotNull
-  private final TokenAuthentication.Factory authenticationFactory;
+//  @NotNull
+//  private final TokenAuthentication.Factory authenticationFactory;
 
   @NotNull
   private final String authenticationUrl;
@@ -27,10 +27,11 @@ public class AuthenticationViewModel {
   /**
    * Constructs an AuthenticationViewModel.
    */
-  public AuthenticationViewModel(@NotNull TokenAuthentication.Factory authenticationFactory,
+  public AuthenticationViewModel(
+//      @NotNull TokenAuthentication.Factory authenticationFactory,
                                  @NotNull String authenticationHtmlUrl,
                                  @NotNull ExerciseDataSource exerciseDataSource) {
-    this.authenticationFactory = authenticationFactory;
+//    this.authenticationFactory = authenticationFactory;
     this.authenticationUrl = authenticationHtmlUrl;
     this.exerciseDataSource = exerciseDataSource;
   }
@@ -55,7 +56,7 @@ public class AuthenticationViewModel {
       if (token == null) {
         throw new IllegalStateException("Token is not set");
       }
-      this.authentication = authenticationFactory.create(token);
+//      this.authentication = authenticationFactory.create(token);
       Arrays.fill(token, '\0');
     }
   }

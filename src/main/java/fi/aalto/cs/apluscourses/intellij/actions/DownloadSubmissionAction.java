@@ -7,14 +7,13 @@ import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.ExerciseNotSelectedNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
-import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.intellij.utils.Interfaces;
 import fi.aalto.cs.apluscourses.intellij.utils.SubmissionDownloader;
-import fi.aalto.cs.apluscourses.model.DummySubmissionResult;
-import fi.aalto.cs.apluscourses.model.SubmissionResult;
-import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseViewModel;
+import fi.aalto.cs.apluscourses.model.exercise.SubmissionResult;
+//import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseViewModel;
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
-import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionResultViewModel;
+//import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionResultViewModel;
+import fi.aalto.cs.apluscourses.services.PluginSettings;
 import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -62,29 +61,29 @@ public class DownloadSubmissionAction extends AnAction {
     var project = e.getProject();
     var mainViewModel = mainViewModelProvider.getMainViewModel(project);
     var courseViewModel = mainViewModel.courseViewModel.get();
-    var exercisesTreeViewModel = mainViewModel.exercisesViewModel.get();
-    if (project == null || courseViewModel == null || exercisesTreeViewModel == null) {
-      return;
-    }
-    var selectedItem = exercisesTreeViewModel.getSelectedItem();
-    if (!(selectedItem instanceof SubmissionResultViewModel)) {
-      logger.info("Selected item not submission result");
-      return;
-    }
-
-    var selection = (ExercisesTreeViewModel.ExerciseTreeSelection) exercisesTreeViewModel.findSelected();
-    var selectedExercise = selection.getExercise();
-    var selectedExerciseGroup = selection.getExerciseGroup();
-    if (selectedExercise == null || selectedExerciseGroup == null) {
-      notifier.notifyAndHide(new ExerciseNotSelectedNotification(), project);
-      return;
-    }
-
-    var exercise = selectedExercise.getModel();
-    var course = courseViewModel.getModel();
-
-    new SubmissionDownloader().downloadSubmission(project, course, exercise,
-        (SubmissionResult) selectedItem.getModel());
+//    var exercisesTreeViewModel = mainViewModel.exercisesViewModel.get();
+//    if (project == null || courseViewModel == null || exercisesTreeViewModel == null) {
+//      return;
+//    }
+//    var selectedItem = exercisesTreeViewModel.getSelectedItem();
+//    if (!(selectedItem instanceof SubmissionResultViewModel)) {
+//      logger.info("Selected item not submission result");
+//      return;
+//    }
+//
+//    var selection = (ExercisesTreeViewModel.ExerciseTreeSelection) exercisesTreeViewModel.findSelected();
+//    var selectedExercise = selection.getExercise();
+//    var selectedExerciseGroup = selection.getExerciseGroup();
+//    if (selectedExercise == null || selectedExerciseGroup == null) {
+//      notifier.notifyAndHide(new ExerciseNotSelectedNotification(), project);
+//      return;
+//    }
+//
+//    var exercise = selectedExercise.getModel();
+//    var course = courseViewModel.getModel();
+//
+//    new SubmissionDownloader().downloadSubmission(project, course, exercise,
+//        (SubmissionResult) selectedItem.getModel());
   }
 
   @Override
@@ -93,15 +92,15 @@ public class DownloadSubmissionAction extends AnAction {
     e.getPresentation().setEnabled(false);
     var mainViewModel = mainViewModelProvider.getMainViewModel(e.getProject());
     var courseViewModel = mainViewModel.courseViewModel.get();
-    var exercisesTreeViewModel = mainViewModel.exercisesViewModel.get();
-    if (courseViewModel != null && exercisesTreeViewModel != null) {
-      var selection = (ExercisesTreeViewModel.ExerciseTreeSelection) exercisesTreeViewModel.findSelected();
-      ExerciseViewModel selectedExercise = selection.getExercise();
-      var selectedItem = exercisesTreeViewModel.getSelectedItem();
-      e.getPresentation().setEnabled(selectedItem instanceof SubmissionResultViewModel
-          && selectedExercise != null
-          && (selectedExercise.isSubmittable() || selectedItem.getModel() instanceof DummySubmissionResult));
-    }
+//    var exercisesTreeViewModel = mainViewModel.exercisesViewModel.get();
+//    if (courseViewModel != null && exercisesTreeViewModel != null) {
+//      var selection = (ExercisesTreeViewModel.ExerciseTreeSelection) exercisesTreeViewModel.findSelected();
+//      ExerciseViewModel selectedExercise = selection.getExercise();
+//      var selectedItem = exercisesTreeViewModel.getSelectedItem();
+//      e.getPresentation().setEnabled(selectedItem instanceof SubmissionResultViewModel
+//          && selectedExercise != null
+//          && (selectedExercise.isSubmittable()));
+//    }
   }
 
   @Override

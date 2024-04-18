@@ -14,7 +14,7 @@ public class NewsBodyViewModel extends SelectableNodeViewModel<News> {
   }
 
   @NotNull
-  public String[] getPresentableName() {
+  public String getPresentableName() {
     return news.getBody();
   }
 

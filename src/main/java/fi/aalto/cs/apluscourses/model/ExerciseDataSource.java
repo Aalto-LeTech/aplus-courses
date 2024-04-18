@@ -1,5 +1,9 @@
 package fi.aalto.cs.apluscourses.model;
 
+import fi.aalto.cs.apluscourses.model.exercise.Exercise;
+import fi.aalto.cs.apluscourses.model.exercise.ExerciseGroup;
+import fi.aalto.cs.apluscourses.model.exercise.Points;
+import fi.aalto.cs.apluscourses.model.exercise.SubmissionResult;
 import fi.aalto.cs.apluscourses.utils.cache.CachePreference;
 import java.io.IOException;
 import java.time.ZonedDateTime;
@@ -20,11 +24,11 @@ public interface ExerciseDataSource {
                                         @NotNull String languageCode) throws IOException;
 
   @NotNull
-  Points getPoints(@NotNull Course course, @NotNull Authentication authentication)
+  fi.aalto.cs.apluscourses.model.exercise.Points getPoints(@NotNull Course course, @NotNull Authentication authentication)
       throws IOException;
 
   @NotNull
-  Points getPoints(@NotNull Course course, @NotNull Authentication authentication, @Nullable Student student)
+  fi.aalto.cs.apluscourses.model.exercise.Points getPoints(@NotNull Course course, @NotNull Authentication authentication, @Nullable Student student)
       throws IOException;
 
   @NotNull

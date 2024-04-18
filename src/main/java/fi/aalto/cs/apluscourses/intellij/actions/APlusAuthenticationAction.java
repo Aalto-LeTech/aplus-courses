@@ -6,15 +6,15 @@ import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.dal.APlusTokenAuthentication;
 import fi.aalto.cs.apluscourses.dal.PasswordStorage;
-import fi.aalto.cs.apluscourses.intellij.dal.IntelliJPasswordStorage;
+import fi.aalto.cs.apluscourses.dal.TokenStorage;
 import fi.aalto.cs.apluscourses.intellij.notifications.ApiTokenNotSetNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.services.CourseProjectProvider;
 import fi.aalto.cs.apluscourses.intellij.services.Dialogs;
-import fi.aalto.cs.apluscourses.intellij.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Authentication;
 import fi.aalto.cs.apluscourses.presentation.AuthenticationViewModel;
+import fi.aalto.cs.apluscourses.services.PluginSettings;
 import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -31,8 +31,8 @@ public class APlusAuthenticationAction extends DumbAwareAction {
   @NotNull
   private final Dialogs dialogs;
 
-  @NotNull
-  private final PasswordStorage.Factory passwordStorageFactory;
+//  @NotNull
+//  private final PasswordStorage.Factory passwordStorageFactory;
 
   @NotNull
   private final Notifier notifier;
@@ -44,7 +44,7 @@ public class APlusAuthenticationAction extends DumbAwareAction {
     this(
         PluginSettings.getInstance()::getCourseProject,
         Dialogs.DEFAULT,
-        IntelliJPasswordStorage::new,
+//        TokenStorage::new,
         new DefaultNotifier()
     );
   }
@@ -54,11 +54,11 @@ public class APlusAuthenticationAction extends DumbAwareAction {
    */
   public APlusAuthenticationAction(@NotNull CourseProjectProvider courseProjectProvider,
                                    @NotNull Dialogs dialogs,
-                                   @NotNull PasswordStorage.Factory passwordStorageFactory,
+//                                   @NotNull PasswordStorage.Factory passwordStorageFactory,
                                    @NotNull Notifier notifier) {
     this.courseProjectProvider = courseProjectProvider;
     this.dialogs = dialogs;
-    this.passwordStorageFactory = passwordStorageFactory;
+//    this.passwordStorageFactory = passwordStorageFactory;
     this.notifier = notifier;
   }
 
@@ -81,14 +81,14 @@ public class APlusAuthenticationAction extends DumbAwareAction {
       logger.warn("Course project was null");
       return;
     }
-    var course = courseProject.getCourse();
+    var course = courseProject.course;
 
     String apiUrl = course.getApiUrl();
     String authenticationHtmlUrl = course.getHtmlUrl() + "accounts/accounts/";
 
-    PasswordStorage passwordStorage = passwordStorageFactory.create(apiUrl);
+//    PasswordStorage passwordStorage = passwordStorageFactory.create(apiUrl);
     AuthenticationViewModel authenticationViewModel = new AuthenticationViewModel(
-        APlusTokenAuthentication.getFactoryFor(passwordStorage),
+//        APlusTokenAuthentication.getFactoryFor(passwordStorage),
         authenticationHtmlUrl,
         course.getExerciseDataSource()
     );
@@ -106,7 +106,7 @@ public class APlusAuthenticationAction extends DumbAwareAction {
       notifier.notify(new ApiTokenNotSetNotification(), project);
     }
     courseProject.setAuthentication(authentication);
-    courseProject.getExercisesUpdater().restart();
+//    courseProject.exercisesUpdater.restart(courseProject);
     logger.info("Authentication finished");
   }
 

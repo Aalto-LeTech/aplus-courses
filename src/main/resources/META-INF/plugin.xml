@@ -1,4 +1,4 @@
-<idea-plugin require-restart="true">
+<idea-plugin>
     <id>fi.aalto.cs.intellij-plugin</id>
     <name>A+ Courses</name>
     <vendor email="intellij-plugin-letech@aalto.fi"
@@ -9,20 +9,21 @@
     <depends>org.intellij.scala</depends>
 
     <resource-bundle>resources</resource-bundle>
-
-
-
+    
     <extensions defaultExtensionNs="com.intellij">
-        <backgroundPostStartupActivity
-                implementation="fi.aalto.cs.apluscourses.intellij.activities.InitializationActivity"/>
-
+        <postStartupActivity
+                implementation="fi.aalto.cs.apluscourses.activities.InitializationActivity"/>
         <toolWindow id="A+ Courses"
                     anchor="right"
-                    factoryClass="fi.aalto.cs.apluscourses.intellij.toolwindows.APlusToolWindowFactory"
+                    factoryClass="fi.aalto.cs.apluscourses.toolwindows.APlusToolWindowFactory"
                     icon="PluginIcons.A_PLUS_LOGO"/>
         <moduleBuilder builderClass="fi.aalto.cs.apluscourses.intellij.generator.APlusModuleBuilder"/>
         <errorHandler implementation="fi.aalto.cs.apluscourses.intellij.utils.ErrorHandler"/>
         <httpRequestHandler implementation="fi.aalto.cs.apluscourses.intellij.services.OpenSubmissionService"/>
+        <applicationConfigurable
+                displayName="A+ Courses"
+                instance="fi.aalto.cs.apluscourses.config.APlusConfigurable"
+        />
     </extensions>
 
     <actions>
@@ -30,7 +31,7 @@
                text="A+"
                description="Actions for A+ menu"
                popup="true">
-<!--            <add-to-group group-id="MainMenu" anchor="last"/>-->
+            <!--            <add-to-group group-id="MainMenu" anchor="last"/>-->
             <action id="fi.aalto.cs.apluscourses.intellij.actions.CourseProjectAction"
                     class="fi.aalto.cs.apluscourses.intellij.actions.CourseProjectAction"
                     text="Link Project to an A+ Course"
@@ -93,30 +94,30 @@
                    icon="PluginIcons.A_PLUS_FILTER">
             </group>
         </group>
-        <group id="fi.aalto.cs.apluscourses.intellij.actions.ActionGroups.EXERCISE_ACTIONS"
+        <group id="fi.aalto.cs.apluscourses.actions.ActionGroups.EXERCISE_ACTIONS"
                text="A+ Assignment"
                description="Actions for A+ assignments">
-            <action id="fi.aalto.cs.apluscourses.intellij.actions.SubmitExerciseAction"
-                    class="fi.aalto.cs.apluscourses.intellij.actions.SubmitExerciseAction"
+            <action id="fi.aalto.cs.apluscourses.actions.exercise.SubmitExerciseAction"
+                    class="fi.aalto.cs.apluscourses.actions.exercise.SubmitExerciseAction"
                     text="Submit A+ Assignment"
                     icon="PluginIcons.A_PLUS_UPLOAD"/>
-            <action id="fi.aalto.cs.apluscourses.intellij.actions.OpenExerciseItemAction"
-                    class="fi.aalto.cs.apluscourses.intellij.actions.OpenExerciseItemAction"
+            <action id="fi.aalto.cs.apluscourses.actions.exercise.OpenExerciseItemAction"
+                    class="fi.aalto.cs.apluscourses.actions.exercise.OpenExerciseItemAction"
                     text="Open in Browser"
                     icon="PluginIcons.A_PLUS_BROWSE"/>
-            <action id="fi.aalto.cs.apluscourses.intellij.actions.ShowFeedbackAction"
-                    class="fi.aalto.cs.apluscourses.intellij.actions.ShowFeedbackAction"
+            <action id="fi.aalto.cs.apluscourses.actions.exercise.ShowFeedbackAction"
+                    class="fi.aalto.cs.apluscourses.actions.exercise.ShowFeedbackAction"
                     text="Show Feedback"
                     icon="PluginIcons.A_PLUS_FEEDBACK"/>
-            <action id="fi.aalto.cs.apluscourses.intellij.actions.ExercisesRefreshAction"
-                    class="fi.aalto.cs.apluscourses.intellij.actions.RefreshExercisesAction"
+            <action id="fi.aalto.cs.apluscourses.actions.exercise.RefreshExercisesAction"
+                    class="fi.aalto.cs.apluscourses.actions.exercise.RefreshExercisesAction"
                     text="Refresh Assignments"
                     icon="PluginIcons.A_PLUS_REFRESH"/>
-            <group id="fi.aalto.cs.apluscourses.intellij.actions.OptionsActionGroup.ForExercises"
-                    class="fi.aalto.cs.apluscourses.intellij.actions.APlusOptionsActionGroup$ForExercises"
-                    popup="true"
-                    text="Filter Assignments"
-                    icon="PluginIcons.A_PLUS_FILTER">
+            <group id="fi.aalto.cs.apluscourses.actions.exercise.FilterActionGroup"
+                   class="fi.aalto.cs.apluscourses.actions.exercise.FilterActionGroup"
+                   popup="true"
+                   text="Filter Assignments"
+                   icon="PluginIcons.A_PLUS_FILTER">
             </group>
             <separator/>
             <action id="fi.aalto.cs.apluscourses.intellij.actions.SelectStudentAction"
@@ -144,16 +145,6 @@
                         text="Log In"/>
             </group>
         </group>
-        <action id="Scala.RunConsole"
-                class="fi.aalto.cs.apluscourses.intellij.actions.ReplAction"
-                overrides="true"
-                icon="PluginIcons.A_PLUS_REPL">
-            <keyboard-shortcut first-keystroke="control shift D" keymap="$default"/>
-        </action>
-        <action id="ScalaConsole.Execute"
-                class="org.jetbrains.plugins.scala.console.apluscourses.ConsoleExecuteAction"
-                overrides="true">
-        </action>
     </actions>
     <applicationListeners>
         <listener class="fi.aalto.cs.apluscourses.intellij.utils.PluginLoadUnloadEventsListener"

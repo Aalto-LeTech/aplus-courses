@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.model;
 
+import fi.aalto.cs.apluscourses.model.exercise.Exercise;
 import java.nio.file.Path;
 import java.util.Map;
 import org.jetbrains.annotations.NotNull;

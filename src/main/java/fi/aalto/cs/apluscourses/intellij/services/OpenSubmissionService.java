@@ -7,6 +7,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import fi.aalto.cs.apluscourses.intellij.utils.SubmissionDownloader;
+import fi.aalto.cs.apluscourses.services.PluginSettings;
 import fi.aalto.cs.apluscourses.utils.cache.CachePreferences;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
@@ -79,7 +80,7 @@ public class OpenSubmissionService extends RestService {
     if (courseProject == null) {
       return false;
     }
-    var apiUrl = courseProject.getCourse().getHtmlUrl();
+    var apiUrl = courseProject.course.getHtmlUrl();
     return apiUrl.equals(getOrigin(request) + "/");
   }
 
@@ -93,7 +94,7 @@ public class OpenSubmissionService extends RestService {
     if (courseProject == null) {
       return NOT_LOADED_ERROR;
     }
-    var course = courseProject.getCourse();
+    var course = courseProject.course;
     var dataSource = course.getExerciseDataSource();
 
     var exerciseTree = courseProject.getExerciseTree();
@@ -112,7 +113,7 @@ public class OpenSubmissionService extends RestService {
     try {
       var submissionResult = dataSource.getSubmissionResult(
           course.getApiUrl() + "submissions/" + submissionId + "/", exercise,
-          courseProject.getAuthentication(), courseProject.getCourse(), CachePreferences.FOR_THIS_SESSION_ONLY);
+          courseProject.getAuthentication(), courseProject.course, CachePreferences.FOR_THIS_SESSION_ONLY);
 
       ApplicationManager.getApplication().invokeLater(
           () -> new SubmissionDownloader().downloadSubmission(project, course, exercise, submissionResult));
