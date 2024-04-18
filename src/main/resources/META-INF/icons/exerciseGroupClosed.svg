@@ -1,15 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="16" height="16" version="1.1" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"
-     xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/"
-     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-    <metadata>
-        <rdf:RDF>
-            <cc:Work rdf:about="">
-                <dc:format>image/svg+xml</dc:format>
-                <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-                <dc:title/>
-            </cc:Work>
-        </rdf:RDF>
-    </metadata>
-    <path d="m2 1v11l3 3h9v-11h-1v10h-7.6191l-2.0117-2h7.6309v-11z" fill="#9aa7b0" fill-opacity=".8"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+<path fill="#EBECF0" stroke="#6C707E" stroke-linejoin="round" stroke-miterlimit="10" d="M1.5,12.5l2,2h10v-10
+	l-2-3"/>
+<rect x="1.5" y="1.5" fill="#EBECF0" stroke="#6C707E" stroke-linejoin="round" stroke-miterlimit="10" width="10" height="11"/>
+<polyline fill="none" stroke="#6C707E" stroke-linejoin="round" stroke-miterlimit="10" points="3.5,1.5
+	3.5,5.5 4.5,4.5 5.5,5.5 5.5,1.5 "/>
 </svg>

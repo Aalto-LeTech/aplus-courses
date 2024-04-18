@@ -1,6 +1,8 @@
 package icons;
 
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.util.IconLoader;
+import com.intellij.ui.AnimatedIcon;
 import com.intellij.ui.JBColor;
 import java.awt.Color;
 import javax.swing.Icon;
@@ -62,8 +64,7 @@ public final class PluginIcons {
       .getIcon("/META-INF/images/courses-banner.png", PluginIcons.class);
   public static final Icon A_PLUS_COURSES_FOOTER = IconLoader
       .getIcon("/META-INF/images/footer.png", PluginIcons.class);
-  public static final Icon A_PLUS_IN_GRADING = IconLoader
-      .getIcon("/META-INF/icons/hourglass.svg", PluginIcons.class);
+  public static final AnimatedIcon A_PLUS_IN_GRADING = new AnimatedIcon.Default();
   public static final Icon A_PLUS_USER = IconLoader
       .getIcon("/META-INF/icons/user.svg", PluginIcons.class);
   public static final Icon A_PLUS_USER_ACTIVE = IconLoader
@@ -76,6 +77,5 @@ public final class PluginIcons {
       .getIcon("/META-INF/icons/checked.svg", PluginIcons.class);
   public static final Icon A_PLUS_DOCS = IconLoader
       .getIcon("/META-INF/icons/docs.svg", PluginIcons.class);
-  public static final Icon A_PLUS_PLUS = IconLoader
-      .getIcon("/META-INF/icons/plus.svg", PluginIcons.class);
+  public static final Icon A_PLUS_PLUS = AllIcons.General.Add;
 }
