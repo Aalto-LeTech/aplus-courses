@@ -1,7 +1,7 @@
 package fi.aalto.cs.apluscourses.intellij.actions
 
 import com.intellij.concurrency.ThreadContext
-import com.intellij.execution.configurations._
+import com.intellij.execution.configurations.*
 import com.intellij.execution.filters.TextConsoleBuilderImpl
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.ui.ConsoleView
@@ -27,22 +27,20 @@ import org.jetbrains.plugins.scala.project.ProjectExt
 import scala.jdk.CollectionConverters.ListHasAsScala
 import scala.util.Using
 
-/**
- * Custom class that adjusts Scala Plugin's own RunConsoleAction with A+ requirements.
- */
-class ReplAction extends RunConsoleAction {
+/** Custom class that adjusts Scala Plugin's own RunConsoleAction with A+ requirements.
+  */
+class ReplAction extends RunConsoleAction:
 
-  override def update(e: AnActionEvent): Unit = {
-    if (e.getProject == null || e.getProject.isDisposed) return // scalastyle:ignore
+  override def update(e: AnActionEvent): Unit =
+    if e.getProject == null || e.getProject.isDisposed then return
 
     e.getPresentation.setEnabledAndVisible(e.getProject.hasScala)
-  }
 
-  override def actionPerformed(@NotNull e: AnActionEvent): Unit = {
+  override def actionPerformed(@NotNull e: AnActionEvent): Unit =
     val dataContext = e.getDataContext
-    val project = CommonDataKeys.PROJECT.getData(dataContext)
+    val project     = CommonDataKeys.PROJECT.getData(dataContext)
 
-    if (project == null) return // scalastyle:ignore
+    if project == null then return
 
     val runManagerEx = RunManagerEx.getInstanceEx(project)
 
@@ -59,88 +57,78 @@ class ReplAction extends RunConsoleAction {
      * configured for module" error.
      */
     val selectedModule = getScalaModuleOfEditorFile(project, dataContext)
-      .orElse(getScalaModuleOfSelectedFile(project, dataContext)).orElse(getDefaultModule(project))
+      .orElse(getScalaModuleOfSelectedFile(project, dataContext))
+      .orElse(getDefaultModule(project))
 
     val setting = runManagerEx.createConfiguration(
-      getText("ui.repl.console.scala.repl"), new ReplConfigurationFactory())
+      getText("ui.repl.console.scala.repl"),
+      new ReplConfigurationFactory()
+    )
     val configuration = setting.getConfiguration.asInstanceOf[ScalaConsoleRunConfiguration]
 
-    selectedModule match {
+    selectedModule match
       case Some(module) =>
-        if (!setConfigurationConditionally(project, module, configuration)) {
-          return // scalastyle:ignore
-        }
+        if !setConfigurationConditionally(project, module, configuration) then return
       case None =>
         super.actionPerformed(e) // Delegate to the original Scala Plugin REPL
-        return // scalastyle:ignore
-    }
+        return
     RunConsoleAction.runExisting(setting, runManagerEx, project)
-  }
 
-  private class ReplConfigurationFactory() extends ConfigurationFactory(getMyConfigurationType) {
-    override def createTemplateConfiguration(project: Project): ScalaConsoleRunConfiguration = {
-      new ReplConfiguration(project, this,
-        getText("ui.repl.console.scala.repl"))
-    }
+  private class ReplConfigurationFactory() extends ConfigurationFactory(getMyConfigurationType):
+    override def createTemplateConfiguration(project: Project): ScalaConsoleRunConfiguration =
+      new ReplConfiguration(project, this, getText("ui.repl.console.scala.repl"))
 
     override def getId: String = getText("ui.repl.console.scala.repl.extended")
 
-    // scalastyle:off no.clone
-    private class ReplConfiguration(project: Project,
-                                    configurationFactory: ConfigurationFactory,
-                                    name: String)
-      extends ScalaConsoleRunConfiguration(project, configurationFactory, name) {
+    private class ReplConfiguration(
+        project: Project,
+        configurationFactory: ConfigurationFactory,
+        name: String
+    ) extends ScalaConsoleRunConfiguration(project, configurationFactory, name):
 
       private def getModule: Option[Module] = Option(getConfigurationModule.getModule)
 
-      override def getState(executor: Executor, env: ExecutionEnvironment): RunProfileState = {
+      override def getState(executor: Executor, env: ExecutionEnvironment): RunProfileState =
         val state = super.getState(executor, env).asInstanceOf[JavaCommandLineState]
 
-        getModule match {
+        getModule match
           case Some(module) =>
             state.setConsoleBuilder(new MyBuilder(module))
           case None =>
-        }
 
         state
-      }
 
-      override def clone(): ModuleBasedConfiguration[_ <: RunConfigurationModule, _] = super.clone()
+      override def clone(): ModuleBasedConfiguration[? <: RunConfigurationModule, ?] = super.clone()
 
-      private class MyBuilder(module: Module) extends TextConsoleBuilderImpl(module.getProject) {
+      private class MyBuilder(module: Module) extends TextConsoleBuilderImpl(module.getProject):
         override def createConsole(): ConsoleView = new Repl(module)
-      }
 
-    }
-    // scalastyle:on no.clone
-  }
-
-  def getDefaultModule(@NotNull project: Project): Option[Module] = {
-    Option(PluginSettings.getInstance().getMainViewModel(project).courseViewModel.get) match {
+  private def getDefaultModule(@NotNull project: Project): Option[Module] =
+    Option(PluginSettings.getInstance().getMainViewModel(project).courseViewModel.get) match
       case Some(courseViewModel) =>
-        Option(ModuleManager.getInstance(project).findModuleByName(
-          courseViewModel
-            .getModel
-            .getAutoInstallComponentNames
-            .asScala
-            //  we, hereby, commonly agree, that the first in the list auto install component (module)
-            //  is ultimately REPL's default module (as it's most likely to exist). sorry :pensive:
-            .head))
+        Option(
+          ModuleManager
+            .getInstance(project)
+            .findModuleByName(
+              courseViewModel.getModel.getAutoInstallComponentNames.asScala
+                //  we, hereby, commonly agree, that the first in the list auto install component (module)
+                //  is ultimately REPL's default module (as it's most likely to exist). sorry :pensive:
+                .head
+            )
+        )
       case None => None
-    }
-  }
 
-  def getReplAdditionalArguments(@NotNull project: Project): String = {
-    Option(PluginSettings.getInstance().getMainViewModel(project).courseViewModel.get) match {
+  private def getReplAdditionalArguments(@NotNull project: Project): String =
+    Option(PluginSettings.getInstance().getMainViewModel(project).courseViewModel.get) match
       case Some(courseViewModel) => courseViewModel.getModel.getReplAdditionalArguments
-      case None => ""
-    }
-  }
+      case None                  => ""
 
-  def setConfigurationFields(@NotNull configuration: ScalaConsoleRunConfiguration,
-                             @NotNull workingDirectory: String,
-                             @NotNull module: Module): Unit = {
-    configuration.setWorkingDirectory(workingDirectory)
+  private def setConfigurationFields(
+      @NotNull configuration: ScalaConsoleRunConfiguration,
+      @NotNull workingDirectory: String,
+      @NotNull module: Module
+  ): Unit =
+    configuration.workingDirectory = workingDirectory
     configuration.setModule(module)
     configuration.setName(getAndReplaceText("ui.repl.console.name", module.getName))
 
@@ -149,55 +137,53 @@ class ReplAction extends RunConsoleAction {
     // Scala 3 no longer has an option for preloading REPL commands, so there's no point
     // in adding this command-line switch anymore
     // Instead, we use an alternative method of preloading commands by using ScalaExecutor
-    if (!ModuleUtils.isScala3Module(module)) {
+    if !ModuleUtils.isScala3Module(module) then
       ModuleUtils.createInitialReplCommandsFile(module)
-      if (ModuleUtils.initialReplCommandsFileExists(module)) {
+      if ModuleUtils.initialReplCommandsFileExists(module) then
         args += " -i " + MODULE_REPL_INITIAL_COMMANDS_FILE_NAME
-      }
-    }
 
-    configuration.setMyConsoleArgs(args)
-  }
+    configuration.myConsoleArgs = args
 
-  /**
-   * Sets configuration fields for the given configuration and returns true. Returns false if
-   * the REPL start is cancelled (i.e. user selects "Cancel" in the REPL configuration dialog).
-   */
-  def setConfigurationConditionally(@NotNull project: Project,
-                                    @NotNull module: Module,
-                                    @NotNull configuration: ScalaConsoleRunConfiguration): Boolean = {
-
-
-    if (PluginSettings.getInstance.shouldShowReplConfigurationDialog) {
+  /** Sets configuration fields for the given configuration and returns true. Returns false if the
+    * REPL start is cancelled (i.e. user selects "Cancel" in the REPL configuration dialog).
+    */
+  private def setConfigurationConditionally(
+      @NotNull project: Project,
+      @NotNull module: Module,
+      @NotNull configuration: ScalaConsoleRunConfiguration
+  ): Boolean =
+    if PluginSettings.getInstance.shouldShowReplConfigurationDialog then
       setConfigurationFieldsFromDialog(configuration, project, module)
-    } else {
+    else
       setConfigurationFields(configuration, ModuleUtils.getModuleDirectory(module), module)
       true
-    }
-  }
 
-  /**
-   * Sets the configuration fields from the REPL dialog. Returns true if it is done successfully,
-   * and false if the user cancels the REPL dialog.
-   */
-  private def setConfigurationFieldsFromDialog(@NotNull configuration: ScalaConsoleRunConfiguration,
-                                               @NotNull project: Project,
-                                               @NotNull module: Module): Boolean = {
+  /** Sets the configuration fields from the REPL dialog. Returns true if it is done successfully,
+    * and false if the user cancels the REPL dialog.
+    */
+  private def setConfigurationFieldsFromDialog(
+      @NotNull configuration: ScalaConsoleRunConfiguration,
+      @NotNull project: Project,
+      @NotNull module: Module
+  ): Boolean =
     val configModel = showReplDialog(project, module)
-    if (!configModel.isStartRepl) {
-      false
-    } else {
+    if !configModel.isStartRepl then false
+    else
       val changedModuleName = configModel.getTargetModuleName
-      val changedModule = ModuleManager.getInstance(project).findModuleByName(changedModuleName)
-      val changedWorkDir = toSystemIndependentName(configModel.getModuleWorkingDirectory)
+      val changedModule     = ModuleManager.getInstance(project).findModuleByName(changedModuleName)
+      val changedWorkDir    = toSystemIndependentName(configModel.getModuleWorkingDirectory)
       setConfigurationFields(configuration, changedWorkDir, changedModule)
       true
-    }
-  }
 
-  private def showReplDialog(@NotNull project: Project,
-                             @NotNull module: Module): ReplConfigurationFormModel = {
-    val configModel = new ReplConfigurationFormModel(project, ModuleUtils.getModuleDirectory(module), module.getName)
+  private def showReplDialog(
+      @NotNull project: Project,
+      @NotNull module: Module
+  ): ReplConfigurationFormModel =
+    val configModel = new ReplConfigurationFormModel(
+      project,
+      ModuleUtils.getModuleDirectory(module),
+      module.getName
+    )
     val configForm = new ReplConfigurationForm(configModel, project)
 
     // This will reset the current thread context. We need to do this because
@@ -205,27 +191,29 @@ class ReplAction extends RunConsoleAction {
     // to spawn a dialog box with its own processing loop (which sets a thread context).
     // This makes IntelliJ unhappy because a thread context can only be set once.
     // Once the Using block exits (i.e. the dialog box closes), the original thread context is restored.
-    Using(ThreadContext.resetThreadContext()) { _ => {
+    Using(ThreadContext.resetThreadContext()): _ =>
       val configDialog = new ReplConfigurationDialog
       configDialog.setReplConfigurationForm(configForm)
       configDialog.setVisible(true)
-    }}
 
     configModel
-  }
 
-  private def getScalaModuleOfEditorFile(@NotNull project: Project,
-                                         @NotNull context: DataContext): Option[Module] =
+  private def getScalaModuleOfEditorFile(
+      @NotNull project: Project,
+      @NotNull context: DataContext
+  ): Option[Module] =
     ModuleUtils.getModuleOfEditorFile(project, context).filter(hasScalaSdkLibrary)
 
-  private def getScalaModuleOfSelectedFile(@NotNull project: Project,
-                                           @NotNull context: DataContext): Option[Module] =
+  private def getScalaModuleOfSelectedFile(
+      @NotNull project: Project,
+      @NotNull context: DataContext
+  ): Option[Module] =
     ModuleUtils.getModuleOfSelectedFile(project, context).filter(hasScalaSdkLibrary)
 
   private def hasScalaSdkLibrary(@NotNull module: Module): Boolean = ModuleUtils.nonEmpty(
-    ModuleRootManager.getInstance(module)
+    ModuleRootManager
+      .getInstance(module)
       .orderEntries()
       .librariesOnly()
-      .satisfying(_.getPresentableName.startsWith("scala-sdk-")))
-
-}
+      .satisfying(_.getPresentableName.startsWith("scala-sdk-"))
+  )

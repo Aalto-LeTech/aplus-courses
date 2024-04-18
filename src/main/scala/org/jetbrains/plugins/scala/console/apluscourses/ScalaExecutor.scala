@@ -8,17 +8,16 @@ import fi.aalto.cs.apluscourses.intellij.Repl
 import javax.swing.SwingUtilities
 import org.jetbrains.plugins.scala.console.ScalaConsoleInfo
 
-object ScalaExecutor {
-  /**
-   * Runs a single line of Scala code in the context of the provided REPL console.
-   * @param console An instance of our A+ enhanced REPL.
-   * @param command A single line (no newlines) of Scala code to execute.
-   */
-  def runLine(console: Repl, command: String): Unit = {
+object ScalaExecutor:
+  /** Runs a single line of Scala code in the context of the provided REPL console.
+    * @param console
+    *   An instance of our A+ enhanced REPL.
+    * @param command
+    *   A single line (no newlines) of Scala code to execute.
+    */
+  def runLine(console: Repl, command: String): Unit =
     val processHandler = ScalaConsoleInfo.getProcessHandler(console.getConsoleEditor)
-    if (processHandler == null) {
-      return // scalastyle:ignore
-    }
+    if processHandler == null then return
 
     val outputStream = processHandler.getProcessInput
     outputStream.write((command + "\n").getBytes)
@@ -26,5 +25,3 @@ object ScalaExecutor {
 
     // this must be invoked from EDT because it accesses the IntelliJ PSI
     SwingUtilities.invokeLater(() => console.textSent(command))
-  }
-}
