@@ -14,7 +14,7 @@
             <stop offset="1" stop-color="#ff62e5"/>
         </linearGradient>
     </defs>
-    <path fill="#000000" d="M16,38h8v-14h14s0-8,0-8h-14V2h-8v14H2v8h14s0,14,0,14Z"/>
-    <path fill="url(#g1)" d="M17,37h6v-14h14s0-6,0-6h-14V3h-6v14H3v6h14s0,14,0,14Z"/>
+    <path fill="url(#g1)" d="M16,38h8v-14h14s0-8,0-8h-14V2h-8v14H2v8h14s0,14,0,14Z"/>
+    <path fill="#000000" d="M17,37h6v-14h14s0-6,0-6h-14V3h-6v14H3v6h14s0,14,0,14Z"/>
     <path fill="url(#g2)" d="M8,38L24,2h-8L0,38h8Z"/>
 </svg>
