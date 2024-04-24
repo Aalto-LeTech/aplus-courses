@@ -1,36 +1,33 @@
 <p align="center">
-   <a href="https://plugins.jetbrains.com/plugin/13634-a-courses">
-      <img src="images/courses-banner.webp" alt="A+ Courses is a plugin for IntelliJ IDEA, used in programming courses at Aalto University">
+   <a href="https://plugins.jetbrains.com/plugin/13634-a-courses" style="box-shadow: 5px 5px 15px 1px black;">
+      <img src="images/courses-banner.webp" alt="A+ Courses is a plugin for IntelliJ IDEA, used in programming courses at Aalto University" >
    </a>
 </p>
 
-<p align="center">
-   <a href="https://github.com/Aalto-LeTech/aplus-courses/actions?query=workflow%3Abuild">
-      <img alt="Build" src="https://github.com/Aalto-LeTech/aplus-courses/actions/workflows/push.yml/badge.svg"/>
-   </a>
-   <a href="https://snyk.io/test/github/Aalto-LeTech/aplus-courses?targetFile=build.gradle">
-      <img alt="Known Vulnerabilities" src="https://snyk.io/test/github/Aalto-LeTech/aplus-courses/badge.svg?targetFile=build.gradle"/>
-   </a>
-   <a href="https://sonarcloud.io/dashboard?id=Aalto-LeTech_intellij-plugin">
-      <img alt="Coverage" src="https://sonarcloud.io/api/project_badges/measure?project=Aalto-LeTech_intellij-plugin&metric=coverage"/>
-   </a>
-   <a href="https://plugins.jetbrains.com/plugin/13634-a-plugin-for-intellij">
-      <img alt="A+ Courses plugin downloads" src="https://img.shields.io/jetbrains/plugin/d/13634-a-plugin-for-intellij?label=plugin%20downloads"/>
-   </a>
-   <a href="https://plugins.jetbrains.com/plugin/13634-a-plugin-for-intellij">
-      <img alt="A+ Courses plugin version" src="https://img.shields.io/jetbrains/plugin/v/13634?label=plugin%20version"/>
-   </a>
-</p>
+<div align="center">
 
-<p align="center">
+  <a href="https://github.com/Aalto-LeTech/aplus-courses/actions?query=workflow%3Abuild">![Build](https://github.com/Aalto-LeTech/aplus-courses/actions/workflows/push.yml/badge.svg)</a>
+  <a href="https://snyk.io/test/github/Aalto-LeTech/aplus-courses?targetFile=build.gradle">![Known Vulnerabilities](https://snyk.io/test/github/Aalto-LeTech/aplus-courses/badge.svg?targetFile=build.gradle)</a>
+  <a href="https://sonarcloud.io/dashboard?id=Aalto-LeTech_intellij-plugin">![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Aalto-LeTech_intellij-plugin&metric=coverage)</a>
+
+</div>
+
+<div align="center">
+
+  <a href="https://plugins.jetbrains.com/plugin/13634-a-plugin-for-intellij">![Plugin Downloads](https://img.shields.io/jetbrains/plugin/d/13634-a-plugin-for-intellij?label=plugin%20downloads)</a>
+  <a href="https://plugins.jetbrains.com/plugin/13634-a-plugin-for-intellij">![Plugin Version](https://img.shields.io/jetbrains/plugin/v/13634?label=plugin%20version)</a>
+
+</div>
+
+<div align="center">
    <a href="https://plugins.jetbrains.com/plugin/13634-a-courses">
       <img width="245px" src="images/marketplace.webp" alt="Get from Marketplace">
    </a>
-</p>
+</div>
 
 ---
 
-<img width="300px" align="right" src="images/image_4_readme.webp" alt="Screenshot"/>
+<img width="300px" align="right" src="images/image_4_readme.webp" alt="Screenshot">
 
 This repository hosts the source code for the A+ Courses [IntelliJ IDEA](https://www.jetbrains.com/idea/) plugin
 communicating with the [A+ LMS](https://apluslms.github.io/). It allows users to download code modules, submit
@@ -39,7 +36,7 @@ currently used in introductory programming courses taught at Aalto
 University ([Programming 1](https://plus.cs.aalto.fi/o1)
 and [Programming Studio 2/A](https://oodi.aalto.fi/a/opintjakstied.jsp?OpinKohd=1125591784&haettuOpas=-1&Kieli=6)).
 
-The project is developed under the [Aalto Le-Tech research group](https://research.cs.aalto.fi/LeTech/) and is steered
+The project is developed under the [Aalto LeTech research group](https://research.cs.aalto.fi/LeTech/) and is steered
 by **[Juha Sorva](https://github.com/jsorva)** and **[Otto Seppälä.](https://github.com/oseppala)**
 
 ## Features and Further Development
@@ -75,13 +72,23 @@ List of courses is available at https://version.aalto.fi/gitlab/aplus-courses/co
 
 ## Research
 
-Contains references for the academic research related to or created based on the A+ Courses plugin.
+Academic research related to or created based on the A+ Courses plugin.
 
-1. ["Creating an educational plugin to support online programming learning A case of IntelliJ IDEA plugin for A+ Learning Management System"](https://aaltodoc.aalto.fi/handle/123456789/102499)
-   Master's thesis by Nikolai Denissov
 
-2. ["Plug-in Interoperation in Extendable Platforms"](https://aaltodoc.aalto.fi/handle/123456789/107623) Master's thesis
-   by Olli Kiljunen
+<div align="center">
+
+  <a href="https://aaltodoc.aalto.fi/handle/123456789/102499"><img 
+    alt="'Creating an educational plugin to support online programming learning A case of IntelliJ IDEA plugin for A+ Learning Management System' Master's thesis by Nikolai Denissov" 
+    width="375"
+    src="images/thesis-nikolai.svg" ></a>
+  <a href="https://aaltodoc.aalto.fi/handle/123456789/107623"><img 
+    alt="'Plug-in Interoperation in Extendable Platforms' Master's thesis by Olli Kiljunen"
+    width="375"
+    src="images/thesis-olli.svg" ></a>
+   
+</div>
+
+
 
 ## Code Style
 
