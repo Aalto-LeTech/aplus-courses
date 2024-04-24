@@ -79,12 +79,11 @@ Academic research related to or created based on the A+ Courses plugin.
 
   <a href="https://aaltodoc.aalto.fi/handle/123456789/102499"><img 
     alt="'Creating an educational plugin to support online programming learning A case of IntelliJ IDEA plugin for A+ Learning Management System' Master's thesis by Nikolai Denissov" 
-    width="400"
-    hspace="20"
+    width="375"
     src="images/thesis-nikolai.svg" ></a>
   <a href="https://aaltodoc.aalto.fi/handle/123456789/107623"><img 
     alt="'Plug-in Interoperation in Extendable Platforms' Master's thesis by Olli Kiljunen"
-    width="400"
+    width="375"
     src="images/thesis-olli.svg" ></a>
    
 </div>
