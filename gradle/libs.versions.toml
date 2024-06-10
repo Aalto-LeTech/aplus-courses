@@ -1,6 +1,6 @@
 [versions]
 # libraries
-annotations = "24.1.0"
+#annotations = "24.1.0"
 zip4j = "2.11.5"
 json = "20240303"
 scalaLibrary = "3.4.1"
@@ -13,15 +13,14 @@ mockito = "5.11.0"
 restAssured = "5.4.0"
 
 # plugins
-kotlin = "1.9.23"
-scala = "2024.1.15"
+kotlin = "2.0.0"
 changelog = "2.2.0"
-intelliJPlatform = "2.0.0-SNAPSHOT"
-qodana = "2023.3.1"
-kover = "0.7.6"
+intelliJPlatform = "2.0.0-beta6"
+qodana = "2024.1.5"
+kover = "0.8.0"
 
 [libraries]
-annotations = { group = "org.jetbrains", name = "annotations", version.ref = "annotations" }
+#annotations = { group = "org.jetbrains", name = "annotations", version.ref = "annotations" }
 zip4j = { group = "net.lingala.zip4j", name = "zip4j", version.ref = "zip4j" }
 json = { group = "org.json", name = "json", version.ref = "json" }
 
@@ -40,6 +39,5 @@ restAssured = { group = "io.rest-assured", name = "rest-assured", version.ref = 
 changelog = { id = "org.jetbrains.changelog", version.ref = "changelog" }
 intelliJPlatform = { id = "org.jetbrains.intellij.platform", version.ref = "intelliJPlatform" }
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-scala = { id = "org.jetbrains.plugins.scala", version.ref = "scala" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 qodana = { id = "org.jetbrains.qodana", version.ref = "qodana" }

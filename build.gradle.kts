@@ -1,15 +1,14 @@
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.markdownToHTML
-import org.jetbrains.intellij.platform.gradle.extensions.TestFrameworkType
 
-fun properties(key: String) = providers.gradleProperty(key)
-fun environment(key: String) = providers.environmentVariable(key)
+fun properties(key: String): Provider<String> = providers.gradleProperty(key)
+fun environment(key: String): Provider<String> = providers.environmentVariable(key)
 
 plugins {
-    id("java")
-    id("scala")
-    id("jacoco")
-    id("checkstyle")
+    java
+//    scala
+    jacoco
+    checkstyle
 
     // ./gradle/libs.versions.toml
     alias(libs.plugins.kotlin) // Kotlin support
@@ -17,6 +16,8 @@ plugins {
     alias(libs.plugins.changelog) // Gradle Changelog Plugin
     alias(libs.plugins.qodana) // Gradle Qodana Plugin
     alias(libs.plugins.kover) // Gradle Kover Plugin
+
+    kotlin("plugin.serialization") version "2.0.0"
 }
 
 group = properties("pluginGroup").get()
@@ -24,7 +25,7 @@ version = properties("pluginVersion").get()
 
 // Set the JVM language level used to build the project.
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(21)
 }
 
 // Configure project's dependencies
@@ -34,7 +35,6 @@ repositories {
     // IntelliJ Platform Gradle Plugin Repositories Extension - read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-repositories-extension.html
     intellijPlatform {
         defaultRepositories()
-        intellijDependencies()
     }
 }
 
@@ -46,9 +46,16 @@ idea {
 }
 
 dependencies {
-    implementation(libs.annotations)
     implementation(libs.zip4j)
     implementation(libs.json)
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+    implementation("io.ktor:ktor-client-core:2.3.11")
+    implementation("io.ktor:ktor-client-cio:2.3.11")
+    implementation("io.ktor:ktor-client-resources:2.3.11") //{
+//        exclude(group = "io.ktor", module = "ktor-client-core")
+//        exclude(group = "io.ktor", module = "ktor-utils")
+//        exclude(group = "io.ktor", module = "ktor-resources" )
+//    }
 
     compileOnly(libs.scalaLibrary)
 
@@ -61,6 +68,15 @@ dependencies {
     testImplementation(libs.mockito)
     testImplementation(libs.restAssured) {
         exclude(group = "commons-codec", module = "commons-codec") // Excluded because of Cxeb68d52e-5509
+    }
+
+    configurations.all {
+        exclude(group = "org.jetbrains.kotlinx", module = "kotlinx.coroutines") // Only the bundled version is allowed
+        exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-core")
+        exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-core-jvm")
+        exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-jdk8")
+        exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-slf4j")
+        exclude(group = "org.slf4j")
     }
 
     // IntelliJ Platform Gradle Plugin Dependencies Extension - read more:
@@ -78,7 +94,6 @@ dependencies {
 
         instrumentationTools()
         pluginVerifier()
-        testFramework(TestFrameworkType.Platform.JUnit4)
     }
 }
 
