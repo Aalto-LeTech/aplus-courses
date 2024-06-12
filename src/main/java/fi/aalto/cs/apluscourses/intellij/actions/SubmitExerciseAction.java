@@ -282,8 +282,19 @@ public class SubmitExerciseAction extends AnAction {
 
     documentSaver.saveAllDocuments();
 
-    Path modulePath =
-        moduleDir == null ? Paths.get(ModuleUtilCore.getModuleDirPath(selectedModule)) : Paths.get(moduleDir.getPath());
+    Path modulePath;
+    if (moduleDir == null) {
+      modulePath = Paths.get(ModuleUtilCore.getModuleDirPath(selectedModule));
+
+      // in the case of SBT modules, the .iml file is inside .idea/modules, so we need to
+      // go up the directory tree two times to reach the project directory
+      if (modulePath.endsWith(Path.of(".idea/modules"))) {
+        modulePath = modulePath.getParent().getParent();
+      }
+    } else {
+      modulePath = Paths.get(moduleDir.getPath());
+    }
+
     Map<String, Path> files = new HashMap<>();
     for (SubmittableFile file : submissionInfo.getFiles(language)) {
       files.put(file.getKey(), fileFinder.findFile(modulePath, file.getName()));

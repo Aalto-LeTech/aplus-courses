@@ -36,7 +36,7 @@ public interface ModelFactory {
                       long courseLastModified);
 
   Module createModule(@NotNull String name, @NotNull URL url, @NotNull Version version,
-                      @NotNull String changelog);
+                      @NotNull String changelog, boolean isSbtModule);
 
   Library createLibrary(@NotNull String name);
 }
