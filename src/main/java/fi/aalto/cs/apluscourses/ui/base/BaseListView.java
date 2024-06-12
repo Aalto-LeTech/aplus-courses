@@ -57,12 +57,12 @@ public abstract class BaseListView<E extends ListElementViewModel<?>>
   protected BaseListView() {
     addMouseListener(new ListMouseListener());
     getInputMap(JComponent.WHEN_FOCUSED).put(ENTER_KEY_STROKE, LIST_ACTION);
-    getActionMap().put(LIST_ACTION, new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent actionEvent) {
-        onListActionPerformed();
-      }
-    });
+//    getActionMap().put(LIST_ACTION, new AbstractAction() {
+//      @Override
+//      public void actionPerformed(ActionEvent actionEvent) {
+//        onListActionPerformed();
+//      }
+//    });
   }
 
   /**

@@ -2,7 +2,7 @@ package fi.aalto.cs.apluscourses.presentation.news;
 
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
-import fi.aalto.cs.apluscourses.model.NewsTree;
+import fi.aalto.cs.apluscourses.model.news.NewsTree;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.BaseTreeViewModel;
 import java.util.stream.Collectors;

@@ -24,14 +24,10 @@ import fi.aalto.cs.apluscourses.utils.PluginDependency;
 import fi.aalto.cs.apluscourses.utils.Version;
 import java.net.URL;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -60,7 +56,7 @@ public class IntelliJCourse extends Course {
                         @NotNull Map<String, String> vmOptions,
                         @NotNull Set<String> optionalCategories,
                         @NotNull List<String> autoInstallComponentNames,
-                        @NotNull Map<String, String[]> replInitialCommands,
+                        @NotNull Map<String, List<String>> replInitialCommands,
                         @NotNull String replAdditionalArguments,
                         @NotNull Version courseVersion,
                         @NotNull APlusProject project,
@@ -125,14 +121,14 @@ public class IntelliJCourse extends Course {
     return component != null && component.getFullPath().equals(Paths.get(file.getPath())) ? component : null;
   }
 
-  @NotNull
-  @Override
-  public Collection<Component> getComponents() {
-    return Stream.concat(
-        super.getComponents().stream(),
-        commonLibraryProvider.getProvidedLibraries().stream()
-    ).collect(Collectors.toCollection(ArrayList::new));
-  }
+//  @NotNull
+//  @Override
+//  public Collection<Component> getComponents() {
+//    return Stream.concat(
+//        super.getComponents().stream(),
+//        commonLibraryProvider.getProvidedLibraries().stream()
+//    ).collect(Collectors.toCollection(ArrayList::new));
+//  }
 
   @Override
   public void register() {

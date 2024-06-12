@@ -1,12 +1,11 @@
 package fi.aalto.cs.apluscourses.utils;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.intellij.openapi.diagnostic.Logger;
 
 public class APlusLogger {
   private APlusLogger() {
 
   }
 
-  public static final Logger logger = LoggerFactory.getLogger("A+ Courses");
+  public static final Logger logger = Logger.getInstance(APlusLogger.class);
 }

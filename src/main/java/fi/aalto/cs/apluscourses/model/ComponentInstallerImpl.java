@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.model;
 
+import com.intellij.openapi.diagnostic.Logger;
 import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import fi.aalto.cs.apluscourses.utils.Callbacks;
 import fi.aalto.cs.apluscourses.utils.async.TaskManager;
@@ -8,7 +9,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
 
 public class ComponentInstallerImpl<T> implements ComponentInstaller {
 

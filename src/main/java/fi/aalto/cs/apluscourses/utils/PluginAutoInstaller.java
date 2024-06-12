@@ -7,6 +7,7 @@ import com.intellij.ide.plugins.PluginNode;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.application.WriteAction;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
@@ -26,7 +27,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
 
 public class PluginAutoInstaller {
 
@@ -76,7 +76,7 @@ public class PluginAutoInstaller {
         }
       });
 
-      for (;;) {
+      for (; ; ) {
         // Semaphore acquisition will succeed once all plugins have been installed.
         if (lock.tryAcquire()) {
           // If plugin installation failed at any point (for example: an attempt to install a non-existent plugin),
@@ -114,12 +114,13 @@ public class PluginAutoInstaller {
   /**
    * Verifies that all plugins with given plugin IDs are installed and enabled. If not, the function
    * asks the user for consent to install and enable all missing plugins.
-   * @param project The project which initiated the operation.
-   * @param notifier A notifier instance, used to show a notification if something goes wrong.
+   *
+   * @param project     The project which initiated the operation.
+   * @param notifier    A notifier instance, used to show a notification if something goes wrong.
    * @param pluginNames List of plugin ID strings. The plugin ID can be found on the plugin's
    *                    JetBrains Marketplace website.
-   * @param callback An interface implementing functions invoked by this method. The functions
-   *                 are related to showing the consent dialog box to the user.
+   * @param callback    An interface implementing functions invoked by this method. The functions
+   *                    are related to showing the consent dialog box to the user.
    * @return True, if all dependencies are satisfied and there's nothing to be done. False, if
    * some dependencies were missing, and they were installed or enabled. Null, if the operation
    * has been cancelled due to missing consent or an error.
@@ -137,8 +138,8 @@ public class PluginAutoInstaller {
     final var pluginsToEnable = pluginIDs.stream()
         .filter(PluginAutoInstaller::shouldEnablePlugin).collect(Collectors.toSet());
 
-    pluginsToDownload.forEach(id -> logger.info("Plugin to download: {}", id.getIdString()));
-    pluginsToEnable.forEach(id -> logger.info("Plugin to enable: {}", id.getIdString()));
+    pluginsToDownload.forEach(id -> logger.info("Plugin to download: %s".formatted(id.getIdString())));
+    pluginsToEnable.forEach(id -> logger.info("Plugin to enable: %s".formatted(id.getIdString())));
 
     if (pluginsToDownload.isEmpty() && pluginsToEnable.isEmpty()) {
       return true;

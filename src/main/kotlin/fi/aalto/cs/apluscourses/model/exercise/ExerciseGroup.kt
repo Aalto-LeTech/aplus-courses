@@ -1,17 +1,17 @@
 package fi.aalto.cs.apluscourses.model.exercise
 
+//import fi.aalto.cs.apluscourses.utils.JsonUtil
+//import org.json.JSONArray
+//import org.json.JSONObject
 import com.intellij.util.xml.ConvertContext
 import com.intellij.util.xml.Converter
-//import fi.aalto.cs.apluscourses.utils.JsonUtil
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-//import org.json.JSONArray
-//import org.json.JSONObject
-import java.util.*
 
 
 @Serializable
+@Suppress("PROVIDED_RUNTIME_TOO_LOW")
 data class ExerciseGroup(
     val id: Long,
     val name: String,
@@ -39,16 +39,16 @@ data class ExerciseGroup(
                 return json.decodeFromString(value)
             }
 
-            override fun toString(value: MutableList<ExerciseGroup>): String? {
+            override fun toString(value: MutableList<ExerciseGroup>): String {
                 return json.encodeToString(value)
             }
         }
 
         class EGConverter : Converter<ExerciseGroup>() {
-            override fun toString(t: ExerciseGroup?, context: ConvertContext?): String =
+            override fun toString(t: ExerciseGroup?, context: ConvertContext): String =
                 if (t == null) "" else json.encodeToString(t)
 
-            override fun fromString(s: String?, context: ConvertContext?): ExerciseGroup? {
+            override fun fromString(s: String?, context: ConvertContext): ExerciseGroup? {
                 return if (s == null) null else json.decodeFromString(s)
             }
         }

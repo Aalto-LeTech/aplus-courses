@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.presentation
 
+import com.intellij.openapi.diagnostic.Logger
 import fi.aalto.cs.apluscourses.model.CourseProject
 import fi.aalto.cs.apluscourses.model.User
 import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel
@@ -8,8 +9,6 @@ import fi.aalto.cs.apluscourses.presentation.news.NewsTreeViewModel
 import fi.aalto.cs.apluscourses.utils.Event
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.util.*
 
 /**
@@ -98,6 +97,6 @@ class MainViewModel {
     }
 
     companion object {
-        val logger: Logger = LoggerFactory.getLogger(MainViewModel::class.java)
+        val logger: Logger = Logger.getInstance(MainViewModel::class.java)
     }
 }

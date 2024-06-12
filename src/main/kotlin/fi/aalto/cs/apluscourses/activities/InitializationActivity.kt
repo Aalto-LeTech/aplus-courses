@@ -3,20 +3,18 @@ package fi.aalto.cs.apluscourses.activities
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ex.ApplicationEx
 import com.intellij.openapi.components.service
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.project.ProjectManagerListener
 import com.intellij.openapi.startup.ProjectActivity
-import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory
 import fi.aalto.cs.apluscourses.intellij.model.SettingsImporter
 import fi.aalto.cs.apluscourses.intellij.notifications.*
 import fi.aalto.cs.apluscourses.intellij.utils.ProjectKey
 import fi.aalto.cs.apluscourses.intellij.utils.ProjectViewUtil
-import fi.aalto.cs.apluscourses.model.Course
-import fi.aalto.cs.apluscourses.model.CourseProject
-import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationException
-import fi.aalto.cs.apluscourses.model.UnexpectedResponseException
+import fi.aalto.cs.apluscourses.model.*
 import fi.aalto.cs.apluscourses.services.PluginSettings
+import fi.aalto.cs.apluscourses.services.course.CourseUpdaterService
 import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdaterService
 import fi.aalto.cs.apluscourses.ui.IntegrityCheckDialog
 import fi.aalto.cs.apluscourses.ui.utils.PluginInstallerDialogs
@@ -25,7 +23,6 @@ import fi.aalto.cs.apluscourses.utils.Version.ComparisonStatus
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty
 import fi.aalto.cs.apluscourses.utils.observable.ObservableReadWriteProperty
 import org.json.JSONException
-import org.slf4j.Logger
 import java.io.IOException
 import java.net.URL
 import java.nio.file.Paths
@@ -35,8 +32,9 @@ internal class InitializationActivity(private val notifier: Notifier = DefaultNo
     ProjectActivity {
     override suspend fun execute(project: Project) {
         project.service<ExercisesUpdaterService>().restart()
+        project.service<CourseUpdaterService>().restart()
         val courseVersion = BuildInfo.INSTANCE.courseVersion
-        logger.info("Starting initialization, course version {}", courseVersion)
+        logger.info("Starting initialization, course version $courseVersion")
 
         if (!PluginIntegrityChecker.isPluginCorrectlyInstalled()) {
             logger.warn("Missing one or more dependencies")
@@ -62,7 +60,12 @@ internal class InitializationActivity(private val notifier: Notifier = DefaultNo
 
         val course: Course
         try {
-            course = Course.fromUrl(courseConfigurationFileUrl, IntelliJModelFactory(project))
+            course = Course.fromUrl(
+                courseConfigurationFileUrl,
+                IntelliJModelFactory(project), project
+            )
+            println("course")
+            println(course.getModules().joinToString { "\"${it.name}\"" })
         } catch (e: UnexpectedResponseException) {
             logger.warn("Error occurred while trying to parse a course configuration file", e)
             notifier.notify(CourseConfigurationError(e), project)
@@ -114,9 +117,9 @@ internal class InitializationActivity(private val notifier: Notifier = DefaultNo
             || versionComparison == ComparisonStatus.MAJOR_TOO_NEW
         ) {
             if (versionComparison == ComparisonStatus.MAJOR_TOO_OLD) {
-                logger.warn("A+ Courses version outdated: installed {}, required {}", courseVersion, course.version)
+                logger.warn("A+ Courses version outdated: installed $courseVersion, required ${course.version}")
             } else {
-                logger.warn("A+ Courses version too new: installed {}, required {}", courseVersion, course.version)
+                logger.warn("A+ Courses version too new: installed $courseVersion, required ${course.version}")
             }
             notifier.notify(
                 if (versionComparison == ComparisonStatus.MAJOR_TOO_OLD
@@ -125,9 +128,10 @@ internal class InitializationActivity(private val notifier: Notifier = DefaultNo
             progress.finish()
             return
         } else if (versionComparison == ComparisonStatus.MINOR_TOO_OLD) {
-            logger.warn("A+ Courses version outdated: installed {}, required {}", courseVersion, course.version)
+            logger.warn("A+ Courses version outdated: installed $courseVersion, required ${course.version}")
             notifier.notify(CourseVersionOutdatedWarning(), project)
         }
+        println(course.getModules().joinToString("\n"))
 
         val courseProject = CourseProject(
             course, courseConfigurationFileUrl, project,
@@ -145,7 +149,7 @@ internal class InitializationActivity(private val notifier: Notifier = DefaultNo
         if (basePath != null) {
             try {
                 val settingsImporter = SettingsImporter()
-                settingsImporter.importCustomProperties(Paths.get(project.basePath), course, project)
+                settingsImporter.importCustomProperties(Paths.get(project.basePath!!), course, project)
                 settingsImporter.importFeedbackCss(project, course)
             } catch (e: IOException) {
                 logger.warn("Failed to import settings", e)

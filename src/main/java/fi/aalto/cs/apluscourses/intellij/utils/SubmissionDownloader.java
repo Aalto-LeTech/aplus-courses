@@ -1,38 +1,34 @@
 package fi.aalto.cs.apluscourses.intellij.utils;
 
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
-import fi.aalto.cs.apluscourses.model.CourseProject;
 import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.MissingFileNotification;
-import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.services.Dialogs;
-import fi.aalto.cs.apluscourses.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.ComponentInstaller;
 import fi.aalto.cs.apluscourses.model.ComponentInstallerImpl;
 import fi.aalto.cs.apluscourses.model.Course;
-import fi.aalto.cs.apluscourses.model.exercise.Exercise;
+import fi.aalto.cs.apluscourses.model.CourseProject;
 import fi.aalto.cs.apluscourses.model.FileDoesNotExistException;
 import fi.aalto.cs.apluscourses.model.FileFinder;
 import fi.aalto.cs.apluscourses.model.Module;
+import fi.aalto.cs.apluscourses.model.exercise.Exercise;
 import fi.aalto.cs.apluscourses.model.exercise.SubmissionFileInfo;
 import fi.aalto.cs.apluscourses.model.exercise.SubmissionResult;
 import fi.aalto.cs.apluscourses.presentation.exercise.DownloadSubmissionViewModel;
+import fi.aalto.cs.apluscourses.services.PluginSettings;
 import fi.aalto.cs.apluscourses.ui.InstallerDialogs;
 import fi.aalto.cs.apluscourses.utils.APlusLogger;
-import fi.aalto.cs.apluscourses.utils.CoursesClient;
 import fi.aalto.cs.apluscourses.utils.WindowUtil;
 import fi.aalto.cs.apluscourses.utils.async.SimpleAsyncTaskManager;
-import java.io.IOException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
 
 public class SubmissionDownloader {
 
@@ -131,9 +127,9 @@ public class SubmissionDownloader {
     }
 
     var module = downloadSubmissionViewModel.selectedModule.get();
-    logger.info("User-selected module: {}", module);
+    logger.info("User-selected module: %s".formatted(module));
     var newName = downloadSubmissionViewModel.moduleName.get();
-    logger.info("New module name: {}", newName);
+    logger.info("New module name: %s".formatted(newName));
 
     if (module == null || newName == null) {
       return;
@@ -143,7 +139,7 @@ public class SubmissionDownloader {
 
     var moduleVf = virtualFileFinder.findFile(moduleCopy.getFullPath().toFile());
 
-    componentInstallerFactory.getInstallerFor(course, dialogsFactory.getDialogs(project), course.getCallbacks())
+    componentInstallerFactory.getInstallerFor(course, dialogsFactory.getDialogs(project), course.callbacks)
         .installAsync(List.of(moduleCopy),
             () -> fileRefresher.refreshPath(moduleVf,
                 () -> downloadFiles(project,
@@ -157,7 +153,7 @@ public class SubmissionDownloader {
                                    @NotNull Course course,
                                    @NotNull Exercise exercise) {
     var language = languageSource.getLanguage(project);
-    logger.info("Selected language: {}", language);
+    logger.info("Selected language: %s".formatted(language));
 
     var exerciseModules = course.getExerciseModules().get(exercise.getId());
 
@@ -168,7 +164,7 @@ public class SubmissionDownloader {
 
     Module selectedModule = selectedComponent instanceof Module ? (Module) selectedComponent : null;
 
-    logger.info("Auto-selected module: {}", selectedModule);
+    logger.info("Auto-selected module: %s".formatted(selectedModule));
     return selectedModule;
   }
 
@@ -188,17 +184,17 @@ public class SubmissionDownloader {
     for (var info : submissionFilesInfo) {
       try {
         var file = fileFinder.findFile(module.getFullPath(), info.getFileName()).toFile();
-        logger.info("Found file: {}", file);
-        CoursesClient.fetch(new URL(info.getUrl()), file, auth);
-        logger.info("Fetched file");
-        fileBrowser.navigateTo(file, project);
-        logger.info("Opened file");
+        logger.info("Found file: %s".formatted(file));
+//        CoursesClient.fetch(new URL(info.getUrl()), file, auth);
+//        logger.info("Fetched file");
+//        fileBrowser.navigateTo(file, project);
+//        logger.info("Opened file");
       } catch (FileDoesNotExistException ex) {
         logger.warn("File not found", ex);
         notifier.notifyAndHide(new MissingFileNotification(module.getPath(), info.getFileName(), true), project);
-      } catch (IOException ex) {
-        logger.warn("IOException while downloading submission", ex);
-        notifier.notifyAndHide(new NetworkErrorNotification(ex), project);
+//      } catch (IOException ex) {
+//        logger.warn("IOException while downloading submission", ex);
+//        notifier.notifyAndHide(new NetworkErrorNotification(ex), project);
       }
     }
     logger.debug("Finished downloading submission");

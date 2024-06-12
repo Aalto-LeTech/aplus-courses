@@ -3,7 +3,7 @@ package fi.aalto.cs.apluscourses.intellij.actions;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
-import fi.aalto.cs.apluscourses.model.NewsTree;
+import fi.aalto.cs.apluscourses.model.news.NewsTree;
 import fi.aalto.cs.apluscourses.model.UrlRenderer;
 import fi.aalto.cs.apluscourses.presentation.base.BaseTreeViewModel;
 import org.jetbrains.annotations.NotNull;

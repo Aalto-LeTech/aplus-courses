@@ -5,6 +5,7 @@ import java.util.*
 import java.util.regex.Pattern
 
 @Serializable
+@Suppress("PROVIDED_RUNTIME_TOO_LOW")
 class Points
 /**
  * Construct an instance with the given maps.

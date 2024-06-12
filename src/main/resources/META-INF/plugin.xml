@@ -1,15 +1,14 @@
 <idea-plugin>
     <id>fi.aalto.cs.intellij-plugin</id>
     <name>A+ Courses</name>
-    <vendor email="intellij-plugin-letech@aalto.fi"
-            url="https://research.cs.aalto.fi/LeTech/">LeTech Group at Aalto University
-    </vendor>
+    <vendor>LeTech</vendor>
 
-    <depends>com.intellij.modules.java</depends>
+    <!--    <depends>com.intellij.modules.java</depends>-->
+    <depends>com.intellij.modules.platform</depends>
     <depends>org.intellij.scala</depends>
 
     <resource-bundle>resources</resource-bundle>
-    
+
     <extensions defaultExtensionNs="com.intellij">
         <postStartupActivity
                 implementation="fi.aalto.cs.apluscourses.activities.InitializationActivity"/>
@@ -20,7 +19,7 @@
         <moduleBuilder builderClass="fi.aalto.cs.apluscourses.intellij.generator.APlusModuleBuilder"/>
         <errorHandler implementation="fi.aalto.cs.apluscourses.intellij.utils.ErrorHandler"/>
         <httpRequestHandler implementation="fi.aalto.cs.apluscourses.intellij.services.OpenSubmissionService"/>
-        <applicationConfigurable
+        <projectConfigurable
                 displayName="A+ Courses"
                 instance="fi.aalto.cs.apluscourses.config.APlusConfigurable"
         />
@@ -87,12 +86,12 @@
                     class="fi.aalto.cs.apluscourses.intellij.actions.OpenDocumentationAction"
                     text="Open Documentation"
                     icon="PluginIcons.A_PLUS_DOCS"/>
-            <group id="fi.aalto.cs.apluscourses.intellij.actions.OptionsActionGroup.ForModules"
-                   class="fi.aalto.cs.apluscourses.intellij.actions.APlusOptionsActionGroup$ForModules"
-                   popup="true"
-                   text="Filter Modules"
-                   icon="PluginIcons.A_PLUS_FILTER">
-            </group>
+            <!--            <group id="fi.aalto.cs.apluscourses.intellij.actions.OptionsActionGroup.ForModules"-->
+            <!--                   class="fi.aalto.cs.apluscourses.intellij.actions.APlusOptionsActionGroup$ForModules"-->
+            <!--                   popup="true"-->
+            <!--                   text="Filter Modules"-->
+            <!--                   icon="PluginIcons.A_PLUS_FILTER">-->
+            <!--            </group>-->
         </group>
         <group id="fi.aalto.cs.apluscourses.actions.ActionGroups.EXERCISE_ACTIONS"
                text="A+ Assignment"

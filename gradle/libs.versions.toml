@@ -1,6 +1,5 @@
 [versions]
 # libraries
-#annotations = "24.1.0"
 zip4j = "2.11.5"
 json = "20240303"
 scalaLibrary = "3.4.1"
@@ -20,7 +19,6 @@ qodana = "2024.1.5"
 kover = "0.8.0"
 
 [libraries]
-#annotations = { group = "org.jetbrains", name = "annotations", version.ref = "annotations" }
 zip4j = { group = "net.lingala.zip4j", name = "zip4j", version.ref = "zip4j" }
 json = { group = "org.json", name = "json", version.ref = "json" }
 

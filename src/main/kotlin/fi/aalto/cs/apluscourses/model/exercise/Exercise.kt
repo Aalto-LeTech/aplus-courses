@@ -3,6 +3,7 @@ package fi.aalto.cs.apluscourses.model.exercise
 import kotlinx.serialization.Serializable
 
 @Serializable
+@Suppress("PROVIDED_RUNTIME_TOO_LOW")
 data class Exercise(
     val id: Long,
     val name: String,

@@ -1,21 +1,19 @@
 package fi.aalto.cs.apluscourses.intellij.model;
 
-import com.intellij.compiler.CompilerWorkspaceConfiguration;
 import com.intellij.diagnostic.VMOptions;
 import com.intellij.ide.startup.StartupActionScriptManager;
 import com.intellij.openapi.application.PathManager;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.updateSettings.impl.UpdateSettings;
 import com.intellij.openapi.util.io.FileUtilRt;
-import fi.aalto.cs.apluscourses.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Course;
+import fi.aalto.cs.apluscourses.services.PluginSettings;
 import fi.aalto.cs.apluscourses.utils.APlusLogger;
-import fi.aalto.cs.apluscourses.utils.CoursesClient;
 import fi.aalto.cs.apluscourses.utils.PluginResourceBundle;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -24,7 +22,6 @@ import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.model.FileHeader;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
 
 public class SettingsImporter {
 
@@ -45,7 +42,7 @@ public class SettingsImporter {
     }
 
     File file = FileUtilRt.createTempFile("course-ide-settings", ".zip");
-    CoursesClient.fetch(ideSettingsUrl, file);
+//    CoursesClient.fetch(ideSettingsUrl, file);
     String configPath = FileUtilRt.toSystemIndependentName(PathManager.getConfigPath());
     StartupActionScriptManager.addActionCommands(
         List.of(
@@ -56,7 +53,7 @@ public class SettingsImporter {
 
     UpdateSettings.getInstance().forceCheckForUpdateAfterRestart();
 
-    PluginSettings.getInstance().setImportedIdeSettingsId(course.getId());
+    PluginSettings.getInstance().setImportedIdeSettingsId(course.id);
   }
 
   /**
@@ -104,14 +101,13 @@ public class SettingsImporter {
     Path settingsPath = basePath.resolve(Project.DIRECTORY_STORE_FOLDER);
 
     File settingsZip = FileUtilRt.createTempFile("course-project-settings", ".zip");
-    CoursesClient.fetch(settingsUrl, settingsZip);
+//    CoursesClient.fetch(settingsUrl, settingsZip);
     ZipFile zipFile = new ZipFile(settingsZip);
 
     extractZipTo(zipFile, settingsPath);
 
     // a hard-coded workspace setting
-    CompilerWorkspaceConfiguration.getInstance(project).AUTO_SHOW_ERRORS_IN_EDITOR = false;
-
+//    CompilerWorkspaceConfiguration.getInstance(project).AUTO_SHOW_ERRORS_IN_EDITOR = false; TODO
     logger.info("Imported project settings");
   }
 
@@ -132,7 +128,7 @@ public class SettingsImporter {
     Path settingsPath = basePath.resolve(Project.DIRECTORY_STORE_FOLDER);
 
     File file = settingsPath.resolve(PluginResourceBundle.CUSTOM_RESOURCES_FILENAME).toFile();
-    CoursesClient.fetch(settingsUrl, file);
+//    CoursesClient.fetch(settingsUrl, file);
 
     PluginResourceBundle.setCustomBundle(file, project);
     logger.info("Imported custom properties");
@@ -150,12 +146,12 @@ public class SettingsImporter {
     }
 
     // TODO cache when string cache is available
-    var stream = CoursesClient.fetch(cssUrl);
+//    var stream = CoursesClient.fetch(cssUrl);
 
-    var bytes = stream.readAllBytes();
-    var s = new String(bytes, StandardCharsets.UTF_8);
+//    var bytes = stream.readAllBytes();
+//    var s = new String(bytes, StandardCharsets.UTF_8);
 
-    PluginSettings.getInstance().getMainViewModel(project).feedbackCss = s;
+    PluginSettings.getInstance().getMainViewModel(project).feedbackCss = "";
     logger.info("Imported feedback CSS");
   }
 

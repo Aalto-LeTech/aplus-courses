@@ -2,12 +2,12 @@ package fi.aalto.cs.apluscourses.intellij.notifications;
 
 import com.intellij.notification.Notification;
 import com.intellij.notification.Notifications;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import java.util.concurrent.Executors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
 
 public class NotificationUtil {
   private static final Logger logger = APlusLogger.logger;

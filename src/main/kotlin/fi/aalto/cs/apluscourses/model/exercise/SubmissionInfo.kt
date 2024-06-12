@@ -6,6 +6,7 @@ import kotlinx.serialization.Serializable
 //import org.json.JSONArray
 
 @Serializable
+@Suppress("PROVIDED_RUNTIME_TOO_LOW")
 data class SubmissionInfo(val files: Map<String, List<SubmittableFile>>) {
 //    private val files: Map<String, List<SubmittableFile>> = files
 

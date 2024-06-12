@@ -1,14 +1,14 @@
 package fi.aalto.cs.apluscourses.presentation.news;
 
-import fi.aalto.cs.apluscourses.model.News;
+import fi.aalto.cs.apluscourses.model.news.NewsItem;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
 import org.jetbrains.annotations.NotNull;
 
-public class NewsBodyViewModel extends SelectableNodeViewModel<News> {
+public class NewsBodyViewModel extends SelectableNodeViewModel<NewsItem> {
 
-  private final News news;
+  private final NewsItem news;
 
-  protected NewsBodyViewModel(@NotNull News news) {
+  protected NewsBodyViewModel(@NotNull NewsItem news) {
     super(news, null);
     this.news = news;
   }

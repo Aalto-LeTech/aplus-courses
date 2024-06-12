@@ -24,10 +24,8 @@ public class APlusModuleBuilder extends ModuleBuilder {
   @Override
   public boolean isAvailable() {
     // Only show the builder when creating a new project
-    return Objects.equals(
-        ((ActionManagerImpl) ActionManagerImpl.getInstance())
-            .getLastPreformedActionId(),
-        "NewProject");
+    return !Objects.requireNonNull(((ActionManagerImpl) ActionManagerImpl.getInstance())
+        .getLastPreformedActionId()).contains("Module");
   }
 
   @Override

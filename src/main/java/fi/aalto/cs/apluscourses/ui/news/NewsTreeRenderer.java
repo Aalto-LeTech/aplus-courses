@@ -3,7 +3,7 @@ package fi.aalto.cs.apluscourses.ui.news;
 import static fi.aalto.cs.apluscourses.utils.TreeRendererUtil.isIrrelevantNode;
 
 import com.intellij.ui.MultilineTreeCellRenderer;
-import fi.aalto.cs.apluscourses.model.News;
+import fi.aalto.cs.apluscourses.model.news.NewsItem;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
 import fi.aalto.cs.apluscourses.presentation.news.NewsBodyViewModel;
 import fi.aalto.cs.apluscourses.presentation.news.NewsTitleViewModel;
@@ -23,7 +23,7 @@ public class NewsTreeRenderer extends MultilineTreeCellRenderer {
       String[] text = {titleViewModel.getPresentableName()};
       setText(text, "");
       setEnabled(true);
-      if (((News) viewModel.getModel()).isRead()) {
+      if (((NewsItem) viewModel.getModel()).isRead()) {
         setIcon(PluginIcons.A_PLUS_DUMMY);
       } else {
         setIcon(PluginIcons.A_PLUS_INFO);

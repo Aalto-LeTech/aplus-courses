@@ -2,10 +2,11 @@ package fi.aalto.cs.apluscourses.presentation.exercise;
 
 import static fi.aalto.cs.apluscourses.utils.PluginResourceBundle.getText;
 
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
-import fi.aalto.cs.apluscourses.model.exercise.Exercise;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.Submission;
+import fi.aalto.cs.apluscourses.model.exercise.Exercise;
 import fi.aalto.cs.apluscourses.model.exercise.SubmittableFile;
 import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import fi.aalto.cs.apluscourses.utils.FileDateFormatter;
@@ -19,7 +20,6 @@ import java.util.Map;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
 
 public class SubmissionViewModel {
 

@@ -1,8 +1,8 @@
 package fi.aalto.cs.apluscourses.utils;
 
+import com.intellij.openapi.diagnostic.Logger;
 import java.util.Properties;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
 
 /**
  * Holds information that was gathered during the build of the program (such as version).

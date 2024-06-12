@@ -10,12 +10,14 @@ object TokenStorage {
     private const val A_COURSES_PLUGIN: String = "A+ Courses Plugin"
     private const val KEY: String = "auth_token"
 
-    private val credentialAttributes: CredentialAttributes = CredentialAttributes(
+    //    private val credentialAttributes: CredentialAttributes = CredentialAttributes( TODO
+    val credentialAttributes: CredentialAttributes = CredentialAttributes(
+//        generateServiceName(A_COURSES_PLUGIN, KEY)
         generateServiceName(A_COURSES_PLUGIN, KEY)
     )
 
-    fun store(user: String, password: OneTimeString?): Boolean {
-        val credentials = if (password == null) null else Credentials(user, password)
+    fun store(password: OneTimeString?): Boolean {
+        val credentials = if (password == null) null else Credentials(credentialAttributes.userName, password)
         PasswordSafe.instance.set(credentialAttributes, credentials)
         return !PasswordSafe.instance.isPasswordStoredOnlyInMemory(credentialAttributes, credentials!!)
     }

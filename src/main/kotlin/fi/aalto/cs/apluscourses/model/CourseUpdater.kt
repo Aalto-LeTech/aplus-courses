@@ -1,13 +1,14 @@
 package fi.aalto.cs.apluscourses.model
 
 import com.intellij.notification.Notification
+import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier
 import fi.aalto.cs.apluscourses.intellij.notifications.NewModulesVersionsNotification
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier
-import fi.aalto.cs.apluscourses.model.CourseUpdater.CourseConfigurationFetcher
+import fi.aalto.cs.apluscourses.model.news.NewsTree
+import fi.aalto.cs.apluscourses.services.CoursesClient
 import fi.aalto.cs.apluscourses.services.PluginSettings
-import fi.aalto.cs.apluscourses.utils.CoursesClient
 import fi.aalto.cs.apluscourses.utils.Event
 import fi.aalto.cs.apluscourses.utils.PluginResourceBundle
 import fi.aalto.cs.apluscourses.utils.Version
@@ -30,7 +31,6 @@ class CourseUpdater
     private val course: Course,
     private val project: Project,
     private val courseUrl: URL,
-    private val configurationFetcher: CourseConfigurationFetcher,
     private val eventToTrigger: Event,
     private val notifier: Notifier,
     updateInterval: Long
@@ -54,15 +54,11 @@ class CourseUpdater
         courseUrl: URL,
         eventToTrigger: Event
     ) : this(
-        courseProject, course, project, courseUrl, CourseConfigurationFetcher { url: URL? ->
-            CoursesClient.fetch(
-                url!!
-            )
-        }, eventToTrigger, DefaultNotifier(),
+        courseProject, course, project, courseUrl, eventToTrigger, DefaultNotifier(),
         PluginSettings.UPDATE_INTERVAL
     )
 
-    fun doTask() {
+    suspend fun doTask() {
 
         val progressViewModel =
             PluginSettings.getInstance().getMainViewModel(project).progressViewModel
@@ -108,8 +104,8 @@ class CourseUpdater
     }
 
     @Throws(IOException::class)
-    private fun fetchCourseConfiguration(): JSONObject {
-        val inputStream = configurationFetcher.fetch(courseUrl)
+    private suspend fun fetchCourseConfiguration(): JSONObject {
+        val inputStream = project.service<CoursesClient>().fetch(courseUrl)
         val tokenizer = JSONTokener(inputStream)
         return JSONObject(tokenizer)
     }
@@ -138,7 +134,7 @@ class CourseUpdater
     }
 
     private fun updateModules(uriToModuleInfo: Map<URI?, ModuleInfo>) {
-        for (module in course.modules) {
+        for (module in course.getModules()) {
             val moduleInfo = uriToModuleInfo[urlToUri(module.url)]
             if (moduleInfo != null) {
                 module.updateVersion(moduleInfo.version)

@@ -9,23 +9,19 @@ import fi.aalto.cs.apluscourses.model.ExerciseDataSource;
 import fi.aalto.cs.apluscourses.model.exercise.ExerciseGroup;
 import fi.aalto.cs.apluscourses.model.Group;
 import fi.aalto.cs.apluscourses.model.InvalidAuthenticationException;
-import fi.aalto.cs.apluscourses.model.News;
 import fi.aalto.cs.apluscourses.model.exercise.Points;
 import fi.aalto.cs.apluscourses.model.Student;
 import fi.aalto.cs.apluscourses.model.Submission;
 import fi.aalto.cs.apluscourses.model.exercise.SubmissionInfo;
 import fi.aalto.cs.apluscourses.model.exercise.SubmissionResult;
 import fi.aalto.cs.apluscourses.model.User;
-import fi.aalto.cs.apluscourses.utils.CoursesClient;
+import fi.aalto.cs.apluscourses.model.news.NewsItem;
 import fi.aalto.cs.apluscourses.utils.cache.Cache;
 import fi.aalto.cs.apluscourses.utils.cache.CachePreference;
 import fi.aalto.cs.apluscourses.utils.cache.CachePreferences;
 import fi.aalto.cs.apluscourses.utils.cache.DualCache;
 import fi.aalto.cs.apluscourses.utils.cache.JsonFileCache;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -33,15 +29,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
-import org.apache.commons.io.IOUtils;
-import org.apache.http.Header;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 
 public class APlusExerciseDataSource implements ExerciseDataSource {
 
@@ -114,7 +106,7 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   @NotNull
   private Map<Long, List<Long>> getExerciseOrder(@NotNull Course course, @NotNull Authentication authentication)
       throws IOException {
-    String url = apiUrl + COURSES + "/" + course.getId() + "/tree/";
+    String url = apiUrl + COURSES + "/" + course.id + "/tree/";
     JSONObject response = client.fetch(url, authentication);
     return parser.parseExerciseOrder(response);
   }
@@ -129,7 +121,7 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   @NotNull
   public List<Group> getGroups(@NotNull Course course, @NotNull Authentication authentication)
       throws IOException {
-    String url = apiUrl + COURSES + "/" + course.getId() + "/mygroups/";
+    String url = apiUrl + COURSES + "/" + course.id + "/mygroups/";
     return getPaginatedResults(url, authentication, Group::fromJsonObject);
   }
 
@@ -180,7 +172,7 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   @NotNull
   public Points getPoints(@NotNull Course course, @NotNull Authentication authentication,
                           @Nullable Student student) throws IOException {
-    String url = apiUrl + COURSES + "/" + course.getId() + "/" + POINTS + "/"
+    String url = apiUrl + COURSES + "/" + course.id + "/" + POINTS + "/"
         + (student == null ? ME : student.getId()) + "/";
     JSONObject response = client.fetch(url, authentication);
     return parser.parsePoints(response);
@@ -233,7 +225,7 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   public List<Student> getStudents(@NotNull Course course,
                                    @NotNull Authentication authentication,
                                    @NotNull CachePreference cachePreference) throws IOException {
-    String url = apiUrl + COURSES + "/" + course.getId() + "/" + STUDENTS + "/";
+    String url = apiUrl + COURSES + "/" + course.id + "/" + STUDENTS + "/";
     return getPaginatedResults(url, authentication, cachePreference, Student::fromJsonObject);
   }
 
@@ -242,19 +234,18 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
   public ZonedDateTime getEndingTime(@NotNull Course course,
                                      @NotNull Authentication authentication)
       throws IOException {
-    String url = apiUrl + COURSES + "/" + course.getId() + "/";
+    String url = apiUrl + COURSES + "/" + course.id + "/";
     JSONObject response = client.fetch(url, authentication);
     return parser.parseEndingTime(response);
   }
 
   @Override
-  @NotNull
-  public List<News> getNews(@NotNull Course course,
-                            @NotNull Authentication authentication,
-                            @NotNull String language) throws IOException {
-    String url = apiUrl + COURSES + "/" + course.getId() + "/" + NEWS + "/";
+  public @NotNull List<NewsItem> getNews(@NotNull Course course,
+                                         @NotNull Authentication authentication,
+                                         @NotNull String language) throws IOException {
+    String url = apiUrl + COURSES + "/" + course.id + "/" + NEWS + "/";
     return getPaginatedResults(url, authentication, CachePreferences.GET_NEW_AND_FORGET,
-        jsonObject -> News.fromJsonObject(jsonObject, course, language));
+        jsonObject -> NewsItem.fromJsonObject(jsonObject, course, language));
   }
 
   /**
@@ -309,12 +300,13 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
       if (value != null) {
         return value;
       }
-      try (InputStream inputStream = CoursesClient.fetch(new URL(url), authentication)) {
-        var streamString = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
-        var response = new JSONObject(new JSONTokener(streamString));
-        cache.putValue(url, response, cachePreference);
-        return response;
-      }
+//      try (InputStream inputStream = CoursesClient.fetch(new URL(url), authentication)) {
+//        var streamString = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+//        var response = new JSONObject(new JSONTokener(streamString));
+//        cache.putValue(url, response, cachePreference);
+//        return response;
+//      }
+      return value;
     }
 
     @Override
@@ -322,15 +314,16 @@ public class APlusExerciseDataSource implements ExerciseDataSource {
     public String post(@NotNull String url,
                        @NotNull Authentication authentication,
                        @NotNull Map<String, Object> data) throws IOException {
-      return CoursesClient.post(
-          new URL(url),
-          authentication,
-          data,
-          response -> Optional
-              .ofNullable(response.getFirstHeader("Location"))
-              .map(Header::getValue)
-              .orElse(null)
-      );
+//      return CoursesClient.post(
+//          new URL(url),
+//          authentication,
+//          data,
+//          response -> Optional
+//              .ofNullable(response.getFirstHeader("Location"))
+//              .map(Header::getValue)
+//              .orElse(null)
+//      );
+      return null;
     }
 
     @Override

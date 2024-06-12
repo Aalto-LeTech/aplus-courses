@@ -13,7 +13,7 @@ import fi.aalto.cs.apluscourses.intellij.utils.IntelliJFilterOption
 import fi.aalto.cs.apluscourses.intellij.utils.ProjectKey
 import fi.aalto.cs.apluscourses.model.Course
 import fi.aalto.cs.apluscourses.model.CourseProject
-import fi.aalto.cs.apluscourses.model.NewsTree
+import fi.aalto.cs.apluscourses.model.news.NewsTree
 import fi.aalto.cs.apluscourses.model.User
 import fi.aalto.cs.apluscourses.presentation.CourseEndedBannerViewModel
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel
@@ -320,6 +320,7 @@ class PluginSettings internal constructor(private val applicationPropertiesManag
     /**
      * Unsets all the local IDE settings from [LocalIdeSettingsNames].
      */
+    @OptIn(ExperimentalStdlibApi::class) // TODO
     fun unsetLocalIdeSettings() {
         Arrays.stream(LocalIdeSettingsNames.entries.toTypedArray())
             .map { obj: LocalIdeSettingsNames -> obj.id }
@@ -390,7 +391,7 @@ class PluginSettings internal constructor(private val applicationPropertiesManag
         }
     }
 
-    // Initialiaziton-on-demand holder
+    // Initialization-on-demand holder
     private object InstanceHolder {
         @JvmStatic
         val instance: PluginSettings = PluginSettings(PropertiesComponentAdapter(PropertiesComponent.getInstance()))

@@ -7,6 +7,7 @@ import fi.aalto.cs.apluscourses.dal.TokenStorage
 import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier
 import fi.aalto.cs.apluscourses.model.exercise.ExercisesTree
+import fi.aalto.cs.apluscourses.model.news.NewsTree
 import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdaterService
 import fi.aalto.cs.apluscourses.utils.Event
 import fi.aalto.cs.apluscourses.utils.observable.ObservableProperty

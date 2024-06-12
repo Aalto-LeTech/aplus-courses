@@ -1,17 +1,17 @@
 package fi.aalto.cs.apluscourses.presentation.news;
 
-import fi.aalto.cs.apluscourses.model.News;
+import fi.aalto.cs.apluscourses.model.news.NewsItem;
 import fi.aalto.cs.apluscourses.presentation.MainViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.SelectableNodeViewModel;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
-public class NewsTitleViewModel extends SelectableNodeViewModel<News> {
+public class NewsTitleViewModel extends SelectableNodeViewModel<NewsItem> {
 
-  private final News news;
+  private final NewsItem news;
   private final MainViewModel mainViewModel;
 
-  protected NewsTitleViewModel(@NotNull News news, @NotNull MainViewModel mainViewModel) {
+  protected NewsTitleViewModel(@NotNull NewsItem news, @NotNull MainViewModel mainViewModel) {
     super(news, List.of(new NewsBodyViewModel(news)));
     this.news = news;
     this.mainViewModel = mainViewModel;

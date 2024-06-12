@@ -7,19 +7,13 @@ import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.intellij.util.messages.Topic
 import com.intellij.util.messages.Topic.ProjectLevel
 import com.intellij.util.xmlb.annotations.Attribute
-import fi.aalto.cs.apluscourses.dal.TokenStorage
 import fi.aalto.cs.apluscourses.model.exercise.Exercise
 import fi.aalto.cs.apluscourses.model.exercise.ExerciseGroup
 import fi.aalto.cs.apluscourses.model.exercise.SubmissionInfo
 import fi.aalto.cs.apluscourses.model.exercise.SubmissionResult
+import fi.aalto.cs.apluscourses.services.CoursesClient
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil
-import io.ktor.client.*
-import io.ktor.client.engine.cio.*
-import io.ktor.client.plugins.cache.*
-import io.ktor.client.plugins.cache.storage.*
-import io.ktor.client.request.*
 import io.ktor.client.statement.*
-import io.ktor.http.*
 import io.ktor.utils.io.CancellationException
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Semaphore
@@ -28,8 +22,6 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonNamingStrategy
-import java.nio.file.Files
-import java.nio.file.Paths
 import java.util.concurrent.ConcurrentHashMap
 
 
@@ -39,7 +31,7 @@ import java.util.concurrent.ConcurrentHashMap
     storages = [Storage("aplusCoursesExercisesUpdater.xml")]
 )
 class ExercisesUpdaterService(
-    private val project: Project,
+    val project: Project,
     val cs: CoroutineScope
 ) : SimplePersistentStateComponent<ExercisesUpdaterService.State>(State()) {
     class State : BaseState() {
@@ -57,17 +49,17 @@ class ExercisesUpdaterService(
 //    private val requestThreadPool = newFixedThreadPoolContext(8, "ExercisesUpdaterService")
 
 
-    private val client = HttpClient(CIO) {
-        install(HttpCache) {
-            val cacheFile = Files.createDirectories(Paths.get(".idea/aplusCourses/.http-cache")).toFile()
-            privateStorage(FileStorage(cacheFile))
-        }
-        engine {
-            endpoint {
-                maxConnectionsCount = 8
-            }
-        }
-    }
+//    private val client = HttpClient(CIO) {
+//        install(HttpCache) {
+//            val cacheFile = Files.createDirectories(Paths.get(".idea/aplusCourses/.http-cache")).toFile()
+//            privateStorage(FileStorage(cacheFile))
+//        }
+//        engine {
+//            endpoint {
+//                maxConnectionsCount = 8
+//            }
+//        }
+//    }
 
     // Semaphore to limit the number of concurrent requests
     val semaphore = Semaphore(8) // Up to 8 concurrent operations
@@ -121,12 +113,14 @@ class ExercisesUpdaterService(
                     }
                 } catch (e: CancellationException) {
                     println("Task was cancelled yay")
-                } finally {
-                    client.close()
                 }
+//                finally {
+//                    client.close()
+//                }
             }
     }
 
+    @Suppress("PROVIDED_RUNTIME_TOO_LOW")
     object Points {
         @Serializable
         data class PointsDataHolder(
@@ -192,6 +186,7 @@ class ExercisesUpdaterService(
         )
     }
 
+    @Suppress("PROVIDED_RUNTIME_TOO_LOW")
     object Exercises {
         @Serializable
         data class CourseModuleResults(
@@ -221,6 +216,7 @@ class ExercisesUpdaterService(
         )
     }
 
+    @Suppress("PROVIDED_RUNTIME_TOO_LOW")
     object ExerciseDetails {
         @Serializable
         data class Exercise(
@@ -242,6 +238,7 @@ class ExercisesUpdaterService(
         )
     }
 
+    @Suppress("PROVIDED_RUNTIME_TOO_LOW")
     object SubmissionDetails {
         @Serializable
         data class Submission(
@@ -271,6 +268,7 @@ class ExercisesUpdaterService(
 //        notifier: Notifier = DefaultNotifier(),
     ) {
         try {
+            project.service<CoursesClient>().updateAuthentication()
             println("Starting exercises update")
 //        logger.debug("Starting exercises update")
 //        val course = courseProject.course
@@ -298,23 +296,11 @@ class ExercisesUpdaterService(
 //            )
 //        try {
 //            progress.increment()
-            val token = TokenStorage.getToken()
-            if (token == null) {
-                println("No token")
-                return
-            }
-
-            val authHeader = headersOf(
-                "Authorization", "Token $token"
-            )
 
 
             suspend fun request(url: String) = withContext(Dispatchers.IO) {
-                client.get(url) {
-                    headers.appendAll(authHeader)
-                }
+                project.service<CoursesClient>().get(url)
             }
-
             cs.ensureActive()
             val apiUrl = "https://plus.cs.aalto.fi/api/v2/"
             val courseUrl = "${apiUrl}courses/154/"
@@ -610,15 +596,16 @@ class ExercisesUpdaterService(
                     .sum()
             }*/
         } catch (_: CancellationException) {
-        } finally {
-            client.close()
         }
+        //        finally {
+//            client.close()
+//        }
     }
 
     private fun fireExercisesUpdated() {
         ApplicationManager.getApplication().invokeLater {
             ApplicationManager.getApplication().messageBus
-                .syncPublisher(TOPIC)
+                .syncPublisher(EXERCISES_TOPIC)
                 .onExercisesUpdated()
         }
     }
@@ -626,7 +613,7 @@ class ExercisesUpdaterService(
     private fun fireExerciseUpdated(exercise: Exercise) {
         ApplicationManager.getApplication().invokeLater {
             ApplicationManager.getApplication().messageBus
-                .syncPublisher(TOPIC)
+                .syncPublisher(EXERCISES_TOPIC)
                 .onExerciseUpdated(exercise)
         }
     }
@@ -643,11 +630,11 @@ class ExercisesUpdaterService(
 //        private val logger: Logger = APlusLogger.logger
 
         @ProjectLevel
-        val TOPIC: Topic<ExercisesUpdaterListener> =
+        val EXERCISES_TOPIC: Topic<ExercisesUpdaterListener> =
             Topic(ExercisesUpdaterListener::class.java, Topic.BroadcastDirection.TO_CHILDREN)
 
         fun getInstance(project: Project): ExercisesUpdaterService {
-            return project.getService(ExercisesUpdaterService::class.java)
+            return project.service<ExercisesUpdaterService>()
         }
     }
 }

@@ -1,7 +1,6 @@
 package fi.aalto.cs.apluscourses.toolwindows
 
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.components.service
@@ -15,16 +14,12 @@ import com.intellij.ui.components.JBPanel
 import com.intellij.ui.content.ContentFactory
 import fi.aalto.cs.apluscourses.actions.ActionGroups.EXERCISE_ACTIONS
 import fi.aalto.cs.apluscourses.actions.ShowSettingsAction
-import fi.aalto.cs.apluscourses.activities.isInitialized
-import fi.aalto.cs.apluscourses.intellij.actions.ActionGroups
-import fi.aalto.cs.apluscourses.intellij.actions.ActionUtil
-import fi.aalto.cs.apluscourses.intellij.actions.InstallModuleAction
+import fi.aalto.cs.apluscourses.model.news.NewsTree
 import fi.aalto.cs.apluscourses.model.exercise.Exercise
-import fi.aalto.cs.apluscourses.presentation.BannerViewModel
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel
-import fi.aalto.cs.apluscourses.presentation.MainViewModel
-import fi.aalto.cs.apluscourses.presentation.news.NewsTreeViewModel
 import fi.aalto.cs.apluscourses.services.PluginSettings
+import fi.aalto.cs.apluscourses.services.course.CourseUpdaterService
+import fi.aalto.cs.apluscourses.services.course.CourseUpdaterService.NewsUpdaterListener
 import fi.aalto.cs.apluscourses.services.exercise.ExercisesTreeFilterService
 import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdaterService
 import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdaterService.ExercisesUpdaterListener
@@ -33,59 +28,91 @@ import fi.aalto.cs.apluscourses.ui.exercise.ExercisesView
 import fi.aalto.cs.apluscourses.ui.module.ModulesView
 import fi.aalto.cs.apluscourses.ui.news.NewsView
 import fi.aalto.cs.apluscourses.ui.overview.OverviewView
+import java.awt.event.ComponentEvent
+import java.awt.event.ComponentListener
 import javax.swing.Box
 import javax.swing.BoxLayout
 import javax.swing.JComponent
 
 internal class APlusToolWindowFactory : ToolWindowFactory, DumbAware {
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
-//        val component = createToolWindowContentInternal(project)
+        // Hide the title of the tool window, which is replaced by the overview tab
+        toolWindow.component.putClientProperty(
+            ToolWindowContentUi.HIDE_ID_LABEL, "true"
+        )
+
         val newsView = createNewsView(project, toolWindow)
         val modulesView = createModulesView(project)
         val exercisesView = createExercisesView(project, toolWindow.disposable)
+
         val contentFactory = ContentFactory.getInstance()
-//        contentFactory.createContentManager(TabbedPaneContentUI(), true, project)
-        val content0 =
-            contentFactory.createContent(OverviewView(project), "<html><body><b>A+ Courses</b></body></html>", true)
-        val content = contentFactory.createContent(
+
+        val overviewTab = contentFactory.createContent(
+            OverviewView(project),
+            "<html><body><b>A+ Courses</b></body></html>",
+            true
+        )
+        val exercisesTab = contentFactory.createContent(
+            exercisesView,
+            "Assignments",
+            true
+        )
+        val modulesTab = contentFactory.createContent(
+            modulesView,
+            "Modules",
+            true
+        )
+        val newsTab = contentFactory.createContent(
             newsView,
             "News",
             true
         )
-        val content2 = contentFactory.createContent(modulesView, "Modules", true)
-        val content3 = contentFactory.createContent(exercisesView, "Assignments", true)
 
-//        val content4 = contentFactory.createContent(exercisesView.toolbarContainer, "Settings", true)
-        toolWindow.contentManager.addContent(content0)
-        toolWindow.contentManager.addContent(content)
-        toolWindow.contentManager.addContent(content2)
-        toolWindow.contentManager.addContent(content3)
+        toolWindow.contentManager.addContent(overviewTab)
+        toolWindow.contentManager.addContent(exercisesTab)
+        toolWindow.contentManager.addContent(modulesTab)
+        toolWindow.contentManager.addContent(newsTab)
+        toolWindow.contentManager.setSelectedContent(overviewTab)
 
-//        toolWindow.contentManager.addContent(content4)
+        // Shorten titles when tool window is too small
+        toolWindow.component.addComponentListener(object : ComponentListener {
+            override fun componentResized(e: ComponentEvent?) {
+                if (e != null) {
+                    println(e.component.bounds.width)
+                    if (e.component.bounds.width <= 460) {
+                        overviewTab.displayName = "<html><body><b>A+</b></body></html>"
+                    } else {
+                        overviewTab.displayName = "<html><body><b>A+ Courses</b></body></html>"
+                    }
+                    if (e.component.bounds.width <= 390) {
+                        newsView.setShortTab(true)
+                        modulesTab.displayName = "📦"
+                        exercisesTab.displayName = "📚"
+                    } else {
+                        newsView.setShortTab(false)
+                        modulesTab.displayName = "Modules"
+                        exercisesTab.displayName = "Assignments"
+                    }
+                }
+            }
+
+            override fun componentMoved(e: ComponentEvent?) {}
+            override fun componentShown(e: ComponentEvent?) {}
+            override fun componentHidden(e: ComponentEvent?) {}
+        })
 
 
+        // Add shortcut to settings to the title bar
         val showSettingsAction = ShowSettingsAction()
         toolWindow.setTitleActions(listOf(showSettingsAction))
 
+        // Hide the title of the tool window, which is replaced by the overview tab
         toolWindow.component.putClientProperty(
             ToolWindowContentUi.HIDE_ID_LABEL, "true"
         )
-    }
 
-//    private fun createToolWindowContentInternal(project: Project): JComponent {
-//        val newsView = createNewsView(project)
-//        val modulesView = createModulesView(project)
-//        val exercisesView = createExercisesView(project)
-//        val collapsed = PluginSettings.getInstance().collapsed
-////        val splitter = CollapsibleSplitter(newsView, modulesView, exercisesView)
-//        splitter.collapseByTitles(collapsed)
-//
-//        val cardPanel = createCardPanel(splitter.firstSplitter, project)
-//
-//        val progressViewModel = PluginSettings.getInstance().getMainViewModel(project).progressViewModel
-//        val progressBarView = ProgressBarView(progressViewModel, cardPanel).container
-//        return createBannerView(project, progressBarView).container
-//    }
+        project.service<CourseUpdaterService>().restart()
+    }
 }
 
 //private fun createCardPanel(panel: JPanel, project: Project): JPanel {
@@ -107,28 +134,29 @@ fun createModulesView(project: Project): ModulesView {
     val modulesView = ModulesView()
     PluginSettings.getInstance().getMainViewModel(project).courseViewModel
         .addValueObserver(modulesView) { obj: ModulesView, course: CourseViewModel? ->
-            obj.viewModelChanged(
-                course
-            )
+            obj.viewModelChanged(course)
+            if (course != null) {
+                println(course.modules)
+            }
         }
 
-    val actionManager = ActionManager.getInstance()
-    val group = actionManager.getAction(ActionGroups.MODULE_ACTIONS) as ActionGroup
+//    val actionManager = ActionManager.getInstance()
+//    val group = actionManager.getAction(ActionGroups.MODULE_ACTIONS) as ActionGroup
 
-    val toolbar = actionManager.createActionToolbar(ActionPlaces.TOOLBAR, group, true)
-    toolbar.targetComponent = modulesView.moduleListView
-    modulesView.toolbar = toolbar.component
+//    val toolbar = actionManager.createActionToolbar(ActionPlaces.TOOLBAR, group, true)
+//    toolbar.targetComponent = modulesView.list
+//    modulesView.toolbar = toolbar.component
 
-    val popupMenu =
-        actionManager.createActionPopupMenu(ActionPlaces.TOOLWINDOW_POPUP, group)
-    popupMenu.setTargetComponent(modulesView.moduleListView)
-    modulesView.moduleListView.setPopupMenu(popupMenu.component)
-
-    modulesView.moduleListView.addListActionListener(
-        ActionUtil.createOnEventLauncher(
-            InstallModuleAction.ACTION_ID, modulesView.moduleListView
-        )
-    )
+//    val popupMenu =
+//        actionManager.createActionPopupMenu(ActionPlaces.TOOLWINDOW_POPUP, group)
+//    popupMenu.setTargetComponent(modulesView.moduleListView)
+//    modulesView.moduleListView.setPopupMenu(popupMenu.component)
+//
+//    modulesView.moduleListView.addListActionListener(
+//        ActionUtil.createOnEventLauncher(
+//            InstallModuleAction.ACTION_ID, modulesView.moduleListView
+//        )
+//    )
 
     return modulesView
 }
@@ -153,13 +181,13 @@ private fun createExercisesView(project: Project, disposable: Disposable): Exerc
 
     val connection = project.messageBus.connect(disposable)
 
-    Disposer.register(disposable) {
-        project.service<ExercisesUpdaterService>().stop()
-        connection.dispose()
-        println("disposed")
-    }
+//    Disposer.register(disposable) {
+//        project.service<ExercisesUpdaterService>().stop()
+//        connection.dispose()
+//        println("disposed")
+//    }
 
-    connection.subscribe(ExercisesUpdaterService.TOPIC, object : ExercisesUpdaterListener {
+    connection.subscribe(ExercisesUpdaterService.EXERCISES_TOPIC, object : ExercisesUpdaterListener {
         override fun onExercisesUpdated() {
             println("received update mytoolwindow")
             exercisesView.updateTree()
@@ -182,24 +210,39 @@ private fun createExercisesView(project: Project, disposable: Disposable): Exerc
 }
 
 private fun createNewsView(project: Project, toolWindow: ToolWindow): NewsView {
-    val mainViewModel = PluginSettings.getInstance().getMainViewModel(project)
+//    val mainViewModel = PluginSettings.getInstance().getMainViewModel(project)
 
-    isInitialized(project)
-        .addValueObserver(mainViewModel) { obj: MainViewModel, isReady: Boolean? ->
-            obj.setProjectReady(
-                isReady ?: return@addValueObserver
-            )
+//    isInitialized(project)
+//        .addValueObserver(mainViewModel) { obj: MainViewModel, isReady: Boolean? ->
+//            obj.setProjectReady(
+//                isReady ?: return@addValueObserver
+//            )
+//        }
+
+    val newsView = NewsView(toolWindow, project)
+
+    val connection = project.messageBus.connect(toolWindow.disposable)
+
+    connection.subscribe(CourseUpdaterService.NEWS_TOPIC, object : NewsUpdaterListener {
+        override fun onNewsUpdated(newsTree: NewsTree) {
+            println("received update news mytoolwindow")
+            newsView.viewModelChanged(newsTree)
         }
+    })
 
-    val newsView = NewsView(toolWindow)
+    Disposer.register(toolWindow.disposable) {
+        project.service<CourseUpdaterService>().stop()
+        connection.dispose()
+        println("disposed")
+    }
 
-    mainViewModel.newsTreeViewModel
-        .addValueObserver(newsView) { obj: NewsView, viewModel: NewsTreeViewModel? ->
-            obj.viewModelChanged(
-                viewModel
-            )
-        }
-    val actionManager = ActionManager.getInstance()
+//    mainViewModel.newsTreeViewModel
+//        .addValueObserver(newsView) { obj: NewsView, viewModel: NewsTreeViewModel? ->
+//            obj.viewModelChanged(
+//                viewModel
+//            )
+//        }
+//    val actionManager = ActionManager.getInstance()
 //    val group = actionManager.getAction(ActionGroups.NEWS_ACTIONS) as ActionGroup
 
 //    val toolbar = actionManager.createActionToolbar(ActionPlaces.TOOLBAR, group, true)
@@ -220,14 +263,14 @@ private fun createBannerView(
 ): BannerView {
     val bannerView = BannerView(bottomComponent)
 
-    val mainViewModel = PluginSettings.getInstance()
-        .getMainViewModel(project)
-    mainViewModel.bannerViewModel
-        .addValueObserver(bannerView) { obj: BannerView, viewModel: BannerViewModel? ->
-            obj.viewModelChanged(
-                viewModel
-            )
-        }
+//    val mainViewModel = PluginSettings.getInstance()
+//        .getMainViewModel(project)
+//    mainViewModel.bannerViewModel
+//        .addValueObserver(bannerView) { obj: BannerView, viewModel: BannerViewModel? ->
+//            obj.viewModelChanged(
+//                viewModel
+//            )
+//        }
 
     return bannerView
 }

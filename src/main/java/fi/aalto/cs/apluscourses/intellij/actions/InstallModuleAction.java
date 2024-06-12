@@ -2,22 +2,22 @@ package fi.aalto.cs.apluscourses.intellij.actions;
 
 import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.DumbAwareAction;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
-import fi.aalto.cs.apluscourses.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.Component;
 import fi.aalto.cs.apluscourses.model.ComponentInstaller;
 import fi.aalto.cs.apluscourses.model.ComponentInstallerImpl;
 import fi.aalto.cs.apluscourses.model.Course;
 import fi.aalto.cs.apluscourses.presentation.CourseViewModel;
 import fi.aalto.cs.apluscourses.presentation.base.BaseViewModel;
+import fi.aalto.cs.apluscourses.services.PluginSettings;
 import fi.aalto.cs.apluscourses.ui.InstallerDialogs;
 import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import fi.aalto.cs.apluscourses.utils.async.SimpleAsyncTaskManager;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
 
 public class InstallModuleAction extends DumbAwareAction {
 
@@ -78,10 +78,10 @@ public class InstallModuleAction extends DumbAwareAction {
       List<Component> modules = courseViewModel.getModules().streamSelectedElements()
           .map(BaseViewModel::getModel)
           .collect(Collectors.toList());
-      logger.info("Downloading modules: {}", modules);
+      logger.info("Downloading modules: %s".formatted(modules));
       Course course = courseViewModel.getModel();
       componentInstallerFactory.getInstallerFor(course,
-              dialogsFactory.getDialogs(e.getProject()), course.getCallbacks())
+              dialogsFactory.getDialogs(e.getProject()), course.callbacks)
           .installAsync(modules, () -> downloadDone(course));
     }
   }

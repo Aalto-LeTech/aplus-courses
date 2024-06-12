@@ -1,11 +1,10 @@
 package fi.aalto.cs.apluscourses.intellij.utils;
 
-import com.intellij.execution.impl.ExecutionManagerImpl;
 import com.intellij.openapi.project.Project;
 import fi.aalto.cs.apluscourses.utils.DelegateTimerTask;
 import java.util.Timer;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.plugins.scala.console.ScalaConsoleInfo;
+//import org.jetbrains.plugins.scala.console.ScalaConsoleInfo;
 
 public class ScalaReplObserver {
 
@@ -50,9 +49,10 @@ public class ScalaReplObserver {
    * Returns true if the REPL for a given module is open.
    */
   public static boolean isReplOpen(@NotNull Project project, @NotNull String module) {
-    return ScalaConsoleInfo.getConsole(project) != null
-        && ExecutionManagerImpl.getAllDescriptors(project).stream().anyMatch(d -> d.getDisplayName().contains("REPL")
-        && d.getDisplayName().contains(module));
+    return false; //TODO
+//    return ScalaConsoleInfo.getConsole(project) != null
+//        && ExecutionManagerImpl.getAllDescriptors(project).stream().anyMatch(d -> d.getDisplayName().contains("REPL")
+//        && d.getDisplayName().contains(module));
   }
 
   public interface Callback {

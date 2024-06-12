@@ -10,6 +10,7 @@ import com.intellij.openapi.project.DumbAwareToggleAction
 import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.services.exercise.ExercisesTreeFilterService
 
+@OptIn(ExperimentalStdlibApi::class) // TODO
 class FilterActionGroup : DefaultActionGroup(), Toggleable {
     init {
         ExercisesTreeFilterService.Companion.Filter.entries.map { filter ->

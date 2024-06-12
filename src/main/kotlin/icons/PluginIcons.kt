@@ -53,6 +53,8 @@ object PluginIcons {
     @JvmField // TODO remove this annotation
     val A_PLUS_DUMMY: Icon = getIcon("/META-INF/icons/dummy.svg", PluginIcons::class.java)
     val A_PLUS_CHECKED: Icon = getIcon("/META-INF/icons/checked.svg", PluginIcons::class.java)
+
+    @JvmField // TODO remove this annotation
     val A_PLUS_DOCS: Icon = getIcon("/META-INF/icons/docs.svg", PluginIcons::class.java)
     val A_PLUS_NEW: Icon = getIcon("/META-INF/icons/new.svg", PluginIcons::class.java)
 

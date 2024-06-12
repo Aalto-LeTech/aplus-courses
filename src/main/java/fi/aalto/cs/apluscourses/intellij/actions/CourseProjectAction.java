@@ -6,26 +6,25 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ex.ApplicationEx;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
-import fi.aalto.cs.apluscourses.model.CourseProject;
-import fi.aalto.cs.apluscourses.intellij.model.IntelliJModelFactory;
 import fi.aalto.cs.apluscourses.intellij.model.SettingsImporter;
 import fi.aalto.cs.apluscourses.intellij.notifications.CourseConfigListErrorNotification;
-import fi.aalto.cs.apluscourses.intellij.notifications.CourseConfigurationError;
 import fi.aalto.cs.apluscourses.intellij.notifications.CourseFileError;
 import fi.aalto.cs.apluscourses.intellij.notifications.CourseVersionOutdatedError;
 import fi.aalto.cs.apluscourses.intellij.notifications.CourseVersionTooNewError;
 import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
 import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
-import fi.aalto.cs.apluscourses.services.PluginSettings;
 import fi.aalto.cs.apluscourses.model.ComponentInstaller;
 import fi.aalto.cs.apluscourses.model.ComponentInstallerImpl;
 import fi.aalto.cs.apluscourses.model.Course;
+import fi.aalto.cs.apluscourses.model.CourseProject;
 import fi.aalto.cs.apluscourses.model.MalformedCourseConfigurationException;
 import fi.aalto.cs.apluscourses.presentation.CourseItemViewModel;
 import fi.aalto.cs.apluscourses.presentation.CourseProjectViewModel;
 import fi.aalto.cs.apluscourses.presentation.CourseSelectionViewModel;
+import fi.aalto.cs.apluscourses.services.PluginSettings;
 import fi.aalto.cs.apluscourses.ui.InstallerDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogs;
 import fi.aalto.cs.apluscourses.ui.courseproject.CourseProjectActionDialogsImpl;
@@ -33,7 +32,6 @@ import fi.aalto.cs.apluscourses.ui.ideactivities.ComponentDatabase;
 import fi.aalto.cs.apluscourses.ui.utils.PluginInstallerDialogs;
 import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import fi.aalto.cs.apluscourses.utils.BuildInfo;
-import fi.aalto.cs.apluscourses.utils.CoursesClient;
 import fi.aalto.cs.apluscourses.utils.PluginAutoInstaller;
 import fi.aalto.cs.apluscourses.utils.PostponedRunnable;
 import fi.aalto.cs.apluscourses.utils.Version;
@@ -53,7 +51,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
 import org.yaml.snakeyaml.Yaml;
 
 public class CourseProjectAction extends AnAction {
@@ -62,8 +59,8 @@ public class CourseProjectAction extends AnAction {
 
   public static final String ACTION_ID = CourseProjectAction.class.getCanonicalName();
 
-  @NotNull
-  private final CourseFactory courseFactory;
+//  @NotNull
+//  private final CourseFactory courseFactory;
 
   private final boolean useCourseFile;
 
@@ -131,7 +128,7 @@ public class CourseProjectAction extends AnAction {
                              @NotNull InstallerDialogs.Factory installerDialogsFactory,
                              @NotNull Notifier notifier,
                              @NotNull ExecutorService executor) {
-    this.courseFactory = courseFactory;
+//    this.courseFactory = courseFactory;
     this.useCourseFile = useCourseFile;
     this.settingsImporter = settingsImporter;
     this.installerFactory = installerFactory;
@@ -146,7 +143,7 @@ public class CourseProjectAction extends AnAction {
    * Construct a course project action with sensible defaults.
    */
   public CourseProjectAction() {
-    this.courseFactory = (url, project) -> Course.fromUrl(url, new IntelliJModelFactory(project));
+//    this.courseFactory = (url, project) -> Course.Companion.fromUrl(url, new IntelliJModelFactory(project), project);
     this.useCourseFile = true;
     this.settingsImporter = new SettingsImporter();
     this.installerFactory = new ComponentInstallerImpl.FactoryImpl<>(new SimpleAsyncTaskManager());
@@ -202,9 +199,9 @@ public class CourseProjectAction extends AnAction {
     if (versionComparison == Version.ComparisonStatus.MAJOR_TOO_OLD
         || versionComparison == Version.ComparisonStatus.MAJOR_TOO_NEW) {
       if (versionComparison == Version.ComparisonStatus.MAJOR_TOO_OLD) {
-        logger.warn("A+ Courses version outdated: installed {}, required {}", version, course.getVersion());
+        logger.warn("A+ Courses version outdated: installed %s, required %s".formatted(version, course.getVersion()));
       } else {
-        logger.warn("A+ Courses version too new: installed {}, required {}", version, course.getVersion());
+        logger.warn("A+ Courses version too new: installed %s, required %s".formatted(version, course.getVersion()));
       }
       notifier.notify(
           versionComparison == Version.ComparisonStatus.MAJOR_TOO_OLD
@@ -219,13 +216,13 @@ public class CourseProjectAction extends AnAction {
     }
 
     String language = Objects.requireNonNull(courseProjectViewModel.languageProperty.get());
-    logger.info("Language chosen: {}", language);
+    logger.info("Language chosen: %s".formatted(language));
     if (!tryCreateCourseFile(project, courseUrl, language)) {
       return;
     }
 
     boolean importIdeSettings = courseProjectViewModel.shouldApplyNewIdeSettings();
-    logger.info("Should apply new IDE settings: {}", importIdeSettings);
+    logger.info("Should apply new IDE settings: %s".formatted(importIdeSettings));
 
     var basePath = Optional.ofNullable(project.getBasePath()).map(Paths::get).orElse(null);
     if (basePath == null) {
@@ -312,7 +309,7 @@ public class CourseProjectAction extends AnAction {
         return null;
       } else {
         var url = new URL(Objects.requireNonNull(viewModel.selectedCourseUrl.get()));
-        logger.info("Got url: {}", url);
+        logger.info("Got url: %s".formatted(url));
         return url;
       }
     } catch (MalformedURLException e) {
@@ -329,15 +326,15 @@ public class CourseProjectAction extends AnAction {
   private CourseItemViewModel[] fetchCourses(@NotNull Project project) {
     try {
       var url = new URL(COURSE_LIST_URL);
-      var courseStream = CoursesClient.fetch(url);
+//      var courseStream = CoursesClient.fetch(url);
       var yaml = new Yaml();
 
-      @SuppressWarnings("unchecked") var courseList = (List<Map<String, String>>) yaml.load(courseStream);
+      var courseList = List.of(Map.of("", ""));// (List<Map<String, String>>) ();　// yaml.load(courseStream);
       return courseList.stream().map(CourseItemViewModel::fromMap).toArray(CourseItemViewModel[]::new);
     } catch (MalformedURLException e) {
       logger.info("Malformed course config list url", e);
-    } catch (IOException e) {
-      logger.info("Failed to fetch course config list", e);
+//    } catch (IOException e) {
+//      logger.info("Failed to fetch course config list", e);
     } catch (ClassCastException e) {
       logger.info("Course config list yaml corrupted", e);
     }
@@ -355,23 +352,23 @@ public class CourseProjectAction extends AnAction {
    */
   @Nullable
   private Course tryGetCourse(@NotNull Project project, @NotNull URL courseUrl) {
-    try {
-      logger.debug("Getting course");
-      return courseFactory.fromUrl(courseUrl, project);
-    } catch (IOException e) {
-      logger.warn("Network error", e);
-      notifier.notify(new NetworkErrorNotification(e), project);
-      return null;
-    } catch (MalformedCourseConfigurationException e) {
-      logger.warn("Malformed course configuration file", e);
-      notifier.notify(new CourseConfigurationError(e), project);
-      return null;
-    }
+//    try {
+    logger.debug("Getting course");
+    return null;//courseFactory.fromUrl(courseUrl, project);
+//    } catch (IOException e) {
+//      logger.warn("Network error", e);
+//      notifier.notify(new NetworkErrorNotification(e), project);
+//      return null;
+//    } catch (MalformedCourseConfigurationException e) {
+//      logger.warn("Malformed course configuration file", e);
+//      notifier.notify(new CourseConfigurationError(e), project);
+//      return null;
+//    }
   }
 
   private void startAutoInstalls(@NotNull Course course, @NotNull Project project) {
     ComponentInstaller.Dialogs installerDialogs = installerDialogsFactory.getDialogs(project);
-    ComponentInstaller installer = installerFactory.getInstallerFor(course, installerDialogs, course.getCallbacks());
+    ComponentInstaller installer = installerFactory.getInstallerFor(course, installerDialogs, course.callbacks);
     installer.install(course.getAutoInstallComponents());
   }
 

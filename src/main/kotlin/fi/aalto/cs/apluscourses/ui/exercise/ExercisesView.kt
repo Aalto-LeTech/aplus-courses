@@ -81,7 +81,7 @@ class ExercisesView(project: Project) :
     }
 
     fun updateExercise(exercise: Exercise) {
-        return
+//        return
         TreeUtil.findNode(exerciseGroupsFilteringTree.root) { node ->
             when (node.userObject) {
                 is ExerciseItem -> (node.userObject as ExerciseItem).exercise.id == exercise.id
@@ -104,7 +104,7 @@ class ExercisesView(project: Project) :
     data class ExercisesRootItem(val project: Project) : ExercisesTreeItem {
         override fun displayName(): String = ""
 
-        override fun children(): List<ExerciseGroupItem> =
+        override fun children(): List<ExerciseGroupItem> = //listOf()
             project.service<ExercisesUpdaterService>().state.exerciseGroups.map { group ->
                 ExerciseGroupItem(
                     group,
@@ -209,7 +209,7 @@ class ExercisesView(project: Project) :
             return false
         }
 
-        override fun getNodeClass() = DefaultMutableTreeNode::class.java
+        override fun getNodeClass(): Class<DefaultMutableTreeNode> = DefaultMutableTreeNode::class.java
 
         override fun getChildren(item: ExercisesTreeItem): List<ExercisesTreeItem> =
             item.children()

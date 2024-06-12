@@ -128,7 +128,7 @@ public abstract class Module extends Component {
       return false;
     }
     synchronized (moduleLock) {
-      return version.major != Optional.ofNullable(localVersion).orElse(new Version(1, 0)).major;
+      return version.getMajor() != Optional.ofNullable(localVersion).orElse(new Version(1, 0)).getMajor();
     }
   }
 
@@ -178,6 +178,12 @@ public abstract class Module extends Component {
   public Version getVersion() {
     synchronized (moduleLock) {
       return version;
+    }
+  }
+
+  public Version getLocalVersion() {
+    synchronized (moduleLock) {
+      return localVersion;
     }
   }
 

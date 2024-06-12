@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.utils;
 
+import com.intellij.openapi.diagnostic.Logger;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -22,8 +23,6 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -31,9 +30,9 @@ import org.xml.sax.SAXException;
 
 public class DomUtil {
 
-  private static Logger logger = LoggerFactory.getLogger(DomUtil.class);
+  private static final Logger logger = Logger.getInstance(DomUtil.class);
 
-  private static ConcurrentMap<String, XPathExpression> xPathCache;
+  private static final ConcurrentMap<String, XPathExpression> xPathCache;
   private static final XPathFactory xPathFactory;
   private static final DocumentBuilderFactory documentBuilderFactory;
   private static final TransformerFactory transformerFactory;

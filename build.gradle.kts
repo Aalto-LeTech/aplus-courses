@@ -6,9 +6,10 @@ fun environment(key: String): Provider<String> = providers.environmentVariable(k
 
 plugins {
     java
+    idea
 //    scala
-    jacoco
-    checkstyle
+//    jacoco
+//    checkstyle
 
     // ./gradle/libs.versions.toml
     alias(libs.plugins.kotlin) // Kotlin support
@@ -51,11 +52,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
     implementation("io.ktor:ktor-client-core:2.3.11")
     implementation("io.ktor:ktor-client-cio:2.3.11")
-    implementation("io.ktor:ktor-client-resources:2.3.11") //{
-//        exclude(group = "io.ktor", module = "ktor-client-core")
-//        exclude(group = "io.ktor", module = "ktor-utils")
-//        exclude(group = "io.ktor", module = "ktor-resources" )
-//    }
+    implementation("io.ktor:ktor-client-resources:2.3.11")
 
     compileOnly(libs.scalaLibrary)
 
@@ -77,6 +74,7 @@ dependencies {
         exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-jdk8")
         exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-slf4j")
         exclude(group = "org.slf4j")
+//        resolutionStrategy.sortArtifacts(ResolutionStrategy.SortOrder.DEPENDENCY_FIRST)
     }
 
     // IntelliJ Platform Gradle Plugin Dependencies Extension - read more:
@@ -213,9 +211,9 @@ tasks {
         enabled = false // Disabled because it breaks dynamic reload
     }
 
-    jacocoTestReport {
-        reports.xml.required = true
-    }
+//    jacocoTestReport {
+//        reports.xml.required = true
+//    }
 
     register<GatherBuildInfoTask>("gatherBuildInfo") {
         pluginVersion = properties("pluginVersion").get()
@@ -227,12 +225,12 @@ tasks {
         dependsOn("gatherBuildInfo")
     }
 
-    check {
-        dependsOn("jacocoTestReport")
-    }
+//    check {
+//        dependsOn("jacocoTestReport")
+//    }
 }
 
-checkstyle {
-    configFile = file("checkstyle/google_checks.xml")
-    maxWarnings = 0
-}
+//checkstyle {
+//    configFile = file("checkstyle/google_checks.xml")
+//    maxWarnings = 0
+//}

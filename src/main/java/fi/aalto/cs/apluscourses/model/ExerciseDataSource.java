@@ -4,6 +4,7 @@ import fi.aalto.cs.apluscourses.model.exercise.Exercise;
 import fi.aalto.cs.apluscourses.model.exercise.ExerciseGroup;
 import fi.aalto.cs.apluscourses.model.exercise.Points;
 import fi.aalto.cs.apluscourses.model.exercise.SubmissionResult;
+import fi.aalto.cs.apluscourses.model.news.NewsItem;
 import fi.aalto.cs.apluscourses.utils.cache.CachePreference;
 import java.io.IOException;
 import java.time.ZonedDateTime;
@@ -63,9 +64,9 @@ public interface ExerciseDataSource {
                               @NotNull Authentication authentication) throws IOException;
 
   @NotNull
-  List<News> getNews(@NotNull Course course,
-                     @NotNull Authentication authentication,
-                     @NotNull String language) throws IOException;
+  List<NewsItem> getNews(@NotNull Course course,
+                         @NotNull Authentication authentication,
+                         @NotNull String language) throws IOException;
 
   @Nullable
   String submit(@NotNull Submission submission, @NotNull Authentication authentication)

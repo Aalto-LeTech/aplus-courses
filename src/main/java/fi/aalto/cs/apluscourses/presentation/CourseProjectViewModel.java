@@ -36,7 +36,7 @@ public class CourseProjectViewModel {
                                 @Nullable String currentlyImportedIdeSettings) {
     this.course = course;
 
-    currentSettingsDiffer = !course.getId().equals(currentlyImportedIdeSettings);
+    currentSettingsDiffer = !course.id.equals(currentlyImportedIdeSettings);
 
     settingsOptOutProperty = new ObservableReadWriteProperty<>(!currentSettingsDiffer);
   }
@@ -66,11 +66,11 @@ public class CourseProjectViewModel {
   }
 
   public String getCourseName() {
-    return course.getName();
+    return course.name;
   }
 
   public String[] getLanguages() {
-    return course.getLanguages().toArray(new String[0]);
+    return course.languages.toArray(new String[0]);
   }
 
   public boolean shouldShowCurrentSettings() {

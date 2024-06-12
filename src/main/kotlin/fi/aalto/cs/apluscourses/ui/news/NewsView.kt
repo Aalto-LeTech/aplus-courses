@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.ui.news
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.ui.JBColor
@@ -10,15 +11,22 @@ import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.gridLayout.UnscaledGaps
 import com.intellij.ui.dsl.gridLayout.UnscaledGapsY
 import com.intellij.util.ui.JBFont
-import fi.aalto.cs.apluscourses.presentation.news.NewsTreeViewModel
+import fi.aalto.cs.apluscourses.model.news.NewsTree
 import fi.aalto.cs.apluscourses.ui.base.TreeView
 import fi.aalto.cs.apluscourses.utils.PluginResourceBundle
 import icons.PluginIcons
 import java.awt.Font
 import javax.swing.ScrollPaneConstants
 
-class NewsView(private val toolWindow: ToolWindow) : SimpleToolWindowPanel(true, true) {
-    val newsTree: TreeView = TreeView()
+class NewsView(private val toolWindow: ToolWindow, private val project: Project) : SimpleToolWindowPanel(true, true) {
+    private val newsTree: TreeView = TreeView()
+    private var news: NewsTree? = null
+    private var shortTab = false
+    private val shortTabTitle = "📰"
+    private val longTabTitle = "News"
+    private fun tabTitle() = if (shortTab) shortTabTitle else longTabTitle
+    private fun unreadTabTitle() =
+        """<html><body><span>${tabTitle()} </span><span style="color: #FF0090;">●</span></body></html>"""
 
     /**
      * Creates an ExerciseView that uses mainViewModel to dynamically adjust its UI components.
@@ -47,53 +55,56 @@ class NewsView(private val toolWindow: ToolWindow) : SimpleToolWindowPanel(true,
     /**
      * Sets the view model of this view, or does nothing if the given view model is null.
      */
-    fun viewModelChanged(viewModel: NewsTreeViewModel?) {
-        ApplicationManager.getApplication().invokeLater(
-            {
-                newsTree.setViewModel(viewModel)
-                if (viewModel == null) {
-                    return@invokeLater
-                }
-                val content = JBScrollPane((panel {
-                    panel {
-                        for (node in viewModel.model.news) {
-                            row {
-                                text(node.title).applyToComponent {
-                                    font = JBFont.regular().biggerOn(6f).deriveFont(Font.BOLD)
-                                }.resizableColumn()
-                                if (!node.isRead) {
-                                    icon(PluginIcons.A_PLUS_NEW)
-                                }
-                            }.customize(UnscaledGapsY(0, 0))
-                            row {
-                                text(node.publishTimeInfo).applyToComponent {
-                                    foreground = JBColor.GRAY
-                                }
-                            }.customize(UnscaledGapsY(0, 0))
-                            row {
-                                text(node.body)
+    fun viewModelChanged(newsTree: NewsTree?) {
+        ApplicationManager.getApplication().invokeLater {
+            println("newsview update")
+//                newsTree.setViewModel(viewModel)
+            this.news = newsTree
+            if (newsTree == null) {
+                return@invokeLater
+            }
+            println("newsview update 2")
+            val content = JBScrollPane((panel {
+                panel {
+                    for (node in newsTree.news) {
+                        row {
+                            text(node.title).applyToComponent {
+                                font = JBFont.regular().biggerOn(6f).deriveFont(Font.BOLD)
+                            }.resizableColumn()
+                            if (!node.isRead) {
+                                icon(PluginIcons.A_PLUS_NEW)
                             }
-                            separator()
+                        }.customize(UnscaledGapsY(0, 0))
+                        row {
+                            text(node.publishTimeInfo).applyToComponent {
+                                foreground = JBColor.GRAY
+                            }
+                        }.customize(UnscaledGapsY(0, 0))
+                        row {
+                            text(node.body)
                         }
-                    }.customize(UnscaledGaps(32, 32, 16, 32))
-                }), ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER)
-                setContent(content)
-                if (viewModel.model.unreadCount() > 0L) {
-                    toolWindow.contentManager.getContent(this).displayName =
-                        """<html><body>News <span style="color: #FF0090;">●</span></body></html>"""
-                } else {
-                    toolWindow.contentManager.getContent(this).displayName = "News"
-                }
-//                title!!.text = viewModel.title
-            }, ModalityState.any()
-        )
+                        separator()
+                    }
+                }.customize(UnscaledGaps(32, 32, 16, 32))
+            }), ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER)
+            setContent(content)
+            updateTitle()
+            updateUI()
+        }
     }
 
-//    private fun createUIComponents() {
-//        pane = ScrollPaneFactory.createScrollPane(basePanel)
-//        title = JLabel()
-//        newsTree = TreeView()
-//        newsTree!!.cellRenderer = NewsTreeRenderer()
-//        newsTree!!.rowHeight = -1
-//    }
+    fun setShortTab(short: Boolean) {
+        shortTab = short
+        updateTitle()
+    }
+
+    private fun updateTitle() {
+        val currentNews = news
+        toolWindow.contentManager.getContent(this).displayName =
+            if (currentNews != null && currentNews.unreadCount() > 0) {
+                unreadTabTitle()
+            } else {
+                tabTitle()
+            }
+    }
 }

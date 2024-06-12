@@ -3,20 +3,14 @@ package fi.aalto.cs.apluscourses.intellij.actions;
 import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.diagnostic.Logger;
 import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier;
-import fi.aalto.cs.apluscourses.intellij.notifications.ExerciseNotSelectedNotification;
 import fi.aalto.cs.apluscourses.intellij.notifications.Notifier;
 import fi.aalto.cs.apluscourses.intellij.services.MainViewModelProvider;
 import fi.aalto.cs.apluscourses.intellij.utils.Interfaces;
-import fi.aalto.cs.apluscourses.intellij.utils.SubmissionDownloader;
-import fi.aalto.cs.apluscourses.model.exercise.SubmissionResult;
-//import fi.aalto.cs.apluscourses.presentation.exercise.ExerciseViewModel;
-import fi.aalto.cs.apluscourses.presentation.exercise.ExercisesTreeViewModel;
-//import fi.aalto.cs.apluscourses.presentation.exercise.SubmissionResultViewModel;
 import fi.aalto.cs.apluscourses.services.PluginSettings;
 import fi.aalto.cs.apluscourses.utils.APlusLogger;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
 
 public class DownloadSubmissionAction extends AnAction {
 

@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.intellij.utils;
 
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ModuleRootManager;
@@ -34,7 +35,6 @@ import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.slf4j.Logger;
 
 public class CourseFileManager {
 
