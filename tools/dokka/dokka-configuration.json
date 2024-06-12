@@ -1,0 +1,26 @@
+{
+  "moduleName": "A+ Courses",
+  "moduleVersion": "4.0.0-beta1",
+  "outputDir": "./html",
+  "suppressObviousFunctions": true,
+  "sourceSets": [
+    {
+      "sourceSetID": {
+        "scopeId": "moduleName",
+        "sourceSetName": "main"
+      },
+      "sourceRoots": [
+        "../../src/main/kotlin/fi/aalto/cs/apluscourses"
+      ],
+      "jdkVersion": 21,
+      "languageVersion": "2.0",
+      "apiVersion": "2.0"
+    }
+  ],
+  "pluginsClasspath": [
+    "./dokka-base-1.9.20.jar",
+    "./kotlinx-html-jvm-0.8.0.jar",
+    "./analysis-kotlin-descriptors-1.9.20.jar",
+    "./freemarker-2.3.31.jar"
+  ]
+}
