@@ -38,7 +38,7 @@ import java.nio.file.Paths
  * the input stream of the response is needed.
  */
 @Service(
-    Service.Level.PROJECT
+    Service.Level.APP
 )
 class CoursesClient(
 //    private val project: Project,
@@ -148,6 +148,15 @@ class CoursesClient(
         return withContext(Dispatchers.IO) {
             client.get(url)
         }
+    }
+
+    suspend fun getFileSize(url: URL): Long? {
+        val head = withContext(Dispatchers.IO) {
+            client.request(url) {
+                method = HttpMethod.Head
+            }
+        }
+        return head.contentLength()
     }
 
     @OptIn(ExperimentalSerializationApi::class)

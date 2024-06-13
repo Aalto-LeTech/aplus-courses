@@ -16,7 +16,7 @@
                     anchor="right"
                     factoryClass="fi.aalto.cs.apluscourses.toolwindows.APlusToolWindowFactory"
                     icon="PluginIcons.A_PLUS_LOGO"/>
-        <moduleBuilder builderClass="fi.aalto.cs.apluscourses.intellij.generator.APlusModuleBuilder"/>
+        <moduleBuilder builderClass="fi.aalto.cs.apluscourses.generator.APlusModuleBuilder"/>
         <errorHandler implementation="fi.aalto.cs.apluscourses.intellij.utils.ErrorHandler"/>
         <httpRequestHandler implementation="fi.aalto.cs.apluscourses.intellij.services.OpenSubmissionService"/>
         <projectConfigurable
