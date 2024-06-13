@@ -131,7 +131,7 @@ internal class APlusToolWindowFactory : ToolWindowFactory, DumbAware {
  * Creates a ModulesView.
  */
 fun createModulesView(project: Project): ModulesView {
-    val modulesView = ModulesView()
+    val modulesView = ModulesView(project)
     PluginSettings.getInstance().getMainViewModel(project).courseViewModel
         .addValueObserver(modulesView) { obj: ModulesView, course: CourseViewModel? ->
             obj.viewModelChanged(course)
