@@ -1,8 +1,8 @@
 name: Build and deploy docs to Pages
 
 on:
-  push:
-    branches: [ "kotlin" ]
+  #  push:
+  #    branches: [ "kotlin" ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
