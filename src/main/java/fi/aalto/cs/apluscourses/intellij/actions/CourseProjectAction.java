@@ -231,7 +231,7 @@ public class CourseProjectAction extends AnAction {
     }
 
     if (useCourseFile) {
-      // The course file not created in testing.
+      // The course file is not created in testing.
       var currentProject = PluginSettings.getInstance().getCourseProject(project);
       if (currentProject != null) {
 //        currentProject.courseUpdater.restart();

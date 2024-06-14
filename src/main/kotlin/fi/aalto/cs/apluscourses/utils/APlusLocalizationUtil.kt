@@ -28,7 +28,6 @@ object APlusLocalizationUtil {
      * Returns the language name corresponding to the given ISO 639-1 language code. Only a few common
      * ones are supported, otherwise the given language code is returned.
      */
-    @JvmStatic // TODO remove
     fun languageCodeToName(languageCode: String): String {
         // Hard-coded common language codes
         return when (languageCode) {

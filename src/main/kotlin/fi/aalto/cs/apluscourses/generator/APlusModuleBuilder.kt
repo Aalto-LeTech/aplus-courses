@@ -4,53 +4,57 @@ import com.intellij.ide.util.projectWizard.WizardContext
 import com.intellij.ide.wizard.*
 import com.intellij.ide.wizard.NewProjectWizardChainStep.Companion.nextStep
 import com.intellij.ide.wizard.comment.CommentNewProjectWizardStep
+import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.actionSystem.MacOtherAction
+import com.intellij.openapi.actionSystem.impl.ActionManagerImpl
 import com.intellij.openapi.components.service
 import com.intellij.openapi.module.GeneralModuleType
 import com.intellij.openapi.module.ModuleTypeManager
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.ColoredListCellRenderer
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.UIBundle
-import com.intellij.ui.components.JBLabel
+import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBList
 import com.intellij.ui.components.JBTextField
+import com.intellij.ui.dsl.builder.Align
+import com.intellij.ui.dsl.builder.Cell
 import com.intellij.ui.dsl.builder.Panel
+import com.intellij.ui.dsl.gridLayout.HorizontalAlign
+import com.intellij.ui.layout.CCFlags
+import com.intellij.ui.util.minimumWidth
 import com.intellij.util.application
 import fi.aalto.cs.apluscourses.MyBundle
+import fi.aalto.cs.apluscourses.api.CourseConfig
 import fi.aalto.cs.apluscourses.presentation.CourseItemViewModel
 import fi.aalto.cs.apluscourses.services.CoursesClient
+import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil.languageCodeToName
 import icons.PluginIcons
 import io.ktor.client.statement.*
 import kotlinx.coroutines.launch
 import org.yaml.snakeyaml.Yaml
 import javax.swing.Icon
+import javax.swing.JEditorPane
 import javax.swing.JList
-import javax.swing.JPanel
+import javax.swing.ListSelectionModel
+import javax.swing.event.ListSelectionListener
 
 class APlusModuleBuilder : GeneratorNewProjectWizardBuilderAdapter(APlusModuleBuilderA())
 
+/**
+ * [com.intellij.ide.wizard.language.EmptyProjectGeneratorNewProjectWizard]
+ */
 class APlusModuleBuilderA : GeneratorNewProjectWizard {
     override val icon: Icon = PluginIcons.A_PLUS_LOGO_COLOR
     override val name: String = MyBundle.message("intellij.ProjectBuilder.name")
     override val id: String = "APLUS_MODULE_TYPE"
     override val ordinal: Int = 100000
     override val description: String = MyBundle.message("intellij.ProjectBuilder.description")
-//    override fun getModuleType(): APlusModuleType = APlusModuleType()
-//
-//    override fun getWeight(): Int = 100000
-//
-//    /**
-//     * Only show the builder when creating a new project
-//     */
-//    override fun isAvailable(): Boolean {
-//        val lastAction = (ActionManager.getInstance() as ActionManagerImpl).lastPreformedActionId
-//        return if (lastAction == null) true else !lastAction.contains("Module")
-//    }
-//
-//
-//    override fun canCreateModule(): Boolean = false
-//
-//    override fun isOpenProjectSettingsAfter(): Boolean = false
+    override fun isEnabled(): Boolean {
+        val lastAction = (ActionManager.getInstance() as ActionManagerImpl).lastPreformedActionId
+        return if (lastAction == null) true else !lastAction.contains("Module")
+    }
 
     override fun createStep(context: WizardContext): NewProjectWizardChainStep<Step> =
         RootNewProjectWizardStep(context)
@@ -60,7 +64,9 @@ class APlusModuleBuilderA : GeneratorNewProjectWizard {
             .nextStep(::Step)
 
     private class CommentStep(parent: NewProjectWizardStep) : CommentNewProjectWizardStep(parent) {
-        override val comment: String = UIBundle.message("label.project.wizard.empty.project.generator.full.description")
+        override val comment: String =
+            "A project integrating with the A+ LMS, supporting course module downloads<br>and assignment submissions."
+        //UIBundle.message("label.project.wizard.empty.project.generator.full.description")
     }
 
     class Step(parent: NewProjectWizardStep) : AbstractNewProjectWizardStep(parent) {
@@ -72,16 +78,35 @@ class APlusModuleBuilderA : GeneratorNewProjectWizard {
     }
 
     private class CourseSelectStep(parent: NewProjectWizardStep) : AbstractNewProjectWizardStep(parent) {
-
-//            val projectSettings: ProjectSettingsStep = ProjectSettingsStep(context)
-
-        val panel = JPanel()
+        var urlField: JBTextField? = null
         var courses: List<CourseItemViewModel> = emptyList()
-
-        //            val urlFieldLabel = JBLabel(MyBundle.message("ui.courseProject.courseSelection.textField"))
-        val courseListLabel = JBLabel(MyBundle.message("ui.courseProject.courseSelection.selection"))
-        val urlField = JBTextField()
+        val configs: MutableMap<CourseItemViewModel, CourseConfig.JSON> = mutableMapOf()
         val courseList = JBList<CourseItemViewModel>()
+        var selectedCourse: CourseItemViewModel? = null
+        var languages = listOf("Finnish", "English")
+        var languageCombo: ComboBox<String>? = null
+        var languageComment: JEditorPane? = null
+        var com = "test"
+        val test = ListSelectionListener { e ->
+            if (e.valueIsAdjusting) return@ListSelectionListener
+            selectedCourse = courseList.selectedValue
+            urlField?.text = selectedCourse?.url
+            val config = configs[selectedCourse]
+            println(config)
+            if (config == null || languageCombo == null) return@ListSelectionListener
+            println("${config.id} ${languageCombo!!.selectedItem}")
+            languages = config.languages.map { language -> languageCodeToName(language) }
+            if (languages.size > 1 && languages.contains("Finnish")) {
+                com = MyBundle.message("ui.courseProject.view.languagePrompt")
+                languageComment?.text = MyBundle.message("ui.courseProject.view.languagePrompt")
+            } else {
+                com = ""
+                languageComment?.text = ""
+            }
+            languageCombo!!.removeAllItems()
+            languages.forEach { language -> languageCombo!!.addItem(language) }
+            println(languages.joinToString(", "))
+        }
 
         private val NAME_TEXT_ATTRIBUTES
                 : SimpleTextAttributes = SimpleTextAttributes(SimpleTextAttributes.STYLE_BOLD, null)
@@ -89,22 +114,6 @@ class APlusModuleBuilderA : GeneratorNewProjectWizard {
                 : SimpleTextAttributes = SimpleTextAttributes(SimpleTextAttributes.STYLE_ITALIC, null)
 
         init {
-
-//                projectSettings.updateStep()
-//                val layout = BoxLayout(panel, BoxLayout.Y_AXIS)
-//                panel.setLayout(layout)
-//                val border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
-//                panel.border = border
-//                projectSettings.addSettingsField(
-//                    MyBundle.message("ui.courseProject.courseSelection.textField"),
-//                    urlField
-//                )
-//                projectSettings.addSettingsComponent(courseList)
-//                panel.add(courseListLabel)
-//                urlField.setEmptyState(MyBundle.message())
-//                panel.add(urlField)
-            panel.add(courseList)
-//                panel.add(Box.createVerticalGlue())
             courseList.setCellRenderer(
                 object : ColoredListCellRenderer<CourseItemViewModel>() {
                     override fun customizeCellRenderer(
@@ -120,6 +129,9 @@ class APlusModuleBuilderA : GeneratorNewProjectWizard {
                     }
                 }
             )
+            courseList.selectionMode = ListSelectionModel.SINGLE_SELECTION
+
+            courseList.addListSelectionListener(test)
 
             val client = application.service<CoursesClient>()
             val url = "https://version.aalto.fi/gitlab/aplus-courses/course-config-urls/-/raw/main/courses.yaml"
@@ -134,6 +146,12 @@ class APlusModuleBuilderA : GeneratorNewProjectWizard {
                     }
 
                 courseList.setListData(courses.toTypedArray())
+
+                for (course in courses) {
+                    val courseConfig = client.getBody<CourseConfig.JSON>(course.url, false)
+                    println("${course.name} ${courseConfig.languages.joinToString(", ")}")
+                    configs[course] = courseConfig
+                }
             }
         }
 
@@ -143,23 +161,27 @@ class APlusModuleBuilderA : GeneratorNewProjectWizard {
                     label(MyBundle.message("ui.courseProject.courseSelection.selection"))
                 }
                 row {
-                    cell(panel).resizableColumn()
+                    cell(courseList).align(Align.FILL)
                 }
                 row(MyBundle.message("ui.courseProject.courseSelection.textField")) {
-                    textField().resizableColumn()
+                    textField().resizableColumn().align(Align.FILL).apply {
+                        urlField = component
+                    }
+                    button("Fetch") { event -> println("press") }
+                }
+                row("Language:") {
+                    comboBox(languages).comment("", 40).apply {
+                        languageCombo = component
+                        languageComment = comment
+                    }
+                }
+                row("Settings:") {
+                    checkBox("Leave IntelliJ settings unchanged")
+                        .comment(MyBundle.message("ui.courseProject.form.settingsWarningText"), 40)
                 }
             }
-
-//            override fun getComponent(): JComponent = projectSettings.component
-
-//            override fun updateStep() {
-//
-//            }
-
-//            override fun updateDataModel() {
-//                // don't do anything
-//            }
         }
+
     }
 
 }

@@ -1,9 +1,7 @@
 package fi.aalto.cs.apluscourses.utils
 
-import kotlinx.serialization.Serializable
-
-@Serializable
 data class Version(val major: Int, val minor: Int) {
+
     init {
         require(!(major < 0 || minor < 0)) { "All the parts of version number must be non-negative." }
     }

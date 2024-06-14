@@ -160,17 +160,24 @@ class CoursesClient(
     }
 
     @OptIn(ExperimentalSerializationApi::class)
-    val json = Json {
+    fun json(snake: Boolean = true) = Json {
         ignoreUnknownKeys = true
         isLenient = true
-        namingStrategy = JsonNamingStrategy.SnakeCase
+        namingStrategy = if (snake) JsonNamingStrategy.SnakeCase else null
     }
 
     suspend inline fun <reified Resource : Any, reified Body : Any> getBody(resource: Resource): Body {
         val res = withContext(Dispatchers.IO) {
             client.get(resource)
         }
-        return json.decodeFromString<Body>(res.bodyAsText())
+        return json().decodeFromString<Body>(res.bodyAsText())
+    }
+
+    suspend inline fun <reified Body : Any> getBody(url: String, snake: Boolean): Body {
+        val res = withContext(Dispatchers.IO) {
+            client.get(url)
+        }
+        return json(snake).decodeFromString<Body>(res.bodyAsText())
     }
 
     /**

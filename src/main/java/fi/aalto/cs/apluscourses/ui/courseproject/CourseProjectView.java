@@ -92,10 +92,10 @@ public class CourseProjectView extends OurDialogWrapper {
   private void createUIComponents() {
     languagePrompt = new JLabel();
     languageComboBox = new OurComboBox<>(viewModel.getLanguages(), String.class);
-    languageComboBox.setRenderer(new IconListCellRenderer<>(
-        getText("ui.courseProject.view.languageSelectorDefault"),
-        APlusLocalizationUtil::languageCodeToName,
-        null));
+//    languageComboBox.setRenderer(new IconListCellRenderer<>(
+//        getText("ui.courseProject.view.languageSelectorDefault"),
+//        APlusLocalizationUtil::languageCodeToName,
+//        null));
     languageComboBox.selectedItemBindable.bindToSource(viewModel.languageProperty);
 
     // If there is only one language available, select it by default.

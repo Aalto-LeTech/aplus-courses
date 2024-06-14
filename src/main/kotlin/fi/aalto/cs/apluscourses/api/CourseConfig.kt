@@ -1,4 +1,4 @@
-@file:UseSerializers(CourseConfig.URLSerializer::class)
+@file:UseSerializers(CourseConfig.URLSerializer::class, CourseConfig.VersionSerializer::class)
 
 package fi.aalto.cs.apluscourses.api
 
@@ -21,6 +21,18 @@ object CourseConfig {
         }
 
         override fun serialize(encoder: Encoder, value: URL) {
+            encoder.encodeString(value.toString())
+        }
+    }
+
+    @OptIn(ExperimentalSerializationApi::class)
+    @Serializer(forClass = Version::class)
+    object VersionSerializer : KSerializer<Version> {
+        override fun deserialize(decoder: Decoder): Version {
+            return Version.fromString(decoder.decodeString())
+        }
+
+        override fun serialize(encoder: Encoder, value: Version) {
             encoder.encodeString(value.toString())
         }
     }
@@ -148,12 +160,12 @@ object CourseConfig {
         val aPlusUrl: URL,
         val languages: List<String>,
         val resources: Map<String, URL>,
-        val vmOptions: Map<String, String>,
-        val autoInstall: List<String>,
-        val repl: REPL,
+        val vmOptions: Map<String, String>? = null,
+        val autoInstall: List<String>? = null,
+        val repl: REPL? = null,
         val modules: List<Module>,
         val exerciseModules: Map<String, Map<String, String>>,
-        val hiddenElements: List<Long>,
+        val hiddenElements: List<Long>? = null,
     )
 
     /**
@@ -172,8 +184,8 @@ object CourseConfig {
      */
     @Serializable
     data class REPL(
-        val initialCommands: Map<String, List<String>>,
-        val arguments: String,
+        val initialCommands: Map<String, List<String>>? = null,
+        val arguments: String? = null,
     )
 
     /**
@@ -189,17 +201,17 @@ object CourseConfig {
      * ]
      * ```
      * @property name Name for the module shown in the UI.
-     * @property language Optional language of the module. If provided, only shown for that language in the UI.
      * @property url URL to a .zip file containing skeleton code, that the plugin downloads.
+     * @property language Optional language of the module. If provided, only shown for that language in the UI.
      * @property version Major.minor version number. Increment the major number when making breaking changes, else the minor number.
      * @property changelog Optional changelog, that gets shown as a tooltip in the modules list. Use empty string or leave out if you don't want a changelog.
      */
     @Serializable
     data class Module(
         val name: String,
-        val language: String?,
         val url: URL,
-        val version: Version,
-        val changelog: String,
+        val language: String? = null,
+        val version: Version? = null,
+        val changelog: String? = null,
     )
 }
