@@ -10,6 +10,7 @@ plugins {
 //    scala
 //    jacoco
 //    checkstyle
+    kotlin("plugin.serialization") version embeddedKotlinVersion
 
     // ./gradle/libs.versions.toml
     alias(libs.plugins.kotlin) // Kotlin support
@@ -18,7 +19,6 @@ plugins {
     alias(libs.plugins.qodana) // Gradle Qodana Plugin
     alias(libs.plugins.kover) // Gradle Kover Plugin
 
-    kotlin("plugin.serialization") version "2.0.0"
 }
 
 group = properties("pluginGroup").get()
@@ -26,7 +26,9 @@ version = properties("pluginVersion").get()
 
 // Set the JVM language level used to build the project.
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
 }
 
 // Configure project's dependencies
@@ -47,9 +49,27 @@ idea {
 }
 
 dependencies {
+    // IntelliJ Platform Gradle Plugin Dependencies Extension - read more:
+    // https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-dependencies-extension.html
+    intellijPlatform {
+        create(properties("platformType"), properties("platformVersion"))
+
+        // Plugin Dependencies.
+        // Uses `platformBundledPlugins` property from the gradle.properties file for bundled IntelliJ Platform plugins.
+        bundledPlugins(properties("platformBundledPlugins").map { it.split(',') })
+
+        // Plugin Dependencies.
+        // Uses `platformPlugins` property from the gradle.properties file for plugin from JetBrains Marketplace.
+        plugins(properties("platformPlugins").map { it.split(',') })
+
+        instrumentationTools()
+        pluginVerifier()
+        zipSigner()
+    }
+
     implementation(libs.zip4j)
     implementation(libs.json)
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.0")
     implementation("io.ktor:ktor-client-core:2.3.11")
     implementation("io.ktor:ktor-client-cio:2.3.11")
     implementation("io.ktor:ktor-client-resources:2.3.11")
@@ -75,23 +95,6 @@ dependencies {
         exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-slf4j")
         exclude(group = "org.slf4j")
 //        resolutionStrategy.sortArtifacts(ResolutionStrategy.SortOrder.DEPENDENCY_FIRST)
-    }
-
-    // IntelliJ Platform Gradle Plugin Dependencies Extension - read more:
-    // https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-dependencies-extension.html
-    intellijPlatform {
-        create(properties("platformType"), properties("platformVersion"))
-
-        // Plugin Dependencies.
-        // Uses `platformBundledPlugins` property from the gradle.properties file for bundled IntelliJ Platform plugins.
-        bundledPlugins(properties("platformBundledPlugins").map { it.split(',') })
-
-        // Plugin Dependencies.
-        // Uses `platformPlugins` property from the gradle.properties file for plugin from JetBrains Marketplace.
-        plugins(properties("platformPlugins").map { it.split(',') })
-
-        instrumentationTools()
-        pluginVerifier()
     }
 }
 
@@ -228,6 +231,10 @@ tasks {
 //    check {
 //        dependsOn("jacocoTestReport")
 //    }
+
+    runIde {
+        properties("idea.is.internal=true")
+    }
 }
 
 //checkstyle {

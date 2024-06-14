@@ -14,7 +14,7 @@ restAssured = "5.4.0"
 # plugins
 kotlin = "2.0.0"
 changelog = "2.2.0"
-intelliJPlatform = "2.0.0-beta6"
+intelliJPlatform = "2.0.0-beta7"
 qodana = "2024.1.5"
 kover = "0.8.0"
 
