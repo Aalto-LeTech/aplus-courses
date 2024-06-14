@@ -1,5 +1,8 @@
 package fi.aalto.cs.apluscourses.utils
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Version(val major: Int, val minor: Int) {
 
     init {

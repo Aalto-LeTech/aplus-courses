@@ -31,7 +31,6 @@ import java.awt.Dimension
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import javax.swing.*
-import kotlin.random.Random
 
 class ModulesView(val project: Project) : SimpleToolWindowPanel(true, true) {
     private var availableModules = mutableListOf<ModuleListElementViewModel>()
@@ -92,8 +91,12 @@ class ModulesView(val project: Project) : SimpleToolWindowPanel(true, true) {
                 }
                 val visible = course.modules.streamVisibleItems().toList()
                 val count = visible.size
-                availableModules = visible.subList(0, count / 2)
-                installedModules = visible.subList(count / 2, count)
+                availableModules =
+                    visible.filter { it.model.stateMonitor.get() == fi.aalto.cs.apluscourses.model.Component.NOT_INSTALLED }
+                        .toMutableList()
+                installedModules =
+                    visible.filter { it.model.stateMonitor.get() != fi.aalto.cs.apluscourses.model.Component.NOT_INSTALLED }
+                        .toMutableList()
 
 
                 addLabel("Available Modules")
@@ -145,8 +148,8 @@ class ModulesView(val project: Project) : SimpleToolWindowPanel(true, true) {
             nameLabel.foreground = JBColor.foreground()
             headerPanel.add(nameLabel, BorderLayout.CENTER)
 
-            val updateAvailable = installed && module.version != module.localVersion
-            // module.isUpdatable
+            val updateAvailable = module.isUpdatable //installed && module.version != module.localVersion
+
             val statusPanel = JPanel()
             statusPanel.isOpaque = false
             if (updateAvailable) {

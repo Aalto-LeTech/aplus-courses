@@ -11,9 +11,7 @@ import fi.aalto.cs.apluscourses.utils.CourseHiddenElements
 import fi.aalto.cs.apluscourses.utils.PluginDependency
 import fi.aalto.cs.apluscourses.utils.Version
 import java.net.URL
-import java.time.ZonedDateTime
 import java.util.*
-import kotlin.random.Random
 
 class IntelliJModelFactory(project: Project) : ModelFactory {
     private val project = APlusProject(project)
@@ -80,20 +78,20 @@ class IntelliJModelFactory(project: Project) : ModelFactory {
 //<li>Added some stuff</li>
 //<li>Did some fixing</li>
 //</ul>"""
-        val exampleChangelog = """Added some stuff<br>
-Did some fixing"""
-
-        val exampleVersion = if (Random.nextBoolean()) {
-            Version(Random.nextInt(2, 5), Random.nextInt(20))
-        } else {
-            version
-        }
-//        val moduleMetadata = Optional.ofNullable(modulesMetadata[name])
-//            .orElse(ModuleMetadata(null, null))
+//        val exampleChangelog = """Added some stuff<br>
+//Did some fixing"""
+//
+//        val exampleVersion = if (Random.nextBoolean()) {
+//            Version(Random.nextInt(2, 5), Random.nextInt(20))
+//        } else {
+//            version
+//        }
         val moduleMetadata = Optional.ofNullable(modulesMetadata[name])
-            .orElse(ModuleMetadata(version, ZonedDateTime.now()))
+            .orElse(ModuleMetadata(null, null))
+//        val moduleMetadata = Optional.ofNullable(modulesMetadata[name])
+//            .orElse(ModuleMetadata(version, ZonedDateTime.now()))
         return IntelliJModule(
-            name, url, exampleChangelog, exampleVersion, moduleMetadata.version,
+            name, url, changelog, version, moduleMetadata.version,
             moduleMetadata.downloadedAt, project
         )
     }
