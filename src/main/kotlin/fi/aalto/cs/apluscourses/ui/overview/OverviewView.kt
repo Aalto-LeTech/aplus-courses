@@ -34,9 +34,11 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
             )
     }
 
+    private val banner = ResponsiveImagePanel()
+
     private val panel = panel {
         row {
-            cell(ResponsiveImagePanel())
+            cell(banner)
                 .resizableColumn()
         }.topGap(TopGap.NONE)
         panel {
@@ -67,6 +69,17 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
         val content = JBScrollPane(panel)
         setContent(panel)
     }
+
+    private var oldWidth = 0
+    override fun getWidth(): Int {
+        val newWidth = super.getWidth()
+
+        if (newWidth != oldWidth && this.isShowing) {
+            oldWidth = newWidth
+            banner.updateWidth(newWidth)
+        }
+        return newWidth
+    }
 }
 
 private class ResponsiveImagePanel : JPanel() {
@@ -81,22 +94,16 @@ private class ResponsiveImagePanel : JPanel() {
             ScaleContext.createIdentity()
         )
         heightMultiplier = icon.iconHeight.toDouble() / icon.iconWidth.toDouble()
+    }
 
-        addComponentListener(object : ComponentAdapter() {
-            override fun componentResized(e: ComponentEvent) {
-                repaint()
-            }
-
-            override fun componentShown(e: ComponentEvent?) {
-                repaint()
-            }
-        })
+    fun updateWidth(width: Int) {
+        this.width = width
+        repaint()
     }
 
     override fun paintComponent(g: Graphics) {
         super.paintComponent(g)
         image?.let {
-            width = this.parent.width
             g.drawImage(it, 0, 0, width, height, this)
         }
     }
