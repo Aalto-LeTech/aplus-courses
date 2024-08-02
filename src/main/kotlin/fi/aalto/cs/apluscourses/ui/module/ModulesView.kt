@@ -1,133 +1,149 @@
 package fi.aalto.cs.apluscourses.ui.module
 
 import com.intellij.icons.AllIcons
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.EDT
-import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.components.service
-import com.intellij.openapi.observable.util.heightProperty
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.ui.ColorUtil
 import com.intellij.ui.JBColor
+import com.intellij.ui.SearchTextField
+import com.intellij.ui.TitledSeparator
+import com.intellij.ui.components.ActionLink
+import com.intellij.ui.components.AnActionLink
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBScrollPane
+import com.intellij.ui.util.maximumWidth
 import com.intellij.ui.util.preferredHeight
-import com.intellij.ui.util.preferredWidth
+import com.intellij.util.application
 import com.intellij.util.ui.UIUtil
-import fi.aalto.cs.apluscourses.model.Module
-import fi.aalto.cs.apluscourses.presentation.CourseViewModel
-import fi.aalto.cs.apluscourses.presentation.module.ModuleListElementViewModel
+import fi.aalto.cs.apluscourses.MyBundle
+import fi.aalto.cs.apluscourses.model.Course
+import fi.aalto.cs.apluscourses.model.component.Component.Status
+import fi.aalto.cs.apluscourses.model.component.Module
 import fi.aalto.cs.apluscourses.services.CoursesClient
+import fi.aalto.cs.apluscourses.services.Opener
+import fi.aalto.cs.apluscourses.services.course.CourseManager
+import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdaterService
+import fi.aalto.cs.apluscourses.utils.temp.DateDifferenceFormatter.formatTimeUntilNow
 import icons.PluginIcons
-import kotlinx.coroutines.CoroutineScope
+import io.ktor.http.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.jdesktop.swingx.painter.AbstractLayoutPainter
 import java.awt.BorderLayout
-import java.awt.Component
 import java.awt.Dimension
+import java.awt.event.KeyEvent
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import javax.swing.*
 
 class ModulesView(val project: Project) : SimpleToolWindowPanel(true, true) {
-    private var availableModules = mutableListOf<ModuleListElementViewModel>()
-    private var installedModules = mutableListOf<ModuleListElementViewModel>()
-    private val mainPanel = JPanel()
-    private val itemPanels = mutableListOf<CustomItemPanel>()
+    private var modules = mutableListOf<Module>()
+    private var actionRequired = mutableListOf<Module>()
+    private var available = mutableListOf<Module>()
+    private var installed = mutableListOf<Module>()
+    private val mainPanel = JPanel().apply {
+        layout = BoxLayout(this, BoxLayout.PAGE_AXIS)
+    }
+    private val itemPanels = mutableListOf<ModulePanel>()
+    val searchTextField: SearchTextField = object : SearchTextField() {
+        override fun preprocessEventForTextField(e: KeyEvent): Boolean {
+            super.preprocessEventForTextField(e)
+            searchChanged(this.text)
+            return false
+        }
+    }
 
     init {
-        mainPanel.layout = BoxLayout(mainPanel, BoxLayout.Y_AXIS)
         val content = JBScrollPane(mainPanel)
         content.horizontalScrollBarPolicy = JBScrollPane.HORIZONTAL_SCROLLBAR_NEVER
         setContent(content)
     }
 
+    private fun collapseAll() = itemPanels.forEach { it.collapse() }
+
     private fun addModule(
-        name: String,
-        status: String,
         module: Module,
-        index: Int,
-        installed: Boolean,
+        index: Int
     ) {
-        val itemPanel = CustomItemPanel(name, status, module, index, installed, project)
-//        itemPanel.addMouseListener(object : MouseAdapter() {
-//            override fun mouseClicked(e: MouseEvent?) {
-//                itemPanels.forEach {
-//                    if (it !== itemPanel && it.isExpanded()) {
-//                        it.collapse()
-//                    }
-//                }
-//                itemPanel.expand()
-//            }
-//        })
-        itemPanel.alignmentX = Component.LEFT_ALIGNMENT
+        val itemPanel = ModulePanel(module, index, project) { collapseAll() }
+        itemPanel.alignmentX = LEFT_ALIGNMENT
+        itemPanel.maximumSize = Dimension(itemPanel.maximumWidth, itemPanel.preferredHeight)
         itemPanels.add(itemPanel)
         mainPanel.add(itemPanel)
-        revalidate()
-        repaint()
     }
 
     private fun addLabel(text: String) {
-        val label = JBLabel(text, UIUtil.ComponentStyle.LARGE)
-        label.alignmentX = Component.LEFT_ALIGNMENT
+        val label = TitledSeparator(text)
+        label.border = BorderFactory.createEmptyBorder(8, 8, 8, 8)
+        label.alignmentX = LEFT_ALIGNMENT
+        label.maximumSize = Dimension(label.maximumWidth, label.preferredHeight)
         mainPanel.add(label)
+    }
+
+    fun searchChanged(text: String) {
+        for (item in itemPanels) {
+            item.setVisibility(item.module.name.lowercase().contains(text.lowercase()))
+        }
+    }
+
+    private fun updateView() {
+        val openModule = itemPanels.find { it.isExpanded() }
+        val categories = modules.groupBy { it.category }
+        actionRequired = categories[Module.Category.ACTION_REQUIRED]?.toMutableList() ?: mutableListOf()
+        available = categories[Module.Category.AVAILABLE]?.toMutableList() ?: mutableListOf()
+        installed = categories[Module.Category.INSTALLED]?.toMutableList() ?: mutableListOf()
+
+        mainPanel.removeAll()
+        itemPanels.clear()
+        if (actionRequired.isNotEmpty()) addLabel("Action Required")
+        for ((index, module) in actionRequired.withIndex()) {
+            addModule(module, index)
+        }
+        if (available.isNotEmpty()) addLabel("Available Modules")
+        for ((index, module) in available.withIndex()) {
+            addModule(module, index)
+        }
+        if (installed.isNotEmpty()) addLabel("Installed Modules")
+        for ((index, module) in installed.withIndex()) {
+            addModule(module, index)
+        }
+        mainPanel.add(Box.createVerticalGlue())
+        searchChanged(searchTextField.text)
+        itemPanels.find { it.module.name == openModule?.module?.name }?.expand()
     }
 
     /**
      * Update this modules view with the given view model (which may be null).
      */
-    fun viewModelChanged(course: CourseViewModel?) {
-        ApplicationManager.getApplication().invokeLater(
-            {
+    fun viewModelChanged(course: Course?) {
+        println("modules vm changed")
+        application.invokeLater {
+            if (course == null) {
                 mainPanel.removeAll()
                 itemPanels.clear()
-                if (course == null) {
-                    installedModules.clear()
-                    availableModules.clear()
-                    return@invokeLater
-                }
-                val visible = course.modules.streamVisibleItems().toList()
-                val count = visible.size
-                availableModules =
-                    visible.filter { it.model.stateMonitor.get() == fi.aalto.cs.apluscourses.model.Component.NOT_INSTALLED }
-                        .toMutableList()
-                installedModules =
-                    visible.filter { it.model.stateMonitor.get() != fi.aalto.cs.apluscourses.model.Component.NOT_INSTALLED }
-                        .toMutableList()
+                actionRequired.clear()
+                installed.clear()
+                available.clear()
+                return@invokeLater
+            }
+            val visible = course.modules
+            modules = visible.toMutableList()
+            updateView()
 
-
-                addLabel("Available Modules")
-                for ((index, module) in availableModules.withIndex()) {
-                    addModule(module.name, module.status, module.model, index, false)
-                }
-
-                addLabel("Installed Modules")
-                for ((index, module) in installedModules.withIndex()) {
-                    addModule(module.name, module.status, module.model, index, true)
-                }
-
-//                if (modules.isEmpty()) {
-//                    mainPanel.add(JBLabel(PluginResourceBundle.getText("ui.toolWindow.subTab.modules.noModules")))
-//                }
-
-                revalidate()
-                repaint()
-                updateUI()
-            }, ModalityState.any()
-        )
+            if (modules.isEmpty()) {
+                mainPanel.add(JBLabel(MyBundle.message("ui.toolWindow.subTab.modules.noModules")))
+            }
+        }
     }
 
 
-    class CustomItemPanel(
-        name: String,
-        status: String,
+    private class ModulePanel(
         val module: Module,
         index: Int,
-        installed: Boolean,
-        val project: Project
+        val project: Project,
+        val collapseAll: () -> Unit
     ) :
         JPanel(BorderLayout()) {
         private val detailsPanel: JPanel
@@ -136,25 +152,37 @@ class ModulesView(val project: Project) : SimpleToolWindowPanel(true, true) {
         private var isExpanded = false
         private var fileSize = ""
 
+        private val icon
+            get() = if (module.category == Module.Category.AVAILABLE) PluginIcons.A_PLUS_MODULE_DISABLED
+            else if (module.category == Module.Category.INSTALLED) PluginIcons.A_PLUS_MODULE
+            else if (module.isUpdateAvailable) PluginIcons.A_PLUS_INFO
+            else PluginIcons.A_PLUS_NO_POINTS
+
         init {
             val background = if (index % 2 == 0) UIUtil.getTableBackground()
             else if (JBColor.isBright()) UIUtil.getTableBackground().brighter()
             else ColorUtil.darker(UIUtil.getTableBackground(), 1)
             val headerPanel = JPanel(BorderLayout())
             headerPanel.background = background
-            headerPanel.border = BorderFactory.createEmptyBorder(2, 8, 2, 2)
+            headerPanel.border = BorderFactory.createEmptyBorder(0, 10, 0, 4)
 
-            val nameLabel = JBLabel(name, PluginIcons.A_PLUS_MODULE, JBLabel.LEFT)
+            val nameLabel = JBLabel(
+                module.name,
+                icon,
+                JBLabel.LEFT
+            )
             nameLabel.foreground = JBColor.foreground()
             headerPanel.add(nameLabel, BorderLayout.CENTER)
 
-            val updateAvailable = module.isUpdatable //installed && module.version != module.localVersion
+            val updateAvailable = module.isUpdateAvailable //installed && module.version != module.localVersion
 
             val statusPanel = JPanel()
             statusPanel.isOpaque = false
-            if (updateAvailable) {
-                val updateAvailableLabel = JBLabel("Update available!")
-                statusPanel.add(updateAvailableLabel)
+            if (module.category == Module.Category.ACTION_REQUIRED) {
+                val statusLabel = JBLabel("viewModel.statusOld")
+
+//                val statusLabel = JBLabel(viewModel.status)
+                statusPanel.add(statusLabel)
             }
 
             expandButton = JBLabel(AllIcons.General.ChevronDown)
@@ -165,7 +193,7 @@ class ModulesView(val project: Project) : SimpleToolWindowPanel(true, true) {
 
             detailsPanel = JPanel(BorderLayout())
             detailsPanel.background = background
-            detailsPanel.border = BorderFactory.createEmptyBorder(2, 8, 2, 8)
+            detailsPanel.border = BorderFactory.createEmptyBorder(2, 10, 2, 10)
 
             val detailsTextPanel = JPanel()
             detailsTextPanel.layout = BoxLayout(detailsTextPanel, BoxLayout.Y_AXIS)
@@ -173,54 +201,114 @@ class ModulesView(val project: Project) : SimpleToolWindowPanel(true, true) {
 
             val detailsColor = JBColor.gray
 
-//        val statusLabel = JBLabel(status)
-//        statusLabel.foreground = JBColor.foreground()
-//        detailsPanel.add(statusLabel, BorderLayout.NORTH)
             infoLabel = JBLabel()
-            val button = if (installed) {
-                val versionLabel = JBLabel(
-                    """<html><body>
-                    <span>Version ${module.localVersion}${if (updateAvailable) " " else "<br>"}Installed ${module.metadata.downloadedAt?.toLocalDate()}</span>
-                </body></html>""".trimIndent()
-                )
+            infoLabel.foreground = detailsColor
+            val statusLabel = JBLabel("module.info")
+            statusLabel.foreground = detailsColor
+            detailsTextPanel.add(statusLabel)
+            detailsPanel.add(detailsTextPanel, BorderLayout.CENTER)
+
+//                if (updateAvailable) {
+//                    val hasChangelog = module.changelog != ""
+//                    val version = "Version ${module.version}"
+//                    val changesLabel = if (hasChangelog)
+//                        JBLabel(
+//                            """<html><body>
+//                            <span>${version} Changelog:</span><br>${module.changelog}
+//                        </body></html>""".trimIndent()
+//                        )
+//                    else
+//                        JBLabel("$version available")
+//                    changesLabel.foreground = detailsColor
+//                    println(changesLabel.text)
+//                    detailsTextPanel.add(changesLabel)
+//                }
+//                detailsPanel.add(detailsTextPanel, BorderLayout.CENTER)
+            val button = if (module.category == Module.Category.INSTALLED) {
+                val installedTime = if (module.metadata != null) {
+                    "Installed ${formatTimeUntilNow(module.metadata!!.downloadedAt)}"
+                } else {
+                    "Metadata not found"
+                }
+                val versionLabel = JBLabel(installedTime)
                 versionLabel.foreground = detailsColor
                 detailsTextPanel.add(versionLabel)
 
-                if (updateAvailable) {
-                    val hasChangelog = module.changelog != ""
-                    val version = "Version ${module.version}"
-                    val changesLabel = if (hasChangelog)
-                        JBLabel(
-                            """<html><body>
-                            <span>${version} Changelog:</span><br>${module.changelog}
-                        </body></html>""".trimIndent()
-                        )
-                    else
-                        JBLabel("$version available")
-                    changesLabel.foreground = detailsColor
-                    println(changesLabel.text)
-                    detailsTextPanel.add(changesLabel)
-                }
-                detailsPanel.add(detailsTextPanel, BorderLayout.CENTER)
+                val nextExercise = ExercisesUpdaterService.getInstance(project).state.exerciseGroups
+                    .flatMap { it.exercises }
+                    .filter { it.module?.name == module.name }
+                    .firstOrNull { it.userPoints == 0 }
 
+                val opener = project.service<Opener>()
+                if (nextExercise != null) {
+                    val nextExerciseLabel = JBLabel("Next exercise: ${nextExercise.name}")
+                    val externalLink = ActionLink("External link") {
+                        opener.showExercise(nextExercise)
+                    }.apply {
+                        setExternalLinkIcon()
+                    }
+                    nextExerciseLabel.foreground = detailsColor
+                    detailsTextPanel.add(nextExerciseLabel)
+                    detailsTextPanel.add(externalLink)
+                }
+
+                val projectTreeLink = ActionLink("Show in Project Tree") {
+                    println("Show in Project Tree clicked for: $name")
+                    opener.showModuleInProjectTree(module)
+                }.apply {
+                    setExternalLinkIcon()
+                }
+                val documentationLink = AnActionLink(
+                    "Open Documentation",
+                    opener.openDocumentationAction(module, "doc/index.html"), "here"
+                )// TODO
+                    .apply {
+                        setExternalLinkIcon()
+                    }
+                detailsTextPanel.add(projectTreeLink)
+                detailsTextPanel.add(documentationLink)
+
+                val anotherButton = JButton("Uninstall")
                 val updateButton = JButton(if (updateAvailable) "Update" else "Reinstall")
+                anotherButton.isRolloverEnabled = true
+                anotherButton.isOpaque = false
+                anotherButton.addActionListener {
+                    println("Uninstall clicked for: $name")
+                }
                 updateButton.isRolloverEnabled = true
                 updateButton.isOpaque = false
                 updateButton.addActionListener {
                     println("Update clicked for: $name")
                 }
                 updateButton
-            } else {
+            } else if (module.category == Module.Category.AVAILABLE) {
                 detailsPanel.add(infoLabel, BorderLayout.CENTER)
 
 
-                val installButton = JButton("Install")
+                val isInstalling = module.status == Status.LOADING
+                val installButton = JButton(if (isInstalling) "Installing..." else "Install")
                 installButton.isOpaque = false
+                installButton.isEnabled = !isInstalling
                 installButton.addActionListener {
                     println("installButton clicked for: $name")
+                    installButton.text = "Installing..."
+                    installButton.isEnabled = false
+                    project.service<CourseManager>().installModule(module)
                 }
                 installButton
+            } else {
+                val updateButton = JButton("Update")
+                updateButton.isOpaque = false
+                updateButton.addActionListener {
+                    println("installButton clicked for: $name")
+//                    project.service<ModuleInstaller>().installModule(module)
+                    updateButton.text = "Installing..."
+                    updateButton.isEnabled = false
+                }
+                detailsPanel.add(detailsTextPanel, BorderLayout.CENTER)
+                updateButton
             }
+
 
             val buttonContainer = JPanel()
             val buttonContainerLayout = BoxLayout(buttonContainer, BoxLayout.Y_AXIS)
@@ -234,7 +322,11 @@ class ModulesView(val project: Project) : SimpleToolWindowPanel(true, true) {
             add(detailsPanel, BorderLayout.CENTER)
             addMouseListener(object : MouseAdapter() {
                 override fun mouseClicked(e: MouseEvent?) {
-                    toggleExpand()
+                    val isOpen = isExpanded
+                    collapseAll()
+                    if (!isOpen) {
+                        expand()
+                    }
                 }
 
                 override fun mouseEntered(e: MouseEvent?) {
@@ -262,9 +354,9 @@ class ModulesView(val project: Project) : SimpleToolWindowPanel(true, true) {
             if (fileSize == "") {
                 fileSize = "loading..."
                 updateInfoLabel()
-                val client = project.service<CoursesClient>()
+                val client = application.service<CoursesClient>()
                 client.cs.launch {
-                    val size = client.getFileSize(module.url)
+                    val size = client.getFileSize(Url(module.zipUrl))
                     if (size != null) {
                         fileSize = "${size / 1024 / 1024.0}MB"
                     }
@@ -276,8 +368,13 @@ class ModulesView(val project: Project) : SimpleToolWindowPanel(true, true) {
             isExpanded = !isExpanded
             detailsPanel.isVisible = isExpanded
             expandButton.icon = if (isExpanded) AllIcons.General.ChevronUp else AllIcons.General.ChevronDown
+            maximumSize = Dimension(maximumWidth, preferredHeight)
             revalidate()
             repaint()
+        }
+
+        fun setVisibility(visible: Boolean) {
+            isVisible = visible
         }
 
         fun collapse() {

@@ -1,18 +1,17 @@
 package fi.aalto.cs.apluscourses.model.exercise
 
-import kotlinx.serialization.Serializable
+import fi.aalto.cs.apluscourses.model.component.Module
 
-@Serializable
-@Suppress("PROVIDED_RUNTIME_TOO_LOW")
-data class Exercise(
+class Exercise(
     val id: Long,
     val name: String,
+    val module: Module?,
     val htmlUrl: String,
     val url: String,
     var submissionInfo: SubmissionInfo?,
-    val submissionResults: MutableList<SubmissionResult>,
+    var submissionResults: MutableList<SubmissionResult>,
     val maxPoints: Int,
-    val userPoints: Int,
+    var userPoints: Int,
     val maxSubmissions: Int,
     val bestSubmissionId: Long?,
     val difficulty: String = "",
@@ -47,7 +46,7 @@ data class Exercise(
     /**
      * Returns true if any of the submissions of this exercise has status WAITING.
      */
-    fun isInGrading(): Boolean = submissionResults.any { it.status == SubmissionResult.Companion.Status.WAITING }
+    fun isInGrading(): Boolean = submissionResults.any { it.status == SubmissionResult.Status.WAITING }
 
     /**
      * Returns the best submission of this exercise (if one exists).
@@ -60,43 +59,4 @@ data class Exercise(
         val bestSubmission = bestSubmission()
         return bestSubmission?.latePenalty != null && bestSubmission.latePenalty != 0.0
     }
-
-
-//    companion object {
-//        /**
-//         * Construct an exercise from the given JSON object. The object must contain an integer value for
-//         * the key "id", a string value for the key "display_name", a string value for the key "html_url",
-//         * and integer values for the keys "max_points" and "max_submissions".
-//         *
-//         * @param jsonObject The JSON object from which the exercise is constructed.
-//         * @return An exercise instance.
-//         */
-//        fun fromJsonObject(
-//            jsonObject: JSONObject,
-//            points: Points,
-//            optionalCategories: Set<String?>,
-//            languageCode: String
-//        ): Exercise {
-//            val id = jsonObject.getLong("id")
-//
-//            val name = APlusLocalizationUtil.getLocalizedName(jsonObject.getString("display_name"), languageCode)
-//            val htmlUrl = jsonObject.getString("html_url")
-//
-//            val bestSubmissionId = points.bestSubmissionIds[id]
-//            val maxPoints = jsonObject.getInt("max_points")
-//            val maxSubmissions = jsonObject.getInt("max_submissions")
-//            val difficulty = jsonObject.optString("difficulty")
-//            val isOptional = optionalCategories.contains(difficulty)
-//
-//            val submissionInfo = SubmissionInfo.fromJsonObject(jsonObject)
-//
-//            val optionalBestSubmission = if (bestSubmissionId == null) OptionalLong.empty()
-//            else OptionalLong.of(bestSubmissionId)
-//
-//            return Exercise(
-//                id, name, htmlUrl, submissionInfo, maxPoints, maxSubmissions, optionalBestSubmission,
-//                difficulty, isOptional
-//            )
-//        }
-//    }
 }

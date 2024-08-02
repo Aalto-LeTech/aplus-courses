@@ -3,6 +3,7 @@
   "moduleVersion": "4.0.0-beta1",
   "outputDir": "./html",
   "suppressObviousFunctions": true,
+  "offlineMode": true,
   "sourceSets": [
     {
       "sourceSetID": {

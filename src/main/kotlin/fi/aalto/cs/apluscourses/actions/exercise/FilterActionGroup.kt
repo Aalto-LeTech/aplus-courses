@@ -7,13 +7,13 @@ import com.intellij.openapi.actionSystem.Toggleable
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.DumbAwareToggleAction
+import com.intellij.util.application
 import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.services.exercise.ExercisesTreeFilterService
 
-@OptIn(ExperimentalStdlibApi::class) // TODO
 class FilterActionGroup : DefaultActionGroup(), Toggleable {
     init {
-        ExercisesTreeFilterService.Companion.Filter.entries.map { filter ->
+        ExercisesTreeFilterService.Filter.entries.map { filter ->
             add(FilterAction(filter))
         }
     }
@@ -21,14 +21,14 @@ class FilterActionGroup : DefaultActionGroup(), Toggleable {
     override fun update(e: AnActionEvent) {
         Toggleable.setSelected(
             e.presentation,
-            ApplicationManager.getApplication()
+            application
                 .service<ExercisesTreeFilterService>()
                 .state
                 .isAnyActive()
         )
     }
 
-    private class FilterAction(val filter: ExercisesTreeFilterService.Companion.Filter) :
+    private class FilterAction(val filter: ExercisesTreeFilterService.Filter) :
         DumbAwareToggleAction(message(filter.displayName)) {
         override fun isSelected(e: AnActionEvent): Boolean =
             ApplicationManager.getApplication()

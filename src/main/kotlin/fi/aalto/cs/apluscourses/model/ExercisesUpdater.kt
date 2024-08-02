@@ -6,8 +6,8 @@ package fi.aalto.cs.apluscourses.model
 //import com.intellij.util.concurrency.annotations.RequiresEdt
 //import com.intellij.util.messages.Topic
 //import com.intellij.util.messages.Topic.ProjectLevel
-//import fi.aalto.cs.apluscourses.intellij.notifications.DefaultNotifier
-//import fi.aalto.cs.apluscourses.intellij.notifications.NetworkErrorNotification
+//import fi.aalto.cs.apluscourses.notifications.DefaultNotifier
+//import fi.aalto.cs.apluscourses.notifications.NetworkErrorNotification
 //import fi.aalto.cs.apluscourses.intellij.notifications.Notifier
 //import fi.aalto.cs.apluscourses.services.PluginSettings
 //import fi.aalto.cs.apluscourses.model.*

@@ -5,15 +5,11 @@ import com.intellij.ui.ListExpandableItemsHandler
 import com.intellij.ui.components.JBList
 import com.intellij.ui.hover.TreeHoverListener
 import com.intellij.ui.hover.addHoverAndPressStateListener
-import com.intellij.ui.speedSearch.SpeedSearchUtil
 import com.intellij.util.ui.UIUtil
-import fi.aalto.cs.apluscourses.model.Student
-import fi.aalto.cs.apluscourses.presentation.module.ModuleListElementViewModel
-import icons.PluginIcons
 import java.awt.Component
 import javax.swing.*
 
-class ModuleListView : JBList<ModuleListElementViewModel>() {
+class ModuleListView : JBList<ModuleViewModel>() {
     //BaseListView<ModuleListElementViewModel?>() {
     val expandedItems = mutableSetOf<Int>()
 
@@ -80,11 +76,11 @@ class ModuleListView : JBList<ModuleListElementViewModel>() {
 }
 
 class ModuleListCellRenderer(private val listView: ModuleListView) :
-    ColoredListCellRenderer<ModuleListElementViewModel?>() {
+    ColoredListCellRenderer<ModuleViewModel?>() {
 
     override fun getListCellRendererComponent(
-        list: JList<out ModuleListElementViewModel?>,
-        value: ModuleListElementViewModel?,
+        list: JList<out ModuleViewModel?>,
+        value: ModuleViewModel?,
         index: Int,
         isSelected: Boolean,
         cellHasFocus: Boolean
@@ -125,8 +121,8 @@ class ModuleListCellRenderer(private val listView: ModuleListView) :
     }
 
     override fun customizeCellRenderer(
-        list: JList<out ModuleListElementViewModel?>,
-        value: ModuleListElementViewModel?,
+        list: JList<out ModuleViewModel?>,
+        value: ModuleViewModel?,
         index: Int,
         selected: Boolean,
         hasFocus: Boolean

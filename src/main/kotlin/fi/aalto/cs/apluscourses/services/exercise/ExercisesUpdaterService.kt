@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.services.exercise
 
+import ai.grazie.nlp.encoder.toM
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
@@ -7,13 +8,16 @@ import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.intellij.util.messages.Topic
 import com.intellij.util.messages.Topic.ProjectLevel
 import com.intellij.util.xmlb.annotations.Attribute
+import fi.aalto.cs.apluscourses.api.APlusApi
 import fi.aalto.cs.apluscourses.model.exercise.Exercise
 import fi.aalto.cs.apluscourses.model.exercise.ExerciseGroup
 import fi.aalto.cs.apluscourses.model.exercise.SubmissionInfo
 import fi.aalto.cs.apluscourses.model.exercise.SubmissionResult
 import fi.aalto.cs.apluscourses.services.CoursesClient
+import fi.aalto.cs.apluscourses.services.course.CourseManager
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil
 import io.ktor.client.statement.*
+import io.ktor.http.*
 import io.ktor.utils.io.CancellationException
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Semaphore
@@ -22,6 +26,9 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonNamingStrategy
+import kotlinx.serialization.json.decodeToSequence
+import java.io.ByteArrayInputStream
+import java.io.StringReader
 import java.util.concurrent.ConcurrentHashMap
 
 
@@ -33,14 +40,17 @@ import java.util.concurrent.ConcurrentHashMap
 class ExercisesUpdaterService(
     val project: Project,
     val cs: CoroutineScope
-) : SimplePersistentStateComponent<ExercisesUpdaterService.State>(State()) {
-    class State : BaseState() {
-        @get:Attribute(converter = ExerciseGroup.Companion.EGLConverter::class)
-        @set:Attribute(converter = ExerciseGroup.Companion.EGLConverter::class)
-        var exerciseGroups: MutableList<ExerciseGroup> by list()
-        fun increment() = incrementModificationCount()
+) {
+    //: SimplePersistentStateComponent<ExercisesUpdaterService.State>(State()) {
+    class State { // : BaseState() {
+        //        @get:Attribute(converter = ExerciseGroup.Companion.EGLConverter::class)
+//        @set:Attribute(converter = ExerciseGroup.Companion.EGLConverter::class)
+        var exerciseGroups: MutableList<ExerciseGroup> = mutableListOf()//by list()
+        var pointsByDifficulty: Map<String, Int>? = null
+        fun increment() = {}//incrementModificationCount()
     }
 
+    val state = State()
     //        val exercisesTree: ExercisesTree by property(exercisesTree)
 //        @get:Property(surroundWithTag = false)
 //        @get:XCollection(style = XCollection.Style.v2)
@@ -69,7 +79,16 @@ class ExercisesUpdaterService(
     private val json = Json {
         ignoreUnknownKeys = true
         isLenient = true
+        coerceInputValues = true // TODO remove after hasSubmittableFiles is fixed
         namingStrategy = JsonNamingStrategy.SnakeCase
+    }
+
+    @OptIn(ExperimentalSerializationApi::class)
+    private val json2 = Json {
+        ignoreUnknownKeys = true
+        isLenient = true
+        coerceInputValues = true // TODO remove after hasSubmittableFiles is fixed
+//        namingStrategy = JsonNamingStrategy.SnakeCase
     }
 
     /**
@@ -81,29 +100,35 @@ class ExercisesUpdaterService(
 //    private val notifier: Notifier = DefaultNotifier(),
 //    updateInterval: Long = PluginSettings.UPDATE_INTERVAL
 //) : RepeatedTask(courseProject.project, updateInterval) {
-    private var job: Job? = null
+    private var exerciseJob: Job? = null
+    private var gradingJob: Job? = null
     private val submissionsInGrading: MutableSet<Long> = ConcurrentHashMap.newKeySet()
+    private var submissionCount = -1
+    private var points = -1
 
     fun restart(
 //        courseProject: CourseProject
     ) {
-        job?.cancel(CancellationException("test"))
+        exerciseJob?.cancel(CancellationException("test"))
+        gradingJob?.cancel(CancellationException("test"))
         println("restart")
-        run(
+        runExerciseUpdater(
 //            courseProject
         )
+        runGradingUpdater()
 //        run()
     }
 
     fun stop() {
-        job?.cancel(CancellationException("test"))
+        exerciseJob?.cancel(CancellationException("test"))
+        gradingJob?.cancel(CancellationException("test"))
     }
 
-    private fun run(
+    private fun runExerciseUpdater(
 //        courseProject: CourseProject,
         updateInterval: Long = 300000
     ) {
-        job =
+        exerciseJob =
             cs.launch {
                 try {
                     while (true) {
@@ -112,15 +137,29 @@ class ExercisesUpdaterService(
                         delay(updateInterval)
                     }
                 } catch (e: CancellationException) {
-                    println("Task was cancelled yay")
+                    println("Task was cancelled 1")
                 }
-//                finally {
-//                    client.close()
-//                }
             }
     }
 
-    @Suppress("PROVIDED_RUNTIME_TOO_LOW")
+    private fun runGradingUpdater(
+        updateInterval: Long = 5000
+    ) {
+        gradingJob = cs.launch {
+            try {
+                while (true) {
+                    if (submissionsInGrading.isNotEmpty()) {
+                        doGradingTask()
+                    }
+                    cs.ensureActive()
+                    delay(updateInterval)
+                }
+            } catch (e: CancellationException) {
+                println("Task was cancelled")
+            }
+        }
+    }
+
     object Points {
         @Serializable
         data class PointsDataHolder(
@@ -186,7 +225,6 @@ class ExercisesUpdaterService(
         )
     }
 
-    @Suppress("PROVIDED_RUNTIME_TOO_LOW")
     object Exercises {
         @Serializable
         data class CourseModuleResults(
@@ -212,11 +250,12 @@ class ExercisesUpdaterService(
             val maxPoints: Int,
             val maxSubmissions: Int,
             val hierarchicalName: String,
-            val difficulty: String
+            val difficulty: String,
+//            val hasSubmittableFiles: Boolean // TODO should always be bool, currently boolean or null or array
+            val hasSubmittableFiles: Boolean?
         )
     }
 
-    @Suppress("PROVIDED_RUNTIME_TOO_LOW")
     object ExerciseDetails {
         @Serializable
         data class Exercise(
@@ -238,7 +277,6 @@ class ExercisesUpdaterService(
         )
     }
 
-    @Suppress("PROVIDED_RUNTIME_TOO_LOW")
     object SubmissionDetails {
         @Serializable
         data class Submission(
@@ -263,13 +301,15 @@ class ExercisesUpdaterService(
         )
     }
 
+    @OptIn(ExperimentalSerializationApi::class)
     private suspend fun doTask(
 //        courseProject: CourseProject,
 //        notifier: Notifier = DefaultNotifier(),
     ) {
-        try {
-            project.service<CoursesClient>().updateAuthentication()
-            println("Starting exercises update")
+        val course = CourseManager.course(project) ?: return
+        project.service<CoursesClient>().updateAuthentication()
+        println("Starting exercises update")
+        val timeStart = System.currentTimeMillis()
 //        logger.debug("Starting exercises update")
 //        val course = courseProject.course
 //        val dataSource = course.exerciseDataSource
@@ -286,7 +326,7 @@ class ExercisesUpdaterService(
 //        }
 //        val progressViewModel =
 //            PluginSettings.getInstance().getMainViewModel(courseProject.project).progressViewModel
-            val selectedLanguage = "en" //PluginSettings.getInstance()
+        val selectedLanguage = "en" //PluginSettings.getInstance()
 //            .getCourseFileManager(courseProject.project).language
 //        val progress =
 //            progressViewModel.start(
@@ -298,308 +338,158 @@ class ExercisesUpdaterService(
 //            progress.increment()
 
 
-            suspend fun request(url: String) = withContext(Dispatchers.IO) {
-                project.service<CoursesClient>().get(url)
-            }
-            cs.ensureActive()
-            val apiUrl = "https://plus.cs.aalto.fi/api/v2/"
-            val courseUrl = "${apiUrl}courses/154/"
-            val exercisesUrl = "${courseUrl}exercises/"
-            val pointsUrl = "${courseUrl}points/me"
+        cs.ensureActive()
+        val apiUrl = "https://plus.cs.aalto.fi/api/v2/"
+//        val courseUrl = "${apiUrl}courses/154/" // 2020
+        val courseUrl = "${apiUrl}courses/294/" // 2023
 
-            val response = request(pointsUrl)
-
-            println(response.status)
-
-            val exercisesResponse = request(exercisesUrl)
-
-            val exercises = json.decodeFromString<Exercises.CourseModuleResults>(exercisesResponse.bodyAsText())
-            println(exercises.results.size)
-
-            val points = json.decodeFromString<Points.PointsDataHolder>(response.bodyAsText())
-            println(points.modules.size)
-            val exerciseGroups = points.modules.map { module ->
-                val exerciseModule = exercises.results.find { it.id == module.id }
-                ExerciseGroup(
-                    module.id,
-                    APlusLocalizationUtil.getLocalizedName(module.name, selectedLanguage),
-                    module.maxPoints,
-                    module.points,
-                    exerciseModule?.htmlUrl ?: "",
-                    exerciseModule?.isOpen == true,
-                    exerciseOrder = listOf(),
-                    exercises =
-                    module.exercises.map { exercise ->
-                        val exerciseExercise = exerciseModule?.exercises?.find { it.id == exercise.id }
-                        Exercise(
-                            id = exercise.id,
-                            name = APlusLocalizationUtil.getLocalizedName(exercise.name, selectedLanguage),
-                            htmlUrl = exerciseExercise?.htmlUrl ?: "",
-                            url = exercise.url,
-                            submissionInfo = null,
-                            submissionResults = exercise
-                                .submissionsWithPoints
-                                .reversed() // Reverse order for correct indexing
-                                .mapIndexed { i, it ->
-                                    SubmissionResult(
-                                        id = it.id,
-                                        url = it.url,
-                                        maxPoints = exercise.maxPoints,
-                                        userPoints = it.grade,
-                                        latePenalty = null,
-                                        status = SubmissionResult.Companion.Status.UNKNOWN,
-                                        filesInfo = emptyList(),
-                                    )
-                                }.toMutableList(),
-                            maxPoints = exercise.maxPoints,
-                            userPoints = exercise.points,
-                            maxSubmissions = exerciseExercise?.maxSubmissions ?: 0,
-                            bestSubmissionId = exercise.bestSubmission?.split("/")?.last()?.toLong(),
-                            difficulty = exercise.difficulty,
-                            isSubmittable = exercise.name.contains("("), // TODO get info from api
-                            isOptional = listOf("optional", "training", "").contains(exercise.difficulty)
-                        )
-                    }.toMutableList()
-                )
-            }
-            if (state.exerciseGroups.isEmpty()) {
-                state.exerciseGroups.addAll(exerciseGroups)
-                state.increment()
-                fireExercisesUpdated()
-            }
-            cs.ensureActive()
-//        fireExercisesUpdated()
-//        return
-            runBlocking {
-                for (group in state.exerciseGroups) {
-                    val requests = group.exercises.map { exercise ->
-                        async {
-                            semaphore.withPermit {
-                                try {
-                                    if (!exercise.isDetailsLoaded && exercise.isSubmittable) {
-                                        val exerciseResponse = request(exercise.url)
-                                        cs.ensureActive()
-                                        println("exerciseResponse: ${exerciseResponse.status}")
-                                        val exerciseDetails =
-                                            json.decodeFromString<ExerciseDetails.Exercise>(exerciseResponse.bodyAsText())
-                                        val submissionInfo = SubmissionInfo.fromJsonObject(exerciseDetails)
-                                        exercise.submissionInfo = submissionInfo
-                                        state.increment()
-                                        cs.ensureActive()
-                                        // TODO check if is late
-//                                        if (exercise.userPoints != exercise.maxPoints) {
-//                                        } else {
-//                                            val bestSubmission = exercise.bestSubmission()
-//                                            if (bestSubmission != null && !bestSubmission.isDetailsLoaded) {
-////                                    checkCancelled()
-//                                                val submissionResponse = withContext(Dispatchers.IO) {
-//                                                    client.get(bestSubmission.url) {
-//                                                        headers {
-//                                                            append(
-//                                                                "Authorization",
-//                                                            )
-//                                                        }
-//                                                    }
-//                                                }
-//                                                if (!isActive) {
-//                                                    return@async
-//                                                }
-//                                                println("submissionResponse: ${submissionResponse.status}")
-//                                                val submissionDetails =
-//                                                    json.decodeFromString<SubmissionDetails.Submission>(
-//                                                        submissionResponse.bodyAsText()
-//                                                    )
-//                                                bestSubmission.updateStatus(submissionDetails.status)
-//                                                bestSubmission.latePenalty = submissionDetails.latePenaltyApplied ?: 0.0
-//                                                bestSubmission.isDetailsLoaded = true
-//                                                state.increment()
-//                                            }
-//
-//                                        }
-                                    }
-                                    exercise.isDetailsLoaded = true
-                                    state.increment()
-                                    fireExerciseUpdated(exercise)
-                                } catch (e: CancellationException) {
-                                    println("Fetching was cancelled")
-                                    throw e // Re-throw to propagate cancellation
-                                }
-                            }
-                        }
-                    }
-                    println("group ${group.name} done")
-                    requests.awaitAll()
-                    println("group ${group.name} done2")
-//                }
-                }
-//            }
-            }
-            println("done")
-//            fireExercisesUpdated()
-
-
-            /*
-                    var exerciseGroups = dataSource.getExerciseGroups(course, authentication, selectedLanguage)
-        //            logger.info("Exercise groups count: {}", exerciseGroups.size)
-                    cs.ensureActive()
-                    exerciseGroups = exerciseGroups.stream()
-                        .filter { group: ExerciseGroup ->
-                            !hiddenElements.shouldHideObject(
-                                group.id,
-                                group.name,
-                                selectedLanguage
-                            )
-                        }
-                        .collect(Collectors.toList())
-                    progress.increment()
-                    val selectedStudent = courseProject.selectedStudent
-        //            logger.info("Selected student: {}", selectedStudent)
-                    val exerciseTree = ExercisesTree(exerciseGroups, selectedStudent)
-                    if (courseProject.exerciseTree == null) {
-                        courseProject.exerciseTree = exerciseTree
-        //                eventToTrigger.trigger()
-                        fireExercisesUpdated()
-                    }
-                    val points = dataSource.getPoints(course, authentication, selectedStudent)
-
-                    addDummySubmissionResults(exerciseGroups, points)
-                    cs.ensureActive()
-
-                    progress.incrementMaxValue(
-                        submissionsToBeLoadedCount(courseProject, exerciseGroups, points)
-                                + exercisesToBeLoadedCount(courseProject, exerciseGroups)
-                    )
-                    addExercises(courseProject, exerciseGroups, points, authentication, progress, selectedLanguage)
-
-                    cs.ensureActive()
-
-        //            eventToTrigger.trigger()
-                    fireExercisesUpdated()
-        //            logger.debug("Exercises update done")
-                } catch (e: IOException) {
-        //            logger.warn("Network error during exercise update", e)
-                    notifier.notify(NetworkErrorNotification(e), courseProject.project)
-                } finally {
-                    progress.finish()
-                }
-            }
-
-
-            @Throws(IOException::class)
-            private fun addExercises(
-                courseProject: CourseProject,
-                exerciseGroups: List<ExerciseGroup>,
-                points: Points,
-                authentication: Authentication,
-                progress: Progress,
-                selectedLanguage: String
-            ) {
-                val course = courseProject.course
-                val dataSource = course.exerciseDataSource
-                val selectedStudent = courseProject.selectedStudent
-                val exercisesTree = ExercisesTree(exerciseGroups, selectedStudent)
-                val hiddenElements = course.hiddenElements
-                courseProject.exerciseTree = exercisesTree
-
-                for (exerciseGroup in exerciseGroups) {
-                    if (courseProject.isLazyLoadedGroup(exerciseGroup.id)) {
-                        for (exerciseId in points.getExercises(exerciseGroup.id)) {
-                            if (Thread.interrupted()) {
-                                return
-                            }
-                            val exercise = dataSource.getExercise(
-                                exerciseId, points, course.optionalCategories,
-                                authentication, CachePreferences.GET_MAX_ONE_WEEK_OLD, selectedLanguage
-                            )
-                            if (!hiddenElements.shouldHideObject(exercise.id, exercise.name, selectedLanguage)) {
-                                exerciseGroup.addExercise(exercise)
-                            }
-
-                            progress.increment()
-
-                            addSubmissionResults(courseProject, exercise, points, authentication, progress)
-
-        //                    eventToTrigger.trigger()
-                            fireExercisesUpdated()
-                        }
-                    }
-                }
-            }
-
-            private fun addDummySubmissionResults(
-                exerciseGroups: List<ExerciseGroup>,
-                points: Points
-            ) {
-                for (exerciseGroup in exerciseGroups) {
-                    if (Thread.interrupted()) {
-                        return
-                    }
-                    for (exercise in exerciseGroup.exercises) {
-                        val submissionIds = points.getSubmissions(exercise.id)
-                        for (id in submissionIds) {
-                            exercise.addSubmissionResult(DummySubmissionResult(id, exercise))
-                        }
-                    }
-                }
-            }
-
-            @Throws(IOException::class)
-            private fun addSubmissionResults(
-                courseProject: CourseProject,
-                exercise: Exercise,
-                points: Points,
-                authentication: Authentication,
-                progress: Progress
-            ) {
-                val dataSource = courseProject.course.exerciseDataSource
-                val baseUrl = courseProject.course.apiUrl + "submissions/"
-                val submissionIds = points.getSubmissions(exercise.id)
-                for (id in submissionIds) {
-                    if (Thread.interrupted()) {
-                        return
-                    }
-
-                    // Ignore cache for submissions that had the status WAITING
-                    val cachePreference = if (submissionsInGrading.remove(id)
-                    ) CachePreferences.GET_NEW_AND_KEEP
-                    else CachePreferences.GET_MAX_ONE_WEEK_OLD
-                    val submission = dataSource.getSubmissionResult(
-                        "$baseUrl$id/", exercise, authentication, courseProject.course, cachePreference
-                    )
-                    if (submission.status == SubmissionResult.Status.WAITING) {
-                        submissionsInGrading.add(id)
-                    }
-
-                    exercise.addSubmissionResult(submission)
-                    progress.increment()
-                }
-            }
-
-            private fun submissionsToBeLoadedCount(
-                courseProject: CourseProject,
-                exerciseGroups: List<ExerciseGroup>,
-                points: Points
-            ): Int {
-                return exerciseGroups.stream()
-                    .filter { group: ExerciseGroup -> courseProject.isLazyLoadedGroup(group.id) }
-                    .mapToInt { group: ExerciseGroup ->
-                        group.exercises.stream()
-                            .mapToInt { exercise: Exercise -> points.getSubmissionsAmount(exercise.id) }.sum()
-                    }
-                    .sum()
-            }
-
-            private fun exercisesToBeLoadedCount(courseProject: CourseProject, exerciseGroups: List<ExerciseGroup>): Int {
-                return exerciseGroups.stream()
-                    .filter { group: ExerciseGroup -> courseProject.isLazyLoadedGroup(group.id) }
-                    .mapToInt { group: ExerciseGroup -> group.exercises.size }
-                    .sum()
-            }*/
-        } catch (_: CancellationException) {
+        val exercisesUrl = "${courseUrl}exercises/"
+        val pointsUrl = "${courseUrl}points/me"
+        val submissionDataUrl = "${courseUrl}submissiondata/me?best=no&format=json"
+        val coursesClient = project.service<CoursesClient>()
+        val response = coursesClient.get(pointsUrl)
+        val points = json.decodeFromString<Points.PointsDataHolder>(response.bodyAsText())
+        val categories =
+            points.modules.flatMap { it.exercises }.map { it.difficulty }.toSet().filter { !it.isEmpty() }
+                .associateWith { 0 }.toMutableMap()
+        categories.replaceAll { category, _ -> points.pointsByDifficulty[category] ?: 0 }
+        state.pointsByDifficulty = categories
+        state.increment()
+        firePointsByDifficultyUpdated()
+//        val newSubmissionCount = points.submissionCount // TODO https://github.com/apluslms/a-plus/issues/1384
+//        val newPoints = points.points
+        val newSubmissionCount = points.modules.flatMap { it.exercises }.sumOf { it.submissions.size }
+        val newPoints = points.modules.flatMap { it.exercises }.sumOf { it.points }
+        if (this.points == newPoints && this.submissionCount == newSubmissionCount) {
+            println("No new data")
+            return
         }
-        //        finally {
-//            client.close()
-//        }
+        this.points = newPoints
+        this.submissionCount = newSubmissionCount
+        val (exercisesResponse, submissionDataCsv) = runBlocking {
+            awaitAll(
+                async { coursesClient.get(exercisesUrl) },
+                async { coursesClient.get(submissionDataUrl) }
+            )
+        }
+
+        @Serializable
+        data class SubmissionData(val SubmissionID: Long, val UserID: Long, val Status: String, val Penalty: Double?)
+
+        val submissionDataParsed = json2.decodeFromString<List<SubmissionData>>(
+            submissionDataCsv.bodyAsText()
+        )
+
+        val submissionData = submissionDataParsed.associateBy { it.SubmissionID }
+        val submissionsWithMultipleSubmitters: Map<Long, List<Long>> = submissionDataParsed
+            .groupBy { it.SubmissionID }
+            .filter { it.value.size > 1 }
+            .map { it.key to it.value.map { it.UserID } }
+            .toMap()
+        println("done processing submission data ${submissionData.size}")
+        println(response.status)
+
+        val tempFixForHasSubmittableFiles = // TODO
+            exercisesResponse.bodyAsText()
+                .replace("\"has_submittable_files\":[]", "\"has_submittable_files\":false")
+        val exercises = json.decodeFromString<Exercises.CourseModuleResults>(tempFixForHasSubmittableFiles)
+        println(exercises.results.size)
+
+        println(points.modules.size)
+        val newExerciseGroups = points.modules.map { module ->
+            val exerciseModule = exercises.results.find { it.id == module.id }
+            ExerciseGroup(
+                module.id,
+                APlusLocalizationUtil.getLocalizedName(module.name, selectedLanguage),
+                module.maxPoints,
+                module.points,
+                exerciseModule?.htmlUrl ?: "",
+                exerciseModule?.isOpen == true,
+                exerciseOrder = listOf(),
+                exercises = module.exercises.map { exercise ->
+                    val exerciseExercise = exerciseModule?.exercises?.find { it.id == exercise.id }
+                    Exercise(
+                        id = exercise.id,
+                        name = APlusLocalizationUtil.getLocalizedName(exercise.name, selectedLanguage),
+                        module = course.exerciseModules[exercise.id]?.get(selectedLanguage),
+                        htmlUrl = exerciseExercise?.htmlUrl ?: "",
+                        url = exercise.url,
+                        submissionInfo = null,
+                        submissionResults = exercise
+                            .submissionsWithPoints
+                            .map {
+                                val data = submissionData[it.id]
+                                val submitters = submissionsWithMultipleSubmitters[it.id]
+                                if (submitters != null) {
+                                    println("Multiple submitters for ${it.id}: $submitters")
+                                }
+                                SubmissionResult(
+                                    id = it.id,
+                                    url = it.url,
+                                    maxPoints = exercise.maxPoints,
+                                    userPoints = it.grade,
+                                    latePenalty = data?.Penalty,
+                                    status = SubmissionResult.statusFromString(data?.Status),
+                                    filesInfo = emptyList(),
+                                    submitters = submitters,
+                                )
+                            }.toMutableList(),
+                        maxPoints = exercise.maxPoints,
+                        userPoints = exercise.points,
+                        maxSubmissions = exerciseExercise?.maxSubmissions ?: 0,
+                        bestSubmissionId = exercise.bestSubmission?.split("/")?.last()?.toLong(),
+                        difficulty = exercise.difficulty,
+                        isSubmittable = exerciseExercise?.hasSubmittableFiles == true,
+                        isOptional = listOf("optional", "training", "").contains(exercise.difficulty),
+                        isDetailsLoaded = true
+                    )
+                }.toMutableList()
+            )
+        }
+        state.exerciseGroups.clear()
+        state.exerciseGroups.addAll(newExerciseGroups)
+        state.increment()
+        fireExercisesUpdated()
+        val newSubmissionsInGrading = newExerciseGroups
+            .flatMap { it.exercises }
+            .flatMap { it.submissionResults }
+            .filter { it.status == SubmissionResult.Status.WAITING }
+            .map { it.id }
+        submissionsInGrading.clear()
+        submissionsInGrading.addAll(newSubmissionsInGrading)
+        println("done processing exercises")
+        val timeEnd = System.currentTimeMillis()
+        println("Time taken: ${timeEnd - timeStart} ms")
+    }
+
+    private fun doGradingTask() {
+        println("Starting grading update")
+        val submissions = submissionsInGrading.toList()
+        var anyPassed = false
+        runBlocking {
+            for (submissionId in submissions) {
+                val submission = APlusApi.Submission(submissionId).get()
+                if (SubmissionResult.statusFromString(submission.status) != SubmissionResult.Status.WAITING) {
+                    anyPassed = true
+                    submissionsInGrading.remove(submissionId)
+                    val exercise = state.exerciseGroups
+                        .flatMap { it.exercises }
+                        .find { it.id == submission.exercise.id }
+                    if (exercise != null) {
+                        val submissionResult = exercise.submissionResults.find { it.id == submissionId }
+                        if (submissionResult != null) {
+                            submissionResult.status = SubmissionResult.statusFromString(submission.status)
+                            submissionResult.latePenalty = submission.latePenaltyApplied
+                            state.increment()
+                            fireExerciseUpdated(exercise)
+                        }
+                    }
+                }
+            }
+            if (anyPassed) {
+                restart()
+            }
+        }
     }
 
     private fun fireExercisesUpdated() {
@@ -618,12 +508,23 @@ class ExercisesUpdaterService(
         }
     }
 
+    private fun firePointsByDifficultyUpdated() {
+        ApplicationManager.getApplication().invokeLater {
+            ApplicationManager.getApplication().messageBus
+                .syncPublisher(EXERCISES_TOPIC)
+                .onPointsByDifficultyUpdated(state.pointsByDifficulty)
+        }
+    }
+
     interface ExercisesUpdaterListener {
         @RequiresEdt
         fun onExercisesUpdated()
 
         @RequiresEdt
         fun onExerciseUpdated(exercise: Exercise)
+
+        @RequiresEdt
+        fun onPointsByDifficultyUpdated(pointsByDifficulty: Map<String, Int>?)
     }
 
     companion object {

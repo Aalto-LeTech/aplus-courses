@@ -10,14 +10,8 @@ import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdaterService
 class RefreshExercisesAction : DumbAwareAction() {
 
     override fun update(e: AnActionEvent) {
-//        if (e.isFromActionToolbar) {
-//            e.presentation.text = message("intellij.actions.RefreshExerciseAction.tooltip")
-//        }
-        e.presentation.setEnabled(
-            e.project != null// && courseProject != null && courseProject.getAuthentication() != null
-        )
+        e.presentation.isEnabled = e.project != null
     }
-
 
     override fun actionPerformed(e: AnActionEvent) {
         e.project?.service<ExercisesUpdaterService>()?.restart()

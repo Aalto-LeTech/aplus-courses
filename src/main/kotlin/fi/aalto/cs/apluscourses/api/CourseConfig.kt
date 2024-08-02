@@ -1,42 +1,10 @@
-@file:UseSerializers(CourseConfig.URLSerializer::class, CourseConfig.VersionSerializer::class)
-
 package fi.aalto.cs.apluscourses.api
 
 import fi.aalto.cs.apluscourses.utils.Version
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.KSerializer
+import io.ktor.http.*
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Serializer
-import kotlinx.serialization.UseSerializers
-import kotlinx.serialization.encoding.Encoder
-import kotlinx.serialization.encoding.Decoder
-import java.net.URL
 
 object CourseConfig {
-    @OptIn(ExperimentalSerializationApi::class)
-    @Serializer(forClass = URL::class)
-    object URLSerializer : KSerializer<URL> {
-        override fun deserialize(decoder: Decoder): URL {
-            return URL(decoder.decodeString())
-        }
-
-        override fun serialize(encoder: Encoder, value: URL) {
-            encoder.encodeString(value.toString())
-        }
-    }
-
-    @OptIn(ExperimentalSerializationApi::class)
-    @Serializer(forClass = Version::class)
-    object VersionSerializer : KSerializer<Version> {
-        override fun deserialize(decoder: Decoder): Version {
-            return Version.fromString(decoder.decodeString())
-        }
-
-        override fun serialize(encoder: Encoder, value: Version) {
-            encoder.encodeString(value.toString())
-        }
-    }
-
     /**
      * This class serves as the serializer and documentation for the course configuration file.
      *
@@ -120,6 +88,8 @@ object CourseConfig {
      * `"aPlusUrl": "https://plus.cs.aalto.fi/"`
      * @property languages An array of the languages for the assignments. Different languages may use different modules.
      * `"languages": ["fi", "en"]`
+     * @property version Minimum version of the plugin required to use the course in the format major.minor.
+     * `"version": "4.0"`
      * @property resources URLs for some resources the plugin uses:
      * * ### ideSettings
      *     A .zip file, containing settings for IntelliJ that the user may optionally install while turning their project into an A+ project.
@@ -138,6 +108,8 @@ object CourseConfig {
      * `
      * @property vmOptions A map of options for the JVM.
      * `"vmOptions": {"file.encoding": "UTF-8"}`
+     * @property optionalCategories An array of categories of the assignments that are optional.
+     * `"optionalCategories": ["training", "challenge"]`
      * @property autoInstall An array of the modules that get installed automatically when the project gets turned into an A+ project.
      * `"autoInstall": ["O1Library"]`
      * @property repl Settings for the Scala REPL. See [REPL].
@@ -157,15 +129,44 @@ object CourseConfig {
     data class JSON(
         val id: String,
         val name: String,
-        val aPlusUrl: URL,
+        val aPlusUrl: String,
         val languages: List<String>,
-        val resources: Map<String, URL>,
-        val vmOptions: Map<String, String>? = null,
-        val autoInstall: List<String>? = null,
-        val repl: REPL? = null,
+        val version: Version,
+        val resources: Resources,
+        val vmOptions: Map<String, String> = emptyMap(),
+        val optionalCategories: List<String> = emptyList(),
+        val autoInstall: List<String> = emptyList(),
+        val scalaRepl: ScalaREPL? = null,
         val modules: List<Module>,
-        val exerciseModules: Map<String, Map<String, String>>,
-        val hiddenElements: List<Long>? = null,
+        val callbacks: Callbacks? = null,
+        val exerciseModules: Map<Long, Map<String, String>>,
+        val hiddenElements: List<Long> = emptyList(),
+    )
+
+    @Serializable
+    data class Resources(
+        val ideSettings: String? = null,
+        val ideSettingsMac: String? = null,
+        val projectSettings: String? = null,
+        val customProperties: String? = null,
+        val feedbackCss: String? = null,
+    )
+
+    fun resourceUrls(res: Resources): Map<String, Url> {
+        return mapOf(
+            "ideSettings" to res.ideSettings,
+            "ideSettingsMac" to res.ideSettingsMac,
+            "projectSettings" to res.projectSettings,
+            "customProperties" to res.customProperties,
+            "feedbackCss" to res.feedbackCss,
+        ).mapNotNull { (key, value) ->
+            value?.let { key to Url(it) }
+        }.toMap()
+    }
+
+    @Serializable
+    data class Callbacks(
+        val postDownloadModule: List<String> = emptyList()
     )
 
     /**
@@ -183,8 +184,8 @@ object CourseConfig {
      * @property arguments Arguments for the Scala compiler of the REPL.
      */
     @Serializable
-    data class REPL(
-        val initialCommands: Map<String, List<String>>? = null,
+    data class ScalaREPL(
+        val initialCommands: Map<String, List<String>> = emptyMap(),
         val arguments: String? = null,
     )
 
@@ -209,9 +210,9 @@ object CourseConfig {
     @Serializable
     data class Module(
         val name: String,
-        val url: URL,
+        val url: String,
         val language: String? = null,
-        val version: Version? = null,
+        val version: Version = Version.DEFAULT,
         val changelog: String? = null,
     )
 }

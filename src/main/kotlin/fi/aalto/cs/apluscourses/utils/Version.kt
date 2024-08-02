@@ -1,16 +1,21 @@
 package fi.aalto.cs.apluscourses.utils
 
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 
-@Serializable
-data class Version(val major: Int, val minor: Int) {
-
-    init {
-        require(!(major < 0 || minor < 0)) { "All the parts of version number must be non-negative." }
-    }
-
-    class InvalidVersionStringException(versionString: String, cause: Throwable?) : RuntimeException(
-        "Version string '$versionString' does not match the expected pattern.", cause
+@Serializable(with = VersionSerializer::class)
+open class Version(val major: Int, val minor: Int) {
+    /**
+     * @param versionString A version string of format `{major}.{minor}`.
+     */
+    constructor(versionString: String) : this(
+        versionString.substringBefore(".").toInt(),
+        versionString.substringAfter(".").toInt()
     )
 
     enum class ComparisonStatus {
@@ -20,11 +25,18 @@ data class Version(val major: Int, val minor: Int) {
         MAJOR_TOO_NEW
     }
 
+    operator fun compareTo(other: Version): Int {
+        return if (this.major == other.major) {
+            this.minor - other.minor
+        } else {
+            this.major - other.major
+        }
+    }
 
     /**
      * Compares a version with another version and returns the comparison result.
      */
-    fun compareTo(other: Version): ComparisonStatus {
+    fun comparisonStatus(other: Version): ComparisonStatus {
         if (this.major < other.major) {
             return ComparisonStatus.MAJOR_TOO_OLD
         }
@@ -47,33 +59,30 @@ data class Version(val major: Int, val minor: Int) {
     }
 
     companion object {
-        @JvmField
         val EMPTY: Version = Version(0, 0)
+        val DEFAULT: Version = Version(1, 0)
+    }
+}
 
-        /**
-         * Returns a [Version] object based on the value of the given string.
-         *
-         * @param versionString A version string of format "{major}.{minor}.{build}".
-         * @return A [Version] object.
-         * @throws InvalidVersionStringException If the given string is invalid.
-         */
-        @JvmStatic
-        fun fromString(versionString: String): Version {
-            val major: Int
-            val minor: Int
+class PluginVersion(major: Int, minor: Int, val patch: Int, val versionString: String) : Version(major, minor) {
+    constructor(versionString: String) : this(
+        versionString.substringBefore(".").toInt(),
+        versionString.substringAfter(".").substringBefore(".").toInt(),
+        versionString.substringAfterLast(".").substringBefore("-").toInt(),
+        versionString
+    )
 
-            val parts = versionString.split("\\.".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+    override fun toString(): String = versionString
+}
 
-            //    if (parts.length != 2) {
-//      throw new InvalidVersionStringException(versionString, null);
-//    } TODO
-            try {
-                major = parts[0].toInt()
-                minor = parts[1].toInt()
-                return Version(major, minor)
-            } catch (ex: NumberFormatException) {
-                throw InvalidVersionStringException(versionString, ex)
-            }
-        }
+private object VersionSerializer : KSerializer<Version> {
+    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("Version", PrimitiveKind.STRING)
+
+    override fun serialize(encoder: Encoder, value: Version) {
+        encoder.encodeString(value.toString())
+    }
+
+    override fun deserialize(decoder: Decoder): Version {
+        return Version(decoder.decodeString())
     }
 }

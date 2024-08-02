@@ -1,15 +1,17 @@
 package fi.aalto.cs.apluscourses.api
 
-import com.intellij.openapi.components.service
-import com.intellij.openapi.project.Project
-import fi.aalto.cs.apluscourses.intellij.utils.Interfaces.ReadNewsImpl
+import fi.aalto.cs.apluscourses.model.Course as CourseModel
+import fi.aalto.cs.apluscourses.model.temp.Group as GroupModel
+import fi.aalto.cs.apluscourses.model.temp.Submission as SubmissionModel
+import fi.aalto.cs.apluscourses.model.exercise.SubmissionResult as SubmissionResultModel
+import fi.aalto.cs.apluscourses.model.exercise.Exercise as ExerciseModel
+import fi.aalto.cs.apluscourses.model.people.User as UserModel
 import fi.aalto.cs.apluscourses.model.news.NewsItem
 import fi.aalto.cs.apluscourses.model.news.NewsTree
 import fi.aalto.cs.apluscourses.services.CoursesClient
-import fi.aalto.cs.apluscourses.utils.parser.NewsParser
-import fi.aalto.cs.apluscourses.utils.parser.O1NewsParser
-import io.ktor.client.call.*
-import io.ktor.client.plugins.resources.*
+import fi.aalto.cs.apluscourses.utils.temp.parser.O1NewsParser
+import io.ktor.client.request.forms.*
+import io.ktor.http.*
 import io.ktor.resources.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -17,67 +19,223 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import org.jsoup.Jsoup
 import java.time.ZonedDateTime
-import java.util.*
+import kotlin.collections.component1
+import kotlin.collections.component2
 
-@Resource("/courses/{id}")
-//@Suppress("PROVIDED_RUNTIME_TOO_LOW") // TODO: https://github.com/awslabs/aws-glue-schema-registry/issues/313
-class Course(val id: Int) {
-    @Resource("news")
-    class News(val parent: Course) {
-        suspend fun get(project: Project): NewsTree {
-            println("news get")
-            val resource = this
-            val res = withContext(Dispatchers.IO) {
-                project.service<CoursesClient>().getBody<News, Body>(resource)
+object APlusApi {
+    @Resource("/courses/{id}")
+    class Course(val id: Long) {
+        suspend fun get(): CourseBody {
+            return withContext(Dispatchers.IO) {
+                CoursesClient.getInstance().getBody<Course, CourseBody>(this@Course)
             }
-            println("news res ${res}")
+        }
 
-            return NewsTree(res.results.map { (id, url, title, _, publishString, language, body, pin) ->
-                val titleElement = Jsoup.parseBodyFragment(title).body()
+        @Serializable
+        data class CourseBody(
+            val htmlUrl: String,
+            val endingTime: String,
+            val image: String,
+        )
 
-                val bodyElement = Jsoup.parseBodyFragment(body).body()
+        @Resource("news")
+        class News(val parent: Course) {
+            suspend fun get(): NewsTree {
+                println("news get")
+                val res = withContext(Dispatchers.IO) {
+                    CoursesClient.getInstance().getBody<News, NewsBody>(this@News)
+                }
+//                println("news res ${res}")
 
-                val parser: NewsParser = NewsParser()
+                return NewsTree(res.results.map { (id, url, title, _, publishString, _, body, _) ->
+                    val titleElement = Jsoup.parseBodyFragment(title).body()
+
+                    val bodyElement = Jsoup.parseBodyFragment(body).body()
+
+                    val parser = O1NewsParser("en")//NewsParser()
 //                val parserKey = null//Optional.ofNullable(course.newsParser).orElse(course.name)
 //                parser = when (parserKey) {
 //                    O1NewsParser.NAME -> O1NewsParser(language)
 //                    else -> NewsParser()
 //                }
-                val titleText = parser.parseTitle(titleElement)
-                val bodyText = parser.parseBody(bodyElement)
-                println(titleText)
+                    val titleText = parser.parseTitle(titleElement)
+                    val bodyText = parser.parseBody(bodyElement)
+//                    println(titleText)
 
-                val publish = ZonedDateTime.parse(publishString)
-                NewsItem(
-                    id,
-                    url,
-                    titleText,
-                    bodyText,
-                    publish,
-                    ReadNewsImpl()
-                )
-            })
+                    val publish = ZonedDateTime.parse(publishString)
+                    NewsItem(
+                        id,
+                        url,
+                        titleText,
+                        bodyText,
+                        publish,
+//                        ReadNewsImpl()
+                    )
+                })
+            }
+
+            @Serializable
+            data class NewsBody(
+                val results: List<NewsItemRes>,
+            )
+
+            @Serializable
+            data class NewsItemRes(
+                val id: Long,
+                val url: String,
+                val title: String,
+                val audience: Long,
+                val publish: String,
+                val language: String,
+                val body: String,
+                val pin: Boolean,
+            )
+        }
+
+        @Resource("mygroups")
+        class MyGroups(val parent: Course) {
+            suspend fun get(): List<GroupModel> {
+                val res = withContext(Dispatchers.IO) {
+                    CoursesClient
+                        .getInstance()
+                        .getBody<MyGroups, GroupsBody>(this@MyGroups)
+                        .results
+                }
+                return res.map { (id, members) ->
+                    GroupModel(
+                        id,
+                        members.map { GroupModel.GroupMember(it.id, it.fullName) })
+                }
+            }
+
+            @Serializable
+            data class GroupsBody(
+                val results: List<MyGroup>,
+            )
+
+            @Serializable
+            data class MyGroup(
+                val id: Long,
+                val members: List<Member>,
+            )
+
+            @Serializable
+            data class Member(
+                val id: Long,
+                val fullName: String,
+            )
+        }
+
+        fun news(): News = News(this)
+        suspend fun myGroups(): List<GroupModel> = MyGroups(this).get()
+
+        companion object {
+            fun apply(course: Course): Course = Course(course.id.toLong())
+        }
+    }
+
+    @Resource("/submissions/{id}")
+    class Submission(val id: Long) {
+        suspend fun get(): SubmissionBody {
+            return withContext(Dispatchers.IO) {
+                CoursesClient.getInstance().getBody<Submission, SubmissionBody>(this@Submission)
+            }
+        }
+
+        @Serializable
+        data class SubmissionBody(
+            val feedback: String,
+            val htmlUrl: String,
+            val status: String,
+            val latePenaltyApplied: Double?,
+            val exercise: SubmissionExercise,
+        )
+
+        @Serializable
+        data class SubmissionExercise(
+            val id: Long,
+        )
+    }
+
+    @Resource("/exercises/{id}")
+    class Exercise(val id: Long) {
+        suspend fun get(): Body {
+            return withContext(Dispatchers.IO) {
+                CoursesClient.getInstance().getBody<Exercise, Body>(this@Exercise)
+            }
         }
 
         @Serializable
         data class Body(
-            val results: List<NewsItemRes>,
+            val feedback: String
         )
 
-        @Serializable
-        data class NewsItemRes(
-            val id: Long,
-            val url: String,
-            val title: String,
-            val audience: Long,
-            val publish: String,
-            val language: String,
-            val body: String,
-            val pin: Boolean,
-        )
+        @Resource("submissions")
+        class Submissions(val parent: Exercise) {
+            @Resource("submit")
+            class Submit(val parent: Submissions) {
+                suspend fun post(submission: SubmissionModel) {
+                    val form = formData {
+                        append(
+                            "__aplus__",
+                            "{ \"group\": " + submission.group.id + ", \"lang\": \"" + submission.language + "\" }"
+                        )
+                        submission.files.forEach { (key, value) ->
+                            run {
+                                val file = value.toFile()
+                                append(key, file.readBytes(), Headers.build {
+                                    append(HttpHeaders.ContentDisposition, "filename=\"${file.name}\"")
+                                })
+                            }
+                        }
+                    }
+                    withContext(Dispatchers.IO) {
+                        CoursesClient.getInstance().postForm<Submit>(this@Submit, form)
+                    }
+                }
+            }
+        }
+
+        suspend fun submit(submission: SubmissionModel): Unit =
+            Submissions.Submit(Submissions(this)).post(submission)
     }
 
-    fun news(): News = News(this)
-}
+    @Resource("/users")
+    class Users {
+        @Resource("me")
+        class Me(val parent: Users) {
+            suspend fun get(): UserModel {
+                val body = withContext(Dispatchers.IO) {
+                    CoursesClient.getInstance().getBody<Me, UserBody>(this@Me)
+                }
+                return UserModel(
+                    body.fullName ?: body.username,
+                    body.studentId,
+                    body.id,
+                    body.staffCourses.map { it.id }
+                )
+            }
 
-object APlusApi
+            @Serializable
+            data class UserBody(
+                val username: String,
+                val fullName: String?,
+                val studentId: String,
+                val id: Long,
+                val staffCourses: List<Course>,
+            )
+
+            @Serializable
+            data class Course(
+                val id: Long
+            )
+        }
+    }
+
+    fun course(course: CourseModel): Course = Course(course.id.toLong())
+    fun exercise(exercise: ExerciseModel): Exercise = Exercise(exercise.id)
+    fun submission(submission: SubmissionResultModel): Submission = Submission(submission.id)
+    fun me(): Users.Me = Users.Me(Users())
+
+    fun cs(): CoroutineScope = CoursesClient.getInstance().cs
+}

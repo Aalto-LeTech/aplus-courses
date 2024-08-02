@@ -16,83 +16,83 @@
                     anchor="right"
                     factoryClass="fi.aalto.cs.apluscourses.toolwindows.APlusToolWindowFactory"
                     icon="PluginIcons.A_PLUS_LOGO"/>
+        <toolWindow id="A+ Teacher"
+                    anchor="right"
+                    factoryClass="fi.aalto.cs.apluscourses.toolwindows.TeacherToolWindowFactory"
+                    icon="PluginIcons.A_PLUS_LOGO"/>
         <moduleBuilder builderClass="fi.aalto.cs.apluscourses.generator.APlusModuleBuilder"/>
-        <errorHandler implementation="fi.aalto.cs.apluscourses.intellij.utils.ErrorHandler"/>
-        <httpRequestHandler implementation="fi.aalto.cs.apluscourses.intellij.services.OpenSubmissionService"/>
+        <errorHandler implementation="com.intellij.diagnostic.JetBrainsMarketplaceErrorReportSubmitter"/>
+        <!--        <httpRequestHandler implementation="fi.aalto.cs.apluscourses.intellij.services.OpenSubmissionService"/>-->
         <projectConfigurable
                 displayName="A+ Courses"
                 instance="fi.aalto.cs.apluscourses.config.APlusConfigurable"
         />
+        <fileEditorProvider implementation="fi.aalto.cs.apluscourses.ui.browser.BrowserEditorProvider"/>
+        <editorTabTitleProvider implementation="fi.aalto.cs.apluscourses.ui.browser.APlusTabTitleProvider"/>
+        <fileType name="A+" language="A+" extensions="aplus"
+                  implementationClass="fi.aalto.cs.apluscourses.ui.browser.APlusFileType" fieldName="INSTANCE"/>
+        <applicationService serviceInterface="com.intellij.openapi.roots.ui.configuration.actions.ModuleDeleteProvider"
+                            serviceImplementation="fi.aalto.cs.apluscourses.services.APlusModuleDeleteProvider"
+                            overrides="true"/>
+        <iw.actionProvider implementation="fi.aalto.cs.apluscourses.services.OpenDocumentationActionProvider"/>
     </extensions>
 
     <actions>
-        <group id="fi.aalto.cs.apluscourses.intellij.actions.ActionGroups.MENU_ACTIONS"
-               text="A+"
-               description="Actions for A+ menu"
-               popup="true">
-            <!--            <add-to-group group-id="MainMenu" anchor="last"/>-->
-            <action id="fi.aalto.cs.apluscourses.intellij.actions.CourseProjectAction"
-                    class="fi.aalto.cs.apluscourses.intellij.actions.CourseProjectAction"
-                    text="Link Project to an A+ Course"
-                    description="Turn the currently open project into an A+ course project."/>
-            <action id="fi.aalto.cs.apluscourses.intellij.actions.APlusAuthenticationAction"
-                    class="fi.aalto.cs.apluscourses.intellij.actions.APlusAuthenticationAction"
-                    text="Set A+ Token"
-                    description="Set an access token for submitting assignments to A+."/>
-            <separator/>
-            <action id="fi.aalto.cs.apluscourses.intellij.actions.ExportModuleAction"
-                    class="fi.aalto.cs.apluscourses.intellij.actions.ExportModuleAction"
-                    text="Export Module"
-                    description="Export the contents of a module to a ZIP file."/>
-            <separator/>
-            <action id="fi.aalto.cs.apluscourses.intellij.actions.ResetSettingsAction"
-                    class="fi.aalto.cs.apluscourses.intellij.actions.ResetSettingsAction"
-                    text="Reset A+ Courses Plugin Settings"
-                    description="Reset all the settings related to the A+ Courses plugin."/>
-            <action id="fi.aalto.cs.apluscourses.intellij.actions.AssistantModeAction"
-                    class="fi.aalto.cs.apluscourses.intellij.actions.AssistantModeAction"
-                    text="Assistant Mode"
-                    description="Toggles the assistant mode"/>
-            <separator/>
-            <action id="fi.aalto.cs.apluscourses.intellij.actions.AboutAction"
-                    class="fi.aalto.cs.apluscourses.intellij.actions.AboutAction"
-                    text="About the A+ Courses Plugin"
-                    description="Information about the A+ Courses plugin for IntelliJ"/>
-        </group>
-        <group id="fi.aalto.cs.apluscourses.intellij.actions.ActionGroups.NEWS_ACTIONS"
-               text="A+ News"
-               description="Actions for A+ news">
-            <action id="fi.aalto.cs.apluscourses.intellij.actions.ReadAllNewsAction"
-                    class="fi.aalto.cs.apluscourses.intellij.actions.ReadAllNewsAction"
-                    text="Mark All News as Read"
-                    icon="PluginIcons.A_PLUS_CHECKED"/>
-            <action id="fi.aalto.cs.apluscourses.intellij.actions.NewsRefreshAction"
-                    class="fi.aalto.cs.apluscourses.intellij.actions.RefreshModulesAction"
-                    text="Refresh News"
-                    icon="PluginIcons.A_PLUS_REFRESH"/>
-        </group>
-        <group id="fi.aalto.cs.apluscourses.intellij.actions.ActionGroups.MODULE_ACTIONS"
-               text="A+ Module"
-               description="Actions for A+ modules">
-            <action id="fi.aalto.cs.apluscourses.intellij.actions.InstallModuleAction"
-                    class="fi.aalto.cs.apluscourses.intellij.actions.InstallModuleAction"
-                    text="Install A+ Module"
-                    icon="PluginIcons.A_PLUS_DOWNLOAD"/>
-            <action id="fi.aalto.cs.apluscourses.intellij.actions.ModulesRefreshAction"
-                    class="fi.aalto.cs.apluscourses.intellij.actions.RefreshModulesAction"
-                    text="Refresh Modules"
-                    icon="PluginIcons.A_PLUS_REFRESH"/>
-            <action id="fi.aalto.cs.apluscourses.intellij.actions.OpenDocumentationAction"
-                    class="fi.aalto.cs.apluscourses.intellij.actions.OpenDocumentationAction"
-                    text="Open Documentation"
-                    icon="PluginIcons.A_PLUS_DOCS"/>
-            <!--            <group id="fi.aalto.cs.apluscourses.intellij.actions.OptionsActionGroup.ForModules"-->
-            <!--                   class="fi.aalto.cs.apluscourses.intellij.actions.APlusOptionsActionGroup$ForModules"-->
-            <!--                   popup="true"-->
-            <!--                   text="Filter Modules"-->
-            <!--                   icon="PluginIcons.A_PLUS_FILTER">-->
-            <!--            </group>-->
-        </group>
+        <!--        <group id="fi.aalto.cs.apluscourses.intellij.actions.ActionGroups.MENU_ACTIONS"-->
+        <!--               text="A+"-->
+        <!--               description="Actions for A+ menu"-->
+        <!--               popup="true">-->
+        <!--            &lt;!&ndash;            <add-to-group group-id="MainMenu" anchor="last"/>&ndash;&gt;-->
+        <!--            <action id="fi.aalto.cs.apluscourses.intellij.actions.CourseProjectAction"-->
+        <!--                    class="fi.aalto.cs.apluscourses.intellij.actions.CourseProjectAction"-->
+        <!--                    text="Link Project to an A+ Course"-->
+        <!--                    description="Turn the currently open project into an A+ course project."/>-->
+        <!--            <action id="fi.aalto.cs.apluscourses.intellij.actions.APlusAuthenticationAction"-->
+        <!--                    class="fi.aalto.cs.apluscourses.intellij.actions.APlusAuthenticationAction"-->
+        <!--                    text="Set A+ Token"-->
+        <!--                    description="Set an access token for submitting assignments to A+."/>-->
+        <!--            <separator/>-->
+        <!--            <action id="fi.aalto.cs.apluscourses.intellij.actions.ExportModuleAction"-->
+        <!--                    class="fi.aalto.cs.apluscourses.intellij.actions.ExportModuleAction"-->
+        <!--                    text="Export Module"-->
+        <!--                    description="Export the contents of a module to a ZIP file."/>-->
+        <!--            <separator/>-->
+        <!--            <action id="fi.aalto.cs.apluscourses.intellij.actions.ResetSettingsAction"-->
+        <!--                    class="fi.aalto.cs.apluscourses.intellij.actions.ResetSettingsAction"-->
+        <!--                    text="Reset A+ Courses Plugin Settings"-->
+        <!--                    description="Reset all the settings related to the A+ Courses plugin."/>-->
+        <!--            <action id="fi.aalto.cs.apluscourses.intellij.actions.AssistantModeAction"-->
+        <!--                    class="fi.aalto.cs.apluscourses.intellij.actions.AssistantModeAction"-->
+        <!--                    text="Assistant Mode"-->
+        <!--                    description="Toggles the assistant mode"/>-->
+        <!--            <separator/>-->
+        <!--            <action id="fi.aalto.cs.apluscourses.intellij.actions.AboutAction"-->
+        <!--                    class="fi.aalto.cs.apluscourses.intellij.actions.AboutAction"-->
+        <!--                    text="About the A+ Courses Plugin"-->
+        <!--                    description="Information about the A+ Courses plugin for IntelliJ"/>-->
+        <!--        </group>-->
+        <!--        <group id="fi.aalto.cs.apluscourses.intellij.actions.ActionGroups.MODULE_ACTIONS"-->
+        <!--               text="A+ Module"-->
+        <!--               description="Actions for A+ modules">-->
+        <!--            <action id="fi.aalto.cs.apluscourses.actions.module.InstallModuleAction"-->
+        <!--                    class="fi.aalto.cs.apluscourses.actions.module.InstallModuleAction"-->
+        <!--                    text="Install A+ Module"-->
+        <!--                    icon="PluginIcons.A_PLUS_DOWNLOAD"/>-->
+        <!--            <action id="fi.aalto.cs.apluscourses.intellij.actions.ModulesRefreshAction"-->
+        <!--                    class="fi.aalto.cs.apluscourses.intellij.actions.RefreshModulesAction"-->
+        <!--                    text="Refresh Modules"-->
+        <!--                    icon="PluginIcons.A_PLUS_REFRESH"/>-->
+        <!--            <action id="fi.aalto.cs.apluscourses.intellij.actions.OpenDocumentationAction"-->
+        <!--                    class="fi.aalto.cs.apluscourses.intellij.actions.OpenDocumentationAction"-->
+        <!--                    text="Open Documentation"-->
+        <!--                    icon="PluginIcons.A_PLUS_DOCS"/>-->
+        <!--            <group id="fi.aalto.cs.apluscourses.intellij.actions.OptionsActionGroup.ForModules"-->
+        <!--                   class="fi.aalto.cs.apluscourses.intellij.actions.APlusOptionsActionGroup$ForModules"-->
+        <!--                   popup="true"-->
+        <!--                   text="Filter Modules"-->
+        <!--                   icon="PluginIcons.A_PLUS_FILTER">-->
+        <!--            </group>-->
+        <!--        </group>-->
         <group id="fi.aalto.cs.apluscourses.actions.ActionGroups.EXERCISE_ACTIONS"
                text="A+ Assignment"
                description="Actions for A+ assignments">
@@ -118,32 +118,32 @@
                    text="Filter Assignments"
                    icon="PluginIcons.A_PLUS_FILTER">
             </group>
-            <separator/>
-            <action id="fi.aalto.cs.apluscourses.intellij.actions.SelectStudentAction"
-                    class="fi.aalto.cs.apluscourses.intellij.actions.SelectStudentAction"
-                    text="Select Student"
-                    icon="PluginIcons.A_PLUS_USER_ACTIVE"/>
-            <action id="fi.aalto.cs.apluscourses.intellij.actions.DownloadSubmissionAction"
-                    class="fi.aalto.cs.apluscourses.intellij.actions.DownloadSubmissionAction"
-                    text="Download Submission"
-                    icon="PluginIcons.A_PLUS_DOWNLOAD"/>
+            <!--            <separator/>-->
+            <!--            <action id="fi.aalto.cs.apluscourses.intellij.actions.SelectStudentAction"-->
+            <!--                    class="fi.aalto.cs.apluscourses.intellij.actions.SelectStudentAction"-->
+            <!--                    text="Select Student"-->
+            <!--                    icon="PluginIcons.A_PLUS_USER_ACTIVE"/>-->
+            <!--            <action id="fi.aalto.cs.apluscourses.intellij.actions.DownloadSubmissionAction"-->
+            <!--                    class="fi.aalto.cs.apluscourses.intellij.actions.DownloadSubmissionAction"-->
+            <!--                    text="Download Submission"-->
+            <!--                    icon="PluginIcons.A_PLUS_DOWNLOAD"/>-->
         </group>
-        <group id="fi.aalto.cs.apluscourses.intellij.actions.ActionGroups.TOOL_WINDOW_ACTIONS"
-               text="A+ Tool Window"
-               description="Actions for A+ tool window">
-            <group id="fi.aalto.cs.apluscourses.intellij.actions.UserActionGroup"
-                   class="fi.aalto.cs.apluscourses.intellij.actions.UserActionGroup"
-                   popup="true"
-                   text="Not Logged In"
-                   icon="PluginIcons.A_PLUS_USER">
-                <action id="fi.aalto.cs.apluscourses.intellij.actions.UserNameAction"
-                        class="fi.aalto.cs.apluscourses.intellij.actions.UserNameAction"
-                        text="Not Logged In"/>
-                <action id="fi.aalto.cs.apluscourses.intellij.actions.LogInOutAction"
-                        class="fi.aalto.cs.apluscourses.intellij.actions.LogInOutAction"
-                        text="Log In"/>
-            </group>
-        </group>
+        <!--        <group id="fi.aalto.cs.apluscourses.intellij.actions.ActionGroups.TOOL_WINDOW_ACTIONS"-->
+        <!--               text="A+ Tool Window"-->
+        <!--               description="Actions for A+ tool window">-->
+        <!--            <group id="fi.aalto.cs.apluscourses.intellij.actions.UserActionGroup"-->
+        <!--                   class="fi.aalto.cs.apluscourses.intellij.actions.UserActionGroup"-->
+        <!--                   popup="true"-->
+        <!--                   text="Not Logged In"-->
+        <!--                   icon="PluginIcons.A_PLUS_USER">-->
+        <!--                <action id="fi.aalto.cs.apluscourses.intellij.actions.UserNameAction"-->
+        <!--                        class="fi.aalto.cs.apluscourses.intellij.actions.UserNameAction"-->
+        <!--                        text="Not Logged In"/>-->
+        <!--                <action id="fi.aalto.cs.apluscourses.intellij.actions.LogInOutAction"-->
+        <!--                        class="fi.aalto.cs.apluscourses.intellij.actions.LogInOutAction"-->
+        <!--                        text="Log In"/>-->
+        <!--            </group>-->
+        <!--        </group>-->
     </actions>
     <applicationListeners>
         <listener class="fi.aalto.cs.apluscourses.intellij.utils.PluginLoadUnloadEventsListener"

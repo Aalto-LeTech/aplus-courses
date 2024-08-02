@@ -2,7 +2,6 @@ package fi.aalto.cs.apluscourses.generator
 
 import com.intellij.openapi.module.ModuleType
 import com.intellij.openapi.module.ModuleTypeManager
-import fi.aalto.cs.apluscourses.utils.PluginResourceBundle
 import icons.PluginIcons
 import javax.swing.Icon
 
@@ -12,11 +11,11 @@ import javax.swing.Icon
 //    }
 //
 //    override fun getName(): String {
-//        return PluginResourceBundle.getText("intellij.ProjectBuilder.name")
+//        return MyBundle.getText("intellij.ProjectBuilder.name")
 //    }
 //
 //    override fun getDescription(): String {
-//        return PluginResourceBundle.getText("intellij.ProjectBuilder.description")
+//        return MyBundle.getText("intellij.ProjectBuilder.description")
 //    }
 //
 //    override fun getNodeIcon(isOpened: Boolean): Icon {

@@ -3,15 +3,12 @@ package fi.aalto.cs.apluscourses.model.exercise
 import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdaterService
 import kotlinx.serialization.Serializable
 
-//import org.json.JSONArray
-
 @Serializable
-@Suppress("PROVIDED_RUNTIME_TOO_LOW")
 data class SubmissionInfo(val files: Map<String, List<SubmittableFile>>) {
 //    private val files: Map<String, List<SubmittableFile>> = files
 
     /**
-     * Returns the submittable files corresponding to the given language (or an empty collection if
+     * Return the submittable files corresponding to the given language (or an empty collection if
      * the language isn't found).
      */
     fun getFiles(language: String): List<SubmittableFile> {

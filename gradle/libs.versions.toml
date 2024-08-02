@@ -11,16 +11,8 @@ hamcrest = "2.2"
 mockito = "5.11.0"
 restAssured = "5.4.0"
 
-# plugins
-kotlin = "2.0.0"
-changelog = "2.2.0"
-intelliJPlatform = "2.0.0-beta7"
-qodana = "2024.1.5"
-kover = "0.8.0"
-
 [libraries]
 zip4j = { group = "net.lingala.zip4j", name = "zip4j", version.ref = "zip4j" }
-json = { group = "org.json", name = "json", version.ref = "json" }
 
 scalaLibrary = { group = "org.scala-lang", name = "scala3-library_3", version.ref = "scalaLibrary" }
 
@@ -32,10 +24,3 @@ junit = { group = "junit", name = "junit", version.ref = "junit" }
 hamcrest = { group = "org.hamcrest", name = "hamcrest", version.ref = "hamcrest" }
 mockito = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
 restAssured = { group = "io.rest-assured", name = "rest-assured", version.ref = "restAssured" }
-
-[plugins]
-changelog = { id = "org.jetbrains.changelog", version.ref = "changelog" }
-intelliJPlatform = { id = "org.jetbrains.intellij.platform", version.ref = "intelliJPlatform" }
-kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
-qodana = { id = "org.jetbrains.qodana", version.ref = "qodana" }

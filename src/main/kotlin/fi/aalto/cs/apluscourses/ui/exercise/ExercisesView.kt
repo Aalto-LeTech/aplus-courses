@@ -1,10 +1,12 @@
 package fi.aalto.cs.apluscourses.ui.exercise
 
+import com.intellij.ide.util.treeView.TreeState
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.ui.*
+import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.components.TextComponentEmptyText
 import com.intellij.ui.hover.TreeHoverListener
 import com.intellij.ui.scale.JBUIScale.scale
@@ -15,35 +17,34 @@ import com.intellij.util.ui.tree.TreeUtil
 import fi.aalto.cs.apluscourses.model.exercise.Exercise
 import fi.aalto.cs.apluscourses.model.exercise.ExerciseGroup
 import fi.aalto.cs.apluscourses.model.exercise.SubmissionResult
-import fi.aalto.cs.apluscourses.services.exercise.ExercisesTreeFilterService
-import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdaterService
-import fi.aalto.cs.apluscourses.services.exercise.SelectedExerciseService
+import fi.aalto.cs.apluscourses.services.exercise.*
 import java.awt.BorderLayout
 import java.awt.Color
+import java.awt.event.KeyEvent
+import java.awt.event.KeyEvent.VK_ENTER
+import java.awt.event.MouseAdapter
+import java.awt.event.MouseEvent
 import javax.swing.ScrollPaneConstants
 import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.TreeSelectionModel
 
 
-class ExercisesView(project: Project) :
-    SimpleToolWindowPanel(true, true) {
+class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true) {
 
     val exerciseGroupsFilteringTree: ExercisesTreeView = ExercisesTreeView(project).apply {
         installSearchField()
     }
 
     val searchTextField: SearchTextField
+    val scrollPane: JBScrollPane
 
-    /**
-     * Creates an ExerciseView that uses mainViewModel to dynamically adjust its UI components.
-     */
     init {
         exerciseGroupsFilteringTree.tree.selectionModel.selectionMode =
             TreeSelectionModel.SINGLE_TREE_SELECTION
         TreeUtil.selectFirstNode(exerciseGroupsFilteringTree.tree)
 
         val treeComponent = exerciseGroupsFilteringTree.component
-        val scrollPane = ScrollPaneFactory.createScrollPane(treeComponent, true)
+        scrollPane = JBScrollPane(treeComponent)
         scrollPane.horizontalScrollBarPolicy = ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
         scrollPane.verticalScrollBarPolicy = ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS
 
@@ -51,7 +52,6 @@ class ExercisesView(project: Project) :
         searchTextField = exerciseGroupsFilteringTree.installSearchField()
 
         val panel = JBUI.Panels.simplePanel()
-//        panel.add(searchTextField, BorderLayout.NORTH)
         panel.add(scrollPane, BorderLayout.CENTER)
 
         panel.focusTraversalPolicy = ListFocusTraversalPolicy(
@@ -64,8 +64,8 @@ class ExercisesView(project: Project) :
 
 
     fun updateTree() {
-//        val scroll = scrollPane.verticalScrollBar.value
-//        val treeState = TreeState.createOn(exerciseGroupsFilteringTree.tree, exerciseGroupsFilteringTree.root)
+        val scroll = scrollPane.verticalScrollBar.value
+        val treeState = TreeState.createOn(exerciseGroupsFilteringTree.tree, true, true)
 //        invokeLater {
         exerciseGroupsFilteringTree.updateTree()
 //            panel.remove(searchTextField)
@@ -76,8 +76,8 @@ class ExercisesView(project: Project) :
 //            panel.repaint()
 //        }
 
-//        treeState.applyTo(exerciseGroupsFilteringTree.tree)
-//        scrollPane.verticalScrollBar.value = scroll
+        treeState.applyTo(exerciseGroupsFilteringTree.tree)
+        scrollPane.verticalScrollBar.value = scroll
     }
 
     fun updateExercise(exercise: Exercise) {
@@ -94,9 +94,24 @@ class ExercisesView(project: Project) :
         }
     }
 
+    fun showExercise(exercise: Exercise) {
+        TreeUtil.findNode(exerciseGroupsFilteringTree.root) { node ->
+            when (node.userObject) {
+                is ExerciseItem -> (node.userObject as ExerciseItem).exercise.id == exercise.id
+                else -> false
+            }
+        }?.let {
+            val path = TreeUtil.getPath(exerciseGroupsFilteringTree.root, it)
+            TreeUtil.selectPath(exerciseGroupsFilteringTree.tree, path)
+//            TreeUtil.scrollSelectionToVisible(exerciseGroupsFilteringTree.tree)
+        }
+    }
+
 
     sealed interface ExercisesTreeItem {
         fun displayName(): String
+
+        fun url(): String? = null
 
         fun children(): List<ExercisesTreeItem>
     }
@@ -113,35 +128,46 @@ class ExercisesView(project: Project) :
                             if (exercise.isSubmittable) listOf(NewSubmissionItem(exercise)) else emptyList()
                         ExerciseItem(
                             exercise,
-                            (exercise.submissionResults.mapIndexed { i, submission ->
-                                SubmissionResultItem(submission, i, exercise)
-                            } + newSubmission
-                                    ).reversed() // Reverse order of submissions to show the latest first
+                            (newSubmission + exercise.submissionResults.mapIndexed { i, submission ->
+                                SubmissionResultItem(submission, exercise.submissionResults.size - i, exercise)
+                            })
                         )
                     })
-            }.filterNot( // Filter groups
-                ApplicationManager.getApplication()
-                    .service<ExercisesTreeFilterService>().state.exercisesGroupFilter()
-            ).filter { group -> // Filter out empty groups
-                group.children().isNotEmpty()
             }
+                .filterNot( // Filter groups
+                    ApplicationManager.getApplication()
+                        .service<ExercisesTreeFilterService>().state.exercisesGroupFilter()
+                ).filter { group -> // Filter out empty groups
+                    group.children().isNotEmpty()
+                }
     }
 
     data class ExerciseGroupItem(val group: ExerciseGroup, private val children: List<ExerciseItem>) :
         ExercisesTreeItem {
         override fun displayName(): String = group.name
 
-        override fun children(): List<ExerciseItem> = children.filterNot( // Filter exercises
-            ApplicationManager.getApplication()
-                .service<ExercisesTreeFilterService>().state.exercisesFilter()
-        )
+        override fun url(): String = group.htmlUrl
+
+        override fun children(): List<ExerciseItem> = children
+            .filterNot( // Filter exercises
+                ApplicationManager.getApplication()
+                    .service<ExercisesTreeFilterService>().state.exercisesFilter()
+            )
     }
 
     data class ExerciseItem(val exercise: Exercise, private val children: List<ExercisesTreeItem>) :
         ExercisesTreeItem {
         override fun displayName(): String = exercise.name
 
+        override fun url(): String = exercise.htmlUrl
+
         override fun children(): List<ExercisesTreeItem> = children
+//            (exercise.submissionResults.mapIndexed { i, submission ->
+//            SubmissionResultItem(submission, i, exercise)
+//        }
+//                                    + newSubmission
+//                                    ).reversed() // Reverse order of submissions to show the latest first
+//                //children
     }
 
     data class SubmissionResultItem(
@@ -150,7 +176,9 @@ class ExercisesView(project: Project) :
         val exercise: Exercise
     ) :
         ExercisesTreeItem {
-        override fun displayName(): String = "Submission ${index + 1}"
+        override fun displayName(): String = "Submission $index"
+
+        override fun url(): String = ""
 
         override fun children(): List<ExercisesTreeItem> = emptyList()
     }
@@ -170,14 +198,18 @@ class ExercisesView(project: Project) :
             else ColorUtil.darker(UIUtil.getTableBackground(), 1)
     }
 
-    class ExercisesTreeView(project: Project) :
+    class ExercisesTreeView(private val project: Project) :
         FilteringTree<DefaultMutableTreeNode, ExercisesTreeItem>(
             SimpleExercisesTree(),
             DefaultMutableTreeNode(ExercisesRootItem(project))
         ) {
         init {
             tree.addTreeSelectionListener {
-                if (tree.lastSelectedPathComponent == null) return@addTreeSelectionListener
+                if (tree.lastSelectedPathComponent == null) {
+                    project.service<SelectedExerciseService>().selectedExercise = null
+                    project.service<SelectedExerciseService>().selectedExerciseTreeItem = null
+                    return@addTreeSelectionListener
+                }
                 val selectedNode = tree.lastSelectedPathComponent as DefaultMutableTreeNode
                 val selected = selectedNode.userObject as? ExercisesTreeItem ?: return@addTreeSelectionListener
 
@@ -189,18 +221,50 @@ class ExercisesView(project: Project) :
                 }
 
                 project.service<SelectedExerciseService>().selectedExercise = selectedExercise
+                project.service<SelectedExerciseService>().selectedExerciseTreeItem = selected
             }
+
+            tree.addMouseListener(
+                object : MouseAdapter() {
+                    override fun mouseClicked(e: MouseEvent?) {
+                        if (e?.clickCount != 2) return
+                        activateItem()
+                    }
+                }
+            )
+
+            tree.addKeyListener(
+                object : KeyStrokeAdapter() {
+                    override fun keyPressed(event: KeyEvent?) {
+                        super.keyPressed(event)
+                        if (event?.keyCode == VK_ENTER) {
+                            activateItem()
+                        }
+                    }
+                }
+            )
+
             tree.isRootVisible = false
             tree.cellRenderer = ExercisesTreeRenderer()
             tree.rowHeight = scale(24)
             tree.toggleClickCount = 1
-            tree.putClientProperty(AnimatedIcon.ANIMATION_IN_RENDERER_ALLOWED, true)
-            SmartExpander.installOn(tree)
-            TreeHoverListener.DEFAULT.addTo(tree)
+            tree.putClientProperty(AnimatedIcon.ANIMATION_IN_RENDERER_ALLOWED, true) // Enable loading icon animationz
+            TreeHoverListener.DEFAULT.addTo(tree) // Enable hover color
+        }
+
+        private fun activateItem() {
+            val selectedNode = tree.lastSelectedPathComponent as DefaultMutableTreeNode
+            val selected = selectedNode.userObject as? ExercisesTreeItem ?: return
+            if (selected is NewSubmissionItem) {
+                project.service<SubmitExercise>().submit(selected.exercise)
+            } else if (selected is SubmissionResultItem) {
+                project.service<ShowFeedback>().showFeedback(selected.submission, selected.exercise)
+            }
         }
 
         fun updateTree() {
             searchModel.updateStructure()
+//            searchModel.refilter()
             tree.revalidate()
             tree.repaint()
         }
@@ -211,14 +275,29 @@ class ExercisesView(project: Project) :
 
         override fun getNodeClass(): Class<DefaultMutableTreeNode> = DefaultMutableTreeNode::class.java
 
-        override fun getChildren(item: ExercisesTreeItem): List<ExercisesTreeItem> =
-            item.children()
+        override fun getChildren(item: ExercisesTreeItem): MutableIterable<ExercisesTreeItem> {
+            return item.children().toMutableList()
+        }
+//        override fun getChildren(item: ExercisesTreeItem): List<ExercisesTreeItem> =
+//            item.children()
 
         override fun getText(item: ExercisesTreeItem?): String = when (item) {
             is ExerciseItem -> item.exercise.name
             is SubmissionResultItem -> item.exercise.name
             is NewSubmissionItem -> item.exercise.name
             else -> ""
+        }
+
+        override fun expandTreeOnSearchUpdateComplete(pattern: String?) {
+            if (pattern?.isNotEmpty() == true) {
+                TreeUtil.expand(this.tree, 2) // Don't expand exercises
+            }
+        }
+
+        override fun onSpeedSearchUpdateComplete(pattern: String?) {
+            if (pattern?.isEmpty() == true) {
+                TreeUtil.collapseAll(tree, 1) // Collapse everything when search is cleared
+            }
         }
 
         override fun createNode(item: ExercisesTreeItem): DefaultMutableTreeNode =
@@ -230,14 +309,11 @@ class ExercisesView(project: Project) :
                     emptyText.text = "Search"
                     accessibleContext.accessibleName = "Search"
                     TextComponentEmptyText.setupPlaceholderVisibility(this)
-
-//                    addKeyboardAction(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0)) { activateItems(tree) }
                 }
             }
         }
 
     }
-
 
 }
 

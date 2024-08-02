@@ -1,24 +1,28 @@
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.markdownToHTML
+import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
 
 fun properties(key: String): Provider<String> = providers.gradleProperty(key)
 fun environment(key: String): Provider<String> = providers.environmentVariable(key)
 
 plugins {
-    java
-    idea
+//    id("java")
+//    id("idea")
 //    scala
 //    jacoco
 //    checkstyle
-    kotlin("plugin.serialization") version embeddedKotlinVersion
 
     // ./gradle/libs.versions.toml
-    alias(libs.plugins.kotlin) // Kotlin support
-    alias(libs.plugins.intelliJPlatform) // IntelliJ Platform Gradle Plugin
-    alias(libs.plugins.changelog) // Gradle Changelog Plugin
-    alias(libs.plugins.qodana) // Gradle Qodana Plugin
-    alias(libs.plugins.kover) // Gradle Kover Plugin
-
+    id("org.jetbrains.kotlin.jvm") version "2.0.0"
+    kotlin("plugin.serialization") version "2.0.0"
+    id("org.jetbrains.intellij.platform") version "2.0.0" // IntelliJ Platform Gradle Plugin
+    id("org.jetbrains.changelog") version "2.2.1"
+    id("org.jetbrains.qodana") version "2024.1.5"
+    id("org.jetbrains.kotlinx.kover") version "0.8.2"
+//    alias(libs.plugins.kotlin) // Kotlin support
+//    alias(libs.plugins.changelog) // Gradle Changelog Plugin
+//    alias(libs.plugins.qodana) // Gradle Qodana Plugin
+//    alias(libs.plugins.kover) // Gradle Kover Plugin
 }
 
 group = properties("pluginGroup").get()
@@ -26,9 +30,7 @@ version = properties("pluginVersion").get()
 
 // Set the JVM language level used to build the project.
 kotlin {
-    jvmToolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
+    jvmToolchain(21)
 }
 
 // Configure project's dependencies
@@ -41,51 +43,28 @@ repositories {
     }
 }
 
-idea {
-    module {
-        isDownloadJavadoc = true
-        isDownloadSources = true
-    }
-}
-
 dependencies {
-    // IntelliJ Platform Gradle Plugin Dependencies Extension - read more:
-    // https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-dependencies-extension.html
-    intellijPlatform {
-        create(properties("platformType"), properties("platformVersion"))
-
-        // Plugin Dependencies.
-        // Uses `platformBundledPlugins` property from the gradle.properties file for bundled IntelliJ Platform plugins.
-        bundledPlugins(properties("platformBundledPlugins").map { it.split(',') })
-
-        // Plugin Dependencies.
-        // Uses `platformPlugins` property from the gradle.properties file for plugin from JetBrains Marketplace.
-        plugins(properties("platformPlugins").map { it.split(',') })
-
-        instrumentationTools()
-        pluginVerifier()
-        zipSigner()
-    }
-
     implementation(libs.zip4j)
-    implementation(libs.json)
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
     implementation("io.ktor:ktor-client-core:2.3.11")
     implementation("io.ktor:ktor-client-cio:2.3.11")
     implementation("io.ktor:ktor-client-resources:2.3.11")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.11")
+    implementation("io.ktor:ktor-client-content-negotiation:2.3.11")
 
-    compileOnly(libs.scalaLibrary)
+//    compileOnly(libs.scalaLibrary)
 
-    testImplementation(libs.jupiterApi)
-    testRuntimeOnly(libs.junitPlatformLauncher)
-    testRuntimeOnly(libs.junitJupiterEngine)
-
-    testImplementation(libs.junit)
-    testImplementation(libs.hamcrest)
-    testImplementation(libs.mockito)
-    testImplementation(libs.restAssured) {
-        exclude(group = "commons-codec", module = "commons-codec") // Excluded because of Cxeb68d52e-5509
-    }
+//    testImplementation(libs.jupiterApi)
+//    testRuntimeOnly(libs.junitPlatformLauncher)
+//    testRuntimeOnly(libs.junitJupiterEngine)
+//
+//    testImplementation(libs.junit)
+//    testImplementation(libs.hamcrest)
+//    testImplementation(libs.mockito)
+//    testImplementation(libs.restAssured) {
+//        exclude(group = "commons-codec", module = "commons-codec") // Excluded because of Cxeb68d52e-5509
+//    }
 
     configurations.all {
         exclude(group = "org.jetbrains.kotlinx", module = "kotlinx.coroutines") // Only the bundled version is allowed
@@ -96,12 +75,31 @@ dependencies {
         exclude(group = "org.slf4j")
 //        resolutionStrategy.sortArtifacts(ResolutionStrategy.SortOrder.DEPENDENCY_FIRST)
     }
+
+    // IntelliJ Platform Gradle Plugin Dependencies Extension - read more:
+    // https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-dependencies-extension.html
+    intellijPlatform {
+        create(providers.gradleProperty("platformType"), providers.gradleProperty("platformVersion"))
+
+        // Plugin Dependencies.
+        // Uses `platformBundledPlugins` property from the gradle.properties file for bundled IntelliJ Platform plugins.
+//        bundledPlugins(providers.gradleProperty("platformBundledPlugins").map { it.split(',') })
+
+        // Plugin Dependencies.
+        // Uses `platformPlugins` property from the gradle.properties file for plugin from JetBrains Marketplace.
+        plugins(providers.gradleProperty("platformPlugins").map { it.split(',') })
+
+        instrumentationTools()
+        pluginVerifier()
+        zipSigner()
+//        testFramework(TestFrameworkType.Platform)
+    }
 }
 
 // Configure IntelliJ Platform Gradle Plugin - read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-extension.html
 intellijPlatform {
     pluginConfiguration {
-        version = properties("pluginVersion")
+        version = providers.gradleProperty("pluginVersion")
 
         // Extract the <!-- Plugin description --> section from README.md and provide for the plugin's manifest
         description = providers.fileContents(layout.projectDirectory.file("README.md")).asText.map {
@@ -118,7 +116,7 @@ intellijPlatform {
 
         val changelog = project.changelog // local variable for configuration cache compatibility
         // Get the latest available change notes from the changelog file
-        changeNotes = properties("pluginVersion").map { pluginVersion ->
+        changeNotes = providers.gradleProperty("pluginVersion").map { pluginVersion ->
             with(changelog) {
                 renderItem(
                     (getOrNull(pluginVersion) ?: getUnreleased())
@@ -130,31 +128,27 @@ intellijPlatform {
         }
 
         ideaVersion {
-            sinceBuild = properties("pluginSinceBuild")
-            untilBuild = properties("pluginUntilBuild")
+            sinceBuild = providers.gradleProperty("pluginSinceBuild")
+            untilBuild = providers.gradleProperty("pluginUntilBuild")
         }
     }
 
     signing {
-        certificateChain = environment("CERTIFICATE_CHAIN")
-        privateKey = environment("PRIVATE_KEY")
-        password = environment("PRIVATE_KEY_PASSWORD")
+        certificateChain = providers.environmentVariable("CERTIFICATE_CHAIN")
+        privateKey = providers.environmentVariable("PRIVATE_KEY")
+        password = providers.environmentVariable("PRIVATE_KEY_PASSWORD")
     }
 
     publishing {
-        token = environment("INTELLIJ_PUBLISH_TOKEN")
-        // The pluginVersion is based on the SemVer (https://semver.org) and supports pre-release labels,
-        // like 2.1.7-alpha.3
-        // Specify pre-release label to publish the plugin in a custom Release Channel automatically.
-        // Read more:
+        token = providers.environmentVariable("PUBLISH_TOKEN")
+        // The pluginVersion is based on the SemVer (https://semver.org) and supports pre-release labels, like 2.1.7-alpha.3
+        // Specify pre-release label to publish the plugin in a custom Release Channel automatically. Read more:
         // https://plugins.jetbrains.com/docs/intellij/deployment.html#specifying-a-release-channel
-//        channels = properties("pluginVersion").map { listOf(it.substringAfter('-',
-//        "").substringBefore('.').ifEmpty { "default"
-//        }) }
-        channels = listOf(System.getenv("INTELLIJ_PUBLISH_CHANNEL"))
+        channels = providers.gradleProperty("pluginVersion")
+            .map { listOf(it.substringAfter('-', "").substringBefore('.').ifEmpty { "default" }) }
     }
 
-    verifyPlugin {
+    pluginVerification {
         ides {
             recommended()
         }
@@ -164,69 +158,67 @@ intellijPlatform {
 // Configure Gradle Changelog Plugin - read more: https://github.com/JetBrains/gradle-changelog-plugin
 changelog {
     groups.empty()
-    repositoryUrl = properties("pluginRepositoryUrl")
+    repositoryUrl = providers.gradleProperty("pluginRepositoryUrl")
 }
 
 // Configure Gradle Kover Plugin - read more: https://github.com/Kotlin/kotlinx-kover#configuration
-//koverReport {
-//    defaults {
-//        xml {
-//            onCheck = true
+//kover {
+//    reports {
+//        total {
+//            xml {
+//                onCheck = true
+//            }
 //        }
 //    }
 //}
 
-abstract class GatherBuildInfoTask : DefaultTask() {
-    @get:Input
-    abstract val pluginVersion: Property<String>
-
-    @get:Input
-    abstract val courseVersion: Property<String>
-
-    @get:OutputDirectory
-    abstract val outputDir: DirectoryProperty
-
-    @TaskAction
-    fun gatherBuildInfo() {
-        outputDir.file("build-info.properties").get().asFile.writeText(
-            """
-            version=${pluginVersion.get()}
-            courseVersion=${courseVersion.get()}
-            """.trimIndent()
-        )
-    }
-}
+//abstract class GatherBuildInfoTask : DefaultTask() {
+//    @get:Input
+//    abstract val pluginVersion: Property<String>
+//
+//    @get:Input
+//    abstract val courseVersion: Property<String>
+//
+//    @get:OutputDirectory
+//    abstract val outputDir: DirectoryProperty
+//
+//    @TaskAction
+//    fun gatherBuildInfo() {
+//        outputDir.file("build-info.properties").get().asFile.writeText(
+//            """
+//            version=${pluginVersion.get()}
+//            courseVersion=${courseVersion.get()}
+//            """.trimIndent()
+//        )
+//    }
+//}
 
 tasks {
     wrapper {
-        gradleVersion = properties("gradleVersion").get()
+        gradleVersion = providers.gradleProperty("gradleVersion").get()
     }
 
     publishPlugin {
         dependsOn(patchChangelog)
     }
 
-    test {
-        useJUnitPlatform()
-    }
-
-    buildSearchableOptions {
-        enabled = false // Disabled because it breaks dynamic reload
-    }
+//    buildSearchableOptions {
+//        enabled = false // Disabled because it breaks dynamic reload
+//    }
 
 //    jacocoTestReport {
 //        reports.xml.required = true
 //    }
 
-    register<GatherBuildInfoTask>("gatherBuildInfo") {
-        pluginVersion = properties("pluginVersion").get()
-        courseVersion = properties("courseVersion").get()
-        outputDir = layout.buildDirectory.dir("resources/main")
-    }
-
-    classes {
-        dependsOn("gatherBuildInfo")
-    }
+//    register<GatherBuildInfoTask>("gatherBuildInfo") {
+//        pluginVersion = properties("pluginVersion").get()
+//        courseVersion = properties("courseVersion").get()
+//        outputDir = layout.buildDirectory.dir("resources/main")
+//    }
+//
+//    classes {
+//        dependsOn("gatherBuildInfo")
+//    }
 
 //    check {
 //        dependsOn("jacocoTestReport")
@@ -234,6 +226,21 @@ tasks {
 
     runIde {
         properties("idea.is.internal=true")
+    }
+
+//    prepareSandbox {
+//        disabledPlugins = listOf("org.jetbrains.kotlin")
+//    }
+    intellijPlatformTesting {
+        runIde {
+            create("runCustom") {
+                type = IntelliJPlatformType.IntellijIdeaCommunity
+                version = providers.gradleProperty("platformVersion")
+                plugins {
+                    disablePlugins("org.jetbrains.kotlin")
+                }
+            }
+        }
     }
 }
 

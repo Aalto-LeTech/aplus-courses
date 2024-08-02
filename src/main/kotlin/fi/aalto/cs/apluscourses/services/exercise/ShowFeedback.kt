@@ -1,0 +1,104 @@
+package fi.aalto.cs.apluscourses.services.exercise
+
+import com.intellij.openapi.application.EDT
+import com.intellij.openapi.components.Service
+import com.intellij.openapi.fileEditor.FileEditor
+import com.intellij.openapi.fileEditor.FileEditorManager
+import com.intellij.openapi.fileEditor.impl.HTMLEditorProvider.Companion.openEditor
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.vfs.writeText
+import com.intellij.ui.JBColor
+import com.intellij.util.application
+import com.intellij.util.ui.JBFont
+import fi.aalto.cs.apluscourses.MyBundle.message
+import fi.aalto.cs.apluscourses.api.APlusApi
+import fi.aalto.cs.apluscourses.model.exercise.Exercise
+import fi.aalto.cs.apluscourses.model.exercise.SubmissionResult
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.jsoup.Jsoup
+import org.jsoup.safety.Safelist
+import java.awt.Color
+import java.io.IOException
+
+@Service(Service.Level.PROJECT)
+class ShowFeedback(
+    private val project: Project,
+    private val cs: CoroutineScope
+) {
+    fun showFeedback(submission: SubmissionResult, exercise: Exercise) {
+        cs.launch {
+            try {
+//                val mainViewModel = PluginSettings.getInstance().getMainViewModel(project)
+//                val feedbackCss = mainViewModel.feedbackCss ?: return@launch
+                val feedbackCss = "" // TODO
+                if (feedbackCss.isEmpty()) {
+                    return@launch
+                }
+                val feedbackString = withContext(Dispatchers.IO) {
+                    APlusApi.submission(submission).get().feedback
+                }
+
+                val document = Jsoup.parseBodyFragment(feedbackString)
+
+                val textColor: JBColor = JBColor.black
+                val textColorString =
+                    String.format("#%02x%02x%02x", textColor.red, textColor.green, textColor.blue)
+                val backgroundColor: Color = JBColor.background()
+                val backgroundColorString = String.format(
+                    "#%02x%02x%02x", backgroundColor.red, backgroundColor.green,
+                    backgroundColor.blue
+                )
+
+                val fontName: String = JBFont.regular().fontName
+
+                println(feedbackCss)
+
+                document.head().append(
+                    "<style>"
+                            + Jsoup.clean(
+                        feedbackCss
+                            .replace("TEXT_COLOR", textColorString)
+                            .replace("BG_COLOR", backgroundColorString)
+                            .replace("FONT_NAME", fontName),
+                        Safelist.none()
+                    )
+                            + "</style>"
+                )
+
+                val fileEditorManager: FileEditorManager = FileEditorManager.getInstance(project)
+
+                withContext(Dispatchers.EDT) {
+                    // Close all feedback editor tabs
+                    fileEditorManager.allEditors.forEach { editor: FileEditor ->
+                        if (editor.file != null && editor.file.name.startsWith("Feedback for ")) {
+                            fileEditorManager.closeFile(editor.file)
+                        }
+                    }
+
+                    openEditor(
+                        project, message(
+                            "ui.ShowFeedbackAction.feedbackTitle",
+                            exercise.name, submission.id.toString()
+                        ),
+                        document.html()
+                    )
+                }
+            } catch (ex: IOException) {
+//            notifier.notify(NetworkErrorNotification(ex), project)
+            }
+        }
+    }
+
+    fun updateBrowserTitle(file: VirtualFile, newTitle: String) {
+//        cs.launch {
+//            writeCommandAction(project, "Change Page Title") {
+        application.runWriteAction {
+            file.writeText(newTitle)
+            FileEditorManager.getInstance(project).updateFilePresentation(file)
+        }
+    }
+}

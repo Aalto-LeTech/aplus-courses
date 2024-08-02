@@ -52,6 +52,13 @@ class ExercisesTreeFilterService : SimplePersistentStateComponent<ExercisesTreeF
         fun onFilterUpdated()
     }
 
+    enum class Filter(val displayName: String) {
+        NON_SUBMITTABLE("presentation.exerciseFilterOptions.nonSubmittable"),
+        COMPLETED("presentation.exerciseFilterOptions.Completed"),
+        OPTIONAL("presentation.exerciseFilterOptions.Optional"),
+        CLOSED("presentation.exerciseGroupFilterOptions.Closed");
+    }
+
     companion object {
         @AppLevel
         val TOPIC: Topic<ExercisesTreeFilterListener> =
@@ -71,13 +78,6 @@ class ExercisesTreeFilterService : SimplePersistentStateComponent<ExercisesTreeF
 
         private val closedFilter: ExercisesGroupFilter = { item: ExercisesView.ExerciseGroupItem ->
             !item.group.isOpen
-        }
-
-        enum class Filter(val displayName: String) {
-            NON_SUBMITTABLE("presentation.exerciseFilterOptions.nonSubmittable"),
-            COMPLETED("presentation.exerciseFilterOptions.Completed"),
-            OPTIONAL("presentation.exerciseFilterOptions.Optional"),
-            CLOSED("presentation.exerciseGroupFilterOptions.Closed");
         }
 
         val exerciseFilters = mapOf(

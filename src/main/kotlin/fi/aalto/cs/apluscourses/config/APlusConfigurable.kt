@@ -9,7 +9,7 @@ import com.intellij.ui.dsl.builder.panel
 import fi.aalto.cs.apluscourses.dal.TokenStorage
 import javax.swing.JComponent
 
-class APlusConfigurable(val project: Project) : Configurable {
+internal class APlusConfigurable(val project: Project) : Configurable {
     internal data class Model(
         var token: String = ""
     )

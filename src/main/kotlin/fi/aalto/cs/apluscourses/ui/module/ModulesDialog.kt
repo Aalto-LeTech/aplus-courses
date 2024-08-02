@@ -2,13 +2,13 @@ package fi.aalto.cs.apluscourses.ui.module
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
+import fi.aalto.cs.apluscourses.MyBundle
 import fi.aalto.cs.apluscourses.toolwindows.createModulesView
-import fi.aalto.cs.apluscourses.utils.PluginResourceBundle
 import javax.swing.Action
 import javax.swing.JComponent
 
 class ModulesDialog(project: Project) : DialogWrapper(project) {
-    private val modulesView = createModulesView(project)
+//    private val modulesView = createModulesView(project)
 
     /**
      * Constructor.
@@ -21,7 +21,7 @@ class ModulesDialog(project: Project) : DialogWrapper(project) {
     }
 
     override fun createActions(): Array<Action> {
-        return arrayOf(DialogWrapperExitAction(PluginResourceBundle.getText("ui.close"), OK_EXIT_CODE))
+        return arrayOf(DialogWrapperExitAction(MyBundle.message("ui.close"), OK_EXIT_CODE))
     }
 
     override fun getPreferredFocusedComponent(): JComponent {
@@ -29,6 +29,7 @@ class ModulesDialog(project: Project) : DialogWrapper(project) {
     }
 
     override fun createCenterPanel(): JComponent? {
-        return modulesView.content
+        return null
+//        return modulesView.content
     }
 }

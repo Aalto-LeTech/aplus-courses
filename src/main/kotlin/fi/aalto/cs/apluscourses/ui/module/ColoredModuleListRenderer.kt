@@ -3,17 +3,16 @@ package fi.aalto.cs.apluscourses.ui.module
 import com.intellij.ui.ColoredListCellRenderer
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.speedSearch.SpeedSearchUtil
-import fi.aalto.cs.apluscourses.presentation.module.ModuleListElementViewModel
-import fi.aalto.cs.apluscourses.utils.PluginResourceBundle
+import fi.aalto.cs.apluscourses.MyBundle
 import icons.PluginIcons
 import javax.swing.JList
 
 class ColoredModuleListRenderer
 
-    : ColoredListCellRenderer<ModuleListElementViewModel>() {
+    : ColoredListCellRenderer<ModuleViewModel>() {
     override fun customizeCellRenderer(
-        list: JList<out ModuleListElementViewModel>,
-        element: ModuleListElementViewModel,
+        list: JList<out ModuleViewModel>,
+        element: ModuleViewModel,
         index: Int,
         selected: Boolean,
         hasFocus: Boolean
@@ -26,11 +25,11 @@ class ColoredModuleListRenderer
         toolTipText = element.tooltip
         icon = PluginIcons.A_PLUS_MODULE
         iconTextGap = 4
-        if (element.isUpdateAvailable && (!element.model.hasLocalChanges()
-                    || element.model.isMajorUpdate)
+        if (element.isUpdateAvailable && (!element.get.hasLocalChanges()
+                    || element.get.isMajorUpdate)
         ) {
             append(
-                "  " + PluginResourceBundle.getText("ui.toolWindow.subTab.modules.module.updateAvailable"),
+                "  " + MyBundle.message("ui.toolWindow.subTab.modules.module.updateAvailable"),
                 BOLDED_TEXT_STYLE
             )
         }

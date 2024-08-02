@@ -9,6 +9,7 @@ import com.intellij.ui.components.fields.ExtendableTextComponent
 import com.intellij.util.ui.JBFont
 import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.model.exercise.Exercise
+import fi.aalto.cs.apluscourses.model.exercise.SubmissionResult
 import icons.PluginIcons
 import java.awt.*
 import java.awt.geom.RoundRectangle2D
@@ -95,6 +96,10 @@ class ExercisesTreeRenderer : NodeRenderer() {
                 val submission = item.submission
                 isEnabled = true
                 append(item.displayName(), SimpleTextAttributes.REGULAR_ATTRIBUTES, true)
+                append(" ${submission.id}", SimpleTextAttributes.GRAYED_ATTRIBUTES, false)
+                if (submission.status == SubmissionResult.Status.WAITING) {
+                    icon = PluginIcons.A_PLUS_LOADING
+                }
 //                append(" [" + viewModel.statusText + "]", STATUS_TEXT_STYLE, false)
 //                toolTipText = PluginResourceBundle.getAndReplaceText(
 //                    "ui.exercise.ExercisesTreeRenderer.tooltip",
@@ -198,11 +203,19 @@ class ExercisesTreeRenderer : NodeRenderer() {
 
             is ExercisesView.SubmissionResultItem -> {
                 val submission = item.submission
+                val isLate = (submission.latePenalty
+                    ?: 0.0) > 0 || submission.status == SubmissionResult.Status.UNOFFICIAL
+                val isRejected = submission.status == SubmissionResult.Status.REJECTED
                 g2d.font = JBFont.regular()
                 g2d.color = if (submission.userPoints == submission.maxPoints) {
                     JBColor(0x8bc34a, 0x8bc34a)
                 } else {
                     JBColor(0xffb74d, 0xffb74d)
+                }
+                if (isRejected) {
+                    status = "rejected"
+                } else if (isLate) {
+                    status = "late"
                 }
                 "${submission.userPoints}/${submission.maxPoints}"
             }

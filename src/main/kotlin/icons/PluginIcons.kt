@@ -19,11 +19,8 @@ object PluginIcons {
         Color(255, 0, 144),
         Color(255, 0, 144)
     ).rgb
-
-    @JvmField // TODO remove this annotation
     val A_PLUS_MODULE: Icon = getIcon("/META-INF/icons/module.svg", PluginIcons::class.java)
-
-    @JvmField // TODO remove this annotation
+    val A_PLUS_MODULE_DISABLED: Icon = getIcon("/META-INF/icons/moduleDisabled.svg", PluginIcons::class.java)
     val A_PLUS_EXERCISE_GROUP: Icon = getIcon("/META-INF/icons/exerciseGroup.svg", PluginIcons::class.java)
     val A_PLUS_EXERCISE_GROUP_CLOSED: Icon =
         getIcon("/META-INF/icons/exerciseGroupClosed.svg", PluginIcons::class.java)
@@ -34,30 +31,15 @@ object PluginIcons {
     val A_PLUS_FULL_POINTS: Icon = getIcon("/META-INF/icons/fullPoints.svg", PluginIcons::class.java)
     val A_PLUS_LATE: Icon = getIcon("/META-INF/icons/late.svg", PluginIcons::class.java)
     val A_PLUS_REPL: Icon = getIcon("/META-INF/icons/repl.svg", PluginIcons::class.java)
-
-    @JvmField // TODO remove this annotation
     val A_PLUS_COURSES_BANNER: Icon = getIcon("/META-INF/images/courses-banner.png", PluginIcons::class.java)
-
-    @JvmField // TODO remove this annotation
     val A_PLUS_COURSES_FOOTER: Icon = getIcon("/META-INF/images/footer.png", PluginIcons::class.java)
-
-    @JvmField // TODO remove this annotation
     val A_PLUS_USER: Icon = getIcon("/META-INF/icons/user.svg", PluginIcons::class.java)
-
-    @JvmField // TODO remove this annotation
     val A_PLUS_USER_ACTIVE: Icon = getIcon("/META-INF/icons/user_pink.svg", PluginIcons::class.java)
-
-    @JvmField // TODO remove this annotation
     val A_PLUS_INFO: Icon = getIcon("/META-INF/icons/info.svg", PluginIcons::class.java)
-
-    @JvmField // TODO remove this annotation
     val A_PLUS_DUMMY: Icon = getIcon("/META-INF/icons/dummy.svg", PluginIcons::class.java)
     val A_PLUS_CHECKED: Icon = getIcon("/META-INF/icons/checked.svg", PluginIcons::class.java)
-
-    @JvmField // TODO remove this annotation
     val A_PLUS_DOCS: Icon = getIcon("/META-INF/icons/docs.svg", PluginIcons::class.java)
     val A_PLUS_NEW: Icon = getIcon("/META-INF/icons/new.svg", PluginIcons::class.java)
-
     val A_PLUS_LOADING: Icon = AnimatedIcon.Default()
     val A_PLUS_PLUS: Icon = AllIcons.General.Add
 
