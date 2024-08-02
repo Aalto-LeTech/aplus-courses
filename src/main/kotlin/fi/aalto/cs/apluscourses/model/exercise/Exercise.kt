@@ -59,4 +59,25 @@ class Exercise(
         val bestSubmission = bestSubmission()
         return bestSubmission?.latePenalty != null && bestSubmission.latePenalty != 0.0
     }
+
+    override fun toString(): String = name
+    override fun equals(other: Any?): Boolean = other is Exercise && other.id == id
+    override fun hashCode(): Int {
+        var result = id.hashCode()
+        result = 31 * result + name.hashCode()
+        result = 31 * result + (module?.hashCode() ?: 0)
+        result = 31 * result + htmlUrl.hashCode()
+        result = 31 * result + url.hashCode()
+        result = 31 * result + (submissionInfo?.hashCode() ?: 0)
+        result = 31 * result + submissionResults.hashCode()
+        result = 31 * result + maxPoints
+        result = 31 * result + userPoints
+        result = 31 * result + maxSubmissions
+        result = 31 * result + (bestSubmissionId?.hashCode() ?: 0)
+        result = 31 * result + difficulty.hashCode()
+        result = 31 * result + isOptional.hashCode()
+        result = 31 * result + isSubmittable.hashCode()
+        result = 31 * result + isDetailsLoaded.hashCode()
+        return result
+    }
 }

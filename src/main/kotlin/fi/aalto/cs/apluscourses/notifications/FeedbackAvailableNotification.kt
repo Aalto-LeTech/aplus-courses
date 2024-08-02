@@ -4,9 +4,13 @@ import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
 import fi.aalto.cs.apluscourses.MyBundle
+import fi.aalto.cs.apluscourses.actions.exercise.OpenSubmissionNotificationAction
+import fi.aalto.cs.apluscourses.actions.exercise.ShowFeedbackNotificationAction
 import fi.aalto.cs.apluscourses.model.exercise.Exercise
 import fi.aalto.cs.apluscourses.model.exercise.SubmissionResult
 import fi.aalto.cs.apluscourses.services.PluginSettings
+import fi.aalto.cs.apluscourses.services.course.CourseManager
+import fi.aalto.cs.apluscourses.utils.temp.SubmissionResultUtil
 
 //import fi.aalto.cs.apluscourses.services.PluginSettings.Companion.getInstance
 
@@ -16,8 +20,11 @@ class FeedbackAvailableNotification(
     project: Project
 ) : Notification(
     PluginSettings.A_PLUS,
-    MyBundle.message("notification.FeedbackAvailableNotification.title"),  //        getAndReplaceText("notification.FeedbackAvailableNotification.content",
-    //            exercise.name, SubmissionResultUtil.getStatus(submissionResult)),
+    MyBundle.message("notification.FeedbackAvailableNotification.title"),
+    MyBundle.message(
+        "notification.FeedbackAvailableNotification.content",
+        exercise.name, SubmissionResultUtil.getStatus(submissionResult)
+    ),
     NotificationType.INFORMATION
 ) {
     /**
@@ -26,16 +33,9 @@ class FeedbackAvailableNotification(
      * points the submission got.
      */
     init {
-//        if (mainViewModelProvider.getMainViewModel(project).feedbackCss != null) {
-//            super.addAction(ShowFeedbackNotificationAction(submissionResult))
-//        }
-//        super.addAction(OpenSubmissionNotificationAction(submissionResult))
+        if (CourseManager.getInstance(project).state.feedbackCss != null) {
+            super.addAction(ShowFeedbackNotificationAction(submissionResult, exercise))
+        }
+        super.addAction(OpenSubmissionNotificationAction(submissionResult))
     }
-
-
-//    constructor(
-//        submissionResult: SubmissionResult,
-//        exercise: Exercise,
-//        project: Project
-//    ) : this(submissionResult, exercise, getInstance(), project)
 }

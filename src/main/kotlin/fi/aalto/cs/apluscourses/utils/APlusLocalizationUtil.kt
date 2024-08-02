@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.utils
 
 import org.apache.commons.lang3.StringUtils
+import org.jetbrains.annotations.NonNls
 import java.util.*
 
 object APlusLocalizationUtil {
@@ -17,17 +18,17 @@ object APlusLocalizationUtil {
      * @param localizedString The input string, which may be localized or not.
      * @param languageCode The requested language code, e.g. "fi" or "en".
      */
-    fun getLocalizedName(localizedString: String, languageCode: String): String {
-        return Objects.requireNonNullElse(
-            extractLocalizedText(localizedString, languageCode),
-            Objects.requireNonNullElse(extractLocalizedText(localizedString, "en"), localizedString)
-        )
-    }
+    fun getLocalizedName(localizedString: String, languageCode: String): String =
+        if (localizedString.contains(languageCode))
+            extractLocalizedText(localizedString, languageCode)
+        else
+            extractLocalizedText(localizedString, "en")
 
     /**
      * Returns the language name corresponding to the given ISO 639-1 language code. Only a few common
      * ones are supported, otherwise the given language code is returned.
      */
+    @NonNls
     fun languageCodeToName(languageCode: String): String {
         // Hard-coded common language codes
         return when (languageCode) {

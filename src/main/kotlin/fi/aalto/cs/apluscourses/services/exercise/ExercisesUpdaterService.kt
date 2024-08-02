@@ -9,11 +9,15 @@ import com.intellij.util.messages.Topic
 import com.intellij.util.messages.Topic.ProjectLevel
 import com.intellij.util.xmlb.annotations.Attribute
 import fi.aalto.cs.apluscourses.api.APlusApi
+import fi.aalto.cs.apluscourses.dal.TokenStorage
 import fi.aalto.cs.apluscourses.model.exercise.Exercise
 import fi.aalto.cs.apluscourses.model.exercise.ExerciseGroup
 import fi.aalto.cs.apluscourses.model.exercise.SubmissionInfo
 import fi.aalto.cs.apluscourses.model.exercise.SubmissionResult
+import fi.aalto.cs.apluscourses.notifications.FeedbackAvailableNotification
 import fi.aalto.cs.apluscourses.services.CoursesClient
+import fi.aalto.cs.apluscourses.services.Notifier
+import fi.aalto.cs.apluscourses.services.course.CourseFileManager
 import fi.aalto.cs.apluscourses.services.course.CourseManager
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil
 import io.ktor.client.statement.*
@@ -306,8 +310,11 @@ class ExercisesUpdaterService(
 //        courseProject: CourseProject,
 //        notifier: Notifier = DefaultNotifier(),
     ) {
-        val course = CourseManager.course(project) ?: return
+        if (!TokenStorage.isTokenSet()) {
+            return
+        }
         project.service<CoursesClient>().updateAuthentication()
+        val course = CourseManager.course(project) ?: return
         println("Starting exercises update")
         val timeStart = System.currentTimeMillis()
 //        logger.debug("Starting exercises update")
@@ -326,7 +333,7 @@ class ExercisesUpdaterService(
 //        }
 //        val progressViewModel =
 //            PluginSettings.getInstance().getMainViewModel(courseProject.project).progressViewModel
-        val selectedLanguage = "en" //PluginSettings.getInstance()
+        val selectedLanguage = CourseFileManager.getInstance(project).state.language!!
 //            .getCourseFileManager(courseProject.project).language
 //        val progress =
 //            progressViewModel.start(
@@ -481,6 +488,7 @@ class ExercisesUpdaterService(
                             submissionResult.status = SubmissionResult.statusFromString(submission.status)
                             submissionResult.latePenalty = submission.latePenaltyApplied
                             state.increment()
+                            Notifier.notify(FeedbackAvailableNotification(submissionResult, exercise, project), project)
                             fireExerciseUpdated(exercise)
                         }
                     }

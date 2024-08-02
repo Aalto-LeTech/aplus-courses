@@ -60,7 +60,7 @@ class ExercisesTreeRenderer : NodeRenderer() {
             is ExercisesView.NewSubmissionItem -> {
                 isEnabled = true
                 append(item.displayName(), SimpleTextAttributes.REGULAR_ITALIC_ATTRIBUTES, true)
-                icon = PluginIcons.A_PLUS_PLUS
+                icon = if (item.missingModule) PluginIcons.A_PLUS_MODULE_DISABLED else PluginIcons.A_PLUS_PLUS
                 toolTipText = message("ui.exercise.ExercisesTreeRenderer.submit")
             }
 
@@ -203,6 +203,11 @@ class ExercisesTreeRenderer : NodeRenderer() {
 
             is ExercisesView.SubmissionResultItem -> {
                 val submission = item.submission
+                val isWaiting = submission.status == SubmissionResult.Status.WAITING
+                if (isWaiting) {
+                    super.paintComponent(g)
+                    return
+                }
                 val isLate = (submission.latePenalty
                     ?: 0.0) > 0 || submission.status == SubmissionResult.Status.UNOFFICIAL
                 val isRejected = submission.status == SubmissionResult.Status.REJECTED

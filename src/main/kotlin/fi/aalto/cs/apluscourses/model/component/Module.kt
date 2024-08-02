@@ -4,12 +4,14 @@ import com.intellij.openapi.application.writeAction
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.guessModuleDir
 import com.intellij.openapi.project.rootManager
 import com.intellij.openapi.roots.LibraryOrderEntry
 import com.intellij.openapi.roots.ModuleOrderEntry
 import com.intellij.openapi.roots.RootPolicy
 import fi.aalto.cs.apluscourses.services.course.CourseFileManager
 import fi.aalto.cs.apluscourses.services.course.CourseFileManager.ModuleMetadata
+import fi.aalto.cs.apluscourses.services.course.CourseManager
 import fi.aalto.cs.apluscourses.utils.Version
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -35,12 +37,8 @@ class Module(
         get() = CourseFileManager.getInstance(project).getMetadata(name)
 
     override fun findDependencies(): Set<String> {
-        if (status != Status.LOADED) return emptySet()
         val module = platformObject
-        if (module == null) {
-            status = Status.ERROR // TODO proper error
-            return emptySet()
-        }
+        if (module == null) return emptySet()
         return module
             .rootManager
             .orderEntries()
@@ -80,6 +78,12 @@ class Module(
             ModuleManager.getInstance(project).loadModule(imlPath)
         }
         status = Status.LOADED
+        val initialReplCommands = CourseManager.course(project)?.replInitialCommands?.get(name)
+        val platformModule = platformObject
+        if (initialReplCommands != null && platformModule != null) {
+            platformModule.guessModuleDir()?.toNioPath()?.resolve(".repl-commands")?.toFile()
+                ?.writeText(initialReplCommands.joinToString("\n"))
+        }
     }
 
     private val imlPath

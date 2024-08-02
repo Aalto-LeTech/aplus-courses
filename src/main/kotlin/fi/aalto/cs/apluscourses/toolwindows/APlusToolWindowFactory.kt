@@ -13,8 +13,9 @@ import com.intellij.ui.components.JBPanel
 import com.intellij.ui.content.*
 import com.intellij.util.messages.MessageBusConnection
 import fi.aalto.cs.apluscourses.actions.ActionGroups.EXERCISE_ACTIONS
-import fi.aalto.cs.apluscourses.actions.ShowSettingsAction
+import fi.aalto.cs.apluscourses.dal.TokenStorage
 import fi.aalto.cs.apluscourses.model.Course
+import fi.aalto.cs.apluscourses.model.component.Module
 import fi.aalto.cs.apluscourses.model.news.NewsTree
 import fi.aalto.cs.apluscourses.model.exercise.Exercise
 import fi.aalto.cs.apluscourses.services.Opener
@@ -39,7 +40,6 @@ internal class APlusToolWindowFactory : ToolWindowFactory, DumbAware {
         toolWindow.component.putClientProperty(
             ToolWindowContentUi.HIDE_ID_LABEL, "true"
         )
-
         val connection = project.messageBus.connect(toolWindow.disposable)
         val overviewView = createOverviewView(project, connection)
         val newsView = createNewsView(project, toolWindow)
@@ -70,6 +70,9 @@ internal class APlusToolWindowFactory : ToolWindowFactory, DumbAware {
             "News",
             true
         )
+
+        createConnections(overviewView, newsView, modulesView, exercisesView, modulesTab, exercisesTab, toolWindow)
+
 
         toolWindow.contentManager.addContent(overviewTab)
         toolWindow.contentManager.addContent(exercisesTab)
@@ -109,11 +112,6 @@ internal class APlusToolWindowFactory : ToolWindowFactory, DumbAware {
             }
         })
 
-
-        // Add shortcut to settings to the title bar
-        val showSettingsAction = ShowSettingsAction()
-        toolWindow.setTitleActions(listOf(showSettingsAction))
-
         // Hide the title of the tool window, which is replaced by the overview tab
         toolWindow.component.putClientProperty(
             ToolWindowContentUi.HIDE_ID_LABEL, "true"
@@ -122,6 +120,71 @@ internal class APlusToolWindowFactory : ToolWindowFactory, DumbAware {
         // Force resize to trigger componentResized
         toolWindow.component.size = Dimension(toolWindow.component.width - 1, toolWindow.component.height)
     }
+}
+
+fun createConnections(
+    overviewView: OverviewView,
+    newsView: NewsView,
+    modulesView: ModulesView,
+    exercisesView: ExercisesView,
+    modulesContent: Content,
+    exercisesContent: Content,
+    toolWindow: ToolWindow
+) {
+    val connection = toolWindow.project.messageBus.connect(toolWindow.disposable)
+
+    connection.subscribe(CourseManager.COURSE_TOPIC, object : CourseManager.CourseListener {
+        override fun onCourseUpdated(course: Course?) {
+            overviewView.update()
+        }
+    })
+
+    connection.subscribe(ExercisesUpdaterService.EXERCISES_TOPIC, object : ExercisesUpdaterListener {
+        override fun onExercisesUpdated() {
+            exercisesView.updateTree()
+            modulesView.viewModelChanged(CourseManager.course(toolWindow.project))
+        }
+
+        override fun onExerciseUpdated(exercise: Exercise) {
+            exercisesView.updateExercise(exercise)
+        }
+
+        override fun onPointsByDifficultyUpdated(pointsByDifficulty: Map<String, Int>?) {
+            overviewView.update()
+        }
+    })
+
+    connection.subscribe(
+        ExercisesTreeFilterService.TOPIC,
+        object : ExercisesTreeFilterService.ExercisesTreeFilterListener {
+            override fun onFilterUpdated() {
+                exercisesView.updateTree()
+            }
+        })
+
+    connection.subscribe(Opener.SHOW_ITEM_TOPIC, object : Opener.ItemOpenerListener {
+        override fun onExerciseOpened(exercise: Exercise) {
+            exercisesView.showExercise(exercise)
+            toolWindow.contentManager.setSelectedContent(exercisesContent)
+        }
+
+        override fun onModuleOpened(module: Module) {
+            modulesView.showModule(module, true)
+            toolWindow.contentManager.setSelectedContent(modulesContent)
+        }
+    })
+
+    connection.subscribe(CourseManager.NEWS_TOPIC, object : NewsUpdaterListener {
+        override fun onNewsUpdated(newsTree: NewsTree) {
+            println("received update news mytoolwindow")
+            newsView.viewModelChanged(newsTree)
+        }
+    })
+    connection.subscribe(CourseManager.MODULES_TOPIC, object : CourseManager.ModuleListener {
+        override fun onModulesUpdated(course: Course?) {
+            modulesView.viewModelChanged(course)
+        }
+    })
 }
 
 //private fun createCardPanel(panel: JPanel, project: Project): JPanel {
@@ -138,19 +201,6 @@ internal class APlusToolWindowFactory : ToolWindowFactory, DumbAware {
 
 fun createOverviewView(project: Project, connection: MessageBusConnection): OverviewView {
     val overviewView = OverviewView(project)
-    connection.subscribe(CourseManager.COURSE_TOPIC, object : CourseManager.CourseListener {
-        override fun onCourseUpdated(course: Course?) {
-            overviewView.update()
-        }
-    })
-    connection.subscribe(ExercisesUpdaterService.EXERCISES_TOPIC, object : ExercisesUpdaterListener {
-        override fun onExercisesUpdated() {}
-        override fun onExerciseUpdated(exercise: Exercise) {}
-
-        override fun onPointsByDifficultyUpdated(pointsByDifficulty: Map<String, Int>?) {
-            overviewView.update()
-        }
-    })
     return overviewView
 }
 
@@ -159,11 +209,6 @@ fun createOverviewView(project: Project, connection: MessageBusConnection): Over
  */
 fun createModulesView(project: Project, connection: MessageBusConnection): ModulesView {
     val modulesView = ModulesView(project)
-    connection.subscribe(CourseManager.MODULES_TOPIC, object : CourseManager.ModuleListener {
-        override fun onModulesUpdated(course: Course?) {
-            modulesView.viewModelChanged(course)
-        }
-    })
 //    PluginSettings.getInstance().getMainViewModel(project).courseViewModel
 //        .addValueObserver(modulesView) { obj: ModulesView, course: CourseViewModel? ->
 //            obj.viewModelChanged(course)
@@ -233,37 +278,6 @@ private fun createExercisesView(
 //        connection.dispose()
 //        println("disposed")
 //    }
-
-    connection.subscribe(ExercisesUpdaterService.EXERCISES_TOPIC, object : ExercisesUpdaterListener {
-        override fun onPointsByDifficultyUpdated(pointsByDifficulty: Map<String, Int>?) {}
-
-        override fun onExercisesUpdated() {
-            println("received update mytoolwindow")
-            exercisesView.updateTree()
-        }
-
-        override fun onExerciseUpdated(exercise: Exercise) {
-            exercisesView.updateExercise(exercise)
-        }
-    })
-
-    connection.subscribe(Opener.OPEN_EXERCISE_TOPIC, object : Opener.ExerciseOpenerListener {
-        override fun onExerciseOpened(exercise: Exercise) {
-            exercisesView.showExercise(exercise)
-            toolWindow.contentManager.findContent("Assignments")?.let {
-                toolWindow.contentManager.setSelectedContent(it)
-            }
-        }
-    })
-
-    connection.subscribe(
-        ExercisesTreeFilterService.TOPIC,
-        object : ExercisesTreeFilterService.ExercisesTreeFilterListener {
-            override fun onFilterUpdated() {
-                exercisesView.updateTree()
-            }
-        })
-
     return exercisesView
 }
 
@@ -280,13 +294,6 @@ private fun createNewsView(project: Project, toolWindow: ToolWindow): NewsView {
     val newsView = NewsView(toolWindow, project)
 
     val connection = project.messageBus.connect(toolWindow.disposable)
-
-    connection.subscribe(CourseManager.NEWS_TOPIC, object : NewsUpdaterListener {
-        override fun onNewsUpdated(newsTree: NewsTree) {
-            println("received update news mytoolwindow")
-            newsView.viewModelChanged(newsTree)
-        }
-    })
 
     Disposer.register(toolWindow.disposable) {
         project.service<CourseManager>().stop()

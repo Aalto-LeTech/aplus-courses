@@ -11,6 +11,7 @@ import com.intellij.openapi.module.GeneralModuleType
 import com.intellij.openapi.module.ModuleTypeManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ComboBox
+import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.ui.ColoredListCellRenderer
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.components.JBList
@@ -34,7 +35,9 @@ import javax.swing.JList
 import javax.swing.ListSelectionModel
 import javax.swing.event.ListSelectionListener
 
-internal class APlusModuleBuilder : GeneratorNewProjectWizardBuilderAdapter(APlusModuleBuilderA())
+internal class APlusModuleBuilder : GeneratorNewProjectWizardBuilderAdapter(APlusModuleBuilderA()) {
+    override fun canCreateModule(): Boolean = false
+}
 
 /**
  * [com.intellij.ide.wizard.language.EmptyProjectGeneratorNewProjectWizard]
@@ -42,7 +45,7 @@ internal class APlusModuleBuilder : GeneratorNewProjectWizardBuilderAdapter(APlu
 class APlusModuleBuilderA : GeneratorNewProjectWizard {
     override val icon: Icon = PluginIcons.A_PLUS_LOGO_COLOR
     override val name: String = MyBundle.message("intellij.ProjectBuilder.name")
-    override val id: String = "APLUS_MODULE_TYPE"
+    override val id: String = APlusModuleType.ID
     override val ordinal: Int = 100000
     override val description: String = MyBundle.message("intellij.ProjectBuilder.description")
     override fun isEnabled(): Boolean {
@@ -66,9 +69,9 @@ class APlusModuleBuilderA : GeneratorNewProjectWizard {
 
     inner class Step(parent: NewProjectWizardStep) : AbstractNewProjectWizardStep(parent) {
         override fun setupProject(project: Project) {
-            val moduleType = ModuleTypeManager.getInstance().findByID(GeneralModuleType.TYPE_ID)
-            val builder = moduleType.createModuleBuilder()
-            setupProjectFromBuilder(project, builder)
+//            val moduleType = APlusModuleType.instance
+//            val builder = moduleType.createModuleBuilder()
+//            setupProjectFromBuilder(project, builder)
         }
     }
 
@@ -80,7 +83,9 @@ class APlusModuleBuilderA : GeneratorNewProjectWizard {
         val courseList = JBList<CourseItemViewModel>()
         var selectedCourse: CourseItemViewModel? = null
 
-        data class Language(val code: String, val displayName: String)
+        data class Language(val code: String, val displayName: String) {
+            override fun toString(): String = displayName
+        }
 
         var languages = listOf(Language("fi", "Finnish"), Language("en", "English"))
         var languageCombo: ComboBox<Language>? = null
@@ -92,7 +97,7 @@ class APlusModuleBuilderA : GeneratorNewProjectWizard {
             if (url == null || languageIndex == null) return
             val language = languages[languageIndex].code
             println("setupProject $url $language")
-            project.service<CourseFileManager>().updateSettings(url, language)
+            project.service<CourseFileManager>().updateSettings(language, url)
         }
 
         val test = ListSelectionListener { e ->
@@ -148,7 +153,8 @@ class APlusModuleBuilderA : GeneratorNewProjectWizard {
             courseList.addListSelectionListener(test)
 
             val client = application.service<CoursesClient>()
-            val url = "https://version.aalto.fi/gitlab/aplus-courses/course-config-urls/-/raw/main/courses.yaml"
+//            val url = "https://version.aalto.fi/gitlab/aplus-courses/course-config-urls/-/raw/main/courses.yaml"
+            val url = "https://raw.githubusercontent.com/jaakkonakaza/temp/main/courses.yaml" // TODO
 
             client.cs.launch {
                 val res = client.get(url)

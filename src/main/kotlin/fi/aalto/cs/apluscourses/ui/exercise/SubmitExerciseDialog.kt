@@ -18,6 +18,7 @@ import com.intellij.ui.RoundedLineBorder
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.treeStructure.Tree
+import fi.aalto.cs.apluscourses.MyBundle
 import fi.aalto.cs.apluscourses.model.exercise.Exercise
 import fi.aalto.cs.apluscourses.utils.temp.FileDateFormatter
 import icons.PluginIcons
@@ -44,6 +45,7 @@ class SubmitExerciseDialog(val project: Project, val exercise: Exercise, val fil
 //        row {
 //            label(exercise.name).bold()
 //        }
+        val submissionNumber = exercise.submissionResults.size + 1
 
         row {
             label("Files to submit:")
@@ -55,27 +57,33 @@ class SubmitExerciseDialog(val project: Project, val exercise: Exercise, val fil
             }
         }
         row("Group:") {
-            comboBox(listOf("Submit alone", "Group 1", "Group 2"))
+            comboBox(listOf("Submit alone", "TODO", "Group 1", "Group 2"))
             button(
                 "Set as default"
             ) {}
         }
         row {
-            text("You are about to make submission 83 out of 10.")
+            text("You are about to make submission ${submissionNumber} out of ${exercise.maxSubmissions}.")
         }
         row {
-            text(
-                "You have already used up all your submission attempts for this assignment. You can still submit, but further submissions won't count towards your points total."
-            ).applyToComponent {
-                foreground = JBColor.namedColor("Notification.ToolWindow.errorForeground")
-                background = JBColor.namedColor("Notification.ToolWindow.errorBackground")
-                isOpaque = true
-                val errorBorderColor = JBColor.namedColor("Notification.ToolWindow.errorBorderColor")
+            if (exercise.maxSubmissions <= (submissionNumber)) {
+                text(
+                    if (submissionNumber == exercise.maxSubmissions) {
+                        MyBundle.message("presentation.submissionViewModel.warning.lastSubmission")
+                    } else {
+                        MyBundle.message("presentation.submissionViewModel.warning.submissionsExceeded")
+                    }
+                ).applyToComponent {
+                    foreground = JBColor.namedColor("Notification.ToolWindow.errorForeground")
+                    background = JBColor.namedColor("Notification.ToolWindow.errorBackground")
+                    isOpaque = true
+                    val errorBorderColor = JBColor.namedColor("Notification.ToolWindow.errorBorderColor")
 
-                border = BorderFactory.createCompoundBorder(
-                    RoundedLineBorder(errorBorderColor, 10, 1),
-                    BorderFactory.createEmptyBorder(10, 10, 10, 10)
-                )
+                    border = BorderFactory.createCompoundBorder(
+                        RoundedLineBorder(errorBorderColor, 10, 1),
+                        BorderFactory.createEmptyBorder(10, 10, 10, 10)
+                    )
+                }
             }
         }
     }

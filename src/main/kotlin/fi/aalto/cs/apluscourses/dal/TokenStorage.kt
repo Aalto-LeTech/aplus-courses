@@ -10,9 +10,7 @@ object TokenStorage {
     private const val A_COURSES_PLUGIN: String = "A+ Courses Plugin"
     private const val KEY: String = "auth_token"
 
-    //    private val credentialAttributes: CredentialAttributes = CredentialAttributes( TODO
     val credentialAttributes: CredentialAttributes = CredentialAttributes(
-//        generateServiceName(A_COURSES_PLUGIN, KEY)
         generateServiceName(A_COURSES_PLUGIN, KEY)
     )
 
@@ -29,5 +27,5 @@ object TokenStorage {
     fun getToken(): OneTimeString? =
         PasswordSafe.instance.getPassword(credentialAttributes)?.let { OneTimeString(it) }
 
-    fun isTokenSet(): Boolean = false//PasswordSafe.instance.getPassword(credentialAttributes) != null
+    fun isTokenSet(): Boolean = PasswordSafe.instance.getPassword(credentialAttributes) != null
 }

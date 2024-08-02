@@ -143,6 +143,7 @@ class CoursesClient(
     }
 
     suspend inline fun <reified Body : Any> getBody(url: String, snake: Boolean): Body {
+        println(url)
         val res = withContext(Dispatchers.IO) {
             client.get(url)
         }

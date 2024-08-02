@@ -11,12 +11,15 @@ import com.intellij.ui.components.TextComponentEmptyText
 import com.intellij.ui.hover.TreeHoverListener
 import com.intellij.ui.scale.JBUIScale.scale
 import com.intellij.ui.treeStructure.SimpleTree
+import com.intellij.util.application
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
 import com.intellij.util.ui.tree.TreeUtil
+import fi.aalto.cs.apluscourses.model.component.Component
 import fi.aalto.cs.apluscourses.model.exercise.Exercise
 import fi.aalto.cs.apluscourses.model.exercise.ExerciseGroup
 import fi.aalto.cs.apluscourses.model.exercise.SubmissionResult
+import fi.aalto.cs.apluscourses.services.Opener
 import fi.aalto.cs.apluscourses.services.exercise.*
 import java.awt.BorderLayout
 import java.awt.Color
@@ -26,6 +29,7 @@ import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import javax.swing.ScrollPaneConstants
 import javax.swing.tree.DefaultMutableTreeNode
+import javax.swing.tree.TreePath
 import javax.swing.tree.TreeSelectionModel
 
 
@@ -66,6 +70,10 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true) {
     fun updateTree() {
         val scroll = scrollPane.verticalScrollBar.value
         val treeState = TreeState.createOn(exerciseGroupsFilteringTree.tree, true, true)
+//        val tree = exerciseGroupsFilteringTree.tree
+//        val expanded = getExpandedPaths()
+//        val selected = tree.selectionPaths?.toList() ?: emptyList()
+//        val treeState = TreeState.createOn(exerciseGroupsFilteringTree.tree, expanded, selected)
 //        invokeLater {
         exerciseGroupsFilteringTree.updateTree()
 //            panel.remove(searchTextField)
@@ -78,6 +86,24 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true) {
 
         treeState.applyTo(exerciseGroupsFilteringTree.tree)
         scrollPane.verticalScrollBar.value = scroll
+    }
+
+    private fun getExpandedPaths(): List<TreePath> {
+        val tree = exerciseGroupsFilteringTree.tree
+        val root = exerciseGroupsFilteringTree.root
+        val expandedPaths = mutableListOf<TreePath>()
+
+        fun collectExpandedPaths(node: DefaultMutableTreeNode, path: TreePath) {
+            if (tree.isExpanded(path)) {
+                expandedPaths.add(path)
+                node.children().toList().forEach { childNode ->
+                    collectExpandedPaths(childNode as DefaultMutableTreeNode, path.pathByAddingChild(childNode))
+                }
+            }
+        }
+
+        collectExpandedPaths(root, TreePath(root))
+        return expandedPaths
     }
 
     fun updateExercise(exercise: Exercise) {
@@ -119,7 +145,7 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true) {
     data class ExercisesRootItem(val project: Project) : ExercisesTreeItem {
         override fun displayName(): String = ""
 
-        override fun children(): List<ExerciseGroupItem> = //listOf()
+        override fun children(): List<ExerciseGroupItem> =
             project.service<ExercisesUpdaterService>().state.exerciseGroups.map { group ->
                 ExerciseGroupItem(
                     group,
@@ -132,59 +158,54 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true) {
                                 SubmissionResultItem(submission, exercise.submissionResults.size - i, exercise)
                             })
                         )
-                    })
+                    }.filterNot( // Filter exercises
+                        application.service<ExercisesTreeFilterService>().state.exercisesFilter()
+                    )
+                )
+            }.filterNot( // Filter groups
+                ApplicationManager.getApplication()
+                    .service<ExercisesTreeFilterService>().state.exercisesGroupFilter()
+            ).filter { group -> // Filter out empty groups
+                group.children().isNotEmpty()
             }
-                .filterNot( // Filter groups
-                    ApplicationManager.getApplication()
-                        .service<ExercisesTreeFilterService>().state.exercisesGroupFilter()
-                ).filter { group -> // Filter out empty groups
-                    group.children().isNotEmpty()
-                }
     }
 
     data class ExerciseGroupItem(val group: ExerciseGroup, private val children: List<ExerciseItem>) :
         ExercisesTreeItem {
         override fun displayName(): String = group.name
-
         override fun url(): String = group.htmlUrl
-
         override fun children(): List<ExerciseItem> = children
-            .filterNot( // Filter exercises
-                ApplicationManager.getApplication()
-                    .service<ExercisesTreeFilterService>().state.exercisesFilter()
-            )
     }
 
     data class ExerciseItem(val exercise: Exercise, private val children: List<ExercisesTreeItem>) :
         ExercisesTreeItem {
+        override fun toString(): String = exercise.name
         override fun displayName(): String = exercise.name
-
         override fun url(): String = exercise.htmlUrl
-
         override fun children(): List<ExercisesTreeItem> = children
-//            (exercise.submissionResults.mapIndexed { i, submission ->
-//            SubmissionResultItem(submission, i, exercise)
-//        }
-//                                    + newSubmission
-//                                    ).reversed() // Reverse order of submissions to show the latest first
-//                //children
     }
 
     data class SubmissionResultItem(
         val submission: SubmissionResult,
         val index: Int,
         val exercise: Exercise
-    ) :
-        ExercisesTreeItem {
+    ) : ExercisesTreeItem {
         override fun displayName(): String = "Submission $index"
-
-        override fun url(): String = ""
-
+        override fun url(): String = "" // Needs to be fetched on demand
         override fun children(): List<ExercisesTreeItem> = emptyList()
     }
 
     data class NewSubmissionItem(val exercise: Exercise) : ExercisesTreeItem {
-        override fun displayName(): String = "New submission"
+        override fun displayName(): String =
+            if (missingModule) "Show Missing Module: ${exercise.module?.name}"
+            else "New submission"
+
+        val missingModule: Boolean
+            get() {
+                val module = exercise.module ?: return false
+                module.load()
+                return exercise.module.status != Component.Status.LOADED
+            }
 
         override fun children(): List<ExercisesTreeItem> = emptyList()
     }
@@ -256,7 +277,11 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true) {
             val selectedNode = tree.lastSelectedPathComponent as DefaultMutableTreeNode
             val selected = selectedNode.userObject as? ExercisesTreeItem ?: return
             if (selected is NewSubmissionItem) {
-                project.service<SubmitExercise>().submit(selected.exercise)
+                if (selected.missingModule) {
+                    project.service<Opener>().showModule(selected.exercise.module!!)
+                } else {
+                    project.service<SubmitExercise>().submit(selected.exercise)
+                }
             } else if (selected is SubmissionResultItem) {
                 project.service<ShowFeedback>().showFeedback(selected.submission, selected.exercise)
             }
@@ -275,8 +300,8 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true) {
 
         override fun getNodeClass(): Class<DefaultMutableTreeNode> = DefaultMutableTreeNode::class.java
 
-        override fun getChildren(item: ExercisesTreeItem): MutableIterable<ExercisesTreeItem> {
-            return item.children().toMutableList()
+        override fun getChildren(item: ExercisesTreeItem): List<ExercisesTreeItem> {
+            return item.children()
         }
 //        override fun getChildren(item: ExercisesTreeItem): List<ExercisesTreeItem> =
 //            item.children()
@@ -306,8 +331,8 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true) {
         override fun installSearchField(): SearchTextField {
             return super.installSearchField().apply {
                 textEditor.apply {
-                    emptyText.text = "Search"
-                    accessibleContext.accessibleName = "Search"
+                    emptyText.text = "Search Assignments..."
+                    accessibleContext.accessibleName = "Search Assignments"
                     TextComponentEmptyText.setupPlaceholderVisibility(this)
                 }
             }

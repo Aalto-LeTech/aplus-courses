@@ -2,16 +2,17 @@ package fi.aalto.cs.apluscourses.services.course
 
 import com.intellij.notification.Notification
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.components.BaseState
 import com.intellij.openapi.components.Service
-import com.intellij.openapi.components.SimplePersistentStateComponent
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
+import com.intellij.platform.ide.progress.withBackgroundProgress
+import com.intellij.platform.util.progress.reportSequentialProgress
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.intellij.util.messages.Topic
 import com.intellij.util.messages.Topic.ProjectLevel
 import fi.aalto.cs.apluscourses.api.APlusApi
 import fi.aalto.cs.apluscourses.api.CourseConfig
+import fi.aalto.cs.apluscourses.dal.TokenStorage
 import fi.aalto.cs.apluscourses.model.Course
 import fi.aalto.cs.apluscourses.model.component.Component
 import fi.aalto.cs.apluscourses.model.component.Module
@@ -20,9 +21,10 @@ import fi.aalto.cs.apluscourses.model.people.User
 import fi.aalto.cs.apluscourses.notifications.NewModulesVersionsNotification
 import fi.aalto.cs.apluscourses.services.CoursesClient
 import fi.aalto.cs.apluscourses.services.Notifier
+import fi.aalto.cs.apluscourses.services.Opener
 import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdaterService
-import fi.aalto.cs.apluscourses.utils.callbacks.Callbacks
 import fi.aalto.cs.apluscourses.utils.Version
+import fi.aalto.cs.apluscourses.utils.callbacks.Callbacks
 import kotlinx.coroutines.*
 import java.io.IOException
 import java.util.concurrent.ConcurrentHashMap
@@ -38,6 +40,9 @@ class CourseManager(
         var course: Course? = null
         var news: NewsTree? = null
         var user: User? = null
+        var feedbackCss: String? = null
+        var settingsImported = false
+        var missingDependencies = mapOf<String, List<Component<*>>>()
     }
 
     val state = State()
@@ -104,6 +109,10 @@ class CourseManager(
 
     private suspend fun doTask() {
         project.service<CourseFileManager>().migrateOldConfig()
+        if (!TokenStorage.isTokenSet()) {
+            return
+        }
+//        CoursesClient.getInstance().updateAuthentication()
 
 
 //        val progressViewModel =
@@ -120,7 +129,7 @@ class CourseManager(
                 async {
                     val courseConfig = CoursesClient.getInstance()
                         .getBody<CourseConfig.JSON>(
-                            "https://raw.githubusercontent.com/jaakkonakaza/temp/main/config.json",
+                            CourseFileManager.getInstance(project).state.url!!,
                             false
                         )
                     val extraCourseData = APlusApi.Course(courseConfig.id.toLong()).get()
@@ -167,11 +176,14 @@ class CourseManager(
                         courseConfig.vmOptions,
                         courseConfig.optionalCategories,
                         courseConfig.autoInstall,
+                        courseConfig.scalaRepl?.initialCommands,
+                        courseConfig.scalaRepl?.arguments,
                         courseConfig.version,
                         courseConfig.hiddenElements,
                         Callbacks.fromJsonObject(courseConfig.callbacks),
                         project
                     )
+                    importSettings(state.course!!)
                     state.course?.components?.values?.forEach { it.load() }
                 }
                 async {
@@ -181,6 +193,12 @@ class CourseManager(
                 }
             }
             val course = state.course ?: return
+            course.autoInstallComponents.forEach {
+                val status = it.loadAndGetStatus()
+                if (status == Component.Status.UNRESOLVED && it is Module) {
+                    installModule(it, false)
+                }
+            }
             fireCourseUpdated()
             ExercisesUpdaterService.getInstance(project).restart()
             refreshModuleStatuses()
@@ -203,13 +221,22 @@ class CourseManager(
         notifyUpdatableModules()
     }
 
+    private suspend fun importSettings(course: Course) {
+        if (state.settingsImported) {
+            return
+        }
+        val settingsImporter = project.service<SettingsImporter>()
+//                settingsImporter.importCustomProperties(Paths.get(project.basePath!!), course, project)
+        state.feedbackCss = settingsImporter.importFeedbackCss(course)
+    }
+
 
     private fun notifyUpdatableModules() {
         val course = state.course ?: return
         val metadata = CourseFileManager.getInstance(project).state.modules
         metadata.map { it.name to it.version }.toMap()
         val updatableModules = course.modules
-            .filter { m: Module -> !m.isMinorUpdate }
+            .filter { m: Module -> m.isUpdateAvailable && !m.isMinorUpdate }
             .filter { m: Module -> notifiedModules.add(m.name) }
         if (updatableModules.isNotEmpty()) {
             val notification = NewModulesVersionsNotification(updatableModules)
@@ -218,33 +245,49 @@ class CourseManager(
     }
 
     fun refreshModuleStatuses() {
-        state.course?.modules?.forEach {
+        state.missingDependencies = state.course?.modules?.mapNotNull {
             it.load()
-            val dependencies = getDependencies(it, Component.Status.UNRESOLVED)
+            val dependencies = getMissingDependencies(it)
             println("module: ${it.name} dependencies: $dependencies")
             if (dependencies.isNotEmpty()) {
                 it.setError()
+                it.name to dependencies
+            } else {
+                null
             }
-        }
+        }?.toMap() ?: emptyMap()
         fireModulesUpdated()
     }
 
-    fun installModule(module: Module) {
+    fun installModule(module: Module, show: Boolean = true) {
         cs.launch {
-            module.downloadAndInstall()
-            println("Module installed")
-            refreshModuleStatuses()
+            withBackgroundProgress(project, "Installing module ${module.name}") {
+                reportSequentialProgress { reporter ->
+                    reporter.indeterminateStep("Downloading...")
+                    module.downloadAndInstall()
+                    println("Module installed")
+//            refreshModuleStatuses()
+                    fireModulesUpdated()
+                    if (show) project.service<Opener>().showModuleInProjectTree(module)
 //            return@launch
-            val dependencies = getDependencies(module, Component.Status.UNRESOLVED)
-            dependencies.forEach { it.downloadAndInstall() }
-            // TODO validate
+                    val dependencies = getMissingDependencies(module)
+                    println("module: ${module.name} dependencies: $dependencies")
+                    dependencies.forEach { it.downloadAndInstall() }
+                    refreshModuleStatuses()
+                }
+
+            }
+
         }
     }
 
-    private fun getDependencies(module: Module, filterStatus: Component.Status?): List<Component<*>> {
+    private fun getMissingDependencies(module: Module): List<Component<*>> {
         return module.dependencyNames
             ?.mapNotNull { state.course?.getComponentIfExists(it) }
-            ?.filter { filterStatus == null || it.loadAndGetStatus() == filterStatus }
+            ?.filter { module ->
+                val status = module.loadAndGetStatus()
+                status == Component.Status.UNRESOLVED || status == Component.Status.ERROR
+            }
             ?: emptyList()
     }
 

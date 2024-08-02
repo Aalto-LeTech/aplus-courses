@@ -30,8 +30,8 @@ class Course(
     val vmOptions: Map<String, String>,
     val optionalCategories: List<String>,
     val autoInstallComponentNames: List<String>,
-//    val replInitialCommands: Map<String, List<String>>,
-//    val replAdditionalArguments: String,
+    val replInitialCommands: Map<String, List<String>>?,
+    val replAdditionalArguments: String?,
     val minimumPluginVersion: Version,
 //    val commonLibraryProvider: CommonLibraryProvider,
 //    val pluginDependencies: List<PluginDependency>, TODO

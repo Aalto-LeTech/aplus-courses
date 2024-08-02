@@ -1,19 +1,22 @@
 package fi.aalto.cs.apluscourses.activities
 
-import com.intellij.openapi.components.service
+import com.intellij.openapi.application.EDT
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.project.ModuleListener
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.ProjectActivity
+import com.intellij.openapi.wm.ToolWindowManager
 import fi.aalto.cs.apluscourses.model.*
 import fi.aalto.cs.apluscourses.notifications.*
 import fi.aalto.cs.apluscourses.services.Notifier
 import fi.aalto.cs.apluscourses.services.PluginSettings
 import fi.aalto.cs.apluscourses.services.course.CourseManager
-import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdaterService
+import fi.aalto.cs.apluscourses.services.course.SettingsImporter
 import fi.aalto.cs.apluscourses.utils.*
 import io.ktor.http.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.IOException
 
 
@@ -22,6 +25,9 @@ internal class InitializationActivity(private val notifier: Notifier.Companion =
     override suspend fun execute(project: Project) {
 //        project.service<ExercisesUpdaterService>().restart()
 //        project.service<CourseManager>().restart()
+        withContext(Dispatchers.EDT) {
+            ToolWindowManager.getInstance(project).getToolWindow("A+ Courses")?.activate(null)
+        }
         val connection = project.messageBus.connect()
         connection.subscribe(ModuleListener.TOPIC, object : ModuleListener {
             override fun moduleRemoved(project: Project, module: Module) {
@@ -142,9 +148,9 @@ internal class InitializationActivity(private val notifier: Notifier.Companion =
         val basePath = project.basePath
         if (basePath != null) {
             try {
-                val settingsImporter = SettingsImporter()
+//                val settingsImporter = SettingsImporter()
 //                settingsImporter.importCustomProperties(Paths.get(project.basePath!!), course, project)
-                settingsImporter.importFeedbackCss(project, course)
+//                settingsImporter.importFeedbackCss(project, course)
             } catch (e: IOException) {
                 logger.warn("Failed to import settings", e)
                 notifier.notify(NetworkErrorNotification(e), project)

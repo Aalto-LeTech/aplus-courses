@@ -15,6 +15,7 @@ import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.api.APlusApi
 import fi.aalto.cs.apluscourses.model.exercise.Exercise
 import fi.aalto.cs.apluscourses.model.exercise.SubmissionResult
+import fi.aalto.cs.apluscourses.services.course.CourseManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -32,9 +33,7 @@ class ShowFeedback(
     fun showFeedback(submission: SubmissionResult, exercise: Exercise) {
         cs.launch {
             try {
-//                val mainViewModel = PluginSettings.getInstance().getMainViewModel(project)
-//                val feedbackCss = mainViewModel.feedbackCss ?: return@launch
-                val feedbackCss = "" // TODO
+                val feedbackCss = CourseManager.getInstance(project).state.feedbackCss ?: return@launch
                 if (feedbackCss.isEmpty()) {
                     return@launch
                 }

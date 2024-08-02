@@ -1,30 +1,36 @@
-package fi.aalto.cs.apluscourses.model
+package fi.aalto.cs.apluscourses.services.course
 
 import com.intellij.diagnostic.VMOptions
 import com.intellij.ide.startup.StartupActionScriptManager
 import com.intellij.ide.startup.StartupActionScriptManager.UnzipCommand
 import com.intellij.openapi.application.PathManager
+import com.intellij.openapi.components.Service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.updateSettings.impl.UpdateSettings
 import com.intellij.openapi.util.io.FileUtilRt
+import fi.aalto.cs.apluscourses.model.Course
 import fi.aalto.cs.apluscourses.services.CoursesClient
 import fi.aalto.cs.apluscourses.utils.APlusLogger
+import io.ktor.client.statement.bodyAsText
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import net.lingala.zip4j.ZipFile
-import net.lingala.zip4j.model.FileHeader
 import java.io.IOException
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.util.stream.Collectors
 
-class SettingsImporter {
+@Service(Service.Level.PROJECT)
+class SettingsImporter(
+    private val project: Project,
+    val cs: CoroutineScope
+) {
     /**
      * Downloads the course IDE settings ZIP file to a temporary file. Also adds IDEA startup actions
      * that unzip the temporary file to the IDEA configuration path after which the temporary file is
      * deleted. Therefore, the new IDE settings only take effect once IDEA is restarted and the
      * temporary file must still exist at that point.
      *
-     * @throws IOException If an IO error occurs (e.g. network issues).
+     * @throws IOException If an IO error occurs (e.g., network issues).
      */
     @Throws(IOException::class)
     fun importIdeSettings(course: Course) {
@@ -73,12 +79,12 @@ class SettingsImporter {
     }
 
     /**
-     * Downloads the course project settings ZIP file to a temporary file. After that the files from
+     * Downloads the course project settings ZIP file to a temporary file. After that, the files from
      * the .idea directory of the ZIP file are extracted to the .idea directory of the given project,
      * after which the project is reloaded. If the course does not provide custom project settings,
      * this method does nothing.
      *
-     * @throws IOException If an IO error occurs (e.g. network issues).
+     * @throws IOException If an IO error occurs (e.g., network issues).
      */
     @Throws(IOException::class)
     fun importProjectSettings(project: Project, basePath: Path, course: Course) {
@@ -98,48 +104,15 @@ class SettingsImporter {
     }
 
     /**
-     * Downloads a custom properties file if it exists, and saves it to the project's
-     * .idea directory.
+     * Downloads the feedback CSS and saves it to the MainViewModel.
      *
      * @throws IOException If an IO error occurs (e.g., network issues).
      */
-//    @Throws(IOException::class)
-//    fun importCustomProperties(
-//        basePath: Path, course: Course,
-//        project: Project
-//    ) {
-//        val settingsUrl = course.resourceUrls["customProperties"] ?: return
-//
-//        val settingsPath = basePath.resolve(Project.DIRECTORY_STORE_FOLDER)
-//
-//        val file = settingsPath.resolve(PluginResourceBundle.CUSTOM_RESOURCES_FILENAME).toFile()
-//
-//        //    CoursesClient.fetch(settingsUrl, file);
-//        PluginResourceBundle.setCustomBundle(file, project)
-//        logger.info("Imported custom properties")
-//    }
-
-    /**
-     * Downloads the feedback CSS and saves it to the MainViewModel.
-     *
-     * @throws IOException If an IO error occurs (e.g. network issues).
-     */
     @Throws(IOException::class)
-    fun importFeedbackCss(project: Project, course: Course) {
-        val cssUrl = course.resourceUrls["feedbackCss"] ?: return
-
-        // TODO cache when string cache is available
-//    var stream = CoursesClient.fetch(cssUrl);
-
-//    var bytes = stream.readAllBytes();
-//    var s = new String(bytes, StandardCharsets.UTF_8);
-        //TODO
-        CoursesClient.getInstance().cs.launch {
-            val res = CoursesClient.getInstance().get(cssUrl.toString())
-
-//            PluginSettings.getInstance().getMainViewModel(project).feedbackCss = res.bodyAsText()
-            logger.info("Imported feedback CSS")
-        }
+    suspend fun importFeedbackCss(course: Course): String? {
+        val cssUrl = course.resourceUrls["feedbackCss"] ?: return null
+        return CoursesClient.getInstance().get(cssUrl.toString()).bodyAsText()
+        logger.info("Imported feedback CSS")
     }
 
     companion object {
@@ -150,9 +123,9 @@ class SettingsImporter {
             val fileNames = getZipFileNames(zipFile)
             for (fileName in fileNames) {
                 val path = Paths.get(fileName)
-                // The ZIP contains a .idea directory with all of the settings files. We want to extract the
-                // files to the .idea directory without the .idea prefix, as otherwise we would end up with
-                // .idea/.idea/<settings_files>.
+                // The ZIP contains a .idea directory with all the settings files.
+                // We want to extract the files to the .idea directory without the .idea prefix,
+                // as otherwise we would end up with .idea/.idea/<settings_files>.
                 val pathWithoutRoot = path.subpath(1, path.nameCount)
                 zipFile.extractFile(path.toString(), target.toString(), pathWithoutRoot.toString())
             }

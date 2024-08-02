@@ -13,6 +13,7 @@ import com.intellij.ui.components.ActionLink
 import com.intellij.ui.components.AnActionLink
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBScrollPane
+import com.intellij.ui.components.TextComponentEmptyText
 import com.intellij.ui.util.maximumWidth
 import com.intellij.ui.util.preferredHeight
 import com.intellij.util.application
@@ -31,6 +32,7 @@ import io.ktor.http.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.jetbrains.annotations.NonNls
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.event.KeyEvent
@@ -47,11 +49,17 @@ class ModulesView(val project: Project) : SimpleToolWindowPanel(true, true) {
         layout = BoxLayout(this, BoxLayout.PAGE_AXIS)
     }
     private val itemPanels = mutableListOf<ModulePanel>()
-    val searchTextField: SearchTextField = object : SearchTextField() {
+    val searchTextField: SearchTextField = object : SearchTextField(false) {
         override fun preprocessEventForTextField(e: KeyEvent): Boolean {
             super.preprocessEventForTextField(e)
             searchChanged(this.text)
             return false
+        }
+    }.apply {
+        textEditor.apply {
+            emptyText.text = "Search Modules.."
+            accessibleContext.accessibleName = "Search Modules"
+            TextComponentEmptyText.setupPlaceholderVisibility(this)
         }
     }
 
@@ -111,7 +119,17 @@ class ModulesView(val project: Project) : SimpleToolWindowPanel(true, true) {
         }
         mainPanel.add(Box.createVerticalGlue())
         searchChanged(searchTextField.text)
+        openModule?.let { showModule(it.module, false) }
         itemPanels.find { it.module.name == openModule?.module?.name }?.expand()
+    }
+
+    fun showModule(module: Module, scroll: Boolean) {
+        collapseAll()
+        val item = itemPanels.find { it.module.name == module.name }
+        if (item != null) {
+            item.expand()
+            if (scroll) (content as JBScrollPane?)?.verticalScrollBar?.value = item.location.y - 100
+        }
     }
 
     /**
@@ -144,8 +162,7 @@ class ModulesView(val project: Project) : SimpleToolWindowPanel(true, true) {
         index: Int,
         val project: Project,
         val collapseAll: () -> Unit
-    ) :
-        JPanel(BorderLayout()) {
+    ) : JPanel(BorderLayout()) {
         private val detailsPanel: JPanel
         private val expandButton: JBLabel
         private val infoLabel: JBLabel
@@ -178,15 +195,8 @@ class ModulesView(val project: Project) : SimpleToolWindowPanel(true, true) {
 
             val statusPanel = JPanel()
             statusPanel.isOpaque = false
-            if (module.category == Module.Category.ACTION_REQUIRED) {
-                val statusLabel = JBLabel("viewModel.statusOld")
-
-//                val statusLabel = JBLabel(viewModel.status)
-                statusPanel.add(statusLabel)
-            }
 
             expandButton = JBLabel(AllIcons.General.ChevronDown)
-            statusPanel.add(expandButton)
             headerPanel.add(statusPanel, BorderLayout.EAST)
 
             add(headerPanel, BorderLayout.NORTH)
@@ -203,9 +213,9 @@ class ModulesView(val project: Project) : SimpleToolWindowPanel(true, true) {
 
             infoLabel = JBLabel()
             infoLabel.foreground = detailsColor
-            val statusLabel = JBLabel("module.info")
-            statusLabel.foreground = detailsColor
-            detailsTextPanel.add(statusLabel)
+//            val statusLabel = JBLabel("module.info")
+//            statusLabel.foreground = detailsColor
+//            detailsTextPanel.add(statusLabel)
             detailsPanel.add(detailsTextPanel, BorderLayout.CENTER)
 
 //                if (updateAvailable) {
@@ -235,17 +245,19 @@ class ModulesView(val project: Project) : SimpleToolWindowPanel(true, true) {
                 detailsTextPanel.add(versionLabel)
 
                 val nextExercise = ExercisesUpdaterService.getInstance(project).state.exerciseGroups
-                    .flatMap { it.exercises }
-                    .filter { it.module?.name == module.name }
-                    .firstOrNull { it.userPoints == 0 }
+                    .flatMap { group -> group.exercises.map { it to group } }
+                    .filter { it.first.module?.name == module.name }
+                    .firstOrNull { it.first.userPoints == 0 }
 
                 val opener = project.service<Opener>()
                 if (nextExercise != null) {
-                    val nextExerciseLabel = JBLabel("Next exercise: ${nextExercise.name}")
-                    val externalLink = ActionLink("External link") {
-                        opener.showExercise(nextExercise)
+                    val exercise = nextExercise.first
+                    val groupName = nextExercise.second.name
+                    val nextExerciseLabel = JBLabel("Next exercise: ${groupName}")
+                    val externalLink = ActionLink(exercise.name) {
+                        opener.showExercise(exercise)
                     }.apply {
-                        setExternalLinkIcon()
+                        setIcon(PluginIcons.A_PLUS_NO_SUBMISSIONS, false)
                     }
                     nextExerciseLabel.foreground = detailsColor
                     detailsTextPanel.add(nextExerciseLabel)
@@ -256,31 +268,35 @@ class ModulesView(val project: Project) : SimpleToolWindowPanel(true, true) {
                     println("Show in Project Tree clicked for: $name")
                     opener.showModuleInProjectTree(module)
                 }.apply {
-                    setExternalLinkIcon()
+                    setLinkIcon()
                 }
-                val documentationLink = AnActionLink(
-                    "Open Documentation",
-                    opener.openDocumentationAction(module, "doc/index.html"), "here"
-                )// TODO
-                    .apply {
-                        setExternalLinkIcon()
-                    }
                 detailsTextPanel.add(projectTreeLink)
-                detailsTextPanel.add(documentationLink)
 
-                val anotherButton = JButton("Uninstall")
-                val updateButton = JButton(if (updateAvailable) "Update" else "Reinstall")
-                anotherButton.isRolloverEnabled = true
-                anotherButton.isOpaque = false
-                anotherButton.addActionListener {
-                    println("Uninstall clicked for: $name")
+                if (module.documentationExists) {
+                    val documentationLink = AnActionLink(
+                        "Open Documentation",
+                        opener.openDocumentationAction(module, "doc/index.html"), "here"
+                    )// TODO
+                        .apply {
+                            setLinkIcon()
+                        }
+                    detailsTextPanel.add(documentationLink)
                 }
-                updateButton.isRolloverEnabled = true
-                updateButton.isOpaque = false
-                updateButton.addActionListener {
-                    println("Update clicked for: $name")
-                }
-                updateButton
+
+//                val anotherButton = JButton("Uninstall")
+//                val updateButton = JButton(if (updateAvailable) "Update" else "Reinstall")
+//                anotherButton.isRolloverEnabled = true
+//                anotherButton.isOpaque = false
+//                anotherButton.addActionListener {
+//                    println("Uninstall clicked for: $name")
+//                }
+//                updateButton.isRolloverEnabled = true
+//                updateButton.isOpaque = false
+//                updateButton.addActionListener {
+//                    println("Update clicked for: $name")
+//                }
+//                updateButton
+                null
             } else if (module.category == Module.Category.AVAILABLE) {
                 detailsPanel.add(infoLabel, BorderLayout.CENTER)
 
@@ -297,17 +313,59 @@ class ModulesView(val project: Project) : SimpleToolWindowPanel(true, true) {
                 }
                 installButton
             } else {
-                val updateButton = JButton("Update")
-                updateButton.isOpaque = false
-                updateButton.addActionListener {
-                    println("installButton clicked for: $name")
+                val missingDependencies = CourseManager.getInstance(project).state.missingDependencies[module.name]
+                if (missingDependencies == null) {
+                    val statusLabel = JBLabel("Update available")
+                    statusPanel.add(statusLabel)
+                    val updateAvailableLabel =
+                        JBLabel("Update available: ${module.metadata?.version} -> ${module.latestVersion}")
+                    updateAvailableLabel.foreground = detailsColor
+                    detailsTextPanel.add(updateAvailableLabel)
+                    val updateButton = JButton("Update")
+                    updateButton.isOpaque = false
+                    updateButton.addActionListener {
+                        println("installButton clicked for: $name")
 //                    project.service<ModuleInstaller>().installModule(module)
-                    updateButton.text = "Installing..."
-                    updateButton.isEnabled = false
+                        updateButton.text = "Installing..."
+                        updateButton.isEnabled = false
+                    }
+                    detailsPanel.add(detailsTextPanel, BorderLayout.CENTER)
+                    updateButton
+                } else {
+                    val statusLabel = JBLabel("Missing dependencies")
+                    statusPanel.add(statusLabel)
+
+                    val missingDependenciesLabel = JBLabel("Missing dependencies:")
+                    missingDependenciesLabel.foreground = detailsColor
+                    detailsTextPanel.add(missingDependenciesLabel)
+                    missingDependencies.forEach { component ->
+                        if (component is Module) {
+                            val externalLink = ActionLink(component.name) {
+                                project.service<Opener>().showModule(component)
+                            }.apply {
+                                setIcon(PluginIcons.A_PLUS_MODULE_DISABLED, false)
+                            }
+                            detailsTextPanel.add(externalLink)
+                        } else {
+                            val dependencyLabel = JBLabel(component.name)
+                            dependencyLabel.foreground = detailsColor
+                            detailsTextPanel.add(dependencyLabel)
+                        }
+                    }
+                    val installButton = JButton("Install")
+                    installButton.isOpaque = false
+                    installButton.addActionListener {
+                        println("installButton clicked for: $name")
+                        installButton.text = "Installing..."
+                        installButton.isEnabled = false
+                        project.service<CourseManager>().installModule(module)
+                    }
+                    detailsPanel.add(detailsTextPanel, BorderLayout.CENTER)
+                    installButton
                 }
-                detailsPanel.add(detailsTextPanel, BorderLayout.CENTER)
-                updateButton
+                null
             }
+            statusPanel.add(expandButton)
 
 
             val buttonContainer = JPanel()
@@ -315,13 +373,15 @@ class ModulesView(val project: Project) : SimpleToolWindowPanel(true, true) {
             buttonContainer.layout = buttonContainerLayout
             buttonContainer.isOpaque = false
             buttonContainer.add(Box.createVerticalGlue())
-            buttonContainer.add(button)
+            if (button != null) { // TODO
+                buttonContainer.add(button)
+            }
             detailsPanel.add(buttonContainer, BorderLayout.EAST)
 
             detailsPanel.isVisible = false
             add(detailsPanel, BorderLayout.CENTER)
             addMouseListener(object : MouseAdapter() {
-                override fun mouseClicked(e: MouseEvent?) {
+                override fun mousePressed(e: MouseEvent?) {
                     val isOpen = isExpanded
                     collapseAll()
                     if (!isOpen) {
@@ -343,22 +403,53 @@ class ModulesView(val project: Project) : SimpleToolWindowPanel(true, true) {
         }
 
         private fun updateInfoLabel() {
-            infoLabel.text = """
-            <html><body>
-                <span>${fileSize}</span>
-            </body></html>
-            """.trimIndent()
+            infoLabel.text = fileSize
+//                """
+//            <html><body>
+//                <span>${fileSize}</span>
+//            </body></html>
+//            """.trimIndent()
+        }
+
+        @NonNls
+        fun formatFileSize(sizeInBytes: Long): String {
+            val sizeInKB = sizeInBytes / 1024.0
+            val sizeInMB = sizeInKB / 1024.0
+
+            return when {
+                sizeInMB >= 1 -> "%.2f MB".format(sizeInMB)
+                sizeInKB >= 1 -> "%.2f KB".format(sizeInKB)
+                else -> "$sizeInBytes B"
+            }
         }
 
         private fun toggleExpand() {
             if (fileSize == "") {
-                fileSize = "loading..."
+                val url = module.zipUrl.replace("/", "/<wbr>")
+//                fileSize = "Available at $url"
+                val formattedText = """
+                <html><body>
+                    <span style="white-space: nowrap;">Available at </span>
+                    <span>${url}</span>
+                    <span style="white-space: nowrap;">(????)</span>
+                </body></html>
+                """.trimIndent()
+                fileSize = formattedText
                 updateInfoLabel()
                 val client = application.service<CoursesClient>()
                 client.cs.launch {
                     val size = client.getFileSize(Url(module.zipUrl))
                     if (size != null) {
-                        fileSize = "${size / 1024 / 1024.0}MB"
+                        val formattedSize = formatFileSize(size)
+                        val formattedText = """
+                        <html><body>
+                            <span style="white-space: nowrap;">Available at </span>
+                            <span>${url} </span>
+                            <span style="white-space: nowrap;">($formattedSize)</span>
+                        </body></html>
+                        """.trimIndent()
+                        fileSize = formattedText//"Available at $url (${formatFileSize(size)})"
+                        updateInfoLabel()
                     }
                     withContext(Dispatchers.EDT) {
                         updateInfoLabel()

@@ -9,7 +9,7 @@ package fi.aalto.cs.apluscourses.actions;
 //import com.intellij.openapi.diagnostic.Logger;
 //import com.intellij.openapi.project.Project;
 //import com.intellij.openapi.wm.ToolWindowManager;
-//import fi.aalto.cs.apluscourses.model.SettingsImporter;
+//import fi.aalto.cs.apluscourses.services.course.SettingsImporter;
 //import fi.aalto.cs.apluscourses.notifications.CourseConfigListErrorNotification;
 //import fi.aalto.cs.apluscourses.notifications.CourseFileError;
 //import fi.aalto.cs.apluscourses.notifications.CourseVersionOutdatedError;

@@ -13,7 +13,7 @@ abstract class Component<T>(val name: String, protected val project: Project) {
     var dependencyNames: Set<String>? = null
         private set
         get() {
-            if (status != Status.LOADED) {
+            if (platformObject == null) {
                 return null
             }
             if (field == null) {

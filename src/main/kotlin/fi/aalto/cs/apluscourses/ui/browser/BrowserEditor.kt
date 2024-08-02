@@ -230,6 +230,7 @@ class BrowserEditor(private val project: Project, private val file: VirtualFile,
         ourCefClient.addLoadHandler(object : CefLoadHandlerAdapter() {
             override fun onLoadEnd(browser: CefBrowser, frame: CefFrame, httpStatusCode: Int) {
                 println("onLoadEnd")
+                return
                 frame.executeJavaScript(
                     """(function() {
 fetch('/accounts/accounts/')

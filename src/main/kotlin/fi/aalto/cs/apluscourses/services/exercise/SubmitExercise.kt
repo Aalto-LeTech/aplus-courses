@@ -21,6 +21,7 @@ import fi.aalto.cs.apluscourses.notifications.NotSubmittableNotification
 import fi.aalto.cs.apluscourses.ui.temp.presentation.exercise.SubmissionViewModel
 import fi.aalto.cs.apluscourses.services.CoursesClient
 import fi.aalto.cs.apluscourses.services.Notifier
+import fi.aalto.cs.apluscourses.services.course.CourseFileManager
 import fi.aalto.cs.apluscourses.services.course.CourseManager
 import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdaterService.ExerciseDetails
 import fi.aalto.cs.apluscourses.ui.exercise.SubmitExerciseDialog
@@ -63,7 +64,7 @@ class SubmitExercise(
 
                 cs.ensureActive()
 
-                val language: String = "fi"//languageSource.getLanguage(project)
+                val language: String = CourseFileManager.getInstance(project).state.language!!
                 logger.info("Language: $language")
                 val submittable = submissionInfo.isSubmittable(language)
 

@@ -27,6 +27,7 @@ internal class OpenDocumentationActionProvider : InspectionWidgetActionProvider 
         val project = editor.project ?: return null
         val course = CourseManager.course(project) ?: return null
         val virtualFile = editor.virtualFile ?: return null
+        if (virtualFile.extension != "scala") return null
         val fileName = virtualFile.nameWithoutExtension
         val path = virtualFile.path
         println(path)
