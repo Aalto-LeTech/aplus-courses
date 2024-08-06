@@ -1,39 +1,30 @@
 package fi.aalto.cs.apluscourses.ui.overview
 
 import com.intellij.credentialStore.OneTimeString
-import com.intellij.ide.troubleshooting.scale
+import com.intellij.icons.AllIcons
 import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.openapi.util.IconLoader
-import com.intellij.ui.LightColors
 import com.intellij.ui.components.JBPasswordField
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.dsl.builder.*
 import com.intellij.ui.dsl.gridLayout.UnscaledGaps
 import com.intellij.ui.scale.ScaleContext
-import com.intellij.ui.util.minimumHeight
-import com.intellij.util.IconUtil
 import com.intellij.util.ui.JBFont
+import com.intellij.util.ui.JBUI
 import fi.aalto.cs.apluscourses.MyBundle
 import fi.aalto.cs.apluscourses.dal.TokenStorage
-import fi.aalto.cs.apluscourses.services.CoursesClient
 import fi.aalto.cs.apluscourses.services.course.CourseManager
 import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdaterService
 import fi.aalto.cs.apluscourses.ui.BannerPanel
 import icons.PluginIcons
-import io.ktor.http.*
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.periodUntil
 import java.awt.*
-import java.awt.event.ComponentAdapter
 import java.net.URI
-import java.net.URL
 import javax.swing.Icon
 import javax.swing.JPanel
+import javax.swing.JProgressBar
 import javax.swing.ScrollPaneConstants
 
 class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, true) {
@@ -87,51 +78,92 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
         }
         val course = CourseManager.course(project) ?: return loadingPanel()
         val user = CourseManager.user(project) ?: return loadingPanel()
-        val points = ExercisesUpdaterService.getInstance(project).state.pointsByDifficulty
-        val pointsText = // Format: "<b>A</b> 10<br><b>B</b> 5<br><b>C</b> 0"
-            points
-                ?.entries
-                ?.filter { !course.optionalCategories.contains(it.key) }
-                ?.sortedBy { it.key }
-                ?.joinToString("<br>") { (key, value) -> "<b>$key</b> $value" }
+        val points = ExercisesUpdaterService.getInstance(project).state.userPointsForCategories
+            ?.filter { !course.optionalCategories.contains(it.key) }
+            ?.toList()
+            ?.sortedBy { it.first } // Show categories in alphabetical order
+        val maxPoints = ExercisesUpdaterService.getInstance(project).state.maxPointsForCategories
+//        val pointsText = // Format: "<b>A</b> 10<br><b>B</b> 5<br><b>C</b> 0"
+//            points
+//                ?.entries
+//                ?.filter { !course.optionalCategories.contains(it.key) }
+//                ?.sortedBy { it.key }
+//                ?.joinToString("<br>") { (key, value) -> "<b>$key</b> $value" }
         val banner = ResponsiveImagePanel(course.imageUrl, width = this.width)
         this.banner = banner
         return panel {
             row { cell(banner) }
             row { cell(BannerPanel(MyBundle.message("ui.BannerView.courseEnded"), BannerPanel.BannerType.ERROR)) }
             panel {
-                row {
-                    text(course.name).applyToComponent {
-                        font = JBFont.regular().biggerOn(7f).deriveFont(Font.PLAIN)
-                    }
-                }
-                row {
-                    text(user.userName)
-                }
-
-                if (pointsText == null) {
+                customizeSpacingConfiguration(object : IntelliJSpacingConfiguration() {
+                    override val verticalComponentGap: Int = 1
+                }) {
                     row {
-                        icon(PluginIcons.A_PLUS_LOADING).resizableColumn().align(Align.CENTER)
-                    }.resizableRow()
-                } else if (pointsText.isNotEmpty()) {
-                    separator()
-                    row {
-                        text("Points collected")
-                    }
-                    row {
-                        text(pointsText)
-                    }
-                    separator()
-                    row {
-                        comment("Week 2 closing 21.2.2024 21:00 (in 4 hours)")
-                    }
-                    row {
-                        link("Open A+ Courses settings") {
-                            ShowSettingsUtil.getInstance().showSettingsDialog(project, "A+ Courses")
+                        text(course.name).applyToComponent {
+                            font = JBFont.h0()
+                        }.comment(user.userName)
+                    }.topGap(TopGap.SMALL)
+                    if (points == null || maxPoints == null) {
+                        row {
+                            icon(PluginIcons.A_PLUS_LOADING).resizableColumn().align(Align.CENTER)
+                        }.resizableRow()
+                    } else {
+                        group(indent = false) {
+                            row {
+                                text("Points collected").comment("Grade 4")
+                            }.topGap(TopGap.MEDIUM)
+                            points.map {
+                                val (category, points) = it
+                                val maxPoints = maxPoints[category]!!
+                                row {
+                                    text(category).bold()
+                                    cell(JProgressBar(0, maxPoints))
+                                        .applyToComponent { value = points }
+                                        .resizableColumn().align(AlignX.FILL)
+                                    text("${points}/${maxPoints}").applyToComponent {
+                                        foreground = JBUI.CurrentTheme.ContextHelp.FOREGROUND
+                                    }
+                                }.layout(RowLayout.PARENT_GRID)
+                            }
+                            row {
+                                text("Points until next grade")
+                            }.topGap(TopGap.SMALL)
+                            points.map {
+                                val (category, points) = it
+                                val pointsTemp = if (category == "A") 355 else 1
+                                val pointsLeft = if (category == "A") 345 else 0
+                                val maxPoints = if (category == "A") 700 else 1
+                                row {
+                                    text(category).bold()
+                                    cell(JProgressBar(0, maxPoints))
+                                        .applyToComponent { value = pointsTemp }
+                                        .resizableColumn().align(AlignX.FILL)
+                                    text("$pointsLeft").applyToComponent {
+                                        foreground = JBUI.CurrentTheme.ContextHelp.FOREGROUND
+                                    }
+                                }.layout(RowLayout.PARENT_GRID)
+                            }
+                        }
+                        separator().bottomGap(BottomGap.MEDIUM)
+                        row {
+                            text("Week 2 closing 21.2.2024 21:00 (in 4 hours)").applyToComponent {
+                                foreground = JBUI.CurrentTheme.ContextHelp.FOREGROUND
+                            }
+                        }.bottomGap(BottomGap.SMALL)
+                        row {
+                            link("Plugin settings") {
+                                ShowSettingsUtil.getInstance().showSettingsDialog(project, "A+ Courses")
+                            }.applyToComponent {
+                                icon = AllIcons.General.Settings
+                            }
+                        }
+                        row {
+                            browserLink("Course page", course.htmlUrl).applyToComponent {
+                                setIcon(PluginIcons.A_PLUS_LOGO_COLOR, atRight = false)
+                            }
                         }
                     }
                 }
-
             }.customize(UnscaledGaps(16, 32, 16, 32))
         }
     }
