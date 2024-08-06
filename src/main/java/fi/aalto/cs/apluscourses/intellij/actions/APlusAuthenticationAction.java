@@ -102,9 +102,7 @@ public class APlusAuthenticationAction extends DumbAwareAction {
     if (authentication == null) {
       return;
     }
-    if (!authentication.persist()) {
-      notifier.notify(new ApiTokenNotSetNotification(), project);
-    }
+    authentication.persist(() -> {}, () -> notifier.notify(new ApiTokenNotSetNotification(), project));
     courseProject.setAuthentication(authentication);
     courseProject.getExercisesUpdater().restart();
     logger.info("Authentication finished");
