@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.model.exercise
 
+import fi.aalto.cs.apluscourses.api.APlusApi
 import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdaterService
 import kotlinx.serialization.Serializable
 
@@ -32,7 +33,7 @@ data class SubmissionInfo(val files: Map<String, List<SubmittableFile>>) {
         /**
          * Construct a submission info instance from the given JSON object.
          */
-        fun fromJsonObject(jsonObject: ExercisesUpdaterService.ExerciseDetails.Exercise): SubmissionInfo {
+        fun fromJsonObject(jsonObject: APlusApi.Exercise.Body): SubmissionInfo {
 
             // Some assignments, such as https://plus.cs.aalto.fi/api/v2/exercises/24882/ don't have the
             // exercise info at all.

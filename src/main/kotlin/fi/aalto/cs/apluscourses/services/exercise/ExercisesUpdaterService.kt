@@ -50,7 +50,8 @@ class ExercisesUpdaterService(
         //        @get:Attribute(converter = ExerciseGroup.Companion.EGLConverter::class)
 //        @set:Attribute(converter = ExerciseGroup.Companion.EGLConverter::class)
         var exerciseGroups: MutableList<ExerciseGroup> = mutableListOf()//by list()
-        var pointsByDifficulty: Map<String, Int>? = null
+        var userPointsForCategories: Map<String, Int>? = null
+        var maxPointsForCategories: Map<String, Int>? = null
         fun increment() = {}//incrementModificationCount()
     }
 
@@ -260,27 +261,6 @@ class ExercisesUpdaterService(
         )
     }
 
-    object ExerciseDetails {
-        @Serializable
-        data class Exercise(
-            val exerciseInfo: ExerciseInfo? = null
-        )
-
-        @Serializable
-        data class ExerciseInfo(
-            val formSpec: List<FormSpec>? = null,
-            val formI18n: Map<String, Map<String, String>>
-        )
-
-        @Serializable
-        data class FormSpec(
-            val type: String,
-            val required: Boolean? = null,
-            val title: String,
-            val key: String
-        )
-    }
-
     object SubmissionDetails {
         @Serializable
         data class Submission(
@@ -311,9 +291,9 @@ class ExercisesUpdaterService(
 //        notifier: Notifier = DefaultNotifier(),
     ) {
         if (!TokenStorage.isTokenSet()) {
+            println("Not authenticated")
             return
         }
-        project.service<CoursesClient>().updateAuthentication()
         val course = CourseManager.course(project) ?: return
         println("Starting exercises update")
         val timeStart = System.currentTimeMillis()
@@ -354,13 +334,30 @@ class ExercisesUpdaterService(
         val pointsUrl = "${courseUrl}points/me"
         val submissionDataUrl = "${courseUrl}submissiondata/me?best=no&format=json"
         val coursesClient = project.service<CoursesClient>()
-        val response = coursesClient.get(pointsUrl)
+        val response = coursesClient.get(pointsUrl, token = true) // TODO refactor
         val points = json.decodeFromString<Points.PointsDataHolder>(response.bodyAsText())
-        val categories =
-            points.modules.flatMap { it.exercises }.map { it.difficulty }.toSet().filter { !it.isEmpty() }
-                .associateWith { 0 }.toMutableMap()
-        categories.replaceAll { category, _ -> points.pointsByDifficulty[category] ?: 0 }
-        state.pointsByDifficulty = categories
+        val pointsAndCategories =
+            points.modules
+                .flatMap { it.exercises }
+                .map { it.difficulty to it.maxPoints }
+                .filter { !it.first.isEmpty() } // Filter out empty categories
+        val userPointsForCategories = pointsAndCategories
+            .map { it.first }
+            .toSet()
+            .associateWith {
+                points.pointsByDifficulty.getOrDefault(it, 0)
+            } // If points are 0, the category is not in pointsByDifficulty
+        val maxPointsForCategories: Map<String, Int> =
+            pointsAndCategories.fold(mutableMapOf()) { acc: MutableMap<String, Int>, pair: Pair<String, Int> ->
+                val (category, points) = pair
+                acc[category] = acc.getOrDefault(category, 0) + points
+                acc
+            }
+        println("c")
+        println(userPointsForCategories)
+        println(maxPointsForCategories)
+        state.userPointsForCategories = userPointsForCategories
+        state.maxPointsForCategories = maxPointsForCategories
         state.increment()
         firePointsByDifficultyUpdated()
 //        val newSubmissionCount = points.submissionCount // TODO https://github.com/apluslms/a-plus/issues/1384
@@ -375,8 +372,8 @@ class ExercisesUpdaterService(
         this.submissionCount = newSubmissionCount
         val (exercisesResponse, submissionDataCsv) = runBlocking {
             awaitAll(
-                async { coursesClient.get(exercisesUrl) },
-                async { coursesClient.get(submissionDataUrl) }
+                async { coursesClient.get(exercisesUrl, true) },
+                async { coursesClient.get(submissionDataUrl, true) }
             )
         }
 
@@ -520,7 +517,7 @@ class ExercisesUpdaterService(
         ApplicationManager.getApplication().invokeLater {
             ApplicationManager.getApplication().messageBus
                 .syncPublisher(EXERCISES_TOPIC)
-                .onPointsByDifficultyUpdated(state.pointsByDifficulty)
+                .onPointsByDifficultyUpdated(state.userPointsForCategories)
         }
     }
 

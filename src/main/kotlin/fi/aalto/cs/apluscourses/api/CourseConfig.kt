@@ -3,6 +3,7 @@ package fi.aalto.cs.apluscourses.api
 import fi.aalto.cs.apluscourses.utils.Version
 import io.ktor.http.*
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 
 object CourseConfig {
     /**
@@ -216,4 +217,8 @@ object CourseConfig {
         val version: Version = Version.DEFAULT,
         val changelog: String? = null,
     )
+
+    fun deserialize(json: String): JSON {
+        return Json.decodeFromString(JSON.serializer(), json)
+    }
 }

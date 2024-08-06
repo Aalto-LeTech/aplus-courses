@@ -168,7 +168,21 @@ object APlusApi {
 
         @Serializable
         data class Body(
-            val feedback: String
+            val exerciseInfo: ExerciseInfo? = null
+        )
+
+        @Serializable
+        data class ExerciseInfo(
+            val formSpec: List<FormSpec>? = null,
+            val formI18n: Map<String, Map<String, String>>
+        )
+
+        @Serializable
+        data class FormSpec(
+            val type: String,
+            val required: Boolean? = null,
+            val title: String,
+            val key: String
         )
 
         @Resource("submissions")

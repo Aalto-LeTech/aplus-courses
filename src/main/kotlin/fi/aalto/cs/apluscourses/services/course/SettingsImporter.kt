@@ -12,6 +12,7 @@ import fi.aalto.cs.apluscourses.model.Course
 import fi.aalto.cs.apluscourses.services.CoursesClient
 import fi.aalto.cs.apluscourses.utils.APlusLogger
 import io.ktor.client.statement.bodyAsText
+import io.ktor.client.statement.request
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import net.lingala.zip4j.ZipFile
@@ -111,7 +112,15 @@ class SettingsImporter(
     @Throws(IOException::class)
     suspend fun importFeedbackCss(course: Course): String? {
         val cssUrl = course.resourceUrls["feedbackCss"] ?: return null
+        println("importing feedback css\n$cssUrl")
+        val res = CoursesClient.getInstance(project).get(cssUrl.toString())
+        println(res)
+        println(res.request)
+        println(res.request.url)
+        println(res.request.headers)
+        println(res.bodyAsText())
         return CoursesClient.getInstance(project).get(cssUrl.toString()).bodyAsText()
+
         logger.info("Imported feedback CSS")
     }
 

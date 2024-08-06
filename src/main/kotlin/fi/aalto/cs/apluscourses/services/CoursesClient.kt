@@ -1,13 +1,9 @@
 package fi.aalto.cs.apluscourses.services
 
-import com.intellij.openapi.application.ApplicationInfo
-import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
-import com.intellij.util.application
 import fi.aalto.cs.apluscourses.dal.TokenStorage
-import fi.aalto.cs.apluscourses.utils.BuildInfo
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
@@ -22,7 +18,6 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.serialization.kotlinx.json.*
-import io.ktor.util.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -37,31 +32,13 @@ class CoursesClient(
     val project: Project,
     val cs: CoroutineScope
 ) {
-    private val userAgent: String
-    var client: HttpClient // TODO private
-
-    init {
-        val appInfo = ApplicationInfo.getInstance()
-        val appNamesInfo = ApplicationNamesInfo.getInstance()
-        val intellijVersion = appInfo.fullVersion
-        val product = appNamesInfo.productName // E.g. "IDEA"
-        val edition = appNamesInfo.editionName // E.g. "Community Edition"
-        val os = System.getProperty("os.name")
-        val pluginVersion = BuildInfo.pluginVersion
-//        val apacheUserAgent =
-//            VersionInfo.getUserAgent("Apache-HttpClient", "org.apache.http.client", VersionInfo::class.java)
-
-        userAgent = "intellij/$intellijVersion ($product; $edition; $os) apluscourses/$pluginVersion"
-
-        this.client = HttpClient(CIO) {
+    val client: HttpClient by lazy {
+        HttpClient(CIO) {
             install(Resources)
             install(HttpCache) {
                 val cacheFile =
                     Files.createDirectories(Path(project.basePath!!).resolve(".idea/aplusCourses/")).toFile()
                 privateStorage(FileStorage(cacheFile))
-            }
-            install(UserAgent) {
-                agent = userAgent
             }
             install(ContentNegotiation) {
                 json(Json {
@@ -77,40 +54,25 @@ class CoursesClient(
             }
             defaultRequest {
                 url {
-                    protocol = URLProtocol.HTTPS // TODO
+                    protocol = URLProtocol.HTTPS
                     host = "plus.cs.aalto.fi"
                     path("api/v2/")
-//                    accept(ContentType.Application.Json)
-//                    accept(ContentType.Text.CSV)
-                    accept(ContentType.Any)
                 }
             }
         }
     }
 
-    fun updateAuthentication() {
-        val token = TokenStorage.getToken()
-        if (token == null) {
-            println("Removing auth")
-            client.config {
-                headers {
-                    remove("Authorization")
-                }
-            }
-        } else {
-            println("Setting auth")
-
-            client = client.config {
-                defaultRequest {
-                    headers.appendIfNameAbsent("Authorization", "Token $token")
-                }
-            }
-        }
+    fun HttpRequestBuilder.addToken() {
+        header("Authorization", "Token ${TokenStorage.getToken()}")
     }
 
-    suspend fun get(url: String): HttpResponse {
+    suspend fun get(url: String, token: Boolean = false): HttpResponse {
         return withContext(Dispatchers.IO) {
-            client.get(url)
+            client.get(url) {
+                if (token) {
+                    addToken()
+                }
+            }
         }
     }
 
@@ -123,32 +85,13 @@ class CoursesClient(
         return head.contentLength()
     }
 
-    @OptIn(ExperimentalSerializationApi::class)
-    fun jsonb(snake: Boolean = true) = Json {
-        ignoreUnknownKeys = true
-        isLenient = true
-        namingStrategy = if (snake) JsonNamingStrategy.SnakeCase else null
-    }
-
     suspend inline fun <reified Resource : Any, reified Body : Any> getBody(resource: Resource): Body {
         val res = withContext(Dispatchers.IO) {
-            client.get(resource, {
-                headers {
-                    append("Authorization", "Token ${TokenStorage.getToken()}")
-                }
-            })
+            client.get(resource) {
+                addToken()
+            }
         }
-//        println(res.bodyAsText())
-//        return json().decodeFromString<Body>(res.bodyAsText())
         return res.body<Body>()
-    }
-
-    suspend inline fun <reified Body : Any> getBody(url: String, snake: Boolean): Body {
-        println(url)
-        val res = withContext(Dispatchers.IO) {
-            client.get(url)
-        }
-        return jsonb(snake).decodeFromString<Body>(res.bodyAsText())
     }
 
     suspend inline fun <reified Resource : Any> postForm(
@@ -157,15 +100,8 @@ class CoursesClient(
     ): HttpResponse {
         val res = withContext(Dispatchers.IO) {
             client.post(resource) {
-                headers {
-                    append("Authorization", "Token ${TokenStorage.getToken()}")
-                }
-                setBody(
-                    MultiPartFormDataContent(
-                        form,
-//                        boundary = "APlusCoursesBoundary"
-                    )
-                )
+                addToken()
+                setBody(MultiPartFormDataContent(form))
                 onUpload { bytesSentTotal, contentLength ->
                     println("Sent $bytesSentTotal bytes from $contentLength")
                 }

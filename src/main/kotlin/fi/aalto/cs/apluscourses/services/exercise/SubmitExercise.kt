@@ -3,31 +3,26 @@ package fi.aalto.cs.apluscourses.services.exercise
 import com.intellij.history.LocalHistory
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.components.Service
-import com.intellij.openapi.components.service
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.module.ModuleUtilCore
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
 import fi.aalto.cs.apluscourses.api.APlusApi
 import fi.aalto.cs.apluscourses.model.component.Module
-import fi.aalto.cs.apluscourses.model.temp.FileDoesNotExistException
-import fi.aalto.cs.apluscourses.model.temp.Group
 import fi.aalto.cs.apluscourses.model.exercise.Exercise
 import fi.aalto.cs.apluscourses.model.exercise.SubmissionInfo
+import fi.aalto.cs.apluscourses.model.temp.FileDoesNotExistException
+import fi.aalto.cs.apluscourses.model.temp.Group
 import fi.aalto.cs.apluscourses.notifications.MissingFileNotification
 import fi.aalto.cs.apluscourses.notifications.MissingModuleNotification
 import fi.aalto.cs.apluscourses.notifications.NetworkErrorNotification
 import fi.aalto.cs.apluscourses.notifications.NotSubmittableNotification
-import fi.aalto.cs.apluscourses.ui.temp.presentation.exercise.SubmissionViewModel
-import fi.aalto.cs.apluscourses.services.CoursesClient
 import fi.aalto.cs.apluscourses.services.Notifier
 import fi.aalto.cs.apluscourses.services.course.CourseFileManager
 import fi.aalto.cs.apluscourses.services.course.CourseManager
-import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdaterService.ExerciseDetails
 import fi.aalto.cs.apluscourses.ui.exercise.SubmitExerciseDialog
+import fi.aalto.cs.apluscourses.ui.temp.presentation.exercise.SubmissionViewModel
 import fi.aalto.cs.apluscourses.utils.APlusLogger
 import fi.aalto.cs.apluscourses.utils.FileUtil
-import fi.aalto.cs.apluscourses.utils.ProjectModuleSource
 import icons.PluginIcons.ACCENT_COLOR
 import kotlinx.coroutines.*
 import java.io.IOException
@@ -49,10 +44,7 @@ class SubmitExercise(
                 var submissionInfo = submissionInfos[exercise.id]
                 if (submissionInfo == null) {
                     println("Submission info is null")
-                    submissionInfo =
-                        SubmissionInfo.fromJsonObject(
-                            project.service<CoursesClient>().getBody<ExerciseDetails.Exercise>(exercise.url, true)
-                        )
+                    submissionInfo = SubmissionInfo.fromJsonObject(APlusApi.exercise(exercise).get(project))
                     submissionInfos[exercise.id] = submissionInfo
                 } else {
                     println("Submission info is not null")
@@ -126,6 +118,8 @@ class SubmitExercise(
 //                    if (moduleDir == null) ModuleUtilCore.getModuleDirPath(module.platformObject) else moduleDir.path
 
                 val files: MutableMap<String, Path> = HashMap()
+                println(modulePath)
+                println(submissionInfo.getFiles(language))
                 for ((key, name) in submissionInfo.getFiles(language)) {
                     files[key] = FileUtil.findFileInDirectory(modulePath, name)!!
                 }

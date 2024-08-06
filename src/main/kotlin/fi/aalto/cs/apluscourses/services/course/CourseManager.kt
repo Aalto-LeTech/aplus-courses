@@ -25,6 +25,7 @@ import fi.aalto.cs.apluscourses.services.Opener
 import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdaterService
 import fi.aalto.cs.apluscourses.utils.Version
 import fi.aalto.cs.apluscourses.utils.callbacks.Callbacks
+import io.ktor.client.statement.bodyAsText
 import kotlinx.coroutines.*
 import java.io.IOException
 import java.util.concurrent.ConcurrentHashMap
@@ -126,72 +127,72 @@ class CourseManager(
 //        val auth = courseProject.authentication
         try {
             runBlocking {
-                async {
-                    println(CourseFileManager.getInstance(project).state.url)
-                    val courseConfig = CoursesClient.getInstance(project)
-                        .getBody<CourseConfig.JSON>(
-                            CourseFileManager.getInstance(project).state.url!!,
-                            false
-                        )
-                    val extraCourseData = APlusApi.Course(courseConfig.id.toLong()).get(project)
-                    val modules = courseConfig.modules.map {
-                        Module(
-                            it.name,
-                            it.url,
-                            it.changelog,
-                            it.version,
-                            project
-                        )
-                    }
-                    val exerciseModules = courseConfig.exerciseModules.map { (exerciseId, languagesToModule) ->
-                        println("exerciseId: $exerciseId languagesToModule: $languagesToModule")
-                        exerciseId to
-                                languagesToModule
-                                    .map { (language, moduleName) ->
-                                        var module = modules.find { it.name == moduleName }
-                                        if (module == null) {
-                                            println("Module $moduleName not found")
-                                            module = Module(
-                                                moduleName,
-                                                "",
-                                                "",
-                                                Version.EMPTY,
-                                                project
-                                            )
-                                        }
-                                        language to module
-                                    }
-                                    .toMap()
-                    }.toMap()
-                    state.course = Course(
-                        courseConfig.id.toLong(),
-                        courseConfig.name,
-                        courseConfig.aPlusUrl,
-                        extraCourseData.htmlUrl,
-                        extraCourseData.image,
-                        extraCourseData.endingTime,
-                        courseConfig.languages,
-                        modules,
-                        exerciseModules,
-                        CourseConfig.resourceUrls(courseConfig.resources),
-                        courseConfig.vmOptions,
-                        courseConfig.optionalCategories,
-                        courseConfig.autoInstall,
-                        courseConfig.scalaRepl?.initialCommands,
-                        courseConfig.scalaRepl?.arguments,
-                        courseConfig.version,
-                        courseConfig.hiddenElements,
-                        Callbacks.fromJsonObject(courseConfig.callbacks),
+//                async {
+                println(CourseFileManager.getInstance(project).state.url)
+                val courseConfig = CourseConfig.deserialize(
+                    CoursesClient.getInstance(project)
+                        .get(CourseFileManager.getInstance(project).state.url!!).bodyAsText()
+                )
+                println("courseConfig: $courseConfig")
+                val extraCourseData = APlusApi.Course(courseConfig.id.toLong()).get(project)
+                val modules = courseConfig.modules.map {
+                    Module(
+                        it.name,
+                        it.url,
+                        it.changelog,
+                        it.version,
                         project
                     )
-                    importSettings(state.course!!)
-                    state.course?.components?.values?.forEach { it.load() }
                 }
-                async {
-                    state.user = withContext(Dispatchers.IO) {
-                        APlusApi.me().get(project)
-                    }
+                val exerciseModules = courseConfig.exerciseModules.map { (exerciseId, languagesToModule) ->
+                    println("exerciseId: $exerciseId languagesToModule: $languagesToModule")
+                    exerciseId to
+                            languagesToModule
+                                .map { (language, moduleName) ->
+                                    var module = modules.find { it.name == moduleName }
+                                    if (module == null) {
+                                        println("Module $moduleName not found")
+                                        module = Module(
+                                            moduleName,
+                                            "",
+                                            "",
+                                            Version.EMPTY,
+                                            project
+                                        )
+                                    }
+                                    language to module
+                                }
+                                .toMap()
+                }.toMap()
+                state.course = Course(
+                    courseConfig.id.toLong(),
+                    courseConfig.name,
+                    courseConfig.aPlusUrl,
+                    extraCourseData.htmlUrl,
+                    extraCourseData.image,
+                    extraCourseData.endingTime,
+                    courseConfig.languages,
+                    modules,
+                    exerciseModules,
+                    CourseConfig.resourceUrls(courseConfig.resources),
+                    courseConfig.vmOptions,
+                    courseConfig.optionalCategories,
+                    courseConfig.autoInstall,
+                    courseConfig.scalaRepl?.initialCommands,
+                    courseConfig.scalaRepl?.arguments,
+                    courseConfig.version,
+                    courseConfig.hiddenElements,
+                    Callbacks.fromJsonObject(courseConfig.callbacks),
+                    project
+                )
+                importSettings(state.course!!)
+                state.course?.components?.values?.forEach { it.load() }
+//                }
+//                async {
+                state.user = withContext(Dispatchers.IO) {
+                    APlusApi.me().get(project)
                 }
+//                }
             }
             val course = state.course ?: return
             course.autoInstallComponents.forEach {

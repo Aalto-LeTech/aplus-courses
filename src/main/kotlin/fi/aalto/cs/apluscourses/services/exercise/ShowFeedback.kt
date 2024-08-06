@@ -11,6 +11,7 @@ import com.intellij.openapi.vfs.writeText
 import com.intellij.ui.JBColor
 import com.intellij.util.application
 import com.intellij.util.ui.JBFont
+import com.intellij.util.ui.StartupUiUtil
 import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.api.APlusApi
 import fi.aalto.cs.apluscourses.model.exercise.Exercise
@@ -57,6 +58,14 @@ class ShowFeedback(
                 println(feedbackCss)
 
                 document.head().append(
+                    """<script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous" referrerpolicy="no-referrer"></script>"""
+                )
+
+                document.head().append(
+                    """<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap3/dist/css/bootstrap.min.css"/>"""
+                )
+
+                document.head().append(
                     "<style>"
                             + Jsoup.clean(
                         feedbackCss
@@ -67,6 +76,10 @@ class ShowFeedback(
                     )
                             + "</style>"
                 )
+
+                if (!JBColor.isBright()) {
+                    document.body().addClass("dark")
+                }
 
                 val fileEditorManager: FileEditorManager = FileEditorManager.getInstance(project)
 
