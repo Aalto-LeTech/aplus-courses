@@ -136,7 +136,7 @@ class SubmitExercise(
 
 
                 //TODO move to service
-                val groups = listOf(Group.GROUP_ALONE) + APlusApi.course(course).myGroups()
+                val groups = listOf(Group.GROUP_ALONE) + APlusApi.course(course).myGroups(project)
 
                 // Find the group from the available groups that matches the default group ID.
                 // A group could be removed, so this way we check that the default group ID is still valid.
@@ -191,7 +191,7 @@ class SubmitExercise(
 //            }
 
 //                logger.info("Submitting with group: $selectedGroup")
-                APlusApi.exercise(exercise).submit(submission.buildSubmission())
+                APlusApi.exercise(exercise).submit(submission.buildSubmission(), project)
                 ExercisesUpdaterService.getInstance(project).restart()
 //            val submissionUrl: String = exerciseDataSource.submit(submission.buildSubmission(), authentication)
 //            logger.info("Submission url: {}", submissionUrl)

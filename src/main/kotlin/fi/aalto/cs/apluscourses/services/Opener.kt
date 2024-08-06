@@ -84,7 +84,7 @@ class Opener(
 
     fun openSubmission(submission: SubmissionResult) {
         cs.launch {
-            BrowserUtil.open(submission.getHtmlUrl())
+            BrowserUtil.open(submission.getHtmlUrl(project))
         }
     }
 

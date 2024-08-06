@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.model.exercise
 
 //import fi.aalto.cs.apluscourses.utils.JsonUtil
+import com.intellij.openapi.project.Project
 import fi.aalto.cs.apluscourses.api.APlusApi
 import kotlinx.serialization.Serializable
 
@@ -17,8 +18,8 @@ data class SubmissionResult(
     val testsSucceeded: Int = -1,
     val testsFailed: Int = -1, // TODO
 ) {
-    suspend fun getHtmlUrl(): String {
-        return APlusApi.submission(this).get().htmlUrl
+    suspend fun getHtmlUrl(project: Project): String {
+        return APlusApi.submission(this).get(project).htmlUrl
     }
 
     fun updateStatus(statusString: String) {

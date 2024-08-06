@@ -4,6 +4,7 @@ import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
+import com.intellij.openapi.project.Project
 import com.intellij.util.application
 import fi.aalto.cs.apluscourses.dal.TokenStorage
 import fi.aalto.cs.apluscourses.utils.BuildInfo
@@ -28,13 +29,12 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.*
 import java.nio.file.Files
-import java.nio.file.Paths
+import kotlin.io.path.Path
 
 @OptIn(ExperimentalSerializationApi::class)
-@Service(
-    Service.Level.APP
-)
+@Service(Service.Level.PROJECT)
 class CoursesClient(
+    val project: Project,
     val cs: CoroutineScope
 ) {
     private val userAgent: String
@@ -56,7 +56,8 @@ class CoursesClient(
         this.client = HttpClient(CIO) {
             install(Resources)
             install(HttpCache) {
-                val cacheFile = Files.createDirectories(Paths.get(".idea/aplusCourses/.http-cache")).toFile()
+                val cacheFile =
+                    Files.createDirectories(Path(project.basePath!!).resolve(".idea/aplusCourses/")).toFile()
                 privateStorage(FileStorage(cacheFile))
             }
             install(UserAgent) {
@@ -177,8 +178,8 @@ class CoursesClient(
     }
 
     companion object {
-        fun getInstance(): CoursesClient {
-            return application.service<CoursesClient>()
+        fun getInstance(project: Project): CoursesClient {
+            return project.service<CoursesClient>()
         }
     }
 }

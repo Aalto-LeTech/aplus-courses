@@ -26,7 +26,7 @@ abstract class Component<T>(val name: String, protected val project: Project) {
     abstract val fullPath: Path
 
     protected suspend fun downloadAndUnzipZip(zipUrl: String, extractPath: Path, onlyPath: String? = null) {
-        val res = CoursesClient.getInstance().get(zipUrl)
+        val res = CoursesClient.getInstance(project).get(zipUrl)
         println("Downloading $zipUrl to $path")
         val zipBytes = res.readBytes()
         val tempZipFile = kotlin.io.path.createTempFile("aplus", ".zip").toFile()

@@ -38,7 +38,7 @@ class ShowFeedback(
                     return@launch
                 }
                 val feedbackString = withContext(Dispatchers.IO) {
-                    APlusApi.submission(submission).get().feedback
+                    APlusApi.submission(submission).get(project).feedback
                 }
 
                 val document = Jsoup.parseBodyFragment(feedbackString)

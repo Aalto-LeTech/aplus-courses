@@ -127,12 +127,13 @@ class CourseManager(
         try {
             runBlocking {
                 async {
-                    val courseConfig = CoursesClient.getInstance()
+                    println(CourseFileManager.getInstance(project).state.url)
+                    val courseConfig = CoursesClient.getInstance(project)
                         .getBody<CourseConfig.JSON>(
                             CourseFileManager.getInstance(project).state.url!!,
                             false
                         )
-                    val extraCourseData = APlusApi.Course(courseConfig.id.toLong()).get()
+                    val extraCourseData = APlusApi.Course(courseConfig.id.toLong()).get(project)
                     val modules = courseConfig.modules.map {
                         Module(
                             it.name,
@@ -188,7 +189,7 @@ class CourseManager(
                 }
                 async {
                     state.user = withContext(Dispatchers.IO) {
-                        APlusApi.me().get()
+                        APlusApi.me().get(project)
                     }
                 }
             }
@@ -204,7 +205,7 @@ class CourseManager(
             refreshModuleStatuses()
             val newNews = runBlocking {
 //                APlusApi.Course(course.id).news().get()
-                APlusApi.Course(294).news().get()
+                APlusApi.Course(294).news().get(project)
 
             }
             state.news?.news?.forEach {

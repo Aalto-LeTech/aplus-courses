@@ -26,10 +26,10 @@ class OpenExerciseItemAction : AnAction() {
         val selectedItem = project.service<SelectedExerciseService>().selectedExerciseTreeItem
         val url = selectedItem?.url() ?: return
         if (selectedItem is ExercisesView.SubmissionResultItem) {
-            APlusApi.cs().launch {
+            APlusApi.cs(project).launch { // TODO dont use this cs
                 // The URL of a submission result has to first be fetched from the API
                 loading = true
-                val htmlUrl = selectedItem.submission.getHtmlUrl()
+                val htmlUrl = selectedItem.submission.getHtmlUrl(project)
                 loading = false
                 browse(htmlUrl, project)
             }

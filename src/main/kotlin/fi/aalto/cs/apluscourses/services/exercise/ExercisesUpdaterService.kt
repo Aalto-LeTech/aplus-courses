@@ -475,7 +475,7 @@ class ExercisesUpdaterService(
         var anyPassed = false
         runBlocking {
             for (submissionId in submissions) {
-                val submission = APlusApi.Submission(submissionId).get()
+                val submission = APlusApi.Submission(submissionId).get(project)
                 if (SubmissionResult.statusFromString(submission.status) != SubmissionResult.Status.WAITING) {
                     anyPassed = true
                     submissionsInGrading.remove(submissionId)

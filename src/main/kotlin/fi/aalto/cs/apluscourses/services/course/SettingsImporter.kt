@@ -111,7 +111,7 @@ class SettingsImporter(
     @Throws(IOException::class)
     suspend fun importFeedbackCss(course: Course): String? {
         val cssUrl = course.resourceUrls["feedbackCss"] ?: return null
-        return CoursesClient.getInstance().get(cssUrl.toString()).bodyAsText()
+        return CoursesClient.getInstance(project).get(cssUrl.toString()).bodyAsText()
         logger.info("Imported feedback CSS")
     }
 

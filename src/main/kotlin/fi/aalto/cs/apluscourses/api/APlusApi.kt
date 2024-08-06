@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.api
 
+import com.intellij.openapi.project.Project
 import fi.aalto.cs.apluscourses.model.Course as CourseModel
 import fi.aalto.cs.apluscourses.model.temp.Group as GroupModel
 import fi.aalto.cs.apluscourses.model.temp.Submission as SubmissionModel
@@ -25,9 +26,9 @@ import kotlin.collections.component2
 object APlusApi {
     @Resource("/courses/{id}")
     class Course(val id: Long) {
-        suspend fun get(): CourseBody {
+        suspend fun get(project: Project): CourseBody {
             return withContext(Dispatchers.IO) {
-                CoursesClient.getInstance().getBody<Course, CourseBody>(this@Course)
+                CoursesClient.getInstance(project).getBody<Course, CourseBody>(this@Course)
             }
         }
 
@@ -40,10 +41,10 @@ object APlusApi {
 
         @Resource("news")
         class News(val parent: Course) {
-            suspend fun get(): NewsTree {
+            suspend fun get(project: Project): NewsTree {
                 println("news get")
                 val res = withContext(Dispatchers.IO) {
-                    CoursesClient.getInstance().getBody<News, NewsBody>(this@News)
+                    CoursesClient.getInstance(project).getBody<News, NewsBody>(this@News)
                 }
 //                println("news res ${res}")
 
@@ -94,10 +95,10 @@ object APlusApi {
 
         @Resource("mygroups")
         class MyGroups(val parent: Course) {
-            suspend fun get(): List<GroupModel> {
+            suspend fun get(project: Project): List<GroupModel> {
                 val res = withContext(Dispatchers.IO) {
                     CoursesClient
-                        .getInstance()
+                        .getInstance(project)
                         .getBody<MyGroups, GroupsBody>(this@MyGroups)
                         .results
                 }
@@ -127,7 +128,7 @@ object APlusApi {
         }
 
         fun news(): News = News(this)
-        suspend fun myGroups(): List<GroupModel> = MyGroups(this).get()
+        suspend fun myGroups(project: Project): List<GroupModel> = MyGroups(this).get(project)
 
         companion object {
             fun apply(course: Course): Course = Course(course.id.toLong())
@@ -136,9 +137,9 @@ object APlusApi {
 
     @Resource("/submissions/{id}")
     class Submission(val id: Long) {
-        suspend fun get(): SubmissionBody {
+        suspend fun get(project: Project): SubmissionBody {
             return withContext(Dispatchers.IO) {
-                CoursesClient.getInstance().getBody<Submission, SubmissionBody>(this@Submission)
+                CoursesClient.getInstance(project).getBody<Submission, SubmissionBody>(this@Submission)
             }
         }
 
@@ -159,9 +160,9 @@ object APlusApi {
 
     @Resource("/exercises/{id}")
     class Exercise(val id: Long) {
-        suspend fun get(): Body {
+        suspend fun get(project: Project): Body {
             return withContext(Dispatchers.IO) {
-                CoursesClient.getInstance().getBody<Exercise, Body>(this@Exercise)
+                CoursesClient.getInstance(project).getBody<Exercise, Body>(this@Exercise)
             }
         }
 
@@ -174,7 +175,7 @@ object APlusApi {
         class Submissions(val parent: Exercise) {
             @Resource("submit")
             class Submit(val parent: Submissions) {
-                suspend fun post(submission: SubmissionModel) {
+                suspend fun post(submission: SubmissionModel, project: Project) {
                     val form = formData {
                         append(
                             "__aplus__",
@@ -190,23 +191,23 @@ object APlusApi {
                         }
                     }
                     withContext(Dispatchers.IO) {
-                        CoursesClient.getInstance().postForm<Submit>(this@Submit, form)
+                        CoursesClient.getInstance(project).postForm<Submit>(this@Submit, form)
                     }
                 }
             }
         }
 
-        suspend fun submit(submission: SubmissionModel): Unit =
-            Submissions.Submit(Submissions(this)).post(submission)
+        suspend fun submit(submission: SubmissionModel, project: Project): Unit =
+            Submissions.Submit(Submissions(this)).post(submission, project)
     }
 
     @Resource("/users")
     class Users {
         @Resource("me")
         class Me(val parent: Users) {
-            suspend fun get(): UserModel {
+            suspend fun get(project: Project): UserModel {
                 val body = withContext(Dispatchers.IO) {
-                    CoursesClient.getInstance().getBody<Me, UserBody>(this@Me)
+                    CoursesClient.getInstance(project).getBody<Me, UserBody>(this@Me)
                 }
                 return UserModel(
                     body.fullName ?: body.username,
@@ -237,5 +238,5 @@ object APlusApi {
     fun submission(submission: SubmissionResultModel): Submission = Submission(submission.id)
     fun me(): Users.Me = Users.Me(Users())
 
-    fun cs(): CoroutineScope = CoursesClient.getInstance().cs
+    fun cs(project: Project): CoroutineScope = CoursesClient.getInstance(project).cs
 }

@@ -436,8 +436,8 @@ class ModulesView(val project: Project) : SimpleToolWindowPanel(true, true) {
                 """.trimIndent()
                 fileSize = formattedText
                 updateInfoLabel()
-                val client = application.service<CoursesClient>()
-                client.cs.launch {
+                val client = CoursesClient.getInstance(project)
+                client.cs.launch { // TODO
                     val size = client.getFileSize(Url(module.zipUrl))
                     if (size != null) {
                         val formattedSize = formatFileSize(size)

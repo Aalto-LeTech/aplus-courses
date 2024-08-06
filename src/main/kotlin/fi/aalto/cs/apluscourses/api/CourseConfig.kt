@@ -132,7 +132,7 @@ object CourseConfig {
         val aPlusUrl: String,
         val languages: List<String>,
         val version: Version,
-        val resources: Resources,
+        val resources: Resources? = null,
         val vmOptions: Map<String, String> = emptyMap(),
         val optionalCategories: List<String> = emptyList(),
         val autoInstall: List<String> = emptyList(),
@@ -152,7 +152,8 @@ object CourseConfig {
         val feedbackCss: String? = null,
     )
 
-    fun resourceUrls(res: Resources): Map<String, Url> {
+    fun resourceUrls(res: Resources?): Map<String, Url> {
+        if (res == null) return emptyMap()
         return mapOf(
             "ideSettings" to res.ideSettings,
             "ideSettingsMac" to res.ideSettingsMac,
