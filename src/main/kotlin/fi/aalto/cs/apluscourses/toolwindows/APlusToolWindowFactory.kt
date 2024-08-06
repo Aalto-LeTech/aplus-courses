@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.toolwindows
 
+import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.components.service
@@ -13,6 +14,8 @@ import com.intellij.ui.components.JBPanel
 import com.intellij.ui.content.*
 import com.intellij.util.messages.MessageBusConnection
 import fi.aalto.cs.apluscourses.actions.ActionGroups.EXERCISE_ACTIONS
+import fi.aalto.cs.apluscourses.actions.ActionGroups.TOOL_WINDOW_ACTIONS
+import fi.aalto.cs.apluscourses.actions.RefreshEverythingAction
 import fi.aalto.cs.apluscourses.dal.TokenStorage
 import fi.aalto.cs.apluscourses.model.Course
 import fi.aalto.cs.apluscourses.model.component.Module
@@ -80,6 +83,10 @@ internal class APlusToolWindowFactory : ToolWindowFactory, DumbAware {
         toolWindow.contentManager.addContent(newsTab)
         toolWindow.contentManager.setSelectedContent(overviewTab)
 
+        toolWindow.setAdditionalGearActions(
+            TOOL_WINDOW_ACTIONS.get()
+        )
+
         // Shorten titles when toolwindow is too small
         toolWindow.component.addComponentListener(object : ComponentAdapter() {
             override fun componentResized(e: ComponentEvent) {
@@ -143,6 +150,7 @@ fun createConnections(
         override fun onExercisesUpdated() {
             exercisesView.updateTree()
             modulesView.viewModelChanged(CourseManager.course(toolWindow.project))
+            overviewView.update()
         }
 
         override fun onExerciseUpdated(exercise: Exercise) {

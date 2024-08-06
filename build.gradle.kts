@@ -2,9 +2,6 @@ import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.markdownToHTML
 import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
 
-fun properties(key: String): Provider<String> = providers.gradleProperty(key)
-fun environment(key: String): Provider<String> = providers.environmentVariable(key)
-
 plugins {
 //    id("java")
 //    id("idea")
@@ -25,8 +22,8 @@ plugins {
 //    alias(libs.plugins.kover) // Gradle Kover Plugin
 }
 
-group = properties("pluginGroup").get()
-version = properties("pluginVersion").get()
+group = providers.gradleProperty("pluginGroup").get()
+version = providers.gradleProperty("pluginVersion").get()
 
 // Set the JVM language level used to build the project.
 kotlin {
@@ -53,19 +50,6 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.11")
     implementation("io.ktor:ktor-client-content-negotiation:2.3.11")
 
-//    compileOnly(libs.scalaLibrary)
-
-//    testImplementation(libs.jupiterApi)
-//    testRuntimeOnly(libs.junitPlatformLauncher)
-//    testRuntimeOnly(libs.junitJupiterEngine)
-//
-//    testImplementation(libs.junit)
-//    testImplementation(libs.hamcrest)
-//    testImplementation(libs.mockito)
-//    testImplementation(libs.restAssured) {
-//        exclude(group = "commons-codec", module = "commons-codec") // Excluded because of Cxeb68d52e-5509
-//    }
-
     configurations.all {
         exclude(group = "org.jetbrains.kotlinx", module = "kotlinx.coroutines") // Only the bundled version is allowed
         exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-core")
@@ -73,7 +57,6 @@ dependencies {
         exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-jdk8")
         exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-slf4j")
         exclude(group = "org.slf4j")
-//        resolutionStrategy.sortArtifacts(ResolutionStrategy.SortOrder.DEPENDENCY_FIRST)
     }
 
     // IntelliJ Platform Gradle Plugin Dependencies Extension - read more:
@@ -172,26 +155,6 @@ changelog {
 //    }
 //}
 
-//abstract class GatherBuildInfoTask : DefaultTask() {
-//    @get:Input
-//    abstract val pluginVersion: Property<String>
-//
-//    @get:Input
-//    abstract val courseVersion: Property<String>
-//
-//    @get:OutputDirectory
-//    abstract val outputDir: DirectoryProperty
-//
-//    @TaskAction
-//    fun gatherBuildInfo() {
-//        outputDir.file("build-info.properties").get().asFile.writeText(
-//            """
-//            version=${pluginVersion.get()}
-//            courseVersion=${courseVersion.get()}
-//            """.trimIndent()
-//        )
-//    }
-//}
 
 tasks {
     wrapper {
@@ -202,49 +165,7 @@ tasks {
         dependsOn(patchChangelog)
     }
 
-//    buildSearchableOptions {
-//        enabled = false // Disabled because it breaks dynamic reload
-//    }
-
-//    jacocoTestReport {
-//        reports.xml.required = true
-//    }
-
-//    register<GatherBuildInfoTask>("gatherBuildInfo") {
-//        pluginVersion = properties("pluginVersion").get()
-//        courseVersion = properties("courseVersion").get()
-//        outputDir = layout.buildDirectory.dir("resources/main")
-//    }
-//
-//    classes {
-//        dependsOn("gatherBuildInfo")
-//    }
-
-//    check {
-//        dependsOn("jacocoTestReport")
-//    }
-
-    runIde {
-        properties("idea.is.internal=true")
-    }
-
-//    prepareSandbox {
-//        disabledPlugins = listOf("org.jetbrains.kotlin")
-//    }
-    intellijPlatformTesting {
-        runIde {
-            create("runCustom") {
-                type = IntelliJPlatformType.IntellijIdeaCommunity
-                version = providers.gradleProperty("platformVersion")
-                plugins {
-                    disablePlugins("org.jetbrains.kotlin")
-                }
-            }
-        }
+    buildSearchableOptions {
+        enabled = false // Disabled because it breaks dynamic reload
     }
 }
-
-//checkstyle {
-//    configFile = file("checkstyle/google_checks.xml")
-//    maxWarnings = 0
-//}

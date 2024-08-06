@@ -3,7 +3,6 @@
     <name>A+ Courses</name>
     <vendor>LeTech</vendor>
 
-    <!--    <depends>com.intellij.modules.java</depends>-->
     <depends>com.intellij.modules.platform</depends>
     <depends>org.intellij.scala</depends>
 
@@ -128,25 +127,17 @@
             <!--                    text="Download Submission"-->
             <!--                    icon="PluginIcons.A_PLUS_DOWNLOAD"/>-->
         </group>
-        <!--        <group id="fi.aalto.cs.apluscourses.intellij.actions.ActionGroups.TOOL_WINDOW_ACTIONS"-->
-        <!--               text="A+ Tool Window"-->
-        <!--               description="Actions for A+ tool window">-->
-        <!--            <group id="fi.aalto.cs.apluscourses.intellij.actions.UserActionGroup"-->
-        <!--                   class="fi.aalto.cs.apluscourses.intellij.actions.UserActionGroup"-->
-        <!--                   popup="true"-->
-        <!--                   text="Not Logged In"-->
-        <!--                   icon="PluginIcons.A_PLUS_USER">-->
-        <!--                <action id="fi.aalto.cs.apluscourses.intellij.actions.UserNameAction"-->
-        <!--                        class="fi.aalto.cs.apluscourses.intellij.actions.UserNameAction"-->
-        <!--                        text="Not Logged In"/>-->
-        <!--                <action id="fi.aalto.cs.apluscourses.intellij.actions.LogInOutAction"-->
-        <!--                        class="fi.aalto.cs.apluscourses.intellij.actions.LogInOutAction"-->
-        <!--                        text="Log In"/>-->
-        <!--            </group>-->
-        <!--        </group>-->
+        <group id="fi.aalto.cs.apluscourses.actions.ActionGroups.TOOL_WINDOW_ACTIONS"
+               text="A+ Tool Window"
+               description="Actions for A+ tool window">
+            <action class="fi.aalto.cs.apluscourses.actions.RefreshEverythingAction"
+                    id="fi.aalto.cs.apluscourses.actions.RefreshEverythingAction"
+                    text="Refresh"
+                    icon="PluginIcons.A_PLUS_REFRESH"/>
+        </group>
     </actions>
-    <applicationListeners>
-        <listener class="fi.aalto.cs.apluscourses.intellij.utils.PluginLoadUnloadEventsListener"
-                  topic="com.intellij.ide.plugins.DynamicPluginListener"/>
-    </applicationListeners>
+    <!--    <applicationListeners>-->
+    <!--        <listener class="fi.aalto.cs.apluscourses.intellij.utils.PluginLoadUnloadEventsListener"-->
+    <!--                  topic="com.intellij.ide.plugins.DynamicPluginListener"/>-->
+    <!--    </applicationListeners>-->
 </idea-plugin>
