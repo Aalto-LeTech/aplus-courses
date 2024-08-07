@@ -30,7 +30,7 @@ class IntelliJModule
     implements IntelliJComponent<com.intellij.openapi.module.Module> {
 
   @NotNull
-  private final APlusProject project;
+  protected final APlusProject project;
 
   IntelliJModule(@NotNull String name,
                  @NotNull URL url,
@@ -91,7 +91,7 @@ class IntelliJModule
   }
 
   @RequiresWriteLock
-  private void loadInternal() throws ComponentLoadException {
+  protected void loadInternal() throws ComponentLoadException {
     try {
       project.getModuleManager().loadModule(getImlFile().toPath());
       PluginSettings
