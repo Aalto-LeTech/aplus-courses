@@ -3,7 +3,6 @@ package fi.aalto.cs.apluscourses.services
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
-import fi.aalto.cs.apluscourses.dal.TokenStorage
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
@@ -18,11 +17,13 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.serialization.kotlinx.json.*
+import io.ktor.utils.io.errors.IOException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.*
+import org.jetbrains.annotations.NonNls
 import java.nio.file.Files
 import kotlin.io.path.Path
 
@@ -62,8 +63,10 @@ class CoursesClient(
         }
     }
 
-    fun HttpRequestBuilder.addToken() {
-        header("Authorization", "Token ${TokenStorage.getToken()}")
+    suspend fun HttpRequestBuilder.addToken() {
+        @NonNls val key = "Authorization"
+        @NonNls val value = "Token ${TokenStorage.getInstance().getToken()}"
+        header(key, value)
     }
 
     suspend fun get(url: String, token: Boolean = false): HttpResponse {
@@ -90,6 +93,9 @@ class CoursesClient(
             client.get(resource) {
                 addToken()
             }
+        }
+        if (res.status != HttpStatusCode.OK) {
+            throw IOException("Failed to get body: ${res.status}")
         }
         return res.body<Body>()
     }

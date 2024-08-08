@@ -1,18 +1,15 @@
 package fi.aalto.cs.apluscourses.services.exercise
 
-import ai.grazie.nlp.encoder.toM
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.intellij.util.messages.Topic
 import com.intellij.util.messages.Topic.ProjectLevel
-import com.intellij.util.xmlb.annotations.Attribute
 import fi.aalto.cs.apluscourses.api.APlusApi
-import fi.aalto.cs.apluscourses.dal.TokenStorage
+import fi.aalto.cs.apluscourses.services.TokenStorage
 import fi.aalto.cs.apluscourses.model.exercise.Exercise
 import fi.aalto.cs.apluscourses.model.exercise.ExerciseGroup
-import fi.aalto.cs.apluscourses.model.exercise.SubmissionInfo
 import fi.aalto.cs.apluscourses.model.exercise.SubmissionResult
 import fi.aalto.cs.apluscourses.notifications.FeedbackAvailableNotification
 import fi.aalto.cs.apluscourses.services.CoursesClient
@@ -21,18 +18,13 @@ import fi.aalto.cs.apluscourses.services.course.CourseFileManager
 import fi.aalto.cs.apluscourses.services.course.CourseManager
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil
 import io.ktor.client.statement.*
-import io.ktor.http.*
 import io.ktor.utils.io.CancellationException
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Semaphore
-import kotlinx.coroutines.sync.withPermit
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonNamingStrategy
-import kotlinx.serialization.json.decodeToSequence
-import java.io.ByteArrayInputStream
-import java.io.StringReader
 import java.util.concurrent.ConcurrentHashMap
 
 
@@ -53,6 +45,11 @@ class ExercisesUpdaterService(
         var userPointsForCategories: Map<String, Int>? = null
         var maxPointsForCategories: Map<String, Int>? = null
         fun increment() = {}//incrementModificationCount()
+        fun clearAll() {
+            exerciseGroups.clear()
+            userPointsForCategories = null
+            maxPointsForCategories = null
+        }
     }
 
     val state = State()
@@ -290,8 +287,10 @@ class ExercisesUpdaterService(
 //        courseProject: CourseProject,
 //        notifier: Notifier = DefaultNotifier(),
     ) {
-        if (!TokenStorage.isTokenSet()) {
+        if (!TokenStorage.getInstance().isTokenSet()) {
             println("Not authenticated")
+            state.clearAll()
+            fireExercisesUpdated()
             return
         }
         val course = CourseManager.course(project) ?: return
@@ -364,7 +363,7 @@ class ExercisesUpdaterService(
 //        val newPoints = points.points
         val newSubmissionCount = points.modules.flatMap { it.exercises }.sumOf { it.submissions.size }
         val newPoints = points.modules.flatMap { it.exercises }.sumOf { it.points }
-        if (this.points == newPoints && this.submissionCount == newSubmissionCount) {
+        if (this.state.exerciseGroups.isNotEmpty() && this.points == newPoints && this.submissionCount == newSubmissionCount) {
             println("No new data")
             return
         }

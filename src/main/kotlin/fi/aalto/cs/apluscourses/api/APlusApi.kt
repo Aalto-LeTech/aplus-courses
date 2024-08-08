@@ -10,6 +10,7 @@ import fi.aalto.cs.apluscourses.model.people.User as UserModel
 import fi.aalto.cs.apluscourses.model.news.NewsItem
 import fi.aalto.cs.apluscourses.model.news.NewsTree
 import fi.aalto.cs.apluscourses.services.CoursesClient
+import fi.aalto.cs.apluscourses.services.course.CourseFileManager
 import fi.aalto.cs.apluscourses.utils.temp.parser.O1NewsParser
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
@@ -53,7 +54,8 @@ object APlusApi {
 
                     val bodyElement = Jsoup.parseBodyFragment(body).body()
 
-                    val parser = O1NewsParser("en")//NewsParser()
+                    val language = CourseFileManager.getInstance(project).state.language!!
+                    val parser = O1NewsParser(language)//NewsParser()
 //                val parserKey = null//Optional.ofNullable(course.newsParser).orElse(course.name)
 //                parser = when (parserKey) {
 //                    O1NewsParser.NAME -> O1NewsParser(language)
@@ -219,7 +221,7 @@ object APlusApi {
     class Users {
         @Resource("me")
         class Me(val parent: Users) {
-            suspend fun get(project: Project): UserModel {
+            suspend fun get(project: Project): UserModel? {
                 val body = withContext(Dispatchers.IO) {
                     CoursesClient.getInstance(project).getBody<Me, UserBody>(this@Me)
                 }

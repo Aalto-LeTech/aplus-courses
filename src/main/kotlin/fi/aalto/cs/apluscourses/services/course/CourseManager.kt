@@ -12,7 +12,7 @@ import com.intellij.util.messages.Topic
 import com.intellij.util.messages.Topic.ProjectLevel
 import fi.aalto.cs.apluscourses.api.APlusApi
 import fi.aalto.cs.apluscourses.api.CourseConfig
-import fi.aalto.cs.apluscourses.dal.TokenStorage
+import fi.aalto.cs.apluscourses.services.TokenStorage
 import fi.aalto.cs.apluscourses.model.Course
 import fi.aalto.cs.apluscourses.model.component.Component
 import fi.aalto.cs.apluscourses.model.component.Module
@@ -38,12 +38,22 @@ class CourseManager(
     //: SimplePersistentStateComponent<CourseManager.State>(State()) {
     class State {
         //: BaseState() {
+        var authenticated: Boolean? = null
         var course: Course? = null
+        var courseName: String? = null
         var news: NewsTree? = null
         var user: User? = null
         var feedbackCss: String? = null
         var settingsImported = false
         var missingDependencies = mapOf<String, List<Component<*>>>()
+        fun clearAll() {
+            course = null
+            news = null
+            user = null
+            feedbackCss = null
+            settingsImported = false
+            missingDependencies = emptyMap()
+        }
     }
 
     val state = State()
@@ -110,9 +120,20 @@ class CourseManager(
 
     private suspend fun doTask() {
         project.service<CourseFileManager>().migrateOldConfig()
-        if (!TokenStorage.isTokenSet()) {
+        println(CourseFileManager.getInstance(project).state.url)
+        val courseConfig = CourseConfig.deserialize(
+            CoursesClient.getInstance(project)
+                .get(CourseFileManager.getInstance(project).state.url!!).bodyAsText()
+        )
+        state.courseName = courseConfig.name
+        println("courseConfig: $courseConfig")
+        if (!TokenStorage.getInstance().isTokenSet()) {
+            state.clearAll()
+            state.authenticated = false
+            fireCourseUpdated()
             return
         }
+        state.authenticated = true
 //        CoursesClient.getInstance().updateAuthentication()
 
 
@@ -128,12 +149,7 @@ class CourseManager(
         try {
             runBlocking {
 //                async {
-                println(CourseFileManager.getInstance(project).state.url)
-                val courseConfig = CourseConfig.deserialize(
-                    CoursesClient.getInstance(project)
-                        .get(CourseFileManager.getInstance(project).state.url!!).bodyAsText()
-                )
-                println("courseConfig: $courseConfig")
+
                 val extraCourseData = APlusApi.Course(courseConfig.id.toLong()).get(project)
                 val modules = courseConfig.modules.map {
                     Module(
@@ -367,6 +383,10 @@ class CourseManager(
 
         fun user(project: Project): User? {
             return getInstance(project).state.user
+        }
+
+        fun authenticated(project: Project): Boolean? {
+            return getInstance(project).state.authenticated
         }
     }
 }

@@ -12,13 +12,15 @@ import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.dsl.builder.*
 import com.intellij.ui.dsl.gridLayout.UnscaledGaps
 import com.intellij.ui.scale.ScaleContext
+import com.intellij.util.lateinitVal
 import com.intellij.util.ui.JBFont
 import com.intellij.util.ui.JBUI
 import fi.aalto.cs.apluscourses.MyBundle
-import fi.aalto.cs.apluscourses.dal.TokenStorage
+import fi.aalto.cs.apluscourses.services.TokenStorage
 import fi.aalto.cs.apluscourses.services.course.CourseManager
 import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdaterService
 import fi.aalto.cs.apluscourses.ui.BannerPanel
+import fi.aalto.cs.apluscourses.ui.TokenForm
 import icons.PluginIcons
 import java.awt.*
 import java.net.URI
@@ -59,21 +61,35 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
 
     private var passwordField: JBPasswordField? = null// TODO duplicated
     private fun setToken() {
-        TokenStorage.store(OneTimeString(passwordField!!.password))
+        TokenStorage.getInstance().storeAndCheck(OneTimeString(passwordField!!.password), project) {
+            CourseManager.getInstance(project).restart()
+        }
         passwordField!!.text = ""
-        CourseManager.getInstance(project).restart()
-        ExercisesUpdaterService.getInstance(project).restart()
+    }
+
+    private val tokenForm: TokenForm by lazy {
+        TokenForm(project) {
+            CourseManager.getInstance(project).restart()
+        }
     }
 
     private fun createPanel(): DialogPanel {
-        if (!TokenStorage.isTokenSet()) {
+        val authenticated = CourseManager.authenticated(project) ?: return loadingPanel()
+        if (!authenticated) {
             passwordField = JBPasswordField()
+            val courseName = CourseManager.getInstance(project).state.courseName ?: ""
             return panel {
-                row("A+ token") {
-                    cell(passwordField!!).columns(COLUMNS_MEDIUM)
-                        .comment("<a href=\"https://plus.cs.aalto.fi/accounts/accounts/\">Show token in A+</a>")
-                    button("Set") { setToken() }
-                }
+                panel {
+                    row {
+                        text("Welcome to ${courseName}").applyToComponent {
+                            font = JBFont.h1()
+                        }.comment("You need to log in to access the course content:")
+                    }
+                    with(tokenForm) {
+                        token()
+                        validation()
+                    }
+                }.customize(UnscaledGaps(16, 32, 16, 32))
             }
         }
         val course = CourseManager.course(project) ?: return loadingPanel()
@@ -83,12 +99,6 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
             ?.toList()
             ?.sortedBy { it.first } // Show categories in alphabetical order
         val maxPoints = ExercisesUpdaterService.getInstance(project).state.maxPointsForCategories
-//        val pointsText = // Format: "<b>A</b> 10<br><b>B</b> 5<br><b>C</b> 0"
-//            points
-//                ?.entries
-//                ?.filter { !course.optionalCategories.contains(it.key) }
-//                ?.sortedBy { it.key }
-//                ?.joinToString("<br>") { (key, value) -> "<b>$key</b> $value" }
         val banner = ResponsiveImagePanel(course.imageUrl, width = this.width)
         this.banner = banner
         return panel {
