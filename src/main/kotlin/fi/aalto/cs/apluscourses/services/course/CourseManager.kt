@@ -181,26 +181,27 @@ class CourseManager(
                                 .toMap()
                 }.toMap()
                 state.course = Course(
-                    courseConfig.id.toLong(),
-                    courseConfig.name,
-                    courseConfig.aPlusUrl,
-                    extraCourseData.htmlUrl,
-                    extraCourseData.image,
-                    extraCourseData.endingTime,
-                    courseConfig.languages,
-                    modules,
-                    exerciseModules,
-                    CourseConfig.resourceUrls(courseConfig.resources),
-                    courseConfig.vmOptions,
-                    courseConfig.optionalCategories,
-                    courseConfig.autoInstall,
-                    courseConfig.scalaRepl?.initialCommands,
-                    courseConfig.scalaRepl?.arguments,
-                    courseConfig.version,
-                    courseConfig.hiddenElements,
-                    Callbacks.fromJsonObject(courseConfig.callbacks),
+                    id = courseConfig.id.toLong(),
+                    name = courseConfig.name,
+                    aplusUrl = courseConfig.aPlusUrl,
+                    htmlUrl = extraCourseData.htmlUrl,
+                    imageUrl = extraCourseData.image,
+                    endingTime = extraCourseData.endingTime,
+                    languages = courseConfig.languages,
+                    modules = modules,
+                    exerciseModules = exerciseModules,
+                    resourceUrls = CourseConfig.resourceUrls(courseConfig.resources),
+                    vmOptions = courseConfig.vmOptions,
+                    optionalCategories = courseConfig.optionalCategories,
+                    autoInstallComponentNames = courseConfig.autoInstall,
+                    replInitialCommands = courseConfig.scalaRepl?.initialCommands,
+                    replAdditionalArguments = courseConfig.scalaRepl?.arguments,
+                    minimumPluginVersion = courseConfig.version,
+                    hiddenElements = courseConfig.hiddenElements,
+                    callbacks = Callbacks.fromJsonObject(courseConfig.callbacks),
                     project
                 )
+                println("adjawidjwoaidjowai ${courseConfig.hiddenElements}")
                 importSettings(state.course!!)
                 state.course?.components?.values?.forEach { it.load() }
 //                }

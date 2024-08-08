@@ -20,6 +20,7 @@ import fi.aalto.cs.apluscourses.model.exercise.Exercise
 import fi.aalto.cs.apluscourses.model.exercise.ExerciseGroup
 import fi.aalto.cs.apluscourses.model.exercise.SubmissionResult
 import fi.aalto.cs.apluscourses.services.Opener
+import fi.aalto.cs.apluscourses.services.course.CourseManager
 import fi.aalto.cs.apluscourses.services.exercise.*
 import java.awt.BorderLayout
 import java.awt.Color
@@ -145,8 +146,11 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true) {
     data class ExercisesRootItem(val project: Project) : ExercisesTreeItem {
         override fun displayName(): String = ""
 
+        private val hiddenElements
+            get() = CourseManager.course(project)?.hiddenElements ?: emptyList()
+
         override fun children(): List<ExerciseGroupItem> =
-            project.service<ExercisesUpdaterService>().state.exerciseGroups.map { group ->
+            ExercisesUpdaterService.getInstance(project).state.exerciseGroups.map { group ->
                 ExerciseGroupItem(
                     group,
                     group.exercises.map { exercise ->
@@ -160,12 +164,16 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true) {
                         )
                     }.filterNot( // Filter exercises
                         application.service<ExercisesTreeFilterService>().state.exercisesFilter()
-                    )
+                    ).filterNot {
+                        hiddenElements.contains(it.exercise.id)
+                    }
                 )
             }.filterNot( // Filter groups
                 ApplicationManager.getApplication()
                     .service<ExercisesTreeFilterService>().state.exercisesGroupFilter()
-            ).filter { group -> // Filter out empty groups
+            ).filterNot {
+                hiddenElements.contains(it.group.id)
+            }.filter { group -> // Filter out empty groups
                 group.children().isNotEmpty()
             }
     }
