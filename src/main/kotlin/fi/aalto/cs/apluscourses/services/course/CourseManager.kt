@@ -300,6 +300,13 @@ class CourseManager(
         }
     }
 
+    fun updateModule(module: Module) {
+        cs.launch {
+            module.update()
+            refreshModuleStatuses()
+        }
+    }
+
     private fun getMissingDependencies(module: Module): List<Component<*>> {
         return module.dependencyNames
             ?.mapNotNull { state.course?.getComponentIfExists(it) }

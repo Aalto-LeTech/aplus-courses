@@ -35,6 +35,7 @@ import kotlinx.coroutines.withContext
 import org.jetbrains.annotations.NonNls
 import java.awt.BorderLayout
 import java.awt.Dimension
+import java.awt.Point
 import java.awt.event.KeyEvent
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
@@ -48,7 +49,7 @@ class ModulesView(val project: Project) : SimpleToolWindowPanel(true, true) {
     private val mainPanel = JPanel().apply {
         layout = BoxLayout(this, BoxLayout.PAGE_AXIS)
     }
-    private val itemPanels = mutableListOf<ModulePanel>()
+    private val itemPanels = mutableListOf<ModuleRenderer>()
     val searchTextField: SearchTextField = object : SearchTextField(false) {
         override fun preprocessEventForTextField(e: KeyEvent): Boolean {
             super.preprocessEventForTextField(e)
@@ -63,10 +64,40 @@ class ModulesView(val project: Project) : SimpleToolWindowPanel(true, true) {
         }
     }
 
+
+    private fun getPanelAt(point: Point) =
+        itemPanels.find { it.bounds.contains(point) }
+
     init {
         val content = JBScrollPane(mainPanel)
         content.horizontalScrollBarPolicy = JBScrollPane.HORIZONTAL_SCROLLBAR_NEVER
         setContent(content)
+        mainPanel.addMouseMotionListener(object : MouseAdapter() {
+            override fun mouseMoved(e: MouseEvent) {
+                itemPanels.forEach { it.updateBackground(false) }
+                getPanelAt(e.point)?.updateBackground(true)
+            }
+        })
+        mainPanel.addMouseListener(object : MouseAdapter() {
+            override fun mousePressed(e: MouseEvent) {
+                getPanelAt(e.point)?.let {
+                    val isExpanded = it.isExpanded
+                    collapseAll()
+                    if (!isExpanded) {
+                        it.expand()
+                    }
+                }
+            }
+
+            override fun mouseExited(e: MouseEvent) {
+                val bounds = content.bounds
+                val point = e.point
+                val scrollbarWidth = content.verticalScrollBar.width
+                if (!bounds.contains(point) || point.x > bounds.width - scrollbarWidth) {
+                    itemPanels.forEach { it.updateBackground(false) }
+                }
+            }
+        })
     }
 
     private fun collapseAll() = itemPanels.forEach { it.collapse() }
@@ -75,7 +106,8 @@ class ModulesView(val project: Project) : SimpleToolWindowPanel(true, true) {
         module: Module,
         index: Int
     ) {
-        val itemPanel = ModulePanel(module, index, project) { collapseAll() }
+        val itemPanel = ModuleRenderer(module, index, project) { collapseAll() }
+        itemPanel.isOpaque = false
         itemPanel.alignmentX = LEFT_ALIGNMENT
         itemPanel.maximumSize = Dimension(itemPanel.maximumWidth, itemPanel.preferredHeight)
         itemPanels.add(itemPanel)
@@ -97,7 +129,7 @@ class ModulesView(val project: Project) : SimpleToolWindowPanel(true, true) {
     }
 
     private fun updateView() {
-        val openModule = itemPanels.find { it.isExpanded() }
+        val openModule = itemPanels.find { it.isExpanded }
         val categories = modules.groupBy { it.category }
         actionRequired = categories[Module.Category.ACTION_REQUIRED]?.toMutableList() ?: mutableListOf()
         available = categories[Module.Category.AVAILABLE]?.toMutableList() ?: mutableListOf()
@@ -282,20 +314,6 @@ class ModulesView(val project: Project) : SimpleToolWindowPanel(true, true) {
                         }
                     detailsTextPanel.add(documentationLink)
                 }
-
-//                val anotherButton = JButton("Uninstall")
-//                val updateButton = JButton(if (updateAvailable) "Update" else "Reinstall")
-//                anotherButton.isRolloverEnabled = true
-//                anotherButton.isOpaque = false
-//                anotherButton.addActionListener {
-//                    println("Uninstall clicked for: $name")
-//                }
-//                updateButton.isRolloverEnabled = true
-//                updateButton.isOpaque = false
-//                updateButton.addActionListener {
-//                    println("Update clicked for: $name")
-//                }
-//                updateButton
                 null
             } else if (module.category == Module.Category.AVAILABLE) {
                 detailsPanel.add(infoLabel, BorderLayout.CENTER)
@@ -318,7 +336,16 @@ class ModulesView(val project: Project) : SimpleToolWindowPanel(true, true) {
                     val statusLabel = JBLabel("Update available")
                     statusPanel.add(statusLabel)
                     val updateAvailableLabel =
-                        JBLabel("Update available: ${module.metadata?.version} -> ${module.latestVersion}")
+                        JBLabel("Update available: ${module.metadata?.version} → ${module.latestVersion}")
+                    val changelog = module.changelog
+                    if (changelog?.isNotEmpty() == true) {
+                        val changelogLabel = JBLabel("Changelog:")
+                        changelogLabel.foreground = detailsColor
+                        detailsTextPanel.add(changelogLabel)
+                        val changelogText = JBLabel(module.changelog)
+                        changelogText.foreground = detailsColor
+                        detailsTextPanel.add(changelogText)
+                    }
                     updateAvailableLabel.foreground = detailsColor
                     detailsTextPanel.add(updateAvailableLabel)
                     val updateButton = JButton("Update")
@@ -365,6 +392,7 @@ class ModulesView(val project: Project) : SimpleToolWindowPanel(true, true) {
                 }
                 null
             }
+
             statusPanel.add(expandButton)
 
 

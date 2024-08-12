@@ -36,11 +36,6 @@ class CoursesClient(
     val client: HttpClient by lazy {
         HttpClient(CIO) {
             install(Resources)
-            install(HttpCache) {
-                val cacheFile =
-                    Files.createDirectories(Path(project.basePath!!).resolve(".idea/aplusCourses/")).toFile()
-                privateStorage(FileStorage(cacheFile))
-            }
             install(ContentNegotiation) {
                 json(Json {
                     ignoreUnknownKeys = true

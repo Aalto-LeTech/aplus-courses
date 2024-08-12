@@ -1,29 +1,22 @@
 package fi.aalto.cs.apluscourses.model.component
 
-import com.intellij.openapi.application.readAndWriteAction
-import com.intellij.openapi.roots.libraries.Library as IdeaLibrary
 import com.intellij.openapi.application.writeAction
 import com.intellij.openapi.externalSystem.service.project.IdeModifiableModelsProviderImpl
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.OrderRootType
-import com.intellij.openapi.roots.impl.libraries.LibraryEx
 import com.intellij.openapi.roots.libraries.LibraryTablesRegistrar
-import com.intellij.openapi.util.io.systemIndependentPath
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFileManager
-import com.intellij.util.application
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
-import org.jetbrains.plugins.scala.project.ScalaLibraryType
 import org.jetbrains.plugins.scala.project.external.ScalaSdkUtils
 import scala.Option
 import scala.jdk.javaapi.CollectionConverters
 import java.io.File
 import java.nio.file.Path
-import kotlin.io.path.pathString
 
 class ScalaSdk(private val scalaVersion: String, project: Project) : Library(scalaVersion, project) {
-    override suspend fun downloadAndInstall() {
+    override suspend fun downloadAndInstall(updating: Boolean) {
         println("Downloading Scala SDK $scalaVersion")
         val strippedScalaVersion = this.scalaVersion.substringAfter("scala-sdk-")
         val zipUrl =

@@ -9,12 +9,34 @@ object FileUtil {
      * @param directory The directory to search for files.
      * @param timestamp The timestamp to compare the last modified time of the files to in milliseconds since epoch.
      */
-    fun getChangedFilesInDirectory(directory: String, timestamp: Long): List<Path> {
-        return File(directory).walk().filter {
-            it.lastModified() > timestamp
+    fun getChangedFilesInDirectory(directory: File, timestamp: Long): List<Path> {
+        return directory.walk().filter {
+            it.lastModified() > timestamp && it.isFile
         }.map {
             it.toPath()
         }.toList()
+    }
+
+    fun getChangedFilesInDirectory(directory: String, timestamp: Long): List<Path> =
+        getChangedFilesInDirectory(File(directory), timestamp)
+
+    fun getAllFilesInDirectory(directory: File): List<Path> {
+        return directory.walk().map {
+            it.toPath()
+        }.toList()
+    }
+
+    fun deleteFilesInDirectory(directory: File, skipDirectory: Path) {
+        directory.walk().forEach {
+            if (it.isFile && !it.toPath().startsWith(skipDirectory)) {
+                it.delete()
+            }
+        }
+        directory.walk().forEach {
+            if (it.isDirectory && it.list().isEmpty()) {
+                it.delete()
+            }
+        }
     }
 
     /**

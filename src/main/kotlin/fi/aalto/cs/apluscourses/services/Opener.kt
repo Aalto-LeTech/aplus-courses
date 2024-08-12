@@ -1,8 +1,10 @@
 package fi.aalto.cs.apluscourses.services
 
+import com.intellij.icons.AllIcons
 import com.intellij.ide.BrowserUtil
 import com.intellij.ide.browsers.actions.OpenInBrowserBaseGroupAction.OpenInBrowserEditorContextBarGroupAction
 import com.intellij.ide.projectView.ProjectView
+import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -45,6 +47,38 @@ class Opener(
         }
     }
 
+    fun openDocumentation(module: Module) {
+        cs.launch {
+            val dir = module.platformObject?.guessModuleDir() ?: return@launch
+            val virtualFile = dir.findFile("doc/index.html") ?: return@launch
+            val psiFile = PsiManager.getInstance(project).findFile(virtualFile) ?: return@launch
+            val newDataContext = SimpleDataContext.builder().add(CommonDataKeys.PROJECT, project)
+                .add(CommonDataKeys.PSI_FILE, psiFile).build()
+            val actionEvent = AnActionEvent.createFromDataContext(ActionPlaces.TOOLWINDOW_CONTENT, null, newDataContext)
+            val action = OpenInBrowserEditorContextBarGroupAction().getChildren(null)[0]
+            withContext(Dispatchers.EDT) {
+                action.actionPerformed(actionEvent)
+            }
+        }
+    }
+
+    fun showModuleInProjectTreeAction(module: Module): AnAction {
+        return object : DumbAwareAction("Show in Project Tree") {
+            override fun actionPerformed(e: AnActionEvent) {
+                showModuleInProjectTree(module)
+            }
+
+            override fun update(e: AnActionEvent) {
+                e.presentation.text = "Show in Project Tree"
+                e.presentation.icon = AllIcons.General.Locate
+            }
+
+            override fun getActionUpdateThread(): ActionUpdateThread {
+                return ActionUpdateThread.EDT
+            }
+        }
+    }
+
     fun openDocumentationAction(module: Module, fileName: String): AnAction {
         return object : DumbAwareAction("Show Documentation") {
             override fun actionPerformed(e: AnActionEvent) {
@@ -64,11 +98,12 @@ class Opener(
             }
 
             override fun update(e: AnActionEvent) {
+                e.presentation.text = "Show Documentation"
                 e.presentation.icon = PluginIcons.A_PLUS_DOCS
             }
 
             override fun getActionUpdateThread(): ActionUpdateThread {
-                return ActionUpdateThread.BGT
+                return ActionUpdateThread.EDT
             }
 
         }

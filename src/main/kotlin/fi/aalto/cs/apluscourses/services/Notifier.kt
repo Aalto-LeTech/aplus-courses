@@ -52,7 +52,7 @@ class Notifier(
          * @param project      The Project where the Notification is shown.
          * @param timeoutMs    The time in milliseconds after which the notification is hidden.
          */
-        fun notifyAndHide(notification: Notification, project: Project, timeoutMs: Long = 6000L) {
+        fun notifyAndHide(notification: Notification, project: Project, timeoutMs: Long = 10000L) {
             getInstance(project).notifyAndHide(notification, timeoutMs)
         }
     }

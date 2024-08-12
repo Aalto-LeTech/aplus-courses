@@ -162,7 +162,7 @@ class SubmitExercise(
 
 
                 val canceled = withContext(Dispatchers.EDT) {
-                    return@withContext !SubmitExerciseDialog(project, exercise, files.values.toList()).showAndGet()
+                    !SubmitExerciseDialog(project, exercise, files.values.toList()).showAndGet()
                 }
 
                 if (canceled) {

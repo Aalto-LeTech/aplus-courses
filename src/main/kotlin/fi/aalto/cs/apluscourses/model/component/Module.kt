@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.model.component
 
+import com.intellij.openapi.application.EDT
+import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.application.writeAction
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.module.ModuleManager
@@ -9,12 +11,23 @@ import com.intellij.openapi.project.rootManager
 import com.intellij.openapi.roots.LibraryOrderEntry
 import com.intellij.openapi.roots.ModuleOrderEntry
 import com.intellij.openapi.roots.RootPolicy
+import com.intellij.util.io.createParentDirectories
+import fi.aalto.cs.apluscourses.notifications.ModuleUpdatedNotification
+import fi.aalto.cs.apluscourses.services.Notifier
+import fi.aalto.cs.apluscourses.services.PluginSettings
 import fi.aalto.cs.apluscourses.services.course.CourseFileManager
 import fi.aalto.cs.apluscourses.services.course.CourseFileManager.ModuleMetadata
 import fi.aalto.cs.apluscourses.services.course.CourseManager
+import fi.aalto.cs.apluscourses.ui.module.UpdateModuleDialog
+import fi.aalto.cs.apluscourses.utils.FileUtil
 import fi.aalto.cs.apluscourses.utils.Version
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.nio.file.StandardCopyOption
+import kotlin.io.path.exists
+import kotlin.io.path.moveTo
 import com.intellij.openapi.module.Module as IdeaModule
 
 class Module(
@@ -58,17 +71,27 @@ class Module(
     val documentationExists: Boolean
         get() = status == Status.LOADED && documentationIndexFullPath.toFile().exists()
 
-//    fun hasLocalChanges(downloadedAt: ZonedDateTime): Boolean {
-//        val fullPath = fullPath
-//        val timeStamp = (downloadedAt.toInstant().toEpochMilli()
-//                + PluginSettings.REASONABLE_DELAY_FOR_MODULE_INSTALLATION)
-//        return false
-////        return ReadAction.compute<Boolean, RuntimeException> { VfsUtil.hasDirectoryChanges(fullPath, timeStamp) }
-//    }
+    fun changedFiles(): List<Path> {
+        val fullPath = fullPath
+        val timestamp = metadata?.downloadedAt ?: return emptyList()
+        val timeStamp = timestamp.toEpochMilliseconds() + PluginSettings.REASONABLE_DELAY_FOR_MODULE_INSTALLATION
+        return ReadAction.compute<List<Path>, RuntimeException> {
+            FileUtil.getChangedFilesInDirectory(
+                fullPath.toFile(),
+                timeStamp
+            )
+        }
+    }
 
-    override suspend fun downloadAndInstall() {
-        if (platformObject != null) {
-            return
+    override suspend fun downloadAndInstall(updating: Boolean) {
+        val oldPlatformObject = platformObject
+        if (oldPlatformObject != null) {
+            if (!updating) {
+                return
+            }
+            writeAction {
+                ModuleManager.getInstance(project).disposeModule(oldPlatformObject)
+            }
         }
         status = Status.LOADING
         downloadAndUnzipZip(zipUrl, Path.of(project.basePath!!))
@@ -84,6 +107,39 @@ class Module(
             platformModule.guessModuleDir()?.toNioPath()?.resolve(".repl-commands")?.toFile()
                 ?.writeText(initialReplCommands.joinToString("\n"))
         }
+    }
+
+    suspend fun update() {
+        val filesWithChanges = changedFiles()
+        val allFiles = FileUtil.getAllFilesInDirectory(fullPath.toFile())
+        if (filesWithChanges.isNotEmpty()) {
+            val canceled = withContext(Dispatchers.EDT) {
+                !UpdateModuleDialog(project, this@Module, filesWithChanges).showAndGet()
+            }
+            if (canceled) return
+            val backupDir = fullPath.resolve("backup")
+
+            for (file in filesWithChanges) {
+                val relativePath = fullPath.relativize(file)
+                val targetPath = backupDir.resolve(relativePath)
+
+                if (!targetPath.parent.exists()) {
+                    targetPath.createParentDirectories()
+                }
+                file.moveTo(targetPath, StandardCopyOption.REPLACE_EXISTING)
+            }
+        }
+
+        FileUtil.deleteFilesInDirectory(fullPath.toFile(), fullPath.resolve("backup"))
+        downloadAndInstall(updating = true)
+
+        val newFiles = FileUtil.getAllFilesInDirectory(fullPath.toFile())
+        val deletedFiles = allFiles - newFiles
+        val addedFiles = newFiles - allFiles
+        Notifier.notifyAndHide(
+            ModuleUpdatedNotification(this, addedFiles, deletedFiles),
+            project
+        )
     }
 
     private val imlPath
@@ -131,7 +187,7 @@ class Module(
     }
 
     val isUpdateAvailable: Boolean
-        get() = metadata != null && latestVersion > metadata!!.version
+        get() = status == Status.LOADED && metadata != null && latestVersion > metadata!!.version
 
     val isMinorUpdate: Boolean
         get() = isUpdateAvailable && latestVersion.major == metadata!!.version.major
@@ -142,11 +198,10 @@ class Module(
 
     val category: Category
         get() {
-            return if (status == Status.LOADED) {
-                Category.INSTALLED
-//            } else if (status == Status.ERROR || dependencyState == OldComponent.DEP_ERROR || isUpdateAvailable) {
-            } else if (status == Status.ERROR || isUpdateAvailable) {
+            return if (status == Status.ERROR || isUpdateAvailable) {
                 Category.ACTION_REQUIRED
+            } else if (status == Status.LOADED) {
+                Category.INSTALLED
             } else {
                 Category.AVAILABLE
             }
