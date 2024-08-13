@@ -3,6 +3,9 @@ package fi.aalto.cs.apluscourses.services.exercise
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
+import com.intellij.platform.ide.progress.withBackgroundProgress
+import com.intellij.platform.util.progress.reportProgress
+import com.intellij.platform.util.progress.reportSequentialProgress
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.intellij.util.messages.Topic
 import com.intellij.util.messages.Topic.ProjectLevel
@@ -37,14 +40,10 @@ class ExercisesUpdaterService(
     val project: Project,
     val cs: CoroutineScope
 ) {
-    //: SimplePersistentStateComponent<ExercisesUpdaterService.State>(State()) {
-    class State { // : BaseState() {
-        //        @get:Attribute(converter = ExerciseGroup.Companion.EGLConverter::class)
-//        @set:Attribute(converter = ExerciseGroup.Companion.EGLConverter::class)
-        var exerciseGroups: MutableList<ExerciseGroup> = mutableListOf()//by list()
+    class State {
+        var exerciseGroups: MutableList<ExerciseGroup> = mutableListOf()
         var userPointsForCategories: Map<String, Int>? = null
         var maxPointsForCategories: Map<String, Int>? = null
-        fun increment() = {}//incrementModificationCount()
         fun clearAll() {
             exerciseGroups.clear()
             userPointsForCategories = null
@@ -53,29 +52,6 @@ class ExercisesUpdaterService(
     }
 
     val state = State()
-    //        val exercisesTree: ExercisesTree by property(exercisesTree)
-//        @get:Property(surroundWithTag = false)
-//        @get:XCollection(style = XCollection.Style.v2)
-//        @get:Attribute(converter = EGConverter::class)
-//    @OptIn(DelicateCoroutinesApi::class)
-//    private val requestThreadPool = newFixedThreadPoolContext(8, "ExercisesUpdaterService")
-
-
-//    private val client = HttpClient(CIO) {
-//        install(HttpCache) {
-//            val cacheFile = Files.createDirectories(Paths.get(".idea/aplusCourses/.http-cache")).toFile()
-//            privateStorage(FileStorage(cacheFile))
-//        }
-//        engine {
-//            endpoint {
-//                maxConnectionsCount = 8
-//            }
-//        }
-//    }
-
-    // Semaphore to limit the number of concurrent requests
-    val semaphore = Semaphore(8) // Up to 8 concurrent operations
-//    private val threadContext = newSingleThreadContext("ExercisesUpdaterService")
 
     @OptIn(ExperimentalSerializationApi::class)
     private val json = Json {
@@ -90,35 +66,20 @@ class ExercisesUpdaterService(
         ignoreUnknownKeys = true
         isLenient = true
         coerceInputValues = true // TODO remove after hasSubmittableFiles is fixed
-//        namingStrategy = JsonNamingStrategy.SnakeCase
     }
 
-    /**
-     * Construct an updater with the given parameters.
-     */
-//constructor(
-//    private val courseProject: CourseProject,
-//    private val eventToTrigger: Event,
-//    private val notifier: Notifier = DefaultNotifier(),
-//    updateInterval: Long = PluginSettings.UPDATE_INTERVAL
-//) : RepeatedTask(courseProject.project, updateInterval) {
     private var exerciseJob: Job? = null
     private var gradingJob: Job? = null
     private val submissionsInGrading: MutableSet<Long> = ConcurrentHashMap.newKeySet()
     private var submissionCount = -1
     private var points = -1
 
-    fun restart(
-//        courseProject: CourseProject
-    ) {
+    fun restart() {
         exerciseJob?.cancel(CancellationException("test"))
         gradingJob?.cancel(CancellationException("test"))
         println("restart")
-        runExerciseUpdater(
-//            courseProject
-        )
+        runExerciseUpdater()
         runGradingUpdater()
-//        run()
     }
 
     fun stop() {
@@ -127,14 +88,18 @@ class ExercisesUpdaterService(
     }
 
     private fun runExerciseUpdater(
-//        courseProject: CourseProject,
-        updateInterval: Long = 300000
+        updateInterval: Long = 300_000
     ) {
         exerciseJob =
             cs.launch {
                 try {
                     while (true) {
-                        doTask()
+                        withBackgroundProgress(project, "A+ Courses", cancellable = true) {
+                            reportSequentialProgress { reporter ->
+                                reporter.indeterminateStep("Refreshing assingments")
+                                doTask()
+                            }
+                        }
                         cs.ensureActive()
                         delay(updateInterval)
                     }
@@ -151,7 +116,17 @@ class ExercisesUpdaterService(
             try {
                 while (true) {
                     if (submissionsInGrading.isNotEmpty()) {
-                        doGradingTask()
+                        withBackgroundProgress(project, "A+ Courses", cancellable = true) {
+                            reportProgress { reporter ->
+                                reporter.indeterminateStep("Assignment in grading") {
+                                    while (submissionsInGrading.isNotEmpty()) {
+                                        doGradingTask()
+                                        cs.ensureActive()
+                                        delay(updateInterval)
+                                    }
+                                }
+                            }
+                        }
                     }
                     cs.ensureActive()
                     delay(updateInterval)
@@ -258,35 +233,7 @@ class ExercisesUpdaterService(
         )
     }
 
-    object SubmissionDetails {
-        @Serializable
-        data class Submission(
-//            val id: Long,
-//            val url: String,
-//            val submissionTime: String,
-//            val grade: Int,
-            val status: String,
-            val latePenaltyApplied: Double? = null,
-//            val exercise: Long,
-//            val user: String,
-//            val files: List<File>
-        )
-
-        @Serializable
-        data class File(
-            val id: Long,
-            val url: String,
-            val filename: String,
-            val size: Int,
-            val mimeType: String
-        )
-    }
-
-    @OptIn(ExperimentalSerializationApi::class)
-    private suspend fun doTask(
-//        courseProject: CourseProject,
-//        notifier: Notifier = DefaultNotifier(),
-    ) {
+    private suspend fun doTask() {
         if (!TokenStorage.getInstance().isTokenSet()) {
             println("Not authenticated")
             state.clearAll()
@@ -296,32 +243,7 @@ class ExercisesUpdaterService(
         val course = CourseManager.course(project) ?: return
         println("Starting exercises update")
         val timeStart = System.currentTimeMillis()
-//        logger.debug("Starting exercises update")
-//        val course = courseProject.course
-//        val dataSource = course.exerciseDataSource
-//        val authentication = courseProject.authentication
-//        val hiddenElements = course.hiddenElements
-//        if (authentication == null) {
-//            if (courseProject.exerciseTree != null) {
-//                courseProject.exerciseTree = ExercisesTree()
-////                eventToTrigger.trigger()
-//                fireExercisesUpdated()
-//            }
-////            logger.warn("Not authenticated")
-//            return
-//        }
-//        val progressViewModel =
-//            PluginSettings.getInstance().getMainViewModel(courseProject.project).progressViewModel
         val selectedLanguage = CourseFileManager.getInstance(project).state.language!!
-//            .getCourseFileManager(courseProject.project).language
-//        val progress =
-//            progressViewModel.start(
-//                3,
-//                PluginResourceBundle.getText("ui.ProgressBarView.refreshingAssignments"),
-//                false
-//            )
-//        try {
-//            progress.increment()
 
 
         cs.ensureActive()
@@ -357,10 +279,7 @@ class ExercisesUpdaterService(
         println(maxPointsForCategories)
         state.userPointsForCategories = userPointsForCategories
         state.maxPointsForCategories = maxPointsForCategories
-        state.increment()
         firePointsByDifficultyUpdated()
-//        val newSubmissionCount = points.submissionCount // TODO https://github.com/apluslms/a-plus/issues/1384
-//        val newPoints = points.points
         val newSubmissionCount = points.modules.flatMap { it.exercises }.sumOf { it.submissions.size }
         val newPoints = points.modules.flatMap { it.exercises }.sumOf { it.points }
         if (this.state.exerciseGroups.isNotEmpty() && this.points == newPoints && this.submissionCount == newSubmissionCount) {
@@ -377,7 +296,12 @@ class ExercisesUpdaterService(
         }
 
         @Serializable
-        data class SubmissionData(val SubmissionID: Long, val UserID: Long, val Status: String, val Penalty: Double?)
+        data class SubmissionData(
+            val SubmissionID: Long,
+            val UserID: Long,
+            val Status: String,
+            val Penalty: Double?
+        )
 
         val submissionDataParsed = json2.decodeFromString<List<SubmissionData>>(
             submissionDataCsv.bodyAsText()
@@ -451,7 +375,6 @@ class ExercisesUpdaterService(
         }
         state.exerciseGroups.clear()
         state.exerciseGroups.addAll(newExerciseGroups)
-        state.increment()
         fireExercisesUpdated()
         val newSubmissionsInGrading = newExerciseGroups
             .flatMap { it.exercises }
@@ -460,6 +383,10 @@ class ExercisesUpdaterService(
             .map { it.id }
         submissionsInGrading.clear()
         submissionsInGrading.addAll(newSubmissionsInGrading)
+        if (submissionsInGrading.isNotEmpty()) {
+            gradingJob?.cancel("Restart grading")
+            runGradingUpdater()
+        }
         println("done processing exercises")
         val timeEnd = System.currentTimeMillis()
         println("Time taken: ${timeEnd - timeStart} ms")
@@ -483,7 +410,6 @@ class ExercisesUpdaterService(
                         if (submissionResult != null) {
                             submissionResult.status = SubmissionResult.statusFromString(submission.status)
                             submissionResult.latePenalty = submission.latePenaltyApplied
-                            state.increment()
                             Notifier.notify(FeedbackAvailableNotification(submissionResult, exercise, project), project)
                             fireExerciseUpdated(exercise)
                         }

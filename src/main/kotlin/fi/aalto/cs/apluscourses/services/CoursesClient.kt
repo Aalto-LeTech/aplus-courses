@@ -123,7 +123,7 @@ class CoursesClient(
 
     suspend fun getAndUnzip(zipUrl: String, target: Path, onlyPath: String? = null) {
         println("Downloading and unzipping $zipUrl to $target")
-        withBackgroundProgress(project, "Downloading and Unzipping") {
+        withBackgroundProgress(project, "A+ Courses") {
             reportSequentialProgress { reporter ->
                 val tempZipFile = kotlin.io.path.createTempFile(target.nameWithoutExtension, ".zip").toFile()
                 reporter.indeterminateStep("Downloading $zipUrl") {

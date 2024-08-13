@@ -92,23 +92,24 @@ class CourseManager(
     }
 
     private fun run(
-//        courseProject: CourseProject,
-        updateInterval: Long = 300000 // TODO PluginSettings.UPDATE_INTERVAL
+        updateInterval: Long = 300_000 // TODO PluginSettings.UPDATE_INTERVAL
     ) {
         job =
             cs.launch {
                 try {
                     while (true) {
-                        doTask()
+                        withBackgroundProgress(project, "A+ Courses") {
+                            reportSequentialProgress { reporter ->
+                                reporter.indeterminateStep("Refreshing course")
+                                doTask()
+                            }
+                        }
                         cs.ensureActive()
                         delay(updateInterval)
                     }
                 } catch (e: CancellationException) {
                     println("Task was cancelled yay")
                 }
-//                finally {
-//                    client.close()
-//                }
             }
     }
 
@@ -280,9 +281,9 @@ class CourseManager(
 
     fun installModule(module: Module, show: Boolean = true) {
         cs.launch {
-            withBackgroundProgress(project, "Installing module ${module.name}") {
+            withBackgroundProgress(project, "A+ Courses") {
                 reportSequentialProgress { reporter ->
-                    reporter.indeterminateStep("Downloading...")
+                    reporter.indeterminateStep("Installing ${module.name}")
                     module.downloadAndInstall()
                     println("Module installed")
 //            refreshModuleStatuses()
