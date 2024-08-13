@@ -3,12 +3,12 @@ package fi.aalto.cs.apluscourses.services
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
+import com.intellij.platform.ide.progress.withBackgroundProgress
+import com.intellij.platform.util.progress.reportSequentialProgress
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.*
-import io.ktor.client.plugins.cache.*
-import io.ktor.client.plugins.cache.storage.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.resources.*
 import io.ktor.client.request.*
@@ -17,6 +17,9 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.serialization.kotlinx.json.*
+import io.ktor.util.cio.writeChannel
+import io.ktor.utils.io.close
+import io.ktor.utils.io.copyTo
 import io.ktor.utils.io.errors.IOException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -24,8 +27,12 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.*
 import org.jetbrains.annotations.NonNls
-import java.nio.file.Files
-import kotlin.io.path.Path
+import java.nio.file.Path
+import java.util.zip.ZipFile
+import kotlin.io.path.nameWithoutExtension
+import kotlin.io.readBytes
+import kotlin.sequences.forEach
+import kotlin.text.contains
 
 @OptIn(ExperimentalSerializationApi::class)
 @Service(Service.Level.PROJECT)
@@ -112,6 +119,57 @@ class CoursesClient(
         println(res)
         println(res.bodyAsText())
         return res
+    }
+
+    suspend fun getAndUnzip(zipUrl: String, target: Path, onlyPath: String? = null) {
+        println("Downloading and unzipping $zipUrl to $target")
+        withBackgroundProgress(project, "Downloading and Unzipping") {
+            reportSequentialProgress { reporter ->
+                val tempZipFile = kotlin.io.path.createTempFile(target.nameWithoutExtension, ".zip").toFile()
+                reporter.indeterminateStep("Downloading $zipUrl") {
+                    val response = get(zipUrl)
+                    if (response.status != HttpStatusCode.OK) {
+                        throw IOException("Failed to get file: ${response.status}")
+                    }
+                    println("Downloading $zipUrl to $target")
+                    val bodyChannel = response.bodyAsChannel()
+                    val fileChannel = tempZipFile.writeChannel(Dispatchers.IO)
+                    bodyChannel.copyTo(fileChannel)
+                    fileChannel.close()
+                    println("Downloaded $zipUrl to $tempZipFile")
+                }
+                reporter.indeterminateStep("Extracting $zipUrl to $target") {
+                    val destination = target
+                    val destinationFile = destination.toFile()
+
+                    withContext(Dispatchers.IO) {
+                        if (!destinationFile.exists()) {
+                            destinationFile.mkdirs()
+                        }
+
+                        ZipFile(tempZipFile).use { zip ->
+                            zip.entries().asSequence().forEach { entry ->
+                                zip.getInputStream(entry).use { inputStream ->
+                                    val file = destination.resolve(entry.name).toFile()
+                                    if (onlyPath != null && !file.path.contains(onlyPath)) {
+                                        return@use
+                                    }
+                                    if (entry.isDirectory) {
+                                        file.mkdir()
+                                    } else {
+                                        if (!file.parentFile.exists()) {
+                                            file.parentFile.mkdirs()
+                                        }
+                                        file.writeBytes(inputStream.readBytes())
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        println("Extracted $zipUrl to $target")
     }
 
     companion object {

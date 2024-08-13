@@ -26,41 +26,7 @@ abstract class Component<T>(val name: String, protected val project: Project) {
     abstract val fullPath: Path
 
     protected suspend fun downloadAndUnzipZip(zipUrl: String, extractPath: Path, onlyPath: String? = null) {
-        val res = CoursesClient.getInstance(project).get(zipUrl)
-        println("Downloading $zipUrl to $path")
-        val zipBytes = res.readBytes()
-        val tempZipFile = kotlin.io.path.createTempFile("aplus", ".zip").toFile()
-        tempZipFile.writeBytes(zipBytes)
-        println("Downloaded $zipUrl to $tempZipFile")
-        val destination = extractPath
-        val destinationFile = destination.toFile()
-        withContext(Dispatchers.IO) {
-            if (!destinationFile.exists()) {
-                destinationFile.mkdirs()
-            }
-            ZipFile(tempZipFile).use { zip ->
-                zip.entries().asSequence().forEach { entry ->
-                    zip.getInputStream(entry).use { inputStream ->
-                        val file = destination.resolve(entry.name).toFile()
-                        if (onlyPath != null && !file.path.contains(onlyPath)) {
-                            return@use
-                        }
-                        println("Extracting ${entry.name} to $file")
-                        if (entry.isDirectory) {
-                            file.mkdir()
-                        } else {
-                            if (!file.parentFile.exists()) {
-                                file.parentFile.mkdirs()
-                            }
-                            file.writeBytes(inputStream.readBytes())
-                        }
-
-                    }
-
-                }
-            }
-        }
-        println("Extracted $zipUrl to $destination")
+        CoursesClient.getInstance(project).getAndUnzip(zipUrl, extractPath, onlyPath)
     }
 
     protected abstract fun findDependencies(): Set<String>
