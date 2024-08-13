@@ -3,37 +3,45 @@ package fi.aalto.cs.apluscourses.ui.module
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.components.service
+import com.intellij.openapi.observable.properties.AtomicBooleanProperty
+import com.intellij.openapi.observable.properties.AtomicProperty
+import com.intellij.openapi.observable.util.not
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.ui.ColorUtil
 import com.intellij.ui.JBColor
+import com.intellij.ui.components.AnActionLink
 import com.intellij.ui.dsl.builder.AlignY
+import com.intellij.ui.dsl.builder.IntelliJSpacingConfiguration
 import com.intellij.ui.dsl.builder.Panel
 import com.intellij.ui.dsl.builder.RightGap
 import com.intellij.ui.dsl.builder.Row
-import com.intellij.ui.dsl.builder.actionButton
+import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.gridLayout.UnscaledGaps
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
 import fi.aalto.cs.apluscourses.model.component.Module
+import fi.aalto.cs.apluscourses.services.CoursesClient
 import fi.aalto.cs.apluscourses.services.Opener
 import fi.aalto.cs.apluscourses.services.course.CourseManager
 import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdaterService
 import fi.aalto.cs.apluscourses.utils.temp.DateDifferenceFormatter.formatTimeUntilNow
 import icons.PluginIcons
+import org.jetbrains.annotations.NonNls
 import java.awt.BorderLayout
 import java.awt.event.ActionEvent
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
+import javax.swing.Icon
 import javax.swing.JPanel
+import javax.swing.SwingUtilities
 import kotlin.to
 
 class ModuleRenderer(
     val module: Module,
     val index: Int,
     val project: Project,
-    val collapseAll: () -> Unit
 ) : JPanel(BorderLayout()) {
     private var panel: DialogPanel
 
@@ -46,40 +54,36 @@ class ModuleRenderer(
     var isExpanded = false
         private set
 
-    private fun mouseListener(passClick: Boolean = false) = object : MouseAdapter() {
-        override fun mousePressed(e: MouseEvent) = if (passClick) this@ModuleRenderer.dispatchEvent(e) else {
-        }
-
-        override fun mouseMoved(e: MouseEvent) = this@ModuleRenderer.dispatchEvent(e)
-
-        //        override fun mouseEntered(e: MouseEvent) = this@ModuleRenderer.dispatchEvent(e)
-//        override fun mouseExited(e: MouseEvent) =
-//            this@ModuleRenderer.dispatchEvent(e)
-    }
-
     private fun Row.info(text: String) =
         text(text).applyToComponent {
             foreground = JBUI.CurrentTheme.ContextHelp.FOREGROUND
-            addMouseListener(mouseListener(true))
-            addMouseMotionListener(mouseListener())
+            addMouseListener(object : MouseAdapter() { // Forward mouse clicks to the parent component
+                override fun mousePressed(e: MouseEvent) {
+                    val convertedPoint =
+                        SwingUtilities.convertPoint(this@applyToComponent, e.point, this@ModuleRenderer.parent)
+                    e.translatePoint(convertedPoint.x - e.x, convertedPoint.y - e.y)
+                    this@ModuleRenderer.parent.dispatchEvent(e)
+                }
+            })
         }
 
-    private fun Row.myLink(text: String, action: (ActionEvent) -> Unit) =
+    private fun Row.myLink(text: String, icon: Icon, action: (ActionEvent) -> Unit) =
         link(text, action).applyToComponent {
-            addMouseListener(mouseListener())
-            addMouseMotionListener(mouseListener())
+            setIcon(icon, false)
         }
 
-    private fun Row.myActionButton(action: AnAction) =
-        actionButton(action).applyToComponent {
-            addMouseListener(mouseListener())
-            addMouseMotionListener(mouseListener())
+    private fun Row.myActionLink(text: String, icon: Icon, action: AnAction) =
+        cell(AnActionLink(text, action)).applyToComponent {
+            setIcon(icon, false)
         }
 
     private fun Panel.header() {
         row {
             icon(icon).gap(RightGap.SMALL)
-            label(module.name).resizableColumn()
+            label(module.name).gap(RightGap.SMALL)
+            label(module.language ?: "").applyToComponent {
+                foreground = JBUI.CurrentTheme.ContextHelp.FOREGROUND
+            }.resizableColumn()
             if (module.category == Module.Category.ACTION_REQUIRED) {
                 label(actionRequiredText).gap(RightGap.SMALL).applyToComponent {
                     foreground = JBUI.CurrentTheme.ContextHelp.FOREGROUND
@@ -111,21 +115,67 @@ class ModuleRenderer(
 
 
     private fun Panel.dependenciesMissing() {
-        val missingDependencies = CourseManager.getInstance(project).state.missingDependencies[module.name]
+        val missingDependencies =
+            CourseManager.getInstance(project).state.missingDependencies[module.name] ?: emptyList()
         row {
-            info("Dependencies missing: ${missingDependencies?.joinToString(", ")}")
-                .resizableColumn()
+            info("Dependencies missing:")
+        }
+        missingDependencies.forEach { component ->
+            row {
+                if (component is Module) {
+                    myLink(component.name, PluginIcons.A_PLUS_MODULE_DISABLED) {
+                        project.service<Opener>().showModule(component)
+                    }
+                } else {
+                    info(component.name)
+                }
+            }
+        }
+    }
+
+
+    private val installing = AtomicBooleanProperty(false)
+    private val zipSizeText = AtomicProperty<String>("")
+    private var isZipSizeSet = false
+    private fun updateZipSize(size: String) {
+        zipSizeText.set(
+            "<span style=\"white-space: nowrap;\">Available at </span>" +
+                    "<span>${module.zipUrl} </span>" +
+                    "<span style=\"white-space: nowrap;\">(${size})</span>"
+        )
+    }
+
+    @NonNls
+    fun formatFileSize(sizeInBytes: Long): String {
+        val sizeInKB = sizeInBytes / 1024.0
+        val sizeInMB = sizeInKB / 1024.0
+
+        return when {
+            sizeInMB >= 1 -> "%.2f MB".format(sizeInMB)
+            sizeInKB >= 1 -> "%.2f KB".format(sizeInKB)
+            else -> "$sizeInBytes B"
         }
     }
 
     private fun Panel.available() {
-        val url = module.zipUrl
+        if (!isZipSizeSet) {
+            CoursesClient.getInstance(project).execute {
+                val size = it.getFileSize(module.zipUrl) ?: return@execute
+                updateZipSize(formatFileSize(size))
+                isZipSizeSet = true
+            }
+        }
         row {
-            info("<span style=\"white-space: nowrap;\">Available at </span><span>${url}</span><span style=\"white-space: nowrap;\">(????)</span>")
+            info("")
+                .bindText(zipSizeText)
                 .resizableColumn()
             button("Install") {
                 project.service<CourseManager>().installModule(module)
-            }.align(AlignY.BOTTOM)
+                installing.set(true)
+            }.align(AlignY.BOTTOM).visibleIf(installing.not())
+            button("Installing...") {}.applyToComponent {
+                isEnabled = false
+            }.align(AlignY.BOTTOM).visibleIf(installing)
         }
     }
 
@@ -144,13 +194,7 @@ class ModuleRenderer(
             .firstOrNull { it.first.userPoints == 0 }
 
         val opener = project.service<Opener>()
-        row {
-            info(installedTimeText)
-            myActionButton(opener.showModuleInProjectTreeAction(module)).gap(RightGap.SMALL)
-            if (module.documentationExists) {
-                myActionButton(opener.openDocumentationAction(module, "doc/index.html"))
-            }
-        }
+        row { info(installedTimeText) }
         if (nextExercise != null) {
             val exercise = nextExercise.first
             val groupName = nextExercise.second.name
@@ -158,11 +202,23 @@ class ModuleRenderer(
                 info("Next assignment: ${groupName}")
             }
             row {
-                myLink(exercise.name) {
+                myLink(exercise.name, PluginIcons.A_PLUS_NO_SUBMISSIONS) {
                     opener.showExercise(exercise)
-                }.applyToComponent {
-                    setIcon(PluginIcons.A_PLUS_NO_SUBMISSIONS, false)
                 }
+            }
+        }
+        if (module.documentationExists) {
+            row {
+                myActionLink(
+                    "Open documentation",
+                    PluginIcons.A_PLUS_DOCS,
+                    opener.openDocumentationAction(module, "doc/index.html")
+                )
+            }
+        }
+        row {
+            myLink("Show in project tree", AllIcons.General.Locate) {
+                opener.showModuleInProjectTree(module)
             }
         }
     }
@@ -174,39 +230,19 @@ class ModuleRenderer(
     private var isHovering = false
 
     init {
-        this.panel = base {
-            header()
-        }
+        updateZipSize("??? ??")
+        this.panel = base { header() }
         add(panel, BorderLayout.CENTER)
-//        addMouseListener(object : MouseAdapter() {
-//            override fun mousePressed(e: MouseEvent) {
-//                val isOpen = isExpanded
-//                collapseAll()
-//                if (!isOpen) {
-//                    expand()
-//                }
-//            }
-//
-//            override fun mouseEntered(e: MouseEvent) {
-//                isHovering = true
-//                panel.background = hoverBackground
-//            }
-//
-//            override fun mouseExited(e: MouseEvent) {
-//                isHovering = false
-//                panel.background = rowBackground
-//            }
-//
-//            override fun mouseMoved(e: MouseEvent?) {
-//                println("Moved")
-//            }
-//        })
     }
 
     private fun base(init: Panel.() -> Unit) = panel {
         panel {
-            init()
-        }.customize(UnscaledGaps(0, 8, 0, 8)).apply {
+            customizeSpacingConfiguration(object : IntelliJSpacingConfiguration() {
+                override val verticalComponentGap: Int = 1
+            }) {
+                init()
+            }
+        }.customize(UnscaledGaps(3, 8, 3, 8)).apply {
             isOpaque = false
         }
     }.apply {
@@ -214,15 +250,6 @@ class ModuleRenderer(
     }
 
     fun collapse() {
-//        val mouseY = parent.mousePosition.y
-//        if (this.y < mouseY && mouseY < this.y + 30) {
-//            panel.background = hoverBackground
-//        } else {
-//            panel.background = rowBackground
-//        }
-//        application.invokeLater {
-//            isHovering = this.isComponentUnderMouse()
-//        }
         if (!isExpanded) return
         isExpanded = false
         updatePanel {
@@ -241,6 +268,7 @@ class ModuleRenderer(
                 else -> dependenciesMissing()
             }
         }
+        updateBackground(true)
     }
 
     private fun updatePanel(init: Panel.() -> Unit) {

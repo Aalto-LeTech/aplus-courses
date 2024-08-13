@@ -32,15 +32,23 @@ import javax.swing.tree.TreePath
 class FileTree(files: List<Path>, project: Project) : Tree() {
     var icons: Map<PsiFile, Icon> = emptyMap()
 
+    // The tree expand controls are hidden, so the position of the tree is adjusted
+    override fun getY(): Int = super.y - 5
+    override fun getX(): Int = super.x - 16
+
     init {
-        val files = files.mapNotNull { file ->
-            val vFile = VirtualFileManager.getInstance().findFileByNioPath(file) ?: return@mapNotNull null
-            val psiFile = PsiManager.getInstance(project).findFile(vFile) ?: return@mapNotNull null
-            psiFile
-        }.toSet()
         val settings = DependencyPanelSettings()
-        settings.UI_SHOW_MODULES = false
+        settings.UI_SHOW_MODULES = false // The module has the same name as the top level package, so it is hidden
         project.service<Background>().runInBackground {
+            val files = files.mapNotNull { file ->
+                val vFile = VirtualFileManager.getInstance().findFileByNioPath(file) ?: return@mapNotNull null
+                val psiFile =
+                    readAction {
+                        PsiManager.getInstance(project).findFile(vFile)
+                    } ?: return@mapNotNull null
+                psiFile
+            }.toSet()
+
             val model = withContext(Dispatchers.IO) {
                 FileTreeModelBuilder.createTreeModel(
                     project, false, files,
@@ -52,7 +60,7 @@ class FileTree(files: List<Path>, project: Project) : Tree() {
 
             icons = withContext(Dispatchers.IO) {
                 files.mapNotNull {
-                    val icon = readAction { PsiIconUtil.getIconFromProviders(it, 0) } ?: return@mapNotNull null
+                    val icon = readAction { PsiIconUtil.getIconFromProviders(it, flags = 0) } ?: return@mapNotNull null
                     it to icon
                 }.toMap()
             }
@@ -60,7 +68,6 @@ class FileTree(files: List<Path>, project: Project) : Tree() {
             this.model = model
             DefaultTreeExpander(this).expandAll()
             isRootVisible = false
-            this.rootPane
             setUI(object : BasicTreeUI() {
                 override fun shouldPaintExpandControl(
                     path: TreePath?,
@@ -85,20 +92,21 @@ class FileRenderer(private val files: Map<String, Path>) : NodeRenderer() {
         hasFocus: Boolean
     ) {
         val node = value as DefaultMutableTreeNode
-        val text = node.userObject as String
+        val text = "${node.userObject}"
         val tree = tree as FileTree
         if (node is FileNode) {
-//            node.psiElement?.containingFile
-//            icon = node.psiElement?.getIcon(0)
             icon = tree.icons[node.psiElement]
             append(text)
-            append(
-                " last modified ${FileDateFormatter.getFileModificationTime(files[text]!!)}", //TODO
-                SimpleTextAttributes.GRAYED_ATTRIBUTES
-            )
+            val file = files[text]
+            if (file != null) {
+                append(
+                    " last modified ${FileDateFormatter.getFileModificationTime(file)}",
+                    SimpleTextAttributes.GRAYED_ATTRIBUTES
+                )
+            }
         } else {
             icon = if (row == 0) PluginIcons.A_PLUS_MODULE else AllIcons.Nodes.Package
-            append(text.replace("/", "."))
+            append(text.replace("/", ".")) // Use periods for package separators
         }
 
     }

@@ -23,6 +23,7 @@ import io.ktor.utils.io.copyTo
 import io.ktor.utils.io.errors.IOException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.*
@@ -65,6 +66,12 @@ class CoursesClient(
         }
     }
 
+    fun execute(action: suspend (CoursesClient) -> Unit) {
+        cs.launch {
+            action(this@CoursesClient)
+        }
+    }
+
     suspend fun HttpRequestBuilder.addToken() {
         @NonNls val key = "Authorization"
         @NonNls val value = "Token ${TokenStorage.getInstance().getToken()}"
@@ -81,7 +88,7 @@ class CoursesClient(
         }
     }
 
-    suspend fun getFileSize(url: Url): Long? {
+    suspend fun getFileSize(url: String): Long? {
         val head = withContext(Dispatchers.IO) {
             client.request(url) {
                 method = HttpMethod.Head

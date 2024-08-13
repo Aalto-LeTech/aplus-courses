@@ -43,6 +43,7 @@ class Opener(
             val psi = readAction { PsiManager.getInstance(project).findDirectory(dir) } ?: return@launch
             withContext(Dispatchers.EDT) {
                 ProjectView.getInstance(project).select(psi, dir, true)
+                // TODO open project view
             }
         }
     }

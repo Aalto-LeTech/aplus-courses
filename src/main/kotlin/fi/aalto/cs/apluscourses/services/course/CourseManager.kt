@@ -158,6 +158,7 @@ class CourseManager(
                         it.url,
                         it.changelog,
                         it.version,
+                        it.language,
                         project
                     )
                 }
@@ -174,6 +175,7 @@ class CourseManager(
                                             "",
                                             "",
                                             Version.EMPTY,
+                                            null,
                                             project
                                         )
                                     }

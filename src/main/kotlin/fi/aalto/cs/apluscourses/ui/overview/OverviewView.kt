@@ -1,22 +1,18 @@
 package fi.aalto.cs.apluscourses.ui.overview
 
-import com.intellij.credentialStore.OneTimeString
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.openapi.util.IconLoader
-import com.intellij.ui.components.JBPasswordField
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.dsl.builder.*
 import com.intellij.ui.dsl.gridLayout.UnscaledGaps
 import com.intellij.ui.scale.ScaleContext
-import com.intellij.util.lateinitVal
 import com.intellij.util.ui.JBFont
 import com.intellij.util.ui.JBUI
 import fi.aalto.cs.apluscourses.MyBundle
-import fi.aalto.cs.apluscourses.services.TokenStorage
 import fi.aalto.cs.apluscourses.services.course.CourseManager
 import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdaterService
 import fi.aalto.cs.apluscourses.ui.BannerPanel
@@ -30,14 +26,6 @@ import javax.swing.JProgressBar
 import javax.swing.ScrollPaneConstants
 
 class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, true) {
-    companion object {
-        private val BANNER =
-            IconLoader.toImage(
-                IconLoader.getIcon("/META-INF/images/O1-2024.png", OverviewView::class.java.classLoader),
-                ScaleContext.createIdentity()
-            )
-    }
-
     private var banner: ResponsiveImagePanel? = null
 
     private var panel = createPanel()
@@ -51,20 +39,11 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
 
 
     private fun loadingPanel(): DialogPanel {
-//        val icon = IconUtil.scale(PluginIcons.A_PLUS_LOADING, this, 1.5f)
         return panel {
             row {
                 icon(PluginIcons.A_PLUS_LOADING).resizableColumn().align(Align.CENTER)
             }.resizableRow()
         }
-    }
-
-    private var passwordField: JBPasswordField? = null// TODO duplicated
-    private fun setToken() {
-        TokenStorage.getInstance().storeAndCheck(OneTimeString(passwordField!!.password), project) {
-            CourseManager.getInstance(project).restart()
-        }
-        passwordField!!.text = ""
     }
 
     private val tokenForm: TokenForm by lazy {
@@ -76,7 +55,6 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
     private fun createPanel(): DialogPanel {
         val authenticated = CourseManager.authenticated(project) ?: return loadingPanel()
         if (!authenticated) {
-            passwordField = JBPasswordField()
             val courseName = CourseManager.getInstance(project).state.courseName ?: ""
             return panel {
                 panel {

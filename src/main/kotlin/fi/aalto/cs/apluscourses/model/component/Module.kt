@@ -35,6 +35,7 @@ class Module(
     val zipUrl: String,
     val changelog: String?,
     val latestVersion: Version,
+    val language: String?,
     project: Project
 ) : Component<IdeaModule>(name, project) {
     override val path: Path
