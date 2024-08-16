@@ -1,11 +1,5 @@
 package fi.aalto.cs.apluscourses.model.exercise
 
-import com.intellij.util.xml.ConvertContext
-import com.intellij.util.xml.Converter
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-
 data class ExerciseGroup(
     val id: Long,
     val name: String,

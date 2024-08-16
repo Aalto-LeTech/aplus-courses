@@ -5,9 +5,6 @@ import com.intellij.credentialStore.Credentials
 import com.intellij.credentialStore.OneTimeString
 import com.intellij.credentialStore.generateServiceName
 import com.intellij.ide.passwordSafe.PasswordSafe
-import com.intellij.openapi.application.invokeAndWaitIfNeeded
-import com.intellij.openapi.application.readAction
-import com.intellij.openapi.application.writeAction
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project

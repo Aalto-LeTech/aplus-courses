@@ -1,11 +1,10 @@
 package fi.aalto.cs.apluscourses.model.component
 
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.libraries.Library as IdeaLibrary
 import com.intellij.openapi.roots.libraries.LibraryTable
 import com.intellij.openapi.roots.libraries.LibraryTablesRegistrar
 import java.nio.file.Path
-import java.nio.file.Paths
+import com.intellij.openapi.roots.libraries.Library as IdeaLibrary
 
 abstract class Library(name: String, project: Project) : Component<IdeaLibrary>(name, project) {
     override val platformObject: IdeaLibrary?

@@ -2,7 +2,6 @@ package fi.aalto.cs.apluscourses.utils
 
 import org.apache.commons.lang3.StringUtils
 import org.jetbrains.annotations.NonNls
-import java.util.*
 
 object APlusLocalizationUtil {
     private fun extractLocalizedText(localizedString: String, languageCode: String): String {

@@ -7,7 +7,6 @@ import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.content.ContentFactory
 import com.intellij.ui.dsl.builder.panel
-import fi.aalto.cs.apluscourses.model.Course
 import javax.swing.ScrollPaneConstants
 
 internal class TeacherToolWindowFactory : ToolWindowFactory, DumbAware {

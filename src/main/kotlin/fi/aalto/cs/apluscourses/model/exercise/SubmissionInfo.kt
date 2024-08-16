@@ -1,7 +1,6 @@
 package fi.aalto.cs.apluscourses.model.exercise
 
 import fi.aalto.cs.apluscourses.api.APlusApi
-import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdaterService
 import kotlinx.serialization.Serializable
 
 @Serializable

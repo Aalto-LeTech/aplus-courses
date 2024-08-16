@@ -5,13 +5,11 @@ import com.intellij.notification.Notifications
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
-import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdaterService
 import fi.aalto.cs.apluscourses.utils.APlusLogger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.util.concurrent.Executors
 
 @Service(Service.Level.PROJECT)
 class Notifier(

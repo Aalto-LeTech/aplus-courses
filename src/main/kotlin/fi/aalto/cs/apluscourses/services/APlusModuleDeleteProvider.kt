@@ -1,6 +1,5 @@
 package fi.aalto.cs.apluscourses.services
 
-import com.intellij.openapi.application.WriteAction
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.module.ModuleManager

@@ -4,9 +4,7 @@ import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import fi.aalto.cs.apluscourses.MyBundle
 import fi.aalto.cs.apluscourses.model.component.Module
-import fi.aalto.cs.apluscourses.model.component.old.OldModule
 import fi.aalto.cs.apluscourses.services.PluginSettings
-import java.util.stream.Collectors
 
 /**
  * A [Notification] wrapper to let the user know about some A+ Course modules having the new

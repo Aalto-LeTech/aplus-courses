@@ -11,7 +11,6 @@ import com.intellij.openapi.vfs.writeText
 import com.intellij.ui.JBColor
 import com.intellij.util.application
 import com.intellij.util.ui.JBFont
-import com.intellij.util.ui.StartupUiUtil
 import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.api.APlusApi
 import fi.aalto.cs.apluscourses.model.exercise.Exercise

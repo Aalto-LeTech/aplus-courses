@@ -2,12 +2,7 @@ package fi.aalto.cs.apluscourses.model.component
 
 import com.intellij.openapi.project.Project
 import fi.aalto.cs.apluscourses.services.CoursesClient
-import io.ktor.client.statement.readBytes
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import java.nio.file.Path
-import java.util.zip.ZipFile
-import kotlin.sequences.forEach
 
 abstract class Component<T>(val name: String, protected val project: Project) {
     var dependencyNames: Set<String>? = null

@@ -88,7 +88,8 @@ class NewsView(private val toolWindow: ToolWindow, private val project: Project)
 
     private fun updateTitle() {
         val currentNews = news
-        toolWindow.contentManager.getContent(this).displayName =
+        val content = toolWindow.contentManager.getContent(this) ?: return
+        content.displayName =
             if (currentNews != null && currentNews.unreadCount() > 0) unreadTabTitle else tabTitle
     }
 }

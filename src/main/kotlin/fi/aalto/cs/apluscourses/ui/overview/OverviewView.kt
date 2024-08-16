@@ -51,11 +51,9 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
         val authenticated = CourseManager.authenticated(project) ?: return loadingPanel()
         if (!authenticated) {
             val courseName = CourseManager.getInstance(project).state.courseName ?: ""
-            val tokenForm: TokenForm by lazy {
-                TokenForm(project) {
-                    update(loading = true)
-                    CourseManager.getInstance(project).restart()
-                }
+            val tokenForm = TokenForm(project) {
+                update(loading = true)
+                CourseManager.getInstance(project).restart()
             }
             return panel {
                 panel {

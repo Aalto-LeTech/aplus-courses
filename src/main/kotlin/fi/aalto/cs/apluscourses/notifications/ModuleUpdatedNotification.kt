@@ -2,11 +2,9 @@ package fi.aalto.cs.apluscourses.notifications
 
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
-import com.intellij.util.io.isFile
 import fi.aalto.cs.apluscourses.model.component.Module
 import fi.aalto.cs.apluscourses.services.PluginSettings
 import java.nio.file.Path
-import kotlin.io.path.isRegularFile
 
 class ModuleUpdatedNotification(module: Module, addedFiles: List<Path>, removedFiles: List<Path>) : Notification(
     PluginSettings.A_PLUS,

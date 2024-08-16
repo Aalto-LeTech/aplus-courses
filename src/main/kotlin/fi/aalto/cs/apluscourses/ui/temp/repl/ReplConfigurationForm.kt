@@ -5,11 +5,8 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.vfs.VirtualFile
-import fi.aalto.cs.apluscourses.MyBundle
 import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.ui.temp.presentation.ReplConfigurationFormModel
-import java.util.Objects
-import java.util.function.Consumer
 import javax.swing.JCheckBox
 import javax.swing.JLabel
 import javax.swing.JPanel

@@ -2,13 +2,9 @@ package fi.aalto.cs.apluscourses.services.course
 
 import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
-import com.intellij.util.xml.ConvertContext
 import com.intellij.util.xmlb.Converter
 import com.intellij.util.xmlb.annotations.*
-import fi.aalto.cs.apluscourses.model.Course
 import fi.aalto.cs.apluscourses.model.component.Module
-import fi.aalto.cs.apluscourses.model.news.NewsTree
-import fi.aalto.cs.apluscourses.model.people.User
 import fi.aalto.cs.apluscourses.utils.Version
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant

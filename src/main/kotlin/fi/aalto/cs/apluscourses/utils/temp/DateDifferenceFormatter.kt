@@ -4,9 +4,7 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.periodUntil
-import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
-import java.util.List
 
 object DateDifferenceFormatter {
     fun formatTimeUntilNow(time: Instant): String {

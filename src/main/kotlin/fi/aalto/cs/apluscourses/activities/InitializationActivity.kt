@@ -12,7 +12,6 @@ import fi.aalto.cs.apluscourses.notifications.*
 import fi.aalto.cs.apluscourses.services.Notifier
 import fi.aalto.cs.apluscourses.services.PluginSettings
 import fi.aalto.cs.apluscourses.services.course.CourseManager
-import fi.aalto.cs.apluscourses.services.course.SettingsImporter
 import fi.aalto.cs.apluscourses.utils.*
 import io.ktor.http.*
 import kotlinx.coroutines.Dispatchers
