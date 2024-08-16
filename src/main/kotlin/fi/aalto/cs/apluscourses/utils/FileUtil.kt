@@ -17,9 +17,6 @@ object FileUtil {
         }.toList()
     }
 
-    fun getChangedFilesInDirectory(directory: String, timestamp: Long): List<Path> =
-        getChangedFilesInDirectory(File(directory), timestamp)
-
     fun getAllFilesInDirectory(directory: File): List<Path> {
         return directory.walk().map {
             it.toPath()

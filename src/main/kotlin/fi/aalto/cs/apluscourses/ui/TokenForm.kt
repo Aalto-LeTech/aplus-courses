@@ -58,7 +58,7 @@ class TokenForm(private val project: Project, private val callback: () -> Unit =
     fun Panel.user(): Row =
         row("Logged in as") {
             text("").bindText(userName)
-            button("Log out") { removeToken() }
+            button("Log Out") { removeToken() }
         }.visibleIf(user.isNotNull())
 
     fun Panel.token(): Row =

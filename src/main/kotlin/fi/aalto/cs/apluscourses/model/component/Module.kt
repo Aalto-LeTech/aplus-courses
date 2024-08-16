@@ -97,7 +97,7 @@ class Module(
         status = Status.LOADING
         downloadAndUnzipZip(zipUrl, Path.of(project.basePath!!))
         CourseFileManager.getInstance(project).addModule(this)
-        println("Loading module $name ${imlPath}")
+        println("Loading module $name $imlPath")
         writeAction {
             ModuleManager.getInstance(project).loadModule(imlPath)
         }
@@ -214,7 +214,9 @@ class Module(
  * [com.intellij.openapi.roots.OrderEntry] objects that represents dependencies of an
  * [Component] object (that is, modules and non-module-level libraries).
  */
-private class DependenciesPolicy : RootPolicy<Set<String>>() {
+private class DependenciesPolicy : RootPolicy<Set<String>> {
+    constructor()
+
     override fun visitModuleOrderEntry(
         moduleOrderEntry: ModuleOrderEntry,
         entries: Set<String>

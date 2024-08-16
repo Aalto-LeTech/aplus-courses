@@ -1,6 +1,5 @@
-package fi.aalto.cs.apluscourses.model.temp
+package fi.aalto.cs.apluscourses.model.exercise
 
-import fi.aalto.cs.apluscourses.model.exercise.Exercise
 import java.nio.file.Path
 
 /**

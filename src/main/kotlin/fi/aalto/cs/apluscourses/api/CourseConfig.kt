@@ -134,6 +134,7 @@ object CourseConfig {
         val languages: List<String>,
         val version: Version,
         val resources: Resources? = null,
+        val requiredPlugins: List<RequiredPlugin> = emptyList(),
         val vmOptions: Map<String, String> = emptyMap(),
         val optionalCategories: List<String> = emptyList(),
         val autoInstall: List<String> = emptyList(),
@@ -142,6 +143,12 @@ object CourseConfig {
         val callbacks: Callbacks? = null,
         val exerciseModules: Map<Long, Map<String, String>>,
         val hiddenElements: List<Long> = emptyList(),
+    )
+
+    @Serializable
+    data class RequiredPlugin(
+        val name: String,
+        val id: String,
     )
 
     @Serializable

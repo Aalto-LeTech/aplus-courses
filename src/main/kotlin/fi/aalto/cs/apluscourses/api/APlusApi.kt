@@ -2,8 +2,8 @@ package fi.aalto.cs.apluscourses.api
 
 import com.intellij.openapi.project.Project
 import fi.aalto.cs.apluscourses.model.Course as CourseModel
-import fi.aalto.cs.apluscourses.model.temp.Group as GroupModel
-import fi.aalto.cs.apluscourses.model.temp.Submission as SubmissionModel
+import fi.aalto.cs.apluscourses.model.exercise.Group as GroupModel
+import fi.aalto.cs.apluscourses.model.exercise.Submission as SubmissionModel
 import fi.aalto.cs.apluscourses.model.exercise.SubmissionResult as SubmissionResultModel
 import fi.aalto.cs.apluscourses.model.exercise.Exercise as ExerciseModel
 import fi.aalto.cs.apluscourses.model.people.User as UserModel
@@ -43,11 +43,9 @@ object APlusApi {
         @Resource("news")
         class News(val parent: Course) {
             suspend fun get(project: Project): NewsTree {
-                println("news get")
                 val res = withContext(Dispatchers.IO) {
                     CoursesClient.getInstance(project).getBody<News, NewsBody>(this@News)
                 }
-//                println("news res ${res}")
 
                 return NewsTree(res.results.map { (id, url, title, _, publishString, _, body, _) ->
                     val titleElement = Jsoup.parseBodyFragment(title).body()

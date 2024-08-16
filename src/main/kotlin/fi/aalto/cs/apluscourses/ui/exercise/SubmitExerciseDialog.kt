@@ -1,20 +1,29 @@
 package fi.aalto.cs.apluscourses.ui.exercise
 
+import com.intellij.openapi.observable.properties.AtomicProperty
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.JBColor
 import com.intellij.ui.RoundedLineBorder
+import com.intellij.ui.dsl.builder.bindItem
 import com.intellij.ui.dsl.builder.panel
+import com.intellij.ui.layout.ComboBoxPredicate
 import fi.aalto.cs.apluscourses.MyBundle
 import fi.aalto.cs.apluscourses.model.exercise.Exercise
+import fi.aalto.cs.apluscourses.model.exercise.Group
 import fi.aalto.cs.apluscourses.ui.FileRenderer
 import fi.aalto.cs.apluscourses.ui.FileTree
 import java.nio.file.Path
 import javax.swing.BorderFactory
 import kotlin.io.path.name
 
-class SubmitExerciseDialog(val project: Project, val exercise: Exercise, val files: List<Path>) :
+class SubmitExerciseDialog(
+    val project: Project,
+    val exercise: Exercise,
+    val files: List<Path>,
+    val groups: List<Group>
+) :
     DialogWrapper(project) {
     init {
         setOKButtonText("Submit")
@@ -22,6 +31,8 @@ class SubmitExerciseDialog(val project: Project, val exercise: Exercise, val fil
         setSize(0, 0)
         init()
     }
+
+//    private val selectedGroup = AtomicProperty<Group>(groups.first())
 
     // TODO check if can submit with group (if has submitted with group before)
 
@@ -41,13 +52,13 @@ class SubmitExerciseDialog(val project: Project, val exercise: Exercise, val fil
             }
         }
         row("Group:") {
-            comboBox(listOf("Submit alone", "TODO", "Group 1", "Group 2"))
+            comboBox(groups)//.bindItem(selectedGroup)
             button(
-                "Set as default"
+                "Set as Default"
             ) {}
         }
         row {
-            text("You are about to make submission ${submissionNumber} out of ${exercise.maxSubmissions}.")
+            text("You are about to make submission $submissionNumber out of ${exercise.maxSubmissions}.")
         }
         row {
             if (exercise.maxSubmissions <= (submissionNumber)) {

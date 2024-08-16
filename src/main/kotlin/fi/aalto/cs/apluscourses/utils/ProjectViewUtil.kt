@@ -21,7 +21,7 @@ object ProjectViewUtil {
         val ignoredFiles = fileTypeManager.ignoredFilesList
             .replace("([^;])(?:\\.repl-commands)+".toRegex(), "$1")
 
-        WriteCommandAction.runWriteCommandAction(project) {
+        WriteCommandAction.runWriteCommandAction(project) { // TODO test-only method
             fileTypeManager.ignoredFilesList = "$ignoredFiles;$ignoredFileName"
         }
     }

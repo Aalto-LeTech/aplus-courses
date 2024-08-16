@@ -58,7 +58,7 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
             return panel {
                 panel {
                     row {
-                        text("Welcome to ${courseName}").applyToComponent {
+                        text("Welcome to $courseName").applyToComponent {
                             font = JBFont.h1()
                         }.comment("You need to log in to access the course content:")
                     }
@@ -190,18 +190,16 @@ class ResponsiveImagePanel(url: String? = null, icon: Icon? = null, width: Int) 
 
     init {
         val icon = icon ?: IconLoader.findIcon(URI(url!!).toURL(), true)
-        println("icon $icon ${icon?.iconWidth} ${url}")
+        println("icon $icon ${icon?.iconWidth} $url")
         image = icon?.let {
             IconLoader.toImage(
                 it,
                 ScaleContext.createIdentity()
             )
         }
-        if (icon != null) {
-            heightMultiplier = icon.iconHeight.toDouble() / icon.iconWidth.toDouble()
-        } else {
-            heightMultiplier = 1.0
-        }
+        heightMultiplier = if (icon != null)
+            icon.iconHeight.toDouble() / icon.iconWidth.toDouble()
+        else 1.0
 
         updateWidth(width)
     }

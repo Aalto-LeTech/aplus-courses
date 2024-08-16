@@ -19,11 +19,10 @@ abstract class Library(name: String, project: Project) : Component<IdeaLibrary>(
     override fun findDependencies(): Set<String> = emptySet()
 
     override fun load() {
-        println("loading lib $name, $platformObject")
-        if (platformObject != null) {
-            status = Status.LOADED
+        status = if (platformObject != null) {
+            Status.LOADED
         } else {
-            status = Status.UNRESOLVED
+            Status.UNRESOLVED
         }
     }
 

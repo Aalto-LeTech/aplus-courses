@@ -40,7 +40,6 @@ internal class OpenDocumentationActionProvider : InspectionWidgetActionProvider 
                 val psiFile = PsiManager.getInstance(project).findFile(virtualFile) ?: return
                 val newDataContext = SimpleDataContext.builder().add(CommonDataKeys.PROJECT, project)
                     .add(CommonDataKeys.PSI_FILE, psiFile).build()
-
                 OpenInBrowserEditorContextBarGroupAction().getChildren(e)[0].actionPerformed(
                     e.withDataContext(newDataContext)
                 )

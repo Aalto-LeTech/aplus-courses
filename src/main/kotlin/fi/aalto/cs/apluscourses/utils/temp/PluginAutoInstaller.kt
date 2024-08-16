@@ -8,6 +8,7 @@ import com.intellij.ide.plugins.PluginNode
 import com.intellij.openapi.extensions.PluginId
 import com.intellij.openapi.project.Project
 import com.intellij.util.concurrency.annotations.RequiresEdt
+import fi.aalto.cs.apluscourses.api.CourseConfig.RequiredPlugin
 import fi.aalto.cs.apluscourses.utils.APlusLogger
 
 object PluginAutoInstaller {
@@ -38,7 +39,7 @@ object PluginAutoInstaller {
     @RequiresEdt
     fun ensureDependenciesInstalled(
         project: Project,
-        pluginNames: List<PluginDependency>,
+        pluginNames: List<RequiredPlugin>,
 //        callback: PluginInstallerCallback
     ): Boolean? {
         val pluginIDs = pluginNames.map { PluginId.getId(it.id) }.toSet()
@@ -55,15 +56,13 @@ object PluginAutoInstaller {
         }
 
         // allPluginNames = list of PluginDependencies for all plugins in pluginsToDownload or pluginsToEnable
-        val missingPluginIds = java.util.stream.Stream.concat<PluginId?>(
-            pluginsToDownload.stream(),
-            pluginsToEnable.stream()
-        )
-            .map<String?> { obj: PluginId? -> obj!!.idString }
-            .collect(java.util.stream.Collectors.toSet())
-        val allPluginNames = pluginNames.stream()
-            .filter { p: PluginDependency? -> missingPluginIds.contains(p!!.id) }
-            .collect(java.util.stream.Collectors.toList())
+        val missingPluginIds = (pluginsToDownload + pluginsToEnable).toList()
+            .map { it.idString }
+            .toSet()
+
+        val allPluginNames = pluginNames
+            .filter { p: RequiredPlugin -> missingPluginIds.contains(p.id) }
+
 
 //        val consentResult: Unit /* TODO: class org.jetbrains.kotlin.nj2k.types.JKJavaNullPrimitiveType */? =
 //            callback.askForInstallationConsent(allPluginNames)

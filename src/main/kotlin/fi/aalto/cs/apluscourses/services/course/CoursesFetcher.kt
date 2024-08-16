@@ -6,8 +6,10 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
+import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import org.jetbrains.annotations.NonNls
 import org.yaml.snakeyaml.Yaml
@@ -71,6 +73,19 @@ class CoursesFetcher(private val cs: CoroutineScope) {
             }
             client.close()
 
+        }
+    }
+
+    fun fetchCourse(url: String): CourseConfig.JSON? {
+        return runBlocking(cs.coroutineContext) {
+            try {
+                val client = HttpClient(CIO)
+                val res = client.get(url)
+                client.close()
+                json.decodeFromString<CourseConfig.JSON>(res.bodyAsText())
+            } catch (_: Exception) {
+                null
+            }
         }
     }
 }

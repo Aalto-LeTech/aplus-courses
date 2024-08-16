@@ -8,7 +8,7 @@ import java.nio.file.Path
 
 class ModuleUpdatedNotification(module: Module, addedFiles: List<Path>, removedFiles: List<Path>) : Notification(
     PluginSettings.A_PLUS,
-    "Module Updated",
+    "Module updated",
     notificationContent(module, addedFiles, removedFiles),
     NotificationType.INFORMATION
 ) {

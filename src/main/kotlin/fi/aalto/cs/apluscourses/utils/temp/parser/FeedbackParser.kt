@@ -7,13 +7,5 @@ open class FeedbackParser {
         return TestResults(-1, -1)
     }
 
-    class TestResults(succeeded: Int, failed: Int) {
-        val succeeded: Int
-        val failed: Int
-
-        init {
-            this.succeeded = succeeded
-            this.failed = failed
-        }
-    }
+    data class TestResults(val succeeded: Int, val failed: Int)
 }

@@ -148,10 +148,8 @@ internal class APlusConfigurable(val project: Project) : Configurable, Configura
     override fun isModified(): Boolean = isModified || tokenForm.isModified
 
     override fun apply() {
-//        CourseFileManager.getInstance(project).updateSettings(selectedLanguage)
         val originalLanguage = originalLanguage.get()
         val language = selectedLanguage.get()
-        println("Selected language: $language")
         if (language.isNotEmpty() && originalLanguage != language) {
             CourseFileManager.getInstance(project).state.language = language
             CourseManager.getInstance(project).state.clearAll()

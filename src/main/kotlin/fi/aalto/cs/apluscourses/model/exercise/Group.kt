@@ -1,7 +1,7 @@
-package fi.aalto.cs.apluscourses.model.temp
+package fi.aalto.cs.apluscourses.model.exercise
 
 import fi.aalto.cs.apluscourses.MyBundle.message
-import fi.aalto.cs.apluscourses.model.temp.Group.GroupMember
+import fi.aalto.cs.apluscourses.model.exercise.Group.GroupMember
 
 // TODO remove?
 data class Group(val id: Long, val members: List<GroupMember>) {
@@ -14,9 +14,9 @@ data class Group(val id: Long, val members: List<GroupMember>) {
      * [getId][.getId] is that this method will return the same ID for two different groups if their
      * members are the same.
      */ // TODO remove?
-    val memberwiseId: String = members.sortedBy { it.id }.joinToString(",") { it.name }
+    val memberwiseId: String = members.sortedBy { it.id }.joinToString(", ") { it.name }
 
-    override fun toString(): String = "Group{$memberwiseId}"
+    override fun toString(): String = memberwiseId
 
     companion object {
         val GROUP_ALONE: Group = Group(

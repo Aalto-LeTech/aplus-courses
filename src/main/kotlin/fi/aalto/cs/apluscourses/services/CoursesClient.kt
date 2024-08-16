@@ -18,16 +18,20 @@ import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.util.cio.writeChannel
+import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.close
+import io.ktor.utils.io.copyAndClose
 import io.ktor.utils.io.copyTo
-import io.ktor.utils.io.errors.IOException
+import io.ktor.utils.io.readAvailable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.*
 import org.jetbrains.annotations.NonNls
+import java.io.IOException
 import java.nio.file.Path
 import java.util.zip.ZipFile
 import kotlin.io.path.nameWithoutExtension
@@ -140,9 +144,15 @@ class CoursesClient(
                     }
                     println("Downloading $zipUrl to $target")
                     val bodyChannel = response.bodyAsChannel()
-                    val fileChannel = tempZipFile.writeChannel(Dispatchers.IO)
-                    bodyChannel.copyTo(fileChannel)
-                    fileChannel.close()
+                    tempZipFile.outputStream().use { fileOutputStream ->
+                        runBlocking {
+                            val buffer = ByteArray(8 * 1024)
+                            var bytesRead: Int
+                            while (bodyChannel.readAvailable(buffer).also { bytesRead = it } != -1) {
+                                fileOutputStream.write(buffer, 0, bytesRead)
+                            }
+                        }
+                    }
                     println("Downloaded $zipUrl to $tempZipFile")
                 }
                 reporter.indeterminateStep("Extracting $zipUrl to $target") {
@@ -153,6 +163,7 @@ class CoursesClient(
                         if (!destinationFile.exists()) {
                             destinationFile.mkdirs()
                         }
+                        println("$tempZipFile ${tempZipFile.exists()} ${tempZipFile.length()} ${tempZipFile.canRead()}")
 
                         ZipFile(tempZipFile).use { zip ->
                             zip.entries().asSequence().forEach { entry ->
@@ -172,6 +183,7 @@ class CoursesClient(
                                 }
                             }
                         }
+                        tempZipFile.delete()
                     }
                 }
             }

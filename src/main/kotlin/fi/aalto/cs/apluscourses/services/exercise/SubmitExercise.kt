@@ -11,8 +11,8 @@ import fi.aalto.cs.apluscourses.icons.CoursesIcons
 import fi.aalto.cs.apluscourses.model.component.Module
 import fi.aalto.cs.apluscourses.model.exercise.Exercise
 import fi.aalto.cs.apluscourses.model.exercise.SubmissionInfo
-import fi.aalto.cs.apluscourses.model.temp.FileDoesNotExistException
-import fi.aalto.cs.apluscourses.model.temp.Group
+import fi.aalto.cs.apluscourses.model.exercise.Group
+import fi.aalto.cs.apluscourses.model.exercise.Submission
 import fi.aalto.cs.apluscourses.notifications.MissingFileNotification
 import fi.aalto.cs.apluscourses.notifications.MissingModuleNotification
 import fi.aalto.cs.apluscourses.notifications.NetworkErrorNotification
@@ -21,7 +21,6 @@ import fi.aalto.cs.apluscourses.services.Notifier
 import fi.aalto.cs.apluscourses.services.course.CourseFileManager
 import fi.aalto.cs.apluscourses.services.course.CourseManager
 import fi.aalto.cs.apluscourses.ui.exercise.SubmitExerciseDialog
-import fi.aalto.cs.apluscourses.ui.temp.presentation.exercise.SubmissionViewModel
 import fi.aalto.cs.apluscourses.utils.APlusLogger
 import fi.aalto.cs.apluscourses.utils.FileUtil
 import kotlinx.coroutines.*
@@ -76,7 +75,7 @@ class SubmitExercise(
                 val exerciseModules: Map<String, Module> = course.exerciseModules[exercise.id]!!
                 println(course.exerciseModules)
 
-                val module = exerciseModules.get(language)
+                val module = exerciseModules[language]
                 val platformModule = module?.platformObject
 //        val moduleName = Optional
 //            .ofNullable(exerciseModules)
@@ -155,14 +154,12 @@ class SubmitExercise(
 //                .orElse(null)
                 val lastSubmittedGroup = null
 
-                val submission = SubmissionViewModel(
-                    exercise, groups, defaultGroup,
-                    lastSubmittedGroup, files, language
-                )
+                val group = Group.GROUP_ALONE //Objects.requireNonNull(selectedGroup.get());
+                val submission = Submission(exercise, files, group, language)
 
 
                 val canceled = withContext(Dispatchers.EDT) {
-                    !SubmitExerciseDialog(project, exercise, files.values.toList()).showAndGet()
+                    !SubmitExerciseDialog(project, exercise, files.values.toList(), groups).showAndGet()
                 }
 
                 if (canceled) {
@@ -185,7 +182,7 @@ class SubmitExercise(
 //            }
 
 //                logger.info("Submitting with group: $selectedGroup")
-                APlusApi.exercise(exercise).submit(submission.buildSubmission(), project)
+                APlusApi.exercise(exercise).submit(submission, project)
                 ExercisesUpdaterService.getInstance(project).restart()
 //            val submissionUrl: String = exerciseDataSource.submit(submission.buildSubmission(), authentication)
 //            logger.info("Submission url: {}", submissionUrl)
@@ -207,8 +204,8 @@ class SubmitExercise(
 //            addLocalHistoryTag(project, tag)
             } catch (ex: IOException) {
                 notifyNetworkError(ex, project)
-            } catch (ex: FileDoesNotExistException) {
-                notifier.notify(MissingFileNotification(ex.path, ex.name), project)
+//            } catch (ex: FileDoesNotExistException) {
+//                notifier.notify(MissingFileNotification(ex.path, ex.name), project)
             } catch (ex: ModuleMissingException) {
                 notifier.notify(MissingModuleNotification(ex.moduleName), project)
             }

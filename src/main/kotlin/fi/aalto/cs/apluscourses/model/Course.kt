@@ -2,9 +2,9 @@ package fi.aalto.cs.apluscourses.model
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfoRt
+import fi.aalto.cs.apluscourses.api.CourseConfig.RequiredPlugin
 import fi.aalto.cs.apluscourses.model.component.*
 import fi.aalto.cs.apluscourses.utils.callbacks.Callbacks
-import fi.aalto.cs.apluscourses.utils.temp.PluginDependency
 import fi.aalto.cs.apluscourses.utils.Version
 import io.ktor.http.*
 
@@ -23,8 +23,6 @@ class Course(
     val endingTime: String,
     val languages: List<String>,
     val modules: List<Module>,
-//    val oldModules: List<OldModule>,
-//    val oldLibraries: List<OldLibrary>,
     val exerciseModules: Map<Long, Map<String, Module>>,
     val resourceUrls: Map<String, Url>,
     val vmOptions: Map<String, String>,
@@ -33,13 +31,10 @@ class Course(
     val replInitialCommands: Map<String, List<String>>?,
     val replAdditionalArguments: String?,
     val minimumPluginVersion: Version,
-//    val commonLibraryProvider: CommonLibraryProvider,
-//    val pluginDependencies: List<PluginDependency>, TODO
+    val pluginDependencies: List<RequiredPlugin>,
     val hiddenElements: List<Long>,
     val callbacks: Callbacks,
-//    val requireAuthenticationForModules: Boolean,
 //    val feedbackParser: String?,
-//    val newsParser: String?,
 //    val courseLastModified: Long, // TODO reimplement
     private val project: Project,
 ) {
@@ -96,8 +91,6 @@ class Course(
     val apiUrl: String = aplusUrl + "api/v2/"
 
     val courseApiUrl: String = apiUrl + "courses/" + id
-
-    val requiredPlugins: List<PluginDependency> = emptyList()// TODO pluginDependencies
 
     val technicalDescription: String = "$name <$courseApiUrl>"
 

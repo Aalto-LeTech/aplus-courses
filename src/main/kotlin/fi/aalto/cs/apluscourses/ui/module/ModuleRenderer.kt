@@ -198,7 +198,7 @@ class ModuleRenderer(
             val exercise = nextExercise.first
             val groupName = nextExercise.second.name
             row {
-                info("Next assignment: ${groupName}")
+                info("Next assignment: $groupName")
             }
             row {
                 myLink(exercise.name, CoursesIcons.NoSubmissions) {

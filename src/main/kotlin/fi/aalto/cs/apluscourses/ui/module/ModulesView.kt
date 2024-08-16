@@ -50,7 +50,7 @@ class ModulesView(val project: Project) : SimpleToolWindowPanel(true, true) {
     }
 
     private fun getPanelAt(point: Point) =
-        itemPanels.find { it.bounds.contains(point) }
+        itemPanels.find { it.bounds.contains(point) && it.isVisible }
 
     private fun updateView() {
         val openModule = itemPanels.find { it.isExpanded }

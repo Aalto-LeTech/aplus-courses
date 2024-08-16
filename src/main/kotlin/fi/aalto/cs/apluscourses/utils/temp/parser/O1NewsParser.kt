@@ -1,14 +1,10 @@
 package fi.aalto.cs.apluscourses.utils.temp.parser
 
+import org.jetbrains.annotations.NonNls
 import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
 
-class O1NewsParser(language: String) : NewsParser() {
-    private val language: String
-
-    init {
-        this.language = language
-    }
+class O1NewsParser(private val language: String) : NewsParser() {
 
     override fun parseTitle(titleElement: Element): String {
         return getElementsByLanguage(titleElement).first().text()
@@ -19,9 +15,11 @@ class O1NewsParser(language: String) : NewsParser() {
     }
 
     private fun getElementsByLanguage(element: Element): Elements {
-        val elements = element.getElementsByClass("only" + language)
-        if (elements.isEmpty()) {
-            return element.getElementsByClass("onlyen")
+        @NonNls val className = "only$language"
+        @NonNls val defaultClassName = "onlyen"
+        val elements = element.getElementsByClass(className)
+        if (elements.isEmpty) {
+            return element.getElementsByClass(defaultClassName)
         }
         return elements
     }

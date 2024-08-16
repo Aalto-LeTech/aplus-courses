@@ -200,6 +200,7 @@ class CourseManager(
                     replInitialCommands = courseConfig.scalaRepl?.initialCommands,
                     replAdditionalArguments = courseConfig.scalaRepl?.arguments,
                     minimumPluginVersion = courseConfig.version,
+                    pluginDependencies = courseConfig.requiredPlugins,
                     hiddenElements = courseConfig.hiddenElements,
                     callbacks = Callbacks.fromJsonObject(courseConfig.callbacks),
                     project
@@ -336,7 +337,7 @@ class CourseManager(
 
 
     private fun fireNewsUpdated(newsTree: NewsTree) {
-        println("fireNewsUpdated ${newsTree}")
+        println("fireNewsUpdated $newsTree")
         ApplicationManager.getApplication().invokeLater {
             ApplicationManager.getApplication().messageBus
                 .syncPublisher(NEWS_TOPIC)

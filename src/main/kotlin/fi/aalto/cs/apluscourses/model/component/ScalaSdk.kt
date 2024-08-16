@@ -17,6 +17,7 @@ import java.nio.file.Path
 
 class ScalaSdk(private val scalaVersion: String, project: Project) : Library(scalaVersion, project) {
     override suspend fun downloadAndInstall(updating: Boolean) {
+        status = Status.LOADING
         println("Downloading Scala SDK $scalaVersion")
         val strippedScalaVersion = this.scalaVersion.substringAfter("scala-sdk-")
         val zipUrl =
@@ -92,46 +93,9 @@ class ScalaSdk(private val scalaVersion: String, project: Project) : Library(sca
             libraryModel.commit()
             VirtualFileManager.getInstance().syncRefresh()
         }
+        status = Status.LOADED
 
     }
-//
-//        application.invokeLater {
-//            val a = ProjectStructureConfigurable(project)
-//            val b = ProjectLibrariesConfigurable(a)
-////            val f = StructureConfigurableContext()
-//            project.service<IdeaModifiableModelsProvider>()
-//            b.init(a.context)
-//            ConvertProjectLibraryToRepositoryLibraryAction(b, b.conte)
-//            CreateNewLibraryAction.createLibrary(
-//                ScalaLibraryType.apply(),
-//                b.tree,
-//                project,
-//                (f.getLibraryTableModifiableModel(project) as LibraryTableModifiableModelProvider)!!.modifiableModel
-//                a.context.createModifiableModelProvider(LibraryTablesRegistrar.PROJECT_LEVEL).modifiableModel
-//                b.modelProvider.modifiableModel
-//                LibraryTablesRegistrar.getInstance().getLibraryTable(project).modifiableModel
-//            )
-//        }
-//        application.invokeLater {
-//            ScalaLibraryType.Description.createNewLibrary(null, project.baseDir)
-//            LibraryTableId.ProjectLibraryTableId
-//            val dialog = SdkSelectionDialogWrapper(project.baseDir)
-//            dialog.createLeftSideActions()[0].actionPerformed(null)
-//        }
-
-//        val resolved = ScalaVersionDownloadingDialog.createScalaVersionResolveResult(version.get(), dependencyManager)
-//        ScalaLibraryType()
-//        LibraryDownloadSettings(
-//            version,
-//            ,
-//            LibrariesContainer.LibraryLevel.PROJECT,
-//            ""
-//        )
-//        type.createNewLibrary(project, resolved)
-//        ScalaLibraryType.Description.createNewLibraryWithDefaultSettings()
-//        ScalaLibraryType.Description.createNewLibrary(project.
-//        println("scala resolved $resolved")
-//    }
 
     override suspend fun remove(deleteFiles: Boolean) {
         TODO("Not yet implemented")
