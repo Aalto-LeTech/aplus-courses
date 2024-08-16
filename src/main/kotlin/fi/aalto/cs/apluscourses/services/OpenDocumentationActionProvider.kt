@@ -1,26 +1,19 @@
 package fi.aalto.cs.apluscourses.services
 
-import com.intellij.execution.runToolbar.runToolbarData
 import com.intellij.ide.browsers.actions.OpenInBrowserBaseGroupAction.OpenInBrowserEditorContextBarGroupAction
-import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
-import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.markup.InspectionWidgetActionProvider
 import com.intellij.openapi.project.DumbAwareAction
-import com.intellij.openapi.project.guessModuleDir
-import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.psi.PsiManager
 import fi.aalto.cs.apluscourses.services.course.CourseManager
 import fi.aalto.cs.apluscourses.utils.FileUtil
-import icons.PluginIcons
-import org.jetbrains.plugins.scala.codeInsight.ScalaCodeInsightBundle
-import kotlin.io.path.pathString
+import fi.aalto.cs.apluscourses.icons.CoursesIcons
 
 internal class OpenDocumentationActionProvider : InspectionWidgetActionProvider {
     override fun createAction(editor: Editor): AnAction? {
@@ -62,7 +55,7 @@ internal class OpenDocumentationActionProvider : InspectionWidgetActionProvider 
             }
 
             override fun update(e: AnActionEvent) {
-                e.presentation.icon = PluginIcons.A_PLUS_DOCS
+                e.presentation.icon = CoursesIcons.Docs
             }
 
             override fun getActionUpdateThread(): ActionUpdateThread {

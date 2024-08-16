@@ -2,7 +2,7 @@ package fi.aalto.cs.apluscourses.ui.browser
 
 import com.intellij.lang.Language
 import com.intellij.openapi.fileTypes.LanguageFileType
-import icons.PluginIcons
+import fi.aalto.cs.apluscourses.icons.CoursesIcons
 import javax.swing.Icon
 
 internal class APlusFileType : LanguageFileType(APlusLanguage.INSTANCE) {
@@ -12,7 +12,7 @@ internal class APlusFileType : LanguageFileType(APlusLanguage.INSTANCE) {
 
     override fun getDefaultExtension(): String = "aplus"
 
-    override fun getIcon(): Icon = PluginIcons.A_PLUS_LOGO_COLOR
+    override fun getIcon(): Icon = CoursesIcons.LogoColor
 
     companion object {
         val INSTANCE = APlusFileType()

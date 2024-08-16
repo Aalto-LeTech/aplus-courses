@@ -19,7 +19,7 @@ import com.intellij.ui.treeStructure.Tree
 import com.intellij.util.PsiIconUtil
 import fi.aalto.cs.apluscourses.services.Background
 import fi.aalto.cs.apluscourses.utils.temp.FileDateFormatter
-import icons.PluginIcons
+import fi.aalto.cs.apluscourses.icons.CoursesIcons
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.nio.file.Path
@@ -105,7 +105,7 @@ class FileRenderer(private val files: Map<String, Path>) : NodeRenderer() {
                 )
             }
         } else {
-            icon = if (row == 0) PluginIcons.A_PLUS_MODULE else AllIcons.Nodes.Package
+            icon = if (row == 0) CoursesIcons.Module else AllIcons.Nodes.Package
             append(text.replace("/", ".")) // Use periods for package separators
         }
 

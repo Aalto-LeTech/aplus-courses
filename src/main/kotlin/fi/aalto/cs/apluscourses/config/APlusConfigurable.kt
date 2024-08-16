@@ -1,39 +1,21 @@
 package fi.aalto.cs.apluscourses.config
 
-import com.intellij.credentialStore.OneTimeString
 import com.intellij.ide.plugins.MultiPanel
 import com.intellij.ide.plugins.newui.TabbedPaneHeaderComponent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
-import com.intellij.openapi.observable.properties.AtomicBooleanProperty
 import com.intellij.openapi.observable.properties.AtomicProperty
-import com.intellij.openapi.observable.util.isNotNull
-import com.intellij.openapi.observable.util.isNull
-import com.intellij.openapi.observable.util.not
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogPanel
-import com.intellij.openapi.ui.ValidationInfo
-import com.intellij.openapi.ui.validation.DialogValidation
 import com.intellij.ui.components.JBPasswordField
-import com.intellij.ui.dsl.builder.COLUMNS_MEDIUM
-import com.intellij.ui.dsl.builder.bindText
-import com.intellij.ui.dsl.builder.columns
 import com.intellij.ui.dsl.builder.panel
-import com.intellij.ui.dsl.builder.text
-import com.intellij.ui.dsl.validation.Level
-import com.intellij.util.application
-import com.intellij.util.applyIf
-import com.intellij.util.ui.JBFont
-import com.intellij.util.ui.JBUI
 import fi.aalto.cs.apluscourses.MyBundle
-import fi.aalto.cs.apluscourses.model.people.User
-import fi.aalto.cs.apluscourses.services.TokenStorage
 import fi.aalto.cs.apluscourses.services.course.CourseFileManager
 import fi.aalto.cs.apluscourses.services.course.CourseManager
 import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdaterService
 import fi.aalto.cs.apluscourses.ui.TokenForm
 import fi.aalto.cs.apluscourses.ui.overview.ResponsiveImagePanel
-import icons.PluginIcons
+import fi.aalto.cs.apluscourses.icons.CoursesIcons
 import java.awt.Component
 import javax.swing.JComponent
 
@@ -64,7 +46,7 @@ internal class APlusConfigurable(val project: Project) : Configurable, Configura
         originalLanguage.set(t)
         selectedLanguage.afterChange { isModified = originalLanguage.get() != it }
         val l = course?.languages ?: emptyList()
-        banner = ResponsiveImagePanel(icon = PluginIcons.A_PLUS_COURSES_BANNER, width = 200)
+        banner = ResponsiveImagePanel(icon = CoursesIcons.About.Banner, width = 200)
         settingsPanel = panel {
             group("Global Settings") {
                 with(tokenForm) {

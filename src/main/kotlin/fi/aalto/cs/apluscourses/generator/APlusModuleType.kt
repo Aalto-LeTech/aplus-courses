@@ -3,7 +3,7 @@ package fi.aalto.cs.apluscourses.generator
 import com.intellij.openapi.module.ModuleType
 import com.intellij.openapi.module.ModuleTypeManager
 import fi.aalto.cs.apluscourses.MyBundle
-import icons.PluginIcons
+import fi.aalto.cs.apluscourses.icons.CoursesIcons
 import org.jetbrains.annotations.NonNls
 import javax.swing.Icon
 
@@ -21,7 +21,7 @@ internal class APlusModuleType : ModuleType<APlusModuleBuilder>(ID) {
     }
 
     override fun getNodeIcon(isOpened: Boolean): Icon {
-        return PluginIcons.A_PLUS_LOGO_COLOR
+        return CoursesIcons.LogoColor
     }
 
     companion object {

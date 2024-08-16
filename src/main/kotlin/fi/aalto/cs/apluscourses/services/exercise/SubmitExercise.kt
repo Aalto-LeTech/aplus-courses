@@ -7,6 +7,7 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.module.ModuleUtilCore
 import com.intellij.openapi.project.Project
 import fi.aalto.cs.apluscourses.api.APlusApi
+import fi.aalto.cs.apluscourses.icons.CoursesIcons
 import fi.aalto.cs.apluscourses.model.component.Module
 import fi.aalto.cs.apluscourses.model.exercise.Exercise
 import fi.aalto.cs.apluscourses.model.exercise.SubmissionInfo
@@ -23,7 +24,6 @@ import fi.aalto.cs.apluscourses.ui.exercise.SubmitExerciseDialog
 import fi.aalto.cs.apluscourses.ui.temp.presentation.exercise.SubmissionViewModel
 import fi.aalto.cs.apluscourses.utils.APlusLogger
 import fi.aalto.cs.apluscourses.utils.FileUtil
-import icons.PluginIcons.ACCENT_COLOR
 import kotlinx.coroutines.*
 import java.io.IOException
 import java.nio.file.Path
@@ -224,7 +224,7 @@ class SubmitExercise(
 
 
     private fun addLocalHistoryTag(project: Project, tag: String) {
-        LocalHistory.getInstance().putSystemLabel(project, tag, ACCENT_COLOR)
+        LocalHistory.getInstance().putSystemLabel(project, tag, CoursesIcons.AccentColor.rgb)
     }
 
     companion object {

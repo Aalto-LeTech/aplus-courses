@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NonNls
 import org.jetbrains.annotations.PropertyKey
 
 @NonNls
-private const val BUNDLE = "resources"
+private const val BUNDLE = "messages.resources"
 
 object MyBundle : DynamicBundle(BUNDLE) {
     @JvmStatic

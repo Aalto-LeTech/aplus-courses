@@ -19,14 +19,13 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.guessModuleDir
 import com.intellij.openapi.vfs.findFile
 import com.intellij.psi.PsiManager
-import com.intellij.util.application
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.intellij.util.messages.Topic
 import com.intellij.util.messages.Topic.ProjectLevel
 import fi.aalto.cs.apluscourses.model.component.Module
 import fi.aalto.cs.apluscourses.model.exercise.Exercise
 import fi.aalto.cs.apluscourses.model.exercise.SubmissionResult
-import icons.PluginIcons
+import fi.aalto.cs.apluscourses.icons.CoursesIcons
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -100,7 +99,7 @@ class Opener(
 
             override fun update(e: AnActionEvent) {
                 e.presentation.text = "Show Documentation"
-                e.presentation.icon = PluginIcons.A_PLUS_DOCS
+                e.presentation.icon = CoursesIcons.Docs
             }
 
             override fun getActionUpdateThread(): ActionUpdateThread {

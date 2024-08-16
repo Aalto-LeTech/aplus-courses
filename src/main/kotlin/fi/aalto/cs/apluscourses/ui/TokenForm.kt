@@ -17,8 +17,6 @@ import com.intellij.util.ui.JBUI
 import fi.aalto.cs.apluscourses.model.people.User
 import fi.aalto.cs.apluscourses.services.TokenStorage
 import fi.aalto.cs.apluscourses.services.course.CourseManager
-import kotlin.text.get
-import kotlin.text.set
 
 class TokenForm(private val project: Project, private val callback: () -> Unit = {}) {
     val checking = AtomicBooleanProperty(false)
@@ -34,7 +32,6 @@ class TokenForm(private val project: Project, private val callback: () -> Unit =
             OneTimeString(passwordField.password.filter { it.isLetterOrDigit() }.toCharArray()),
             project
         ) {
-            println("Token stored: $it")
             user.set(it)
             userName.set(it?.userName ?: "")
             checking.set(false)

@@ -23,7 +23,7 @@ import fi.aalto.cs.apluscourses.MyBundle
 import fi.aalto.cs.apluscourses.services.course.CourseFileManager
 import fi.aalto.cs.apluscourses.services.course.CoursesFetcher
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil.languageCodeToName
-import icons.PluginIcons
+import fi.aalto.cs.apluscourses.icons.CoursesIcons
 import javax.swing.Icon
 import javax.swing.JEditorPane
 import javax.swing.JList
@@ -39,7 +39,7 @@ internal class APlusModuleBuilder : GeneratorNewProjectWizardBuilderAdapter(APlu
  * [com.intellij.ide.wizard.language.EmptyProjectGeneratorNewProjectWizard]
  */
 class APlusModuleBuilderA : GeneratorNewProjectWizard {
-    override val icon: Icon = PluginIcons.A_PLUS_LOGO_COLOR
+    override val icon: Icon = CoursesIcons.LogoColor
     override val name: String = MyBundle.message("intellij.ProjectBuilder.name")
     override val id: String = APlusModuleType.ID
     override val ordinal: Int = 100000
@@ -49,12 +49,17 @@ class APlusModuleBuilderA : GeneratorNewProjectWizard {
         return if (lastAction == null) true else !lastAction.contains("Module")
     }
 
-    override fun createStep(context: WizardContext): NewProjectWizardChainStep<Step> =
-        RootNewProjectWizardStep(context)
+    override fun createStep(context: WizardContext): NewProjectWizardChainStep<Step> {
+//        val javaModuleType = JavaModuleType()
+//        val test = JavaModuleType.getModuleType()
+//            .createWizardSteps(context, javaModuleType.createModuleBuilder(), context.modulesProvider)
+        return RootNewProjectWizardStep(context)
             .nextStep(::CommentStep)
             .nextStep(::NewProjectWizardBaseStep)
             .nextStep(::CourseSelectStep)
+            .nextStep { Step(it) }
             .nextStep(::Step)
+    }
 
     private class CommentStep(parent: NewProjectWizardStep) : CommentNewProjectWizardStep(parent) {
         override val comment: String =
@@ -72,6 +77,9 @@ class APlusModuleBuilderA : GeneratorNewProjectWizard {
     }
 
     private class CourseSelectStep(parent: NewProjectWizardStep) : AbstractNewProjectWizardStep(parent) {
+
+//        private val javaStep = JavaModuleType.getModuleType().modifySettingsStep()
+
         val fetchEnabled = AtomicBooleanProperty(false)
         val languagesVisible = AtomicBooleanProperty(false)
         val settingsVisible = AtomicBooleanProperty(false)
@@ -125,7 +133,7 @@ class APlusModuleBuilderA : GeneratorNewProjectWizard {
                     val loading = item.config == null
                     isEnabled = !loading
                     isFocusable
-                    icon = if (loading) PluginIcons.A_PLUS_LOADING else PluginIcons.A_PLUS_EXERCISE_GROUP
+                    icon = if (loading) CoursesIcons.Loading else CoursesIcons.ExerciseGroup
                     append(item.name, NAME_TEXT_ATTRIBUTES)
                     append(" " + item.semester, SEMESTER_TEXT_ATTRIBUTES)
                 }
@@ -200,10 +208,11 @@ class APlusModuleBuilderA : GeneratorNewProjectWizard {
                 }.visibleIf(languagesVisible)
                 row("Settings:") {
                     checkBox("Leave IntelliJ settings unchanged")
-                        .comment(MyBundle.message("ui.courseProject.form.settingsWarningText"), 40)
-                        .apply {
-                            enabled(false)
-                        }
+                }.visibleIf(settingsVisible)
+                row("") {
+                    comment(
+                        MyBundle.message("ui.courseProject.form.settingsWarningText"), 40
+                    )
                 }.visibleIf(settingsVisible)
             }
         }

@@ -19,6 +19,7 @@ import com.intellij.ui.dsl.builder.Row
 import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.gridLayout.UnscaledGaps
+import com.intellij.util.application
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
 import fi.aalto.cs.apluscourses.model.component.Module
@@ -27,7 +28,7 @@ import fi.aalto.cs.apluscourses.services.Opener
 import fi.aalto.cs.apluscourses.services.course.CourseManager
 import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdaterService
 import fi.aalto.cs.apluscourses.utils.temp.DateDifferenceFormatter.formatTimeUntilNow
-import icons.PluginIcons
+import fi.aalto.cs.apluscourses.icons.CoursesIcons
 import org.jetbrains.annotations.NonNls
 import java.awt.BorderLayout
 import java.awt.event.ActionEvent
@@ -46,10 +47,10 @@ class ModuleRenderer(
     private var panel: DialogPanel
 
     private val icon
-        get() = if (module.category == Module.Category.AVAILABLE) PluginIcons.A_PLUS_MODULE_DISABLED
-        else if (module.category == Module.Category.INSTALLED) PluginIcons.A_PLUS_MODULE
-        else if (module.isUpdateAvailable) PluginIcons.A_PLUS_INFO
-        else PluginIcons.A_PLUS_NO_POINTS
+        get() = if (module.category == Module.Category.AVAILABLE) CoursesIcons.ModuleDisabled
+        else if (module.category == Module.Category.INSTALLED) CoursesIcons.Module
+        else if (module.isUpdateAvailable) CoursesIcons.Info
+        else CoursesIcons.NoPoints
 
     var isExpanded = false
         private set
@@ -123,7 +124,7 @@ class ModuleRenderer(
         missingDependencies.forEach { component ->
             row {
                 if (component is Module) {
-                    myLink(component.name, PluginIcons.A_PLUS_MODULE_DISABLED) {
+                    myLink(component.name, CoursesIcons.ModuleDisabled) {
                         project.service<Opener>().showModule(component)
                     }
                 } else {
@@ -135,15 +136,13 @@ class ModuleRenderer(
 
 
     private val installing = AtomicBooleanProperty(false)
-    private val zipSizeText = AtomicProperty<String>("")
     private var isZipSizeSet = false
-    private fun updateZipSize(size: String) {
-        zipSizeText.set(
-            "<span style=\"white-space: nowrap;\">Available at </span>" +
-                    "<span>${module.zipUrl} </span>" +
-                    "<span style=\"white-space: nowrap;\">(${size})</span>"
-        )
-    }
+    private fun zipSizeText(size: String) = "<span style=\"white-space: nowrap;\">Available at </span>" +
+            "<span>${module.zipUrl} </span>" +
+            "<span style=\"white-space: nowrap;\">(${size})</span>"
+
+    private val zipSizeText = AtomicProperty<String>(zipSizeText("??? ??"))
+
 
     @NonNls
     fun formatFileSize(sizeInBytes: Long): String {
@@ -158,15 +157,8 @@ class ModuleRenderer(
     }
 
     private fun Panel.available() {
-        if (!isZipSizeSet) {
-            CoursesClient.getInstance(project).execute {
-                val size = it.getFileSize(module.zipUrl) ?: return@execute
-                updateZipSize(formatFileSize(size))
-                isZipSizeSet = true
-            }
-        }
         row {
-            info("")
+            info(zipSizeText.get())
                 .bindText(zipSizeText)
                 .resizableColumn()
             button("Install") {
@@ -176,6 +168,13 @@ class ModuleRenderer(
             button("Installing...") {}.applyToComponent {
                 isEnabled = false
             }.align(AlignY.BOTTOM).visibleIf(installing)
+        }
+        if (!isZipSizeSet) {
+            CoursesClient.getInstance(project).execute {
+                val size = it.getFileSize(module.zipUrl) ?: return@execute
+                zipSizeText.set(zipSizeText(formatFileSize(size)))
+                isZipSizeSet = true
+            }
         }
     }
 
@@ -202,7 +201,7 @@ class ModuleRenderer(
                 info("Next assignment: ${groupName}")
             }
             row {
-                myLink(exercise.name, PluginIcons.A_PLUS_NO_SUBMISSIONS) {
+                myLink(exercise.name, CoursesIcons.NoSubmissions) {
                     opener.showExercise(exercise)
                 }
             }
@@ -211,7 +210,7 @@ class ModuleRenderer(
             row {
                 myActionLink(
                     "Open documentation",
-                    PluginIcons.A_PLUS_DOCS,
+                    CoursesIcons.Docs,
                     opener.openDocumentationAction(module, "doc/index.html")
                 )
             }
@@ -230,7 +229,7 @@ class ModuleRenderer(
     private var isHovering = false
 
     init {
-        updateZipSize("??? ??")
+//        updateZipSize("??? ??")
         this.panel = base { header() }
         add(panel, BorderLayout.CENTER)
     }
@@ -276,9 +275,11 @@ class ModuleRenderer(
         panel = base {
             init()
         }
-        add(panel, BorderLayout.CENTER)
-        revalidate()
-        repaint()
+        application.invokeLater {
+            add(panel, BorderLayout.CENTER)
+            revalidate()
+            repaint()
+        }
     }
 
     fun updateBackground(isHovering: Boolean) {

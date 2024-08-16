@@ -1,6 +1,5 @@
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.markdownToHTML
-import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
 
 plugins {
 //    id("java")
@@ -66,7 +65,7 @@ dependencies {
 
         // Plugin Dependencies.
         // Uses `platformBundledPlugins` property from the gradle.properties file for bundled IntelliJ Platform plugins.
-//        bundledPlugins(providers.gradleProperty("platformBundledPlugins").map { it.split(',') })
+        bundledPlugins(providers.gradleProperty("platformBundledPlugins").map { it.split(',') })
 
         // Plugin Dependencies.
         // Uses `platformPlugins` property from the gradle.properties file for plugin from JetBrains Marketplace.

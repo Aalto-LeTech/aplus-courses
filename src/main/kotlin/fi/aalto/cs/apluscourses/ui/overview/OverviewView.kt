@@ -17,7 +17,7 @@ import fi.aalto.cs.apluscourses.services.course.CourseManager
 import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdaterService
 import fi.aalto.cs.apluscourses.ui.BannerPanel
 import fi.aalto.cs.apluscourses.ui.TokenForm
-import icons.PluginIcons
+import fi.aalto.cs.apluscourses.icons.CoursesIcons
 import java.awt.*
 import java.net.URI
 import javax.swing.Icon
@@ -30,8 +30,8 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
 
     private var panel = createPanel()
 
-    fun update() {
-        panel = createPanel()
+    fun update(loading: Boolean = false) {
+        panel = createPanel(loading)
         val content = JBScrollPane(panel)
         content.horizontalScrollBarPolicy = ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
         setContent(content)
@@ -41,21 +41,22 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
     private fun loadingPanel(): DialogPanel {
         return panel {
             row {
-                icon(PluginIcons.A_PLUS_LOADING).resizableColumn().align(Align.CENTER)
+                icon(CoursesIcons.Loading).resizableColumn().align(Align.CENTER)
             }.resizableRow()
         }
     }
 
-    private val tokenForm: TokenForm by lazy {
-        TokenForm(project) {
-            CourseManager.getInstance(project).restart()
-        }
-    }
-
-    private fun createPanel(): DialogPanel {
+    private fun createPanel(loading: Boolean = false): DialogPanel {
+        if (loading) return loadingPanel()
         val authenticated = CourseManager.authenticated(project) ?: return loadingPanel()
         if (!authenticated) {
             val courseName = CourseManager.getInstance(project).state.courseName ?: ""
+            val tokenForm: TokenForm by lazy {
+                TokenForm(project) {
+                    update(loading = true)
+                    CourseManager.getInstance(project).restart()
+                }
+            }
             return panel {
                 panel {
                     row {
@@ -93,7 +94,7 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
                     }.topGap(TopGap.SMALL)
                     if (points == null || maxPoints == null) {
                         row {
-                            icon(PluginIcons.A_PLUS_LOADING).resizableColumn().align(Align.CENTER)
+                            icon(CoursesIcons.Loading).resizableColumn().align(Align.CENTER)
                         }.resizableRow()
                     } else {
                         group(indent = false) {
@@ -147,7 +148,7 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
                         }
                         row {
                             browserLink("Course page", course.htmlUrl).applyToComponent {
-                                setIcon(PluginIcons.A_PLUS_LOGO_COLOR, atRight = false)
+                                setIcon(CoursesIcons.LogoColor, atRight = false)
                             }
                         }
                     }

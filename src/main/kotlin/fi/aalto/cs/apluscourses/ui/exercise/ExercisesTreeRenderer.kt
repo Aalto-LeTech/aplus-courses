@@ -10,11 +10,10 @@ import com.intellij.util.ui.JBFont
 import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.model.exercise.Exercise
 import fi.aalto.cs.apluscourses.model.exercise.SubmissionResult
-import icons.PluginIcons
+import fi.aalto.cs.apluscourses.icons.CoursesIcons
 import java.awt.*
 import java.awt.geom.RoundRectangle2D
 import javax.swing.Icon
-import javax.swing.JButton
 import javax.swing.JTree
 import javax.swing.tree.DefaultMutableTreeNode
 
@@ -22,22 +21,6 @@ import javax.swing.tree.DefaultMutableTreeNode
 class ExercisesTreeRenderer : NodeRenderer() {
     private lateinit var item: ExercisesView.ExercisesTreeItem
 
-    private val actionButton: JButton = JButton("Submit").apply {
-//        isFocusable = false
-//        addMouseListener(object : MouseAdapter() {
-//            override fun mouseEntered(e: MouseEvent?) {
-//                background = JBColor.red//JBUI.CurrentTheme.ActionButton.hoverBackground()
-//            }
-//
-//            override fun mouseExited(e: MouseEvent?) {
-//                background = JBColor.background()
-//            }
-//        })
-
-    }
-
-//    private var hovering = false
-//    private var mousePosition: Point? = Point()
 
     override fun customizeCellRenderer(
         tree: JTree,
@@ -48,19 +31,12 @@ class ExercisesTreeRenderer : NodeRenderer() {
         row: Int,
         hasFocus: Boolean
     ) {
-//        hovering = getHoveredRow(tree) == row
-//        mousePosition = tree.mousePosition
-//        background = if (row % 2 == 0) {
-//            JBColor.red
-//        } else {
-//            JBColor.background()
-//        }
         this.item = (value as DefaultMutableTreeNode).userObject as ExercisesView.ExercisesTreeItem
         when (val item = value.userObject as ExercisesView.ExercisesTreeItem) {
             is ExercisesView.NewSubmissionItem -> {
                 isEnabled = true
                 append(item.displayName(), SimpleTextAttributes.REGULAR_ITALIC_ATTRIBUTES, true)
-                icon = if (item.missingModule) PluginIcons.A_PLUS_MODULE_DISABLED else PluginIcons.A_PLUS_PLUS
+                icon = if (item.missingModule) CoursesIcons.ModuleDisabled else CoursesIcons.Plus
                 toolTipText = message("ui.exercise.ExercisesTreeRenderer.submit")
             }
 
@@ -70,11 +46,11 @@ class ExercisesTreeRenderer : NodeRenderer() {
                 append(group.name, SimpleTextAttributes.REGULAR_ATTRIBUTES, false)
                 isEnabled = true
                 icon = if (group.exercises.any { exercise -> !exercise.isDetailsLoaded }) {
-                    PluginIcons.A_PLUS_LOADING
+                    CoursesIcons.Loading
                 } else if (group.isOpen) {
-                    PluginIcons.A_PLUS_EXERCISE_GROUP
+                    CoursesIcons.ExerciseGroup
                 } else {
-                    PluginIcons.A_PLUS_EXERCISE_GROUP_CLOSED
+                    CoursesIcons.ExerciseGroupClosed
                 }
                 toolTipText = ""
             }
@@ -82,13 +58,7 @@ class ExercisesTreeRenderer : NodeRenderer() {
             is ExercisesView.ExerciseItem -> {
                 val exercise = item.exercise
                 append(exercise.name, SimpleTextAttributes.REGULAR_ATTRIBUTES, true)
-//                if (viewModel.statusText.trim { it <= ' ' }.isNotEmpty()) {
-//                    append(" [" + viewModel.statusText + "]", STATUS_TEXT_STYLE)
-//                }
                 isEnabled = exercise.isSubmittable
-//                toolTipText = if (exercise.isSubmittable
-//                ) PluginResourceBundle.getText("ui.exercise.ExercisesTreeRenderer.useUploadButton")
-//                else PluginResourceBundle.getText("ui.exercise.ExercisesTreeRenderer.cannotSubmit")
                 icon = ExtendableTextComponent.Extension { statusToIcon(getStatus(exercise)) }.getIcon(false)
             }
 
@@ -98,13 +68,8 @@ class ExercisesTreeRenderer : NodeRenderer() {
                 append(item.displayName(), SimpleTextAttributes.REGULAR_ATTRIBUTES, true)
                 append(" ${submission.id}", SimpleTextAttributes.GRAYED_ATTRIBUTES, false)
                 if (submission.status == SubmissionResult.Status.WAITING) {
-                    icon = PluginIcons.A_PLUS_LOADING
+                    icon = CoursesIcons.Loading
                 }
-//                append(" [" + viewModel.statusText + "]", STATUS_TEXT_STYLE, false)
-//                toolTipText = PluginResourceBundle.getAndReplaceText(
-//                    "ui.exercise.ExercisesTreeRenderer.tooltip",
-//                    submission.id.toString()
-//                )
             }
 
             is ExercisesView.ExercisesRootItem -> {}
@@ -133,35 +98,8 @@ class ExercisesTreeRenderer : NodeRenderer() {
         var isSubmittable = true
         val text = when (val item = this.item) {
             is ExercisesView.ExerciseItem -> {
-//                if (hovering && item.exercise.isSubmittable) {
-//                    super.paintComponent(g2d)
-//                    val size = size
-//                    val buttonSize = actionButton.preferredSize
-//                    actionButton.setBounds(
-//                        size.width - buttonSize.width - 5,
-//                        0, buttonSize.width, height
-//                    )
-////                     transparent backround
-//                    actionButton.isOpaque = false
-//                    // check if hovering
-//                    if (mousePosition != null && mousePosition!!.x < size.width - buttonSize.width - 5
-//                    ) {
-//                        actionButton.graphics?.color = JBColor(0x000000, 0x000000)
-//                        println("dijawofijaoiwf")
-//                        actionButton.border = JBUI.Borders.customLine(JBColor(0x000000, 0x000000), 1, 0, 0, 0)
-//                    } else {
-//                        actionButton.isSelected = false
-//                        actionButton.border = JBUI.Borders.empty()
-//                    }
-//
-//                    SwingUtilities.paintComponent(g2d, actionButton, this, actionButton.bounds)
-//                    return
-//                }
                 val exercise = item.exercise
                 isSubmittable = exercise.isSubmittable
-//                if (submittable) {
-//                    g2d.
-//                }
                 white = false
                 val userPoints = exercise.userPoints
                 val maxPoints = exercise.maxPoints
@@ -312,19 +250,15 @@ class ExercisesTreeRenderer : NodeRenderer() {
 
         private fun statusToIcon(exerciseStatus: Status): Icon {
             return when (exerciseStatus) {
-                Status.OPTIONAL_PRACTICE -> PluginIcons.A_PLUS_OPTIONAL_PRACTICE
-                Status.NO_SUBMISSIONS -> PluginIcons.A_PLUS_NO_SUBMISSIONS
-                Status.NO_POINTS -> PluginIcons.A_PLUS_NO_POINTS
-                Status.PARTIAL_POINTS -> PluginIcons.A_PLUS_PARTIAL_POINTS
-                Status.FULL_POINTS -> PluginIcons.A_PLUS_FULL_POINTS
-                Status.LATE -> PluginIcons.A_PLUS_LATE
-                Status.IN_GRADING, Status.LOADING -> PluginIcons.A_PLUS_LOADING
+                Status.OPTIONAL_PRACTICE -> CoursesIcons.OptionalPractice
+                Status.NO_SUBMISSIONS -> CoursesIcons.NoSubmissions
+                Status.NO_POINTS -> CoursesIcons.NoPoints
+                Status.PARTIAL_POINTS -> CoursesIcons.PartialPoints
+                Status.FULL_POINTS -> CoursesIcons.FullPoints
+                Status.LATE -> CoursesIcons.Late
+                Status.IN_GRADING, Status.LOADING -> CoursesIcons.Loading
             }
         }
-
-        private val STATUS_TEXT_STYLE = SimpleTextAttributes(
-            SimpleTextAttributes.STYLE_ITALIC or SimpleTextAttributes.STYLE_SMALLER, null
-        )
 
         enum class Status {
             OPTIONAL_PRACTICE,

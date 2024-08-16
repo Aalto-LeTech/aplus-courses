@@ -1,6 +1,5 @@
 package fi.aalto.cs.apluscourses.actions.exercise
 
-import com.intellij.ide.BrowserUtil
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -9,13 +8,12 @@ import com.intellij.openapi.fileEditor.FileEditor
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.testFramework.LightVirtualFile
-import com.intellij.ui.jcef.JBCefBrowser
 import com.intellij.util.application
 import fi.aalto.cs.apluscourses.api.APlusApi
 import fi.aalto.cs.apluscourses.services.exercise.SelectedExerciseService
 import fi.aalto.cs.apluscourses.ui.browser.BrowserEditor
 import fi.aalto.cs.apluscourses.ui.exercise.ExercisesView
-import icons.PluginIcons
+import fi.aalto.cs.apluscourses.icons.CoursesIcons
 import kotlinx.coroutines.launch
 
 
@@ -58,7 +56,7 @@ class OpenExerciseItemAction : AnAction() {
     override fun update(e: AnActionEvent) {
         val selected = e.project?.service<SelectedExerciseService>()?.selectedExerciseTreeItem
         e.presentation.isEnabled = selected?.url() != null
-        e.presentation.icon = if (loading) PluginIcons.A_PLUS_LOADING else PluginIcons.A_PLUS_BROWSE
+        e.presentation.icon = if (loading) CoursesIcons.Loading else CoursesIcons.Browse
     }
 
     override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT

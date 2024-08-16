@@ -6,13 +6,14 @@ import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBScrollPane
+import com.intellij.ui.dsl.builder.AlignY
 import com.intellij.ui.dsl.builder.BottomGap
 import com.intellij.ui.dsl.builder.IntelliJSpacingConfiguration
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.gridLayout.UnscaledGaps
 import com.intellij.util.ui.JBFont
 import fi.aalto.cs.apluscourses.model.news.NewsTree
-import icons.PluginIcons
+import fi.aalto.cs.apluscourses.icons.CoursesIcons
 import java.awt.Font
 import javax.swing.ScrollPaneConstants
 
@@ -60,7 +61,7 @@ class NewsView(private val toolWindow: ToolWindow, private val project: Project)
                                     font = JBFont.regular().biggerOn(6f).deriveFont(Font.BOLD)
                                 }.resizableColumn()
                                 if (!node.isRead) {
-                                    icon(PluginIcons.A_PLUS_NEW)
+                                    icon(CoursesIcons.NewChip).align(AlignY.TOP)
                                 }
                             }
                             row {

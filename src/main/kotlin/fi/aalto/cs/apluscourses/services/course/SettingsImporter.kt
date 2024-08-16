@@ -14,7 +14,6 @@ import fi.aalto.cs.apluscourses.utils.APlusLogger
 import io.ktor.client.statement.bodyAsText
 import io.ktor.client.statement.request
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import net.lingala.zip4j.ZipFile
 import java.io.IOException
 import java.nio.file.Path
@@ -38,7 +37,7 @@ class SettingsImporter(
         val ideSettingsUrl = course.appropriateIdeSettingsUrl ?: return
 
         val file = FileUtilRt.createTempFile("course-ide-settings", ".zip")
-        //    CoursesClient.fetch(ideSettingsUrl, file);
+//        CoursesClient.getInstance(project).fetch(ideSettingsUrl, file)
         val configPath = FileUtilRt.toSystemIndependentName(PathManager.getConfigPath())
         StartupActionScriptManager.addActionCommands(
             listOf(
@@ -47,7 +46,8 @@ class SettingsImporter(
             )
         )
 
-        UpdateSettings.getInstance().forceCheckForUpdateAfterRestart()
+//        UpdateSettings.getInstance().forceCheckForUpdateAfterRestart()
+        UpdateSettings.getInstance().isCheckNeeded = true
 
 //        PluginSettings.getInstance().importedIdeSettingsId = course.id
     }
