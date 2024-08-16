@@ -171,8 +171,4 @@ internal class APlusConfigurable(val project: Project) : Configurable, Configura
     override fun getDisplayName(): String {
         return "A+ Courses"
     }
-
-    override fun disposeUIResources() {
-        super.disposeUIResources()
-    }
 }

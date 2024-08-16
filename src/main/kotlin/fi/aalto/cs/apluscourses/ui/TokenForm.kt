@@ -8,11 +8,10 @@ import com.intellij.openapi.observable.util.isNull
 import com.intellij.openapi.observable.util.not
 import com.intellij.openapi.project.Project
 import com.intellij.ui.components.JBPasswordField
-import com.intellij.ui.dsl.builder.COLUMNS_MEDIUM
+import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.Panel
 import com.intellij.ui.dsl.builder.Row
 import com.intellij.ui.dsl.builder.bindText
-import com.intellij.ui.dsl.builder.columns
 import com.intellij.util.ui.JBUI
 import fi.aalto.cs.apluscourses.model.people.User
 import fi.aalto.cs.apluscourses.services.TokenStorage
@@ -24,12 +23,12 @@ class TokenForm(private val project: Project, private val callback: () -> Unit =
     val user = AtomicProperty<User?>(null)
     val userName = AtomicProperty<String>("")
     var isModified = false
-    private val passwordField = JBPasswordField()
+    private var passwordField: JBPasswordField? = null
 
     private fun setToken() {
         checking.set(true)
         TokenStorage.getInstance().storeAndCheck(
-            OneTimeString(passwordField.password.filter { it.isLetterOrDigit() }.toCharArray()),
+            OneTimeString(passwordField!!.password.filter { it.isLetterOrDigit() }.toCharArray()),
             project
         ) {
             user.set(it)
@@ -41,7 +40,7 @@ class TokenForm(private val project: Project, private val callback: () -> Unit =
                 callback()
             }
         }
-        passwordField.text = ""
+        passwordField!!.text = ""
     }
 
     private fun removeToken() {
@@ -64,9 +63,18 @@ class TokenForm(private val project: Project, private val callback: () -> Unit =
 
     fun Panel.token(): Row =
         row("A+ token") {
-            cell(passwordField).columns(COLUMNS_MEDIUM).comment(
-                "<a href=\"https://plus.cs.aalto.fi/accounts/accounts/\">What is my token?</a>",
-            )
+//            cell(passwordField).apply {
+//                component.preferredSize = null // Let the layout manager decide based on minimumSize
+//            }.comment(
+//                "<a href=\"https://plus.cs.aalto.fi/accounts/accounts/\">What is my token?</a>",
+//            ).align(AlignX.FILL).columns(COLUMNS_MEDIUM)
+            passwordField()
+                .applyToComponent {
+                    passwordField = this
+                }
+                .resizableColumn()
+                .align(AlignX.FILL)
+                .comment("<a href=\"https://plus.cs.aalto.fi/accounts/accounts/\">What is my token?</a>")
             button("Set") { setToken() }.visibleIf(checking.not())
             button("Checking...") {}.enabled(false).visibleIf(checking)
         }.visibleIf(user.isNull())
