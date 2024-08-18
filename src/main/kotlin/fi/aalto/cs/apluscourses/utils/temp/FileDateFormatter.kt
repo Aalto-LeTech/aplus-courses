@@ -20,6 +20,6 @@ object FileDateFormatter {
         val fileInstant = Instant.fromEpochMilliseconds(fileTime.toMillis())
         val currentTime = Clock.System.now()
 
-        return DateDifferenceFormatter.formatWithLargestTimeUnit(fileInstant, currentTime)
+        return DateDifferenceFormatter.formatWithLargestTimeUnit(fileInstant, currentTime, true)
     }
 }

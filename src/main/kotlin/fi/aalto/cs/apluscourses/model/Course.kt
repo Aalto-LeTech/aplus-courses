@@ -51,21 +51,6 @@ class Course(
         autoInstallComponentNames
             .mapNotNull { components[it] }
 
-    /**
-     * A URL containing the appropriate IDE settings for the platform that the user
-     * is currently using. If no IDE settings are available, null is returned.
-     */
-    val appropriateIdeSettingsUrl: Url? =
-        if (SystemInfoRt.isWindows) {
-            resourceUrls["ideSettingsWindows"]
-        } else if (SystemInfoRt.isLinux) {
-            resourceUrls["ideSettingsLinux"]
-        } else if (SystemInfoRt.isMac) {
-            resourceUrls["ideSettingsMac"]
-        } else {
-            null
-        } ?: resourceUrls["ideSettings"] // Use generic IDE settings if no platform-specific settings are available
-
 //    /**
 //     * Resolves states of unresolved components and calls `validate()`.
 //     */

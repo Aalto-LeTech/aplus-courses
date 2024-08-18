@@ -1,6 +1,10 @@
 package fi.aalto.cs.apluscourses.api
 
+import com.intellij.openapi.project.Project
+import fi.aalto.cs.apluscourses.services.CoursesClient
+import fi.aalto.cs.apluscourses.services.course.CourseFileManager
 import fi.aalto.cs.apluscourses.utils.Version
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -143,6 +147,7 @@ object CourseConfig {
         val callbacks: Callbacks? = null,
         val exerciseModules: Map<Long, Map<String, String>>,
         val hiddenElements: List<Long> = emptyList(),
+        val grading: Grading? = null,
     )
 
     @Serializable
@@ -224,6 +229,22 @@ object CourseConfig {
         val version: Version = Version.DEFAULT,
         val changelog: String? = null,
     )
+
+    @Serializable
+    data class Grading(
+        val style: String,
+        val points: Map<String, Map<String, Int>>
+    )
+
+    suspend fun get(project: Project): JSON? {
+        val url = CourseFileManager.getInstance(project).state.url ?: return null
+        try {
+            val courseConfig = CoursesClient.getInstance(project).get(url).bodyAsText()
+            return deserialize(courseConfig)
+        } catch (_: Exception) {
+            return null
+        }
+    }
 
     fun deserialize(json: String): JSON {
         return Json.decodeFromString(JSON.serializer(), json)

@@ -5,6 +5,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.util.xmlb.Converter
 import com.intellij.util.xmlb.annotations.*
 import fi.aalto.cs.apluscourses.model.component.Module
+import fi.aalto.cs.apluscourses.model.exercise.Group
 import fi.aalto.cs.apluscourses.utils.Version
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -39,6 +40,9 @@ class CourseFileManager(private val project: Project) :
         var modules: MutableList<ModuleMetadata> by list()
         var language by string(null)
         var url by string(null)
+        var defaultGroupId by property(-1L)
+        var importSettings by property(false)
+        var initialized by property(false)
         fun increment() = incrementModificationCount()
     }
 
@@ -51,9 +55,14 @@ class CourseFileManager(private val project: Project) :
         constructor() : this("", Instant.fromEpochSeconds(0), Version.EMPTY)
     }
 
-    fun updateSettings(language: String, aplusUrl: String) {
+    fun updateSettings(language: String, aplusUrl: String, importSettings: Boolean) {
         state.language = language
         state.url = aplusUrl
+        state.importSettings = importSettings
+    }
+
+    fun setDefaultGroup(group: Group) {
+        state.defaultGroupId = group.id
     }
 
     fun addModule(module: Module) {

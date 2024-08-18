@@ -1,18 +1,22 @@
 package fi.aalto.cs.apluscourses.services.course
 
+import com.intellij.compiler.CompilerWorkspaceConfiguration
 import com.intellij.diagnostic.VMOptions
 import com.intellij.ide.startup.StartupActionScriptManager
 import com.intellij.ide.startup.StartupActionScriptManager.UnzipCommand
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.components.Service
+import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.updateSettings.impl.UpdateSettings
+import com.intellij.openapi.util.SystemInfoRt
 import com.intellij.openapi.util.io.FileUtilRt
 import fi.aalto.cs.apluscourses.model.Course
 import fi.aalto.cs.apluscourses.services.CoursesClient
 import fi.aalto.cs.apluscourses.utils.APlusLogger
 import io.ktor.client.statement.bodyAsText
 import io.ktor.client.statement.request
+import io.ktor.http.Url
 import kotlinx.coroutines.CoroutineScope
 import net.lingala.zip4j.ZipFile
 import java.io.IOException
@@ -33,11 +37,23 @@ class SettingsImporter(
      * @throws IOException If an IO error occurs (e.g., network issues).
      */
     @Throws(IOException::class)
-    fun importIdeSettings(course: Course) {
-        val ideSettingsUrl = course.appropriateIdeSettingsUrl ?: return
+    suspend fun importIdeSettings(resourceUrls: Map<String, Url>): Boolean {
+        val ideSettingsUrl =
+            if (SystemInfoRt.isWindows) {
+                resourceUrls["ideSettingsWindows"]
+            } else if (SystemInfoRt.isLinux) {
+                resourceUrls["ideSettingsLinux"]
+            } else if (SystemInfoRt.isMac) {
+                resourceUrls["ideSettingsMac"]
+            } else {
+                null
+            }
+                ?: resourceUrls["ideSettings"] // Use generic IDE settings if no platform-specific settings are available ?: return
 
-        val file = FileUtilRt.createTempFile("course-ide-settings", ".zip")
-//        CoursesClient.getInstance(project).fetch(ideSettingsUrl, file)
+        if (ideSettingsUrl == null) false
+
+        val file = FileUtilRt.createTempFile("course-ide-settings", ".zip", false)
+        CoursesClient.getInstance(project).fetch(ideSettingsUrl.toString(), file)
         val configPath = FileUtilRt.toSystemIndependentName(PathManager.getConfigPath())
         StartupActionScriptManager.addActionCommands(
             listOf(
@@ -46,10 +62,8 @@ class SettingsImporter(
             )
         )
 
-//        UpdateSettings.getInstance().forceCheckForUpdateAfterRestart()
-        UpdateSettings.getInstance().isCheckNeeded = true
-
-//        PluginSettings.getInstance().importedIdeSettingsId = course.id
+        UpdateSettings.getInstance().forceCheckForUpdateAfterRestart()
+        return true
     }
 
     /**
@@ -57,26 +71,14 @@ class SettingsImporter(
      * options to import, this function does nothing.
      */
     @Throws(IOException::class)
-    fun importVMOptions(course: Course) {
+    fun importVMOptions(options: Map<String, String>) {
         if (!VMOptions.canWriteOptions()) {
             logger.warn("Cannot import VM options because the IDE is configured not to use them")
             return
         }
-
-        val options: Map<String, String> = course.vmOptions
-        for ((key, value) in options) {
-            VMOptions.setProperty(key, value)
-        }
+        options.forEach { (key, value) -> VMOptions.setProperty(key, value) }
 
         logger.info("Imported " + options.size + " VM options")
-    }
-
-    /**
-     * Returns the ID of the course for which the latest IDE settings import has been done.
-     */
-    fun currentlyImportedIdeSettings(): Long? {
-//        return PluginSettings.getInstance().importedIdeSettingsId
-        return null
     }
 
     /**
@@ -88,19 +90,13 @@ class SettingsImporter(
      * @throws IOException If an IO error occurs (e.g., network issues).
      */
     @Throws(IOException::class)
-    fun importProjectSettings(project: Project, basePath: Path, course: Course) {
-        val settingsUrl = course.resourceUrls["projectSettings"] ?: return
-
-        val settingsPath = basePath.resolve(Project.DIRECTORY_STORE_FOLDER)
-
-        val settingsZip = FileUtilRt.createTempFile("course-project-settings", ".zip")
-        //    CoursesClient.fetch(settingsUrl, settingsZip);
-        val zipFile = ZipFile(settingsZip)
-
-        extractZipTo(zipFile, settingsPath)
+    suspend fun importProjectSettings(resourceUrls: Map<String, Url>) {
+        val settingsUrl = resourceUrls["projectSettings"] ?: return
+        val settingsPath = Path.of(project.basePath!!, Project.DIRECTORY_STORE_FOLDER)
+        CoursesClient.getInstance(project).getAndUnzip(settingsUrl.toString(), settingsPath)
 
         // a hard-coded workspace setting
-//    CompilerWorkspaceConfiguration.getInstance(project).AUTO_SHOW_ERRORS_IN_EDITOR = false; TODO
+        CompilerWorkspaceConfiguration.getInstance(project).AUTO_SHOW_ERRORS_IN_EDITOR = false
         logger.info("Imported project settings")
     }
 
@@ -126,6 +122,10 @@ class SettingsImporter(
 
     companion object {
         private val logger = APlusLogger.logger
+
+        fun getInstance(project: Project): SettingsImporter {
+            return project.service<SettingsImporter>()
+        }
 
         @Throws(IOException::class)
         private fun extractZipTo(zipFile: ZipFile, target: Path) {

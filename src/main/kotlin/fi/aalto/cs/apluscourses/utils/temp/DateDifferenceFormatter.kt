@@ -9,7 +9,12 @@ import java.time.temporal.ChronoUnit
 object DateDifferenceFormatter {
     fun formatTimeUntilNow(time: Instant): String {
         val currentTime = Clock.System.now()
-        return formatWithLargestTimeUnit(time, currentTime)
+        return formatWithLargestTimeUnit(time, currentTime, true)
+    }
+
+    fun formatTimeSinceNow(time: Instant): String {
+        val currentTime = Clock.System.now()
+        return formatWithLargestTimeUnit(currentTime, time, false)
     }
 
     /**
@@ -22,7 +27,8 @@ object DateDifferenceFormatter {
      */
     fun formatWithLargestTimeUnit(
         earlierTimePoint: Instant,
-        laterTimePoint: Instant
+        laterTimePoint: Instant,
+        before: Boolean
     ): String {
         val period = earlierTimePoint.periodUntil(laterTimePoint, TimeZone.UTC)
 
@@ -45,6 +51,10 @@ object DateDifferenceFormatter {
             timeUnitText = timeUnitText.substringBeforeLast("s")
         }
 
-        return "$time $timeUnitText ago"
+        return if (before) {
+            "$time $timeUnitText ago"
+        } else {
+            "in $time $timeUnitText"
+        }
     }
 }

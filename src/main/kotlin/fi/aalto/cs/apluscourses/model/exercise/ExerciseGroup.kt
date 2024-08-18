@@ -7,6 +7,7 @@ data class ExerciseGroup(
     var userPoints: Int,
     val htmlUrl: String,
     val isOpen: Boolean,
+    val closingTime: String?,
     private val exerciseOrder: List<Long>,
     val exercises: MutableList<Exercise>
 ) {

@@ -33,6 +33,7 @@ class ShowFeedback(
     fun showFeedback(submission: SubmissionResult, exercise: Exercise) {
         cs.launch {
             try {
+                println(CourseManager.getInstance(project).state.feedbackCss)
                 val feedbackCss = CourseManager.getInstance(project).state.feedbackCss ?: return@launch
                 if (feedbackCss.isEmpty()) {
                     return@launch
@@ -61,7 +62,11 @@ class ShowFeedback(
                 )
 
                 document.head().append(
-                    """<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap3/dist/css/bootstrap.min.css"/>"""
+                    """<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js"></script>"""
+                )
+
+                document.head().append(
+                    """<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css"/>"""
                 )
 
                 document.head().append(

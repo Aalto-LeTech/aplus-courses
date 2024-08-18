@@ -48,8 +48,10 @@ class SubmitExercise(
                 } else {
                     println("Submission info is not null")
                 }
-                if (exercise.submissionResults.isNotEmpty()) {
-                    println("multiple submitters:  ${exercise.submissionResults.first().submitters}")
+                val submittedBefore = exercise.submissionResults.isNotEmpty()
+                val submittersFromBefore = exercise.submissionResults.firstOrNull()?.submitters
+                if (submittedBefore) {
+                    println("multiple submitters:  ${submittersFromBefore}")
                 }
                 exercise.submissionInfo = submissionInfo // TODO remove
 
@@ -77,31 +79,6 @@ class SubmitExercise(
 
                 val module = exerciseModules[language]
                 val platformModule = module?.platformObject
-//        val moduleName = Optional
-//            .ofNullable(exerciseModules)
-//            .map { self: Map<String, String> -> self[language] }
-
-//                var selectedModule: com.intellij.openapi.module.Module? = null
-//                println(moduleName)
-//                val moduleDir: VirtualFile? = null
-//                if (moduleName != null) {
-//                    selectedModule = ProjectModuleSource.getModule(project, moduleName)
-//                    if (selectedModule == null) {
-//                        throw ModuleMissingException(moduleName)
-//                    }
-//                } else {
-//                    TODO()
-//            val modules = ProjectModuleSource.getModules(project)
-//
-//            val moduleSelectionViewModel: ModuleSelectionViewModel = ModuleSelectionViewModel(
-//                modules, getText("ui.toolWindow.subTab.exercises.submission.selectModule"), project, moduleDirGuesser
-//            )
-//            if (!dialogs.create(moduleSelectionViewModel, project).showAndGet()) {
-//                return
-//            }
-//            selectedModule = moduleSelectionViewModel.selectedModule.get()
-//            moduleDir = moduleSelectionViewModel.selectedModuleFile.get()
-//                }
 
                 logger.info("Selected $module")
 
@@ -114,7 +91,6 @@ class SubmitExercise(
                 }
 
                 val modulePath = ModuleUtilCore.getModuleDirPath(platformModule)
-//                    if (moduleDir == null) ModuleUtilCore.getModuleDirPath(module.platformObject) else moduleDir.path
 
                 val files: MutableMap<String, Path> = HashMap()
                 println(modulePath)
@@ -124,47 +100,36 @@ class SubmitExercise(
                 }
                 logger.info("Submission files: $files")
 
-//        val course: Unit = courseViewModel.getModel()
-//        val exerciseDataSource: Unit = course.getExerciseDataSource()
-
-
                 //TODO move to service
                 val groups = listOf(Group.GROUP_ALONE) + APlusApi.course(course).myGroups(project)
 
                 // Find the group from the available groups that matches the default group ID.
                 // A group could be removed, so this way we check that the default group ID is still valid.
-//            val defaultGroupId: Optional<Long> = defaultGroupIdSetting.getDefaultGroupId()
-//            val defaultGroup: Group = defaultGroupId
-//                .flatMap<Group>(Function<Long, Optional<out Group?>> { id: Long ->
-//                    groups
-//                        .stream()
-//                        .filter(Predicate<Group?> { group: Group? -> group.getId() === id })
-//                        .findFirst()
-//                })
-//                .orElse(null)
-                val defaultGroup = groups.first()
+                var defaultGroupId = CourseFileManager.getInstance(project).state.defaultGroupId
+                var group = groups.find { it.id == defaultGroupId }
+                if (group == null) {
+                    group = Group.GROUP_ALONE
+                    CourseFileManager.getInstance(project).setDefaultGroup(group)
+                }
+                if (submittedBefore) {
+                    val submitters = submittersFromBefore ?: emptyList()
+                    group = groups.find {
+                        submitters.containsAll(it.members.map { it.id })
+                    } ?: Group.GROUP_ALONE
+                }
 
-
-//            val lastSubmittedGroupId: String =
-//                groupSelector.getLastSubmittedGroupId(project, course.getId(), exercise.id)
-//            val lastSubmittedGroup: Group? = groups
-//                .stream()
-//                .filter(Predicate<Group?> { g: Group? -> g.getMemberwiseId().equals(lastSubmittedGroupId) })
-//                .findFirst()
-//                .orElse(null)
-                val lastSubmittedGroup = null
-
-                val group = Group.GROUP_ALONE //Objects.requireNonNull(selectedGroup.get());
-                val submission = Submission(exercise, files, group, language)
-
+                val submissionDialog = withContext(Dispatchers.EDT) {
+                    SubmitExerciseDialog(project, exercise, files.values.toList(), groups, group, submittedBefore)
+                }
 
                 val canceled = withContext(Dispatchers.EDT) {
-                    !SubmitExerciseDialog(project, exercise, files.values.toList(), groups).showAndGet()
+                    !submissionDialog.showAndGet()
                 }
 
                 if (canceled) {
                     return@launch
                 }
+                val submission = Submission(exercise, files, submissionDialog.selectedGroup.get(), language)
 
                 withContext(Dispatchers.EDT) {
 //                    if (DuplicateSubmissionCheckerImpl().isDuplicateSubmission(project, course.id, exercise.id, files) TODO
@@ -173,13 +138,7 @@ class SubmitExercise(
 //                        return@withContext
 //                    }
                 }
-//                val selectedGroup: Group = submission.selectedGroup.get()!!
 
-//            if (submission.makeDefaultGroup.get() == true) {
-//                defaultGroupIdSetting.setDefaultGroupId(selectedGroup.id)
-//            } else {
-//                defaultGroupIdSetting.clearDefaultGroupId()
-//            }
 
 //                logger.info("Submitting with group: $selectedGroup")
                 APlusApi.exercise(exercise).submit(submission, project)
@@ -189,12 +148,7 @@ class SubmitExercise(
 
 //            groupSelector.onAssignmentSubmitted(project, course.getId(), exercise.id, selectedGroup)
 //            duplicateChecker.onAssignmentSubmitted(project, course.getId(), exercise.id, files)
-//
-//            SubmissionStatusUpdater(
-//                project, exerciseDataSource, authentication, submissionUrl, selectedExercise.getModel(), course
-//            ).start()
-//            notifier.notifyAndHide(SubmissionSentNotification(), project)
-//
+
 //            val tag: String = getAndReplaceText(
 //                "ui.localHistory.submission.tag",
 //                selectedExerciseGroup.getPresentableName(),

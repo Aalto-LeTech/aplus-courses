@@ -17,11 +17,7 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.serialization.kotlinx.json.*
-import io.ktor.util.cio.writeChannel
-import io.ktor.utils.io.ByteReadChannel
-import io.ktor.utils.io.close
-import io.ktor.utils.io.copyAndClose
-import io.ktor.utils.io.copyTo
+import java.io.File
 import io.ktor.utils.io.readAvailable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -45,8 +41,17 @@ class CoursesClient(
     val project: Project,
     val cs: CoroutineScope
 ) {
-    val client: HttpClient by lazy {
-        HttpClient(CIO) {
+    var client: HttpClient =
+        HttpClient(CIO)
+
+
+    fun changeHost(newHost: String) {
+        val protocol =
+            if (newHost.substringBefore("://").lowercase() == "https") URLProtocol.HTTPS else URLProtocol.HTTP
+        val host = newHost.substringAfter("://").substringBeforeLast("/").substringBeforeLast(":")
+        val port = newHost.substringAfterLast(":").substringBefore("/").toIntOrNull() ?: 0
+
+        client = HttpClient(CIO) {
             install(Resources)
             install(ContentNegotiation) {
                 json(Json {
@@ -62,8 +67,9 @@ class CoursesClient(
             }
             defaultRequest {
                 url {
-                    protocol = URLProtocol.HTTPS
-                    host = "plus.cs.aalto.fi"
+                    this@url.protocol = protocol
+                    this@url.host = host
+                    this@url.port = port
                     path("api/v2/")
                 }
             }
@@ -102,11 +108,13 @@ class CoursesClient(
     }
 
     suspend inline fun <reified Resource : Any, reified Body : Any> getBody(resource: Resource): Body {
+        println("Getting body for $resource")
         val res = withContext(Dispatchers.IO) {
             client.get(resource) {
                 addToken()
             }
         }
+        println(res)
         if (res.status != HttpStatusCode.OK) {
             throw IOException("Failed to get body: ${res.status}")
         }
@@ -132,28 +140,30 @@ class CoursesClient(
         return res
     }
 
+    suspend fun fetch(url: String, file: File) {
+        val response = get(url)
+        if (response.status != HttpStatusCode.OK) {
+            throw IOException("Failed to get file: ${response.status}")
+        }
+        val bodyChannel = response.bodyAsChannel()
+        file.outputStream().use { fileOutputStream ->
+            runBlocking {
+                val buffer = ByteArray(8 * 1024)
+                var bytesRead: Int
+                while (bodyChannel.readAvailable(buffer).also { bytesRead = it } != -1) {
+                    fileOutputStream.write(buffer, 0, bytesRead)
+                }
+            }
+        }
+    }
+
     suspend fun getAndUnzip(zipUrl: String, target: Path, onlyPath: String? = null) {
         println("Downloading and unzipping $zipUrl to $target")
         withBackgroundProgress(project, "A+ Courses") {
             reportSequentialProgress { reporter ->
                 val tempZipFile = kotlin.io.path.createTempFile(target.nameWithoutExtension, ".zip").toFile()
                 reporter.indeterminateStep("Downloading $zipUrl") {
-                    val response = get(zipUrl)
-                    if (response.status != HttpStatusCode.OK) {
-                        throw IOException("Failed to get file: ${response.status}")
-                    }
-                    println("Downloading $zipUrl to $target")
-                    val bodyChannel = response.bodyAsChannel()
-                    tempZipFile.outputStream().use { fileOutputStream ->
-                        runBlocking {
-                            val buffer = ByteArray(8 * 1024)
-                            var bytesRead: Int
-                            while (bodyChannel.readAvailable(buffer).also { bytesRead = it } != -1) {
-                                fileOutputStream.write(buffer, 0, bytesRead)
-                            }
-                        }
-                    }
-                    println("Downloaded $zipUrl to $tempZipFile")
+                    fetch(zipUrl, tempZipFile)
                 }
                 reporter.indeterminateStep("Extracting $zipUrl to $target") {
                     val destination = target

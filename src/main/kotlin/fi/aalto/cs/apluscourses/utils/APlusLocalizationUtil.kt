@@ -18,10 +18,11 @@ object APlusLocalizationUtil {
      * @param languageCode The requested language code, e.g. "fi" or "en".
      */
     fun getLocalizedName(localizedString: String, languageCode: String): String =
-        if (localizedString.contains(languageCode))
+        if (localizedString.contains("|$languageCode"))
             extractLocalizedText(localizedString, languageCode)
-        else
+        else if (localizedString.contains("|en"))
             extractLocalizedText(localizedString, "en")
+        else localizedString
 
     /**
      * Returns the language name corresponding to the given ISO 639-1 language code. Only a few common

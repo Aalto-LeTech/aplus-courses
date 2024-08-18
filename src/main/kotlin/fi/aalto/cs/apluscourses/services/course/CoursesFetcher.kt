@@ -20,12 +20,13 @@ class CoursesFetcher(private val cs: CoroutineScope) {
         val name: String,
         val semester: String,
         val url: String,
+        val language: String?,
         var config: CourseConfig.JSON? = null
     ) {
         companion object {
             @NonNls
             fun fromYaml(map: Map<String, String>): CourseConfig {
-                return CourseConfig(map["name"]!!, map["semester"]!!, map["url"]!!)
+                return CourseConfig(map["name"]!!, map["semester"]!!, map["url"]!!, map["language"])
             }
         }
     }
@@ -67,7 +68,7 @@ class CoursesFetcher(private val cs: CoroutineScope) {
             try {
                 val courseConfigRes = client.get(url)
                 val courseConfig = json.decodeFromString<CourseConfig.JSON>(courseConfigRes.bodyAsText())
-                setCourse(CourseConfig("", "", url, courseConfig))
+                setCourse(CourseConfig("", "", url, "", courseConfig))
             } catch (_: Exception) {
                 setCourse(null)
             }

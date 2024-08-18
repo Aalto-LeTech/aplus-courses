@@ -214,6 +214,7 @@ class ExercisesUpdaterService(
             val htmlUrl: String,
             val displayName: String,
             val isOpen: Boolean,
+            val closingTime: String,
             val exercises: List<Exercise>
         )
 
@@ -246,15 +247,18 @@ class ExercisesUpdaterService(
 
 
         cs.ensureActive()
-        val apiUrl = "https://plus.cs.aalto.fi/api/v2/"
+//        val apiUrl = "https://plus.cs.aalto.fi/api/v2/"
+        val apiUrl = "http://localhost:8000/api/v2/"
 //        val courseUrl = "${apiUrl}courses/154/" // 2020
-        val courseUrl = "${apiUrl}courses/294/" // 2023
+//        val courseUrl = "${apiUrl}courses/294/" // 2023
+        val courseUrl = "${apiUrl}courses/1/"
 
         val exercisesUrl = "${courseUrl}exercises/"
         val pointsUrl = "${courseUrl}points/me"
         val submissionDataUrl = "${courseUrl}submissiondata/me?best=no&format=json"
         val coursesClient = project.service<CoursesClient>()
         val response = coursesClient.get(pointsUrl, token = true) // TODO refactor
+        println(response.bodyAsText())
         val points = json.decodeFromString<Points.PointsDataHolder>(response.bodyAsText())
         val pointsAndCategories =
             points.modules
@@ -324,6 +328,7 @@ class ExercisesUpdaterService(
         println(points.modules.size)
         val newExerciseGroups = points.modules.map { module ->
             val exerciseModule = exercises.results.find { it.id == module.id }
+            println("Processing module ${module.name} ${selectedLanguage}")
             ExerciseGroup(
                 module.id,
                 APlusLocalizationUtil.getLocalizedName(module.name, selectedLanguage),
@@ -331,6 +336,7 @@ class ExercisesUpdaterService(
                 module.points,
                 exerciseModule?.htmlUrl ?: "",
                 exerciseModule?.isOpen == true,
+                exerciseModule?.closingTime,
                 exerciseOrder = listOf(),
                 exercises = module.exercises.map { exercise ->
                     val exerciseExercise = exerciseModule?.exercises?.find { it.id == exercise.id }

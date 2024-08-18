@@ -7,6 +7,7 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.platform.ide.progress.withBackgroundProgress
 import com.intellij.platform.util.progress.reportSequentialProgress
+import com.intellij.util.application
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.intellij.util.messages.Topic
 import com.intellij.util.messages.Topic.ProjectLevel
@@ -25,6 +26,7 @@ import fi.aalto.cs.apluscourses.services.Opener
 import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdaterService
 import fi.aalto.cs.apluscourses.utils.Version
 import fi.aalto.cs.apluscourses.utils.callbacks.Callbacks
+import fi.aalto.cs.apluscourses.utils.temp.PluginAutoInstaller
 import io.ktor.client.statement.bodyAsText
 import kotlinx.coroutines.*
 import java.io.IOException
@@ -44,6 +46,7 @@ class CourseManager(
         var news: NewsTree? = null
         var user: User? = null
         var feedbackCss: String? = null
+        var grading: CourseConfig.Grading? = null
         var settingsImported = false
         var missingDependencies = mapOf<String, List<Component<*>>>()
         fun clearAll() {
@@ -122,10 +125,8 @@ class CourseManager(
     private suspend fun doTask() {
         project.service<CourseFileManager>().migrateOldConfig()
         println(CourseFileManager.getInstance(project).state.url)
-        val courseConfig = CourseConfig.deserialize(
-            CoursesClient.getInstance(project)
-                .get(CourseFileManager.getInstance(project).state.url!!).bodyAsText()
-        )
+        val courseConfig = CourseConfig.get(project) ?: return
+
         state.courseName = courseConfig.name
         println("courseConfig: $courseConfig")
         if (!TokenStorage.getInstance().isTokenSet()) {
@@ -149,8 +150,8 @@ class CourseManager(
 //        val auth = courseProject.authentication
         try {
             runBlocking {
+                state.grading = courseConfig.grading
 //                async {
-
                 val extraCourseData = APlusApi.Course(courseConfig.id.toLong()).get(project)
                 val modules = courseConfig.modules.map {
                     Module(
@@ -337,25 +338,24 @@ class CourseManager(
 
 
     private fun fireNewsUpdated(newsTree: NewsTree) {
-        println("fireNewsUpdated $newsTree")
-        ApplicationManager.getApplication().invokeLater {
-            ApplicationManager.getApplication().messageBus
+        application.invokeLater {
+            project.messageBus
                 .syncPublisher(NEWS_TOPIC)
                 .onNewsUpdated(state.news!!)
         }
     }
 
     private fun fireModulesUpdated() {
-        ApplicationManager.getApplication().invokeLater {
-            ApplicationManager.getApplication().messageBus
+        application.invokeLater {
+            project.messageBus
                 .syncPublisher(MODULES_TOPIC)
                 .onModulesUpdated(state.course)
         }
     }
 
     private fun fireCourseUpdated() {
-        ApplicationManager.getApplication().invokeLater {
-            ApplicationManager.getApplication().messageBus
+        application.invokeLater {
+            project.messageBus
                 .syncPublisher(COURSE_TOPIC)
                 .onCourseUpdated(state.course)
         }

@@ -19,6 +19,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.guessModuleDir
 import com.intellij.openapi.vfs.findFile
 import com.intellij.psi.PsiManager
+import com.intellij.util.application
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.intellij.util.messages.Topic
 import com.intellij.util.messages.Topic.ProjectLevel
@@ -125,16 +126,16 @@ class Opener(
 
 
     private fun fireOpenExercise(exercise: Exercise) {
-        ApplicationManager.getApplication().invokeLater {
-            ApplicationManager.getApplication().messageBus
+        application.invokeLater {
+            project.messageBus
                 .syncPublisher(SHOW_ITEM_TOPIC)
                 .onExerciseOpened(exercise)
         }
     }
 
     private fun fireOpenModule(module: Module) {
-        ApplicationManager.getApplication().invokeLater {
-            ApplicationManager.getApplication().messageBus
+        application.invokeLater {
+            project.messageBus
                 .syncPublisher(SHOW_ITEM_TOPIC)
                 .onModuleOpened(module)
         }

@@ -105,7 +105,13 @@ object APlusApi {
                 return res.map { (id, members) ->
                     GroupModel(
                         id,
-                        members.map { GroupModel.GroupMember(it.id, it.fullName) })
+                        members.map {
+                            GroupModel.GroupMember(
+                                // The IDs in the group are different from the user IDs for some reason
+                                it.url.substringAfterLast("/").toLong(),
+                                it.fullName
+                            )
+                        })
                 }
             }
 
@@ -123,6 +129,7 @@ object APlusApi {
             @Serializable
             data class Member(
                 val id: Long,
+                val url: String,
                 val fullName: String,
             )
         }
@@ -237,7 +244,7 @@ object APlusApi {
                 val fullName: String?,
                 val studentId: String,
                 val id: Long,
-                val staffCourses: List<Course>,
+                val staffCourses: List<Course> = emptyList(),
             )
 
             @Serializable

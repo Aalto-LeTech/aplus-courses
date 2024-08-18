@@ -8,16 +8,24 @@ import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.openapi.util.IconLoader
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.dsl.builder.*
+import com.intellij.ui.dsl.builder.Panel
 import com.intellij.ui.dsl.gridLayout.UnscaledGaps
 import com.intellij.ui.scale.ScaleContext
 import com.intellij.util.ui.JBFont
 import com.intellij.util.ui.JBUI
 import fi.aalto.cs.apluscourses.MyBundle
+import fi.aalto.cs.apluscourses.api.CourseConfig.Grading
+import fi.aalto.cs.apluscourses.icons.CoursesIcons
+import fi.aalto.cs.apluscourses.model.exercise.ExerciseGroup
 import fi.aalto.cs.apluscourses.services.course.CourseManager
 import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdaterService
 import fi.aalto.cs.apluscourses.ui.BannerPanel
 import fi.aalto.cs.apluscourses.ui.TokenForm
-import fi.aalto.cs.apluscourses.icons.CoursesIcons
+import fi.aalto.cs.apluscourses.utils.temp.DateDifferenceFormatter
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import java.awt.*
 import java.net.URI
 import javax.swing.Icon
@@ -71,10 +79,16 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
         }
         val course = CourseManager.course(project) ?: return loadingPanel()
         val user = CourseManager.user(project) ?: return loadingPanel()
+        val weeks = ExercisesUpdaterService.getInstance(project).state.exerciseGroups
         val points = ExercisesUpdaterService.getInstance(project).state.userPointsForCategories
             ?.filter { !course.optionalCategories.contains(it.key) }
             ?.toList()
             ?.sortedBy { it.first } // Show categories in alphabetical order
+        val grading = CourseManager.getInstance(project).state.grading
+        val gradeData = grading?.let { grade(it, points?.toMap() ?: emptyMap()) }
+        val grade = gradeData?.grade
+        val pointsUntilNextGrade = gradeData?.pointsUntilNext
+        val maxPointsOfNextGrade = gradeData?.maxOfNext
         val maxPoints = ExercisesUpdaterService.getInstance(project).state.maxPointsForCategories
         val banner = ResponsiveImagePanel(course.imageUrl, width = this.width)
         this.banner = banner
@@ -97,7 +111,7 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
                     } else {
                         group(indent = false) {
                             row {
-                                text("Points collected").comment("Grade 4")
+                                text("Points collected").comment(grade?.let { "Grade $it" })
                             }.topGap(TopGap.MEDIUM)
                             points.map {
                                 val (category, points) = it
@@ -112,31 +126,29 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
                                     }
                                 }.layout(RowLayout.PARENT_GRID)
                             }
-                            row {
-                                text("Points until next grade")
-                            }.topGap(TopGap.SMALL)
-                            points.map {
-                                val (category, points) = it
-                                val pointsTemp = if (category == "A") 355 else 1
-                                val pointsLeft = if (category == "A") 345 else 0
-                                val maxPoints = if (category == "A") 700 else 1
+                            if (pointsUntilNextGrade != null && maxPointsOfNextGrade != null) {
                                 row {
-                                    text(category).bold()
-                                    cell(JProgressBar(0, maxPoints))
-                                        .applyToComponent { value = pointsTemp }
-                                        .resizableColumn().align(AlignX.FILL)
-                                    text("$pointsLeft").applyToComponent {
-                                        foreground = JBUI.CurrentTheme.ContextHelp.FOREGROUND
-                                    }
-                                }.layout(RowLayout.PARENT_GRID)
+                                    text("Points until next grade")
+                                }.topGap(TopGap.SMALL)
+                                pointsUntilNextGrade.map { (category, pointsUntilNext) ->
+                                    val maxPointsForCategory = maxPointsOfNextGrade[category] ?: 0
+
+                                    val progressPoints = maxPointsForCategory - pointsUntilNext
+
+                                    row {
+                                        text(category.replaceFirstChar { it.uppercase() }).bold()
+                                        cell(JProgressBar(0, maxPointsForCategory))
+                                            .applyToComponent { value = progressPoints }
+                                            .resizableColumn().align(AlignX.FILL)
+                                        text("$pointsUntilNext points needed").applyToComponent {
+                                            foreground = JBUI.CurrentTheme.ContextHelp.FOREGROUND
+                                        }
+                                    }.layout(RowLayout.PARENT_GRID)
+                                }
                             }
                         }
                         separator().bottomGap(BottomGap.MEDIUM)
-                        row {
-                            text("Week 2 closing 21.2.2024 21:00 (in 4 hours)").applyToComponent {
-                                foreground = JBUI.CurrentTheme.ContextHelp.FOREGROUND
-                            }
-                        }.bottomGap(BottomGap.SMALL)
+                        weekClosingTime(weeks)
                         row {
                             link("Plugin settings") {
                                 ShowSettingsUtil.getInstance().showSettingsDialog(project, "A+ Courses")
@@ -155,14 +167,98 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
         }
     }
 
-    private fun timeInfo(closingTime: String): String {
-//        val closing = Instant.parse(closingTime)
-//        val now = Clock.System.now()
-//        val diff = now.periodUntil(closing)
-//        val hours = diff.toHours()
-//        val minutes = diff.toMinutes() % 60
-//        return "Closing ${hours}h ${minutes}m"
-        return ""
+    private class Grade(val grade: String?, val pointsUntilNext: Map<String, Int>?, val maxOfNext: Map<String, Int>?)
+
+    private fun grade(grading: Grading, points: Map<String, Int>): Grade? {
+        val style = grading.style
+        val gradePoints = grading.points
+
+        return when (style) {
+            "o1" -> {
+                val a = points["A"] ?: return null
+                val b = points["B"] ?: return null
+                val c = points["C"] ?: return null
+
+                val currentGrade = gradePoints.entries.findLast { (_, requiredPoints) ->
+                    a >= requiredPoints["A"]!! &&
+                            b >= requiredPoints["B"]!! &&
+                            c >= requiredPoints["C"]!!
+                }
+
+                val nextGrade = gradePoints.entries.firstOrNull { (_, requiredPoints) ->
+                    a < requiredPoints["A"]!! ||
+                            b < requiredPoints["B"]!! ||
+                            c < requiredPoints["C"]!!
+                }
+
+                val pointsToNextGrade = if (nextGrade != null) {
+                    mapOf(
+                        "A" to maxOf(0, nextGrade.value["A"]!! - a),
+                        "B" to maxOf(0, nextGrade.value["B"]!! - b),
+                        "C" to maxOf(0, nextGrade.value["C"]!! - c)
+                    )
+                } else {
+                    mapOf("A" to 0, "B" to 0, "C" to 0)
+                }
+
+                val maxOfNext = mapOf(
+                    "A" to (nextGrade?.value["A"] ?: 0),
+                    "B" to (nextGrade?.value["B"] ?: 0),
+                    "C" to (nextGrade?.value["C"] ?: 0)
+                )
+
+                Grade(currentGrade?.key, pointsToNextGrade, maxOfNext)
+            }
+
+            "total" -> {
+                val totalPoints = points.values.sum()
+
+                val currentGrade = gradePoints.entries.findLast { (_, requiredPoints) ->
+                    totalPoints >= requiredPoints["total"]!!
+                }
+
+                val nextGrade = gradePoints.entries.firstOrNull { (_, requiredPoints) ->
+                    totalPoints < requiredPoints["total"]!!
+                }
+
+                val pointsToNextGrade = if (nextGrade != null) {
+                    mapOf(
+                        "total" to maxOf(0, nextGrade.value["total"]!! - totalPoints)
+                    )
+                } else {
+                    mapOf("total" to 0)
+                }
+
+                val maxOfNext = mapOf("total" to (nextGrade?.value["total"] ?: 0))
+
+                Grade(currentGrade?.key, pointsToNextGrade, maxOfNext)
+            }
+
+            else -> {
+                null
+            }
+        }
+    }
+
+    fun Panel.weekClosingTime(weeks: List<ExerciseGroup>) {
+        val now = Clock.System.now()
+        val currentWeek = weeks.find { it.closingTime != null && now < Instant.parse(it.closingTime) }
+        val weekNumber = weeks.indexOf(currentWeek) + 1
+        if (currentWeek != null) {
+            val closingTime = Instant.parse(currentWeek.closingTime!!)
+            val localDateTime = closingTime.toLocalDateTime(TimeZone.currentSystemDefault())
+            val formattedDateTime = localDateTime.run {
+                "${dayOfMonth}.${monthNumber}.${year} ${hour.toString().padStart(2, '0')}:${
+                    minute.toString().padStart(2, '0')
+                }"
+            }
+            val howLongLeft = DateDifferenceFormatter.formatTimeSinceNow(closingTime)
+            row {
+                text("Week $weekNumber closing $formattedDateTime ($howLongLeft)").applyToComponent {
+                    foreground = JBUI.CurrentTheme.ContextHelp.FOREGROUND
+                }
+            }.bottomGap(BottomGap.SMALL)
+        }
     }
 
     init {

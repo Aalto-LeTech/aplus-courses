@@ -5,10 +5,15 @@ import com.intellij.ide.plugins.PluginManagerCore.isPluginInstalled
 import com.intellij.ide.plugins.PluginManagerCore.getPlugin
 import com.intellij.ide.plugins.PluginManagerMain
 import com.intellij.ide.plugins.PluginNode
+import com.intellij.openapi.components.service
 import com.intellij.openapi.extensions.PluginId
+import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.ThrowableComputable
+import com.intellij.util.application
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import fi.aalto.cs.apluscourses.api.CourseConfig.RequiredPlugin
+import fi.aalto.cs.apluscourses.services.Plugins
 import fi.aalto.cs.apluscourses.utils.APlusLogger
 
 object PluginAutoInstaller {
@@ -19,7 +24,7 @@ object PluginAutoInstaller {
     }
 
     private fun shouldEnablePlugin(id: PluginId): Boolean {
-        val plugin: com.intellij.ide.plugins.IdeaPluginDescriptor? = getPlugin(id)
+        val plugin = getPlugin(id)
         return plugin != null && !plugin.isEnabled
     }
 
@@ -36,8 +41,7 @@ object PluginAutoInstaller {
      * some dependencies were missing, and they were installed or enabled. Null, if the operation
      * has been cancelled due to missing consent or an error.
      */
-    @RequiresEdt
-    fun ensureDependenciesInstalled(
+    suspend fun ensureDependenciesInstalled(
         project: Project,
         pluginNames: List<RequiredPlugin>,
 //        callback: PluginInstallerCallback
@@ -75,25 +79,20 @@ object PluginAutoInstaller {
         // Enable all requires plugins that are installed, but disabled.
         PluginEnabler.getInstance().enableById(pluginsToEnable)
 
-//        val downloadablePluginNodes: kotlin.collections.MutableList<PluginNode?> = pluginsToDownload.stream()
-//            .map<PluginNode?> { id: com.intellij.openapi.extensions.PluginId? -> PluginNode(id) }
-//            .collect(java.util.stream.Collectors.toList())
+        val downloadablePluginNodes = pluginsToDownload
+            .map { PluginNode(it) }
 
-        //    final var installerWorker = new PluginInstallerWorker(project, notifier, downloadablePluginNodes);
-
-//    return ProgressManager.getInstance().runProcessWithProgressSynchronously(installerWorker,
-//        "Downloading required plugins", true, project);
-        return false
+        return application.service<Plugins>().installPlugins(project, downloadablePluginNodes)
     }
 
     private class PluginInstallerWorker(
-        val project: Project,  //                                  @Nullable Notifier notifier,
+        val project: Project,
         val downloadablePluginNodes: List<PluginNode>
-    ) : com.intellij.openapi.util.ThrowableComputable<Boolean?, java.lang.RuntimeException?> {
+    ) : ThrowableComputable<Boolean, RuntimeException> {
 
         override fun compute(): Boolean? {
             val indicator = java.util.Objects.requireNonNull<com.intellij.openapi.progress.ProgressIndicator>(
-                com.intellij.openapi.progress.ProgressManager.getInstance().progressIndicator
+                ProgressManager.getInstance().progressIndicator
             )
             indicator.isIndeterminate = true
 

@@ -44,8 +44,6 @@ internal class APlusToolWindowFactory : ToolWindowFactory, DumbAware {
         val newsView = createNewsView(project, toolWindow)
         val modulesView = createModulesView(project)
         val exercisesView = createExercisesView(project)
-        project.service<ExercisesUpdaterService>().restart() // TODO
-        project.service<CourseManager>().restart()
 
         val contentFactory = ContentFactory.getInstance()
 

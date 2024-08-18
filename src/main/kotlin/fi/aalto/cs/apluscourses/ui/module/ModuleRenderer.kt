@@ -137,9 +137,7 @@ class ModuleRenderer(
 
     private val installing = AtomicBooleanProperty(false)
     private var isZipSizeSet = false
-    private fun zipSizeText(size: String) = "<span style=\"white-space: nowrap;\">Available at </span>" +
-            "<span>${module.zipUrl} </span>" +
-            "<span style=\"white-space: nowrap;\">(${size})</span>"
+    private fun zipSizeText(size: String) = "Download size ${size}"
 
     private val zipSizeText = AtomicProperty<String>(zipSizeText("??? ??"))
 
