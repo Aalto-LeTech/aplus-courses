@@ -1,11 +1,11 @@
 package fi.aalto.cs.apluscourses.model
 
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.SystemInfoRt
+import com.intellij.openapi.roots.libraries.LibraryTable
 import fi.aalto.cs.apluscourses.api.CourseConfig.RequiredPlugin
 import fi.aalto.cs.apluscourses.model.component.*
-import fi.aalto.cs.apluscourses.utils.callbacks.Callbacks
 import fi.aalto.cs.apluscourses.utils.Version
+import fi.aalto.cs.apluscourses.utils.callbacks.Callbacks
 import io.ktor.http.*
 
 /**
@@ -35,14 +35,11 @@ class Course(
     val hiddenElements: List<Long>,
     val callbacks: Callbacks,
 //    val feedbackParser: String?,
-//    val courseLastModified: Long, // TODO reimplement
     private val project: Project,
 ) {
     val commonLibraries: MutableList<Library> = mutableListOf()
     val components: Map<String, Component<*>>
         get() = (modules + commonLibraries).associateBy { it.name }
-//        (oldModules + oldLibraries + commonLibraryProvider.providedLibraries).associateBy { it.originalName }
-
 
     /**
      * A list of components that should be installed automatically for this course.
@@ -51,46 +48,11 @@ class Course(
         autoInstallComponentNames
             .mapNotNull { components[it] }
 
-//    /**
-//     * Resolves states of unresolved components and calls `validate()`.
-//     */
-//    fun resolve() {
-//        components.values.forEach { it.resolveState() }
-//        validate()
-//    }
-//
-//    /**
-//     * Validates that components conform integrity constraints.
-//     */
-//    fun validate() {
-//        components.values.forEach { it.validate(this) }
-//    }
-
     /**
      * A list of modules that have an update available.
      */
     fun updatableModules(): List<Module> =
         modules.filter { it.isUpdateAvailable }
-
-
-    val apiUrl: String = aplusUrl + "api/v2/"
-
-    val courseApiUrl: String = apiUrl + "courses/" + id
-
-    val technicalDescription: String = "$name <$courseApiUrl>"
-
-//    private val platformListener: PlatformListener = PlatformListener()
-
-//    /**
-//     * Constructor.
-//     */
-//    init {
-//        this.platformListener = PlatformListener()
-//        this.exerciseDataSource = APlusExerciseDataSource(
-//            apiUrl, project.basePath
-//                .resolve(Paths.get(Project.DIRECTORY_STORE_FOLDER, "a-plus-cache.json")), courseLastModified
-//        )
-//    }
 
     fun getComponentIfExists(name: String): Component<*>? {
         val component = components[name]
@@ -111,76 +73,14 @@ class Course(
         return null
     }
 
-//    fun getComponentIfExists(file: VirtualFile): OldComponent? {
-//        val component = getComponentIfExists(file.name)
-//        return if (component != null && component.fullPath == Paths.get(file.path)) component else null
-//    }
-
-//    fun register() {
-//        ReadAction.run<RuntimeException> { platformListener.registerListeners() }
-//    }
-//
-//    fun unregister() {
-//        ReadAction.run<RuntimeException> { platformListener.unregisterListeners() }
-//    }
-
-//    private inner class PlatformListener {
-//        private var messageBusConnection: MessageBusConnection? = null
-//
-//        private val libraryTableListener: LibraryTable.Listener = object : LibraryTable.Listener {
-//            override fun afterLibraryRemoved(
-//                library: com.intellij.openapi.roots.libraries.Library
-//            ) {
-//                library.name?.let { name ->
-//                    getComponentIfExists(name).setUnresolved()
-//                }
-//            }
-//        }
-//
-//        @RequiresReadLock
-//        @Synchronized
-//        fun registerListeners() {
-//            if (messageBusConnection != null) {
-//                return
-//            }
-//            messageBusConnection = project.messageBus.connect()
-//
-//            (messageBusConnection ?: return).subscribe(
-//                VirtualFileManager.VFS_CHANGES,
-//                object : BulkFileListener {
-//                    override fun after(events: List<VFileEvent>) {
-//                        for (event in events) {
-//                            if (event is VFileDeleteEvent) {
-//                                event.file.let { file ->
-//                                    getComponentIfExists(file)?.setUnresolved()
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//            )
-//            (messageBusConnection ?: return).subscribe(ModuleListener.TOPIC, object : ModuleListener {
-//                override fun moduleRemoved(
-//                    project: Project,
-//                    projectModule: com.intellij.openapi.module.Module
-//                ) {
-//                    projectModule.name.let { name ->
-//                        getComponentIfExists(name).setUnresolved()
-//                    }
-//                }
-//            })
-//            project.libraryTable.addListener(libraryTableListener)
-//        }
-//
-//        @RequiresReadLock
-//        @Synchronized
-//        fun unregisterListeners() {
-//            if (messageBusConnection == null) {
-//                return
-//            }
-//            (messageBusConnection ?: return).disconnect()
-//            messageBusConnection = null
-//            project.libraryTable.removeListener(libraryTableListener)
-//        }
-//    }
+    init {
+        val libraryTableListener: LibraryTable.Listener = object : LibraryTable.Listener {
+            override fun afterLibraryRemoved(
+                library: com.intellij.openapi.roots.libraries.Library
+            ) {
+                library.name?.let { name -> getComponentIfExists(name)?.load() }
+            }
+        }
+        Library.libraryTable(project).addListener(libraryTableListener)
+    }
 }

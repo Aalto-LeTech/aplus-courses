@@ -10,7 +10,7 @@ import fi.aalto.cs.apluscourses.model.exercise.Exercise
 import fi.aalto.cs.apluscourses.model.exercise.SubmissionResult
 import fi.aalto.cs.apluscourses.services.PluginSettings
 import fi.aalto.cs.apluscourses.services.course.CourseManager
-import fi.aalto.cs.apluscourses.utils.temp.SubmissionResultUtil
+import fi.aalto.cs.apluscourses.utils.SubmissionResultUtil
 
 //import fi.aalto.cs.apluscourses.services.PluginSettings.Companion.getInstance
 

@@ -1,6 +1,5 @@
-package fi.aalto.cs.apluscourses.utils.temp.parser
+package fi.aalto.cs.apluscourses.utils.parser
 
-import fi.aalto.cs.apluscourses.utils.temp.parser.FeedbackParser.TestResults
 import org.jsoup.Jsoup
 import java.util.regex.Pattern
 
@@ -14,7 +13,7 @@ class O1FeedbackParser : FeedbackParser() {
         if (lastH3 == null || lastH3.nextElementSibling() == null) {
             return TestResults(-1, -1)
         }
-        val results = lastH3.nextElementSibling().text()
+        val results = lastH3.nextElementSibling()?.text()
         val pattern = Pattern.compile("(\\d+)\\s+succeeded,\\s+(\\d+)\\s+failed,\\s+(\\d+)\\s+canceled")
         val matcher = pattern.matcher(results)
         if (!matcher.find()) {

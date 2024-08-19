@@ -146,20 +146,9 @@ class Module(
     private val imlPath
         get() = fullPath.resolve("$name.iml")
 
-    override suspend fun remove(deleteFiles: Boolean) {
-        TODO("Not yet implemented")
-    }
-
     override fun load() {
-        /*
-       * Four cases to check for here:
-       *   0. The component is in the project, but the files are missing -> ERROR.
-       *   1. The component is in the project, so its state should be INSTALLED.
-       *   2. The component is not in the project, but the module files are present in the file
-       *      system, so its state should be FETCHED.
-       *   3. The component files aren't present in the file system (and by extension, the component
-       *      isn't in the project), so its state should be NOT_INSTALLED.
-       */
+        if (status == Status.LOADING) return // Module is still loading
+
         val module = platformObject
         val exists = module != null
         val loaded = module != null && module.isLoaded
@@ -167,24 +156,12 @@ class Module(
             status = Status.LOADED
             return
         } else if (exists) {
-            status = Status.ERROR
+            status = Status.ERROR // The platform object exists but is not loaded
             return
         } else {
             status = Status.UNRESOLVED
             return
         }
-//        val filesOk: Boolean = doesDirExist(component.path)
-//        println("loaded: " + loaded + ", filesOk: " + filesOk + ", name: " + name)
-//        if (loaded && !filesOk) {
-//            return OldComponent.ERROR
-//        }
-//        if (loaded) {
-//            return OldComponent.LOADED
-//        }
-//        if (filesOk) {
-//            return OldComponent.FETCHED
-//        }
-//        return OldComponent.NOT_INSTALLED
     }
 
     val isUpdateAvailable: Boolean

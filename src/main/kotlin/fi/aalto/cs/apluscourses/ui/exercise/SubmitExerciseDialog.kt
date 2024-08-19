@@ -9,11 +9,10 @@ import com.intellij.ui.JBColor
 import com.intellij.ui.RoundedLineBorder
 import com.intellij.ui.dsl.builder.bindItem
 import com.intellij.ui.dsl.builder.panel
-import com.intellij.ui.layout.ComboBoxPredicate
 import com.intellij.ui.layout.ComponentPredicate
 import fi.aalto.cs.apluscourses.MyBundle
 import fi.aalto.cs.apluscourses.model.exercise.Exercise
-import fi.aalto.cs.apluscourses.model.exercise.Group
+import fi.aalto.cs.apluscourses.model.people.Group
 import fi.aalto.cs.apluscourses.services.course.CourseFileManager
 import fi.aalto.cs.apluscourses.ui.FileRenderer
 import fi.aalto.cs.apluscourses.ui.FileTree
@@ -50,13 +49,7 @@ class SubmitExerciseDialog(
         init()
     }
 
-
-    // TODO check if can submit with group (if has submitted with group before)
-
     override fun createCenterPanel(): DialogPanel = panel {
-//        row {
-//            label(exercise.name).bold()
-//        }
         val submissionNumber = exercise.submissionResults.size + 1
 
         row {

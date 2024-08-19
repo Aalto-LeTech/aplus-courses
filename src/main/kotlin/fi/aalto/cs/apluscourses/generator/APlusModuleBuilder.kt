@@ -17,19 +17,14 @@ import com.intellij.openapi.module.ModifiableModuleModel
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.module.ModuleType
 import com.intellij.openapi.observable.properties.AtomicProperty
-import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.impl.jdkDownloader.JdkDownloadTask
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.roots.ui.configuration.ModulesProvider
-import com.intellij.openapi.ui.Messages
-import com.intellij.platform.ide.progress.runWithModalProgressBlocking
-import com.intellij.platform.ide.progress.withModalProgress
 import com.intellij.ui.AnimatedIcon
 import com.intellij.ui.ColoredListCellRenderer
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.components.JBList
-import com.intellij.ui.dsl.builder.Align
 import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.Placeholder
 import com.intellij.ui.dsl.builder.bindItem
@@ -38,7 +33,6 @@ import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.gridLayout.UnscaledGaps
 import com.intellij.util.application
-import com.intellij.util.io.await
 import com.intellij.util.ui.JBUI
 import fi.aalto.cs.apluscourses.MyBundle
 import fi.aalto.cs.apluscourses.api.CourseConfig
@@ -48,7 +42,6 @@ import fi.aalto.cs.apluscourses.services.SdkInstall
 import fi.aalto.cs.apluscourses.services.course.CourseFileManager
 import fi.aalto.cs.apluscourses.services.course.CoursesFetcher
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil.languageCodeToName
-import java.awt.Dimension
 import javax.swing.JComponent
 import javax.swing.JList
 import javax.swing.ListSelectionModel
@@ -87,15 +80,10 @@ internal class APlusModuleBuilder : ModuleBuilder() {
             if (selectedSdk is DownloadJdk) {
                 val task = selectedSdk.task
                 if (task is JdkDownloadTask) {
-//                    println("Downloading SDK")
-//                    application.invokeLater {
-//                        val sdkDownloadedFuture =
-//                            project.service<JdkDownloadService>().scheduleDownloadJdkForNewProject(task)
-//                        runWithModalProgressBlocking(project, "test") {
-//                            sdkDownloadedFuture.await()
-//                        }
-//                    }
-
+                    println("Downloading SDK")
+                    val sdkDownloadedFuture =
+                        project.service<JdkDownloadService>().scheduleDownloadJdkForNewProject(task)
+                    project.service<SdkInstall>().setFuture(sdkDownloadedFuture)
                 }
             } else if (selectedSdk is ExistingJdk) {
                 application.runWriteAction {
@@ -105,17 +93,6 @@ internal class APlusModuleBuilder : ModuleBuilder() {
             }
         }
         val module = super.commit(project, model, modulesProvider)
-        if (selectedSdk != null) {
-            if (selectedSdk is DownloadJdk) {
-                val task = selectedSdk.task
-                if (task is JdkDownloadTask) {
-                    println("Downloading SDK")
-                    val sdkDownloadedFuture =
-                        project.service<JdkDownloadService>().scheduleDownloadJdkForNewProject(task)
-                    project.service<SdkInstall>().setFuture(sdkDownloadedFuture)
-                }
-            }
-        }
         return module
     }
 
@@ -125,7 +102,7 @@ internal class APlusModuleBuilder : ModuleBuilder() {
     override fun createWizardSteps(
         wizardContext: WizardContext,
         modulesProvider: ModulesProvider
-    ): Array<ModuleWizardStep> = arrayOf(CourseSettingsStep(wizardContext, modulesProvider))
+    ): Array<ModuleWizardStep> = arrayOf(CourseSettingsStep(wizardContext))
 
     inner class CourseSelectStep : ModuleWizardStep() {
         val courseList = JBList<CoursesFetcher.CourseConfig>()
@@ -155,7 +132,7 @@ internal class APlusModuleBuilder : ModuleBuilder() {
             })
 
             application.service<CoursesFetcher>()
-                .fetchCourses({ courses -> courseList.setListData(courses.toTypedArray()) }, { courseList.updateUI() })
+                .fetchCourses { courses -> courseList.setListData(courses.toTypedArray()) }
         }
 
         override fun getComponent(): JComponent {
@@ -209,8 +186,7 @@ internal class APlusModuleBuilder : ModuleBuilder() {
     }
 
     inner class CourseSettingsStep(
-        val wizardContext: WizardContext,
-        val modulesProvider: ModulesProvider
+        val wizardContext: WizardContext
     ) : ModuleWizardStep() {
         private var mainPanel = panel {}
         private val selectedLanguage = AtomicProperty<String>("")

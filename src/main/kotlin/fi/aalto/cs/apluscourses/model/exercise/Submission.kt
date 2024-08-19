@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.model.exercise
 
+import fi.aalto.cs.apluscourses.model.people.Group
 import java.nio.file.Path
 
 /**

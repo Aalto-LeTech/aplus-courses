@@ -71,20 +71,7 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true) {
     fun updateTree() {
         val scroll = scrollPane.verticalScrollBar.value
         val treeState = TreeState.createOn(exerciseGroupsFilteringTree.tree, true, true)
-//        val tree = exerciseGroupsFilteringTree.tree
-//        val expanded = getExpandedPaths()
-//        val selected = tree.selectionPaths?.toList() ?: emptyList()
-//        val treeState = TreeState.createOn(exerciseGroupsFilteringTree.tree, expanded, selected)
-//        invokeLater {
         exerciseGroupsFilteringTree.updateTree()
-//            panel.remove(searchTextField)
-//            searchTextField.removeNotify()
-//            searchTextField = exerciseGroupsFilteringTree.installSearchField()
-//            panel.add(searchTextField, BorderLayout.NORTH)
-//            panel.revalidate()
-//            panel.repaint()
-//        }
-
         treeState.applyTo(exerciseGroupsFilteringTree.tree)
         scrollPane.verticalScrollBar.value = scroll
     }
@@ -108,7 +95,6 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true) {
     }
 
     fun updateExercise(exercise: Exercise) {
-//        return
         TreeUtil.findNode(exerciseGroupsFilteringTree.root) { node ->
             when (node.userObject) {
                 is ExerciseItem -> (node.userObject as ExerciseItem).exercise.id == exercise.id
@@ -117,7 +103,6 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true) {
         }?.let {
             val path = TreeUtil.getPath(exerciseGroupsFilteringTree.root, it)
             TreeUtil.repaintPath(exerciseGroupsFilteringTree.tree, path)
-//            exerciseGroupsFilteringTree.tree.repaint()
         }
     }
 
@@ -130,7 +115,6 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true) {
         }?.let {
             val path = TreeUtil.getPath(exerciseGroupsFilteringTree.root, it)
             TreeUtil.selectPath(exerciseGroupsFilteringTree.tree, path)
-//            TreeUtil.scrollSelectionToVisible(exerciseGroupsFilteringTree.tree)
         }
     }
 
@@ -150,7 +134,7 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true) {
             get() = CourseManager.course(project)?.hiddenElements ?: emptyList()
 
         override fun children(): List<ExerciseGroupItem> =
-            ExercisesUpdaterService.getInstance(project).state.exerciseGroups.map { group ->
+            ExercisesUpdater.getInstance(project).state.exerciseGroups.map { group ->
                 ExerciseGroupItem(
                     group,
                     group.exercises.map { exercise ->
@@ -163,14 +147,14 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true) {
                             })
                         )
                     }.filterNot( // Filter exercises
-                        application.service<ExercisesTreeFilterService>().state.exercisesFilter()
+                        application.service<ExercisesTreeFilter>().state.exercisesFilter()
                     ).filterNot {
                         hiddenElements.contains(it.exercise.id)
                     }
                 )
             }.filterNot( // Filter groups
                 ApplicationManager.getApplication()
-                    .service<ExercisesTreeFilterService>().state.exercisesGroupFilter()
+                    .service<ExercisesTreeFilter>().state.exercisesGroupFilter()
             ).filterNot {
                 hiddenElements.contains(it.group.id)
             }.filter { group -> // Filter out empty groups
@@ -235,8 +219,8 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true) {
         init {
             tree.addTreeSelectionListener {
                 if (tree.lastSelectedPathComponent == null) {
-                    project.service<SelectedExerciseService>().selectedExercise = null
-                    project.service<SelectedExerciseService>().selectedExerciseTreeItem = null
+                    project.service<SelectedExercise>().selectedExercise = null
+                    project.service<SelectedExercise>().selectedExerciseTreeItem = null
                     return@addTreeSelectionListener
                 }
                 val selectedNode = tree.lastSelectedPathComponent as DefaultMutableTreeNode
@@ -249,8 +233,8 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true) {
                     else -> null
                 }
 
-                project.service<SelectedExerciseService>().selectedExercise = selectedExercise
-                project.service<SelectedExerciseService>().selectedExerciseTreeItem = selected
+                project.service<SelectedExercise>().selectedExercise = selectedExercise
+                project.service<SelectedExercise>().selectedExerciseTreeItem = selected
             }
 
             tree.addMouseListener(
@@ -297,7 +281,7 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true) {
 
         fun updateTree() {
             searchModel.updateStructure()
-//            searchModel.refilter()
+            searchModel.refilter()
             tree.revalidate()
             tree.repaint()
         }
@@ -351,7 +335,7 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true) {
 }
 
 
-/**
+/** // TODO
  * Sets the nodeAppliedListener as OpenExerciseItemAction if the course isn't supported in ShowFeedbackAction,
  * else ShowFeedbackAction.
  */

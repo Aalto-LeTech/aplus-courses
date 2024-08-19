@@ -1,16 +1,16 @@
 package fi.aalto.cs.apluscourses.utils.callbacks
 
 import com.intellij.openapi.project.Project
+import fi.aalto.cs.apluscourses.api.CourseConfig
 import fi.aalto.cs.apluscourses.model.component.Module
 import fi.aalto.cs.apluscourses.utils.callbacks.Callbacks.PostDownloadModuleCallback
-import fi.aalto.cs.apluscourses.api.CourseConfig
 
 class Callbacks private constructor(private val postDownloadModuleCallbacks: List<PostDownloadModuleCallback>) {
     fun interface PostDownloadModuleCallback {
         fun postDownloadModule(project: Project, module: Module)
     }
 
-    fun invokePostDownloadModuleCallbacks(project: Project, module: Module) {
+    fun invokePostDownloadModuleCallbacks(project: Project, module: Module) { // TODO
         postDownloadModuleCallbacks.forEach { callback ->
             callback.postDownloadModule(
                 project,

@@ -1,4 +1,4 @@
-package fi.aalto.cs.apluscourses.utils.temp.parser
+package fi.aalto.cs.apluscourses.utils.parser
 
 import org.jetbrains.annotations.NonNls
 import org.jsoup.nodes.Element
@@ -7,7 +7,7 @@ import org.jsoup.select.Elements
 class O1NewsParser(private val language: String) : NewsParser() {
 
     override fun parseTitle(titleElement: Element): String {
-        return getElementsByLanguage(titleElement).first().text()
+        return getElementsByLanguage(titleElement).first()?.text() ?: ""
     }
 
     override fun parseBody(bodyElement: Element): String {

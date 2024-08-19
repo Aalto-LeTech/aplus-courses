@@ -18,9 +18,9 @@ import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.treeStructure.Tree
 import com.intellij.util.PsiIconUtil
 import com.intellij.util.application
-import fi.aalto.cs.apluscourses.services.Background
-import fi.aalto.cs.apluscourses.utils.temp.FileDateFormatter
 import fi.aalto.cs.apluscourses.icons.CoursesIcons
+import fi.aalto.cs.apluscourses.services.Background
+import fi.aalto.cs.apluscourses.utils.FileDateFormatter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.nio.file.Path

@@ -7,7 +7,6 @@ import java.time.format.FormatStyle
 
 class NewsItem(
     val id: Long,
-    private val url: String,
     val title: String,
     val body: String,
     private val publish: ZonedDateTime,

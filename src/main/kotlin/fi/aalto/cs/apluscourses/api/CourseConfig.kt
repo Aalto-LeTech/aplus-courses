@@ -128,7 +128,7 @@ object CourseConfig {
      *     }
      * }
      * `
-     * @property hiddenElements TODO
+     * @property hiddenElements
      **/
     @Serializable
     data class JSON(

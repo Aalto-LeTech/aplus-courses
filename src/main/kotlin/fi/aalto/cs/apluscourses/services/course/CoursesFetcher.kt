@@ -6,7 +6,6 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
-import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -20,8 +19,7 @@ class CoursesFetcher(private val cs: CoroutineScope) {
         val name: String,
         val semester: String,
         val url: String,
-        val language: String?,
-        var config: CourseConfig.JSON? = null
+        val language: String?
     ) {
         companion object {
             @NonNls
@@ -36,12 +34,11 @@ class CoursesFetcher(private val cs: CoroutineScope) {
         isLenient = true
     }
 
-    fun fetchCourses(setCourses: (List<CoursesFetcher.CourseConfig>) -> Unit, updateCourses: () -> Unit) {
+    fun fetchCourses(setCourses: (List<CoursesFetcher.CourseConfig>) -> Unit) {
         cs.launch {
             val client = HttpClient(CIO)
 //          val url = "https://version.aalto.fi/gitlab/aplus-courses/course-config-urls/-/raw/main/courses.yaml"
             val url = "https://raw.githubusercontent.com/jaakkonakaza/temp/main/courses.yaml" // TODO
-
             val res = client.get(url)
 
             val courses = Yaml()
@@ -51,29 +48,7 @@ class CoursesFetcher(private val cs: CoroutineScope) {
                 }
 
             setCourses(courses)
-
-            for (course in courses) {
-                val courseConfigRes = client.get(course.url)//client.getBody<CourseConfig.JSON>(course.url, false)
-                val courseConfig = json.decodeFromString<CourseConfig.JSON>(courseConfigRes.bodyAsText())
-                course.config = courseConfig
-                updateCourses()
-            }
             client.close()
-        }
-    }
-
-    fun fetchCourse(url: String, setCourse: (CourseConfig?) -> Unit) {
-        cs.launch {
-            val client = HttpClient(CIO)
-            try {
-                val courseConfigRes = client.get(url)
-                val courseConfig = json.decodeFromString<CourseConfig.JSON>(courseConfigRes.bodyAsText())
-                setCourse(CourseConfig("", "", url, "", courseConfig))
-            } catch (_: Exception) {
-                setCourse(null)
-            }
-            client.close()
-
         }
     }
 

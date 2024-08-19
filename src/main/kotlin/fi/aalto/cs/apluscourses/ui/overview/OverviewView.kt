@@ -18,10 +18,10 @@ import fi.aalto.cs.apluscourses.api.CourseConfig.Grading
 import fi.aalto.cs.apluscourses.icons.CoursesIcons
 import fi.aalto.cs.apluscourses.model.exercise.ExerciseGroup
 import fi.aalto.cs.apluscourses.services.course.CourseManager
-import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdaterService
+import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdater
 import fi.aalto.cs.apluscourses.ui.BannerPanel
 import fi.aalto.cs.apluscourses.ui.TokenForm
-import fi.aalto.cs.apluscourses.utils.temp.DateDifferenceFormatter
+import fi.aalto.cs.apluscourses.utils.DateDifferenceFormatter
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
@@ -79,8 +79,8 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
         }
         val course = CourseManager.course(project) ?: return loadingPanel()
         val user = CourseManager.user(project) ?: return loadingPanel()
-        val weeks = ExercisesUpdaterService.getInstance(project).state.exerciseGroups
-        val points = ExercisesUpdaterService.getInstance(project).state.userPointsForCategories
+        val weeks = ExercisesUpdater.getInstance(project).state.exerciseGroups
+        val points = ExercisesUpdater.getInstance(project).state.userPointsForCategories
             ?.filter { !course.optionalCategories.contains(it.key) }
             ?.toList()
             ?.sortedBy { it.first } // Show categories in alphabetical order
@@ -89,7 +89,7 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
         val grade = gradeData?.grade
         val pointsUntilNextGrade = gradeData?.pointsUntilNext
         val maxPointsOfNextGrade = gradeData?.maxOfNext
-        val maxPoints = ExercisesUpdaterService.getInstance(project).state.maxPointsForCategories
+        val maxPoints = ExercisesUpdater.getInstance(project).state.maxPointsForCategories
         val banner = ResponsiveImagePanel(course.imageUrl, width = this.width)
         this.banner = banner
         return panel {
@@ -131,8 +131,9 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
                                     text("Points until next grade")
                                 }.topGap(TopGap.SMALL)
                                 pointsUntilNextGrade.map { (category, pointsUntilNext) ->
-                                    val maxPointsForCategory = maxPointsOfNextGrade[category] ?: 0
-
+                                    val maxPointsForCategory =
+                                        if (pointsUntilNext == 0) 1 // Full progress bar for completed categories
+                                        else maxPointsOfNextGrade[category] ?: 0
                                     val progressPoints = maxPointsForCategory - pointsUntilNext
 
                                     row {
@@ -140,7 +141,7 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
                                         cell(JProgressBar(0, maxPointsForCategory))
                                             .applyToComponent { value = progressPoints }
                                             .resizableColumn().align(AlignX.FILL)
-                                        text("$pointsUntilNext points needed").applyToComponent {
+                                        text(pointsUntilNext.toString()).applyToComponent {
                                             foreground = JBUI.CurrentTheme.ContextHelp.FOREGROUND
                                         }
                                     }.layout(RowLayout.PARENT_GRID)

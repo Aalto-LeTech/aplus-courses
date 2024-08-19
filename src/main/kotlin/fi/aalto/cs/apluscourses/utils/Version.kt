@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.utils
 
+import com.intellij.ide.plugins.PluginManagerCore.getPlugin
+import com.intellij.openapi.extensions.PluginId
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.PrimitiveKind
@@ -73,6 +75,10 @@ class PluginVersion(major: Int, minor: Int, val patch: Int, val versionString: S
     )
 
     override fun toString(): String = versionString
+
+    companion object {
+        val current = getPlugin(PluginId.getId("fi.aalto.cs.intellij-plugin"))?.version ?: ""
+    }
 }
 
 private object VersionSerializer : KSerializer<Version> {

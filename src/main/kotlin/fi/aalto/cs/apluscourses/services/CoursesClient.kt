@@ -17,7 +17,6 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.serialization.kotlinx.json.*
-import java.io.File
 import io.ktor.utils.io.readAvailable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -27,6 +26,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.*
 import org.jetbrains.annotations.NonNls
+import java.io.File
 import java.io.IOException
 import java.nio.file.Path
 import java.util.zip.ZipFile
@@ -107,14 +107,32 @@ class CoursesClient(
         return head.contentLength()
     }
 
-    suspend inline fun <reified Resource : Any, reified Body : Any> getBody(resource: Resource): Body {
-        println("Getting body for $resource")
+    suspend inline fun <reified Resource : Any> get(
+        resource: Resource,
+        crossinline requestBuilder: HttpRequestBuilder.() -> Unit = {}
+    ): HttpResponse {
         val res = withContext(Dispatchers.IO) {
             client.get(resource) {
                 addToken()
+                requestBuilder()
             }
         }
-        println(res)
+        if (res.status != HttpStatusCode.OK) {
+            throw IOException("Failed to get resource: ${res.status}")
+        }
+        return res
+    }
+
+    suspend inline fun <reified Resource : Any, reified Body : Any> getBody(
+        resource: Resource,
+        crossinline requestBuilder: HttpRequestBuilder.() -> Unit = {}
+    ): Body {
+        val res = withContext(Dispatchers.IO) {
+            client.get(resource) {
+                addToken()
+                requestBuilder()
+            }
+        }
         if (res.status != HttpStatusCode.OK) {
             throw IOException("Failed to get body: ${res.status}")
         }

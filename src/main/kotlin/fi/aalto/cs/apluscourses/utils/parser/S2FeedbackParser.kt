@@ -1,6 +1,6 @@
-package fi.aalto.cs.apluscourses.utils.temp.parser
+package fi.aalto.cs.apluscourses.utils.parser
 
-import fi.aalto.cs.apluscourses.utils.temp.parser.FeedbackParser.TestResults
+import fi.aalto.cs.apluscourses.utils.parser.FeedbackParser.TestResults
 import org.jsoup.Jsoup
 import java.util.regex.Pattern
 

@@ -8,9 +8,9 @@ import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.components.fields.ExtendableTextComponent
 import com.intellij.util.ui.JBFont
 import fi.aalto.cs.apluscourses.MyBundle.message
+import fi.aalto.cs.apluscourses.icons.CoursesIcons
 import fi.aalto.cs.apluscourses.model.exercise.Exercise
 import fi.aalto.cs.apluscourses.model.exercise.SubmissionResult
-import fi.aalto.cs.apluscourses.icons.CoursesIcons
 import java.awt.*
 import java.awt.geom.RoundRectangle2D
 import javax.swing.Icon
@@ -45,9 +45,7 @@ class ExercisesTreeRenderer : NodeRenderer() {
                 append("", SimpleTextAttributes.REGULAR_ATTRIBUTES, true) // disable search highlighting
                 append(group.name, SimpleTextAttributes.REGULAR_ATTRIBUTES, false)
                 isEnabled = true
-                icon = if (group.exercises.any { exercise -> !exercise.isDetailsLoaded }) {
-                    CoursesIcons.Loading
-                } else if (group.isOpen) {
+                icon = if (group.isOpen) {
                     CoursesIcons.ExerciseGroup
                 } else {
                     CoursesIcons.ExerciseGroupClosed
@@ -231,8 +229,6 @@ class ExercisesTreeRenderer : NodeRenderer() {
         private fun getStatus(exercise: Exercise): Status {
             return if (exercise.isInGrading()) {
                 Status.IN_GRADING
-            } else if (!exercise.isDetailsLoaded) {
-                Status.LOADING
             } else if (exercise.isOptional) {
                 Status.OPTIONAL_PRACTICE
             } else if (exercise.submissionResults.isEmpty()) {
@@ -256,7 +252,7 @@ class ExercisesTreeRenderer : NodeRenderer() {
                 Status.PARTIAL_POINTS -> CoursesIcons.PartialPoints
                 Status.FULL_POINTS -> CoursesIcons.FullPoints
                 Status.LATE -> CoursesIcons.Late
-                Status.IN_GRADING, Status.LOADING -> CoursesIcons.Loading
+                Status.IN_GRADING -> CoursesIcons.Loading
             }
         }
 
@@ -267,8 +263,7 @@ class ExercisesTreeRenderer : NodeRenderer() {
             PARTIAL_POINTS,
             FULL_POINTS,
             IN_GRADING,
-            LATE,
-            LOADING
+            LATE
         }
     }
 }

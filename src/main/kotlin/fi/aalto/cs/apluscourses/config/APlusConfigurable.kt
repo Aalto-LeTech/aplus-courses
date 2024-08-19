@@ -7,15 +7,16 @@ import com.intellij.openapi.observable.properties.AtomicProperty
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogPanel
-import com.intellij.ui.components.JBPasswordField
 import com.intellij.ui.dsl.builder.panel
 import fi.aalto.cs.apluscourses.MyBundle
+import fi.aalto.cs.apluscourses.icons.CoursesIcons
 import fi.aalto.cs.apluscourses.services.course.CourseFileManager
 import fi.aalto.cs.apluscourses.services.course.CourseManager
-import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdaterService
+import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdater
 import fi.aalto.cs.apluscourses.ui.TokenForm
 import fi.aalto.cs.apluscourses.ui.overview.ResponsiveImagePanel
-import fi.aalto.cs.apluscourses.icons.CoursesIcons
+import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil.languageCodeToName
+import fi.aalto.cs.apluscourses.utils.PluginVersion
 import java.awt.Component
 import javax.swing.JComponent
 
@@ -27,10 +28,8 @@ internal class APlusConfigurable(val project: Project) : Configurable, Configura
 
     private var isModified = false
 
-    private val passwordField = JBPasswordField()
-
-    private val SETTINGS_TAB = 0
-    private val ABOUT_TAB = 1
+    private val settingsTab = 0
+    private val aboutTab = 1
 
     private var myTabHeaderComponent: TabbedPaneHeaderComponent? = null
     override fun getCenterComponent(controller: Configurable.TopComponentController): Component = myTabHeaderComponent!!
@@ -41,11 +40,11 @@ internal class APlusConfigurable(val project: Project) : Configurable, Configura
     private var banner: ResponsiveImagePanel? = null
     override fun createComponent(): JComponent {
         val course = CourseManager.course(project)
-        val t = CourseFileManager.getInstance(project).state.language ?: ""
-        selectedLanguage.set(t)
-        originalLanguage.set(t)
+        val currentLanguage = CourseFileManager.getInstance(project).state.language ?: ""
+        selectedLanguage.set(currentLanguage)
+        originalLanguage.set(currentLanguage)
         selectedLanguage.afterChange { isModified = originalLanguage.get() != it }
-        val l = course?.languages ?: emptyList()
+        val languages = course?.languages ?: emptyList()
         banner = ResponsiveImagePanel(icon = CoursesIcons.About.Banner, width = 200)
         settingsPanel = panel {
             group("Global Settings") {
@@ -62,19 +61,18 @@ internal class APlusConfigurable(val project: Project) : Configurable, Configura
             }
             group("Course Settings") {
                 row("Language") {
-//                comboBox<String>(l)
-                    segmentedButton(l) {
-                        text = it
+                    segmentedButton(languages) {
+                        text = languageCodeToName(it)
                     }.bind(selectedLanguage)
                 }
             }
         }
         val myCardPanel: MultiPanel = object : MultiPanel() {
             override fun create(key: Int): JComponent {
-                if (key == SETTINGS_TAB) {
+                if (key == settingsTab) {
                     return settingsPanel!!
                 }
-                if (key == ABOUT_TAB) {
+                if (key == aboutTab) {
                     return aboutTab()
                 }
                 return super.create(key)
@@ -96,22 +94,22 @@ internal class APlusConfigurable(val project: Project) : Configurable, Configura
         }
         myTabHeaderComponent!!.addTab("Settings", null)
         myTabHeaderComponent!!.addTab("About", null)
-        myCardPanel.select(SETTINGS_TAB, true)
+        myCardPanel.select(settingsTab, true)
         myTabHeaderComponent!!.setListener()
         myTabHeaderComponent!!.getComponent(1).isVisible = false
         return myCardPanel
     }
 
-    private val A_COURSES_PLUGIN_PAGE = "https://plugins.jetbrains.com/plugin/13634-a-courses"
-    private val A_PLUS_PAGE = "https://plus.cs.aalto.fi/"
-    private val GITHUB_PAGE = "https://github.com/Aalto-LeTech/aplus-courses"
+    private val pluginPage = "https://plugins.jetbrains.com/plugin/13634-a-courses"
+    private val aPlus = "https://plus.cs.aalto.fi/"
+    private val github = "https://github.com/Aalto-LeTech/aplus-courses"
 
     private fun aboutTab() = panel {
         row {
             cell(banner!!)
         }
         row {
-            label("Version: 4.0.0-beta1").bold()
+            label(PluginVersion.current).bold()
         }
         row {
             text(
@@ -120,17 +118,17 @@ internal class APlusConfigurable(val project: Project) : Configurable, Configura
         }
         row {
             browserLink(
-                MyBundle.message("ui.aboutDialog.website"), A_COURSES_PLUGIN_PAGE
+                MyBundle.message("ui.aboutDialog.website"), pluginPage
             )
         }
         row {
             browserLink(
-                MyBundle.message("ui.aboutDialog.GithubWebsite"), GITHUB_PAGE
+                MyBundle.message("ui.aboutDialog.GithubWebsite"), github
             )
         }
         row {
             browserLink(
-                MyBundle.message("ui.aboutDialog.APlusWebsite"), A_PLUS_PAGE
+                MyBundle.message("ui.aboutDialog.APlusWebsite"), aPlus
             )
         }
         row {
@@ -153,7 +151,7 @@ internal class APlusConfigurable(val project: Project) : Configurable, Configura
         if (language.isNotEmpty() && originalLanguage != language) {
             CourseFileManager.getInstance(project).state.language = language
             CourseManager.getInstance(project).state.clearAll()
-            ExercisesUpdaterService.getInstance(project).state.clearAll()
+            ExercisesUpdater.getInstance(project).state.clearAll()
         }
         CourseManager.getInstance(project).restart()
         settingsPanel?.validationsOnApply?.values?.flatten()?.mapNotNull {

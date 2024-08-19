@@ -23,7 +23,7 @@ class TokenStorage(private val cs: CoroutineScope) {
     private val serviceName: String = "A+ Courses Plugin"
 
     @NonNls
-    private val serviceKey: String = "auth_token"
+    private val serviceKey: String = "A+ Token"
 
     private val credentialAttributes: CredentialAttributes = CredentialAttributes(
         generateServiceName(serviceName, serviceKey)

@@ -1,17 +1,13 @@
 package fi.aalto.cs.apluscourses.utils.temp
 
 import com.intellij.ide.plugins.PluginEnabler
-import com.intellij.ide.plugins.PluginManagerCore.isPluginInstalled
 import com.intellij.ide.plugins.PluginManagerCore.getPlugin
-import com.intellij.ide.plugins.PluginManagerMain
+import com.intellij.ide.plugins.PluginManagerCore.isPluginInstalled
 import com.intellij.ide.plugins.PluginNode
 import com.intellij.openapi.components.service
 import com.intellij.openapi.extensions.PluginId
-import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.ThrowableComputable
 import com.intellij.util.application
-import com.intellij.util.concurrency.annotations.RequiresEdt
 import fi.aalto.cs.apluscourses.api.CourseConfig.RequiredPlugin
 import fi.aalto.cs.apluscourses.services.Plugins
 import fi.aalto.cs.apluscourses.utils.APlusLogger
@@ -64,7 +60,7 @@ object PluginAutoInstaller {
             .map { it.idString }
             .toSet()
 
-        val allPluginNames = pluginNames
+        pluginNames
             .filter { p: RequiredPlugin -> missingPluginIds.contains(p.id) }
 
 
@@ -83,74 +79,5 @@ object PluginAutoInstaller {
             .map { PluginNode(it) }
 
         return application.service<Plugins>().installPlugins(project, downloadablePluginNodes)
-    }
-
-    private class PluginInstallerWorker(
-        val project: Project,
-        val downloadablePluginNodes: List<PluginNode>
-    ) : ThrowableComputable<Boolean, RuntimeException> {
-
-        override fun compute(): Boolean? {
-            val indicator = java.util.Objects.requireNonNull<com.intellij.openapi.progress.ProgressIndicator>(
-                ProgressManager.getInstance().progressIndicator
-            )
-            indicator.isIndeterminate = true
-
-            // The semaphore must be released (i.e., permits must be raised) once per each plugin installed.
-            // Only when the semaphore's permit count reaches 1, this function can return.
-            val lock = java.util.concurrent.Semaphore(-downloadablePluginNodes.size + 1)
-
-            // "true" means that installation is successful (so far)
-            val installationResult = java.util.concurrent.atomic.AtomicBoolean(true)
-
-            com.intellij.openapi.application.ApplicationManager.getApplication().invokeLater(Runnable {
-                try {
-                    val onInstallationComplete = java.util.function.Consumer { result: Boolean? ->
-                        installationResult.set(installationResult.get() and result!!)
-                        lock.release()
-                    }
-
-                    com.intellij.openapi.application.WriteAction.run<java.io.IOException?>(com.intellij.util.ThrowableRunnable {
-                        PluginManagerMain.downloadPlugins(
-                            downloadablePluginNodes,
-                            kotlin.collections.mutableListOf<PluginNode?>(),
-                            false,
-                            null,
-                            PluginEnabler.getInstance(),
-                            com.intellij.openapi.application.ModalityState.defaultModalityState(),
-                            onInstallationComplete
-                        )
-                    })
-                } catch (ex: java.io.IOException) {
-//          if (notifier != null) {
-//            notifier.notify(new NetworkErrorNotification(ex), project);
-//          }
-
-                    installationResult.set(false)
-                }
-            })
-
-            while (true) {
-                // Semaphore acquisition will succeed once all plugins have been installed.
-                if (lock.tryAcquire()) {
-                    // If plugin installation failed at any point (for example, an attempt to install a non-existent plugin),
-                    // we return null to indicate a failed operation.
-                    return if (installationResult.get()) false else null
-                }
-
-                // This will throw an exception if a user has cancelled the operation. It won't actually cancel
-                // the installation of the current plugin; that would corrupt the IDE. But it will at least return
-                // from this function and close the progress bar.
-                indicator.checkCanceled()
-
-                // In practice, an interruption should never happen.
-                try {
-                    Thread.sleep(50)
-                } catch (ex: InterruptedException) {
-                    Thread.currentThread().interrupt()
-                    return null
-                }
-            }
-        }
     }
 }

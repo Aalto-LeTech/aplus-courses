@@ -46,6 +46,4 @@ abstract class Component<T>(val name: String, protected val project: Project) {
     abstract fun load()
 
     abstract suspend fun downloadAndInstall(updating: Boolean = false)
-
-    abstract suspend fun remove(deleteFiles: Boolean)
 }

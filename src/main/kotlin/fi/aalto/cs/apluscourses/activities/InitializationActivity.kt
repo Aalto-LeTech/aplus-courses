@@ -7,8 +7,6 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.project.ModuleListener
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.projectRoots.impl.jdkDownloader.JdkDownloader
-import com.intellij.openapi.roots.ui.configuration.projectRoot.SdkDownload
 import com.intellij.openapi.startup.ProjectActivity
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.wm.ToolWindowManager
@@ -16,25 +14,19 @@ import com.intellij.util.application
 import fi.aalto.cs.apluscourses.MyBundle
 import fi.aalto.cs.apluscourses.api.CourseConfig
 import fi.aalto.cs.apluscourses.api.CourseConfig.resourceUrls
-import fi.aalto.cs.apluscourses.model.*
-import fi.aalto.cs.apluscourses.notifications.*
 import fi.aalto.cs.apluscourses.services.CoursesClient
-import fi.aalto.cs.apluscourses.services.Notifier
 import fi.aalto.cs.apluscourses.services.PluginSettings
 import fi.aalto.cs.apluscourses.services.SdkInstall
 import fi.aalto.cs.apluscourses.services.course.CourseFileManager
 import fi.aalto.cs.apluscourses.services.course.CourseManager
 import fi.aalto.cs.apluscourses.services.course.SettingsImporter
-import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdaterService
 import fi.aalto.cs.apluscourses.utils.*
 import fi.aalto.cs.apluscourses.utils.temp.PluginAutoInstaller
-import io.ktor.http.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.io.IOException
 
 
-internal class InitializationActivity(private val notifier: Notifier.Companion = Notifier) :
+internal class InitializationActivity() :
     ProjectActivity {
     override suspend fun execute(project: Project) {
         val courseConfig = CourseConfig.get(project) ?: return
@@ -46,7 +38,7 @@ internal class InitializationActivity(private val notifier: Notifier.Companion =
                 CourseManager.getInstance(project).refreshModuleStatuses()
             }
         })
-        val pluginVersion = BuildInfo.pluginVersion
+        val pluginVersion = PluginVersion.current
         logger.info("Starting initialization, course version $pluginVersion")
         ProjectViewUtil.ignoreFileInProjectView(PluginSettings.MODULE_REPL_INITIAL_COMMANDS_FILE_NAME, project)
 
@@ -128,20 +120,6 @@ internal class InitializationActivity(private val notifier: Notifier.Companion =
 //            notifier.notify(CourseVersionOutdatedWarning(), project)
         withContext(Dispatchers.EDT) {
             ToolWindowManager.getInstance(project).getToolWindow("A+ Courses")?.activate(null)
-        }
-    }
-
-    private fun importSettings(project: Project, course: Course) { // TODO
-        val basePath = project.basePath
-        if (basePath != null) {
-            try {
-//                val settingsImporter = SettingsImporter()
-//                settingsImporter.importCustomProperties(Paths.get(project.basePath!!), course, project)
-//                settingsImporter.importFeedbackCss(project, course)
-            } catch (e: IOException) {
-                logger.warn("Failed to import settings", e)
-                notifier.notify(NetworkErrorNotification(e), project)
-            }
         }
     }
 

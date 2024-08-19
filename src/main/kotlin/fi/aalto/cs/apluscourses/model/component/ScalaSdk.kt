@@ -69,7 +69,7 @@ class ScalaSdk(private val scalaVersion: String, project: Project) : Library(sca
             async { downloadAndUnzipZip(sourcesUrl, scala3SourcesPath, "scala3-$strippedScalaVersion/library/src/") }
             async {
                 val scala2SourcesUrl = "https://github.com/scala/scala/archive/refs/tags/v$scala2Version.zip"
-                val scala2SourcesPath = fullPath.resolve("src").resolve("scala-$scala2Version")
+                fullPath.resolve("src").resolve("scala-$scala2Version")
                 downloadAndUnzipZip(scala2SourcesUrl, scala3SourcesPath, "scala-$scala2Version/src/library/")
             }
         }
@@ -95,9 +95,5 @@ class ScalaSdk(private val scalaVersion: String, project: Project) : Library(sca
         }
         status = Status.LOADED
 
-    }
-
-    override suspend fun remove(deleteFiles: Boolean) {
-        TODO("Not yet implemented")
     }
 }

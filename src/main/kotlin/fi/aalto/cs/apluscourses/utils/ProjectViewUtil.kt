@@ -17,12 +17,10 @@ object ProjectViewUtil {
     ) {
         val fileTypeManager = FileTypeManager.getInstance()
 
-        // The below is a fix for a past bug, see issue #996
-        val ignoredFiles = fileTypeManager.ignoredFilesList
-            .replace("([^;])(?:\\.repl-commands)+".toRegex(), "$1")
-
-        WriteCommandAction.runWriteCommandAction(project) { // TODO test-only method
-            fileTypeManager.ignoredFilesList = "$ignoredFiles;$ignoredFileName"
+        if (!fileTypeManager.isFileIgnored(ignoredFileName)) {
+            WriteCommandAction.runWriteCommandAction(project) {
+                fileTypeManager.ignoredFilesList = "${fileTypeManager.ignoredFilesList};$ignoredFileName"
+            }
         }
     }
 }

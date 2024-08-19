@@ -9,6 +9,7 @@ import com.intellij.openapi.project.rootManager
 import com.intellij.openapi.roots.ui.configuration.actions.ModuleDeleteProvider
 import com.intellij.util.application
 import fi.aalto.cs.apluscourses.services.course.CourseManager
+import org.jetbrains.annotations.ApiStatus
 
 @Service(Service.Level.APP)
 internal class APlusModuleDeleteProvider : ModuleDeleteProvider() {
@@ -17,6 +18,7 @@ internal class APlusModuleDeleteProvider : ModuleDeleteProvider() {
      * it should not be deleted from other modules' dependencies
      * because it would not get re-added when the module is re-downloaded.
      */
+    @ApiStatus.Experimental
     override fun doDetachModules(
         project: Project,
         modules: Array<Module>?,

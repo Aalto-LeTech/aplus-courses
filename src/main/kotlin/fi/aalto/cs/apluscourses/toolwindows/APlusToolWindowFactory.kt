@@ -15,13 +15,13 @@ import fi.aalto.cs.apluscourses.actions.ActionGroups.TOOL_WINDOW_ACTIONS
 import fi.aalto.cs.apluscourses.model.Course
 import fi.aalto.cs.apluscourses.model.component.Module
 import fi.aalto.cs.apluscourses.model.exercise.Exercise
-import fi.aalto.cs.apluscourses.model.news.NewsTree
+import fi.aalto.cs.apluscourses.model.news.NewsList
 import fi.aalto.cs.apluscourses.services.Opener
 import fi.aalto.cs.apluscourses.services.course.CourseManager
 import fi.aalto.cs.apluscourses.services.course.CourseManager.NewsUpdaterListener
-import fi.aalto.cs.apluscourses.services.exercise.ExercisesTreeFilterService
-import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdaterService
-import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdaterService.ExercisesUpdaterListener
+import fi.aalto.cs.apluscourses.services.exercise.ExercisesTreeFilter
+import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdater
+import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdater.ExercisesUpdaterListener
 import fi.aalto.cs.apluscourses.ui.exercise.ExercisesView
 import fi.aalto.cs.apluscourses.ui.module.ModulesView
 import fi.aalto.cs.apluscourses.ui.news.NewsView
@@ -86,9 +86,7 @@ internal class APlusToolWindowFactory : ToolWindowFactory, DumbAware {
         toolWindow.contentManager.addContent(newsTab)
         toolWindow.contentManager.setSelectedContent(overviewTab)
 
-        toolWindow.setAdditionalGearActions(
-            TOOL_WINDOW_ACTIONS.get()
-        )
+        toolWindow.setAdditionalGearActions(TOOL_WINDOW_ACTIONS)
 
         // Shorten titles when toolwindow is too small
         toolWindow.component.addComponentListener(object : ComponentAdapter() {
@@ -137,7 +135,7 @@ internal class APlusToolWindowFactory : ToolWindowFactory, DumbAware {
             }
         })
 
-        connection.subscribe(ExercisesUpdaterService.EXERCISES_TOPIC, object : ExercisesUpdaterListener {
+        connection.subscribe(ExercisesUpdater.EXERCISES_TOPIC, object : ExercisesUpdaterListener {
             override fun onExercisesUpdated() {
                 exercisesView.updateTree()
                 modulesView.viewModelChanged(CourseManager.course(toolWindow.project))
@@ -154,8 +152,8 @@ internal class APlusToolWindowFactory : ToolWindowFactory, DumbAware {
         })
 
         connection.subscribe(
-            ExercisesTreeFilterService.TOPIC,
-            object : ExercisesTreeFilterService.ExercisesTreeFilterListener {
+            ExercisesTreeFilter.TOPIC,
+            object : ExercisesTreeFilter.ExercisesTreeFilterListener {
                 override fun onFilterUpdated() {
                     exercisesView.updateTree()
                 }
@@ -174,9 +172,9 @@ internal class APlusToolWindowFactory : ToolWindowFactory, DumbAware {
         })
 
         connection.subscribe(CourseManager.NEWS_TOPIC, object : NewsUpdaterListener {
-            override fun onNewsUpdated(newsTree: NewsTree) {
+            override fun onNewsUpdated(newsList: NewsList) {
                 println("received update news mytoolwindow")
-                newsView.viewModelChanged(newsTree)
+                newsView.viewModelChanged(newsList)
             }
         })
         connection.subscribe(CourseManager.MODULES_TOPIC, object : CourseManager.ModuleListener {
@@ -205,7 +203,7 @@ internal class APlusToolWindowFactory : ToolWindowFactory, DumbAware {
 
         val toolbar = ActionManager.getInstance().createActionToolbar(
             ActionPlaces.TOOLBAR,
-            EXERCISE_ACTIONS.get(),
+            EXERCISE_ACTIONS,
             true
         )
         toolbar.targetComponent = exercisesView.exerciseGroupsFilteringTree.component

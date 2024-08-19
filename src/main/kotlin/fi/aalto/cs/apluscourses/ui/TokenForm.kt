@@ -63,11 +63,6 @@ class TokenForm(private val project: Project, private val callback: () -> Unit =
 
     fun Panel.token(): Row =
         row("A+ token") {
-//            cell(passwordField).apply {
-//                component.preferredSize = null // Let the layout manager decide based on minimumSize
-//            }.comment(
-//                "<a href=\"https://plus.cs.aalto.fi/accounts/accounts/\">What is my token?</a>",
-//            ).align(AlignX.FILL).columns(COLUMNS_MEDIUM)
             passwordField()
                 .applyToComponent {
                     passwordField = this

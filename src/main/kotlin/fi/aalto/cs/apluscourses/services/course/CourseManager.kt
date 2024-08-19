@@ -1,7 +1,5 @@
 package fi.aalto.cs.apluscourses.services.course
 
-import com.intellij.notification.Notification
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
@@ -13,21 +11,19 @@ import com.intellij.util.messages.Topic
 import com.intellij.util.messages.Topic.ProjectLevel
 import fi.aalto.cs.apluscourses.api.APlusApi
 import fi.aalto.cs.apluscourses.api.CourseConfig
-import fi.aalto.cs.apluscourses.services.TokenStorage
 import fi.aalto.cs.apluscourses.model.Course
 import fi.aalto.cs.apluscourses.model.component.Component
 import fi.aalto.cs.apluscourses.model.component.Module
-import fi.aalto.cs.apluscourses.model.news.NewsTree
+import fi.aalto.cs.apluscourses.model.news.NewsList
 import fi.aalto.cs.apluscourses.model.people.User
 import fi.aalto.cs.apluscourses.notifications.NewModulesVersionsNotification
-import fi.aalto.cs.apluscourses.services.CoursesClient
 import fi.aalto.cs.apluscourses.services.Notifier
 import fi.aalto.cs.apluscourses.services.Opener
-import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdaterService
+import fi.aalto.cs.apluscourses.services.PluginSettings
+import fi.aalto.cs.apluscourses.services.TokenStorage
+import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdater
 import fi.aalto.cs.apluscourses.utils.Version
 import fi.aalto.cs.apluscourses.utils.callbacks.Callbacks
-import fi.aalto.cs.apluscourses.utils.temp.PluginAutoInstaller
-import io.ktor.client.statement.bodyAsText
 import kotlinx.coroutines.*
 import java.io.IOException
 import java.util.concurrent.ConcurrentHashMap
@@ -37,13 +33,11 @@ class CourseManager(
     private val project: Project,
     val cs: CoroutineScope
 ) {
-    //: SimplePersistentStateComponent<CourseManager.State>(State()) {
     class State {
-        //: BaseState() {
         var authenticated: Boolean? = null
         var course: Course? = null
         var courseName: String? = null
-        var news: NewsTree? = null
+        var news: NewsList? = null
         var user: User? = null
         var feedbackCss: String? = null
         var grading: CourseConfig.Grading? = null
@@ -63,31 +57,10 @@ class CourseManager(
 
     private val notifiedModules: MutableSet<String> = ConcurrentHashMap.newKeySet()
 
-    private var moduleUpdatesNotification: Notification? = null
-
-    //    /**
-//     * Construct a course updater with reasonable defaults.
-//     */
-//    constructor(
-//        courseProject: CourseProject,
-//        course: Course,
-//        project: Project,
-//        courseUrl: URL,
-//        eventToTrigger: Event
-//    ) : this(
-//        courseProject, course, project, courseUrl, eventToTrigger, DefaultNotifier(),
-//        PluginSettings.UPDATE_INTERVAL
-//    )
     private var job: Job? = null
-    fun restart(
-//        courseProject: CourseProject
-    ) {
+    fun restart() {
         job?.cancel(CancellationException("test"))
-        println("restart")
-        run(
-//            courseProject
-        )
-//        run()
+        run()
     }
 
     fun stop() {
@@ -95,7 +68,7 @@ class CourseManager(
     }
 
     private fun run(
-        updateInterval: Long = 300_000 // TODO PluginSettings.UPDATE_INTERVAL
+        updateInterval: Long = PluginSettings.UPDATE_INTERVAL
     ) {
         job =
             cs.launch {
@@ -110,8 +83,7 @@ class CourseManager(
                         cs.ensureActive()
                         delay(updateInterval)
                     }
-                } catch (e: CancellationException) {
-                    println("Task was cancelled yay")
+                } catch (_: CancellationException) {
                 }
             }
     }
@@ -136,18 +108,7 @@ class CourseManager(
             return
         }
         state.authenticated = true
-//        CoursesClient.getInstance().updateAuthentication()
 
-
-//        val progressViewModel =
-//            PluginSettings.getInstance().getMainViewModel(project).progressViewModel
-//        val progress =
-//            progressViewModel.start(3, PluginResourceBundle.getText("ui.ProgressBarView.refreshingCourse"), false)
-//        val selectedLanguage = PluginSettings
-//            .getInstance()
-//            .getCourseFileManager(project).language
-
-//        val auth = courseProject.authentication
         try {
             runBlocking {
                 state.grading = courseConfig.grading
@@ -206,7 +167,6 @@ class CourseManager(
                     callbacks = Callbacks.fromJsonObject(courseConfig.callbacks),
                     project
                 )
-                println("adjawidjwoaidjowai ${courseConfig.hiddenElements}")
                 importSettings(state.course!!)
                 state.course?.components?.values?.forEach { it.load() }
 //                }
@@ -224,13 +184,9 @@ class CourseManager(
                 }
             }
             fireCourseUpdated()
-            ExercisesUpdaterService.getInstance(project).restart()
+            ExercisesUpdater.getInstance(project).restart()
             refreshModuleStatuses()
-            val newNews = runBlocking {
-//                APlusApi.Course(course.id).news().get()
-                APlusApi.Course(294).news().get(project)
-
-            }
+            val newNews = APlusApi.Course(294).news(project)
             state.news?.news?.forEach {
                 if (it.isRead) newNews.setRead(it.id)
             }
@@ -238,7 +194,6 @@ class CourseManager(
             state.news = newNews
             fireNewsUpdated(newNews)
         } catch (e: IOException) {
-//            progress.finish()
             return
         }
 
@@ -250,8 +205,8 @@ class CourseManager(
             return
         }
         val settingsImporter = project.service<SettingsImporter>()
-//                settingsImporter.importCustomProperties(Paths.get(project.basePath!!), course, project)
         state.feedbackCss = settingsImporter.importFeedbackCss(course)
+        state.settingsImported = true
     }
 
 
@@ -322,22 +277,8 @@ class CourseManager(
             ?: emptyList()
     }
 
-//    private fun getAndLoadDependencies(module: Module, filterStatus: Component.Status?): List<Component<*>> {
-//        return module.dependencyNames
-//            ?.mapNotNull { state.course?.getComponentIfExists(it) }
-//            ?.filter { filterStatus == null || it.status == filterStatus }
-//            ?.map { it.load(); it }
-//            ?.filter { filterStatus == null || it.status == filterStatus }
-//            ?: emptyList()
-//    }
 
-    private class ModuleInfo(
-        val version: Version,
-        val changelog: String
-    )
-
-
-    private fun fireNewsUpdated(newsTree: NewsTree) {
+    private fun fireNewsUpdated(newsList: NewsList) {
         application.invokeLater {
             project.messageBus
                 .syncPublisher(NEWS_TOPIC)
@@ -363,7 +304,7 @@ class CourseManager(
 
     interface NewsUpdaterListener {
         @RequiresEdt
-        fun onNewsUpdated(newsTree: NewsTree)
+        fun onNewsUpdated(newsList: NewsList)
     }
 
     interface ModuleListener {

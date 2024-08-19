@@ -9,11 +9,11 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.project.DumbAwareToggleAction
 import com.intellij.util.application
 import fi.aalto.cs.apluscourses.MyBundle.message
-import fi.aalto.cs.apluscourses.services.exercise.ExercisesTreeFilterService
+import fi.aalto.cs.apluscourses.services.exercise.ExercisesTreeFilter
 
 class FilterActionGroup : DefaultActionGroup(), Toggleable {
     init {
-        ExercisesTreeFilterService.Filter.entries.map { filter ->
+        ExercisesTreeFilter.Filter.entries.map { filter ->
             add(FilterAction(filter))
         }
     }
@@ -22,23 +22,23 @@ class FilterActionGroup : DefaultActionGroup(), Toggleable {
         Toggleable.setSelected(
             e.presentation,
             application
-                .service<ExercisesTreeFilterService>()
+                .service<ExercisesTreeFilter>()
                 .state
                 .isAnyActive()
         )
     }
 
-    private class FilterAction(val filter: ExercisesTreeFilterService.Filter) :
+    private class FilterAction(val filter: ExercisesTreeFilter.Filter) :
         DumbAwareToggleAction(message(filter.displayName)) {
         override fun isSelected(e: AnActionEvent): Boolean =
             ApplicationManager.getApplication()
-                .service<ExercisesTreeFilterService>()
+                .service<ExercisesTreeFilter>()
                 .state.getFilter(filter)
 
 
         override fun setSelected(e: AnActionEvent, state: Boolean) =
             ApplicationManager.getApplication()
-                .service<ExercisesTreeFilterService>()
+                .service<ExercisesTreeFilter>()
                 .state.setFilter(filter, state)
 
         override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT

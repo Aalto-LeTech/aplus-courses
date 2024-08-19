@@ -12,13 +12,13 @@ import com.intellij.ui.dsl.builder.IntelliJSpacingConfiguration
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.gridLayout.UnscaledGaps
 import com.intellij.util.ui.JBFont
-import fi.aalto.cs.apluscourses.model.news.NewsTree
 import fi.aalto.cs.apluscourses.icons.CoursesIcons
+import fi.aalto.cs.apluscourses.model.news.NewsList
 import java.awt.Font
 import javax.swing.ScrollPaneConstants
 
 class NewsView(private val toolWindow: ToolWindow, private val project: Project) : SimpleToolWindowPanel(true, true) {
-    private var news: NewsTree? = null
+    private var news: NewsList? = null
     private var shortTab = false
     private val shortTabTitle = "📰"
     private val longTabTitle = "News"
@@ -42,11 +42,11 @@ class NewsView(private val toolWindow: ToolWindow, private val project: Project)
     /**
      * Sets the view model of this view, or does nothing if the given view model is null.
      */
-    fun viewModelChanged(newsTree: NewsTree?) {
+    fun viewModelChanged(newsList: NewsList?) {
         ApplicationManager.getApplication().invokeLater {
             println("newsview update")
-            this.news = newsTree
-            if (newsTree == null) {
+            this.news = newsList
+            if (newsList == null) {
                 return@invokeLater
             }
             println("newsview update 2")
@@ -55,7 +55,7 @@ class NewsView(private val toolWindow: ToolWindow, private val project: Project)
                     customizeSpacingConfiguration(object : IntelliJSpacingConfiguration() {
                         override val verticalComponentGap: Int = 1
                     }) {
-                        for (node in newsTree.news) {
+                        for (node in newsList.news) {
                             row {
                                 text(node.title).applyToComponent {
                                     font = JBFont.regular().biggerOn(6f).deriveFont(Font.BOLD)

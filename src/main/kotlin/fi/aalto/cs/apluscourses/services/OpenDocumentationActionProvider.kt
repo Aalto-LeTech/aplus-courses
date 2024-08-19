@@ -11,14 +11,14 @@ import com.intellij.openapi.editor.markup.InspectionWidgetActionProvider
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.psi.PsiManager
+import fi.aalto.cs.apluscourses.icons.CoursesIcons
 import fi.aalto.cs.apluscourses.services.course.CourseManager
 import fi.aalto.cs.apluscourses.utils.FileUtil
-import fi.aalto.cs.apluscourses.icons.CoursesIcons
 
 internal class OpenDocumentationActionProvider : InspectionWidgetActionProvider {
     override fun createAction(editor: Editor): AnAction? {
         val project = editor.project ?: return null
-        val course = CourseManager.course(project) ?: return null
+        CourseManager.course(project) ?: return null
         val virtualFile = editor.virtualFile ?: return null
         if (virtualFile.extension != "scala") return null
         val fileName = virtualFile.nameWithoutExtension

@@ -36,7 +36,6 @@ data class SubmissionResult(
     }
 
     companion object {
-
         fun statusFromString(statusString: String?): Status {
             return when (statusString) {
                 "ready" -> Status.GRADED

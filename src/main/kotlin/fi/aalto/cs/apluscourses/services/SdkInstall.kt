@@ -16,9 +16,7 @@ class SdkInstall(val project: Project, val cs: CoroutineScope) {
 
     fun waitForInstall(afterInstall: suspend () -> Unit = {}) {
         cs.launch {
-            sdkDownloadedFuture?.let {
-                it.await()
-            }
+            sdkDownloadedFuture?.await()
             afterInstall()
         }
     }

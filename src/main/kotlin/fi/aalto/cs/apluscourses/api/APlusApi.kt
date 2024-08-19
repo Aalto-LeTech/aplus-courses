@@ -1,28 +1,33 @@
 package fi.aalto.cs.apluscourses.api
 
 import com.intellij.openapi.project.Project
-import fi.aalto.cs.apluscourses.model.Course as CourseModel
-import fi.aalto.cs.apluscourses.model.exercise.Group as GroupModel
-import fi.aalto.cs.apluscourses.model.exercise.Submission as SubmissionModel
-import fi.aalto.cs.apluscourses.model.exercise.SubmissionResult as SubmissionResultModel
-import fi.aalto.cs.apluscourses.model.exercise.Exercise as ExerciseModel
-import fi.aalto.cs.apluscourses.model.people.User as UserModel
 import fi.aalto.cs.apluscourses.model.news.NewsItem
-import fi.aalto.cs.apluscourses.model.news.NewsTree
+import fi.aalto.cs.apluscourses.model.news.NewsList
 import fi.aalto.cs.apluscourses.services.CoursesClient
 import fi.aalto.cs.apluscourses.services.course.CourseFileManager
-import fi.aalto.cs.apluscourses.utils.temp.parser.O1NewsParser
+import fi.aalto.cs.apluscourses.utils.parser.O1NewsParser
 import io.ktor.client.request.forms.*
+import io.ktor.client.request.parameter
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.*
 import io.ktor.resources.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonNamingStrategy
 import org.jsoup.Jsoup
 import java.time.ZonedDateTime
 import kotlin.collections.component1
 import kotlin.collections.component2
+import fi.aalto.cs.apluscourses.model.Course as CourseModel
+import fi.aalto.cs.apluscourses.model.exercise.Exercise as ExerciseModel
+import fi.aalto.cs.apluscourses.model.exercise.Submission as SubmissionModel
+import fi.aalto.cs.apluscourses.model.exercise.SubmissionResult as SubmissionResultModel
+import fi.aalto.cs.apluscourses.model.people.Group as GroupModel
+import fi.aalto.cs.apluscourses.model.people.User as UserModel
 
 object APlusApi {
     @Resource("/courses/{id}")
@@ -40,37 +45,191 @@ object APlusApi {
             val image: String,
         )
 
+        @Resource("exercises")
+        class Exercises(val parent: Course) {
+            suspend fun get(project: Project): List<CourseModule> {
+                return withContext(Dispatchers.IO) {
+                    // TODO remove after hasSubmittableFiles fixed
+//                    CoursesClient.getInstance(project).getBody<Exercises, CourseModuleResults>(this@Exercises).results
+                    val res = CoursesClient.getInstance(project).get<Exercises>(this@Exercises)
+                    json.decodeFromString<CourseModuleResults>(
+                        res.bodyAsText().replace("\"has_submittable_files\":[]", "\"has_submittable_files\":false")
+                    ).results
+                }
+            }
+
+            @Serializable
+            data class CourseModuleResults(
+                val results: List<CourseModule>
+            )
+
+            @Serializable
+            data class CourseModule(
+                val id: Long,
+                val url: String,
+                val htmlUrl: String,
+                val displayName: String,
+                val isOpen: Boolean,
+                val closingTime: String,
+                val exercises: List<Exercise>
+            )
+
+            @Serializable
+            data class Exercise(
+                val id: Long,
+                val url: String,
+                val htmlUrl: String,
+                val displayName: String,
+                val maxPoints: Int,
+                val maxSubmissions: Int,
+                val hierarchicalName: String,
+                val difficulty: String,
+//            val hasSubmittableFiles: Boolean // TODO should always be bool, currently boolean or null or array
+                val hasSubmittableFiles: Boolean?
+            )
+
+            companion object {
+                @OptIn(ExperimentalSerializationApi::class)
+                private val json = Json { // TODO remove after hasSubmittableFiles fixed
+                    ignoreUnknownKeys = true
+                    isLenient = true
+                    namingStrategy = JsonNamingStrategy.SnakeCase
+                }
+            }
+        }
+
+        @Resource("points/me")
+        class Points(val parent: Course) {
+            suspend fun get(project: Project): PointsBody {
+                return withContext(Dispatchers.IO) {
+                    CoursesClient.getInstance(project).getBody<Points, PointsBody>(this@Points)
+                }
+            }
+
+            @Serializable
+            data class PointsBody(
+                val id: Long,
+                val url: String,
+                val username: String,
+                val studentId: String,
+                val email: String,
+                val fullName: String,
+                val isExternal: Boolean,
+                val tags: List<Tag>,
+                val role: String,
+                val submissionCount: Int,
+                val points: Int,
+                val pointsByDifficulty: Map<String, Int>,
+                val modules: List<Module>
+            )
+
+            @Serializable
+            data class Tag(
+                val id: Long,
+                val url: String,
+                val slug: String,
+                val name: String
+            )
+
+            @Serializable
+            data class Module(
+                val id: Long,
+                val name: String,
+                val maxPoints: Int,
+                val pointsToPass: Int,
+                val submissionCount: Int,
+                val points: Int,
+                val pointsByDifficulty: Map<String, Int>,
+                val passed: Boolean,
+                val exercises: List<Exercise>
+            )
+
+            @Serializable
+            data class Exercise(
+                val url: String,
+                val bestSubmission: String?,
+                val submissions: List<String>,
+                val submissionsWithPoints: List<SubmissionWithPoints>,
+                val id: Long,
+                val name: String,
+                val difficulty: String,
+                val maxPoints: Int,
+                val pointsToPass: Int,
+                val submissionCount: Int,
+                val points: Int,
+                val passed: Boolean,
+                val official: Boolean
+            )
+
+            @Serializable
+            data class SubmissionWithPoints(
+                val id: Long,
+                val url: String,
+                val submissionTime: String,
+                val grade: Int
+            )
+        }
+
+        @Resource("submissiondata/me")
+        class SubmissionData(val parent: Course) {
+            suspend fun get(project: Project): List<SubmissionDataBody> {
+                val res = withContext(Dispatchers.IO) {
+                    CoursesClient.getInstance(project)
+                        .get<SubmissionData>(this@SubmissionData) {
+                            parameter("best", "no")
+                            parameter("format", "json")
+                        }
+                }
+                return json.decodeFromString<List<SubmissionDataBody>>(res.bodyAsText())
+            }
+
+            companion object {
+                private val json = Json {
+                    ignoreUnknownKeys = true
+                }
+            }
+
+            @Serializable
+            data class SubmissionDataBody(
+                val SubmissionID: Long,
+                val UserID: Long,
+                val Status: String,
+                val Penalty: Double?
+            )
+        }
+
         @Resource("news")
         class News(val parent: Course) {
-            suspend fun get(project: Project): NewsTree {
+            suspend fun get(project: Project): NewsList {
                 val res = withContext(Dispatchers.IO) {
                     CoursesClient.getInstance(project).getBody<News, NewsBody>(this@News)
                 }
 
-                return NewsTree(res.results.map { (id, url, title, _, publishString, _, body, _) ->
-                    val titleElement = Jsoup.parseBodyFragment(title).body()
+                return NewsList(res.results.mapNotNull { (id, url, title, _, publishString, language, body, _) ->
+                    val courseLanguage = CourseFileManager.getInstance(project).state.language!!
+                    if (language != "-" && language != courseLanguage) { // TODO test
+                        return@mapNotNull null
+                    }
 
-                    val bodyElement = Jsoup.parseBodyFragment(body).body()
+                    val (titleText, bodyText) = if (this.parent.id == 294L) {
+                        val titleElement = Jsoup.parseBodyFragment(title).body()
+                        val bodyElement = Jsoup.parseBodyFragment(body).body()
 
-                    val language = CourseFileManager.getInstance(project).state.language!!
-                    val parser = O1NewsParser(language)//NewsParser()
-//                val parserKey = null//Optional.ofNullable(course.newsParser).orElse(course.name)
-//                parser = when (parserKey) {
-//                    O1NewsParser.NAME -> O1NewsParser(language)
-//                    else -> NewsParser()
-//                }
-                    val titleText = parser.parseTitle(titleElement)
-                    val bodyText = parser.parseBody(bodyElement)
-//                    println(titleText)
+                        val parser = O1NewsParser(language) // For O1 2023
+
+                        val titleText = parser.parseTitle(titleElement)
+                        val bodyText = parser.parseBody(bodyElement)
+                        titleText to bodyText
+                    } else {
+                        title to body
+                    }
 
                     val publish = ZonedDateTime.parse(publishString)
                     NewsItem(
                         id,
-                        url,
                         titleText,
                         bodyText,
-                        publish,
-//                        ReadNewsImpl()
+                        publish
                     )
                 })
             }
@@ -134,8 +293,17 @@ object APlusApi {
             )
         }
 
-        fun news(): News = News(this)
-        suspend fun myGroups(project: Project): List<GroupModel> = MyGroups(this).get(project)
+        suspend fun points(project: Project): Points.PointsBody =
+            Points(this).get(project)
+
+        suspend fun exercises(project: Project): List<Exercises.CourseModule> =
+            Exercises(this).get(project)
+
+        suspend fun submissionData(project: Project): List<SubmissionData.SubmissionDataBody> =
+            SubmissionData(this).get(project)
+
+        suspend fun news(project: Project) = News(this).get(project)
+        suspend fun myGroups(project: Project) = MyGroups(this).get(project)
 
         companion object {
             fun apply(course: Course): Course = Course(course.id.toLong())

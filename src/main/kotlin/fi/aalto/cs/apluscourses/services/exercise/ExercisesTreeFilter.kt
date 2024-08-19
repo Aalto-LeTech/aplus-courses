@@ -12,7 +12,7 @@ import fi.aalto.cs.apluscourses.ui.exercise.ExercisesView
     name = "ExercisesUpdaterService",
     storages = [Storage("aplusCoursesExercisesTreeFilter.xml")]
 )
-class ExercisesTreeFilterService : SimplePersistentStateComponent<ExercisesTreeFilterService.State>(State()) {
+class ExercisesTreeFilter : SimplePersistentStateComponent<ExercisesTreeFilter.State>(State()) {
     class State : BaseState() {
         private var enabledFilters: MutableMap<String, Boolean> by map()
 

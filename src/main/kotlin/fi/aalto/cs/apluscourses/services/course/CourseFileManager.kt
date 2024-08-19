@@ -5,7 +5,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.util.xmlb.Converter
 import com.intellij.util.xmlb.annotations.*
 import fi.aalto.cs.apluscourses.model.component.Module
-import fi.aalto.cs.apluscourses.model.exercise.Group
+import fi.aalto.cs.apluscourses.model.people.Group
 import fi.aalto.cs.apluscourses.utils.Version
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant

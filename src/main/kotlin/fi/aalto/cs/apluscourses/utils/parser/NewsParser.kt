@@ -1,4 +1,4 @@
-package fi.aalto.cs.apluscourses.utils.temp.parser
+package fi.aalto.cs.apluscourses.utils.parser
 
 import org.jsoup.nodes.Element
 

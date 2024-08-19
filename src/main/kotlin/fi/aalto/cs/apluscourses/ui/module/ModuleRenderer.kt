@@ -22,13 +22,13 @@ import com.intellij.ui.dsl.gridLayout.UnscaledGaps
 import com.intellij.util.application
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
+import fi.aalto.cs.apluscourses.icons.CoursesIcons
 import fi.aalto.cs.apluscourses.model.component.Module
 import fi.aalto.cs.apluscourses.services.CoursesClient
 import fi.aalto.cs.apluscourses.services.Opener
 import fi.aalto.cs.apluscourses.services.course.CourseManager
-import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdaterService
-import fi.aalto.cs.apluscourses.utils.temp.DateDifferenceFormatter.formatTimeUntilNow
-import fi.aalto.cs.apluscourses.icons.CoursesIcons
+import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdater
+import fi.aalto.cs.apluscourses.utils.DateDifferenceFormatter.formatTimeUntilNow
 import org.jetbrains.annotations.NonNls
 import java.awt.BorderLayout
 import java.awt.event.ActionEvent
@@ -41,7 +41,7 @@ import kotlin.to
 
 class ModuleRenderer(
     val module: Module,
-    val index: Int,
+    index: Int, // TODO when filtering, background color has to be updated
     val project: Project,
 ) : JPanel(BorderLayout()) {
     private var panel: DialogPanel
@@ -137,7 +137,7 @@ class ModuleRenderer(
 
     private val installing = AtomicBooleanProperty(false)
     private var isZipSizeSet = false
-    private fun zipSizeText(size: String) = "Download size ${size}"
+    private fun zipSizeText(size: String) = "Download size $size"
 
     private val zipSizeText = AtomicProperty<String>(zipSizeText("??? ??"))
 
@@ -185,7 +185,7 @@ class ModuleRenderer(
             "Metadata not found"
         }
 
-        val nextExercise = ExercisesUpdaterService.getInstance(project).state.exerciseGroups
+        val nextExercise = ExercisesUpdater.getInstance(project).state.exerciseGroups
             .flatMap { group -> group.exercises.map { it to group } }
             .filter { it.first.module?.name == module.name }
             .firstOrNull { it.first.userPoints == 0 }

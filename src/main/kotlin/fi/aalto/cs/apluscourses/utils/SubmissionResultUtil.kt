@@ -1,4 +1,4 @@
-package fi.aalto.cs.apluscourses.utils.temp
+package fi.aalto.cs.apluscourses.utils
 
 import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.model.exercise.SubmissionResult

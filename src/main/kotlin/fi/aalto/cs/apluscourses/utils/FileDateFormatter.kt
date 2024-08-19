@@ -1,4 +1,4 @@
-package fi.aalto.cs.apluscourses.utils.temp
+package fi.aalto.cs.apluscourses.utils
 
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant

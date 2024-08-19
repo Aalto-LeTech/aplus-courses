@@ -10,10 +10,9 @@ import fi.aalto.cs.apluscourses.api.APlusApi
 import fi.aalto.cs.apluscourses.icons.CoursesIcons
 import fi.aalto.cs.apluscourses.model.component.Module
 import fi.aalto.cs.apluscourses.model.exercise.Exercise
-import fi.aalto.cs.apluscourses.model.exercise.SubmissionInfo
-import fi.aalto.cs.apluscourses.model.exercise.Group
 import fi.aalto.cs.apluscourses.model.exercise.Submission
-import fi.aalto.cs.apluscourses.notifications.MissingFileNotification
+import fi.aalto.cs.apluscourses.model.exercise.SubmissionInfo
+import fi.aalto.cs.apluscourses.model.people.Group
 import fi.aalto.cs.apluscourses.notifications.MissingModuleNotification
 import fi.aalto.cs.apluscourses.notifications.NetworkErrorNotification
 import fi.aalto.cs.apluscourses.notifications.NotSubmittableNotification
@@ -34,8 +33,6 @@ class SubmitExercise(
 ) {
     private val submissionInfos: MutableMap<Long, SubmissionInfo> = HashMap()
 
-    //    // TODO: store language and default group ID in the object model and read them from there
-//    private val languageSource: Interfaces.LanguageSource = languageSource
     fun submit(exercise: Exercise) {
         cs.launch {
             try {
@@ -50,10 +47,6 @@ class SubmitExercise(
                 }
                 val submittedBefore = exercise.submissionResults.isNotEmpty()
                 val submittersFromBefore = exercise.submissionResults.firstOrNull()?.submitters
-                if (submittedBefore) {
-                    println("multiple submitters:  ${submittersFromBefore}")
-                }
-                exercise.submissionInfo = submissionInfo // TODO remove
 
                 cs.ensureActive()
 
@@ -100,7 +93,6 @@ class SubmitExercise(
                 }
                 logger.info("Submission files: $files")
 
-                //TODO move to service
                 val groups = listOf(Group.GROUP_ALONE) + APlusApi.course(course).myGroups(project)
 
                 // Find the group from the available groups that matches the default group ID.
@@ -142,7 +134,7 @@ class SubmitExercise(
 
 //                logger.info("Submitting with group: $selectedGroup")
                 APlusApi.exercise(exercise).submit(submission, project)
-                ExercisesUpdaterService.getInstance(project).restart()
+                ExercisesUpdater.getInstance(project).restart()
 //            val submissionUrl: String = exerciseDataSource.submit(submission.buildSubmission(), authentication)
 //            logger.info("Submission url: {}", submissionUrl)
 
