@@ -51,5 +51,5 @@ class OpenExerciseItemAction : AnAction() {
         e.presentation.icon = if (loading) CoursesIcons.Loading else CoursesIcons.Browse
     }
 
-    override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
+    override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.EDT
 }

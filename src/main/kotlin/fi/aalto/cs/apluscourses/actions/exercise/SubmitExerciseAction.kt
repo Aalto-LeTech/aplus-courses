@@ -21,5 +21,5 @@ class SubmitExerciseAction : AnAction() {
         project.service<SubmitExercise>().submit(exercise)
     }
 
-    override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
+    override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.EDT
 }

@@ -22,5 +22,5 @@ class ShowFeedbackAction : AnAction() {
         e.presentation.isEnabled = selected != null && selected is SubmissionResultItem
     }
 
-    override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
+    override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.EDT
 }
