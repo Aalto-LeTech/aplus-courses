@@ -2,7 +2,6 @@ package fi.aalto.cs.apluscourses.model
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.libraries.LibraryTable
-import fi.aalto.cs.apluscourses.api.CourseConfig.RequiredPlugin
 import fi.aalto.cs.apluscourses.model.component.*
 import fi.aalto.cs.apluscourses.utils.Version
 import fi.aalto.cs.apluscourses.utils.callbacks.Callbacks
@@ -17,7 +16,6 @@ import io.ktor.http.*
 class Course(
     val id: Long,
     val name: String,
-    val aplusUrl: String,
     val htmlUrl: String,
     val imageUrl: String,
     val endingTime: String,
@@ -25,13 +23,11 @@ class Course(
     val modules: List<Module>,
     val exerciseModules: Map<Long, Map<String, Module>>,
     val resourceUrls: Map<String, Url>,
-    val vmOptions: Map<String, String>,
     val optionalCategories: List<String>,
     val autoInstallComponentNames: List<String>,
     val replInitialCommands: Map<String, List<String>>?,
     val replAdditionalArguments: String?,
     val minimumPluginVersion: Version,
-    val pluginDependencies: List<RequiredPlugin>,
     val hiddenElements: List<Long>,
     val callbacks: Callbacks,
 //    val feedbackParser: String?,

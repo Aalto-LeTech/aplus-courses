@@ -31,14 +31,14 @@ class SubmitExerciseDialog(
     DialogWrapper(project) {
     val selectedGroup = AtomicProperty<Group>(group)
     val defaultGroup = AtomicProperty<Group>(group)
-    private val test = object : ComponentPredicate() {
+    private val isDefaultSelected = object : ComponentPredicate() {
         override fun invoke(): Boolean {
             return selectedGroup.get() != defaultGroup.get()
         }
 
         override fun addListener(listener: (Boolean) -> Unit) {
-            selectedGroup.whenPropertyChanged { listener.invoke(it != defaultGroup.get()) }
-            defaultGroup.whenPropertyChanged { listener.invoke(selectedGroup.get() != it) }
+            selectedGroup.whenPropertyChanged { listener(it != defaultGroup.get()) }
+            defaultGroup.whenPropertyChanged { listener(selectedGroup.get() != it) }
         }
     }
 
@@ -70,7 +70,7 @@ class SubmitExerciseDialog(
                 CourseFileManager.getInstance(project).setDefaultGroup(selectedGroup.get())
             }
                 .enabled(!submittedBefore)
-                .enabledIf(test)
+                .enabledIf(isDefaultSelected)
             contextHelp("You cannot change the group after submitting.")
                 .visible(submittedBefore)
         }

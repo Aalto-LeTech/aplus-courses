@@ -61,18 +61,20 @@ class TokenForm(private val project: Project, private val callback: () -> Unit =
             button("Log Out") { removeToken() }
         }.visibleIf(user.isNotNull())
 
-    fun Panel.token(): Row =
-        row("A+ token") {
+    fun Panel.token(): Row {
+        val aplusUrl = CourseManager.getInstance(project).state.aPlusUrl ?: "https://plus.cs.aalto.fi/"
+        return row("A+ token") {
             passwordField()
                 .applyToComponent {
                     passwordField = this
                 }
                 .resizableColumn()
                 .align(AlignX.FILL)
-                .comment("<a href=\"https://plus.cs.aalto.fi/accounts/accounts/\">What is my token?</a>")
+                .comment("<a href=\"${aplusUrl}accounts/accounts/\">What is my token?</a>")
             button("Set") { setToken() }.visibleIf(checking.not())
             button("Checking...") {}.enabled(false).visibleIf(checking)
         }.visibleIf(user.isNull())
+    }
 
     fun Panel.validation(): Row =
         row("") {

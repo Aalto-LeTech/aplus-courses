@@ -48,6 +48,8 @@ class ExercisesUpdater(
 
     private var exerciseJob: Job? = null
     private var gradingJob: Job? = null
+    var isRunning: Boolean = false
+        private set
     private val submissionsInGrading: MutableSet<Long> = ConcurrentHashMap.newKeySet()
     private var submissionCount = -1
     private var points = -1
@@ -122,6 +124,7 @@ class ExercisesUpdater(
             fireExercisesUpdated()
             return
         }
+        isRunning = true
         val course = CourseManager.course(project) ?: return
         println("Starting exercises update")
         val timeStart = System.currentTimeMillis()
@@ -157,6 +160,7 @@ class ExercisesUpdater(
         val newPoints = points.modules.flatMap { it.exercises }.sumOf { it.points }
         if (this.state.exerciseGroups.isNotEmpty() && this.points == newPoints && this.submissionCount == newSubmissionCount) {
             println("No new data")
+            isRunning = false
             return
         }
         this.points = newPoints
@@ -201,11 +205,12 @@ class ExercisesUpdater(
                                 if (submitters != null) {
                                     println("Multiple submitters for ${it.id}: $submitters")
                                 }
+                                println("Processing submission ${exercise.name} ${it.id} ${data?.Status} ${data?.Grade}")
                                 SubmissionResult(
                                     id = it.id,
                                     url = it.url,
                                     maxPoints = exercise.maxPoints,
-                                    userPoints = it.grade,
+                                    userPoints = data?.Grade ?: it.grade,
                                     latePenalty = data?.Penalty,
                                     status = SubmissionResult.statusFromString(data?.Status),
                                     filesInfo = emptyList(),
@@ -240,6 +245,7 @@ class ExercisesUpdater(
         println("done processing exercises")
         val timeEnd = System.currentTimeMillis()
         println("Time taken: ${timeEnd - timeStart} ms")
+        isRunning = false
     }
 
     private fun doGradingTask() {

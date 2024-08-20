@@ -194,6 +194,7 @@ object APlusApi {
                 val SubmissionID: Long,
                 val UserID: Long,
                 val Status: String,
+                val Grade: Int,
                 val Penalty: Double?
             )
         }
