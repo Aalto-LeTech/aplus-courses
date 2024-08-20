@@ -60,7 +60,7 @@ object AddModuleWatermark {
         val user = CourseManager.user(project)
 
         try {
-            Files.walk(module.path).use { entries ->
+            Files.walk(module.fullPath).use { entries ->
                 entries.forEach { path: Path ->
                     val file = path.toFile()
                     if (file.isFile && file.name.lowercase(Locale.getDefault()).endsWith(".py")) {

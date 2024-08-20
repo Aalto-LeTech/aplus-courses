@@ -40,6 +40,7 @@ class CourseManager(
         var news: NewsList? = null
         var user: User? = null
         var feedbackCss: String? = null
+        var aPlusUrl: String? = null
         var grading: CourseConfig.Grading? = null
         var settingsImported = false
         var missingDependencies = mapOf<String, List<Component<*>>>()
@@ -100,6 +101,7 @@ class CourseManager(
         val courseConfig = CourseConfig.get(project) ?: return
 
         state.courseName = courseConfig.name
+        state.aPlusUrl = courseConfig.aPlusUrl
         println("courseConfig: $courseConfig")
         if (!TokenStorage.getInstance().isTokenSet()) {
             state.clearAll()
@@ -148,7 +150,6 @@ class CourseManager(
                 state.course = Course(
                     id = courseConfig.id.toLong(),
                     name = courseConfig.name,
-                    aplusUrl = courseConfig.aPlusUrl,
                     htmlUrl = extraCourseData.htmlUrl,
                     imageUrl = extraCourseData.image,
                     endingTime = extraCourseData.endingTime,
@@ -156,13 +157,11 @@ class CourseManager(
                     modules = modules,
                     exerciseModules = exerciseModules,
                     resourceUrls = CourseConfig.resourceUrls(courseConfig.resources),
-                    vmOptions = courseConfig.vmOptions,
                     optionalCategories = courseConfig.optionalCategories,
                     autoInstallComponentNames = courseConfig.autoInstall,
                     replInitialCommands = courseConfig.scalaRepl?.initialCommands,
                     replAdditionalArguments = courseConfig.scalaRepl?.arguments,
                     minimumPluginVersion = courseConfig.version,
-                    pluginDependencies = courseConfig.requiredPlugins,
                     hiddenElements = courseConfig.hiddenElements,
                     callbacks = Callbacks.fromJsonObject(courseConfig.callbacks),
                     project
@@ -186,7 +185,7 @@ class CourseManager(
             fireCourseUpdated()
             ExercisesUpdater.getInstance(project).restart()
             refreshModuleStatuses()
-            val newNews = APlusApi.Course(294).news(project)
+            val newNews = APlusApi.Course(course.id).news(project)
             state.news?.news?.forEach {
                 if (it.isRead) newNews.setRead(it.id)
             }
@@ -244,6 +243,7 @@ class CourseManager(
                 reportSequentialProgress { reporter ->
                     reporter.indeterminateStep("Installing ${module.name}")
                     module.downloadAndInstall()
+                    state.course?.callbacks?.invokePostDownloadModuleCallbacks(project, module)
                     println("Module installed")
 //            refreshModuleStatuses()
                     fireModulesUpdated()
