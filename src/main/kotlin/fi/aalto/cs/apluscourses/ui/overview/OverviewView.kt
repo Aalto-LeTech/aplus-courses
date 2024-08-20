@@ -54,28 +54,74 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
         }
     }
 
-    private fun createPanel(loading: Boolean = false): DialogPanel {
-        if (loading) return loadingPanel()
-        val authenticated = CourseManager.authenticated(project) ?: return loadingPanel()
-        if (!authenticated) {
+    private fun authPanel(): DialogPanel {
+        return panel {
             val courseName = CourseManager.getInstance(project).state.courseName ?: ""
             val tokenForm = TokenForm(project) {
                 update(loading = true)
                 CourseManager.getInstance(project).restart()
             }
-            return panel {
-                panel {
-                    row {
-                        text("Welcome to $courseName").applyToComponent {
-                            font = JBFont.h1()
-                        }.comment("You need to log in to access the course content:")
+            panel {
+                row {
+                    text("Welcome to $courseName").applyToComponent {
+                        font = JBFont.h1()
+                    }.comment("You need to log in to access the course content:")
+                }
+                with(tokenForm) {
+                    token()
+                    validation()
+                }
+            }.customize(UnscaledGaps(16, 32, 16, 32))
+        }
+    }
+
+    private fun networkErrorPanel(): DialogPanel {
+        return panel {
+            panel {
+                row {
+                    text("The plugin encountered a network error").applyToComponent {
+                        font = JBFont.h1()
+                    }.comment("Please check your internet connection and that A+ is accessible.")
+                }
+                row {
+                    button("Refresh") {
+                        update(loading = true)
+                        CourseManager.getInstance(project).restart()
                     }
-                    with(tokenForm) {
-                        token()
-                        validation()
+                }
+            }.customize(UnscaledGaps(16, 32, 16, 32))
+        }
+    }
+
+    private fun notEnrolledPanel(): DialogPanel {
+        return panel {
+            val courseName = CourseManager.getInstance(project).state.courseName
+            panel {
+                row {
+                    text("Looks like you are not enrolled on this course").applyToComponent {
+                        font = JBFont.h1()
+                    }.comment("Please check the ${courseName ?: "course"} page on A+.")
+                }
+                row {
+                    button("Refresh") {
+                        update(loading = true)
+                        CourseManager.getInstance(project).restart()
                     }
-                }.customize(UnscaledGaps(16, 32, 16, 32))
-            }
+                }
+
+            }.customize(UnscaledGaps(16, 32, 16, 32))
+        }
+    }
+
+    private fun createPanel(loading: Boolean = false): DialogPanel {
+        if (loading) return loadingPanel()
+        val authenticated = CourseManager.authenticated(project) ?: return loadingPanel()
+        if (!authenticated) return authPanel()
+        val error = CourseManager.error(project)
+        if (error == CourseManager.Error.NETWORK_ERROR) {
+            return networkErrorPanel()
+        } else if (error == CourseManager.Error.NOT_ENROLLED) {
+            return notEnrolledPanel()
         }
         val course = CourseManager.course(project) ?: return loadingPanel()
         val user = CourseManager.user(project) ?: return loadingPanel()

@@ -1,7 +1,5 @@
 package fi.aalto.cs.apluscourses.model.people
 
-import fi.aalto.cs.apluscourses.model.Course
-
 /**
  * @property userName The name of the user. If the full name is not available, the username is used.
  * @property studentId The student ID of the user.
@@ -12,9 +10,14 @@ class User(
     val userName: String,
     val studentId: String,
     val aplusId: Long,
-    private val staffCourses: List<Long>,
+    val enrolledCourses: List<Long>,
+    val staffCourses: List<Long>,
 ) {
-    fun isStaffOf(course: Course): Boolean {
-        return course.id in staffCourses
+    fun isStaffOf(courseId: Long): Boolean {
+        return courseId in staffCourses
+    }
+
+    fun isEnrolledIn(courseId: Long): Boolean {
+        return courseId in enrolledCourses
     }
 }

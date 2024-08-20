@@ -55,16 +55,16 @@ class ExercisesUpdater(
     private var points = -1
 
     fun restart() {
-        exerciseJob?.cancel(CancellationException("test"))
-        gradingJob?.cancel(CancellationException("test"))
+        exerciseJob?.cancel()
+        gradingJob?.cancel()
         println("restart")
         runExerciseUpdater()
         runGradingUpdater()
     }
 
     fun stop() {
-        exerciseJob?.cancel(CancellationException("test"))
-        gradingJob?.cancel(CancellationException("test"))
+        exerciseJob?.cancel()
+        gradingJob?.cancel()
     }
 
     private fun runExerciseUpdater(
@@ -83,7 +83,7 @@ class ExercisesUpdater(
                         cs.ensureActive()
                         delay(updateInterval)
                     }
-                } catch (e: CancellationException) {
+                } catch (_: CancellationException) {
                     println("Task was cancelled 1")
                 }
             }

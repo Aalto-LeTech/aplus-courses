@@ -403,6 +403,7 @@ object APlusApi {
                     body.fullName ?: body.username,
                     body.studentId,
                     body.id,
+                    body.enrolledCourses.map { it.id },
                     body.staffCourses.map { it.id }
                 )
             }
@@ -413,6 +414,7 @@ object APlusApi {
                 val fullName: String?,
                 val studentId: String,
                 val id: Long,
+                val enrolledCourses: List<Course> = emptyList(),
                 val staffCourses: List<Course> = emptyList(),
             )
 

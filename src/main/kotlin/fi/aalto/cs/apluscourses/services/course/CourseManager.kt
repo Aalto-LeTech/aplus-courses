@@ -43,6 +43,7 @@ class CourseManager(
         var aPlusUrl: String? = null
         var grading: CourseConfig.Grading? = null
         var settingsImported = false
+        var error: Error? = null
         var missingDependencies = mapOf<String, List<Component<*>>>()
         fun clearAll() {
             course = null
@@ -54,18 +55,23 @@ class CourseManager(
         }
     }
 
+    enum class Error {
+        NOT_ENROLLED,
+        NETWORK_ERROR,
+    }
+
     val state = State()
 
     private val notifiedModules: MutableSet<String> = ConcurrentHashMap.newKeySet()
 
     private var job: Job? = null
     fun restart() {
-        job?.cancel(CancellationException("test"))
+        job?.cancel()
         run()
     }
 
     fun stop() {
-        job?.cancel(CancellationException("test"))
+        job?.cancel()
     }
 
     private fun run(
@@ -110,71 +116,80 @@ class CourseManager(
             return
         }
         state.authenticated = true
+        state.error = null
 
         try {
-            runBlocking {
-                state.grading = courseConfig.grading
-//                async {
-                val extraCourseData = APlusApi.Course(courseConfig.id.toLong()).get(project)
-                val modules = courseConfig.modules.map {
-                    Module(
-                        it.name,
-                        it.url,
-                        it.changelog,
-                        it.version,
-                        it.language,
-                        project
-                    )
-                }
-                val exerciseModules = courseConfig.exerciseModules.map { (exerciseId, languagesToModule) ->
-                    println("exerciseId: $exerciseId languagesToModule: $languagesToModule")
-                    exerciseId to
-                            languagesToModule
-                                .map { (language, moduleName) ->
-                                    var module = modules.find { it.name == moduleName }
-                                    if (module == null) {
-                                        println("Module $moduleName not found")
-                                        module = Module(
-                                            moduleName,
-                                            "",
-                                            "",
-                                            Version.EMPTY,
-                                            null,
-                                            project
-                                        )
-                                    }
-                                    language to module
-                                }
-                                .toMap()
-                }.toMap()
-                state.course = Course(
-                    id = courseConfig.id.toLong(),
-                    name = courseConfig.name,
-                    htmlUrl = extraCourseData.htmlUrl,
-                    imageUrl = extraCourseData.image,
-                    endingTime = extraCourseData.endingTime,
-                    languages = courseConfig.languages,
-                    modules = modules,
-                    exerciseModules = exerciseModules,
-                    resourceUrls = CourseConfig.resourceUrls(courseConfig.resources),
-                    optionalCategories = courseConfig.optionalCategories,
-                    autoInstallComponentNames = courseConfig.autoInstall,
-                    replInitialCommands = courseConfig.scalaRepl?.initialCommands,
-                    replAdditionalArguments = courseConfig.scalaRepl?.arguments,
-                    minimumPluginVersion = courseConfig.version,
-                    hiddenElements = courseConfig.hiddenElements,
-                    callbacks = Callbacks.fromJsonObject(courseConfig.callbacks),
-                    project
-                )
-                importSettings(state.course!!)
-                state.course?.components?.values?.forEach { it.load() }
-//                }
-//                async {
+            state.grading = courseConfig.grading
+
+            val extraCourseData = try {
                 state.user = withContext(Dispatchers.IO) {
                     APlusApi.me().get(project)
                 }
-//                }
+                APlusApi.Course(courseConfig.id.toLong()).get(project)
+            } catch (_: Exception) {
+                val courseId = courseConfig.id.toLong()
+                val user = state.user
+                if (user != null && (!user.isStaffOf(courseId) || !user.isEnrolledIn(courseId))) {
+                    state.error = Error.NOT_ENROLLED
+                } else {
+                    state.error = Error.NETWORK_ERROR
+                }
+                fireCourseUpdated()
+                throw CancellationException()
             }
+            val modules = courseConfig.modules.map {
+                Module(
+                    it.name,
+                    it.url,
+                    it.changelog,
+                    it.version,
+                    it.language,
+                    project
+                )
+            }
+            val exerciseModules = courseConfig.exerciseModules.map { (exerciseId, languagesToModule) ->
+                println("exerciseId: $exerciseId languagesToModule: $languagesToModule")
+                exerciseId to
+                        languagesToModule
+                            .map { (language, moduleName) ->
+                                var module = modules.find { it.name == moduleName }
+                                if (module == null) {
+                                    println("Module $moduleName not found")
+                                    module = Module(
+                                        moduleName,
+                                        "",
+                                        "",
+                                        Version.EMPTY,
+                                        null,
+                                        project
+                                    )
+                                }
+                                language to module
+                            }
+                            .toMap()
+            }.toMap()
+            state.course = Course(
+                id = courseConfig.id.toLong(),
+                name = courseConfig.name,
+                htmlUrl = extraCourseData.htmlUrl,
+                imageUrl = extraCourseData.image,
+                endingTime = extraCourseData.endingTime,
+                languages = courseConfig.languages,
+                modules = modules,
+                exerciseModules = exerciseModules,
+                resourceUrls = CourseConfig.resourceUrls(courseConfig.resources),
+                optionalCategories = courseConfig.optionalCategories,
+                autoInstallComponentNames = courseConfig.autoInstall,
+                replInitialCommands = courseConfig.scalaRepl?.initialCommands,
+                replAdditionalArguments = courseConfig.scalaRepl?.arguments,
+                minimumPluginVersion = courseConfig.version,
+                hiddenElements = courseConfig.hiddenElements,
+                callbacks = Callbacks.fromJsonObject(courseConfig.callbacks),
+                project
+            )
+            importSettings(state.course!!)
+            state.course?.components?.values?.forEach { it.load() }
+
             val course = state.course ?: return
             course.autoInstallComponents.forEach {
                 val status = it.loadAndGetStatus()
@@ -192,7 +207,9 @@ class CourseManager(
 
             state.news = newNews
             fireNewsUpdated(newNews)
-        } catch (e: IOException) {
+        } catch (_: IOException) {
+            state.error = Error.NETWORK_ERROR
+            fireCourseUpdated()
             return
         }
 
@@ -332,6 +349,10 @@ class CourseManager(
 
         fun course(project: Project): Course? {
             return getInstance(project).state.course
+        }
+
+        fun error(project: Project): Error? {
+            return getInstance(project).state.error
         }
 
         fun user(project: Project): User? {
