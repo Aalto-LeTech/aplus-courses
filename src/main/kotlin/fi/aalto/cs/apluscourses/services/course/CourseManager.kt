@@ -27,6 +27,7 @@ import fi.aalto.cs.apluscourses.utils.callbacks.Callbacks
 import kotlinx.coroutines.*
 import java.io.IOException
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.Executors
 
 @Service(Service.Level.PROJECT)
 class CourseManager(
@@ -61,6 +62,8 @@ class CourseManager(
     }
 
     val state = State()
+
+    private val moduleOperationDispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
 
     private val notifiedModules: MutableSet<String> = ConcurrentHashMap.newKeySet()
 
@@ -98,6 +101,7 @@ class CourseManager(
     fun setNewsAsRead() {
         val news = state.news ?: return
         news.setAllRead()
+        CourseFileManager.getInstance(project).setNewsRead()
         fireNewsUpdated(news)
     }
 
@@ -188,7 +192,7 @@ class CourseManager(
                 project
             )
             importSettings(state.course!!)
-            state.course?.components?.values?.forEach { it.updateStatus() }
+            state.course?.components?.values?.forEach { withContext(moduleOperationDispatcher) { it.updateStatus() } }
 
             val course = state.course ?: return
 
@@ -202,13 +206,17 @@ class CourseManager(
             fireNewsUpdated(newNews)
 
             val autoInstallModulesToInstall = course.autoInstallComponents
-                .filter { it.updateAndGetStatus() == Component.Status.UNRESOLVED }
+                .filter {
+                    withContext(moduleOperationDispatcher) {
+                        it.updateAndGetStatus() == Component.Status.UNRESOLVED
+                    }
+                }
             if (autoInstallModulesToInstall.isNotEmpty()) {
                 autoInstallModulesToInstall.forEach {
                     if (it is Module) installModuleAsync(it, false)
                 }
             } else {
-                refreshModuleStatuses()
+                refreshModuleStatusesAsync()
             }
 
         } catch (_: IOException) {
@@ -243,9 +251,11 @@ class CourseManager(
         }
     }
 
-    fun refreshModuleStatuses() {
+    suspend fun refreshModuleStatusesAsync() {
         state.missingDependencies = state.course?.modules?.mapNotNull {
-            it.updateStatus()
+            withContext(moduleOperationDispatcher) {
+                it.updateStatus()
+            }
             val dependencies = getMissingDependencies(it)
             println("module: ${it.name} dependencies: $dependencies")
             if (dependencies.isNotEmpty()) {
@@ -258,11 +268,19 @@ class CourseManager(
         fireModulesUpdated()
     }
 
+    fun refreshModuleStatuses() {
+        cs.launch {
+            refreshModuleStatusesAsync()
+        }
+    }
+
     suspend fun installModuleAsync(module: Module, show: Boolean = true) {
         withBackgroundProgress(project, "A+ Courses") {
             reportSequentialProgress { reporter ->
                 reporter.indeterminateStep("Installing ${module.name}")
-                module.downloadAndInstall()
+                withContext(moduleOperationDispatcher) {
+                    module.downloadAndInstall()
+                }
                 state.course?.callbacks?.invokePostDownloadModuleCallbacks(project, module)
                 println("Module installed")
 
@@ -270,7 +288,11 @@ class CourseManager(
                 if (show) project.service<Opener>().showModuleInProjectTree(module)
                 val dependencies = getMissingDependencies(module)
 
-                dependencies.forEach { it.downloadAndInstall() }
+                dependencies.forEach {
+                    withContext(moduleOperationDispatcher) {
+                        it.downloadAndInstall()
+                    }
+                }
                 refreshModuleStatuses()
             }
 
@@ -285,16 +307,20 @@ class CourseManager(
 
     fun updateModule(module: Module) {
         cs.launch {
-            module.update()
-            refreshModuleStatuses()
+            withContext(moduleOperationDispatcher) {
+                module.update()
+            }
+            refreshModuleStatusesAsync()
         }
     }
 
-    private fun getMissingDependencies(module: Module): List<Component<*>> {
+    private suspend fun getMissingDependencies(module: Module): List<Component<*>> {
         return module.dependencyNames
             ?.mapNotNull { state.course?.getComponentIfExists(it) }
             ?.filter { module ->
-                val status = module.updateAndGetStatus()
+                val status = withContext(moduleOperationDispatcher) {
+                    module.updateAndGetStatus()
+                }
                 status == Component.Status.UNRESOLVED || status == Component.Status.ERROR
             }
             ?: emptyList()
