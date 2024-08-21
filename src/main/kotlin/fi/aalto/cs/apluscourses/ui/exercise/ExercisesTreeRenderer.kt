@@ -21,7 +21,6 @@ import javax.swing.tree.DefaultMutableTreeNode
 class ExercisesTreeRenderer : NodeRenderer() {
     private lateinit var item: ExercisesView.ExercisesTreeItem
 
-
     override fun customizeCellRenderer(
         tree: JTree,
         value: Any,
@@ -75,154 +74,190 @@ class ExercisesTreeRenderer : NodeRenderer() {
 
     }
 
-
     override fun paintComponent(g: Graphics?) {
-        if (g == null) {
-            return
-        }
-        val g2d = g.create() as Graphics2D
-        UISettings.setupAntialiasing(g2d)
-        val clip: Shape?
-        val width = width
-        val height = height
-        if (isOpaque) {
-            // paint background for expanded row
-            g2d.color = background
-            g2d.fillRect(0, 0, width, height)
-        }
+        if (g == null) return
 
-        var white = true
-        var status = ""
-        var isSubmittable = true
-        val text = when (val item = this.item) {
+        val g2d = g.create() as Graphics2D
+
+        try {
+            if (!prepareToPaint(g2d)) return
+
+
+            val width = width
+            val height = height
+            val fontMetrics = g2d.fontMetrics
+            val pointsText = pointsText()
+            val pointsTextBounds = fontMetrics.getStringBounds(pointsText, g2d).bounds
+            val status = statusText()
+            val statusBounds = fontMetrics.getStringBounds(status, g2d).bounds
+
+            val pointsTextX = (width - pointsTextBounds.width) - 10
+            val pointsTextY = getTextBaseLine(fontMetrics, height)
+            val statusX = (width - statusBounds.width) - (pointsTextBounds.width + 18)
+
+            if (pointsText.isNotEmpty()) {
+                clipComponent(g2d, statusX, height)
+                drawBackground(g2d, pointsTextBounds, pointsTextX, pointsTextY)
+                drawText(g2d, pointsText, pointsTextX, pointsTextY)
+            } else {
+                super.paintComponent(g2d)
+            }
+            drawStatusText(g2d, status, statusX, pointsTextY)
+        } finally {
+            g2d.dispose()
+        }
+    }
+
+    private fun prepareToPaint(g2d: Graphics2D): Boolean {
+        UISettings.setupAntialiasing(g2d)
+        val item = this.item
+        return when (item) {
+            is ExercisesView.ExerciseGroupItem -> item.group.maxPoints != 0
+            is ExercisesView.SubmissionResultItem -> item.submission.status != SubmissionResult.Status.WAITING
+            else -> true
+        }
+    }
+
+    private fun statusText(): String {
+        val item = this.item
+        return when (item) {
             is ExercisesView.ExerciseItem -> {
                 val exercise = item.exercise
-                isSubmittable = exercise.isSubmittable
-                white = false
-                val userPoints = exercise.userPoints
-                val maxPoints = exercise.maxPoints
-                g2d.font = JBFont.regular()
-                val statusEnum = getStatus(exercise)
-                g2d.color = when (statusEnum) {
-                    Status.FULL_POINTS ->
-                        JBColor(0x8bc34a, 0x8bc34a)
 
-                    Status.NO_POINTS, Status.PARTIAL_POINTS ->
-                        JBColor(0xffb74d, 0xffb74d)
-
-                    else -> JBColor(0xc5c5c5, 0xc5c5c5)
+                if (getStatus(exercise) == Status.OPTIONAL_PRACTICE) {
+                    exercise.difficulty
+                } else {
+                    val lateString = if (exercise.isLate()) "late, " else ""
+                    "${lateString}${exercise.submissionResults.size} of ${exercise.maxSubmissions} ${exercise.difficulty}"
                 }
-                if (!isSubmittable) {
-                    g2d.color = ColorUtil.withAlpha(g2d.color, 0.5)
-                }
-                val statusText: String =
-                    if (statusEnum == Status.OPTIONAL_PRACTICE) {
-                        exercise.difficulty
-                    } else {
-                        val lateString = if (exercise.isLate()) "late, " else ""
-                        "${lateString}${exercise.submissionResults.size} of ${exercise.maxSubmissions} ${exercise.difficulty}"
-                    }
-                status = statusText
-                "${userPoints}/${maxPoints}"
-            }
-
-            is ExercisesView.ExerciseGroupItem -> {
-                val group = item.group
-                if (group.maxPoints == 0) {
-                    super.paintComponent(g)
-                    return
-                }
-                g2d.font = JBFont.regular().deriveFont(Font.BOLD)
-                g2d.color = JBColor(0x005EB8, 0x005EB8)
-                "${group.userPoints}/${group.maxPoints}"
             }
 
             is ExercisesView.SubmissionResultItem -> {
                 val submission = item.submission
-                val isWaiting = submission.status == SubmissionResult.Status.WAITING
-                if (isWaiting) {
-                    super.paintComponent(g)
-                    return
-                }
+                val isRejected = submission.status == SubmissionResult.Status.REJECTED
                 val isLate = (submission.latePenalty
                     ?: 0.0) > 0 || submission.status == SubmissionResult.Status.UNOFFICIAL
-                val isRejected = submission.status == SubmissionResult.Status.REJECTED
-                g2d.font = JBFont.regular()
-                g2d.color = if (submission.userPoints == submission.maxPoints) {
-                    JBColor(0x8bc34a, 0x8bc34a)
-                } else {
-                    JBColor(0xffb74d, 0xffb74d)
-                }
                 if (isRejected) {
-                    status = "rejected"
+                    "rejected"
                 } else if (isLate) {
-                    status = "late"
+                    "late"
+                } else {
+                    ""
                 }
-                "${submission.userPoints}/${submission.maxPoints}"
             }
 
-            else -> {
-                super.paintComponent(g)
-                return
-            }
-
+            else -> ""
         }
+    }
 
+    private fun pointsText(): String {
+        val item = this.item
 
-        val fontMetrics: FontMetrics = g2d.fontMetrics
-        val stringBounds = fontMetrics.getStringBounds(text, g2d).bounds
-        val textX = (width - stringBounds.width) - 10
-        val textY =
-            getTextBaseLine(g2d.fontMetrics, height) // height - stringBounds.height) / 2 + fontMetrics.ascent + 1
-
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
-        val roundRectangle =
-            RoundRectangle2D.Double(
-                textX - 15.0,
-                textY - stringBounds.height + 2.0,
-                stringBounds.width.toDouble() + 10.0,
-                stringBounds.height.toDouble() + 2.0,
-                stringBounds.height.toDouble(),
-                stringBounds.height.toDouble()
-            )
-        when (item) {
-            is ExercisesView.SubmissionResultItem -> {
-                g2d.draw(roundRectangle)
-            }
-
-            else -> {
-                g2d.fill(roundRectangle)
-                g2d.color =
-                    if (white)
-                        JBColor(0xFFFFFF, 0xFFFFFF)
-                    else
-                        JBColor(0x000000, 0x000000)
-            }
+        return when (item) {
+            is ExercisesView.ExerciseItem -> "${item.exercise.userPoints}/${item.exercise.maxPoints}"
+            is ExercisesView.ExerciseGroupItem -> "${item.group.userPoints}/${item.group.maxPoints}"
+            is ExercisesView.SubmissionResultItem -> "${item.submission.userPoints}/${item.submission.maxPoints}"
+            else -> ""
         }
+    }
 
-        if (!isSubmittable) {
-            g2d.color = ColorUtil.withAlpha(g2d.color, 0.8)
+    private fun pointsBackground(item: ExercisesView.ExercisesTreeItem): Color {
+        return when (item) {
+            is ExercisesView.ExerciseItem -> statusToColor(getStatus(item.exercise))
+            is ExercisesView.SubmissionResultItem -> submissionResultToColor(item.submission)
+            else -> JBColor(0x005EB8, 0x005EB8)
         }
-        g2d.drawString(text, textX - 10, textY)
+    }
 
-        if (status.isNotEmpty()) {
-            val statusBounds = fontMetrics.getStringBounds(status, g2d).bounds
-            val statusX = (width - statusBounds.width) - (stringBounds.width + 18)
-            g2d.color = JBColor.gray
-            if (!isSubmittable) {
-                g2d.color = ColorUtil.withAlpha(g2d.color, 0.5)
-            }
-            g2d.drawString(status, statusX - 10, textY)
+    private fun statusToColor(status: Status): Color {
+        val baseColor = when (status) {
+            Status.FULL_POINTS -> JBColor(0x8bc34a, 0x8bc34a)
+            Status.NO_POINTS, Status.PARTIAL_POINTS -> JBColor(0xffb74d, 0xffb74d)
+            else -> JBColor(0xc5c5c5, 0xc5c5c5)
         }
+        return if (isSubmittable()) baseColor else ColorUtil.withAlpha(baseColor, 0.5)
+    }
 
+    private fun submissionResultToColor(submission: SubmissionResult): Color {
+        return if (submission.userPoints == submission.maxPoints) {
+            JBColor(0x8bc34a, 0x8bc34a)
+        } else {
+            JBColor(0xffb74d, 0xffb74d)
+        }
+    }
 
-        clip = g2d.clip
-        g2d.clipRect(0, 0, width, height)
+    private fun determineFont(item: ExercisesView.ExercisesTreeItem): Font {
+        return when (item) {
+            is ExercisesView.ExerciseGroupItem -> JBFont.regular().deriveFont(Font.BOLD)
+            else -> JBFont.regular()
+        }
+    }
 
+    private fun clipComponent(g2d: Graphics2D, statusX: Int, height: Int) {
+        val originalClip = g2d.clip
+        g2d.clipRect(0, 0, statusX - 12, height)
         super.paintComponent(g2d)
+        g2d.clip = originalClip
+    }
 
-        // restore clip area if needed
-        if (clip != null) g2d.clip = clip
+    private fun drawBackground(
+        g2d: Graphics2D,
+        pointsTextBounds: Rectangle,
+        pointsTextX: Int,
+        pointsTextY: Int
+    ) {
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
+        g2d.color = pointsBackground(item)
+        if (!isSubmittable()) {
+            g2d.color = ColorUtil.withAlpha(g2d.color, 0.5)
+        }
+        val roundRectangle = RoundRectangle2D.Double(
+            pointsTextX - 15.0,
+            pointsTextY - pointsTextBounds.height + 2.0,
+            pointsTextBounds.width.toDouble() + 10.0,
+            pointsTextBounds.height.toDouble() + 2.0,
+            pointsTextBounds.height.toDouble(),
+            pointsTextBounds.height.toDouble()
+        )
+        if (item is ExercisesView.SubmissionResultItem) {
+            g2d.draw(roundRectangle)
+        } else {
+            g2d.fill(roundRectangle)
+        }
+    }
+
+    private fun drawText(g2d: Graphics2D, text: String, x: Int, y: Int) {
+        if (item !is ExercisesView.SubmissionResultItem) {
+            g2d.color =
+                if (this.item is ExercisesView.ExerciseItem) {
+                    val color = JBColor(0x000000, 0x000000)
+                    if (!isSubmittable()) {
+                        ColorUtil.withAlpha(color, 0.7)
+                    } else {
+                        color
+                    }
+                } else {
+                    JBColor(0xFFFFFF, 0xFFFFFF)
+                }
+        }
+        g2d.font = determineFont(item)
+        g2d.drawString(text, x - 10, y)
+    }
+
+    private fun drawStatusText(g2d: Graphics2D, status: String, x: Int, y: Int) {
+        g2d.color = JBColor.gray
+        if (!isSubmittable()) {
+            g2d.color = ColorUtil.withAlpha(g2d.color, 0.5)
+        }
+        g2d.drawString(status, x - 10, y)
+    }
+
+    private fun isSubmittable(): Boolean {
+        val item = this.item
+        return when (item) {
+            is ExercisesView.ExerciseItem -> item.exercise.isSubmittable
+            else -> true
+        }
     }
 
     companion object {

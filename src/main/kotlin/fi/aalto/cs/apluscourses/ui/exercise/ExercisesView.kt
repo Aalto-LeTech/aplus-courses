@@ -1,6 +1,5 @@
 package fi.aalto.cs.apluscourses.ui.exercise
 
-import com.intellij.ide.util.treeView.TreeState
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
@@ -70,20 +69,21 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true) {
 
     fun updateTree() {
         val scroll = scrollPane.verticalScrollBar.value
-        val treeState = TreeState.createOn(exerciseGroupsFilteringTree.tree, true, true)
+        val expandedItems = getExpandedItems()
         exerciseGroupsFilteringTree.updateTree()
-        treeState.applyTo(exerciseGroupsFilteringTree.tree)
+        expandItems(expandedItems)
         scrollPane.verticalScrollBar.value = scroll
     }
 
-    private fun getExpandedPaths(): List<TreePath> {
+    private fun getExpandedItems(): List<ExercisesTreeItem> {
         val tree = exerciseGroupsFilteringTree.tree
         val root = exerciseGroupsFilteringTree.root
-        val expandedPaths = mutableListOf<TreePath>()
+        val expandedItems = mutableListOf<ExercisesTreeItem>()
 
         fun collectExpandedPaths(node: DefaultMutableTreeNode, path: TreePath) {
             if (tree.isExpanded(path)) {
-                expandedPaths.add(path)
+                val userObject = node.userObject as? ExercisesTreeItem ?: return
+                expandedItems.add(userObject)
                 node.children().toList().forEach { childNode ->
                     collectExpandedPaths(childNode as DefaultMutableTreeNode, path.pathByAddingChild(childNode))
                 }
@@ -91,7 +91,24 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true) {
         }
 
         collectExpandedPaths(root, TreePath(root))
-        return expandedPaths
+        return expandedItems
+    }
+
+    private fun expandItems(expandedItems: List<ExercisesTreeItem>) {
+        val tree = exerciseGroupsFilteringTree.tree
+        val root = exerciseGroupsFilteringTree.root
+
+        fun expandPaths(node: DefaultMutableTreeNode, path: TreePath) {
+            val userObject = node.userObject as? ExercisesTreeItem ?: return
+            if (expandedItems.any { it.isSameAs(userObject) }) {
+                tree.expandPath(path)
+            }
+            node.children().toList().forEach { childNode ->
+                expandPaths(childNode as DefaultMutableTreeNode, path.pathByAddingChild(childNode))
+            }
+        }
+
+        expandPaths(root, TreePath(root))
     }
 
     fun updateExercise(exercise: Exercise) {
@@ -125,6 +142,8 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true) {
         fun url(): String? = null
 
         fun children(): List<ExercisesTreeItem>
+
+        fun isSameAs(other: ExercisesTreeItem): Boolean
     }
 
     data class ExercisesRootItem(val project: Project) : ExercisesTreeItem {
@@ -160,6 +179,8 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true) {
             }.filter { group -> // Filter out empty groups
                 group.children().isNotEmpty()
             }
+
+        override fun isSameAs(other: ExercisesTreeItem): Boolean = other is ExercisesRootItem
     }
 
     data class ExerciseGroupItem(val group: ExerciseGroup, private val children: List<ExerciseItem>) :
@@ -167,6 +188,9 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true) {
         override fun displayName(): String = group.name
         override fun url(): String = group.htmlUrl
         override fun children(): List<ExerciseItem> = children
+
+        override fun isSameAs(other: ExercisesTreeItem): Boolean =
+            other is ExerciseGroupItem && other.group.id == group.id
     }
 
     data class ExerciseItem(val exercise: Exercise, private val children: List<ExercisesTreeItem>) :
@@ -175,6 +199,9 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true) {
         override fun displayName(): String = exercise.name
         override fun url(): String = exercise.htmlUrl
         override fun children(): List<ExercisesTreeItem> = children
+
+        override fun isSameAs(other: ExercisesTreeItem): Boolean =
+            other is ExerciseItem && other.exercise.id == exercise.id
     }
 
     data class SubmissionResultItem(
@@ -185,6 +212,9 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true) {
         override fun displayName(): String = "Submission $index"
         override fun url(): String = "" // Needs to be fetched on demand
         override fun children(): List<ExercisesTreeItem> = emptyList()
+
+        override fun isSameAs(other: ExercisesTreeItem): Boolean =
+            other is SubmissionResultItem && other.submission.id == submission.id && other.exercise.id == exercise.id
     }
 
     data class NewSubmissionItem(val exercise: Exercise) : ExercisesTreeItem {
@@ -200,6 +230,9 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true) {
             }
 
         override fun children(): List<ExercisesTreeItem> = emptyList()
+
+        override fun isSameAs(other: ExercisesTreeItem): Boolean =
+            other is NewSubmissionItem && other.exercise.id == exercise.id
     }
 
     class SimpleExercisesTree : SimpleTree() {
