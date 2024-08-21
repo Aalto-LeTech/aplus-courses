@@ -67,6 +67,9 @@ class TokenForm(private val project: Project, private val callback: () -> Unit =
             passwordField()
                 .applyToComponent {
                     passwordField = this
+                    addActionListener {
+                        setToken()
+                    }
                 }
                 .resizableColumn()
                 .align(AlignX.FILL)

@@ -15,10 +15,10 @@
                     anchor="right"
                     factoryClass="fi.aalto.cs.apluscourses.toolwindows.APlusToolWindowFactory"
                     icon="/icons/aPlusLogo.svg"/>
-        <toolWindow id="A+ Teacher"
-                    anchor="right"
-                    factoryClass="fi.aalto.cs.apluscourses.toolwindows.TeacherToolWindowFactory"
-                    icon="/icons/aPlusLogo.svg"/>
+        <!--        <toolWindow id="A+ Teacher"-->
+        <!--                    anchor="right"-->
+        <!--                    factoryClass="fi.aalto.cs.apluscourses.toolwindows.TeacherToolWindowFactory"-->
+        <!--                    icon="/icons/aPlusLogo.svg"/>-->
         <moduleBuilder builderClass="fi.aalto.cs.apluscourses.generator.APlusModuleBuilder"/>
         <errorHandler implementation="com.intellij.diagnostic.JetBrainsMarketplaceErrorReportSubmitter"/>
         <!--        <httpRequestHandler implementation="fi.aalto.cs.apluscourses.intellij.services.OpenSubmissionService"/>-->

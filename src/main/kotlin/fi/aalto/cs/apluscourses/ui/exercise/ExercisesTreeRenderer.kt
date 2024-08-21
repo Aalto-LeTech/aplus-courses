@@ -77,11 +77,18 @@ class ExercisesTreeRenderer : NodeRenderer() {
     override fun paintComponent(g: Graphics?) {
         if (g == null) return
 
+        val item = this.item
+        val isSubmissionInGrading =
+            item is ExercisesView.SubmissionResultItem && item.submission.status == SubmissionResult.Status.WAITING
+        if (isSubmissionInGrading) {
+            super.paintComponent(g)
+            return
+        }
+
         val g2d = g.create() as Graphics2D
 
         try {
             if (!prepareToPaint(g2d)) return
-
 
             val width = width
             val height = height

@@ -19,6 +19,7 @@ import fi.aalto.cs.apluscourses.notifications.NotSubmittableNotification
 import fi.aalto.cs.apluscourses.services.Notifier
 import fi.aalto.cs.apluscourses.services.course.CourseFileManager
 import fi.aalto.cs.apluscourses.services.course.CourseManager
+import fi.aalto.cs.apluscourses.ui.exercise.DuplicateSubmissionDialog
 import fi.aalto.cs.apluscourses.ui.exercise.SubmitExerciseDialog
 import fi.aalto.cs.apluscourses.utils.APlusLogger
 import fi.aalto.cs.apluscourses.utils.FileUtil
@@ -93,6 +94,14 @@ class SubmitExercise(
                 }
                 logger.info("Submission files: $files")
 
+                if (withContext(Dispatchers.EDT) {
+                        (DuplicateSubmissionChecker.getInstance(project).isDuplicateSubmission(exercise.id, files)
+                                && !DuplicateSubmissionDialog.showDialog()
+                                )
+                    }) {
+                    return@launch
+                }
+
                 val groups = listOf(Group.GROUP_ALONE) + APlusApi.course(course).myGroups(project)
 
                 // Find the group from the available groups that matches the default group ID.
@@ -114,32 +123,19 @@ class SubmitExercise(
                     SubmitExerciseDialog(project, exercise, files.values.toList(), groups, group, submittedBefore)
                 }
 
-                val canceled = withContext(Dispatchers.EDT) {
-                    !submissionDialog.showAndGet()
-                }
-
-                if (canceled) {
+                if (withContext(Dispatchers.EDT) {
+                        !submissionDialog.showAndGet()
+                    }) {
                     return@launch
                 }
+
                 val submission = Submission(exercise, files, submissionDialog.selectedGroup.get(), language)
 
-                withContext(Dispatchers.EDT) {
-//                    if (DuplicateSubmissionCheckerImpl().isDuplicateSubmission(project, course.id, exercise.id, files) TODO
-//                        && !DuplicateSubmissionDialog.showDialog()
-//                    ) {
-//                        return@withContext
-//                    }
-                }
-
-
-//                logger.info("Submitting with group: $selectedGroup")
                 APlusApi.exercise(exercise).submit(submission, project)
                 ExercisesUpdater.getInstance(project).restart()
-//            val submissionUrl: String = exerciseDataSource.submit(submission.buildSubmission(), authentication)
-//            logger.info("Submission url: {}", submissionUrl)
 
-//            groupSelector.onAssignmentSubmitted(project, course.getId(), exercise.id, selectedGroup)
-//            duplicateChecker.onAssignmentSubmitted(project, course.getId(), exercise.id, files)
+                DuplicateSubmissionChecker.getInstance(project)
+                    .onAssignmentSubmitted(exercise.id, files)
 
 //            val tag: String = getAndReplaceText(
 //                "ui.localHistory.submission.tag",

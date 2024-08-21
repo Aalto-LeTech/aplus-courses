@@ -1,7 +1,7 @@
 package fi.aalto.cs.apluscourses.services
 
 object PluginSettings {
-    const val REPL_ADDITIONAL_ARGUMENTS_FILE_NAME: String = ".repl-arguments" // TODO
+    const val REPL_ADDITIONAL_ARGUMENTS_FILE_NAME: String = ".repl-arguments"
 
     const val MODULE_REPL_INITIAL_COMMANDS_FILE_NAME: String = ".repl-commands"
 

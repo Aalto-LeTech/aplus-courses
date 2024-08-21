@@ -72,6 +72,7 @@ object PluginAutoInstaller {
         if (askForConsent) {
             val install = withContext(Dispatchers.EDT) {
                 Messages.showOkCancelDialog(
+                    project,
                     message(
                         "ui.pluginInstallationDialog.courseOpenDialog.message",
                         missingPluginNames.joinToString(", ")

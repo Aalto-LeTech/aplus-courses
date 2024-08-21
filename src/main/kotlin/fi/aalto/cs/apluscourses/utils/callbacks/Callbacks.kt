@@ -10,7 +10,7 @@ class Callbacks private constructor(private val postDownloadModuleCallbacks: Lis
         fun postDownloadModule(project: Project, module: Module)
     }
 
-    fun invokePostDownloadModuleCallbacks(project: Project, module: Module) { // TODO
+    fun invokePostDownloadModuleCallbacks(project: Project, module: Module) {
         postDownloadModuleCallbacks.forEach { callback ->
             callback.postDownloadModule(
                 project,

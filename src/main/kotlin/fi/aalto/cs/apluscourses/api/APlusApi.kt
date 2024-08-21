@@ -196,7 +196,7 @@ object APlusApi {
                 val lastNewsReadTime = CourseFileManager.getInstance(project).state.newsReadTime
                 return NewsList(res.results.mapNotNull { (id, url, title, _, publishString, language, body, _) ->
                     val courseLanguage = CourseFileManager.getInstance(project).state.language!!
-                    if (language != "-" && language != courseLanguage) { // TODO test
+                    if (language != "-" && language != courseLanguage) {
                         return@mapNotNull null
                     }
 

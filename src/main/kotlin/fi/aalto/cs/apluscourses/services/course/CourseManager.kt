@@ -204,6 +204,7 @@ class CourseManager(
 
             state.news = newNews
             fireNewsUpdated(newNews)
+            fireCourseUpdated()
 
             val autoInstallModulesToInstall = course.autoInstallComponents
                 .filter {

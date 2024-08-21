@@ -115,7 +115,7 @@ internal class InitializationActivity() :
         if ((needsRestartForPlugins || needsRestartForSettings)) {
             project.service<ProjectInitializationTracker>().waitForAllTasks()
             val willRestart = withContext(Dispatchers.EDT) {
-                askForIDERestart(newProject = !isCourseInitialized)
+                askForIDERestart(project, newProject = !isCourseInitialized)
             }
             if (willRestart) {
                 application.invokeLater {
@@ -136,7 +136,8 @@ internal class InitializationActivity() :
         }
     }
 
-    private fun askForIDERestart(newProject: Boolean) = Messages.showOkCancelDialog(
+    private fun askForIDERestart(project: Project, newProject: Boolean) = Messages.showOkCancelDialog(
+        project,
         MyBundle.message(
             if (newProject) "ui.newProject.askForIDERestart.message" else "ui.pluginInstallationDialog.askForIDERestart.message"
         ),
