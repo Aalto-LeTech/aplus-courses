@@ -1,10 +1,13 @@
 package fi.aalto.cs.apluscourses.activities
 
+import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.actionSystem.impl.ActionManagerImpl
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.application.ex.ApplicationEx
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.module.Module
+import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.ModuleListener
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.ProjectActivity
@@ -28,6 +31,7 @@ import fi.aalto.cs.apluscourses.utils.Version.ComparisonStatus
 import fi.aalto.cs.apluscourses.utils.temp.PluginAutoInstaller
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.jetbrains.annotations.NonNls
 
 
 internal class InitializationActivity() :
@@ -39,6 +43,20 @@ internal class InitializationActivity() :
         val connection = project.messageBus.connect()
         connection.subscribe(ModuleListener.TOPIC, object : ModuleListener {
             override fun moduleRemoved(project: Project, module: Module) {
+                val isDumb = DumbService.isDumb(project)
+                val courseManager = CourseManager.getInstance(project)
+                val course = courseManager.state.course
+                @NonNls val lastAction = (ActionManager.getInstance() as ActionManagerImpl).lastPreformedActionId ?: ""
+
+                // Sometimes the module gets deleted when it is being installed in dumb mode
+                if (isDumb && course != null &&
+                    !lastAction.contains("Delete") // Do not trigger when deleting a module
+                ) {
+                    val moduleModel = course.getComponentIfExists(module.name)
+                    if (moduleModel is fi.aalto.cs.apluscourses.model.component.Module) {
+                        moduleModel.loadToProject()
+                    }
+                }
                 CourseManager.getInstance(project).refreshModuleStatuses()
             }
         })

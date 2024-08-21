@@ -188,7 +188,7 @@ class CourseManager(
                 project
             )
             importSettings(state.course!!)
-            state.course?.components?.values?.forEach { it.load() }
+            state.course?.components?.values?.forEach { it.updateStatus() }
 
             val course = state.course ?: return
 
@@ -201,14 +201,16 @@ class CourseManager(
             state.news = newNews
             fireNewsUpdated(newNews)
 
-            course.autoInstallComponents.forEach {
-                val status = it.loadAndGetStatus()
-                if (status == Component.Status.UNRESOLVED && it is Module) {
-                    installModuleAsync(it, false)
+            val autoInstallModulesToInstall = course.autoInstallComponents
+                .filter { it.updateAndGetStatus() == Component.Status.UNRESOLVED }
+            if (autoInstallModulesToInstall.isNotEmpty()) {
+                autoInstallModulesToInstall.forEach {
+                    if (it is Module) installModuleAsync(it, false)
                 }
+            } else {
+                refreshModuleStatuses()
             }
-            fireCourseUpdated()
-            refreshModuleStatuses()
+
         } catch (_: IOException) {
             state.error = Error.NETWORK_ERROR
             fireCourseUpdated()
@@ -243,7 +245,7 @@ class CourseManager(
 
     fun refreshModuleStatuses() {
         state.missingDependencies = state.course?.modules?.mapNotNull {
-            it.load()
+            it.updateStatus()
             val dependencies = getMissingDependencies(it)
             println("module: ${it.name} dependencies: $dependencies")
             if (dependencies.isNotEmpty()) {
@@ -263,12 +265,11 @@ class CourseManager(
                 module.downloadAndInstall()
                 state.course?.callbacks?.invokePostDownloadModuleCallbacks(project, module)
                 println("Module installed")
-//            refreshModuleStatuses()
+
                 fireModulesUpdated()
                 if (show) project.service<Opener>().showModuleInProjectTree(module)
-//            return@launch
                 val dependencies = getMissingDependencies(module)
-                println("module: ${module.name} dependencies: $dependencies")
+
                 dependencies.forEach { it.downloadAndInstall() }
                 refreshModuleStatuses()
             }
@@ -293,7 +294,7 @@ class CourseManager(
         return module.dependencyNames
             ?.mapNotNull { state.course?.getComponentIfExists(it) }
             ?.filter { module ->
-                val status = module.loadAndGetStatus()
+                val status = module.updateAndGetStatus()
                 status == Component.Status.UNRESOLVED || status == Component.Status.ERROR
             }
             ?: emptyList()

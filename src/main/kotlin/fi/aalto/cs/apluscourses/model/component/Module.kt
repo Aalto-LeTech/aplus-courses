@@ -5,7 +5,6 @@ import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.application.writeAction
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.module.ModuleManager
-import com.intellij.openapi.module.ModuleWithNameAlreadyExists
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.guessModuleDir
 import com.intellij.openapi.project.rootManager
@@ -26,7 +25,6 @@ import fi.aalto.cs.apluscourses.utils.FileUtil
 import fi.aalto.cs.apluscourses.utils.Version
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.io.IOException
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
@@ -103,9 +101,8 @@ class Module(
         downloadAndUnzipZip(zipUrl, Path.of(project.basePath!!))
         CourseFileManager.getInstance(project).addModule(this)
         println("Loading module $name $imlPath")
-        writeAction {
-            ModuleManager.getInstance(project).loadModule(imlPath)
-            VirtualFileManager.getInstance().syncRefresh()
+        withContext(Dispatchers.EDT) {
+            loadToProject()
         }
         status = Status.LOADED
         val initialReplCommands = CourseManager.course(project)?.replInitialCommands?.get(name)
@@ -113,6 +110,13 @@ class Module(
         if (initialReplCommands != null && platformModule != null) {
             platformModule.guessModuleDir()?.toNioPath()?.resolve(".repl-commands")?.toFile()
                 ?.writeText(initialReplCommands.joinToString("\n"))
+        }
+    }
+
+    fun loadToProject() {
+        application.runWriteAction {
+            ModuleManager.getInstance(project).loadModule(imlPath)
+            VirtualFileManager.getInstance().syncRefresh()
         }
     }
 
@@ -149,36 +153,15 @@ class Module(
         )
     }
 
-    private val imlPath
+    val imlPath
         get() = fullPath.resolve("$name.iml")
 
-    override fun load() {
+    override fun updateStatus() {
         if (status == Status.LOADING) return // Module is still loading
 
         val module = platformObject
         val exists = module != null
         val loaded = module != null && module.isLoaded
-
-        if (!exists && imlPath.exists()) {
-            try {
-                // Sometimes the module is not found right after it has been created
-                application.runReadAction {
-                    ModuleManager.getInstance(project).loadModule(imlPath)
-                }
-                status = Status.LOADED
-                return
-            } catch (e: Exception) {
-                when (e) {
-                    is IOException -> {
-                        status = Status.ERROR
-                        return
-                    }
-
-                    is ModuleWithNameAlreadyExists -> {}
-                    else -> throw e
-                }
-            }
-        }
 
         if (loaded) {
             status = Status.LOADED
