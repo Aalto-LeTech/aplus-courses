@@ -78,6 +78,7 @@ class PluginVersion(major: Int, minor: Int, val patch: Int, val versionString: S
 
     companion object {
         val current = getPlugin(PluginId.getId("fi.aalto.cs.intellij-plugin"))?.version ?: ""
+        val currentVersion = PluginVersion(current)
     }
 }
 

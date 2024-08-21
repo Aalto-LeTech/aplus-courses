@@ -14,13 +14,17 @@ import com.intellij.util.application
 import fi.aalto.cs.apluscourses.MyBundle
 import fi.aalto.cs.apluscourses.api.CourseConfig
 import fi.aalto.cs.apluscourses.api.CourseConfig.resourceUrls
+import fi.aalto.cs.apluscourses.notifications.CourseVersionOutdatedError
+import fi.aalto.cs.apluscourses.notifications.CourseVersionTooNewError
 import fi.aalto.cs.apluscourses.services.CoursesClient
+import fi.aalto.cs.apluscourses.services.Notifier
 import fi.aalto.cs.apluscourses.services.PluginSettings
 import fi.aalto.cs.apluscourses.services.SdkInstall
 import fi.aalto.cs.apluscourses.services.course.CourseFileManager
 import fi.aalto.cs.apluscourses.services.course.CourseManager
 import fi.aalto.cs.apluscourses.services.course.SettingsImporter
 import fi.aalto.cs.apluscourses.utils.*
+import fi.aalto.cs.apluscourses.utils.Version.ComparisonStatus
 import fi.aalto.cs.apluscourses.utils.temp.PluginAutoInstaller
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -39,7 +43,27 @@ internal class InitializationActivity() :
             }
         })
 
-        logger.info("Starting initialization for course ${courseConfig.name}")
+        val pluginVersion = PluginVersion.currentVersion
+        val requiredVersion = courseConfig.version
+        logger.info("Starting initialization for course ${courseConfig.name} with required plugin version $requiredVersion and installed version $pluginVersion")
+
+        val versionComparison = requiredVersion.comparisonStatus(pluginVersion)
+
+        when (versionComparison) {
+            ComparisonStatus.MAJOR_TOO_OLD -> {
+                logger.warn("A+ Courses version outdated: installed $pluginVersion, required $requiredVersion")
+                Notifier.notify(CourseVersionOutdatedError(), project)
+                return
+            }
+
+            ComparisonStatus.MAJOR_TOO_NEW -> {
+                logger.warn("A+ Courses version too new: installed $pluginVersion, required $requiredVersion")
+                Notifier.notify(CourseVersionTooNewError(), project)
+            }
+
+            else -> {}
+        }
+
         ProjectViewUtil.ignoreFileInProjectView(PluginSettings.MODULE_REPL_INITIAL_COMMANDS_FILE_NAME, project)
 
         val needsRestartForPlugins =
@@ -85,40 +109,6 @@ internal class InitializationActivity() :
 //            ApplicationManager.getApplication().invokeLater { IntegrityCheckDialog.show() }
 //        }
 
-//
-//        ApplicationManager.getApplication().invokeLater {
-//            if (java.lang.Boolean.FALSE == PluginAutoInstaller.ensureDependenciesInstalled(
-//                    project,
-//                    course.requiredPlugins
-//                ) { pluginNames: List<PluginDependency?>? ->
-//                    PluginInstallerDialogs.askForInstallationConsentOnInit(
-//                        pluginNames!!
-//                    )
-//                } && PluginInstallerDialogs.askForIDERestart()
-//            ) {
-//                (ApplicationManager.getApplication() as ApplicationEx).restart(true)
-//            }
-//        }
-
-//        val versionComparison = courseVersion.comparisonStatus(course.courseVersion)
-//
-//        if (versionComparison == ComparisonStatus.MAJOR_TOO_OLD
-//            || versionComparison == ComparisonStatus.MAJOR_TOO_NEW
-//        ) {
-//            if (versionComparison == ComparisonStatus.MAJOR_TOO_OLD) {
-//                logger.warn("A+ Courses version outdated: installed $courseVersion, required ${course.courseVersion}")
-//            } else {
-//                logger.warn("A+ Courses version too new: installed $courseVersion, required ${course.courseVersion}")
-//            }
-//            notifier.notify(
-//                if (versionComparison == ComparisonStatus.MAJOR_TOO_OLD
-//                ) CourseVersionOutdatedError() else CourseVersionTooNewError(), project
-//            )
-//            progress.finish()
-//            return
-//        } else if (versionComparison == ComparisonStatus.MINOR_TOO_OLD) {
-//            logger.warn("A+ Courses version outdated: installed $courseVersion, required ${course.courseVersion}")
-//            notifier.notify(CourseVersionOutdatedWarning(), project)
         withContext(Dispatchers.EDT) {
             ToolWindowManager.getInstance(project).getToolWindow("A+ Courses")?.activate(null)
         }
