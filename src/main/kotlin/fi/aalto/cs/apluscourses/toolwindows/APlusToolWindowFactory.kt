@@ -113,7 +113,6 @@ internal class APlusToolWindowFactory : ToolWindowFactory, DumbAware {
             private var previousSelection: Content? = null
             override fun selectionChanged(event: ContentManagerEvent) {
                 if (previousSelection == newsTab) {
-                    println("previous was news")
                     project.service<CourseManager>().setNewsAsRead()
                 }
                 previousSelection = event.content
@@ -214,6 +213,9 @@ internal class APlusToolWindowFactory : ToolWindowFactory, DumbAware {
             add(toolbar.component)
         }
         exercisesView.toolbar = customToolbar
+
+        project.service<ExercisesTreeFilter>().loadFromState()
+
         return exercisesView
     }
 

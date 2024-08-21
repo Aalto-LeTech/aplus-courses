@@ -131,6 +131,7 @@ class ModulesView(val project: Project) : SimpleToolWindowPanel(true, true) {
         collapseAll()
         val item = itemPanels.find { it.module.name == module.name }
         if (item != null) {
+            searchChanged("")
             item.expand()
             if (scroll) (content as JBScrollPane?)?.verticalScrollBar?.value = item.location.y - 100
         }

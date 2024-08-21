@@ -1,6 +1,5 @@
 package fi.aalto.cs.apluscourses.ui.news
 
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.openapi.wm.ToolWindow
@@ -11,6 +10,7 @@ import com.intellij.ui.dsl.builder.BottomGap
 import com.intellij.ui.dsl.builder.IntelliJSpacingConfiguration
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.gridLayout.UnscaledGaps
+import com.intellij.util.application
 import com.intellij.util.ui.JBFont
 import fi.aalto.cs.apluscourses.icons.CoursesIcons
 import fi.aalto.cs.apluscourses.model.news.NewsList
@@ -43,7 +43,7 @@ class NewsView(private val toolWindow: ToolWindow, private val project: Project)
      * Sets the view model of this view, or does nothing if the given view model is null.
      */
     fun viewModelChanged(newsList: NewsList?) {
-        ApplicationManager.getApplication().invokeLater {
+        application.invokeLater {
             println("newsview update")
             this.news = newsList
             if (newsList == null) {

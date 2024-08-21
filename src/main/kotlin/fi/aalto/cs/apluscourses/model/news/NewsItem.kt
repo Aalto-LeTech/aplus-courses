@@ -10,12 +10,11 @@ class NewsItem(
     val title: String,
     val body: String,
     private val publish: ZonedDateTime,
+    var isRead: Boolean = false
 ) {
     val publishTimeInfo: String
         get() = MyBundle.message(
             "ui.toolWindow.subTab.news.publishTime",
             publish.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT))
         )
-
-    var isRead: Boolean = false
 }

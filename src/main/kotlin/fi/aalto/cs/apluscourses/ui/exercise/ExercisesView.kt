@@ -1,6 +1,5 @@
 package fi.aalto.cs.apluscourses.ui.exercise
 
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.SimpleToolWindowPanel
@@ -10,7 +9,6 @@ import com.intellij.ui.components.TextComponentEmptyText
 import com.intellij.ui.hover.TreeHoverListener
 import com.intellij.ui.scale.JBUIScale.scale
 import com.intellij.ui.treeStructure.SimpleTree
-import com.intellij.util.application
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
 import com.intellij.util.ui.tree.TreeUtil
@@ -166,14 +164,13 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true) {
                             })
                         )
                     }.filterNot( // Filter exercises
-                        application.service<ExercisesTreeFilter>().exercisesFilter()
+                        project.service<ExercisesTreeFilter>().exercisesFilter()
                     ).filterNot {
                         hiddenElements.contains(it.exercise.id)
                     }
                 )
             }.filterNot( // Filter groups
-                ApplicationManager.getApplication()
-                    .service<ExercisesTreeFilter>().exercisesGroupFilter()
+                project.service<ExercisesTreeFilter>().exercisesGroupFilter()
             ).filterNot {
                 hiddenElements.contains(it.group.id)
             }.filter { group -> // Filter out empty groups

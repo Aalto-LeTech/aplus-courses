@@ -1,11 +1,11 @@
 package fi.aalto.cs.apluscourses.services.exercise
 
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
 import com.intellij.platform.ide.progress.withBackgroundProgress
 import com.intellij.platform.util.progress.reportProgress
 import com.intellij.platform.util.progress.reportSequentialProgress
+import com.intellij.util.application
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.intellij.util.messages.Topic
 import com.intellij.util.messages.Topic.ProjectLevel
@@ -278,24 +278,24 @@ class ExercisesUpdater(
     }
 
     private fun fireExercisesUpdated() {
-        ApplicationManager.getApplication().invokeLater {
-            ApplicationManager.getApplication().messageBus
+        application.invokeLater {
+            project.messageBus
                 .syncPublisher(EXERCISES_TOPIC)
                 .onExercisesUpdated()
         }
     }
 
     private fun fireExerciseUpdated(exercise: Exercise) {
-        ApplicationManager.getApplication().invokeLater {
-            ApplicationManager.getApplication().messageBus
+        application.invokeLater {
+            project.messageBus
                 .syncPublisher(EXERCISES_TOPIC)
                 .onExerciseUpdated(exercise)
         }
     }
 
     private fun firePointsByDifficultyUpdated() {
-        ApplicationManager.getApplication().invokeLater {
-            ApplicationManager.getApplication().messageBus
+        application.invokeLater {
+            project.messageBus
                 .syncPublisher(EXERCISES_TOPIC)
                 .onPointsByDifficultyUpdated(state.userPointsForCategories)
         }

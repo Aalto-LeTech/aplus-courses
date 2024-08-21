@@ -193,6 +193,7 @@ object APlusApi {
             suspend fun get(project: Project): NewsList {
                 val res = CoursesClient.getInstance(project).getBody<News, NewsBody>(this@News)
 
+                val lastNewsReadTime = CourseFileManager.getInstance(project).state.newsReadTime
                 return NewsList(res.results.mapNotNull { (id, url, title, _, publishString, language, body, _) ->
                     val courseLanguage = CourseFileManager.getInstance(project).state.language!!
                     if (language != "-" && language != courseLanguage) { // TODO test
@@ -213,11 +214,15 @@ object APlusApi {
                     }
 
                     val publish = ZonedDateTime.parse(publishString)
+
+                    val isRead = lastNewsReadTime.epochSeconds >= publish.toEpochSecond()
+
                     NewsItem(
                         id,
                         titleText,
                         bodyText,
-                        publish
+                        publish,
+                        isRead
                     )
                 })
             }

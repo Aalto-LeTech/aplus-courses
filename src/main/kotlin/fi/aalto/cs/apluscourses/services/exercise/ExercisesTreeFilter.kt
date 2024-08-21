@@ -1,32 +1,56 @@
 package fi.aalto.cs.apluscourses.services.exercise
 
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.*
+import com.intellij.openapi.project.Project
+import com.intellij.util.application
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.intellij.util.messages.Topic
-import com.intellij.util.messages.Topic.AppLevel
+import com.intellij.util.messages.Topic.ProjectLevel
 import fi.aalto.cs.apluscourses.ui.exercise.ExercisesView.ExerciseGroupItem
 import fi.aalto.cs.apluscourses.ui.exercise.ExercisesView.ExerciseItem
 import fi.aalto.cs.apluscourses.ui.exercise.ExercisesView.ExercisesTreeItem
 import java.util.Collections
 import kotlin.reflect.KClass
 
-@Service(Service.Level.APP)
+@Service(Service.Level.PROJECT)
 @State(
-    name = "ExercisesUpdaterService",
-    storages = [Storage("aplusCoursesExercisesTreeFilter.xml")]
+    name = "Filters",
+    storages = [Storage("aplus_project.xml")]
 )
-class ExercisesTreeFilter {
+class ExercisesTreeFilter(private val project: Project) :
+    SimplePersistentStateComponent<ExercisesTreeFilter.State>(State()) {
+    class State : BaseState() {
+        var enabledFilters by list<String>()
+    }
+
     private val filters: MutableMap<Filter<out ExercisesTreeItem>, Boolean> =
         Collections.synchronizedMap(mutableMapOf())
 
     fun setFilter(filter: Filter<out ExercisesTreeItem>, enabled: Boolean) {
         filters[filter] = enabled
-        ApplicationManager.getApplication().invokeLater {
-            ApplicationManager.getApplication().messageBus
+        saveState()
+        application.invokeLater {
+            project.messageBus
                 .syncPublisher(TOPIC)
                 .onFilterUpdated()
         }
+    }
+
+    fun loadFromState() {
+        filters.clear()
+        state.enabledFilters.forEach { filterName ->
+            println("Filter name: $filterName")
+            val filter = Filter.allFilters.find { it.displayName == filterName }
+            if (filter != null) {
+                filters[filter] = true
+            }
+        }
+    }
+
+    fun saveState() {
+        state.enabledFilters = filters.entries
+            .filter { it.value }
+            .map { it.key.displayName }.toMutableList()
     }
 
     fun getFilter(filter: Filter<out ExercisesTreeItem>): Boolean = filters.getOrPut(filter) {
@@ -92,7 +116,7 @@ class ExercisesTreeFilter {
     }
 
     companion object {
-        @AppLevel
+        @ProjectLevel
         val TOPIC: Topic<ExercisesTreeFilterListener> =
             Topic(ExercisesTreeFilterListener::class.java, Topic.BroadcastDirection.TO_CHILDREN)
     }

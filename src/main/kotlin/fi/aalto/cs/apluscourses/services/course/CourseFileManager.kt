@@ -43,6 +43,10 @@ class CourseFileManager(private val project: Project) :
         var defaultGroupId by property(-1L)
         var importSettings by property(false)
         var initialized by property(false)
+
+        @OptionTag("newsReadTime", converter = InstantConverter::class)
+        var newsReadTime: Instant = Instant.fromEpochSeconds(0)
+
         fun increment() = incrementModificationCount()
     }
 
@@ -63,6 +67,12 @@ class CourseFileManager(private val project: Project) :
 
     fun setDefaultGroup(group: Group) {
         state.defaultGroupId = group.id
+    }
+
+    fun setNewsRead() {
+        println("old news read time: ${state.newsReadTime}")
+        state.newsReadTime = Clock.System.now()
+        println("new news read time: ${state.newsReadTime}")
     }
 
     fun addModule(module: Module) {
