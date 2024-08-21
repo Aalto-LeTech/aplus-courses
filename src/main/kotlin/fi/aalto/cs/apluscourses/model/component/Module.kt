@@ -6,7 +6,6 @@ import com.intellij.openapi.application.writeAction
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.project.guessModuleDir
 import com.intellij.openapi.project.rootManager
 import com.intellij.openapi.roots.LibraryOrderEntry
 import com.intellij.openapi.roots.ModuleOrderEntry
@@ -26,7 +25,6 @@ import fi.aalto.cs.apluscourses.utils.Version
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.nio.file.Path
-import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
 import kotlin.io.path.exists
 import kotlin.io.path.moveTo
@@ -69,7 +67,7 @@ class Module(
     }
 
     val documentationIndexFullPath: Path
-        get() = Paths.get(fullPath.toString(), "doc/index.html")
+        get() = fullPath.resolve("doc").resolve("index.html")
 
     val documentationExists: Boolean
         get() = status == Status.LOADED && documentationIndexFullPath.toFile().exists()
@@ -77,11 +75,12 @@ class Module(
     fun changedFiles(): List<Path> {
         val fullPath = fullPath
         val timestamp = metadata?.downloadedAt ?: return emptyList()
-        val timeStamp = timestamp.toEpochMilliseconds() + PluginSettings.REASONABLE_DELAY_FOR_MODULE_INSTALLATION
+        val timestampWithDelay =
+            timestamp.toEpochMilliseconds() + PluginSettings.REASONABLE_DELAY_FOR_MODULE_INSTALLATION
         return ReadAction.compute<List<Path>, RuntimeException> {
             FileUtil.getChangedFilesInDirectory(
                 fullPath.toFile(),
-                timeStamp
+                timestampWithDelay
             )
         }
     }
@@ -98,7 +97,7 @@ class Module(
             }
         }
         status = Status.LOADING
-        downloadAndUnzipZip(zipUrl, Path.of(project.basePath!!))
+        downloadAndUnzipZip(zipUrl, fullPath.parent)
         CourseFileManager.getInstance(project).addModule(this)
         println("Loading module $name $imlPath")
         withContext(Dispatchers.EDT) {
@@ -108,8 +107,8 @@ class Module(
         val initialReplCommands = CourseManager.course(project)?.replInitialCommands?.get(name)
         val platformModule = platformObject
         if (initialReplCommands != null && platformModule != null) {
-            platformModule.guessModuleDir()?.toNioPath()?.resolve(".repl-commands")?.toFile()
-                ?.writeText(initialReplCommands.joinToString("\n"))
+            fullPath.resolve(".repl-commands").toFile()
+                .writeText(initialReplCommands.joinToString(System.lineSeparator()))
         }
     }
 

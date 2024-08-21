@@ -3,6 +3,7 @@ package fi.aalto.cs.apluscourses.model.component
 import com.intellij.openapi.project.Project
 import fi.aalto.cs.apluscourses.services.CoursesClient
 import java.nio.file.Path
+import java.util.concurrent.atomic.AtomicReference
 
 abstract class Component<T>(val name: String, protected val project: Project) {
     var dependencyNames: Set<String>? = null
@@ -28,8 +29,11 @@ abstract class Component<T>(val name: String, protected val project: Project) {
 
     abstract val platformObject: T?
 
-    var status: Status = Status.UNRESOLVED
-        protected set
+    private val statusRef = AtomicReference(Status.UNRESOLVED)
+
+    var status: Status
+        get() = statusRef.get()
+        set(value) = statusRef.set(value)
 
     enum class Status {
         UNRESOLVED,
@@ -38,12 +42,12 @@ abstract class Component<T>(val name: String, protected val project: Project) {
         ERROR
     }
 
-    fun loadAndGetStatus(): Status {
-        load()
+    fun updateAndGetStatus(): Status {
+        updateStatus()
         return status
     }
 
-    abstract fun load()
+    abstract fun updateStatus()
 
     abstract suspend fun downloadAndInstall(updating: Boolean = false)
 }

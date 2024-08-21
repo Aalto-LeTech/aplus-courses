@@ -74,7 +74,7 @@ class Course(
             override fun afterLibraryRemoved(
                 library: com.intellij.openapi.roots.libraries.Library
             ) {
-                library.name?.let { name -> getComponentIfExists(name)?.load() }
+                library.name?.let { name -> getComponentIfExists(name)?.updateStatus() }
             }
         }
         Library.libraryTable(project).addListener(libraryTableListener)

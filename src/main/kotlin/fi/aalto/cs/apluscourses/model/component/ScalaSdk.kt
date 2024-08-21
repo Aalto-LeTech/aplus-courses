@@ -24,7 +24,7 @@ class ScalaSdk(private val scalaVersion: String, project: Project) : Library(sca
             "https://github.com/lampepfl/dotty/releases/download/$strippedScalaVersion/scala3-$strippedScalaVersion.zip"
         val sourcesUrl = "https://github.com/scala/scala3/archive/refs/tags/$strippedScalaVersion.zip"
         val path = Path.of(project.basePath!!, ".libs")
-        downloadAndUnzipZip(zipUrl, path) // TODO only "scala3-$scalaVersion/lib"?
+        downloadAndUnzipZip(zipUrl, path)
         val libraryTable = LibraryTablesRegistrar.getInstance().getLibraryTable(project).modifiableModel
         libraryTable.getLibraryByName(scalaVersion)?.let {
             writeAction {
@@ -66,12 +66,20 @@ class ScalaSdk(private val scalaVersion: String, project: Project) : Library(sca
         }
         runBlocking {
             val scala3SourcesPath = path.resolve("scala3-$strippedScalaVersion").resolve("src")
-            async { downloadAndUnzipZip(sourcesUrl, scala3SourcesPath, "scala3-$strippedScalaVersion/library/src/") }
-            async {
+            val scala3Docs = async {
+                downloadAndUnzipZip(
+                    sourcesUrl,
+                    scala3SourcesPath,
+                    "scala3-$strippedScalaVersion/library/src/"
+                )
+            }
+            val scala2Docs = async {
                 val scala2SourcesUrl = "https://github.com/scala/scala/archive/refs/tags/v$scala2Version.zip"
                 fullPath.resolve("src").resolve("scala-$scala2Version")
                 downloadAndUnzipZip(scala2SourcesUrl, scala3SourcesPath, "scala-$scala2Version/src/library/")
             }
+            scala3Docs.await()
+            scala2Docs.await()
         }
 
         writeAction {

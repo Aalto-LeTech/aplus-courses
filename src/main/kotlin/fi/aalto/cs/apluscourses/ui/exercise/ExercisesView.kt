@@ -195,7 +195,7 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true) {
         val missingModule: Boolean
             get() {
                 val module = exercise.module ?: return false
-                module.load()
+                module.updateStatus()
                 return exercise.module.status != Component.Status.LOADED
             }
 

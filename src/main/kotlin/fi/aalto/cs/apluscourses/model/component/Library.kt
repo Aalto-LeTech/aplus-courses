@@ -18,7 +18,7 @@ abstract class Library(name: String, project: Project) : Component<IdeaLibrary>(
 
     override fun findDependencies(): Set<String> = emptySet()
 
-    override fun load() {
+    override fun updateStatus() {
         if (status == Status.LOADING) return
         status = if (platformObject != null) {
             Status.LOADED
