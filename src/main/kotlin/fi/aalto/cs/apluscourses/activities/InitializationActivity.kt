@@ -101,6 +101,9 @@ internal class InitializationActivity() :
             courseFileManager.state.initialized = true
             val settingsImporter = SettingsImporter.getInstance(project)
             settingsImporter.importProjectSettings(resourceUrls(courseConfig.resources))
+            courseConfig.scalaRepl?.arguments?.let {
+                settingsImporter.importScalaReplAdditionalArguments(it)
+            }
 
             if (courseFileManager.state.importSettings) {
                 settingsImporter.importVMOptions(courseConfig.vmOptions)

@@ -13,6 +13,7 @@ import com.intellij.openapi.util.SystemInfoRt
 import com.intellij.openapi.util.io.FileUtilRt
 import fi.aalto.cs.apluscourses.model.Course
 import fi.aalto.cs.apluscourses.services.CoursesClient
+import fi.aalto.cs.apluscourses.services.PluginSettings
 import fi.aalto.cs.apluscourses.utils.APlusLogger
 import io.ktor.client.statement.bodyAsText
 import io.ktor.client.statement.request
@@ -118,6 +119,14 @@ class SettingsImporter(
         return CoursesClient.getInstance(project).get(cssUrl.toString()).bodyAsText()
 
         logger.info("Imported feedback CSS")
+    }
+
+    fun importScalaReplAdditionalArguments(string: String) {
+        Path.of(project.basePath!!)
+            .resolve(Project.DIRECTORY_STORE_FOLDER)
+            .resolve(PluginSettings.REPL_ADDITIONAL_ARGUMENTS_FILE_NAME)
+            .toFile()
+            .writeText(string)
     }
 
     companion object {
