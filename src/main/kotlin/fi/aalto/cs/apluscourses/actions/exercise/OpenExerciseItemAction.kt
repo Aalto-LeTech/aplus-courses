@@ -6,6 +6,7 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
+import com.intellij.util.concurrency.annotations.RequiresEdt
 import fi.aalto.cs.apluscourses.icons.CoursesIcons
 import fi.aalto.cs.apluscourses.services.Opener
 import fi.aalto.cs.apluscourses.services.exercise.SelectedExercise
@@ -14,17 +15,22 @@ import fi.aalto.cs.apluscourses.ui.exercise.ExercisesView
 
 class OpenExerciseItemAction : AnAction() {
     private var loading = false
+        @RequiresEdt set
+        @RequiresEdt get
+
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
         val selectedItem = project.service<SelectedExercise>().selectedExerciseTreeItem
         val url = selectedItem?.url() ?: return
-        if (selectedItem is ExercisesView.SubmissionResultItem) {
-            loading = true
-            project.service<Opener>().openSubmissionResult(selectedItem.submission) {
-                loading = false
+        when (selectedItem) {
+            is ExercisesView.SubmissionResultItem -> {
+                loading = true
+                project.service<Opener>().openSubmissionResult(selectedItem.submission) {
+                    loading = false
+                }
             }
-        } else {
-            browse(url, project)
+
+            else -> browse(url, project)
         }
     }
 

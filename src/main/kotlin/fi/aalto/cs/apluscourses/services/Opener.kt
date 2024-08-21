@@ -64,8 +64,11 @@ class Opener(
 
     fun openSubmissionResult(submission: SubmissionResult, callback: () -> Unit) {
         cs.launch {
-            BrowserUtil.open(submission.getHtmlUrl(project))
-            callback()
+            val url = submission.getHtmlUrl(project)
+            withContext(Dispatchers.EDT) {
+                BrowserUtil.open(url)
+                callback()
+            }
         }
     }
 

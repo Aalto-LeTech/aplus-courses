@@ -147,14 +147,14 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true) {
                             })
                         )
                     }.filterNot( // Filter exercises
-                        application.service<ExercisesTreeFilter>().state.exercisesFilter()
+                        application.service<ExercisesTreeFilter>().exercisesFilter()
                     ).filterNot {
                         hiddenElements.contains(it.exercise.id)
                     }
                 )
             }.filterNot( // Filter groups
                 ApplicationManager.getApplication()
-                    .service<ExercisesTreeFilter>().state.exercisesGroupFilter()
+                    .service<ExercisesTreeFilter>().exercisesGroupFilter()
             ).filterNot {
                 hiddenElements.contains(it.group.id)
             }.filter { group -> // Filter out empty groups

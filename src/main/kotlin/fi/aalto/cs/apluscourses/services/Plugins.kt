@@ -12,13 +12,10 @@ import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.extensions.PluginId
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.DialogPanel
 import com.intellij.platform.ide.progress.withBackgroundProgress
 import com.intellij.platform.util.progress.reportSequentialProgress
 import com.intellij.ui.components.labels.LinkLabel
 import com.intellij.ui.components.labels.LinkListener
-import com.intellij.ui.dsl.builder.TopGap
-import com.intellij.ui.dsl.builder.panel
 import com.intellij.util.application
 import fi.aalto.cs.apluscourses.api.CourseConfig
 import kotlinx.coroutines.CompletableDeferred
@@ -27,11 +24,14 @@ import kotlinx.coroutines.launch
 
 @Service(Service.Level.APP)
 class Plugins(val cs: CoroutineScope) {
-    fun runInBackground(requiredPlugins: List<CourseConfig.RequiredPlugin>, updateUI: (DialogPanel) -> Unit) {
+    fun runInBackground(
+        requiredPlugins: List<CourseConfig.RequiredPlugin>,
+        callback: (List<ListPluginComponent>) -> Unit
+    ) {
         cs.launch {
             val nodes = RepositoryHelper.loadPlugins(requiredPlugins.map { PluginId.getId(it.id) }.toSet())
             val components = nodes.mapNotNull { pluginInfo ->
-                val component = ListPluginComponent(
+                ListPluginComponent(
                     MyPluginModel(null),
                     pluginInfo,
                     PluginsGroup("", PluginsGroupType.SEARCH),
@@ -40,20 +40,8 @@ class Plugins(val cs: CoroutineScope) {
                     },
                     false
                 )
-                component.remove(4) // Remove checkbox and install button
-                component.remove(3)
-                component
             }
-            updateUI(
-                panel {
-                    components.forEach {
-                        row {
-                            contextHelp(it.pluginDescriptor.description ?: "No description")
-                            cell(it)
-                        }.topGap(TopGap.SMALL)
-                    }
-                }
-            )
+            callback(components)
         }
     }
 
@@ -73,7 +61,7 @@ class Plugins(val cs: CoroutineScope) {
                     ) { success -> deferredResult.complete(success) }
                 }
 
-                deferredResult.await()
+                !deferredResult.await()
             }
         }
 }

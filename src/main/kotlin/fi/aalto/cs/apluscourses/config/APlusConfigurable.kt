@@ -19,6 +19,7 @@ import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil.languageCodeToName
 import fi.aalto.cs.apluscourses.utils.PluginVersion
 import java.awt.Component
 import javax.swing.JComponent
+import javax.swing.JPanel
 
 internal class APlusConfigurable(val project: Project) : Configurable, Configurable.TopComponentProvider,
     Configurable.NoScroll {
@@ -26,13 +27,14 @@ internal class APlusConfigurable(val project: Project) : Configurable, Configura
     private val originalLanguage = AtomicProperty<String>("")
     private val selectedLanguage = AtomicProperty<String>("")
 
-    private var isModified = false
+    private var isLanguageChanged = false
 
     private val settingsTab = 0
     private val aboutTab = 1
 
     private var myTabHeaderComponent: TabbedPaneHeaderComponent? = null
-    override fun getCenterComponent(controller: Configurable.TopComponentController): Component = myTabHeaderComponent!!
+    override fun getCenterComponent(controller: Configurable.TopComponentController): Component =
+        myTabHeaderComponent ?: JPanel()
 
     private var settingsPanel: DialogPanel? = null
     private val tokenForm = TokenForm(project)
@@ -43,7 +45,7 @@ internal class APlusConfigurable(val project: Project) : Configurable, Configura
         val currentLanguage = CourseFileManager.getInstance(project).state.language ?: ""
         selectedLanguage.set(currentLanguage)
         originalLanguage.set(currentLanguage)
-        selectedLanguage.afterChange { isModified = originalLanguage.get() != it }
+        selectedLanguage.afterChange { isLanguageChanged = originalLanguage.get() != it }
         val languages = course?.languages ?: emptyList()
         banner = ResponsiveImagePanel(icon = CoursesIcons.About.Banner, width = 200)
         settingsPanel = panel {
@@ -53,11 +55,11 @@ internal class APlusConfigurable(val project: Project) : Configurable, Configura
                     token()
                     validation()
                 }
-                row("Assistant mode") {
-                    checkBox("Enable assistant mode").applyToComponent {
-                        isEnabled = false
-                    }
-                }
+//                row("Assistant mode") {
+//                    checkBox("Enable assistant mode").applyToComponent {
+//                        isEnabled = false
+//                    }
+//                } TODO: Re-enable when assistant mode is implemented
             }
             group("Course Settings") {
                 row("Language") {
@@ -92,11 +94,11 @@ internal class APlusConfigurable(val project: Project) : Configurable, Configura
         myTabHeaderComponent = TabbedPaneHeaderComponent(DefaultActionGroup()) { index ->
             myCardPanel.select(index, true)
         }
-        myTabHeaderComponent!!.addTab("Settings", null)
-        myTabHeaderComponent!!.addTab("About", null)
+        myTabHeaderComponent?.addTab("Settings", null)
+        myTabHeaderComponent?.addTab("About", null)
         myCardPanel.select(settingsTab, true)
-        myTabHeaderComponent!!.setListener()
-        myTabHeaderComponent!!.getComponent(1).isVisible = false
+        myTabHeaderComponent?.setListener()
+        myTabHeaderComponent?.getComponent(1)?.isVisible = false
         return myCardPanel
     }
 
@@ -143,7 +145,7 @@ internal class APlusConfigurable(val project: Project) : Configurable, Configura
         }
     }
 
-    override fun isModified(): Boolean = isModified || tokenForm.isModified
+    override fun isModified(): Boolean = isLanguageChanged || tokenForm.isModified
 
     override fun apply() {
         val originalLanguage = originalLanguage.get()
@@ -154,14 +156,10 @@ internal class APlusConfigurable(val project: Project) : Configurable, Configura
             ExercisesUpdater.getInstance(project).state.clearAll()
         }
         CourseManager.getInstance(project).restart()
-        settingsPanel?.validationsOnApply?.values?.flatten()?.mapNotNull {
-            it.validate()
-        }
     }
 
     override fun reset() {
         selectedLanguage.set(originalLanguage.get())
-        isModified = false
     }
 
     override fun getDisplayName(): String {

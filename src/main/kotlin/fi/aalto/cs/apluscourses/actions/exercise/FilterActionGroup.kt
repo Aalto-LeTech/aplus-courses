@@ -13,7 +13,7 @@ import fi.aalto.cs.apluscourses.services.exercise.ExercisesTreeFilter
 
 class FilterActionGroup : DefaultActionGroup(), Toggleable {
     init {
-        ExercisesTreeFilter.Filter.entries.map { filter ->
+        ExercisesTreeFilter.Filter.allFilters.map { filter ->
             add(FilterAction(filter))
         }
     }
@@ -23,23 +23,21 @@ class FilterActionGroup : DefaultActionGroup(), Toggleable {
             e.presentation,
             application
                 .service<ExercisesTreeFilter>()
-                .state
                 .isAnyActive()
         )
     }
 
-    private class FilterAction(val filter: ExercisesTreeFilter.Filter) :
+    private class FilterAction(val filter: ExercisesTreeFilter.Filter<*>) :
         DumbAwareToggleAction(message(filter.displayName)) {
         override fun isSelected(e: AnActionEvent): Boolean =
             ApplicationManager.getApplication()
                 .service<ExercisesTreeFilter>()
-                .state.getFilter(filter)
-
+                .getFilter(filter)
 
         override fun setSelected(e: AnActionEvent, state: Boolean) =
             ApplicationManager.getApplication()
                 .service<ExercisesTreeFilter>()
-                .state.setFilter(filter, state)
+                .setFilter(filter, state)
 
         override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
     }

@@ -4,13 +4,18 @@ import com.intellij.ide.plugins.PluginEnabler
 import com.intellij.ide.plugins.PluginManagerCore.getPlugin
 import com.intellij.ide.plugins.PluginManagerCore.isPluginInstalled
 import com.intellij.ide.plugins.PluginNode
+import com.intellij.openapi.application.EDT
 import com.intellij.openapi.components.service
 import com.intellij.openapi.extensions.PluginId
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.Messages
 import com.intellij.util.application
+import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.api.CourseConfig.RequiredPlugin
 import fi.aalto.cs.apluscourses.services.Plugins
 import fi.aalto.cs.apluscourses.utils.APlusLogger
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 object PluginAutoInstaller {
     private val logger: com.intellij.openapi.diagnostic.Logger = APlusLogger.logger
@@ -40,7 +45,7 @@ object PluginAutoInstaller {
     suspend fun ensureDependenciesInstalled(
         project: Project,
         pluginNames: List<RequiredPlugin>,
-//        callback: PluginInstallerCallback
+        askForConsent: Boolean = false
     ): Boolean? {
         val pluginIDs = pluginNames.map { PluginId.getId(it.id) }.toSet()
         // Downloading and enabling plugins are different operations, so we handle these separately.
@@ -55,22 +60,32 @@ object PluginAutoInstaller {
             return true
         }
 
-        // allPluginNames = list of PluginDependencies for all plugins in pluginsToDownload or pluginsToEnable
         val missingPluginIds = (pluginsToDownload + pluginsToEnable).toList()
             .map { it.idString }
             .toSet()
 
-        pluginNames
+        val missingPluginNames = pluginNames
             .filter { p: RequiredPlugin -> missingPluginIds.contains(p.id) }
+            .map { p: RequiredPlugin -> p.name }
 
 
-//        val consentResult: Unit /* TODO: class org.jetbrains.kotlin.nj2k.types.JKJavaNullPrimitiveType */? =
-//            callback.askForInstallationConsent(allPluginNames)
-//        if (consentResult == PluginInstallerCallback.ConsentResult.IGNORE_INSTALL) {
-//            return true // pretend that everything went fine
-//        } else if (consentResult == PluginInstallerCallback.ConsentResult.REJECTED) {
-//            return null // signal to the caller to abort the operation
-//        }
+        if (askForConsent) {
+            val install = withContext(Dispatchers.EDT) {
+                Messages.showOkCancelDialog(
+                    message(
+                        "ui.pluginInstallationDialog.courseOpenDialog.message",
+                        missingPluginNames.joinToString(", ")
+                    ),
+                    message("ui.pluginInstallationDialog.courseOpenDialog.title"),
+                    message("ui.pluginInstallationDialog.courseOpenDialog.yesText"),
+                    message("ui.pluginInstallationDialog.courseOpenDialog.noText"),
+                    Messages.getQuestionIcon()
+                ) == Messages.OK
+            }
+            if (!install) {
+                return true
+            }
+        }
 
         // Enable all requires plugins that are installed, but disabled.
         PluginEnabler.getInstance().enableById(pluginsToEnable)

@@ -38,45 +38,46 @@ internal class InitializationActivity() :
                 CourseManager.getInstance(project).refreshModuleStatuses()
             }
         })
-        val pluginVersion = PluginVersion.current
-        logger.info("Starting initialization, course version $pluginVersion")
+
+        logger.info("Starting initialization for course ${courseConfig.name}")
         ProjectViewUtil.ignoreFileInProjectView(PluginSettings.MODULE_REPL_INITIAL_COMMANDS_FILE_NAME, project)
 
         val needsRestartForPlugins =
-            PluginAutoInstaller.ensureDependenciesInstalled(project, courseConfig.requiredPlugins) == false
+            PluginAutoInstaller.ensureDependenciesInstalled(
+                project,
+                courseConfig.requiredPlugins,
+                askForConsent = true
+            ) == false
 
         val courseFileManager = CourseFileManager.getInstance(project)
         val isCourseInitialized = courseFileManager.state.initialized
 
-        val needsRestartForSettings = if (!isCourseInitialized) {
+        var needsRestartForSettings = false
+
+        if (!isCourseInitialized) {
             courseFileManager.state.initialized = true
             val settingsImporter = SettingsImporter.getInstance(project)
             settingsImporter.importProjectSettings(resourceUrls(courseConfig.resources))
+
             if (courseFileManager.state.importSettings) {
                 settingsImporter.importVMOptions(courseConfig.vmOptions)
                 settingsImporter.importIdeSettings(resourceUrls(courseConfig.resources))
-            } else {
-                false
+                needsRestartForSettings = true
             }
-        } else {
-            false
         }
-
 
         if ((needsRestartForPlugins || needsRestartForSettings)) {
-            project.service<SdkInstall>().waitForInstall {
-                val willRestart = withContext(Dispatchers.EDT) {
-                    askForIDERestart()
-                }
-                if (willRestart) {
-                    application.invokeLater {
-                        (application as ApplicationEx).restart(true)
-                    }
+            project.service<SdkInstall>().waitForInstall()
+            val willRestart = withContext(Dispatchers.EDT) {
+                askForIDERestart()
+            }
+            if (willRestart) {
+                application.invokeLater {
+                    (application as ApplicationEx).restart(true)
                 }
             }
         }
 
-//        project.service<ExercisesUpdaterService>().restart()
         project.service<CourseManager>().restart()
 
 //        if (!PluginIntegrityChecker.isPluginCorrectlyInstalled()) {

@@ -27,6 +27,7 @@ import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.components.JBList
 import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.Placeholder
+import com.intellij.ui.dsl.builder.TopGap
 import com.intellij.ui.dsl.builder.bindItem
 import com.intellij.ui.dsl.builder.bindSelected
 import com.intellij.ui.dsl.builder.bindText
@@ -53,14 +54,14 @@ internal class APlusModuleBuilder : ModuleBuilder() {
     override fun getWeight(): Int = 100000
     override fun isAvailable(): Boolean {
         val lastAction = (ActionManager.getInstance() as ActionManagerImpl).lastPreformedActionId
-        return if (lastAction == null) true else !lastAction.contains("Module")
+        return lastAction == null || !lastAction.contains("Module")
     }
 
     private var courseConfig: CourseConfig.JSON? = null
     private var courseConfigUrl = ""
     private var programmingLanguage = ""
     private var language = ""
-    private var sdk: ProjectWizardJdkIntent? = null
+    private var jdkIntent: ProjectWizardJdkIntent? = null
     private var importSettings = false
 
 
@@ -69,13 +70,13 @@ internal class APlusModuleBuilder : ModuleBuilder() {
         model: ModifiableModuleModel?,
         modulesProvider: ModulesProvider?
     ): List<Module?>? {
-        println("Creating module $courseConfig, $courseConfigUrl, $language, $sdk")
+        println("Creating module $courseConfig, $courseConfigUrl, $language, $jdkIntent")
         project.service<CourseFileManager>().updateSettings(
             language,
             courseConfigUrl,
             importSettings
         )
-        val selectedSdk = sdk
+        val selectedSdk = jdkIntent
         if (selectedSdk != null) {
             if (selectedSdk is DownloadJdk) {
                 val task = selectedSdk.task
@@ -243,14 +244,27 @@ internal class APlusModuleBuilder : ModuleBuilder() {
                                 }
                             }
                         }
+                    } else {
+                        selectedSdk = null
                     }
                 }.customize(UnscaledGaps(32, 32, 32, 32))
             }
 
             component.revalidate()
             component.repaint()
-            application.service<Plugins>().runInBackground(courseConfig.requiredPlugins) {
-                placeholder?.component = it
+            application.service<Plugins>().runInBackground(courseConfig.requiredPlugins) { components ->
+                placeholder?.component = panel {
+                    components.map {
+                        it.remove(4) // Remove checkbox and install button
+                        it.remove(3)
+                        it
+                    }.forEach {
+                        row {
+                            contextHelp(it.pluginDescriptor.description ?: "No description")
+                            cell(it)
+                        }.topGap(TopGap.SMALL)
+                    }
+                }
                 component.revalidate()
                 component.repaint()
             }
@@ -260,12 +274,8 @@ internal class APlusModuleBuilder : ModuleBuilder() {
 
         override fun updateDataModel() {
             this@APlusModuleBuilder.language = selectedLanguage.get()
-            this@APlusModuleBuilder.sdk = selectedSdk?.get()
+            this@APlusModuleBuilder.jdkIntent = selectedSdk?.get()
             this@APlusModuleBuilder.importSettings = !dontImportSettings.get()
-        }
-
-        override fun validate(): Boolean {
-            return true
         }
     }
 }

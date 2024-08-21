@@ -11,9 +11,6 @@ import io.ktor.client.request.parameter
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.*
 import io.ktor.resources.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -33,9 +30,7 @@ object APlusApi {
     @Resource("/courses/{id}")
     class Course(val id: Long) {
         suspend fun get(project: Project): CourseBody {
-            return withContext(Dispatchers.IO) {
-                CoursesClient.getInstance(project).getBody<Course, CourseBody>(this@Course)
-            }
+            return CoursesClient.getInstance(project).getBody<Course, CourseBody>(this@Course)
         }
 
         @Serializable
@@ -48,14 +43,12 @@ object APlusApi {
         @Resource("exercises")
         class Exercises(val parent: Course) {
             suspend fun get(project: Project): List<CourseModule> {
-                return withContext(Dispatchers.IO) {
-                    // TODO remove after hasSubmittableFiles fixed
+                // TODO remove after hasSubmittableFiles fixed
 //                    CoursesClient.getInstance(project).getBody<Exercises, CourseModuleResults>(this@Exercises).results
-                    val res = CoursesClient.getInstance(project).get<Exercises>(this@Exercises)
-                    json.decodeFromString<CourseModuleResults>(
-                        res.bodyAsText().replace("\"has_submittable_files\":[]", "\"has_submittable_files\":false")
-                    ).results
-                }
+                val res = CoursesClient.getInstance(project).get<Exercises>(this@Exercises)
+                return json.decodeFromString<CourseModuleResults>(
+                    res.bodyAsText().replace("\"has_submittable_files\":[]", "\"has_submittable_files\":false")
+                ).results
             }
 
             @Serializable
@@ -101,9 +94,7 @@ object APlusApi {
         @Resource("points/me")
         class Points(val parent: Course) {
             suspend fun get(project: Project): PointsBody {
-                return withContext(Dispatchers.IO) {
-                    CoursesClient.getInstance(project).getBody<Points, PointsBody>(this@Points)
-                }
+                return CoursesClient.getInstance(project).getBody<Points, PointsBody>(this@Points)
             }
 
             @Serializable
@@ -173,13 +164,11 @@ object APlusApi {
         @Resource("submissiondata/me")
         class SubmissionData(val parent: Course) {
             suspend fun get(project: Project): List<SubmissionDataBody> {
-                val res = withContext(Dispatchers.IO) {
-                    CoursesClient.getInstance(project)
-                        .get<SubmissionData>(this@SubmissionData) {
-                            parameter("best", "no")
-                            parameter("format", "json")
-                        }
-                }
+                val res = CoursesClient.getInstance(project)
+                    .get<SubmissionData>(this@SubmissionData) {
+                        parameter("best", "no")
+                        parameter("format", "json")
+                    }
                 return json.decodeFromString<List<SubmissionDataBody>>(res.bodyAsText())
             }
 
@@ -202,9 +191,7 @@ object APlusApi {
         @Resource("news")
         class News(val parent: Course) {
             suspend fun get(project: Project): NewsList {
-                val res = withContext(Dispatchers.IO) {
-                    CoursesClient.getInstance(project).getBody<News, NewsBody>(this@News)
-                }
+                val res = CoursesClient.getInstance(project).getBody<News, NewsBody>(this@News)
 
                 return NewsList(res.results.mapNotNull { (id, url, title, _, publishString, language, body, _) ->
                     val courseLanguage = CourseFileManager.getInstance(project).state.language!!
@@ -256,12 +243,11 @@ object APlusApi {
         @Resource("mygroups")
         class MyGroups(val parent: Course) {
             suspend fun get(project: Project): List<GroupModel> {
-                val res = withContext(Dispatchers.IO) {
-                    CoursesClient
-                        .getInstance(project)
-                        .getBody<MyGroups, GroupsBody>(this@MyGroups)
-                        .results
-                }
+                val res = CoursesClient
+                    .getInstance(project)
+                    .getBody<MyGroups, GroupsBody>(this@MyGroups)
+                    .results
+
                 return res.map { (id, members) ->
                     GroupModel(
                         id,
@@ -314,9 +300,7 @@ object APlusApi {
     @Resource("/submissions/{id}")
     class Submission(val id: Long) {
         suspend fun get(project: Project): SubmissionBody {
-            return withContext(Dispatchers.IO) {
-                CoursesClient.getInstance(project).getBody<Submission, SubmissionBody>(this@Submission)
-            }
+            return CoursesClient.getInstance(project).getBody<Submission, SubmissionBody>(this@Submission)
         }
 
         @Serializable
@@ -337,9 +321,7 @@ object APlusApi {
     @Resource("/exercises/{id}")
     class Exercise(val id: Long) {
         suspend fun get(project: Project): Body {
-            return withContext(Dispatchers.IO) {
-                CoursesClient.getInstance(project).getBody<Exercise, Body>(this@Exercise)
-            }
+            return CoursesClient.getInstance(project).getBody<Exercise, Body>(this@Exercise)
         }
 
         @Serializable
@@ -380,9 +362,7 @@ object APlusApi {
                             }
                         }
                     }
-                    withContext(Dispatchers.IO) {
-                        CoursesClient.getInstance(project).postForm<Submit>(this@Submit, form)
-                    }
+                    CoursesClient.getInstance(project).postForm<Submit>(this@Submit, form)
                 }
             }
         }
@@ -396,9 +376,8 @@ object APlusApi {
         @Resource("me")
         class Me(val parent: Users) {
             suspend fun get(project: Project): UserModel? {
-                val body = withContext(Dispatchers.IO) {
-                    CoursesClient.getInstance(project).getBody<Me, UserBody>(this@Me)
-                }
+                val body = CoursesClient.getInstance(project).getBody<Me, UserBody>(this@Me)
+
                 return UserModel(
                     body.fullName ?: body.username,
                     body.studentId,
@@ -429,6 +408,4 @@ object APlusApi {
     fun exercise(exercise: ExerciseModel): Exercise = Exercise(exercise.id)
     fun submission(submission: SubmissionResultModel): Submission = Submission(submission.id)
     fun me(): Users.Me = Users.Me(Users())
-
-    fun cs(project: Project): CoroutineScope = CoursesClient.getInstance(project).cs
 }
