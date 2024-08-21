@@ -39,10 +39,11 @@ import fi.aalto.cs.apluscourses.MyBundle
 import fi.aalto.cs.apluscourses.api.CourseConfig
 import fi.aalto.cs.apluscourses.icons.CoursesIcons
 import fi.aalto.cs.apluscourses.services.Plugins
-import fi.aalto.cs.apluscourses.services.SdkInstall
+import fi.aalto.cs.apluscourses.services.ProjectInitializationTracker
 import fi.aalto.cs.apluscourses.services.course.CourseFileManager
 import fi.aalto.cs.apluscourses.services.course.CoursesFetcher
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil.languageCodeToName
+import kotlinx.coroutines.future.asDeferred
 import javax.swing.JComponent
 import javax.swing.JList
 import javax.swing.ListSelectionModel
@@ -84,7 +85,8 @@ internal class APlusModuleBuilder : ModuleBuilder() {
                     println("Downloading SDK")
                     val sdkDownloadedFuture =
                         project.service<JdkDownloadService>().scheduleDownloadJdkForNewProject(task)
-                    project.service<SdkInstall>().setFuture(sdkDownloadedFuture)
+                    project.service<ProjectInitializationTracker>()
+                        .addInitializationTask(sdkDownloadedFuture.asDeferred())
                 }
             } else if (selectedSdk is ExistingJdk) {
                 application.runWriteAction {
@@ -231,7 +233,7 @@ internal class APlusModuleBuilder : ModuleBuilder() {
                         row {
                             placeholder().apply {
                                 placeholder = this
-                            }.resizableColumn()
+                            }.resizableColumn().align(AlignX.FILL)
                         }
                     }
                     if (this@APlusModuleBuilder.programmingLanguage == "scala") {
@@ -261,7 +263,7 @@ internal class APlusModuleBuilder : ModuleBuilder() {
                     }.forEach {
                         row {
                             contextHelp(it.pluginDescriptor.description ?: "No description")
-                            cell(it)
+                            cell(it).resizableColumn().align(AlignX.FILL)
                         }.topGap(TopGap.SMALL)
                     }
                 }

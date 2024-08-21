@@ -19,7 +19,7 @@ import fi.aalto.cs.apluscourses.notifications.CourseVersionTooNewError
 import fi.aalto.cs.apluscourses.services.CoursesClient
 import fi.aalto.cs.apluscourses.services.Notifier
 import fi.aalto.cs.apluscourses.services.PluginSettings
-import fi.aalto.cs.apluscourses.services.SdkInstall
+import fi.aalto.cs.apluscourses.services.ProjectInitializationTracker
 import fi.aalto.cs.apluscourses.services.course.CourseFileManager
 import fi.aalto.cs.apluscourses.services.course.CourseManager
 import fi.aalto.cs.apluscourses.services.course.SettingsImporter
@@ -66,15 +66,16 @@ internal class InitializationActivity() :
 
         ProjectViewUtil.ignoreFileInProjectView(PluginSettings.MODULE_REPL_INITIAL_COMMANDS_FILE_NAME, project)
 
+        val courseFileManager = CourseFileManager.getInstance(project)
+        val isCourseInitialized = courseFileManager.state.initialized
+
         val needsRestartForPlugins =
             PluginAutoInstaller.ensureDependenciesInstalled(
                 project,
                 courseConfig.requiredPlugins,
-                askForConsent = true
+                askForConsent = isCourseInitialized
             ) == false
 
-        val courseFileManager = CourseFileManager.getInstance(project)
-        val isCourseInitialized = courseFileManager.state.initialized
 
         var needsRestartForSettings = false
 
@@ -91,9 +92,9 @@ internal class InitializationActivity() :
         }
 
         if ((needsRestartForPlugins || needsRestartForSettings)) {
-            project.service<SdkInstall>().waitForInstall()
+            project.service<ProjectInitializationTracker>().waitForAllTasks()
             val willRestart = withContext(Dispatchers.EDT) {
-                askForIDERestart()
+                askForIDERestart(newProject = !isCourseInitialized)
             }
             if (willRestart) {
                 application.invokeLater {
@@ -114,8 +115,10 @@ internal class InitializationActivity() :
         }
     }
 
-    private fun askForIDERestart() = Messages.showOkCancelDialog(
-        MyBundle.message("ui.pluginInstallationDialog.askForIDERestart.message"),
+    private fun askForIDERestart(newProject: Boolean) = Messages.showOkCancelDialog(
+        MyBundle.message(
+            if (newProject) "ui.newProject.askForIDERestart.message" else "ui.pluginInstallationDialog.askForIDERestart.message"
+        ),
         MyBundle.message("ui.pluginInstallationDialog.askForIDERestart.title"),
         MyBundle.message("ui.pluginInstallationDialog.askForIDERestart.okText"),
         MyBundle.message("ui.pluginInstallationDialog.askForIDERestart.cancelText"),

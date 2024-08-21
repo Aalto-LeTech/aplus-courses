@@ -92,7 +92,7 @@ class SettingsImporter(
     @Throws(IOException::class)
     suspend fun importProjectSettings(resourceUrls: Map<String, Url>) {
         val settingsUrl = resourceUrls["projectSettings"] ?: return
-        val settingsPath = Path.of(project.basePath!!, Project.DIRECTORY_STORE_FOLDER)
+        val settingsPath = Path.of(project.basePath!!)
         CoursesClient.getInstance(project).getAndUnzip(settingsUrl.toString(), settingsPath)
 
         // a hard-coded workspace setting

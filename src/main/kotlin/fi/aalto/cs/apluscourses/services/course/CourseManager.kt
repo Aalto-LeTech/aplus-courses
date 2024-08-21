@@ -191,15 +191,8 @@ class CourseManager(
             state.course?.components?.values?.forEach { it.load() }
 
             val course = state.course ?: return
-            course.autoInstallComponents.forEach {
-                val status = it.loadAndGetStatus()
-                if (status == Component.Status.UNRESOLVED && it is Module) {
-                    installModule(it, false)
-                }
-            }
-            fireCourseUpdated()
+
             ExercisesUpdater.getInstance(project).restart()
-            refreshModuleStatuses()
             val newNews = APlusApi.Course(course.id).news(project)
             state.news?.news?.forEach {
                 if (it.isRead) newNews.setRead(it.id)
@@ -207,6 +200,15 @@ class CourseManager(
 
             state.news = newNews
             fireNewsUpdated(newNews)
+
+            course.autoInstallComponents.forEach {
+                val status = it.loadAndGetStatus()
+                if (status == Component.Status.UNRESOLVED && it is Module) {
+                    installModuleAsync(it, false)
+                }
+            }
+            fireCourseUpdated()
+            refreshModuleStatuses()
         } catch (_: IOException) {
             state.error = Error.NETWORK_ERROR
             fireCourseUpdated()
@@ -254,26 +256,29 @@ class CourseManager(
         fireModulesUpdated()
     }
 
-    fun installModule(module: Module, show: Boolean = true) {
-        cs.launch {
-            withBackgroundProgress(project, "A+ Courses") {
-                reportSequentialProgress { reporter ->
-                    reporter.indeterminateStep("Installing ${module.name}")
-                    module.downloadAndInstall()
-                    state.course?.callbacks?.invokePostDownloadModuleCallbacks(project, module)
-                    println("Module installed")
+    suspend fun installModuleAsync(module: Module, show: Boolean = true) {
+        withBackgroundProgress(project, "A+ Courses") {
+            reportSequentialProgress { reporter ->
+                reporter.indeterminateStep("Installing ${module.name}")
+                module.downloadAndInstall()
+                state.course?.callbacks?.invokePostDownloadModuleCallbacks(project, module)
+                println("Module installed")
 //            refreshModuleStatuses()
-                    fireModulesUpdated()
-                    if (show) project.service<Opener>().showModuleInProjectTree(module)
+                fireModulesUpdated()
+                if (show) project.service<Opener>().showModuleInProjectTree(module)
 //            return@launch
-                    val dependencies = getMissingDependencies(module)
-                    println("module: ${module.name} dependencies: $dependencies")
-                    dependencies.forEach { it.downloadAndInstall() }
-                    refreshModuleStatuses()
-                }
-
+                val dependencies = getMissingDependencies(module)
+                println("module: ${module.name} dependencies: $dependencies")
+                dependencies.forEach { it.downloadAndInstall() }
+                refreshModuleStatuses()
             }
 
+        }
+    }
+
+    fun installModule(module: Module, show: Boolean = true) {
+        cs.launch {
+            installModuleAsync(module, show)
         }
     }
 

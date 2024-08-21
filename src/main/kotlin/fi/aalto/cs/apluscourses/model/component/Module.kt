@@ -5,12 +5,15 @@ import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.application.writeAction
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.module.ModuleManager
+import com.intellij.openapi.module.ModuleWithNameAlreadyExists
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.guessModuleDir
 import com.intellij.openapi.project.rootManager
 import com.intellij.openapi.roots.LibraryOrderEntry
 import com.intellij.openapi.roots.ModuleOrderEntry
 import com.intellij.openapi.roots.RootPolicy
+import com.intellij.openapi.vfs.VirtualFileManager
+import com.intellij.util.application
 import com.intellij.util.io.createParentDirectories
 import fi.aalto.cs.apluscourses.notifications.ModuleUpdatedNotification
 import fi.aalto.cs.apluscourses.services.Notifier
@@ -23,6 +26,7 @@ import fi.aalto.cs.apluscourses.utils.FileUtil
 import fi.aalto.cs.apluscourses.utils.Version
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.IOException
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
@@ -92,6 +96,7 @@ class Module(
             }
             writeAction {
                 ModuleManager.getInstance(project).disposeModule(oldPlatformObject)
+                println("Disposing module $name")
             }
         }
         status = Status.LOADING
@@ -100,6 +105,7 @@ class Module(
         println("Loading module $name $imlPath")
         writeAction {
             ModuleManager.getInstance(project).loadModule(imlPath)
+            VirtualFileManager.getInstance().syncRefresh()
         }
         status = Status.LOADED
         val initialReplCommands = CourseManager.course(project)?.replInitialCommands?.get(name)
@@ -152,6 +158,28 @@ class Module(
         val module = platformObject
         val exists = module != null
         val loaded = module != null && module.isLoaded
+
+        if (!exists && imlPath.exists()) {
+            try {
+                // Sometimes the module is not found right after it has been created
+                application.runReadAction {
+                    ModuleManager.getInstance(project).loadModule(imlPath)
+                }
+                status = Status.LOADED
+                return
+            } catch (e: Exception) {
+                when (e) {
+                    is IOException -> {
+                        status = Status.ERROR
+                        return
+                    }
+
+                    is ModuleWithNameAlreadyExists -> {}
+                    else -> throw e
+                }
+            }
+        }
+
         if (loaded) {
             status = Status.LOADED
             return
