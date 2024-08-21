@@ -70,9 +70,8 @@ class CourseFileManager(private val project: Project) :
     }
 
     fun setNewsRead() {
-        println("old news read time: ${state.newsReadTime}")
         state.newsReadTime = Clock.System.now()
-        println("new news read time: ${state.newsReadTime}")
+        state.increment()
     }
 
     fun addModule(module: Module) {

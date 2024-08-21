@@ -6,6 +6,7 @@ import com.intellij.util.application
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.intellij.util.messages.Topic
 import com.intellij.util.messages.Topic.ProjectLevel
+import com.intellij.util.xmlb.annotations.XCollection
 import fi.aalto.cs.apluscourses.ui.exercise.ExercisesView.ExerciseGroupItem
 import fi.aalto.cs.apluscourses.ui.exercise.ExercisesView.ExerciseItem
 import fi.aalto.cs.apluscourses.ui.exercise.ExercisesView.ExercisesTreeItem
@@ -20,6 +21,11 @@ import kotlin.reflect.KClass
 class ExercisesTreeFilter(private val project: Project) :
     SimplePersistentStateComponent<ExercisesTreeFilter.State>(State()) {
     class State : BaseState() {
+        @get:XCollection(
+            propertyElementName = "enabledFilters",
+            valueAttributeName = "",
+            style = XCollection.Style.v2
+        )
         var enabledFilters by list<String>()
     }
 
