@@ -19,6 +19,7 @@ import fi.aalto.cs.apluscourses.model.exercise.SubmissionResult
 import fi.aalto.cs.apluscourses.services.Opener
 import fi.aalto.cs.apluscourses.services.course.CourseManager
 import fi.aalto.cs.apluscourses.services.exercise.*
+import fi.aalto.cs.apluscourses.ui.Utils.loadingPanel
 import java.awt.BorderLayout
 import java.awt.Color
 import java.awt.event.KeyEvent
@@ -39,6 +40,7 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true) {
 
     val searchTextField: SearchTextField
     val scrollPane: JBScrollPane
+    val panel = JBUI.Panels.simplePanel()
 
     init {
         exerciseGroupsFilteringTree.tree.selectionModel.selectionMode =
@@ -53,7 +55,6 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true) {
         exerciseGroupsFilteringTree.updateTree()
         searchTextField = exerciseGroupsFilteringTree.installSearchField()
 
-        val panel = JBUI.Panels.simplePanel()
         panel.add(scrollPane, BorderLayout.CENTER)
 
         panel.focusTraversalPolicy = ListFocusTraversalPolicy(
@@ -61,16 +62,19 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true) {
         )
         panel.isFocusTraversalPolicyProvider = true
         panel.isFocusCycleRoot = true
-        setContent(panel)
+        setContent(loadingPanel())
     }
 
 
     fun updateTree() {
+        setContent(panel)
         val scroll = scrollPane.verticalScrollBar.value
         val expandedItems = getExpandedItems()
         exerciseGroupsFilteringTree.updateTree()
         expandItems(expandedItems)
         scrollPane.verticalScrollBar.value = scroll
+        // Show "All items are filtered" if no items are shown
+        exerciseGroupsFilteringTree.tree.emptyText.text = "All items are filtered"
     }
 
     private fun getExpandedItems(): List<ExercisesTreeItem> {

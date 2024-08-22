@@ -25,6 +25,7 @@ import fi.aalto.cs.apluscourses.services.PluginSettings
 import fi.aalto.cs.apluscourses.services.ProjectInitializationTracker
 import fi.aalto.cs.apluscourses.services.course.CourseFileManager
 import fi.aalto.cs.apluscourses.services.course.CourseManager
+import fi.aalto.cs.apluscourses.services.course.InitializationStatus
 import fi.aalto.cs.apluscourses.services.course.SettingsImporter
 import fi.aalto.cs.apluscourses.utils.*
 import fi.aalto.cs.apluscourses.utils.Version.ComparisonStatus
@@ -37,7 +38,18 @@ import org.jetbrains.annotations.NonNls
 internal class InitializationActivity() :
     ProjectActivity {
     override suspend fun execute(project: Project) {
-        val courseConfig = CourseConfig.get(project) ?: return
+        val courseConfig = try {
+            CourseConfig.get(project)
+        } catch (_: Exception) {
+            InitializationStatus.setIsIoError(project)
+            CourseManager.getInstance(project).fireNetworkError()
+            return
+        }
+        if (courseConfig == null) {
+            InitializationStatus.setIsNotCourse(project)
+            CourseManager.getInstance(project).fireNetworkError()
+            return
+        }
         CoursesClient.getInstance(project).changeHost(courseConfig.aPlusUrl)
 
         val connection = project.messageBus.connect()

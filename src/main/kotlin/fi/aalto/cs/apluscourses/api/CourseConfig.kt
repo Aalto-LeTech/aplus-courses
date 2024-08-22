@@ -8,6 +8,8 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import java.io.IOException
+import java.nio.channels.UnresolvedAddressException
 
 object CourseConfig {
     /**
@@ -241,8 +243,12 @@ object CourseConfig {
         try {
             val courseConfig = CoursesClient.getInstance(project).get(url).bodyAsText()
             return deserialize(courseConfig)
-        } catch (_: Exception) {
-            return null
+        } catch (e: Exception) {
+            println(e)
+            when (e) {
+                is IOException, is UnresolvedAddressException -> throw e
+                else -> return null
+            }
         }
     }
 

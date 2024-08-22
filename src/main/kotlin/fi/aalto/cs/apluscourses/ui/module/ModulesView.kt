@@ -11,6 +11,7 @@ import com.intellij.ui.dsl.builder.panel
 import com.intellij.util.application
 import fi.aalto.cs.apluscourses.model.Course
 import fi.aalto.cs.apluscourses.model.component.Module
+import fi.aalto.cs.apluscourses.ui.Utils.loadingPanel
 import java.awt.Point
 import java.awt.event.KeyEvent
 import java.awt.event.MouseAdapter
@@ -39,6 +40,10 @@ class ModulesView(val project: Project) : SimpleToolWindowPanel(true, true) {
             accessibleContext.accessibleName = "Search Modules"
             TextComponentEmptyText.setupPlaceholderVisibility(this)
         }
+    }
+
+    init {
+        setContent(loadingPanel())
     }
 
     private fun collapseAll() = itemPanels.forEach { it.collapse() }
@@ -80,7 +85,9 @@ class ModulesView(val project: Project) : SimpleToolWindowPanel(true, true) {
             }
         }
 
-        val scrollValue = (content as JBScrollPane?)?.verticalScrollBar?.value ?: 0
+        val scrollValue = if (content is JBScrollPane) {
+            (content as JBScrollPane?)?.verticalScrollBar?.value ?: 0
+        } else 0
 
         val panel = panel {
             addCategory(Module.Category.ACTION_REQUIRED, actionRequired)

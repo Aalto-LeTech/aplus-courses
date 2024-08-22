@@ -44,8 +44,8 @@ class CourseFileManager(private val project: Project) :
         var importSettings by property(false)
         var initialized by property(false)
 
-        @OptionTag("newsReadTime", converter = InstantConverter::class)
-        var newsReadTime: Instant = Instant.fromEpochSeconds(0)
+        @get:OptionTag("newsReadTime", converter = InstantConverter::class)
+        var newsReadTime by property<Instant>(Instant.fromEpochSeconds(0)) { it == Instant.fromEpochSeconds(0) }
 
         fun increment() = incrementModificationCount()
     }

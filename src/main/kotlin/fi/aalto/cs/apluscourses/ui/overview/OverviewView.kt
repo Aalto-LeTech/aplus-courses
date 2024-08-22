@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.ui.overview
 
 import com.intellij.icons.AllIcons
+import com.intellij.ide.actions.NewProjectAction
 import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogPanel
@@ -18,9 +19,12 @@ import fi.aalto.cs.apluscourses.api.CourseConfig.Grading
 import fi.aalto.cs.apluscourses.icons.CoursesIcons
 import fi.aalto.cs.apluscourses.model.exercise.ExerciseGroup
 import fi.aalto.cs.apluscourses.services.course.CourseManager
+import fi.aalto.cs.apluscourses.services.course.InitializationStatus
 import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdater
 import fi.aalto.cs.apluscourses.ui.BannerPanel
 import fi.aalto.cs.apluscourses.ui.TokenForm
+import fi.aalto.cs.apluscourses.ui.Utils.loadingPanel
+import fi.aalto.cs.apluscourses.ui.Utils.myActionLink
 import fi.aalto.cs.apluscourses.utils.DateDifferenceFormatter
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -43,15 +47,6 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
         val content = JBScrollPane(panel)
         content.horizontalScrollBarPolicy = ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
         setContent(content)
-    }
-
-
-    private fun loadingPanel(): DialogPanel {
-        return panel {
-            row {
-                icon(CoursesIcons.Loading).resizableColumn().align(Align.CENTER)
-            }.resizableRow()
-        }
     }
 
     private fun authPanel(): DialogPanel {
@@ -113,7 +108,40 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
         }
     }
 
+    private fun notACoursePanel(): DialogPanel {
+        return panel {
+            panel {
+                row {
+                    text("This project is not linked to a course").applyToComponent {
+                        font = JBFont.h1()
+                    }.comment("Create a new A+ Courses project to access a course.")
+                }
+                row {
+                    myActionLink("Create new project", CoursesIcons.LogoColor, NewProjectAction())
+                }
+            }.customize(UnscaledGaps(16, 32, 16, 32))
+        }
+    }
+
+    private fun initializationIoErrorPanel(): DialogPanel {
+        return panel {
+            panel {
+                row {
+                    text("The plugin encountered a network error during initialization").applyToComponent {
+                        font = JBFont.h1()
+                    }.comment("Please check your internet connection and that A+ is accessible.")
+                }
+            }.customize(UnscaledGaps(16, 32, 16, 32))
+        }
+    }
+
     private fun createPanel(loading: Boolean = false): DialogPanel {
+        if (InitializationStatus.isNotCourse(project)) {
+            return notACoursePanel()
+        }
+        if (InitializationStatus.isIoError(project)) {
+            return initializationIoErrorPanel()
+        }
         if (loading) return loadingPanel()
         val authenticated = CourseManager.authenticated(project) ?: return loadingPanel()
         if (!authenticated) return authPanel()
@@ -201,11 +229,13 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
                                 ShowSettingsUtil.getInstance().showSettingsDialog(project, "A+ Courses")
                             }.applyToComponent {
                                 icon = AllIcons.General.Settings
+                                isFocusPainted = false
                             }
                         }
                         row {
                             browserLink("Course page", course.htmlUrl).applyToComponent {
                                 setIcon(CoursesIcons.LogoColor, atRight = false)
+                                isFocusPainted = false
                             }
                         }
                     }

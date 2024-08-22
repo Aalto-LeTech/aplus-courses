@@ -19,6 +19,7 @@ import fi.aalto.cs.apluscourses.model.news.NewsList
 import fi.aalto.cs.apluscourses.services.Opener
 import fi.aalto.cs.apluscourses.services.course.CourseManager
 import fi.aalto.cs.apluscourses.services.course.CourseManager.NewsUpdaterListener
+import fi.aalto.cs.apluscourses.services.course.InitializationStatus
 import fi.aalto.cs.apluscourses.services.exercise.ExercisesTreeFilter
 import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdater
 import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdater.ExercisesUpdaterListener
@@ -181,6 +182,10 @@ internal class APlusToolWindowFactory : ToolWindowFactory, DumbAware {
                 modulesView.viewModelChanged(course)
             }
         })
+
+        if (InitializationStatus.isNotCourse(project) || InitializationStatus.isIoError(project)) {
+            removeAllTabs()
+        }
     }
 
     private fun createOverviewView(project: Project): OverviewView = OverviewView(project)

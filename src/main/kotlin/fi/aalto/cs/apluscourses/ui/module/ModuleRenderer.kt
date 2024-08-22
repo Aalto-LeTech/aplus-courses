@@ -1,7 +1,6 @@
 package fi.aalto.cs.apluscourses.ui.module
 
 import com.intellij.icons.AllIcons
-import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.components.service
 import com.intellij.openapi.observable.properties.AtomicBooleanProperty
 import com.intellij.openapi.observable.properties.AtomicProperty
@@ -10,7 +9,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.ui.ColorUtil
 import com.intellij.ui.JBColor
-import com.intellij.ui.components.AnActionLink
 import com.intellij.ui.dsl.builder.AlignY
 import com.intellij.ui.dsl.builder.IntelliJSpacingConfiguration
 import com.intellij.ui.dsl.builder.Panel
@@ -28,13 +26,13 @@ import fi.aalto.cs.apluscourses.services.CoursesClient
 import fi.aalto.cs.apluscourses.services.Opener
 import fi.aalto.cs.apluscourses.services.course.CourseManager
 import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdater
+import fi.aalto.cs.apluscourses.ui.Utils.myActionLink
+import fi.aalto.cs.apluscourses.ui.Utils.myLink
 import fi.aalto.cs.apluscourses.utils.DateDifferenceFormatter.formatTimeUntilNow
 import org.jetbrains.annotations.NonNls
 import java.awt.BorderLayout
-import java.awt.event.ActionEvent
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
-import javax.swing.Icon
 import javax.swing.JPanel
 import javax.swing.SwingUtilities
 import kotlin.to
@@ -66,16 +64,6 @@ class ModuleRenderer(
                     this@ModuleRenderer.parent.dispatchEvent(e)
                 }
             })
-        }
-
-    private fun Row.myLink(text: String, icon: Icon, action: (ActionEvent) -> Unit) =
-        link(text, action).applyToComponent {
-            setIcon(icon, false)
-        }
-
-    private fun Row.myActionLink(text: String, icon: Icon, action: AnAction) =
-        cell(AnActionLink(text, action)).applyToComponent {
-            setIcon(icon, false)
         }
 
     private fun Panel.header() {
