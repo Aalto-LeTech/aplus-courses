@@ -126,6 +126,7 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true) {
     }
 
     fun showExercise(exercise: Exercise) {
+        searchTextField.text = ""
         TreeUtil.findNode(exerciseGroupsFilteringTree.root) { node ->
             when (node.userObject) {
                 is ExerciseItem -> (node.userObject as ExerciseItem).exercise.id == exercise.id

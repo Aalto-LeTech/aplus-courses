@@ -5,11 +5,11 @@ import com.intellij.openapi.observable.properties.whenPropertyChanged
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.openapi.ui.DialogWrapper
-import com.intellij.ui.JBColor
 import com.intellij.ui.RoundedLineBorder
 import com.intellij.ui.dsl.builder.bindItem
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.layout.ComponentPredicate
+import com.intellij.util.ui.JBUI.CurrentTheme.NotificationError
 import fi.aalto.cs.apluscourses.MyBundle
 import fi.aalto.cs.apluscourses.model.exercise.Exercise
 import fi.aalto.cs.apluscourses.model.people.Group
@@ -86,10 +86,10 @@ class SubmitExerciseDialog(
                         MyBundle.message("presentation.submissionViewModel.warning.submissionsExceeded")
                     }
                 ).applyToComponent {
-                    foreground = JBColor.namedColor("Notification.ToolWindow.errorForeground")
-                    background = JBColor.namedColor("Notification.ToolWindow.errorBackground")
+                    foreground = NotificationError.foregroundColor()
+                    background = NotificationError.backgroundColor()
                     isOpaque = true
-                    val errorBorderColor = JBColor.namedColor("Notification.ToolWindow.errorBorderColor")
+                    val errorBorderColor = NotificationError.borderColor()
 
                     border = BorderFactory.createCompoundBorder(
                         RoundedLineBorder(errorBorderColor, 10, 1),

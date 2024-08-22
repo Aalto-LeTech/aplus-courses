@@ -25,6 +25,8 @@ import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdater
 import fi.aalto.cs.apluscourses.utils.Version
 import fi.aalto.cs.apluscourses.utils.callbacks.Callbacks
 import kotlinx.coroutines.*
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import java.io.IOException
 import java.nio.channels.UnresolvedAddressException
 import java.util.concurrent.ConcurrentHashMap
@@ -395,6 +397,14 @@ class CourseManager(
 
         fun course(project: Project): Course? {
             return getInstance(project).state.course
+        }
+
+        fun isCourseEnded(project: Project): Boolean {
+            val endingTime = getInstance(project).state.course?.endingTime ?: return false
+            val parsedTime = Instant.parse(endingTime)
+            val now = Clock.System.now()
+            println("parsedTime: $parsedTime now: $now, isCourseEnded: ${now > parsedTime}")
+            return now > parsedTime
         }
 
         fun error(project: Project): Error? {

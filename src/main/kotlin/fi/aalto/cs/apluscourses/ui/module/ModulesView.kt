@@ -16,7 +16,6 @@ import java.awt.Point
 import java.awt.event.KeyEvent
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
-import javax.swing.*
 
 class ModulesView(val project: Project) : SimpleToolWindowPanel(true, true) {
     private var modules = mutableListOf<Module>()
@@ -96,7 +95,6 @@ class ModulesView(val project: Project) : SimpleToolWindowPanel(true, true) {
         }
 
         val content = JBScrollPane(panel)
-        content.horizontalScrollBarPolicy = ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
         content.verticalScrollBar.value = scrollValue
         setContent(content)
 
@@ -138,6 +136,7 @@ class ModulesView(val project: Project) : SimpleToolWindowPanel(true, true) {
         collapseAll()
         val item = itemPanels.find { it.module.name == module.name }
         if (item != null) {
+            searchTextField.text = ""
             searchChanged("")
             item.expand()
             if (scroll) (content as JBScrollPane?)?.verticalScrollBar?.value = item.location.y - 100

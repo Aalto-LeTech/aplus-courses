@@ -37,6 +37,7 @@ class NewsView(private val toolWindow: ToolWindow, private val project: Project)
     init {
         val content = JBScrollPane()
         setContent(content)
+        emptyText.text = "No news to show"
     }
 
     /**
@@ -46,7 +47,8 @@ class NewsView(private val toolWindow: ToolWindow, private val project: Project)
         application.invokeLater {
             println("newsview update")
             this.news = newsList
-            if (newsList == null) {
+            if (newsList == null || newsList.news.isEmpty()) {
+                remove(content)
                 return@invokeLater
             }
             println("newsview update 2")

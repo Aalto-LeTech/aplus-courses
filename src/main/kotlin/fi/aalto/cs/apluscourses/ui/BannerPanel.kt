@@ -1,16 +1,17 @@
 package fi.aalto.cs.apluscourses.ui
 
-import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBLabel
 import com.intellij.util.ui.JBUI
+import com.intellij.util.ui.JBUI.CurrentTheme.NotificationError
 import java.awt.BorderLayout
+import java.awt.Color
 import javax.swing.BorderFactory
 import javax.swing.JPanel
 
 class BannerPanel(text: String, bannerType: BannerType) : JPanel(BorderLayout()) {
-    private val errorForeground: JBColor = JBColor.namedColor("Notification.ToolWindow.errorForeground")
-    private val errorBackground: JBColor = JBColor.namedColor("Notification.ToolWindow.errorBackground")
-    private val errorBorderColor: JBColor = JBColor.namedColor("Notification.ToolWindow.errorBorderColor")
+    private val errorForeground: Color = NotificationError.foregroundColor()
+    private val errorBackground: Color = NotificationError.backgroundColor()
+    private val errorBorderColor: Color = NotificationError.borderColor()
 
     /**
      * Constructor for the banner.

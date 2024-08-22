@@ -36,6 +36,7 @@ import javax.swing.Icon
 import javax.swing.JPanel
 import javax.swing.JProgressBar
 import javax.swing.ScrollPaneConstants
+import kotlin.math.max
 
 class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, true) {
     private var banner: ResponsiveImagePanel? = null
@@ -45,7 +46,8 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
     fun update(loading: Boolean = false) {
         panel = createPanel(loading)
         val content = JBScrollPane(panel)
-        content.horizontalScrollBarPolicy = ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
+        content.horizontalScrollBarPolicy =
+            if (isMainPanel) ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED else ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
         setContent(content)
     }
 
@@ -135,7 +137,11 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
         }
     }
 
+    private var isMainPanel = false
+    private val mainPanelMaxWidth = 300
+
     private fun createPanel(loading: Boolean = false): DialogPanel {
+        isMainPanel = false
         if (InitializationStatus.isNotCourse(project)) {
             return notACoursePanel()
         }
@@ -153,6 +159,7 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
         }
         val course = CourseManager.course(project) ?: return loadingPanel()
         val user = CourseManager.user(project) ?: return loadingPanel()
+        val isCourseEnded = CourseManager.isCourseEnded(project)
         val weeks = ExercisesUpdater.getInstance(project).state.exerciseGroups
         val points = ExercisesUpdater.getInstance(project).state.userPointsForCategories
             ?.filter { !course.optionalCategories.contains(it.key) }
@@ -164,11 +171,14 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
         val pointsUntilNextGrade = gradeData?.pointsUntilNext
         val maxPointsOfNextGrade = gradeData?.maxOfNext
         val maxPoints = ExercisesUpdater.getInstance(project).state.maxPointsForCategories
-        val banner = ResponsiveImagePanel(course.imageUrl, width = this.width)
+        val banner = ResponsiveImagePanel(course.imageUrl, width = this.width, maxWidth = mainPanelMaxWidth)
         this.banner = banner
-        return panel {
+        isMainPanel = true
+        val mainPanel = panel {
             row { cell(banner) }
-            row { cell(BannerPanel(MyBundle.message("ui.BannerView.courseEnded"), BannerPanel.BannerType.ERROR)) }
+            if (isCourseEnded) {
+                row { cell(BannerPanel(MyBundle.message("ui.BannerView.courseEnded"), BannerPanel.BannerType.ERROR)) }
+            }
             panel {
                 customizeSpacingConfiguration(object : IntelliJSpacingConfiguration() {
                     override val verticalComponentGap: Int = 1
@@ -242,6 +252,8 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
                 }
             }.customize(UnscaledGaps(16, 32, 16, 32))
         }
+        mainPanel.preferredSize = Dimension(mainPanelMaxWidth, Int.MAX_VALUE)
+        return mainPanel
     }
 
     private class Grade(val grade: String?, val pointsUntilNext: Map<String, Int>?, val maxOfNext: Map<String, Int>?)
@@ -356,7 +368,7 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
     }
 }
 
-class ResponsiveImagePanel(url: String? = null, icon: Icon? = null, width: Int) : JPanel() {
+class ResponsiveImagePanel(url: String? = null, icon: Icon? = null, width: Int, val maxWidth: Int = width) : JPanel() {
     private var image: Image? = null
     private var width: Int = 100
     private val heightMultiplier: Double
@@ -378,7 +390,7 @@ class ResponsiveImagePanel(url: String? = null, icon: Icon? = null, width: Int) 
     }
 
     fun updateWidth(width: Int) {
-        this.width = width
+        this.width = max(width, maxWidth)
         repaint()
     }
 
