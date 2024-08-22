@@ -26,6 +26,7 @@ import fi.aalto.cs.apluscourses.utils.Version
 import fi.aalto.cs.apluscourses.utils.callbacks.Callbacks
 import kotlinx.coroutines.*
 import java.io.IOException
+import java.nio.channels.UnresolvedAddressException
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 
@@ -94,8 +95,22 @@ class CourseManager(
                         delay(updateInterval)
                     }
                 } catch (_: CancellationException) {
+
+                } catch (e: Exception) {
+                    when (e) {
+                        is IOException, is UnresolvedAddressException -> getInstance(project)
+                            .fireNetworkError()
+
+                        else -> throw e
+                    }
                 }
             }
+    }
+
+    fun fireNetworkError() {
+        state.error = Error.NETWORK_ERROR
+        state.clearAll()
+        fireCourseUpdated()
     }
 
     fun setNewsAsRead() {
@@ -108,7 +123,11 @@ class CourseManager(
     private suspend fun doTask() {
         project.service<CourseFileManager>().migrateOldConfig()
         println(CourseFileManager.getInstance(project).state.url)
-        val courseConfig = CourseConfig.get(project) ?: return
+        val courseConfig = CourseConfig.get(project)
+        if (courseConfig == null) {
+            fireNetworkError()
+            return
+        }
 
         state.courseName = courseConfig.name
         state.aPlusUrl = courseConfig.aPlusUrl
@@ -122,108 +141,102 @@ class CourseManager(
         state.authenticated = true
         state.error = null
 
-        try {
-            state.grading = courseConfig.grading
 
-            val extraCourseData = try {
-                state.user = withContext(Dispatchers.IO) {
-                    APlusApi.me().get(project)
-                }
-                APlusApi.Course(courseConfig.id.toLong()).get(project)
-            } catch (_: Exception) {
-                val courseId = courseConfig.id.toLong()
-                val user = state.user
-                if (user != null && (!user.isStaffOf(courseId) || !user.isEnrolledIn(courseId))) {
-                    state.error = Error.NOT_ENROLLED
-                } else {
-                    state.error = Error.NETWORK_ERROR
-                }
-                fireCourseUpdated()
-                throw CancellationException()
+        state.grading = courseConfig.grading
+
+        val extraCourseData = try {
+            state.user = withContext(Dispatchers.IO) {
+                APlusApi.me().get(project)
             }
-            val modules = courseConfig.modules.map {
-                Module(
-                    it.name,
-                    it.url,
-                    it.changelog,
-                    it.version,
-                    it.language,
-                    project
-                )
+            APlusApi.Course(courseConfig.id.toLong()).get(project)
+        } catch (_: Exception) {
+            val courseId = courseConfig.id.toLong()
+            val user = state.user
+            if (user != null && (!user.isStaffOf(courseId) || !user.isEnrolledIn(courseId))) {
+                state.error = Error.NOT_ENROLLED
+            } else {
+                state.error = Error.NETWORK_ERROR
             }
-            val exerciseModules = courseConfig.exerciseModules.map { (exerciseId, languagesToModule) ->
-                println("exerciseId: $exerciseId languagesToModule: $languagesToModule")
-                exerciseId to
-                        languagesToModule
-                            .map { (language, moduleName) ->
-                                var module = modules.find { it.name == moduleName }
-                                if (module == null) {
-                                    println("Module $moduleName not found")
-                                    module = Module(
-                                        moduleName,
-                                        "",
-                                        "",
-                                        Version.EMPTY,
-                                        null,
-                                        project
-                                    )
-                                }
-                                language to module
-                            }
-                            .toMap()
-            }.toMap()
-            state.course = Course(
-                id = courseConfig.id.toLong(),
-                name = courseConfig.name,
-                htmlUrl = extraCourseData.htmlUrl,
-                imageUrl = extraCourseData.image,
-                endingTime = extraCourseData.endingTime,
-                languages = courseConfig.languages,
-                modules = modules,
-                exerciseModules = exerciseModules,
-                resourceUrls = CourseConfig.resourceUrls(courseConfig.resources),
-                optionalCategories = courseConfig.optionalCategories,
-                autoInstallComponentNames = courseConfig.autoInstall,
-                replInitialCommands = courseConfig.scalaRepl?.initialCommands,
-                replAdditionalArguments = courseConfig.scalaRepl?.arguments,
-                minimumPluginVersion = courseConfig.version,
-                hiddenElements = courseConfig.hiddenElements,
-                callbacks = Callbacks.fromJsonObject(courseConfig.callbacks),
+            fireCourseUpdated()
+            throw CancellationException()
+        }
+        val modules = courseConfig.modules.map {
+            Module(
+                it.name,
+                it.url,
+                it.changelog,
+                it.version,
+                it.language,
                 project
             )
-            importSettings(state.course!!)
-            state.course?.components?.values?.forEach { withContext(moduleOperationDispatcher) { it.updateStatus() } }
+        }
+        val exerciseModules = courseConfig.exerciseModules.map { (exerciseId, languagesToModule) ->
+            println("exerciseId: $exerciseId languagesToModule: $languagesToModule")
+            exerciseId to
+                    languagesToModule
+                        .map { (language, moduleName) ->
+                            var module = modules.find { it.name == moduleName }
+                            if (module == null) {
+                                println("Module $moduleName not found")
+                                module = Module(
+                                    moduleName,
+                                    "",
+                                    "",
+                                    Version.EMPTY,
+                                    null,
+                                    project
+                                )
+                            }
+                            language to module
+                        }
+                        .toMap()
+        }.toMap()
+        state.course = Course(
+            id = courseConfig.id.toLong(),
+            name = courseConfig.name,
+            htmlUrl = extraCourseData.htmlUrl,
+            imageUrl = extraCourseData.image,
+            endingTime = extraCourseData.endingTime,
+            languages = courseConfig.languages,
+            modules = modules,
+            exerciseModules = exerciseModules,
+            resourceUrls = CourseConfig.resourceUrls(courseConfig.resources),
+            optionalCategories = courseConfig.optionalCategories,
+            autoInstallComponentNames = courseConfig.autoInstall,
+            replInitialCommands = courseConfig.scalaRepl?.initialCommands,
+            replAdditionalArguments = courseConfig.scalaRepl?.arguments,
+            minimumPluginVersion = courseConfig.version,
+            hiddenElements = courseConfig.hiddenElements,
+            callbacks = Callbacks.fromJsonObject(courseConfig.callbacks),
+            project
+        )
+        importSettings(state.course!!)
+        state.course?.components?.values?.forEach { withContext(moduleOperationDispatcher) { it.updateStatus() } }
 
-            val course = state.course ?: return
+        val course = state.course ?: return
 
-            ExercisesUpdater.getInstance(project).restart()
-            val newNews = APlusApi.Course(course.id).news(project)
-            state.news?.news?.forEach {
-                if (it.isRead) newNews.setRead(it.id)
-            }
+        ExercisesUpdater.getInstance(project).restart()
+        val newNews = APlusApi.Course(course.id).news(project)
+        state.news?.news?.forEach {
+            if (it.isRead) newNews.setRead(it.id)
+        }
 
-            state.news = newNews
-            fireNewsUpdated(newNews)
-            fireCourseUpdated()
+        state.news = newNews
+        fireNewsUpdated(newNews)
+        fireCourseUpdated()
 
-            val autoInstallModulesToInstall = course.autoInstallComponents
-                .filter {
-                    withContext(moduleOperationDispatcher) {
-                        it.updateAndGetStatus() == Component.Status.UNRESOLVED
-                    }
+        val autoInstallModulesToInstall = course.autoInstallComponents
+            .filter {
+                withContext(moduleOperationDispatcher) {
+                    it.updateAndGetStatus() == Component.Status.UNRESOLVED
                 }
-            if (autoInstallModulesToInstall.isNotEmpty()) {
-                autoInstallModulesToInstall.forEach {
-                    if (it is Module) installModuleAsync(it, false)
-                }
-            } else {
-                refreshModuleStatusesAsync()
             }
-
-        } catch (_: IOException) {
-            state.error = Error.NETWORK_ERROR
-            fireCourseUpdated()
-            return
+        if (autoInstallModulesToInstall.isNotEmpty()) {
+            autoInstallModulesToInstall.forEach {
+                if (it is Module) installModuleAsync(it, false)
+            }
+        } else {
+            refreshModuleStatusesAsync()
         }
 
         notifyUpdatableModules()

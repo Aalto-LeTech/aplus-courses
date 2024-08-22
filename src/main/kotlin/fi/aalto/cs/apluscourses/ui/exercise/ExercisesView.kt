@@ -296,6 +296,7 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true) {
         }
 
         private fun activateItem() {
+            if (tree.lastSelectedPathComponent == null) return
             val selectedNode = tree.lastSelectedPathComponent as DefaultMutableTreeNode
             val selected = selectedNode.userObject as? ExercisesTreeItem ?: return
             if (selected is NewSubmissionItem) {

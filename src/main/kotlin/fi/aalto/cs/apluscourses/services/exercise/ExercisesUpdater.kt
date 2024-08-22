@@ -21,6 +21,8 @@ import fi.aalto.cs.apluscourses.services.course.CourseManager
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil
 import io.ktor.utils.io.CancellationException
 import kotlinx.coroutines.*
+import java.io.IOException
+import java.nio.channels.UnresolvedAddressException
 import java.util.concurrent.ConcurrentHashMap
 
 
@@ -85,6 +87,16 @@ class ExercisesUpdater(
                     }
                 } catch (_: CancellationException) {
                     println("Task was cancelled 1")
+                } catch (e: Exception) {
+                    when (e) {
+                        is IOException, is UnresolvedAddressException -> {
+                            state.clearAll()
+                            CourseManager.getInstance(project)
+                                .fireNetworkError()
+                        }
+
+                        else -> throw e
+                    }
                 }
             }
     }

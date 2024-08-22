@@ -89,13 +89,17 @@ class CoursesClient(
     }
 
     suspend fun get(url: String, token: Boolean = false): HttpResponse {
-        return withContext(Dispatchers.IO) {
+        val res = withContext(Dispatchers.IO) {
             client.get(url) {
                 if (token) {
                     addToken()
                 }
             }
         }
+        if (res.status != HttpStatusCode.OK) {
+            throw IOException("Failed to get resource: ${res.status}")
+        }
+        return res
     }
 
     suspend fun getFileSize(url: String): Long? {
