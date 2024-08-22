@@ -46,6 +46,7 @@ class CourseManager(
         var feedbackCss: String? = null
         var aPlusUrl: String? = null
         var grading: CourseConfig.Grading? = null
+        var alwaysShowGroups = false
         var settingsImported = false
         var error: Error? = null
         var missingDependencies = mapOf<String, List<Component<*>>>()
@@ -143,8 +144,8 @@ class CourseManager(
         state.authenticated = true
         state.error = null
 
-
         state.grading = courseConfig.grading
+        state.alwaysShowGroups = courseConfig.alwaysShowGroups
 
         val extraCourseData = try {
             state.user = withContext(Dispatchers.IO) {

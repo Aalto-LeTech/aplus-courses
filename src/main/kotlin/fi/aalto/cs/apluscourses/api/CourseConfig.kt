@@ -150,6 +150,7 @@ object CourseConfig {
         val exerciseModules: Map<Long, Map<String, String>>,
         val hiddenElements: List<Long> = emptyList(),
         val grading: Grading? = null,
+        val alwaysShowGroups: Boolean = false,
     )
 
     @Serializable

@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.ui.exercise
 
+import com.intellij.openapi.components.service
 import com.intellij.openapi.observable.properties.AtomicProperty
 import com.intellij.openapi.observable.properties.whenPropertyChanged
 import com.intellij.openapi.project.Project
@@ -14,6 +15,7 @@ import fi.aalto.cs.apluscourses.MyBundle
 import fi.aalto.cs.apluscourses.model.exercise.Exercise
 import fi.aalto.cs.apluscourses.model.people.Group
 import fi.aalto.cs.apluscourses.services.course.CourseFileManager
+import fi.aalto.cs.apluscourses.services.course.CourseManager
 import fi.aalto.cs.apluscourses.ui.FileRenderer
 import fi.aalto.cs.apluscourses.ui.FileTree
 import java.nio.file.Path
@@ -51,6 +53,7 @@ class SubmitExerciseDialog(
 
     override fun createCenterPanel(): DialogPanel = panel {
         val submissionNumber = exercise.submissionResults.size + 1
+        val showGroups = project.service<CourseManager>().state.alwaysShowGroups || groups.size > 1
 
         row {
             label("Files to submit:")
@@ -61,18 +64,20 @@ class SubmitExerciseDialog(
                 isEnabled = false
             }
         }
-        row("Group:") {
-            comboBox(groups).bindItem(selectedGroup).enabled(!submittedBefore)
-            button(
-                "Set as Default"
-            ) {
-                defaultGroup.set(selectedGroup.get())
-                CourseFileManager.getInstance(project).setDefaultGroup(selectedGroup.get())
+        if (showGroups) {
+            row("Group:") {
+                comboBox(groups).bindItem(selectedGroup).enabled(!submittedBefore)
+                button(
+                    "Set as Default"
+                ) {
+                    defaultGroup.set(selectedGroup.get())
+                    CourseFileManager.getInstance(project).setDefaultGroup(selectedGroup.get())
+                }
+                    .enabled(!submittedBefore)
+                    .enabledIf(isDefaultSelected)
+                contextHelp("You cannot change the group after submitting.")
+                    .visible(submittedBefore)
             }
-                .enabled(!submittedBefore)
-                .enabledIf(isDefaultSelected)
-            contextHelp("You cannot change the group after submitting.")
-                .visible(submittedBefore)
         }
         row {
             text("You are about to make submission $submissionNumber out of ${exercise.maxSubmissions}.")
