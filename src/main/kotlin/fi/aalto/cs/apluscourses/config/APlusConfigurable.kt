@@ -8,6 +8,7 @@ import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.ui.dsl.builder.panel
+import com.intellij.util.ui.JBFont
 import fi.aalto.cs.apluscourses.MyBundle
 import fi.aalto.cs.apluscourses.icons.CoursesIcons
 import fi.aalto.cs.apluscourses.services.course.CourseFileManager
@@ -111,7 +112,9 @@ internal class APlusConfigurable(val project: Project) : Configurable, Configura
             cell(banner!!)
         }
         row {
-            label(PluginVersion.current).bold()
+            text(MyBundle.message("ui.aboutDialog.title")).applyToComponent {
+                font = JBFont.h0()
+            }.comment(PluginVersion.current)
         }
         row {
             text(
@@ -136,11 +139,6 @@ internal class APlusConfigurable(val project: Project) : Configurable, Configura
         row {
             text(
                 MyBundle.message("ui.aboutDialog.authors")
-            )
-        }
-        row {
-            text(
-                MyBundle.message("ui.aboutDialog.attributes")
             )
         }
     }

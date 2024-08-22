@@ -19,10 +19,8 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.client.statement.request
 import io.ktor.http.Url
 import kotlinx.coroutines.CoroutineScope
-import net.lingala.zip4j.ZipFile
 import java.io.IOException
 import java.nio.file.Path
-import java.nio.file.Paths
 
 @Service(Service.Level.PROJECT)
 class SettingsImporter(
@@ -134,36 +132,6 @@ class SettingsImporter(
 
         fun getInstance(project: Project): SettingsImporter {
             return project.service<SettingsImporter>()
-        }
-
-        @Throws(IOException::class)
-        private fun extractZipTo(zipFile: ZipFile, target: Path) {
-            val fileNames = getZipFileNames(zipFile)
-            for (fileName in fileNames) {
-                val path = Paths.get(fileName)
-                // The ZIP contains a .idea directory with all the settings files.
-                // We want to extract the files to the .idea directory without the .idea prefix,
-                // as otherwise we would end up with .idea/.idea/<settings_files>.
-                val pathWithoutRoot = path.subpath(1, path.nameCount)
-                zipFile.extractFile(path.toString(), target.toString(), pathWithoutRoot.toString())
-            }
-        }
-
-
-        /**
-         * Returns the names of the files inside the given ZIP file. Directories are not included, but
-         * files inside directories are included.
-         *
-         * @param zipFile The ZIP file from which the file names are read.
-         * @return A list of names of the files inside the given ZIP file.
-         * @throws IOException If an IO error occurs.
-         */
-        @Throws(IOException::class)
-        private fun getZipFileNames(zipFile: ZipFile): List<String> {
-            return zipFile
-                .fileHeaders
-                .filter { !it.isDirectory }
-                .map { it.fileName }
         }
     }
 }
