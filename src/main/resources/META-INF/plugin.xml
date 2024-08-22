@@ -26,10 +26,6 @@
                 displayName="A+ Courses"
                 instance="fi.aalto.cs.apluscourses.config.APlusConfigurable"
         />
-        <fileEditorProvider implementation="fi.aalto.cs.apluscourses.ui.browser.BrowserEditorProvider"/>
-        <editorTabTitleProvider implementation="fi.aalto.cs.apluscourses.ui.browser.APlusTabTitleProvider"/>
-        <fileType name="A+" language="A+" extensions="aplus"
-                  implementationClass="fi.aalto.cs.apluscourses.ui.browser.APlusFileType" fieldName="INSTANCE"/>
         <applicationService serviceInterface="com.intellij.openapi.roots.ui.configuration.actions.ModuleDeleteProvider"
                             serviceImplementation="fi.aalto.cs.apluscourses.services.APlusModuleDeleteProvider"
                             overrides="true"/>
