@@ -90,21 +90,24 @@ class ExercisesTreeRenderer : NodeRenderer() {
         try {
             if (!prepareToPaint(g2d)) return
 
-            val width = width
-            val height = height
-            val fontMetrics = g2d.fontMetrics
+            val width = width.toFloat()
+            val height = height.toFloat()
+            val pointsFont = determineFont(item)
+            val pointsFontMetrics = g2d.getFontMetrics(pointsFont)
             val pointsText = pointsText()
-            val pointsTextBounds = fontMetrics.getStringBounds(pointsText, g2d).bounds
+            val pointsTextBounds = pointsFontMetrics.getStringBounds(pointsText, g2d).bounds
             val status = statusText()
+            val fontMetrics = g2d.fontMetrics
             val statusBounds = fontMetrics.getStringBounds(status, g2d).bounds
 
-            val pointsTextX = (width - pointsTextBounds.width) - 10
-            val pointsTextY = getTextBaseLine(fontMetrics, height)
+            val pointsTextX = (width - pointsTextBounds.width.toFloat()) - 20
+            val pointsTextY =
+                ((height - pointsTextBounds.height.toFloat()) / 2) + fontMetrics.ascent
             val statusX = (width - statusBounds.width) - (pointsTextBounds.width + 18)
 
             if (pointsText.isNotEmpty()) {
                 clipComponent(g2d, statusX, height)
-                drawBackground(g2d, pointsTextBounds, pointsTextX, pointsTextY)
+                drawBackground(g2d, pointsTextBounds, pointsTextX)
                 drawText(g2d, pointsText, pointsTextX, pointsTextY)
             } else {
                 super.paintComponent(g2d)
@@ -200,9 +203,9 @@ class ExercisesTreeRenderer : NodeRenderer() {
         }
     }
 
-    private fun clipComponent(g2d: Graphics2D, statusX: Int, height: Int) {
+    private fun clipComponent(g2d: Graphics2D, statusX: Float, height: Float) {
         val originalClip = g2d.clip
-        g2d.clipRect(0, 0, statusX - 12, height)
+        g2d.clipRect(0, 0, statusX.toInt() - 12, height.toInt())
         super.paintComponent(g2d)
         g2d.clip = originalClip
     }
@@ -210,21 +213,22 @@ class ExercisesTreeRenderer : NodeRenderer() {
     private fun drawBackground(
         g2d: Graphics2D,
         pointsTextBounds: Rectangle,
-        pointsTextX: Int,
-        pointsTextY: Int
+        pointsTextX: Float
     ) {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
         g2d.color = pointsBackground(item)
         if (!isSubmittable()) {
             g2d.color = ColorUtil.withAlpha(g2d.color, 0.5)
         }
-        val roundRectangle = RoundRectangle2D.Double(
-            pointsTextX - 15.0,
-            pointsTextY - pointsTextBounds.height + 2.0,
-            pointsTextBounds.width.toDouble() + 10.0,
-            pointsTextBounds.height.toDouble() + 2.0,
-            pointsTextBounds.height.toDouble(),
-            pointsTextBounds.height.toDouble()
+        val rectangleHeight = height - 4.0f
+        val rectangleY = (height - rectangleHeight) / 2
+        val roundRectangle = RoundRectangle2D.Float(
+            pointsTextX - 5.0f,
+            rectangleY,
+            pointsTextBounds.width + 10.0f,
+            rectangleHeight,
+            rectangleHeight,
+            rectangleHeight
         )
         if (item is ExercisesView.SubmissionResultItem) {
             g2d.draw(roundRectangle)
@@ -233,7 +237,7 @@ class ExercisesTreeRenderer : NodeRenderer() {
         }
     }
 
-    private fun drawText(g2d: Graphics2D, text: String, x: Int, y: Int) {
+    private fun drawText(g2d: Graphics2D, text: String, x: Float, y: Float) {
         if (item !is ExercisesView.SubmissionResultItem) {
             g2d.color =
                 if (this.item is ExercisesView.ExerciseItem) {
@@ -248,10 +252,10 @@ class ExercisesTreeRenderer : NodeRenderer() {
                 }
         }
         g2d.font = determineFont(item)
-        g2d.drawString(text, x - 10, y)
+        g2d.drawString(text, x, y)
     }
 
-    private fun drawStatusText(g2d: Graphics2D, status: String, x: Int, y: Int) {
+    private fun drawStatusText(g2d: Graphics2D, status: String, x: Float, y: Float) {
         g2d.color = JBColor.gray
         if (!isSubmittable()) {
             g2d.color = ColorUtil.withAlpha(g2d.color, 0.5)

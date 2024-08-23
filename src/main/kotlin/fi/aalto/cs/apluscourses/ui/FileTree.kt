@@ -26,16 +26,10 @@ import kotlinx.coroutines.withContext
 import java.nio.file.Path
 import javax.swing.Icon
 import javax.swing.JTree
-import javax.swing.plaf.basic.BasicTreeUI
 import javax.swing.tree.DefaultMutableTreeNode
-import javax.swing.tree.TreePath
 
 class FileTree(files: List<Path>, project: Project) : Tree() {
     var icons: Map<PsiFile, Icon> = emptyMap()
-
-    // The tree expand controls are hidden, so the position of the tree is adjusted
-    override fun getY(): Int = super.y - 5
-    override fun getX(): Int = super.x - 16
 
     init {
         val settings = DependencyPanelSettings()
@@ -69,15 +63,6 @@ class FileTree(files: List<Path>, project: Project) : Tree() {
             this.model = model
             DefaultTreeExpander(this).expandAll()
             isRootVisible = false
-            setUI(object : BasicTreeUI() {
-                override fun shouldPaintExpandControl(
-                    path: TreePath?,
-                    row: Int,
-                    isExpanded: Boolean,
-                    hasBeenExpanded: Boolean,
-                    isLeaf: Boolean
-                ): Boolean = false
-            })
         }
     }
 }

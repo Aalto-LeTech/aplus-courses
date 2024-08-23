@@ -265,31 +265,54 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
         return when (style) {
             "o1" -> {
                 val a = points["A"] ?: return null
-                val b = points["B"] ?: return null
-                val c = points["C"] ?: return null
+                var b = points["B"] ?: return null
+                var c = points["C"] ?: return null
 
+                // Calculate effective points for A and adjust B and C accordingly
+                val requiredA = gradePoints.entries.last().value["A"]!!
+                val neededA = maxOf(0, requiredA - a)
+                val usedBForA = minOf(b, neededA)
+                val usedCForA = minOf(c, neededA - usedBForA)
+                val finalA = a + usedBForA + usedCForA
+
+                b -= usedBForA
+                c -= usedCForA
+
+                // Calculate effective points for B
+                val requiredB = gradePoints.entries.last().value["B"]!!
+                val neededB = maxOf(0, requiredB - b)
+                val usedCForB = minOf(c, neededB)
+                val effectiveB = b + usedCForB
+
+                c -= usedCForB
+
+                // Determine the current grade based on effective points
                 val currentGrade = gradePoints.entries.findLast { (_, requiredPoints) ->
-                    a >= requiredPoints["A"]!! &&
-                            b >= requiredPoints["B"]!! &&
+                    finalA >= requiredPoints["A"]!! &&
+                            effectiveB >= requiredPoints["B"]!! &&
                             c >= requiredPoints["C"]!!
                 }
 
+                // Determine the next achievable grade
                 val nextGrade = gradePoints.entries.firstOrNull { (_, requiredPoints) ->
-                    a < requiredPoints["A"]!! ||
-                            b < requiredPoints["B"]!! ||
+                    finalA < requiredPoints["A"]!! ||
+                            effectiveB < requiredPoints["B"]!! ||
                             c < requiredPoints["C"]!!
                 }
 
-                val pointsToNextGrade = if (nextGrade != null) {
-                    mapOf(
-                        "A" to maxOf(0, nextGrade.value["A"]!! - a),
-                        "B" to maxOf(0, nextGrade.value["B"]!! - b),
-                        "C" to maxOf(0, nextGrade.value["C"]!! - c)
+                // Calculate the points needed to reach the next grade
+                val pointsToNextGrade = nextGrade?.value?.mapValues { (key, value) ->
+                    maxOf(
+                        0, value - when (key) {
+                            "A" -> finalA
+                            "B" -> effectiveB
+                            "C" -> c
+                            else -> 0
+                        }
                     )
-                } else {
-                    mapOf("A" to 0, "B" to 0, "C" to 0)
-                }
+                } ?: mapOf("A" to 0, "B" to 0, "C" to 0)
 
+                // Max points for the next grade
                 val maxOfNext = mapOf(
                     "A" to (nextGrade?.value["A"] ?: 0),
                     "B" to (nextGrade?.value["B"] ?: 0),

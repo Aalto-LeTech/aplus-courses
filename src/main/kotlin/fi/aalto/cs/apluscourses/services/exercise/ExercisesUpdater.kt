@@ -276,6 +276,7 @@ class ExercisesUpdater(
                         val submissionResult = exercise.submissionResults.find { it.id == submissionId }
                         if (submissionResult != null) {
                             submissionResult.updateStatus(submission.status)
+                            submissionResult.userPoints = submission.grade
                             submissionResult.latePenalty = submission.latePenaltyApplied
                             Notifier.notify(FeedbackAvailableNotification(submissionResult, exercise, project), project)
                             fireExerciseUpdated(exercise)

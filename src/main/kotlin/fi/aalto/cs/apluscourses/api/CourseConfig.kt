@@ -254,6 +254,8 @@ object CourseConfig {
     }
 
     fun deserialize(json: String): JSON {
-        return Json.decodeFromString(JSON.serializer(), json)
+        return jsonSerializer.decodeFromString(JSON.serializer(), json)
     }
+
+    private val jsonSerializer = Json { ignoreUnknownKeys = true }
 }

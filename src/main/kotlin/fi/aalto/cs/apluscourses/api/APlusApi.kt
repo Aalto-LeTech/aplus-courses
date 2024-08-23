@@ -313,6 +313,7 @@ object APlusApi {
             val feedback: String,
             val htmlUrl: String,
             val status: String,
+            val grade: Int,
             val latePenaltyApplied: Double?,
             val exercise: SubmissionExercise,
         )

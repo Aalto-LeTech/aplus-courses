@@ -1,6 +1,5 @@
 package fi.aalto.cs.apluscourses.model.exercise
 
-//import fi.aalto.cs.apluscourses.utils.JsonUtil
 import com.intellij.openapi.project.Project
 import fi.aalto.cs.apluscourses.api.APlusApi
 import kotlinx.serialization.Serializable
@@ -10,7 +9,7 @@ data class SubmissionResult(
     val id: Long,
     val url: String,
     val maxPoints: Int,
-    val userPoints: Int,
+    var userPoints: Int,
     var latePenalty: Double?,
     var status: Status,
     val filesInfo: List<SubmissionFileInfo>,
