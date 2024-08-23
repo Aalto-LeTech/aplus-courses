@@ -29,6 +29,15 @@
 
 <img width="300px" align="right" src="images/image_4_readme.webp" alt="Screenshot">
 
+<!-- Plugin description -->
+This plugin supports the educational use of IntelliJ IDEA in programming courses that rely on the A+ LMS developed at
+Aalto University.
+The plugin accesses programming assignments and automated grading services provided by A+ and otherwise enhances the
+student experience.
+
+Keywords: aplus courses, a plus
+<!-- Plugin description end -->
+
 This repository hosts the source code for the A+ Courses [IntelliJ IDEA](https://www.jetbrains.com/idea/) plugin
 communicating with the [A+ LMS](https://apluslms.github.io/). It allows users to download code modules, submit
 assignments, and use the Scala REPL more conveniently among other learning experience improvements. The plugin is
@@ -108,7 +117,9 @@ University's [code of conduct.](https://www.aalto.fi/sites/g/files/flghsv161/fil
 ## Credits
 
 We would like to
-acknowledge **[Nikolas Drosdek,](https://github.com/nikke234)** **[@superseacat,](https://github.com/superseacat)** **[Styliani Tsovou,](https://github.com/stellatsv)** **[@valtonv2,](https://github.com/valtonv2)** **[@xiaoxiaobt,](https://github.com/xiaoxiaobt)**
+acknowledge **[Nikolas Drosdek,](https://github.com/nikke234)** **[@superseacat,](https://github.com/superseacat)** *
+*[Styliani Tsovou,](https://github.com/stellatsv)** **[@valtonv2,](https://github.com/valtonv2)** *
+*[@xiaoxiaobt,](https://github.com/xiaoxiaobt)**
 **Ida Iskala,** and **[@StanislavFranko](https://github.com/StanislavFranko)** for their help in testing and improving
 this project.
 

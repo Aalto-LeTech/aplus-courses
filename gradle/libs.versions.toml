@@ -1,0 +1,23 @@
+[versions]
+# libraries
+scalaLibrary = "3.4.1"
+jupiterApi = "5.10.2"
+junitPlatformLauncher = "1.10.2"
+junitJupiterEngine = "5.10.2"
+junit = "4.13.2"
+hamcrest = "2.2"
+mockito = "5.11.0"
+restAssured = "5.4.0"
+
+[libraries]
+
+scalaLibrary = { group = "org.scala-lang", name = "scala3-library_3", version.ref = "scalaLibrary" }
+
+jupiterApi = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "jupiterApi" }
+junitPlatformLauncher = { group = "org.junit.platform", name = "junit-platform-launcher", version.ref = "junitPlatformLauncher" }
+junitJupiterEngine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junitJupiterEngine" }
+
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+hamcrest = { group = "org.hamcrest", name = "hamcrest", version.ref = "hamcrest" }
+mockito = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
+restAssured = { group = "io.rest-assured", name = "rest-assured", version.ref = "restAssured" }
