@@ -5,11 +5,10 @@ import com.intellij.notification.NotificationType
 import fi.aalto.cs.apluscourses.MyBundle
 import fi.aalto.cs.apluscourses.services.PluginSettings
 
-class NotSubmittableNotification
 /**
- * Construct a notification that explains that the exercise cannot be submitted from the plugin.
+ * A notification that explains that the exercise cannot be submitted from the plugin.
  */
-    : Notification(
+class NotSubmittableNotification : Notification(
     PluginSettings.A_PLUS,
     MyBundle.message("notification.NotSubmittableNotification.title"),
     MyBundle.message("notification.NotSubmittableNotification.content"),

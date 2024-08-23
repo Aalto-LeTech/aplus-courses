@@ -226,14 +226,16 @@ internal class APlusModuleBuilder : ModuleBuilder() {
                             checkBox("Leave IntelliJ settings unchanged").bindSelected(dontImportSettings)
                         }
                     }
-                    group("Required plugins") {
-                        row {
-                            text("The following plugins required by the course will be installed.")
-                        }
-                        row {
-                            placeholder().apply {
-                                placeholder = this
-                            }.resizableColumn().align(AlignX.FILL)
+                    if (courseConfig.requiredPlugins.isNotEmpty()) {
+                        group("Required plugins") {
+                            row {
+                                text("The following plugins required by the course will be installed.")
+                            }
+                            row {
+                                placeholder().apply {
+                                    placeholder = this
+                                }.resizableColumn().align(AlignX.FILL)
+                            }
                         }
                     }
                     if (this@APlusModuleBuilder.programmingLanguage == "scala") {
@@ -254,6 +256,7 @@ internal class APlusModuleBuilder : ModuleBuilder() {
 
             component.revalidate()
             component.repaint()
+            if (courseConfig.requiredPlugins.isEmpty()) return
             application.service<Plugins>().runInBackground(courseConfig.requiredPlugins) { components ->
                 placeholder?.component = panel {
                     components.map {

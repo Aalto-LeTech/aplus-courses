@@ -330,8 +330,6 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true) {
         override fun getChildren(item: ExercisesTreeItem): List<ExercisesTreeItem> {
             return item.children()
         }
-//        override fun getChildren(item: ExercisesTreeItem): List<ExercisesTreeItem> =
-//            item.children()
 
         override fun getText(item: ExercisesTreeItem?): String = when (item) {
             is ExerciseItem -> item.exercise.name
@@ -364,26 +362,5 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true) {
                 }
             }
         }
-
     }
-
 }
-
-
-/** // TODO
- * Sets the nodeAppliedListener as OpenExerciseItemAction if the course isn't supported in ShowFeedbackAction,
- * else ShowFeedbackAction.
- */
-//    fun setSubmissionAction(feedbackEnabled: Boolean) {
-//        if (!feedbackEnabled) {
-//            exerciseGroupsTree.addNodeAppliedListener(
-//                SubmissionResultViewModel::class.java,
-//                ActionUtil.createOnEventLauncher(OpenExerciseItemAction.ACTION_ID, exerciseGroupsTree)
-//            )
-//        } else {
-//            exerciseGroupsTree.addNodeAppliedListener(
-//                SubmissionResultViewModel::class.java,
-//                ActionUtil.createOnEventLauncher(ShowFeedbackAction.ACTION_ID, exerciseGroupsTree)
-//            )
-//        }
-//    }

@@ -5,12 +5,12 @@ import com.intellij.notification.NotificationType
 import fi.aalto.cs.apluscourses.MyBundle
 import fi.aalto.cs.apluscourses.services.PluginSettings
 
-class NetworkErrorNotification
 /**
- * Constructs a notification that notifies the user of an IO error arising from the HTTP client.
+ * A notification that notifies the user of an IO error arising from the HTTP client.
  *
  * @param exception An exception that caused this notification.
- */(val exception: Exception) : Notification(
+ */
+class NetworkErrorNotification(val exception: Exception) : Notification(
     PluginSettings.A_PLUS,
     MyBundle.message("notification.NetworkErrorNotification.title"),
     MyBundle.message(

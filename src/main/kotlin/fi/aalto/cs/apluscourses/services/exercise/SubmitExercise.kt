@@ -6,13 +6,14 @@ import com.intellij.openapi.components.Service
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.module.ModuleUtilCore
 import com.intellij.openapi.project.Project
+import com.intellij.serialization.PropertyMapping
 import fi.aalto.cs.apluscourses.api.APlusApi
 import fi.aalto.cs.apluscourses.icons.CoursesIcons
-import fi.aalto.cs.apluscourses.model.component.Module
 import fi.aalto.cs.apluscourses.model.exercise.Exercise
 import fi.aalto.cs.apluscourses.model.exercise.Submission
 import fi.aalto.cs.apluscourses.model.exercise.SubmissionInfo
 import fi.aalto.cs.apluscourses.model.people.Group
+import fi.aalto.cs.apluscourses.notifications.MissingFileNotification
 import fi.aalto.cs.apluscourses.notifications.MissingModuleNotification
 import fi.aalto.cs.apluscourses.notifications.NetworkErrorNotification
 import fi.aalto.cs.apluscourses.notifications.NotSubmittableNotification
@@ -57,7 +58,6 @@ class SubmitExercise(
 
                 if (!submittable) {
                     logger.warn("$exercise not submittable")
-                    // TODO more info
                     notifier.notify(NotSubmittableNotification(), project)
                     return@launch
                 }
@@ -68,16 +68,16 @@ class SubmitExercise(
                     return@launch
                 }
 
-                val exerciseModules: Map<String, Module> = course.exerciseModules[exercise.id]!!
-                println(course.exerciseModules)
+//                val exerciseModules: Map<String, Module> = course.exerciseModules[exercise.id]!!
+//                println(course.exerciseModules)
 
-                val module = exerciseModules[language]
+                val module = exercise.module// exerciseModules[language]
                 val platformModule = module?.platformObject
 
                 logger.info("Selected $module")
 
                 if (module == null || platformModule == null) {
-                    return@launch
+                    throw ModuleMissingException()
                 }
 
                 withContext(Dispatchers.EDT) {
@@ -90,7 +90,10 @@ class SubmitExercise(
                 println(modulePath)
                 println(submissionInfo.getFiles(language))
                 for ((key, name) in submissionInfo.getFiles(language)) {
-                    files[key] = FileUtil.findFileInDirectory(modulePath, name)!!
+                    files[key] = FileUtil.findFileInDirectory(modulePath, name) ?: throw FileDoesNotExistException(
+                        modulePath,
+                        name
+                    )
                 }
                 logger.info("Submission files: $files")
 
@@ -146,10 +149,10 @@ class SubmitExercise(
 //            addLocalHistoryTag(project, tag)
             } catch (ex: IOException) {
                 notifyNetworkError(ex, project)
-//            } catch (ex: FileDoesNotExistException) {
-//                notifier.notify(MissingFileNotification(ex.path, ex.name), project)
-            } catch (ex: ModuleMissingException) {
-                notifier.notify(MissingModuleNotification(ex.moduleName), project)
+            } catch (ex: FileDoesNotExistException) {
+                notifier.notify(MissingFileNotification(ex.path, ex.name), project)
+            } catch (_: ModuleMissingException) {
+                notifier.notify(MissingModuleNotification(), project)
             }
             logger.debug("Finished submitting exercise")
         }
@@ -167,7 +170,16 @@ class SubmitExercise(
     }
 
     companion object {
-        class ModuleMissingException(val moduleName: String) : Exception()
+        class ModuleMissingException @PropertyMapping() constructor() : Exception() {
+            private val serialVersionUID: Long = 1L
+        }
+
+        class FileDoesNotExistException @PropertyMapping("path", "name") constructor(
+            val path: String,
+            val name: String
+        ) : Exception() {
+            private val serialVersionUID: Long = 1L
+        }
 
         private val logger = APlusLogger.logger
         private val notifier = Notifier

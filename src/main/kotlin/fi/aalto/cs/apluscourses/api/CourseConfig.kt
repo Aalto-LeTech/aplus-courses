@@ -1,7 +1,9 @@
 package fi.aalto.cs.apluscourses.api
 
 import com.intellij.openapi.project.Project
+import fi.aalto.cs.apluscourses.notifications.CourseConfigurationError
 import fi.aalto.cs.apluscourses.services.CoursesClient
+import fi.aalto.cs.apluscourses.services.Notifier
 import fi.aalto.cs.apluscourses.services.course.CourseFileManager
 import fi.aalto.cs.apluscourses.utils.Version
 import io.ktor.client.statement.bodyAsText
@@ -138,7 +140,7 @@ object CourseConfig {
         val name: String,
         val aPlusUrl: String,
         val languages: List<String>,
-        val version: Version,
+        val version: Version = Version.DEFAULT,
         val resources: Resources? = null,
         val requiredPlugins: List<RequiredPlugin> = emptyList(),
         val vmOptions: Map<String, String> = emptyMap(),
@@ -245,10 +247,12 @@ object CourseConfig {
             val courseConfig = CoursesClient.getInstance(project).get(url).bodyAsText()
             return deserialize(courseConfig)
         } catch (e: Exception) {
-            println(e)
             when (e) {
                 is IOException, is UnresolvedAddressException -> throw e
-                else -> return null
+                else -> {
+                    Notifier.notify(CourseConfigurationError(e), project)
+                    return null
+                }
             }
         }
     }

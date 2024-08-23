@@ -35,19 +35,6 @@ class OpenExerciseItemAction : AnAction() {
     }
 
     private fun browse(url: String, project: Project) {
-        /* Embedded browser for the future
-        val fileEditorManager = FileEditorManager.getInstance(project)
-        fileEditorManager.allEditors.forEach { editor: FileEditor ->
-            if (editor.file != null && editor.file.extension == "aplus") {
-                (editor as BrowserEditor).loadURL(url)
-                return
-            }
-        }
-        val file = LightVirtualFile("browse.aplus", "url:$url")
-        application.invokeLater {
-            fileEditorManager.openFile(file, true)
-        }
-         */
         BrowserUtil.browse(url, project)
     }
 

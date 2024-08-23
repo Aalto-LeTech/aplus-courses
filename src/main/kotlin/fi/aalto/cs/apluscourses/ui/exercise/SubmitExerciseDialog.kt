@@ -83,7 +83,7 @@ class SubmitExerciseDialog(
             text("You are about to make submission $submissionNumber out of ${exercise.maxSubmissions}.")
         }
         row {
-            if (exercise.maxSubmissions <= (submissionNumber)) {
+            if (submissionNumber >= exercise.maxSubmissions) {
                 text(
                     if (submissionNumber == exercise.maxSubmissions) {
                         MyBundle.message("presentation.submissionViewModel.warning.lastSubmission")

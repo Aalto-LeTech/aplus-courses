@@ -20,10 +20,10 @@ import org.jetbrains.annotations.NonNls
 @Service(Service.Level.APP)
 class TokenStorage(private val cs: CoroutineScope) {
     @NonNls
-    private val serviceName: String = "A+ Courses Plugin"
+    private val serviceName: String = "A+ Courses Plugin Token"
 
     @NonNls
-    private val serviceKey: String = "A+ Token"
+    private val serviceKey: String = "plus.cs.aalto.fi" // TODO change to the correct url
 
     private val credentialAttributes: CredentialAttributes = CredentialAttributes(
         generateServiceName(serviceName, serviceKey)

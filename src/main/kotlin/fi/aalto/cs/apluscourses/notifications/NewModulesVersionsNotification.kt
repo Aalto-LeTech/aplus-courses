@@ -23,7 +23,7 @@ class NewModulesVersionsNotification(modules: List<Module>) : Notification(
             "notification.NewModulesVersionsNotification.contentSingle"
         else
             "notification.NewModulesVersionsNotification.content",
-        modules.map { it.name }.joinToString(", ") // TODO check strings
+        modules.map { it.name }.joinToString(", ")
     ),
     NotificationType.INFORMATION
 )

@@ -2,19 +2,20 @@ package fi.aalto.cs.apluscourses.services.exercise
 
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.components.Service
+import com.intellij.openapi.components.service
 import com.intellij.openapi.fileEditor.FileEditor
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.impl.HTMLEditorProvider.Companion.openEditor
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.openapi.vfs.writeText
 import com.intellij.ui.JBColor
-import com.intellij.util.application
 import com.intellij.util.ui.JBFont
 import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.api.APlusApi
 import fi.aalto.cs.apluscourses.model.exercise.Exercise
 import fi.aalto.cs.apluscourses.model.exercise.SubmissionResult
+import fi.aalto.cs.apluscourses.notifications.NetworkErrorNotification
+import fi.aalto.cs.apluscourses.services.Notifier
+import fi.aalto.cs.apluscourses.services.Opener
 import fi.aalto.cs.apluscourses.services.course.CourseManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -33,9 +34,9 @@ class ShowFeedback(
     fun showFeedback(submission: SubmissionResult, exercise: Exercise) {
         cs.launch {
             try {
-                println(CourseManager.getInstance(project).state.feedbackCss)
-                val feedbackCss = CourseManager.getInstance(project).state.feedbackCss ?: return@launch
-                if (feedbackCss.isEmpty()) {
+                val feedbackCss = CourseManager.getInstance(project).state.feedbackCss ?: ""
+                if (feedbackCss.isEmpty() || !exercise.isSubmittable) {
+                    project.service<Opener>().openSubmission(submission)
                     return@launch
                 }
                 val feedbackString = withContext(Dispatchers.IO) {
@@ -54,8 +55,6 @@ class ShowFeedback(
                 )
 
                 val fontName: String = JBFont.regular().fontName
-
-                println(feedbackCss)
 
                 document.head().append(
                     """<script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous" referrerpolicy="no-referrer"></script>"""
@@ -104,17 +103,8 @@ class ShowFeedback(
                     )
                 }
             } catch (ex: IOException) {
-//            notifier.notify(NetworkErrorNotification(ex), project)
+                Notifier.notify(NetworkErrorNotification(ex), project)
             }
-        }
-    }
-
-    fun updateBrowserTitle(file: VirtualFile, newTitle: String) {
-//        cs.launch {
-//            writeCommandAction(project, "Change Page Title") {
-        application.runWriteAction {
-            file.writeText(newTitle)
-            FileEditorManager.getInstance(project).updateFilePresentation(file)
         }
     }
 }

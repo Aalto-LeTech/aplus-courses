@@ -1,6 +1,5 @@
 package fi.aalto.cs.apluscourses.services
 
-import com.intellij.icons.AllIcons
 import com.intellij.ide.BrowserUtil
 import com.intellij.ide.browsers.actions.OpenInBrowserBaseGroupAction.OpenInBrowserEditorContextBarGroupAction
 import com.intellij.ide.projectView.ProjectView
@@ -72,33 +71,11 @@ class Opener(
         }
     }
 
-    fun showModuleInProjectTreeAction(module: Module): AnAction {
-        return object : DumbAwareAction("Show in Project Tree") {
-            override fun actionPerformed(e: AnActionEvent) {
-                showModuleInProjectTree(module)
-            }
-
-            override fun update(e: AnActionEvent) {
-                e.presentation.text = "Show in Project Tree"
-                e.presentation.icon = AllIcons.General.Locate
-            }
-
-            override fun getActionUpdateThread(): ActionUpdateThread {
-                return ActionUpdateThread.EDT
-            }
-        }
-    }
-
     fun openDocumentationAction(module: Module, fileName: String): AnAction {
         return object : DumbAwareAction("Show Documentation") {
             override fun actionPerformed(e: AnActionEvent) {
                 val dir = module.platformObject?.guessModuleDir() ?: return
-                println(dir)
-//        val file = FileUtil.findFileInDirectoryStartingWith(
-//            path.replace("/o1/", "/doc/o1/").substringBeforeLast("/"), fileName
-//        val virtualFile = VirtualFileManager.getInstance().findFileByNioPath(file) ?: return
                 val virtualFile = dir.findFile(fileName) ?: return
-                println(virtualFile)
                 val psiFile = PsiManager.getInstance(project).findFile(virtualFile) ?: return
                 val newDataContext = SimpleDataContext.builder().add(CommonDataKeys.PROJECT, project)
                     .add(CommonDataKeys.PSI_FILE, psiFile).build()
@@ -113,7 +90,7 @@ class Opener(
             }
 
             override fun getActionUpdateThread(): ActionUpdateThread {
-                return ActionUpdateThread.EDT
+                return ActionUpdateThread.BGT
             }
 
         }

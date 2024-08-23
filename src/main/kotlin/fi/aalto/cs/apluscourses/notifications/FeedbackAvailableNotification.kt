@@ -12,8 +12,11 @@ import fi.aalto.cs.apluscourses.services.PluginSettings
 import fi.aalto.cs.apluscourses.services.course.CourseManager
 import fi.aalto.cs.apluscourses.utils.SubmissionResultUtil
 
-//import fi.aalto.cs.apluscourses.services.PluginSettings.Companion.getInstance
-
+/**
+ * A notification that notifies the user that feedback is available for a submission.
+ * The notification contains a link that can be used to open the feedback and the amount of
+ * points the submission got.
+ */
 class FeedbackAvailableNotification(
     submissionResult: SubmissionResult,
     exercise: Exercise,
@@ -27,15 +30,10 @@ class FeedbackAvailableNotification(
     ),
     NotificationType.INFORMATION
 ) {
-    /**
-     * Construct a notification that notifies the user that feedback is available for a submission.
-     * The notification contains a link that can be used to open the feedback and the amount of
-     * points the submission got.
-     */
     init {
         if (CourseManager.getInstance(project).state.feedbackCss != null) {
-            super.addAction(ShowFeedbackNotificationAction(submissionResult, exercise))
+            addAction(ShowFeedbackNotificationAction(submissionResult, exercise))
         }
-        super.addAction(OpenSubmissionNotificationAction(submissionResult))
+        addAction(OpenSubmissionNotificationAction(submissionResult))
     }
 }

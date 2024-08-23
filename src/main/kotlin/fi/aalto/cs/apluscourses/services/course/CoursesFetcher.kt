@@ -37,8 +37,7 @@ class CoursesFetcher(private val cs: CoroutineScope) {
     fun fetchCourses(setCourses: (List<CoursesFetcher.CourseConfig>) -> Unit) {
         cs.launch {
             val client = HttpClient(CIO)
-//          val url = "https://version.aalto.fi/gitlab/aplus-courses/course-config-urls/-/raw/main/courses.yaml"
-            val url = "https://raw.githubusercontent.com/jaakkonakaza/temp/main/courses.yaml" // TODO
+            val url = "https://version.aalto.fi/gitlab/aplus-courses/course-config-urls/-/raw/main/courses.yaml"
             val res = client.get(url)
 
             val courses = Yaml()

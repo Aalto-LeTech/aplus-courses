@@ -18,6 +18,7 @@ import fi.aalto.cs.apluscourses.MyBundle
 import fi.aalto.cs.apluscourses.api.CourseConfig
 import fi.aalto.cs.apluscourses.api.CourseConfig.resourceUrls
 import fi.aalto.cs.apluscourses.notifications.CourseVersionOutdatedError
+import fi.aalto.cs.apluscourses.notifications.CourseVersionOutdatedWarning
 import fi.aalto.cs.apluscourses.notifications.CourseVersionTooNewError
 import fi.aalto.cs.apluscourses.services.CoursesClient
 import fi.aalto.cs.apluscourses.services.Notifier
@@ -77,13 +78,20 @@ internal class InitializationActivity() :
         val requiredVersion = courseConfig.version
         logger.info("Starting initialization for course ${courseConfig.name} with required plugin version $requiredVersion and installed version $pluginVersion")
 
-        val versionComparison = requiredVersion.comparisonStatus(pluginVersion)
+        val versionComparison = pluginVersion.comparisonStatus(requiredVersion)
 
         when (versionComparison) {
             ComparisonStatus.MAJOR_TOO_OLD -> {
                 logger.warn("A+ Courses version outdated: installed $pluginVersion, required $requiredVersion")
                 Notifier.notify(CourseVersionOutdatedError(), project)
+                InitializationStatus.setIsIoError(project)
+                CourseManager.getInstance(project).fireNetworkError()
                 return
+            }
+
+            ComparisonStatus.MINOR_TOO_OLD -> {
+                logger.warn("A+ Courses version outdated: installed $pluginVersion, required $requiredVersion")
+                Notifier.notify(CourseVersionOutdatedWarning(), project)
             }
 
             ComparisonStatus.MAJOR_TOO_NEW -> {

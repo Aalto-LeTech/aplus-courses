@@ -5,13 +5,13 @@ import com.intellij.notification.NotificationType
 import fi.aalto.cs.apluscourses.MyBundle
 import fi.aalto.cs.apluscourses.services.PluginSettings
 
-class CourseConfigurationError
 /**
- * Constructs a notification that notifies the user of an error that occurred while attempting to
+ * A notification that notifies the user of an error that occurred while attempting to
  * parse a course configuration file.
  *
  * @param exception An exception that caused this notification.
- */(val exception: Exception) : Notification(
+ */
+class CourseConfigurationError(val exception: Exception) : Notification(
     PluginSettings.A_PLUS,
     MyBundle.message("notification.CourseConfigurationError.title"),
     MyBundle.message(

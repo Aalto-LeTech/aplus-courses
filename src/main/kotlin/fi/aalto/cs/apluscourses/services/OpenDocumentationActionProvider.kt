@@ -18,22 +18,18 @@ import fi.aalto.cs.apluscourses.utils.FileUtil
 internal class OpenDocumentationActionProvider : InspectionWidgetActionProvider {
     override fun createAction(editor: Editor): AnAction? {
         val project = editor.project ?: return null
-        CourseManager.course(project) ?: return null
+        val course = CourseManager.course(project) ?: return null
+        if (!course.name.contains("O1")) return null
         val virtualFile = editor.virtualFile ?: return null
         if (virtualFile.extension != "scala") return null
         val fileName = virtualFile.nameWithoutExtension
         val path = virtualFile.path
-        println(path)
-        println(path.replace("/o1/", "/doc/o1/").substringBeforeLast("/"))
 
-//        val module =
-//            ProjectRootManager.getInstance(project).fileIndex.getModuleForFile(virtualFile) ?: return null
         val file = FileUtil.findFileInDirectoryStartingWith(
+            // TODO: O1 specific
             path.replace("/o1/", "/doc/o1/").substringBeforeLast("/"), fileName
         ) ?: return null
-        println(
-            file
-        )
+
         val action = object : DumbAwareAction("Show Documentation") {
             override fun actionPerformed(e: AnActionEvent) {
                 val virtualFile = VirtualFileManager.getInstance().findFileByNioPath(file) ?: return
@@ -43,14 +39,6 @@ internal class OpenDocumentationActionProvider : InspectionWidgetActionProvider 
                 OpenInBrowserEditorContextBarGroupAction().getChildren(e)[0].actionPerformed(
                     e.withDataContext(newDataContext)
                 )
-//                    AnActionEvent(
-//                        e.inputEvent,
-//                        newDataContext,
-//                        e.place,
-//                        e.presentation,
-//                        e.actionManager,
-//                        e.modifiers
-//                )
             }
 
             override fun update(e: AnActionEvent) {
