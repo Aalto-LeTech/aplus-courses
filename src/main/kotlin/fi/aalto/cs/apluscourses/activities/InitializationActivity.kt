@@ -28,8 +28,8 @@ import fi.aalto.cs.apluscourses.services.course.CourseManager
 import fi.aalto.cs.apluscourses.services.course.InitializationStatus
 import fi.aalto.cs.apluscourses.services.course.SettingsImporter
 import fi.aalto.cs.apluscourses.utils.*
+import fi.aalto.cs.apluscourses.utils.PluginAutoInstaller
 import fi.aalto.cs.apluscourses.utils.Version.ComparisonStatus
-import fi.aalto.cs.apluscourses.utils.temp.PluginAutoInstaller
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.annotations.NonNls

@@ -1,4 +1,4 @@
-package fi.aalto.cs.apluscourses.utils.temp
+package fi.aalto.cs.apluscourses.utils
 
 import com.intellij.ide.plugins.PluginEnabler
 import com.intellij.ide.plugins.PluginManagerCore.getPlugin
@@ -6,6 +6,7 @@ import com.intellij.ide.plugins.PluginManagerCore.isPluginInstalled
 import com.intellij.ide.plugins.PluginNode
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.components.service
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.extensions.PluginId
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
@@ -13,12 +14,11 @@ import com.intellij.util.application
 import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.api.CourseConfig.RequiredPlugin
 import fi.aalto.cs.apluscourses.services.Plugins
-import fi.aalto.cs.apluscourses.utils.APlusLogger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 object PluginAutoInstaller {
-    private val logger: com.intellij.openapi.diagnostic.Logger = APlusLogger.logger
+    private val logger: Logger = APlusLogger.logger
 
     private fun shouldDownloadPlugin(id: PluginId): Boolean {
         return !isPluginInstalled(id)
