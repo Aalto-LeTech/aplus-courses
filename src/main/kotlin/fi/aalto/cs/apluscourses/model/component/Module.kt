@@ -169,7 +169,7 @@ class Module(
             status = Status.ERROR // The platform object exists but is not loaded
             return
         } else {
-            status = Status.UNRESOLVED
+            status = Status.NOT_LOADED
             return
         }
     }

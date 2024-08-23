@@ -231,7 +231,7 @@ class CourseManager(
         val autoInstallModulesToInstall = course.autoInstallComponents
             .filter {
                 withContext(moduleOperationDispatcher) {
-                    it.updateAndGetStatus() == Component.Status.UNRESOLVED
+                    it.updateAndGetStatus() == Component.Status.NOT_LOADED
                 }
             }
         if (autoInstallModulesToInstall.isNotEmpty()) {
@@ -338,7 +338,7 @@ class CourseManager(
                 val status = withContext(moduleOperationDispatcher) {
                     module.updateAndGetStatus()
                 }
-                status == Component.Status.UNRESOLVED || status == Component.Status.ERROR
+                status == Component.Status.NOT_LOADED || status == Component.Status.ERROR
             }
             ?: emptyList()
     }

@@ -28,11 +28,11 @@ abstract class Component<T>(val name: String, protected val project: Project) {
 
     abstract val platformObject: T?
 
-    var status: Status = Status.UNRESOLVED
+    var status: Status = Status.NOT_LOADED
         protected set
 
     enum class Status {
-        UNRESOLVED,
+        NOT_LOADED,
         LOADING,
         LOADED,
         ERROR

@@ -23,7 +23,7 @@ abstract class Library(name: String, project: Project) : Component<IdeaLibrary>(
         status = if (platformObject != null) {
             Status.LOADED
         } else {
-            Status.UNRESOLVED
+            Status.NOT_LOADED
         }
     }
 
