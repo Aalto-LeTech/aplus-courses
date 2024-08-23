@@ -1,7 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
-<path fill="#EBECF0" stroke="#6C707E" stroke-linejoin="round" stroke-miterlimit="10" d="M1.5,12.5l2,2h10v-10
-	l-2-3"/>
-<rect x="1.5" y="1.5" fill="#EBECF0" stroke="#6C707E" stroke-linejoin="round" stroke-miterlimit="10" width="10" height="11"/>
-<polyline fill="none" stroke="#6C707E" stroke-linejoin="round" stroke-miterlimit="10" points="3.5,1.5
-	3.5,5.5 4.5,4.5 5.5,5.5 5.5,1.5 "/>
+  <path fill="#EBECF0" stroke="#6C707E" stroke-linejoin="round" stroke-miterlimit="10"
+    d="M1.5,12.5l2,2h10v-10
+  l-2-3" />
+  <rect x="1.5" y="1.5" fill="#EBECF0" stroke="#6C707E" stroke-linejoin="round"
+    stroke-miterlimit="10" width="10"
+    height="11" />
+  <polyline fill="none" stroke="#6C707E" stroke-linejoin="round" stroke-miterlimit="10"
+    points="3.5,1.5
+  3.5,5.5 4.5,4.5 5.5,5.5 5.5,1.5 " />
 </svg>
