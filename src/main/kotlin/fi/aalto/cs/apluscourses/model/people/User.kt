@@ -6,7 +6,7 @@ package fi.aalto.cs.apluscourses.model.people
  * @property aplusId The A+ ID of the user.
  * @property staffCourses List of course IDs that the user is a staff member of.
  */
-class User(
+data class User(
     val userName: String,
     val studentId: String,
     val aplusId: Long,

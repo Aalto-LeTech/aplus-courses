@@ -1,6 +1,6 @@
 package fi.aalto.cs.apluscourses.model.news
 
-class NewsList(val news: List<NewsItem> = emptyList()) {
+data class NewsList(val news: List<NewsItem> = emptyList()) {
     fun setAllRead() {
         news.forEach { newsItem: NewsItem -> newsItem.isRead = true }
     }

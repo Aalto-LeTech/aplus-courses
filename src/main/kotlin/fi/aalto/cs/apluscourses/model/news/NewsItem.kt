@@ -5,7 +5,7 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
-class NewsItem(
+data class NewsItem(
     val id: Long,
     val title: String,
     val body: String,

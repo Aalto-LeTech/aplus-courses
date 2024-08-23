@@ -1,9 +1,7 @@
 package fi.aalto.cs.apluscourses.model.exercise
 
 import fi.aalto.cs.apluscourses.api.APlusApi
-import kotlinx.serialization.Serializable
 
-@Serializable
 data class SubmissionInfo(val files: Map<String, List<SubmittableFile>>) {
 //    private val files: Map<String, List<SubmittableFile>> = files
 

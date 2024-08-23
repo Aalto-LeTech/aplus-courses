@@ -13,7 +13,7 @@ import io.ktor.http.*
  * @param exerciseModules Mapping of exercise IDs to modules. The keys are exercise IDs, and the values are maps from language codes to module names. Note that some exercises use modules that are not in the course configuration file, so the modules may not be in [Course.getModules].
  * @param resourceUrls URLs of resources related to the course. The keys are the names of the resources and the values are the URLs.
  */
-class Course(
+data class Course(
     val id: Long,
     val name: String,
     val htmlUrl: String,

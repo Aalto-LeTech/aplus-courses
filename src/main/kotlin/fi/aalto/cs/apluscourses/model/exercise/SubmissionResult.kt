@@ -2,9 +2,7 @@ package fi.aalto.cs.apluscourses.model.exercise
 
 import com.intellij.openapi.project.Project
 import fi.aalto.cs.apluscourses.api.APlusApi
-import kotlinx.serialization.Serializable
 
-@Serializable
 data class SubmissionResult(
     val id: Long,
     val url: String,
