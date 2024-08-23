@@ -3,8 +3,6 @@ package fi.aalto.cs.apluscourses.model.exercise
 import fi.aalto.cs.apluscourses.api.APlusApi
 
 data class SubmissionInfo(val files: Map<String, List<SubmittableFile>>) {
-//    private val files: Map<String, List<SubmittableFile>> = files
-
     /**
      * Return the submittable files corresponding to the given language (or an empty collection if
      * the language isn't found).

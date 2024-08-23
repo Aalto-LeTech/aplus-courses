@@ -293,7 +293,6 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true) {
 
             tree.isRootVisible = false
             tree.cellRenderer = ExercisesTreeRenderer()
-//            tree.rowHeight = scale(24)
             tree.toggleClickCount = 1
             tree.putClientProperty(AnimatedIcon.ANIMATION_IN_RENDERER_ALLOWED, true) // Enable loading icon animations
             TreeHoverListener.DEFAULT.addTo(tree) // Enable hover color

@@ -213,7 +213,6 @@ class ModuleRenderer(
     private var isHovering = false
 
     init {
-//        updateZipSize("??? ??")
         this.panel = base { header() }
         add(panel, BorderLayout.CENTER)
     }

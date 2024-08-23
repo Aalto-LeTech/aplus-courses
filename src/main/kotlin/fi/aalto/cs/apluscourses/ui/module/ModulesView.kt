@@ -155,10 +155,6 @@ class ModulesView(val project: Project) : SimpleToolWindowPanel(true, true) {
             val visible = course.modules
             modules = visible.toMutableList()
             updateView()
-
-            if (modules.isEmpty()) {
-//                mainPanel.add(JBLabel(MyBundle.message("ui.toolWindow.subTab.modules.noModules")))
-            }
         }
     }
 }
