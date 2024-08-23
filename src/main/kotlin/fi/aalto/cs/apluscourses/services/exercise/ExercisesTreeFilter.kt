@@ -7,9 +7,11 @@ import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.intellij.util.messages.Topic
 import com.intellij.util.messages.Topic.ProjectLevel
 import com.intellij.util.xmlb.annotations.XCollection
+import fi.aalto.cs.apluscourses.BUNDLE
 import fi.aalto.cs.apluscourses.ui.exercise.ExercisesView.ExerciseGroupItem
 import fi.aalto.cs.apluscourses.ui.exercise.ExercisesView.ExerciseItem
 import fi.aalto.cs.apluscourses.ui.exercise.ExercisesView.ExercisesTreeItem
+import org.jetbrains.annotations.PropertyKey
 import java.util.Collections
 import kotlin.reflect.KClass
 
@@ -93,7 +95,7 @@ class ExercisesTreeFilter(private val project: Project) :
         }
 
         class ExerciseGroupFilter(
-            displayName: String,
+            @PropertyKey(resourceBundle = BUNDLE) displayName: String,
             private val filter: (ExerciseGroupItem) -> Boolean
         ) : Filter<ExerciseGroupItem>(displayName, ExerciseGroupItem::class) {
             override fun getFilterFunction(): (ExerciseGroupItem) -> Boolean = filter
@@ -101,19 +103,19 @@ class ExercisesTreeFilter(private val project: Project) :
 
         companion object {
             val NON_SUBMITTABLE = ExerciseItemFilter(
-                "presentation.exerciseFilterOptions.nonSubmittable"
+                "services.ExercisesTreeFilter.nonSubmittable"
             ) { item -> !item.exercise.isSubmittable }
 
             val COMPLETED = ExerciseItemFilter(
-                "presentation.exerciseFilterOptions.Completed"
+                "services.ExercisesTreeFilter.Completed"
             ) { item -> item.exercise.isCompleted() }
 
             val OPTIONAL = ExerciseItemFilter(
-                "presentation.exerciseFilterOptions.Optional"
+                "services.ExercisesTreeFilter.Optional"
             ) { item -> item.exercise.isOptional }
 
             val CLOSED = ExerciseGroupFilter(
-                "presentation.exerciseGroupFilterOptions.Closed"
+                "services.ExercisesTreeFilter.Closed"
             ) { item -> !item.group.isOpen }
 
             val allFilters = listOf(NON_SUBMITTABLE, COMPLETED, OPTIONAL, CLOSED)

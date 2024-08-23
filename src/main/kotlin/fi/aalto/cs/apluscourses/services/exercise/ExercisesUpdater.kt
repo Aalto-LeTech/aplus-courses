@@ -9,6 +9,7 @@ import com.intellij.util.application
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.intellij.util.messages.Topic
 import com.intellij.util.messages.Topic.ProjectLevel
+import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.api.APlusApi
 import fi.aalto.cs.apluscourses.model.exercise.Exercise
 import fi.aalto.cs.apluscourses.model.exercise.ExerciseGroup
@@ -19,7 +20,7 @@ import fi.aalto.cs.apluscourses.services.TokenStorage
 import fi.aalto.cs.apluscourses.services.course.CourseFileManager
 import fi.aalto.cs.apluscourses.services.course.CourseManager
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil
-import fi.aalto.cs.apluscourses.utils.APlusLogger
+import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import io.ktor.utils.io.CancellationException
 import kotlinx.coroutines.*
 import java.io.IOException
@@ -64,18 +65,13 @@ class ExercisesUpdater(
         runGradingUpdater()
     }
 
-    fun stop() {
-        exerciseJob?.cancel()
-        gradingJob?.cancel()
-    }
-
     private fun runExerciseUpdater() {
         exerciseJob =
             cs.launch {
                 try {
-                    withBackgroundProgress(project, "A+ Courses", cancellable = true) {
+                    withBackgroundProgress(project, message("aplusCourses"), cancellable = true) {
                         reportSequentialProgress { reporter ->
-                            reporter.indeterminateStep("Refreshing assingments")
+                            reporter.indeterminateStep(message("services.progress.refreshingAssignments"))
                             doTask()
                         }
                     }
@@ -102,9 +98,9 @@ class ExercisesUpdater(
             try {
                 while (true) {
                     if (submissionsInGrading.isNotEmpty()) {
-                        withBackgroundProgress(project, "A+ Courses", cancellable = true) {
+                        withBackgroundProgress(project, message("aplusCourses"), cancellable = true) {
                             reportProgress { reporter ->
-                                reporter.indeterminateStep("Assignment in grading") {
+                                reporter.indeterminateStep(message("services.progress.gradingAssignments")) {
                                     while (submissionsInGrading.isNotEmpty()) {
                                         doGradingTask()
                                         cs.ensureActive()
@@ -124,14 +120,14 @@ class ExercisesUpdater(
 
     private suspend fun doTask() {
         if (!TokenStorage.getInstance().isTokenSet()) {
-            logger.info("Not authenticated, clearing exercises")
+            CoursesLogger.info("Not authenticated, clearing exercises")
             state.clearAll()
             fireExercisesUpdated()
             return
         }
         val course = CourseManager.course(project) ?: return
         isRunning = true
-        logger.info("Updating exercises for course ${course.id}")
+        CoursesLogger.info("Updating exercises for course ${course.id}")
         val timeStart = System.currentTimeMillis()
         val selectedLanguage = CourseFileManager.getInstance(project).state.language!!
 
@@ -164,7 +160,7 @@ class ExercisesUpdater(
         val newSubmissionCount = points.modules.flatMap { it.exercises }.sumOf { it.submissions.size }
         val newPoints = points.modules.flatMap { it.exercises }.sumOf { it.points }
         if (this.state.exerciseGroups.isNotEmpty() && this.points == newPoints && this.submissionCount == newSubmissionCount) {
-            logger.info("No changes in exercises")
+            CoursesLogger.info("No changes in exercises")
             isRunning = false
             return
         }
@@ -245,7 +241,7 @@ class ExercisesUpdater(
             runGradingUpdater()
         }
         val timeEnd = System.currentTimeMillis()
-        logger.info("Done updating exercises. Time taken: ${timeEnd - timeStart} ms")
+        CoursesLogger.info("Done updating exercises. Time taken: ${timeEnd - timeStart} ms")
         isRunning = false
     }
 
@@ -315,8 +311,6 @@ class ExercisesUpdater(
     }
 
     companion object {
-        private val logger = APlusLogger.logger
-
         @ProjectLevel
         val EXERCISES_TOPIC: Topic<ExercisesUpdaterListener> =
             Topic(ExercisesUpdaterListener::class.java, Topic.BroadcastDirection.TO_CHILDREN)

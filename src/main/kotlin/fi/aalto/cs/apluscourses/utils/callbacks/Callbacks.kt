@@ -3,7 +3,7 @@ package fi.aalto.cs.apluscourses.utils.callbacks
 import com.intellij.openapi.project.Project
 import fi.aalto.cs.apluscourses.api.CourseConfig
 import fi.aalto.cs.apluscourses.model.component.Module
-import fi.aalto.cs.apluscourses.utils.APlusLogger
+import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import fi.aalto.cs.apluscourses.utils.callbacks.Callbacks.PostDownloadModuleCallback
 
 class Callbacks private constructor(private val postDownloadModuleCallbacks: List<PostDownloadModuleCallback>) {
@@ -19,7 +19,7 @@ class Callbacks private constructor(private val postDownloadModuleCallbacks: Lis
             )
         }
         if (postDownloadModuleCallbacks.isNotEmpty()) {
-            APlusLogger.info("${postDownloadModuleCallbacks.size} post-download module callbacks invoked for module ${module.name}")
+            CoursesLogger.info("${postDownloadModuleCallbacks.size} post-download module callbacks invoked for module ${module.name}")
         }
     }
 

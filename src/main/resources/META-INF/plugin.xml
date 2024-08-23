@@ -22,10 +22,8 @@
         <moduleBuilder builderClass="fi.aalto.cs.apluscourses.generator.APlusModuleBuilder"/>
         <errorHandler implementation="com.intellij.diagnostic.JetBrainsMarketplaceErrorReportSubmitter"/>
         <!--        <httpRequestHandler implementation="fi.aalto.cs.apluscourses.intellij.services.OpenSubmissionService"/>-->
-        <projectConfigurable
-                displayName="A+ Courses"
-                instance="fi.aalto.cs.apluscourses.config.APlusConfigurable"
-        />
+        <projectConfigurable key="aplusCourses"
+                             instance="fi.aalto.cs.apluscourses.config.APlusConfigurable"/>
         <applicationService serviceInterface="com.intellij.openapi.roots.ui.configuration.actions.ModuleDeleteProvider"
                             serviceImplementation="fi.aalto.cs.apluscourses.services.APlusModuleDeleteProvider"
                             overrides="true"/>
@@ -33,38 +31,28 @@
     </extensions>
 
     <actions>
-        <group id="fi.aalto.cs.apluscourses.actions.ActionGroups.EXERCISE_ACTIONS"
-               text="A+ Assignment"
-               description="Actions for A+ assignments">
+        <group id="fi.aalto.cs.apluscourses.actions.ActionGroups.EXERCISE_ACTIONS">
             <action id="fi.aalto.cs.apluscourses.actions.exercise.SubmitExerciseAction"
                     class="fi.aalto.cs.apluscourses.actions.exercise.SubmitExerciseAction"
-                    text="Submit A+ Assignment"
                     icon="/icons/upload.svg"/>
             <action id="fi.aalto.cs.apluscourses.actions.exercise.OpenExerciseItemAction"
                     class="fi.aalto.cs.apluscourses.actions.exercise.OpenExerciseItemAction"
-                    text="Open in Browser"
                     icon="/icons/web.svg"/>
             <action id="fi.aalto.cs.apluscourses.actions.exercise.ShowFeedbackAction"
                     class="fi.aalto.cs.apluscourses.actions.exercise.ShowFeedbackAction"
-                    text="Show Feedback"
                     icon="/icons/feedback.svg"/>
             <action id="fi.aalto.cs.apluscourses.actions.exercise.RefreshExercisesAction"
                     class="fi.aalto.cs.apluscourses.actions.exercise.RefreshExercisesAction"
-                    text="Refresh Assignments"
                     icon="/icons/refresh.svg"/>
             <group id="fi.aalto.cs.apluscourses.actions.exercise.FilterActionGroup"
                    class="fi.aalto.cs.apluscourses.actions.exercise.FilterActionGroup"
                    popup="true"
-                   text="Filter Assignments"
                    icon="/icons/filter.svg">
             </group>
         </group>
-        <group id="fi.aalto.cs.apluscourses.actions.ActionGroups.TOOL_WINDOW_ACTIONS"
-               text="A+ Tool Window"
-               description="Actions for A+ tool window">
+        <group id="fi.aalto.cs.apluscourses.actions.ActionGroups.TOOL_WINDOW_ACTIONS">
             <action class="fi.aalto.cs.apluscourses.actions.RefreshEverythingAction"
                     id="fi.aalto.cs.apluscourses.actions.RefreshEverythingAction"
-                    text="Refresh"
                     icon="/icons/refresh.svg"/>
         </group>
     </actions>

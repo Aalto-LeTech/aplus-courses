@@ -36,7 +36,6 @@ class ExercisesTreeRenderer : NodeRenderer() {
                 isEnabled = true
                 append(item.displayName(), SimpleTextAttributes.REGULAR_ITALIC_ATTRIBUTES, true)
                 icon = if (item.missingModule) CoursesIcons.ModuleDisabled else CoursesIcons.Plus
-                toolTipText = message("ui.exercise.ExercisesTreeRenderer.submit")
             }
 
             is ExercisesView.ExerciseGroupItem -> {
@@ -49,14 +48,13 @@ class ExercisesTreeRenderer : NodeRenderer() {
                 } else {
                     CoursesIcons.ExerciseGroupClosed
                 }
-                toolTipText = ""
             }
 
             is ExercisesView.ExerciseItem -> {
                 val exercise = item.exercise
                 append(exercise.name, SimpleTextAttributes.REGULAR_ATTRIBUTES, true)
                 isEnabled = exercise.isSubmittable
-                icon = ExtendableTextComponent.Extension { statusToIcon(getStatus(exercise)) }.getIcon(false)
+                icon = ExtendableTextComponent.Extension { exerciseIcon(exercise) }.getIcon(false)
             }
 
             is ExercisesView.SubmissionResultItem -> {
@@ -134,12 +132,19 @@ class ExercisesTreeRenderer : NodeRenderer() {
             is ExercisesView.ExerciseItem -> {
                 val exercise = item.exercise
 
-                if (getStatus(exercise) == Status.OPTIONAL_PRACTICE) {
+                if (getStatus(exercise) == Status.OPTIONAL_PRACTICE)
                     exercise.difficulty
-                } else {
-                    val lateString = if (exercise.isLate()) "late, " else ""
-                    "${lateString}${exercise.submissionResults.size} of ${exercise.maxSubmissions} ${exercise.difficulty}"
-                }
+                else if (exercise.isLate()) message(
+                    "ui.ExercisesTreeRenderer.exercise.statusLate",
+                    exercise.submissionResults.size,
+                    exercise.maxSubmissions,
+                    exercise.difficulty
+                ) else message(
+                    "ui.ExercisesTreeRenderer.exercise.status",
+                    exercise.submissionResults.size,
+                    exercise.maxSubmissions,
+                    exercise.difficulty
+                )
             }
 
             is ExercisesView.SubmissionResultItem -> {
@@ -147,15 +152,11 @@ class ExercisesTreeRenderer : NodeRenderer() {
                 val isRejected = submission.status == SubmissionResult.Status.REJECTED
                 val isUnofficial = submission.status == SubmissionResult.Status.UNOFFICIAL
                 val isLate = (submission.latePenalty ?: 0.0) > 0
-                if (isRejected) {
-                    "rejected"
-                } else if (isLate) {
-                    "late"
-                } else if (isUnofficial) {
-                    "unofficial"
-                } else {
-                    ""
-                }
+
+                if (isRejected) message("ui.ExercisesTreeRenderer.exercise.submissionResult.rejected")
+                else if (isLate) message("ui.ExercisesTreeRenderer.exercise.submissionResult.late")
+                else if (isUnofficial) message("ui.ExercisesTreeRenderer.exercise.submissionResult.unofficial")
+                else ""
             }
 
             else -> ""
@@ -292,7 +293,8 @@ class ExercisesTreeRenderer : NodeRenderer() {
             }
         }
 
-        private fun statusToIcon(exerciseStatus: Status): Icon {
+        fun exerciseIcon(exercise: Exercise): Icon {
+            val exerciseStatus = getStatus(exercise)
             return when (exerciseStatus) {
                 Status.OPTIONAL_PRACTICE -> CoursesIcons.OptionalPractice
                 Status.NO_SUBMISSIONS -> CoursesIcons.NoSubmissions

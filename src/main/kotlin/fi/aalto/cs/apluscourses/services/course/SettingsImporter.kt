@@ -14,7 +14,7 @@ import com.intellij.openapi.util.io.FileUtilRt
 import fi.aalto.cs.apluscourses.model.Course
 import fi.aalto.cs.apluscourses.services.CoursesClient
 import fi.aalto.cs.apluscourses.services.PluginSettings
-import fi.aalto.cs.apluscourses.utils.APlusLogger
+import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.Url
 import kotlinx.coroutines.CoroutineScope
@@ -29,7 +29,7 @@ class SettingsImporter(
     /**
      * Downloads the course IDE settings ZIP file to a temporary file. Also adds IDEA startup actions
      * that unzip the temporary file to the IDEA configuration path after which the temporary file is
-     * deleted. Therefore, the new IDE settings only take effect once IDEA is restarted and the
+     * deleted. Therefore, the new IDE settings only take effect once the IDE is restarted and the
      * temporary file must still exist at that point.
      *
      * @throws IOException If an IO error occurs (e.g., network issues).
@@ -61,7 +61,7 @@ class SettingsImporter(
         )
 
         UpdateSettings.getInstance().forceCheckForUpdateAfterRestart()
-        logger.info("Imported IDE settings")
+        CoursesLogger.info("Imported IDE settings")
         return true
     }
 
@@ -72,12 +72,12 @@ class SettingsImporter(
     @Throws(IOException::class)
     fun importVMOptions(options: Map<String, String>) {
         if (!VMOptions.canWriteOptions()) {
-            logger.warn("Cannot import VM options because the IDE is configured not to use them")
+            CoursesLogger.warn("Cannot import VM options because the IDE is configured not to use them")
             return
         }
         options.forEach { (key, value) -> VMOptions.setProperty(key, value) }
 
-        logger.info("Imported " + options.size + " VM options")
+        CoursesLogger.info("Imported " + options.size + " VM options")
     }
 
     /**
@@ -96,7 +96,7 @@ class SettingsImporter(
 
         // a hard-coded workspace setting
         CompilerWorkspaceConfiguration.getInstance(project).AUTO_SHOW_ERRORS_IN_EDITOR = false
-        logger.info("Imported project settings")
+        CoursesLogger.info("Imported project settings")
     }
 
     /**
@@ -107,7 +107,7 @@ class SettingsImporter(
     @Throws(IOException::class)
     suspend fun importFeedbackCss(course: Course): String? {
         val cssUrl = course.resourceUrls["feedbackCss"] ?: return null
-        logger.info("Importing feedback CSS")
+        CoursesLogger.info("Importing feedback CSS")
         return CoursesClient.getInstance(project).get(cssUrl.toString()).bodyAsText()
     }
 
@@ -120,8 +120,6 @@ class SettingsImporter(
     }
 
     companion object {
-        private val logger = APlusLogger.logger
-
         fun getInstance(project: Project): SettingsImporter {
             return project.service<SettingsImporter>()
         }

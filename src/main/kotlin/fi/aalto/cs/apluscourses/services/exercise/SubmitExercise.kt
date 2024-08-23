@@ -20,7 +20,7 @@ import fi.aalto.cs.apluscourses.services.course.CourseFileManager
 import fi.aalto.cs.apluscourses.services.course.CourseManager
 import fi.aalto.cs.apluscourses.ui.exercise.DuplicateSubmissionDialog
 import fi.aalto.cs.apluscourses.ui.exercise.SubmitExerciseDialog
-import fi.aalto.cs.apluscourses.utils.APlusLogger
+import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import fi.aalto.cs.apluscourses.utils.FileUtil
 import kotlinx.coroutines.*
 import java.io.IOException
@@ -36,7 +36,7 @@ class SubmitExercise(
     fun submit(exercise: Exercise) {
         cs.launch {
             try {
-                logger.info("Submitting $exercise")
+                CoursesLogger.info("Submitting $exercise")
                 var submissionInfo = submissionInfos[exercise.id]
                 if (submissionInfo == null) {
                     submissionInfo = SubmissionInfo.fromJsonObject(APlusApi.exercise(exercise).get(project))
@@ -46,23 +46,23 @@ class SubmitExercise(
                 val submittedBefore = exercise.submissionResults.isNotEmpty()
                 val submittersFromBefore = exercise.submissionResults.firstOrNull()?.submitters
 
-                logger.info("Has exercise been submitted before: $submittedBefore, submitters: $submittersFromBefore")
+                CoursesLogger.info("Has exercise been submitted before: $submittedBefore, submitters: $submittersFromBefore")
 
                 cs.ensureActive()
 
                 val language: String = CourseFileManager.getInstance(project).state.language!!
-                logger.info("Language: $language")
+                CoursesLogger.info("Language: $language")
                 val submittable = submissionInfo.isSubmittable(language)
 
                 if (!submittable) {
-                    logger.warn("$exercise not submittable")
+                    CoursesLogger.warn("$exercise not submittable")
                     notifier.notify(NotSubmittableNotification(), project)
                     return@launch
                 }
 
                 val course = CourseManager.course(project)
                 if (course == null) {
-                    logger.error("Course not found")
+                    CoursesLogger.error("Course not found")
                     return@launch
                 }
 
@@ -70,7 +70,7 @@ class SubmitExercise(
                 val platformModule = module?.platformObject
 
                 if (module == null || platformModule == null) {
-                    logger.error("Module not found. Module: $module, platformModule: $platformModule")
+                    CoursesLogger.error("Module $module not found")
                     throw ModuleMissingException()
                 }
 
@@ -80,7 +80,7 @@ class SubmitExercise(
 
                 val modulePath = ModuleUtilCore.getModuleDirPath(platformModule)
 
-                logger.info("Detected module: $module, path: $modulePath")
+                CoursesLogger.info("Detected module: $module, path: $modulePath")
 
                 val files: MutableMap<String, Path> = HashMap()
                 for ((key, name) in submissionInfo.getFiles(language)) {
@@ -89,14 +89,14 @@ class SubmitExercise(
                         name
                     )
                 }
-                logger.info("Submission files: $files")
+                CoursesLogger.info("Submission files: $files")
 
                 if (withContext(Dispatchers.EDT) {
                         (DuplicateSubmissionChecker.getInstance(project).isDuplicateSubmission(exercise.id, files)
                                 && !DuplicateSubmissionDialog.showDialog()
                                 )
                     }) {
-                    logger.info("Duplicate submission detected and user chose to cancel")
+                    CoursesLogger.info("Duplicate submission detected and user chose to cancel")
                     return@launch
                 }
 
@@ -117,7 +117,7 @@ class SubmitExercise(
                     } ?: Group.GROUP_ALONE
                 }
 
-                logger.info("Selected group: $group, default group: $defaultGroupId")
+                CoursesLogger.info("Selected group: $group, default group: $defaultGroupId")
 
                 val submissionDialog = withContext(Dispatchers.EDT) {
                     SubmitExerciseDialog(project, exercise, files.values.toList(), groups, group, submittedBefore)
@@ -137,7 +137,7 @@ class SubmitExercise(
                 DuplicateSubmissionChecker.getInstance(project)
                     .onAssignmentSubmitted(exercise.id, files)
 
-                logger.info("Submitted exercise $exercise successfully")
+                CoursesLogger.info("Submitted exercise $exercise successfully")
             } catch (ex: IOException) {
                 notifyNetworkError(ex, project)
             } catch (ex: FileDoesNotExistException) {
@@ -145,13 +145,13 @@ class SubmitExercise(
             } catch (_: ModuleMissingException) {
                 notifier.notify(MissingModuleNotification(), project)
             }
-            logger.debug("Finished submitting exercise")
+            CoursesLogger.debug("Finished submitting exercise")
         }
 
     }
 
     private fun notifyNetworkError(exception: IOException, project: Project) {
-        logger.warn("Network error while submitting exercise", exception)
+        CoursesLogger.warn("Network error while submitting exercise", exception)
         notifier.notify(NetworkErrorNotification(exception), project)
     }
 
@@ -167,7 +167,6 @@ class SubmitExercise(
             private val serialVersionUID: Long = 1L
         }
 
-        private val logger = APlusLogger.logger
         private val notifier = Notifier
     }
 }

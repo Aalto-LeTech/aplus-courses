@@ -7,87 +7,90 @@ import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.content.ContentFactory
 import com.intellij.ui.dsl.builder.panel
+import fi.aalto.cs.apluscourses.MyBundle.message
+import org.jetbrains.annotations.NonNls
 import javax.swing.ScrollPaneConstants
 
 internal class TeacherToolWindowFactory : ToolWindowFactory, DumbAware {
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         val ui = panel {
-            collapsibleGroup("Course Information") {
-                row("A+ Course ID") {
+            collapsibleGroup(message("toolwindows.TeacherToolWindowFactory.courseInformation")) {
+                row(message("toolwindows.TeacherToolWindowFactory.courseId")) {
                     textField()
                 }
-                row("Course Name") {
-                    textField().comment("Shown in the tool window")
+                row(message("toolwindows.TeacherToolWindowFactory.courseName")) {
+                    textField().comment(message("toolwindows.TeacherToolWindowFactory.courseNameComment"))
                 }
-                row("A+ URL") {
+                row(message("toolwindows.TeacherToolWindowFactory.aPlusUrl")) {
                     textField().applyToComponent {
                         text = "https://plus.cs.aalto.fi/"
                     }
                 }
             }.apply { expanded = true }
-            collapsibleGroup("Resource URLs") {
-                row("IDE Settings") {
+            collapsibleGroup(message("toolwindows.TeacherToolWindowFactory.resourceUrls")) {
+                row(message("toolwindows.TeacherToolWindowFactory.ideSettings")) {
                     textField().comment(
-                        "A .zip file, containing settings for IntelliJ that the user may optionally install while turning their project into an A+ project.",
+                        message("toolwindows.TeacherToolWindowFactory.ideSettingsComment"),
                         50
                     )
                 }
-                row("   for macOS") {
+                row(message("toolwindows.TeacherToolWindowFactory.forMac")) {
                     textField()
                 }
-                row("   for Linux") {
+                row(message("toolwindows.TeacherToolWindowFactory.forLinux")) {
                     textField()
                 }
-                row("   for Windows") {
+                row(message("toolwindows.TeacherToolWindowFactory.forWindows")) {
                     textField()
                 }
-                row("Feedback CSS") {
+                row(message("toolwindows.TeacherToolWindowFactory.feedbackCss")) {
                     textField()
                 }
             }.apply { expanded = true }
-            collapsibleGroup("Modules") {
-                row("Base URL") {
+            collapsibleGroup(message("toolwindows.TeacherToolWindowFactory.modules")) {
+                row(message("toolwindows.TeacherToolWindowFactory.baseUrl")) {
                     textField()
                 }
-                row("Name Pattern") {
+                row(message("toolwindows.TeacherToolWindowFactory.namePattern")) {
                     textField().applyToComponent {
-                        text = "{name}.zip"
+                        @NonNls val default = "{name}.zip"
+                        text = default
                     }
                 }
-                row("Authentication") {
-                    checkBox("Require authentication for modules")
+                row(message("toolwindows.TeacherToolWindowFactory.authentication")) {
+                    checkBox(message("toolwindows.TeacherToolWindowFactory.authenticationCheckbox"))
                 }
-                row("Installation Callbacks") {
+                row(message("toolwindows.TeacherToolWindowFactory.callbacks")) {
                     checkBox("AddModuleWatermark")
                 }
                 separator()
-                row("Name") {
+                row(message("toolwindows.TeacherToolWindowFactory.moduleName")) {
                     textField().applyToComponent {
-                        text = "Expressions"
+                        text = ""
                     }
                 }
-                row("Version") {
+                row(message("toolwindows.TeacherToolWindowFactory.moduleVersion")) {
                     textField().applyToComponent {
                         text = "1.2"
                     }
                 }
-                row("Changelog") {
+                row(message("toolwindows.TeacherToolWindowFactory.moduleChangelog")) {
                     textField().applyToComponent {
-                        text = "Fixed expressiontest"
+                        text = ""
                     }
                 }
                 separator()
-                row("Name") {
+                row(message("toolwindows.TeacherToolWindowFactory.moduleName")) {
                     textField().applyToComponent {
-                        text = "Grep"
+                        text = ""
                     }
                 }
-                row("Version") {
+                row(message("toolwindows.TeacherToolWindowFactory.moduleVersion")) {
                     textField().applyToComponent {
                         text = "1.0"
                     }
                 }
-                row("Changelog") {
+                row(message("toolwindows.TeacherToolWindowFactory.moduleChangelog")) {
                     textField()
                 }
                 separator()
@@ -96,7 +99,10 @@ internal class TeacherToolWindowFactory : ToolWindowFactory, DumbAware {
         }
         val scrollPane = JBScrollPane(ui)
         scrollPane.horizontalScrollBarPolicy = ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
-        val content = ContentFactory.getInstance().createContent(scrollPane, "Config Generator", true)
+        val content = ContentFactory.getInstance().createContent(
+            scrollPane,
+            message("toolwindows.TeacherToolWindowFactory.tabTitle"), true
+        )
         toolWindow.contentManager.addContent(content)
     }
 }

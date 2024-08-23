@@ -9,6 +9,7 @@ import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.Panel
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.util.application
+import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.model.Course
 import fi.aalto.cs.apluscourses.model.component.Module
 import fi.aalto.cs.apluscourses.ui.Utils.loadingPanel
@@ -35,8 +36,8 @@ class ModulesView(val project: Project) : SimpleToolWindowPanel(true, true) {
         }
     }.apply {
         textEditor.apply {
-            emptyText.text = "Search Modules.."
-            accessibleContext.accessibleName = "Search Modules"
+            emptyText.text = message("ui.ModuleView.search")
+            accessibleContext.accessibleName = message("ui.ModuleView.searchAccessible")
             TextComponentEmptyText.setupPlaceholderVisibility(this)
         }
     }
@@ -67,9 +68,9 @@ class ModulesView(val project: Project) : SimpleToolWindowPanel(true, true) {
 
         fun Panel.addCategory(category: Module.Category, modules: List<Module>) {
             val categoryName = when (category) {
-                Module.Category.ACTION_REQUIRED -> "Action Required"
-                Module.Category.AVAILABLE -> "Available Modules"
-                Module.Category.INSTALLED -> "Installed Modules"
+                Module.Category.ACTION_REQUIRED -> message("ui.ModuleView.category.actionRequired")
+                Module.Category.AVAILABLE -> message("ui.ModuleView.category.available")
+                Module.Category.INSTALLED -> message("ui.ModuleView.category.installed")
             }
             if (modules.isNotEmpty()) {
                 group("  $categoryName", indent = false) {

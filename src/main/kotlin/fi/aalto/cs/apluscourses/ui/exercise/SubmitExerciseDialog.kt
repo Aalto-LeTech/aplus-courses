@@ -11,7 +11,7 @@ import com.intellij.ui.dsl.builder.bindItem
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.layout.ComponentPredicate
 import com.intellij.util.ui.JBUI.CurrentTheme.NotificationError
-import fi.aalto.cs.apluscourses.MyBundle
+import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.model.exercise.Exercise
 import fi.aalto.cs.apluscourses.model.people.Group
 import fi.aalto.cs.apluscourses.services.course.CourseFileManager
@@ -45,8 +45,8 @@ class SubmitExerciseDialog(
     }
 
     init {
-        setOKButtonText("Submit")
-        title = "Submit ${exercise.name}"
+        setOKButtonText(message("ui.SubmitExerciseDialog.okButton"))
+        title = message("ui.SubmitExerciseDialog.title", exercise.name)
         setSize(0, 0)
         init()
     }
@@ -56,7 +56,7 @@ class SubmitExerciseDialog(
         val showGroups = project.service<CourseManager>().state.alwaysShowGroups || groups.size > 1
 
         row {
-            label("Files to submit:")
+            label(message("ui.SubmitExerciseDialog.files"))
         }
         row {
             cell(FileTree(files, project)).applyToComponent {
@@ -65,31 +65,28 @@ class SubmitExerciseDialog(
             }
         }
         if (showGroups) {
-            row("Group:") {
+            row(message("ui.SubmitExerciseDialog.group")) {
                 comboBox(groups).bindItem(selectedGroup).enabled(!submittedBefore)
                 button(
-                    "Set as Default"
+                    message("ui.SubmitExerciseDialog.groupDefaultButton")
                 ) {
                     defaultGroup.set(selectedGroup.get())
                     CourseFileManager.getInstance(project).setDefaultGroup(selectedGroup.get())
                 }
                     .enabled(!submittedBefore)
                     .enabledIf(isDefaultSelected)
-                contextHelp("You cannot change the group after submitting.")
+                contextHelp(message("ui.SubmitExerciseDialog.cantChangeGroup"))
                     .visible(submittedBefore)
             }
         }
         row {
-            text("You are about to make submission $submissionNumber out of ${exercise.maxSubmissions}.")
+            text(message("ui.SubmitExerciseDialog.description", submissionNumber, exercise.maxSubmissions))
         }
         row {
             if (submissionNumber >= exercise.maxSubmissions) {
                 text(
-                    if (submissionNumber == exercise.maxSubmissions) {
-                        MyBundle.message("presentation.submissionViewModel.warning.lastSubmission")
-                    } else {
-                        MyBundle.message("presentation.submissionViewModel.warning.submissionsExceeded")
-                    }
+                    if (submissionNumber == exercise.maxSubmissions) message("ui.SubmitExerciseDialog.warning.lastSubmission")
+                    else message("ui.SubmitExerciseDialog.warning.submissionsExceeded")
                 ).applyToComponent {
                     foreground = NotificationError.foregroundColor()
                     background = NotificationError.backgroundColor()

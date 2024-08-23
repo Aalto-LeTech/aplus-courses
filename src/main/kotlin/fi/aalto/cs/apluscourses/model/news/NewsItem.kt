@@ -14,7 +14,7 @@ data class NewsItem(
 ) {
     val publishTimeInfo: String
         get() = MyBundle.message(
-            "ui.toolWindow.subTab.news.publishTime",
+            "ui.NewsView.publishTime",
             publish.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT))
         )
 }

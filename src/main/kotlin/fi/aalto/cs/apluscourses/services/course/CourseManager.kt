@@ -9,6 +9,7 @@ import com.intellij.util.application
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.intellij.util.messages.Topic
 import com.intellij.util.messages.Topic.ProjectLevel
+import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.api.APlusApi
 import fi.aalto.cs.apluscourses.api.CourseConfig
 import fi.aalto.cs.apluscourses.model.Course
@@ -22,7 +23,7 @@ import fi.aalto.cs.apluscourses.services.Opener
 import fi.aalto.cs.apluscourses.services.PluginSettings
 import fi.aalto.cs.apluscourses.services.TokenStorage
 import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdater
-import fi.aalto.cs.apluscourses.utils.APlusLogger
+import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import fi.aalto.cs.apluscourses.utils.Version
 import fi.aalto.cs.apluscourses.utils.callbacks.Callbacks
 import kotlinx.coroutines.*
@@ -78,10 +79,6 @@ class CourseManager(
         run()
     }
 
-    fun stop() {
-        job?.cancel()
-    }
-
     private fun run(
         updateInterval: Long = PluginSettings.UPDATE_INTERVAL
     ) {
@@ -89,9 +86,9 @@ class CourseManager(
             cs.launch {
                 try {
                     while (true) {
-                        withBackgroundProgress(project, "A+ Courses") {
+                        withBackgroundProgress(project, message("aplusCourses")) {
                             reportSequentialProgress { reporter ->
-                                reporter.indeterminateStep("Refreshing course")
+                                reporter.indeterminateStep(message("services.progress.refreshingCourse"))
                                 doTask()
                             }
                         }
@@ -288,10 +285,10 @@ class CourseManager(
     }
 
     suspend fun installModuleAsync(module: Module, show: Boolean = true) {
-        withBackgroundProgress(project, "A+ Courses") {
+        withBackgroundProgress(project, message("aplusCourses")) {
             reportSequentialProgress { reporter ->
-                reporter.indeterminateStep("Installing ${module.name}")
-                logger.info("Installing ${module.name}")
+                reporter.indeterminateStep(message("services.progress.installing", module.name))
+                CoursesLogger.info("Installing ${module.name}")
                 withContext(moduleOperationDispatcher) {
                     module.downloadAndInstall()
                 }
@@ -307,9 +304,9 @@ class CourseManager(
                     }
                 }
                 if (dependencies.isNotEmpty()) {
-                    logger.info("Installed ${module.name} and its dependencies ${dependencies.map { it.name }}")
+                    CoursesLogger.info("Installed ${module.name} and its dependencies ${dependencies.map { it.name }}")
                 } else {
-                    logger.info("Installed ${module.name}")
+                    CoursesLogger.info("Installed ${module.name}")
                 }
                 refreshModuleStatuses()
             }
@@ -325,7 +322,7 @@ class CourseManager(
 
     fun updateModule(module: Module) {
         cs.launch {
-            logger.info("Updating ${module.name}")
+            CoursesLogger.info("Updating ${module.name}")
             withContext(moduleOperationDispatcher) {
                 module.update()
             }
@@ -384,8 +381,6 @@ class CourseManager(
     }
 
     companion object {
-        private val logger = APlusLogger.logger
-
         @ProjectLevel
         val NEWS_TOPIC: Topic<NewsUpdaterListener> =
             Topic(NewsUpdaterListener::class.java, Topic.BroadcastDirection.TO_CHILDREN)

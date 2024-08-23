@@ -6,7 +6,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.components.service
 import fi.aalto.cs.apluscourses.services.exercise.SelectedExercise
 import fi.aalto.cs.apluscourses.services.exercise.SubmitExercise
-import fi.aalto.cs.apluscourses.utils.APlusLogger
+import fi.aalto.cs.apluscourses.utils.CoursesLogger
 
 class SubmitExerciseAction : AnAction() {
     override fun update(e: AnActionEvent) {
@@ -15,7 +15,7 @@ class SubmitExerciseAction : AnAction() {
     }
 
     override fun actionPerformed(e: AnActionEvent) {
-        APlusLogger.logger.debug("Starting SubmitExerciseAction")
+        CoursesLogger.debug("Starting SubmitExerciseAction")
         val project = e.project ?: return
         val exercise = project.service<SelectedExercise>().selectedExercise ?: return
         project.service<SubmitExercise>().submit(exercise)

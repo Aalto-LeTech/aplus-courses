@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.utils
 
+import fi.aalto.cs.apluscourses.MyBundle.message
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
@@ -33,7 +34,7 @@ object DateDifferenceFormatter {
         val period = earlierTimePoint.periodUntil(laterTimePoint, TimeZone.UTC)
 
         if (period.seconds <= 0) {
-            return "just now"
+            return message("utils.DateDifferenceFormatter.now")
         }
 
         val (unit, time) = when {
@@ -52,9 +53,9 @@ object DateDifferenceFormatter {
         }
 
         return if (before) {
-            "$time $timeUnitText ago"
+            message("utils.DateDifferenceFormatter.before", time, timeUnitText)
         } else {
-            "in $time $timeUnitText"
+            message("utils.DateDifferenceFormatter.after", time, timeUnitText)
         }
     }
 }

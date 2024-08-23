@@ -35,7 +35,7 @@ import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.gridLayout.UnscaledGaps
 import com.intellij.util.application
 import com.intellij.util.ui.JBUI
-import fi.aalto.cs.apluscourses.MyBundle
+import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.api.CourseConfig
 import fi.aalto.cs.apluscourses.icons.CoursesIcons
 import fi.aalto.cs.apluscourses.services.Plugins
@@ -43,8 +43,9 @@ import fi.aalto.cs.apluscourses.services.ProjectInitializationTracker
 import fi.aalto.cs.apluscourses.services.course.CourseFileManager
 import fi.aalto.cs.apluscourses.services.course.CoursesFetcher
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil.languageCodeToName
-import fi.aalto.cs.apluscourses.utils.APlusLogger
+import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import kotlinx.coroutines.future.asDeferred
+import org.jetbrains.annotations.NonNls
 import javax.swing.JComponent
 import javax.swing.JList
 import javax.swing.ListSelectionModel
@@ -56,7 +57,8 @@ internal class APlusModuleBuilder : ModuleBuilder() {
     override fun getWeight(): Int = 100000
     override fun isAvailable(): Boolean {
         val lastAction = (ActionManager.getInstance() as ActionManagerImpl).lastPreformedActionId
-        return lastAction == null || !lastAction.contains("Module")
+        @NonNls val moduleAction = "Module"
+        return lastAction == null || !lastAction.contains(moduleAction)
     }
 
     private var courseConfig: CourseConfig.JSON? = null
@@ -72,8 +74,7 @@ internal class APlusModuleBuilder : ModuleBuilder() {
         model: ModifiableModuleModel?,
         modulesProvider: ModulesProvider?
     ): List<Module?>? {
-        val logger = APlusLogger.logger
-        logger.info("Creating project from $courseConfigUrl, language: $language")
+        CoursesLogger.info("Creating project from $courseConfigUrl, language: $language")
         project.service<CourseFileManager>().updateSettings(
             language,
             courseConfigUrl,
@@ -84,7 +85,7 @@ internal class APlusModuleBuilder : ModuleBuilder() {
             if (selectedSdk is DownloadJdk) {
                 val task = selectedSdk.task
                 if (task is JdkDownloadTask) {
-                    logger.info("Downloading JDK ${task.jdkItem} for new project")
+                    CoursesLogger.info("Downloading JDK ${task.jdkItem} for new project")
 
                     val sdkDownloadedFuture =
                         project.service<JdkDownloadService>().scheduleDownloadJdkForNewProject(task)
@@ -93,7 +94,7 @@ internal class APlusModuleBuilder : ModuleBuilder() {
                 }
             } else if (selectedSdk is ExistingJdk) {
                 application.runWriteAction {
-                    logger.info("Setting SDK to ${selectedSdk.jdk} for new project")
+                    CoursesLogger.info("Setting SDK to ${selectedSdk.jdk} for new project")
                     ProjectRootManager.getInstance(project).projectSdk = selectedSdk.jdk
                 }
             }
@@ -145,17 +146,17 @@ internal class APlusModuleBuilder : ModuleBuilder() {
             return panel {
                 panel {
                     row {
-                        text("A project linked to an A+ LMS course").applyToComponent {
+                        text(message("generator.APlusModuleBuilder.description")).applyToComponent {
                             foreground = JBUI.CurrentTheme.ContextHelp.FOREGROUND
                         }
                     }
                     row {
-                        text("Select a course:")
+                        text(message("generator.APlusModuleBuilder.selectCourse"))
                     }
                     row {
                         cell(courseList).resizableColumn().align(AlignX.FILL)
                     }
-                    row("Configuration file URL:") {
+                    row(message("generator.APlusModuleBuilder.configUrl")) {
                         textField()
                             .bindText(courseConfigUrl)
                             .resizableColumn()
@@ -175,12 +176,12 @@ internal class APlusModuleBuilder : ModuleBuilder() {
         override fun validate(): Boolean {
             val url = courseConfigUrl.get()
             if (url.isEmpty()) {
-                errorMessage.set("Please select a course.")
+                errorMessage.set(message("generator.APlusModuleBuilder.selectCourse.selectError"))
                 return false
             }
             val courseConfig = application.service<CoursesFetcher>().fetchCourse(url)
             if (courseConfig == null) {
-                errorMessage.set("Invalid URL.")
+                errorMessage.set(message("generator.APlusModuleBuilder.selectCourse.urlError"))
                 return false
             }
             errorMessage.set("")
@@ -203,36 +204,39 @@ internal class APlusModuleBuilder : ModuleBuilder() {
         override fun updateStep() {
             val courseConfig = this@APlusModuleBuilder.courseConfig ?: return
             val languages = courseConfig.languages
-            if (languages.contains("fi")) selectedLanguage.set("fi") else selectedLanguage.set(languages.first())
+            @NonNls val finnishCode = "fi"
+            if (languages.contains(finnishCode)) selectedLanguage.set(finnishCode) else selectedLanguage.set(languages.first())
 
             mainPanel = panel {
                 panel {
-                    group("Language") {
+                    group(message("generator.APlusModuleBuilder.language")) {
                         row {
                             text(
-                                MyBundle.message("ui.courseProject.view.languagePrompt")
+                                message("generator.APlusModuleBuilder.finnishInfo")
                             )
-                        }.visible(languages.size > 1 && languages.contains("fi"))
+                        }.visible(languages.size > 1 && languages.contains(finnishCode))
                         row {
                             segmentedButton(courseConfig.languages) {
                                 text = languageCodeToName(it)
                             }.bind(selectedLanguage)
                         }
                     }
-                    group("Settings") {
+                    group(message("generator.APlusModuleBuilder.settings")) {
                         row {
                             text(
-                                MyBundle.message("ui.courseProject.form.settingsWarningText")
+                                message("generator.APlusModuleBuilder.settingsInfo")
                             )
                         }
                         row {
-                            checkBox("Leave IntelliJ settings unchanged").bindSelected(dontImportSettings)
+                            checkBox(message("generator.APlusModuleBuilder.leaveSettings")).bindSelected(
+                                dontImportSettings
+                            )
                         }
                     }
                     if (courseConfig.requiredPlugins.isNotEmpty()) {
-                        group("Required plugins") {
+                        group(message("generator.APlusModuleBuilder.plugins")) {
                             row {
-                                text("The following plugins required by the course will be installed.")
+                                text(message("generator.APlusModuleBuilder.pluginsInfo"))
                             }
                             row {
                                 placeholder().apply {
@@ -242,7 +246,7 @@ internal class APlusModuleBuilder : ModuleBuilder() {
                         }
                     }
                     if (this@APlusModuleBuilder.programmingLanguage == "scala") {
-                        group("Additional configuration") {
+                        group(message("generator.APlusModuleBuilder.extra")) {
                             row(JavaUiBundle.message("label.project.wizard.new.project.jdk")) {
                                 cell(ProjectWizardJdkComboBox(null, wizardContext.disposable)).apply {
                                     val defaultValue = this.component.selectedItem
@@ -268,7 +272,10 @@ internal class APlusModuleBuilder : ModuleBuilder() {
                         it
                     }.forEach {
                         row {
-                            contextHelp(it.pluginDescriptor.description ?: "No description")
+                            contextHelp(
+                                it.pluginDescriptor.description
+                                    ?: message("generator.APlusModuleBuilder.defaultDescription")
+                            )
                             cell(it).resizableColumn().align(AlignX.FILL)
                         }.topGap(TopGap.SMALL)
                     }

@@ -14,7 +14,7 @@ import com.intellij.ui.dsl.gridLayout.UnscaledGaps
 import com.intellij.ui.scale.ScaleContext
 import com.intellij.util.ui.JBFont
 import com.intellij.util.ui.JBUI
-import fi.aalto.cs.apluscourses.MyBundle
+import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.api.CourseConfig.Grading
 import fi.aalto.cs.apluscourses.icons.CoursesIcons
 import fi.aalto.cs.apluscourses.model.exercise.ExerciseGroup
@@ -30,6 +30,7 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import org.jetbrains.annotations.NonNls
 import java.awt.*
 import java.net.URI
 import javax.swing.Icon
@@ -60,9 +61,9 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
             }
             panel {
                 row {
-                    text("Welcome to $courseName").applyToComponent {
+                    text(message("ui.OverviewView.auth.title", courseName)).applyToComponent {
                         font = JBFont.h1()
-                    }.comment("You need to log in to access the course content:")
+                    }.comment(message("ui.OverviewView.auth.description"))
                 }
                 with(tokenForm) {
                     token()
@@ -76,12 +77,12 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
         return panel {
             panel {
                 row {
-                    text("The plugin encountered a network error").applyToComponent {
+                    text(message("ui.OverviewView.networkError.title")).applyToComponent {
                         font = JBFont.h1()
-                    }.comment("Please check your internet connection and that A+ is accessible.")
+                    }.comment(message("ui.OverviewView.networkError.description"))
                 }
                 row {
-                    button("Refresh") {
+                    button(message("ui.OverviewView.refresh")) {
                         update(loading = true)
                         CourseManager.getInstance(project).restart()
                     }
@@ -95,12 +96,17 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
             val courseName = CourseManager.getInstance(project).state.courseName
             panel {
                 row {
-                    text("Looks like you are not enrolled on this course").applyToComponent {
+                    text(message("ui.OverviewView.notEnrolled.title")).applyToComponent {
                         font = JBFont.h1()
-                    }.comment("Please check the ${courseName ?: "course"} page on A+.")
+                    }.comment(
+                        message(
+                            "ui.OverviewView.notEnrolled.description",
+                            courseName ?: message("ui.OverviewView.notEnrolled.descriptionDefault")
+                        )
+                    )
                 }
                 row {
-                    button("Refresh") {
+                    button(message("ui.OverviewView.refresh")) {
                         update(loading = true)
                         CourseManager.getInstance(project).restart()
                     }
@@ -114,12 +120,16 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
         return panel {
             panel {
                 row {
-                    text("This project is not linked to a course").applyToComponent {
+                    text(message("ui.OverviewView.notACourse.title")).applyToComponent {
                         font = JBFont.h1()
-                    }.comment("Create a new A+ Courses project to access a course.")
+                    }.comment(message("ui.OverviewView.notACourse.description"))
                 }
                 row {
-                    myActionLink("Create new project", CoursesIcons.LogoColor, NewProjectAction())
+                    myActionLink(
+                        message("ui.OverviewView.notACourse.createProject"),
+                        CoursesIcons.LogoColor,
+                        NewProjectAction()
+                    )
                 }
             }.customize(UnscaledGaps(16, 32, 16, 32))
         }
@@ -129,9 +139,9 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
         return panel {
             panel {
                 row {
-                    text("The plugin encountered a network error during initialization").applyToComponent {
+                    text(message("ui.OverviewView.initializationIoError.title")).applyToComponent {
                         font = JBFont.h1()
-                    }.comment("Please check your internet connection and that A+ is accessible.")
+                    }.comment(message("ui.OverviewView.initializationIoError.description"))
                 }
             }.customize(UnscaledGaps(16, 32, 16, 32))
         }
@@ -177,7 +187,7 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
         val mainPanel = panel {
             row { cell(banner) }
             if (isCourseEnded) {
-                row { cell(BannerPanel(MyBundle.message("ui.BannerView.courseEnded"), BannerPanel.BannerType.ERROR)) }
+                row { cell(BannerPanel(message("ui.BannerView.courseEnded"), BannerPanel.BannerType.ERROR)) }
             }
             panel {
                 customizeSpacingConfiguration(object : IntelliJSpacingConfiguration() {
@@ -195,7 +205,12 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
                     } else {
                         group(indent = false) {
                             row {
-                                text("Points collected").comment(grade?.let { "Grade $it" })
+                                text(message("ui.OverviewView.pointsCollected")).comment(grade?.let {
+                                    message(
+                                        "ui.OverviewView.grade",
+                                        it
+                                    )
+                                })
                             }.topGap(TopGap.MEDIUM)
                             points.map {
                                 val (category, points) = it
@@ -212,7 +227,7 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
                             }
                             if (pointsUntilNextGrade != null && maxPointsOfNextGrade != null) {
                                 row {
-                                    text("Points until next grade")
+                                    text(message("ui.OverviewView.pointsUntilNextGrade"))
                                 }.topGap(TopGap.SMALL)
                                 pointsUntilNextGrade.map { (category, pointsUntilNext) ->
                                     val maxPointsForCategory =
@@ -235,15 +250,15 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
                         separator().bottomGap(BottomGap.MEDIUM)
                         weekClosingTime(weeks)
                         row {
-                            link("Plugin settings") {
-                                ShowSettingsUtil.getInstance().showSettingsDialog(project, "A+ Courses")
+                            link(message("ui.OverviewView.pluginSettings")) {
+                                ShowSettingsUtil.getInstance().showSettingsDialog(project, message("aplusCourses"))
                             }.applyToComponent {
                                 icon = AllIcons.General.Settings
                                 isFocusPainted = false
                             }
                         }
                         row {
-                            browserLink("Course page", course.htmlUrl).applyToComponent {
+                            browserLink(message("ui.OverviewView.coursePage"), course.htmlUrl).applyToComponent {
                                 setIcon(CoursesIcons.LogoColor, atRight = false)
                                 isFocusPainted = false
                             }
@@ -262,86 +277,92 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
         val style = grading.style
         val gradePoints = grading.points
 
+        @NonNls val o1 = "o1"
+        @NonNls val total = "total"
+
         return when (style) {
-            "o1" -> {
-                val a = points["A"] ?: return null
-                var b = points["B"] ?: return null
-                var c = points["C"] ?: return null
+            o1 -> {
+                @NonNls val a = "A"
+                @NonNls val b = "B"
+                @NonNls val c = "C"
+                val aPoints = points[a] ?: return null
+                var bPoints = points[b] ?: return null
+                var cPoints = points[c] ?: return null
 
                 // Calculate effective points for A and adjust B and C accordingly
-                val requiredA = gradePoints.entries.last().value["A"]!!
-                val neededA = maxOf(0, requiredA - a)
-                val usedBForA = minOf(b, neededA)
-                val usedCForA = minOf(c, neededA - usedBForA)
-                val finalA = a + usedBForA + usedCForA
+                val requiredA = gradePoints.entries.last().value[a]!!
+                val neededA = maxOf(0, requiredA - aPoints)
+                val usedBForA = minOf(bPoints, neededA)
+                val usedCForA = minOf(cPoints, neededA - usedBForA)
+                val finalA = aPoints + usedBForA + usedCForA
 
-                b -= usedBForA
-                c -= usedCForA
+                bPoints -= usedBForA
+                cPoints -= usedCForA
 
                 // Calculate effective points for B
-                val requiredB = gradePoints.entries.last().value["B"]!!
-                val neededB = maxOf(0, requiredB - b)
-                val usedCForB = minOf(c, neededB)
-                val effectiveB = b + usedCForB
+                val requiredB = gradePoints.entries.last().value[b]!!
+                val neededB = maxOf(0, requiredB - bPoints)
+                val usedCForB = minOf(cPoints, neededB)
+                val effectiveB = bPoints + usedCForB
 
-                c -= usedCForB
+                cPoints -= usedCForB
 
                 // Determine the current grade based on effective points
                 val currentGrade = gradePoints.entries.findLast { (_, requiredPoints) ->
-                    finalA >= requiredPoints["A"]!! &&
-                            effectiveB >= requiredPoints["B"]!! &&
-                            c >= requiredPoints["C"]!!
+                    finalA >= requiredPoints[a]!! &&
+                            effectiveB >= requiredPoints[b]!! &&
+                            cPoints >= requiredPoints[c]!!
                 }
 
                 // Determine the next achievable grade
                 val nextGrade = gradePoints.entries.firstOrNull { (_, requiredPoints) ->
-                    finalA < requiredPoints["A"]!! ||
-                            effectiveB < requiredPoints["B"]!! ||
-                            c < requiredPoints["C"]!!
+                    finalA < requiredPoints[a]!! ||
+                            effectiveB < requiredPoints[b]!! ||
+                            cPoints < requiredPoints[c]!!
                 }
 
                 // Calculate the points needed to reach the next grade
                 val pointsToNextGrade = nextGrade?.value?.mapValues { (key, value) ->
                     maxOf(
                         0, value - when (key) {
-                            "A" -> finalA
-                            "B" -> effectiveB
-                            "C" -> c
+                            a -> finalA
+                            b -> effectiveB
+                            c -> cPoints
                             else -> 0
                         }
                     )
-                } ?: mapOf("A" to 0, "B" to 0, "C" to 0)
+                } ?: mapOf(a to 0, b to 0, c to 0)
 
                 // Max points for the next grade
                 val maxOfNext = mapOf(
-                    "A" to (nextGrade?.value["A"] ?: 0),
-                    "B" to (nextGrade?.value["B"] ?: 0),
-                    "C" to (nextGrade?.value["C"] ?: 0)
+                    a to (nextGrade?.value[a] ?: 0),
+                    b to (nextGrade?.value[b] ?: 0),
+                    c to (nextGrade?.value[c] ?: 0)
                 )
 
                 Grade(currentGrade?.key, pointsToNextGrade, maxOfNext)
             }
 
-            "total" -> {
+            total -> {
                 val totalPoints = points.values.sum()
 
                 val currentGrade = gradePoints.entries.findLast { (_, requiredPoints) ->
-                    totalPoints >= requiredPoints["total"]!!
+                    totalPoints >= requiredPoints[total]!!
                 }
 
                 val nextGrade = gradePoints.entries.firstOrNull { (_, requiredPoints) ->
-                    totalPoints < requiredPoints["total"]!!
+                    totalPoints < requiredPoints[total]!!
                 }
 
                 val pointsToNextGrade = if (nextGrade != null) {
                     mapOf(
-                        "total" to maxOf(0, nextGrade.value["total"]!! - totalPoints)
+                        total to maxOf(0, nextGrade.value[total]!! - totalPoints)
                     )
                 } else {
-                    mapOf("total" to 0)
+                    mapOf(total to 0)
                 }
 
-                val maxOfNext = mapOf("total" to (nextGrade?.value["total"] ?: 0))
+                val maxOfNext = mapOf(total to (nextGrade?.value[total] ?: 0))
 
                 Grade(currentGrade?.key, pointsToNextGrade, maxOfNext)
             }
@@ -366,7 +387,7 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
             }
             val howLongLeft = DateDifferenceFormatter.formatTimeSinceNow(closingTime)
             row {
-                text("Week $weekNumber closing $formattedDateTime ($howLongLeft)").applyToComponent {
+                text(message("ui.OverviewView.closing", weekNumber, formattedDateTime, howLongLeft)).applyToComponent {
                     foreground = JBUI.CurrentTheme.ContextHelp.FOREGROUND
                 }
             }.bottomGap(BottomGap.SMALL)

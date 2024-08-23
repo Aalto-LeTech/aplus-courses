@@ -20,6 +20,7 @@ import com.intellij.util.application
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.intellij.util.messages.Topic
 import com.intellij.util.messages.Topic.ProjectLevel
+import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.icons.CoursesIcons
 import fi.aalto.cs.apluscourses.model.component.Module
 import fi.aalto.cs.apluscourses.model.exercise.Exercise
@@ -28,6 +29,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.jetbrains.annotations.NonNls
 
 @Service(Service.Level.PROJECT)
 class Opener(
@@ -55,8 +57,8 @@ class Opener(
         }
     }
 
-    fun openDocumentationAction(module: Module, fileName: String): AnAction {
-        return object : DumbAwareAction("Show Documentation") {
+    fun openDocumentationAction(module: Module, @NonNls fileName: String): AnAction {
+        return object : DumbAwareAction(message("services.Opener.showDocumentationAction")) {
             override fun actionPerformed(e: AnActionEvent) {
                 val dir = module.platformObject?.guessModuleDir() ?: return
                 val virtualFile = dir.findFile(fileName) ?: return
@@ -69,7 +71,7 @@ class Opener(
             }
 
             override fun update(e: AnActionEvent) {
-                e.presentation.text = "Show Documentation"
+                e.presentation.text = message("services.Opener.showDocumentationAction")
                 e.presentation.icon = CoursesIcons.Docs
             }
 

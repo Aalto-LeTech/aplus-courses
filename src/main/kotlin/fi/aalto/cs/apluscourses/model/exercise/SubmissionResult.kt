@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.model.exercise
 
 import com.intellij.openapi.project.Project
 import fi.aalto.cs.apluscourses.api.APlusApi
+import org.jetbrains.annotations.NonNls
 
 data class SubmissionResult(
     val id: Long,
@@ -33,7 +34,7 @@ data class SubmissionResult(
     }
 
     companion object {
-        fun statusFromString(statusString: String?): Status {
+        fun statusFromString(@NonNls statusString: String?): Status {
             return when (statusString) {
                 "ready" -> Status.GRADED
                 "unofficial" -> Status.UNOFFICIAL

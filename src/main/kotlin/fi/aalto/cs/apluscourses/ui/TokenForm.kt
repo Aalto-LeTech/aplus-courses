@@ -13,6 +13,7 @@ import com.intellij.ui.dsl.builder.Panel
 import com.intellij.ui.dsl.builder.Row
 import com.intellij.ui.dsl.builder.bindText
 import com.intellij.util.ui.JBUI
+import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.model.people.User
 import fi.aalto.cs.apluscourses.services.TokenStorage
 import fi.aalto.cs.apluscourses.services.course.CourseManager
@@ -56,14 +57,14 @@ class TokenForm(private val project: Project, private val callback: () -> Unit =
     }
 
     fun Panel.user(): Row =
-        row("Logged in as") {
+        row(message("ui.TokenForm.loggedInAs")) {
             text("").bindText(userName)
-            button("Log Out") { removeToken() }
+            button(message("ui.TokenForm.logOut")) { removeToken() }
         }.visibleIf(user.isNotNull())
 
     fun Panel.token(): Row {
         val aplusUrl = CourseManager.getInstance(project).state.aPlusUrl ?: "https://plus.cs.aalto.fi/"
-        return row("A+ token") {
+        return row(message("ui.TokenForm.token")) {
             passwordField()
                 .applyToComponent {
                     passwordField = this
@@ -73,15 +74,15 @@ class TokenForm(private val project: Project, private val callback: () -> Unit =
                 }
                 .resizableColumn()
                 .align(AlignX.FILL)
-                .comment("<a href=\"${aplusUrl}accounts/accounts/\">What is my token?</a>")
-            button("Set") { setToken() }.visibleIf(checking.not())
-            button("Checking...") {}.enabled(false).visibleIf(checking)
+                .comment(message("ui.TokenForm.tokenLink", aplusUrl))
+            button(message("ui.TokenForm.setToken")) { setToken() }.visibleIf(checking.not())
+            button(message("ui.TokenForm.checking")) {}.enabled(false).visibleIf(checking)
         }.visibleIf(user.isNull())
     }
 
     fun Panel.validation(): Row =
         row("") {
-            text("Token is invalid").visibleIf(tokenFailed).applyToComponent {
+            text(message("ui.TokenForm.tokenError")).visibleIf(tokenFailed).applyToComponent {
                 foreground = JBUI.CurrentTheme.NotificationError.borderColor()
             }
         }

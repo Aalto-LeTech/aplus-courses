@@ -10,6 +10,7 @@ import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.openapi.wm.impl.content.ToolWindowContentUi
 import com.intellij.ui.components.JBPanel
 import com.intellij.ui.content.*
+import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.actions.ActionGroups.EXERCISE_ACTIONS
 import fi.aalto.cs.apluscourses.actions.ActionGroups.TOOL_WINDOW_ACTIONS
 import fi.aalto.cs.apluscourses.model.Course
@@ -42,7 +43,7 @@ internal class APlusToolWindowFactory : ToolWindowFactory, DumbAware {
         toolWindow.isShowStripeButton = true
         val connection = project.messageBus.connect(toolWindow.disposable)
         val overviewView = createOverviewView(project)
-        val newsView = createNewsView(project, toolWindow)
+        val newsView = createNewsView(toolWindow)
         val modulesView = createModulesView(project)
         val exercisesView = createExercisesView(project)
 
@@ -50,22 +51,22 @@ internal class APlusToolWindowFactory : ToolWindowFactory, DumbAware {
 
         val overviewTab = contentFactory.createContent(
             overviewView,
-            "<html><body><b>A+ Courses</b></body></html>",
+            message("toolwindows.APlusToolWindowFactory.tabs.overview"),
             true
         )
         val exercisesTab = contentFactory.createContent(
             exercisesView,
-            "Assignments",
+            message("toolwindows.APlusToolWindowFactory.tabs.exercises"),
             true
         )
         val modulesTab = contentFactory.createContent(
             modulesView,
-            "Modules",
+            message("toolwindows.APlusToolWindowFactory.tabs.modules"),
             true
         )
         val newsTab = contentFactory.createContent(
             newsView,
-            "News",
+            message("toolwindows.APlusToolWindowFactory.tabs.news"),
             true
         )
 
@@ -93,18 +94,18 @@ internal class APlusToolWindowFactory : ToolWindowFactory, DumbAware {
         toolWindow.component.addComponentListener(object : ComponentAdapter() {
             override fun componentResized(e: ComponentEvent) {
                 if (e.component.bounds.width <= 424) {
-                    overviewTab.displayName = "<html><body><b>A+</b></body></html>"
+                    overviewTab.displayName = message("toolwindows.APlusToolWindowFactory.tabs.overviewShort")
                 } else {
-                    overviewTab.displayName = "<html><body><b>A+ Courses</b></body></html>"
+                    overviewTab.displayName = message("toolwindows.APlusToolWindowFactory.tabs.overview")
                 }
                 if (e.component.bounds.width <= 370) {
                     newsView.setShortTab(true)
-                    modulesTab.displayName = "📦"
-                    exercisesTab.displayName = "📚"
+                    modulesTab.displayName = message("toolwindows.APlusToolWindowFactory.tabs.modulesShort")
+                    exercisesTab.displayName = message("toolwindows.APlusToolWindowFactory.tabs.exercisesShort")
                 } else {
                     newsView.setShortTab(false)
-                    modulesTab.displayName = "Modules"
-                    exercisesTab.displayName = "Assignments"
+                    modulesTab.displayName = message("toolwindows.APlusToolWindowFactory.tabs.modules")
+                    exercisesTab.displayName = message("toolwindows.APlusToolWindowFactory.tabs.exercises")
                 }
             }
         })
@@ -222,6 +223,6 @@ internal class APlusToolWindowFactory : ToolWindowFactory, DumbAware {
         return exercisesView
     }
 
-    private fun createNewsView(project: Project, toolWindow: ToolWindow): NewsView = NewsView(toolWindow, project)
+    private fun createNewsView(toolWindow: ToolWindow): NewsView = NewsView(toolWindow)
 
 }

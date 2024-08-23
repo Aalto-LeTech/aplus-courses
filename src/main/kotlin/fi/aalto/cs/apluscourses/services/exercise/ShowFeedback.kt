@@ -21,6 +21,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.jetbrains.annotations.NonNls
 import org.jsoup.Jsoup
 import org.jsoup.safety.Safelist
 import java.awt.Color
@@ -45,44 +46,43 @@ class ShowFeedback(
 
                 val document = Jsoup.parseBodyFragment(feedbackString)
 
+                @NonNls val rgbFormat = "#%02x%02x%02x"
                 val textColor: JBColor = JBColor.black
                 val textColorString =
-                    String.format("#%02x%02x%02x", textColor.red, textColor.green, textColor.blue)
+                    String.format(rgbFormat, textColor.red, textColor.green, textColor.blue)
+
                 val backgroundColor: Color = JBColor.background()
-                val backgroundColorString = String.format(
-                    "#%02x%02x%02x", backgroundColor.red, backgroundColor.green,
-                    backgroundColor.blue
-                )
+                val backgroundColorString =
+                    String.format(rgbFormat, backgroundColor.red, backgroundColor.green, backgroundColor.blue)
 
                 val fontName: String = JBFont.regular().fontName
 
-                document.head().append(
+                @NonNls val jquery =
                     """<script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous" referrerpolicy="no-referrer"></script>"""
-                )
-
-                document.head().append(
+                @NonNls val bootstrapJs =
                     """<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js"></script>"""
-                )
-
-                document.head().append(
+                @NonNls val bootstrapCss =
                     """<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css"/>"""
-                )
 
-                document.head().append(
-                    "<style>"
-                            + Jsoup.clean(
+                document.head().append(jquery)
+                document.head().append(bootstrapJs)
+                document.head().append(bootstrapCss)
+
+                @NonNls val style = "<style>${
+                    Jsoup.clean(
                         feedbackCss
                             .replace(Regex("(--bg-color:\\s*)(.*;)"), "$1$backgroundColorString;")
                             .replace(Regex("(--fg-color:\\s*)(.*;)"), "$1$textColorString;")
                             .replace(Regex("(--font-name:\\s*)(.*;)"), "$1\"$fontName\";"),
                         Safelist.none()
                     )
-                            + "</style>"
-                )
+                }</style>"
 
-                if (!JBColor.isBright()) {
-                    document.body().addClass("dark")
-                }
+                document.head().append(style)
+
+                @NonNls val darkClassName = "dark"
+
+                if (!JBColor.isBright()) document.body().addClass(darkClassName)
 
                 val fileEditorManager: FileEditorManager = FileEditorManager.getInstance(project)
 

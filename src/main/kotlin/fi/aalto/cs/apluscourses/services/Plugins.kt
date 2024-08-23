@@ -17,6 +17,7 @@ import com.intellij.platform.util.progress.reportSequentialProgress
 import com.intellij.ui.components.labels.LinkLabel
 import com.intellij.ui.components.labels.LinkListener
 import com.intellij.util.application
+import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.api.CourseConfig
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
@@ -46,9 +47,9 @@ class Plugins(val cs: CoroutineScope) {
     }
 
     suspend fun installPlugins(project: Project, downloadablePluginNodes: List<PluginNode>): Boolean =
-        withBackgroundProgress(project, "A+ Courses") {
+        withBackgroundProgress(project, message("aplusCourses")) {
             reportSequentialProgress { reporter ->
-                reporter.indeterminateStep("Installing plugins")
+                reporter.indeterminateStep(message("services.progress.pluginsInstall"))
                 val deferredResult = CompletableDeferred<Boolean>()
                 application.runWriteAction {
                     PluginManagerMain.downloadPlugins(

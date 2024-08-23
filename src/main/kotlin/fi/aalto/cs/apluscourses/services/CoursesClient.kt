@@ -5,6 +5,7 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.platform.ide.progress.withBackgroundProgress
 import com.intellij.platform.util.progress.reportSequentialProgress
+import fi.aalto.cs.apluscourses.MyBundle.message
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
@@ -46,8 +47,10 @@ class CoursesClient(
 
 
     fun changeHost(newHost: String) {
+        @NonNls val https = "https"
+        @NonNls val apiPath = "api/v2/"
         val protocol =
-            if (newHost.substringBefore("://").lowercase() == "https") URLProtocol.HTTPS else URLProtocol.HTTP
+            if (newHost.substringBefore("://").lowercase() == https) URLProtocol.HTTPS else URLProtocol.HTTP
         val host = newHost.substringAfter("://").substringBeforeLast("/").substringBeforeLast(":")
         val port = newHost.substringAfterLast(":").substringBefore("/").toIntOrNull() ?: 0
 
@@ -70,7 +73,7 @@ class CoursesClient(
                     this@url.protocol = protocol
                     this@url.host = host
                     this@url.port = port
-                    path("api/v2/")
+                    path(apiPath)
                 }
             }
         }
@@ -174,13 +177,13 @@ class CoursesClient(
     }
 
     suspend fun getAndUnzip(zipUrl: String, target: Path, onlyPath: String? = null) {
-        withBackgroundProgress(project, "A+ Courses") {
+        withBackgroundProgress(project, message("aplusCourses")) {
             reportSequentialProgress { reporter ->
                 val tempZipFile = kotlin.io.path.createTempFile(target.nameWithoutExtension, ".zip").toFile()
-                reporter.indeterminateStep("Downloading $zipUrl") {
+                reporter.indeterminateStep(message("services.progress.downloading", zipUrl)) {
                     fetch(zipUrl, tempZipFile)
                 }
-                reporter.indeterminateStep("Extracting $zipUrl to $target") {
+                reporter.indeterminateStep(message("services.progress.extracting", zipUrl, target)) {
                     val destination = target
                     val destinationFile = destination.toFile()
 

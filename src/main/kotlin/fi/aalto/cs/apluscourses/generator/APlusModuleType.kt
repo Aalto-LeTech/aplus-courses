@@ -13,11 +13,11 @@ internal class APlusModuleType : ModuleType<APlusModuleBuilder>(ID) {
     }
 
     override fun getName(): String {
-        return MyBundle.message("intellij.ProjectBuilder.name")
+        return MyBundle.message("aplusCourses")
     }
 
     override fun getDescription(): String {
-        return MyBundle.message("intellij.ProjectBuilder.description")
+        return MyBundle.message("generator.APlusModuleType.description")
     }
 
     override fun getNodeIcon(isOpened: Boolean): Icon {

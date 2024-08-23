@@ -14,7 +14,7 @@ data class Group(val id: Long, val members: List<GroupMember>) {
             listOf(
                 GroupMember(
                     -1,
-                    message("ui.toolWindow.subTab.exercises.submission.submitAlone")
+                    message("people.group.submitAlone")
                 )
             )
         )

@@ -7,7 +7,7 @@ import com.intellij.openapi.roots.OrderRootType
 import com.intellij.openapi.roots.libraries.LibraryTablesRegistrar
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFileManager
-import fi.aalto.cs.apluscourses.utils.APlusLogger
+import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.plugins.scala.project.external.ScalaSdkUtils
@@ -19,7 +19,7 @@ import java.nio.file.Path
 class ScalaSdk(private val scalaVersion: String, project: Project) : Library(scalaVersion, project) {
     override suspend fun downloadAndInstall(updating: Boolean) {
         status = Status.LOADING
-        APlusLogger.info("Downloading Scala SDK $scalaVersion")
+        CoursesLogger.info("Downloading Scala SDK $scalaVersion")
         val strippedScalaVersion = this.scalaVersion.substringAfter("scala-sdk-")
         val zipUrl =
             "https://github.com/lampepfl/dotty/releases/download/$strippedScalaVersion/scala3-$strippedScalaVersion.zip"

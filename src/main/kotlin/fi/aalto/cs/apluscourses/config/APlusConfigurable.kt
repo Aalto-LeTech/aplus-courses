@@ -9,7 +9,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.util.ui.JBFont
-import fi.aalto.cs.apluscourses.MyBundle
+import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.icons.CoursesIcons
 import fi.aalto.cs.apluscourses.services.course.CourseFileManager
 import fi.aalto.cs.apluscourses.services.course.CourseManager
@@ -50,7 +50,7 @@ internal class APlusConfigurable(val project: Project) : Configurable, Configura
         val languages = course?.languages ?: emptyList()
         banner = ResponsiveImagePanel(icon = CoursesIcons.About.Banner, width = 200)
         settingsPanel = panel {
-            group("Global Settings") {
+            group(message("config.APlusConfigurable.globalSettings")) {
                 with(tokenForm) {
                     user()
                     token()
@@ -62,8 +62,8 @@ internal class APlusConfigurable(val project: Project) : Configurable, Configura
 //                    }
 //                } TODO: Re-enable when assistant mode is implemented
             }
-            group("Course Settings") {
-                row("Language") {
+            group(message("config.APlusConfigurable.courseSettings")) {
+                row(message("config.APlusConfigurable.language")) {
                     segmentedButton(languages) {
                         text = languageCodeToName(it)
                     }.bind(selectedLanguage)
@@ -95,8 +95,8 @@ internal class APlusConfigurable(val project: Project) : Configurable, Configura
         myTabHeaderComponent = TabbedPaneHeaderComponent(DefaultActionGroup()) { index ->
             myCardPanel.select(index, true)
         }
-        myTabHeaderComponent?.addTab("Settings", null)
-        myTabHeaderComponent?.addTab("About", null)
+        myTabHeaderComponent?.addTab(message("config.APlusConfigurable.settingsTab"), null)
+        myTabHeaderComponent?.addTab(message("config.APlusConfigurable.aboutTab"), null)
         myCardPanel.select(settingsTab, true)
         myTabHeaderComponent?.setListener()
         myTabHeaderComponent?.getComponent(1)?.isVisible = false
@@ -112,33 +112,33 @@ internal class APlusConfigurable(val project: Project) : Configurable, Configura
             cell(banner!!)
         }
         row {
-            text(MyBundle.message("ui.aboutDialog.title")).applyToComponent {
+            text(message("aplusCourses")).applyToComponent {
                 font = JBFont.h0()
             }.comment(PluginVersion.current)
         }
         row {
             text(
-                MyBundle.message("ui.aboutDialog.description")
+                message("ui.aboutDialog.description")
             )
         }
         row {
             browserLink(
-                MyBundle.message("ui.aboutDialog.website"), pluginPage
+                message("ui.aboutDialog.website"), pluginPage
             )
         }
         row {
             browserLink(
-                MyBundle.message("ui.aboutDialog.GithubWebsite"), github
+                message("ui.aboutDialog.GithubWebsite"), github
             )
         }
         row {
             browserLink(
-                MyBundle.message("ui.aboutDialog.APlusWebsite"), aPlus
+                message("ui.aboutDialog.APlusWebsite"), aPlus
             )
         }
         row {
             text(
-                MyBundle.message("ui.aboutDialog.authors")
+                message("ui.aboutDialog.authors")
             )
         }
     }
@@ -161,6 +161,6 @@ internal class APlusConfigurable(val project: Project) : Configurable, Configura
     }
 
     override fun getDisplayName(): String {
-        return "A+ Courses"
+        return message("aplusCourses")
     }
 }

@@ -6,13 +6,8 @@ import fi.aalto.cs.apluscourses.model.component.*
 import fi.aalto.cs.apluscourses.utils.Version
 import fi.aalto.cs.apluscourses.utils.callbacks.Callbacks
 import io.ktor.http.*
+import org.jetbrains.annotations.NonNls
 
-/**
- * @param oldModules List of all modules in this course. If the course object is created with [Course.fromConfigurationData], then the modules are returned in the order in which they are listed in the course configuration data.
- * @param oldLibraries Libraries (not including common libraries) of the course.
- * @param exerciseModules Mapping of exercise IDs to modules. The keys are exercise IDs, and the values are maps from language codes to module names. Note that some exercises use modules that are not in the course configuration file, so the modules may not be in [Course.getModules].
- * @param resourceUrls URLs of resources related to the course. The keys are the names of the resources and the values are the URLs.
- */
 data class Course(
     val id: Long,
     val name: String,
@@ -50,12 +45,13 @@ data class Course(
     }
 
     private fun createAndCacheLibrary(name: String): Library? {
-        if (name.contains("scala-sdk")) {
+        @NonNls val scalaSdkName = "scala-sdk"
+        if (name.contains(scalaSdkName)) {
             try {
                 val library = ScalaSdk(name, project)
                 commonLibraries.add(library)
                 return library
-            } catch (e: IllegalArgumentException) {
+            } catch (_: IllegalArgumentException) {
                 return null
             }
         }

@@ -11,6 +11,7 @@ import com.intellij.ui.treeStructure.SimpleTree
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
 import com.intellij.util.ui.tree.TreeUtil
+import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.model.component.Component
 import fi.aalto.cs.apluscourses.model.exercise.Exercise
 import fi.aalto.cs.apluscourses.model.exercise.ExerciseGroup
@@ -29,7 +30,6 @@ import javax.swing.ScrollPaneConstants
 import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.TreePath
 import javax.swing.tree.TreeSelectionModel
-
 
 class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true) {
 
@@ -73,7 +73,7 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true) {
         expandItems(expandedItems)
         scrollPane.verticalScrollBar.value = scroll
         // Show "All items are filtered" if no items are shown
-        exerciseGroupsFilteringTree.tree.emptyText.text = "All items are filtered"
+        exerciseGroupsFilteringTree.tree.emptyText.text = message("ui.ExercisesView.allFiltered")
     }
 
     private fun getExpandedItems(): List<ExercisesTreeItem> {
@@ -210,7 +210,7 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true) {
         val index: Int,
         val exercise: Exercise
     ) : ExercisesTreeItem {
-        override fun displayName(): String = "Submission $index"
+        override fun displayName(): String = message("ui.ExercisesView.submission", index)
         override fun url(): String = "" // Needs to be fetched on demand
         override fun children(): List<ExercisesTreeItem> = emptyList()
 
@@ -220,8 +220,8 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true) {
 
     data class NewSubmissionItem(val exercise: Exercise) : ExercisesTreeItem {
         override fun displayName(): String =
-            if (missingModule) "Show Missing Module: ${exercise.module?.name}"
-            else "New submission"
+            if (missingModule) message("ui.ExercisesView.newSubmission.missingModule", exercise.module?.name ?: "")
+            else message("ui.ExercisesView.newSubmission.submit")
 
         val missingModule: Boolean
             get() {
@@ -355,8 +355,8 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true) {
         override fun installSearchField(): SearchTextField {
             return super.installSearchField().apply {
                 textEditor.apply {
-                    emptyText.text = "Search Assignments..."
-                    accessibleContext.accessibleName = "Search Assignments"
+                    emptyText.text = message("ui.ExercisesView.search")
+                    accessibleContext.accessibleName = message("ui.ExercisesView.searchAccessible")
                     TextComponentEmptyText.setupPlaceholderVisibility(this)
                 }
             }

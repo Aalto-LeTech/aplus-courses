@@ -121,7 +121,7 @@ object CourseConfig {
      * `"optionalCategories": ["training", "challenge"]`
      * @property autoInstall An array of the modules that get installed automatically when the project gets turned into an A+ project.
      * `"autoInstall": ["O1Library"]`
-     * @property repl Settings for the Scala REPL. See [REPL].
+     * @property scalaRepl Settings for the Scala REPL. See [ScalaREPL].
      * @property modules An array of objects containing information about modules. See [Module].
      * @property exerciseModules Information, about which module each assignment uses. The assignment ID is used as a key to a map, where language codes are used as keys for the module names.
      * `
@@ -224,7 +224,8 @@ object CourseConfig {
      * @property url URL to a .zip file containing skeleton code, that the plugin downloads.
      * @property language Optional language of the module. If provided, only shown for that language in the UI.
      * @property version Major.minor version number. Increment the major number when making breaking changes, else the minor number.
-     * @property changelog Optional changelog, that gets shown as a tooltip in the modules list. Use empty string or leave out if you don't want a changelog.
+     * @property changelog Optional changelog, that gets shown as a tooltip in the module list.
+     * Use empty string or leave out if you don't want a changelog.
      */
     @Serializable
     data class Module(

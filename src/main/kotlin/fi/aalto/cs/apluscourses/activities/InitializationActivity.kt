@@ -5,7 +5,6 @@ import com.intellij.openapi.actionSystem.impl.ActionManagerImpl
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.application.ex.ApplicationEx
 import com.intellij.openapi.components.service
-import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.ModuleListener
@@ -76,13 +75,13 @@ internal class InitializationActivity() :
 
         val pluginVersion = PluginVersion.currentVersion
         val requiredVersion = courseConfig.version
-        logger.info("Starting initialization for course ${courseConfig.name} with required plugin version $requiredVersion and installed version $pluginVersion")
+        CoursesLogger.info("Starting initialization for course ${courseConfig.name} with required plugin version $requiredVersion and installed version $pluginVersion")
 
         val versionComparison = pluginVersion.comparisonStatus(requiredVersion)
 
         when (versionComparison) {
             ComparisonStatus.MAJOR_TOO_OLD -> {
-                logger.warn("A+ Courses major version outdated: installed $pluginVersion, required $requiredVersion")
+                CoursesLogger.warn("A+ Courses major version outdated: installed $pluginVersion, required $requiredVersion")
                 Notifier.notify(CourseVersionOutdatedError(), project)
                 InitializationStatus.setIsIoError(project)
                 CourseManager.getInstance(project).fireNetworkError()
@@ -90,12 +89,12 @@ internal class InitializationActivity() :
             }
 
             ComparisonStatus.MINOR_TOO_OLD -> {
-                logger.warn("A+ Courses minor version outdated: installed $pluginVersion, required $requiredVersion")
+                CoursesLogger.warn("A+ Courses minor version outdated: installed $pluginVersion, required $requiredVersion")
                 Notifier.notify(CourseVersionOutdatedWarning(), project)
             }
 
             ComparisonStatus.MAJOR_TOO_NEW -> {
-                logger.warn("A+ Courses version too new: installed $pluginVersion, required $requiredVersion")
+                CoursesLogger.warn("A+ Courses version too new: installed $pluginVersion, required $requiredVersion")
                 Notifier.notify(CourseVersionTooNewError(), project)
             }
 
@@ -166,7 +165,4 @@ internal class InitializationActivity() :
         MyBundle.message("ui.pluginInstallationDialog.askForIDERestart.cancelText"),
         Messages.getQuestionIcon()
     ) == Messages.OK
-
-
-    private val logger: Logger = APlusLogger.logger
 }

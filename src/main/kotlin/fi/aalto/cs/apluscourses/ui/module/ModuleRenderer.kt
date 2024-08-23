@@ -20,6 +20,7 @@ import com.intellij.ui.dsl.gridLayout.UnscaledGaps
 import com.intellij.util.application
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
+import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.icons.CoursesIcons
 import fi.aalto.cs.apluscourses.model.component.Module
 import fi.aalto.cs.apluscourses.services.CoursesClient
@@ -28,6 +29,7 @@ import fi.aalto.cs.apluscourses.services.course.CourseManager
 import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdater
 import fi.aalto.cs.apluscourses.ui.Utils.myActionLink
 import fi.aalto.cs.apluscourses.ui.Utils.myLink
+import fi.aalto.cs.apluscourses.ui.exercise.ExercisesTreeRenderer.Companion.exerciseIcon
 import fi.aalto.cs.apluscourses.utils.DateDifferenceFormatter.formatTimeUntilNow
 import org.jetbrains.annotations.NonNls
 import java.awt.BorderLayout
@@ -83,18 +85,19 @@ class ModuleRenderer(
     }
 
     private val actionRequiredText
-        get() = if (module.isUpdateAvailable) "Update Available"
-        else "Dependencies Missing"
+        get() = if (module.isUpdateAvailable) message("ui.ModuleRenderer.actionRequired.update")
+        else message("ui.ModuleRenderer.actionRequired.dependenciesMissing")
 
 
     private fun Panel.updateAvailable() {
         val metadata = module.metadata
         val changelog = module.changelog
-        val firstRow = "Update available: ${metadata?.version} → ${module.latestVersion}"
+        val firstRow =
+            message("ui.ModuleRenderer.updateAvailable.title", metadata?.version ?: "???", module.latestVersion)
         val text = if (changelog != null) "$firstRow<br><br>$changelog" else firstRow
         row {
             info(text).resizableColumn()
-            button("Update") {
+            button(message("ui.ModuleRenderer.updateAvailable.button")) {
                 CourseManager.getInstance(project).updateModule(module)
             }.align(AlignY.BOTTOM)
         }
@@ -105,7 +108,7 @@ class ModuleRenderer(
         val missingDependencies =
             CourseManager.getInstance(project).state.missingDependencies[module.name] ?: emptyList()
         row {
-            info("Dependencies missing:")
+            info(message("ui.ModuleRenderer.dependenciesMissing.title"))
         }
         missingDependencies.forEach { component ->
             row {
@@ -123,7 +126,7 @@ class ModuleRenderer(
 
     private val installing = AtomicBooleanProperty(false)
     private var isZipSizeSet = false
-    private fun zipSizeText(size: String) = "Download size $size"
+    private fun zipSizeText(size: String) = message("ui.ModuleRenderer.available.fileSize", size)
 
     private val zipSizeText = AtomicProperty<String>(zipSizeText("??? ??"))
 
@@ -145,11 +148,11 @@ class ModuleRenderer(
             info(zipSizeText.get())
                 .bindText(zipSizeText)
                 .resizableColumn()
-            button("Install") {
+            button(message("ui.ModuleRenderer.available.button")) {
                 project.service<CourseManager>().installModule(module)
                 installing.set(true)
             }.align(AlignY.BOTTOM).visibleIf(installing.not())
-            button("Installing...") {}.applyToComponent {
+            button(message("ui.ModuleRenderer.available.installing")) {}.applyToComponent {
                 isEnabled = false
             }.align(AlignY.BOTTOM).visibleIf(installing)
         }
@@ -166,9 +169,9 @@ class ModuleRenderer(
     private fun Panel.installed() {
         val installedTime = module.metadata?.downloadedAt
         val installedTimeText = if (installedTime != null) {
-            "Installed ${formatTimeUntilNow(installedTime)}"
+            message("ui.ModuleRenderer.installed.title", formatTimeUntilNow(installedTime))
         } else {
-            "Metadata not found"
+            message("ui.ModuleRenderer.installed.metadataError")
         }
 
         val nextExercise = ExercisesUpdater.getInstance(project).state.exerciseGroups
@@ -182,10 +185,10 @@ class ModuleRenderer(
             val exercise = nextExercise.first
             val groupName = nextExercise.second.name
             row {
-                info("Next assignment: $groupName")
+                info(message("ui.ModuleRenderer.installed.nextAssignment", groupName))
             }
             row {
-                myLink(exercise.name, CoursesIcons.NoSubmissions) {
+                myLink(exercise.name, exerciseIcon(exercise)) { // TODO correct icon
                     opener.showExercise(exercise)
                 }
             }
@@ -193,14 +196,14 @@ class ModuleRenderer(
         if (module.documentationExists) {
             row {
                 myActionLink(
-                    "Open documentation",
+                    message("ui.ModuleRenderer.installed.documentation"),
                     CoursesIcons.Docs,
                     opener.openDocumentationAction(module, "doc/index.html")
                 )
             }
         }
         row {
-            myLink("Show in project tree", AllIcons.General.Locate) {
+            myLink(message("ui.ModuleRenderer.installed.showInProject"), AllIcons.General.Locate) {
                 opener.showModuleInProjectTree(module)
             }
         }

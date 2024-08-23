@@ -5,7 +5,7 @@ import com.intellij.notification.Notifications
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
-import fi.aalto.cs.apluscourses.utils.APlusLogger
+import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -29,7 +29,7 @@ class Notifier(
                 delay(timeoutMs)
                 notification.hideBalloon()
             } catch (e: CancellationException) {
-                APlusLogger.logger.warn("Notification timeout interrupted", e)
+                CoursesLogger.warn("Notification timeout interrupted", e)
             }
         }
     }

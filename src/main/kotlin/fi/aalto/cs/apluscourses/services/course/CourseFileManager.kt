@@ -6,7 +6,7 @@ import com.intellij.util.xmlb.Converter
 import com.intellij.util.xmlb.annotations.*
 import fi.aalto.cs.apluscourses.model.component.Module
 import fi.aalto.cs.apluscourses.model.people.Group
-import fi.aalto.cs.apluscourses.utils.APlusLogger
+import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import fi.aalto.cs.apluscourses.utils.Version
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -119,7 +119,7 @@ class CourseFileManager(private val project: Project) :
                 state.language = oldConfigJson.language
                 state.url = oldConfigJson.url
                 state.modules = oldConfigJson.modules.map { oldToNew(it.key, it.value) }.toMutableList()
-                APlusLogger.info("Migrated old configuration\nOld config: $oldConfig\nNew config: $state")
+                CoursesLogger.info("Migrated old configuration\nOld config: $oldConfig\nNew config: $state")
             }
         }
     }

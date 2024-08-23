@@ -6,7 +6,6 @@ import com.intellij.ide.plugins.PluginManagerCore.isPluginInstalled
 import com.intellij.ide.plugins.PluginNode
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.components.service
-import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.extensions.PluginId
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
@@ -18,8 +17,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 object PluginAutoInstaller {
-    private val logger: Logger = APlusLogger.logger
-
     private fun shouldDownloadPlugin(id: PluginId): Boolean {
         return !isPluginInstalled(id)
     }
@@ -52,8 +49,8 @@ object PluginAutoInstaller {
         val pluginsToDownload = pluginIDs.filter { shouldDownloadPlugin(it) }.toSet()
         val pluginsToEnable = pluginIDs.filter { shouldEnablePlugin(it) }.toSet()
 
-        pluginsToDownload.forEach { logger.info("Plugin to download: ${it.idString}") }
-        pluginsToEnable.forEach { logger.info("Plugin to enable: ${it.idString}") }
+        pluginsToDownload.forEach { CoursesLogger.info("Plugin to download: ${it.idString}") }
+        pluginsToEnable.forEach { CoursesLogger.info("Plugin to enable: ${it.idString}") }
 
 
         if (pluginsToDownload.isEmpty() && pluginsToEnable.isEmpty()) {

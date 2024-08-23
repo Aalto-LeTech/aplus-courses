@@ -18,6 +18,7 @@ import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.treeStructure.Tree
 import com.intellij.util.PsiIconUtil
 import com.intellij.util.application
+import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.icons.CoursesIcons
 import fi.aalto.cs.apluscourses.services.Background
 import fi.aalto.cs.apluscourses.utils.FileDateFormatter
@@ -88,7 +89,7 @@ class FileRenderer(private val files: Map<String, Path>) : NodeRenderer() {
             val file = files[text]
             if (file != null) {
                 append(
-                    " last modified ${FileDateFormatter.getFileModificationTime(file)}",
+                    " " + message("ui.FileTree.lastModified", FileDateFormatter.getFileModificationTime(file)),
                     SimpleTextAttributes.GRAYED_ATTRIBUTES
                 )
             }

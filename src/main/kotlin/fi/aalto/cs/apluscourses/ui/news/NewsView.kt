@@ -1,6 +1,5 @@
 package fi.aalto.cs.apluscourses.ui.news
 
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.ui.JBColor
@@ -12,32 +11,33 @@ import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.gridLayout.UnscaledGaps
 import com.intellij.util.application
 import com.intellij.util.ui.JBFont
+import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.icons.CoursesIcons
 import fi.aalto.cs.apluscourses.model.news.NewsList
 import java.awt.Font
 import javax.swing.ScrollPaneConstants
 
-class NewsView(private val toolWindow: ToolWindow, private val project: Project) : SimpleToolWindowPanel(true, true) {
+class NewsView(private val toolWindow: ToolWindow) : SimpleToolWindowPanel(true, true) {
     private var news: NewsList? = null
     private var shortTab = false
-    private val shortTabTitle = "📰"
-    private val longTabTitle = "News"
+    private val shortTabTitle = message("toolwindows.APlusToolWindowFactory.tabs.newsShort")
+    private val longTabTitle = message("toolwindows.APlusToolWindowFactory.tabs.news")
     private val tabTitle
         get() = if (shortTab) shortTabTitle else longTabTitle
 
-    private val notificationDot = """<span style="color: #FF0090;">●</span>"""
+    private val notificationDot = message("ui.NewsView.notificationDot")
     private val unreadTabTitle
         get() = """<html><body>${
             if (shortTab)
                 notificationDot
             else
-                """<span>${longTabTitle} </span>${notificationDot}"""
+                message("ui.NewsView.titleWithDot")
         }</body></html>"""
 
     init {
         val content = JBScrollPane()
         setContent(content)
-        emptyText.text = "No news to show"
+        emptyText.text = message("ui.NewsView.noNews")
     }
 
     /**
