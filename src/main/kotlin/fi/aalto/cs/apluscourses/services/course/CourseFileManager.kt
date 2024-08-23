@@ -21,8 +21,8 @@ private class InstantConverter : Converter<Instant>() {
 }
 
 private class VersionConverter : Converter<Version>() {
-    override fun fromString(s: @NonNls String): Version? = Version(s)
-    override fun toString(v: Version): String? = v.toString()
+    override fun fromString(s: @NonNls String): Version = Version(s)
+    override fun toString(v: Version): String = v.toString()
 }
 
 @Service(Service.Level.PROJECT)

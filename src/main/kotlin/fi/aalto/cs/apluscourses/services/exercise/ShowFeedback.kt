@@ -73,9 +73,9 @@ class ShowFeedback(
                     "<style>"
                             + Jsoup.clean(
                         feedbackCss
-                            .replace("TEXT_COLOR", textColorString)
-                            .replace("BG_COLOR", backgroundColorString)
-                            .replace("FONT_NAME", fontName),
+                            .replace(Regex("(--bg-color:\\s*)(.*;)"), "$1$backgroundColorString;")
+                            .replace(Regex("(--fg-color:\\s*)(.*;)"), "$1$textColorString;")
+                            .replace(Regex("(--font-name:\\s*)(.*;)"), "$1\"$fontName\";"),
                         Safelist.none()
                     )
                             + "</style>"
