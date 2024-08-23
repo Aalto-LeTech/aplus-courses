@@ -5,7 +5,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.DumbAwareAction
 import fi.aalto.cs.apluscourses.services.course.CourseManager
-import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdater
 
 class RefreshEverythingAction : DumbAwareAction() {
 
@@ -15,7 +14,6 @@ class RefreshEverythingAction : DumbAwareAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
         e.project?.service<CourseManager>()?.restart()
-        e.project?.service<ExercisesUpdater>()?.restart()
     }
 
     override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT

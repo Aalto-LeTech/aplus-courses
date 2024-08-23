@@ -59,7 +59,6 @@ class ExercisesUpdater(
     fun restart() {
         exerciseJob?.cancel()
         gradingJob?.cancel()
-        println("restart")
         runExerciseUpdater()
         runGradingUpdater()
     }
@@ -69,26 +68,20 @@ class ExercisesUpdater(
         gradingJob?.cancel()
     }
 
-    private fun runExerciseUpdater(
-        updateInterval: Long = 300_000
-    ) {
+    private fun runExerciseUpdater() {
         exerciseJob =
             cs.launch {
                 try {
-                    while (true) {
-                        withBackgroundProgress(project, "A+ Courses", cancellable = true) {
-                            reportSequentialProgress { reporter ->
-                                reporter.indeterminateStep("Refreshing assingments")
-                                doTask()
-                            }
+                    withBackgroundProgress(project, "A+ Courses", cancellable = true) {
+                        reportSequentialProgress { reporter ->
+                            reporter.indeterminateStep("Refreshing assingments")
+                            doTask()
                         }
-                        cs.ensureActive()
-                        delay(updateInterval)
                     }
-                } catch (_: CancellationException) {
-                    println("Task was cancelled 1")
                 } catch (e: Exception) {
                     when (e) {
+                        is CancellationException -> {}
+
                         is IOException, is UnresolvedAddressException -> {
                             state.clearAll()
                             CourseManager.getInstance(project)
