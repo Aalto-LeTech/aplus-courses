@@ -398,7 +398,6 @@ class ResponsiveImagePanel(url: String? = null, icon: Icon? = null, width: Int, 
 
     init {
         val icon = icon ?: IconLoader.findIcon(URI(url!!).toURL(), true)
-        println("icon $icon ${icon?.iconWidth} $url")
         image = icon?.let {
             IconLoader.toImage(
                 it,

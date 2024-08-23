@@ -45,13 +45,11 @@ class NewsView(private val toolWindow: ToolWindow, private val project: Project)
      */
     fun viewModelChanged(newsList: NewsList?) {
         application.invokeLater {
-            println("newsview update")
             this.news = newsList
             if (newsList == null || newsList.news.isEmpty()) {
                 remove(content)
                 return@invokeLater
             }
-            println("newsview update 2")
             val content = JBScrollPane((panel {
                 panel {
                     customizeSpacingConfiguration(object : IntelliJSpacingConfiguration() {

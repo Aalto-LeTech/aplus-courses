@@ -22,6 +22,7 @@ import fi.aalto.cs.apluscourses.services.Opener
 import fi.aalto.cs.apluscourses.services.PluginSettings
 import fi.aalto.cs.apluscourses.services.TokenStorage
 import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdater
+import fi.aalto.cs.apluscourses.utils.APlusLogger
 import fi.aalto.cs.apluscourses.utils.Version
 import fi.aalto.cs.apluscourses.utils.callbacks.Callbacks
 import kotlinx.coroutines.*
@@ -120,12 +121,11 @@ class CourseManager(
         val news = state.news ?: return
         news.setAllRead()
         CourseFileManager.getInstance(project).setNewsRead()
-        fireNewsUpdated(news)
+        fireNewsUpdated()
     }
 
     private suspend fun doTask() {
         project.service<CourseFileManager>().migrateOldConfig()
-        println(CourseFileManager.getInstance(project).state.url)
         val courseConfig = CourseConfig.get(project)
         if (courseConfig == null) {
             fireNetworkError()
@@ -134,7 +134,6 @@ class CourseManager(
 
         state.courseName = courseConfig.name
         state.aPlusUrl = courseConfig.aPlusUrl
-        println("courseConfig: $courseConfig")
         if (!TokenStorage.getInstance().isTokenSet()) {
             state.clearAll()
             state.authenticated = false
@@ -174,13 +173,11 @@ class CourseManager(
             )
         }
         val exerciseModules = courseConfig.exerciseModules.map { (exerciseId, languagesToModule) ->
-            println("exerciseId: $exerciseId languagesToModule: $languagesToModule")
             exerciseId to
                     languagesToModule
                         .map { (language, moduleName) ->
                             var module = modules.find { it.name == moduleName }
                             if (module == null) {
-                                println("Module $moduleName not found")
                                 module = Module(
                                     moduleName,
                                     "",
@@ -225,7 +222,7 @@ class CourseManager(
         }
 
         state.news = newNews
-        fireNewsUpdated(newNews)
+        fireNewsUpdated()
         fireCourseUpdated()
 
         val autoInstallModulesToInstall = course.autoInstallComponents
@@ -274,7 +271,6 @@ class CourseManager(
                 it.updateStatus()
             }
             val dependencies = getMissingDependencies(it)
-            println("module: ${it.name} dependencies: $dependencies")
             if (dependencies.isNotEmpty()) {
                 it.setError()
                 it.name to dependencies
@@ -295,11 +291,11 @@ class CourseManager(
         withBackgroundProgress(project, "A+ Courses") {
             reportSequentialProgress { reporter ->
                 reporter.indeterminateStep("Installing ${module.name}")
+                logger.info("Installing ${module.name}")
                 withContext(moduleOperationDispatcher) {
                     module.downloadAndInstall()
                 }
                 state.course?.callbacks?.invokePostDownloadModuleCallbacks(project, module)
-                println("Module installed")
 
                 fireModulesUpdated()
                 if (show) project.service<Opener>().showModuleInProjectTree(module)
@@ -309,6 +305,11 @@ class CourseManager(
                     withContext(moduleOperationDispatcher) {
                         it.downloadAndInstall()
                     }
+                }
+                if (dependencies.isNotEmpty()) {
+                    logger.info("Installed ${module.name} and its dependencies ${dependencies.map { it.name }}")
+                } else {
+                    logger.info("Installed ${module.name}")
                 }
                 refreshModuleStatuses()
             }
@@ -324,6 +325,7 @@ class CourseManager(
 
     fun updateModule(module: Module) {
         cs.launch {
+            logger.info("Updating ${module.name}")
             withContext(moduleOperationDispatcher) {
                 module.update()
             }
@@ -344,7 +346,7 @@ class CourseManager(
     }
 
 
-    private fun fireNewsUpdated(newsList: NewsList) {
+    private fun fireNewsUpdated() {
         application.invokeLater {
             project.messageBus
                 .syncPublisher(NEWS_TOPIC)
@@ -382,6 +384,8 @@ class CourseManager(
     }
 
     companion object {
+        private val logger = APlusLogger.logger
+
         @ProjectLevel
         val NEWS_TOPIC: Topic<NewsUpdaterListener> =
             Topic(NewsUpdaterListener::class.java, Topic.BroadcastDirection.TO_CHILDREN)
@@ -404,7 +408,6 @@ class CourseManager(
             val endingTime = getInstance(project).state.course?.endingTime ?: return false
             val parsedTime = Instant.parse(endingTime)
             val now = Clock.System.now()
-            println("parsedTime: $parsedTime now: $now, isCourseEnded: ${now > parsedTime}")
             return now > parsedTime
         }
 

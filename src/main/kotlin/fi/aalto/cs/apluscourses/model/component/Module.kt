@@ -93,13 +93,11 @@ class Module(
             }
             writeAction {
                 ModuleManager.getInstance(project).disposeModule(oldPlatformObject)
-                println("Disposing module $name")
             }
         }
         status = Status.LOADING
         downloadAndUnzipZip(zipUrl, fullPath.parent)
         CourseFileManager.getInstance(project).addModule(this)
-        println("Loading module $name $imlPath")
         withContext(Dispatchers.EDT) {
             loadToProject()
         }

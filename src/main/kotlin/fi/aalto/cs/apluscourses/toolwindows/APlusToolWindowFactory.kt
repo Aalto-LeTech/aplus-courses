@@ -92,7 +92,6 @@ internal class APlusToolWindowFactory : ToolWindowFactory, DumbAware {
         // Shorten titles when toolwindow is too small
         toolWindow.component.addComponentListener(object : ComponentAdapter() {
             override fun componentResized(e: ComponentEvent) {
-                println("toolwindow resize ${e.component.bounds.width}")
                 if (e.component.bounds.width <= 424) {
                     overviewTab.displayName = "<html><body><b>A+</b></body></html>"
                 } else {
@@ -173,7 +172,6 @@ internal class APlusToolWindowFactory : ToolWindowFactory, DumbAware {
 
         connection.subscribe(CourseManager.NEWS_TOPIC, object : NewsUpdaterListener {
             override fun onNewsUpdated(newsList: NewsList) {
-                println("received update news mytoolwindow")
                 newsView.viewModelChanged(newsList)
             }
         })

@@ -145,12 +145,14 @@ class ExercisesTreeRenderer : NodeRenderer() {
             is ExercisesView.SubmissionResultItem -> {
                 val submission = item.submission
                 val isRejected = submission.status == SubmissionResult.Status.REJECTED
-                val isLate = (submission.latePenalty
-                    ?: 0.0) > 0 || submission.status == SubmissionResult.Status.UNOFFICIAL
+                val isUnofficial = submission.status == SubmissionResult.Status.UNOFFICIAL
+                val isLate = (submission.latePenalty ?: 0.0) > 0
                 if (isRejected) {
                     "rejected"
                 } else if (isLate) {
                     "late"
+                } else if (isUnofficial) {
+                    "unofficial"
                 } else {
                     ""
                 }

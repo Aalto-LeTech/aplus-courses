@@ -6,6 +6,7 @@ import com.intellij.util.xmlb.Converter
 import com.intellij.util.xmlb.annotations.*
 import fi.aalto.cs.apluscourses.model.component.Module
 import fi.aalto.cs.apluscourses.model.people.Group
+import fi.aalto.cs.apluscourses.utils.APlusLogger
 import fi.aalto.cs.apluscourses.utils.Version
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -94,7 +95,6 @@ class CourseFileManager(private val project: Project) :
 
     fun migrateOldConfig() {
         if (state.url == null) {
-            println("Migrating old configuration for project ${project.name} at ${project.basePath} with state $state and url ${state.url}")
             val file =
                 Path(project.basePath!!).resolve(Project.DIRECTORY_STORE_FOLDER).resolve("a-plus-project.json").toFile()
             if (file.exists()) {
@@ -119,13 +119,8 @@ class CourseFileManager(private val project: Project) :
                 state.language = oldConfigJson.language
                 state.url = oldConfigJson.url
                 state.modules = oldConfigJson.modules.map { oldToNew(it.key, it.value) }.toMutableList()
-                println("Migrated old configuration")
-                println("Old config: $oldConfig")
-                println("New config: $state")
-//                file.delete()
+                APlusLogger.info("Migrated old configuration\nOld config: $oldConfig\nNew config: $state")
             }
-            println("File: $file")
-
         }
     }
 

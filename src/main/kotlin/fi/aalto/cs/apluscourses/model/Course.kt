@@ -44,19 +44,12 @@ data class Course(
         autoInstallComponentNames
             .mapNotNull { components[it] }
 
-    /**
-     * A list of modules that have an update available.
-     */
-    fun updatableModules(): List<Module> =
-        modules.filter { it.isUpdateAvailable }
-
     fun getComponentIfExists(name: String): Component<*>? {
         val component = components[name]
         return component ?: createAndCacheLibrary(name)
     }
 
     private fun createAndCacheLibrary(name: String): Library? {
-        println("createAndCacheLibrary $name")
         if (name.contains("scala-sdk")) {
             try {
                 val library = ScalaSdk(name, project)

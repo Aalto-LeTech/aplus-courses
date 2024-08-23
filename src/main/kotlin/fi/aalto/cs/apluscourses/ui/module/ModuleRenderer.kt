@@ -95,8 +95,6 @@ class ModuleRenderer(
         row {
             info(text).resizableColumn()
             button("Update") {
-                println("Update ${module.name}")
-                println("changedFiles = ${module.changedFiles()}")
                 CourseManager.getInstance(project).updateModule(module)
             }.align(AlignY.BOTTOM)
         }

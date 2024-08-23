@@ -45,7 +45,6 @@ class ExercisesTreeFilter(private val project: Project) :
     fun loadFromState() {
         filters.clear()
         state.enabledFilters.forEach { filterName ->
-            println("Filter name: $filterName")
             val filter = Filter.allFilters.find { it.displayName == filterName }
             if (filter != null) {
                 filters[filter] = true

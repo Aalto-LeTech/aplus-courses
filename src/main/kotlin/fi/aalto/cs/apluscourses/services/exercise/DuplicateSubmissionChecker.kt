@@ -42,14 +42,12 @@ class DuplicateSubmissionChecker(val project: Project) :
     }
 
     fun isDuplicateSubmission(exerciseId: Long, files: Map<String, Path>): Boolean {
-        println("Checking duplicate submission $exerciseId $files ${state.submissionHashes}")
         val currentHash = hashAllFiles(files)
         val existingHashes = state.submissionHashes[exerciseId]?.split(";") ?: listOf()
         return existingHashes.contains(currentHash)
     }
 
     fun onAssignmentSubmitted(exerciseId: Long, files: Map<String, Path>) {
-        println("Assignment submitted $exerciseId $files")
         val currentHash = hashAllFiles(files)
         val updatedHashes = (state.submissionHashes[exerciseId]?.split(";") ?: listOf()) + currentHash
         state.submissionHashes[exerciseId] = updatedHashes.joinToString(";")

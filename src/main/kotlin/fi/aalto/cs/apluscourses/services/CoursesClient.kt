@@ -151,14 +151,8 @@ class CoursesClient(
             client.post(resource) {
                 addToken()
                 setBody(MultiPartFormDataContent(form))
-                onUpload { bytesSentTotal, contentLength ->
-                    println("Sent $bytesSentTotal bytes from $contentLength")
-                }
             }
         }
-        println(res.headers.toString())
-        println(res)
-        println(res.bodyAsText())
         return res
     }
 
@@ -180,7 +174,6 @@ class CoursesClient(
     }
 
     suspend fun getAndUnzip(zipUrl: String, target: Path, onlyPath: String? = null) {
-        println("Downloading and unzipping $zipUrl to $target")
         withBackgroundProgress(project, "A+ Courses") {
             reportSequentialProgress { reporter ->
                 val tempZipFile = kotlin.io.path.createTempFile(target.nameWithoutExtension, ".zip").toFile()
@@ -195,7 +188,6 @@ class CoursesClient(
                         if (!destinationFile.exists()) {
                             destinationFile.mkdirs()
                         }
-                        println("$tempZipFile ${tempZipFile.exists()} ${tempZipFile.length()} ${tempZipFile.canRead()}")
 
                         ZipFile(tempZipFile).use { zip ->
                             zip.entries().asSequence().forEach { entry ->
@@ -220,7 +212,6 @@ class CoursesClient(
                 }
             }
         }
-        println("Extracted $zipUrl to $target")
     }
 
     companion object {

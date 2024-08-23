@@ -1,6 +1,5 @@
 package fi.aalto.cs.apluscourses.services.exercise
 
-import com.intellij.history.LocalHistory
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.fileEditor.FileDocumentManager
@@ -8,7 +7,6 @@ import com.intellij.openapi.module.ModuleUtilCore
 import com.intellij.openapi.project.Project
 import com.intellij.serialization.PropertyMapping
 import fi.aalto.cs.apluscourses.api.APlusApi
-import fi.aalto.cs.apluscourses.icons.CoursesIcons
 import fi.aalto.cs.apluscourses.model.exercise.Exercise
 import fi.aalto.cs.apluscourses.model.exercise.Submission
 import fi.aalto.cs.apluscourses.model.exercise.SubmissionInfo
@@ -41,14 +39,14 @@ class SubmitExercise(
                 logger.info("Submitting $exercise")
                 var submissionInfo = submissionInfos[exercise.id]
                 if (submissionInfo == null) {
-                    println("Submission info is null")
                     submissionInfo = SubmissionInfo.fromJsonObject(APlusApi.exercise(exercise).get(project))
                     submissionInfos[exercise.id] = submissionInfo
-                } else {
-                    println("Submission info is not null")
                 }
+
                 val submittedBefore = exercise.submissionResults.isNotEmpty()
                 val submittersFromBefore = exercise.submissionResults.firstOrNull()?.submitters
+
+                logger.info("Has exercise been submitted before: $submittedBefore, submitters: $submittersFromBefore")
 
                 cs.ensureActive()
 
@@ -68,15 +66,11 @@ class SubmitExercise(
                     return@launch
                 }
 
-//                val exerciseModules: Map<String, Module> = course.exerciseModules[exercise.id]!!
-//                println(course.exerciseModules)
-
-                val module = exercise.module// exerciseModules[language]
+                val module = exercise.module
                 val platformModule = module?.platformObject
 
-                logger.info("Selected $module")
-
                 if (module == null || platformModule == null) {
+                    logger.error("Module not found. Module: $module, platformModule: $platformModule")
                     throw ModuleMissingException()
                 }
 
@@ -86,9 +80,9 @@ class SubmitExercise(
 
                 val modulePath = ModuleUtilCore.getModuleDirPath(platformModule)
 
+                logger.info("Detected module: $module, path: $modulePath")
+
                 val files: MutableMap<String, Path> = HashMap()
-                println(modulePath)
-                println(submissionInfo.getFiles(language))
                 for ((key, name) in submissionInfo.getFiles(language)) {
                     files[key] = FileUtil.findFileInDirectory(modulePath, name) ?: throw FileDoesNotExistException(
                         modulePath,
@@ -102,6 +96,7 @@ class SubmitExercise(
                                 && !DuplicateSubmissionDialog.showDialog()
                                 )
                     }) {
+                    logger.info("Duplicate submission detected and user chose to cancel")
                     return@launch
                 }
 
@@ -122,6 +117,8 @@ class SubmitExercise(
                     } ?: Group.GROUP_ALONE
                 }
 
+                logger.info("Selected group: $group, default group: $defaultGroupId")
+
                 val submissionDialog = withContext(Dispatchers.EDT) {
                     SubmitExerciseDialog(project, exercise, files.values.toList(), groups, group, submittedBefore)
                 }
@@ -140,13 +137,7 @@ class SubmitExercise(
                 DuplicateSubmissionChecker.getInstance(project)
                     .onAssignmentSubmitted(exercise.id, files)
 
-//            val tag: String = getAndReplaceText(
-//                "ui.localHistory.submission.tag",
-//                selectedExerciseGroup.getPresentableName(),
-//                submission.presentableExerciseName,
-//                submission.currentSubmissionNumber
-//            )
-//            addLocalHistoryTag(project, tag)
+                logger.info("Submitted exercise $exercise successfully")
             } catch (ex: IOException) {
                 notifyNetworkError(ex, project)
             } catch (ex: FileDoesNotExistException) {
@@ -162,11 +153,6 @@ class SubmitExercise(
     private fun notifyNetworkError(exception: IOException, project: Project) {
         logger.warn("Network error while submitting exercise", exception)
         notifier.notify(NetworkErrorNotification(exception), project)
-    }
-
-
-    private fun addLocalHistoryTag(project: Project, tag: String) {
-        LocalHistory.getInstance().putSystemLabel(project, tag, CoursesIcons.AccentColor.rgb)
     }
 
     companion object {

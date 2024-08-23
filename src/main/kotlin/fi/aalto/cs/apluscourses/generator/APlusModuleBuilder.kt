@@ -43,6 +43,7 @@ import fi.aalto.cs.apluscourses.services.ProjectInitializationTracker
 import fi.aalto.cs.apluscourses.services.course.CourseFileManager
 import fi.aalto.cs.apluscourses.services.course.CoursesFetcher
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil.languageCodeToName
+import fi.aalto.cs.apluscourses.utils.APlusLogger
 import kotlinx.coroutines.future.asDeferred
 import javax.swing.JComponent
 import javax.swing.JList
@@ -71,7 +72,8 @@ internal class APlusModuleBuilder : ModuleBuilder() {
         model: ModifiableModuleModel?,
         modulesProvider: ModulesProvider?
     ): List<Module?>? {
-        println("Creating module $courseConfig, $courseConfigUrl, $language, $jdkIntent")
+        val logger = APlusLogger.logger
+        logger.info("Creating project from $courseConfigUrl, language: $language")
         project.service<CourseFileManager>().updateSettings(
             language,
             courseConfigUrl,
@@ -82,7 +84,8 @@ internal class APlusModuleBuilder : ModuleBuilder() {
             if (selectedSdk is DownloadJdk) {
                 val task = selectedSdk.task
                 if (task is JdkDownloadTask) {
-                    println("Downloading SDK")
+                    logger.info("Downloading JDK ${task.jdkItem} for new project")
+
                     val sdkDownloadedFuture =
                         project.service<JdkDownloadService>().scheduleDownloadJdkForNewProject(task)
                     project.service<ProjectInitializationTracker>()
@@ -90,7 +93,7 @@ internal class APlusModuleBuilder : ModuleBuilder() {
                 }
             } else if (selectedSdk is ExistingJdk) {
                 application.runWriteAction {
-                    println("Setting SDK to ${selectedSdk.jdk}")
+                    logger.info("Setting SDK to ${selectedSdk.jdk} for new project")
                     ProjectRootManager.getInstance(project).projectSdk = selectedSdk.jdk
                 }
             }

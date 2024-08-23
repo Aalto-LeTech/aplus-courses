@@ -19,6 +19,7 @@ import fi.aalto.cs.apluscourses.services.TokenStorage
 import fi.aalto.cs.apluscourses.services.course.CourseFileManager
 import fi.aalto.cs.apluscourses.services.course.CourseManager
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil
+import fi.aalto.cs.apluscourses.utils.APlusLogger
 import io.ktor.utils.io.CancellationException
 import kotlinx.coroutines.*
 import java.io.IOException
@@ -117,21 +118,20 @@ class ExercisesUpdater(
                     delay(updateInterval)
                 }
             } catch (_: CancellationException) {
-                println("Task was cancelled")
             }
         }
     }
 
     private suspend fun doTask() {
         if (!TokenStorage.getInstance().isTokenSet()) {
-            println("Not authenticated")
+            logger.info("Not authenticated, clearing exercises")
             state.clearAll()
             fireExercisesUpdated()
             return
         }
-        isRunning = true
         val course = CourseManager.course(project) ?: return
-        println("Starting exercises update")
+        isRunning = true
+        logger.info("Updating exercises for course ${course.id}")
         val timeStart = System.currentTimeMillis()
         val selectedLanguage = CourseFileManager.getInstance(project).state.language!!
 
@@ -164,7 +164,7 @@ class ExercisesUpdater(
         val newSubmissionCount = points.modules.flatMap { it.exercises }.sumOf { it.submissions.size }
         val newPoints = points.modules.flatMap { it.exercises }.sumOf { it.points }
         if (this.state.exerciseGroups.isNotEmpty() && this.points == newPoints && this.submissionCount == newSubmissionCount) {
-            println("No new data")
+            logger.info("No changes in exercises")
             isRunning = false
             return
         }
@@ -182,7 +182,8 @@ class ExercisesUpdater(
             .filter { it.value.size > 1 }
             .map { it.key to it.value.map { it.UserID } }
             .toMap()
-        println("done processing submission data ${submissionData.size}")
+
+        val optionalCategories = course.optionalCategories + "" // Empty category counted as optional
 
         val newExerciseGroups = points.modules.map { module ->
             val exerciseModule = exercises.find { it.id == module.id }
@@ -207,10 +208,6 @@ class ExercisesUpdater(
                             .map {
                                 val data = submissionData[it.id]
                                 val submitters = submissionsWithMultipleSubmitters[it.id]
-                                if (submitters != null) {
-                                    println("Multiple submitters for ${it.id}: $submitters")
-                                }
-                                println("Processing submission ${exercise.name} ${it.id} ${data?.Status} ${data?.Grade}")
                                 SubmissionResult(
                                     id = it.id,
                                     url = it.url,
@@ -228,7 +225,7 @@ class ExercisesUpdater(
                         bestSubmissionId = exercise.bestSubmission?.split("/")?.last()?.toLong(),
                         difficulty = exercise.difficulty,
                         isSubmittable = exerciseExercise?.hasSubmittableFiles == true,
-                        isOptional = listOf("optional", "training", "").contains(exercise.difficulty)
+                        isOptional = optionalCategories.contains(exercise.difficulty)
                     )
                 }.toMutableList()
             )
@@ -244,12 +241,11 @@ class ExercisesUpdater(
         submissionsInGrading.clear()
         submissionsInGrading.addAll(newSubmissionsInGrading)
         if (submissionsInGrading.isNotEmpty()) {
-            gradingJob?.cancel("Restart grading")
+            gradingJob?.cancel()
             runGradingUpdater()
         }
-        println("done processing exercises")
         val timeEnd = System.currentTimeMillis()
-        println("Time taken: ${timeEnd - timeStart} ms")
+        logger.info("Done updating exercises. Time taken: ${timeEnd - timeStart} ms")
         isRunning = false
     }
 
@@ -319,7 +315,7 @@ class ExercisesUpdater(
     }
 
     companion object {
-//        private val logger: Logger = APlusLogger.logger
+        private val logger = APlusLogger.logger
 
         @ProjectLevel
         val EXERCISES_TOPIC: Topic<ExercisesUpdaterListener> =

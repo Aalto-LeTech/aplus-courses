@@ -3,7 +3,6 @@ package fi.aalto.cs.apluscourses.services
 import com.intellij.ide.BrowserUtil
 import com.intellij.ide.browsers.actions.OpenInBrowserBaseGroupAction.OpenInBrowserEditorContextBarGroupAction
 import com.intellij.ide.projectView.ProjectView
-import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -42,21 +41,6 @@ class Opener(
             withContext(Dispatchers.EDT) {
                 ProjectView.getInstance(project).select(psi, dir, true)
                 // TODO open project view
-            }
-        }
-    }
-
-    fun openDocumentation(module: Module) {
-        cs.launch {
-            val dir = module.platformObject?.guessModuleDir() ?: return@launch
-            val virtualFile = dir.findFile("doc/index.html") ?: return@launch
-            val psiFile = PsiManager.getInstance(project).findFile(virtualFile) ?: return@launch
-            val newDataContext = SimpleDataContext.builder().add(CommonDataKeys.PROJECT, project)
-                .add(CommonDataKeys.PSI_FILE, psiFile).build()
-            val actionEvent = AnActionEvent.createFromDataContext(ActionPlaces.TOOLWINDOW_CONTENT, null, newDataContext)
-            val action = OpenInBrowserEditorContextBarGroupAction().getChildren(null)[0]
-            withContext(Dispatchers.EDT) {
-                action.actionPerformed(actionEvent)
             }
         }
     }

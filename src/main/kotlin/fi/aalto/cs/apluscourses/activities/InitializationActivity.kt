@@ -82,7 +82,7 @@ internal class InitializationActivity() :
 
         when (versionComparison) {
             ComparisonStatus.MAJOR_TOO_OLD -> {
-                logger.warn("A+ Courses version outdated: installed $pluginVersion, required $requiredVersion")
+                logger.warn("A+ Courses major version outdated: installed $pluginVersion, required $requiredVersion")
                 Notifier.notify(CourseVersionOutdatedError(), project)
                 InitializationStatus.setIsIoError(project)
                 CourseManager.getInstance(project).fireNetworkError()
@@ -90,7 +90,7 @@ internal class InitializationActivity() :
             }
 
             ComparisonStatus.MINOR_TOO_OLD -> {
-                logger.warn("A+ Courses version outdated: installed $pluginVersion, required $requiredVersion")
+                logger.warn("A+ Courses minor version outdated: installed $pluginVersion, required $requiredVersion")
                 Notifier.notify(CourseVersionOutdatedWarning(), project)
             }
 

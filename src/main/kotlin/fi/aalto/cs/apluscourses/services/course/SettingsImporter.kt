@@ -16,7 +16,6 @@ import fi.aalto.cs.apluscourses.services.CoursesClient
 import fi.aalto.cs.apluscourses.services.PluginSettings
 import fi.aalto.cs.apluscourses.utils.APlusLogger
 import io.ktor.client.statement.bodyAsText
-import io.ktor.client.statement.request
 import io.ktor.http.Url
 import kotlinx.coroutines.CoroutineScope
 import java.io.IOException
@@ -62,6 +61,7 @@ class SettingsImporter(
         )
 
         UpdateSettings.getInstance().forceCheckForUpdateAfterRestart()
+        logger.info("Imported IDE settings")
         return true
     }
 
@@ -107,16 +107,8 @@ class SettingsImporter(
     @Throws(IOException::class)
     suspend fun importFeedbackCss(course: Course): String? {
         val cssUrl = course.resourceUrls["feedbackCss"] ?: return null
-        println("importing feedback css\n$cssUrl")
-        val res = CoursesClient.getInstance(project).get(cssUrl.toString())
-        println(res)
-        println(res.request)
-        println(res.request.url)
-        println(res.request.headers)
-        println(res.bodyAsText())
+        logger.info("Importing feedback CSS")
         return CoursesClient.getInstance(project).get(cssUrl.toString()).bodyAsText()
-
-        logger.info("Imported feedback CSS")
     }
 
     fun importScalaReplAdditionalArguments(string: String) {
