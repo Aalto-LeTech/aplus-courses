@@ -25,6 +25,7 @@ import com.intellij.ui.AnimatedIcon
 import com.intellij.ui.ColoredListCellRenderer
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.components.JBList
+import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.Placeholder
 import com.intellij.ui.dsl.builder.TopGap
@@ -46,6 +47,7 @@ import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil.languageCodeToName
 import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import kotlinx.coroutines.future.asDeferred
 import org.jetbrains.annotations.NonNls
+import java.awt.event.ItemEvent
 import javax.swing.JComponent
 import javax.swing.JList
 import javax.swing.ListSelectionModel
@@ -233,6 +235,34 @@ internal class APlusModuleBuilder : ModuleBuilder() {
                             )
                         }
                     }
+                    if (this@APlusModuleBuilder.programmingLanguage == "scala") {
+                        group(message("generator.APlusModuleBuilder.extra")) {
+                            row(JavaUiBundle.message("label.project.wizard.new.project.jdk")) {
+                                cell(ProjectWizardJdkComboBox(null, wizardContext.disposable)).apply {
+                                    val defaultValue = this.component.selectedItem
+                                    selectedSdk = AtomicProperty(defaultValue as ProjectWizardJdkIntent)
+                                    bindItem(selectedSdk!!)
+
+                                    // If the user selects a JDK that is already installed, select the existing JDK
+                                    component.addItemListener { changed ->
+                                        if (changed.stateChange == ItemEvent.SELECTED) {
+                                            val newSdk = changed.item
+                                            if (newSdk is DownloadJdk) {
+                                                val existingSdk =
+                                                    component.registered.find { it.jdk.name == newSdk.task.suggestedSdkName }
+                                                if (existingSdk != null) {
+                                                    selectedSdk!!.set(existingSdk)
+                                                }
+                                            }
+
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        selectedSdk = null
+                    }
                     if (courseConfig.requiredPlugins.isNotEmpty()) {
                         group(message("generator.APlusModuleBuilder.plugins")) {
                             row {
@@ -245,20 +275,10 @@ internal class APlusModuleBuilder : ModuleBuilder() {
                             }
                         }
                     }
-                    if (this@APlusModuleBuilder.programmingLanguage == "scala") {
-                        group(message("generator.APlusModuleBuilder.extra")) {
-                            row(JavaUiBundle.message("label.project.wizard.new.project.jdk")) {
-                                cell(ProjectWizardJdkComboBox(null, wizardContext.disposable)).apply {
-                                    val defaultValue = this.component.selectedItem
-                                    selectedSdk = AtomicProperty(defaultValue as ProjectWizardJdkIntent)
-                                    bindItem(selectedSdk!!)
-                                }
-                            }
-                        }
-                    } else {
-                        selectedSdk = null
-                    }
                 }.customize(UnscaledGaps(32, 32, 32, 32))
+            }).apply {
+                verticalScrollBarPolicy = JBScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED
+                horizontalScrollBarPolicy = JBScrollPane.HORIZONTAL_SCROLLBAR_NEVER
             }
 
             component.revalidate()
@@ -276,7 +296,10 @@ internal class APlusModuleBuilder : ModuleBuilder() {
                                 it.pluginDescriptor.description
                                     ?: message("generator.APlusModuleBuilder.defaultDescription")
                             )
-                            cell(it).resizableColumn().align(AlignX.FILL)
+                            cell(it).resizableColumn().align(AlignX.FILL).applyToComponent {
+                                background = null
+                                isOpaque = false
+                            }
                         }.topGap(TopGap.SMALL)
                     }
                 }

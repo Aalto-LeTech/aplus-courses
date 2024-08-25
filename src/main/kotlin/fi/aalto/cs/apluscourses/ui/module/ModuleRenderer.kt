@@ -41,7 +41,7 @@ import kotlin.to
 
 class ModuleRenderer(
     val module: Module,
-    index: Int, // TODO when filtering, background color has to be updated
+    var index: Int,
     val project: Project,
 ) : JPanel(BorderLayout()) {
     private var panel: DialogPanel
@@ -188,7 +188,7 @@ class ModuleRenderer(
                 info(message("ui.ModuleRenderer.installed.nextAssignment", groupName))
             }
             row {
-                myLink(exercise.name, exerciseIcon(exercise)) { // TODO correct icon
+                myLink(exercise.name, exerciseIcon(exercise)) {
                     opener.showExercise(exercise)
                 }
             }
@@ -209,9 +209,11 @@ class ModuleRenderer(
         }
     }
 
-    private val rowBackground = if (index % 2 == 0) UIUtil.getTableBackground()
-    else if (JBColor.isBright()) UIUtil.getTableBackground().brighter()
-    else ColorUtil.darker(UIUtil.getTableBackground(), 1)
+    private val rowBackground
+        get() =
+            if (index % 2 == 0) UIUtil.getTableBackground()
+            else if (JBColor.isBright()) UIUtil.getTableBackground().brighter()
+            else ColorUtil.darker(UIUtil.getTableBackground(), 1)
     private val hoverBackground = UIUtil.getTableBackground(true, false)
     private var isHovering = false
 
