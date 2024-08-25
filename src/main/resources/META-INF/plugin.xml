@@ -4,6 +4,7 @@
     <vendor>LeTech</vendor>
 
     <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.java</depends>
     <depends>org.intellij.scala</depends>
 
     <resource-bundle>messages.resources</resource-bundle>
