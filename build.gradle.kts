@@ -14,7 +14,7 @@ plugins {
     id("org.jetbrains.intellij.platform") version "2.0.1" // IntelliJ Platform Gradle Plugin
     id("org.jetbrains.changelog") version "2.2.1"
     id("org.jetbrains.qodana") version "2024.1.5"
-    id("org.jetbrains.kotlinx.kover") version "0.8.2"
+    id("org.jetbrains.kotlinx.kover") version "0.8.3"
 //    alias(libs.plugins.kotlin) // Kotlin support
 //    alias(libs.plugins.changelog) // Gradle Changelog Plugin
 //    alias(libs.plugins.qodana) // Gradle Qodana Plugin
