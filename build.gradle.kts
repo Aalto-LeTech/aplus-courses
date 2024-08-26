@@ -46,7 +46,7 @@ dependencies {
     implementation("io.ktor:ktor-client-cio:2.3.11")
     implementation("io.ktor:ktor-client-resources:2.3.11")
     implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.11")
-    implementation("io.ktor:ktor-client-content-negotiation:2.3.11")
+    implementation("io.ktor:ktor-client-content-negotiation:2.3.12")
 
     configurations.all {
         exclude(group = "org.jetbrains.kotlinx", module = "kotlinx.coroutines") // Only the bundled version is allowed
