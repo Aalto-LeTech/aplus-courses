@@ -1,23 +1,29 @@
 [versions]
+# plugins
+kotlin = "2.0.20"
+intelliJPlatform = "2.0.1"
+changelog = "2.2.1"
+qodana = "2024.1.9"
+kover = "0.8.3"
+
 # libraries
-scalaLibrary = "3.4.1"
-jupiterApi = "5.10.2"
-junitPlatformLauncher = "1.10.2"
-junitJupiterEngine = "5.10.2"
-junit = "4.13.2"
-hamcrest = "2.2"
-mockito = "5.11.0"
-restAssured = "5.4.0"
+jsonSerialization = "1.7.1"
+datetime = "0.6.1"
+ktor = "2.3.12"
+
+[plugins]
+kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+intelliJPlatform = { id = "org.jetbrains.intellij.platform", version.ref = "intelliJPlatform" }
+changelog = { id = "org.jetbrains.changelog", version.ref = "changelog" }
+qodana = { id = "org.jetbrains.qodana", version.ref = "qodana" }
+kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 
 [libraries]
+jsonSerialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json-jvm", version.ref = "jsonSerialization" }
+datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime-jvm", version.ref = "datetime" }
 
-scalaLibrary = { group = "org.scala-lang", name = "scala3-library_3", version.ref = "scalaLibrary" }
-
-jupiterApi = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "jupiterApi" }
-junitPlatformLauncher = { group = "org.junit.platform", name = "junit-platform-launcher", version.ref = "junitPlatformLauncher" }
-junitJupiterEngine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junitJupiterEngine" }
-
-junit = { group = "junit", name = "junit", version.ref = "junit" }
-hamcrest = { group = "org.hamcrest", name = "hamcrest", version.ref = "hamcrest" }
-mockito = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
-restAssured = { group = "io.rest-assured", name = "rest-assured", version.ref = "restAssured" }
+ktorCore = { group = "io.ktor", name = "ktor-client-core-jvm", version.ref = "ktor" }
+ktorCio = { group = "io.ktor", name = "ktor-client-cio-jvm", version.ref = "ktor" }
+ktorResources = { group = "io.ktor", name = "ktor-client-resources-jvm", version.ref = "ktor" }
+ktorJsonSerialization = { group = "io.ktor", name = "ktor-serialization-kotlinx-json-jvm", version.ref = "ktor" }
+ktorContentNegotiation = { group = "io.ktor", name = "ktor-client-content-negotiation-jvm", version.ref = "ktor" }

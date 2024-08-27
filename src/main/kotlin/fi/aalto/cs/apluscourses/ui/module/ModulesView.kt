@@ -49,8 +49,15 @@ class ModulesView(val project: Project) : SimpleToolWindowPanel(true, true) {
     private fun collapseAll() = itemPanels.forEach { it.collapse() }
 
     fun searchChanged(text: String) {
+        var i = 0
         for (item in itemPanels) {
-            item.setVisibility(item.module.name.lowercase().contains(text.lowercase()))
+            val isVisible = item.module.name.lowercase().contains(text.lowercase())
+            item.setVisibility(isVisible)
+            if (isVisible) {
+                item.index = i
+                item.updateBackground(false)
+                i++
+            }
         }
     }
 
@@ -137,10 +144,12 @@ class ModulesView(val project: Project) : SimpleToolWindowPanel(true, true) {
         collapseAll()
         val item = itemPanels.find { it.module.name == module.name }
         if (item != null) {
-            searchTextField.text = ""
-            searchChanged("")
             item.expand()
-            if (scroll) (content as JBScrollPane?)?.verticalScrollBar?.value = item.location.y - 100
+            if (scroll) {
+                searchTextField.text = ""
+                searchChanged("")
+                (content as JBScrollPane?)?.verticalScrollBar?.value = item.location.y - 100
+            }
         }
     }
 

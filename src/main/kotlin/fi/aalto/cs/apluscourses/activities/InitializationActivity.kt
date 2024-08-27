@@ -66,7 +66,9 @@ internal class InitializationActivity() :
                 ) {
                     val moduleModel = course.getComponentIfExists(module.name)
                     if (moduleModel is fi.aalto.cs.apluscourses.model.component.Module) {
-                        moduleModel.loadToProject()
+                        DumbService.getInstance(project).runWhenSmart {
+                            moduleModel.loadToProject()
+                        }
                     }
                 }
                 CourseManager.getInstance(project).refreshModuleStatuses()
