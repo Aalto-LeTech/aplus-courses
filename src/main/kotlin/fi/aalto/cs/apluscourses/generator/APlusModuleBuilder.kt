@@ -197,7 +197,7 @@ internal class APlusModuleBuilder : ModuleBuilder() {
     inner class CourseSettingsStep(
         val wizardContext: WizardContext
     ) : ModuleWizardStep() {
-        private var mainPanel = panel {}
+        private var mainPanel = JBScrollPane()
         private val selectedLanguage = AtomicProperty<String>("")
         private val dontImportSettings = AtomicProperty(false)
         private var selectedSdk: AtomicProperty<ProjectWizardJdkIntent>? = null
@@ -209,7 +209,7 @@ internal class APlusModuleBuilder : ModuleBuilder() {
             @NonNls val finnishCode = "fi"
             if (languages.contains(finnishCode)) selectedLanguage.set(finnishCode) else selectedLanguage.set(languages.first())
 
-            mainPanel = panel {
+            mainPanel = JBScrollPane(panel {
                 panel {
                     group(message("generator.APlusModuleBuilder.language")) {
                         row {

@@ -8,6 +8,7 @@ import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.impl.HTMLEditorProvider.Companion.openEditor
 import com.intellij.openapi.project.Project
 import com.intellij.ui.JBColor
+import com.intellij.ui.jcef.JBCefScrollbarsHelper
 import com.intellij.util.ui.JBFont
 import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.api.APlusApi
@@ -76,7 +77,7 @@ class ShowFeedback(
                             .replace(Regex("(--font-name:\\s*)(.*;)"), "$1\"$fontName\";"),
                         Safelist.none()
                     )
-                }</style>"
+                }${JBCefScrollbarsHelper.buildScrollbarsStyle()}</style>"
 
                 document.head().append(style)
 

@@ -22,6 +22,7 @@ import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
 import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.icons.CoursesIcons
+import fi.aalto.cs.apluscourses.model.component.Component
 import fi.aalto.cs.apluscourses.model.component.Module
 import fi.aalto.cs.apluscourses.services.CoursesClient
 import fi.aalto.cs.apluscourses.services.Opener
@@ -144,6 +145,9 @@ class ModuleRenderer(
     }
 
     private fun Panel.available() {
+        if (module.status == Component.Status.LOADING) {
+            installing.set(true)
+        }
         row {
             info(zipSizeText.get())
                 .bindText(zipSizeText)
