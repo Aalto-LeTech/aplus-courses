@@ -9,7 +9,7 @@ kover = "0.8.3"
 # libraries
 jsonSerialization = "1.7.1"
 datetime = "0.6.1"
-ktor = "2.3.11"
+ktor = "2.3.12"
 
 [plugins]
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
