@@ -8,7 +8,7 @@ package fi.aalto.cs.apluscourses.model.people
  */
 data class User(
     val userName: String,
-    val studentId: String,
+    val studentId: String?,
     val aplusId: Long,
     val enrolledCourses: List<Long>,
     val staffCourses: List<Long>,

@@ -40,7 +40,8 @@ internal class InitializationActivity() :
     override suspend fun execute(project: Project) {
         val courseConfig = try {
             CourseConfig.get(project)
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            CoursesLogger.error("Network error in InitializationActivity", e)
             InitializationStatus.setIsIoError(project)
             CourseManager.getInstance(project).fireNetworkError()
             return

@@ -25,4 +25,8 @@ object CoursesLogger {
     fun error(@NonNls message: String) {
         logger.error(message)
     }
+
+    fun error(@NonNls message: String, throwable: Throwable) {
+        logger.error(message, throwable)
+    }
 }

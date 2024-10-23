@@ -99,8 +99,11 @@ class CourseManager(
 
                 } catch (e: Exception) {
                     when (e) {
-                        is IOException, is UnresolvedAddressException -> getInstance(project)
-                            .fireNetworkError()
+                        is IOException, is UnresolvedAddressException -> {
+                            fireNetworkError()
+                            CoursesLogger.error("Network error in CourseManager", e)
+                            throw e
+                        }
 
                         else -> throw e
                     }
@@ -148,7 +151,8 @@ class CourseManager(
                 APlusApi.me().get(project)
             }
             APlusApi.Course(courseConfig.id.toLong()).get(project)
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            CoursesLogger.error("Error while fetching user or course", e)
             val courseId = courseConfig.id.toLong()
             val user = state.user
             if (user != null && (!user.isStaffOf(courseId) || !user.isEnrolledIn(courseId))) {

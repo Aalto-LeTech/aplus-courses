@@ -18,6 +18,7 @@ import fi.aalto.cs.apluscourses.notifications.NetworkErrorNotification
 import fi.aalto.cs.apluscourses.services.Notifier
 import fi.aalto.cs.apluscourses.services.Opener
 import fi.aalto.cs.apluscourses.services.course.CourseManager
+import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -104,6 +105,7 @@ class ShowFeedback(
                     )
                 }
             } catch (ex: IOException) {
+                CoursesLogger.error("Network error in ShowFeedback", ex)
                 Notifier.notify(NetworkErrorNotification(ex), project)
             }
         }
