@@ -80,10 +80,19 @@ class SubmitExerciseDialog(
             }
         }
         row {
-            text(message("ui.SubmitExerciseDialog.description", submissionNumber, exercise.maxSubmissions))
+            text(
+                if (exercise.maxSubmissions < 1) message(
+                    "ui.SubmitExerciseDialog.descriptionOptional",
+                    submissionNumber
+                ) else message(
+                    "ui.SubmitExerciseDialog.description",
+                    submissionNumber,
+                    exercise.maxSubmissions
+                )
+            )
         }
         row {
-            if (submissionNumber >= exercise.maxSubmissions) {
+            if (!exercise.isOptional && submissionNumber >= exercise.maxSubmissions) {
                 text(
                     if (submissionNumber == exercise.maxSubmissions) message("ui.SubmitExerciseDialog.warning.lastSubmission")
                     else message("ui.SubmitExerciseDialog.warning.submissionsExceeded")

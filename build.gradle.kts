@@ -2,23 +2,13 @@ import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.markdownToHTML
 
 plugins {
-//    id("java")
-//    id("idea")
-//    scala
-//    jacoco
-//    checkstyle
-
     // ./gradle/libs.versions.toml
-    id("org.jetbrains.kotlin.jvm") version "2.0.0"
-    kotlin("plugin.serialization") version "2.0.0"
-    id("org.jetbrains.intellij.platform") version "2.0.1" // IntelliJ Platform Gradle Plugin
-    id("org.jetbrains.changelog") version "2.2.1"
-    id("org.jetbrains.qodana") version "2024.1.5"
-    id("org.jetbrains.kotlinx.kover") version "0.8.2"
-//    alias(libs.plugins.kotlin) // Kotlin support
-//    alias(libs.plugins.changelog) // Gradle Changelog Plugin
-//    alias(libs.plugins.qodana) // Gradle Qodana Plugin
-//    alias(libs.plugins.kover) // Gradle Kover Plugin
+    alias(libs.plugins.kotlin) // Kotlin support
+    kotlin("plugin.serialization") version libs.versions.kotlin
+    alias(libs.plugins.intelliJPlatform) // IntelliJ Platform Gradle Plugin
+    alias(libs.plugins.changelog) // Gradle Changelog Plugin
+    alias(libs.plugins.qodana) // Gradle Qodana Plugin
+    alias(libs.plugins.kover) // Gradle Kover Plugin
 }
 
 group = providers.gradleProperty("pluginGroup").get()
@@ -40,22 +30,13 @@ repositories {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1")
-    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
-    implementation("io.ktor:ktor-client-core:2.3.11")
-    implementation("io.ktor:ktor-client-cio:2.3.11")
-    implementation("io.ktor:ktor-client-resources:2.3.11")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.11")
-    implementation("io.ktor:ktor-client-content-negotiation:2.3.11")
-
-    configurations.all {
-        exclude(group = "org.jetbrains.kotlinx", module = "kotlinx.coroutines") // Only the bundled version is allowed
-        exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-core")
-        exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-core-jvm")
-        exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-jdk8")
-        exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-slf4j")
-        exclude(group = "org.slf4j")
-    }
+    implementation(libs.jsonSerialization)
+    implementation(libs.datetime)
+    implementation(libs.ktorCore)
+    implementation(libs.ktorCio)
+    implementation(libs.ktorResources)
+    implementation(libs.ktorJsonSerialization)
+    implementation(libs.ktorContentNegotiation)
 
     // IntelliJ Platform Gradle Plugin Dependencies Extension - read more:
     // https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-dependencies-extension.html
@@ -75,6 +56,19 @@ dependencies {
         zipSigner()
 //        testFramework(TestFrameworkType.Platform)
     }
+}
+
+// Exclude transitive dependencies that IntelliJ already provides
+configurations.runtimeClasspath {
+    exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib")
+    exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib-common")
+    exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib-jdk8")
+    exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines")
+    exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-core")
+    exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-core-jvm")
+    exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-jdk8")
+    exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-slf4j")
+    exclude(group = "org.slf4j")
 }
 
 // Configure IntelliJ Platform Gradle Plugin - read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-extension.html

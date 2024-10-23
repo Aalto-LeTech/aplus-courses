@@ -80,6 +80,7 @@ class ExercisesUpdater(
                         is CancellationException -> {}
 
                         is IOException, is UnresolvedAddressException -> {
+                            CoursesLogger.error("Network error in ExercisesUpdater", e)
                             state.clearAll()
                             CourseManager.getInstance(project)
                                 .fireNetworkError()

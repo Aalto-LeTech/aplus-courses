@@ -40,7 +40,8 @@ internal class InitializationActivity() :
     override suspend fun execute(project: Project) {
         val courseConfig = try {
             CourseConfig.get(project)
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            CoursesLogger.error("Network error in InitializationActivity", e)
             InitializationStatus.setIsIoError(project)
             CourseManager.getInstance(project).fireNetworkError()
             return
@@ -66,7 +67,9 @@ internal class InitializationActivity() :
                 ) {
                     val moduleModel = course.getComponentIfExists(module.name)
                     if (moduleModel is fi.aalto.cs.apluscourses.model.component.Module) {
-                        moduleModel.loadToProject()
+                        DumbService.getInstance(project).runWhenSmart {
+                            moduleModel.loadToProject()
+                        }
                     }
                 }
                 CourseManager.getInstance(project).refreshModuleStatuses()

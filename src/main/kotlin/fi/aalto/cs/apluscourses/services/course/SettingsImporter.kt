@@ -36,19 +36,18 @@ class SettingsImporter(
      */
     @Throws(IOException::class)
     suspend fun importIdeSettings(resourceUrls: Map<String, Url>): Boolean {
-        val ideSettingsUrl =
-            if (SystemInfoRt.isWindows) {
-                resourceUrls["ideSettingsWindows"]
-            } else if (SystemInfoRt.isLinux) {
-                resourceUrls["ideSettingsLinux"]
-            } else if (SystemInfoRt.isMac) {
-                resourceUrls["ideSettingsMac"]
-            } else {
-                null
-            }
-                ?: resourceUrls["ideSettings"] // Use generic IDE settings if no platform-specific settings are available ?: return
+        val systemIdeSettingsUrl = if (SystemInfoRt.isWindows) {
+            resourceUrls["ideSettingsWindows"]
+        } else if (SystemInfoRt.isLinux) {
+            resourceUrls["ideSettingsLinux"]
+        } else if (SystemInfoRt.isMac) {
+            resourceUrls["ideSettingsMac"]
+        } else {
+            null
+        }
 
-        if (ideSettingsUrl == null) false
+        // Use generic IDE settings if no platform-specific settings are available
+        val ideSettingsUrl = systemIdeSettingsUrl ?: resourceUrls["ideSettings"] ?: return false
 
         val file = FileUtilRt.createTempFile("course-ide-settings", ".zip", false)
         CoursesClient.getInstance(project).fetch(ideSettingsUrl.toString(), file)

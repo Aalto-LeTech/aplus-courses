@@ -5,6 +5,7 @@ import fi.aalto.cs.apluscourses.notifications.CourseConfigurationError
 import fi.aalto.cs.apluscourses.services.CoursesClient
 import fi.aalto.cs.apluscourses.services.Notifier
 import fi.aalto.cs.apluscourses.services.course.CourseFileManager
+import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import fi.aalto.cs.apluscourses.utils.Version
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.*
@@ -248,6 +249,7 @@ object CourseConfig {
             val courseConfig = CoursesClient.getInstance(project).get(url).bodyAsText()
             return deserialize(courseConfig)
         } catch (e: Exception) {
+            CoursesLogger.error("Error in CourseConfig", e)
             when (e) {
                 is IOException, is UnresolvedAddressException -> throw e
                 else -> {

@@ -102,7 +102,7 @@ object APlusApi {
                 val id: Long,
                 val url: String,
                 val username: String,
-                val studentId: String,
+                val studentId: String?,
                 val email: String,
                 val fullName: String,
                 val isExternal: Boolean,
@@ -397,7 +397,7 @@ object APlusApi {
             data class UserBody(
                 val username: String,
                 val fullName: String?,
-                val studentId: String,
+                val studentId: String?,
                 val id: Long,
                 val enrolledCourses: List<Course> = emptyList(),
                 val staffCourses: List<Course> = emptyList(),

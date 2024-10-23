@@ -139,6 +139,7 @@ class SubmitExercise(
 
                 CoursesLogger.info("Submitted exercise $exercise successfully")
             } catch (ex: IOException) {
+                CoursesLogger.error("Network error in SubmitExercise", ex)
                 notifyNetworkError(ex, project)
             } catch (ex: FileDoesNotExistException) {
                 notifier.notify(MissingFileNotification(ex.path, ex.name), project)
