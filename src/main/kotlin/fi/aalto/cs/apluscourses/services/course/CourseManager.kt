@@ -334,7 +334,7 @@ class CourseManager(
         }
     }
 
-    private suspend fun getMissingDependencies(module: Module): List<Component<*>> {
+    suspend fun getMissingDependencies(module: Module): List<Component<*>> {
         return module.dependencyNames
             ?.mapNotNull { state.course?.getComponentIfExists(it) }
             ?.filter { module ->

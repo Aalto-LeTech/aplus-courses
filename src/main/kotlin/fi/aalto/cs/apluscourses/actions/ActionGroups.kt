@@ -7,6 +7,9 @@ object ActionGroups {
     val EXERCISE_ACTIONS: DefaultActionGroup
         get() = actionGroup("fi.aalto.cs.apluscourses.actions.ActionGroups.EXERCISE_ACTIONS")
 
+    val MODULE_ACTIONS: DefaultActionGroup
+        get() = actionGroup("fi.aalto.cs.apluscourses.actions.ActionGroups.MODULE_ACTIONS")
+
     val TOOL_WINDOW_ACTIONS: DefaultActionGroup
         get() = actionGroup("fi.aalto.cs.apluscourses.actions.ActionGroups.TOOL_WINDOW_ACTIONS")
 

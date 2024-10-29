@@ -56,6 +56,14 @@
                     id="fi.aalto.cs.apluscourses.actions.RefreshEverythingAction"
                     icon="/icons/refresh.svg"/>
         </group>
+        <group id="fi.aalto.cs.apluscourses.actions.ActionGroups.MODULE_ACTIONS">
+            <action id="fi.aalto.cs.apluscourses.actions.ExportModuleAction"
+                    class="fi.aalto.cs.apluscourses.actions.ExportModuleAction"
+                    icon="/icons/upload.svg"/>
+            <action id="fi.aalto.cs.apluscourses.actions.ImportModuleAction"
+                    class="fi.aalto.cs.apluscourses.actions.ImportModuleAction"
+                    icon="/icons/download.svg"/>
+        </group>
     </actions>
     <!--    <applicationListeners>-->
     <!--        <listener class="fi.aalto.cs.apluscourses.intellij.utils.PluginLoadUnloadEventsListener"-->

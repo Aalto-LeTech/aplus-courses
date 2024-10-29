@@ -12,6 +12,7 @@ import com.intellij.ui.components.JBPanel
 import com.intellij.ui.content.*
 import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.actions.ActionGroups.EXERCISE_ACTIONS
+import fi.aalto.cs.apluscourses.actions.ActionGroups.MODULE_ACTIONS
 import fi.aalto.cs.apluscourses.actions.ActionGroups.TOOL_WINDOW_ACTIONS
 import fi.aalto.cs.apluscourses.model.Course
 import fi.aalto.cs.apluscourses.model.component.Module
@@ -191,9 +192,19 @@ internal class APlusToolWindowFactory : ToolWindowFactory, DumbAware {
 
     private fun createModulesView(project: Project): ModulesView {
         val modulesView = ModulesView(project)
+
+        val toolbar = ActionManager.getInstance().createActionToolbar(
+            ActionPlaces.TOOLBAR,
+            MODULE_ACTIONS,
+            true
+        )
+        toolbar.targetComponent = modulesView.component
+
         val customToolbar = JBPanel<JBPanel<*>>().apply {
             layout = BoxLayout(this, BoxLayout.X_AXIS)
             add(modulesView.searchTextField)
+            add(Box.createHorizontalGlue())
+            add(toolbar.component)
         }
         modulesView.toolbar = customToolbar
         return modulesView
