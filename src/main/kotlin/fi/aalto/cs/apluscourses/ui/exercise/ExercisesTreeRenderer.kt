@@ -166,7 +166,10 @@ class ExercisesTreeRenderer : NodeRenderer() {
         val item = this.item
 
         return when (item) {
-            is ExercisesView.ExerciseItem -> "${item.exercise.userPoints}/${item.exercise.maxPoints}"
+            is ExercisesView.ExerciseItem -> if (item.exercise.isFeedback)
+                "" else
+                "${item.exercise.userPoints}/${item.exercise.maxPoints}"
+
             is ExercisesView.ExerciseGroupItem -> "${item.group.userPoints}/${item.group.maxPoints}"
             is ExercisesView.SubmissionResultItem -> "${item.submission.userPoints}/${item.submission.maxPoints}"
             else -> ""
