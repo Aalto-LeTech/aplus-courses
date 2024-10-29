@@ -49,6 +49,7 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
         val content = JBScrollPane(panel)
         content.horizontalScrollBarPolicy =
             if (isMainPanel) ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED else ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
+        content.verticalScrollBarPolicy = ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED
         setContent(content)
     }
 
@@ -267,7 +268,8 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
                 }
             }.customize(UnscaledGaps(16, 32, 16, 32))
         }
-        mainPanel.preferredSize = Dimension(mainPanelMaxWidth, Int.MAX_VALUE)
+        mainPanel.preferredSize = Dimension(mainPanelMaxWidth, mainPanel.preferredSize.height)
+//        mainPanel.maximumSize = Dimension(mainPanelMaxWidth, Int.MAX_VALUE)
         return mainPanel
     }
 

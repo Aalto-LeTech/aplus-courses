@@ -67,6 +67,7 @@ class CoursesClient(
                 endpoint {
                     maxConnectionsCount = 8
                 }
+                requestTimeout = 0
             }
             defaultRequest {
                 url {
@@ -100,7 +101,7 @@ class CoursesClient(
             }
         }
         if (res.status != HttpStatusCode.OK) {
-            throw IOException("Failed to get resource: ${res.status}")
+            throw IOException("Failed to get URL [$url]: ${res.status}")
         }
         return res
     }

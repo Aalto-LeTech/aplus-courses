@@ -21,7 +21,7 @@ object AddModuleWatermark {
         "#\u200b\u200c\u200b\u200b\u200b\u200b\u200c\u200c\u200b\u200c\u200b\u200c\u200c\u200b *-* coding: utf-8 *-*"
 
     @Throws(IOException::class)
-    private fun addWatermark(path: Path, user: User?) {
+    private fun addWatermark(path: Path, user: User?, module: Module) {
         val userId = user?.aplusId ?: 0
         val studentId = user?.studentId ?: "---"
         val studentName = user?.userName ?: "---"
@@ -37,10 +37,11 @@ object AddModuleWatermark {
         newLines.addAll(
             0, listOf(
                 ENCODING_LINE,
-                "# Nimi: $studentName",
-                "# Opiskelijanumero: $studentId",
+                "# Name: $studentName",
+                "# Student ID: $studentId",
                 "# Data Structures and Algorithms Y CS-A1141",
-                "# Date: ${date.dayOfMonth}/${date.monthNumber}/${date.year}"
+                "# Date: ${date.dayOfMonth}/${date.monthNumber}/${date.year}",
+                "# Version: ${module.latestVersion}",
             )
         )
 
@@ -78,7 +79,7 @@ object AddModuleWatermark {
                     val file = path.toFile()
                     if (file.isFile && file.name.lowercase(Locale.getDefault()).endsWith(".py")) {
                         try {
-                            addWatermark(path, user)
+                            addWatermark(path, user, module)
                         } catch (e: IOException) {
                             throw UncheckedIOException(e)
                         }

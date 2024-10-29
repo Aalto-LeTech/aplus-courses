@@ -8,6 +8,7 @@ import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.impl.HTMLEditorProvider.Companion.openEditor
 import com.intellij.openapi.project.Project
 import com.intellij.ui.JBColor
+import com.intellij.ui.jcef.JBCefScrollbarsHelper
 import com.intellij.util.ui.JBFont
 import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.api.APlusApi
@@ -17,6 +18,7 @@ import fi.aalto.cs.apluscourses.notifications.NetworkErrorNotification
 import fi.aalto.cs.apluscourses.services.Notifier
 import fi.aalto.cs.apluscourses.services.Opener
 import fi.aalto.cs.apluscourses.services.course.CourseManager
+import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -76,7 +78,7 @@ class ShowFeedback(
                             .replace(Regex("(--font-name:\\s*)(.*;)"), "$1\"$fontName\";"),
                         Safelist.none()
                     )
-                }</style>"
+                }${JBCefScrollbarsHelper.buildScrollbarsStyle()}</style>"
 
                 document.head().append(style)
 
@@ -103,6 +105,7 @@ class ShowFeedback(
                     )
                 }
             } catch (ex: IOException) {
+                CoursesLogger.error("Network error in ShowFeedback", ex)
                 Notifier.notify(NetworkErrorNotification(ex), project)
             }
         }
