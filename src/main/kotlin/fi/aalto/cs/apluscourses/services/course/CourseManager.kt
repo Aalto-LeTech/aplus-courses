@@ -124,6 +124,17 @@ class CourseManager(
         fireNewsUpdated()
     }
 
+    private fun checkIsEnrolled(courseId: Long?, user: User?) {
+        if (courseId != null && user != null) {
+            if (!user.isStaffOf(courseId) && !user.isEnrolledIn(courseId)) {
+                state.error = Error.NOT_ENROLLED
+                state.clearAll()
+                fireCourseUpdated()
+                throw CancellationException()
+            }
+        }
+    }
+
     private suspend fun doTask() {
         project.service<CourseFileManager>().migrateOldConfig()
         val courseConfig = CourseConfig.get(project)
@@ -153,16 +164,16 @@ class CourseManager(
             APlusApi.Course(courseConfig.id.toLong()).get(project)
         } catch (e: Exception) {
             CoursesLogger.error("Error while fetching user or course", e)
-            val courseId = courseConfig.id.toLong()
-            val user = state.user
-            if (user != null && (!user.isStaffOf(courseId) || !user.isEnrolledIn(courseId))) {
-                state.error = Error.NOT_ENROLLED
-            } else {
-                state.error = Error.NETWORK_ERROR
-            }
+
+            // Check if the user is enrolled when they cannot fetch the course
+            checkIsEnrolled(courseConfig.id.toLong(), state.user)
+
+            state.error = Error.NETWORK_ERROR
             fireCourseUpdated()
             throw CancellationException()
         }
+        // Check if the user is enrolled when they can fetch the course but might not be enrolled
+        checkIsEnrolled(courseConfig.id.toLong(), state.user)
         val modules = courseConfig.modules.map {
             Module(
                 it.name,

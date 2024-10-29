@@ -11,10 +11,8 @@ import io.ktor.client.request.parameter
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.*
 import io.ktor.resources.*
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonNamingStrategy
 import org.jsoup.Jsoup
 import java.time.ZonedDateTime
 import kotlin.collections.component1
@@ -43,12 +41,8 @@ object APlusApi {
         @Resource("exercises")
         class Exercises(val parent: Course) {
             suspend fun get(project: Project): List<CourseModule> {
-                // TODO remove after hasSubmittableFiles fixed
-//                    CoursesClient.getInstance(project).getBody<Exercises, CourseModuleResults>(this@Exercises).results
-                val res = CoursesClient.getInstance(project).get<Exercises>(this@Exercises)
-                return json.decodeFromString<CourseModuleResults>(
-                    res.bodyAsText().replace("\"has_submittable_files\":[]", "\"has_submittable_files\":false")
-                ).results
+                return CoursesClient.getInstance(project)
+                    .getBody<Exercises, CourseModuleResults>(this@Exercises).results
             }
 
             @Serializable
@@ -77,18 +71,8 @@ object APlusApi {
                 val maxSubmissions: Int,
                 val hierarchicalName: String,
                 val difficulty: String,
-//            val hasSubmittableFiles: Boolean // TODO should always be bool, currently boolean or null or array
-                val hasSubmittableFiles: Boolean?
+                val hasSubmittableFiles: Boolean
             )
-
-            companion object {
-                @OptIn(ExperimentalSerializationApi::class)
-                private val json = Json { // TODO remove after hasSubmittableFiles fixed
-                    ignoreUnknownKeys = true
-                    isLenient = true
-                    namingStrategy = JsonNamingStrategy.SnakeCase
-                }
-            }
         }
 
         @Resource("points/me")
