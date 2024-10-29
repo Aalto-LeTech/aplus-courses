@@ -92,6 +92,26 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
         }
     }
 
+    private fun invalidTokenPanel(): DialogPanel {
+        return panel {
+            val tokenForm = TokenForm(project) {
+                update(loading = true)
+                CourseManager.getInstance(project).restart()
+            }
+            panel {
+                row {
+                    text(message("ui.OverviewView.invalidToken.title")).applyToComponent {
+                        font = JBFont.h1()
+                    }.comment(message("ui.OverviewView.invalidToken.description"))
+                }
+                with(tokenForm) {
+                    token()
+                    validation()
+                }
+            }.customize(UnscaledGaps(16, 32, 16, 32))
+        }
+    }
+
     private fun notEnrolledPanel(): DialogPanel {
         return panel {
             val courseName = CourseManager.getInstance(project).state.courseName
@@ -165,6 +185,8 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
         val error = CourseManager.error(project)
         if (error == CourseManager.Error.NETWORK_ERROR) {
             return networkErrorPanel()
+        } else if (error == CourseManager.Error.INVALID_TOKEN) {
+            return invalidTokenPanel()
         } else if (error == CourseManager.Error.NOT_ENROLLED) {
             return notEnrolledPanel()
         }

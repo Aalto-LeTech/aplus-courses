@@ -5,6 +5,7 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.platform.ide.progress.withBackgroundProgress
 import com.intellij.platform.util.progress.reportSequentialProgress
+import com.intellij.serialization.PropertyMapping
 import fi.aalto.cs.apluscourses.MyBundle.message
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -35,6 +36,10 @@ import kotlin.io.path.nameWithoutExtension
 import kotlin.io.readBytes
 import kotlin.sequences.forEach
 import kotlin.text.contains
+
+class UnauthorizedException @PropertyMapping() constructor() : Exception() {
+    private val serialVersionUID: Long = 1L
+}
 
 @OptIn(ExperimentalSerializationApi::class)
 @Service(Service.Level.PROJECT)
@@ -140,6 +145,9 @@ class CoursesClient(
                 addToken()
                 requestBuilder()
             }
+        }
+        if (res.status == HttpStatusCode.Unauthorized) {
+            throw UnauthorizedException()
         }
         if (res.status != HttpStatusCode.OK) {
             throw IOException("Failed to get body: ${res.status}")

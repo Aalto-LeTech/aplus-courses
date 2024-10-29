@@ -22,6 +22,7 @@ import fi.aalto.cs.apluscourses.services.Notifier
 import fi.aalto.cs.apluscourses.services.Opener
 import fi.aalto.cs.apluscourses.services.PluginSettings
 import fi.aalto.cs.apluscourses.services.TokenStorage
+import fi.aalto.cs.apluscourses.services.UnauthorizedException
 import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdater
 import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import fi.aalto.cs.apluscourses.utils.Version
@@ -64,6 +65,7 @@ class CourseManager(
 
     enum class Error {
         NOT_ENROLLED,
+        INVALID_TOKEN,
         NETWORK_ERROR,
     }
 
@@ -158,9 +160,7 @@ class CourseManager(
         state.alwaysShowGroups = courseConfig.alwaysShowGroups
 
         val extraCourseData = try {
-            state.user = withContext(Dispatchers.IO) {
-                APlusApi.me().get(project)
-            }
+            state.user = APlusApi.me().get(project)
             APlusApi.Course(courseConfig.id.toLong()).get(project)
         } catch (e: Exception) {
             CoursesLogger.error("Error while fetching user or course", e)
@@ -168,7 +168,7 @@ class CourseManager(
             // Check if the user is enrolled when they cannot fetch the course
             checkIsEnrolled(courseConfig.id.toLong(), state.user)
 
-            state.error = Error.NETWORK_ERROR
+            state.error = if (e is UnauthorizedException) Error.INVALID_TOKEN else Error.NETWORK_ERROR
             fireCourseUpdated()
             throw CancellationException()
         }
