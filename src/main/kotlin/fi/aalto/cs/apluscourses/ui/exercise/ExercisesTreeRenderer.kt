@@ -61,7 +61,6 @@ class ExercisesTreeRenderer : NodeRenderer() {
                 val submission = item.submission
                 isEnabled = true
                 append(item.displayName(), SimpleTextAttributes.REGULAR_ATTRIBUTES, true)
-                append(" ${submission.id}", SimpleTextAttributes.GRAYED_ATTRIBUTES, false)
                 if (submission.status == SubmissionResult.Status.WAITING) {
                     icon = CoursesIcons.Loading
                 }
