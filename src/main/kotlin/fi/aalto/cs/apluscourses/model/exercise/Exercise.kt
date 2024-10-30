@@ -16,6 +16,7 @@ data class Exercise(
     val difficulty: String = "",
     val isOptional: Boolean,
     val isSubmittable: Boolean,
+    val isFeedback: Boolean
 ) {
 
     /**

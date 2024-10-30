@@ -22,6 +22,7 @@ import fi.aalto.cs.apluscourses.services.Notifier
 import fi.aalto.cs.apluscourses.services.Opener
 import fi.aalto.cs.apluscourses.services.PluginSettings
 import fi.aalto.cs.apluscourses.services.TokenStorage
+import fi.aalto.cs.apluscourses.services.UnauthorizedException
 import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdater
 import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import fi.aalto.cs.apluscourses.utils.Version
@@ -64,6 +65,7 @@ class CourseManager(
 
     enum class Error {
         NOT_ENROLLED,
+        INVALID_TOKEN,
         NETWORK_ERROR,
     }
 
@@ -124,6 +126,17 @@ class CourseManager(
         fireNewsUpdated()
     }
 
+    private fun checkIsEnrolled(courseId: Long?, user: User?) {
+        if (courseId != null && user != null) {
+            if (!user.isStaffOf(courseId) && !user.isEnrolledIn(courseId)) {
+                state.error = Error.NOT_ENROLLED
+                state.clearAll()
+                fireCourseUpdated()
+                throw CancellationException()
+            }
+        }
+    }
+
     private suspend fun doTask() {
         project.service<CourseFileManager>().migrateOldConfig()
         val courseConfig = CourseConfig.get(project)
@@ -147,22 +160,20 @@ class CourseManager(
         state.alwaysShowGroups = courseConfig.alwaysShowGroups
 
         val extraCourseData = try {
-            state.user = withContext(Dispatchers.IO) {
-                APlusApi.me().get(project)
-            }
+            state.user = APlusApi.me().get(project)
             APlusApi.Course(courseConfig.id.toLong()).get(project)
         } catch (e: Exception) {
             CoursesLogger.error("Error while fetching user or course", e)
-            val courseId = courseConfig.id.toLong()
-            val user = state.user
-            if (user != null && (!user.isStaffOf(courseId) || !user.isEnrolledIn(courseId))) {
-                state.error = Error.NOT_ENROLLED
-            } else {
-                state.error = Error.NETWORK_ERROR
-            }
+
+            // Check if the user is enrolled when they cannot fetch the course
+            checkIsEnrolled(courseConfig.id.toLong(), state.user)
+
+            state.error = if (e is UnauthorizedException) Error.INVALID_TOKEN else Error.NETWORK_ERROR
             fireCourseUpdated()
             throw CancellationException()
         }
+        // Check if the user is enrolled when they can fetch the course but might not be enrolled
+        checkIsEnrolled(courseConfig.id.toLong(), state.user)
         val modules = courseConfig.modules.map {
             Module(
                 it.name,
@@ -334,7 +345,7 @@ class CourseManager(
         }
     }
 
-    private suspend fun getMissingDependencies(module: Module): List<Component<*>> {
+    suspend fun getMissingDependencies(module: Module): List<Component<*>> {
         return module.dependencyNames
             ?.mapNotNull { state.course?.getComponentIfExists(it) }
             ?.filter { module ->

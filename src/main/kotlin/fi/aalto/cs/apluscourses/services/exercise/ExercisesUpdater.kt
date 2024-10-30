@@ -23,6 +23,7 @@ import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil
 import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import io.ktor.utils.io.CancellationException
 import kotlinx.coroutines.*
+import org.jetbrains.annotations.NonNls
 import java.io.IOException
 import java.nio.channels.UnresolvedAddressException
 import java.util.concurrent.ConcurrentHashMap
@@ -49,6 +50,9 @@ class ExercisesUpdater(
     }
 
     val state = State()
+
+    @NonNls
+    private val FEEDBACK_STRING = "|en:Feedback|"
 
     private var exerciseJob: Job? = null
     private var gradingJob: Job? = null
@@ -222,7 +226,8 @@ class ExercisesUpdater(
                         bestSubmissionId = exercise.bestSubmission?.split("/")?.last()?.toLong(),
                         difficulty = exercise.difficulty,
                         isSubmittable = exerciseExercise?.hasSubmittableFiles == true,
-                        isOptional = optionalCategories.contains(exercise.difficulty)
+                        isOptional = optionalCategories.contains(exercise.difficulty),
+                        isFeedback = exercise.name.contains(FEEDBACK_STRING) && exercise.difficulty == ""
                     )
                 }.toMutableList()
             )

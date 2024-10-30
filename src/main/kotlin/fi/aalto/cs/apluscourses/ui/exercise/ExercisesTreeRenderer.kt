@@ -61,7 +61,6 @@ class ExercisesTreeRenderer : NodeRenderer() {
                 val submission = item.submission
                 isEnabled = true
                 append(item.displayName(), SimpleTextAttributes.REGULAR_ATTRIBUTES, true)
-                append(" ${submission.id}", SimpleTextAttributes.GRAYED_ATTRIBUTES, false)
                 if (submission.status == SubmissionResult.Status.WAITING) {
                     icon = CoursesIcons.Loading
                 }
@@ -167,7 +166,10 @@ class ExercisesTreeRenderer : NodeRenderer() {
         val item = this.item
 
         return when (item) {
-            is ExercisesView.ExerciseItem -> "${item.exercise.userPoints}/${item.exercise.maxPoints}"
+            is ExercisesView.ExerciseItem -> if (item.exercise.isFeedback)
+                "" else
+                "${item.exercise.userPoints}/${item.exercise.maxPoints}"
+
             is ExercisesView.ExerciseGroupItem -> "${item.group.userPoints}/${item.group.maxPoints}"
             is ExercisesView.SubmissionResultItem -> "${item.submission.userPoints}/${item.submission.maxPoints}"
             else -> ""
