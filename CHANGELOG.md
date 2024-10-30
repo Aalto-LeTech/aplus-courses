@@ -4,18 +4,18 @@
 
 ## [4.1.0] - 2024-10-30
 
-## Added
+### Added
 
 - Module exporting: Students can now export modules for submission.
 - Module importing: Users can import multiple module zip files simultaneously. This feature helps assistants in grading
   and allows students to test their zips.
 
-## Changed
+### Changed
 
 - Hid point counter from feedback assignments.
 - Removed submission IDs from the assignment tree.
 
-## Fixed
+### Fixed
 
 - Improved enrollment detection.
 - Added token invalidation detection: The plugin now prompts users to re-enter their token if it is invalid (i.e., a new
