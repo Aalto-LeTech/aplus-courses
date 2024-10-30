@@ -75,7 +75,7 @@ internal class APlusModuleBuilder : ModuleBuilder() {
         project: Project,
         model: ModifiableModuleModel?,
         modulesProvider: ModulesProvider?
-    ): List<Module?>? {
+    ): List<Module>? {
         CoursesLogger.info("Creating project from $courseConfigUrl, language: $language")
         project.service<CourseFileManager>().updateSettings(
             language,
