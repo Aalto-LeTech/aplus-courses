@@ -49,7 +49,7 @@ class ExportModuleDialog(
             .map { it.name.substringAfterLast(" ") }
             .sorted()
             .joinToString("_")
-        val studentId = submitter.studentId?.apply { "${submitter.studentId}_" } ?: ""
+        val studentId = submitter.studentId?.let { "${submitter.studentId}_" } ?: ""
         fileName.set("${studentId}${lastNames}_${module.name}")
     }
 

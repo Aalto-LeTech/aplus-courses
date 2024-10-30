@@ -17,6 +17,7 @@ import fi.aalto.cs.apluscourses.api.APlusApi
 import fi.aalto.cs.apluscourses.model.component.Component
 import fi.aalto.cs.apluscourses.model.component.Module
 import fi.aalto.cs.apluscourses.model.people.Group
+import fi.aalto.cs.apluscourses.model.people.User
 import fi.aalto.cs.apluscourses.notifications.ModuleExportedNotification
 import fi.aalto.cs.apluscourses.services.course.CourseManager
 import fi.aalto.cs.apluscourses.ui.module.ExportModuleDialog
@@ -41,15 +42,11 @@ class ModuleImportExport(
                 withModalProgress(project, message("ui.ModuleImportExport.import.progress")) {
                     files.forEach { file ->
                         val zip = ZipFile(file.toNioPath().toFile())
-                        val imlEntry = zip.entries()
-                            .asSequence()
-                            .find { it.name.endsWith(".iml") }
-
                         val desiredModuleName = file.nameWithoutExtension
 
                         val zipFile = FileUtil.createTempDirectory("apluscourses", "modules")
                         zip.entries().asSequence().forEach { entry ->
-                            val entryName = if (entry.name == imlEntry?.name) {
+                            val entryName = if (entry.name.endsWith(".iml")) {
                                 "$desiredModuleName.iml"
                             } else {
                                 entry.name
@@ -104,29 +101,33 @@ class ModuleImportExport(
     }
 
     suspend fun exportModuleSuspend() {
-        val course = CourseManager.getInstance(project).state.course ?: return
-        val modules = ModuleManager.getInstance(project).modules
-        if (modules.isEmpty()) return
+        val (student, modules, groups) = withModalProgress(
+            project,
+            message("ui.ModuleImportExport.export.loading")
+        ) {
+            val course = CourseManager.getInstance(project).state.course ?: return@withModalProgress null
 
-        val groups = withContext(Dispatchers.IO) {
-            listOf(Group.GROUP_ALONE) + APlusApi.course(course).myGroups(project)
-        }
-        val student = APlusApi.me().get(project)
-        if (student == null) {
+            val modules = ModuleManager.getInstance(project).modules
+            if (modules.isEmpty()) return@withModalProgress null
+
+            val groups = withContext(Dispatchers.IO) {
+                listOf(Group.GROUP_ALONE) + APlusApi.course(course).myGroups(project)
+            }
+            val student = APlusApi.me().get(project) ?: return@withModalProgress null
+
+            Triple(student, modules, groups)
+        } ?: return
+
+        val dialog = withContext(Dispatchers.EDT) { ExportModuleDialog(project, modules.toList(), groups, student) }
+
+        if (withContext(Dispatchers.EDT) { !dialog.showAndGet() }) {
             return
         }
 
-        val dialog = withContext(Dispatchers.EDT) {
-            val dialog = ExportModuleDialog(project, modules.toList(), groups, student)
-            dialog.showAndGet() to dialog
-        }
-
-        if (!dialog.first) return
-
-        val module = dialog.second.getSelectedModule()
-        val selectedGroup = dialog.second.getSelectedGroup() ?: return
-        val outputPath = dialog.second.getOutputPath() ?: return
-        val fileName = dialog.second.getFileName()
+        val module = dialog.getSelectedModule()
+        val selectedGroup = dialog.getSelectedGroup() ?: return
+        val outputPath = dialog.getOutputPath() ?: return
+        val fileName = dialog.getFileName()
 
         withContext(Dispatchers.IO) {
             val moduleDir = module.guessModuleDir()?.toNioPathOrNull()?.toFile()
@@ -141,22 +142,7 @@ class ModuleImportExport(
             FileOutputStream(zipFile).use { fos ->
                 ZipOutputStream(fos).use { zos ->
 
-                    // Text file containing info about submitters
-                    val studentsInfo = buildString {
-                        appendLine(
-                            message(
-                                "ui.ModuleImportExport.export.submitter",
-                                student.userName,
-                                student.studentId ?: "???"
-                            )
-                        )
-                        if (selectedGroup != Group.GROUP_ALONE) {
-                            appendLine()
-                            selectedGroup.members.forEach { member ->
-                                appendLine("- ${member.name}")
-                            }
-                        }
-                    }
+                    val studentsInfo = createSubmittersInfo(student, selectedGroup)
 
                     zos.putNextEntry(ZipEntry("students.txt"))
                     zos.write(studentsInfo.toByteArray())
@@ -179,6 +165,22 @@ class ModuleImportExport(
                 withContext(Dispatchers.EDT) {
                     ModuleExportedNotification(module, zipFile).notify(project)
                 }
+            }
+        }
+    }
+
+    private fun createSubmittersInfo(submitter: User, selectedGroup: Group): String = buildString {
+        appendLine(
+            message(
+                "ui.ModuleImportExport.export.submitter",
+                submitter.userName,
+                submitter.studentId ?: "???"
+            )
+        )
+        if (selectedGroup != Group.GROUP_ALONE) {
+            appendLine()
+            selectedGroup.members.forEach { member ->
+                appendLine("- ${member.name}")
             }
         }
     }
