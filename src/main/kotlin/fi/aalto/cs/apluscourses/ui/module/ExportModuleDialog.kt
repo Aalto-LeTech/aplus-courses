@@ -90,9 +90,9 @@ class ExportModuleDialog(
         }
         row(message("ui.ExportModuleDialog.outputPath")) {
             textFieldWithBrowseButton(
-                message("ui.ExportModuleDialog.selectOutput"),
-                project,
                 FileChooserDescriptor(false, true, false, false, false, false)
+                    .withTitle(message("ui.ExportModuleDialog.selectOutput")),
+                project
             )
                 .bindText(outputPath)
                 .validationOnApply {

@@ -7,11 +7,13 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.guessModuleDir
+import com.intellij.openapi.ui.DialogBuilder
 import com.intellij.openapi.util.Comparing
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.toNioPathOrNull
 import com.intellij.platform.ide.progress.withModalProgress
+import com.intellij.ui.dsl.builder.panel
 import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.api.APlusApi
 import fi.aalto.cs.apluscourses.model.component.Component
@@ -21,12 +23,14 @@ import fi.aalto.cs.apluscourses.model.people.User
 import fi.aalto.cs.apluscourses.notifications.ModuleExportedNotification
 import fi.aalto.cs.apluscourses.services.course.CourseManager
 import fi.aalto.cs.apluscourses.ui.module.ExportModuleDialog
+import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import fi.aalto.cs.apluscourses.utils.Version
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.FileOutputStream
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 import java.util.zip.ZipOutputStream
@@ -36,71 +40,107 @@ class ModuleImportExport(
     val project: Project,
     val cs: CoroutineScope
 ) {
+    private val running = AtomicBoolean(false)
+
     fun importModules() {
+        if (!running.compareAndSet(false, true)) {
+            return
+        }
+        val modulesWithErrors = mutableListOf<String>()
         FileChooser.chooseFiles(FileChooserDescriptorImpl(), project, null) { files ->
             cs.launch {
                 withModalProgress(project, message("ui.ModuleImportExport.import.progress")) {
+
                     files.forEach { file ->
-                        val zip = ZipFile(file.toNioPath().toFile())
-                        val desiredModuleName = file.nameWithoutExtension
+                        try {
+                            val zip = ZipFile(file.toNioPath().toFile())
+                            val desiredModuleName = file.nameWithoutExtension
 
-                        val zipFile = FileUtil.createTempDirectory("apluscourses", "modules")
-                        zip.entries().asSequence().forEach { entry ->
-                            val entryName = if (entry.name.endsWith(".iml")) {
-                                "$desiredModuleName.iml"
-                            } else {
-                                entry.name
+                            val zipFile = FileUtil.createTempDirectory("apluscourses", "modules")
+                            zip.entries().asSequence().forEach { entry ->
+                                val entryName = if (entry.name.endsWith(".iml")) {
+                                    "$desiredModuleName.iml"
+                                } else {
+                                    entry.name
+                                }
+                                val entryFile = zipFile.resolve(entryName)
+
+                                if (entry.isDirectory) {
+                                    entryFile.mkdirs()
+                                } else {
+                                    entryFile.parentFile.mkdirs()
+                                    entryFile.writeBytes(zip.getInputStream(entry).readBytes())
+
+                                }
                             }
-                            val entryFile = zipFile.resolve(entryName)
 
-                            if (entry.isDirectory) {
-                                entryFile.mkdirs()
-                            } else {
-                                entryFile.parentFile.mkdirs()
-                                entryFile.writeBytes(zip.getInputStream(entry).readBytes())
+                            // Create and load module
+                            val module = Module(
+                                name = desiredModuleName,
+                                zipUrl = "",
+                                changelog = null,
+                                latestVersion = Version.DEFAULT,
+                                language = null,
+                                project = project
+                            )
 
+                            val moduleDir = module.fullPath.toFile()
+                            zipFile.copyRecursively(moduleDir, overwrite = true)
+
+                            withContext(Dispatchers.EDT) {
+                                if (module.updateAndGetStatus() == Component.Status.NOT_LOADED) {
+                                    module.loadToProject()
+                                }
                             }
+
+                            module.downloadAndInstall()
+                            val missingDependencies = CourseManager.getInstance(project).getMissingDependencies(module)
+                            missingDependencies.forEach { it.downloadAndInstall() }
+
+                            zipFile.deleteRecursively()
+                        } catch (e: Exception) {
+                            CoursesLogger.error("Failed to import module", e)
+                            modulesWithErrors.add(file.nameWithoutExtension)
                         }
-
-                        // Create and load module
-                        val module = Module(
-                            name = desiredModuleName,
-                            zipUrl = "",
-                            changelog = null,
-                            latestVersion = Version.DEFAULT,
-                            language = null,
-                            project = project
-                        )
-
-                        val moduleDir = module.fullPath.toFile()
-                        zipFile.copyRecursively(moduleDir, overwrite = true)
-
-                        withContext(Dispatchers.EDT) {
-                            if (module.updateAndGetStatus() == Component.Status.NOT_LOADED) {
-                                module.loadToProject()
-                            }
-                        }
-
-                        module.downloadAndInstall()
-                        val missingDependencies = CourseManager.getInstance(project).getMissingDependencies(module)
-                        missingDependencies.forEach { it.downloadAndInstall() }
-
-                        zipFile.deleteRecursively()
                     }
+
 
                     CourseManager.getInstance(project).refreshModuleStatuses()
                 }
+                if (modulesWithErrors.isNotEmpty()) {
+                    withContext(Dispatchers.EDT) {
+                        DialogBuilder(project)
+                            .title(message("ui.ModuleImportExport.import.error.title"))
+                            .centerPanel(
+                                panel {
+                                    row {
+                                        text(
+                                            message("ui.ModuleImportExport.import.error.content", modulesWithErrors
+                                                .map { "<li>${it}</li>" }
+                                                .joinToString(""))
+                                        )
+                                    }
+                                }
+                            )
+                            .show()
+                    }
+                }
             }
         }
+        running.set(false)
     }
 
     fun exportModule() {
         cs.launch {
+            if (!running.compareAndSet(false, true)) {
+                return@launch
+            }
             exportModuleSuspend()
+            running.set(false)
         }
     }
 
-    suspend fun exportModuleSuspend() {
+    private suspend fun exportModuleSuspend() {
         val (student, modules, groups) = withModalProgress(
             project,
             message("ui.ModuleImportExport.export.loading")
@@ -198,7 +238,7 @@ class ModuleImportExport(
                 return false
             }
 
-            val extension = file.getExtension()
+            val extension = file.extension
             return Comparing.strEqual(extension, "zip")
         }
     }

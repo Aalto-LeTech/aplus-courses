@@ -25,6 +25,7 @@ import fi.aalto.cs.apluscourses.utils.FileUtil
 import kotlinx.coroutines.*
 import java.io.IOException
 import java.nio.file.Path
+import java.util.concurrent.atomic.AtomicBoolean
 
 @Service(Service.Level.PROJECT)
 class SubmitExercise(
@@ -32,9 +33,14 @@ class SubmitExercise(
     private val cs: CoroutineScope
 ) {
     private val submissionInfos: MutableMap<Long, SubmissionInfo> = HashMap()
+    private val submitting = AtomicBoolean(false)
 
     fun submit(exercise: Exercise) {
         cs.launch {
+            if (!submitting.compareAndSet(false, true)) {
+                CoursesLogger.warn("Already submitting exercise")
+                return@launch
+            }
             try {
                 CoursesLogger.info("Submitting $exercise")
                 var submissionInfo = submissionInfos[exercise.id]
@@ -57,12 +63,14 @@ class SubmitExercise(
                 if (!submittable) {
                     CoursesLogger.warn("$exercise not submittable")
                     notifier.notify(NotSubmittableNotification(), project)
+                    submitting.set(false)
                     return@launch
                 }
 
                 val course = CourseManager.course(project)
                 if (course == null) {
                     CoursesLogger.error("Course not found")
+                    submitting.set(false)
                     return@launch
                 }
 
@@ -97,6 +105,7 @@ class SubmitExercise(
                                 )
                     }) {
                     CoursesLogger.info("Duplicate submission detected and user chose to cancel")
+                    submitting.set(false)
                     return@launch
                 }
 
@@ -126,6 +135,7 @@ class SubmitExercise(
                 if (withContext(Dispatchers.EDT) {
                         !submissionDialog.showAndGet()
                     }) {
+                    submitting.set(false)
                     return@launch
                 }
 
@@ -147,6 +157,7 @@ class SubmitExercise(
                 notifier.notify(MissingModuleNotification(), project)
             }
             CoursesLogger.debug("Finished submitting exercise")
+            submitting.set(false)
         }
 
     }
