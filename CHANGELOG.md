@@ -2,6 +2,13 @@
 
 # A+ Courses Changelog
 
+## [4.1.1] - 2024-11-13
+
+### Fixed
+
+- Updated to version 2024.3 of IntelliJ.
+- Small bug fixes.
+
 ## [4.1.0] - 2024-10-30
 
 ### Added
