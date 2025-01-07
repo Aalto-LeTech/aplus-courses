@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.utils.callbacks
 
 import com.intellij.openapi.project.Project
+import fi.aalto.cs.apluscourses.model.Course
 import fi.aalto.cs.apluscourses.model.component.Module
 import fi.aalto.cs.apluscourses.model.people.User
 import fi.aalto.cs.apluscourses.services.course.CourseManager
@@ -21,10 +22,11 @@ object AddModuleWatermark {
         "#\u200b\u200c\u200b\u200b\u200b\u200b\u200c\u200c\u200b\u200c\u200b\u200c\u200c\u200b *-* coding: utf-8 *-*"
 
     @Throws(IOException::class)
-    private fun addWatermark(path: Path, user: User?, module: Module) {
+    private fun addWatermark(path: Path, user: User?, module: Module, course: Course?) {
         val userId = user?.aplusId ?: 0
         val studentId = user?.studentId ?: "---"
         val studentName = user?.userName ?: "---"
+        val courseName = course?.name ?: "---"
 
         val newLines = Files.lines(path).use { lineStream ->
             lineStream.filter { line ->
@@ -39,7 +41,7 @@ object AddModuleWatermark {
                 ENCODING_LINE,
                 "# Name: $studentName",
                 "# Student ID: $studentId",
-                "# Data Structures and Algorithms Y CS-A1141",
+                "# $courseName",
                 "# Date: ${date.dayOfMonth}/${date.monthNumber}/${date.year}",
                 "# Version: ${module.latestVersion}",
             )
@@ -72,6 +74,7 @@ object AddModuleWatermark {
      */
     fun postDownloadModule(project: Project, module: Module) {
         val user = CourseManager.user(project)
+        val course = CourseManager.course(project)
 
         try {
             Files.walk(module.fullPath).use { entries ->
@@ -79,7 +82,7 @@ object AddModuleWatermark {
                     val file = path.toFile()
                     if (file.isFile && file.name.lowercase(Locale.getDefault()).endsWith(".py")) {
                         try {
-                            addWatermark(path, user, module)
+                            addWatermark(path, user, module, course)
                         } catch (e: IOException) {
                             throw UncheckedIOException(e)
                         }
