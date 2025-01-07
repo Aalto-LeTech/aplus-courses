@@ -29,6 +29,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 import java.io.FileOutputStream
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.zip.ZipEntry
@@ -58,12 +59,14 @@ class ModuleImportExport(
 
                             val zipFile = FileUtil.createTempDirectory("apluscourses", "modules")
                             zip.entries().asSequence().forEach { entry ->
-                                val entryName = if (entry.name.endsWith(".iml")) {
+                                // Fix: Replace backslashes with slashes in entry names
+                                val fixedEntryName = entry.name.replace('\\', '/')
+                                val entryName = if (fixedEntryName.endsWith(".iml")) {
                                     "$desiredModuleName.iml"
                                 } else {
-                                    entry.name
+                                    fixedEntryName
                                 }
-                                val entryFile = zipFile.resolve(entryName)
+                                val entryFile = File(zipFile, entryName)
 
                                 if (entry.isDirectory) {
                                     entryFile.mkdirs()
@@ -115,9 +118,10 @@ class ModuleImportExport(
                                 panel {
                                     row {
                                         text(
-                                            message("ui.ModuleImportExport.import.error.content", modulesWithErrors
-                                                .map { "<li>${it}</li>" }
-                                                .joinToString(""))
+                                            message(
+                                                "ui.ModuleImportExport.import.error.content", modulesWithErrors
+                                                    .map { "<li>${it}</li>" }
+                                                    .joinToString(""))
                                         )
                                     }
                                 }
@@ -190,10 +194,14 @@ class ModuleImportExport(
 
                     moduleDir.walkTopDown()
                         .forEach { file ->
-                            val zipEntry = ZipEntry(
-                                file.relativeTo(moduleDir).path +
-                                        (if (file.isDirectory) "/" else "")
-                            )
+                            // Fix: Use forward slashes in zip entry names
+                            val relativePath = file.relativeTo(moduleDir).invariantSeparatorsPath
+                            val entryName = if (file.isDirectory) {
+                                "$relativePath/"
+                            } else {
+                                relativePath
+                            }
+                            val zipEntry = ZipEntry(entryName)
                             zos.putNextEntry(zipEntry)
                             if (file.isFile) {
                                 file.inputStream().use { it.copyTo(zos) }
@@ -225,7 +233,7 @@ class ModuleImportExport(
         }
     }
 
-    private class FileChooserDescriptorImpl() :
+    private class FileChooserDescriptorImpl :
         FileChooserDescriptor(false, false, true, true, false, true) {
 
         init {
