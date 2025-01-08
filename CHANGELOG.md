@@ -2,6 +2,12 @@
 
 # A+ Courses Changelog
 
+## [4.1.2] - 2024-11-27
+
+### Fixed
+
+- File separators of exported modules
+
 ## [4.1.1] - 2024-11-13
 
 ### Fixed
