@@ -2,6 +2,13 @@
 
 # A+ Courses Changelog
 
+## [4.2.0] - 2025-01-08
+
+### Fixed
+
+- Show correct course name in downloaded modules
+- Loading assignments for certain courses
+
 ## [4.1.2] - 2024-11-27
 
 ### Fixed
