@@ -29,7 +29,7 @@ class ExportModuleDialog(
     private val submitter: User
 ) : DialogWrapper(project) {
     private val selectedModule = AtomicProperty<Module>(modules.first())
-    private val selectedGroup = AtomicProperty<Group>(Group.GROUP_ALONE)
+    private val selectedGroup = AtomicProperty<Group>(Group.EXPORT_ALONE)
     private val outputPath = AtomicProperty(System.getProperty("user.home"))
     private val fileName = AtomicProperty("")
 
@@ -37,15 +37,13 @@ class ExportModuleDialog(
         title = message("ui.ExportModuleDialog.title")
         selectedGroup.whenPropertyChanged { updateFileName() }
         selectedModule.whenPropertyChanged { updateFileName() }
-        updateFileName()
         init()
-        initValidation()
     }
 
     private fun updateFileName() {
         val group = selectedGroup.get()
         val module = selectedModule.get()
-        val lastNames = if (group == Group.GROUP_ALONE) submitter.userName.substringAfterLast(" ") else group.members
+        val lastNames = if (group == Group.EXPORT_ALONE) submitter.userName.substringAfterLast(" ") else group.members
             .map { it.name.substringAfterLast(" ") }
             .sorted()
             .joinToString("_")
@@ -62,14 +60,23 @@ class ExportModuleDialog(
                     index: Int,
                     isSelected: Boolean,
                     cellHasFocus: Boolean
-                ): Component? {
+                ): Component {
                     if (value == null) {
-                        return null
+                        return JBLabel(message("ui.ExportModuleDialog.noModule"), JBLabel.LEFT)
                     }
                     return JBLabel(value.name, CoursesIcons.Module, JBLabel.LEFT)
                 }
             })
                 .bindItem(selectedModule)
+                .applyToComponent {
+                    selectedItem = null
+                }
+                .validationOnApply {
+                    if (it.selectedItem == null) {
+                        return@validationOnApply ValidationInfo(message("ui.ExportModuleDialog.error.noModule"))
+                    }
+                    return@validationOnApply null
+                }
                 .align(AlignX.FILL)
         }
         row(message("ui.ExportModuleDialog.selectGroup")) {
@@ -106,7 +113,7 @@ class ExportModuleDialog(
     }
 
     fun getSelectedModule(): Module = selectedModule.get()
-    fun getSelectedGroup(): Group? = selectedGroup.get()
+    fun getSelectedGroup(): Group = selectedGroup.get()
     fun getOutputPath(): Path? = outputPath.get().takeIf { it.isNotEmpty() }?.let { Path.of(it) }
     fun getFileName(): String = fileName.get()
 } 

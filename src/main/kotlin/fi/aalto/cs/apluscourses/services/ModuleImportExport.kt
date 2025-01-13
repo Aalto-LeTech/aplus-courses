@@ -155,7 +155,7 @@ class ModuleImportExport(
             if (modules.isEmpty()) return@withModalProgress null
 
             val groups = withContext(Dispatchers.IO) {
-                listOf(Group.GROUP_ALONE) + APlusApi.course(course).myGroups(project)
+                listOf(Group.EXPORT_ALONE) + APlusApi.course(course).myGroups(project)
             }
             val student = APlusApi.me().get(project) ?: return@withModalProgress null
 
@@ -169,7 +169,7 @@ class ModuleImportExport(
         }
 
         val module = dialog.getSelectedModule()
-        val selectedGroup = dialog.getSelectedGroup() ?: return
+        val selectedGroup = dialog.getSelectedGroup()
         val outputPath = dialog.getOutputPath() ?: return
         val fileName = dialog.getFileName()
 
@@ -225,7 +225,7 @@ class ModuleImportExport(
                 submitter.studentId ?: "???"
             )
         )
-        if (selectedGroup != Group.GROUP_ALONE) {
+        if (selectedGroup != Group.SUBMIT_ALONE) {
             appendLine()
             selectedGroup.members.forEach { member ->
                 appendLine("- ${member.name}")
