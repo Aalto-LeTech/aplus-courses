@@ -30,7 +30,7 @@ import kotlin.io.path.exists
 import kotlin.io.path.moveTo
 import com.intellij.openapi.module.Module as IdeaModule
 
-class Module(
+open class Module(
     name: String,
     val zipUrl: String,
     val changelog: String?,
@@ -101,6 +101,8 @@ class Module(
         withContext(Dispatchers.EDT) {
             loadToProject()
         }
+
+        waitForLoad()
         status = Status.LOADED
         val initialReplCommands = CourseManager.course(project)?.replInitialCommands?.get(name)
         val platformModule = platformObject
@@ -110,7 +112,10 @@ class Module(
         }
     }
 
-    fun loadToProject() {
+    open fun waitForLoad() {
+    }
+
+    open fun loadToProject() {
         application.runWriteAction {
             ModuleManager.getInstance(project).loadModule(imlPath)
             VirtualFileManager.getInstance().syncRefresh()

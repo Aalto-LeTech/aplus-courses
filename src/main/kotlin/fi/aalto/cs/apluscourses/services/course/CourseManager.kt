@@ -15,14 +15,11 @@ import fi.aalto.cs.apluscourses.api.CourseConfig
 import fi.aalto.cs.apluscourses.model.Course
 import fi.aalto.cs.apluscourses.model.component.Component
 import fi.aalto.cs.apluscourses.model.component.Module
+import fi.aalto.cs.apluscourses.model.component.SbtModule
 import fi.aalto.cs.apluscourses.model.news.NewsList
 import fi.aalto.cs.apluscourses.model.people.User
 import fi.aalto.cs.apluscourses.notifications.NewModulesVersionsNotification
-import fi.aalto.cs.apluscourses.services.Notifier
-import fi.aalto.cs.apluscourses.services.Opener
-import fi.aalto.cs.apluscourses.services.PluginSettings
-import fi.aalto.cs.apluscourses.services.TokenStorage
-import fi.aalto.cs.apluscourses.services.UnauthorizedException
+import fi.aalto.cs.apluscourses.services.*
 import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdater
 import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import fi.aalto.cs.apluscourses.utils.Version
@@ -175,7 +172,7 @@ class CourseManager(
         // Check if the user is enrolled when they can fetch the course but might not be enrolled
         checkIsEnrolled(courseConfig.id.toLong(), state.user)
         val modules = courseConfig.modules.map {
-            Module(
+            SbtModule(
                 it.name,
                 it.url,
                 it.changelog,
@@ -190,7 +187,7 @@ class CourseManager(
                         .map { (language, moduleName) ->
                             var module = modules.find { it.name == moduleName }
                             if (module == null) {
-                                module = Module(
+                                module = SbtModule(
                                     moduleName,
                                     "",
                                     "",
