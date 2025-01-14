@@ -11,3 +11,6 @@ exclude:
     paths:
       - .qodana
       - images
+  - name: KDocMissingDocumentation
+  - name: HardCodedStringLiteral
+
