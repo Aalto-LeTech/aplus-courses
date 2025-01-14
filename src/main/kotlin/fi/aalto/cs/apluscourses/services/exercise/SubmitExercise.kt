@@ -26,6 +26,8 @@ import kotlinx.coroutines.*
 import java.io.IOException
 import java.nio.file.Path
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.io.path.Path
+import kotlin.io.path.invariantSeparatorsPathString
 
 @Service(Service.Level.PROJECT)
 class SubmitExercise(
@@ -86,16 +88,21 @@ class SubmitExercise(
                     FileDocumentManager.getInstance().saveAllDocuments()
                 }
 
-                val modulePath = ModuleUtilCore.getModuleDirPath(platformModule)
-
+                var modulePath = Path(ModuleUtilCore.getModuleDirPath(platformModule))
+                // in the case of SBT modules, the .iml file is inside .idea/modules, so we need to
+                // go up the directory tree two times to reach the project directory
+                if (modulePath.endsWith(Path(".idea/modules"))) {
+                    modulePath = modulePath.parent.parent
+                }
                 CoursesLogger.info("Detected module: $module, path: $modulePath")
 
                 val files: MutableMap<String, Path> = HashMap()
                 for ((key, name) in submissionInfo.getFiles(language)) {
-                    files[key] = FileUtil.findFileInDirectory(modulePath, name) ?: throw FileDoesNotExistException(
-                        modulePath,
-                        name
-                    )
+                    files[key] = FileUtil.findFileInDirectory(modulePath.invariantSeparatorsPathString, name)
+                        ?: throw FileDoesNotExistException(
+                            modulePath.invariantSeparatorsPathString,
+                            name
+                        )
                 }
                 CoursesLogger.info("Submission files: $files")
 
