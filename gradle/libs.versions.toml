@@ -4,7 +4,7 @@ kotlin = "2.1.0"
 intelliJPlatform = "2.2.1"
 changelog = "2.2.1"
 qodana = "2024.3.4"
-kover = "0.8.3"
+kover = "0.9.1"
 
 # libraries
 jsonSerialization = "1.7.3"
