@@ -8,19 +8,19 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.ValidationInfo
-import com.intellij.ui.components.JBLabel
+import com.intellij.ui.ColoredListCellRenderer
+import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.bindItem
 import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
+import com.intellij.util.ui.JBUI
 import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.icons.CoursesIcons
 import fi.aalto.cs.apluscourses.model.people.Group
 import fi.aalto.cs.apluscourses.model.people.User
-import java.awt.Component
 import java.nio.file.Path
 import javax.swing.JList
-import javax.swing.ListCellRenderer
 
 class ExportModuleDialog(
     private val project: Project,
@@ -53,18 +53,27 @@ class ExportModuleDialog(
 
     override fun createCenterPanel(): DialogPanel = panel {
         row(message("ui.ExportModuleDialog.selectModule")) {
-            comboBox(modules, object : ListCellRenderer<Module?> {
-                override fun getListCellRendererComponent(
+            comboBox(modules, object : ColoredListCellRenderer<Module?>() {
+                override fun customizeCellRenderer(
                     list: JList<out Module?>,
                     value: Module?,
                     index: Int,
                     isSelected: Boolean,
                     cellHasFocus: Boolean
-                ): Component {
+                ) {
                     if (value == null) {
-                        return JBLabel(message("ui.ExportModuleDialog.noModule"), JBLabel.LEFT)
+                        append(
+                            message("ui.ExportModuleDialog.noModule"),
+                            SimpleTextAttributes(
+                                SimpleTextAttributes.STYLE_PLAIN,
+                                JBUI.CurrentTheme.ContextHelp.FOREGROUND,
+                                null
+                            )
+                        )
+                        return
                     }
-                    return JBLabel(value.name, CoursesIcons.Module, JBLabel.LEFT)
+                    icon = CoursesIcons.Module
+                    append(value.name, SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, null))
                 }
             })
                 .bindItem(selectedModule)
