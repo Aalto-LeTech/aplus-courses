@@ -26,13 +26,7 @@ import com.intellij.ui.ColoredListCellRenderer
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.components.JBList
 import com.intellij.ui.components.JBScrollPane
-import com.intellij.ui.dsl.builder.AlignX
-import com.intellij.ui.dsl.builder.Placeholder
-import com.intellij.ui.dsl.builder.TopGap
-import com.intellij.ui.dsl.builder.bindItem
-import com.intellij.ui.dsl.builder.bindSelected
-import com.intellij.ui.dsl.builder.bindText
-import com.intellij.ui.dsl.builder.panel
+import com.intellij.ui.dsl.builder.*
 import com.intellij.ui.dsl.gridLayout.UnscaledGaps
 import com.intellij.util.application
 import com.intellij.util.ui.JBUI
@@ -114,15 +108,15 @@ internal class APlusModuleBuilder : ModuleBuilder() {
     ): Array<ModuleWizardStep> = arrayOf(CourseSettingsStep(wizardContext))
 
     inner class CourseSelectStep : ModuleWizardStep() {
-        val courseList = JBList<CoursesFetcher.CourseConfig>()
-        val courseConfigUrl = AtomicProperty("")
-        val errorMessage = AtomicProperty("")
+        private val courseList = JBList<CoursesFetcher.CourseInfo>()
+        private val courseConfigUrl = AtomicProperty("")
+        private val errorMessage = AtomicProperty("")
 
         init {
-            courseList.cellRenderer = object : ColoredListCellRenderer<CoursesFetcher.CourseConfig>() {
+            courseList.cellRenderer = object : ColoredListCellRenderer<CoursesFetcher.CourseInfo>() {
                 override fun customizeCellRenderer(
-                    list: JList<out CoursesFetcher.CourseConfig>,
-                    item: CoursesFetcher.CourseConfig,
+                    list: JList<out CoursesFetcher.CourseInfo>,
+                    item: CoursesFetcher.CourseInfo,
                     index: Int,
                     selected: Boolean,
                     hasFocus: Boolean
@@ -135,7 +129,7 @@ internal class APlusModuleBuilder : ModuleBuilder() {
             courseList.putClientProperty(AnimatedIcon.ANIMATION_IN_RENDERER_ALLOWED, true)
             courseList.selectionMode = ListSelectionModel.SINGLE_SELECTION
 
-            courseList.addListSelectionListener(ListSelectionListener { e ->
+            courseList.addListSelectionListener(ListSelectionListener {
                 val url = courseList.selectedValue?.url ?: return@ListSelectionListener
                 courseConfigUrl.set(url)
             })
@@ -195,10 +189,10 @@ internal class APlusModuleBuilder : ModuleBuilder() {
     }
 
     inner class CourseSettingsStep(
-        val wizardContext: WizardContext
+        private val wizardContext: WizardContext
     ) : ModuleWizardStep() {
         private var mainPanel = JBScrollPane()
-        private val selectedLanguage = AtomicProperty<String>("")
+        private val selectedLanguage = AtomicProperty("")
         private val dontImportSettings = AtomicProperty(false)
         private var selectedSdk: AtomicProperty<ProjectWizardJdkIntent>? = null
         private var placeholder: Placeholder? = null

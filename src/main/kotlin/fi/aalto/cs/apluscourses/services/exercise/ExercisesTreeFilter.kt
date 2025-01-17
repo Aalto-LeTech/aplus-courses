@@ -8,11 +8,9 @@ import com.intellij.util.messages.Topic
 import com.intellij.util.messages.Topic.ProjectLevel
 import com.intellij.util.xmlb.annotations.XCollection
 import fi.aalto.cs.apluscourses.BUNDLE
-import fi.aalto.cs.apluscourses.ui.exercise.ExercisesView.ExerciseGroupItem
-import fi.aalto.cs.apluscourses.ui.exercise.ExercisesView.ExerciseItem
-import fi.aalto.cs.apluscourses.ui.exercise.ExercisesView.ExercisesTreeItem
+import fi.aalto.cs.apluscourses.ui.exercise.ExercisesView.*
 import org.jetbrains.annotations.PropertyKey
-import java.util.Collections
+import java.util.*
 import kotlin.reflect.KClass
 
 @Service(Service.Level.PROJECT)
@@ -28,7 +26,7 @@ class ExercisesTreeFilter(private val project: Project) :
             valueAttributeName = "",
             style = XCollection.Style.v2
         )
-        var enabledFilters by list<String>()
+        var enabledFilters: MutableList<String> by list()
     }
 
     private val filters: MutableMap<Filter<out ExercisesTreeItem>, Boolean> =
@@ -54,7 +52,7 @@ class ExercisesTreeFilter(private val project: Project) :
         }
     }
 
-    fun saveState() {
+    private fun saveState() {
         state.enabledFilters = filters.entries
             .filter { it.value }
             .map { it.key.displayName }.toMutableList()
@@ -75,7 +73,10 @@ class ExercisesTreeFilter(private val project: Project) :
             // Filter out disabled filters and match the target type
             .filter { it.value && it.key.targetType == targetType }
             // Map to filter functions with correct type
-            .map { it.key.getFilterFunction() as (T) -> Boolean }
+            .map {
+                @Suppress("UNCHECKED_CAST", "HardCodedStringLiteral")
+                it.key.getFilterFunction() as (T) -> Boolean
+            }
             // Combine filters to a single lambda
             .fold({ false }) { acc, filter -> { item -> filter(item) || acc(item) } }
 
@@ -89,7 +90,7 @@ class ExercisesTreeFilter(private val project: Project) :
 
         class ExerciseItemFilter(
             displayName: String,
-            private val filter: (ExerciseItem) -> Boolean
+            val filter: (ExerciseItem) -> Boolean
         ) : Filter<ExerciseItem>(displayName, ExerciseItem::class) {
             override fun getFilterFunction(): (ExerciseItem) -> Boolean = filter
         }
@@ -102,23 +103,24 @@ class ExercisesTreeFilter(private val project: Project) :
         }
 
         companion object {
-            val NON_SUBMITTABLE = ExerciseItemFilter(
+            private val NON_SUBMITTABLE: ExerciseItemFilter = ExerciseItemFilter(
                 "services.ExercisesTreeFilter.nonSubmittable"
-            ) { item -> !item.exercise.isSubmittable }
+            ) { !it.exercise.isSubmittable }
 
-            val COMPLETED = ExerciseItemFilter(
+            private val COMPLETED: ExerciseItemFilter = ExerciseItemFilter(
                 "services.ExercisesTreeFilter.Completed"
-            ) { item -> item.exercise.isCompleted() }
+            ) { it.exercise.isCompleted() }
 
-            val OPTIONAL = ExerciseItemFilter(
+            private val OPTIONAL: ExerciseItemFilter = ExerciseItemFilter(
                 "services.ExercisesTreeFilter.Optional"
-            ) { item -> item.exercise.isOptional }
+            ) { it.exercise.isOptional }
 
-            val CLOSED = ExerciseGroupFilter(
+            private val CLOSED: ExerciseGroupFilter = ExerciseGroupFilter(
                 "services.ExercisesTreeFilter.Closed"
-            ) { item -> !item.group.isOpen }
+            ) { !it.group.isOpen }
 
-            val allFilters = listOf(NON_SUBMITTABLE, COMPLETED, OPTIONAL, CLOSED)
+            val allFilters: List<Filter<out ExercisesTreeItem>> =
+                listOf(NON_SUBMITTABLE, COMPLETED, OPTIONAL, CLOSED)
         }
     }
 
