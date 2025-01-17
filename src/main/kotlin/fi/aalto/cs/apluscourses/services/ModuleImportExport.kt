@@ -59,12 +59,10 @@ class ModuleImportExport(
 
                             val zipFile = FileUtil.createTempDirectory("apluscourses", "modules")
                             zip.entries().asSequence().forEach { entry ->
-                                // Fix: Replace backslashes with slashes in entry names
-                                val fixedEntryName = entry.name.replace('\\', '/')
-                                val entryName = if (fixedEntryName.endsWith(".iml")) {
+                                val entryName = if (entry.name.endsWith(".iml")) {
                                     "$desiredModuleName.iml"
                                 } else {
-                                    fixedEntryName
+                                    entry.name
                                 }
                                 val entryFile = File(zipFile, entryName)
 
@@ -119,9 +117,8 @@ class ModuleImportExport(
                                     row {
                                         text(
                                             message(
-                                                "ui.ModuleImportExport.import.error.content", modulesWithErrors
-                                                    .map { "<li>${it}</li>" }
-                                                    .joinToString(""))
+                                                "ui.ModuleImportExport.import.error.content",
+                                                modulesWithErrors.joinToString("") { "<li>${it}</li>" })
                                         )
                                     }
                                 }
@@ -174,10 +171,7 @@ class ModuleImportExport(
         val fileName = dialog.getFileName()
 
         withContext(Dispatchers.IO) {
-            val moduleDir = module.guessModuleDir()?.toNioPathOrNull()?.toFile()
-            if (moduleDir == null) {
-                return@withContext
-            }
+            val moduleDir = module.guessModuleDir()?.toNioPathOrNull()?.toFile() ?: return@withContext
             val zipFile = outputPath.resolve("${fileName}.zip").toFile()
             if (zipFile.exists()) {
                 zipFile.delete()
@@ -194,7 +188,9 @@ class ModuleImportExport(
 
                     moduleDir.walkTopDown()
                         .forEach { file ->
-                            // Fix: Use forward slashes in zip entry names
+                            // File names in ZIP should always use forward slashes.
+                            // See section 4.4.17 of the ".ZIP File Format Specification" v6.3.6 FINAL.
+                            // Available online: https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT
                             val relativePath = file.relativeTo(moduleDir).invariantSeparatorsPath
                             val entryName = if (file.isDirectory) {
                                 "$relativePath/"
