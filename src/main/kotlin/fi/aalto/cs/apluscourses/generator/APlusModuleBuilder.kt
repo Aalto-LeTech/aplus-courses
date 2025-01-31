@@ -1,11 +1,8 @@
 package fi.aalto.cs.apluscourses.generator
 
-import com.intellij.ide.JavaUiBundle
-import com.intellij.ide.projectWizard.ProjectWizardJdkComboBox
 import com.intellij.ide.projectWizard.ProjectWizardJdkIntent
-import com.intellij.ide.projectWizard.ProjectWizardJdkIntent.DownloadJdk
-import com.intellij.ide.projectWizard.ProjectWizardJdkIntent.ExistingJdk
-import com.intellij.ide.projectWizard.generators.JdkDownloadService
+import com.intellij.ide.starters.local.StarterContext
+import com.intellij.ide.starters.shared.*
 import com.intellij.ide.util.projectWizard.ModuleBuilder
 import com.intellij.ide.util.projectWizard.ModuleWizardStep
 import com.intellij.ide.util.projectWizard.WizardContext
@@ -18,7 +15,7 @@ import com.intellij.openapi.module.Module
 import com.intellij.openapi.module.ModuleType
 import com.intellij.openapi.observable.properties.AtomicProperty
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.projectRoots.impl.jdkDownloader.JdkDownloadTask
+import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.roots.ui.configuration.ModulesProvider
 import com.intellij.ui.AnimatedIcon
@@ -29,7 +26,6 @@ import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.Placeholder
 import com.intellij.ui.dsl.builder.TopGap
-import com.intellij.ui.dsl.builder.bindItem
 import com.intellij.ui.dsl.builder.bindSelected
 import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
@@ -40,14 +36,11 @@ import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.api.CourseConfig
 import fi.aalto.cs.apluscourses.icons.CoursesIcons
 import fi.aalto.cs.apluscourses.services.Plugins
-import fi.aalto.cs.apluscourses.services.ProjectInitializationTracker
 import fi.aalto.cs.apluscourses.services.course.CourseFileManager
 import fi.aalto.cs.apluscourses.services.course.CoursesFetcher
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil.languageCodeToName
 import fi.aalto.cs.apluscourses.utils.CoursesLogger
-import kotlinx.coroutines.future.asDeferred
 import org.jetbrains.annotations.NonNls
-import java.awt.event.ItemEvent
 import javax.swing.JComponent
 import javax.swing.JList
 import javax.swing.ListSelectionModel
@@ -67,7 +60,7 @@ internal class APlusModuleBuilder : ModuleBuilder() {
     private var courseConfigUrl = ""
     private var programmingLanguage = ""
     private var language = ""
-    private var jdkIntent: ProjectWizardJdkIntent? = null
+    private var jdk: Sdk? = null
     private var importSettings = false
 
 
@@ -75,43 +68,62 @@ internal class APlusModuleBuilder : ModuleBuilder() {
         project: Project,
         model: ModifiableModuleModel?,
         modulesProvider: ModulesProvider?
-    ): List<Module>? {
+    ): List<Module> {
         CoursesLogger.info("Creating project from $courseConfigUrl, language: $language")
         project.service<CourseFileManager>().updateSettings(
             language,
             courseConfigUrl,
             importSettings
         )
-        val selectedSdk = jdkIntent
-        if (selectedSdk != null) {
-            if (selectedSdk is DownloadJdk) {
-                val task = selectedSdk.task
-                if (task is JdkDownloadTask) {
-                    CoursesLogger.info("Downloading JDK ${task.jdkItem} for new project")
 
-                    val sdkDownloadedFuture =
-                        project.service<JdkDownloadService>().scheduleDownloadJdkForNewProject(task)
-                    project.service<ProjectInitializationTracker>()
-                        .addInitializationTask(sdkDownloadedFuture.asDeferred())
-                }
-            } else if (selectedSdk is ExistingJdk) {
-                application.runWriteAction {
-                    CoursesLogger.info("Setting SDK to ${selectedSdk.jdk} for new project")
-                    ProjectRootManager.getInstance(project).projectSdk = selectedSdk.jdk
-                }
-            }
+        val module = application.runWriteAction<Module> {
+            ProjectRootManager.getInstance(project).projectSdk = jdk
+            super.createAndCommitIfNeeded(project, model, true)
         }
-        val module = super.commit(project, model, modulesProvider)
-        return module
+        return listOf(module)
     }
+
+    val projectTypes = listOf(StarterProjectType("1", "Maven"), StarterProjectType("2", "Gradle"))
+    val languages = listOf(StarterLanguage("3", "Kotlin", "1"))
+    val isExampleCodeProvided = false
+    val isPackageNameEditable = true
+    val languageLevels = listOf(StarterLanguageLevel("1", "17", "3"))
+    val defaultLanguageLevel = null
+    val packagingTypes = listOf(StarterAppPackaging("22", "JAR"))
+    val applicationTypes = listOf(StarterAppType("d", "Web"))
+    val testFrameworks = listOf(StarterTestRunner("l", "JUnit"))
+    val customizedMessages = null
+    val showProjectTypes = false
+
+    val startSettings = StarterWizardSettings(
+        projectTypes = projectTypes,
+        languages = languages,
+        isExampleCodeProvided = isExampleCodeProvided,
+        isPackageNameEditable = isPackageNameEditable,
+        languageLevels = languageLevels,
+        defaultLanguageLevel = defaultLanguageLevel,
+        packagingTypes = packagingTypes,
+        applicationTypes = applicationTypes,
+        testFrameworks = testFrameworks,
+        customizedMessages = customizedMessages,
+        showProjectTypes = showProjectTypes
+    )
 
     override fun getCustomOptionsStep(context: WizardContext, parentDisposable: Disposable): ModuleWizardStep =
         CourseSelectStep()
 
     override fun createWizardSteps(
         wizardContext: WizardContext,
-        modulesProvider: ModulesProvider
-    ): Array<ModuleWizardStep> = arrayOf(CourseSettingsStep(wizardContext))
+        modulesProvider: ModulesProvider,
+    ): Array<ModuleWizardStep> = arrayOf(
+        CourseSettingsStep(
+            wizardContext,
+            StarterContext(),
+            this@APlusModuleBuilder,
+            wizardContext.disposable,
+            startSettings
+        )
+    )
 
     inner class CourseSelectStep : ModuleWizardStep() {
         val courseList = JBList<CoursesFetcher.CourseConfig>()
@@ -195,8 +207,13 @@ internal class APlusModuleBuilder : ModuleBuilder() {
     }
 
     inner class CourseSettingsStep(
-        val wizardContext: WizardContext
-    ) : ModuleWizardStep() {
+        val wizard: WizardContext,
+        val starter: StarterContext,
+        val builder: ModuleBuilder,
+        val parentDis: Disposable,
+        val settings: StarterWizardSettings
+    ) : CommonStarterInitialStep(wizard, starter, builder, parentDis, settings) {
+
         private var mainPanel = JBScrollPane()
         private val selectedLanguage = AtomicProperty<String>("")
         private val dontImportSettings = AtomicProperty(false)
@@ -207,6 +224,7 @@ internal class APlusModuleBuilder : ModuleBuilder() {
             val courseConfig = this@APlusModuleBuilder.courseConfig ?: return
             val languages = courseConfig.languages
             @NonNls val finnishCode = "fi"
+
             if (languages.contains(finnishCode)) selectedLanguage.set(finnishCode) else selectedLanguage.set(languages.first())
 
             mainPanel = JBScrollPane(panel {
@@ -237,27 +255,8 @@ internal class APlusModuleBuilder : ModuleBuilder() {
                     }
                     if (this@APlusModuleBuilder.programmingLanguage == "scala") {
                         group(message("generator.APlusModuleBuilder.extra")) {
-                            row(JavaUiBundle.message("label.project.wizard.new.project.jdk")) {
-                                cell(ProjectWizardJdkComboBox(null, wizardContext.disposable)).apply {
-                                    val defaultValue = this.component.selectedItem
-                                    selectedSdk = AtomicProperty(defaultValue as ProjectWizardJdkIntent)
-                                    bindItem(selectedSdk!!)
-
-                                    // If the user selects a JDK that is already installed, select the existing JDK
-                                    component.addItemListener { changed ->
-                                        if (changed.stateChange == ItemEvent.SELECTED) {
-                                            val newSdk = changed.item
-                                            if (newSdk is DownloadJdk) {
-                                                val existingSdk =
-                                                    component.registered.find { it.jdk.name == newSdk.task.suggestedSdkName }
-                                                if (existingSdk != null) {
-                                                    selectedSdk!!.set(existingSdk)
-                                                }
-                                            }
-
-                                        }
-                                    }
-                                }
+                            row {
+                                panel { addSdkUi() }
                             }
                         }
                     } else {
@@ -312,7 +311,7 @@ internal class APlusModuleBuilder : ModuleBuilder() {
 
         override fun updateDataModel() {
             this@APlusModuleBuilder.language = selectedLanguage.get()
-            this@APlusModuleBuilder.jdkIntent = selectedSdk?.get()
+            this@APlusModuleBuilder.jdk = sdkProperty.get()
             this@APlusModuleBuilder.importSettings = !dontImportSettings.get()
         }
     }
