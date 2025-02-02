@@ -22,14 +22,14 @@ import javax.swing.JComponent
 class CourseSettingsStep(
     wizard: WizardContext,
     starter: StarterContext,
-    val builder: ModuleBuilder,
+    builder: ModuleBuilder,
     parentDis: Disposable,
     settings: StarterWizardSettings,
-    val config: APlusModuleConfig
+    private val config: APlusModuleConfig
 ) : CommonStarterInitialStep(wizard, starter, builder, parentDis, settings) {
 
     private var mainPanel = JBScrollPane()
-    private val selectedLanguage = AtomicProperty<String>("")
+    private val selectedLanguage = AtomicProperty("")
     private val dontImportSettings = AtomicProperty(false)
     private var selectedSdk: AtomicProperty<ProjectWizardJdkIntent>? = null
     private var placeholder: Placeholder? = null

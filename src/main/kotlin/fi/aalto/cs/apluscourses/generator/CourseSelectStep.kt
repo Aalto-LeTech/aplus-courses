@@ -1,3 +1,5 @@
+package fi.aalto.cs.apluscourses.generator
+
 import com.intellij.ide.util.projectWizard.ModuleWizardStep
 import com.intellij.openapi.components.service
 import com.intellij.openapi.observable.properties.AtomicProperty
@@ -12,7 +14,6 @@ import com.intellij.ui.dsl.gridLayout.UnscaledGaps
 import com.intellij.util.application
 import com.intellij.util.ui.JBUI
 import fi.aalto.cs.apluscourses.MyBundle.message
-import fi.aalto.cs.apluscourses.generator.APlusModuleConfig
 import fi.aalto.cs.apluscourses.icons.CoursesIcons
 import fi.aalto.cs.apluscourses.services.course.CoursesFetcher
 import javax.swing.JComponent
@@ -21,9 +22,9 @@ import javax.swing.ListSelectionModel
 import javax.swing.event.ListSelectionListener
 
 class CourseSelectStep(val config: APlusModuleConfig) : ModuleWizardStep() {
-    val courseList = JBList<CoursesFetcher.CourseConfig>()
-    val courseConfigUrl = AtomicProperty("")
-    val errorMessage = AtomicProperty("")
+    private val courseList = JBList<CoursesFetcher.CourseConfig>()
+    private val courseConfigUrl = AtomicProperty("")
+    private val errorMessage = AtomicProperty("")
 
     init {
         courseList.cellRenderer = object : ColoredListCellRenderer<CoursesFetcher.CourseConfig>() {

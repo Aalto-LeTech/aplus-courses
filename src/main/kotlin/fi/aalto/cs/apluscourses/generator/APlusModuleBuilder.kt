@@ -19,7 +19,6 @@ import com.intellij.util.application
 import fi.aalto.cs.apluscourses.services.course.CourseFileManager
 import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import org.jetbrains.annotations.NonNls
-import CourseSelectStep
 
 internal class APlusModuleBuilder : ModuleBuilder() {
 
