@@ -4,7 +4,6 @@ import com.intellij.openapi.projectRoots.Sdk
 import fi.aalto.cs.apluscourses.api.CourseConfig
 
 class APlusModuleConfig {
-
     var programmingLanguage = ""
     var courseConfig: CourseConfig.JSON? = null
     var courseConfigUrl = ""
