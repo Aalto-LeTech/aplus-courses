@@ -13,7 +13,6 @@ import com.intellij.openapi.module.ModifiableModuleModel
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.module.ModuleType
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.roots.ui.configuration.ModulesProvider
 import com.intellij.util.application
@@ -66,7 +65,7 @@ internal class APlusModuleBuilder : ModuleBuilder() {
     private val customizedMessages = null
     private val showProjectTypes = false
 
-    val startSettings = StarterWizardSettings(
+    private val startSettings = StarterWizardSettings(
         projectTypes = projectTypes,
         languages = languages,
         isExampleCodeProvided = isExampleCodeProvided,
