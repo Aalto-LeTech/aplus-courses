@@ -54,17 +54,17 @@ internal class APlusModuleBuilder : ModuleBuilder() {
         return listOf(module)
     }
 
-    val projectTypes = listOf(StarterProjectType("1", "Maven"), StarterProjectType("2", "Gradle"))
-    val languages = listOf(StarterLanguage("3", "Kotlin", "1"))
-    val isExampleCodeProvided = false
-    val isPackageNameEditable = true
-    val languageLevels = listOf(StarterLanguageLevel("1", "17", "3"))
-    val defaultLanguageLevel = null
-    val packagingTypes = listOf(StarterAppPackaging("22", "JAR"))
-    val applicationTypes = listOf(StarterAppType("d", "Web"))
-    val testFrameworks = listOf(StarterTestRunner("l", "JUnit"))
-    val customizedMessages = null
-    val showProjectTypes = false
+    private val projectTypes = listOf(StarterProjectType("1", "IntelliJ"))
+    private val languages = listOf(StarterLanguage("1", "Scala", "1"))
+    private val isExampleCodeProvided = false
+    private val isPackageNameEditable = true
+    private val languageLevels = listOf(StarterLanguageLevel("1", "17", "3"))
+    private val defaultLanguageLevel = null
+    private val packagingTypes = listOf(StarterAppPackaging("22", "JAR"))
+    private val applicationTypes = listOf(StarterAppType("d", "Web"))
+    private val testFrameworks = listOf(StarterTestRunner("l", "JUnit"))
+    private val customizedMessages = null
+    private val showProjectTypes = false
 
     val startSettings = StarterWizardSettings(
         projectTypes = projectTypes,

@@ -20,11 +20,11 @@ import org.jetbrains.annotations.NonNls
 import javax.swing.JComponent
 
 class CourseSettingsStep(
-    val wizard: WizardContext,
-    val starter: StarterContext,
+    wizard: WizardContext,
+    starter: StarterContext,
     val builder: ModuleBuilder,
-    val parentDis: Disposable,
-    val settings: StarterWizardSettings,
+    parentDis: Disposable,
+    settings: StarterWizardSettings,
     val config: APlusModuleConfig
 ) : CommonStarterInitialStep(wizard, starter, builder, parentDis, settings) {
 
