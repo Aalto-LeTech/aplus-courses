@@ -119,9 +119,8 @@ class ModuleImportExport(
                                     row {
                                         text(
                                             message(
-                                                "ui.ModuleImportExport.import.error.content", modulesWithErrors
-                                                    .map { "<li>${it}</li>" }
-                                                    .joinToString(""))
+                                                "ui.ModuleImportExport.import.error.content",
+                                                modulesWithErrors.joinToString("") { "<li>${it}</li>" })
                                         )
                                     }
                                 }

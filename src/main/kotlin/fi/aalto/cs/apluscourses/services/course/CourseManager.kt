@@ -18,11 +18,7 @@ import fi.aalto.cs.apluscourses.model.component.Module
 import fi.aalto.cs.apluscourses.model.news.NewsList
 import fi.aalto.cs.apluscourses.model.people.User
 import fi.aalto.cs.apluscourses.notifications.NewModulesVersionsNotification
-import fi.aalto.cs.apluscourses.services.Notifier
-import fi.aalto.cs.apluscourses.services.Opener
-import fi.aalto.cs.apluscourses.services.PluginSettings
-import fi.aalto.cs.apluscourses.services.TokenStorage
-import fi.aalto.cs.apluscourses.services.UnauthorizedException
+import fi.aalto.cs.apluscourses.services.*
 import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdater
 import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import fi.aalto.cs.apluscourses.utils.Version
@@ -267,7 +263,7 @@ class CourseManager(
     private fun notifyUpdatableModules() {
         val course = state.course ?: return
         val metadata = CourseFileManager.getInstance(project).state.modules
-        metadata.map { it.name to it.version }.toMap()
+        metadata.associate { it.name to it.version }
         val updatableModules = course.modules
             .filter { m: Module -> m.isUpdateAvailable && !m.isMinorUpdate }
             .filter { m: Module -> notifiedModules.add(m.name) }

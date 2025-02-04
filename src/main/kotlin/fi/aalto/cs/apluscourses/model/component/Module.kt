@@ -199,9 +199,7 @@ class Module(
  * [com.intellij.openapi.roots.OrderEntry] objects that represents dependencies of an
  * [Component] object (that is, modules and non-module-level libraries).
  */
-private class DependenciesPolicy : RootPolicy<Set<String>> {
-    constructor()
-
+private class DependenciesPolicy() : RootPolicy<Set<String>>() {
     override fun visitModuleOrderEntry(
         moduleOrderEntry: ModuleOrderEntry,
         entries: Set<String>
