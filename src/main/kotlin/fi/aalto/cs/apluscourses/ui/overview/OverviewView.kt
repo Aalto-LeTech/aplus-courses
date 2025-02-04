@@ -199,7 +199,6 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
             ?.filter { !course.optionalCategories.contains(it.key) }
             ?.toList()
             ?.sortedBy { it.first } // Show categories in alphabetical order
-        println(points)
         val grading = CourseManager.getInstance(project).state.grading
         val gradeData = grading?.let { grade(it, points?.toMap() ?: emptyMap()) }
         val grade = gradeData?.grade

@@ -148,7 +148,7 @@ class ExercisesUpdater(
             points.modules
                 .flatMap { it.exercises }
                 .map { it.difficulty to it.maxPoints }
-//                .filter { !it.first.isEmpty() } // Filter out empty categories
+                .filter { !it.first.isEmpty() } // Filter out empty categories
         val userPointsForCategories = pointsAndCategories
             .map { it.first }
             .toSet()
@@ -187,7 +187,7 @@ class ExercisesUpdater(
             .map { it.key to it.value.map { it.UserID } }
             .toMap()
 
-        val optionalCategories = course.optionalCategories// + "" // Empty category counted as optional
+        val optionalCategories = course.optionalCategories + "" // Empty category counted as optional
 
         val newExerciseGroups = points.modules.map { module ->
             val exerciseModule = exercises.find { it.id == module.id }

@@ -7,7 +7,7 @@ import fi.aalto.cs.apluscourses.services.Notifier
 import fi.aalto.cs.apluscourses.services.course.CourseFileManager
 import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import fi.aalto.cs.apluscourses.utils.Version
-import io.ktor.client.statement.bodyAsText
+import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -235,6 +235,7 @@ object CourseConfig {
         val language: String? = null,
         val version: Version = Version.DEFAULT,
         val changelog: String? = null,
+        val sbt: Boolean = false,
     )
 
     @Serializable

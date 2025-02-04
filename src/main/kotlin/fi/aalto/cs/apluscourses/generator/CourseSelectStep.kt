@@ -31,7 +31,7 @@ class CourseSelectStep(private val config: APlusModuleConfig) : ModuleWizardStep
 
     private val courseConfigUrl = AtomicProperty("")
     private val course = AtomicProperty<CoursesFetcher.CourseConfig?>(null)
-    private val language = AtomicProperty("")
+    private val language = AtomicProperty(PluginSettings.SUPPORTED_LANGUAGES.first())
 
     init {
         course.afterChange {
@@ -119,12 +119,11 @@ class CourseSelectStep(private val config: APlusModuleConfig) : ModuleWizardStep
         }
 
         val courseConfig = application.service<CoursesFetcher>().fetchCourse(url)
-        if (courseConfig == null) {
-            throw ConfigurationException(
+            ?: throw ConfigurationException(
                 message("generator.APlusModuleBuilder.selectCourse.urlError"),
                 message("generator.APlusModuleBuilder.selectCourse.urlErrorTitle")
             )
-        }
+
         config.courseConfig = courseConfig
         config.courseConfigUrl = url
         config.programmingLanguage = language.get()

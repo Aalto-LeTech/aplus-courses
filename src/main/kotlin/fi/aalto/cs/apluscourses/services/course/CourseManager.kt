@@ -172,14 +172,25 @@ class CourseManager(
         // Check if the user is enrolled when they can fetch the course but might not be enrolled
         checkIsEnrolled(courseConfig.id.toLong(), state.user)
         val modules = courseConfig.modules.map {
-            SbtModule(
-                it.name,
-                it.url,
-                it.changelog,
-                it.version,
-                it.language,
-                project
-            )
+            if (it.sbt) {
+                SbtModule(
+                    it.name,
+                    it.url,
+                    it.changelog,
+                    it.version,
+                    it.language,
+                    project
+                )
+            } else {
+                Module(
+                    it.name,
+                    it.url,
+                    it.changelog,
+                    it.version,
+                    it.language,
+                    project
+                )
+            }
         }
         val exerciseModules = courseConfig.exerciseModules.map { (exerciseId, languagesToModule) ->
             exerciseId to
@@ -187,7 +198,7 @@ class CourseManager(
                         .map { (language, moduleName) ->
                             var module = modules.find { it.name == moduleName }
                             if (module == null) {
-                                module = SbtModule(
+                                module = Module(
                                     moduleName,
                                     "",
                                     "",
@@ -264,7 +275,7 @@ class CourseManager(
     private fun notifyUpdatableModules() {
         val course = state.course ?: return
         val metadata = CourseFileManager.getInstance(project).state.modules
-        metadata.map { it.name to it.version }.toMap()
+        metadata.associate { it.name to it.version }
         val updatableModules = course.modules
             .filter { m: Module -> m.isUpdateAvailable && !m.isMinorUpdate }
             .filter { m: Module -> notifiedModules.add(m.name) }
@@ -274,7 +285,7 @@ class CourseManager(
         }
     }
 
-    suspend fun refreshModuleStatusesAsync() {
+    private suspend fun refreshModuleStatusesAsync() {
         state.missingDependencies = state.course?.modules?.mapNotNull {
             withContext(moduleOperationDispatcher) {
                 it.updateStatus()
@@ -296,7 +307,7 @@ class CourseManager(
         }
     }
 
-    suspend fun installModuleAsync(module: Module, show: Boolean = true) {
+    private suspend fun installModuleAsync(module: Module, show: Boolean = true) {
         withBackgroundProgress(project, message("aplusCourses")) {
             reportSequentialProgress { reporter ->
                 reporter.indeterminateStep(message("services.progress.installing", module.name))
