@@ -14,6 +14,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.roots.ui.configuration.ModulesProvider
 import com.intellij.util.application
+import fi.aalto.cs.apluscourses.services.ProjectInitializationTracker
 import fi.aalto.cs.apluscourses.services.course.CourseFileManager
 import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import org.jetbrains.annotations.NonNls
@@ -47,6 +48,22 @@ internal class APlusModuleBuilder : ModuleBuilder() {
             ProjectRootManager.getInstance(project).projectSdk = config.jdk
             super.createAndCommitIfNeeded(project, model, true)
         }
+
+        project.service<ProjectInitializationTracker>()
+            .addInitializationTask {
+                val startTime = System.currentTimeMillis()
+
+                // The version string only starts with "java version" when the JDK is not downloaded completely
+                while ((ProjectRootManager.getInstance(
+                        project
+                    ).projectSdk?.versionString?.startsWith("java version")
+                        ?: true) && System.currentTimeMillis() - startTime < 300 * 1000
+                ) {
+                    Thread.sleep(1000)
+                }
+            }
+
+
         return listOf(module)
     }
 
