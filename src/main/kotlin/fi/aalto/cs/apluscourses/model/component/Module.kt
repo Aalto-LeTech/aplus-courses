@@ -30,7 +30,7 @@ import kotlin.io.path.exists
 import kotlin.io.path.moveTo
 import com.intellij.openapi.module.Module as IdeaModule
 
-class Module(
+open class Module(
     name: String,
     val zipUrl: String,
     val changelog: String?,
@@ -59,20 +59,20 @@ class Module(
             .withoutSdk()
             .withoutModuleSourceEntries()
             .productionOnly()
-            .process(DependenciesPolicy(), emptySet())
+            .process(DEPENDENCIES_POLICY, emptySet())
     }
 
     fun setError() {
         status = Status.ERROR
     }
 
-    val documentationIndexFullPath: Path
+    private val documentationIndexFullPath: Path
         get() = fullPath.resolve("doc").resolve("index.html")
 
     val documentationExists: Boolean
         get() = status == Status.LOADED && documentationIndexFullPath.toFile().exists()
 
-    fun changedFiles(): List<Path> {
+    private fun changedFiles(): List<Path> {
         val fullPath = fullPath
         val timestamp = metadata?.downloadedAt ?: return emptyList()
         val timestampWithDelay =
@@ -101,6 +101,8 @@ class Module(
         withContext(Dispatchers.EDT) {
             loadToProject()
         }
+
+        waitForLoad()
         status = Status.LOADED
         val initialReplCommands = CourseManager.course(project)?.replInitialCommands?.get(name)
         val platformModule = platformObject
@@ -110,7 +112,10 @@ class Module(
         }
     }
 
-    fun loadToProject() {
+    open fun waitForLoad() {
+    }
+
+    open fun loadToProject() {
         application.runWriteAction {
             ModuleManager.getInstance(project).loadModule(imlPath)
             VirtualFileManager.getInstance().syncRefresh()
@@ -150,7 +155,7 @@ class Module(
         )
     }
 
-    val imlPath
+    private val imlPath
         get() = fullPath.resolve("$name.iml")
 
     override fun updateStatus() {
@@ -192,27 +197,28 @@ class Module(
                 Category.AVAILABLE
             }
         }
-}
 
-/**
- * This class is a [RootPolicy] that builds a set of the names of those
- * [com.intellij.openapi.roots.OrderEntry] objects that represents dependencies of an
- * [Component] object (that is, modules and non-module-level libraries).
- */
-private class DependenciesPolicy : RootPolicy<Set<String>> {
-    constructor()
+    companion object {
 
-    override fun visitModuleOrderEntry(
-        moduleOrderEntry: ModuleOrderEntry,
-        entries: Set<String>
-    ): Set<String> = entries + moduleOrderEntry.moduleName
+        /**
+         * This class is a [RootPolicy] that builds a set of the names of those
+         * [com.intellij.openapi.roots.OrderEntry] objects that represents dependencies of an
+         * [Component] object (that is, modules and non-module-level libraries).
+         */
+        private val DEPENDENCIES_POLICY = object : RootPolicy<Set<String>>() {
+            override fun visitModuleOrderEntry(
+                moduleOrderEntry: ModuleOrderEntry,
+                entries: Set<String>
+            ): Set<String> = entries + moduleOrderEntry.moduleName
 
-    override fun visitLibraryOrderEntry(
-        libraryOrderEntry: LibraryOrderEntry,
-        entries: Set<String>
-    ): Set<String> {
-        val name = libraryOrderEntry.libraryName
-        if (!libraryOrderEntry.isModuleLevel && name != null) return entries + name
-        return entries
+            override fun visitLibraryOrderEntry(
+                libraryOrderEntry: LibraryOrderEntry,
+                entries: Set<String>
+            ): Set<String> {
+                val name = libraryOrderEntry.libraryName
+                if (!libraryOrderEntry.isModuleLevel && name != null) return entries + name
+                return entries
+            }
+        }
     }
 }

@@ -26,6 +26,8 @@ import kotlinx.coroutines.*
 import java.io.IOException
 import java.nio.file.Path
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.io.path.Path
+import kotlin.io.path.invariantSeparatorsPathString
 
 @Service(Service.Level.PROJECT)
 class SubmitExercise(
@@ -86,16 +88,21 @@ class SubmitExercise(
                     FileDocumentManager.getInstance().saveAllDocuments()
                 }
 
-                val modulePath = ModuleUtilCore.getModuleDirPath(platformModule)
-
+                var modulePath = Path(ModuleUtilCore.getModuleDirPath(platformModule))
+                // in the case of SBT modules, the .iml file is inside .idea/modules, so we need to
+                // go up the directory tree two times to reach the project directory
+                if (modulePath.endsWith(Path(".idea/modules"))) {
+                    modulePath = modulePath.parent.parent
+                }
                 CoursesLogger.info("Detected module: $module, path: $modulePath")
 
                 val files: MutableMap<String, Path> = HashMap()
                 for ((key, name) in submissionInfo.getFiles(language)) {
-                    files[key] = FileUtil.findFileInDirectory(modulePath, name) ?: throw FileDoesNotExistException(
-                        modulePath,
-                        name
-                    )
+                    files[key] = FileUtil.findFileInDirectory(modulePath.invariantSeparatorsPathString, name)
+                        ?: throw FileDoesNotExistException(
+                            modulePath.invariantSeparatorsPathString,
+                            name
+                        )
                 }
                 CoursesLogger.info("Submission files: $files")
 
@@ -109,21 +116,21 @@ class SubmitExercise(
                     return@launch
                 }
 
-                val groups = listOf(Group.GROUP_ALONE) + APlusApi.course(course).myGroups(project)
+                val groups = listOf(Group.SUBMIT_ALONE) + APlusApi.course(course).myGroups(project)
 
                 // Find the group from the available groups that matches the default group ID.
                 // A group could be removed, so this way we check that the default group ID is still valid.
                 var defaultGroupId = CourseFileManager.getInstance(project).state.defaultGroupId
                 var group = groups.find { it.id == defaultGroupId }
                 if (group == null) {
-                    group = Group.GROUP_ALONE
+                    group = Group.SUBMIT_ALONE
                     CourseFileManager.getInstance(project).setDefaultGroup(group)
                 }
                 if (submittedBefore) {
                     val submitters = submittersFromBefore ?: emptyList()
                     group = groups.find {
                         submitters.containsAll(it.members.map { it.id })
-                    } ?: Group.GROUP_ALONE
+                    } ?: Group.SUBMIT_ALONE
                 }
 
                 CoursesLogger.info("Selected group: $group, default group: $defaultGroupId")

@@ -17,4 +17,7 @@ object PluginSettings {
 
     //  15 seconds in milliseconds
     const val REASONABLE_DELAY_FOR_MODULE_INSTALLATION: Long = 15L * 1000
+
+    @NonNls
+    val SUPPORTED_LANGUAGES: List<String> = listOf("scala", "python")
 }

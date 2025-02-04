@@ -6,14 +6,7 @@
 
 <div align="center">
 
-  <a href="https://github.com/Aalto-LeTech/aplus-courses/actions?query=workflow%3Abuild">![Build](https://github.com/Aalto-LeTech/aplus-courses/actions/workflows/push.yml/badge.svg)</a>
-  <a href="https://snyk.io/test/github/Aalto-LeTech/aplus-courses?targetFile=build.gradle">![Known Vulnerabilities](https://snyk.io/test/github/Aalto-LeTech/aplus-courses/badge.svg?targetFile=build.gradle)</a>
-  <a href="https://sonarcloud.io/dashboard?id=Aalto-LeTech_intellij-plugin">![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Aalto-LeTech_intellij-plugin&metric=coverage)</a>
-
-</div>
-
-<div align="center">
-
+  <a href="https://github.com/Aalto-LeTech/aplus-courses/actions?query=workflow%3Abuild">![Build](https://github.com/Aalto-LeTech/aplus-courses/actions/workflows/push.yml/badge.svg?branch=main)</a>
   <a href="https://plugins.jetbrains.com/plugin/13634-a-plugin-for-intellij">![Plugin Downloads](https://img.shields.io/jetbrains/plugin/d/13634-a-plugin-for-intellij?label=plugin%20downloads)</a>
   <a href="https://plugins.jetbrains.com/plugin/13634-a-plugin-for-intellij">![Plugin Version](https://img.shields.io/jetbrains/plugin/v/13634?label=plugin%20version)</a>
 

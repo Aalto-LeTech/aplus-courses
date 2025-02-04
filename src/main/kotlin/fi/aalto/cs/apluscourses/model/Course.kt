@@ -2,7 +2,10 @@ package fi.aalto.cs.apluscourses.model
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.libraries.LibraryTable
-import fi.aalto.cs.apluscourses.model.component.*
+import fi.aalto.cs.apluscourses.model.component.Component
+import fi.aalto.cs.apluscourses.model.component.Library
+import fi.aalto.cs.apluscourses.model.component.Module
+import fi.aalto.cs.apluscourses.model.component.ScalaSdk
 import fi.aalto.cs.apluscourses.utils.Version
 import fi.aalto.cs.apluscourses.utils.callbacks.Callbacks
 import io.ktor.http.*
@@ -12,7 +15,7 @@ data class Course(
     val id: Long,
     val name: String,
     val htmlUrl: String,
-    val imageUrl: String,
+    val imageUrl: String?,
     val endingTime: String,
     val languages: List<String>,
     val modules: List<Module>,

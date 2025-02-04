@@ -15,14 +15,11 @@ import fi.aalto.cs.apluscourses.api.CourseConfig
 import fi.aalto.cs.apluscourses.model.Course
 import fi.aalto.cs.apluscourses.model.component.Component
 import fi.aalto.cs.apluscourses.model.component.Module
+import fi.aalto.cs.apluscourses.model.component.SbtModule
 import fi.aalto.cs.apluscourses.model.news.NewsList
 import fi.aalto.cs.apluscourses.model.people.User
 import fi.aalto.cs.apluscourses.notifications.NewModulesVersionsNotification
-import fi.aalto.cs.apluscourses.services.Notifier
-import fi.aalto.cs.apluscourses.services.Opener
-import fi.aalto.cs.apluscourses.services.PluginSettings
-import fi.aalto.cs.apluscourses.services.TokenStorage
-import fi.aalto.cs.apluscourses.services.UnauthorizedException
+import fi.aalto.cs.apluscourses.services.*
 import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdater
 import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import fi.aalto.cs.apluscourses.utils.Version
@@ -175,14 +172,25 @@ class CourseManager(
         // Check if the user is enrolled when they can fetch the course but might not be enrolled
         checkIsEnrolled(courseConfig.id.toLong(), state.user)
         val modules = courseConfig.modules.map {
-            Module(
-                it.name,
-                it.url,
-                it.changelog,
-                it.version,
-                it.language,
-                project
-            )
+            if (it.sbt) {
+                SbtModule(
+                    it.name,
+                    it.url,
+                    it.changelog,
+                    it.version,
+                    it.language,
+                    project
+                )
+            } else {
+                Module(
+                    it.name,
+                    it.url,
+                    it.changelog,
+                    it.version,
+                    it.language,
+                    project
+                )
+            }
         }
         val exerciseModules = courseConfig.exerciseModules.map { (exerciseId, languagesToModule) ->
             exerciseId to
@@ -267,7 +275,7 @@ class CourseManager(
     private fun notifyUpdatableModules() {
         val course = state.course ?: return
         val metadata = CourseFileManager.getInstance(project).state.modules
-        metadata.map { it.name to it.version }.toMap()
+        metadata.associate { it.name to it.version }
         val updatableModules = course.modules
             .filter { m: Module -> m.isUpdateAvailable && !m.isMinorUpdate }
             .filter { m: Module -> notifiedModules.add(m.name) }
@@ -277,7 +285,7 @@ class CourseManager(
         }
     }
 
-    suspend fun refreshModuleStatusesAsync() {
+    private suspend fun refreshModuleStatusesAsync() {
         state.missingDependencies = state.course?.modules?.mapNotNull {
             withContext(moduleOperationDispatcher) {
                 it.updateStatus()
@@ -299,7 +307,7 @@ class CourseManager(
         }
     }
 
-    suspend fun installModuleAsync(module: Module, show: Boolean = true) {
+    private suspend fun installModuleAsync(module: Module, show: Boolean = true) {
         withBackgroundProgress(project, message("aplusCourses")) {
             reportSequentialProgress { reporter ->
                 reporter.indeterminateStep(message("services.progress.installing", module.name))

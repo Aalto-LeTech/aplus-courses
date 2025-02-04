@@ -8,9 +8,7 @@ import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.guessModuleDir
 import com.intellij.openapi.ui.DialogBuilder
-import com.intellij.openapi.util.Comparing
 import com.intellij.openapi.util.io.FileUtil
-import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.toNioPathOrNull
 import com.intellij.platform.ide.progress.withModalProgress
 import com.intellij.ui.dsl.builder.panel
@@ -48,7 +46,11 @@ class ModuleImportExport(
             return
         }
         val modulesWithErrors = mutableListOf<String>()
-        FileChooser.chooseFiles(FileChooserDescriptorImpl(), project, null) { files ->
+        FileChooser.chooseFiles(
+            FileChooserDescriptor(false, false, true, true, false, true).withExtensionFilter(
+                "zip"
+            ), project, null
+        ) { files ->
             cs.launch {
                 withModalProgress(project, message("ui.ModuleImportExport.import.progress")) {
 
@@ -152,9 +154,9 @@ class ModuleImportExport(
             if (modules.isEmpty()) return@withModalProgress null
 
             val groups = withContext(Dispatchers.IO) {
-                listOf(Group.GROUP_ALONE) + APlusApi.course(course).myGroups(project)
+                listOf(Group.EXPORT_ALONE) + APlusApi.course(course).myGroups(project)
             }
-            val student = APlusApi.me().get(project) ?: return@withModalProgress null
+            val student = APlusApi.me().get(project)
 
             Triple(student, modules, groups)
         } ?: return
@@ -166,12 +168,13 @@ class ModuleImportExport(
         }
 
         val module = dialog.getSelectedModule()
-        val selectedGroup = dialog.getSelectedGroup() ?: return
+        val selectedGroup = dialog.getSelectedGroup()
         val outputPath = dialog.getOutputPath() ?: return
         val fileName = dialog.getFileName()
 
         withContext(Dispatchers.IO) {
             val moduleDir = module.guessModuleDir()?.toNioPathOrNull()?.toFile() ?: return@withContext
+
             val zipFile = outputPath.resolve("${fileName}.zip").toFile()
             if (zipFile.exists()) {
                 zipFile.delete()
@@ -221,29 +224,11 @@ class ModuleImportExport(
                 submitter.studentId ?: "???"
             )
         )
-        if (selectedGroup != Group.GROUP_ALONE) {
+        if (selectedGroup != Group.SUBMIT_ALONE) {
             appendLine()
             selectedGroup.members.forEach { member ->
                 appendLine("- ${member.name}")
             }
-        }
-    }
-
-    private class FileChooserDescriptorImpl :
-        FileChooserDescriptor(false, false, true, true, false, true) {
-
-        init {
-            title = message("ui.ModuleImportExport.import.title")
-            description = message("ui.ModuleImportExport.import.description")
-        }
-
-        override fun isFileSelectable(file: VirtualFile?): Boolean {
-            if (file == null) {
-                return false
-            }
-
-            val extension = file.extension
-            return Comparing.strEqual(extension, "zip")
         }
     }
 }
