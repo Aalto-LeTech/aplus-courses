@@ -6,9 +6,9 @@ import fi.aalto.cs.apluscourses.model.news.NewsList
 import fi.aalto.cs.apluscourses.services.CoursesClient
 import fi.aalto.cs.apluscourses.services.course.CourseFileManager
 import fi.aalto.cs.apluscourses.utils.parser.O1NewsParser
+import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
-import io.ktor.client.request.parameter
-import io.ktor.client.statement.bodyAsText
+import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.resources.*
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -37,7 +37,7 @@ object APlusApi {
         data class CourseBody(
             val htmlUrl: String,
             val endingTime: String,
-            val image: String,
+            val image: String?,
         )
 
         @Resource("exercises")
@@ -381,7 +381,7 @@ object APlusApi {
     class Users {
         @Resource("me")
         class Me(val parent: Users) {
-            suspend fun get(project: Project): UserModel? {
+            suspend fun get(project: Project): UserModel {
                 val body = CoursesClient.getInstance(project).getBody<Me, UserBody>(this@Me)
 
                 return UserModel(

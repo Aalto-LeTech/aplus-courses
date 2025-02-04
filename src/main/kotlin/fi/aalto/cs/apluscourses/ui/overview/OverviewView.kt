@@ -183,13 +183,14 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
         val authenticated = CourseManager.authenticated(project) ?: return loadingPanel()
         if (!authenticated) return authPanel()
         val error = CourseManager.error(project)
-        if (error == CourseManager.Error.NETWORK_ERROR) {
-            return networkErrorPanel()
-        } else if (error == CourseManager.Error.INVALID_TOKEN) {
-            return invalidTokenPanel()
-        } else if (error == CourseManager.Error.NOT_ENROLLED) {
-            return notEnrolledPanel()
+        if (error != null) {
+            return when (error) {
+                CourseManager.Error.NETWORK_ERROR -> networkErrorPanel()
+                CourseManager.Error.INVALID_TOKEN -> invalidTokenPanel()
+                CourseManager.Error.NOT_ENROLLED -> notEnrolledPanel()
+            }
         }
+
         val course = CourseManager.course(project) ?: return loadingPanel()
         val user = CourseManager.user(project) ?: return loadingPanel()
         val isCourseEnded = CourseManager.isCourseEnded(project)
@@ -235,15 +236,14 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
                                     )
                                 })
                             }.topGap(TopGap.MEDIUM)
-                            points.map {
-                                val (category, points) = it
-                                val maxPoints = maxPoints[category]!!
+                            points.map { (category, points) ->
+                                val categoryMaxPoints = maxPoints[category]!!
                                 row {
                                     text(category).bold()
-                                    cell(JProgressBar(0, maxPoints))
+                                    cell(JProgressBar(0, categoryMaxPoints))
                                         .applyToComponent { value = points }
                                         .resizableColumn().align(AlignX.FILL)
-                                    text("${points}/${maxPoints}").applyToComponent {
+                                    text("${points}/${categoryMaxPoints}").applyToComponent {
                                         foreground = JBUI.CurrentTheme.ContextHelp.FOREGROUND
                                     }
                                 }.layout(RowLayout.PARENT_GRID)
@@ -359,9 +359,9 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
 
                 // Max points for the next grade
                 val maxOfNext = mapOf(
-                    a to (nextGrade?.value[a] ?: 0),
-                    b to (nextGrade?.value[b] ?: 0),
-                    c to (nextGrade?.value[c] ?: 0)
+                    a to (nextGrade?.value?.get(a) ?: 0),
+                    b to (nextGrade?.value?.get(b) ?: 0),
+                    c to (nextGrade?.value?.get(c) ?: 0)
                 )
 
                 Grade(currentGrade?.key, pointsToNextGrade, maxOfNext)
@@ -386,7 +386,7 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
                     mapOf(total to 0)
                 }
 
-                val maxOfNext = mapOf(total to (nextGrade?.value[total] ?: 0))
+                val maxOfNext = mapOf(total to (nextGrade?.value?.get(total) ?: 0))
 
                 Grade(currentGrade?.key, pointsToNextGrade, maxOfNext)
             }
@@ -397,7 +397,7 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
         }
     }
 
-    fun Panel.weekClosingTime(weeks: List<ExerciseGroup>) {
+    private fun Panel.weekClosingTime(weeks: List<ExerciseGroup>) {
         val now = Clock.System.now()
         val currentWeek = weeks.find { it.closingTime != null && now < Instant.parse(it.closingTime) }
         val weekNumber = weeks.indexOf(currentWeek) + 1
@@ -442,18 +442,17 @@ class ResponsiveImagePanel(url: String? = null, icon: Icon? = null, width: Int, 
     private val heightMultiplier: Double
 
     init {
-        val icon = icon ?: IconLoader.findIcon(URI(url!!).toURL(), true)
-        image = icon?.let {
-            IconLoader.toImage(
-                it,
-                ScaleContext.createIdentity()
-            )
+        val loadedIcon = icon ?: url?.let {
+            IconLoader.findIcon(URI(it).toURL(), true)
         }
-        heightMultiplier = if (icon != null)
-            icon.iconHeight.toDouble() / icon.iconWidth.toDouble()
-        else 1.0
 
-        updateWidth(width)
+        if (loadedIcon == null) {
+            heightMultiplier = 0.0
+        } else {
+            image = IconLoader.toImage(loadedIcon, ScaleContext.createIdentity())
+            heightMultiplier = loadedIcon.iconHeight.toDouble() / loadedIcon.iconWidth.toDouble()
+            updateWidth(width)
+        }
     }
 
     fun updateWidth(width: Int) {
@@ -470,8 +469,8 @@ class ResponsiveImagePanel(url: String? = null, icon: Icon? = null, width: Int, 
         }
     }
 
-    override fun getWidth() = width
-    override fun getHeight() = (width * heightMultiplier).toInt()
+    override fun getWidth(): Int = width
+    override fun getHeight(): Int = (width * heightMultiplier).toInt()
 
-    override fun getPreferredSize() = Dimension(width, height)
+    override fun getPreferredSize(): Dimension = Dimension(width, height)
 }
