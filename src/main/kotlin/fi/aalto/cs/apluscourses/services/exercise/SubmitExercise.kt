@@ -116,21 +116,21 @@ class SubmitExercise(
                     return@launch
                 }
 
-                val groups = listOf(Group.GROUP_ALONE) + APlusApi.course(course).myGroups(project)
+                val groups = listOf(Group.SUBMIT_ALONE) + APlusApi.course(course).myGroups(project)
 
                 // Find the group from the available groups that matches the default group ID.
                 // A group could be removed, so this way we check that the default group ID is still valid.
                 var defaultGroupId = CourseFileManager.getInstance(project).state.defaultGroupId
                 var group = groups.find { it.id == defaultGroupId }
                 if (group == null) {
-                    group = Group.GROUP_ALONE
+                    group = Group.SUBMIT_ALONE
                     CourseFileManager.getInstance(project).setDefaultGroup(group)
                 }
                 if (submittedBefore) {
                     val submitters = submittersFromBefore ?: emptyList()
                     group = groups.find {
                         submitters.containsAll(it.members.map { it.id })
-                    } ?: Group.GROUP_ALONE
+                    } ?: Group.SUBMIT_ALONE
                 }
 
                 CoursesLogger.info("Selected group: $group, default group: $defaultGroupId")
