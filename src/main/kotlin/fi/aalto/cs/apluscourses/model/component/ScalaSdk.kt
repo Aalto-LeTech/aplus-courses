@@ -122,7 +122,7 @@ class ScalaSdk(private val scalaVersion: String, project: Project) : Library(sca
 
     private fun getUris(roots: List<String>, pathToUri: (Path) -> String): List<String> {
         return roots
-            .filter { !it.isEmpty() }
+            .filter { it.isNotEmpty() }
             .map { sdkPath.resolve("lib").resolve(it) }
             .map { pathToUri(it) }
     }

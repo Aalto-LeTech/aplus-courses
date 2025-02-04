@@ -59,7 +59,7 @@ open class Module(
             .withoutSdk()
             .withoutModuleSourceEntries()
             .productionOnly()
-            .process(DependenciesPolicy(), emptySet())
+            .process(DEPENDENCIES_POLICY, emptySet())
     }
 
     fun setError() {
@@ -197,26 +197,28 @@ open class Module(
                 Category.AVAILABLE
             }
         }
-}
 
-/**
- * This class is a [RootPolicy] that builds a set of the names of those
- * [com.intellij.openapi.roots.OrderEntry] objects that represents dependencies of an
- * [Component] object (that is, modules and non-module-level libraries).
- */
-private class DependenciesPolicy : RootPolicy<Set<String>>() {
+    companion object {
 
-    override fun visitModuleOrderEntry(
-        moduleOrderEntry: ModuleOrderEntry,
-        entries: Set<String>
-    ): Set<String> = entries + moduleOrderEntry.moduleName
+        /**
+         * This class is a [RootPolicy] that builds a set of the names of those
+         * [com.intellij.openapi.roots.OrderEntry] objects that represents dependencies of an
+         * [Component] object (that is, modules and non-module-level libraries).
+         */
+        private val DEPENDENCIES_POLICY = object : RootPolicy<Set<String>>() {
+            override fun visitModuleOrderEntry(
+                moduleOrderEntry: ModuleOrderEntry,
+                entries: Set<String>
+            ): Set<String> = entries + moduleOrderEntry.moduleName
 
-    override fun visitLibraryOrderEntry(
-        libraryOrderEntry: LibraryOrderEntry,
-        entries: Set<String>
-    ): Set<String> {
-        val name = libraryOrderEntry.libraryName
-        if (!libraryOrderEntry.isModuleLevel && name != null) return entries + name
-        return entries
+            override fun visitLibraryOrderEntry(
+                libraryOrderEntry: LibraryOrderEntry,
+                entries: Set<String>
+            ): Set<String> {
+                val name = libraryOrderEntry.libraryName
+                if (!libraryOrderEntry.isModuleLevel && name != null) return entries + name
+                return entries
+            }
+        }
     }
 }
