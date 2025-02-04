@@ -16,17 +16,32 @@ import com.intellij.util.application
 import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.services.Plugins
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil.languageCodeToName
+import org.jetbrains.annotations.ApiStatus
 import org.jetbrains.annotations.NonNls
 import javax.swing.JComponent
 
+@ApiStatus.Experimental
 class CourseSettingsStep(
     wizard: WizardContext,
-    starter: StarterContext,
     builder: ModuleBuilder,
     parentDis: Disposable,
-    settings: StarterWizardSettings,
     private val config: APlusModuleConfig
-) : CommonStarterInitialStep(wizard, starter, builder, parentDis, settings) {
+) : CommonStarterInitialStep(
+    wizard, StarterContext(), builder, parentDis,
+    StarterWizardSettings(
+        emptyList(),
+        emptyList(),
+        isExampleCodeProvided = false,
+        isPackageNameEditable = false,
+        languageLevels = emptyList(),
+        defaultLanguageLevel = null,
+        packagingTypes = emptyList(),
+        applicationTypes = emptyList(),
+        testFrameworks = emptyList(),
+        customizedMessages = null,
+        showProjectTypes = false
+    )
+) {
 
     private var mainPanel = JBScrollPane()
     private val selectedLanguage = AtomicProperty("")
@@ -69,9 +84,7 @@ class CourseSettingsStep(
                 }
                 if (config.programmingLanguage == "scala") {
                     group(message("generator.APlusModuleBuilder.extra")) {
-                        row {
-                            panel { addSdkUi() }
-                        }
+                        addSdkUi()
                     }
                 } else {
                     selectedSdk = null

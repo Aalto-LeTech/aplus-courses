@@ -21,7 +21,7 @@ import javax.swing.JList
 import javax.swing.ListSelectionModel
 import javax.swing.event.ListSelectionListener
 
-class CourseSelectStep(val config: APlusModuleConfig) : ModuleWizardStep() {
+class CourseSelectStep(private val config: APlusModuleConfig) : ModuleWizardStep() {
     private val courseList = JBList<CoursesFetcher.CourseConfig>()
     private val courseConfigUrl = AtomicProperty("")
     private val errorMessage = AtomicProperty("")

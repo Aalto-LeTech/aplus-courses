@@ -1,7 +1,5 @@
 package fi.aalto.cs.apluscourses.generator
 
-import com.intellij.ide.starters.local.StarterContext
-import com.intellij.ide.starters.shared.*
 import com.intellij.ide.util.projectWizard.ModuleBuilder
 import com.intellij.ide.util.projectWizard.ModuleWizardStep
 import com.intellij.ide.util.projectWizard.WizardContext
@@ -52,32 +50,6 @@ internal class APlusModuleBuilder : ModuleBuilder() {
         return listOf(module)
     }
 
-    private val projectTypes = listOf(StarterProjectType("1", "IntelliJ"))
-    private val languages = listOf(StarterLanguage("1", "Scala", "1"))
-    private val isExampleCodeProvided = false
-    private val isPackageNameEditable = true
-    private val languageLevels = listOf(StarterLanguageLevel("1", "17", "3"))
-    private val defaultLanguageLevel = null
-    private val packagingTypes = listOf(StarterAppPackaging("22", "JAR"))
-    private val applicationTypes = listOf(StarterAppType("d", "Web"))
-    private val testFrameworks = listOf(StarterTestRunner("l", "JUnit"))
-    private val customizedMessages = null
-    private val showProjectTypes = false
-
-    private val startSettings = StarterWizardSettings(
-        projectTypes = projectTypes,
-        languages = languages,
-        isExampleCodeProvided = isExampleCodeProvided,
-        isPackageNameEditable = isPackageNameEditable,
-        languageLevels = languageLevels,
-        defaultLanguageLevel = defaultLanguageLevel,
-        packagingTypes = packagingTypes,
-        applicationTypes = applicationTypes,
-        testFrameworks = testFrameworks,
-        customizedMessages = customizedMessages,
-        showProjectTypes = showProjectTypes
-    )
-
     override fun getCustomOptionsStep(context: WizardContext, parentDisposable: Disposable): ModuleWizardStep =
         CourseSelectStep(config)
 
@@ -87,10 +59,8 @@ internal class APlusModuleBuilder : ModuleBuilder() {
     ): Array<ModuleWizardStep> = arrayOf(
         CourseSettingsStep(
             wizardContext,
-            StarterContext(),
             this@APlusModuleBuilder,
             wizardContext.disposable,
-            startSettings,
             config
         )
     )
