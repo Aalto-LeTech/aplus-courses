@@ -66,13 +66,13 @@ open class Module(
         status = Status.ERROR
     }
 
-    val documentationIndexFullPath: Path
+    private val documentationIndexFullPath: Path
         get() = fullPath.resolve("doc").resolve("index.html")
 
     val documentationExists: Boolean
         get() = status == Status.LOADED && documentationIndexFullPath.toFile().exists()
 
-    fun changedFiles(): List<Path> {
+    private fun changedFiles(): List<Path> {
         val fullPath = fullPath
         val timestamp = metadata?.downloadedAt ?: return emptyList()
         val timestampWithDelay =
@@ -155,7 +155,7 @@ open class Module(
         )
     }
 
-    val imlPath
+    private val imlPath
         get() = fullPath.resolve("$name.iml")
 
     override fun updateStatus() {
@@ -204,8 +204,7 @@ open class Module(
  * [com.intellij.openapi.roots.OrderEntry] objects that represents dependencies of an
  * [Component] object (that is, modules and non-module-level libraries).
  */
-private class DependenciesPolicy : RootPolicy<Set<String>> {
-    constructor()
+private class DependenciesPolicy : RootPolicy<Set<String>>() {
 
     override fun visitModuleOrderEntry(
         moduleOrderEntry: ModuleOrderEntry,

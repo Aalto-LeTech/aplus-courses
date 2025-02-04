@@ -1,54 +1,69 @@
 package fi.aalto.cs.apluscourses.model.component
 
 import com.intellij.openapi.application.writeAction
-import com.intellij.openapi.externalSystem.service.project.IdeModifiableModelsProviderImpl
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.OrderRootType
-import com.intellij.openapi.roots.libraries.LibraryTablesRegistrar
+import com.intellij.openapi.roots.impl.libraries.LibraryEx.ModifiableModelEx
+import com.intellij.openapi.roots.libraries.PersistentLibraryKind
+import com.intellij.openapi.util.io.FileUtil
+import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFileManager
 import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
-import org.jetbrains.plugins.scala.project.external.ScalaSdkUtils
-import scala.Option
-import scala.jdk.javaapi.CollectionConverters
-import java.io.File
+import org.jetbrains.annotations.NonNls
+import org.jetbrains.plugins.scala.project.ScalaLanguageLevel
+import org.jetbrains.plugins.scala.project.ScalaLibraryProperties
+import org.jetbrains.plugins.scala.project.ScalaLibraryPropertiesState
+import org.jetbrains.plugins.scala.project.ScalaLibraryType
 import java.nio.file.Path
 
 class ScalaSdk(private val scalaVersion: String, project: Project) : Library(scalaVersion, project) {
+    @NonNls
+    private val versionNumber = scalaVersion.substringAfter("scala-sdk-")
+    private val libPath = Path.of(project.basePath!!, ".libs")
+    private val sdkPath = libPath.resolve("scala3-$versionNumber")
+
     override suspend fun downloadAndInstall(updating: Boolean) {
         status = Status.LOADING
         CoursesLogger.info("Downloading Scala SDK $scalaVersion")
-        val strippedScalaVersion = this.scalaVersion.substringAfter("scala-sdk-")
         val zipUrl =
-            "https://github.com/lampepfl/dotty/releases/download/$strippedScalaVersion/scala3-$strippedScalaVersion.zip"
-        val sourcesUrl = "https://github.com/scala/scala3/archive/refs/tags/$strippedScalaVersion.zip"
-        val path = Path.of(project.basePath!!, ".libs")
+            "https://github.com/lampepfl/dotty/releases/download/$versionNumber/scala3-$versionNumber.zip"
+        val sourcesUrl = "https://github.com/scala/scala3/archive/refs/tags/$versionNumber.zip"
+        val path = libPath
         downloadAndUnzipZip(zipUrl, path)
-        val libraryTable = LibraryTablesRegistrar.getInstance().getLibraryTable(project).modifiableModel
+
+        val libraryTable = libraryTable(project).modifiableModel
         libraryTable.getLibraryByName(scalaVersion)?.let {
             writeAction {
                 libraryTable.removeLibrary(it)
             }
         }
-        val provider = IdeModifiableModelsProviderImpl(project)
-        val library = provider.createLibrary(scalaVersion)
-        val compilerClasspath =
-            path.resolve("scala3-$strippedScalaVersion").resolve("lib").toFile().listFiles().toList()
+        val kind: PersistentLibraryKind<ScalaLibraryProperties> = ScalaLibraryType.`Kind$`.`MODULE$`
+        val library = libraryTable.createLibrary(name, kind)
+        val compilerClasspath = sdkPath.resolve("lib").toFile().listFiles().toList()
         val scala2Version =
             compilerClasspath.find { it.name.startsWith("scala-library") }?.nameWithoutExtension?.substringAfter("scala-library-")
 
         writeAction {
             val libraryModel = library.modifiableModel
-            ScalaSdkUtils.ensureScalaLibraryIsConvertedToScalaSdk(
-                provider,
-                library,
-                Option.apply(strippedScalaVersion.substringBeforeLast(".")),
-                CollectionConverters.asScala(compilerClasspath).toSeq(),
-                CollectionConverters.asScala(listOf<File>()).toSeq(),
-                ScalaSdkUtils.resolveCompilerBridgeJar(strippedScalaVersion)
+
+            // HACK: this is the only way to access properties that I am aware of
+            val libraryEx = libraryModel as ModifiableModelEx
+            val properties = libraryEx.properties
+            val newState = ScalaLibraryPropertiesState(
+                ScalaLanguageLevel.findByVersion(versionNumber).get(),
+                getUris(getJarFiles()) {
+                    VirtualFileManager.constructUrl(
+                        LocalFileSystem.getInstance().protocol,
+                        FileUtil.toSystemDependentName(it.toString())
+                    )
+                }.toTypedArray(), emptyArray<String>(), null
             )
+            properties.loadState(newState)
+            libraryEx.properties = properties
+
             libraryModel.commit()
             val newLibraryModel = library.modifiableModel
             newLibraryModel.addRoot(
@@ -61,16 +76,16 @@ class ScalaSdk(private val scalaVersion: String, project: Project) : Library(sca
             )
 
             newLibraryModel.commit()
-            provider.commit()
+            libraryTable.commit()
             VirtualFileManager.getInstance().syncRefresh()
         }
         runBlocking {
-            val scala3SourcesPath = path.resolve("scala3-$strippedScalaVersion").resolve("src")
+            val scala3SourcesPath = path.resolve("scala3-$versionNumber").resolve("src")
             val scala3Docs = async {
                 downloadAndUnzipZip(
                     sourcesUrl,
                     scala3SourcesPath,
-                    "scala3-$strippedScalaVersion/library/src/"
+                    "scala3-$versionNumber/library/src/"
                 )
             }
             val scala2Docs = async {
@@ -86,14 +101,14 @@ class ScalaSdk(private val scalaVersion: String, project: Project) : Library(sca
             val libraryModel = library.modifiableModel
             libraryModel.addRoot(
                 VfsUtil.getUrlForLibraryRoot(
-                    path.resolve("scala3-$strippedScalaVersion").resolve("src").resolve("scala3-$strippedScalaVersion")
+                    path.resolve("scala3-$versionNumber").resolve("src").resolve("scala3-$versionNumber")
                         .resolve("library").resolve("src")
                 ),
                 OrderRootType.SOURCES
             )
             libraryModel.addRoot(
                 VfsUtil.getUrlForLibraryRoot(
-                    path.resolve("scala3-$strippedScalaVersion").resolve("src").resolve("scala-$scala2Version")
+                    path.resolve("scala3-$versionNumber").resolve("src").resolve("scala-$scala2Version")
                         .resolve("src").resolve("library")
                 ),
                 OrderRootType.SOURCES
@@ -103,5 +118,19 @@ class ScalaSdk(private val scalaVersion: String, project: Project) : Library(sca
         }
         status = Status.LOADED
 
+    }
+
+    private fun getUris(roots: List<String>, pathToUri: (Path) -> String): List<String> {
+        return roots
+            .filter { !it.isEmpty() }
+            .map { sdkPath.resolve("lib").resolve(it) }
+            .map { pathToUri(it) }
+    }
+
+    private fun getJarFiles(): List<String> {
+        val files = sdkPath.resolve("lib").toFile().listFiles()
+        return files
+            .map { it.name }
+            .filter { it.endsWith(".jar") }
     }
 }

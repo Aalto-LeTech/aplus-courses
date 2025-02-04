@@ -23,7 +23,7 @@ class SbtModule(
     override fun loadToProject() {
         val settings = SbtProjectSettings()
         settings.setupNewProjectDefault()
-        settings.setExternalProjectPath(fullPath.invariantSeparatorsPathString)
+        settings.externalProjectPath = fullPath.invariantSeparatorsPathString
         val id = ProjectSystemId.findById("SBT") ?: return
 
         try {
