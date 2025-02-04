@@ -11,9 +11,7 @@ import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.plugins.scala.project.external.ScalaSdkUtils
-import scala.Option
 import scala.jdk.javaapi.CollectionConverters
-import java.io.File
 import java.nio.file.Path
 
 class ScalaSdk(private val scalaVersion: String, project: Project) : Library(scalaVersion, project) {
@@ -34,8 +32,12 @@ class ScalaSdk(private val scalaVersion: String, project: Project) : Library(sca
         }
         val provider = IdeModifiableModelsProviderImpl(project)
         val library = provider.createLibrary(scalaVersion)
-        val compilerClasspath =
-            path.resolve("scala3-$strippedScalaVersion").resolve("lib").toFile().listFiles().toList()
+        val compilerFiles =
+            path.resolve("scala3-$strippedScalaVersion").resolve("lib").toFile().listFiles()
+
+        val compilerPaths = compilerFiles.map { it.toPath() }
+
+        val compilerClasspath = compilerFiles.asList()
         val scala2Version =
             compilerClasspath.find { it.name.startsWith("scala-library") }?.nameWithoutExtension?.substringAfter("scala-library-")
 
@@ -44,9 +46,8 @@ class ScalaSdk(private val scalaVersion: String, project: Project) : Library(sca
             ScalaSdkUtils.ensureScalaLibraryIsConvertedToScalaSdk(
                 provider,
                 library,
-                Option.apply(strippedScalaVersion.substringBeforeLast(".")),
-                CollectionConverters.asScala(compilerClasspath).toSeq(),
-                CollectionConverters.asScala(listOf<File>()).toSeq(),
+                CollectionConverters.asScala(compilerPaths).toSeq(),
+                CollectionConverters.asScala(listOf<Path>()).toSeq(),
                 ScalaSdkUtils.resolveCompilerBridgeJar(strippedScalaVersion)
             )
             libraryModel.commit()
