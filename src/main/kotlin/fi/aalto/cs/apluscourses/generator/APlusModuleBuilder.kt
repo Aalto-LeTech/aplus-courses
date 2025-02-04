@@ -56,8 +56,7 @@ internal class APlusModuleBuilder : ModuleBuilder() {
                 // The version string only starts with "java version" when the JDK is not downloaded completely
                 while ((ProjectRootManager.getInstance(
                         project
-                    ).projectSdk?.versionString?.startsWith("java version")
-                        ?: true) && System.currentTimeMillis() - startTime < 300 * 1000
+                    ).projectSdk?.versionString?.startsWith("java version") != false) && System.currentTimeMillis() - startTime < 300 * 1000
                 ) {
                     Thread.sleep(1000)
                 }
