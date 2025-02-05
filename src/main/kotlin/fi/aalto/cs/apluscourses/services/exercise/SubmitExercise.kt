@@ -1,12 +1,14 @@
 package fi.aalto.cs.apluscourses.services.exercise
 
 import com.intellij.openapi.application.EDT
+import com.intellij.openapi.application.writeAction
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.module.ModuleUtilCore
 import com.intellij.openapi.project.Project
 import com.intellij.serialization.PropertyMapping
 import fi.aalto.cs.apluscourses.api.APlusApi
+import fi.aalto.cs.apluscourses.model.component.Module
 import fi.aalto.cs.apluscourses.model.exercise.Exercise
 import fi.aalto.cs.apluscourses.model.exercise.Submission
 import fi.aalto.cs.apluscourses.model.exercise.SubmissionInfo
@@ -85,7 +87,9 @@ class SubmitExercise(
                 }
 
                 withContext(Dispatchers.EDT) {
-                    FileDocumentManager.getInstance().saveAllDocuments()
+                    writeAction {
+                        FileDocumentManager.getInstance().saveAllDocuments()
+                    }
                 }
 
                 var modulePath = Path(ModuleUtilCore.getModuleDirPath(platformModule))
@@ -99,10 +103,12 @@ class SubmitExercise(
                 val files: MutableMap<String, Path> = HashMap()
                 for ((key, name) in submissionInfo.getFiles(language)) {
                     files[key] = FileUtil.findFileInDirectory(modulePath.invariantSeparatorsPathString, name)
-                        ?: throw FileDoesNotExistException(
-                            modulePath.invariantSeparatorsPathString,
-                            name
-                        )
+                    { file ->
+                        !file.invariantSeparatorsPath.startsWith("${module.fullPath.resolve(Module.backupDir).invariantSeparatorsPathString}/")
+                    } ?: throw FileDoesNotExistException(
+                        modulePath.invariantSeparatorsPathString,
+                        name
+                    )
                 }
                 CoursesLogger.info("Submission files: $files")
 

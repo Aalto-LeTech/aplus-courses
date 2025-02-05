@@ -8,6 +8,10 @@
 
 - Support for the Programming 2 course and SBT modules
 
+### Fixed
+
+- Do not submit backups of updated modules
+
 ## [4.2.0] - 2025-01-08
 
 ### Fixed

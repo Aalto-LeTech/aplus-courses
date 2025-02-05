@@ -41,9 +41,13 @@ object FileUtil {
      * @param directory The directory to search for the file.
      * @param fileName The name of the file to find.
      */
-    fun findFileInDirectory(directory: String, fileName: String): Path? {
+    fun findFileInDirectory(
+        directory: String,
+        fileName: String,
+        filter: (File) -> Boolean = { _: File -> true }
+    ): Path? {
         return File(directory).walk().find {
-            it.name == fileName
+            it.name == fileName && filter(it)
         }?.toPath()
     }
 

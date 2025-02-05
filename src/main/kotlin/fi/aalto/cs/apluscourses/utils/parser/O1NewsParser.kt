@@ -5,7 +5,6 @@ import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
 
 class O1NewsParser(private val language: String) : NewsParser() {
-
     override fun parseTitle(titleElement: Element): String {
         return getElementsByLanguage(titleElement).first()?.text() ?: ""
     }
@@ -18,13 +17,9 @@ class O1NewsParser(private val language: String) : NewsParser() {
         @NonNls val className = "only$language"
         @NonNls val defaultClassName = "onlyen"
         val elements = element.getElementsByClass(className)
-        if (elements.isEmpty) {
+        if (elements.isEmpty()) {
             return element.getElementsByClass(defaultClassName)
         }
         return elements
-    }
-
-    companion object {
-        const val NAME: String = "O1"
     }
 }

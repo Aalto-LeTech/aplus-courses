@@ -27,10 +27,10 @@ import javax.swing.JComponent
 import javax.swing.JList
 
 class CourseSelectStep(private val config: APlusModuleConfig) : ModuleWizardStep() {
-    private val courses = AtomicProperty<List<CoursesFetcher.CourseConfig>>(emptyList())
+    private val courses = AtomicProperty<List<CoursesFetcher.CourseInfo>>(emptyList())
 
     private val courseConfigUrl = AtomicProperty("")
-    private val course = AtomicProperty<CoursesFetcher.CourseConfig?>(null)
+    private val course = AtomicProperty<CoursesFetcher.CourseInfo?>(null)
     private val language = AtomicProperty(PluginSettings.SUPPORTED_LANGUAGES.first())
 
     init {
@@ -62,10 +62,10 @@ class CourseSelectStep(private val config: APlusModuleConfig) : ModuleWizardStep
                     text(message("generator.APlusModuleBuilder.selectCourse"))
                 }
                 row {
-                    list(courses, object : ColoredListCellRenderer<CoursesFetcher.CourseConfig>() {
+                    list(courses, object : ColoredListCellRenderer<CoursesFetcher.CourseInfo>() {
                         override fun customizeCellRenderer(
-                            list: JList<out CoursesFetcher.CourseConfig>,
-                            item: CoursesFetcher.CourseConfig?,
+                            list: JList<out CoursesFetcher.CourseInfo>,
+                            item: CoursesFetcher.CourseInfo?,
                             index: Int,
                             selected: Boolean,
                             hasFocus: Boolean
