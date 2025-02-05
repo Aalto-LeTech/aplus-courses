@@ -3,13 +3,18 @@ package fi.aalto.cs.apluscourses.toolwindows
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.components.service
+import com.intellij.openapi.fileEditor.FileEditor
+import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.openapi.wm.impl.content.ToolWindowContentUi
 import com.intellij.ui.components.JBPanel
-import com.intellij.ui.content.*
+import com.intellij.ui.content.Content
+import com.intellij.ui.content.ContentFactory
+import com.intellij.ui.content.ContentManagerEvent
+import com.intellij.ui.content.ContentManagerListener
 import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.actions.ActionGroups.EXERCISE_ACTIONS
 import fi.aalto.cs.apluscourses.actions.ActionGroups.MODULE_ACTIONS
@@ -29,6 +34,7 @@ import fi.aalto.cs.apluscourses.ui.exercise.ExercisesView
 import fi.aalto.cs.apluscourses.ui.module.ModulesView
 import fi.aalto.cs.apluscourses.ui.news.NewsView
 import fi.aalto.cs.apluscourses.ui.overview.OverviewView
+import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import java.awt.Dimension
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
@@ -185,6 +191,15 @@ internal class APlusToolWindowFactory : ToolWindowFactory, DumbAware {
 
         if (InitializationStatus.isNotCourse(project) || InitializationStatus.isIoError(project)) {
             removeAllTabs()
+        }
+
+
+        val fileEditorManager: FileEditorManager = FileEditorManager.getInstance(project)
+        fileEditorManager.allEditors.forEach { editor: FileEditor ->
+            if (editor.file != null && editor.file.name == "AI Assistant") {
+                CoursesLogger.info("Closing AI Assistant ad")
+                fileEditorManager.closeFile(editor.file)
+            }
         }
     }
 
