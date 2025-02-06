@@ -3,17 +3,22 @@ package fi.aalto.cs.apluscourses.toolwindows
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.components.service
+import com.intellij.openapi.fileEditor.FileEditor
+import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.openapi.wm.impl.content.ToolWindowContentUi
 import com.intellij.ui.components.JBPanel
-import com.intellij.ui.content.*
+import com.intellij.ui.content.Content
+import com.intellij.ui.content.ContentManagerEvent
+import com.intellij.ui.content.ContentManagerListener
 import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.actions.ActionGroups.EXERCISE_ACTIONS
 import fi.aalto.cs.apluscourses.actions.ActionGroups.MODULE_ACTIONS
 import fi.aalto.cs.apluscourses.actions.ActionGroups.TOOL_WINDOW_ACTIONS
+import fi.aalto.cs.apluscourses.icons.CoursesIcons
 import fi.aalto.cs.apluscourses.model.Course
 import fi.aalto.cs.apluscourses.model.component.Module
 import fi.aalto.cs.apluscourses.model.exercise.Exercise
@@ -29,6 +34,7 @@ import fi.aalto.cs.apluscourses.ui.exercise.ExercisesView
 import fi.aalto.cs.apluscourses.ui.module.ModulesView
 import fi.aalto.cs.apluscourses.ui.news.NewsView
 import fi.aalto.cs.apluscourses.ui.overview.OverviewView
+import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import java.awt.Dimension
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
@@ -48,7 +54,7 @@ internal class APlusToolWindowFactory : ToolWindowFactory, DumbAware {
         val modulesView = createModulesView(project)
         val exercisesView = createExercisesView(project)
 
-        val contentFactory = ContentFactory.getInstance()
+        val contentFactory = toolWindow.contentManager.factory
 
         val overviewTab = contentFactory.createContent(
             overviewView,
@@ -71,22 +77,28 @@ internal class APlusToolWindowFactory : ToolWindowFactory, DumbAware {
             true
         )
 
+        overviewTab.icon = CoursesIcons.LogoColor
+        modulesTab.icon = CoursesIcons.Module
+        exercisesTab.icon = CoursesIcons.ExerciseGroup
+
+//        modulesTab.modulesTab.popupIcon = CoursesIcons.Module
+
         fun addAllTabs() {
-            toolWindow.contentManager.addContent(exercisesTab)
             toolWindow.contentManager.addContent(modulesTab)
-            toolWindow.contentManager.addContent(newsTab)
+            toolWindow.contentManager.addContent(exercisesTab)
+//            toolWindow.contentManager.addContent(newsTab)
         }
 
         fun removeAllTabs() {
-            toolWindow.contentManager.removeContent(exercisesTab, true)
             toolWindow.contentManager.removeContent(modulesTab, true)
-            toolWindow.contentManager.removeContent(newsTab, true)
+            toolWindow.contentManager.removeContent(exercisesTab, true)
+//            toolWindow.contentManager.removeContent(newsTab, true)
         }
 
         toolWindow.contentManager.addContent(overviewTab)
-        toolWindow.contentManager.addContent(exercisesTab)
         toolWindow.contentManager.addContent(modulesTab)
-        toolWindow.contentManager.addContent(newsTab)
+        toolWindow.contentManager.addContent(exercisesTab)
+//        toolWindow.contentManager.addContent(newsTab)
         toolWindow.contentManager.setSelectedContent(overviewTab)
 
         toolWindow.setAdditionalGearActions(TOOL_WINDOW_ACTIONS)
@@ -94,19 +106,42 @@ internal class APlusToolWindowFactory : ToolWindowFactory, DumbAware {
         // Shorten titles when toolwindow is too small
         toolWindow.component.addComponentListener(object : ComponentAdapter() {
             override fun componentResized(e: ComponentEvent) {
-                if (e.component.bounds.width <= 424) {
-                    overviewTab.displayName = message("toolwindows.APlusToolWindowFactory.tabs.overviewShort")
+                println(e.component.bounds.width)
+                if (e.component.bounds.width <= 325) {
+                    overviewTab.displayName = ""//message("toolwindows.APlusToolWindowFactory.tabs.overviewShort")
+                    overviewTab.putUserData(
+                        ToolWindow.SHOW_CONTENT_ICON, true
+                    )
                 } else {
                     overviewTab.displayName = message("toolwindows.APlusToolWindowFactory.tabs.overview")
+                    overviewTab.putUserData(
+                        ToolWindow.SHOW_CONTENT_ICON, false
+                    )
                 }
-                if (e.component.bounds.width <= 370) {
+                if (e.component.bounds.width <= 300) {
                     newsView.setShortTab(true)
-                    modulesTab.displayName = message("toolwindows.APlusToolWindowFactory.tabs.modulesShort")
-                    exercisesTab.displayName = message("toolwindows.APlusToolWindowFactory.tabs.exercisesShort")
+                    modulesTab.icon = CoursesIcons.Module
+                    modulesTab.popupIcon = CoursesIcons.Module
+                    modulesTab.displayName =
+                        ""//message("toolwindows.APlusToolWindowFactory.tabs.modulesShort")
+                    exercisesTab.displayName =
+                        ""//message("toolwindows.APlusToolWindowFactory.tabs.exercisesShort")
+                    modulesTab.putUserData(
+                        ToolWindow.SHOW_CONTENT_ICON, true
+                    )
+                    exercisesTab.putUserData(
+                        ToolWindow.SHOW_CONTENT_ICON, true
+                    )
                 } else {
                     newsView.setShortTab(false)
                     modulesTab.displayName = message("toolwindows.APlusToolWindowFactory.tabs.modules")
                     exercisesTab.displayName = message("toolwindows.APlusToolWindowFactory.tabs.exercises")
+                    modulesTab.putUserData(
+                        ToolWindow.SHOW_CONTENT_ICON, false
+                    )
+                    exercisesTab.putUserData(
+                        ToolWindow.SHOW_CONTENT_ICON, false
+                    )
                 }
             }
         })
@@ -175,6 +210,7 @@ internal class APlusToolWindowFactory : ToolWindowFactory, DumbAware {
         connection.subscribe(CourseManager.NEWS_TOPIC, object : NewsUpdaterListener {
             override fun onNewsUpdated(newsList: NewsList) {
                 newsView.viewModelChanged(newsList)
+                overviewView.news.viewModelChanged(newsList)
             }
         })
         connection.subscribe(CourseManager.MODULES_TOPIC, object : CourseManager.ModuleListener {
@@ -185,6 +221,15 @@ internal class APlusToolWindowFactory : ToolWindowFactory, DumbAware {
 
         if (InitializationStatus.isNotCourse(project) || InitializationStatus.isIoError(project)) {
             removeAllTabs()
+        }
+
+
+        val fileEditorManager: FileEditorManager = FileEditorManager.getInstance(project)
+        fileEditorManager.allEditors.forEach { editor: FileEditor ->
+            if (editor.file != null && editor.file.name == "AI Assistant") {
+                CoursesLogger.info("Closing AI Assistant ad")
+                fileEditorManager.closeFile(editor.file)
+            }
         }
     }
 

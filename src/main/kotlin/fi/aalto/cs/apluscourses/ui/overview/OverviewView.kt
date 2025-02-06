@@ -25,6 +25,7 @@ import fi.aalto.cs.apluscourses.ui.BannerPanel
 import fi.aalto.cs.apluscourses.ui.TokenForm
 import fi.aalto.cs.apluscourses.ui.Utils.loadingPanel
 import fi.aalto.cs.apluscourses.ui.Utils.myActionLink
+import fi.aalto.cs.apluscourses.ui.news.NewsPanel
 import fi.aalto.cs.apluscourses.utils.DateDifferenceFormatter
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -43,6 +44,8 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
     private var banner: ResponsiveImagePanel? = null
 
     private var panel = createPanel()
+
+    val news: NewsPanel = NewsPanel()
 
     fun update(loading: Boolean = false) {
         panel = createPanel(loading)
@@ -220,7 +223,23 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
                     row {
                         text(course.name).applyToComponent {
                             font = JBFont.h0()
-                        }.comment(user.userName)
+                        }.comment(user.userName).resizableColumn()
+                        panel {
+                            row {
+                                link(message("ui.OverviewView.pluginSettings")) {
+                                    ShowSettingsUtil.getInstance().showSettingsDialog(project, message("aplusCourses"))
+                                }.applyToComponent {
+                                    icon = AllIcons.General.Settings
+                                    isFocusPainted = false
+                                }
+                            }
+                            row {
+                                browserLink(message("ui.OverviewView.coursePage"), course.htmlUrl).applyToComponent {
+                                    setIcon(CoursesIcons.LogoColor, atRight = false)
+                                    isFocusPainted = false
+                                }
+                            }
+                        }
                     }.topGap(TopGap.SMALL)
                     if (points == null || maxPoints == null) {
                         row {
@@ -272,23 +291,13 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
                         }
                         separator().bottomGap(BottomGap.MEDIUM)
                         weekClosingTime(weeks)
-                        row {
-                            link(message("ui.OverviewView.pluginSettings")) {
-                                ShowSettingsUtil.getInstance().showSettingsDialog(project, message("aplusCourses"))
-                            }.applyToComponent {
-                                icon = AllIcons.General.Settings
-                                isFocusPainted = false
-                            }
-                        }
-                        row {
-                            browserLink(message("ui.OverviewView.coursePage"), course.htmlUrl).applyToComponent {
-                                setIcon(CoursesIcons.LogoColor, atRight = false)
-                                isFocusPainted = false
-                            }
-                        }
                     }
                 }
-            }.customize(UnscaledGaps(16, 32, 16, 32))
+                row {
+                    cell(news.content)
+                }
+            }.customize(UnscaledGaps(16, 16, 16, 16))
+
         }
         mainPanel.preferredSize = Dimension(mainPanelMaxWidth, mainPanel.preferredSize.height)
 //        mainPanel.maximumSize = Dimension(mainPanelMaxWidth, Int.MAX_VALUE)
