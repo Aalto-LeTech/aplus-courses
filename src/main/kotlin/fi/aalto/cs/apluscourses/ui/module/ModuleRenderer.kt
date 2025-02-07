@@ -122,7 +122,7 @@ class ModuleRenderer(
     private var isZipSizeSet = false
     private fun zipSizeText(size: String) = message("ui.ModuleRenderer.available.fileSize", size)
 
-    private val zipSizeText = AtomicProperty<String>(zipSizeText("??? ??"))
+    private val zipSizeText = AtomicProperty(zipSizeText("??? ??"))
 
 
     @NonNls

@@ -41,7 +41,7 @@ object PluginAutoInstaller {
         project: Project,
         pluginNames: List<RequiredPlugin>,
         askForConsent: Boolean = false
-    ): Boolean? {
+    ): Boolean {
         val pluginIDs = pluginNames.map { PluginId.getId(it.id) }.toSet()
         // Downloading and enabling plugins are different operations, so we handle these separately.
         val pluginsToDownload = pluginIDs.filter { shouldDownloadPlugin(it) }.toSet()
