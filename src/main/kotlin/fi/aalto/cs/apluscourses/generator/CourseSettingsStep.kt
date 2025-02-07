@@ -112,22 +112,21 @@ class CourseSettingsStep(
         if (courseConfig.requiredPlugins.isEmpty()) return
         application.service<Plugins>().runInBackground(courseConfig.requiredPlugins) { components ->
             placeholder?.component = panel {
-                components.map {
-                    it.remove(4) // Remove checkbox and install button
-                    it.remove(3)
-                    it
-                }.forEach {
-                    row {
-                        contextHelp(
-                            it.pluginDescriptor.description
-                                ?: message("generator.APlusModuleBuilder.defaultDescription")
-                        )
-                        cell(it).resizableColumn().align(AlignX.FILL).applyToComponent {
-                            background = null
-                            isOpaque = false
-                        }
-                    }.topGap(TopGap.SMALL)
-                }
+                components
+                    .forEach { plugin ->
+                        row {
+                            contextHelp(
+                                plugin.description
+                                    ?: message("generator.APlusModuleBuilder.defaultDescription")
+                            )
+                            icon(plugin.icon)
+                            panel {
+                                row {
+                                    label(plugin.name).bold()
+                                }.rowComment("${plugin.version} ${plugin.vendor ?: ""}")
+                            }
+                        }.topGap(TopGap.SMALL)
+                    }
             }
             component.revalidate()
             component.repaint()

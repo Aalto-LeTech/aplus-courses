@@ -28,6 +28,7 @@ import org.jetbrains.annotations.NonNls
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption
 import kotlin.io.path.exists
+import kotlin.io.path.extension
 import kotlin.io.path.moveTo
 import com.intellij.openapi.module.Module as IdeaModule
 
@@ -81,13 +82,14 @@ open class Module(
             FileUtil.getChangedFilesInDirectory(
                 fullPath.toFile(),
                 timestampWithDelay
-            )
+            ).filter { it.extension != "iml" }
         }
     }
 
     override suspend fun downloadAndInstall(updating: Boolean) {
         val oldPlatformObject = platformObject
         if (oldPlatformObject != null) {
+            println("updating: $oldPlatformObject aaa: $updating")
             if (!updating) {
                 return
             }
