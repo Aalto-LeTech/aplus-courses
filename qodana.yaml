@@ -13,4 +13,10 @@ exclude:
       - images
   - name: KDocMissingDocumentation
   - name: HardCodedStringLiteral
-
+  - name: UnusedSymbol
+    paths:
+      - src/main/kotlin/fi/aalto/cs/apluscourses/icons/CoursesIcons.kt
+      - src/main/kotlin/fi/aalto/cs/apluscourses/api/APlusApi.kt
+  - name: PropertyName
+    paths:
+      - src/main/kotlin/fi/aalto/cs/apluscourses/api/APlusApi.kt
