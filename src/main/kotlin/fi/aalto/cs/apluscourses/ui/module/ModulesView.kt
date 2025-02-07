@@ -12,19 +12,20 @@ import com.intellij.util.application
 import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.model.Course
 import fi.aalto.cs.apluscourses.model.component.Module
+import fi.aalto.cs.apluscourses.toolwindows.SearchableTab
 import fi.aalto.cs.apluscourses.ui.Utils.loadingPanel
 import java.awt.Point
 import java.awt.event.KeyEvent
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 
-class ModulesView(val project: Project) : SimpleToolWindowPanel(true, true) {
+class ModulesView(val project: Project) : SimpleToolWindowPanel(true, true), SearchableTab {
     private var modules = mutableListOf<Module>()
     private var actionRequired = mutableListOf<Module>()
     private var available = mutableListOf<Module>()
     private var installed = mutableListOf<Module>()
     private val itemPanels = mutableListOf<ModuleRenderer>()
-    val searchTextField: SearchTextField = object : SearchTextField(false) {
+    override val searchTextField: SearchTextField = object : SearchTextField(false) {
         override fun preprocessEventForTextField(e: KeyEvent): Boolean {
             super.preprocessEventForTextField(e)
             searchChanged(this.text)

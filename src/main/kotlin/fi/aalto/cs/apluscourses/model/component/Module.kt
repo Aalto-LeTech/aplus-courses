@@ -2,7 +2,6 @@ package fi.aalto.cs.apluscourses.model.component
 
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.application.ReadAction
-import com.intellij.openapi.application.writeAction
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.project.Project
@@ -89,11 +88,10 @@ open class Module(
     override suspend fun downloadAndInstall(updating: Boolean) {
         val oldPlatformObject = platformObject
         if (oldPlatformObject != null) {
-            println("updating: $oldPlatformObject aaa: $updating")
             if (!updating) {
                 return
             }
-            writeAction {
+            application.runWriteAction {
                 ModuleManager.getInstance(project).disposeModule(oldPlatformObject)
             }
         }

@@ -30,9 +30,8 @@ internal class APlusModuleDeleteProvider : ModuleDeleteProvider() {
         val moduleNamesToDelete = modules?.map { it.name } ?: emptyList()
         val dependants = ModuleManager
             .getInstance(project)
-            .modules
-            .associate { module ->
-                module to module.rootManager.moduleDependencies.filter {
+            .modules.associateWith { module ->
+                module.rootManager.moduleDependencies.filter {
                     moduleNamesToDelete.contains(it.name)
                 }
             }
