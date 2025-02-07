@@ -43,7 +43,7 @@ class TokenStorage(private val cs: CoroutineScope) {
         }
     }
 
-    suspend fun store(password: OneTimeString?) {
+    private suspend fun store(password: OneTimeString?) {
         val credentials = if (password == null) null else Credentials(credentialAttributes.userName, password)
         withContext(Dispatchers.IO) {
             PasswordSafe.instance.set(credentialAttributes, credentials)

@@ -31,7 +31,7 @@ data class Course(
 //    val feedbackParser: String?,
     private val project: Project,
 ) {
-    val commonLibraries: MutableList<Library> = mutableListOf()
+    private val commonLibraries: MutableList<Library> = mutableListOf()
     val components: Map<String, Component<*>>
         get() = (modules + commonLibraries).associateBy { it.name }
 

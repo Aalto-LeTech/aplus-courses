@@ -49,7 +49,7 @@ class CourseManager(
         var alwaysShowGroups: Boolean = false
         var settingsImported: Boolean = false
         var error: Error? = null
-        var missingDependencies: Map<String, List<Component<*>>> = mapOf<String, List<Component<*>>>()
+        var missingDependencies: Map<String, List<Component<*>>> = mapOf()
         fun clearAll() {
             course = null
             news = null

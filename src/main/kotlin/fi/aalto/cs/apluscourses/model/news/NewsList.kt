@@ -2,14 +2,14 @@ package fi.aalto.cs.apluscourses.model.news
 
 data class NewsList(val news: List<NewsItem> = emptyList()) {
     fun setAllRead() {
-        news.forEach { newsItem: NewsItem -> newsItem.isRead = true }
+        news.forEach { it.isRead = true }
     }
 
     fun setRead(id: Long) {
-        news.find { n: NewsItem -> n.id == id }?.isRead = true
+        news.find { it.id == id }?.isRead = true
     }
 
     fun unreadCount(): Int {
-        return news.count { n: NewsItem -> !n.isRead }
+        return news.count { !it.isRead }
     }
 }

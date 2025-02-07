@@ -39,7 +39,7 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true), Searc
     }
 
     override val searchTextField: SearchTextField
-    val scrollPane: JBScrollPane
+    private val scrollPane: JBScrollPane
     val panel: BorderLayoutPanel = JBUI.Panels.simplePanel()
 
     init {

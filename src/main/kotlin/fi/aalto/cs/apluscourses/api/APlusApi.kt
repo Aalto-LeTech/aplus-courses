@@ -187,7 +187,7 @@ object APlusApi {
         }
 
         @Resource("news")
-        class News(val parent: Course) {
+        class News(private val parent: Course) {
             suspend fun get(project: Project): NewsList {
                 val res = CoursesClient.getInstance(project).getBody<News, NewsBody>(this@News)
 
