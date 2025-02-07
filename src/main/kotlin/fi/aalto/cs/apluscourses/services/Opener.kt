@@ -1,21 +1,22 @@
 package fi.aalto.cs.apluscourses.services
 
 import com.intellij.ide.BrowserUtil
-import com.intellij.ide.browsers.actions.OpenInBrowserBaseGroupAction.OpenInBrowserEditorContextBarGroupAction
+import com.intellij.ide.browsers.actions.WebPreviewVirtualFile
 import com.intellij.ide.projectView.ProjectView
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.actionSystem.CommonDataKeys
-import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.application.readAction
 import com.intellij.openapi.components.Service
+import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.guessModuleDir
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.findFile
 import com.intellij.psi.PsiManager
+import com.intellij.util.Urls
 import com.intellij.util.application
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.intellij.util.messages.Topic
@@ -57,17 +58,18 @@ class Opener(
         }
     }
 
+    fun openHtmlFileInEmbeddedBrowser(htmlFile: VirtualFile) {
+        val webPreview = WebPreviewVirtualFile(htmlFile, Urls.newFromVirtualFile(htmlFile))
+        FileEditorManager.getInstance(project)
+            .openFile(webPreview, true, true)
+    }
+
     fun openDocumentationAction(module: Module, @NonNls fileName: String): AnAction {
         return object : DumbAwareAction(message("services.Opener.showDocumentationAction")) {
             override fun actionPerformed(e: AnActionEvent) {
                 val dir = module.platformObject?.guessModuleDir() ?: return
                 val virtualFile = dir.findFile(fileName) ?: return
-                val psiFile = PsiManager.getInstance(project).findFile(virtualFile) ?: return
-                val newDataContext = SimpleDataContext.builder().add(CommonDataKeys.PROJECT, project)
-                    .add(CommonDataKeys.PSI_FILE, psiFile).build()
-                OpenInBrowserEditorContextBarGroupAction().getChildren(e)[0].actionPerformed(
-                    e.withDataContext(newDataContext)
-                )
+                openHtmlFileInEmbeddedBrowser(virtualFile)
             }
 
             override fun update(e: AnActionEvent) {
