@@ -6,12 +6,10 @@ import com.intellij.ide.util.treeView.NodeRenderer
 import com.intellij.openapi.application.readAction
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.packageDependencies.ui.DependenciesPanel.DependencyPanelSettings
 import com.intellij.packageDependencies.ui.FileNode
 import com.intellij.packageDependencies.ui.FileTreeModelBuilder
-import com.intellij.packageDependencies.ui.Marker
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.ui.SimpleTextAttributes
@@ -48,9 +46,7 @@ class FileTree(files: List<Path>, project: Project) : Tree() {
             val model = withContext(Dispatchers.IO) {
                 FileTreeModelBuilder.createTreeModel(
                     project, false, files,
-                    object : Marker {
-                        override fun isMarked(file: VirtualFile): Boolean = false
-                    }, settings
+                    { false }, settings
                 )
             }
 

@@ -1,12 +1,12 @@
 package fi.aalto.cs.apluscourses.services.exercise
 
 import com.intellij.openapi.application.EDT
-import com.intellij.openapi.application.writeAction
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.module.ModuleUtilCore
 import com.intellij.openapi.project.Project
 import com.intellij.serialization.PropertyMapping
+import com.intellij.util.application
 import fi.aalto.cs.apluscourses.api.APlusApi
 import fi.aalto.cs.apluscourses.model.component.Module
 import fi.aalto.cs.apluscourses.model.exercise.Exercise
@@ -87,7 +87,7 @@ class SubmitExercise(
                 }
 
                 withContext(Dispatchers.EDT) {
-                    writeAction {
+                    application.runWriteAction {
                         FileDocumentManager.getInstance().saveAllDocuments()
                     }
                 }
@@ -126,7 +126,7 @@ class SubmitExercise(
 
                 // Find the group from the available groups that matches the default group ID.
                 // A group could be removed, so this way we check that the default group ID is still valid.
-                var defaultGroupId = CourseFileManager.getInstance(project).state.defaultGroupId
+                val defaultGroupId = CourseFileManager.getInstance(project).state.defaultGroupId
                 var group = groups.find { it.id == defaultGroupId }
                 if (group == null) {
                     group = Group.SUBMIT_ALONE
@@ -134,8 +134,8 @@ class SubmitExercise(
                 }
                 if (submittedBefore) {
                     val submitters = submittersFromBefore ?: emptyList()
-                    group = groups.find {
-                        submitters.containsAll(it.members.map { it.id })
+                    group = groups.find { group ->
+                        submitters.containsAll(group.members.map { it.id })
                     } ?: Group.SUBMIT_ALONE
                 }
 

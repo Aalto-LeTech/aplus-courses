@@ -25,7 +25,7 @@ class UpdateModuleDialog(val project: Project, val module: Module, val files: Li
         }
         row {
             cell(FileTree(files, project)).applyToComponent {
-                cellRenderer = FileRenderer(files.associate { it.name to it })
+                cellRenderer = FileRenderer(files.associateBy { it.name })
                 isEnabled = false
             }
         }

@@ -17,8 +17,6 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonNamingStrategy
 import org.jsoup.Jsoup
 import java.time.ZonedDateTime
-import kotlin.collections.component1
-import kotlin.collections.component2
 import fi.aalto.cs.apluscourses.model.Course as CourseModel
 import fi.aalto.cs.apluscourses.model.exercise.Exercise as ExerciseModel
 import fi.aalto.cs.apluscourses.model.exercise.Submission as SubmissionModel
@@ -294,8 +292,8 @@ object APlusApi {
         suspend fun submissionData(project: Project): List<SubmissionData.SubmissionDataBody> =
             SubmissionData(this).get(project)
 
-        suspend fun news(project: Project) = News(this).get(project)
-        suspend fun myGroups(project: Project) = MyGroups(this).get(project)
+        suspend fun news(project: Project): NewsList = News(this).get(project)
+        suspend fun myGroups(project: Project): List<GroupModel> = MyGroups(this).get(project)
 
         companion object {
             fun apply(course: Course): Course = Course(course.id.toLong())

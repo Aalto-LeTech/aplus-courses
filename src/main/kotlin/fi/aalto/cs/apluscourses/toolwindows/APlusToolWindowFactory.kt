@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.toolwindows
 
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionPlaces
+import com.intellij.openapi.actionSystem.ActionToolbar
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
@@ -9,7 +10,10 @@ import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.openapi.wm.impl.content.ToolWindowContentUi
 import com.intellij.ui.components.JBPanel
-import com.intellij.ui.content.*
+import com.intellij.ui.content.Content
+import com.intellij.ui.content.ContentFactory
+import com.intellij.ui.content.ContentManagerEvent
+import com.intellij.ui.content.ContentManagerListener
 import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.actions.ActionGroups.EXERCISE_ACTIONS
 import fi.aalto.cs.apluscourses.actions.ActionGroups.MODULE_ACTIONS
@@ -199,14 +203,7 @@ internal class APlusToolWindowFactory : ToolWindowFactory, DumbAware {
             true
         )
         toolbar.targetComponent = modulesView.component
-
-        val customToolbar = JBPanel<JBPanel<*>>().apply {
-            layout = BoxLayout(this, BoxLayout.X_AXIS)
-            add(modulesView.searchTextField)
-            add(Box.createHorizontalGlue())
-            add(toolbar.component)
-        }
-        modulesView.toolbar = customToolbar
+        modulesView.toolbar = createCustomToolbar(modulesView, toolbar)
         return modulesView
     }
 
@@ -221,18 +218,21 @@ internal class APlusToolWindowFactory : ToolWindowFactory, DumbAware {
             true
         )
         toolbar.targetComponent = exercisesView.exerciseGroupsFilteringTree.component
-        val customToolbar = JBPanel<JBPanel<*>>().apply {
-            layout = BoxLayout(this, BoxLayout.X_AXIS)
-            add(exercisesView.searchTextField)
-            add(Box.createHorizontalGlue())
-            add(toolbar.component)
-        }
-        exercisesView.toolbar = customToolbar
+        exercisesView.toolbar = createCustomToolbar(exercisesView, toolbar)
 
         project.service<ExercisesTreeFilter>().loadFromState()
 
         return exercisesView
     }
+
+    private fun createCustomToolbar(tab: SearchableTab, toolbar: ActionToolbar) =
+        JBPanel<JBPanel<*>>().apply {
+            layout = BoxLayout(this, BoxLayout.X_AXIS)
+            add(tab.searchTextField)
+            add(Box.createHorizontalGlue())
+            add(toolbar.component)
+        }
+
 
     private fun createNewsView(toolWindow: ToolWindow): NewsView = NewsView(toolWindow)
 

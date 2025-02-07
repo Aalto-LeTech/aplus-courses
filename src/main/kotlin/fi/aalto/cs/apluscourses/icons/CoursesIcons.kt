@@ -16,7 +16,7 @@ import javax.swing.Icon
  * Accent colour: #FF0090, RGB(255, 0, 144)
  */
 object CoursesIcons {
-    val AccentColor = JBColor(
+    val AccentColor: JBColor = JBColor(
         Color(255, 0, 144),
         Color(255, 0, 144)
     )

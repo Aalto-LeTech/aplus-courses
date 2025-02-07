@@ -52,10 +52,10 @@ class ExercisesUpdater(
         }
     }
 
-    val state = State()
+    val state: ExercisesUpdater.State = State()
 
     @NonNls
-    private val FEEDBACK_STRING = "|en:Feedback|"
+    private val feedbackString = "|en:Feedback|"
 
     private var exerciseJob: Job? = null
     private var gradingJob: Job? = null
@@ -121,7 +121,8 @@ class ExercisesUpdater(
                     cs.ensureActive()
                     delay(updateInterval)
                 }
-            } catch (_: CancellationException) {
+            } catch (e: CancellationException) {
+                throw e
             }
         }
     }
@@ -184,7 +185,7 @@ class ExercisesUpdater(
         val submissionsWithMultipleSubmitters: Map<Long, List<Long>> = submissionDataResponse
             .groupBy { it.SubmissionID }
             .filter { it.value.size > 1 }
-            .map { it.key to it.value.map { it.UserID } }
+            .map { s -> s.key to s.value.map { it.UserID } }
             .toMap()
 
         val optionalCategories = course.optionalCategories + "" // Empty category counted as optional
@@ -230,7 +231,7 @@ class ExercisesUpdater(
                         difficulty = exercise.difficulty,
                         isSubmittable = exerciseExercise?.hasSubmittableFiles == true,
                         isOptional = optionalCategories.contains(exercise.difficulty),
-                        isFeedback = exercise.name.contains(FEEDBACK_STRING) && exercise.difficulty == ""
+                        isFeedback = exercise.name.contains(feedbackString) && exercise.difficulty == ""
                     )
                 }.toMutableList()
             )
