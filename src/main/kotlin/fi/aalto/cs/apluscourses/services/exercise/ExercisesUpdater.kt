@@ -157,8 +157,7 @@ class ExercisesUpdater(
                 points.pointsByDifficulty.getOrDefault(it, 0)
             } // If points are 0, the category is not in pointsByDifficulty
         val maxPointsForCategories: Map<String, Int> =
-            pointsAndCategories.fold(mutableMapOf()) { acc: MutableMap<String, Int>, pair: Pair<String, Int> ->
-                val (category, points) = pair
+            pointsAndCategories.fold(mutableMapOf()) { acc: MutableMap<String, Int>, (category, points) ->
                 acc[category] = acc.getOrDefault(category, 0) + points
                 acc
             }

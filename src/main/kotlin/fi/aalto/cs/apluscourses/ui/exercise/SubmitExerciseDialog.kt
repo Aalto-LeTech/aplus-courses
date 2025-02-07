@@ -31,8 +31,8 @@ class SubmitExerciseDialog(
     private val submittedBefore: Boolean,
 ) :
     DialogWrapper(project) {
-    val selectedGroup: AtomicProperty<Group> = AtomicProperty<Group>(group)
-    val defaultGroup: AtomicProperty<Group> = AtomicProperty<Group>(group)
+    val selectedGroup: AtomicProperty<Group> = AtomicProperty(group)
+    val defaultGroup: AtomicProperty<Group> = AtomicProperty(group)
     private val isDefaultSelected = object : ComponentPredicate() {
         override fun invoke(): Boolean {
             return selectedGroup.get() != defaultGroup.get()

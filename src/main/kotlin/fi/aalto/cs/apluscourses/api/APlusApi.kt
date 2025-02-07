@@ -296,7 +296,7 @@ object APlusApi {
         suspend fun myGroups(project: Project): List<GroupModel> = MyGroups(this).get(project)
 
         companion object {
-            fun apply(course: Course): Course = Course(course.id.toLong())
+            fun apply(course: Course): Course = Course(course.id)
         }
     }
 
@@ -408,7 +408,7 @@ object APlusApi {
         }
     }
 
-    fun course(course: CourseModel): Course = Course(course.id.toLong())
+    fun course(course: CourseModel): Course = Course(course.id)
     fun exercise(exercise: ExerciseModel): Exercise = Exercise(exercise.id)
     fun submission(submission: SubmissionResultModel): Submission = Submission(submission.id)
     fun me(): Users.Me = Users.Me(Users())

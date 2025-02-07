@@ -49,7 +49,7 @@ class CourseFileManager(private val project: Project) :
         var initialized: Boolean by property(false)
 
         @get:OptionTag("newsReadTime", converter = InstantConverter::class)
-        var newsReadTime: Instant by property<Instant>(Instant.fromEpochSeconds(0)) { it == Instant.fromEpochSeconds(0) }
+        var newsReadTime: Instant by property(Instant.fromEpochSeconds(0)) { it == Instant.fromEpochSeconds(0) }
 
         fun increment(): Unit = incrementModificationCount()
     }

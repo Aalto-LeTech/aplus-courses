@@ -27,15 +27,17 @@ import fi.aalto.cs.apluscourses.services.course.CourseFileManager
 import fi.aalto.cs.apluscourses.services.course.CourseManager
 import fi.aalto.cs.apluscourses.services.course.InitializationStatus
 import fi.aalto.cs.apluscourses.services.course.SettingsImporter
-import fi.aalto.cs.apluscourses.utils.*
+import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import fi.aalto.cs.apluscourses.utils.PluginAutoInstaller
+import fi.aalto.cs.apluscourses.utils.PluginVersion
+import fi.aalto.cs.apluscourses.utils.ProjectViewUtil
 import fi.aalto.cs.apluscourses.utils.Version.ComparisonStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.annotations.NonNls
 
 
-internal class InitializationActivity() :
+internal class InitializationActivity :
     ProjectActivity {
     override suspend fun execute(project: Project) {
         val courseConfig = try {

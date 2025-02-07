@@ -28,8 +28,8 @@ class ExportModuleDialog(
     private val groups: List<Group>,
     private val submitter: User
 ) : DialogWrapper(project) {
-    private val selectedModule = AtomicProperty<Module>(modules.first())
-    private val selectedGroup = AtomicProperty<Group>(Group.EXPORT_ALONE)
+    private val selectedModule = AtomicProperty(modules.first())
+    private val selectedGroup = AtomicProperty(Group.EXPORT_ALONE)
     private val outputPath = AtomicProperty(System.getProperty("user.home"))
     private val fileName = AtomicProperty("")
 
