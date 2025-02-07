@@ -52,7 +52,7 @@ class ExercisesUpdater(
         }
     }
 
-    val state: ExercisesUpdater.State = State()
+    val state: State = State()
 
     @NonNls
     private val feedbackString = "|en:Feedback|"
@@ -149,7 +149,7 @@ class ExercisesUpdater(
             points.modules
                 .flatMap { it.exercises }
                 .map { it.difficulty to it.maxPoints }
-                .filter { !it.first.isEmpty() } // Filter out empty categories
+                .filter { it.first.isNotEmpty() } // Filter out empty categories
         val userPointsForCategories = pointsAndCategories
             .map { it.first }
             .toSet()
@@ -185,7 +185,7 @@ class ExercisesUpdater(
         val submissionsWithMultipleSubmitters: Map<Long, List<Long>> = submissionDataResponse
             .groupBy { it.SubmissionID }
             .filter { it.value.size > 1 }
-            .map { s -> s.key to s.value.map { it.UserID } }
+            .map { (submissionId, submitters) -> submissionId to submitters.map { it.UserID } }
             .toMap()
 
         val optionalCategories = course.optionalCategories + "" // Empty category counted as optional

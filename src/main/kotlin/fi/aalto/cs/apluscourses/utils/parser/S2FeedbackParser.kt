@@ -9,10 +9,7 @@ class S2FeedbackParser : FeedbackParser() {
      */
     override fun parseTestResults(htmlString: String): TestResults {
         val body = Jsoup.parseBodyFragment(htmlString).body()
-        val lastP = body.select("p").last()
-        if (lastP == null) {
-            return TestResults(-1, -1)
-        }
+        val lastP = body.select("p").last() ?: return TestResults(-1, -1)
         val results = lastP.text()
         val pattern = Pattern.compile("success:\\s+(\\d+),\\s+failed:\\s+(\\d+)")
         val matcher = pattern.matcher(results)

@@ -117,8 +117,7 @@ class ExercisesTreeRenderer : NodeRenderer() {
 
     private fun prepareToPaint(g2d: Graphics2D): Boolean {
         UISettings.setupAntialiasing(g2d)
-        val item = this.item
-        return when (item) {
+        return when (val item = this.item) {
             is ExercisesView.ExerciseGroupItem -> item.group.maxPoints != 0
             is ExercisesView.SubmissionResultItem -> item.submission.status != SubmissionResult.Status.WAITING
             else -> true
@@ -126,8 +125,7 @@ class ExercisesTreeRenderer : NodeRenderer() {
     }
 
     private fun statusText(): String {
-        val item = this.item
-        return when (item) {
+        return when (val item = this.item) {
             is ExercisesView.ExerciseItem -> {
                 val exercise = item.exercise
 
@@ -163,9 +161,8 @@ class ExercisesTreeRenderer : NodeRenderer() {
     }
 
     private fun pointsText(): String {
-        val item = this.item
 
-        return when (item) {
+        return when (val item = this.item) {
             is ExercisesView.ExerciseItem -> if (item.exercise.isFeedback)
                 "" else
                 "${item.exercise.userPoints}/${item.exercise.maxPoints}"
@@ -269,8 +266,7 @@ class ExercisesTreeRenderer : NodeRenderer() {
     }
 
     private fun isSubmittable(): Boolean {
-        val item = this.item
-        return when (item) {
+        return when (val item = this.item) {
             is ExercisesView.ExerciseItem -> item.exercise.isSubmittable
             else -> true
         }

@@ -261,7 +261,7 @@ object CourseConfig {
         }
     }
 
-    fun deserialize(json: String): JSON {
+    private fun deserialize(json: String): JSON {
         return jsonSerializer.decodeFromString(JSON.serializer(), json)
     }
 

@@ -60,8 +60,8 @@ object PluginAutoInstaller {
             .toSet()
 
         val missingPluginNames = pluginNames
-            .filter { p: RequiredPlugin -> missingPluginIds.contains(p.id) }
-            .map { p: RequiredPlugin -> p.name }
+            .filter { missingPluginIds.contains(it.id) }
+            .map { it.name }
 
 
         if (askForConsent) {

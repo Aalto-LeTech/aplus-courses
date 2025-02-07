@@ -67,7 +67,7 @@ open class Version(val major: Int, val minor: Int) {
     }
 }
 
-class PluginVersion(major: Int, minor: Int, val patch: Int, val versionString: String) : Version(major, minor) {
+class PluginVersion(major: Int, minor: Int, val patch: Int, private val versionString: String) : Version(major, minor) {
     constructor(versionString: String) : this(
         versionString.substringBefore(".").toInt(),
         versionString.substringAfter(".").substringBefore(".").toInt(),

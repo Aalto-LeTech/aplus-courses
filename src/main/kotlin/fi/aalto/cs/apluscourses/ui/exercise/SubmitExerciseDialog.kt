@@ -26,9 +26,9 @@ class SubmitExerciseDialog(
     val project: Project,
     val exercise: Exercise,
     val files: List<Path>,
-    val groups: List<Group>,
+    private val groups: List<Group>,
     val group: Group,
-    val submittedBefore: Boolean,
+    private val submittedBefore: Boolean,
 ) :
     DialogWrapper(project) {
     val selectedGroup: AtomicProperty<Group> = AtomicProperty<Group>(group)

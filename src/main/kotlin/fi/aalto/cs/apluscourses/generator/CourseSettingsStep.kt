@@ -114,7 +114,7 @@ class CourseSettingsStep(
 
         component.revalidate()
         component.repaint()
-        if (!courseConfig.requiredPlugins.isEmpty()) pluginsPanel!!.load(courseConfig.requiredPlugins)
+        if (courseConfig.requiredPlugins.isNotEmpty()) pluginsPanel!!.load(courseConfig.requiredPlugins)
     }
 
     override fun getComponent(): JComponent = mainPanel
