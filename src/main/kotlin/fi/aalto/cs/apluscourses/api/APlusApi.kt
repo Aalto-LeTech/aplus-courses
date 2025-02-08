@@ -5,7 +5,6 @@ import fi.aalto.cs.apluscourses.model.news.NewsItem
 import fi.aalto.cs.apluscourses.model.news.NewsList
 import fi.aalto.cs.apluscourses.services.CoursesClient
 import fi.aalto.cs.apluscourses.services.course.CourseFileManager
-import fi.aalto.cs.apluscourses.utils.parser.O1NewsParser
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
@@ -15,7 +14,6 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonNamingStrategy
-import org.jsoup.Jsoup
 import java.time.ZonedDateTime
 import fi.aalto.cs.apluscourses.model.Course as CourseModel
 import fi.aalto.cs.apluscourses.model.exercise.Exercise as ExerciseModel
@@ -198,27 +196,13 @@ object APlusApi {
                         return@mapNotNull null
                     }
 
-                    val (titleText, bodyText) = if (this.parent.id == 294L) {
-                        val titleElement = Jsoup.parseBodyFragment(title).body()
-                        val bodyElement = Jsoup.parseBodyFragment(body).body()
-
-                        val parser = O1NewsParser(language) // For O1 2023
-
-                        val titleText = parser.parseTitle(titleElement)
-                        val bodyText = parser.parseBody(bodyElement)
-                        titleText to bodyText
-                    } else {
-                        title to body
-                    }
-
                     val publish = ZonedDateTime.parse(publishString)
-
                     val isRead = lastNewsReadTime.epochSeconds >= publish.toEpochSecond()
 
                     NewsItem(
                         id,
-                        titleText,
-                        bodyText,
+                        title,
+                        body,
                         publish,
                         isRead
                     )
