@@ -106,17 +106,17 @@ internal class InitializationActivity :
             else -> {}
         }
 
-        ProjectViewUtil.ignoreFileInProjectView(PluginSettings.MODULE_REPL_INITIAL_COMMANDS_FILE_NAME, project)
+        ProjectViewUtil.ignoreFileInProjectView(PluginSettings.MODULE_REPL_INITIAL_COMMANDS_FILE_NAME)
 
         val courseFileManager = CourseFileManager.getInstance(project)
         val isCourseInitialized = courseFileManager.state.initialized
 
         val needsRestartForPlugins =
-            PluginAutoInstaller.ensureDependenciesInstalled(
+            !PluginAutoInstaller.ensureDependenciesInstalled(
                 project,
                 courseConfig.requiredPlugins,
                 askForConsent = isCourseInitialized
-            ) == false
+            )
 
 
         var needsRestartForSettings = false
