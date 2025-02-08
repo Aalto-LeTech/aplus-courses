@@ -36,7 +36,7 @@ data class Exercise(
     /**
      * Returns the best submission of this exercise (if one exists).
      */
-    fun bestSubmission(): SubmissionResult? {
+    private fun bestSubmission(): SubmissionResult? {
         return submissionResults.find { it.id == bestSubmissionId }
     }
 

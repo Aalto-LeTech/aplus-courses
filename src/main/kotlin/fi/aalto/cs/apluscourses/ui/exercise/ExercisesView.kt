@@ -6,10 +6,10 @@ import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.ui.*
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.components.TextComponentEmptyText
-import com.intellij.ui.hover.TreeHoverListener
 import com.intellij.ui.treeStructure.SimpleTree
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
+import com.intellij.util.ui.components.BorderLayoutPanel
 import com.intellij.util.ui.tree.TreeUtil
 import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.model.component.Component
@@ -19,6 +19,7 @@ import fi.aalto.cs.apluscourses.model.exercise.SubmissionResult
 import fi.aalto.cs.apluscourses.services.Opener
 import fi.aalto.cs.apluscourses.services.course.CourseManager
 import fi.aalto.cs.apluscourses.services.exercise.*
+import fi.aalto.cs.apluscourses.toolwindows.SearchableTab
 import fi.aalto.cs.apluscourses.ui.Utils.loadingPanel
 import java.awt.BorderLayout
 import java.awt.Color
@@ -31,15 +32,15 @@ import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.TreePath
 import javax.swing.tree.TreeSelectionModel
 
-class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true) {
+class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true), SearchableTab {
 
     val exerciseGroupsFilteringTree: ExercisesTreeView = ExercisesTreeView(project).apply {
         installSearchField()
     }
 
-    val searchTextField: SearchTextField
-    val scrollPane: JBScrollPane
-    val panel = JBUI.Panels.simplePanel()
+    override val searchTextField: SearchTextField
+    private val scrollPane: JBScrollPane
+    val panel: BorderLayoutPanel = JBUI.Panels.simplePanel()
 
     init {
         exerciseGroupsFilteringTree.tree.selectionModel.selectionMode =
@@ -295,7 +296,6 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true) {
             tree.cellRenderer = ExercisesTreeRenderer()
             tree.toggleClickCount = 1
             tree.putClientProperty(AnimatedIcon.ANIMATION_IN_RENDERER_ALLOWED, true) // Enable loading icon animations
-            TreeHoverListener.DEFAULT.addTo(tree) // Enable hover color
         }
 
         private fun activateItem() {

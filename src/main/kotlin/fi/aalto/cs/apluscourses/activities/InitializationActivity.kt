@@ -27,15 +27,17 @@ import fi.aalto.cs.apluscourses.services.course.CourseFileManager
 import fi.aalto.cs.apluscourses.services.course.CourseManager
 import fi.aalto.cs.apluscourses.services.course.InitializationStatus
 import fi.aalto.cs.apluscourses.services.course.SettingsImporter
-import fi.aalto.cs.apluscourses.utils.*
+import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import fi.aalto.cs.apluscourses.utils.PluginAutoInstaller
+import fi.aalto.cs.apluscourses.utils.PluginVersion
+import fi.aalto.cs.apluscourses.utils.ProjectViewUtil
 import fi.aalto.cs.apluscourses.utils.Version.ComparisonStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.annotations.NonNls
 
 
-internal class InitializationActivity() :
+internal class InitializationActivity :
     ProjectActivity {
     override suspend fun execute(project: Project) {
         val courseConfig = try {
@@ -104,17 +106,17 @@ internal class InitializationActivity() :
             else -> {}
         }
 
-        ProjectViewUtil.ignoreFileInProjectView(PluginSettings.MODULE_REPL_INITIAL_COMMANDS_FILE_NAME, project)
+        ProjectViewUtil.ignoreFileInProjectView(PluginSettings.MODULE_REPL_INITIAL_COMMANDS_FILE_NAME)
 
         val courseFileManager = CourseFileManager.getInstance(project)
         val isCourseInitialized = courseFileManager.state.initialized
 
         val needsRestartForPlugins =
-            PluginAutoInstaller.ensureDependenciesInstalled(
+            !PluginAutoInstaller.ensureDependenciesInstalled(
                 project,
                 courseConfig.requiredPlugins,
                 askForConsent = isCourseInitialized
-            ) == false
+            )
 
 
         var needsRestartForSettings = false

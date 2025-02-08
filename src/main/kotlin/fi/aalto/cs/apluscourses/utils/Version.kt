@@ -9,6 +9,7 @@ import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
+import org.jetbrains.annotations.NonNls
 
 @Serializable(with = VersionSerializer::class)
 open class Version(val major: Int, val minor: Int) {
@@ -66,7 +67,7 @@ open class Version(val major: Int, val minor: Int) {
     }
 }
 
-class PluginVersion(major: Int, minor: Int, val patch: Int, val versionString: String) : Version(major, minor) {
+class PluginVersion(major: Int, minor: Int, val patch: Int, private val versionString: String) : Version(major, minor) {
     constructor(versionString: String) : this(
         versionString.substringBefore(".").toInt(),
         versionString.substringAfter(".").substringBefore(".").toInt(),
@@ -77,8 +78,9 @@ class PluginVersion(major: Int, minor: Int, val patch: Int, val versionString: S
     override fun toString(): String = versionString
 
     companion object {
-        val current = getPlugin(PluginId.getId("fi.aalto.cs.intellij-plugin"))?.version ?: ""
-        val currentVersion = PluginVersion(current)
+        @NonNls
+        val current: String = getPlugin(PluginId.getId("fi.aalto.cs.intellij-plugin"))?.version ?: ""
+        val currentVersion: PluginVersion = PluginVersion(current)
     }
 }
 

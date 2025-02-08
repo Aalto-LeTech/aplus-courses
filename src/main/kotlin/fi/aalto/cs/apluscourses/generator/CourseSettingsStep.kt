@@ -10,15 +10,20 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.service
 import com.intellij.openapi.observable.properties.AtomicProperty
 import com.intellij.ui.components.JBScrollPane
-import com.intellij.ui.dsl.builder.*
+import com.intellij.ui.dsl.builder.TopGap
+import com.intellij.ui.dsl.builder.bindSelected
+import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.gridLayout.UnscaledGaps
 import com.intellij.util.application
 import fi.aalto.cs.apluscourses.MyBundle.message
+import fi.aalto.cs.apluscourses.api.CourseConfig
 import fi.aalto.cs.apluscourses.services.Plugins
+import fi.aalto.cs.apluscourses.ui.Utils
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil.languageCodeToName
 import org.jetbrains.annotations.ApiStatus
 import org.jetbrains.annotations.NonNls
 import javax.swing.JComponent
+import javax.swing.JPanel
 
 @ApiStatus.Experimental
 class CourseSettingsStep(
@@ -47,12 +52,14 @@ class CourseSettingsStep(
     private val selectedLanguage = AtomicProperty("")
     private val dontImportSettings = AtomicProperty(false)
     private var selectedSdk: AtomicProperty<ProjectWizardJdkIntent>? = null
-    private var placeholder: Placeholder? = null
+    private var pluginsPanel: PluginsPanel? = null
 
     override fun updateStep() {
         val courseConfig = config.courseConfig ?: return
         val languages = courseConfig.languages
         @NonNls val finnishCode = "fi"
+
+        pluginsPanel = PluginsPanel()
 
         if (languages.contains(finnishCode)) selectedLanguage.set(finnishCode) else selectedLanguage.set(languages.first())
 
@@ -95,9 +102,7 @@ class CourseSettingsStep(
                             text(message("generator.APlusModuleBuilder.pluginsInfo"))
                         }
                         row {
-                            placeholder().apply {
-                                placeholder = this
-                            }.resizableColumn().align(AlignX.FILL)
+                            cell(pluginsPanel!!.content)
                         }
                     }
                 }
@@ -109,29 +114,7 @@ class CourseSettingsStep(
 
         component.revalidate()
         component.repaint()
-        if (courseConfig.requiredPlugins.isEmpty()) return
-        application.service<Plugins>().runInBackground(courseConfig.requiredPlugins) { components ->
-            placeholder?.component = panel {
-                components.map {
-                    it.remove(4) // Remove checkbox and install button
-                    it.remove(3)
-                    it
-                }.forEach {
-                    row {
-                        contextHelp(
-                            it.pluginDescriptor.description
-                                ?: message("generator.APlusModuleBuilder.defaultDescription")
-                        )
-                        cell(it).resizableColumn().align(AlignX.FILL).applyToComponent {
-                            background = null
-                            isOpaque = false
-                        }
-                    }.topGap(TopGap.SMALL)
-                }
-            }
-            component.revalidate()
-            component.repaint()
-        }
+        if (courseConfig.requiredPlugins.isNotEmpty()) pluginsPanel!!.load(courseConfig.requiredPlugins)
     }
 
     override fun getComponent(): JComponent = mainPanel
@@ -140,5 +123,39 @@ class CourseSettingsStep(
         config.language = selectedLanguage.get()
         config.jdk = sdkProperty.get()
         config.importSettings = !dontImportSettings.get()
+    }
+
+    inner class PluginsPanel {
+        val content: JPanel = JPanel()
+
+        fun load(plugins: List<CourseConfig.RequiredPlugin>) {
+            content.add(Utils.loadingPanel())
+
+            application.service<Plugins>().runInBackground(plugins) { components ->
+                val newContent = panel {
+                    components
+                        .forEach {
+                            row {
+                                contextHelp(
+                                    it.description
+                                        ?: message("generator.APlusModuleBuilder.defaultDescription")
+                                )
+                                icon(it.icon)
+                                panel {
+                                    row {
+                                        label(it.name).bold()
+                                    }.rowComment("${it.version} ${it.vendor ?: ""}")
+                                }
+                            }.topGap(TopGap.SMALL)
+                        }
+                }
+
+                content.removeAll()
+                content.add(newContent)
+
+                component.revalidate()
+                component.repaint()
+            }
+        }
     }
 }
