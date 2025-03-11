@@ -8,7 +8,7 @@ kover = "0.9.1"
 
 # libraries
 jsonSerialization = "1.8.0"
-datetime = "0.6.1"
+datetime = "0.6.2"
 ktor = "2.3.12"
 
 [plugins]
