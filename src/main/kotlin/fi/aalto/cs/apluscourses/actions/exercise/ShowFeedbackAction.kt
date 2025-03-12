@@ -20,7 +20,7 @@ class ShowFeedbackAction : AnAction() {
 
     override fun update(e: AnActionEvent) {
         val feedbackCss = e.project?.service<CourseManager>()?.state?.feedbackCss
-        if (feedbackCss == null || feedbackCss.isEmpty()) {
+        if (feedbackCss.isNullOrEmpty()) {
             e.presentation.isVisible = false
             return
         }

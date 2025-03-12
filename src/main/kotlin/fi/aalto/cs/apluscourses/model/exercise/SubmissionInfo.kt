@@ -8,7 +8,7 @@ data class SubmissionInfo(val files: Map<String, List<SubmittableFile>>) {
      * the language isn't found).
      */
     fun getFiles(language: String): List<SubmittableFile> {
-        return files.getOrDefault(language, emptyList<SubmittableFile>())
+        return files.getOrDefault(language, emptyList())
     }
 
     /**
