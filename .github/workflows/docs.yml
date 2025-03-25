@@ -2,9 +2,9 @@ name: Build and deploy docs to Pages
 # https://www.jetbrains.com/help/writerside/deploy-docs-to-github-pages.html#search
 
 on:
-   push:
-     branches: ["main"]
-   workflow_dispatch:
+  push:
+    branches: [ "docs" ]
+  workflow_dispatch:
 
 env:
   INSTANCE: 'Writerside/ac'
@@ -75,7 +75,7 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    needs: [build]
+    needs: [ build ]
     # needs: [build, test]
     runs-on: ubuntu-latest
     steps:

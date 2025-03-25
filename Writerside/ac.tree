@@ -4,11 +4,10 @@
 
 <instance-profile id="ac"
                   name="A+ Courses"
-                  start-page="starter-topic.md">
+                  start-page="Getting-started.md">
 
-    <toc-element topic="starter-topic.md">
-        <toc-element topic="API_Reference.md">
-            <toc-element topic="courses_GET.md"/>
-        </toc-element>
-    </toc-element>
+    <toc-element topic="Overview.topic"/>
+    <toc-element topic="Getting-started.md"/>
+    <toc-element topic="Tutorial.md"/>
+
 </instance-profile>

@@ -1,3 +1,0 @@
-# API Reference
-
-Start typing here...
