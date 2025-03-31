@@ -13,7 +13,7 @@ otherwise enhances the student experience.
 ## Running the plugin
 
 Run the plugin from Gradle using `runIde`. Alternatively there exists a run configuration `Run Plugin` that can be used
-instead.
+instead. This will start start a Sandbox instance where you can use the plugin.
 
 ## List of current courses
 

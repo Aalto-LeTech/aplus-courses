@@ -11,5 +11,6 @@
     <toc-element topic="Configuration.md"/>
     <toc-element topic="Architecture.md"/>
     <toc-element topic="Testing.md"/>
+    <toc-element topic="Maintenance.md"/>
 
 </instance-profile>
