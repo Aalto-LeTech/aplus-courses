@@ -6,6 +6,8 @@
     <build-profile instance="ac">
         <variables>
             <noindex-content>false</noindex-content>
+            <primary-color>#FF0090</primary-color>
+            <header-logo>../../src/main/resources/META-INF/pluginIcon_dark.svg</header-logo>
         </variables>
     </build-profile>
 
