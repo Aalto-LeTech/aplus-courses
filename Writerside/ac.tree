@@ -8,6 +8,8 @@
 
     <toc-element topic="Overview.topic"/>
     <toc-element topic="Getting-started.md"/>
-    <toc-element topic="Tutorial.md"/>
+    <toc-element topic="Configuration.md"/>
+    <toc-element topic="Architecture.md"/>
+    <toc-element topic="Testing.md"/>
 
 </instance-profile>

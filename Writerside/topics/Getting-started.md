@@ -15,12 +15,6 @@ otherwise enhances the student experience.
 Run the plugin from Gradle using `runIde`. Alternatively there exists a run configuration `Run Plugin` that can be used
 instead.
 
-> **Highlight important information**
->
-> You can change the element to *tip* or *warning* by renaming the style attribute below.
->
-{style="warning"}
-
 ## List of current courses
 
 Currently A+ courses plugin is used on five programming courses in Aalto University:

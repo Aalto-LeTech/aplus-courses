@@ -23,22 +23,27 @@
 
         <!--    Add up to 2 topics that you want to promote. Use the "type" attribute to select an icon.    -->
         <spotlight>
-            <a href="" type="account" summary="This overrides the card summary of the topic">Custom</a>
-            <a href="" type="search" summary="This overrides the card summary of the topic">Another custom title</a>
+            <a href="https://github.com/Aalto-LeTech/aplus-courses" type="documents"
+               summary="A+ courses plugin repository">Github</a>
+            <a href="https://plugins.jetbrains.com/plugin/13634-a-courses" type="search"
+               summary="A+ courses on Jetbrains Marketplace">Marketplace</a>
         </spotlight>
 
-        <!--    Add several topics that are most important for this section.    -->
         <primary>
-            <title>For developers</title>
-            <a href="Getting-started.md">Getting started</a>
+            <title>For teachers</title>
+            <a href="Configuration.md"
+               summary="Instructions on how to make the course configuration file needed to use the plugin"/>
+            <a href="https://version.aalto.fi/gitlab/aplus-courses/course-config-urls"
+               summary="Course configuration repository on Github">Course configuration repository</a>
         </primary>
 
-        <!--    Add several topics that are less important or are relevant only for advanced/experienced users.    -->
         <secondary>
-            <title>For teachers</title>
-            <a href="Tutorial.md"
-               summary="Instructions on how to make the course configuration file needed to use the plugin"/>
+            <title>For developers</title>
+            <a href="Getting-started.md" summary="A+ courses plugin documentation for developers"/>
         </secondary>
+
+        <!--    Add several topics that are less important or are relevant only for advanced/experienced users.    -->
+
 
         <!--    Optionally add additional cards and links to topics that are not in this section but may be relevant.    -->
         <misc>
