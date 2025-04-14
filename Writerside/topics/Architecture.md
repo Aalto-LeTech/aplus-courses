@@ -1,143 +1,77 @@
 # Architecture
 
-> If you need more information about how to fill in this template, read the
-> accompanying [guide](https://gitlab.com/tgdp/templates/-/blob/v1.2.0/contributing-guide/guide_contributing-guide.md).
->
-> This template includes writing instructions and boilerplate text that you can customize, use as-is, or completely
-> replace with your own text. This text is indicated in {(curly brackets)}. Make sure you replace the placeholders with
-> your own text.
+This page provides an overview of the code architecture for the A+ Courses Plugin, describing the purpose and contents
+of the main source code directories.
 
-## Welcome
+## Actions
 
-Welcome to the {(Project Name)} Contributing Guide, and thank you for your interest.
+Defines classes that handle behavior triggered by different user or system events.
+Actions are organized into three groups:
 
-If you would like to contribute to a specific part of the project, check out the following list of contributions that we
-accept and their corresponding sections that are within this guide:
+* `EXERCISE_ACTIONS`
+* `MODULE_ACTIONS`
+* `TOOL_WINDOW_ACTIONS`
 
-* {(Contribution type 1)}
-    * {(Section 1)}
-    * {(Section 2)}
-    * {(Section 3)}
-* {(Contribution type 2)}
-    * {(Section 1)}
-    * {(Section 2)}
-    * {(Section 3)}
+Each group handles a specific context in which the actions are used.
 
-However, at this time, we do not accept the following contributions:
+## Activities
 
-* {(Contribution type 1)}
-* {(Contribution type 2)}
-* {(Contribution type 3)}
+Contains the `InitializationActivity` class, which is responsible for setting up a project when it's created using the
+A+ Courses plugin.
 
-## {(Project Name)} overview
+## API
 
-The purpose of the {(Project Name)} is to {(describe your project's objectives or provide an external link to an
-introductory document, such as the project's README file)}.
+Class `APlusApi` for fetching information using the A+ api. Also contains the `CourseConfig` object that serves as the
+serializer and documentation for the course configuration file. More information on the course configuration
+file can be found <a href="Configuration.md">here</a>.
 
-## Ground rules
+## Config
 
-Before contributing, read our {(link to the Code of Conduct)} to learn more about our community guidelines and
-expectations.
+Contains the class `APlusConfigurable` that provides a UI component to display plugin settings and methods to change
+and save settings. In addition, it also shows a short description of the plugin.
 
-## Community engagement
+## Generator
 
-Refer to the following channels to connect with fellow contributors or to stay up-to-date with news about the {(Project
-Name)}:
+Implements the logic for project creation and structure configuration.
+Notable components:
 
-* Join our project contributors on {(name and link to online chat)}.
-* Participate in our project meetings on {(specify the day of the week and cadence)} at {(specify time and timezone)},
-  where you can provide a status update or raise questions and concerns about your contributions. Use the following link
-  to join: {(link to online meeting space)}
-* Stay updated on the latest news and changes to the project by signing up to receive our newsletter. Sign up with the
-  following link: {(link to the sign-up page for the newsletter)}
+* `CourseSelectStep`
+* `CourseSettingsStep`
 
-## Share ideas
+These two classes extend the IntelliJ project creation wizard to support custom steps for A+ course setup.
 
-To share your new ideas for the project, perform the following actions:
+## Icons
 
-1. {(Step 1)}
-2. {(Step 2)}
-3. {(Step 3)}
+Contains UI icons used throughout the plugin, bundled within the `CourseIcons` object.
 
-## Before you start
+## Model
 
-Before you start contributing, ensure you have the following:
+Defines the data models used by the plugin to represent for example exercises, people and other related entities.
 
-* {(Item 1)}
-* {(Item 2)}
-* {(Item 3)}
+## Notifications
 
-## Environment setup
+Contains classes for user notifications that may appear during use, such as status messages or alerts during plugin use.
 
-To set up your environment, perform the following actions:
+## Services
 
-* {(Step 1)}
-* {(Step 2)}
-* {(Step 3)}
+## Toolwindows
 
-### Troubleshoot
+Includes components related to IntelliJ's tool window system.
 
-If you encounter issues as you set up your environment, refer to the following:
+Key class:
 
-* Windows: {(share a link to an external page that shares troubleshooting steps or share the procedure as sub-bullets)}
-* macOS: {(share a link to an external page that shares troubleshooting steps or share the procedure as sub-bullets)}
-* Linux: {(share a link to an external page that shares troubleshooting steps or share the procedure as sub-bullets)}
+* `APlusToolWindowFactory`: defines how the plugin is presented in IntelliJ's tool window panel, when it is expanded by
+  the user.
 
-## Best practices
+## UI
 
-{(Option 1)} Our project has adopted the following best practices for contributing:
+Contains the user interface components of the plugin, including dialogs, views and other visual elements.
 
-* {(Item 1)}
-* {(Item 2)}
-* {(Item 3)}
+## Utils
 
-{(Option 2)} Our project uses the {(name and link to resource for best practices, such as a coding style guide or
-writing style guide)} as our parent guide for best practices. Reference the guide to familiarize yourself with the best
-practices we want contributors to follow.
+Provides utility classes used across the plugin, such as:
 
-## Content style guide
-
-Read our {(name and link to your style guide)} to understand our guidelines for writing and formatting documents. The
-purpose of our style guide is to ensure consistency in the tone, voice, and structure of our documentation.
-
-## Contribution workflow
-
-### Fork and clone repositories
-
-{(Provide instructions on how to fork and clone your repository. Alternatively, provide a link to a Git guide that
-explains the process.)}
-
-### Report issues and bugs
-
-{(Provide instructions on how to report problems.)}
-
-### Issue management
-
-{(Provide instructions on how to create, tag, and assign issues.)}
-
-### Commit messages
-
-{(Provide instructions on how to format commit messages.)}
-
-### Branch creation
-
-{(Provide instructions on how to create and/or name a branch.)}
-
-### Pull requests
-
-{(Provide instructions on how to submit a pull request. Share a link to an example pull request or include the pull
-request template you want contributors to use within this section.)}
-
-### Releases
-
-{(Provide a description of the release process and cadence for the project, such as the source code.)}
-
-### Text formats
-
-{(Provide information on what you need contributors to know and use to edit and create documents.)}
+* Parsers
+* Callbacks
 
 ---
-
-> Explore other templates from [The Good Docs Project](https://thegooddocsproject.dev/). Use
-> our [feedback form](https://thegooddocsproject.dev/feedback/?template=Contributing%20guide) to give feedback on this
-> template.
