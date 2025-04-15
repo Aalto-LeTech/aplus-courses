@@ -1,16 +1,14 @@
 # Course configuration file
 
-To utilize the A+ Courses plugin, each course needs its own course configuration file.
-This page will explain the structure and properties of the course configuration file.
+To utilize the A+ Courses plugin, each course requires its own course configuration file. This page explains the
+structure and key properties of that file.
 
 ## Before you start
 
-Make sure that you have access to
-the [Course Configuration repository](https://version.aalto.fi/gitlab/aplus-courses/course-config-urls). The access is
-given by the .... team. When the
-configuration file is ready and hosted, it should be added here. See the part
-on [course configuration repository](#config_repo) for
-more information.
+Ensure you have access to
+the [Course Configuration repository](https://version.aalto.fi/gitlab/aplus-courses/course-config-urls). Access is
+granted by ... team. Once the configuration file is complete and hosted, it should be added to the repository. See the
+section on the [course configuration repository](#config_repo) for more information.
 
 ## Example
 

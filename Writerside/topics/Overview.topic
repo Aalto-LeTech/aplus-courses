@@ -40,6 +40,7 @@
         <secondary>
             <title>For developers</title>
             <a href="Getting-started.md" summary="A+ courses plugin documentation for developers"/>
+            <a href="Architecture.md" summary="Code architecture of the plugin"/>
         </secondary>
 
         <!--    Add several topics that are less important or are relevant only for advanced/experienced users.    -->

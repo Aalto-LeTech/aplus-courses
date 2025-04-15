@@ -33,7 +33,7 @@ and save settings. In addition, it also shows a short description of the plugin.
 ## Generator
 
 Implements the logic for project creation and structure configuration.
-Notable components:
+Important components:
 
 * `CourseSelectStep`
 * `CourseSettingsStep`
