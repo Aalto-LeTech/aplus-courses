@@ -1,41 +1,62 @@
 # Testing
 
-Tutorials are learning-oriented articles that help users to go through a process and achieve a deliverable.
-Start with an introduction: for whom is this tutorial and what the reader will achieve by reading it.
-Answer the question: "Why should I follow this?"
+## Setting up the testing environment
 
-Provide a short outline for the tutorial.
-In this tutorial, you will learn how to:
+You can use Sandbox or create a zip file of the plugin for testing.
 
-* Do this
-* Deal with that
+### Sandbox
 
-## Sandbox
+Sandbox is a good tool for testing on the go during development.
 
-Describe what the user will learn and accomplish in the first part,
-then write a step-by-step procedure but on a real-world example.
+* Start a sandbox instance from Gradle using `runIde`.
 
-1. Execute the following command in the terminal:
+### Testing with a zip
 
-   ```bash
-    run this --that
-   ```
+Testing with zip creates a more authentic testing environment. Creating a Zip:
 
-2. Step with a [link](https://www.jetbrains.com)
+1. From Gradle run `buildPlugin`. This builds and creates a Zip file for testing and deployment.
+2. Fetch the created file from `build/distributions`.
+3. Optional: Install a new IntelliJ IDEA.
+4. Install the zip in IntelliJ IDEA from `Settings > Plugins >  > Install Plugin from Disk...`.
 
-3. Final step in part 1.
+## Testing main features
 
-## Testing with a zip
+### Creating a new A+ courses project
 
-This is the second part of the tutorial:
+1. Create a new project `File > New > Project...`.
+2. Select **A+ courses** from the project type list on the left of the window.
+3. Enter file configuration URL:
+    ```
+    xxx
+    ```
+4. Click `Next`.
+5. Enable the `Leave IntelliJ settings unchanged` checkbox.
+6. Under `Additional Configurations`, from the JDK dropdown box, choose `temurin-21` (if it doesn't appear in the list,
+   click `Download JDK...` and choose version **21** from **Eclipse Temurin**).
+7. Click `Next`.
+8. Usually there is no need to change the default project name and location, just click `Create`.
+9. If the IntelliJ Scala plugin was not installed already, it will be installed now and may require a restart of
+   IntelliJ. In this case you will see a dialog box asking for a restart. Click `Restart` to finish project creation.
 
-1. Step 1
-2. Step 2
-3. Step n
+### Downloading a module
 
-## Test course in A+
+1. From A+ courses click the `Modules` tab.
+2. From the list of modules, select module `GoodStuff`.
+3. Click `Install`.
+4. After installation, check that the module `GoodStuff` shows up in the project tree of IntelliJ IDEA.
+5. In the A+ courses `Modules` tab, the installed module `GoodStuff` should now be under the `Installed Modules` list.
 
-## What you've learned {id="what-learned"}
+### Submit an exercise and reading the feedback
 
-Summarize what the reader achieved by completing this tutorial.
+1.
+
+## Test course
+
+Contains three different modules:
+
+* Normal?
+* SBT
+* Python
+
+
 
