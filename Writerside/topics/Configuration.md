@@ -82,6 +82,26 @@ Example configuration file:
       "en": "Ave",
       "fi": "Ave"
     }
+  },
+  "grading": {
+    "style": "total",
+    "points": {
+      "1": {
+        "total": 12000
+      },
+      "2": {
+        "total": 15000
+      },
+      "3": {
+        "total": 18000
+      },
+      "4": {
+        "total": 21000
+      },
+      "5": {
+        "total": 24000
+      }
+    }
   }
 }
 ```
@@ -113,7 +133,7 @@ Description of the basic information properties of the course:
 }
 ```
 
-* `id: String` ID for the course from the A+ API.
+* `id: String` ID for the course from the A+ [API](https://plus.cs.aalto.fi/api/v2/courses).
     ```
     "id": "197"
     ```
@@ -260,6 +280,41 @@ configuration file has the following information:
 * `exerciseModules: Map[String, Map[String, String]]` Information, about which module each assignment uses. The
   assignment ID is used as a key to a map,
   where language codes are used as keys for the module names.
+
+## Grading
+
+```JSON
+{
+  "grading": {
+    "style": "total",
+    "points": {
+      "1": {
+        "total": 12000
+      },
+      "2": {
+        "total": 15000
+      },
+      "3": {
+        "total": 18000
+      },
+      "4": {
+        "total": 21000
+      },
+      "5": {
+        "total": 24000
+      }
+    }
+  }
+}
+
+```
+
+* `style: String` Style of the grading criteria. At the moment exists two different grading styles:
+  ```
+    "style": "total",
+    "style": "o1"
+  ```
+* `points: Map[String, Map[String, Int]]` Point thresholds for each grade (1-5).
 
 ## Configuration repository {id="config_repo"}
 

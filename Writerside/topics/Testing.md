@@ -17,7 +17,7 @@ Testing with zip creates a more authentic testing environment. Creating a Zip:
 1. From Gradle run `buildPlugin`. This builds and creates a Zip file for testing and deployment.
 2. Fetch the created file from `build/distributions`.
 3. Optional: Install a new IntelliJ IDEA.
-4. Install the zip in IntelliJ IDEA from `Settings > Plugins >  > Install Plugin from Disk...`.
+4. Install the zip in IntelliJ IDEA from `Settings > Plugins > ⚙️ > Install Plugin from Disk...`.
 
 ## Testing main features
 
@@ -44,11 +44,11 @@ Testing with zip creates a more authentic testing environment. Creating a Zip:
 2. From the list of modules, select module `GoodStuff`.
 3. Click `Install`.
 4. After installation, check that the module `GoodStuff` shows up in the project tree of IntelliJ IDEA.
-5. In the A+ courses `Modules` tab, the installed module `GoodStuff` should now be under the `Installed Modules` list.
 
 ### Submit an exercise and reading the feedback
 
-1.
+1. Open `GoodStuff` module in project tree.
+2.
 
 ## Test course
 
