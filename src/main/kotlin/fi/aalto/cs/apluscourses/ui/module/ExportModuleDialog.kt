@@ -1,6 +1,5 @@
 package fi.aalto.cs.apluscourses.ui.module
 
-import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.observable.properties.AtomicProperty
 import com.intellij.openapi.observable.properties.whenPropertyChanged
@@ -19,6 +18,7 @@ import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.icons.CoursesIcons
 import fi.aalto.cs.apluscourses.model.people.Group
 import fi.aalto.cs.apluscourses.model.people.User
+import fi.aalto.cs.apluscourses.ui.Utils.directoryField
 import java.nio.file.Path
 import javax.swing.JList
 
@@ -28,8 +28,8 @@ class ExportModuleDialog(
     private val groups: List<Group>,
     private val submitter: User
 ) : DialogWrapper(project) {
-    private val selectedModule = AtomicProperty<Module>(modules.first())
-    private val selectedGroup = AtomicProperty<Group>(Group.EXPORT_ALONE)
+    private val selectedModule = AtomicProperty(modules.first())
+    private val selectedGroup = AtomicProperty(Group.EXPORT_ALONE)
     private val outputPath = AtomicProperty(System.getProperty("user.home"))
     private val fileName = AtomicProperty("")
 
@@ -105,11 +105,7 @@ class ExportModuleDialog(
                 .align(AlignX.FILL)
         }
         row(message("ui.ExportModuleDialog.outputPath")) {
-            textFieldWithBrowseButton(
-                FileChooserDescriptor(false, true, false, false, false, false)
-                    .withTitle(message("ui.ExportModuleDialog.selectOutput")),
-                project
-            )
+            directoryField(project, message("ui.ExportModuleDialog.selectOutput"))
                 .bindText(outputPath)
                 .validationOnApply {
                     if (it.text.trim().isEmpty()) {

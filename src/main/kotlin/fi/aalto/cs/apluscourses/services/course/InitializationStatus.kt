@@ -6,8 +6,8 @@ import com.intellij.openapi.project.Project
 
 @Service(Service.Level.PROJECT)
 class InitializationStatus {
-    var isNotCourse = false
-    var isIoError = false
+    var isNotCourse: Boolean = false
+    var isIoError: Boolean = false
 
     companion object {
         fun isNotCourse(project: Project): Boolean = project.service<InitializationStatus>().isNotCourse

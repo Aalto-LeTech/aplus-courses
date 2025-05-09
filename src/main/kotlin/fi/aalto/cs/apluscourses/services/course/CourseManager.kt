@@ -46,10 +46,10 @@ class CourseManager(
         var feedbackCss: String? = null
         var aPlusUrl: String? = null
         var grading: CourseConfig.Grading? = null
-        var alwaysShowGroups = false
-        var settingsImported = false
+        var alwaysShowGroups: Boolean = false
+        var settingsImported: Boolean = false
         var error: Error? = null
-        var missingDependencies = mapOf<String, List<Component<*>>>()
+        var missingDependencies: Map<String, List<Component<*>>> = mapOf()
         fun clearAll() {
             course = null
             news = null
@@ -66,7 +66,7 @@ class CourseManager(
         NETWORK_ERROR,
     }
 
-    val state = State()
+    val state: State = State()
 
     private val moduleOperationDispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
 

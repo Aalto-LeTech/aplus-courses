@@ -25,8 +25,8 @@ import javax.swing.JPanel
 internal class APlusConfigurable(val project: Project) : Configurable, Configurable.TopComponentProvider,
     Configurable.NoScroll {
 
-    private val originalLanguage = AtomicProperty<String>("")
-    private val selectedLanguage = AtomicProperty<String>("")
+    private val originalLanguage = AtomicProperty("")
+    private val selectedLanguage = AtomicProperty("")
 
     private var isLanguageChanged = false
 

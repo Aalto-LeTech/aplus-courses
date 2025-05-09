@@ -33,8 +33,6 @@ object PluginAutoInstaller {
      * @param project     The project which initiated the operation.
      * @param pluginNames List of plugin ID strings. The plugin ID can be found on the plugin's
      * JetBrains Marketplace website.
-     * @param callback    An interface implementing functions invoked by this method. The functions
-     * are related to showing the consent dialog box to the user.
      * @return True, if all dependencies are satisfied and there's nothing to be done. False, if
      * some dependencies were missing, and they were installed or enabled. Null, if the operation
      * has been cancelled due to missing consent or an error.
@@ -43,7 +41,7 @@ object PluginAutoInstaller {
         project: Project,
         pluginNames: List<RequiredPlugin>,
         askForConsent: Boolean = false
-    ): Boolean? {
+    ): Boolean {
         val pluginIDs = pluginNames.map { PluginId.getId(it.id) }.toSet()
         // Downloading and enabling plugins are different operations, so we handle these separately.
         val pluginsToDownload = pluginIDs.filter { shouldDownloadPlugin(it) }.toSet()
@@ -62,8 +60,8 @@ object PluginAutoInstaller {
             .toSet()
 
         val missingPluginNames = pluginNames
-            .filter { p: RequiredPlugin -> missingPluginIds.contains(p.id) }
-            .map { p: RequiredPlugin -> p.name }
+            .filter { missingPluginIds.contains(it.id) }
+            .map { it.name }
 
 
         if (askForConsent) {

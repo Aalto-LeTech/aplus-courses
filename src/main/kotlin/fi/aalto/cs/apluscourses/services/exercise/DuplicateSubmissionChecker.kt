@@ -1,16 +1,11 @@
 package fi.aalto.cs.apluscourses.services.exercise
 
-import com.intellij.openapi.components.BaseState
-import com.intellij.openapi.components.Service
-import com.intellij.openapi.components.SimplePersistentStateComponent
-import com.intellij.openapi.components.State
-import com.intellij.openapi.components.Storage
-import com.intellij.openapi.components.service
+import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
 import com.intellij.util.xmlb.annotations.XMap
 import java.nio.file.Path
 import java.security.MessageDigest
-import java.util.Base64
+import java.util.*
 import kotlin.io.path.readBytes
 
 @Service(Service.Level.PROJECT)
@@ -26,7 +21,7 @@ class DuplicateSubmissionChecker(val project: Project) :
             valueAttributeName = "hashes",
         )
         var submissionHashes: MutableMap<Long, String> = mutableMapOf()
-        fun increment() = incrementModificationCount()
+        fun increment(): Unit = incrementModificationCount()
     }
 
     private fun hashFileToString(digest: MessageDigest, path: Path): String =

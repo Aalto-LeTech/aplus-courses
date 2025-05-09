@@ -16,10 +16,11 @@ class ModuleExportedNotification(module: Module, exportedFile: File) : Notificat
     NotificationType.INFORMATION
 ) {
     init {
-        addAction(NotificationAction.createSimple(
-            message("notification.ModuleExportedNotification.showInFiles")
-        ) {
-            RevealFileAction.openFile(exportedFile)
-        })
+        addAction(
+            NotificationAction.createSimple(
+                message("notification.ModuleExportedNotification.showInFiles")
+            ) {
+                RevealFileAction.openFile(exportedFile)
+            })
     }
 }
