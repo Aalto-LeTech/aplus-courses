@@ -7,7 +7,7 @@ qodana = "2024.3.4"
 kover = "0.9.1"
 
 # libraries
-jsonSerialization = "1.8.0"
+jsonSerialization = "1.8.1"
 datetime = "0.6.2"
 ktor = "3.1.3"
 
