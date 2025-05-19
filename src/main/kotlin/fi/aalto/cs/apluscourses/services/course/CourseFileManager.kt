@@ -20,13 +20,13 @@ import java.time.ZonedDateTime
 import kotlin.io.path.Path
 
 private class InstantConverter : Converter<Instant>() {
-    override fun fromString(s: @NonNls String): Instant = Instant.parse(s)
-    override fun toString(i: Instant): String = i.toString()
+    override fun fromString(value: @NonNls String): Instant = Instant.parse(value)
+    override fun toString(value: Instant): String = value.toString()
 }
 
 private class VersionConverter : Converter<Version>() {
-    override fun fromString(s: @NonNls String): Version = Version(s)
-    override fun toString(v: Version): String = v.toString()
+    override fun fromString(value: @NonNls String): Version = Version(value)
+    override fun toString(value: Version): String = value.toString()
 }
 
 @Service(Service.Level.PROJECT)
