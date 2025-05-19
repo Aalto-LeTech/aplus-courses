@@ -1,7 +1,9 @@
 package fi.aalto.cs.apluscourses.services
 
 import com.intellij.ide.BrowserUtil
+import com.intellij.ide.browsers.WebBrowserService
 import com.intellij.ide.browsers.actions.WebPreviewVirtualFile
+import com.intellij.ide.browsers.createOpenInBrowserRequest
 import com.intellij.ide.projectView.ProjectView
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
@@ -16,7 +18,6 @@ import com.intellij.openapi.project.guessModuleDir
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.findFile
 import com.intellij.psi.PsiManager
-import com.intellij.util.Urls
 import com.intellij.util.application
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.intellij.util.messages.Topic
@@ -59,7 +60,18 @@ class Opener(
     }
 
     fun openHtmlFileInEmbeddedBrowser(htmlFile: VirtualFile) {
-        val webPreview = WebPreviewVirtualFile(htmlFile, Urls.newFromVirtualFile(htmlFile))
+        val psiFile = PsiManager.getInstance(project).findFile(htmlFile) ?: return
+        val request = createOpenInBrowserRequest(psiFile, true) ?: return
+
+        val preferLocalUrl = false // Local urls break interactivity
+        val url = WebBrowserService
+            .getInstance()
+            .getUrlsToOpen(request, preferLocalUrl)
+            .firstOrNull() ?: return
+        val webPreview = WebPreviewVirtualFile(
+            htmlFile,
+            url
+        )
         FileEditorManager.getInstance(project)
             .openFile(webPreview, true, true)
     }
