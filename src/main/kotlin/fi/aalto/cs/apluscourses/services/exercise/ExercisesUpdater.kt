@@ -52,10 +52,10 @@ class ExercisesUpdater(
         }
     }
 
-    val state = State()
+    val state: State = State()
 
     @NonNls
-    private val FEEDBACK_STRING = "|en:Feedback|"
+    private val feedbackString = "|en:Feedback|"
 
     private var exerciseJob: Job? = null
     private var gradingJob: Job? = null
@@ -121,7 +121,8 @@ class ExercisesUpdater(
                     cs.ensureActive()
                     delay(updateInterval)
                 }
-            } catch (_: CancellationException) {
+            } catch (e: CancellationException) {
+                throw e
             }
         }
     }
@@ -148,7 +149,7 @@ class ExercisesUpdater(
             points.modules
                 .flatMap { it.exercises }
                 .map { it.difficulty to it.maxPoints }
-                .filter { !it.first.isEmpty() } // Filter out empty categories
+                .filter { it.first.isNotEmpty() } // Filter out empty categories
         val userPointsForCategories = pointsAndCategories
             .map { it.first }
             .toSet()
@@ -156,8 +157,7 @@ class ExercisesUpdater(
                 points.pointsByDifficulty.getOrDefault(it, 0)
             } // If points are 0, the category is not in pointsByDifficulty
         val maxPointsForCategories: Map<String, Int> =
-            pointsAndCategories.fold(mutableMapOf()) { acc: MutableMap<String, Int>, pair: Pair<String, Int> ->
-                val (category, points) = pair
+            pointsAndCategories.fold(mutableMapOf()) { acc: MutableMap<String, Int>, (category, points) ->
                 acc[category] = acc.getOrDefault(category, 0) + points
                 acc
             }
@@ -184,7 +184,7 @@ class ExercisesUpdater(
         val submissionsWithMultipleSubmitters: Map<Long, List<Long>> = submissionDataResponse
             .groupBy { it.SubmissionID }
             .filter { it.value.size > 1 }
-            .map { it.key to it.value.map { it.UserID } }
+            .map { (submissionId, submitters) -> submissionId to submitters.map { it.UserID } }
             .toMap()
 
         val optionalCategories = course.optionalCategories + "" // Empty category counted as optional
@@ -230,7 +230,7 @@ class ExercisesUpdater(
                         difficulty = exercise.difficulty,
                         isSubmittable = exerciseExercise?.hasSubmittableFiles == true,
                         isOptional = optionalCategories.contains(exercise.difficulty),
-                        isFeedback = exercise.name.contains(FEEDBACK_STRING) && exercise.difficulty == ""
+                        isFeedback = exercise.name.contains(feedbackString) && exercise.difficulty == ""
                     )
                 }.toMutableList()
             )

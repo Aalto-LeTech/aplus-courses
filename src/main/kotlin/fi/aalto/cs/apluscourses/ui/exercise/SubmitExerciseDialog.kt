@@ -26,13 +26,13 @@ class SubmitExerciseDialog(
     val project: Project,
     val exercise: Exercise,
     val files: List<Path>,
-    val groups: List<Group>,
+    private val groups: List<Group>,
     val group: Group,
-    val submittedBefore: Boolean,
+    private val submittedBefore: Boolean,
 ) :
     DialogWrapper(project) {
-    val selectedGroup = AtomicProperty<Group>(group)
-    val defaultGroup = AtomicProperty<Group>(group)
+    val selectedGroup: AtomicProperty<Group> = AtomicProperty(group)
+    val defaultGroup: AtomicProperty<Group> = AtomicProperty(group)
     private val isDefaultSelected = object : ComponentPredicate() {
         override fun invoke(): Boolean {
             return selectedGroup.get() != defaultGroup.get()
@@ -60,7 +60,7 @@ class SubmitExerciseDialog(
         }
         row {
             cell(FileTree(files, project)).applyToComponent {
-                cellRenderer = FileRenderer(files.associate { it.name to it })
+                cellRenderer = FileRenderer(files.associateBy { it.name })
                 isEnabled = false
             }
         }

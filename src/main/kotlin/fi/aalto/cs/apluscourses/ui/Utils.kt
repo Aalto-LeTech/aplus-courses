@@ -1,9 +1,12 @@
 package fi.aalto.cs.apluscourses.ui
 
 import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.observable.properties.ObservableMutableProperty
 import com.intellij.openapi.observable.util.lockOrSkip
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogPanel
+import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.ui.AnimatedIcon
 import com.intellij.ui.components.ActionLink
 import com.intellij.ui.components.AnActionLink
@@ -13,6 +16,7 @@ import com.intellij.ui.dsl.builder.Cell
 import com.intellij.ui.dsl.builder.Row
 import com.intellij.ui.dsl.builder.panel
 import fi.aalto.cs.apluscourses.icons.CoursesIcons
+import org.jetbrains.annotations.Nls
 import java.awt.event.ActionEvent
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.swing.Icon
@@ -37,6 +41,17 @@ object Utils {
         cell(AnActionLink(text, action)).applyToComponent {
             setIcon(icon, false)
         }
+
+    fun Row.directoryField(project: Project, @Nls title: String): Cell<TextFieldWithBrowseButton> {
+        val field = TextFieldWithBrowseButton()
+        field.addBrowseFolderListener(
+            project, FileChooserDescriptorFactory.createSingleFolderDescriptor()
+                .withTitle(title)
+                .withHideIgnored(false)
+        )
+
+        return cell(field)
+    }
 
     /**
      * A wrapper for JBList to be used with the UI DSL.

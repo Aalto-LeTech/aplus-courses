@@ -9,13 +9,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.ui.ColorUtil
 import com.intellij.ui.JBColor
-import com.intellij.ui.dsl.builder.AlignY
-import com.intellij.ui.dsl.builder.IntelliJSpacingConfiguration
-import com.intellij.ui.dsl.builder.Panel
-import com.intellij.ui.dsl.builder.RightGap
-import com.intellij.ui.dsl.builder.Row
-import com.intellij.ui.dsl.builder.bindText
-import com.intellij.ui.dsl.builder.panel
+import com.intellij.ui.dsl.builder.*
 import com.intellij.ui.dsl.gridLayout.UnscaledGaps
 import com.intellij.util.application
 import com.intellij.util.ui.JBUI
@@ -38,7 +32,6 @@ import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import javax.swing.JPanel
 import javax.swing.SwingUtilities
-import kotlin.to
 
 class ModuleRenderer(
     val module: Module,
@@ -53,7 +46,7 @@ class ModuleRenderer(
         else if (module.isUpdateAvailable) CoursesIcons.Info
         else CoursesIcons.NoPoints
 
-    var isExpanded = false
+    var isExpanded: Boolean = false
         private set
 
     private fun Row.info(text: String) =
@@ -129,7 +122,7 @@ class ModuleRenderer(
     private var isZipSizeSet = false
     private fun zipSizeText(size: String) = message("ui.ModuleRenderer.available.fileSize", size)
 
-    private val zipSizeText = AtomicProperty<String>(zipSizeText("??? ??"))
+    private val zipSizeText = AtomicProperty(zipSizeText("??? ??"))
 
 
     @NonNls

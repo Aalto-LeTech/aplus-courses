@@ -2,7 +2,6 @@ package fi.aalto.cs.apluscourses.model.component
 
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.application.ReadAction
-import com.intellij.openapi.application.writeAction
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.project.Project
@@ -28,6 +27,7 @@ import org.jetbrains.annotations.NonNls
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption
 import kotlin.io.path.exists
+import kotlin.io.path.extension
 import kotlin.io.path.moveTo
 import com.intellij.openapi.module.Module as IdeaModule
 
@@ -81,7 +81,7 @@ open class Module(
             FileUtil.getChangedFilesInDirectory(
                 fullPath.toFile(),
                 timestampWithDelay
-            )
+            ).filter { it.extension != "iml" }
         }
     }
 
@@ -91,7 +91,7 @@ open class Module(
             if (!updating) {
                 return
             }
-            writeAction {
+            application.runWriteAction {
                 ModuleManager.getInstance(project).disposeModule(oldPlatformObject)
             }
         }
