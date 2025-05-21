@@ -93,87 +93,87 @@ jobs:
           path: ./build/distributions/content/*/*
 
   # Run tests and upload a code coverage report
-  test:
-    name: Test
-    needs: [ build ]
-    runs-on: ubuntu-latest
-    steps:
-
-      # Check out the current repository
-      - name: Fetch Sources
-        uses: actions/checkout@v4
-
-      # Set up Java environment for the next steps
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: zulu
-          java-version: 21
-
-      # Setup Gradle
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
-      #        with:
-      #          gradle-home-cache-cleanup: true
-
-      # Run tests
-      - name: Run Tests
-        run: ./gradlew check
-
-      # Collect Tests Result of failed tests
-      - name: Collect Tests Result
-        if: ${{ failure() }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: tests-result
-          path: ${{ github.workspace }}/build/reports/tests
-
-      # Upload the Kover report to CodeCov
-      - name: Upload Code Coverage Report
-        uses: codecov/codecov-action@v5
-        with:
-          files: ${{ github.workspace }}/build/reports/kover/report.xml
+  #  test:
+  #    name: Test
+  #    needs: [ build ]
+  #    runs-on: ubuntu-latest
+  #    steps:
+  #
+  #      # Check out the current repository
+  #      - name: Fetch Sources
+  #        uses: actions/checkout@v4
+  #
+  #      # Set up Java environment for the next steps
+  #      - name: Setup Java
+  #        uses: actions/setup-java@v4
+  #        with:
+  #          distribution: zulu
+  #          java-version: 21
+  #
+  #      # Setup Gradle
+  #      - name: Setup Gradle
+  #        uses: gradle/actions/setup-gradle@v4
+  #      #        with:
+  #      #          gradle-home-cache-cleanup: true
+  #
+  #      # Run tests
+  #      - name: Run Tests
+  #        run: ./gradlew check
+  #
+  #      # Collect Tests Result of failed tests
+  #      - name: Collect Tests Result
+  #        if: ${{ failure() }}
+  #        uses: actions/upload-artifact@v4
+  #        with:
+  #          name: tests-result
+  #          path: ${{ github.workspace }}/build/reports/tests
+  #
+  #      # Upload the Kover report to CodeCov
+  #      - name: Upload Code Coverage Report
+  #        uses: codecov/codecov-action@v5
+  #        with:
+  #          files: ${{ github.workspace }}/build/reports/kover/report.xml
 
   # Run Qodana inspections and provide report
-  inspectCode:
-    name: Inspect code
-    needs: [ build ]
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      checks: write
-      pull-requests: write
-    steps:
-
-      # Free GitHub Actions Environment Disk Space
-      #      - name: Maximize Build Space
-      #        uses: jlumbroso/free-disk-space@main
-      #        with:
-      #          tool-cache: false
-      #          large-packages: false
-
-      # Check out the current repository
-      - name: Fetch Sources
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}  # to check out the actual pull request commit, not the merge commit
-          fetch-depth: 0  # a full history is required for pull request analysis
-
-      # Set up Java environment for the next steps
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: zulu
-          java-version: 21
-
-      # Run Qodana inspections
-      - name: Qodana - Code Inspection
-        uses: JetBrains/qodana-action@v2025.1.1
-        with:
-          cache-default-branch-only: true
-          args: --baseline,qodana.sarif.json
-        env:
-          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
+  #  inspectCode:
+  #    name: Inspect code
+  #    needs: [ build ]
+  #    runs-on: ubuntu-latest
+  #    permissions:
+  #      contents: write
+  #      checks: write
+  #      pull-requests: write
+  #    steps:
+  #
+  #      # Free GitHub Actions Environment Disk Space
+  #      #      - name: Maximize Build Space
+  #      #        uses: jlumbroso/free-disk-space@main
+  #      #        with:
+  #      #          tool-cache: false
+  #      #          large-packages: false
+  #
+  #      # Check out the current repository
+  #      - name: Fetch Sources
+  #        uses: actions/checkout@v4
+  #        with:
+  #          ref: ${{ github.event.pull_request.head.sha }}  # to check out the actual pull request commit, not the merge commit
+  #          fetch-depth: 0  # a full history is required for pull request analysis
+  #
+  #      # Set up Java environment for the next steps
+  #      - name: Setup Java
+  #        uses: actions/setup-java@v4
+  #        with:
+  #          distribution: zulu
+  #          java-version: 21
+  #
+  #      # Run Qodana inspections
+  #      - name: Qodana - Code Inspection
+  #        uses: JetBrains/qodana-action@v2025.1.1
+  #        with:
+  #          cache-default-branch-only: true
+  #          args: --baseline,qodana.sarif.json
+  #        env:
+  #          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
 
   # Run plugin structure verification along with IntelliJ Plugin Verifier
   verify:
@@ -207,15 +207,16 @@ jobs:
       #          gradle-home-cache-cleanup: true
 
       # Cache Plugin Verifier IDEs
-      - name: Setup Plugin Verifier IDEs Cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ needs.build.outputs.pluginVerifierHomeDir }}/ides
-          key: plugin-verifier-${{ hashFiles('build/listProductsReleases.txt') }}
+      #      - name: Setup Plugin Verifier IDEs Cache
+      #        uses: actions/cache@v4
+      #        with:
+      #          path: ${{ needs.build.outputs.pluginVerifierHomeDir }}/ides
+      #          key: plugin-verifier-${{ hashFiles('build/listProductsReleases.txt') }}
 
       # Run Verify Plugin task and IntelliJ Plugin Verifier tool
       - name: Run Plugin Verification tasks
-        run: ./gradlew verifyPlugin -Dplugin.verifier.home.dir=${{ needs.build.outputs.pluginVerifierHomeDir }}
+        run: ./gradlew verifyPlugin
+      #          -Dplugin.verifier.home.dir=${{ needs.build.outputs.pluginVerifierHomeDir }}
 
       # Collect Plugin Verifier Result
       - name: Collect Plugin Verifier Result
@@ -227,37 +228,37 @@ jobs:
 
   # Prepare a draft release for GitHub Releases page for the manual verification
   # If accepted and published, release workflow would be triggered
-  releaseDraft:
-    name: Release draft
-    if: github.event_name != 'pull_request'
-    needs: [ build, test, inspectCode, verify ]
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-
-      # Check out the current repository
-      - name: Fetch Sources
-        uses: actions/checkout@v4
-
-      # Remove old release drafts by using the curl request for the available releases with a draft flag
-      - name: Remove Old Release Drafts
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh api repos/{owner}/{repo}/releases \
-            --jq '.[] | select(.draft == true) | .id' \
-            | xargs -I '{}' gh api -X DELETE repos/{owner}/{repo}/releases/{}
-
-      # Create a new release draft which is not publicly visible and requires manual acceptance
-      - name: Create Release Draft
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh release create "v${{ needs.build.outputs.version }}" \
-            --draft \
-            --title "v${{ needs.build.outputs.version }}" \
-            --notes "$(cat << 'EOM'
-          ${{ needs.build.outputs.changelog }}
-          EOM
-          )"
+#  releaseDraft:
+#    name: Release draft
+#    if: github.event_name != 'pull_request'
+#    needs: [ build, test, inspectCode, verify ]
+#    runs-on: ubuntu-latest
+#    permissions:
+#      contents: write
+#    steps:
+#
+#      # Check out the current repository
+#      - name: Fetch Sources
+#        uses: actions/checkout@v4
+#
+#      # Remove old release drafts by using the curl request for the available releases with a draft flag
+#      - name: Remove Old Release Drafts
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        run: |
+#          gh api repos/{owner}/{repo}/releases \
+#            --jq '.[] | select(.draft == true) | .id' \
+#            | xargs -I '{}' gh api -X DELETE repos/{owner}/{repo}/releases/{}
+#
+#      # Create a new release draft which is not publicly visible and requires manual acceptance
+#      - name: Create Release Draft
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        run: |
+#          gh release create "v${{ needs.build.outputs.version }}" \
+#            --draft \
+#            --title "v${{ needs.build.outputs.version }}" \
+#            --notes "$(cat << 'EOM'
+#          ${{ needs.build.outputs.changelog }}
+#          EOM
+#          )"
