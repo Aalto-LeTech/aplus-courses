@@ -49,19 +49,21 @@ internal class APlusModuleBuilder : ModuleBuilder() {
             super.createAndCommitIfNeeded(project, model, true)
         }
 
-        project.service<ProjectInitializationTracker>()
-            .addInitializationTask {
-                val startTime = System.currentTimeMillis()
+        if (config.programmingLanguage == "scala") {
 
-                // The version string only starts with "java version" when the JDK is not downloaded completely
-                while ((ProjectRootManager.getInstance(
-                        project
-                    ).projectSdk?.versionString?.startsWith("java version") != false) && System.currentTimeMillis() - startTime < 300 * 1000
-                ) {
-                    Thread.sleep(1000)
+            project.service<ProjectInitializationTracker>()
+                .addInitializationTask {
+                    val startTime = System.currentTimeMillis()
+
+                    // The version string only starts with "java version" when the JDK is not downloaded completely
+                    while ((ProjectRootManager.getInstance(
+                            project
+                        ).projectSdk?.versionString?.startsWith("java version") != false) && System.currentTimeMillis() - startTime < 300 * 1000
+                    ) {
+                        Thread.sleep(1000)
+                    }
                 }
-            }
-
+        }
 
         return listOf(module)
     }

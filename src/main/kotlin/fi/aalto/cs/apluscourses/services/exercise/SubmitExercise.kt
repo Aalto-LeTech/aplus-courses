@@ -6,7 +6,9 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.module.ModuleUtilCore
 import com.intellij.openapi.project.Project
 import com.intellij.serialization.PropertyMapping
+import com.intellij.util.application
 import fi.aalto.cs.apluscourses.api.APlusApi
+import fi.aalto.cs.apluscourses.model.component.Module
 import fi.aalto.cs.apluscourses.model.exercise.Exercise
 import fi.aalto.cs.apluscourses.model.exercise.Submission
 import fi.aalto.cs.apluscourses.model.exercise.SubmissionInfo
@@ -85,7 +87,9 @@ class SubmitExercise(
                 }
 
                 withContext(Dispatchers.EDT) {
-                    FileDocumentManager.getInstance().saveAllDocuments()
+                    application.runWriteAction {
+                        FileDocumentManager.getInstance().saveAllDocuments()
+                    }
                 }
 
                 var modulePath = Path(ModuleUtilCore.getModuleDirPath(platformModule))
@@ -99,10 +103,12 @@ class SubmitExercise(
                 val files: MutableMap<String, Path> = HashMap()
                 for ((key, name) in submissionInfo.getFiles(language)) {
                     files[key] = FileUtil.findFileInDirectory(modulePath.invariantSeparatorsPathString, name)
-                        ?: throw FileDoesNotExistException(
-                            modulePath.invariantSeparatorsPathString,
-                            name
-                        )
+                    { file ->
+                        !file.invariantSeparatorsPath.startsWith("${module.fullPath.resolve(Module.backupDir).invariantSeparatorsPathString}/")
+                    } ?: throw FileDoesNotExistException(
+                        modulePath.invariantSeparatorsPathString,
+                        name
+                    )
                 }
                 CoursesLogger.info("Submission files: $files")
 
@@ -120,7 +126,7 @@ class SubmitExercise(
 
                 // Find the group from the available groups that matches the default group ID.
                 // A group could be removed, so this way we check that the default group ID is still valid.
-                var defaultGroupId = CourseFileManager.getInstance(project).state.defaultGroupId
+                val defaultGroupId = CourseFileManager.getInstance(project).state.defaultGroupId
                 var group = groups.find { it.id == defaultGroupId }
                 if (group == null) {
                     group = Group.SUBMIT_ALONE
@@ -128,8 +134,8 @@ class SubmitExercise(
                 }
                 if (submittedBefore) {
                     val submitters = submittersFromBefore ?: emptyList()
-                    group = groups.find {
-                        submitters.containsAll(it.members.map { it.id })
+                    group = groups.find { group ->
+                        submitters.containsAll(group.members.map { it.id })
                     } ?: Group.SUBMIT_ALONE
                 }
 

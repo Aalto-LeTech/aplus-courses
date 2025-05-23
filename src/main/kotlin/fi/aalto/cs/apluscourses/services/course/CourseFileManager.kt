@@ -3,7 +3,10 @@ package fi.aalto.cs.apluscourses.services.course
 import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
 import com.intellij.util.xmlb.Converter
-import com.intellij.util.xmlb.annotations.*
+import com.intellij.util.xmlb.annotations.Attribute
+import com.intellij.util.xmlb.annotations.OptionTag
+import com.intellij.util.xmlb.annotations.Tag
+import com.intellij.util.xmlb.annotations.XCollection
 import fi.aalto.cs.apluscourses.model.component.Module
 import fi.aalto.cs.apluscourses.model.people.Group
 import fi.aalto.cs.apluscourses.utils.CoursesLogger
@@ -17,13 +20,13 @@ import java.time.ZonedDateTime
 import kotlin.io.path.Path
 
 private class InstantConverter : Converter<Instant>() {
-    override fun fromString(s: @NonNls String): Instant = Instant.parse(s)
-    override fun toString(i: Instant): String = i.toString()
+    override fun fromString(value: @NonNls String): Instant = Instant.parse(value)
+    override fun toString(value: Instant): String = value.toString()
 }
 
 private class VersionConverter : Converter<Version>() {
-    override fun fromString(s: @NonNls String): Version = Version(s)
-    override fun toString(v: Version): String = v.toString()
+    override fun fromString(value: @NonNls String): Version = Version(value)
+    override fun toString(value: Version): String = value.toString()
 }
 
 @Service(Service.Level.PROJECT)
@@ -39,16 +42,16 @@ class CourseFileManager(private val project: Project) :
             style = XCollection.Style.v2
         )
         var modules: MutableList<ModuleMetadata> by list()
-        var language by string(null)
-        var url by string(null)
-        var defaultGroupId by property(-1L)
-        var importSettings by property(false)
-        var initialized by property(false)
+        var language: String? by string(null)
+        var url: String? by string(null)
+        var defaultGroupId: Long by property(-1L)
+        var importSettings: Boolean by property(false)
+        var initialized: Boolean by property(false)
 
         @get:OptionTag("newsReadTime", converter = InstantConverter::class)
-        var newsReadTime by property<Instant>(Instant.fromEpochSeconds(0)) { it == Instant.fromEpochSeconds(0) }
+        var newsReadTime: Instant by property(Instant.fromEpochSeconds(0)) { it == Instant.fromEpochSeconds(0) }
 
-        fun increment() = incrementModificationCount()
+        fun increment(): Unit = incrementModificationCount()
     }
 
     @Tag("module")

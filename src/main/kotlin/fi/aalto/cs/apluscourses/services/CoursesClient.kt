@@ -19,23 +19,17 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.serialization.kotlinx.json.*
-import io.ktor.utils.io.readAvailable
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
+import io.ktor.utils.io.*
+import kotlinx.coroutines.*
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonNamingStrategy
 import org.jetbrains.annotations.NonNls
 import java.io.File
 import java.io.IOException
 import java.nio.file.Path
 import java.util.zip.ZipFile
 import kotlin.io.path.nameWithoutExtension
-import kotlin.io.readBytes
-import kotlin.sequences.forEach
-import kotlin.text.contains
 
 class UnauthorizedException @PropertyMapping() constructor() : Exception() {
     private val serialVersionUID: Long = 1L
@@ -193,8 +187,7 @@ class CoursesClient(
                     fetch(zipUrl, tempZipFile)
                 }
                 reporter.indeterminateStep(message("services.progress.extracting", zipUrl, target)) {
-                    val destination = target
-                    val destinationFile = destination.toFile()
+                    val destinationFile = target.toFile()
 
                     withContext(Dispatchers.IO) {
                         if (!destinationFile.exists()) {
@@ -204,7 +197,7 @@ class CoursesClient(
                         ZipFile(tempZipFile).use { zip ->
                             zip.entries().asSequence().forEach { entry ->
                                 zip.getInputStream(entry).use { inputStream ->
-                                    val file = destination.resolve(entry.name).toFile()
+                                    val file = target.resolve(entry.name).toFile()
                                     if (onlyPath != null && !file.path.contains(onlyPath)) {
                                         return@use
                                     }

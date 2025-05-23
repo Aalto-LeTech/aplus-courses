@@ -2,7 +2,6 @@ package fi.aalto.cs.apluscourses.model.component
 
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.application.ReadAction
-import com.intellij.openapi.application.writeAction
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.project.Project
@@ -24,9 +23,11 @@ import fi.aalto.cs.apluscourses.utils.FileUtil
 import fi.aalto.cs.apluscourses.utils.Version
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.jetbrains.annotations.NonNls
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption
 import kotlin.io.path.exists
+import kotlin.io.path.extension
 import kotlin.io.path.moveTo
 import com.intellij.openapi.module.Module as IdeaModule
 
@@ -51,8 +52,7 @@ open class Module(
         get() = CourseFileManager.getInstance(project).getMetadata(name)
 
     override fun findDependencies(): Set<String> {
-        val module = platformObject
-        if (module == null) return emptySet()
+        val module = platformObject ?: return emptySet()
         return module
             .rootManager
             .orderEntries()
@@ -81,7 +81,7 @@ open class Module(
             FileUtil.getChangedFilesInDirectory(
                 fullPath.toFile(),
                 timestampWithDelay
-            )
+            ).filter { it.extension != "iml" }
         }
     }
 
@@ -91,7 +91,7 @@ open class Module(
             if (!updating) {
                 return
             }
-            writeAction {
+            application.runWriteAction {
                 ModuleManager.getInstance(project).disposeModule(oldPlatformObject)
             }
         }
@@ -130,7 +130,7 @@ open class Module(
                 !UpdateModuleDialog(project, this@Module, filesWithChanges).showAndGet()
             }
             if (canceled) return
-            val backupDir = fullPath.resolve("backup")
+            val backupDir = fullPath.resolve(backupDir)
 
             for (file in filesWithChanges) {
                 val relativePath = fullPath.relativize(file)
@@ -143,12 +143,12 @@ open class Module(
             }
         }
 
-        FileUtil.deleteFilesInDirectory(fullPath.toFile(), fullPath.resolve("backup"))
+        FileUtil.deleteFilesInDirectory(fullPath.toFile(), fullPath.resolve(backupDir))
         downloadAndInstall(updating = true)
 
         val newFiles = FileUtil.getAllFilesInDirectory(fullPath.toFile())
-        val deletedFiles = allFiles - newFiles
-        val addedFiles = newFiles - allFiles
+        val deletedFiles = allFiles - newFiles.toSet()
+        val addedFiles = newFiles - allFiles.toSet()
         Notifier.notifyAndHide(
             ModuleUpdatedNotification(this, addedFiles, deletedFiles),
             project
@@ -199,6 +199,9 @@ open class Module(
         }
 
     companion object {
+        @NonNls
+        val backupDir: String = "backup"
+
 
         /**
          * This class is a [RootPolicy] that builds a set of the names of those

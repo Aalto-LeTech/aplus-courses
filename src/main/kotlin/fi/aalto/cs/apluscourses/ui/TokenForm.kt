@@ -19,11 +19,11 @@ import fi.aalto.cs.apluscourses.services.TokenStorage
 import fi.aalto.cs.apluscourses.services.course.CourseManager
 
 class TokenForm(private val project: Project, private val callback: () -> Unit = {}) {
-    val checking = AtomicBooleanProperty(false)
-    val tokenFailed = AtomicBooleanProperty(false)
-    val user = AtomicProperty<User?>(null)
-    val userName = AtomicProperty<String>("")
-    var isModified = false
+    private val checking: AtomicBooleanProperty = AtomicBooleanProperty(false)
+    private val tokenFailed: AtomicBooleanProperty = AtomicBooleanProperty(false)
+    val user: AtomicProperty<User?> = AtomicProperty(null)
+    private val userName: AtomicProperty<String> = AtomicProperty("")
+    var isModified: Boolean = false
     private var passwordField: JBPasswordField? = null
 
     private fun setToken() {

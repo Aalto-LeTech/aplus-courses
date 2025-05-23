@@ -5,7 +5,6 @@ import fi.aalto.cs.apluscourses.model.news.NewsItem
 import fi.aalto.cs.apluscourses.model.news.NewsList
 import fi.aalto.cs.apluscourses.services.CoursesClient
 import fi.aalto.cs.apluscourses.services.course.CourseFileManager
-import fi.aalto.cs.apluscourses.utils.parser.O1NewsParser
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
@@ -15,10 +14,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonNamingStrategy
-import org.jsoup.Jsoup
 import java.time.ZonedDateTime
-import kotlin.collections.component1
-import kotlin.collections.component2
 import fi.aalto.cs.apluscourses.model.Course as CourseModel
 import fi.aalto.cs.apluscourses.model.exercise.Exercise as ExerciseModel
 import fi.aalto.cs.apluscourses.model.exercise.Submission as SubmissionModel
@@ -189,7 +185,7 @@ object APlusApi {
         }
 
         @Resource("news")
-        class News(val parent: Course) {
+        class News(private val parent: Course) {
             suspend fun get(project: Project): NewsList {
                 val res = CoursesClient.getInstance(project).getBody<News, NewsBody>(this@News)
 
@@ -200,27 +196,13 @@ object APlusApi {
                         return@mapNotNull null
                     }
 
-                    val (titleText, bodyText) = if (this.parent.id == 294L) {
-                        val titleElement = Jsoup.parseBodyFragment(title).body()
-                        val bodyElement = Jsoup.parseBodyFragment(body).body()
-
-                        val parser = O1NewsParser(language) // For O1 2023
-
-                        val titleText = parser.parseTitle(titleElement)
-                        val bodyText = parser.parseBody(bodyElement)
-                        titleText to bodyText
-                    } else {
-                        title to body
-                    }
-
                     val publish = ZonedDateTime.parse(publishString)
-
                     val isRead = lastNewsReadTime.epochSeconds >= publish.toEpochSecond()
 
                     NewsItem(
                         id,
-                        titleText,
-                        bodyText,
+                        title,
+                        body,
                         publish,
                         isRead
                     )
@@ -294,11 +276,11 @@ object APlusApi {
         suspend fun submissionData(project: Project): List<SubmissionData.SubmissionDataBody> =
             SubmissionData(this).get(project)
 
-        suspend fun news(project: Project) = News(this).get(project)
-        suspend fun myGroups(project: Project) = MyGroups(this).get(project)
+        suspend fun news(project: Project): NewsList = News(this).get(project)
+        suspend fun myGroups(project: Project): List<GroupModel> = MyGroups(this).get(project)
 
         companion object {
-            fun apply(course: Course): Course = Course(course.id.toLong())
+            fun apply(course: Course): Course = Course(course.id)
         }
     }
 
@@ -410,7 +392,7 @@ object APlusApi {
         }
     }
 
-    fun course(course: CourseModel): Course = Course(course.id.toLong())
+    fun course(course: CourseModel): Course = Course(course.id)
     fun exercise(exercise: ExerciseModel): Exercise = Exercise(exercise.id)
     fun submission(submission: SubmissionResultModel): Submission = Submission(submission.id)
     fun me(): Users.Me = Users.Me(Users())

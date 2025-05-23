@@ -4,9 +4,15 @@
 
 ## [Unreleased]
 
+## [4.3.0] - 2025-02-05
+
 ### Added
 
 - Support for the Programming 2 course and SBT modules
+
+### Fixed
+
+- Do not submit backups of updated modules
 
 ## [4.2.0] - 2025-01-08
 
@@ -72,22 +78,13 @@
 - Complete UI overhaul
 - Rewrite of the plugin from Java to Kotlin
 
-[Unreleased]: https://github.com/Aalto-LeTech/aplus-courses/compare/v4.2.0...HEAD
-
+[Unreleased]: https://github.com/Aalto-LeTech/aplus-courses/compare/v4.3.0...HEAD
+[4.3.0]: https://github.com/Aalto-LeTech/aplus-courses/compare/v4.2.0...v4.3.0
 [4.2.0]: https://github.com/Aalto-LeTech/aplus-courses/compare/v4.1.2...v4.2.0
-
-[4.2.0]: https://github.com/Aalto-LeTech/aplus-courses/compare/v4.1.2...v4.2.0
-
 [4.1.2]: https://github.com/Aalto-LeTech/aplus-courses/compare/v4.1.1...v4.1.2
-
 [4.1.1]: https://github.com/Aalto-LeTech/aplus-courses/compare/v4.1.0...v4.1.1
-
 [4.1.0]: https://github.com/Aalto-LeTech/aplus-courses/compare/v4.0.3...v4.1.0
-
 [4.0.3]: https://github.com/Aalto-LeTech/aplus-courses/compare/v4.0.2...v4.0.3
-
 [4.0.2]: https://github.com/Aalto-LeTech/aplus-courses/compare/v4.0.1...v4.0.2
-
 [4.0.1]: https://github.com/Aalto-LeTech/aplus-courses/compare/v4.0.0...v4.0.1
-
 [4.0.0]: https://github.com/Aalto-LeTech/aplus-courses/commits/v4.0.0
