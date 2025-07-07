@@ -93,10 +93,13 @@ class SubmitExercise(
                 }
 
                 var modulePath = Path(ModuleUtilCore.getModuleDirPath(platformModule))
-                // in the case of SBT modules, the .iml file is inside .idea/modules, so we need to
-                // go up the directory tree two times to reach the project directory
                 if (modulePath.endsWith(Path(".idea/modules"))) {
+                    // in the case of SBT modules, the .iml file is inside .idea/modules, so we need to
+                    // go up the directory tree two times to reach the project directory
                     modulePath = modulePath.parent.parent
+                } else if (modulePath.endsWith(Path(".idea/modules/${module.name}"))) {
+                    // in newer versions the module name is included in the path
+                    modulePath = modulePath.parent.parent.parent
                 }
                 CoursesLogger.info("Detected module: $module, path: $modulePath")
 

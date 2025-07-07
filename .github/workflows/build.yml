@@ -176,15 +176,15 @@ jobs:
   verify:
     name: Verify plugin
     needs: [ build ]
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
 
       # Free GitHub Actions Environment Disk Space
-      - name: Maximize Build Space
-        uses: jlumbroso/free-disk-space@main
-        with:
-          tool-cache: false
-          large-packages: false
+      #      - name: Maximize Build Space
+      #        uses: jlumbroso/free-disk-space@main
+      #        with:
+      #          tool-cache: false
+      #          large-packages: false
 
       # Check out the current repository
       - name: Fetch Sources
