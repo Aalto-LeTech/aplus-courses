@@ -55,15 +55,17 @@ class Plugins(val cs: CoroutineScope) {
             reportSequentialProgress { reporter ->
                 reporter.indeterminateStep(message("services.progress.pluginsInstall"))
                 val deferredResult = CompletableDeferred<Boolean>()
-                application.runWriteAction {
-                    PluginManagerMain.downloadPlugins(
-                        downloadablePluginNodes,
-                        emptyList(),
-                        false,
-                        null,
-                        PluginEnabler.getInstance(),
-                        ModalityState.defaultModalityState()
-                    ) { success -> deferredResult.complete(success) }
+                application.invokeLater {
+                    application.runWriteAction {
+                        PluginManagerMain.downloadPlugins(
+                            downloadablePluginNodes,
+                            emptyList(),
+                            false,
+                            null,
+                            PluginEnabler.getInstance(),
+                            ModalityState.defaultModalityState()
+                        ) { success -> deferredResult.complete(success) }
+                    }
                 }
 
                 !deferredResult.await()
