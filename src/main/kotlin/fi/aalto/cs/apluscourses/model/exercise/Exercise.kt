@@ -36,8 +36,15 @@ data class Exercise(
     /**
      * Returns the best submission of this exercise (if one exists).
      */
-    private fun bestSubmission(): SubmissionResult? {
-        return submissionResults.find { it.id == bestSubmissionId }
+    private fun bestSubmission(): SubmissionResult? { //this may need some adjustments
+        //aina oletuksena se, jonka api saa palvelimelta, mutta jos löytyy ilman varoitustunnistetta, välitä se eteenpäin
+        val best = submissionResults.find { it.id == bestSubmissionId }
+        return submissionResults.find { !it.hasTag("warn") && it.userPoints >= (best?.userPoints ?: 0) } ?: best
+    }
+
+    fun bestHasWarn(): Boolean {
+        val bestSubmission = bestSubmission()
+        return bestSubmission != null && bestSubmission.hasTag("warn")
     }
 
     fun isLate(): Boolean {

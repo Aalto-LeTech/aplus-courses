@@ -12,6 +12,7 @@ import io.ktor.http.*
 import io.ktor.resources.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonNamingStrategy
 import java.time.ZonedDateTime
@@ -157,7 +158,7 @@ object APlusApi {
             )
         }
 
-        @Resource("submissiondata/me")
+        @Resource("submissiondata/me") //plugari saa tiedot palautuksista tästä
         class SubmissionData(val parent: Course) {
             suspend fun get(project: Project): List<SubmissionDataBody> {
                 val res = CoursesClient.getInstance(project)
@@ -180,7 +181,9 @@ object APlusApi {
                 val UserID: Long,
                 val Status: String,
                 val Grade: Int,
-                val Penalty: Double?
+                val Penalty: Double?,
+                //TODO: muista laittaa päälle, laitettu pois testauksen vuoksi
+                val Tags: String //tunnisteet ovat eroteltu pystyviivoilla | . Pitäisikö nämä muuntaa jo täällä listaksi?
             )
         }
 
@@ -286,10 +289,57 @@ object APlusApi {
 
     @Resource("/submissions/{id}")
     class Submission(val id: Long) {
+        @OptIn(ExperimentalSerializationApi::class)
         suspend fun get(project: Project): SubmissionBody {
-            return CoursesClient.getInstance(project).getBody<Submission, SubmissionBody>(this@Submission)
+            val json = Json {
+                ignoreUnknownKeys = true
+                namingStrategy = JsonNamingStrategy.SnakeCase
+            }
+            val noTagJson = json.encodeToString(OuterData(gradingData = null))
+            val raw = CoursesClient.getInstance(project).getBody<Submission, RawSubmissionBody>(this@Submission)
+            var tags: List<String> = emptyList() //käytä tätä tunisteiden tallentamiseen
+            //kyseessä tuskin on tää, koska jopa if lause antaa virheen
+            val rawGradingData = raw.gradingData?.let { //yksittäisen tehtävän väritys toimii nyt oikein! ongelmia, jos ei ole grading_dataa!
+                //RawGradingData() //tämä toimii, miten??
+                val potentialRaw = it.gradingData ?: noTagJson
+                json.decodeFromString<RawGradingData>(potentialRaw) //TODO: jos grading_data on tyhjä, tämä aiheuttaa ongelmia
+            }
+            if (rawGradingData != null) {
+                //println(rawGradingData)
+                tags = rawGradingData.submissionTags?.split(",")?.map { it.trim() } ?: emptyList()
+                //println(tags)
+            }
+            /*
+            val gradingData = raw.gradingData?.let {
+                GradingData(
+                    submissionTags = rawGradingData?.submissionTags?.split(",")?.map { it.trim() } ?: emptyList()
+                )
+            }
+             */
+            //println(gradingData)
+            return SubmissionBody(
+                feedback = raw.feedback,
+                htmlUrl = raw.htmlUrl,
+                status = raw.status,
+                grade = raw.grade,
+                latePenaltyApplied = raw.latePenaltyApplied,
+                submissionTags = tags,
+                exercise = raw.exercise
+            )
         }
 
+        @Serializable
+        data class RawSubmissionBody(
+            val feedback: String,
+            val htmlUrl: String,
+            val status: String,
+            val grade: Int,
+            val latePenaltyApplied: Double?,
+            val gradingData: OuterData?,
+            val exercise: SubmissionExercise,
+        )
+
+        //TODO: change this for simplicity so that tags are stored immediately inside it
         @Serializable
         data class SubmissionBody(
             val feedback: String,
@@ -297,7 +347,23 @@ object APlusApi {
             val status: String,
             val grade: Int,
             val latePenaltyApplied: Double?,
+            val submissionTags: List<String> = emptyList(), //tunnisteet ovat suoraan tässä
             val exercise: SubmissionExercise,
+        )
+
+        @Serializable
+        data class OuterData(
+            val gradingData: String? = null,
+        )
+
+        @Serializable //virheet tässä?
+        data class RawGradingData(
+            val submissionTags: String? = "",
+        )
+
+        @Serializable
+        data class GradingData(
+            val submissionTags: List<String> = emptyList(),
         )
 
         @Serializable

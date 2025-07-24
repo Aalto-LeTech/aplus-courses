@@ -175,7 +175,7 @@ class ExercisesUpdater(
         this.points = newPoints
         this.submissionCount = newSubmissionCount
         val exercisesResponseDeferred = withContext(Dispatchers.IO) { async { courseApi.exercises(project) } }
-        val submissionDataResponseDeferred = withContext(Dispatchers.IO) { async { courseApi.submissionData(project) } }
+        val submissionDataResponseDeferred = withContext(Dispatchers.IO) { async { courseApi.submissionData(project) } }//TODO: tästä se sa palautukset ja mm. tunnisteet!
 
         val exercises = exercisesResponseDeferred.await()
         val submissionDataResponse = submissionDataResponseDeferred.await()
@@ -207,7 +207,7 @@ class ExercisesUpdater(
                         module = course.exerciseModules[exercise.id]?.get(selectedLanguage),
                         htmlUrl = exerciseExercise?.htmlUrl ?: "",
                         url = exercise.url,
-                        submissionResults = exercise
+                        submissionResults = exercise //tässä luultavasti tapahtuu muunnos
                             .submissionsWithPoints
                             .map {
                                 val data = submissionData[it.id]
@@ -221,12 +221,13 @@ class ExercisesUpdater(
                                     status = SubmissionResult.statusFromString(data?.Status),
                                     filesInfo = emptyList(),
                                     submitters = submitters,
+                                    tags = data?.Tags?.split("|")?.map { it.trim() } ?: emptyList() //emptyList() //listOf("warn") // TODO: remember to uncomment after testing data?.Tags?.split("|").map { it.trim() } ?: emptyList()
                                 )
                             }.toMutableList(),
                         maxPoints = exercise.maxPoints,
-                        userPoints = exercise.points,
+                        userPoints = exercise.points, //exercise.points palauttaa aina tehtävän parhaat pisteet
                         maxSubmissions = exerciseExercise?.maxSubmissions ?: 0,
-                        bestSubmissionId = exercise.bestSubmission?.split("/")?.last()?.toLong(),
+                        bestSubmissionId = exercise.bestSubmission?.split("/")?.last()?.toLong(), //TODO: tämä pitää luultavasti myös muuttaa
                         difficulty = exercise.difficulty,
                         isSubmittable = exerciseExercise?.hasSubmittableFiles == true,
                         isOptional = optionalCategories.contains(exercise.difficulty),
@@ -272,6 +273,13 @@ class ExercisesUpdater(
                             submissionResult.updateStatus(submission.status)
                             submissionResult.userPoints = submission.grade
                             submissionResult.latePenalty = submission.latePenaltyApplied
+                            //ignore unknown keys?
+                            //val json = Json { ignoreUnknownKeys = true }
+                            //TODO: muista palauttaa tyhjä lista testauksen jälkeen
+                            submissionResult.tags = submission.submissionTags
+                            //println(submission?.gradingData)
+                                    //json.decodeFromString<APlusApi.Submission.InnerData>(submission.gradingData?.gradingData ?: "\"submission_tags\":\"\"").submissionTags?.split(",") ?: emptyList()
+                            //tänne myös tunnisteet, koska jokaisella palautuskerralla ne päivittyy
                             Notifier.notify(FeedbackAvailableNotification(submissionResult, exercise, project), project)
                             fireExerciseUpdated(exercise)
                         }
