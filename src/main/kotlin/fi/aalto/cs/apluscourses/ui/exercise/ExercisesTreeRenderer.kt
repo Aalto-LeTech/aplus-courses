@@ -181,19 +181,18 @@ class ExercisesTreeRenderer : NodeRenderer() {
         }
     }
 
-    private fun statusToColor(status: Status): Color { //tämä on vastuussa koko tehtävän väristä
+    private fun statusToColor(status: Status): Color {
         val baseColor = when (status) {
             Status.FULL_POINTS -> JBColor(0x8bc34a, 0x8bc34a)
-            Status.NO_POINTS, Status.PARTIAL_POINTS -> JBColor(0xffb74d, 0xffb74d) //kuseeko tämä?
+            Status.NO_POINTS, Status.PARTIAL_POINTS -> JBColor(0xffb74d, 0xffb74d)
             else -> JBColor(0xc5c5c5, 0xc5c5c5)
         }
         return if (isSubmittable()) baseColor else ColorUtil.withAlpha(baseColor, 0.5)
     }
 
     //määrittelee yksittäisen palautksen väriä
-    private fun submissionResultToColor(submission: SubmissionResult): Color { //tämä aiheuttaa luultavasti väärän värin palautuksen jälkeen
-        //toinen ehto antaa aina true viimeisellä palautuksella jostain syystä
-        return if (submission.userPoints == submission.maxPoints && !submission.hasTag("warn")) { //virhe oli tunnisteiden tallentamisessa, nyt toimii
+    private fun submissionResultToColor(submission: SubmissionResult): Color {
+        return if (submission.userPoints == submission.maxPoints && !submission.hasTag("warn")) {
             JBColor(0x8bc34a, 0x8bc34a)
         } else {
             JBColor(0xffb74d, 0xffb74d)
@@ -275,23 +274,21 @@ class ExercisesTreeRenderer : NodeRenderer() {
     }
 
     companion object {
-        private fun getStatus(exercise: Exercise): Status { //set status to warn if the tag is set or change how PARTIAL_POINTS works?
+        private fun getStatus(exercise: Exercise): Status {
             return if (exercise.isInGrading()) {
                 Status.IN_GRADING
             } else if (exercise.isOptional) {
                 Status.OPTIONAL_PRACTICE
             } else if (exercise.submissionResults.isEmpty()) {
                 Status.NO_SUBMISSIONS
-            } else if (exercise.userPoints == exercise.maxPoints && !exercise.bestHasWarn()) { //toinen ehto antaa aina true viimeisen palautuksen jälkeen
-                //TODO: yksittäisestä tehtävästä jossa on warn voi edelleen tulla vihreät pisteet, jos avaa intellij uudestaan sit muuttuu keltaiseksi
-                //println("warn is not set!")
+            } else if (exercise.userPoints == exercise.maxPoints && !exercise.bestHasWarn()) {
                 Status.FULL_POINTS
             } else if (exercise.isLate()) {
                 Status.LATE
             } else if (exercise.userPoints == 0) {
                 Status.NO_POINTS
             } else {
-                Status.PARTIAL_POINTS //koska tämä on oeltustila, voi vain katsoa jos on tyäydet pisteet eikä warn-tunnistetta
+                Status.PARTIAL_POINTS
             }
         }
 
@@ -301,7 +298,7 @@ class ExercisesTreeRenderer : NodeRenderer() {
                 Status.OPTIONAL_PRACTICE -> CoursesIcons.OptionalPractice
                 Status.NO_SUBMISSIONS -> CoursesIcons.NoSubmissions
                 Status.NO_POINTS -> CoursesIcons.NoPoints
-                Status.PARTIAL_POINTS -> CoursesIcons.PartialPoints //warning should probably be incorporated into this
+                Status.PARTIAL_POINTS -> CoursesIcons.PartialPoints
                 Status.FULL_POINTS -> CoursesIcons.FullPoints
                 Status.LATE -> CoursesIcons.Late
                 Status.IN_GRADING -> CoursesIcons.Loading

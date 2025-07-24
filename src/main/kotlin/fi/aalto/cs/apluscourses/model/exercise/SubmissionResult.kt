@@ -10,7 +10,7 @@ data class SubmissionResult(
     val maxPoints: Int,
     var userPoints: Int,
     var latePenalty: Double?,
-    var tags: List<String>, //tags arrive here from SubmissinData through ExerciseUpdater
+    var tags: List<String>,
     var status: Status,
     val filesInfo: List<SubmissionFileInfo>,
     val submitters: List<Long>?,
