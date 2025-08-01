@@ -221,6 +221,7 @@ class ExercisesUpdater(
                                     status = SubmissionResult.statusFromString(data?.Status),
                                     filesInfo = emptyList(),
                                     submitters = submitters,
+                                    tags = data?.Tags?.split("|")?.map { it.trim() } ?: emptyList()
                                 )
                             }.toMutableList(),
                         maxPoints = exercise.maxPoints,
@@ -272,6 +273,7 @@ class ExercisesUpdater(
                             submissionResult.updateStatus(submission.status)
                             submissionResult.userPoints = submission.grade
                             submissionResult.latePenalty = submission.latePenaltyApplied
+                            submissionResult.tags = submission.submissionTags
                             Notifier.notify(FeedbackAvailableNotification(submissionResult, exercise, project), project)
                             fireExerciseUpdated(exercise)
                         }

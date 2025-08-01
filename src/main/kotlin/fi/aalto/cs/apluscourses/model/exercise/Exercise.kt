@@ -37,7 +37,14 @@ data class Exercise(
      * Returns the best submission of this exercise (if one exists).
      */
     private fun bestSubmission(): SubmissionResult? {
-        return submissionResults.find { it.id == bestSubmissionId }
+        //the best submission is always assumed to be the one returned by api, but if there is another one with equal/higher points and no 'warn', it is treated as the best locally
+        val best = submissionResults.find { it.id == bestSubmissionId }
+        return submissionResults.find { !it.hasTag("warn") && it.userPoints >= (best?.userPoints ?: 0) } ?: best
+    }
+
+    fun bestHasWarn(): Boolean {
+        val bestSubmission = bestSubmission()
+        return bestSubmission != null && bestSubmission.hasTag("warn")
     }
 
     fun isLate(): Boolean {

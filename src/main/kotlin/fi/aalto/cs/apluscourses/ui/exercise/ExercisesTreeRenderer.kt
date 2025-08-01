@@ -190,8 +190,9 @@ class ExercisesTreeRenderer : NodeRenderer() {
         return if (isSubmittable()) baseColor else ColorUtil.withAlpha(baseColor, 0.5)
     }
 
+    //määrittelee yksittäisen palautksen väriä
     private fun submissionResultToColor(submission: SubmissionResult): Color {
-        return if (submission.userPoints == submission.maxPoints) {
+        return if (submission.userPoints == submission.maxPoints && !submission.hasTag("warn")) {
             JBColor(0x8bc34a, 0x8bc34a)
         } else {
             JBColor(0xffb74d, 0xffb74d)
@@ -280,7 +281,7 @@ class ExercisesTreeRenderer : NodeRenderer() {
                 Status.OPTIONAL_PRACTICE
             } else if (exercise.submissionResults.isEmpty()) {
                 Status.NO_SUBMISSIONS
-            } else if (exercise.userPoints == exercise.maxPoints) {
+            } else if (exercise.userPoints == exercise.maxPoints && !exercise.bestHasWarn()) {
                 Status.FULL_POINTS
             } else if (exercise.isLate()) {
                 Status.LATE
