@@ -21,7 +21,7 @@ abstract class Component<T>(val name: String, protected val project: Project) {
     abstract val fullPath: Path
 
     protected suspend fun downloadAndUnzipZip(zipUrl: String, extractPath: Path, onlyPath: String? = null) {
-        CoursesClient.getInstance(project).getAndUnzip(zipUrl, extractPath, onlyPath)
+        CoursesClient.getInstance(project).downloadAndUnzip(zipUrl, extractPath, onlyPath)
     }
 
     protected abstract fun findDependencies(): Set<String>

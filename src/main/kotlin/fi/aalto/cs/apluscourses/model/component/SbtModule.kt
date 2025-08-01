@@ -31,7 +31,7 @@ class SbtModule(
                 project,
                 id
             ).linkProject(settings)
-        } catch (ex: AlreadyImportedProjectException) {
+        } catch (_: AlreadyImportedProjectException) {
             // this SBT module is already imported; a project-wide refresh is all that is required
         }
 

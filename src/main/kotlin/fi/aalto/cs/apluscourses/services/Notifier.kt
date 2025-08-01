@@ -29,7 +29,8 @@ class Notifier(
                 delay(timeoutMs)
                 notification.hideBalloon()
             } catch (e: CancellationException) {
-                CoursesLogger.warn("Notification timeout interrupted", e)
+                CoursesLogger.warn("Notification timeout interrupted")
+                throw e
             }
         }
     }

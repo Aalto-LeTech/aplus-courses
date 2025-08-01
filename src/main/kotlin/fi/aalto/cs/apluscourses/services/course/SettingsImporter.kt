@@ -15,8 +15,8 @@ import fi.aalto.cs.apluscourses.model.Course
 import fi.aalto.cs.apluscourses.services.CoursesClient
 import fi.aalto.cs.apluscourses.services.PluginSettings
 import fi.aalto.cs.apluscourses.utils.CoursesLogger
-import io.ktor.client.statement.bodyAsText
-import io.ktor.http.Url
+import io.ktor.client.statement.*
+import io.ktor.http.*
 import kotlinx.coroutines.CoroutineScope
 import java.io.IOException
 import java.nio.file.Path
@@ -50,7 +50,7 @@ class SettingsImporter(
         val ideSettingsUrl = systemIdeSettingsUrl ?: resourceUrls["ideSettings"] ?: return false
 
         val file = FileUtilRt.createTempFile("course-ide-settings", ".zip", false)
-        CoursesClient.getInstance(project).fetch(ideSettingsUrl.toString(), file)
+        CoursesClient.getInstance(project).download(ideSettingsUrl.toString(), file)
         val configPath = FileUtilRt.toSystemIndependentName(PathManager.getConfigPath())
         StartupActionScriptManager.addActionCommands(
             listOf(
@@ -91,7 +91,7 @@ class SettingsImporter(
     suspend fun importProjectSettings(resourceUrls: Map<String, Url>) {
         val settingsUrl = resourceUrls["projectSettings"] ?: return
         val settingsPath = Path.of(project.basePath!!)
-        CoursesClient.getInstance(project).getAndUnzip(settingsUrl.toString(), settingsPath)
+        CoursesClient.getInstance(project).downloadAndUnzip(settingsUrl.toString(), settingsPath)
 
         // a hard-coded workspace setting
         CompilerWorkspaceConfiguration.getInstance(project).AUTO_SHOW_ERRORS_IN_EDITOR = false
