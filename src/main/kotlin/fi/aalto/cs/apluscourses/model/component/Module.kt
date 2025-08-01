@@ -2,6 +2,7 @@ package fi.aalto.cs.apluscourses.model.component
 
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.application.ReadAction
+import com.intellij.openapi.application.edtWriteAction
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.project.Project
@@ -9,8 +10,9 @@ import com.intellij.openapi.project.rootManager
 import com.intellij.openapi.roots.LibraryOrderEntry
 import com.intellij.openapi.roots.ModuleOrderEntry
 import com.intellij.openapi.roots.RootPolicy
-import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.util.application
+import com.intellij.util.concurrency.annotations.RequiresEdt
+import com.intellij.util.concurrency.annotations.RequiresWriteLock
 import com.intellij.util.io.createParentDirectories
 import fi.aalto.cs.apluscourses.notifications.ModuleUpdatedNotification
 import fi.aalto.cs.apluscourses.services.Notifier
@@ -98,7 +100,8 @@ open class Module(
         status = Status.LOADING
         downloadAndUnzipZip(zipUrl, fullPath.parent)
         CourseFileManager.getInstance(project).addModule(this)
-        withContext(Dispatchers.EDT) {
+
+        edtWriteAction {
             loadToProject()
         }
 
@@ -115,11 +118,12 @@ open class Module(
     open fun waitForLoad() {
     }
 
+    @RequiresEdt
+    @RequiresWriteLock
     open fun loadToProject() {
-        application.runWriteAction {
-            ModuleManager.getInstance(project).loadModule(imlPath)
-            VirtualFileManager.getInstance().syncRefresh()
-        }
+        val model = ModuleManager.getInstance(project).getModifiableModel()
+        model.loadModule(imlPath)
+        model.commit()
     }
 
     suspend fun update() {

@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.services
 
 import com.intellij.openapi.application.EDT
+import com.intellij.openapi.application.edtWriteAction
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.fileChooser.FileChooser
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
@@ -23,16 +24,13 @@ import fi.aalto.cs.apluscourses.services.course.CourseManager
 import fi.aalto.cs.apluscourses.ui.module.ExportModuleDialog
 import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import fi.aalto.cs.apluscourses.utils.Version
+import fi.aalto.cs.apluscourses.utils.ZipUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.io.FileOutputStream
 import java.util.concurrent.atomic.AtomicBoolean
-import java.util.zip.ZipEntry
-import java.util.zip.ZipFile
-import java.util.zip.ZipOutputStream
 
 @Service(Service.Level.PROJECT)
 class ModuleImportExport(
@@ -56,28 +54,20 @@ class ModuleImportExport(
 
                     files.forEach { file ->
                         try {
-                            val zip = ZipFile(file.toNioPath().toFile())
                             val desiredModuleName = file.nameWithoutExtension
 
-                            val zipFile = FileUtil.createTempDirectory("apluscourses", "modules")
-                            zip.entries().asSequence().forEach { entry ->
-                                val entryName = if (entry.name.endsWith(".iml")) {
-                                    "$desiredModuleName.iml"
-                                } else {
-                                    entry.name
+                            val extractRoot = FileUtil.createTempDirectory("apluscourses", "modules")
+                            ZipUtil.unzip(file.toNioPath().toFile(), extractRoot)
+
+                            // Rename any *.iml that the course archive contained
+                            extractRoot.walkTopDown()
+                                .filter { it.isFile && it.extension == "iml" }
+                                .forEach { iml ->
+                                    val target = File(iml.parentFile, "$desiredModuleName.iml")
+                                    if (!FileUtil.filesEqual(iml, target)) iml.renameTo(target)
                                 }
-                                val entryFile = File(zipFile, entryName)
 
-                                if (entry.isDirectory) {
-                                    entryFile.mkdirs()
-                                } else {
-                                    entryFile.parentFile.mkdirs()
-                                    entryFile.writeBytes(zip.getInputStream(entry).readBytes())
-
-                                }
-                            }
-
-                            // Create and load module
+                            // Create and load the module
                             val module = Module(
                                 name = desiredModuleName,
                                 zipUrl = "",
@@ -87,29 +77,29 @@ class ModuleImportExport(
                                 project = project
                             )
 
-                            val moduleDir = module.fullPath.toFile()
-                            zipFile.copyRecursively(moduleDir, overwrite = true)
+                            extractRoot.copyRecursively(module.fullPath.toFile(), overwrite = true)
 
-                            withContext(Dispatchers.EDT) {
+                            edtWriteAction {
                                 if (module.updateAndGetStatus() == Component.Status.NOT_LOADED) {
                                     module.loadToProject()
                                 }
                             }
 
                             module.downloadAndInstall()
-                            val missingDependencies = CourseManager.getInstance(project).getMissingDependencies(module)
-                            missingDependencies.forEach { it.downloadAndInstall() }
+                            CourseManager.getInstance(project)
+                                .getMissingDependencies(module)
+                                .forEach { it.downloadAndInstall() }
 
-                            zipFile.deleteRecursively()
+                            extractRoot.deleteRecursively()
                         } catch (e: Exception) {
                             CoursesLogger.error("Failed to import module", e)
                             modulesWithErrors.add(file.nameWithoutExtension)
                         }
                     }
 
-
                     CourseManager.getInstance(project).refreshModuleStatuses()
                 }
+
                 if (modulesWithErrors.isNotEmpty()) {
                     withContext(Dispatchers.EDT) {
                         DialogBuilder(project)
@@ -120,7 +110,7 @@ class ModuleImportExport(
                                         text(
                                             message(
                                                 "ui.ModuleImportExport.import.error.content",
-                                                modulesWithErrors.joinToString("") { "<li>${it}</li>" })
+                                                modulesWithErrors.joinToString("") { "<li>$it</li>" })
                                         )
                                     }
                                 }
@@ -130,6 +120,7 @@ class ModuleImportExport(
                 }
             }
         }
+
         running.set(false)
     }
 
@@ -176,42 +167,14 @@ class ModuleImportExport(
             val moduleDir = module.guessModuleDir()?.toNioPathOrNull()?.toFile() ?: return@withContext
 
             val zipFile = outputPath.resolve("${fileName}.zip").toFile()
-            if (zipFile.exists()) {
-                zipFile.delete()
-            }
 
-            FileOutputStream(zipFile).use { fos ->
-                ZipOutputStream(fos).use { zos ->
+            val studentsInfo = createSubmittersInfo(student, selectedGroup)
+            val additionalEntries = mapOf("students.txt" to studentsInfo.toByteArray())
 
-                    val studentsInfo = createSubmittersInfo(student, selectedGroup)
+            ZipUtil.zip(moduleDir, zipFile, additionalEntries)
 
-                    zos.putNextEntry(ZipEntry("students.txt"))
-                    zos.write(studentsInfo.toByteArray())
-                    zos.closeEntry()
-
-                    moduleDir.walkTopDown()
-                        .forEach { file ->
-                            // File names in ZIP should always use forward slashes.
-                            // See section 4.4.17 of the ".ZIP File Format Specification" v6.3.6 FINAL.
-                            // Available online: https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT
-                            val relativePath = file.relativeTo(moduleDir).invariantSeparatorsPath
-                            val entryName = if (file.isDirectory) {
-                                "$relativePath/"
-                            } else {
-                                relativePath
-                            }
-                            val zipEntry = ZipEntry(entryName)
-                            zos.putNextEntry(zipEntry)
-                            if (file.isFile) {
-                                file.inputStream().use { it.copyTo(zos) }
-                            }
-                            zos.closeEntry()
-                        }
-                }
-
-                withContext(Dispatchers.EDT) {
-                    ModuleExportedNotification(module, zipFile).notify(project)
-                }
+            withContext(Dispatchers.EDT) {
+                ModuleExportedNotification(module, zipFile).notify(project)
             }
         }
     }

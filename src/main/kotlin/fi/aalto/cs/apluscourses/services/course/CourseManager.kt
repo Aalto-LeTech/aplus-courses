@@ -94,8 +94,8 @@ class CourseManager(
                         cs.ensureActive()
                         delay(updateInterval)
                     }
-                } catch (_: CancellationException) {
-
+                } catch (e: CancellationException) {
+                    throw e
                 } catch (e: Exception) {
                     when (e) {
                         is IOException, is UnresolvedAddressException -> {

@@ -6,7 +6,8 @@ import com.intellij.openapi.project.Project
 import com.intellij.platform.ide.progress.withBackgroundProgress
 import com.intellij.platform.util.progress.reportSequentialProgress
 import com.intellij.serialization.PropertyMapping
-import fi.aalto.cs.apluscourses.MyBundle.message
+import fi.aalto.cs.apluscourses.MyBundle
+import fi.aalto.cs.apluscourses.utils.ZipUtil
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
@@ -20,40 +21,42 @@ import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.utils.io.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonNamingStrategy
 import org.jetbrains.annotations.NonNls
 import java.io.File
 import java.io.IOException
+import java.nio.channels.WritableByteChannel
 import java.nio.file.Path
-import java.util.zip.ZipFile
+import kotlin.io.path.createTempFile
 import kotlin.io.path.nameWithoutExtension
 
-class UnauthorizedException @PropertyMapping() constructor() : Exception() {
+class UnauthorizedException @PropertyMapping() constructor() :
+    IOException("The server responded with 401 Unauthorized") {
     private val serialVersionUID: Long = 1L
 }
 
 @OptIn(ExperimentalSerializationApi::class)
 @Service(Service.Level.PROJECT)
 class CoursesClient(
-    val project: Project,
-    val cs: CoroutineScope
-) {
-    var client: HttpClient =
-        HttpClient(CIO)
+    private val project: Project,
+    private val scope: CoroutineScope
+) : AutoCloseable {
 
+    @Volatile
+    var client: HttpClient = buildClient()
 
-    fun changeHost(newHost: String) {
-        @NonNls val https = "https"
-        @NonNls val apiPath = "api/v2/"
-        val protocol =
-            if (newHost.substringBefore("://").lowercase() == https) URLProtocol.HTTPS else URLProtocol.HTTP
-        val host = newHost.substringAfter("://").substringBeforeLast("/").substringBeforeLast(":")
-        val port = newHost.substringAfterLast(":").substringBefore("/").toIntOrNull() ?: 0
-
-        client = HttpClient(CIO) {
+    fun buildClient(
+        protocol: URLProtocol = URLProtocol.HTTPS,
+        host: String = "localhost",
+        port: Int = 0,
+        apiPath: String = "api/v2/"
+    ): HttpClient =
+        HttpClient(CIO) {
             install(Resources)
             install(ContentNegotiation) {
                 json(Json {
@@ -62,166 +65,138 @@ class CoursesClient(
                     namingStrategy = JsonNamingStrategy.SnakeCase
                 })
             }
+
             engine {
                 endpoint {
-                    maxConnectionsCount = 8
+                    maxConnectionsCount = 16
                 }
                 requestTimeout = 0
             }
+
             defaultRequest {
                 url {
-                    this@url.protocol = protocol
-                    this@url.host = host
-                    this@url.port = port
+                    this.protocol = protocol
+                    this.host = host
+                    this.port = port
                     path(apiPath)
                 }
             }
         }
+
+    fun changeHost(@NonNls newHost: String) {
+        val protocol = if (newHost.startsWith("https", true)) URLProtocol.HTTPS else URLProtocol.HTTP
+        val stripped = newHost.removePrefix("https://").removePrefix("http://")
+        val hostPart = stripped.substringBefore('/')
+        val host = hostPart.substringBefore(':')
+        val port = hostPart.substringAfter(':', "").toIntOrNull() ?: 0
+        client.close()
+        client = buildClient(protocol, host, port)
     }
 
-    fun execute(action: suspend (CoursesClient) -> Unit) {
-        cs.launch {
-            action(this@CoursesClient)
-        }
-    }
+    fun execute(block: suspend (CoursesClient) -> Unit): Job =
+        scope.launch { block(this@CoursesClient) }
 
-    suspend fun HttpRequestBuilder.addToken() {
-        @NonNls val key = "Authorization"
-        @NonNls val value = "Token ${TokenStorage.getInstance().getToken()}"
-        header(key, value)
-    }
+    suspend fun getFileSize(url: String): Long? =
+        client.head(url).also(::verifyStatus).headers[HttpHeaders.ContentLength]?.toLongOrNull()
 
-    suspend fun get(url: String, token: Boolean = false): HttpResponse {
-        val res = withContext(Dispatchers.IO) {
-            client.get(url) {
-                if (token) {
-                    addToken()
-                }
-            }
-        }
-        if (res.status != HttpStatusCode.OK) {
-            throw IOException("Failed to get URL [$url]: ${res.status}")
-        }
-        return res
-    }
-
-    suspend fun getFileSize(url: String): Long? {
-        val head = withContext(Dispatchers.IO) {
-            client.request(url) {
-                method = HttpMethod.Head
-            }
-        }
-        return head.contentLength()
-    }
+    suspend fun get(
+        url: String,
+        withAuth: Boolean = false,
+        builder: HttpRequestBuilder.() -> Unit = {}
+    ): HttpResponse = client.get(url) {
+        if (withAuth) addToken()
+        builder()
+    }.also(::verifyStatus)
 
     suspend inline fun <reified Resource : Any> get(
         resource: Resource,
-        crossinline requestBuilder: HttpRequestBuilder.() -> Unit = {}
-    ): HttpResponse {
-        val res = withContext(Dispatchers.IO) {
-            client.get(resource) {
-                addToken()
-                requestBuilder()
-            }
-        }
-        if (res.status != HttpStatusCode.OK) {
-            throw IOException("Failed to get resource: ${res.status}")
-        }
-        return res
-    }
+        crossinline builder: HttpRequestBuilder.() -> Unit = {}
+    ): HttpResponse = client.get(resource) {
+        addToken()
+        builder()
+    }.also(::verifyStatus).body()
 
-    suspend inline fun <reified Resource : Any, reified Body : Any> getBody(
+    suspend inline fun <reified Resource : Any, reified R : Any> getBody(
         resource: Resource,
-        crossinline requestBuilder: HttpRequestBuilder.() -> Unit = {}
-    ): Body {
-        val res = withContext(Dispatchers.IO) {
-            client.get(resource) {
-                addToken()
-                requestBuilder()
-            }
-        }
-        if (res.status == HttpStatusCode.Unauthorized) {
-            throw UnauthorizedException()
-        }
-        if (res.status != HttpStatusCode.OK) {
-            throw IOException("Failed to get body: ${res.status}")
-        }
-        return res.body<Body>()
-    }
+        crossinline builder: HttpRequestBuilder.() -> Unit = {}
+    ): R = client.get(resource) {
+        addToken()
+        builder()
+    }.also(::verifyStatus).body()
 
     suspend inline fun <reified Resource : Any> postForm(
         resource: Resource,
-        form: List<PartData>
-    ): HttpResponse {
-        val res = withContext(Dispatchers.IO) {
-            client.post(resource) {
-                addToken()
-                setBody(MultiPartFormDataContent(form))
-            }
-        }
-        return res
+        parts: List<PartData>
+    ): HttpResponse = client.post(resource) {
+        addToken()
+        setBody(MultiPartFormDataContent(parts))
     }
 
-    suspend fun fetch(url: String, file: File) {
-        val response = get(url)
-        if (response.status != HttpStatusCode.OK) {
-            throw IOException("Failed to get file: ${response.status}")
-        }
-        val bodyChannel = response.bodyAsChannel()
-        file.outputStream().use { fileOutputStream ->
-            runBlocking {
-                val buffer = ByteArray(8 * 1024)
-                var bytesRead: Int
-                while (bodyChannel.readAvailable(buffer).also { bytesRead = it } != -1) {
-                    fileOutputStream.write(buffer, 0, bytesRead)
-                }
-            }
-        }
+    suspend fun download(url: String, file: File, withAuth: Boolean = false) {
+        client.get(url) {
+            if (withAuth) addToken()
+        }.also(::verifyStatus)
+            .bodyAsChannel()
+            .copyAndClose(file.also { it.parentFile.mkdirs(); it.createNewFile() }.sinkChannel())
     }
 
-    suspend fun getAndUnzip(zipUrl: String, target: Path, onlyPath: String? = null) {
-        withBackgroundProgress(project, message("aplusCourses")) {
+    suspend fun downloadAndUnzip(
+        zipUrl: String,
+        target: Path,
+        onlyPath: String? = null
+    ) {
+        withBackgroundProgress(project, MyBundle.message("aplusCourses")) {
             reportSequentialProgress { reporter ->
-                val tempZipFile = kotlin.io.path.createTempFile(target.nameWithoutExtension, ".zip").toFile()
-                reporter.indeterminateStep(message("services.progress.downloading", zipUrl)) {
-                    fetch(zipUrl, tempZipFile)
+                val tempZip = createTempFile(target.nameWithoutExtension, ".zip").toFile()
+
+                reporter.indeterminateStep(MyBundle.message("services.progress.downloading", zipUrl)) {
+                    download(zipUrl, tempZip)
                 }
-                reporter.indeterminateStep(message("services.progress.extracting", zipUrl, target)) {
-                    val destinationFile = target.toFile()
 
-                    withContext(Dispatchers.IO) {
-                        if (!destinationFile.exists()) {
-                            destinationFile.mkdirs()
-                        }
-
-                        ZipFile(tempZipFile).use { zip ->
-                            zip.entries().asSequence().forEach { entry ->
-                                zip.getInputStream(entry).use { inputStream ->
-                                    val file = target.resolve(entry.name).toFile()
-                                    if (onlyPath != null && !file.path.contains(onlyPath)) {
-                                        return@use
-                                    }
-                                    if (entry.isDirectory) {
-                                        file.mkdir()
-                                    } else {
-                                        if (!file.parentFile.exists()) {
-                                            file.parentFile.mkdirs()
-                                        }
-                                        file.writeBytes(inputStream.readBytes())
-                                    }
-                                }
-                            }
-                        }
-                        tempZipFile.delete()
-                    }
+                reporter.indeterminateStep(MyBundle.message("services.progress.extracting", zipUrl, target)) {
+                    ZipUtil.unzip(tempZip, target.toFile(), onlyPath)
+                    tempZip.delete()
                 }
             }
         }
+    }
+
+    suspend fun fetchAndParse(url: String, regex: Regex, token: Boolean = false): String? {
+        val body = get(url, token).bodyAsText()
+        return regex.find(body)?.groupValues?.getOrNull(1)
+    }
+
+    suspend fun HttpRequestBuilder.addToken() {
+        TokenStorage.getInstance().getToken()?.let {
+            if (it.isNotBlank()) header(HttpHeaders.Authorization, "Token $it")
+        }
+    }
+
+    fun verifyStatus(response: HttpResponse) {
+        when (response.status) {
+            HttpStatusCode.OK -> Unit
+            HttpStatusCode.Unauthorized -> throw UnauthorizedException()
+            else -> throw IOException("Unexpected ${response.status} for ${response.call.request.url}")
+        }
+    }
+
+    suspend fun ByteReadChannel.copyAndClose(dest: WritableByteChannel): Unit =
+        try {
+            while (!isClosedForRead) {
+                if (copyTo(dest, 8 * 1024) == 0L) break
+            }
+        } finally {
+            dest.close()
+        }
+
+    private fun File.sinkChannel(): WritableByteChannel =
+        outputStream().channel
+
+    override fun close() {
+        client.close()
     }
 
     companion object {
-        fun getInstance(project: Project): CoursesClient {
-            return project.service<CoursesClient>()
-        }
+        fun getInstance(project: Project): CoursesClient = project.service()
     }
 }
