@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+## [4.4.0] - 2025-08-19
+
 ### Added
 
 - Support for IntelliJ 2025.2
@@ -88,7 +90,8 @@
 - Complete UI overhaul
 - Rewrite of the plugin from Java to Kotlin
 
-[Unreleased]: https://github.com/Aalto-LeTech/aplus-courses/compare/v4.3.0...HEAD
+[Unreleased]: https://github.com/Aalto-LeTech/aplus-courses/compare/v4.4.0...HEAD
+[4.4.0]: https://github.com/Aalto-LeTech/aplus-courses/compare/v4.3.0...v4.4.0
 [4.3.0]: https://github.com/Aalto-LeTech/aplus-courses/compare/v4.2.0...v4.3.0
 [4.2.0]: https://github.com/Aalto-LeTech/aplus-courses/compare/v4.1.2...v4.2.0
 [4.1.2]: https://github.com/Aalto-LeTech/aplus-courses/compare/v4.1.1...v4.1.2
