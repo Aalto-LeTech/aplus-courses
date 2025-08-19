@@ -4,6 +4,16 @@
 
 ## [Unreleased]
 
+### Added
+
+- Support for IntelliJ 2025.2
+
+### Fixed
+
+- Issues with Scala SDK installation
+- Issues with assignment submissions in SBT projects
+- Problems when automatically installing plugins
+
 ## [4.3.0] - 2025-02-05
 
 ### Added
