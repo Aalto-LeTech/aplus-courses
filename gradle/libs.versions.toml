@@ -9,7 +9,7 @@ kover = "0.9.1"
 # libraries
 jsonSerialization = "1.9.0"
 datetime = "0.6.2"
-ktor = "3.2.3"
+ktor = "3.3.0"
 
 junit = "5.13.4"
 
