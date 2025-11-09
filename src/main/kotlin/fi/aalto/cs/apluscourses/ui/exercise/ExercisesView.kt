@@ -23,6 +23,8 @@ import fi.aalto.cs.apluscourses.toolwindows.SearchableTab
 import fi.aalto.cs.apluscourses.ui.Utils.loadingPanel
 import java.awt.BorderLayout
 import java.awt.Color
+import java.awt.event.FocusAdapter
+import java.awt.event.FocusEvent
 import java.awt.event.KeyEvent
 import java.awt.event.KeyEvent.VK_ENTER
 import java.awt.event.MouseAdapter
@@ -56,12 +58,11 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true), Searc
         searchTextField = exerciseGroupsFilteringTree.installSearchField()
 
         panel.add(scrollPane, BorderLayout.CENTER)
-
-        panel.focusTraversalPolicy = ListFocusTraversalPolicy(
-            listOf(searchTextField, scrollPane)
-        )
-        panel.isFocusTraversalPolicyProvider = true
-        panel.isFocusCycleRoot = true
+        //FIXME: the action toolbar isn't focus traversable, that would be nice too
+        focusTraversalPolicy =
+            ListFocusTraversalPolicy(listOf(searchTextField.textEditor, exerciseGroupsFilteringTree.tree))
+        isFocusTraversalPolicyProvider = true
+        isFocusCycleRoot = true
         setContent(loadingPanel())
     }
 
@@ -252,6 +253,14 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true), Searc
             DefaultMutableTreeNode(ExercisesRootItem(project))
         ) {
         init {
+            tree.addFocusListener(object : FocusAdapter() {
+                override fun focusGained(e: FocusEvent?) {
+                    // if no assignment is selected or highlighted, pick the first one
+                    if (tree.rowCount > 0 && tree.isSelectionEmpty && tree.leadSelectionPath == null) {
+                        TreeUtil.selectFirstNode(tree)
+                    }
+                }
+            })
             tree.addTreeSelectionListener {
                 if (tree.lastSelectedPathComponent == null) {
                     project.service<SelectedExercise>().selectedExercise = null
