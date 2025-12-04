@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- Fixed write violation error when updating a module
+
 ## [4.4.0] - 2025-08-19
 
 ### Added
