@@ -7,6 +7,7 @@
 ### Fixed
 
 - Fixed write violation error when updating a module
+- Don't show manually graded submissions as background tasks
 
 ## [4.4.0] - 2025-08-19
 
