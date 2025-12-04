@@ -220,6 +220,7 @@ class ExercisesUpdater(
                                     latePenalty = data?.Penalty,
                                     status = SubmissionResult.statusFromString(data?.Status),
                                     filesInfo = emptyList(),
+                                    isSubmittable = exerciseExercise?.hasSubmittableFiles == true,
                                     submitters = submitters,
                                 )
                             }.toMutableList(),
@@ -241,7 +242,7 @@ class ExercisesUpdater(
         val newSubmissionsInGrading = newExerciseGroups
             .flatMap { it.exercises }
             .flatMap { it.submissionResults }
-            .filter { it.status == SubmissionResult.Status.WAITING }
+            .filter { it.status == SubmissionResult.Status.WAITING && it.isSubmittable }
             .map { it.id }
         submissionsInGrading.clear()
         submissionsInGrading.addAll(newSubmissionsInGrading)

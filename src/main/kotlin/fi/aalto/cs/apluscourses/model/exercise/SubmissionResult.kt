@@ -12,6 +12,7 @@ data class SubmissionResult(
     var latePenalty: Double?,
     var status: Status,
     val filesInfo: List<SubmissionFileInfo>,
+    val isSubmittable: Boolean,
     val submitters: List<Long>?,
     val testsSucceeded: Int = -1,
     val testsFailed: Int = -1, // TODO
