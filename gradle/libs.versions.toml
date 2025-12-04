@@ -3,7 +3,7 @@
 kotlin = "2.2.0"
 intelliJPlatform = "2.10.5"
 changelog = "2.3.0"
-qodana = "2025.1.1"
+qodana = "2025.2.2"
 kover = "0.9.1"
 
 # libraries
