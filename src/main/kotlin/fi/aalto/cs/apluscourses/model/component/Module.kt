@@ -93,7 +93,7 @@ open class Module(
             if (!updating) {
                 return
             }
-            application.runWriteAction {
+            edtWriteAction {
                 ModuleManager.getInstance(project).disposeModule(oldPlatformObject)
             }
         }
