@@ -180,7 +180,8 @@ object APlusApi {
                 val UserID: Long,
                 val Status: String,
                 val Grade: Int,
-                val Penalty: Double?
+                val Penalty: Double?,
+                val Tags: String //tunnisteet ovat eroteltu pystyviivoilla | api:ssa
             )
         }
 
@@ -286,9 +287,44 @@ object APlusApi {
 
     @Resource("/submissions/{id}")
     class Submission(val id: Long) {
+        @OptIn(ExperimentalSerializationApi::class)
         suspend fun get(project: Project): SubmissionBody {
-            return CoursesClient.getInstance(project).getBody<Submission, SubmissionBody>(this@Submission)
+            val json = Json {
+                ignoreUnknownKeys = true
+                namingStrategy = JsonNamingStrategy.SnakeCase
+            }
+            val noTagJson = json.encodeToString(OuterData(gradingData = null))
+            val raw = CoursesClient.getInstance(project).getBody<Submission, RawSubmissionBody>(this@Submission)
+            var tags: List<String> = emptyList()
+            val rawGradingData = raw.gradingData?.let {
+                val potentialRaw = it.gradingData ?: noTagJson
+                json.decodeFromString<RawGradingData>(potentialRaw)
+            }
+            if (rawGradingData != null) {
+                tags = rawGradingData.submissionTags?.split(",")?.map { it.trim() } ?: emptyList()
+            }
+
+            return SubmissionBody(
+                feedback = raw.feedback,
+                htmlUrl = raw.htmlUrl,
+                status = raw.status,
+                grade = raw.grade,
+                latePenaltyApplied = raw.latePenaltyApplied,
+                submissionTags = tags,
+                exercise = raw.exercise
+            )
         }
+
+        @Serializable
+        data class RawSubmissionBody(
+            val feedback: String,
+            val htmlUrl: String,
+            val status: String,
+            val grade: Int,
+            val latePenaltyApplied: Double?,
+            val gradingData: OuterData?,
+            val exercise: SubmissionExercise,
+        )
 
         @Serializable
         data class SubmissionBody(
@@ -297,7 +333,18 @@ object APlusApi {
             val status: String,
             val grade: Int,
             val latePenaltyApplied: Double?,
+            val submissionTags: List<String> = emptyList(),
             val exercise: SubmissionExercise,
+        )
+
+        @Serializable
+        data class OuterData(
+            val gradingData: String? = null,
+        )
+
+        @Serializable
+        data class RawGradingData(
+            val submissionTags: String? = "",
         )
 
         @Serializable
