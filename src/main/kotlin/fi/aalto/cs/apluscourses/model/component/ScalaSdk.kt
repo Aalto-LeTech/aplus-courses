@@ -61,7 +61,13 @@ class ScalaSdk(private val scalaVersion: String, project: Project) : Library(sca
                         LocalFileSystem.getInstance().protocol,
                         FileUtil.toSystemDependentName(it.toString())
                     )
-                }).toTypedArray(), emptyArray<String>(), null
+                }).toTypedArray(), emptyArray<String>(), null,
+                arrayOf() // replClasspath being empty implies that the bundled REPL is used.
+                // The REPL is bundled with Scala SDK up to v3.8.
+                // To support Scala v3.8+, we need to install scala-repl
+                // separately and configure the classpath accordingly here. See:
+                // https://github.com/JetBrains/intellij-scala/blob/idea253.x/scala/scala-impl/src/org/jetbrains/plugins/scala/project/ReplClasspath.scala
+                // https://www.scala-lang.org/news/3.8/
             )
             properties.loadState(newState)
             libraryEx.properties = properties
