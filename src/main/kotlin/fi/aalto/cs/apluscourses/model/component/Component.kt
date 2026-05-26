@@ -2,7 +2,13 @@ package fi.aalto.cs.apluscourses.model.component
 
 import com.intellij.openapi.project.Project
 import fi.aalto.cs.apluscourses.services.CoursesClient
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.nio.file.Files
 import java.nio.file.Path
+import java.nio.file.StandardCopyOption
+import kotlin.io.path.createTempFile
+import kotlin.io.path.nameWithoutExtension
 
 abstract class Component<T>(val name: String, protected val project: Project) {
     var dependencyNames: Set<String>? = null
@@ -22,6 +28,24 @@ abstract class Component<T>(val name: String, protected val project: Project) {
 
     protected suspend fun downloadAndUnzipZip(zipUrl: String, extractPath: Path, onlyPath: String? = null) {
         CoursesClient.getInstance(project).downloadAndUnzip(zipUrl, extractPath, onlyPath)
+    }
+
+    protected suspend fun downloadFile(url: String, target: Path): Path = withContext(Dispatchers.IO) {
+        Files.createDirectories(target.parent)
+        val tmp = Files.createTempFile(
+            target.parent,
+            target.fileName.toString(),
+            ".part"
+        )
+        try {
+            CoursesClient.getInstance(project).download(url, tmp.toFile())
+            Files.move(tmp, target, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE)
+        } catch (t: Throwable) {
+            try {
+                Files.deleteIfExists(tmp)
+            } catch (_: Throwable) { }
+            throw t
+        }
     }
 
     protected abstract fun findDependencies(): Set<String>
