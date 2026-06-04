@@ -10,6 +10,7 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.util.application
+import fi.aalto.cs.apluscourses.services.CoursesClient
 import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.plugins.scala.project.ScalaLanguageLevel

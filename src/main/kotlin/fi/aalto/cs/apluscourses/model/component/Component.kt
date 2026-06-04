@@ -30,22 +30,8 @@ abstract class Component<T>(val name: String, protected val project: Project) {
         CoursesClient.getInstance(project).downloadAndUnzip(zipUrl, extractPath, onlyPath)
     }
 
-    protected suspend fun downloadFile(url: String, target: Path): Path = withContext(Dispatchers.IO) {
-        Files.createDirectories(target.parent)
-        val tmp = Files.createTempFile(
-            target.parent,
-            target.fileName.toString(),
-            ".part"
-        )
-        try {
-            CoursesClient.getInstance(project).download(url, tmp.toFile())
-            Files.move(tmp, target, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE)
-        } catch (t: Throwable) {
-            try {
-                Files.deleteIfExists(tmp)
-            } catch (_: Throwable) { }
-            throw t
-        }
+    protected suspend fun downloadFile(url: String, target: Path) {
+        CoursesClient.getInstance(project).downloadFile(url, target)
     }
 
     protected abstract fun findDependencies(): Set<String>

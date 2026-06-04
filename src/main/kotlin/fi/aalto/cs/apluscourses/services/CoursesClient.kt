@@ -31,7 +31,9 @@ import org.jetbrains.annotations.NonNls
 import java.io.File
 import java.io.IOException
 import java.nio.channels.WritableByteChannel
+import java.nio.file.Files
 import java.nio.file.Path
+import java.nio.file.StandardCopyOption
 import kotlin.io.path.createTempFile
 import kotlin.io.path.nameWithoutExtension
 
@@ -138,6 +140,24 @@ class CoursesClient(
         }.also(::verifyStatus)
             .bodyAsChannel()
             .copyAndClose(file.also { it.parentFile.mkdirs(); it.createNewFile() }.sinkChannel())
+    }
+
+    suspend fun downloadFile(url: String, target: Path) {
+        withBackgroundProgress(project, MyBundle.message("aplusCourses")) {
+            reportSequentialProgress { reporter ->
+                val tempFile = createTempFile(target.nameWithoutExtension).toFile()
+
+                reporter.indeterminateStep(MyBundle.message("services.progress.downloading", url)) {
+                    download(url, tempFile)
+                    Files.move(
+                        tempFile.toPath(),
+                        target,
+                        StandardCopyOption.REPLACE_EXISTING,
+                        StandardCopyOption.ATOMIC_MOVE
+                    )
+                }
+            }
+        }
     }
 
     suspend fun downloadAndUnzip(
