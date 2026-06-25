@@ -6,6 +6,12 @@
 
 ### Fixed
 
+- Fixed Scala 3.8 incompatibility
+
+## [4.4.1] - 2025-12-04
+
+### Fixed
+
 - Fixed write violation error when updating a module
 - Don't show manually graded submissions as background tasks
 - Improved keyboard navigation in assignments tab
