@@ -10,13 +10,17 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.util.application
+import fi.aalto.cs.apluscourses.services.CoursesClient
 import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.plugins.scala.project.ScalaLanguageLevel
 import org.jetbrains.plugins.scala.project.ScalaLibraryProperties
 import org.jetbrains.plugins.scala.project.ScalaLibraryPropertiesState
 import org.jetbrains.plugins.scala.project.ScalaLibraryType
+import java.nio.file.Files
 import java.nio.file.Path
+import kotlin.collections.toTypedArray
+import kotlin.io.path.isDirectory
 
 class ScalaSdk(private val scalaVersion: String, project: Project) : Library(scalaVersion, project) {
     @NonNls
@@ -29,7 +33,6 @@ class ScalaSdk(private val scalaVersion: String, project: Project) : Library(sca
         CoursesLogger.info("Downloading Scala SDK $scalaVersion")
         val zipUrl =
             "https://github.com/lampepfl/dotty/releases/download/$versionNumber/scala3-$versionNumber.zip"
-        val sourcesUrl = "https://github.com/scala/scala3/archive/refs/tags/$versionNumber.zip"
         val path = libPath
         downloadAndUnzipZip(zipUrl, path)
 
@@ -43,10 +46,31 @@ class ScalaSdk(private val scalaVersion: String, project: Project) : Library(sca
         val library = libraryTable.createLibrary(name, kind)
         val compilerClasspath = sdkPath.toFile().walkTopDown()
 
-        val scala2Version =
-            compilerClasspath.find { it.name.startsWith("scala-library") && it.extension == "jar" }?.nameWithoutExtension?.substringAfter(
-                "scala-library-"
-            )
+        val libDir = sdkPath.resolve("lib")
+        val m2Dir = sdkPath.resolve("maven2")
+        val scala3Ver = versionNumber
+
+        fun parseVersion(s: String) = s.split('.', '-', '_').mapNotNull { it.toIntOrNull() }.let {
+            Triple(it.getOrElse(0) { 0 }, it.getOrElse(1) { 0 }, it.getOrElse(2) { 0 })
+        }
+
+        fun isScala38Plus(ver: String): Boolean {
+            val (maj, min, _) = parseVersion(ver)
+            return maj > 3 || (maj == 3 && min >= 8)
+        }
+
+        // Download REPL if scala ver >= 3.8.0
+        // Unsure if actually required since this seems to be included as a dependency of the scala sdk and
+        // found under the maven2 directory, but better be safe than sorry
+        val replPath = libDir.resolve("scala3-repl_3-$scala3Ver.jar")
+        var replClasspath = emptyArray<String>()
+        if (isScala38Plus(scala3Ver)) {
+            replClasspath =
+                compilerClasspath.filter { it.extension == "jar" }.map { it.toString() }.toList().toTypedArray()
+            val replUrl =
+                "https://repo1.maven.org/maven2/org/scala-lang/scala3-repl_3/$scala3Ver/scala3-repl_3-$scala3Ver.jar"
+            downloadFile(replUrl, replPath)
+        }
 
         edtWriteAction {
             val libraryModel = library.modifiableModel
@@ -61,7 +85,7 @@ class ScalaSdk(private val scalaVersion: String, project: Project) : Library(sca
                         LocalFileSystem.getInstance().protocol,
                         FileUtil.toSystemDependentName(it.toString())
                     )
-                }).toTypedArray(), emptyArray<String>(), null
+                }).toTypedArray(), emptyArray<String>(), null, replClasspath
             )
             properties.loadState(newState)
             libraryEx.properties = properties
@@ -77,40 +101,62 @@ class ScalaSdk(private val scalaVersion: String, project: Project) : Library(sca
                 OrderRootType.CLASSES
             )
 
+            if (isScala38Plus(scala3Ver)) {
+                newLibraryModel.addRoot(
+                    VfsUtil.getUrlForLibraryRoot(compilerClasspath.find { it.name.startsWith("scala3-repl") && it.extension == "jar" }!!),
+                    OrderRootType.CLASSES
+                )
+            }
+
+
             newLibraryModel.commit()
             libraryTable.commit()
             VirtualFileManager.getInstance().syncRefresh()
         }
 
+        val stdlibVer: String = if (isScala38Plus(scala3Ver)) {
+            scala3Ver
+        } else {
+            fun findStdlibUnder(root: Path): String? {
+                if (!Files.exists(root) || !root.isDirectory()) return null
+                return Files.walk(root).use { stream ->
+                    stream.filter { Files.isRegularFile(it) }
+                        .map { it.fileName.toString() }
+                        .filter { it.startsWith("scala-library-") && it.endsWith(".jar") }
+                        .map { it.removeSuffix(".jar").substringAfter("scala-library-") }
+                        .filter { it.startsWith("2.") }
+                        .findFirst()
+                        .orElse(null)
+                }
+            }
+            findStdlibUnder(libDir)
+                ?: findStdlibUnder(m2Dir)
+                ?: error("scala-library 2.x jar not found under $libDir or $m2Dir for Scala $scala3Ver")
+        }
 
-        val scala3SourcesPath = path.resolve("scala3-$versionNumber").resolve("src")
-        downloadAndUnzipZip(
-            sourcesUrl,
-            scala3SourcesPath,
-            "scala3-$versionNumber/library/src/"
+        val scala3LibSources = libDir.resolve("scala3-library_3-$scala3Ver-sources.jar")
+        downloadFile(
+            "https://repo1.maven.org/maven2/org/scala-lang/scala3-library_3/$scala3Ver/scala3-library_3-$scala3Ver-sources.jar",
+            scala3LibSources
+        )
+
+        val scalaStdlibSources = libDir.resolve("scala-library-$stdlibVer-sources.jar")
+        downloadFile(
+            "https://repo1.maven.org/maven2/org/scala-lang/scala-library/$stdlibVer/scala-library-$stdlibVer-sources.jar",
+            scalaStdlibSources
         )
 
 
-        val scala2SourcesUrl = "https://github.com/scala/scala/archive/refs/tags/v$scala2Version.zip"
-        fullPath.resolve("src").resolve("scala-$scala2Version")
-        downloadAndUnzipZip(scala2SourcesUrl, scala3SourcesPath, "scala-$scala2Version/src/library/")
-
+        // Attach sources jars to the library
         edtWriteAction {
             val libraryModel = library.modifiableModel
-            libraryModel.addRoot(
-                VfsUtil.getUrlForLibraryRoot(
-                    path.resolve("scala3-$versionNumber").resolve("src").resolve("scala3-$versionNumber")
-                        .resolve("library").resolve("src")
-                ),
-                OrderRootType.SOURCES
-            )
-            libraryModel.addRoot(
-                VfsUtil.getUrlForLibraryRoot(
-                    path.resolve("scala3-$versionNumber").resolve("src").resolve("scala-$scala2Version")
-                        .resolve("src").resolve("library")
-                ),
-                OrderRootType.SOURCES
-            )
+            fun addSourcesJar(path: Path) {
+                if (Files.exists(path)) {
+                    libraryModel.addRoot(VfsUtil.getUrlForLibraryRoot(path.toFile()), OrderRootType.SOURCES)
+                }
+            }
+            addSourcesJar(scala3LibSources)
+            addSourcesJar(scalaStdlibSources)
             libraryModel.commit()
             VirtualFileManager.getInstance().syncRefresh()
         }
