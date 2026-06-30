@@ -10,6 +10,7 @@ data class SubmissionResult(
     val maxPoints: Int,
     var userPoints: Int,
     var latePenalty: Double?,
+    var tags: List<String>,
     var status: Status,
     val filesInfo: List<SubmissionFileInfo>,
     val isSubmittable: Boolean,
@@ -24,6 +25,10 @@ data class SubmissionResult(
     fun updateStatus(statusString: String) {
         val status = statusFromString(statusString)
         this.status = status
+    }
+
+    fun hasTag(tagSlug: String): Boolean {
+        return tags.contains(tagSlug)
     }
 
     enum class Status {
