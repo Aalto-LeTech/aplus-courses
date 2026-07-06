@@ -152,8 +152,7 @@ class CoursesClient(
                     Files.move(
                         tempFile.toPath(),
                         target,
-                        StandardCopyOption.REPLACE_EXISTING,
-                        StandardCopyOption.ATOMIC_MOVE
+                        StandardCopyOption.REPLACE_EXISTING
                     )
                 }
             }
