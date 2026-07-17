@@ -10,16 +10,18 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.util.application
-import fi.aalto.cs.apluscourses.services.CoursesClient
 import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.plugins.scala.project.ScalaLanguageLevel
 import org.jetbrains.plugins.scala.project.ScalaLibraryProperties
 import org.jetbrains.plugins.scala.project.ScalaLibraryPropertiesState
 import org.jetbrains.plugins.scala.project.ScalaLibraryType
+import java.io.File
+import java.io.InputStream
 import java.nio.file.Files
 import java.nio.file.Path
-import kotlin.collections.toTypedArray
+import java.util.jar.JarInputStream
+import java.util.jar.Manifest
 import kotlin.io.path.isDirectory
 
 class ScalaSdk(private val scalaVersion: String, project: Project) : Library(scalaVersion, project) {
@@ -44,33 +46,39 @@ class ScalaSdk(private val scalaVersion: String, project: Project) : Library(sca
         }
         val kind: PersistentLibraryKind<ScalaLibraryProperties> = ScalaLibraryType.`Kind$`.`MODULE$`
         val library = libraryTable.createLibrary(name, kind)
-        val compilerClasspath = sdkPath.toFile().walkTopDown()
 
         val libDir = sdkPath.resolve("lib")
         val m2Dir = sdkPath.resolve("maven2")
         val scala3Ver = versionNumber
 
-        fun parseVersion(s: String) = s.split('.', '-', '_').mapNotNull { it.toIntOrNull() }.let {
-            Triple(it.getOrElse(0) { 0 }, it.getOrElse(1) { 0 }, it.getOrElse(2) { 0 })
-        }
+        val isScala38Plus = compareVersions(scala3Ver, "3.8.0") >= 0
 
-        fun isScala38Plus(ver: String): Boolean {
-            val (maj, min, _) = parseVersion(ver)
-            return maj > 3 || (maj == 3 && min >= 8)
-        }
+        val fileTreeWalk = sdkPath.toFile().walkTopDown()
 
-        // Download REPL if scala ver >= 3.8.0
-        // Unsure if actually required since this seems to be included as a dependency of the scala sdk and
-        // found under the maven2 directory, but better be safe than sorry
-        val replPath = libDir.resolve("scala3-repl_3-$scala3Ver.jar")
-        var replClasspath = emptyArray<String>()
-        if (isScala38Plus(scala3Ver)) {
-            replClasspath =
-                compilerClasspath.filter { it.extension == "jar" }.map { it.toString() }.toList().toTypedArray()
-            val replUrl =
-                "https://repo1.maven.org/maven2/org/scala-lang/scala3-repl_3/$scala3Ver/scala3-repl_3-$scala3Ver.jar"
-            downloadFile(replUrl, replPath)
-        }
+        val jars =
+            if (isScala38Plus)
+            // read classpath from JARs's manifests
+                sequenceOf("scala.jar", "with_compiler.jar")
+                    .map(sdkPath.resolve("lib")::resolve)
+                    .flatMap(::getClassPathFromJar)
+                    .map(FileUtil::toSystemDependentName)
+                    .map(libDir::resolve)
+                    .map(Path::normalize)
+                    .map(Path::toString)
+            else
+            // just take (almost) everything
+                fileTreeWalk.filter { it.extension == "jar" && it.nameWithoutExtension != "scala-cli" }
+                    .map(File::toString)
+                    .map(FileUtil::toSystemDependentName)
+
+        val fileUrlProtocol = LocalFileSystem.getInstance().protocol
+
+        val compilerClasspath = jars
+            .map { VirtualFileManager.constructUrl(fileUrlProtocol, it) }
+            .toList()
+            .toTypedArray()
+
+        val replClasspath = if (isScala38Plus) compilerClasspath else emptyArray()
 
         edtWriteAction {
             val libraryModel = library.modifiableModel
@@ -80,41 +88,28 @@ class ScalaSdk(private val scalaVersion: String, project: Project) : Library(sca
             val properties = libraryEx.properties
             val newState = ScalaLibraryPropertiesState(
                 ScalaLanguageLevel.findByVersion(versionNumber).get(),
-                getJarFiles({
-                    VirtualFileManager.constructUrl(
-                        LocalFileSystem.getInstance().protocol,
-                        FileUtil.toSystemDependentName(it.toString())
-                    )
-                }).toTypedArray(), emptyArray<String>(), null, replClasspath
+                compilerClasspath,
+                emptyArray<String>(),
+                null,
+                replClasspath
             )
             properties.loadState(newState)
             libraryEx.properties = properties
 
             libraryModel.commit()
             val newLibraryModel = library.modifiableModel
-            newLibraryModel.addRoot(
-                VfsUtil.getUrlForLibraryRoot(compilerClasspath.find { it.name.startsWith("scala3-library") && it.extension == "jar" }!!),
-                OrderRootType.CLASSES
-            )
-            newLibraryModel.addRoot(
-                VfsUtil.getUrlForLibraryRoot(compilerClasspath.find { it.name.startsWith("scala-library") && it.extension == "jar" }!!),
-                OrderRootType.CLASSES
-            )
 
-            if (isScala38Plus(scala3Ver)) {
-                newLibraryModel.addRoot(
-                    VfsUtil.getUrlForLibraryRoot(compilerClasspath.find { it.name.startsWith("scala3-repl") && it.extension == "jar" }!!),
-                    OrderRootType.CLASSES
-                )
-            }
-
+            sequenceOf("scala3-library", "scala-library")
+                .map { root -> fileTreeWalk.find { it.name.startsWith(root) && it.extension == "jar" }!! }
+                .map(VfsUtil::getUrlForLibraryRoot)
+                .forEach { newLibraryModel.addRoot(it,OrderRootType.CLASSES) }
 
             newLibraryModel.commit()
             libraryTable.commit()
             VirtualFileManager.getInstance().syncRefresh()
         }
 
-        val stdlibVer: String = if (isScala38Plus(scala3Ver)) {
+        val stdlibVer: String = if (isScala38Plus) {
             scala3Ver
         } else {
             fun findStdlibUnder(root: Path): String? {
@@ -146,7 +141,6 @@ class ScalaSdk(private val scalaVersion: String, project: Project) : Library(sca
             scalaStdlibSources
         )
 
-
         // Attach sources jars to the library
         edtWriteAction {
             val libraryModel = library.modifiableModel
@@ -164,12 +158,28 @@ class ScalaSdk(private val scalaVersion: String, project: Project) : Library(sca
         status = Status.LOADED
     }
 
-    private fun getJarFiles(pathToUri: (Path) -> String): List<String> {
-        val files = sdkPath.toFile().walkTopDown()
-
-        return files
-            .filter { it.extension == "jar" && it.nameWithoutExtension != "scala-cli" }
-            .map { pathToUri(it.toPath()) }
-            .toList()
+    private fun parseVersion(s: String) = s.split('.', '-', '_').mapNotNull { it.toIntOrNull() }.let {
+        Triple(it.getOrElse(0) { 0 }, it.getOrElse(1) { 0 }, it.getOrElse(2) { 0 })
     }
+
+    private fun compareVersions(ver1: String, ver2: String): Int {
+        val (maj1, min1, patch1) = parseVersion(ver1)
+        val (maj2, min2, patch2) = parseVersion(ver2)
+        if (maj1 != maj2) return maj1 - maj2
+        if (min1 != min2) return min1 - min2
+        return patch1 - patch2
+    }
+
+    private fun getClassPathFromJar(path: Path): List<String> = getClassPathFromJar(path.toFile())
+
+    private fun getClassPathFromJar(file: File) = file.inputStream().use(::getClassPathFromJar)
+
+    private fun getClassPathFromJar(inputStream: InputStream) = JarInputStream(inputStream).use(::getClassPathFromJar)
+
+    private fun getClassPathFromJar(jarInputStream: JarInputStream) = getClassPathFromJar(jarInputStream.manifest)
+
+    private fun getClassPathFromJar(manifest: Manifest) =
+        manifest.mainAttributes.getValue("Class-Path")
+            ?.split(' ')
+            ?: emptyList()
 }
