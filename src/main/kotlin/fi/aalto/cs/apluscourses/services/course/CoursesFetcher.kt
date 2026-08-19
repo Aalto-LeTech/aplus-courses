@@ -4,7 +4,7 @@ import com.intellij.openapi.components.Service
 import fi.aalto.cs.apluscourses.api.CourseConfig
 import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import io.ktor.client.*
-import io.ktor.client.engine.cio.*
+import io.ktor.client.engine.java.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import kotlinx.coroutines.CoroutineScope
@@ -37,11 +37,7 @@ class CoursesFetcher(private val cs: CoroutineScope) {
 
     fun fetchCourses(setCourses: (List<CourseInfo>) -> Unit) {
         cs.launch {
-            val client = HttpClient(CIO) {
-                engine {
-                    requestTimeout = 0
-                }
-            }
+            val client = HttpClient(Java)
             val url = "https://version.aalto.fi/gitlab/aplus-courses/course-config-urls/-/raw/main/courses.yaml"
             val res = client.get(url)
 
@@ -59,11 +55,7 @@ class CoursesFetcher(private val cs: CoroutineScope) {
     fun fetchCourse(url: String): CourseConfig.JSON? {
         return runBlocking(cs.coroutineContext) {
             try {
-                val client = HttpClient(CIO) {
-                    engine {
-                        requestTimeout = 0
-                    }
-                }
+                val client = HttpClient(Java)
                 val res = client.get(url)
                 client.close()
                 json.decodeFromString<CourseConfig.JSON>(res.bodyAsText())

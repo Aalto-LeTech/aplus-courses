@@ -1,7 +1,6 @@
 package fi.aalto.cs.apluscourses.activities
 
-import com.intellij.openapi.actionSystem.ActionManager
-import com.intellij.openapi.actionSystem.impl.ActionManagerImpl
+import com.intellij.openapi.actionSystem.ex.ActionManagerEx
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.application.ex.ApplicationEx
 import com.intellij.openapi.components.service
@@ -61,7 +60,7 @@ internal class InitializationActivity :
                 val isDumb = DumbService.isDumb(project)
                 val courseManager = CourseManager.getInstance(project)
                 val course = courseManager.state.course
-                @NonNls val lastAction = (ActionManager.getInstance() as ActionManagerImpl).lastPreformedActionId ?: ""
+                @NonNls val lastAction = ActionManagerEx.getInstanceEx().lastPreformedActionId ?: ""
 
                 // Sometimes the module gets deleted when it is being installed in dumb mode
                 if (isDumb && course != null &&

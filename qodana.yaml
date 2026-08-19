@@ -3,7 +3,7 @@
 
 version: 1.0
 linter: jetbrains/qodana-jvm-community:latest
-projectJDK: "21"
+projectJDK: "25"
 profile:
   name: qodana.recommended
 exclude:
@@ -17,6 +17,10 @@ exclude:
     paths:
       - src/main/kotlin/fi/aalto/cs/apluscourses/icons/CoursesIcons.kt
       - src/main/kotlin/fi/aalto/cs/apluscourses/api/APlusApi.kt
+      - src/main/kotlin/fi/aalto/cs/apluscourses/services/course/CourseFileManager.kt
+  # These platform members have a nullable getter and a non-null setter, so Kotlin exposes them
+  # as read-only vals, so property access syntax does not compile ("'val' cannot be reassigned").
+  - name: UsePropertyAccessSyntax
   - name: PropertyName
     paths:
       - src/main/kotlin/fi/aalto/cs/apluscourses/api/APlusApi.kt

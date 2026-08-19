@@ -1,17 +1,19 @@
 [versions]
 # plugins
-kotlin = "2.2.0"
-intelliJPlatform = "2.10.5"
-changelog = "2.3.0"
-qodana = "2025.1.1"
-kover = "0.9.1"
+kotlin = "2.4.10"
+intelliJPlatform = "2.18.1"
+changelog = "2.5.0"
+qodana = "2026.2.0"
+kover = "0.9.9"
 
 # libraries
-jsonSerialization = "1.9.0"
-datetime = "0.6.2"
-ktor = "3.2.3"
+jsonSerialization = "1.11.0"
+datetime = "0.8.0"
+# Version 3.5.0 of ktor has a newer version of coroutines than IntelliJ,
+# so it is not compatible yet.
+ktor = "3.4.3"
 
-junit = "5.13.4"
+junit = "5.14.4"
 
 
 [plugins]
@@ -22,13 +24,16 @@ qodana = { id = "org.jetbrains.qodana", version.ref = "qodana" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 
 [libraries]
-junit = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junit" }
+junitBom = { group = "org.junit", name = "junit-bom", version.ref = "junit" }
+junit = { group = "org.junit.jupiter", name = "junit-jupiter" }
+junitPlatformLauncher = { group = "org.junit.platform", name = "junit-platform-launcher" }
 
 jsonSerialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json-jvm", version.ref = "jsonSerialization" }
 datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime-jvm", version.ref = "datetime" }
 
 ktorCore = { group = "io.ktor", name = "ktor-client-core-jvm", version.ref = "ktor" }
-ktorCio = { group = "io.ktor", name = "ktor-client-cio-jvm", version.ref = "ktor" }
+ktorJava = { group = "io.ktor", name = "ktor-client-java-jvm", version.ref = "ktor" }
 ktorResources = { group = "io.ktor", name = "ktor-client-resources-jvm", version.ref = "ktor" }
 ktorJsonSerialization = { group = "io.ktor", name = "ktor-serialization-kotlinx-json-jvm", version.ref = "ktor" }
 ktorContentNegotiation = { group = "io.ktor", name = "ktor-client-content-negotiation-jvm", version.ref = "ktor" }
+ktorMock = { group = "io.ktor", name = "ktor-client-mock-jvm", version.ref = "ktor" }

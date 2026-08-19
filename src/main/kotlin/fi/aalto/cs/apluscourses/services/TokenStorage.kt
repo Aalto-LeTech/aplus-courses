@@ -46,14 +46,14 @@ class TokenStorage(private val cs: CoroutineScope) {
     private suspend fun store(password: OneTimeString?) {
         val credentials = if (password == null) null else Credentials(credentialAttributes.userName, password)
         withContext(Dispatchers.IO) {
-            PasswordSafe.instance.set(credentialAttributes, credentials)
+            PasswordSafe.instance[credentialAttributes] = credentials
         }
     }
 
     fun remove() {
         cs.launch {
             withContext(Dispatchers.IO) {
-                PasswordSafe.instance.set(credentialAttributes, null)
+                PasswordSafe.instance[credentialAttributes] = null
             }
         }
     }

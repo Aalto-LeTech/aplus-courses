@@ -10,6 +10,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 @Service(Service.Level.PROJECT)
 class Notifier(
@@ -26,7 +27,7 @@ class Notifier(
 
         cs.launch {
             try {
-                delay(timeoutMs)
+                delay(timeoutMs.milliseconds)
                 notification.hideBalloon()
             } catch (e: CancellationException) {
                 CoursesLogger.warn("Notification timeout interrupted")
