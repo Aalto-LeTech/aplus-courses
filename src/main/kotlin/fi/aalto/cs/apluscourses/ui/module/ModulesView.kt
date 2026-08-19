@@ -16,15 +16,11 @@ import fi.aalto.cs.apluscourses.toolwindows.SearchableTab
 import fi.aalto.cs.apluscourses.ui.Utils.loadingPanel
 import java.awt.Point
 import java.awt.event.KeyEvent
-import java.awt.event.MouseAdapter
-import java.awt.event.MouseEvent
+import javax.swing.SwingUtilities
 
 class ModulesView(val project: Project) : SimpleToolWindowPanel(true, true), SearchableTab {
-    private var modules = mutableListOf<Module>()
-    private var actionRequired = mutableListOf<Module>()
-    private var available = mutableListOf<Module>()
-    private var installed = mutableListOf<Module>()
     private val itemPanels = mutableListOf<ModuleRenderer>()
+    private val scrollPane = JBScrollPane()
     override val searchTextField: SearchTextField = object : SearchTextField(false) {
         override fun preprocessEventForTextField(e: KeyEvent): Boolean {
             super.preprocessEventForTextField(e)
@@ -50,122 +46,97 @@ class ModulesView(val project: Project) : SimpleToolWindowPanel(true, true), Sea
     private fun collapseAll() = itemPanels.forEach { it.collapse() }
 
     fun searchChanged(text: String) {
-        var i = 0
+        val query = text.lowercase()
+        var visibleIndex = 0
         for (item in itemPanels) {
-            val isVisible = item.module.name.lowercase().contains(text.lowercase())
-            item.setVisibility(isVisible)
-            if (isVisible) {
-                item.index = i
-                item.updateBackground(false)
-                i++
+            item.isVisible = item.module.name.lowercase().contains(query)
+            if (item.isVisible) {
+                // The index decides the row's striping color, so it counts visible rows only.
+                item.index = visibleIndex++
+                item.refreshBackground()
             }
         }
     }
 
-    private fun getPanelAt(point: Point) =
-        itemPanels.find { it.bounds.contains(point) && it.isVisible }
+    private fun toggleExpanded(row: ModuleRenderer) {
+        val wasExpanded = row.isExpanded
+        collapseAll()
+        if (!wasExpanded) {
+            row.expand()
+        }
+    }
 
-    private fun updateView() {
+    private fun updateView(modules: List<Module>) {
         val openModule = itemPanels.find { it.isExpanded }
         val categories = modules.groupBy { it.category }
-        actionRequired = categories[Module.Category.ACTION_REQUIRED]?.toMutableList() ?: mutableListOf()
-        available = categories[Module.Category.AVAILABLE]?.toMutableList() ?: mutableListOf()
-        installed = categories[Module.Category.INSTALLED]?.toMutableList() ?: mutableListOf()
 
         itemPanels.clear()
 
-        fun Panel.addCategory(category: Module.Category, modules: List<Module>) {
+        fun Panel.addCategory(category: Module.Category) {
+            val categoryModules = categories[category] ?: return
             val categoryName = when (category) {
                 Module.Category.ACTION_REQUIRED -> message("ui.ModuleView.category.actionRequired")
                 Module.Category.AVAILABLE -> message("ui.ModuleView.category.available")
                 Module.Category.INSTALLED -> message("ui.ModuleView.category.installed")
             }
-            if (modules.isNotEmpty()) {
-                group("  $categoryName", indent = false) {
-                    modules.forEachIndexed { index, module ->
-                        val itemPanel = ModuleRenderer(module, index, project)
-                        itemPanels.add(itemPanel)
-                        row {
-                            cell(itemPanel).resizableColumn().align(AlignX.FILL)
-                        }
+            group("  $categoryName", indent = false) {
+                categoryModules.forEachIndexed { index, module ->
+                    val itemPanel = ModuleRenderer(module, index, project, ::toggleExpanded)
+                    itemPanels.add(itemPanel)
+                    row {
+                        cell(itemPanel).resizableColumn().align(AlignX.FILL)
                     }
                 }
             }
         }
 
-        val scrollValue = if (content is JBScrollPane) {
-            (content as JBScrollPane?)?.verticalScrollBar?.value ?: 0
-        } else 0
+        val scrolledTo = scrollPane.viewport.viewPosition.y
 
         val panel = panel {
-            addCategory(Module.Category.ACTION_REQUIRED, actionRequired)
-            addCategory(Module.Category.AVAILABLE, available)
-            addCategory(Module.Category.INSTALLED, installed)
+            addCategory(Module.Category.ACTION_REQUIRED)
+            addCategory(Module.Category.AVAILABLE)
+            addCategory(Module.Category.INSTALLED)
         }
 
-        val content = JBScrollPane(panel)
-        content.verticalScrollBar.value = scrollValue
-        setContent(content)
-
-        panel.addMouseMotionListener(object : MouseAdapter() {
-            override fun mouseMoved(e: MouseEvent) {
-                val hoveringPanel = getPanelAt(e.point) ?: return
-                itemPanels.forEach { it.updateBackground(false) }
-                hoveringPanel.updateBackground(true)
-            }
-        })
-        panel.addMouseListener(object : MouseAdapter() {
-            override fun mousePressed(e: MouseEvent) {
-                getPanelAt(e.point)?.let {
-                    val isExpanded = it.isExpanded
-                    collapseAll()
-                    if (!isExpanded) {
-                        it.expand()
-                    }
-                }
-            }
-
-            override fun mouseExited(e: MouseEvent) {
-                val bounds = content.bounds
-                val point = e.point
-                point.translate(0, -content.verticalScrollBar.value)
-                val scrollbarWidth = content.verticalScrollBar.width
-                if (!bounds.contains(point) || point.x > bounds.width - scrollbarWidth) {
-                    itemPanels.forEach { it.updateBackground(false) }
-                }
-            }
-        })
+        scrollPane.setViewportView(panel)
+        scrollPane.viewport.viewPosition = Point(0, scrolledTo)
+        if (content !== scrollPane) {
+            setContent(scrollPane)
+        }
 
         searchChanged(searchTextField.text)
         openModule?.let { showModule(it.module, false) }
-        itemPanels.find { it.module.name == openModule?.module?.name }?.expand()
+    }
+
+    fun updateModuleIcon(module: Module) {
+        itemPanels.find { it.module.name == module.name }?.refreshIcon()
     }
 
     fun showModule(module: Module, scroll: Boolean) {
         collapseAll()
-        val item = itemPanels.find { it.module.name == module.name }
-        if (item != null) {
-            item.expand()
-            if (scroll) {
-                searchTextField.text = ""
-                searchChanged("")
-                (content as JBScrollPane?)?.verticalScrollBar?.value = item.location.y - 100
-            }
-        }
+        val item = itemPanels.find { it.module.name == module.name } ?: return
+        item.expand()
+        if (!scroll) return
+
+        searchTextField.text = ""
+        searchChanged("")
+        val view = scrollPane.viewport.view ?: return
+        val y = SwingUtilities.convertPoint(item, 0, 0, view).y
+        scrollPane.verticalScrollBar.value = y - SCROLL_MARGIN
     }
 
     fun viewModelChanged(course: Course?) {
-        application.invokeLater {
+        application.invokeLater({
             if (course == null) {
                 itemPanels.clear()
-                actionRequired.clear()
-                installed.clear()
-                available.clear()
-                return@invokeLater
+            } else {
+                updateView(course.modules)
             }
-            val visible = course.modules
-            modules = visible.toMutableList()
-            updateView()
-        }
+        }, project.disposed)
+    }
+
+    private companion object {
+        /** How much of the list is left visible above a row that has been scrolled to. */
+        const val SCROLL_MARGIN = 100
     }
 }

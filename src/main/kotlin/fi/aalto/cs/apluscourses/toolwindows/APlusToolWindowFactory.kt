@@ -188,6 +188,10 @@ internal class APlusToolWindowFactory : ToolWindowFactory, DumbAware {
             override fun onModulesUpdated(course: Course?) {
                 modulesView.viewModelChanged(course)
             }
+
+            override fun onModuleStatusChanged(module: Module) {
+                modulesView.updateModuleIcon(module)
+            }
         })
 
         if (InitializationStatus.isNotCourse(project) || InitializationStatus.isIoError(project)) {
@@ -216,6 +220,7 @@ internal class APlusToolWindowFactory : ToolWindowFactory, DumbAware {
         )
         toolbar.targetComponent = modulesView.component
         modulesView.toolbar = createCustomToolbar(modulesView, toolbar)
+        modulesView.viewModelChanged(CourseManager.course(project))
         return modulesView
     }
 
