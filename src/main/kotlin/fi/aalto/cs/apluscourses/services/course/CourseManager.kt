@@ -33,6 +33,7 @@ import java.io.IOException
 import java.nio.channels.UnresolvedAddressException
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicReference
 import java.util.concurrent.Executors
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -297,7 +298,7 @@ class CourseManager(
                             workSize = 1,
                             text = message("services.progress.installing", module.name)
                         ) {
-                            installModuleAsync(module, show = false)
+                            installModuleAsync(module, show = false, ownTask = false)
                         }
                     }
                 }
@@ -367,43 +368,96 @@ class CourseManager(
         }
     }
 
+    private val moduleStatusRefreshJob = AtomicReference<Job?>(null)
+
     fun refreshModuleStatuses() {
-        cs.launch {
+        val sweep = cs.launch {
+            delay(MODULE_STATUS_REFRESH_DEBOUNCE)
             refreshModuleStatusesAsync()
+        }
+        moduleStatusRefreshJob.getAndSet(sweep)?.cancel()
+    }
+
+    /**
+     * @param ownTask whether to open a background task named after the module. Off when the
+     *   caller already reports progress that this install belongs inside, as during a course
+     *   refresh.
+     */
+    private suspend fun installModuleAsync(
+        module: Module,
+        show: Boolean = true,
+        ownTask: Boolean = true
+    ) {
+        if (ownTask) {
+            withBackgroundProgress(project, message("services.progress.installing", module.name)) {
+                installModuleSteps(module, show)
+            }
+        } else {
+            installModuleSteps(module, show)
         }
     }
 
-    private suspend fun installModuleAsync(module: Module, show: Boolean = true) {
-        withBackgroundProgress(project, message("aplusCourses")) {
+    private suspend fun installModuleSteps(module: Module, show: Boolean) {
+        module.setLoading()
+        fireModuleStatusChanged(module)
+        try {
             reportSequentialProgress { reporter ->
-                reporter.indeterminateStep(message("services.progress.installing", module.name))
-                CoursesLogger.info("Installing ${module.name}")
-                withContext(moduleOperationDispatcher) {
-                    module.downloadAndInstall()
-                }
-                state.course?.callbacks?.invokePostDownloadModuleCallbacks(project, module)
-
-                fireModulesUpdated()
-                if (show) project.service<Opener>().showModuleInProjectTree(module)
-                val dependencies = getMissingDependencies(module)
-
-                dependencies.forEach {
+                reporter.nextStep(endFraction = DOWNLOAD_DONE) {
+                    CoursesLogger.info("Installing ${module.name}")
                     withContext(moduleOperationDispatcher) {
-                        it.downloadAndInstall()
+                        module.downloadAndInstall()
                     }
                 }
-                if (dependencies.isNotEmpty()) {
-                    CoursesLogger.info("Installed ${module.name} and its dependencies ${dependencies.map { it.name }}")
-                } else {
-                    CoursesLogger.info("Installed ${module.name}")
-                }
-                refreshModuleStatuses()
-            }
 
+                reporter.nextStep(CALLBACKS_DONE) {
+                    state.course?.callbacks?.invokePostDownloadModuleCallbacks(project, module)
+                    fireModulesUpdated()
+                    if (show) project.service<Opener>().showModuleInProjectTree(module)
+                }
+
+                val dependencies = getMissingDependencies(module)
+                reporter.nextStep(DEPENDENCIES_DONE) {
+                    if (dependencies.isNotEmpty()) {
+                        reportSequentialProgress(dependencies.size) { dependencyReporter ->
+                            dependencies.forEach { dependency ->
+                                dependencyReporter.sizedStep(
+                                    workSize = 1,
+                                    text = message("services.progress.installing", dependency.name)
+                                ) {
+                                    withContext(moduleOperationDispatcher) {
+                                        dependency.downloadAndInstall()
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (dependencies.isNotEmpty()) {
+                    CoursesLogger.info(
+                        "Installed ${module.name} dependencies ${dependencies.map { it.name }}"
+                    )
+                }
+
+                reporter.nextStep(FINISHED) {
+                    refreshModuleStatuses()
+                }
+            }
+        } catch (e: CancellationException) {
+            module.clearLoading()
+            fireModuleStatusChanged(module)
+            throw e
+        } catch (e: Exception) {
+            module.clearLoading()
+            fireModuleStatusChanged(module)
+            refreshModuleStatuses()
+            throw e
         }
     }
 
     fun installModule(module: Module, show: Boolean = true) {
+        module.setLoading()
+        fireModuleStatusChanged(module)
         cs.launch {
             installModuleAsync(module, show)
         }
@@ -450,6 +504,14 @@ class CourseManager(
         }
     }
 
+    private fun fireModuleStatusChanged(module: Module) {
+        application.invokeLater {
+            project.messageBus
+                .syncPublisher(MODULES_TOPIC)
+                .onModuleStatusChanged(module)
+        }
+    }
+
     private fun fireCourseUpdated() {
         application.invokeLater {
             project.messageBus
@@ -465,6 +527,7 @@ class CourseManager(
 
     interface ModuleListener {
         fun onModulesUpdated(course: Course?)
+        fun onModuleStatusChanged(module: Module)
     }
 
     interface CourseListener {
@@ -513,5 +576,18 @@ class CourseManager(
         private const val CONFIG_LOADED = 5
         private const val CONTENT_LOADED = 15
         private const val REFRESH_FINISHED = 100
+
+        /**
+         * How the install progress bar is divided between the phases of installing a module.
+         *
+         * The download takes much longer than the phases after it, so it owns nearly all the bar.
+         */
+        private const val DOWNLOAD_DONE = 88
+        private const val CALLBACKS_DONE = 90
+        private const val DEPENDENCIES_DONE = 98
+        private const val FINISHED = 100
+
+        /** Bursts of installs within this window share a single module status sweep. */
+        private val MODULE_STATUS_REFRESH_DEBOUNCE = 300.milliseconds
     }
 }

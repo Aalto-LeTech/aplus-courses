@@ -46,11 +46,4 @@ class SbtModule(
         internal fun withoutOwnSubmodules(dependencies: Set<String>, moduleName: String): Set<String> =
             dependencies.filterNotTo(mutableSetOf()) { it.startsWith("$moduleName.") }
     }
-
-    override fun waitForLoad() {
-        val startTime = System.currentTimeMillis()
-        while (platformObject == null && System.currentTimeMillis() - startTime < 300 * 1000) {
-            Thread.sleep(1000)
-        }
-    }
 }

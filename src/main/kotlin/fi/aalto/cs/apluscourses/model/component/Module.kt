@@ -3,14 +3,13 @@ package fi.aalto.cs.apluscourses.model.component
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.application.edtWriteAction
-import com.intellij.openapi.module.Module
 import com.intellij.openapi.module.ModuleManager
+import com.intellij.openapi.project.ModuleListener
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.rootManager
 import com.intellij.openapi.roots.LibraryOrderEntry
 import com.intellij.openapi.roots.ModuleOrderEntry
 import com.intellij.openapi.roots.RootPolicy
-import com.intellij.util.application
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.intellij.util.concurrency.annotations.RequiresWriteLock
 import com.intellij.util.io.createParentDirectories
@@ -23,14 +22,17 @@ import fi.aalto.cs.apluscourses.services.course.CourseManager
 import fi.aalto.cs.apluscourses.ui.module.UpdateModuleDialog
 import fi.aalto.cs.apluscourses.utils.FileUtil
 import fi.aalto.cs.apluscourses.utils.Version
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import org.jetbrains.annotations.NonNls
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption
 import kotlin.io.path.exists
 import kotlin.io.path.extension
 import kotlin.io.path.moveTo
+import kotlin.time.Duration.Companion.minutes
 import com.intellij.openapi.module.Module as IdeaModule
 
 open class Module(
@@ -47,7 +49,7 @@ open class Module(
     override val fullPath: Path
         get() = Path.of(project.basePath!!).resolve(path)
 
-    override val platformObject: Module?
+    override val platformObject: IdeaModule?
         get() = ModuleManager.getInstance(project).findModuleByName(name)
 
     val metadata: ModuleMetadata?
@@ -68,11 +70,21 @@ open class Module(
         status = Status.ERROR
     }
 
+    fun setLoading() {
+        status = Status.LOADING
+    }
+
+    fun clearLoading() {
+        if (status == Status.LOADING) {
+            status = Status.NOT_LOADED
+        }
+    }
+
     private val documentationIndexFullPath: Path
         get() = fullPath.resolve("doc").resolve("index.html")
 
     val documentationExists: Boolean
-        get() = status == Status.LOADED && documentationIndexFullPath.toFile().exists()
+        get() = status == Status.LOADED && documentationIndexFullPath.exists()
 
     private fun changedFiles(): List<Path> {
         val fullPath = fullPath
@@ -83,7 +95,7 @@ open class Module(
             FileUtil.getChangedFilesInDirectory(
                 fullPath.toFile(),
                 timestampWithDelay
-            ).filter { it.extension != "iml" }
+            ).filter { it.extension != IML_EXTENSION }
         }
     }
 
@@ -115,7 +127,27 @@ open class Module(
         }
     }
 
-    open fun waitForLoad() {
+    /**
+     * Waits until the module appears in the project model. A plain module is committed
+     * synchronously by [loadToProject], so this returns immediately. An external-system import
+     * (like sbt) adds the module asynchronously and resolves here through the module-added event.
+     */
+    suspend fun waitForLoad() {
+        if (platformObject != null) return
+        val loaded = CompletableDeferred<Unit>()
+        val connection = project.messageBus.connect()
+        try {
+            connection.subscribe(ModuleListener.TOPIC, object : ModuleListener {
+                override fun modulesAdded(project: Project, modules: List<IdeaModule>) {
+                    if (modules.any { it.name == name }) loaded.complete(Unit)
+                }
+            })
+
+            if (platformObject != null) return
+            withTimeoutOrNull(LOAD_TIMEOUT) { loaded.await() }
+        } finally {
+            connection.disconnect()
+        }
     }
 
     @RequiresEdt
@@ -134,11 +166,11 @@ open class Module(
                 !UpdateModuleDialog(project, this@Module, filesWithChanges).showAndGet()
             }
             if (canceled) return
-            val backupDir = fullPath.resolve(backupDir)
+            val backupPath = fullPath.resolve(BACKUP_DIR)
 
             for (file in filesWithChanges) {
                 val relativePath = fullPath.relativize(file)
-                val targetPath = backupDir.resolve(relativePath)
+                val targetPath = backupPath.resolve(relativePath)
 
                 if (!targetPath.parent.exists()) {
                     targetPath.createParentDirectories()
@@ -147,7 +179,7 @@ open class Module(
             }
         }
 
-        FileUtil.deleteFilesInDirectory(fullPath.toFile(), fullPath.resolve(backupDir))
+        FileUtil.deleteFilesInDirectory(fullPath.toFile(), fullPath.resolve(BACKUP_DIR))
         downloadAndInstall(updating = true)
 
         val newFiles = FileUtil.getAllFilesInDirectory(fullPath.toFile())
@@ -166,46 +198,42 @@ open class Module(
         if (status == Status.LOADING) return // Module is still loading
 
         val module = platformObject
-        val exists = module != null
-        val loaded = module != null && module.isLoaded
-
-        if (loaded) {
-            status = Status.LOADED
-            return
-        } else if (exists) {
-            status = Status.ERROR // The platform object exists but is not loaded
-            return
-        } else {
-            status = Status.NOT_LOADED
-            return
+        status = when {
+            module == null -> Status.NOT_LOADED
+            module.isLoaded -> Status.LOADED
+            // The platform object exists but is not loaded
+            else -> Status.ERROR
         }
     }
 
     val isUpdateAvailable: Boolean
-        get() = status == Status.LOADED && metadata != null && latestVersion > metadata!!.version
+        get() {
+            val installedVersion = metadata?.version ?: return false
+            return status == Status.LOADED && latestVersion > installedVersion
+        }
 
     val isMinorUpdate: Boolean
-        get() = isUpdateAvailable && latestVersion.major == metadata!!.version.major
+        get() = isUpdateAvailable && latestVersion.major == metadata?.version?.major
 
     enum class Category {
         ACTION_REQUIRED, INSTALLED, AVAILABLE
     }
 
     val category: Category
-        get() {
-            return if (status == Status.ERROR || isUpdateAvailable) {
-                Category.ACTION_REQUIRED
-            } else if (status == Status.LOADED) {
-                Category.INSTALLED
-            } else {
-                Category.AVAILABLE
-            }
+        get() = when {
+            status == Status.ERROR || isUpdateAvailable -> Category.ACTION_REQUIRED
+            status == Status.LOADED -> Category.INSTALLED
+            else -> Category.AVAILABLE
         }
 
     companion object {
         @NonNls
-        val backupDir: String = "backup"
+        const val BACKUP_DIR: String = "backup"
 
+        private val LOAD_TIMEOUT = 5.minutes
+
+        @NonNls
+        private const val IML_EXTENSION = "iml"
 
         /**
          * This class is a [RootPolicy] that builds a set of the names of those
