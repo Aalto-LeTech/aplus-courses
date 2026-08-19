@@ -48,6 +48,26 @@ class CourseFileManager(private val project: Project) :
         var importSettings: Boolean by property(false)
         var initialized: Boolean by property(false)
 
+        /** Pixel size of the course banner image at the last load. 0 means not yet known. */
+        var bannerImageWidth: Int by property(0)
+        var bannerImageHeight: Int by property(0)
+
+        var courseHadEnded: Boolean by property(false)
+
+        /** Whether this course shows a "points until next grade" section. */
+        var showsGradeProgression: Boolean by property(false)
+
+        /** Values from the last successful load, used until fresh ones arrive. */
+        var cachedCourseName: String? by string(null)
+
+        var cachedBannerUrl: String? by string(null)
+
+        var cachedUserName: String? by string(null)
+
+        var cachedCoursePageUrl: String? by string(null)
+        var cachedCategoryMaxPoints: MutableMap<String, Int> by map()
+        var cachedCategories: MutableList<String> by list()
+
         @get:OptionTag("newsReadTime", converter = InstantConverter::class)
         var newsReadTime: Instant by property(Instant.fromEpochSeconds(0)) { it == Instant.fromEpochSeconds(0) }
 
@@ -60,6 +80,7 @@ class CourseFileManager(private val project: Project) :
         @Attribute("downloadedAt", converter = InstantConverter::class) var downloadedAt: Instant,
         @Attribute("version", converter = VersionConverter::class) var version: Version
     ) {
+        /** Required by the XML serializer to instantiate the tag before populating it. */
         constructor() : this("", Instant.fromEpochSeconds(0), Version.EMPTY)
     }
 
@@ -98,8 +119,9 @@ class CourseFileManager(private val project: Project) :
 
     fun migrateOldConfig() {
         if (state.url == null) {
+            val basePath = project.basePath ?: return
             val file =
-                Path(project.basePath!!).resolve(Project.DIRECTORY_STORE_FOLDER).resolve("a-plus-project.json").toFile()
+                Path(basePath).resolve(Project.DIRECTORY_STORE_FOLDER).resolve("a-plus-project.json").toFile()
             if (file.exists()) {
                 val oldConfig = file.readText()
                 val json = Json {

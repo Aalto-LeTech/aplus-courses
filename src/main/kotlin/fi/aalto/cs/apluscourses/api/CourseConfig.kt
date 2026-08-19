@@ -12,6 +12,7 @@ import io.ktor.http.*
 import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import org.jetbrains.annotations.NonNls
 import java.io.IOException
 import java.nio.channels.UnresolvedAddressException
 
@@ -20,7 +21,7 @@ object CourseConfig {
      * This class serves as the serializer and documentation for the course configuration file.
      *
      * Example configuration file:
-     * ```
+     * ```json
      * {
      *     "id": "197",
      *     "name": "O1",
@@ -191,15 +192,16 @@ object CourseConfig {
     )
 
     /**
-     * ```
-     * "repl": {
+     * ```json
+     * {
+     *   "repl": {
      *     "initialCommands": {
-     *         "Adventure": [
-     *             "import o1.adventure._"
-     *         ]
+     *       "Adventure": [
+     *         "import o1.adventure._"
+     *        ]
      *     },
      *     "arguments": "-new-syntax -feature -deprecation -explain-types"
-     * }
+     * }}
      * ```
      * @property initialCommands A map from a module name to an array of commands that get run when opening the REPL for the given module.
      * @property arguments Arguments for the Scala compiler of the REPL.
@@ -211,16 +213,15 @@ object CourseConfig {
     )
 
     /**
-     * ```
-     * "modules": [
-     *     {
+     * ```json
+     * {
+     *   "modules": [{
      *     "name": "Adventure",
      *     "language": "en",
      *     "url": "https://grader.cs.aalto.fi/static/O1_2021/projects/given/Adventure/Adventure.zip",
      *     "version": "2.3",
      *     "changelog": "Fixed game crashing on some inputs."
-     *     }
-     * ]
+     * }]}
      * ```
      * @property name Name for the module shown in the UI.
      * @property url URL to a .zip file containing skeleton code, that the plugin downloads.
@@ -243,7 +244,31 @@ object CourseConfig {
     data class Grading(
         val style: String,
         val points: Map<String, Map<String, Int>>
-    )
+    ) {
+        /**
+         * The categories included in the grading rules.
+         *
+         * Optional categories such as `challenge` have no grade, so rules do not list them.
+         *
+         * The `total` style has no categories. Its rules use the key "total".
+         */
+        fun categories(): List<String>? =
+            if (style == STYLE_TOTAL) null
+            else points.values.flatMap { it.keys }.distinct().sorted()
+
+        /** Whether the plugin can calculate the points until the next grade for this style. */
+        val showsGradeProgression: Boolean get() = style in SUPPORTED_STYLES
+
+        companion object {
+            @NonNls
+            const val STYLE_O1: String = "o1"
+
+            @NonNls
+            const val STYLE_TOTAL: String = "total"
+
+            private val SUPPORTED_STYLES = setOf(STYLE_O1, STYLE_TOTAL)
+        }
+    }
 
     suspend fun get(project: Project): JSON? {
         val url = CourseFileManager.getInstance(project).state.url ?: return null
