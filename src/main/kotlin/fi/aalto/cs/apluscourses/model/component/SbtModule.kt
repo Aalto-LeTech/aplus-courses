@@ -39,6 +39,14 @@ class SbtModule(
         ExternalSystemUtil.refreshProjects(ImportSpecBuilder(project, id))
     }
 
+    /** The sbt import splits the module into submodules (`X.main`, `X.test`, nested projects), those are its parts, not dependencies. */
+    override fun findDependencies(): Set<String> = withoutOwnSubmodules(super.findDependencies(), name)
+
+    companion object {
+        internal fun withoutOwnSubmodules(dependencies: Set<String>, moduleName: String): Set<String> =
+            dependencies.filterNotTo(mutableSetOf()) { it.startsWith("$moduleName.") }
+    }
+
     override fun waitForLoad() {
         val startTime = System.currentTimeMillis()
         while (platformObject == null && System.currentTimeMillis() - startTime < 300 * 1000) {

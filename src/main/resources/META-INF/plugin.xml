@@ -26,11 +26,13 @@
         <!--        <httpRequestHandler implementation="fi.aalto.cs.apluscourses.intellij.services.OpenSubmissionService"/>-->
         <projectConfigurable key="aplusCourses"
                              instance="fi.aalto.cs.apluscourses.config.APlusConfigurable"/>
-        <applicationService serviceInterface="com.intellij.openapi.roots.ui.configuration.actions.ModuleDeleteProvider"
-                            serviceImplementation="fi.aalto.cs.apluscourses.services.APlusModuleDeleteProvider"
-                            overrides="true"/>
         <iw.actionProvider implementation="fi.aalto.cs.apluscourses.services.OpenDocumentationActionProvider"/>
     </extensions>
+
+    <projectListeners>
+        <listener class="fi.aalto.cs.apluscourses.services.ModuleDependencyPreserver"
+                  topic="com.intellij.openapi.project.ModuleListener"/>
+    </projectListeners>
 
     <actions>
         <group id="fi.aalto.cs.apluscourses.actions.ActionGroups.EXERCISE_ACTIONS">
