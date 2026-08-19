@@ -24,6 +24,8 @@ import fi.aalto.cs.apluscourses.services.PluginSettings
 import fi.aalto.cs.apluscourses.services.ProjectInitializationTracker
 import fi.aalto.cs.apluscourses.services.course.CourseFileManager
 import fi.aalto.cs.apluscourses.services.course.CourseManager
+import fi.aalto.cs.apluscourses.services.course.CourseSetupStatus
+import fi.aalto.cs.apluscourses.services.course.SetupStepState
 import fi.aalto.cs.apluscourses.services.course.InitializationStatus
 import fi.aalto.cs.apluscourses.services.course.SettingsImporter
 import fi.aalto.cs.apluscourses.utils.CoursesLogger
@@ -115,6 +117,32 @@ internal class InitializationActivity :
         val courseFileManager = CourseFileManager.getInstance(project)
         val isCourseInitialized = courseFileManager.state.initialized
 
+        val setup = CourseSetupStatus.getInstance(project)
+        setup.report(
+            CourseSetupStatus.CONFIGURATION,
+            MyBundle.message("ui.setup.configuration"),
+            SetupStepState.DONE
+        )
+        if (courseConfig.requiredPlugins.isNotEmpty()) {
+            setup.report(
+                CourseSetupStatus.PLUGINS,
+                MyBundle.message("ui.setup.plugins"),
+                SetupStepState.RUNNING
+            )
+        }
+        if (!isCourseInitialized) {
+            setup.report(
+                CourseSetupStatus.SETTINGS,
+                MyBundle.message("ui.setup.settings"),
+                SetupStepState.PENDING
+            )
+        }
+
+        project.service<CourseManager>().restart()
+        withContext(Dispatchers.EDT) {
+            ToolWindowManager.getInstance(project).getToolWindow("A+ Courses")?.activate(null)
+        }
+
         val needsRestartForPlugins =
             !PluginAutoInstaller.ensureDependenciesInstalled(
                 project,
@@ -126,6 +154,7 @@ internal class InitializationActivity :
         var needsRestartForSettings = false
 
         if (!isCourseInitialized) {
+            setup.update(CourseSetupStatus.SETTINGS, SetupStepState.RUNNING)
             courseFileManager.state.initialized = true
             val settingsImporter = SettingsImporter.getInstance(project)
             settingsImporter.importProjectSettings(resourceUrls(courseConfig.resources))
@@ -138,9 +167,11 @@ internal class InitializationActivity :
                 settingsImporter.importIdeSettings(resourceUrls(courseConfig.resources))
                 needsRestartForSettings = true
             }
+            setup.update(CourseSetupStatus.SETTINGS, SetupStepState.DONE)
         }
 
         if ((needsRestartForPlugins || needsRestartForSettings)) {
+            CourseManager.getInstance(project).awaitFirstRefresh()
             project.service<ProjectInitializationTracker>().waitForAllTasks()
             val willRestart = withContext(Dispatchers.EDT) {
                 askForIDERestart(project, newProject = !isCourseInitialized)
@@ -152,16 +183,10 @@ internal class InitializationActivity :
             }
         }
 
-        project.service<CourseManager>().restart()
-
 //        if (!PluginIntegrityChecker.isPluginCorrectlyInstalled()) {
 //            logger.warn("Missing one or more dependencies")
 //            ApplicationManager.getApplication().invokeLater { IntegrityCheckDialog.show() }
 //        }
-
-        withContext(Dispatchers.EDT) {
-            ToolWindowManager.getInstance(project).getToolWindow("A+ Courses")?.activate(null)
-        }
     }
 
     private fun askForIDERestart(project: Project, newProject: Boolean) = Messages.showOkCancelDialog(

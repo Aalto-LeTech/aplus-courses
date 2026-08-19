@@ -13,12 +13,15 @@ import com.intellij.openapi.roots.RootPolicy
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.intellij.util.concurrency.annotations.RequiresWriteLock
 import com.intellij.util.io.createParentDirectories
+import fi.aalto.cs.apluscourses.MyBundle
 import fi.aalto.cs.apluscourses.notifications.ModuleUpdatedNotification
 import fi.aalto.cs.apluscourses.services.Notifier
 import fi.aalto.cs.apluscourses.services.PluginSettings
 import fi.aalto.cs.apluscourses.services.course.CourseFileManager
 import fi.aalto.cs.apluscourses.services.course.CourseFileManager.ModuleMetadata
 import fi.aalto.cs.apluscourses.services.course.CourseManager
+import fi.aalto.cs.apluscourses.services.course.CourseSetupStatus
+import fi.aalto.cs.apluscourses.services.course.SetupStepState
 import fi.aalto.cs.apluscourses.ui.module.UpdateModuleDialog
 import fi.aalto.cs.apluscourses.utils.FileUtil
 import fi.aalto.cs.apluscourses.utils.Version
@@ -34,6 +37,7 @@ import kotlin.io.path.extension
 import kotlin.io.path.moveTo
 import kotlin.time.Duration.Companion.minutes
 import com.intellij.openapi.module.Module as IdeaModule
+import fi.aalto.cs.apluscourses.utils.formatFileSize
 
 open class Module(
     name: String,
@@ -99,7 +103,7 @@ open class Module(
         }
     }
 
-    override suspend fun downloadAndInstall(updating: Boolean) {
+    override suspend fun downloadAndInstall(updating: Boolean, trackSetup: Boolean) {
         val oldPlatformObject = platformObject
         if (oldPlatformObject != null) {
             if (!updating) {
@@ -110,7 +114,21 @@ open class Module(
             }
         }
         status = Status.LOADING
-        downloadAndUnzipZip(zipUrl, fullPath.parent)
+        val setup = CourseSetupStatus.getInstance(project).takeIf { trackSetup }
+        val step = CourseSetupStatus.moduleStep(name)
+        setup?.report(step, MyBundle.message("ui.setup.module", name), SetupStepState.RUNNING)
+        downloadAndUnzipZip(zipUrl, fullPath.parent) { copied, total ->
+            setup?.update(
+                step,
+                SetupStepState.RUNNING,
+                MyBundle.message(
+                    "ui.setup.ofTotal",
+                    formatFileSize(copied),
+                    formatFileSize(total)
+                ),
+                detailIsMeasurement = true
+            )
+        }
         CourseFileManager.getInstance(project).addModule(this)
 
         edtWriteAction {
@@ -118,6 +136,7 @@ open class Module(
         }
 
         waitForLoad()
+        setup?.update(step, SetupStepState.DONE)
         status = Status.LOADED
         val initialReplCommands = CourseManager.course(project)?.replInitialCommands?.get(name)
         val platformModule = platformObject

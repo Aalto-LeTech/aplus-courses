@@ -388,16 +388,18 @@ class CourseManager(
         show: Boolean = true,
         ownTask: Boolean = true
     ) {
+        // An install with no task of its own is part of a course refresh, and only those
+        // belong on the setup checklist.
         if (ownTask) {
             withBackgroundProgress(project, message("services.progress.installing", module.name)) {
-                installModuleSteps(module, show)
+                installModuleSteps(module, show, trackSetup = false)
             }
         } else {
-            installModuleSteps(module, show)
+            installModuleSteps(module, show, trackSetup = true)
         }
     }
 
-    private suspend fun installModuleSteps(module: Module, show: Boolean) {
+    private suspend fun installModuleSteps(module: Module, show: Boolean, trackSetup: Boolean) {
         module.setLoading()
         fireModuleStatusChanged(module)
         try {
@@ -405,7 +407,7 @@ class CourseManager(
                 reporter.nextStep(endFraction = DOWNLOAD_DONE) {
                     CoursesLogger.info("Installing ${module.name}")
                     withContext(moduleOperationDispatcher) {
-                        module.downloadAndInstall()
+                        module.downloadAndInstall(trackSetup = trackSetup)
                     }
                 }
 
@@ -425,7 +427,7 @@ class CourseManager(
                                     text = message("services.progress.installing", dependency.name)
                                 ) {
                                     withContext(moduleOperationDispatcher) {
-                                        dependency.downloadAndInstall()
+                                        dependency.downloadAndInstall(trackSetup = trackSetup)
                                     }
                                 }
                             }
