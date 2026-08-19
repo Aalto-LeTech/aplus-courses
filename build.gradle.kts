@@ -26,6 +26,21 @@ kotlin {
     }
 }
 
+val pluginVersionResourceDir: Provider<Directory> = layout.buildDirectory.dir("generated/pluginVersion")
+
+val generatePluginVersionResource: TaskProvider<WriteProperties> =
+    tasks.register<WriteProperties>("generatePluginVersionResource") {
+        description = "Writes pluginVersion into a properties file bundled as a resource, so the plugin can read its own version at runtime."
+        destinationFile = pluginVersionResourceDir.map { it.file("aplus-courses-version.properties") }
+        property("version", providers.gradleProperty("pluginVersion").get())
+    }
+
+sourceSets {
+    main {
+        resources.srcDir(generatePluginVersionResource.map { pluginVersionResourceDir })
+    }
+}
+
 // Configure project's dependencies
 repositories {
     mavenCentral()
