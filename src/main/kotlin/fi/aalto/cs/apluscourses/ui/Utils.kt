@@ -8,18 +8,29 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.ui.AnimatedIcon
+import com.intellij.ui.CollectionListModel
 import com.intellij.ui.components.ActionLink
 import com.intellij.ui.components.AnActionLink
 import com.intellij.ui.components.JBList
+import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.dsl.builder.Align
 import com.intellij.ui.dsl.builder.Cell
 import com.intellij.ui.dsl.builder.Row
 import com.intellij.ui.dsl.builder.panel
+import com.intellij.util.ui.JBUI
 import fi.aalto.cs.apluscourses.icons.CoursesIcons
 import org.jetbrains.annotations.Nls
+import java.awt.BorderLayout
+import java.awt.Dimension
+import java.awt.Rectangle
 import java.awt.event.ActionEvent
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.swing.Icon
+import javax.swing.JComponent
+import javax.swing.JPanel
+import javax.swing.JViewport
+import javax.swing.ScrollPaneConstants
+import javax.swing.Scrollable
 import javax.swing.ListCellRenderer
 import javax.swing.ListSelectionModel
 
@@ -29,6 +40,41 @@ object Utils {
             row {
                 icon(CoursesIcons.Loading).resizableColumn().align(Align.CENTER)
             }.resizableRow()
+        }
+    }
+
+    /**
+     * Wraps [content] in a vertical scroll pane that gives it the viewport height while it fits.
+     */
+    fun stretchingScrollPane(content: JComponent): JBScrollPane {
+        val view = object : JPanel(BorderLayout()), Scrollable {
+            override fun getPreferredScrollableViewportSize(): Dimension = preferredSize
+
+            override fun getScrollableUnitIncrement(
+                visibleRect: Rectangle,
+                orientation: Int,
+                direction: Int
+            ): Int = JBUI.scale(SCROLL_UNIT)
+
+            override fun getScrollableBlockIncrement(
+                visibleRect: Rectangle,
+                orientation: Int,
+                direction: Int
+            ): Int = visibleRect.height
+
+            override fun getScrollableTracksViewportWidth(): Boolean = true
+
+            override fun getScrollableTracksViewportHeight(): Boolean {
+                val viewport = parent as? JViewport ?: return true
+                return viewport.height >= preferredSize.height
+            }
+        }
+        view.add(content, BorderLayout.CENTER)
+
+        return JBScrollPane(view).apply {
+            border = JBUI.Borders.empty()
+            verticalScrollBarPolicy = ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED
+            horizontalScrollBarPolicy = ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
         }
     }
 
@@ -54,40 +100,49 @@ object Utils {
     }
 
     /**
-     * A wrapper for JBList to be used with the UI DSL.
+     * A JBList kept in sync with an observable list of items.
+     *
+     * This returns the list itself, not a UI DSL cell. The caller must wrap it in a scroll pane,
+     * so that the height comes from the layout and not from the number of items.
      */
-    inline fun <reified T> Row.list(
+    fun <T> list(
         items: ObservableMutableProperty<List<T>>,
         renderer: ListCellRenderer<in T?>
-    ): Cell<JBList<T>> {
-        val list = JBList(items.get())
+    ): JBList<T> {
+        val model = CollectionListModel(items.get())
+        // JList returns false for a vertical layout, which lets the widest item set the
+        // viewport width.
+        val list = object : JBList<T>(model) {
+            override fun getScrollableTracksViewportWidth(): Boolean = true
+        }
         list.cellRenderer = renderer
         list.putClientProperty(AnimatedIcon.ANIMATION_IN_RENDERER_ALLOWED, true)
         list.selectionMode = ListSelectionModel.SINGLE_SELECTION
         items.afterChange {
-            list.setListData(it.toTypedArray())
+            model.replaceAll(it)
         }
-        return cell(list)
+        return list
     }
 
     /**
-     * Extension method to allow binding the selected item with a null value meaning no selection.
+     * Allows binding the selected item with a null value meaning no selection.
      */
-    fun <T, C : JBList<T>> Cell<C>.bindItem(property: ObservableMutableProperty<T?>): Cell<C> {
-        return applyToComponent {
-            setSelectedValue(property.get(), false)
-            val mutex = AtomicBoolean()
-            property.afterChange {
-                mutex.lockOrSkip {
-                    setSelectedValue(it, false)
-                }
-            }
-            this.addListSelectionListener {
-                mutex.lockOrSkip {
-                    property.set(selectedValue)
-                }
+    fun <T> JBList<T>.bindItem(property: ObservableMutableProperty<T?>): JBList<T> {
+        setSelectedValue(property.get(), false)
+        val mutex = AtomicBoolean()
+        property.afterChange {
+            mutex.lockOrSkip {
+                setSelectedValue(it, false)
             }
         }
+        addListSelectionListener {
+            mutex.lockOrSkip {
+                property.set(selectedValue)
+            }
+        }
+        return this
     }
 
+
+    private const val SCROLL_UNIT = 16
 }

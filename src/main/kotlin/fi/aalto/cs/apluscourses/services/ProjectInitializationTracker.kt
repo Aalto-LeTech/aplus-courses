@@ -12,16 +12,15 @@ import kotlinx.coroutines.launch
 class ProjectInitializationTracker(val project: Project, val cs: CoroutineScope) {
     private val initializationTasks: MutableList<Deferred<Boolean>> = mutableListOf()
 
-    fun addInitializationTask(task: Deferred<Boolean>) {
-        initializationTasks.add(task)
-    }
-
     fun addInitializationTask(task: suspend () -> Unit) {
         val deferred = CompletableDeferred<Boolean>()
         initializationTasks.add(deferred)
         cs.launch {
-            task()
-            deferred.complete(true)
+            try {
+                task()
+            } finally {
+                deferred.complete(true)
+            }
         }
     }
 
