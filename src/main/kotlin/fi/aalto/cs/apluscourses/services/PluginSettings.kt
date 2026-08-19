@@ -12,6 +12,10 @@ object PluginSettings {
     @NonNls
     const val A_PLUS: String = "A+"
 
+    /** This plugin's own id, matching the `<id>` in plugin.xml. */
+    @NonNls
+    const val PLUGIN_ID: String = "fi.aalto.cs.intellij-plugin"
+
     //  15 minutes in milliseconds
     const val UPDATE_INTERVAL: Long = 15L * 60 * 1000
 
