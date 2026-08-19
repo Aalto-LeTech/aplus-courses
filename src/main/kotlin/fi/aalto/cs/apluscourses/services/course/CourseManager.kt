@@ -10,6 +10,7 @@ import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.intellij.util.messages.Topic
 import com.intellij.util.messages.Topic.ProjectLevel
 import fi.aalto.cs.apluscourses.MyBundle.message
+import fi.aalto.cs.apluscourses.activities.InitializationActivity
 import fi.aalto.cs.apluscourses.api.APlusApi
 import fi.aalto.cs.apluscourses.api.CourseConfig
 import fi.aalto.cs.apluscourses.model.Course
@@ -18,6 +19,7 @@ import fi.aalto.cs.apluscourses.model.component.Module
 import fi.aalto.cs.apluscourses.model.component.SbtModule
 import fi.aalto.cs.apluscourses.model.news.NewsList
 import fi.aalto.cs.apluscourses.model.people.User
+import fi.aalto.cs.apluscourses.notifications.MissingDependencyNotification
 import fi.aalto.cs.apluscourses.notifications.NewModulesVersionsNotification
 import fi.aalto.cs.apluscourses.services.*
 import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdater
@@ -30,7 +32,9 @@ import kotlin.time.Instant
 import java.io.IOException
 import java.nio.channels.UnresolvedAddressException
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.Executors
+import kotlin.time.Duration.Companion.milliseconds
 
 @Service(Service.Level.PROJECT)
 class CourseManager(
@@ -49,7 +53,12 @@ class CourseManager(
         var alwaysShowGroups: Boolean = false
         var settingsImported: Boolean = false
         var error: Error? = null
+        var networkErrorMessage: String? = null
         var missingDependencies: Map<String, List<Component<*>>> = mapOf()
+
+        /** Dependency names already reported, so the notification is not repeated every refresh. */
+        val notifiedMissingDependencies: MutableSet<String> = ConcurrentHashMap.newKeySet()
+
         fun clearAll() {
             course = null
             news = null
@@ -57,6 +66,7 @@ class CourseManager(
             feedbackCss = null
             settingsImported = false
             missingDependencies = emptyMap()
+            notifiedMissingDependencies.clear()
         }
     }
 
@@ -73,7 +83,13 @@ class CourseManager(
     private val notifiedModules: MutableSet<String> = ConcurrentHashMap.newKeySet()
 
     private var job: Job? = null
+
+    private val firstRefreshDone = CompletableDeferred<Unit>()
+
+    suspend fun awaitFirstRefresh(): Unit = firstRefreshDone.await()
+
     fun restart() {
+        state.error = null
         job?.cancel()
         run()
     }
@@ -83,36 +99,49 @@ class CourseManager(
     ) {
         job =
             cs.launch {
-                try {
-                    while (true) {
-                        withBackgroundProgress(project, message("aplusCourses")) {
-                            reportSequentialProgress { reporter ->
-                                reporter.indeterminateStep(message("services.progress.refreshingCourse"))
-                                doTask()
-                            }
+                while (true) {
+                    try {
+                        withBackgroundProgress(project, message("services.progress.refreshingCourse")) {
+                            doTask()
                         }
-                        cs.ensureActive()
-                        delay(updateInterval)
+                    } catch (_: CancellationException) {
+                        ensureActive()
+                    } catch (e: IOException) {
+                        handleRefreshNetworkError(e)
+                    } catch (e: UnresolvedAddressException) {
+                        handleRefreshNetworkError(e)
+                    } finally {
+                        firstRefreshDone.complete(Unit)
                     }
-                } catch (e: CancellationException) {
-                    throw e
-                } catch (e: Exception) {
-                    when (e) {
-                        is IOException, is UnresolvedAddressException -> {
-                            fireNetworkError()
-                            CoursesLogger.error("Network error in CourseManager", e)
-                            throw e
-                        }
-
-                        else -> throw e
-                    }
+                    delay(updateInterval.milliseconds)
                 }
             }
     }
 
-    fun fireNetworkError() {
+    private fun handleRefreshNetworkError(e: Exception) {
+        CoursesLogger.warn("Network error in CourseManager", e)
+        fireNetworkError(e)
+    }
+
+    /** Re-runs the startup initialization that a network failure aborted. */
+    fun retryInitialization() {
+        if (!initializationRetryInFlight.compareAndSet(false, true)) return
+        InitializationStatus.clearIsIoError(project)
+        state.error = null
+        cs.launch {
+            try {
+                InitializationActivity().execute(project)
+            } finally {
+                initializationRetryInFlight.set(false)
+            }
+        }
+    }
+
+    private val initializationRetryInFlight = AtomicBoolean(false)
+
+    fun fireNetworkError(e: Exception? = null) {
         state.error = Error.NETWORK_ERROR
-        state.clearAll()
+        state.networkErrorMessage = e?.message
         fireCourseUpdated()
     }
 
@@ -134,7 +163,8 @@ class CourseManager(
         }
     }
 
-    private suspend fun doTask() {
+    private suspend fun doTask(): Unit = reportSequentialProgress { reporter ->
+        reporter.nextStep(CONFIG_LOADED, message("services.progress.loadingCourse"))
         project.service<CourseFileManager>().migrateOldConfig()
         val courseConfig = CourseConfig.get(project)
         if (courseConfig == null) {
@@ -152,71 +182,32 @@ class CourseManager(
         }
         state.authenticated = true
         state.error = null
+        state.networkErrorMessage = null
 
         state.grading = courseConfig.grading
         state.alwaysShowGroups = courseConfig.alwaysShowGroups
+        reporter.nextStep(CONTENT_LOADED, message("services.progress.loadingContent"))
 
-        val extraCourseData = try {
-            state.user = APlusApi.me().get(project)
-            APlusApi.Course(courseConfig.id.toLong()).get(project)
-        } catch (e: Exception) {
-            CoursesLogger.error("Error while fetching user or course", e)
-
-            // Check if the user is enrolled when they cannot fetch the course
-            checkIsEnrolled(courseConfig.id.toLong(), state.user)
-
-            state.error = if (e is UnauthorizedException) Error.INVALID_TOKEN else Error.NETWORK_ERROR
-            fireCourseUpdated()
-            throw CancellationException()
-        }
-        // Check if the user is enrolled when they can fetch the course but might not be enrolled
-        checkIsEnrolled(courseConfig.id.toLong(), state.user)
         val modules = courseConfig.modules.map {
             if (it.sbt) {
-                SbtModule(
-                    it.name,
-                    it.url,
-                    it.changelog,
-                    it.version,
-                    it.language,
-                    project
-                )
+                SbtModule(it.name, it.url, it.changelog, it.version, it.language, project)
             } else {
-                Module(
-                    it.name,
-                    it.url,
-                    it.changelog,
-                    it.version,
-                    it.language,
-                    project
-                )
+                Module(it.name, it.url, it.changelog, it.version, it.language, project)
             }
         }
         val exerciseModules = courseConfig.exerciseModules.map { (exerciseId, languagesToModule) ->
             exerciseId to
                     languagesToModule
                         .map { (language, moduleName) ->
-                            var module = modules.find { it.name == moduleName }
-                            if (module == null) {
-                                module = Module(
-                                    moduleName,
-                                    "",
-                                    "",
-                                    Version.EMPTY,
-                                    null,
-                                    project
-                                )
-                            }
+                            val module = modules.find { it.name == moduleName }
+                                ?: Module(moduleName, "", "", Version.EMPTY, null, project)
                             language to module
                         }
                         .toMap()
         }.toMap()
-        state.course = Course(
+        val course = Course(
             id = courseConfig.id.toLong(),
             name = courseConfig.name,
-            htmlUrl = extraCourseData.htmlUrl,
-            imageUrl = extraCourseData.image,
-            endingTime = extraCourseData.endingTime,
             languages = courseConfig.languages,
             modules = modules,
             exerciseModules = exerciseModules,
@@ -230,18 +221,64 @@ class CourseManager(
             callbacks = Callbacks.fromJsonObject(courseConfig.callbacks),
             project
         )
-        importSettings(state.course!!)
-        state.course?.components?.values?.forEach { withContext(moduleOperationDispatcher) { it.updateStatus() } }
 
-        val course = state.course ?: return
+        val previousCourse = state.course
+        state.course = course
+        withContext(moduleOperationDispatcher) {
+            course.components.values.forEach { it.updateStatus() }
+        }
+        fireModulesUpdated()
+
+        val courseId = courseConfig.id.toLong()
+        val fetched = try {
+            coroutineScope {
+                val user = async(Dispatchers.IO) { APlusApi.me().get(project) }
+                val courseData = async(Dispatchers.IO) { APlusApi.Course(courseId).get(project) }
+                val news = async(Dispatchers.IO) { APlusApi.Course(courseId).news(project) }
+
+                state.user = user.await()
+                courseData.await() to news.await()
+            }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            state.course = previousCourse
+            if (e is ForbiddenException) {
+                CoursesLogger.info("A+ refused course $courseId, so this student is not on it")
+                state.error = Error.NOT_ENROLLED
+                state.clearAll()
+                fireCourseUpdated()
+                throw CancellationException()
+            }
+
+            checkIsEnrolled(courseId, state.user)
+
+            if (e is UnauthorizedException) {
+                CoursesLogger.warn("A+ rejected the token", e)
+                state.error = Error.INVALID_TOKEN
+            } else {
+                CoursesLogger.warn("Error while fetching user or course", e)
+                state.error = Error.NETWORK_ERROR
+                state.networkErrorMessage = e.message
+            }
+            fireCourseUpdated()
+            throw CancellationException()
+        }
+        val extraCourseData = fetched.first
+        val fetchedNews = fetched.second
+
+        checkIsEnrolled(courseConfig.id.toLong(), state.user)
+        course.htmlUrl = extraCourseData.htmlUrl
+        course.imageUrl = extraCourseData.image
+        course.endingTime = extraCourseData.endingTime
+
+        importSettings(course)
 
         ExercisesUpdater.getInstance(project).restart()
-        val newNews = APlusApi.Course(course.id).news(project)
         state.news?.news?.forEach {
-            if (it.isRead) newNews.setRead(it.id)
+            if (it.isRead) fetchedNews.setRead(it.id)
         }
-
-        state.news = newNews
+        state.news = fetchedNews
         fireNewsUpdated()
         fireCourseUpdated()
 
@@ -252,8 +289,18 @@ class CourseManager(
                 }
             }
         if (autoInstallModulesToInstall.isNotEmpty()) {
-            autoInstallModulesToInstall.forEach {
-                if (it is Module) installModuleAsync(it, false)
+            val modules = autoInstallModulesToInstall.filterIsInstance<Module>()
+            reporter.nextStep(REFRESH_FINISHED) {
+                reportSequentialProgress(modules.size) { moduleReporter ->
+                    modules.forEach { module ->
+                        moduleReporter.sizedStep(
+                            workSize = 1,
+                            text = message("services.progress.installing", module.name)
+                        ) {
+                            installModuleAsync(module, show = false)
+                        }
+                    }
+                }
             }
         } else {
             refreshModuleStatusesAsync()
@@ -286,19 +333,38 @@ class CourseManager(
     }
 
     private suspend fun refreshModuleStatusesAsync() {
-        state.missingDependencies = state.course?.modules?.mapNotNull {
-            withContext(moduleOperationDispatcher) {
-                it.updateStatus()
-            }
-            val dependencies = getMissingDependencies(it)
-            if (dependencies.isNotEmpty()) {
-                it.setError()
-                it.name to dependencies
-            } else {
-                null
-            }
-        }?.toMap() ?: emptyMap()
+        state.missingDependencies = withContext(moduleOperationDispatcher) {
+            state.course?.modules?.mapNotNull { module ->
+                module.updateStatus()
+                val dependencies = missingDependenciesOf(module)
+                if (dependencies.isNotEmpty()) {
+                    module.setError()
+                    module.name to dependencies
+                } else {
+                    null
+                }
+            }?.toMap() ?: emptyMap()
+        }
+        notifyOfUnresolvedDependencies()
         fireModulesUpdated()
+    }
+
+    private fun unresolvedDependencyNames(module: Module): Set<String> {
+        val course = state.course ?: return emptySet()
+        return module.dependencyNames
+            .orEmpty()
+            .filterTo(mutableSetOf()) { course.getComponentIfExists(it) == null }
+    }
+
+    private fun notifyOfUnresolvedDependencies() {
+        val course = state.course ?: return
+        val unresolved = course.modules
+            .flatMapTo(sortedSetOf()) { unresolvedDependencyNames(it) }
+            .filterTo(sortedSetOf()) { state.notifiedMissingDependencies.add(it) }
+        if (unresolved.isNotEmpty()) {
+            CoursesLogger.warn("Unresolved module dependencies: ${unresolved.joinToString(", ")}")
+            Notifier.notify(MissingDependencyNotification(unresolved), project)
+        }
     }
 
     fun refreshModuleStatuses() {
@@ -353,24 +419,26 @@ class CourseManager(
         }
     }
 
-    suspend fun getMissingDependencies(module: Module): List<Component<*>> {
-        return module.dependencyNames
+    suspend fun getMissingDependencies(module: Module): List<Component<*>> =
+        withContext(moduleOperationDispatcher) { missingDependenciesOf(module) }
+
+    /** Must already be running on [moduleOperationDispatcher]. */
+    private fun missingDependenciesOf(module: Module): List<Component<*>> =
+        module.dependencyNames
             ?.mapNotNull { state.course?.getComponentIfExists(it) }
-            ?.filter { module ->
-                val status = withContext(moduleOperationDispatcher) {
-                    module.updateAndGetStatus()
-                }
+            ?.filter { dependency ->
+                val status = dependency.updateAndGetStatus()
                 status == Component.Status.NOT_LOADED || status == Component.Status.ERROR
             }
             ?: emptyList()
-    }
 
 
     private fun fireNewsUpdated() {
         application.invokeLater {
+            val news = state.news ?: return@invokeLater
             project.messageBus
                 .syncPublisher(NEWS_TOPIC)
-                .onNewsUpdated(state.news!!)
+                .onNewsUpdated(news)
         }
     }
 
@@ -440,5 +508,10 @@ class CourseManager(
         fun authenticated(project: Project): Boolean? {
             return getInstance(project).state.authenticated
         }
+
+        /** How the refresh progress bar is divided between the phases of a refresh. */
+        private const val CONFIG_LOADED = 5
+        private const val CONTENT_LOADED = 15
+        private const val REFRESH_FINISHED = 100
     }
 }

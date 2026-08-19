@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.utils
 
+import kotlinx.coroutines.CancellationException
 import com.intellij.openapi.diagnostic.Logger
 import org.jetbrains.annotations.NonNls
 
@@ -27,6 +28,7 @@ object CoursesLogger {
     }
 
     fun error(@NonNls message: String, throwable: Throwable) {
+        if (throwable is CancellationException) throw throwable
         logger.error(message, throwable)
     }
 }
