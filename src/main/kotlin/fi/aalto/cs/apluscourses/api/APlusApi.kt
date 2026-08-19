@@ -1,3 +1,6 @@
+// `parent` properties are incorrectly marked as unused
+@file:Suppress("unused")
+
 package fi.aalto.cs.apluscourses.api
 
 import com.intellij.openapi.project.Project
@@ -10,10 +13,10 @@ import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.resources.*
-import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonNamingStrategy
+import org.jetbrains.annotations.NonNls
 import java.time.ZonedDateTime
 import fi.aalto.cs.apluscourses.model.Course as CourseModel
 import fi.aalto.cs.apluscourses.model.exercise.Exercise as ExerciseModel
@@ -22,8 +25,76 @@ import fi.aalto.cs.apluscourses.model.exercise.SubmissionResult as SubmissionRes
 import fi.aalto.cs.apluscourses.model.people.Group as GroupModel
 import fi.aalto.cs.apluscourses.model.people.User as UserModel
 
+@NonNls
+private const val COURSE_PATH = "/courses/{id}"
+
+@NonNls
+private const val EXERCISES_PATH = "exercises"
+
+@NonNls
+private const val POINTS_PATH = "points/me"
+
+@NonNls
+private const val SUBMISSION_DATA_PATH = "submissiondata/me"
+
+@NonNls
+private const val NEWS_PATH = "news"
+
+@NonNls
+private const val MY_GROUPS_PATH = "mygroups"
+
+@NonNls
+private const val SUBMISSION_PATH = "/submissions/{id}"
+
+@NonNls
+private const val EXERCISE_PATH = "/exercises/{id}"
+
+@NonNls
+private const val SUBMISSIONS_PATH = "submissions"
+
+@NonNls
+private const val SUBMIT_PATH = "submit"
+
+@NonNls
+private const val USERS_PATH = "/users"
+
+@NonNls
+private const val ME_PATH = "me"
+
+@NonNls
+private const val PARAM_BEST = "best"
+
+@NonNls
+private const val BEST_NO = "no"
+
+@NonNls
+private const val PARAM_FORMAT = "format"
+
+@NonNls
+private const val FORMAT_JSON = "json"
+
+// The submissiondata columns are in PascalCase.
+@NonNls
+private const val FIELD_SUBMISSION_ID = "SubmissionID"
+
+@NonNls
+private const val FIELD_USER_ID = "UserID"
+
+@NonNls
+private const val FIELD_STATUS = "Status"
+
+@NonNls
+private const val FIELD_GRADE = "Grade"
+
+@NonNls
+private const val FIELD_PENALTY = "Penalty"
+
+/** The multipart field A+ reads the submission's group and language out of. */
+@NonNls
+private const val APLUS_FORM_FIELD = "__aplus__"
+
 object APlusApi {
-    @Resource("/courses/{id}")
+    @Resource(COURSE_PATH)
     class Course(val id: Long) {
         suspend fun get(project: Project): CourseBody {
             return CoursesClient.getInstance(project).getBody<Course, CourseBody>(this@Course)
@@ -36,16 +107,12 @@ object APlusApi {
             val image: String?,
         )
 
-        @Resource("exercises")
+        @Resource(EXERCISES_PATH)
         class Exercises(val parent: Course) {
-            suspend fun get(project: Project): List<CourseModule> {
-                // TODO remove after hasSubmittableFiles fixed
-//                    CoursesClient.getInstance(project).getBody<Exercises, CourseModuleResults>(this@Exercises).results
-                val res = CoursesClient.getInstance(project).get<Exercises>(this@Exercises)
-                return json.decodeFromString<CourseModuleResults>(
-                    res.bodyAsText().replace("\"has_submittable_files\":[]", "\"has_submittable_files\":false")
-                ).results
-            }
+            suspend fun get(project: Project): List<CourseModule> =
+                CoursesClient.getInstance(project)
+                    .getBody<Exercises, CourseModuleResults>(this@Exercises)
+                    .results
 
             @Serializable
             data class CourseModuleResults(
@@ -73,21 +140,13 @@ object APlusApi {
                 val maxSubmissions: Int,
                 val hierarchicalName: String,
                 val difficulty: String,
-//            val hasSubmittableFiles: Boolean // TODO should always be bool, currently boolean or null or array
-                val hasSubmittableFiles: Boolean?
+                @Serializable(with = TruthyBooleanSerializer::class)
+                val hasSubmittableFiles: Boolean = false
             )
 
-            companion object {
-                @OptIn(ExperimentalSerializationApi::class)
-                private val json = Json { // TODO remove after hasSubmittableFiles fixed
-                    ignoreUnknownKeys = true
-                    isLenient = true
-                    namingStrategy = JsonNamingStrategy.SnakeCase
-                }
-            }
         }
 
-        @Resource("points/me")
+        @Resource(POINTS_PATH)
         class Points(val parent: Course) {
             suspend fun get(project: Project): PointsBody {
                 return CoursesClient.getInstance(project).getBody<Points, PointsBody>(this@Points)
@@ -157,13 +216,13 @@ object APlusApi {
             )
         }
 
-        @Resource("submissiondata/me")
+        @Resource(SUBMISSION_DATA_PATH)
         class SubmissionData(val parent: Course) {
             suspend fun get(project: Project): List<SubmissionDataBody> {
                 val res = CoursesClient.getInstance(project)
                     .get<SubmissionData>(this@SubmissionData) {
-                        parameter("best", "no")
-                        parameter("format", "json")
+                        parameter(PARAM_BEST, BEST_NO)
+                        parameter(PARAM_FORMAT, FORMAT_JSON)
                     }
                 return json.decodeFromString<List<SubmissionDataBody>>(res.bodyAsText())
             }
@@ -176,15 +235,15 @@ object APlusApi {
 
             @Serializable
             data class SubmissionDataBody(
-                val SubmissionID: Long,
-                val UserID: Long,
-                val Status: String,
-                val Grade: Int,
-                val Penalty: Double?
+                @SerialName(FIELD_SUBMISSION_ID) val submissionId: Long,
+                @SerialName(FIELD_USER_ID) val userId: Long,
+                @SerialName(FIELD_STATUS) val status: String,
+                @SerialName(FIELD_GRADE) val grade: Int,
+                @SerialName(FIELD_PENALTY) val penalty: Double?
             )
         }
 
-        @Resource("news")
+        @Resource(NEWS_PATH)
         class News(private val parent: Course) {
             suspend fun get(project: Project): NewsList {
                 val res = CoursesClient.getInstance(project).getBody<News, NewsBody>(this@News)
@@ -227,7 +286,7 @@ object APlusApi {
             )
         }
 
-        @Resource("mygroups")
+        @Resource(MY_GROUPS_PATH)
         class MyGroups(val parent: Course) {
             suspend fun get(project: Project): List<GroupModel> {
                 val res = CoursesClient
@@ -284,7 +343,7 @@ object APlusApi {
         }
     }
 
-    @Resource("/submissions/{id}")
+    @Resource(SUBMISSION_PATH)
     class Submission(val id: Long) {
         suspend fun get(project: Project): SubmissionBody {
             return CoursesClient.getInstance(project).getBody<Submission, SubmissionBody>(this@Submission)
@@ -306,7 +365,7 @@ object APlusApi {
         )
     }
 
-    @Resource("/exercises/{id}")
+    @Resource(EXERCISE_PATH)
     class Exercise(val id: Long) {
         suspend fun get(project: Project): Body {
             return CoursesClient.getInstance(project).getBody<Exercise, Body>(this@Exercise)
@@ -331,21 +390,21 @@ object APlusApi {
             val key: String
         )
 
-        @Resource("submissions")
+        @Resource(SUBMISSIONS_PATH)
         class Submissions(val parent: Exercise) {
-            @Resource("submit")
+            @Resource(SUBMIT_PATH)
             class Submit(val parent: Submissions) {
                 suspend fun post(submission: SubmissionModel, project: Project) {
                     val form = formData {
-                        append(
-                            "__aplus__",
-                            "{ \"group\": " + submission.group.id + ", \"lang\": \"" + submission.language + "\" }"
-                        )
+                        @NonNls val groupAndLanguage =
+                            """{ "group": ${submission.group.id}, "lang": "${submission.language}" }"""
+                        append(APLUS_FORM_FIELD, groupAndLanguage)
                         submission.files.forEach { (key, value) ->
                             run {
                                 val file = value.toFile()
+                                @NonNls val disposition = """filename="${file.name}""""
                                 append(key, file.readBytes(), Headers.build {
-                                    append(HttpHeaders.ContentDisposition, "filename=\"${file.name}\"")
+                                    append(HttpHeaders.ContentDisposition, disposition)
                                 })
                             }
                         }
@@ -359,9 +418,9 @@ object APlusApi {
             Submissions.Submit(Submissions(this)).post(submission, project)
     }
 
-    @Resource("/users")
+    @Resource(USERS_PATH)
     class Users {
-        @Resource("me")
+        @Resource(ME_PATH)
         class Me(val parent: Users) {
             suspend fun get(project: Project): UserModel {
                 val body = CoursesClient.getInstance(project).getBody<Me, UserBody>(this@Me)
