@@ -55,5 +55,9 @@ abstract class Component<T>(val name: String, protected val project: Project) {
 
     abstract fun updateStatus()
 
-    abstract suspend fun downloadAndInstall(updating: Boolean = false)
+    /**
+     * @param trackSetup whether to list this install on the course setup checklist,
+     *   true for components required by courses.
+     */
+    abstract suspend fun downloadAndInstall(updating: Boolean = false, trackSetup: Boolean = false)
 }

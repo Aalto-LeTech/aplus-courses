@@ -26,6 +26,7 @@ import fi.aalto.cs.apluscourses.model.exercise.Exercise
 import fi.aalto.cs.apluscourses.model.news.NewsList
 import fi.aalto.cs.apluscourses.services.Opener
 import fi.aalto.cs.apluscourses.services.course.CourseManager
+import fi.aalto.cs.apluscourses.services.course.CourseSetupStatus
 import fi.aalto.cs.apluscourses.services.course.CourseManager.NewsUpdaterListener
 import fi.aalto.cs.apluscourses.services.course.InitializationStatus
 import fi.aalto.cs.apluscourses.services.exercise.ExercisesTreeFilter
@@ -135,6 +136,10 @@ internal class APlusToolWindowFactory : ToolWindowFactory, DumbAware {
 
         // Force resize to trigger componentResized
         toolWindow.component.size = Dimension(toolWindow.component.width - 1, toolWindow.component.height)
+
+        connection.subscribe(CourseSetupStatus.TOPIC, CourseSetupStatus.SetupListener {
+            overviewView.update()
+        })
 
         connection.subscribe(CourseManager.COURSE_TOPIC, object : CourseManager.CourseListener {
             override fun onCourseUpdated(course: Course?) {

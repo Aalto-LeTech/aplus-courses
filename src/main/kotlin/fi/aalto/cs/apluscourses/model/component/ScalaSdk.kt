@@ -11,6 +11,9 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.util.application
+import fi.aalto.cs.apluscourses.MyBundle
+import fi.aalto.cs.apluscourses.services.course.CourseSetupStatus
+import fi.aalto.cs.apluscourses.services.course.SetupStepState
 import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.plugins.scala.project.ScalaLanguageLevel
@@ -24,6 +27,7 @@ import java.nio.file.Path
 import java.util.jar.JarInputStream
 import java.util.jar.Manifest
 import kotlin.io.path.isDirectory
+import fi.aalto.cs.apluscourses.utils.formatFileSize
 
 class ScalaSdk(private val scalaVersion: String, project: Project) : Library(scalaVersion, project) {
     @NonNls
@@ -36,15 +40,34 @@ class ScalaSdk(private val scalaVersion: String, project: Project) : Library(sca
      * be taken only once. A download with no step of its own reports into a reporter that is
      * already complete.
      */
-    override suspend fun downloadAndInstall(updating: Boolean): Unit =
+    override suspend fun downloadAndInstall(updating: Boolean, trackSetup: Boolean): Unit =
         reportSequentialProgress { reporter ->
             status = Status.LOADING
             CoursesLogger.info("Downloading Scala SDK $scalaVersion")
             val zipUrl =
                 "https://github.com/lampepfl/dotty/releases/download/$versionNumber/scala3-$versionNumber.zip"
             val path = libPath
+            val setup = CourseSetupStatus.getInstance(project).takeIf { trackSetup }
+            val step = CourseSetupStatus.moduleStep(scalaVersion)
+            setup?.report(
+                step,
+                MyBundle.message("ui.setup.scalaSdk", versionNumber),
+                SetupStepState.RUNNING
+            )
             reporter.nextStep(SDK_ZIP_DONE) {
-                downloadAndUnzipZip(zipUrl, path)
+                // Only the distribution zip reports bytes. It is much larger than the three jars.
+                downloadAndUnzipZip(zipUrl, path) { copied, total ->
+                    setup?.update(
+                        step,
+                        SetupStepState.RUNNING,
+                        MyBundle.message(
+                            "ui.setup.ofTotal",
+                            formatFileSize(copied),
+                            formatFileSize(total)
+                        ),
+                        detailIsMeasurement = true
+                    )
+                }
             }
 
             val libraryTable = libraryTable(project).modifiableModel
@@ -159,6 +182,7 @@ class ScalaSdk(private val scalaVersion: String, project: Project) : Library(sca
                 VirtualFileManager.getInstance().syncRefresh()
             }
 
+            setup?.update(step, SetupStepState.DONE)
             status = Status.LOADED
         }
 

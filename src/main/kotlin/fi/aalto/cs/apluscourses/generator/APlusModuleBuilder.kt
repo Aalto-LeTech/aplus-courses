@@ -16,6 +16,8 @@ import com.intellij.platform.ide.progress.withBackgroundProgress
 import com.intellij.util.application
 import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.services.ProjectInitializationTracker
+import fi.aalto.cs.apluscourses.services.course.CourseSetupStatus
+import fi.aalto.cs.apluscourses.services.course.SetupStepState
 import fi.aalto.cs.apluscourses.services.course.CourseFileManager
 import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import com.intellij.openapi.application.EDT
@@ -87,12 +89,17 @@ internal class APlusModuleBuilder : ModuleBuilder() {
     private suspend fun awaitJdkDownload(project: Project) {
         val sdk = readAction { ProjectRootManager.getInstance(project).projectSdk } ?: return
         if (isDownloading(sdk)) {
+            val setup = CourseSetupStatus.getInstance(project)
+            setup.report(CourseSetupStatus.JDK, message("ui.setup.jdk"), SetupStepState.RUNNING)
+
             val downloaded = withBackgroundProgress(project, message("services.progress.downloadingJdk")) {
                 withTimeoutOrNull(JDK_DOWNLOAD_TIMEOUT) { awaitDownloadFinished(sdk) }
             }
             if (downloaded == null) {
                 CoursesLogger.warn("Gave up waiting for the JDK download after $JDK_DOWNLOAD_TIMEOUT")
             }
+
+            setup.update(CourseSetupStatus.JDK, SetupStepState.DONE)
         }
 
         if (isJdkReady(sdk)) {
