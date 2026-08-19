@@ -1,7 +1,5 @@
 package fi.aalto.cs.apluscourses.utils
 
-import com.intellij.ide.plugins.PluginManagerCore.getPlugin
-import com.intellij.openapi.extensions.PluginId
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.PrimitiveKind
@@ -10,6 +8,7 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import org.jetbrains.annotations.NonNls
+import java.util.Properties
 
 @Serializable(with = VersionSerializer::class)
 open class Version(val major: Int, val minor: Int) {
@@ -67,11 +66,10 @@ open class Version(val major: Int, val minor: Int) {
     }
 }
 
-class PluginVersion(major: Int, minor: Int, val patch: Int, private val versionString: String) : Version(major, minor) {
+class PluginVersion(major: Int, minor: Int, private val versionString: String) : Version(major, minor) {
     constructor(versionString: String) : this(
         versionString.substringBefore(".").toInt(),
         versionString.substringAfter(".").substringBefore(".").toInt(),
-        versionString.substringAfterLast(".").substringBefore("-").toInt(),
         versionString
     )
 
@@ -79,13 +77,29 @@ class PluginVersion(major: Int, minor: Int, val patch: Int, private val versionS
 
     companion object {
         @NonNls
-        val current: String = getPlugin(PluginId.getId("fi.aalto.cs.intellij-plugin"))?.version ?: ""
-        val currentVersion: PluginVersion = PluginVersion(current)
+        private const val VERSION_RESOURCE = "/aplus-courses-version.properties"
+
+        /**
+         * Written by the `generatePluginVersionResource` Gradle task from the `pluginVersion`
+         * property.
+         */
+        @NonNls
+        val current: String = PluginVersion::class.java.getResourceAsStream(VERSION_RESOURCE)
+            ?.use { stream -> Properties().apply { load(stream) }.getProperty("version") }
+            ?: ""
+
+        val currentVersion: PluginVersion =
+            runCatching { PluginVersion(current) }.getOrElse {
+                CoursesLogger.error("Could not read the plugin version from $VERSION_RESOURCE", it)
+                PluginVersion(0, 0, current)
+            }
     }
 }
 
-private object VersionSerializer : KSerializer<Version> {
-    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("Version", PrimitiveKind.STRING)
+internal object VersionSerializer : KSerializer<Version> {
+    @NonNls
+    private val serialName = "Version"
+    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor(serialName, PrimitiveKind.STRING)
 
     override fun serialize(encoder: Encoder, value: Version) {
         encoder.encodeString(value.toString())
