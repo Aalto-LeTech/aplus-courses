@@ -3,6 +3,9 @@ package fi.aalto.cs.apluscourses.ui
 import com.intellij.icons.AllIcons
 import com.intellij.ide.DefaultTreeExpander
 import com.intellij.ide.util.treeView.NodeRenderer
+import com.intellij.openapi.application.EDT
+import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.application.asContextElement
 import com.intellij.openapi.application.readAction
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
@@ -57,9 +60,11 @@ class FileTree(files: List<Path>, project: Project) : Tree() {
                 }.toMap()
             }
 
-            this.model = model
-            DefaultTreeExpander(this).expandAll()
-            isRootVisible = false
+            withContext(Dispatchers.EDT + ModalityState.any().asContextElement()) {
+                this@FileTree.model = model
+                DefaultTreeExpander(this@FileTree).expandAll()
+                this@FileTree.isRootVisible = false
+            }
         }
     }
 }

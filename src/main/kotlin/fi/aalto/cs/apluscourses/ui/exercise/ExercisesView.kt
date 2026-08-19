@@ -120,9 +120,12 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true), Searc
                 is ExerciseItem -> (node.userObject as ExerciseItem).exercise.id == exercise.id
                 else -> false
             }
-        }?.let {
-            val path = TreeUtil.getPath(exerciseGroupsFilteringTree.root, it)
+        }?.let { node ->
+            val path = TreeUtil.getPath(exerciseGroupsFilteringTree.root, node)
             TreeUtil.repaintPath(exerciseGroupsFilteringTree.tree, path)
+            node.children().toList().forEach { child ->
+                TreeUtil.repaintPath(exerciseGroupsFilteringTree.tree, path.pathByAddingChild(child))
+            }
         }
     }
 
@@ -302,7 +305,7 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true), Searc
             )
 
             tree.isRootVisible = false
-            tree.cellRenderer = ExercisesTreeRenderer()
+            tree.cellRenderer = ExercisesTreeRenderer(project)
             tree.toggleClickCount = 1
             tree.putClientProperty(AnimatedIcon.ANIMATION_IN_RENDERER_ALLOWED, true) // Enable loading icon animations
         }
@@ -313,7 +316,8 @@ class ExercisesView(project: Project) : SimpleToolWindowPanel(true, true), Searc
             val selected = selectedNode.userObject as? ExercisesTreeItem ?: return
             if (selected is NewSubmissionItem) {
                 if (selected.missingModule) {
-                    project.service<Opener>().showModule(selected.exercise.module!!)
+                    val module = selected.exercise.module ?: return
+                    project.service<Opener>().showModule(module)
                 } else {
                     project.service<SubmitExercise>().submit(selected.exercise)
                 }
