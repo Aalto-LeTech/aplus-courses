@@ -59,7 +59,7 @@ class CourseSettingsStep(
         val languages = courseConfig.languages
         @NonNls val finnishCode = "fi"
 
-        pluginsPanel = PluginsPanel()
+        val plugins = PluginsPanel().also { pluginsPanel = it }
 
         if (languages.contains(finnishCode)) selectedLanguage.set(finnishCode) else selectedLanguage.set(languages.first())
 
@@ -89,8 +89,9 @@ class CourseSettingsStep(
                         )
                     }
                 }
-                if (config.programmingLanguage == "scala") {
+                if (config.programmingLanguage == SCALA_LANGUAGE) {
                     group(message("generator.APlusModuleBuilder.extra")) {
+                        jdkIntentProperty.set(ProjectWizardJdkIntent.NoJdk)
                         addSdkUi()
                     }
                 } else {
@@ -102,7 +103,7 @@ class CourseSettingsStep(
                             text(message("generator.APlusModuleBuilder.pluginsInfo"))
                         }
                         row {
-                            cell(pluginsPanel!!.content)
+                            cell(plugins.content)
                         }
                     }
                 }
@@ -114,14 +115,14 @@ class CourseSettingsStep(
 
         component.revalidate()
         component.repaint()
-        if (courseConfig.requiredPlugins.isNotEmpty()) pluginsPanel!!.load(courseConfig.requiredPlugins)
+        if (courseConfig.requiredPlugins.isNotEmpty()) plugins.load(courseConfig.requiredPlugins)
     }
 
     override fun getComponent(): JComponent = mainPanel
 
     override fun updateDataModel() {
         config.language = selectedLanguage.get()
-        config.jdk = sdkProperty.get()
+        config.jdk = jdkIntentProperty.get().prepareJdk()
         config.importSettings = !dontImportSettings.get()
     }
 
