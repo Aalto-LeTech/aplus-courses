@@ -11,7 +11,7 @@ import fi.aalto.cs.apluscourses.services.exercise.ExercisesTreeFilter
 
 class FilterActionGroup : DefaultActionGroup(), Toggleable {
     init {
-        ExercisesTreeFilter.Filter.allFilters.map { filter ->
+        ExercisesTreeFilter.Filter.allFilters.forEach { filter ->
             add(FilterAction(filter))
         }
     }

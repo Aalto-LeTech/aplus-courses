@@ -90,7 +90,7 @@ class SettingsImporter(
     @Throws(IOException::class)
     suspend fun importProjectSettings(resourceUrls: Map<String, Url>) {
         val settingsUrl = resourceUrls["projectSettings"] ?: return
-        val settingsPath = Path.of(project.basePath!!)
+        val settingsPath = Path.of(project.basePath ?: return)
         CoursesClient.getInstance(project).downloadAndUnzip(settingsUrl.toString(), settingsPath)
 
         // a hard-coded workspace setting
@@ -111,7 +111,7 @@ class SettingsImporter(
     }
 
     fun importScalaReplAdditionalArguments(string: String) {
-        Path.of(project.basePath!!)
+        Path.of(project.basePath ?: return)
             .resolve(Project.DIRECTORY_STORE_FOLDER)
             .resolve(PluginSettings.REPL_ADDITIONAL_ARGUMENTS_FILE_NAME)
             .toFile()
