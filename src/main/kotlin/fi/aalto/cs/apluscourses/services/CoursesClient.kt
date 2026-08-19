@@ -3,10 +3,9 @@ package fi.aalto.cs.apluscourses.services
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
-import com.intellij.platform.ide.progress.withBackgroundProgress
 import com.intellij.platform.util.progress.reportSequentialProgress
 import com.intellij.serialization.PropertyMapping
-import fi.aalto.cs.apluscourses.MyBundle
+import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import fi.aalto.cs.apluscourses.utils.ZipUtil
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -22,13 +21,17 @@ import io.ktor.http.content.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.utils.io.*
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonNamingStrategy
 import org.jetbrains.annotations.NonNls
 import java.io.File
+import java.util.concurrent.ConcurrentHashMap
 import java.io.IOException
 import java.nio.channels.WritableByteChannel
 import java.nio.file.Files
@@ -39,24 +42,28 @@ import kotlin.io.path.nameWithoutExtension
 
 class UnauthorizedException @PropertyMapping() constructor() :
     IOException("The server responded with 401 Unauthorized") {
-    private val serialVersionUID: Long = 1L
+    companion object {
+        private const val serialVersionUID: Long = 1L
+    }
 }
 
-@OptIn(ExperimentalSerializationApi::class)
+typealias DownloadProgress = (copiedBytes: Long, totalBytes: Long) -> Unit
+
 @Service(Service.Level.PROJECT)
 class CoursesClient(
-    private val project: Project,
     private val scope: CoroutineScope
 ) : AutoCloseable {
 
     @Volatile
     var client: HttpClient = buildClient()
 
+    /** Opted in for [JsonNamingStrategy.SnakeCase], which the A+ API's field names need. */
+    @OptIn(ExperimentalSerializationApi::class)
     fun buildClient(
         protocol: URLProtocol = URLProtocol.HTTPS,
-        host: String = "localhost",
+        @NonNls host: String = "localhost",
         port: Int = 0,
-        apiPath: String = "api/v2/"
+        @NonNls apiPath: String = "api/v2/"
     ): HttpClient =
         HttpClient(Java) {
             install(Resources)
@@ -91,8 +98,22 @@ class CoursesClient(
     fun execute(block: suspend (CoursesClient) -> Unit): Job =
         scope.launch { block(this@CoursesClient) }
 
-    suspend fun getFileSize(url: String): Long? =
-        client.head(url).also(::verifyStatus).headers[HttpHeaders.ContentLength]?.toLongOrNull()
+    /** Sizes of files already asked about. */
+    private val fileSizes = ConcurrentHashMap<String, Long>()
+
+    /**
+     * The download size of [url], from a cached value when possible.
+     */
+    suspend fun getFileSize(url: String): Long? {
+        fileSizes[url]?.let { return it }
+
+        val size = client.prepareHead(url).execute { response ->
+            verifyStatus(response)
+            response.headers[HttpHeaders.ContentLength]?.toLongOrNull()
+        }
+        size?.let { fileSizes[url] = it }
+        return size
+    }
 
     suspend fun get(
         url: String,
@@ -127,27 +148,61 @@ class CoursesClient(
         setBody(MultiPartFormDataContent(parts))
     }
 
-    suspend fun download(url: String, file: File, withAuth: Boolean = false) {
-        client.get(url) {
+    /**
+     * Streams [url] into [file], reporting how far along it is.
+     */
+    suspend fun download(
+        url: String,
+        file: File,
+        withAuth: Boolean = false,
+        onProgress: DownloadProgress? = null,
+    ) {
+        val target = file.also { it.parentFile.mkdirs(); it.createNewFile() }
+
+        client.prepareGet(url) {
             if (withAuth) addToken()
-        }.also(::verifyStatus)
-            .bodyAsChannel()
-            .copyAndClose(file.also { it.parentFile.mkdirs(); it.createNewFile() }.sinkChannel())
+        }.execute { response ->
+            verifyStatus(response)
+
+            val totalBytes = response.contentLength()?.takeIf { it > 0 }
+            if (totalBytes == null) {
+                CoursesLogger.warn("No Content-Length for $url, downloading without progress")
+                response.bodyAsChannel().copyAndClose(target.sinkChannel())
+                return@execute
+            }
+
+            reportSequentialProgress { reporter ->
+                var lastPercent = 0
+                var lastReportedAt = 0L
+                response.bodyAsChannel().copyAndClose(target.sinkChannel()) { copiedBytes ->
+                    val percent = (copiedBytes * 100 / totalBytes).toInt().coerceIn(0, 100)
+                    val now = System.currentTimeMillis()
+                    val lastCall = percent == 100 && lastPercent < 100
+                    if (!lastCall && now - lastReportedAt < MIN_PROGRESS_INTERVAL_MS) {
+                        return@copyAndClose
+                    }
+                    lastReportedAt = now
+                    if (percent > lastPercent) {
+                        lastPercent = percent
+                        reporter.nextStep(percent)
+                    }
+                    onProgress?.invoke(copiedBytes, totalBytes)
+                }
+            }
+        }
     }
 
     suspend fun downloadFile(url: String, target: Path) {
-        withBackgroundProgress(project, MyBundle.message("aplusCourses")) {
-            reportSequentialProgress { reporter ->
-                val tempFile = createTempFile(target.nameWithoutExtension).toFile()
+        reportSequentialProgress { reporter ->
+            val tempFile = createTempFile(target.nameWithoutExtension).toFile()
 
-                reporter.indeterminateStep(MyBundle.message("services.progress.downloading", url)) {
-                    download(url, tempFile)
-                    Files.move(
-                        tempFile.toPath(),
-                        target,
-                        StandardCopyOption.REPLACE_EXISTING
-                    )
-                }
+            reporter.nextStep(endFraction = 100) {
+                download(url, tempFile)
+                Files.move(
+                    tempFile.toPath(),
+                    target,
+                    StandardCopyOption.REPLACE_EXISTING
+                )
             }
         }
     }
@@ -155,32 +210,31 @@ class CoursesClient(
     suspend fun downloadAndUnzip(
         zipUrl: String,
         target: Path,
-        onlyPath: String? = null
+        onlyPath: String? = null,
+        onProgress: DownloadProgress? = null,
     ) {
-        withBackgroundProgress(project, MyBundle.message("aplusCourses")) {
-            reportSequentialProgress { reporter ->
-                val tempZip = createTempFile(target.nameWithoutExtension, ".zip").toFile()
-
-                reporter.indeterminateStep(MyBundle.message("services.progress.downloading", zipUrl)) {
-                    download(zipUrl, tempZip)
+        reportSequentialProgress { reporter ->
+            val tempZip = createTempFile(target.nameWithoutExtension, ".zip").toFile()
+            try {
+                reporter.nextStep(endFraction = DOWNLOAD_END_FRACTION) {
+                    download(zipUrl, tempZip, onProgress = onProgress)
                 }
 
-                reporter.indeterminateStep(MyBundle.message("services.progress.extracting", zipUrl, target)) {
-                    ZipUtil.unzip(tempZip, target.toFile(), onlyPath)
-                    tempZip.delete()
+                reporter.nextStep(endFraction = 100) {
+                    withContext(Dispatchers.IO) {
+                        ZipUtil.unzip(tempZip, target.toFile(), onlyPath) { ensureActive() }
+                    }
                 }
+            } finally {
+                tempZip.delete()
             }
         }
     }
 
-    suspend fun fetchAndParse(url: String, regex: Regex, token: Boolean = false): String? {
-        val body = get(url, token).bodyAsText()
-        return regex.find(body)?.groupValues?.getOrNull(1)
-    }
-
     suspend fun HttpRequestBuilder.addToken() {
         TokenStorage.getInstance().getToken()?.let {
-            if (it.isNotBlank()) header(HttpHeaders.Authorization, "Token $it")
+            @NonNls val token = "Token $it"
+            if (it.isNotBlank()) header(HttpHeaders.Authorization, token)
         }
     }
 
@@ -192,14 +246,24 @@ class CoursesClient(
         }
     }
 
-    suspend fun ByteReadChannel.copyAndClose(dest: WritableByteChannel): Unit =
-        try {
-            while (!isClosedForRead) {
-                if (copyTo(dest, 8 * 1024) == 0L) break
+    suspend fun ByteReadChannel.copyAndClose(
+        dest: WritableByteChannel,
+        onBytesCopied: (Long) -> Unit = {}
+    ) {
+        val source = this
+        withContext(Dispatchers.IO) {
+            dest.use { channel ->
+                var copied = 0L
+                while (!source.isClosedForRead) {
+                    ensureActive()
+                    val chunk = source.copyTo(channel, COPY_CHUNK_BYTES)
+                    if (chunk == 0L) break
+                    copied += chunk
+                    onBytesCopied(copied)
+                }
             }
-        } finally {
-            dest.close()
         }
+    }
 
     private fun File.sinkChannel(): WritableByteChannel =
         outputStream().channel
@@ -209,6 +273,12 @@ class CoursesClient(
     }
 
     companion object {
+        private const val COPY_CHUNK_BYTES = 8L * 1024
+
+        private const val DOWNLOAD_END_FRACTION = 95
+
+        private const val MIN_PROGRESS_INTERVAL_MS = 250L
+
         fun getInstance(project: Project): CoursesClient = project.service()
     }
 }
