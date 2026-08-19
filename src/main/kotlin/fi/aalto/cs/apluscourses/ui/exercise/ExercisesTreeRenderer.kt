@@ -2,6 +2,8 @@ package fi.aalto.cs.apluscourses.ui.exercise
 
 import com.intellij.ide.ui.UISettings
 import com.intellij.ide.util.treeView.NodeRenderer
+import com.intellij.openapi.components.service
+import com.intellij.openapi.project.Project
 import com.intellij.ui.ColorUtil
 import com.intellij.ui.JBColor
 import com.intellij.ui.SimpleTextAttributes
@@ -11,6 +13,7 @@ import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.icons.CoursesIcons
 import fi.aalto.cs.apluscourses.model.exercise.Exercise
 import fi.aalto.cs.apluscourses.model.exercise.SubmissionResult
+import fi.aalto.cs.apluscourses.services.exercise.SubmitExercise
 import java.awt.*
 import java.awt.geom.RoundRectangle2D
 import javax.swing.Icon
@@ -18,7 +21,7 @@ import javax.swing.JTree
 import javax.swing.tree.DefaultMutableTreeNode
 
 
-class ExercisesTreeRenderer : NodeRenderer() {
+class ExercisesTreeRenderer(private val project: Project) : NodeRenderer() {
     private lateinit var item: ExercisesView.ExercisesTreeItem
 
     override fun customizeCellRenderer(
@@ -35,7 +38,11 @@ class ExercisesTreeRenderer : NodeRenderer() {
             is ExercisesView.NewSubmissionItem -> {
                 isEnabled = true
                 append(item.displayName(), SimpleTextAttributes.REGULAR_ITALIC_ATTRIBUTES, true)
-                icon = if (item.missingModule) CoursesIcons.ModuleDisabled else CoursesIcons.Plus
+                icon = when {
+                    item.missingModule -> CoursesIcons.ModuleDisabled
+                    project.service<SubmitExercise>().isSubmitting(item.exercise) -> CoursesIcons.Loading
+                    else -> CoursesIcons.Plus
+                }
             }
 
             is ExercisesView.ExerciseGroupItem -> {

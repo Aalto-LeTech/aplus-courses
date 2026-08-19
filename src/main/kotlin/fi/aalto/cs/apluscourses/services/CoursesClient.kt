@@ -153,7 +153,7 @@ class CoursesClient(
     ): HttpResponse = client.post(resource) {
         addToken()
         setBody(MultiPartFormDataContent(parts))
-    }
+    }.also { verifyStatus(it, redirectionIsSuccess = true) }
 
     /**
      * Streams [url] into [file], reporting how far along it is.
@@ -245,9 +245,14 @@ class CoursesClient(
         }
     }
 
-    fun verifyStatus(response: HttpResponse) {
+    /**
+     * A POST is answered with 201 Created, and the client does not follow redirects for POSTs,
+     * so [redirectionIsSuccess] lets the submission call treat a 3xx as the success it is.
+     */
+    fun verifyStatus(response: HttpResponse, redirectionIsSuccess: Boolean = false) {
         when {
             response.status.isSuccess() -> Unit
+            redirectionIsSuccess && response.status.value in 300..399 -> Unit
             response.status == HttpStatusCode.Unauthorized -> throw UnauthorizedException()
             response.status == HttpStatusCode.Forbidden -> throw ForbiddenException()
             else -> throw IOException("Unexpected ${response.status} for ${response.call.request.url}")
