@@ -9,6 +9,7 @@ import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import fi.aalto.cs.apluscourses.utils.Version
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import java.io.IOException
@@ -249,11 +250,17 @@ object CourseConfig {
         try {
             val courseConfig = CoursesClient.getInstance(project).get(url).bodyAsText()
             return deserialize(courseConfig)
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
-            CoursesLogger.error("Error in CourseConfig", e)
             when (e) {
-                is IOException, is UnresolvedAddressException -> throw e
+                is IOException, is UnresolvedAddressException -> {
+                    CoursesLogger.warn("Network error in CourseConfig", e)
+                    throw e
+                }
+
                 else -> {
+                    CoursesLogger.error("Error in CourseConfig", e)
                     Notifier.notify(CourseConfigurationError(e), project)
                     return null
                 }

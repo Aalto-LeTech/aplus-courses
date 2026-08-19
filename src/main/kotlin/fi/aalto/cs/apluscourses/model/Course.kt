@@ -14,9 +14,6 @@ import org.jetbrains.annotations.NonNls
 data class Course(
     val id: Long,
     val name: String,
-    val htmlUrl: String,
-    val imageUrl: String?,
-    val endingTime: String,
     val languages: List<String>,
     val modules: List<Module>,
     val exerciseModules: Map<Long, Map<String, Module>>,
@@ -31,6 +28,14 @@ data class Course(
 //    val feedbackParser: String?,
     private val project: Project,
 ) {
+    /**
+     * The parts of a course that only the A+ API knows. The course configuration does not carry
+     * them.
+     */
+    var htmlUrl: String? = null
+    var imageUrl: String? = null
+    var endingTime: String? = null
+
     private val commonLibraries: MutableList<Library> = mutableListOf()
     val components: Map<String, Component<*>>
         get() = (modules + commonLibraries).associateBy { it.name }

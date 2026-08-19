@@ -20,5 +20,9 @@ class InitializationStatus {
         fun setIsIoError(project: Project) {
             project.service<InitializationStatus>().isIoError = true
         }
+
+        fun clearIsIoError(project: Project) {
+            project.service<InitializationStatus>().isIoError = false
+        }
     }
 }

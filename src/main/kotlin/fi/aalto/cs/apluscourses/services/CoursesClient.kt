@@ -47,6 +47,13 @@ class UnauthorizedException @PropertyMapping() constructor() :
     }
 }
 
+class ForbiddenException @PropertyMapping() constructor() :
+    IOException("The server responded with 403 Forbidden") {
+    companion object {
+        private const val serialVersionUID: Long = 1L
+    }
+}
+
 typealias DownloadProgress = (copiedBytes: Long, totalBytes: Long) -> Unit
 
 @Service(Service.Level.PROJECT)
@@ -239,9 +246,10 @@ class CoursesClient(
     }
 
     fun verifyStatus(response: HttpResponse) {
-        when (response.status) {
-            HttpStatusCode.OK -> Unit
-            HttpStatusCode.Unauthorized -> throw UnauthorizedException()
+        when {
+            response.status.isSuccess() -> Unit
+            response.status == HttpStatusCode.Unauthorized -> throw UnauthorizedException()
+            response.status == HttpStatusCode.Forbidden -> throw ForbiddenException()
             else -> throw IOException("Unexpected ${response.status} for ${response.call.request.url}")
         }
     }

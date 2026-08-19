@@ -31,6 +31,7 @@ import fi.aalto.cs.apluscourses.utils.PluginAutoInstaller
 import fi.aalto.cs.apluscourses.utils.PluginVersion
 import fi.aalto.cs.apluscourses.utils.ProjectViewUtil
 import fi.aalto.cs.apluscourses.utils.Version.ComparisonStatus
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.annotations.NonNls
@@ -41,10 +42,12 @@ internal class InitializationActivity :
     override suspend fun execute(project: Project) {
         val courseConfig = try {
             CourseConfig.get(project)
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
-            CoursesLogger.error("Network error in InitializationActivity", e)
+            CoursesLogger.warn("Network error in InitializationActivity", e)
             InitializationStatus.setIsIoError(project)
-            CourseManager.getInstance(project).fireNetworkError()
+            CourseManager.getInstance(project).fireNetworkError(e)
             return
         }
         if (courseConfig == null) {

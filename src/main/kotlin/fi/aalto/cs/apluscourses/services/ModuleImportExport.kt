@@ -25,6 +25,7 @@ import fi.aalto.cs.apluscourses.ui.module.ExportModuleDialog
 import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import fi.aalto.cs.apluscourses.utils.Version
 import fi.aalto.cs.apluscourses.utils.ZipUtil
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -91,6 +92,8 @@ class ModuleImportExport(
                                 .forEach { it.downloadAndInstall() }
 
                             extractRoot.deleteRecursively()
+                        } catch (e: CancellationException) {
+                            throw e
                         } catch (e: Exception) {
                             CoursesLogger.error("Failed to import module", e)
                             modulesWithErrors.add(file.nameWithoutExtension)

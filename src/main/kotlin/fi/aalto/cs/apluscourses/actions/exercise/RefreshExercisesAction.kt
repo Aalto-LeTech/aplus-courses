@@ -18,7 +18,7 @@ class RefreshExercisesAction : DumbAwareAction() {
     }
 
     override fun actionPerformed(e: AnActionEvent) {
-        e.project?.service<ExercisesUpdater>()?.restart()
+        e.project?.service<ExercisesUpdater>()?.restart(force = true)
     }
 
     override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.EDT

@@ -6,7 +6,10 @@ import fi.aalto.cs.apluscourses.MyBundle
 import fi.aalto.cs.apluscourses.services.PluginSettings
 
 /**
- * A missing module notification which explains that modules with the given names couldn't be found.
+ * Explains that a module declares dependencies on modules the course does not provide, so they
+ * cannot be installed automatically.
+ *
+ * Raised by CourseManager when refreshing module statuses.
  */
 class MissingDependencyNotification(moduleNames: Set<String>) : Notification(
     PluginSettings.A_PLUS,
@@ -17,4 +20,3 @@ class MissingDependencyNotification(moduleNames: Set<String>) : Notification(
     ),
     NotificationType.ERROR
 )
-// TODO show
