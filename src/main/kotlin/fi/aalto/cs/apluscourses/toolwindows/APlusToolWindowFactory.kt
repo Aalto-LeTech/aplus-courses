@@ -20,6 +20,7 @@ import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.actions.ActionGroups.EXERCISE_ACTIONS
 import fi.aalto.cs.apluscourses.actions.ActionGroups.MODULE_ACTIONS
 import fi.aalto.cs.apluscourses.actions.ActionGroups.TOOL_WINDOW_ACTIONS
+import fi.aalto.cs.apluscourses.icons.CoursesIcons
 import fi.aalto.cs.apluscourses.model.Course
 import fi.aalto.cs.apluscourses.model.component.Module
 import fi.aalto.cs.apluscourses.model.exercise.Exercise
@@ -79,6 +80,10 @@ internal class APlusToolWindowFactory : ToolWindowFactory, DumbAware {
             true
         )
 
+        overviewTab.icon = CoursesIcons.LogoColor
+        modulesTab.icon = CoursesIcons.Module
+        exercisesTab.icon = CoursesIcons.ExerciseGroup
+
         fun addAllTabs() {
             toolWindow.contentManager.addContent(exercisesTab)
             toolWindow.contentManager.addContent(modulesTab)
@@ -102,20 +107,19 @@ internal class APlusToolWindowFactory : ToolWindowFactory, DumbAware {
         // Shorten titles when toolwindow is too small
         toolWindow.component.addComponentListener(object : ComponentAdapter() {
             override fun componentResized(e: ComponentEvent) {
-                if (e.component.bounds.width <= 424) {
-                    overviewTab.displayName = message("toolwindows.APlusToolWindowFactory.tabs.overviewShort")
-                } else {
-                    overviewTab.displayName = message("toolwindows.APlusToolWindowFactory.tabs.overview")
-                }
-                if (e.component.bounds.width <= 370) {
-                    newsView.setShortTab(true)
-                    modulesTab.displayName = message("toolwindows.APlusToolWindowFactory.tabs.modulesShort")
-                    exercisesTab.displayName = message("toolwindows.APlusToolWindowFactory.tabs.exercisesShort")
-                } else {
-                    newsView.setShortTab(false)
-                    modulesTab.displayName = message("toolwindows.APlusToolWindowFactory.tabs.modules")
-                    exercisesTab.displayName = message("toolwindows.APlusToolWindowFactory.tabs.exercises")
-                }
+                val iconOnlyOverview = e.component.bounds.width <= 325
+                overviewTab.displayName =
+                    if (iconOnlyOverview) "" else message("toolwindows.APlusToolWindowFactory.tabs.overview")
+                overviewTab.putUserData(ToolWindow.SHOW_CONTENT_ICON, iconOnlyOverview)
+
+                val iconOnly = e.component.bounds.width <= 300
+                newsView.setShortTab(iconOnly)
+                modulesTab.displayName =
+                    if (iconOnly) "" else message("toolwindows.APlusToolWindowFactory.tabs.modules")
+                exercisesTab.displayName =
+                    if (iconOnly) "" else message("toolwindows.APlusToolWindowFactory.tabs.exercises")
+                modulesTab.putUserData(ToolWindow.SHOW_CONTENT_ICON, iconOnly)
+                exercisesTab.putUserData(ToolWindow.SHOW_CONTENT_ICON, iconOnly)
             }
         })
 

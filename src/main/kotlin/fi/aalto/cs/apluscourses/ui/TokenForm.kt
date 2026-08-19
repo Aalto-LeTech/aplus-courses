@@ -27,9 +27,10 @@ class TokenForm(private val project: Project, private val callback: () -> Unit =
     private var passwordField: JBPasswordField? = null
 
     private fun setToken() {
+        val field = passwordField ?: return
         checking.set(true)
         TokenStorage.getInstance().storeAndCheck(
-            OneTimeString(passwordField!!.password.filter { it.isLetterOrDigit() }.toCharArray()),
+            OneTimeString(field.password.filter { it.isLetterOrDigit() }.toCharArray()),
             project
         ) {
             user.set(it)
@@ -41,7 +42,7 @@ class TokenForm(private val project: Project, private val callback: () -> Unit =
                 callback()
             }
         }
-        passwordField!!.text = ""
+        field.text = ""
     }
 
     private fun removeToken() {
