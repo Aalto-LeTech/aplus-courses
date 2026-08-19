@@ -8,11 +8,15 @@ import java.util.zip.ZipFile
 import java.util.zip.ZipOutputStream
 
 object ZipUtil {
-    fun unzip(zip: File, destination: File, onlyPath: String? = null) {
+    /**
+     * @param onEntry called before each entry. An exception from it stops the extraction.
+     */
+    fun unzip(zip: File, destination: File, onlyPath: String? = null, onEntry: () -> Unit = {}) {
         val canonicalDest = destination.canonicalFile.toPath()
 
         ZipFile(zip).use { zf ->
             zf.entries().asSequence().forEach { entry ->
+                onEntry()
                 if (onlyPath != null && !entry.name.contains(onlyPath)) return@forEach
 
                 // Skip the root directory entry "/"
