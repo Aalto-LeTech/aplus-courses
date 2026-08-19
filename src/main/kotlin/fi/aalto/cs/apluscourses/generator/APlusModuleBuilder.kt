@@ -4,8 +4,7 @@ import com.intellij.ide.util.projectWizard.ModuleBuilder
 import com.intellij.ide.util.projectWizard.ModuleWizardStep
 import com.intellij.ide.util.projectWizard.WizardContext
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.actionSystem.ActionManager
-import com.intellij.openapi.actionSystem.impl.ActionManagerImpl
+import com.intellij.openapi.actionSystem.ex.ActionManagerEx
 import com.intellij.openapi.components.service
 import com.intellij.openapi.module.ModifiableModuleModel
 import com.intellij.openapi.module.Module
@@ -25,7 +24,7 @@ internal class APlusModuleBuilder : ModuleBuilder() {
     override fun canCreateModule(): Boolean = false
     override fun getWeight(): Int = 100000
     override fun isAvailable(): Boolean {
-        val lastAction = (ActionManager.getInstance() as ActionManagerImpl).lastPreformedActionId
+        val lastAction = ActionManagerEx.getInstanceEx().lastPreformedActionId
         @NonNls val moduleAction = "Module"
         return lastAction == null || !lastAction.contains(moduleAction)
     }

@@ -79,7 +79,7 @@ open class Module(
         val timestamp = metadata?.downloadedAt ?: return emptyList()
         val timestampWithDelay =
             timestamp.toEpochMilliseconds() + PluginSettings.REASONABLE_DELAY_FOR_MODULE_INSTALLATION
-        return ReadAction.compute<List<Path>, RuntimeException> {
+        return ReadAction.computeBlocking<List<Path>, RuntimeException> {
             FileUtil.getChangedFilesInDirectory(
                 fullPath.toFile(),
                 timestampWithDelay

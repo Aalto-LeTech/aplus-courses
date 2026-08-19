@@ -10,7 +10,7 @@ import fi.aalto.cs.apluscourses.MyBundle
 import fi.aalto.cs.apluscourses.utils.ZipUtil
 import io.ktor.client.*
 import io.ktor.client.call.*
-import io.ktor.client.engine.cio.*
+import io.ktor.client.engine.java.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.resources.*
@@ -58,7 +58,7 @@ class CoursesClient(
         port: Int = 0,
         apiPath: String = "api/v2/"
     ): HttpClient =
-        HttpClient(CIO) {
+        HttpClient(Java) {
             install(Resources)
             install(ContentNegotiation) {
                 json(Json {
@@ -66,13 +66,6 @@ class CoursesClient(
                     isLenient = true
                     namingStrategy = JsonNamingStrategy.SnakeCase
                 })
-            }
-
-            engine {
-                endpoint {
-                    maxConnectionsCount = 16
-                }
-                requestTimeout = 0
             }
 
             defaultRequest {

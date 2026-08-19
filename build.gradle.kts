@@ -1,6 +1,8 @@
+import org.gradle.process.CommandLineArgumentProvider
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.markdownToHTML
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
+import org.jetbrains.kotlin.gradle.dsl.JvmDefaultMode
 
 plugins {
     // ./gradle/libs.versions.toml
@@ -17,7 +19,11 @@ version = providers.gradleProperty("pluginVersion").get()
 
 // Set the JVM language level used to build the project.
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(25)
+    compilerOptions {
+        // Gets rid of incorrect deprecated ToolWindowFactory warnings by the plugin verifier.
+        jvmDefault = JvmDefaultMode.NO_COMPATIBILITY
+    }
 }
 
 // Configure project's dependencies
@@ -37,7 +43,7 @@ dependencies {
         exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-core")
         exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-core-jvm")
     }
-    implementation(libs.ktorCio) {
+    implementation(libs.ktorJava) {
         exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-core")
         exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-core-jvm")
     }
@@ -54,7 +60,14 @@ dependencies {
         exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-core-jvm")
     }
 
+    testImplementation(platform(libs.junitBom))
     testImplementation(libs.junit)
+
+    testImplementation(libs.ktorMock) {
+        exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-core")
+        exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-core-jvm")
+    }
+    testRuntimeOnly(libs.junitPlatformLauncher)
 
     // https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-faq.html#junit5-test-framework-refers-to-junit4
     testImplementation("junit:junit:4.13.2")
@@ -178,6 +191,14 @@ tasks {
     }
 
     buildSearchableOptions {
-        enabled = false // Disabled because it breaks dynamic reload
+        enabled = false
+    }
+
+    prepareJarSearchableOptions {
+        enabled = false
+    }
+
+    test {
+        useJUnitPlatform()
     }
 }

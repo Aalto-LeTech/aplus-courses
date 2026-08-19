@@ -1,8 +1,8 @@
 package fi.aalto.cs.apluscourses.utils
 
 import fi.aalto.cs.apluscourses.MyBundle.message
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
+import kotlin.time.Clock
+import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.periodUntil
 import java.time.temporal.ChronoUnit

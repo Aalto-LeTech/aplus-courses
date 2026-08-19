@@ -1,7 +1,7 @@
 package fi.aalto.cs.apluscourses.utils
 
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
+import kotlin.time.Clock
+import kotlin.time.Instant
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path

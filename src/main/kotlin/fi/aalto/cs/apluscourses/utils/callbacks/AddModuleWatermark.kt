@@ -5,8 +5,9 @@ import fi.aalto.cs.apluscourses.model.Course
 import fi.aalto.cs.apluscourses.model.component.Module
 import fi.aalto.cs.apluscourses.model.people.User
 import fi.aalto.cs.apluscourses.services.course.CourseManager
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.number
 import kotlinx.datetime.toLocalDateTime
 import java.io.IOException
 import java.io.UncheckedIOException
@@ -42,7 +43,7 @@ object AddModuleWatermark {
                 "# Name: $studentName",
                 "# Student ID: $studentId",
                 "# $courseName",
-                "# Date: ${date.dayOfMonth}/${date.monthNumber}/${date.year}",
+                "# Date: ${date.day}/${date.month.number}/${date.year}",
                 "# Version: ${module.latestVersion}",
             )
         )
