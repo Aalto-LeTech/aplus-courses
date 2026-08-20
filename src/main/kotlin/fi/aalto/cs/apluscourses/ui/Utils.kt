@@ -33,6 +33,7 @@ import javax.swing.ScrollPaneConstants
 import javax.swing.Scrollable
 import javax.swing.ListCellRenderer
 import javax.swing.ListSelectionModel
+import javax.swing.SwingConstants
 
 object Utils {
     fun loadingPanel(): DialogPanel {
@@ -47,28 +48,7 @@ object Utils {
      * Wraps [content] in a vertical scroll pane that gives it the viewport height while it fits.
      */
     fun stretchingScrollPane(content: JComponent): JBScrollPane {
-        val view = object : JPanel(BorderLayout()), Scrollable {
-            override fun getPreferredScrollableViewportSize(): Dimension = preferredSize
-
-            override fun getScrollableUnitIncrement(
-                visibleRect: Rectangle,
-                orientation: Int,
-                direction: Int
-            ): Int = JBUI.scale(SCROLL_UNIT)
-
-            override fun getScrollableBlockIncrement(
-                visibleRect: Rectangle,
-                orientation: Int,
-                direction: Int
-            ): Int = visibleRect.height
-
-            override fun getScrollableTracksViewportWidth(): Boolean = true
-
-            override fun getScrollableTracksViewportHeight(): Boolean {
-                val viewport = parent as? JViewport ?: return true
-                return viewport.height >= preferredSize.height
-            }
-        }
+        val view = ScrollableContent()
         view.add(content, BorderLayout.CENTER)
 
         return JBScrollPane(view).apply {
@@ -142,7 +122,36 @@ object Utils {
         }
         return this
     }
-
-
-    private const val SCROLL_UNIT = 16
 }
+
+/**
+ * Content of a scroll pane that takes the viewport size along an axis it fits into, instead of
+ * leaving the rest of the viewport empty.
+ *
+ * [squeezesToViewportWidth] hands the layout a viewport that is narrower than the content wants,
+ * for scroll panes that never show a horizontal scrollbar and would otherwise leave the part past
+ * the right edge unreachable.
+ */
+class ScrollableContent(
+    private val squeezesToViewportWidth: () -> Boolean = { true }
+) : JPanel(BorderLayout()), Scrollable {
+    override fun getPreferredScrollableViewportSize(): Dimension = preferredSize
+
+    override fun getScrollableUnitIncrement(visibleRect: Rectangle, orientation: Int, direction: Int): Int =
+        JBUI.scale(SCROLL_UNIT)
+
+    override fun getScrollableBlockIncrement(visibleRect: Rectangle, orientation: Int, direction: Int): Int =
+        if (orientation == SwingConstants.VERTICAL) visibleRect.height else visibleRect.width
+
+    override fun getScrollableTracksViewportWidth(): Boolean =
+        squeezesToViewportWidth() || viewportIsAtLeast { width }
+
+    override fun getScrollableTracksViewportHeight(): Boolean = viewportIsAtLeast { height }
+
+    private inline fun viewportIsAtLeast(axis: Dimension.() -> Int): Boolean {
+        val viewport = parent as? JViewport ?: return false
+        return viewport.size.axis() >= preferredSize.axis()
+    }
+}
+
+private const val SCROLL_UNIT = 16

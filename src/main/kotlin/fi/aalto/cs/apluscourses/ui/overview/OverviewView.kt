@@ -12,7 +12,6 @@ import com.intellij.openapi.ui.DialogPanel
 import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.dsl.builder.*
-import com.intellij.ui.dsl.builder.Panel
 import com.intellij.ui.dsl.gridLayout.UnscaledGaps
 import com.intellij.util.ui.JBFont
 import com.intellij.util.ui.JBUI
@@ -27,6 +26,7 @@ import fi.aalto.cs.apluscourses.ui.CLOSING_WIDTH
 import fi.aalto.cs.apluscourses.ui.COURSE_NAME_WIDTH
 import fi.aalto.cs.apluscourses.ui.LINK_WIDTH
 import fi.aalto.cs.apluscourses.ui.PendingLink
+import fi.aalto.cs.apluscourses.ui.ScrollableContent
 import fi.aalto.cs.apluscourses.ui.TokenForm
 import fi.aalto.cs.apluscourses.ui.USER_NAME_WIDTH
 import fi.aalto.cs.apluscourses.ui.Utils.myActionLink
@@ -164,7 +164,7 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
         },
         Screen.AUTH to statusPanel(authTitle, messageProperty("ui.OverviewView.auth.description")) {
             with(authForm) {
-                token()
+                token(compact = true)
                 validation()
             }
         },
@@ -177,7 +177,7 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
             messageProperty("ui.OverviewView.invalidToken.description")
         ) {
             with(invalidTokenForm) {
-                token()
+                token(compact = true)
                 validation()
             }
         },
@@ -188,7 +188,12 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
         Screen.MAIN to WidthLimited(MAIN_PANEL_MAX_WIDTH, mainPanel)
     )
 
-    private val screenContainer = JPanel(BorderLayout()).apply { isOpaque = false }
+    private var currentScreen: Screen? = null
+
+    private fun allowsHorizontalScroll(screen: Screen?): Boolean = screen == Screen.MAIN
+
+    private val screenContainer = ScrollableContent { !allowsHorizontalScroll(currentScreen) }
+        .apply { isOpaque = false }
 
     private val scrollPane = JBScrollPane(screenContainer).apply {
         verticalScrollBarPolicy = ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED
@@ -204,6 +209,9 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
     fun update() {
         val model = readOverviewModel(project)
         showScreen(model.screen)
+
+        authForm.refresh()
+        invalidTokenForm.refresh()
 
         networkErrorDetails.set(model.errorDetails ?: "")
         initErrorDetails.set(model.errorDetails ?: "")
@@ -249,8 +257,8 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
         )
         showsGradeProgression.set(model.showsGradeProgression)
         nextGradeTable.update(
-            model.categories,
-            categories.associateWith { model.nextGradeProgress(it) }
+            model.nextGradeCategories,
+            model.nextGradeCategories.orEmpty().associateWith { model.nextGradeProgress(it) }
         )
 
         val scoreWidth = maxOf(collectedTable.naturalScoreWidth(), nextGradeTable.naturalScoreWidth())
@@ -271,13 +279,11 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
         screenContainer.removeAll()
         screenContainer.add(screens.getValue(screen), BorderLayout.CENTER)
         scrollPane.horizontalScrollBarPolicy =
-            if (screen == Screen.MAIN) ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED
+            if (allowsHorizontalScroll(screen)) ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED
             else ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
         screenContainer.revalidate()
         screenContainer.repaint()
     }
-
-    private var currentScreen: Screen? = null
 
     private fun statusPanel(
         title: ObservableMutableProperty<String>,

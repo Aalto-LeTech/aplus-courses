@@ -21,6 +21,8 @@ import org.junit.jupiter.api.Test
 import java.awt.Component
 import java.awt.Container
 import java.awt.Point
+import javax.swing.ScrollPaneConstants
+import javax.swing.Scrollable
 import kotlin.time.Instant
 
 @TestApplication
@@ -101,6 +103,24 @@ class OverviewViewTest {
         assertSame(scrollPane, current, "a replaced scroll pane would take the position with it")
         assertEquals(Point(0, 60), current.viewport.viewPosition)
     }
+
+    @Test
+    fun `a narrow tool window scrolls the main screen instead of squeezing it`(): Unit =
+        runBlocking(Dispatchers.EDT) {
+            val view = OverviewView(projectFixture.get())
+            val scrollPane = scrollPaneOf(view)
+            scrollPane.setSize(120, 400)
+            scrollPane.doLayout()
+
+            assertEquals(
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED,
+                scrollPane.horizontalScrollBarPolicy
+            )
+            assertFalse(
+                (scrollPane.viewport.view as Scrollable).scrollableTracksViewportWidth,
+                "the main screen keeps its preferred width and scrolls sideways"
+            )
+        }
 
     @Test
     fun `the deadline line is reserved while the rounds are still loading`() {

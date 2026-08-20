@@ -2,7 +2,9 @@ package fi.aalto.cs.apluscourses.ui.overview
 
 import com.intellij.openapi.project.Project
 import fi.aalto.cs.apluscourses.MyBundle
+import fi.aalto.cs.apluscourses.api.CourseConfig.Grading
 import fi.aalto.cs.apluscourses.model.grading.GradeCalculator
+import fi.aalto.cs.apluscourses.model.grading.GradeProgress
 import fi.aalto.cs.apluscourses.services.course.CourseFileManager
 import fi.aalto.cs.apluscourses.services.course.CourseSetupStatus
 import fi.aalto.cs.apluscourses.services.course.SetupStep
@@ -41,6 +43,7 @@ data class OverviewModel(
     val maxPoints: Map<String, Int>? = null,
     val grade: String? = null,
     val showsGradeProgression: Boolean = false,
+    val nextGradeCategories: List<String>? = null,
     val pointsUntilNextGrade: Map<String, Int>? = null,
     val setupSteps: List<SetupStep> = emptyList(),
     val maxPointsOfNextGrade: Map<String, Int>? = null,
@@ -106,7 +109,13 @@ fun readOverviewModel(project: Project): OverviewModel {
         collected = mapOf(total to (exercises.userPointsTotal ?: 0))
         maxPoints = mapOf(total to (exercises.maxPointsTotal ?: 0))
     }
-    val gradeData = grading?.let { GradeCalculator.calculate(it, collected ?: emptyMap()) }
+    val gradeData = collected?.let { points -> grading?.let { GradeCalculator.calculate(it, points) } }
+    val progression = gradeProgression(
+        grading?.style,
+        gradeData,
+        categories,
+        MyBundle.message("ui.OverviewView.totalCategory")
+    )
 
     val courseHasEnded =
         if (course?.endingTime != null) CourseManager.isCourseEnded(project)
@@ -137,13 +146,44 @@ fun readOverviewModel(project: Project): OverviewModel {
         maxPoints = maxPoints,
         grade = gradeData?.grade,
         showsGradeProgression = grading?.showsGradeProgression ?: courseFiles.state.showsGradeProgression,
-        pointsUntilNextGrade = gradeData?.pointsUntilNext,
+        nextGradeCategories = progression.categories,
+        pointsUntilNextGrade = progression.pointsUntilNext,
         setupSteps = setup.visibleSteps.takeIf { !setup.isFinished && setup.isWorthShowing }.orEmpty(),
-        maxPointsOfNextGrade = gradeData?.maxOfNext,
+        maxPointsOfNextGrade = progression.maxOfNext,
         closingWeek = currentWeek(exercises.exerciseGroups.map { it.closingTime }),
         weeksKnown = exercises.exerciseGroups.isNotEmpty()
     )
 }
+
+/**
+ * The rows of the "points until next grade" table.
+ * Null maps mean the points are not loaded yet, so the rows render as placeholders.
+ */
+data class GradeProgression(
+    val categories: List<String>?,
+    val pointsUntilNext: Map<String, Int>?,
+    val maxOfNext: Map<String, Int>?
+)
+
+/**
+ * The total style reports a single figure keyed by [Grading.STYLE_TOTAL], which becomes the one row
+ * named [totalLabel]. Other styles report per category, so their rows are the course's categories.
+ */
+internal fun gradeProgression(
+    style: String?,
+    gradeData: GradeProgress?,
+    categories: List<String>?,
+    totalLabel: String
+): GradeProgression =
+    if (style == Grading.STYLE_TOTAL) {
+        GradeProgression(
+            categories = listOf(totalLabel),
+            pointsUntilNext = gradeData?.let { mapOf(totalLabel to (it.pointsUntilNext[Grading.STYLE_TOTAL] ?: 0)) },
+            maxOfNext = gradeData?.let { mapOf(totalLabel to (it.maxOfNext[Grading.STYLE_TOTAL] ?: 0)) }
+        )
+    } else {
+        GradeProgression(categories, gradeData?.pointsUntilNext, gradeData?.maxOfNext)
+    }
 
 private fun currentWeek(closingTimes: List<String?>): ClosingWeek? {
     val now = Clock.System.now()
