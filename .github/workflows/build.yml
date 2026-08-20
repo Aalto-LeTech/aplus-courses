@@ -163,6 +163,7 @@ jobs:
         uses: JetBrains/qodana-action@v2026.2.0
         with:
           cache-default-branch-only: true
+          upload-result: true
           args: --baseline qodana.sarif.json
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
