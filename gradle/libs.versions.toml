@@ -11,7 +11,7 @@ jsonSerialization = "1.11.0"
 datetime = "0.8.0"
 # Version 3.5.0 of ktor has a newer version of coroutines than IntelliJ,
 # so it is not compatible yet.
-ktor = "3.4.3"
+ktor = "3.5.2"
 
 junit = "5.14.4"
 
