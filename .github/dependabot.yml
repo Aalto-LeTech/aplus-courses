@@ -1,11 +1,25 @@
 version: 2
 updates:
   - package-ecosystem: "gradle"
-    directory: "/" 
+    directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
+    groups:
+      gradle-minor-patch:
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:
+      # ktor 3.5+ needs a newer coroutines than the IntelliJ platform bundles
+      - dependency-name: "io.ktor:*"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
   - package-ecosystem: "github-actions"
-    directory: "/" 
+    directory: "/"
     schedule:
-      interval: "daily"
-      
+      interval: "weekly"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
