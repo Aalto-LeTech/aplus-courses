@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+## [4.5.0] - 2026-08-20
+
 ### Added
 
 - Setup checklist in the Course tab that shows the progress of course setup and helps resolve missing steps
@@ -131,7 +133,8 @@
 - Complete UI overhaul
 - Rewrite of the plugin from Java to Kotlin
 
-[Unreleased]: https://github.com/Aalto-LeTech/aplus-courses/compare/v4.4.2...HEAD
+[Unreleased]: https://github.com/Aalto-LeTech/aplus-courses/compare/v4.5.0...HEAD
+[4.5.0]: https://github.com/Aalto-LeTech/aplus-courses/compare/v4.4.2...v4.5.0
 [4.4.2]: https://github.com/Aalto-LeTech/aplus-courses/compare/v4.4.1...v4.4.2
 [4.4.1]: https://github.com/Aalto-LeTech/aplus-courses/compare/v4.4.0...v4.4.1
 [4.4.0]: https://github.com/Aalto-LeTech/aplus-courses/compare/v4.3.0...v4.4.0
