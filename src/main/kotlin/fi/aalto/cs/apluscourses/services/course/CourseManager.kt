@@ -257,6 +257,7 @@ class CourseManager(
             if (e is UnauthorizedException) {
                 CoursesLogger.warn("A+ rejected the token", e)
                 state.error = Error.INVALID_TOKEN
+                state.user = null
             } else {
                 CoursesLogger.warn("Error while fetching user or course", e)
                 state.error = Error.NETWORK_ERROR

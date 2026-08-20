@@ -1,4 +1,3 @@
-import org.gradle.process.CommandLineArgumentProvider
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.markdownToHTML
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
@@ -30,7 +29,7 @@ val pluginVersionResourceDir: Provider<Directory> = layout.buildDirectory.dir("g
 
 val generatePluginVersionResource: TaskProvider<WriteProperties> =
     tasks.register<WriteProperties>("generatePluginVersionResource") {
-        description = "Writes pluginVersion into a properties file bundled as a resource, so the plugin can read its own version at runtime."
+        description = "Writes pluginVersion into a bundled resource, so the plugin can read its own version at runtime."
         destinationFile = pluginVersionResourceDir.map { it.file("aplus-courses-version.properties") }
         property("version", providers.gradleProperty("pluginVersion").get())
     }
