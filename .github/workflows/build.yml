@@ -164,6 +164,7 @@ jobs:
         with:
           cache-default-branch-only: true
           upload-result: true
+          pr-mode: false
           args: --baseline qodana.sarif.json
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
