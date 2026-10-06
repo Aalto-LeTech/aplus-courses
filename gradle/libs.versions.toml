@@ -1,10 +1,10 @@
 [versions]
 # plugins
-kotlin = "2.4.10"
-intelliJPlatform = "2.18.1"
+kotlin = "2.4.20"
+intelliJPlatform = "2.19.0"
 changelog = "2.5.0"
-qodana = "2026.2.0"
-kover = "0.9.9"
+qodana = "2026.2.2"
+kover = "0.9.11"
 
 # libraries
 jsonSerialization = "1.11.0"
