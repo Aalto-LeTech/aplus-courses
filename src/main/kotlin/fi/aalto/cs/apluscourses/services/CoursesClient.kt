@@ -26,7 +26,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonNamingStrategy
 import org.jetbrains.annotations.NonNls
@@ -64,8 +63,6 @@ class CoursesClient(
     @Volatile
     var client: HttpClient = buildClient()
 
-    /** Opted in for [JsonNamingStrategy.SnakeCase], which the A+ API's field names need. */
-    @OptIn(ExperimentalSerializationApi::class)
     fun buildClient(
         protocol: URLProtocol = URLProtocol.HTTPS,
         @NonNls host: String = "localhost",

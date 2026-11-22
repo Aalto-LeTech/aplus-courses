@@ -35,6 +35,12 @@ import java.util.concurrent.atomic.AtomicLong
 import kotlin.io.path.Path
 import kotlin.io.path.invariantSeparatorsPathString
 
+internal suspend fun saveSubmissionDocuments() {
+    withContext(Dispatchers.EDT) {
+        FileDocumentManager.getInstance().saveAllDocuments()
+    }
+}
+
 @Service(Service.Level.PROJECT)
 class SubmitExercise(
     private val project: Project,
@@ -171,11 +177,7 @@ class SubmitExercise(
 
         reporter.nextStep(FILES_COLLECTED, message("services.progress.submission.files"))
 
-        withContext(Dispatchers.EDT) {
-            application.runWriteAction {
-                FileDocumentManager.getInstance().saveAllDocuments()
-            }
-        }
+        saveSubmissionDocuments()
 
         var modulePath = Path(ModuleUtilCore.getModuleDirPath(platformModule))
         if (modulePath.endsWith(Path(SBT_MODULE_DIR))) {
