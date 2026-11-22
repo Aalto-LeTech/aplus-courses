@@ -26,7 +26,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonNamingStrategy
 import org.jetbrains.annotations.NonNls
@@ -64,8 +63,6 @@ class CoursesClient(
     @Volatile
     var client: HttpClient = buildClient()
 
-    /** Opted in for [JsonNamingStrategy.SnakeCase], which the A+ API's field names need. */
-    @OptIn(ExperimentalSerializationApi::class)
     fun buildClient(
         protocol: URLProtocol = URLProtocol.HTTPS,
         @NonNls host: String = "localhost",
@@ -163,7 +160,7 @@ class CoursesClient(
         file: File,
         withAuth: Boolean = false,
         onProgress: DownloadProgress? = null,
-    ) {
+    ): Unit = withContext(Dispatchers.IO) {
         val target = file.also { it.parentFile.mkdirs(); it.createNewFile() }
 
         client.prepareGet(url) {
@@ -201,15 +198,19 @@ class CoursesClient(
 
     suspend fun downloadFile(url: String, target: Path) {
         reportSequentialProgress { reporter ->
-            val tempFile = createTempFile(target.nameWithoutExtension).toFile()
+            val tempFile = withContext(Dispatchers.IO) {
+                createTempFile(target.nameWithoutExtension).toFile()
+            }
 
             reporter.nextStep(endFraction = 100) {
                 download(url, tempFile)
-                Files.move(
-                    tempFile.toPath(),
-                    target,
-                    StandardCopyOption.REPLACE_EXISTING
-                )
+                withContext(Dispatchers.IO) {
+                    Files.move(
+                        tempFile.toPath(),
+                        target,
+                        StandardCopyOption.REPLACE_EXISTING
+                    )
+                }
             }
         }
     }

@@ -11,6 +11,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.util.application
 import fi.aalto.cs.apluscourses.api.APlusApi
 import fi.aalto.cs.apluscourses.model.people.User
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -35,6 +36,8 @@ class TokenStorage(private val cs: CoroutineScope) {
             try {
                 val user = APlusApi.me().get(project)
                 callback(user)
+            } catch (e: CancellationException) {
+                throw e
             } catch (_: Exception) {
                 remove()
                 callback(null)

@@ -12,6 +12,7 @@ import com.intellij.openapi.application.EDT
 import com.intellij.openapi.application.readAction
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.fileEditor.FileEditorManager
+import com.intellij.openapi.fileEditor.FileEditorOpenRequest
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.guessModuleDir
@@ -73,7 +74,7 @@ class Opener(
             url
         )
         FileEditorManager.getInstance(project)
-            .openFile(webPreview, true, true)
+            .requestOpenFile(webPreview, FileEditorOpenRequest.withFocus(true).withReuseOpen(true))
     }
 
     fun openDocumentationAction(module: Module, @NonNls fileName: String): AnAction {
