@@ -10,7 +10,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 import com.intellij.util.application
 import fi.aalto.cs.apluscourses.MyBundle.message
-import fi.aalto.cs.apluscourses.api.CourseConfig.RequiredPlugin
+import fi.aalto.cs.aplus.courseconfig.CourseConfig.RequiredPlugin
 import fi.aalto.cs.apluscourses.notifications.DisabledPluginsNotification
 import fi.aalto.cs.apluscourses.services.course.CourseSetupStatus
 import fi.aalto.cs.apluscourses.services.course.SetupAction

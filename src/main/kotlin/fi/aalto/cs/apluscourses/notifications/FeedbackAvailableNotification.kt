@@ -10,7 +10,6 @@ import fi.aalto.cs.apluscourses.model.exercise.Exercise
 import fi.aalto.cs.apluscourses.model.exercise.SubmissionResult
 import fi.aalto.cs.apluscourses.services.PluginSettings
 import fi.aalto.cs.apluscourses.services.course.CourseManager
-import fi.aalto.cs.apluscourses.utils.SubmissionResultUtil
 
 /**
  * A notification that notifies the user that feedback is available for a submission.
@@ -26,7 +25,10 @@ class FeedbackAvailableNotification(
     MyBundle.message("notification.FeedbackAvailableNotification.title"),
     MyBundle.message(
         "notification.FeedbackAvailableNotification.content",
-        exercise.name, SubmissionResultUtil.getStatus(submissionResult)
+        exercise.name, MyBundle.message(
+            "presentation.submissionResultViewModel.points",
+            submissionResult.userPoints, submissionResult.maxPoints
+        )
     ),
     NotificationType.INFORMATION
 ) {

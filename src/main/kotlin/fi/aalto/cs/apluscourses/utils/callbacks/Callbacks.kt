@@ -1,7 +1,7 @@
 package fi.aalto.cs.apluscourses.utils.callbacks
 
 import com.intellij.openapi.project.Project
-import fi.aalto.cs.apluscourses.api.CourseConfig
+import fi.aalto.cs.aplus.courseconfig.CourseConfig
 import fi.aalto.cs.apluscourses.model.component.Module
 import fi.aalto.cs.apluscourses.utils.CoursesLogger
 

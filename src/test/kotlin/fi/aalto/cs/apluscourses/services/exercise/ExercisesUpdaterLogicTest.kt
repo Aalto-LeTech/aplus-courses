@@ -1,6 +1,7 @@
 package fi.aalto.cs.apluscourses.services.exercise
 
-import fi.aalto.cs.apluscourses.api.APlusApi
+import fi.aalto.cs.aplus.client.dto.*
+import fi.aalto.cs.aplus.client.LocalizedString
 import fi.aalto.cs.apluscourses.model.exercise.SubmissionResult
 import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdater.Companion.assembleExerciseGroups
 import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdater.Companion.computeCategoryPoints
@@ -13,6 +14,18 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 class ExercisesUpdaterLogicTest {
+    @Test
+    fun `upstream terminal failures clear waiting status`() {
+        for ((raw, expected) in listOf("error" to SubmissionResult.Status.ERROR,
+            "invalidated" to SubmissionResult.Status.INVALIDATED, "future-status" to SubmissionResult.Status.UNKNOWN)) {
+            val result = SubmissionResult(1, 10, 0, null, SubmissionResult.Status.WAITING, true, null)
+            result.status = SubmissionResult.statusFromString(raw)
+            assertEquals(expected, result.status)
+            assertFalse(result.status == SubmissionResult.Status.WAITING)
+        }
+        assertEquals(SubmissionResult.Status.WAITING, SubmissionResult.statusFromString("initialized"))
+    }
+
     @Test
     fun `exercises with an empty difficulty are excluded from category points`() {
         val points = pointsBody(
@@ -182,7 +195,6 @@ class ExercisesUpdaterLogicTest {
         val exercise = groups[0].exercises[0]
         assertEquals(10L, exercise.id)
         assertEquals("Tehtava", exercise.name)
-        assertEquals(EXERCISE_URL, exercise.url)
         assertEquals(5, exercise.maxPoints)
         assertEquals(3, exercise.userPoints)
     }
@@ -575,8 +587,8 @@ class ExercisesUpdaterLogicTest {
     private fun pointsBody(
         pointsByDifficulty: Map<String, Int> = emptyMap(),
         points: Int = 0,
-        modules: List<APlusApi.Course.Points.Module> = emptyList()
-    ) = APlusApi.Course.Points.PointsBody(
+        modules: List<PointsModuleDto> = emptyList()
+    ) = PointsDto(
         id = 1,
         url = "",
         username = USERNAME,
@@ -599,8 +611,8 @@ class ExercisesUpdaterLogicTest {
         @NonNls displayName: String = "",
         isOpen: Boolean,
         @NonNls closingTime: String = "",
-        exercises: List<APlusApi.Course.Exercises.Exercise> = emptyList()
-    ) = APlusApi.Course.Exercises.CourseModule(
+        exercises: List<ExerciseBriefDto> = emptyList()
+    ) = ExerciseModuleDto(
         id = id,
         url = url,
         htmlUrl = htmlUrl,
@@ -620,7 +632,7 @@ class ExercisesUpdaterLogicTest {
         @NonNls hierarchicalName: String = "",
         @NonNls difficulty: String = "",
         hasSubmittableFiles: Boolean
-    ) = APlusApi.Course.Exercises.Exercise(
+    ) = ExerciseBriefDto(
         id = id,
         url = url,
         htmlUrl = htmlUrl,
@@ -637,8 +649,8 @@ class ExercisesUpdaterLogicTest {
         @NonNls name: String = "|en:Module|",
         maxPoints: Int = 0,
         points: Int = 0,
-        exercises: List<APlusApi.Course.Points.Exercise> = emptyList()
-    ) = APlusApi.Course.Points.Module(
+        exercises: List<PointsExerciseDto> = emptyList()
+    ) = PointsModuleDto(
         id = id,
         name = name,
         maxPoints = maxPoints,
@@ -658,9 +670,9 @@ class ExercisesUpdaterLogicTest {
         maxPoints: Int = 0,
         points: Int = 0,
         @NonNls submissions: List<String> = emptyList(),
-        submissionsWithPoints: List<APlusApi.Course.Points.SubmissionWithPoints> = emptyList(),
+        submissionsWithPoints: List<SubmissionBriefDto> = emptyList(),
         @NonNls bestSubmission: String? = null
-    ) = APlusApi.Course.Points.Exercise(
+    ) = PointsExerciseDto(
         url = url,
         bestSubmission = bestSubmission,
         submissions = submissions,
@@ -680,7 +692,7 @@ class ExercisesUpdaterLogicTest {
         id: Long,
         @NonNls url: String = "",
         grade: Int = 0
-    ) = APlusApi.Course.Points.SubmissionWithPoints(
+    ) = SubmissionBriefDto(
         id = id,
         url = url,
         submissionTime = "",
@@ -693,7 +705,8 @@ class ExercisesUpdaterLogicTest {
         @NonNls status: String = "waiting",
         grade: Int = 0,
         penalty: Double? = null
-    ) = APlusApi.Course.SubmissionData.SubmissionDataBody(
+    ) = SubmissionDataRowDto(
+        exerciseId = 10,
         submissionId = submissionId,
         userId = userId,
         status = status,

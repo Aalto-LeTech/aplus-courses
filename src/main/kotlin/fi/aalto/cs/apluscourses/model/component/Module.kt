@@ -24,7 +24,7 @@ import fi.aalto.cs.apluscourses.services.course.CourseSetupStatus
 import fi.aalto.cs.apluscourses.services.course.SetupStepState
 import fi.aalto.cs.apluscourses.ui.module.UpdateModuleDialog
 import fi.aalto.cs.apluscourses.utils.FileUtil
-import fi.aalto.cs.apluscourses.utils.Version
+import fi.aalto.cs.aplus.courseconfig.ConfigVersion
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -43,7 +43,7 @@ open class Module(
     name: String,
     val zipUrl: String,
     val changelog: String?,
-    val latestVersion: Version,
+    val latestVersion: ConfigVersion,
     val language: String?,
     project: Project
 ) : Component<IdeaModule>(name, project) {

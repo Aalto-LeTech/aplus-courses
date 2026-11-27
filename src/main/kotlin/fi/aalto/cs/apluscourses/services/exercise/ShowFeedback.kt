@@ -11,14 +11,15 @@ import com.intellij.ui.JBColor
 import com.intellij.ui.jcef.JBCefScrollbarsHelper
 import com.intellij.util.ui.JBFont
 import fi.aalto.cs.apluscourses.MyBundle.message
-import fi.aalto.cs.apluscourses.api.APlusApi
 import fi.aalto.cs.apluscourses.model.exercise.Exercise
 import fi.aalto.cs.apluscourses.model.exercise.SubmissionResult
 import fi.aalto.cs.apluscourses.notifications.NetworkErrorNotification
+import fi.aalto.cs.apluscourses.services.CoursesClient
 import fi.aalto.cs.apluscourses.services.Notifier
 import fi.aalto.cs.apluscourses.services.Opener
 import fi.aalto.cs.apluscourses.services.course.CourseManager
 import fi.aalto.cs.apluscourses.utils.CoursesLogger
+import fi.aalto.cs.aplus.client.AplusException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -42,11 +43,16 @@ class ShowFeedback(
                     project.service<Opener>().openSubmission(submission)
                     return@launch
                 }
-                val feedbackString = withContext(Dispatchers.IO) {
-                    APlusApi.submission(submission).get(project).feedback
+                val fetched = withContext(Dispatchers.IO) {
+                    CoursesClient.getInstance(project).aplus.submission(submission.id)
+                }
+                // A+ withholds the feedback until it is revealed, so there is nothing to render yet.
+                if (!fetched.feedbackRevealed) {
+                    project.service<Opener>().openSubmission(submission)
+                    return@launch
                 }
 
-                val document = Jsoup.parseBodyFragment(feedbackString)
+                val document = Jsoup.parseBodyFragment(fetched.feedback.orEmpty())
 
                 @NonNls val rgbFormat = "#%02x%02x%02x"
                 val textColor: JBColor = JBColor.black
@@ -105,6 +111,9 @@ class ShowFeedback(
                     )
                 }
             } catch (ex: IOException) {
+                CoursesLogger.error("Network error in ShowFeedback", ex)
+                Notifier.notify(NetworkErrorNotification(ex), project)
+            } catch (ex: AplusException) {
                 CoursesLogger.error("Network error in ShowFeedback", ex)
                 Notifier.notify(NetworkErrorNotification(ex), project)
             }

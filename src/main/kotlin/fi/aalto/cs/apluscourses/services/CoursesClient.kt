@@ -1,33 +1,20 @@
 package fi.aalto.cs.apluscourses.services
 
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.platform.util.progress.reportSequentialProgress
-import com.intellij.serialization.PropertyMapping
 import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import fi.aalto.cs.apluscourses.utils.ZipUtil
-import io.ktor.client.*
-import io.ktor.client.call.*
-import io.ktor.client.engine.java.*
-import io.ktor.client.plugins.*
-import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.client.plugins.resources.*
+import fi.aalto.cs.aplus.client.AplusClient
 import io.ktor.client.request.*
-import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.http.content.*
-import io.ktor.serialization.kotlinx.json.*
 import io.ktor.utils.io.*
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonNamingStrategy
 import org.jetbrains.annotations.NonNls
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
@@ -39,79 +26,48 @@ import java.nio.file.StandardCopyOption
 import kotlin.io.path.createTempFile
 import kotlin.io.path.nameWithoutExtension
 
-class UnauthorizedException @PropertyMapping() constructor() :
-    IOException("The server responded with 401 Unauthorized") {
-    companion object {
-        private const val serialVersionUID: Long = 1L
-    }
-}
-
-class ForbiddenException @PropertyMapping() constructor() :
-    IOException("The server responded with 403 Forbidden") {
-    companion object {
-        private const val serialVersionUID: Long = 1L
-    }
-}
-
 typealias DownloadProgress = (copiedBytes: Long, totalBytes: Long) -> Unit
 
 @Service(Service.Level.PROJECT)
-class CoursesClient(
-    private val scope: CoroutineScope
-) : AutoCloseable {
+class CoursesClient : Disposable {
 
+    /** Authenticated API transport with the IDE's trusted certificates. */
     @Volatile
-    var client: HttpClient = buildClient()
+    var aplus: AplusClient = buildAplusClient("https://localhost")
+        private set
 
-    fun buildClient(
-        protocol: URLProtocol = URLProtocol.HTTPS,
-        @NonNls host: String = "localhost",
-        port: Int = 0,
-        @NonNls apiPath: String = "api/v2/"
-    ): HttpClient =
-        HttpClient(Java) {
-            install(Resources)
-            install(ContentNegotiation) {
-                json(Json {
-                    ignoreUnknownKeys = true
-                    isLenient = true
-                    namingStrategy = JsonNamingStrategy.SnakeCase
-                })
-            }
-
-            defaultRequest {
-                url {
-                    this.protocol = protocol
-                    this.host = host
-                    this.port = port
-                    path(apiPath)
-                }
-            }
+    private fun buildAplusClient(@NonNls baseUrl: String): AplusClient =
+        AplusClient.create(
+            baseUrl = baseUrl,
+            tokenProvider = { TokenStorage.getInstance().getToken(baseUrl)?.toString() },
+        ) {
+            engine { config { trustIdeCertificates().allowConcurrentRequests() } }
         }
 
+    /**
+     * Replaces the API client after validating [newHost].
+     * Invalid URLs leave the existing client open.
+     *
+     * @throws IllegalArgumentException when [newHost] is not a usable A+ URL.
+     */
     fun changeHost(@NonNls newHost: String) {
-        val protocol = if (newHost.startsWith("https", true)) URLProtocol.HTTPS else URLProtocol.HTTP
-        val stripped = newHost.removePrefix("https://").removePrefix("http://")
-        val hostPart = stripped.substringBefore('/')
-        val host = hostPart.substringBefore(':')
-        val port = hostPart.substringAfter(':', "").toIntOrNull() ?: 0
-        client.close()
-        client = buildClient(protocol, host, port)
+        val aplusBaseUrl = AplusClient.normalizeBaseUrl(newHost)
+        val replacement = buildAplusClient(aplusBaseUrl)
+        val previous = aplus
+        aplus = replacement
+        previous.close()
     }
 
-    fun execute(block: suspend (CoursesClient) -> Unit): Job =
-        scope.launch { block(this@CoursesClient) }
+    /** Public resources follow redirects and never carry API credentials. */
+    private val resourceClient get() = IdeHttpClient.getInstance().client
 
-    /** Sizes of files already asked about. */
     private val fileSizes = ConcurrentHashMap<String, Long>()
 
-    /**
-     * The download size of [url], from a cached value when possible.
-     */
+    /** Returns the Content-Length in bytes, caching successful lookups by URL. */
     suspend fun getFileSize(url: String): Long? {
         fileSizes[url]?.let { return it }
 
-        val size = client.prepareHead(url).execute { response ->
+        val size = resourceClient.prepareHead(url).execute { response ->
             verifyStatus(response)
             response.headers[HttpHeaders.ContentLength]?.toLongOrNull()
         }
@@ -119,53 +75,17 @@ class CoursesClient(
         return size
     }
 
-    suspend fun get(
-        url: String,
-        withAuth: Boolean = false,
-        builder: HttpRequestBuilder.() -> Unit = {}
-    ): HttpResponse = client.get(url) {
-        if (withAuth) addToken()
-        builder()
-    }.also(::verifyStatus)
+    suspend fun get(url: String): HttpResponse = resourceClient.get(url).also(::verifyStatus)
 
-    suspend inline fun <reified Resource : Any> get(
-        resource: Resource,
-        crossinline builder: HttpRequestBuilder.() -> Unit = {}
-    ): HttpResponse = client.get(resource) {
-        addToken()
-        builder()
-    }.also(::verifyStatus).body()
-
-    suspend inline fun <reified Resource : Any, reified R : Any> getBody(
-        resource: Resource,
-        crossinline builder: HttpRequestBuilder.() -> Unit = {}
-    ): R = client.get(resource) {
-        addToken()
-        builder()
-    }.also(::verifyStatus).body()
-
-    suspend inline fun <reified Resource : Any> postForm(
-        resource: Resource,
-        parts: List<PartData>
-    ): HttpResponse = client.post(resource) {
-        addToken()
-        setBody(MultiPartFormDataContent(parts))
-    }.also { verifyStatus(it, redirectionIsSuccess = true) }
-
-    /**
-     * Streams [url] into [file], reporting how far along it is.
-     */
+    /** Streams a download to [file]. Progress callbacks require a positive Content-Length. */
     suspend fun download(
         url: String,
         file: File,
-        withAuth: Boolean = false,
         onProgress: DownloadProgress? = null,
     ): Unit = withContext(Dispatchers.IO) {
         val target = file.also { it.parentFile.mkdirs(); it.createNewFile() }
 
-        client.prepareGet(url) {
-            if (withAuth) addToken()
-        }.execute { response ->
+        resourceClient.prepareGet(url).execute { response ->
             verifyStatus(response)
 
             val totalBytes = response.contentLength()?.takeIf { it > 0 }
@@ -196,22 +116,13 @@ class CoursesClient(
         }
     }
 
-    suspend fun downloadFile(url: String, target: Path) {
-        reportSequentialProgress { reporter ->
-            val tempFile = withContext(Dispatchers.IO) {
-                createTempFile(target.nameWithoutExtension).toFile()
-            }
-
-            reporter.nextStep(endFraction = 100) {
-                download(url, tempFile)
-                withContext(Dispatchers.IO) {
-                    Files.move(
-                        tempFile.toPath(),
-                        target,
-                        StandardCopyOption.REPLACE_EXISTING
-                    )
-                }
-            }
+    suspend fun downloadFile(url: String, target: Path): Unit = withContext(Dispatchers.IO) {
+        val tempFile = createTempFile(target.nameWithoutExtension).toFile()
+        try {
+            download(url, tempFile)
+            Files.move(tempFile.toPath(), target, StandardCopyOption.REPLACE_EXISTING)
+        } finally {
+            Files.deleteIfExists(tempFile.toPath())
         }
     }
 
@@ -239,28 +150,13 @@ class CoursesClient(
         }
     }
 
-    suspend fun HttpRequestBuilder.addToken() {
-        TokenStorage.getInstance().getToken()?.let {
-            @NonNls val token = "Token $it"
-            if (it.isNotBlank()) header(HttpHeaders.Authorization, token)
+    private fun verifyStatus(response: HttpResponse) {
+        if (!response.status.isSuccess()) {
+            throw IOException("Unexpected ${response.status} for ${response.call.request.url}")
         }
     }
 
-    /**
-     * A POST is answered with 201 Created, and the client does not follow redirects for POSTs,
-     * so [redirectionIsSuccess] lets the submission call treat a 3xx as the success it is.
-     */
-    fun verifyStatus(response: HttpResponse, redirectionIsSuccess: Boolean = false) {
-        when {
-            response.status.isSuccess() -> Unit
-            redirectionIsSuccess && response.status.value in 300..399 -> Unit
-            response.status == HttpStatusCode.Unauthorized -> throw UnauthorizedException()
-            response.status == HttpStatusCode.Forbidden -> throw ForbiddenException()
-            else -> throw IOException("Unexpected ${response.status} for ${response.call.request.url}")
-        }
-    }
-
-    suspend fun ByteReadChannel.copyAndClose(
+    private suspend fun ByteReadChannel.copyAndClose(
         dest: WritableByteChannel,
         onBytesCopied: (Long) -> Unit = {}
     ) {
@@ -282,8 +178,8 @@ class CoursesClient(
     private fun File.sinkChannel(): WritableByteChannel =
         outputStream().channel
 
-    override fun close() {
-        client.close()
+    override fun dispose() {
+        aplus.close()
     }
 
     companion object {

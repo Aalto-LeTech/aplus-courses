@@ -1,5 +1,7 @@
 package fi.aalto.cs.apluscourses.services.exercise
 
+import fi.aalto.cs.aplus.client.dto.*
+import fi.aalto.cs.aplus.client.LocalizedString
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
@@ -9,18 +11,18 @@ import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.intellij.util.messages.Topic
 import com.intellij.util.messages.Topic.ProjectLevel
 import fi.aalto.cs.apluscourses.MyBundle.message
-import fi.aalto.cs.apluscourses.api.APlusApi
 import fi.aalto.cs.apluscourses.model.Course
 import fi.aalto.cs.apluscourses.model.component.Module
 import fi.aalto.cs.apluscourses.model.exercise.Exercise
 import fi.aalto.cs.apluscourses.model.exercise.ExerciseGroup
 import fi.aalto.cs.apluscourses.model.exercise.SubmissionResult
 import fi.aalto.cs.apluscourses.notifications.FeedbackAvailableNotification
+import fi.aalto.cs.aplus.client.AplusException
+import fi.aalto.cs.apluscourses.services.CoursesClient
 import fi.aalto.cs.apluscourses.services.Notifier
 import fi.aalto.cs.apluscourses.services.TokenStorage
 import fi.aalto.cs.apluscourses.services.course.CourseFileManager
 import fi.aalto.cs.apluscourses.services.course.CourseManager
-import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil
 import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import io.ktor.utils.io.CancellationException
 import kotlinx.coroutines.*
@@ -87,6 +89,8 @@ class ExercisesUpdater(
                 }
             } catch (e: CancellationException) {
                 throw e
+            } catch (e: AplusException) {
+                handleNetworkError(e)
             } catch (e: IOException) {
                 handleNetworkError(e)
             } catch (e: UnresolvedAddressException) {
@@ -127,6 +131,8 @@ class ExercisesUpdater(
                 }
             } catch (e: CancellationException) {
                 throw e
+            } catch (e: AplusException) {
+                handleGradingNetworkError(e)
             } catch (e: IOException) {
                 handleGradingNetworkError(e)
             } catch (e: UnresolvedAddressException) {
@@ -135,7 +141,7 @@ class ExercisesUpdater(
         }
 
     private suspend fun updateExercises(force: Boolean) {
-        if (!TokenStorage.getInstance().isTokenSet()) {
+        if (!TokenStorage.getInstance().isTokenSet(project)) {
             CoursesLogger.info("Not authenticated, clearing exercises")
             state.clearAll()
             fireExercisesUpdated()
@@ -165,9 +171,9 @@ class ExercisesUpdater(
     }
 
     private class FetchedExercises(
-        val points: APlusApi.Course.Points.PointsBody,
-        val exercises: List<APlusApi.Course.Exercises.CourseModule>,
-        val submissionData: List<APlusApi.Course.SubmissionData.SubmissionDataBody>
+        val points: PointsDto,
+        val exercises: List<ExerciseModuleDto>,
+        val submissionData: List<SubmissionDataRowDto>
     )
 
     /**
@@ -175,19 +181,19 @@ class ExercisesUpdater(
      * changed since the last refresh and [force] is false.
      */
     private suspend fun fetchIfChanged(course: Course, force: Boolean): FetchedExercises? {
-        val courseApi = APlusApi.course(course)
-        val points = withContext(Dispatchers.IO) { courseApi.points(project) }
+        val aplus = CoursesClient.getInstance(project).aplus
+        val points = withContext(Dispatchers.IO) { aplus.points(course.id) }
         updateCategoryPoints(points)
         val changed = updateChangeSnapshot(points)
         if (!changed && !force) return null
         return coroutineScope {
-            val exercisesDeferred = async(Dispatchers.IO) { courseApi.exercises(project) }
-            val submissionDataDeferred = async(Dispatchers.IO) { courseApi.submissionData(project) }
+            val exercisesDeferred = async(Dispatchers.IO) { aplus.exerciseModules(course.id) }
+            val submissionDataDeferred = async(Dispatchers.IO) { aplus.submissionData(course.id) }
             FetchedExercises(points, exercisesDeferred.await(), submissionDataDeferred.await())
         }
     }
 
-    private fun updateCategoryPoints(points: APlusApi.Course.Points.PointsBody) {
+    private fun updateCategoryPoints(points: PointsDto) {
         val categoryPoints = computeCategoryPoints(points)
         state.maxPointsForCategories = categoryPoints.maxPointsForCategories
         state.userPointsForCategories = categoryPoints.userPointsForCategories
@@ -200,7 +206,7 @@ class ExercisesUpdater(
      * Compares the total points and submission count against the previous refresh and remembers
      * the new values. Returns false when the exercise tree is already up to date.
      */
-    private fun updateChangeSnapshot(points: APlusApi.Course.Points.PointsBody): Boolean {
+    private fun updateChangeSnapshot(points: PointsDto): Boolean {
         val snapshot = computeChangeSnapshot(
             points,
             previousPoints = lastPoints,
@@ -243,27 +249,33 @@ class ExercisesUpdater(
     }
 
     private suspend fun pollGradedSubmissions() {
-        var anyGraded = false
+        var anyFinished = false
         for (submissionId in submissionsInGrading.toList()) {
-            val submission = APlusApi.Submission(submissionId).get(project)
-            if (SubmissionResult.statusFromString(submission.status) == SubmissionResult.Status.WAITING) continue
-            anyGraded = true
+            val submission = CoursesClient.getInstance(project).aplus.submission(submissionId)
+            val status = SubmissionResult.statusFromString(submission.status)
+            if (status == SubmissionResult.Status.WAITING) continue
             submissionsInGrading.remove(submissionId)
+            if (status == SubmissionResult.Status.UNKNOWN) {
+                CoursesLogger.warn("Submission $submissionId has unknown status ${submission.status}")
+            }
+            anyFinished = true
             applyGradedSubmission(submissionId, submission)
         }
-        // A graded submission changes points, so the whole exercise tree needs a refresh
-        if (anyGraded) restart()
+        // Terminal failures also have to leave the grading state, even when points stay unchanged.
+        if (anyFinished) restart(force = true)
     }
 
-    private fun applyGradedSubmission(submissionId: Long, submission: APlusApi.Submission.SubmissionBody) {
+    private fun applyGradedSubmission(submissionId: Long, submission: SubmissionDto) {
         val exercise = state.exerciseGroups
             .flatMap { it.exercises }
-            .find { it.id == submission.exercise.id } ?: return
+            .find { it.submissionResults.any { result -> result.id == submissionId } } ?: return
         val submissionResult = exercise.submissionResults.find { it.id == submissionId } ?: return
-        submissionResult.updateStatus(submission.status)
+        submissionResult.status = SubmissionResult.statusFromString(submission.status)
         submissionResult.userPoints = submission.grade
         submissionResult.latePenalty = submission.latePenaltyApplied
-        Notifier.notify(FeedbackAvailableNotification(submissionResult, exercise, project), project)
+        if (submissionResult.status in setOf(SubmissionResult.Status.GRADED, SubmissionResult.Status.UNOFFICIAL, SubmissionResult.Status.REJECTED)) {
+            Notifier.notify(FeedbackAvailableNotification(submissionResult, exercise, project), project)
+        }
         fireExerciseUpdated(exercise)
     }
 
@@ -317,19 +329,18 @@ class ExercisesUpdater(
         )
 
         /**
-         * Sums the max points per (non-empty) difficulty category across all modules, and looks up the
-         * user's points for each of those categories (0 if the category is absent from
-         * [APlusApi.Course.Points.PointsBody.pointsByDifficulty]).
+         * Totals maximum points by nonempty difficulty category across modules.
+         * Missing entries in [PointsDto.pointsByDifficulty] count as zero earned points.
          */
-        internal fun computeCategoryPoints(points: APlusApi.Course.Points.PointsBody): CategoryPoints {
+        internal fun computeCategoryPoints(points: PointsDto): CategoryPoints {
             val maxPointsForCategories = points.modules
                 .flatMap { it.exercises }
-                .filter { it.difficulty.isNotEmpty() } // Filter out empty categories
+                .filter { it.difficulty.isNotEmpty() }
                 .groupingBy { it.difficulty }
                 .fold(0) { sum, exercise -> sum + exercise.maxPoints }
             val userPointsForCategories = maxPointsForCategories.keys.associateWith {
                 points.pointsByDifficulty.getOrDefault(it, 0)
-            } // If points are 0, the category is not in pointsByDifficulty
+            }
             return CategoryPoints(
                 userPointsForCategories,
                 maxPointsForCategories,
@@ -350,12 +361,12 @@ class ExercisesUpdater(
          * already an exercise tree ([hasExerciseGroups]) and both totals match the previous refresh.
          */
         internal fun computeChangeSnapshot(
-            points: APlusApi.Course.Points.PointsBody,
+            points: PointsDto,
             previousPoints: Int,
             previousSubmissionCount: Int,
             hasExerciseGroups: Boolean
         ): ChangeSnapshot {
-            val exercises = points.modules.flatMap { it.exercises }
+            val exercises = points.allExercises()
             val newSubmissionCount = exercises.sumOf { it.submissions.size }
             val newPoints = exercises.sumOf { it.points }
             val changed = !(
@@ -370,43 +381,38 @@ class ExercisesUpdater(
          * Assembles the exercise tree from the raw API responses.
          */
         internal fun assembleExerciseGroups(
-            points: APlusApi.Course.Points.PointsBody,
-            exerciseDetails: List<APlusApi.Course.Exercises.CourseModule>,
-            submissionData: List<APlusApi.Course.SubmissionData.SubmissionDataBody>,
+            points: PointsDto,
+            exerciseDetails: List<ExerciseModuleDto>,
+            submissionData: List<SubmissionDataRowDto>,
             language: String,
             optionalCategories: List<String>,
             exerciseModules: Map<Long, Map<String, Module>>
         ): List<ExerciseGroup> {
             val submissionDataById = submissionData.associateBy { it.submissionId }
-            val submitterIdsForGroupSubmissions = submissionData
-                .groupBy { it.submissionId }
+            val submitterIdsForGroupSubmissions = submissionData.submitterIdsBySubmission()
                 .filterValues { it.size > 1 }
-                .mapValues { (_, entries) -> entries.map { it.userId } }
 
-            val hasCategories = points.modules.flatMap { it.exercises }.any { it.difficulty.isNotEmpty() }
+            val hasCategories = points.allExercises().any { it.difficulty.isNotEmpty() }
             val optionalCategoriesWithDefault = if (hasCategories) optionalCategories + "" else optionalCategories
 
             fun buildExercise(
-                exercise: APlusApi.Course.Points.Exercise,
-                details: APlusApi.Course.Exercises.Exercise?
+                exercise: PointsExerciseDto,
+                details: ExerciseBriefDto?
             ): Exercise {
                 val isSubmittable = details?.hasSubmittableFiles ?: false
                 return Exercise(
                     id = exercise.id,
-                    name = APlusLocalizationUtil.getLocalizedName(exercise.name, language),
+                    name = LocalizedString(exercise.name).pick(language),
                     module = exerciseModules[exercise.id]?.get(language),
-                    htmlUrl = details?.htmlUrl ?: "",
-                    url = exercise.url,
+                    htmlUrl = details?.htmlUrl.orEmpty(),
                     submissionResults = exercise.submissionsWithPoints.map { submission ->
                         val data = submissionDataById[submission.id]
                         SubmissionResult(
                             id = submission.id,
-                            url = submission.url,
                             maxPoints = exercise.maxPoints,
                             userPoints = data?.grade ?: submission.grade,
                             latePenalty = data?.penalty,
                             status = SubmissionResult.statusFromString(data?.status),
-                            filesInfo = emptyList(),
                             isSubmittable = isSubmittable,
                             submitters = submitterIdsForGroupSubmissions[submission.id],
                         )
@@ -414,7 +420,7 @@ class ExercisesUpdater(
                     maxPoints = exercise.maxPoints,
                     userPoints = exercise.points,
                     maxSubmissions = details?.maxSubmissions ?: 0,
-                    bestSubmissionId = exercise.bestSubmission?.split("/")?.last()?.toLongOrNull(),
+                    bestSubmissionId = exercise.resolvedBestSubmissionId,
                     difficulty = exercise.difficulty,
                     isSubmittable = isSubmittable,
                     isOptional = optionalCategoriesWithDefault.contains(exercise.difficulty),
@@ -426,7 +432,7 @@ class ExercisesUpdater(
                 val details = exerciseDetails.find { it.id == module.id }
                 ExerciseGroup(
                     module.id,
-                    APlusLocalizationUtil.getLocalizedName(module.name, language),
+                    LocalizedString(module.name).pick(language),
                     module.maxPoints,
                     module.points,
                     details?.htmlUrl ?: "",

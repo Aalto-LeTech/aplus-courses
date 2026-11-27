@@ -1,5 +1,6 @@
 package fi.aalto.cs.apluscourses.model.people
 
+import fi.aalto.cs.aplus.client.AplusClient
 import fi.aalto.cs.apluscourses.MyBundle.message
 
 data class Group(val id: Long, val members: List<GroupMember>) {
@@ -9,7 +10,7 @@ data class Group(val id: Long, val members: List<GroupMember>) {
 
     companion object {
         val SUBMIT_ALONE: Group = Group(
-            -1,
+            AplusClient.SUBMIT_ALONE_GROUP_ID,
             listOf(
                 GroupMember(
                     -1,

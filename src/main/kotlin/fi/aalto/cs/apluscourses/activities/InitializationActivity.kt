@@ -13,11 +13,13 @@ import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.util.application
 import fi.aalto.cs.apluscourses.MyBundle
-import fi.aalto.cs.apluscourses.api.CourseConfig
-import fi.aalto.cs.apluscourses.api.CourseConfig.resourceUrls
+import fi.aalto.cs.aplus.courseconfig.CourseConfig
+import fi.aalto.cs.apluscourses.api.CourseConfigLoader
+import fi.aalto.cs.apluscourses.api.CourseConfigLoader.resourceUrls
 import fi.aalto.cs.apluscourses.notifications.CourseVersionOutdatedError
 import fi.aalto.cs.apluscourses.notifications.CourseVersionOutdatedWarning
 import fi.aalto.cs.apluscourses.notifications.CourseVersionTooNewError
+import fi.aalto.cs.apluscourses.notifications.InvalidCourseUrlNotification
 import fi.aalto.cs.apluscourses.services.CoursesClient
 import fi.aalto.cs.apluscourses.services.Notifier
 import fi.aalto.cs.apluscourses.services.PluginSettings
@@ -32,7 +34,8 @@ import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import fi.aalto.cs.apluscourses.utils.PluginAutoInstaller
 import fi.aalto.cs.apluscourses.utils.PluginVersion
 import fi.aalto.cs.apluscourses.utils.ProjectViewUtil
-import fi.aalto.cs.apluscourses.utils.Version.ComparisonStatus
+import fi.aalto.cs.apluscourses.utils.PluginVersion.ComparisonStatus
+import fi.aalto.cs.aplus.courseconfig.ConfigVersion
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -43,7 +46,7 @@ internal class InitializationActivity :
     ProjectActivity {
     override suspend fun execute(project: Project) {
         val courseConfig = try {
-            CourseConfig.get(project)
+            CourseConfigLoader.get(project)
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
@@ -57,7 +60,15 @@ internal class InitializationActivity :
             CourseManager.getInstance(project).fireNetworkError()
             return
         }
-        CoursesClient.getInstance(project).changeHost(courseConfig.aPlusUrl)
+        try {
+            CoursesClient.getInstance(project).changeHost(requireNotNull(courseConfig.aPlusUrl))
+        } catch (e: IllegalArgumentException) {
+            CoursesLogger.warn("Course configuration has an unusable A+ URL: ${courseConfig.aPlusUrl}", e)
+            Notifier.notify(InvalidCourseUrlNotification(requireNotNull(courseConfig.aPlusUrl)), project)
+            InitializationStatus.setIsIoError(project)
+            CourseManager.getInstance(project).fireNetworkError(e)
+            return
+        }
 
         val connection = project.messageBus.connect()
         connection.subscribe(ModuleListener.TOPIC, object : ModuleListener {
@@ -85,7 +96,7 @@ internal class InitializationActivity :
         })
 
         val pluginVersion = PluginVersion.currentVersion
-        val requiredVersion = courseConfig.version
+        val requiredVersion = ConfigVersion.parse(courseConfig.version)
         CoursesLogger.info("Starting initialization for course ${courseConfig.name} with required plugin version $requiredVersion and installed version $pluginVersion")
 
         val versionComparison = pluginVersion.comparisonStatus(requiredVersion)

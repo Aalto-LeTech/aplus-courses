@@ -4,7 +4,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.testFramework.junit5.TestApplication
 import com.intellij.util.xmlb.XmlSerializer
 import com.intellij.testFramework.junit5.fixture.projectFixture
-import fi.aalto.cs.apluscourses.utils.Version
+import fi.aalto.cs.aplus.courseconfig.ConfigVersion
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -48,7 +48,7 @@ class CourseFileManagerTest {
         assertEquals("https://plus.cs.aalto.fi/o1/2024/", manager.state.url)
 
         val module = manager.getMetadata(MODULE_NAME)
-        assertEquals(Version("1.4"), module?.version)
+        assertEquals(ConfigVersion(1, 4), module?.version)
         assertEquals(1725192000L, module?.downloadedAt?.epochSeconds)
     }
 

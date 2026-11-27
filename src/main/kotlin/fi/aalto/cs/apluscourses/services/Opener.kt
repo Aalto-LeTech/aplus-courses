@@ -28,8 +28,11 @@ import fi.aalto.cs.apluscourses.icons.CoursesIcons
 import fi.aalto.cs.apluscourses.model.component.Module
 import fi.aalto.cs.apluscourses.model.exercise.Exercise
 import fi.aalto.cs.apluscourses.model.exercise.SubmissionResult
+import fi.aalto.cs.apluscourses.notifications.UnavailableUrlNotification
+import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.annotations.NonNls
@@ -50,14 +53,37 @@ class Opener(
         }
     }
 
+    /**
+     * Opens the submission page and always invokes [callback] on the EDT.
+     * Callers use the callback to clear loading indicators after failure or cancellation.
+     */
     fun openSubmissionResult(submission: SubmissionResult, callback: () -> Unit) {
         cs.launch {
-            val url = submission.getHtmlUrl(project)
-            withContext(Dispatchers.EDT) {
-                BrowserUtil.open(url)
-                callback()
+            try {
+                openSubmissionInBrowser(submission)
+            } finally {
+                withContext(NonCancellable + Dispatchers.EDT) { callback() }
             }
         }
+    }
+
+    fun openSubmission(submission: SubmissionResult) {
+        cs.launch { openSubmissionInBrowser(submission) }
+    }
+
+    private suspend fun openSubmissionInBrowser(submission: SubmissionResult) {
+        val url = submissionHtmlUrl(submission)
+        if (url == null) {
+            Notifier.notify(UnavailableUrlNotification(), project)
+            return
+        }
+        withContext(Dispatchers.EDT) { BrowserUtil.open(url) }
+    }
+
+    private suspend fun submissionHtmlUrl(submission: SubmissionResult): String? {
+        val htmlUrl = CoursesClient.getInstance(project).aplus.submission(submission.id).htmlUrl
+        if (htmlUrl == null) CoursesLogger.warn("A+ gave no page URL for submission ${submission.id}")
+        return htmlUrl
     }
 
     fun openHtmlFileInEmbeddedBrowser(htmlFile: VirtualFile) {
@@ -104,13 +130,6 @@ class Opener(
     fun showModule(module: Module) {
         fireOpenModule(module)
     }
-
-    fun openSubmission(submission: SubmissionResult) {
-        cs.launch {
-            BrowserUtil.open(submission.getHtmlUrl(project))
-        }
-    }
-
 
     private fun fireOpenExercise(exercise: Exercise) {
         application.invokeLater {

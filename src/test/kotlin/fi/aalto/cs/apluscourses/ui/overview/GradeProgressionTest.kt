@@ -1,7 +1,7 @@
 package fi.aalto.cs.apluscourses.ui.overview
 
-import fi.aalto.cs.apluscourses.api.CourseConfig.Grading
-import fi.aalto.cs.apluscourses.model.grading.GradeProgress
+import fi.aalto.cs.aplus.courseconfig.CourseConfig.GradeProgress
+import fi.aalto.cs.aplus.courseconfig.CourseConfig.Grading
 import org.jetbrains.annotations.NonNls
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
@@ -18,7 +18,7 @@ class GradeProgressionTest {
         )
 
         val progression = gradeProgression(
-            style = Grading.STYLE_TOTAL,
+            style = Grading.TOTAL,
             gradeData = gradeData,
             categories = listOf(A, B),
             totalLabel = TOTAL_LABEL
@@ -38,7 +38,7 @@ class GradeProgressionTest {
         )
 
         val progression = gradeProgression(
-            style = Grading.STYLE_O1,
+            style = Grading.O1,
             gradeData = gradeData,
             categories = listOf(A, B),
             totalLabel = TOTAL_LABEL
@@ -52,7 +52,7 @@ class GradeProgressionTest {
     @Test
     fun `without grade data the total style still shows the single labeled row`() {
         val progression = gradeProgression(
-            style = Grading.STYLE_TOTAL,
+            style = Grading.TOTAL,
             gradeData = null,
             categories = listOf(A, B),
             totalLabel = TOTAL_LABEL
@@ -66,7 +66,7 @@ class GradeProgressionTest {
     @Test
     fun `without grade data other styles keep one row per category`() {
         val progression = gradeProgression(
-            style = Grading.STYLE_O1,
+            style = Grading.O1,
             gradeData = null,
             categories = listOf(A, B),
             totalLabel = TOTAL_LABEL

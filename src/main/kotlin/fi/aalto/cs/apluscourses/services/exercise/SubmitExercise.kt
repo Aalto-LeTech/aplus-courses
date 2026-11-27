@@ -11,16 +11,18 @@ import com.intellij.platform.util.progress.reportSequentialProgress
 import com.intellij.serialization.PropertyMapping
 import com.intellij.util.application
 import fi.aalto.cs.apluscourses.MyBundle.message
-import fi.aalto.cs.apluscourses.api.APlusApi
 import fi.aalto.cs.apluscourses.model.component.Module
 import fi.aalto.cs.apluscourses.model.exercise.Exercise
 import fi.aalto.cs.apluscourses.model.exercise.Submission
-import fi.aalto.cs.apluscourses.model.exercise.SubmissionInfo
+import fi.aalto.cs.apluscourses.model.mapping.toGroups
+import fi.aalto.cs.apluscourses.model.mapping.toSubmissionFiles
 import fi.aalto.cs.apluscourses.model.people.Group
 import fi.aalto.cs.apluscourses.notifications.MissingFileNotification
 import fi.aalto.cs.apluscourses.notifications.MissingModuleNotification
 import fi.aalto.cs.apluscourses.notifications.NetworkErrorNotification
 import fi.aalto.cs.apluscourses.notifications.NotSubmittableNotification
+import fi.aalto.cs.apluscourses.notifications.SubmissionErrorsNotification
+import fi.aalto.cs.apluscourses.services.CoursesClient
 import fi.aalto.cs.apluscourses.services.Notifier
 import fi.aalto.cs.apluscourses.services.course.CourseFileManager
 import fi.aalto.cs.apluscourses.services.course.CourseManager
@@ -28,6 +30,8 @@ import fi.aalto.cs.apluscourses.ui.exercise.DuplicateSubmissionDialog
 import fi.aalto.cs.apluscourses.ui.exercise.SubmitExerciseDialog
 import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import fi.aalto.cs.apluscourses.utils.FileUtil
+import fi.aalto.cs.aplus.client.dto.LocalizedFileField
+import fi.aalto.cs.aplus.client.AplusException
 import kotlinx.coroutines.*
 import java.io.IOException
 import java.nio.file.Path
@@ -46,7 +50,7 @@ class SubmitExercise(
     private val project: Project,
     private val cs: CoroutineScope
 ) {
-    private val submissionInfos: MutableMap<Long, SubmissionInfo> = HashMap()
+    private val submissionFields = mutableMapOf<Long, Map<String, List<LocalizedFileField>>>()
     private val submittingExerciseId = AtomicLong(NO_SUBMISSION)
 
     fun isSubmitting(exercise: Exercise): Boolean = submittingExerciseId.get() == exercise.id
@@ -88,12 +92,18 @@ class SubmitExercise(
                     submissionDialog.selectedGroup.get(),
                     prepared.language
                 )
-                withBackgroundProgress(
+                val result = withBackgroundProgress(
                     project,
                     message("services.progress.submitting", exercise.name)
                 ) {
-                    APlusApi.exercise(exercise).submit(submission, project)
+                    CoursesClient.getInstance(project).aplus.submit(
+                        exerciseId = exercise.id,
+                        files = withContext(Dispatchers.IO) { toSubmissionFiles(submission.files) },
+                        groupId = submission.group.id,
+                        language = submission.language
+                    )
                 }
+                if (result.errors.isNotEmpty()) notifier.notify(SubmissionErrorsNotification(result.errors), project)
                 ExercisesUpdater.getInstance(project).restart()
 
                 DuplicateSubmissionChecker.getInstance(project)
@@ -101,6 +111,9 @@ class SubmitExercise(
 
                 CoursesLogger.info("Submitted exercise $exercise successfully")
             } catch (ex: IOException) {
+                CoursesLogger.error("Network error in SubmitExercise", ex)
+                notifyNetworkError(ex, project)
+            } catch (ex: AplusException) {
                 CoursesLogger.error("Network error in SubmitExercise", ex)
                 notifyNetworkError(ex, project)
             } catch (ex: FileDoesNotExistException) {
@@ -141,8 +154,8 @@ class SubmitExercise(
     private suspend fun prepare(exercise: Exercise): Prepared? = reportSequentialProgress { reporter ->
         reporter.nextStep(DETAILS_LOADED, message("services.progress.submission.details"))
 
-        val submissionInfo = submissionInfos.getOrPut(exercise.id) {
-            SubmissionInfo.fromJsonObject(APlusApi.exercise(exercise).get(project))
+        val fieldsByLanguage = submissionFields.getOrPut(exercise.id) {
+            CoursesClient.getInstance(project).aplus.exercise(exercise.id).exerciseInfo?.fileFieldsByLanguage().orEmpty()
         }
 
         val submittedBefore = exercise.submissionResults.isNotEmpty()
@@ -155,7 +168,8 @@ class SubmitExercise(
         val language: String = CourseFileManager.getInstance(project).state.language!!
         CoursesLogger.info("Language: $language")
 
-        if (!submissionInfo.isSubmittable(language)) {
+        val requestedFiles = fieldsByLanguage[language].orEmpty()
+        if (requestedFiles.isEmpty()) {
             CoursesLogger.warn("$exercise not submittable")
             notifier.notify(NotSubmittableNotification(), project)
             return null
@@ -191,7 +205,7 @@ class SubmitExercise(
         CoursesLogger.info("Detected module: $module, path: $modulePath")
 
         val files: MutableMap<String, Path> = HashMap()
-        for ((key, name) in submissionInfo.getFiles(language)) {
+        for ((key, name) in requestedFiles) {
             files[key] = FileUtil.findFileInDirectory(modulePath.invariantSeparatorsPathString, name)
             { file ->
                 !file.invariantSeparatorsPath.startsWith("${module.fullPath.resolve(Module.BACKUP_DIR).invariantSeparatorsPathString}/")
@@ -213,7 +227,8 @@ class SubmitExercise(
 
         reporter.nextStep(GROUPS_LOADED, message("services.progress.submission.groups"))
 
-        val groups = listOf(Group.SUBMIT_ALONE) + APlusApi.course(course).myGroups(project)
+        val groups = listOf(Group.SUBMIT_ALONE) +
+                toGroups(CoursesClient.getInstance(project).aplus.myGroups(course.id))
 
         // Find the group from the available groups that matches the default group ID.
         // A group could be removed, so this way we check that the default group ID is still valid.
@@ -235,7 +250,7 @@ class SubmitExercise(
         Prepared(files, groups, group, language, submittedBefore)
     }
 
-    private fun notifyNetworkError(exception: IOException, project: Project) {
+    private fun notifyNetworkError(exception: Exception, project: Project) {
         CoursesLogger.warn("Network error while submitting exercise", exception)
         notifier.notify(NetworkErrorNotification(exception), project)
     }

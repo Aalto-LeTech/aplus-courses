@@ -20,6 +20,7 @@ import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.icons.CoursesIcons
 import fi.aalto.cs.apluscourses.model.component.Component
 import fi.aalto.cs.apluscourses.model.component.Module
+import fi.aalto.cs.apluscourses.services.Background
 import fi.aalto.cs.apluscourses.services.CoursesClient
 import fi.aalto.cs.apluscourses.services.Opener
 import fi.aalto.cs.apluscourses.services.course.CourseManager
@@ -157,8 +158,8 @@ class ModuleRenderer(
             }.align(AlignY.BOTTOM).visibleIf(installing)
         }
         if (!isZipSizeSet) {
-            CoursesClient.getInstance(project).execute {
-                val size = it.getFileSize(module.zipUrl) ?: return@execute
+            project.service<Background>().runInBackground {
+                val size = CoursesClient.getInstance(project).getFileSize(module.zipUrl) ?: return@runInBackground
                 withContext(Dispatchers.EDT) {
                     zipSize.setValue(StringUtil.formatFileSize(size))
                     isZipSizeSet = true

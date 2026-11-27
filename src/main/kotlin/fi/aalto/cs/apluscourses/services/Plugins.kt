@@ -11,7 +11,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.updateSettings.impl.PluginDownloader
 import com.intellij.platform.ide.progress.withBackgroundProgress
 import fi.aalto.cs.apluscourses.MyBundle.message
-import fi.aalto.cs.apluscourses.api.CourseConfig
+import fi.aalto.cs.aplus.courseconfig.CourseConfig
 import fi.aalto.cs.apluscourses.services.course.CourseSetupStatus
 import fi.aalto.cs.apluscourses.services.course.SetupAction
 import fi.aalto.cs.apluscourses.services.course.SetupStepState

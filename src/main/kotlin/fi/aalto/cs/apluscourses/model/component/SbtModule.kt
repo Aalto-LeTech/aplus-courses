@@ -7,7 +7,7 @@ import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
 import com.intellij.openapi.externalSystem.util.ExternalSystemUtil
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
-import fi.aalto.cs.apluscourses.utils.Version
+import fi.aalto.cs.aplus.courseconfig.ConfigVersion
 import org.jetbrains.sbt.project.settings.SbtProjectSettings
 import kotlin.io.path.invariantSeparatorsPathString
 
@@ -15,7 +15,7 @@ class SbtModule(
     name: String,
     zipUrl: String,
     changelog: String?,
-    latestVersion: Version,
+    latestVersion: ConfigVersion,
     language: String?,
     project: Project
 ) : Module(name, zipUrl, changelog, latestVersion, language, project) {

@@ -51,25 +51,14 @@ repositories {
 }
 
 dependencies {
+    implementation(libs.courseConfig)
+    implementation(libs.aplusClient) {
+        exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-core")
+        exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-core-jvm")
+    }
     implementation(libs.jsonSerialization)
     implementation(libs.datetime)
     implementation(libs.ktorCore) {
-        exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-core")
-        exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-core-jvm")
-    }
-    implementation(libs.ktorJava) {
-        exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-core")
-        exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-core-jvm")
-    }
-    implementation(libs.ktorResources) {
-        exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-core")
-        exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-core-jvm")
-    }
-    implementation(libs.ktorJsonSerialization) {
-        exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-core")
-        exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-core-jvm")
-    }
-    implementation(libs.ktorContentNegotiation) {
         exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-core")
         exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-core-jvm")
     }

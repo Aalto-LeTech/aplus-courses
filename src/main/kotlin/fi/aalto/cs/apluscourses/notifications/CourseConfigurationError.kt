@@ -16,7 +16,7 @@ class CourseConfigurationError(val exception: Exception) : Notification(
     MyBundle.message("notification.CourseConfigurationError.title"),
     MyBundle.message(
         "notification.CourseConfigurationError.content",
-        exception.message!!
+        userFacingMessage(exception)
     ),
     NotificationType.ERROR
 )

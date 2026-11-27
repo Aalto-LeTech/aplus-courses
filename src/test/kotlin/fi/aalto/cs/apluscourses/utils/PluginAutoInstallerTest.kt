@@ -3,7 +3,7 @@ package fi.aalto.cs.apluscourses.utils
 import com.intellij.openapi.extensions.PluginId
 import com.intellij.testFramework.junit5.TestApplication
 import com.intellij.testFramework.junit5.fixture.projectFixture
-import fi.aalto.cs.apluscourses.api.CourseConfig.RequiredPlugin
+import fi.aalto.cs.aplus.courseconfig.CourseConfig.RequiredPlugin
 import fi.aalto.cs.apluscourses.notifications.DisabledPluginsNotification
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals

@@ -5,7 +5,7 @@ import com.intellij.testFramework.junit5.TestApplication
 import com.intellij.testFramework.junit5.fixture.projectFixture
 import fi.aalto.cs.apluscourses.model.component.Component
 import fi.aalto.cs.apluscourses.model.component.Module
-import fi.aalto.cs.apluscourses.utils.Version
+import fi.aalto.cs.aplus.courseconfig.ConfigVersion
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -20,7 +20,7 @@ class ModuleRendererTest {
         name = "O1Library",
         zipUrl = "https://example.org/O1Library.zip",
         changelog = null,
-        latestVersion = Version("1.0"),
+        latestVersion = ConfigVersion(1, 0),
         language = null,
         project = projectFixture.get()
     )

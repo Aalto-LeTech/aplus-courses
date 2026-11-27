@@ -7,10 +7,10 @@ data class Exercise(
     val name: String,
     val module: Module?,
     val htmlUrl: String,
-    val url: String,
     val submissionResults: MutableList<SubmissionResult>,
     val maxPoints: Int,
     val userPoints: Int,
+    /** 0 means the exercise has no submission limit. See [hasSubmissionLimit]. */
     val maxSubmissions: Int,
     val bestSubmissionId: Long?,
     val difficulty: String = "",
@@ -18,6 +18,8 @@ data class Exercise(
     val isSubmittable: Boolean,
     val isFeedback: Boolean
 ) {
+    /** Zero means unlimited submissions, including when no exercise metadata was available. */
+    val hasSubmissionLimit: Boolean get() = maxSubmissions > 0
 
     /**
      * Returns true if assignment is completed.

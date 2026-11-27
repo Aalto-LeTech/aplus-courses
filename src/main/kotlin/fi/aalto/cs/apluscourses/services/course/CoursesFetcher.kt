@@ -1,13 +1,15 @@
 package fi.aalto.cs.apluscourses.services.course
 
+import fi.aalto.cs.apluscourses.api.CourseConfigLoader
+
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.asContextElement
 import com.intellij.openapi.components.Service
-import fi.aalto.cs.apluscourses.api.CourseConfig
+import fi.aalto.cs.aplus.courseconfig.CourseConfig
+import fi.aalto.cs.apluscourses.services.IdeHttpClient
 import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import io.ktor.client.*
-import io.ktor.client.engine.java.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import kotlinx.coroutines.CancellationException
@@ -15,7 +17,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.Json
 import org.jetbrains.annotations.NonNls
 import org.yaml.snakeyaml.Yaml
 
@@ -35,12 +36,8 @@ class CoursesFetcher(private val cs: CoroutineScope) {
         }
     }
 
-    private val json = Json {
-        ignoreUnknownKeys = true
-        isLenient = true
-    }
-
-    private fun client(): HttpClient = HttpClient(Java)
+    private val client: HttpClient
+        get() = IdeHttpClient.getInstance().client
 
     /**
      * Fetches the list of known courses and hands the result to [onResult] on the EDT.
@@ -49,11 +46,9 @@ class CoursesFetcher(private val cs: CoroutineScope) {
         cs.launch {
             val result = try {
                 Result.success(
-                    client().use { client ->
-                        Yaml()
-                            .load<List<Map<String, String>>>(client.get(COURSES_URL).bodyAsText())
-                            .map { course: Map<String, String> -> CourseInfo.fromYaml(course) }
-                    }
+                    Yaml()
+                        .load<List<Map<String, String>>>(client.get(COURSES_URL).bodyAsText())
+                        .map { course: Map<String, String> -> CourseInfo.fromYaml(course) }
                 )
             } catch (e: CancellationException) {
                 throw e
@@ -68,11 +63,9 @@ class CoursesFetcher(private val cs: CoroutineScope) {
         }
     }
 
-    suspend fun fetchCourse(url: String): CourseConfig.JSON? {
+    suspend fun fetchCourse(url: String): CourseConfig.Document? {
         return try {
-            client().use { client ->
-                json.decodeFromString<CourseConfig.JSON>(client.get(url).bodyAsText())
-            }
+            CourseConfigLoader.deserialize(client.get(url).bodyAsText())
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {

@@ -91,7 +91,7 @@ class SubmitExerciseDialog(
                 )
             )
         }
-        if (!exercise.isOptional && submissionNumber >= exercise.maxSubmissions) {
+        if (exercise.hasSubmissionLimit && !exercise.isOptional && submissionNumber >= exercise.maxSubmissions) {
             row {
                 text(
                     if (submissionNumber == exercise.maxSubmissions) message("ui.SubmitExerciseDialog.warning.lastSubmission")

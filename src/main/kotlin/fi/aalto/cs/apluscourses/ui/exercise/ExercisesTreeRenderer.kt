@@ -20,7 +20,6 @@ import javax.swing.Icon
 import javax.swing.JTree
 import javax.swing.tree.DefaultMutableTreeNode
 
-
 class ExercisesTreeRenderer(private val project: Project) : NodeRenderer() {
     private lateinit var item: ExercisesView.ExercisesTreeItem
 
@@ -138,17 +137,8 @@ class ExercisesTreeRenderer(private val project: Project) : NodeRenderer() {
 
                 if (getStatus(exercise) == Status.OPTIONAL_PRACTICE)
                     exercise.difficulty
-                else if (exercise.isLate()) message(
-                    "ui.ExercisesTreeRenderer.exercise.statusLate",
-                    exercise.submissionResults.size,
-                    exercise.maxSubmissions,
-                    exercise.difficulty
-                ) else message(
-                    "ui.ExercisesTreeRenderer.exercise.status",
-                    exercise.submissionResults.size,
-                    exercise.maxSubmissions,
-                    exercise.difficulty
-                )
+                else
+                    submissionCountText(exercise)
             }
 
             is ExercisesView.SubmissionResultItem -> {
@@ -157,7 +147,9 @@ class ExercisesTreeRenderer(private val project: Project) : NodeRenderer() {
                 val isUnofficial = submission.status == SubmissionResult.Status.UNOFFICIAL
                 val isLate = (submission.latePenalty ?: 0.0) > 0
 
-                if (isRejected) message("ui.ExercisesTreeRenderer.exercise.submissionResult.rejected")
+                if (submission.status == SubmissionResult.Status.ERROR) message("ui.ExercisesTreeRenderer.exercise.submissionResult.error")
+                else if (submission.status == SubmissionResult.Status.INVALIDATED) message("ui.ExercisesTreeRenderer.exercise.submissionResult.invalidated")
+                else if (isRejected) message("ui.ExercisesTreeRenderer.exercise.submissionResult.rejected")
                 else if (isLate) message("ui.ExercisesTreeRenderer.exercise.submissionResult.late")
                 else if (isUnofficial) message("ui.ExercisesTreeRenderer.exercise.submissionResult.unofficial")
                 else ""
@@ -280,6 +272,24 @@ class ExercisesTreeRenderer(private val project: Project) : NodeRenderer() {
     }
 
     companion object {
+        /** Omits the denominator for unlimited or unknown submission limits. */
+        internal fun submissionCountText(exercise: Exercise): String {
+            val submissions = exercise.submissionResults.size
+            val late = exercise.isLate()
+            if (!exercise.hasSubmissionLimit) {
+                return if (late) message(
+                    "ui.ExercisesTreeRenderer.exercise.statusLateUnlimited", submissions, exercise.difficulty
+                ) else message(
+                    "ui.ExercisesTreeRenderer.exercise.statusUnlimited", submissions, exercise.difficulty
+                )
+            }
+            return if (late) message(
+                "ui.ExercisesTreeRenderer.exercise.statusLate", submissions, exercise.maxSubmissions, exercise.difficulty
+            ) else message(
+                "ui.ExercisesTreeRenderer.exercise.status", submissions, exercise.maxSubmissions, exercise.difficulty
+            )
+        }
+
         private fun getStatus(exercise: Exercise): Status {
             return if (exercise.isInGrading()) {
                 Status.IN_GRADING
