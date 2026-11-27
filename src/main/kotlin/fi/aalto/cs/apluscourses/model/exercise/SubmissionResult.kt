@@ -1,47 +1,43 @@
 package fi.aalto.cs.apluscourses.model.exercise
 
-import com.intellij.openapi.project.Project
-import fi.aalto.cs.apluscourses.api.APlusApi
 import org.jetbrains.annotations.NonNls
+import fi.aalto.cs.aplus.client.dto.SubmissionStatusDto
 
 data class SubmissionResult(
     val id: Long,
-    val url: String,
     val maxPoints: Int,
     var userPoints: Int,
     var latePenalty: Double?,
     var status: Status,
-    val filesInfo: List<SubmissionFileInfo>,
     val isSubmittable: Boolean,
     val submitters: List<Long>?,
-    val testsSucceeded: Int = -1,
-    val testsFailed: Int = -1, // TODO
 ) {
-    suspend fun getHtmlUrl(project: Project): String {
-        return APlusApi.submission(this).get(project).htmlUrl
-    }
-
-    fun updateStatus(statusString: String) {
-        val status = statusFromString(statusString)
-        this.status = status
-    }
-
     enum class Status {
         GRADED,
         UNOFFICIAL,
         REJECTED,
+        ERROR,
+        INVALIDATED,
         WAITING,
         UNKNOWN,
     }
 
     companion object {
+        /**
+         * Maps A+ submission statuses to UI statuses.
+         *
+         * `waiting` and `initialized` both keep grading polling active.
+         * `unofficial` is terminal and graded, but its points do not count.
+         */
         fun statusFromString(@NonNls statusString: String?): Status {
-            return when (statusString) {
-                "ready" -> Status.GRADED
-                "unofficial" -> Status.UNOFFICIAL
-                "rejected" -> Status.REJECTED
-                "waiting" -> Status.WAITING
-                else -> Status.UNKNOWN
+            return when (SubmissionStatusDto.parse(statusString)) {
+                SubmissionStatusDto.READY -> Status.GRADED
+                SubmissionStatusDto.UNOFFICIAL -> Status.UNOFFICIAL
+                SubmissionStatusDto.REJECTED -> Status.REJECTED
+                SubmissionStatusDto.ERROR -> Status.ERROR
+                SubmissionStatusDto.INVALIDATED -> Status.INVALIDATED
+                SubmissionStatusDto.WAITING, SubmissionStatusDto.INITIALIZED -> Status.WAITING
+                null -> Status.UNKNOWN
             }
         }
     }

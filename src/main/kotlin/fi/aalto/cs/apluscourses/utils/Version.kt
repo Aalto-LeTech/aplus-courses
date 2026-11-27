@@ -1,23 +1,17 @@
 package fi.aalto.cs.apluscourses.utils
 
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.descriptors.PrimitiveKind
-import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
-import kotlinx.serialization.descriptors.SerialDescriptor
-import kotlinx.serialization.encoding.Decoder
-import kotlinx.serialization.encoding.Encoder
+import fi.aalto.cs.aplus.courseconfig.ConfigVersion
 import org.jetbrains.annotations.NonNls
 import java.util.Properties
 
-@Serializable(with = VersionSerializer::class)
-open class Version(val major: Int, val minor: Int) {
-    /**
-     * @param versionString A version string of format `{major}.{minor}`.
-     */
+/**
+ * Uses the first two version components for course compatibility checks.
+ * [toString] preserves the full installed version.
+ */
+class PluginVersion(val version: ConfigVersion, private val versionString: String) {
     constructor(versionString: String) : this(
-        versionString.substringBefore(".").toInt(),
-        versionString.substringAfter(".").toInt()
+        ConfigVersion.parse(versionString.split('.').take(2).joinToString(".")),
+        versionString
     )
 
     enum class ComparisonStatus {
@@ -27,51 +21,13 @@ open class Version(val major: Int, val minor: Int) {
         MAJOR_TOO_NEW
     }
 
-    operator fun compareTo(other: Version): Int {
-        return if (this.major == other.major) {
-            this.minor - other.minor
-        } else {
-            this.major - other.major
-        }
+    /** Classifies major and minor mismatches for course compatibility notifications. */
+    fun comparisonStatus(required: ConfigVersion): ComparisonStatus = when {
+        version.major < required.major -> ComparisonStatus.MAJOR_TOO_OLD
+        version.major > required.major -> ComparisonStatus.MAJOR_TOO_NEW
+        version.minor >= required.minor -> ComparisonStatus.VALID
+        else -> ComparisonStatus.MINOR_TOO_OLD
     }
-
-    /**
-     * Compares a version with another version and returns the comparison result.
-     */
-    fun comparisonStatus(other: Version): ComparisonStatus {
-        if (this.major < other.major) {
-            return ComparisonStatus.MAJOR_TOO_OLD
-        }
-        if (this.major > other.major) {
-            return ComparisonStatus.MAJOR_TOO_NEW
-        }
-        return if (this.minor >= other.minor) ComparisonStatus.VALID else ComparisonStatus.MINOR_TOO_OLD
-    }
-
-    override fun toString(): String {
-        return "$major.$minor"
-    }
-
-    override fun hashCode(): Int {
-        return toString().hashCode()
-    }
-
-    override fun equals(other: Any?): Boolean {
-        return other is Version && toString() == other.toString()
-    }
-
-    companion object {
-        val EMPTY: Version = Version(0, 0)
-        val DEFAULT: Version = Version(1, 0)
-    }
-}
-
-class PluginVersion(major: Int, minor: Int, private val versionString: String) : Version(major, minor) {
-    constructor(versionString: String) : this(
-        versionString.substringBefore(".").toInt(),
-        versionString.substringAfter(".").substringBefore(".").toInt(),
-        versionString
-    )
 
     override fun toString(): String = versionString
 
@@ -91,21 +47,7 @@ class PluginVersion(major: Int, minor: Int, private val versionString: String) :
         val currentVersion: PluginVersion =
             runCatching { PluginVersion(current) }.getOrElse {
                 CoursesLogger.error("Could not read the plugin version from $VERSION_RESOURCE", it)
-                PluginVersion(0, 0, current)
+                PluginVersion(ConfigVersion(0, 0), current)
             }
-    }
-}
-
-internal object VersionSerializer : KSerializer<Version> {
-    @NonNls
-    private val serialName = "Version"
-    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor(serialName, PrimitiveKind.STRING)
-
-    override fun serialize(encoder: Encoder, value: Version) {
-        encoder.encodeString(value.toString())
-    }
-
-    override fun deserialize(decoder: Decoder): Version {
-        return Version(decoder.decodeString())
     }
 }

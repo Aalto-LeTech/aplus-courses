@@ -10,7 +10,8 @@ import com.intellij.util.xmlb.annotations.XCollection
 import fi.aalto.cs.apluscourses.model.component.Module
 import fi.aalto.cs.apluscourses.model.people.Group
 import fi.aalto.cs.apluscourses.utils.CoursesLogger
-import fi.aalto.cs.apluscourses.utils.Version
+import fi.aalto.cs.aplus.courseconfig.ConfigVersion
+import fi.aalto.cs.apluscourses.utils.parseInstantOrNull
 import kotlin.time.Clock
 import kotlin.time.Instant
 import kotlinx.serialization.Serializable
@@ -19,14 +20,15 @@ import org.jetbrains.annotations.NonNls
 import java.time.ZonedDateTime
 import kotlin.io.path.Path
 
+/** Malformed persisted timestamps become [Instant.DISTANT_PAST] so stale checks expire them. */
 private class InstantConverter : Converter<Instant>() {
-    override fun fromString(value: @NonNls String): Instant = Instant.parse(value)
+    override fun fromString(value: @NonNls String): Instant = parseInstantOrNull(value) ?: Instant.DISTANT_PAST
     override fun toString(value: Instant): String = value.toString()
 }
 
-private class VersionConverter : Converter<Version>() {
-    override fun fromString(value: @NonNls String): Version = Version(value)
-    override fun toString(value: Version): String = value.toString()
+private class VersionConverter : Converter<ConfigVersion>() {
+    override fun fromString(value: @NonNls String): ConfigVersion = ConfigVersion.parse(value)
+    override fun toString(value: ConfigVersion): String = value.toString()
 }
 
 @Service(Service.Level.PROJECT)
@@ -78,10 +80,10 @@ class CourseFileManager(private val project: Project) :
     data class ModuleMetadata(
         @Attribute("name") val name: String,
         @Attribute("downloadedAt", converter = InstantConverter::class) var downloadedAt: Instant,
-        @Attribute("version", converter = VersionConverter::class) var version: Version
+        @Attribute("version", converter = VersionConverter::class) var version: ConfigVersion
     ) {
         /** Required by the XML serializer to instantiate the tag before populating it. */
-        constructor() : this("", Instant.fromEpochSeconds(0), Version.EMPTY)
+        constructor() : this("", Instant.fromEpochSeconds(0), ConfigVersion(0, 0))
     }
 
     fun updateSettings(language: String, aplusUrl: String, importSettings: Boolean) {
@@ -129,7 +131,7 @@ class CourseFileManager(private val project: Project) :
                 }
 
                 @Serializable
-                data class OldMetadata(val downloadedAt: String, val version: Version)
+                data class OldMetadata(val downloadedAt: String, val version: String)
 
                 @Serializable
                 data class OldConfig(val language: String, val url: String, val modules: Map<String, OldMetadata>)
@@ -137,7 +139,7 @@ class CourseFileManager(private val project: Project) :
                 fun oldToNew(oldName: String, old: OldMetadata) = ModuleMetadata(
                     oldName,
                     Instant.fromEpochSeconds(ZonedDateTime.parse(old.downloadedAt).toEpochSecond()),
-                    old.version
+                    ConfigVersion.parse(old.version)
                 )
 
                 val oldConfigJson = json.decodeFromString<OldConfig>(oldConfig)

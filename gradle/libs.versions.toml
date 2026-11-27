@@ -1,4 +1,5 @@
 [versions]
+aplusClient = "0.0.1"
 # plugins
 kotlin = "2.4.21"
 intelliJPlatform = "2.20.1"
@@ -22,6 +23,8 @@ qodana = { id = "org.jetbrains.qodana", version.ref = "qodana" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 
 [libraries]
+courseConfig = { group = "io.github.jaakkonakaza", name = "course-config", version.ref = "aplusClient" }
+aplusClient = { group = "io.github.jaakkonakaza", name = "aplus-client", version.ref = "aplusClient" }
 junitBom = { group = "org.junit", name = "junit-bom", version.ref = "junit" }
 junit = { group = "org.junit.jupiter", name = "junit-jupiter" }
 junitPlatformLauncher = { group = "org.junit.platform", name = "junit-platform-launcher" }
@@ -30,8 +33,4 @@ jsonSerialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serializa
 datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime-jvm", version.ref = "datetime" }
 
 ktorCore = { group = "io.ktor", name = "ktor-client-core-jvm", version.ref = "ktor" }
-ktorJava = { group = "io.ktor", name = "ktor-client-java-jvm", version.ref = "ktor" }
-ktorResources = { group = "io.ktor", name = "ktor-client-resources-jvm", version.ref = "ktor" }
-ktorJsonSerialization = { group = "io.ktor", name = "ktor-serialization-kotlinx-json-jvm", version.ref = "ktor" }
-ktorContentNegotiation = { group = "io.ktor", name = "ktor-client-content-negotiation-jvm", version.ref = "ktor" }
 ktorMock = { group = "io.ktor", name = "ktor-client-mock-jvm", version.ref = "ktor" }

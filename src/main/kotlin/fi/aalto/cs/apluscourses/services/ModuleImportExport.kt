@@ -14,16 +14,17 @@ import com.intellij.openapi.vfs.toNioPathOrNull
 import com.intellij.platform.ide.progress.withModalProgress
 import com.intellij.ui.dsl.builder.panel
 import fi.aalto.cs.apluscourses.MyBundle.message
-import fi.aalto.cs.apluscourses.api.APlusApi
 import fi.aalto.cs.apluscourses.model.component.Component
 import fi.aalto.cs.apluscourses.model.component.Module
+import fi.aalto.cs.apluscourses.model.mapping.toGroups
+import fi.aalto.cs.apluscourses.model.mapping.toUser
 import fi.aalto.cs.apluscourses.model.people.Group
 import fi.aalto.cs.apluscourses.model.people.User
 import fi.aalto.cs.apluscourses.notifications.ModuleExportedNotification
 import fi.aalto.cs.apluscourses.services.course.CourseManager
 import fi.aalto.cs.apluscourses.ui.module.ExportModuleDialog
 import fi.aalto.cs.apluscourses.utils.CoursesLogger
-import fi.aalto.cs.apluscourses.utils.Version
+import fi.aalto.cs.aplus.courseconfig.ConfigVersion
 import fi.aalto.cs.apluscourses.utils.ZipUtil
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -73,7 +74,7 @@ class ModuleImportExport(
                                 name = desiredModuleName,
                                 zipUrl = "",
                                 changelog = null,
-                                latestVersion = Version.DEFAULT,
+                                latestVersion = ConfigVersion(1, 0),
                                 language = null,
                                 project = project
                             )
@@ -147,10 +148,11 @@ class ModuleImportExport(
             val modules = ModuleManager.getInstance(project).modules
             if (modules.isEmpty()) return@withModalProgress null
 
+            val aplus = CoursesClient.getInstance(project).aplus
             val groups = withContext(Dispatchers.IO) {
-                listOf(Group.EXPORT_ALONE) + APlusApi.course(course).myGroups(project)
+                listOf(Group.EXPORT_ALONE) + toGroups(aplus.myGroups(course.id))
             }
-            val student = APlusApi.me().get(project)
+            val student = toUser(aplus.me())
 
             Triple(student, modules, groups)
         } ?: return
@@ -182,18 +184,26 @@ class ModuleImportExport(
         }
     }
 
-    private fun createSubmittersInfo(submitter: User, selectedGroup: Group): String = buildString {
-        appendLine(
-            message(
-                "ui.ModuleImportExport.export.submitter",
-                submitter.userName,
-                submitter.studentId ?: "???"
+    companion object {
+        /**
+         * Builds the `students.txt` content for module exports.
+         *
+         * Only positive IDs identify groups. [Group.EXPORT_ALONE] and [Group.SUBMIT_ALONE]
+         * contain placeholder labels that must be excluded.
+         */
+        internal fun createSubmittersInfo(submitter: User, selectedGroup: Group): String = buildString {
+            appendLine(
+                message(
+                    "ui.ModuleImportExport.export.submitter",
+                    submitter.userName,
+                    submitter.studentId ?: "???"
+                )
             )
-        )
-        if (selectedGroup != Group.SUBMIT_ALONE) {
-            appendLine()
-            selectedGroup.members.forEach { member ->
-                appendLine("- ${member.name}")
+            if (selectedGroup.id > 0) {
+                appendLine()
+                selectedGroup.members.forEach { member ->
+                    appendLine("- ${member.name}")
+                }
             }
         }
     }

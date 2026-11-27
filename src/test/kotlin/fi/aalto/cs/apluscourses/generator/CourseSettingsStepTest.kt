@@ -6,7 +6,7 @@ import com.intellij.openapi.application.EDT
 import com.intellij.testFramework.junit5.TestApplication
 import com.intellij.testFramework.junit5.TestDisposable
 import com.intellij.testFramework.junit5.fixture.projectFixture
-import fi.aalto.cs.apluscourses.api.CourseConfig
+import fi.aalto.cs.aplus.courseconfig.CourseConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -22,7 +22,7 @@ class CourseSettingsStepTest {
     @TestDisposable
     private lateinit var disposable: Disposable
 
-    private fun courseConfig(vararg languages: String) = CourseConfig.JSON(
+    private fun courseConfig(vararg languages: String) = CourseConfig.Document(
         id = "1",
         name = COURSE_NAME,
         aPlusUrl = "https://plus.cs.aalto.fi/",
@@ -33,7 +33,7 @@ class CourseSettingsStepTest {
 
     private fun step(
         programmingLanguage: String,
-        courseJson: CourseConfig.JSON
+        courseJson: CourseConfig.Document
     ): Pair<CourseSettingsStep, APlusModuleConfig> {
         val builder = APlusModuleBuilder()
         builder.config.programmingLanguage = programmingLanguage

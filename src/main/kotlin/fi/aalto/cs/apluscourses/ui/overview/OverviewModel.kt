@@ -2,15 +2,15 @@ package fi.aalto.cs.apluscourses.ui.overview
 
 import com.intellij.openapi.project.Project
 import fi.aalto.cs.apluscourses.MyBundle
-import fi.aalto.cs.apluscourses.api.CourseConfig.Grading
-import fi.aalto.cs.apluscourses.model.grading.GradeCalculator
-import fi.aalto.cs.apluscourses.model.grading.GradeProgress
+import fi.aalto.cs.aplus.courseconfig.CourseConfig.GradeProgress
+import fi.aalto.cs.aplus.courseconfig.CourseConfig.Grading
 import fi.aalto.cs.apluscourses.services.course.CourseFileManager
 import fi.aalto.cs.apluscourses.services.course.CourseSetupStatus
 import fi.aalto.cs.apluscourses.services.course.SetupStep
 import fi.aalto.cs.apluscourses.services.course.CourseManager
 import fi.aalto.cs.apluscourses.services.course.InitializationStatus
 import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdater
+import fi.aalto.cs.apluscourses.utils.parseInstantOrNullQuietly
 import kotlin.time.Clock
 import kotlin.time.Instant
 
@@ -109,7 +109,7 @@ fun readOverviewModel(project: Project): OverviewModel {
         collected = mapOf(total to (exercises.userPointsTotal ?: 0))
         maxPoints = mapOf(total to (exercises.maxPointsTotal ?: 0))
     }
-    val gradeData = collected?.let { points -> grading?.let { GradeCalculator.calculate(it, points) } }
+    val gradeData = collected?.let { points -> grading?.progress(points) }
     val progression = gradeProgression(
         grading?.style,
         gradeData,
@@ -166,7 +166,7 @@ data class GradeProgression(
 )
 
 /**
- * The total style reports a single figure keyed by [Grading.STYLE_TOTAL], which becomes the one row
+ * The total style reports a single figure keyed by [Grading.TOTAL], which becomes the one row
  * named [totalLabel]. Other styles report per category, so their rows are the course's categories.
  */
 internal fun gradeProgression(
@@ -175,19 +175,32 @@ internal fun gradeProgression(
     categories: List<String>?,
     totalLabel: String
 ): GradeProgression =
-    if (style == Grading.STYLE_TOTAL) {
+    if (style == Grading.TOTAL) {
         GradeProgression(
             categories = listOf(totalLabel),
-            pointsUntilNext = gradeData?.let { mapOf(totalLabel to (it.pointsUntilNext[Grading.STYLE_TOTAL] ?: 0)) },
-            maxOfNext = gradeData?.let { mapOf(totalLabel to (it.maxOfNext[Grading.STYLE_TOTAL] ?: 0)) }
+            pointsUntilNext = gradeData?.let {
+                mapOf(
+                    totalLabel to (it.pointsUntilNext[Grading.TOTAL] ?: 0)
+                )
+            },
+            maxOfNext = gradeData?.let { mapOf(totalLabel to (it.maxOfNext[Grading.TOTAL] ?: 0)) }
         )
     } else {
         GradeProgression(categories, gradeData?.pointsUntilNext, gradeData?.maxOfNext)
     }
 
+private fun Grading.categories(): List<String>? =
+    if (style == Grading.TOTAL) null
+    else points.values.flatMap { it.keys }.distinct().sorted()
+
+private val Grading.showsGradeProgression: Boolean
+    get() = style == Grading.O1 || style == Grading.TOTAL
+
 private fun currentWeek(closingTimes: List<String?>): ClosingWeek? {
     val now = Clock.System.now()
-    val index = closingTimes.indexOfFirst { it != null && now < Instant.parse(it) }
-    val closingTime = closingTimes.getOrNull(index) ?: return null
-    return ClosingWeek(number = index + 1, closingTime = Instant.parse(closingTime))
+    // Skip invalid closing times. Repeated parse failures are logged at debug level.
+    val parsed = closingTimes.map { it?.let(::parseInstantOrNullQuietly) }
+    val index = parsed.indexOfFirst { it != null && now < it }
+    val closingTime = parsed.getOrNull(index) ?: return null
+    return ClosingWeek(number = index + 1, closingTime = closingTime)
 }

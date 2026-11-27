@@ -9,14 +9,19 @@ import com.intellij.util.application
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.intellij.util.messages.Topic
 import com.intellij.util.messages.Topic.ProjectLevel
+import fi.aalto.cs.aplus.client.AplusException
+import fi.aalto.cs.aplus.client.LocalizedString
+import fi.aalto.cs.aplus.courseconfig.ConfigVersion
+import fi.aalto.cs.aplus.courseconfig.CourseConfig
 import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.activities.InitializationActivity
-import fi.aalto.cs.apluscourses.api.APlusApi
-import fi.aalto.cs.apluscourses.api.CourseConfig
+import fi.aalto.cs.apluscourses.api.CourseConfigLoader
 import fi.aalto.cs.apluscourses.model.Course
 import fi.aalto.cs.apluscourses.model.component.Component
 import fi.aalto.cs.apluscourses.model.component.Module
 import fi.aalto.cs.apluscourses.model.component.SbtModule
+import fi.aalto.cs.apluscourses.model.mapping.toNewsList
+import fi.aalto.cs.apluscourses.model.mapping.toUser
 import fi.aalto.cs.apluscourses.model.news.NewsList
 import fi.aalto.cs.apluscourses.model.people.User
 import fi.aalto.cs.apluscourses.notifications.MissingDependencyNotification
@@ -24,17 +29,16 @@ import fi.aalto.cs.apluscourses.notifications.NewModulesVersionsNotification
 import fi.aalto.cs.apluscourses.services.*
 import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdater
 import fi.aalto.cs.apluscourses.utils.CoursesLogger
-import fi.aalto.cs.apluscourses.utils.Version
 import fi.aalto.cs.apluscourses.utils.callbacks.Callbacks
+import fi.aalto.cs.apluscourses.utils.parseInstantOrNull
 import kotlinx.coroutines.*
-import kotlin.time.Clock
-import kotlin.time.Instant
 import java.io.IOException
 import java.nio.channels.UnresolvedAddressException
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
-import java.util.concurrent.Executors
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.milliseconds
 
 @Service(Service.Level.PROJECT)
@@ -111,6 +115,8 @@ class CourseManager(
                         handleRefreshNetworkError(e)
                     } catch (e: UnresolvedAddressException) {
                         handleRefreshNetworkError(e)
+                    } catch (e: AplusException) {
+                        handleRefreshNetworkError(e)
                     } finally {
                         firstRefreshDone.complete(Unit)
                     }
@@ -167,7 +173,7 @@ class CourseManager(
     private suspend fun doTask(): Unit = reportSequentialProgress { reporter ->
         reporter.nextStep(CONFIG_LOADED, message("services.progress.loadingCourse"))
         project.service<CourseFileManager>().migrateOldConfig()
-        val courseConfig = CourseConfig.get(project)
+        val courseConfig = CourseConfigLoader.get(project)
         if (courseConfig == null) {
             fireNetworkError()
             return
@@ -175,7 +181,7 @@ class CourseManager(
 
         state.courseName = courseConfig.name
         state.aPlusUrl = courseConfig.aPlusUrl
-        if (!TokenStorage.getInstance().isTokenSet()) {
+        if (!TokenStorage.getInstance().isTokenSet(project)) {
             state.clearAll()
             state.authenticated = false
             fireCourseUpdated()
@@ -191,9 +197,9 @@ class CourseManager(
 
         val modules = courseConfig.modules.map {
             if (it.sbt) {
-                SbtModule(it.name, it.url, it.changelog, it.version, it.language, project)
+                SbtModule(it.name, it.url, it.changelog, ConfigVersion.parse(it.version), it.language, project)
             } else {
-                Module(it.name, it.url, it.changelog, it.version, it.language, project)
+                Module(it.name, it.url, it.changelog, ConfigVersion.parse(it.version), it.language, project)
             }
         }
         val exerciseModules = courseConfig.exerciseModules.map { (exerciseId, languagesToModule) ->
@@ -201,7 +207,7 @@ class CourseManager(
                     languagesToModule
                         .map { (language, moduleName) ->
                             val module = modules.find { it.name == moduleName }
-                                ?: Module(moduleName, "", "", Version.EMPTY, null, project)
+                                ?: Module(moduleName, "", "", ConfigVersion(0, 0), null, project)
                             language to module
                         }
                         .toMap()
@@ -212,12 +218,12 @@ class CourseManager(
             languages = courseConfig.languages,
             modules = modules,
             exerciseModules = exerciseModules,
-            resourceUrls = CourseConfig.resourceUrls(courseConfig.resources),
+            resourceUrls = CourseConfigLoader.resourceUrls(courseConfig.resources),
             optionalCategories = courseConfig.optionalCategories,
             autoInstallComponentNames = courseConfig.autoInstall,
             replInitialCommands = courseConfig.scalaRepl?.initialCommands,
             replAdditionalArguments = courseConfig.scalaRepl?.arguments,
-            minimumPluginVersion = courseConfig.version,
+            minimumPluginVersion = ConfigVersion.parse(courseConfig.version),
             hiddenElements = courseConfig.hiddenElements,
             callbacks = Callbacks.fromJsonObject(courseConfig.callbacks),
             project
@@ -231,11 +237,17 @@ class CourseManager(
         fireModulesUpdated()
 
         val courseId = courseConfig.id.toLong()
+        val aplus = CoursesClient.getInstance(project).aplus
+        val fileState = CourseFileManager.getInstance(project).state
+        val newsLanguage = fileState.language ?: LocalizedString.DEFAULT_LANGUAGE
+        val newsReadTime = fileState.newsReadTime.epochSeconds
         val fetched = try {
             coroutineScope {
-                val user = async(Dispatchers.IO) { APlusApi.me().get(project) }
-                val courseData = async(Dispatchers.IO) { APlusApi.Course(courseId).get(project) }
-                val news = async(Dispatchers.IO) { APlusApi.Course(courseId).news(project) }
+                val user = async(Dispatchers.IO) { toUser(aplus.me()) }
+                val courseData = async(Dispatchers.IO) { aplus.course(courseId) }
+                val news = async(Dispatchers.IO) {
+                    toNewsList(aplus.news(courseId), newsLanguage, newsReadTime)
+                }
 
                 state.user = user.await()
                 courseData.await() to news.await()
@@ -244,7 +256,7 @@ class CourseManager(
             throw e
         } catch (e: Exception) {
             state.course = previousCourse
-            if (e is ForbiddenException) {
+            if (e is AplusException.Forbidden) {
                 CoursesLogger.info("A+ refused course $courseId, so this student is not on it")
                 state.error = Error.NOT_ENROLLED
                 state.clearAll()
@@ -254,7 +266,7 @@ class CourseManager(
 
             checkIsEnrolled(courseId, state.user)
 
-            if (e is UnauthorizedException) {
+            if (e is AplusException.Unauthorized) {
                 CoursesLogger.warn("A+ rejected the token", e)
                 state.error = Error.INVALID_TOKEN
                 state.user = null
@@ -558,7 +570,8 @@ class CourseManager(
 
         fun isCourseEnded(project: Project): Boolean {
             val endingTime = getInstance(project).state.course?.endingTime ?: return false
-            val parsedTime = Instant.parse(endingTime)
+            // An invalid ending time leaves the course open.
+            val parsedTime = parseInstantOrNull(endingTime) ?: return false
             val now = Clock.System.now()
             return now > parsedTime
         }

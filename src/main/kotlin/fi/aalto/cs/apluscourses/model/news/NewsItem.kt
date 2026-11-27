@@ -9,12 +9,16 @@ data class NewsItem(
     val id: Long,
     val title: String,
     val body: String,
-    private val publish: ZonedDateTime,
+    /** Null when A+ sent no publish time, or one that could not be parsed. */
+    private val publish: ZonedDateTime?,
     var isRead: Boolean = false
 ) {
+    /** The publish date text is empty when A+ supplies no usable date. */
     val publishTimeInfo: String
-        get() = MyBundle.message(
-            "ui.NewsView.publishTime",
-            publish.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT))
-        )
+        get() = publish?.let {
+            MyBundle.message(
+                "ui.NewsView.publishTime",
+                it.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT))
+            )
+        } ?: ""
 }

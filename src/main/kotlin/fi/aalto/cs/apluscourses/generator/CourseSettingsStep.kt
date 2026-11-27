@@ -16,7 +16,7 @@ import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.gridLayout.UnscaledGaps
 import com.intellij.util.application
 import fi.aalto.cs.apluscourses.MyBundle.message
-import fi.aalto.cs.apluscourses.api.CourseConfig
+import fi.aalto.cs.aplus.courseconfig.CourseConfig
 import fi.aalto.cs.apluscourses.services.Plugins
 import fi.aalto.cs.apluscourses.ui.Utils
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil.languageCodeToName

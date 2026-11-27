@@ -6,7 +6,7 @@ import fi.aalto.cs.apluscourses.model.component.Component
 import fi.aalto.cs.apluscourses.model.component.Library
 import fi.aalto.cs.apluscourses.model.component.Module
 import fi.aalto.cs.apluscourses.model.component.ScalaSdk
-import fi.aalto.cs.apluscourses.utils.Version
+import fi.aalto.cs.aplus.courseconfig.ConfigVersion
 import fi.aalto.cs.apluscourses.utils.callbacks.Callbacks
 import io.ktor.http.*
 import org.jetbrains.annotations.NonNls
@@ -22,7 +22,7 @@ data class Course(
     val autoInstallComponentNames: List<String>,
     val replInitialCommands: Map<String, List<String>>?,
     val replAdditionalArguments: String?,
-    val minimumPluginVersion: Version,
+    val minimumPluginVersion: ConfigVersion,
     val hiddenElements: List<Long>,
     val callbacks: Callbacks,
 //    val feedbackParser: String?,

@@ -14,7 +14,7 @@ import com.intellij.testFramework.junit5.fixture.moduleFixture
 import com.intellij.testFramework.junit5.fixture.projectFixture
 import fi.aalto.cs.apluscourses.model.Course
 import fi.aalto.cs.apluscourses.services.course.CourseManager
-import fi.aalto.cs.apluscourses.utils.Version
+import fi.aalto.cs.aplus.courseconfig.ConfigVersion
 import fi.aalto.cs.apluscourses.utils.callbacks.Callbacks
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -48,7 +48,7 @@ class ModuleDependencyPreserverTest {
             autoInstallComponentNames = emptyList(),
             replInitialCommands = null,
             replAdditionalArguments = null,
-            minimumPluginVersion = Version.DEFAULT,
+            minimumPluginVersion = ConfigVersion(1, 0),
             hiddenElements = emptyList(),
             callbacks = Callbacks.fromJsonObject(null),
             project = project

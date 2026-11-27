@@ -54,7 +54,7 @@ class TokenForm(private val project: Project, private val callback: () -> Unit =
     }
 
     private fun removeToken() {
-        TokenStorage.getInstance().remove()
+        TokenStorage.getInstance().remove(project)
         user.set(null)
         userName.set("")
         isModified = true

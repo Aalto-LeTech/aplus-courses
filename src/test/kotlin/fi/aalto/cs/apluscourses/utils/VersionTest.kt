@@ -1,31 +1,20 @@
 package fi.aalto.cs.apluscourses.utils
 
-import fi.aalto.cs.apluscourses.utils.Version.ComparisonStatus
+import fi.aalto.cs.aplus.courseconfig.ConfigVersion
+import fi.aalto.cs.apluscourses.utils.PluginVersion.ComparisonStatus
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 class VersionTest {
     @Test
-    fun `parses major and minor from a version string`() {
-        val version = Version("4.12")
-        assertEquals(4, version.major)
-        assertEquals(12, version.minor)
-    }
-
-    @Test
-    fun `comparisonStatus reports how a version relates to the required one`() {
-        assertEquals(ComparisonStatus.VALID, Version("4.2").comparisonStatus(Version("4.2")))
-        assertEquals(ComparisonStatus.VALID, Version("4.3").comparisonStatus(Version("4.2")))
-        assertEquals(ComparisonStatus.MINOR_TOO_OLD, Version("4.1").comparisonStatus(Version("4.2")))
-        assertEquals(ComparisonStatus.MAJOR_TOO_OLD, Version("3.9").comparisonStatus(Version("4.0")))
-        assertEquals(ComparisonStatus.MAJOR_TOO_NEW, Version("5.0").comparisonStatus(Version("4.9")))
-    }
-
-    @Test
-    fun `equality and toString round-trip through the version string`() {
-        assertEquals(Version("2.7"), Version(2, 7))
-        assertEquals("2.7", Version(2, 7).toString())
+    fun `comparisonStatus reports how the plugin version relates to the required one`() {
+        val required = ConfigVersion(4, 2)
+        assertEquals(ComparisonStatus.VALID, PluginVersion("4.2.0").comparisonStatus(required))
+        assertEquals(ComparisonStatus.VALID, PluginVersion("4.3.1").comparisonStatus(required))
+        assertEquals(ComparisonStatus.MINOR_TOO_OLD, PluginVersion("4.1.9").comparisonStatus(required))
+        assertEquals(ComparisonStatus.MAJOR_TOO_OLD, PluginVersion("3.9.0").comparisonStatus(required))
+        assertEquals(ComparisonStatus.MAJOR_TOO_NEW, PluginVersion("5.0.0").comparisonStatus(required))
     }
 
     @Test

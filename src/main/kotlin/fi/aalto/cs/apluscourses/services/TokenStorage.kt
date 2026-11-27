@@ -9,7 +9,7 @@ import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.util.application
-import fi.aalto.cs.apluscourses.api.APlusApi
+import fi.aalto.cs.apluscourses.model.mapping.toUser
 import fi.aalto.cs.apluscourses.model.people.User
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -17,62 +17,62 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.annotations.NonNls
+import fi.aalto.cs.aplus.client.AplusClient
+import io.ktor.http.Url
 
 @Service(Service.Level.APP)
 class TokenStorage(private val cs: CoroutineScope) {
     @NonNls
     private val serviceName: String = "A+ Courses Plugin Token"
 
-    @NonNls
-    private val serviceKey: String = "plus.cs.aalto.fi" // TODO change to the correct url
-
-    private val credentialAttributes: CredentialAttributes = CredentialAttributes(
-        generateServiceName(serviceName, serviceKey)
+    private fun credentialAttributes(baseUrl: String): CredentialAttributes = CredentialAttributes(
+        generateServiceName(serviceName, tokenServiceKey(baseUrl))
     )
 
     fun storeAndCheck(password: OneTimeString?, project: Project, callback: (User?) -> Unit) {
+        val aplus = CoursesClient.getInstance(project).aplus
+        val attributes = credentialAttributes(aplus.baseUrl)
         cs.launch {
-            store(password)
+            store(password, attributes)
             try {
-                val user = APlusApi.me().get(project)
+                val user = toUser(aplus.me())
                 callback(user)
             } catch (e: CancellationException) {
                 throw e
             } catch (_: Exception) {
-                remove()
+                store(null, attributes)
                 callback(null)
                 return@launch
             }
         }
     }
 
-    private suspend fun store(password: OneTimeString?) {
-        val credentials = if (password == null) null else Credentials(credentialAttributes.userName, password)
-        withContext(Dispatchers.IO) {
-            PasswordSafe.instance[credentialAttributes] = credentials
-        }
+    private suspend fun store(password: OneTimeString?, attributes: CredentialAttributes) {
+        val credentials = if (password == null) null else Credentials(attributes.userName, password)
+        withContext(Dispatchers.IO) { PasswordSafe.instance[attributes] = credentials }
     }
 
-    fun remove() {
-        cs.launch {
-            withContext(Dispatchers.IO) {
-                PasswordSafe.instance[credentialAttributes] = null
-            }
-        }
+    fun remove(project: Project) {
+        val attributes = credentialAttributes(CoursesClient.getInstance(project).aplus.baseUrl)
+        cs.launch { store(null, attributes) }
     }
 
-    suspend fun getToken(): OneTimeString? =
+    suspend fun getToken(baseUrl: String): OneTimeString? =
         withContext(Dispatchers.IO) {
-            PasswordSafe.instance.getPassword(credentialAttributes)?.let { OneTimeString(it) }
+            PasswordSafe.instance.getPassword(credentialAttributes(baseUrl))?.let { OneTimeString(it) }
         }
 
-
-    suspend fun isTokenSet(): Boolean =
-        withContext(Dispatchers.IO) {
-            PasswordSafe.instance.getPassword(credentialAttributes) != null
-        }
+    suspend fun isTokenSet(project: Project): Boolean =
+        getToken(CoursesClient.getInstance(project).aplus.baseUrl)?.isNotBlank() == true
 
     companion object {
         fun getInstance(): TokenStorage = application.service<TokenStorage>()
     }
+}
+
+/** Credentials are shared by URLs with the same scheme, host and port. */
+internal fun tokenServiceKey(baseUrl: String): String {
+    val url = Url(AplusClient.normalizeBaseUrl(baseUrl))
+    val host = url.host.lowercase()
+    return "${url.protocol.name}://$host:${url.port}"
 }
