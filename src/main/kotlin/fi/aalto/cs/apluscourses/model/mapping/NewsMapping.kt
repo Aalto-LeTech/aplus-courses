@@ -1,8 +1,7 @@
 package fi.aalto.cs.apluscourses.model.mapping
 
-import fi.aalto.cs.apluscourses.model.news.NewsItem
-import fi.aalto.cs.apluscourses.model.news.NewsList
 import fi.aalto.cs.aplus.client.dto.NewsItemDto
+import fi.aalto.cs.apluscourses.model.news.NewsItem
 import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import java.time.ZonedDateTime
 import java.time.format.DateTimeParseException
@@ -13,11 +12,11 @@ import java.time.format.DateTimeParseException
  * [NewsItemDto.LANGUAGE_ALL] includes an item in every language.
  * Items published at or before [newsReadTimeEpochSeconds] count as read.
  */
-fun toNewsList(
+fun toNewsItems(
     items: List<NewsItemDto>,
     courseLanguage: String,
     newsReadTimeEpochSeconds: Long
-): NewsList = NewsList(
+): List<NewsItem> =
     items
         .filter { it.appliesTo(courseLanguage) }
         .map { item ->
@@ -31,7 +30,6 @@ fun toNewsList(
                 publish != null && newsReadTimeEpochSeconds >= publish.toEpochSecond()
             )
         }
-)
 
 private fun parsePublishTime(id: Long, publish: String?): ZonedDateTime? {
     if (publish == null) {

@@ -1,14 +1,11 @@
 package fi.aalto.cs.apluscourses.ui.overview
 
 import com.intellij.openapi.project.Project
-import fi.aalto.cs.apluscourses.MyBundle
 import fi.aalto.cs.aplus.courseconfig.CourseConfig.GradeProgress
 import fi.aalto.cs.aplus.courseconfig.CourseConfig.Grading
-import fi.aalto.cs.apluscourses.services.course.CourseFileManager
-import fi.aalto.cs.apluscourses.services.course.CourseSetupStatus
-import fi.aalto.cs.apluscourses.services.course.SetupStep
-import fi.aalto.cs.apluscourses.services.course.CourseManager
-import fi.aalto.cs.apluscourses.services.course.InitializationStatus
+import fi.aalto.cs.apluscourses.MyBundle
+import fi.aalto.cs.apluscourses.model.news.NewsItem
+import fi.aalto.cs.apluscourses.services.course.*
 import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdater
 import fi.aalto.cs.apluscourses.utils.parseInstantOrNullQuietly
 import kotlin.time.Clock
@@ -49,6 +46,7 @@ data class OverviewModel(
     val maxPointsOfNextGrade: Map<String, Int>? = null,
     val closingWeek: ClosingWeek? = null,
     val weeksKnown: Boolean = false,
+    val news: List<NewsItem> = emptyList(),
     val errorDetails: String? = null
 )
 
@@ -151,7 +149,8 @@ fun readOverviewModel(project: Project): OverviewModel {
         setupSteps = setup.visibleSteps.takeIf { !setup.isFinished && setup.isWorthShowing }.orEmpty(),
         maxPointsOfNextGrade = progression.maxOfNext,
         closingWeek = currentWeek(exercises.exerciseGroups.map { it.closingTime }),
-        weeksKnown = exercises.exerciseGroups.isNotEmpty()
+        weeksKnown = exercises.exerciseGroups.isNotEmpty(),
+        news = CourseNews.getInstance(project).current
     )
 }
 

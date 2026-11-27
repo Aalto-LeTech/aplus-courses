@@ -30,11 +30,7 @@ import fi.aalto.cs.apluscourses.model.exercise.Exercise
 import fi.aalto.cs.apluscourses.model.exercise.SubmissionResult
 import fi.aalto.cs.apluscourses.notifications.UnavailableUrlNotification
 import fi.aalto.cs.apluscourses.utils.CoursesLogger
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.NonCancellable
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import org.jetbrains.annotations.NonNls
 
 @Service(Service.Level.PROJECT)
@@ -131,6 +127,10 @@ class Opener(
         fireOpenModule(module)
     }
 
+    fun showNews() {
+        fireOpenNews()
+    }
+
     private fun fireOpenExercise(exercise: Exercise) {
         application.invokeLater {
             project.messageBus
@@ -147,12 +147,23 @@ class Opener(
         }
     }
 
+    private fun fireOpenNews() {
+        application.invokeLater {
+            project.messageBus
+                .syncPublisher(SHOW_ITEM_TOPIC)
+                .onNewsOpened()
+        }
+    }
+
     interface ItemOpenerListener {
         @RequiresEdt
         fun onExerciseOpened(exercise: Exercise)
 
         @RequiresEdt
         fun onModuleOpened(module: Module)
+
+        @RequiresEdt
+        fun onNewsOpened()
     }
 
     companion object {

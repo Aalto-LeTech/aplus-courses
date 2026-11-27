@@ -13,30 +13,26 @@ import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.dsl.builder.*
 import com.intellij.ui.dsl.gridLayout.UnscaledGaps
+import com.intellij.util.application
 import com.intellij.util.ui.JBFont
 import com.intellij.util.ui.JBUI
 import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.icons.CoursesIcons
 import fi.aalto.cs.apluscourses.services.Background
-import fi.aalto.cs.apluscourses.services.course.SetupStepState
 import fi.aalto.cs.apluscourses.services.course.CourseFileManager
 import fi.aalto.cs.apluscourses.services.course.CourseManager
-import fi.aalto.cs.apluscourses.ui.BannerPanel
-import fi.aalto.cs.apluscourses.ui.CLOSING_WIDTH
-import fi.aalto.cs.apluscourses.ui.COURSE_NAME_WIDTH
-import fi.aalto.cs.apluscourses.ui.LINK_WIDTH
-import fi.aalto.cs.apluscourses.ui.PendingLink
-import fi.aalto.cs.apluscourses.ui.ScrollableContent
-import fi.aalto.cs.apluscourses.ui.TokenForm
-import fi.aalto.cs.apluscourses.ui.USER_NAME_WIDTH
+import fi.aalto.cs.apluscourses.services.course.CourseNews
+import fi.aalto.cs.apluscourses.services.course.SetupStepState
+import fi.aalto.cs.apluscourses.ui.*
 import fi.aalto.cs.apluscourses.ui.Utils.myActionLink
-import fi.aalto.cs.apluscourses.ui.pendingText
+import fi.aalto.cs.apluscourses.ui.news.NewsPanel
 import fi.aalto.cs.apluscourses.utils.DateDifferenceFormatter
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.number
 import kotlinx.datetime.toLocalDateTime
 import java.awt.BorderLayout
 import java.awt.Dimension
+import java.awt.Rectangle
 import javax.swing.JComponent
 import javax.swing.JPanel
 import javax.swing.ScrollPaneConstants
@@ -77,7 +73,13 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
     private val collectedTable = PointsTable()
     private val nextGradeTable = PointsTable()
     private val coursePageLink =
-        PendingLink(LINK_WIDTH, message("ui.OverviewView.coursePage"), CoursesIcons.LogoColor)
+        PendingLink(LINK_WIDTH, message("ui.OverviewView.coursePage"), AllIcons.General.Web)
+
+    private val newsPanel = NewsPanel(
+        CoroutineSettleScheduler(project.service<Background>().cs),
+        onSizeChanged = ::newsSizeChanged
+    ) { CourseNews.getInstance(project).setAllRead() }
+    private val newsVisible = AtomicBooleanProperty(false)
 
     private val authForm = TokenForm(project) { restart() }
     private val invalidTokenForm = TokenForm(project) { restart() }
@@ -91,8 +93,27 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
             customizeSpacingConfiguration(object : IntelliJSpacingConfiguration() {
                 override val verticalComponentGap: Int = 1
             }) {
-                row { pendingText(courseName, COURSE_NAME_WIDTH, JBFont.h0()) }.topGap(TopGap.SMALL)
-                row { pendingText(userName, USER_NAME_WIDTH) }
+                row {
+                    panel {
+                        row { pendingText(courseName, COURSE_NAME_WIDTH, JBFont.h0()) }
+                        row { pendingText(userName, USER_NAME_WIDTH) }
+                    }.resizableColumn()
+                    // Keeping links beside the heading leaves more vertical room for news.
+                    panel {
+                        row {
+                            link(message("ui.OverviewView.pluginSettings")) {
+                                ShowSettingsUtil.getInstance()
+                                    .showSettingsDialog(project, message("aplusCourses"))
+                            }.applyToComponent {
+                                icon = AllIcons.General.Settings
+                                isFocusPainted = false
+                            }
+                        }
+                        // The address is not known until the course arrives, so the row holds a
+                        // placeholder link.
+                        row { cell(coursePageLink) }
+                    }.align(AlignY.TOP)
+                }.topGap(TopGap.SMALL)
 
                 row { text("").bindText(setupTitle) }.topGap(TopGap.MEDIUM).visibleIf(setupVisible)
                 row { cell(setupChecklist).resizableColumn().align(AlignX.FILL) }
@@ -123,22 +144,21 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
                         )
                     }.bottomGap(BottomGap.SMALL).visibleIf(closingVisible)
 
+                    separator().topGap(TopGap.MEDIUM).bottomGap(BottomGap.MEDIUM)
+                        .visibleIf(newsVisible)
                     row {
-                        link(message("ui.OverviewView.pluginSettings")) {
-                            ShowSettingsUtil.getInstance()
-                                .showSettingsDialog(project, message("aplusCourses"))
-                        }.applyToComponent {
-                            icon = AllIcons.General.Settings
-                            isFocusPainted = false
+                        text(message("ui.OverviewView.news")).applyToComponent {
+                            font = JBFont.h2().asBold()
                         }
-                    }
-                    // The address is not known until the course arrives, so the row holds a
-                    // placeholder link.
-                    row { cell(coursePageLink) }
+                    }.bottomGap(BottomGap.SMALL).visibleIf(newsVisible)
+                    row { cell(newsPanel).resizableColumn().align(AlignX.FILL) }
+                        .visibleIf(newsVisible)
                 }
             }
         }.customize(UnscaledGaps(16, 32, 16, 32))
     }
+
+    private val mainScreen = WidthLimited(MAIN_PANEL_MAX_WIDTH, mainPanel)
 
     private val screens: Map<Screen, JComponent> = mapOf(
         Screen.NOT_A_COURSE to statusPanel(
@@ -185,7 +205,7 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
             messageProperty("ui.OverviewView.notEnrolled.title"),
             notEnrolledDescription
         ) { retryButton() },
-        Screen.MAIN to WidthLimited(MAIN_PANEL_MAX_WIDTH, mainPanel)
+        Screen.MAIN to mainScreen
     )
 
     private var currentScreen: Screen? = null
@@ -205,7 +225,6 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
         update()
     }
 
-    /** Re-reads the services and pushes what changed into the components already on screen. */
     fun update() {
         val model = readOverviewModel(project)
         showScreen(model.screen)
@@ -267,12 +286,15 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
 
         closingVisible.set(model.showsClosingWeek())
         closingText.set(model.closingWeek?.let { closingMessage(it) })
+
+        newsPanel.update(model.news)
+        newsVisible.set(model.news.isNotEmpty())
+
+        // Hidden views may have invalid ancestors that stop invalidation propagation.
+        mainScreen.forgetSize()
     }
 
-    /**
-     * Swaps which screen is attached, and only when it actually changed. The screens themselves
-     * are the same instances throughout, so the token being typed into one survives a refresh.
-     */
+    /** Screens retain their components so a refresh preserves token input. */
     private fun showScreen(screen: Screen) {
         if (screen == currentScreen) return
         currentScreen = screen
@@ -312,6 +334,28 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
         }
     }
 
+    private var newsRelayoutPending = false
+
+    private fun newsSizeChanged() {
+        if (newsRelayoutPending) return
+        newsRelayoutPending = true
+        // Wrapping runs during layout. Invalidate after that pass marks its ancestors valid.
+        application.invokeLater {
+            newsRelayoutPending = false
+            if (project.isDisposed) return@invokeLater
+            mainPanel.invalidate()
+            mainScreen.invalidate()
+            screenContainer.invalidate()
+            scrollPane.revalidate()
+        }
+    }
+
+    /** Scrolls to the news section after a notification opens the overview. */
+    fun showNews() {
+        if (!newsVisible.get()) return
+        newsPanel.scrollRectToVisible(Rectangle(0, 0, newsPanel.width, 1))
+    }
+
     private var oldWidth = 0
 
     override fun getWidth(): Int {
@@ -325,12 +369,7 @@ class OverviewView(private val project: Project) : SimpleToolWindowPanel(true, t
     }
 }
 
-/**
- * A caption in the muted style the platform uses for explanatory text under a heading.
- *
- * The DSL's own comment is fixed when the row is built, and these captions change as the data
- * arrives, so they are ordinary bound text styled to match.
- */
+/** Bound labels use the IDE context-help style because their text changes after loading. */
 private fun Row.commentText(text: ObservableMutableProperty<String>) {
     this.text("").bindText(text).applyToComponent {
         font = JBFont.medium()
@@ -338,10 +377,8 @@ private fun Row.commentText(text: ObservableMutableProperty<String>) {
     }
 }
 
-/** A title or description that never changes, in the same bound form as the ones that do. */
 private fun messageProperty(key: String): ObservableMutableProperty<String> = AtomicProperty(message(key))
 
-/** A category's progress towards the next grade. */
 private fun OverviewModel.nextGradeProgress(category: String): Points =
     Points.Remaining(
         untilNext = pointsUntilNextGrade?.get(category),
@@ -364,13 +401,29 @@ private fun closingMessage(week: ClosingWeek): String {
 }
 
 private class WidthLimited(private val maxWidth: Int, content: JComponent) : JPanel(BorderLayout()) {
+    private var cachedPreferredSize: Dimension? = null
+
     init {
         isOpaque = false
         add(content, BorderLayout.CENTER)
     }
 
-    override fun getPreferredSize(): Dimension =
-        Dimension(maxWidth, super.getPreferredSize().height)
+    /**
+     * The width never depends on the room available, so the height is worth keeping until
+     * something in the content changes. Measuring it again means re-wrapping every text.
+     */
+    override fun getPreferredSize(): Dimension = cachedPreferredSize
+        ?: Dimension(maxWidth, super.getPreferredSize().height).also { cachedPreferredSize = it }
+
+    /** Invalidation only travels through valid ancestors, so a content change says so directly. */
+    fun forgetSize() {
+        cachedPreferredSize = null
+    }
+
+    override fun invalidate() {
+        forgetSize()
+        super.invalidate()
+    }
 }
 
 private const val MAIN_PANEL_MAX_WIDTH = 300

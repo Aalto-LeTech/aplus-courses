@@ -6,7 +6,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.platform.ide.progress.withBackgroundProgress
 import com.intellij.platform.util.progress.reportSequentialProgress
 import com.intellij.util.application
-import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.intellij.util.messages.Topic
 import com.intellij.util.messages.Topic.ProjectLevel
 import fi.aalto.cs.aplus.client.AplusException
@@ -20,9 +19,8 @@ import fi.aalto.cs.apluscourses.model.Course
 import fi.aalto.cs.apluscourses.model.component.Component
 import fi.aalto.cs.apluscourses.model.component.Module
 import fi.aalto.cs.apluscourses.model.component.SbtModule
-import fi.aalto.cs.apluscourses.model.mapping.toNewsList
+import fi.aalto.cs.apluscourses.model.mapping.toNewsItems
 import fi.aalto.cs.apluscourses.model.mapping.toUser
-import fi.aalto.cs.apluscourses.model.news.NewsList
 import fi.aalto.cs.apluscourses.model.people.User
 import fi.aalto.cs.apluscourses.notifications.MissingDependencyNotification
 import fi.aalto.cs.apluscourses.notifications.NewModulesVersionsNotification
@@ -50,7 +48,6 @@ class CourseManager(
         var authenticated: Boolean? = null
         var course: Course? = null
         var courseName: String? = null
-        var news: NewsList? = null
         var user: User? = null
         var feedbackCss: String? = null
         var aPlusUrl: String? = null
@@ -66,7 +63,6 @@ class CourseManager(
 
         fun clearAll() {
             course = null
-            news = null
             user = null
             feedbackCss = null
             settingsImported = false
@@ -152,18 +148,16 @@ class CourseManager(
         fireCourseUpdated()
     }
 
-    fun setNewsAsRead() {
-        val news = state.news ?: return
-        news.setAllRead()
-        CourseFileManager.getInstance(project).setNewsRead()
-        fireNewsUpdated()
+    private fun clearCourseState() {
+        state.clearAll()
+        CourseNews.getInstance(project).clear()
     }
 
     private fun checkIsEnrolled(courseId: Long?, user: User?) {
         if (courseId != null && user != null) {
             if (!user.isStaffOf(courseId) && !user.isEnrolledIn(courseId)) {
                 state.error = Error.NOT_ENROLLED
-                state.clearAll()
+                clearCourseState()
                 fireCourseUpdated()
                 throw CancellationException()
             }
@@ -182,7 +176,7 @@ class CourseManager(
         state.courseName = courseConfig.name
         state.aPlusUrl = courseConfig.aPlusUrl
         if (!TokenStorage.getInstance().isTokenSet(project)) {
-            state.clearAll()
+            clearCourseState()
             state.authenticated = false
             fireCourseUpdated()
             return
@@ -246,7 +240,7 @@ class CourseManager(
                 val user = async(Dispatchers.IO) { toUser(aplus.me()) }
                 val courseData = async(Dispatchers.IO) { aplus.course(courseId) }
                 val news = async(Dispatchers.IO) {
-                    toNewsList(aplus.news(courseId), newsLanguage, newsReadTime)
+                    toNewsItems(aplus.news(courseId), newsLanguage, newsReadTime)
                 }
 
                 state.user = user.await()
@@ -259,7 +253,7 @@ class CourseManager(
             if (e is AplusException.Forbidden) {
                 CoursesLogger.info("A+ refused course $courseId, so this student is not on it")
                 state.error = Error.NOT_ENROLLED
-                state.clearAll()
+                clearCourseState()
                 fireCourseUpdated()
                 throw CancellationException()
             }
@@ -289,11 +283,7 @@ class CourseManager(
         importSettings(course)
 
         ExercisesUpdater.getInstance(project).restart()
-        state.news?.news?.forEach {
-            if (it.isRead) fetchedNews.setRead(it.id)
-        }
-        state.news = fetchedNews
-        fireNewsUpdated()
+        CourseNews.getInstance(project).refreshed(fetchedNews)
         fireCourseUpdated()
 
         val autoInstallModulesToInstall = course.autoInstallComponents
@@ -502,15 +492,6 @@ class CourseManager(
             ?: emptyList()
 
 
-    private fun fireNewsUpdated() {
-        application.invokeLater {
-            val news = state.news ?: return@invokeLater
-            project.messageBus
-                .syncPublisher(NEWS_TOPIC)
-                .onNewsUpdated(news)
-        }
-    }
-
     private fun fireModulesUpdated() {
         application.invokeLater {
             project.messageBus
@@ -535,11 +516,6 @@ class CourseManager(
         }
     }
 
-    interface NewsUpdaterListener {
-        @RequiresEdt
-        fun onNewsUpdated(newsList: NewsList)
-    }
-
     interface ModuleListener {
         fun onModulesUpdated(course: Course?)
         fun onModuleStatusChanged(module: Module)
@@ -551,9 +527,6 @@ class CourseManager(
 
     companion object {
         @ProjectLevel
-        val NEWS_TOPIC: Topic<NewsUpdaterListener> =
-            Topic(NewsUpdaterListener::class.java, Topic.BroadcastDirection.TO_CHILDREN)
-
         val MODULES_TOPIC: Topic<ModuleListener> =
             Topic(ModuleListener::class.java, Topic.BroadcastDirection.TO_CHILDREN)
 
