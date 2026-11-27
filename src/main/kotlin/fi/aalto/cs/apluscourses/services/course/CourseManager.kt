@@ -1,7 +1,5 @@
 package fi.aalto.cs.apluscourses.services.course
 
-import fi.aalto.cs.apluscourses.api.CourseConfigLoader
-
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
@@ -11,9 +9,13 @@ import com.intellij.util.application
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.intellij.util.messages.Topic
 import com.intellij.util.messages.Topic.ProjectLevel
+import fi.aalto.cs.aplus.client.AplusException
+import fi.aalto.cs.aplus.client.LocalizedString
+import fi.aalto.cs.aplus.courseconfig.ConfigVersion
+import fi.aalto.cs.aplus.courseconfig.CourseConfig
 import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.activities.InitializationActivity
-import fi.aalto.cs.aplus.courseconfig.CourseConfig
+import fi.aalto.cs.apluscourses.api.CourseConfigLoader
 import fi.aalto.cs.apluscourses.model.Course
 import fi.aalto.cs.apluscourses.model.component.Component
 import fi.aalto.cs.apluscourses.model.component.Module
@@ -27,20 +29,16 @@ import fi.aalto.cs.apluscourses.notifications.NewModulesVersionsNotification
 import fi.aalto.cs.apluscourses.services.*
 import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdater
 import fi.aalto.cs.apluscourses.utils.CoursesLogger
-import fi.aalto.cs.aplus.courseconfig.ConfigVersion
-import fi.aalto.cs.apluscourses.utils.parseInstantOrNull
 import fi.aalto.cs.apluscourses.utils.callbacks.Callbacks
-import fi.aalto.cs.aplus.client.AplusException
-import fi.aalto.cs.aplus.client.LocalizedString
+import fi.aalto.cs.apluscourses.utils.parseInstantOrNull
 import kotlinx.coroutines.*
-import kotlin.time.Clock
-import kotlin.time.Instant
 import java.io.IOException
 import java.nio.channels.UnresolvedAddressException
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
-import java.util.concurrent.Executors
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.milliseconds
 
 @Service(Service.Level.PROJECT)
