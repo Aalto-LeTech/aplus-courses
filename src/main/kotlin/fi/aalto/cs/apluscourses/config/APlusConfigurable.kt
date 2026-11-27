@@ -8,6 +8,7 @@ import com.intellij.ui.dsl.builder.panel
 import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.services.course.CourseFileManager
 import fi.aalto.cs.apluscourses.services.course.CourseManager
+import fi.aalto.cs.apluscourses.services.course.CourseNews
 import fi.aalto.cs.apluscourses.services.exercise.ExercisesUpdater
 import fi.aalto.cs.apluscourses.ui.TokenForm
 import fi.aalto.cs.apluscourses.utils.APlusLocalizationUtil.languageCodeToName
@@ -109,6 +110,7 @@ internal class APlusConfigurable(val project: Project) : Configurable {
         if (language.isNotEmpty() && originalLanguage != language) {
             CourseFileManager.getInstance(project).state.language = language
             CourseManager.getInstance(project).state.clearAll()
+            CourseNews.getInstance(project).clear()
             ExercisesUpdater.getInstance(project).state.clearAll()
         }
         CourseManager.getInstance(project).restart()

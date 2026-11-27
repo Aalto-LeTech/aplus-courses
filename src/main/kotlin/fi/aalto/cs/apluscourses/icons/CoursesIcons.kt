@@ -4,6 +4,7 @@ import com.intellij.icons.AllIcons
 import com.intellij.openapi.util.IconLoader.getIcon
 import com.intellij.ui.AnimatedIcon
 import com.intellij.ui.JBColor
+import com.intellij.ui.RowIcon
 import org.jetbrains.annotations.NonNls
 import java.awt.Color
 import javax.swing.Icon
@@ -26,6 +27,11 @@ object CoursesIcons {
 
     val Logo: Icon = icon("/icons/aPlusLogo.svg")
     val LogoColor: Icon = icon("/icons/aPlusLogoColor.svg")
+    val UnreadNews: Icon = icon("/icons/unreadNews.svg")
+    val LogoUnread: Icon = RowIcon(2).apply {
+        setIcon(LogoColor, 0)
+        setIcon(UnreadNews, 1)
+    }
 
     val Module: Icon = icon("/icons/module.svg")
     val ModuleDisabled: Icon = icon("/icons/moduleDisabled.svg")

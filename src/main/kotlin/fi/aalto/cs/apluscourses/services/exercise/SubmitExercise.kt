@@ -1,6 +1,5 @@
 package fi.aalto.cs.apluscourses.services.exercise
 
-import org.jetbrains.annotations.NonNls
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.fileEditor.FileDocumentManager
@@ -10,6 +9,8 @@ import com.intellij.platform.ide.progress.withBackgroundProgress
 import com.intellij.platform.util.progress.reportSequentialProgress
 import com.intellij.serialization.PropertyMapping
 import com.intellij.util.application
+import fi.aalto.cs.aplus.client.AplusException
+import fi.aalto.cs.aplus.client.dto.LocalizedFileField
 import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.model.component.Module
 import fi.aalto.cs.apluscourses.model.exercise.Exercise
@@ -17,11 +18,7 @@ import fi.aalto.cs.apluscourses.model.exercise.Submission
 import fi.aalto.cs.apluscourses.model.mapping.toGroups
 import fi.aalto.cs.apluscourses.model.mapping.toSubmissionFiles
 import fi.aalto.cs.apluscourses.model.people.Group
-import fi.aalto.cs.apluscourses.notifications.MissingFileNotification
-import fi.aalto.cs.apluscourses.notifications.MissingModuleNotification
-import fi.aalto.cs.apluscourses.notifications.NetworkErrorNotification
-import fi.aalto.cs.apluscourses.notifications.NotSubmittableNotification
-import fi.aalto.cs.apluscourses.notifications.SubmissionErrorsNotification
+import fi.aalto.cs.apluscourses.notifications.*
 import fi.aalto.cs.apluscourses.services.CoursesClient
 import fi.aalto.cs.apluscourses.services.Notifier
 import fi.aalto.cs.apluscourses.services.course.CourseFileManager
@@ -30,9 +27,8 @@ import fi.aalto.cs.apluscourses.ui.exercise.DuplicateSubmissionDialog
 import fi.aalto.cs.apluscourses.ui.exercise.SubmitExerciseDialog
 import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import fi.aalto.cs.apluscourses.utils.FileUtil
-import fi.aalto.cs.aplus.client.dto.LocalizedFileField
-import fi.aalto.cs.aplus.client.AplusException
 import kotlinx.coroutines.*
+import org.jetbrains.annotations.NonNls
 import java.io.IOException
 import java.nio.file.Path
 import java.util.concurrent.atomic.AtomicLong
@@ -155,7 +151,8 @@ class SubmitExercise(
         reporter.nextStep(DETAILS_LOADED, message("services.progress.submission.details"))
 
         val fieldsByLanguage = submissionFields.getOrPut(exercise.id) {
-            CoursesClient.getInstance(project).aplus.exercise(exercise.id).exerciseInfo?.fileFieldsByLanguage().orEmpty()
+            CoursesClient.getInstance(project).aplus.exercise(exercise.id).exerciseInfo?.fileFieldsByLanguage()
+                .orEmpty()
         }
 
         val submittedBefore = exercise.submissionResults.isNotEmpty()

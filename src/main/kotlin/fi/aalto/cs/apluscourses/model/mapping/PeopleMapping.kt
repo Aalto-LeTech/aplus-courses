@@ -1,11 +1,11 @@
 package fi.aalto.cs.apluscourses.model.mapping
 
-import fi.aalto.cs.apluscourses.model.people.Group
-import fi.aalto.cs.apluscourses.model.people.User
-import fi.aalto.cs.apluscourses.utils.CoursesLogger
 import fi.aalto.cs.aplus.client.dto.GroupDto
 import fi.aalto.cs.aplus.client.dto.GroupMemberDto
 import fi.aalto.cs.aplus.client.dto.UserDto
+import fi.aalto.cs.apluscourses.model.people.Group
+import fi.aalto.cs.apluscourses.model.people.User
+import fi.aalto.cs.apluscourses.utils.CoursesLogger
 
 /**
  * Maps `mygroups` members to plugin users.
@@ -22,7 +22,7 @@ fun toGroups(groups: List<GroupDto>): List<Group> = groups.map { group ->
             if (userId == null) {
                 CoursesLogger.warn(
                     "Group ${group.id} member ${member.id} has no readable user URL (\"${member.url}\"), " +
-                        "leaving the member out"
+                            "leaving the member out"
                 )
                 return@mapNotNull null
             }

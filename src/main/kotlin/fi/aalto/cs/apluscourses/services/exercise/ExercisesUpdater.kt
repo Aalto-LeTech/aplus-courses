@@ -1,7 +1,5 @@
 package fi.aalto.cs.apluscourses.services.exercise
 
-import fi.aalto.cs.aplus.client.dto.*
-import fi.aalto.cs.aplus.client.LocalizedString
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
@@ -10,6 +8,9 @@ import com.intellij.util.application
 import com.intellij.util.concurrency.annotations.RequiresEdt
 import com.intellij.util.messages.Topic
 import com.intellij.util.messages.Topic.ProjectLevel
+import fi.aalto.cs.aplus.client.AplusException
+import fi.aalto.cs.aplus.client.LocalizedString
+import fi.aalto.cs.aplus.client.dto.*
 import fi.aalto.cs.apluscourses.MyBundle.message
 import fi.aalto.cs.apluscourses.model.Course
 import fi.aalto.cs.apluscourses.model.component.Module
@@ -17,7 +18,6 @@ import fi.aalto.cs.apluscourses.model.exercise.Exercise
 import fi.aalto.cs.apluscourses.model.exercise.ExerciseGroup
 import fi.aalto.cs.apluscourses.model.exercise.SubmissionResult
 import fi.aalto.cs.apluscourses.notifications.FeedbackAvailableNotification
-import fi.aalto.cs.aplus.client.AplusException
 import fi.aalto.cs.apluscourses.services.CoursesClient
 import fi.aalto.cs.apluscourses.services.Notifier
 import fi.aalto.cs.apluscourses.services.TokenStorage
@@ -273,7 +273,12 @@ class ExercisesUpdater(
         submissionResult.status = SubmissionResult.statusFromString(submission.status)
         submissionResult.userPoints = submission.grade
         submissionResult.latePenalty = submission.latePenaltyApplied
-        if (submissionResult.status in setOf(SubmissionResult.Status.GRADED, SubmissionResult.Status.UNOFFICIAL, SubmissionResult.Status.REJECTED)) {
+        if (submissionResult.status in setOf(
+                SubmissionResult.Status.GRADED,
+                SubmissionResult.Status.UNOFFICIAL,
+                SubmissionResult.Status.REJECTED
+            )
+        ) {
             Notifier.notify(FeedbackAvailableNotification(submissionResult, exercise, project), project)
         }
         fireExerciseUpdated(exercise)

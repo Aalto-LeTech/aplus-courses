@@ -284,7 +284,10 @@ class ExercisesTreeRenderer(private val project: Project) : NodeRenderer() {
                 )
             }
             return if (late) message(
-                "ui.ExercisesTreeRenderer.exercise.statusLate", submissions, exercise.maxSubmissions, exercise.difficulty
+                "ui.ExercisesTreeRenderer.exercise.statusLate",
+                submissions,
+                exercise.maxSubmissions,
+                exercise.difficulty
             ) else message(
                 "ui.ExercisesTreeRenderer.exercise.status", submissions, exercise.maxSubmissions, exercise.difficulty
             )

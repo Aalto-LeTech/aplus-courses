@@ -4,14 +4,13 @@ import com.intellij.notification.NotificationType
 import com.intellij.testFramework.junit5.TestApplication
 import com.intellij.testFramework.junit5.fixture.projectFixture
 import fi.aalto.cs.aplus.client.AplusException
-import io.ktor.http.HttpStatusCode
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertFalse
-import org.junit.jupiter.api.Assertions.assertNotEquals
-import org.junit.jupiter.api.Assertions.assertTrue
+import fi.aalto.cs.apluscourses.model.news.NewsItem
+import io.ktor.http.*
 import org.jetbrains.annotations.NonNls
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import java.io.IOException
+import java.time.ZonedDateTime
 
 @TestApplication
 class NotificationContentTest {
@@ -93,6 +92,67 @@ class NotificationContentTest {
         assertEquals(NotificationType.ERROR, notification.type)
     }
 
+    private fun newsItem(@NonNls title: String, @NonNls body: String) = NewsItem(
+        id = 1,
+        title = title,
+        body = body,
+        publish = ZonedDateTime.parse(PUBLISHED)
+    )
+
+    @Test
+    fun `the news notification shows the latest item rather than a number`() {
+        val notification = CourseNewsNotification(newsItem(NEWS_TITLE, NEWS_BODY), unreadCount = 1)
+
+        assertTrue(notification.content.contains(NEWS_TITLE), notification.content)
+        assertTrue(
+            notification.content.contains("The second round"),
+            "the body is what says whether the news is worth opening: ${notification.content}"
+        )
+        assertFalse(notification.content.contains("<p>"), "and it is not shown as markup")
+        assertEquals(NotificationType.INFORMATION, notification.type)
+        assertEquals(1, notification.actions.size, "the balloon opens the news")
+    }
+
+    @Test
+    fun `the news notification says how many others are waiting`() {
+        val one = CourseNewsNotification(newsItem(NEWS_TITLE, NEWS_BODY), unreadCount = 1)
+        val several = CourseNewsNotification(newsItem(NEWS_TITLE, NEWS_BODY), unreadCount = 3)
+
+        assertFalse(one.content.contains("more"), "one item is the whole of it: ${one.content}")
+        assertTrue(several.content.contains("2"), "the others are counted: ${several.content}")
+    }
+
+    @Test
+    fun `a long body is cut at a word and marked as cut`() {
+        val excerpt = excerptOf(LONG_BODY, limit = 40)
+
+        assertTrue(excerpt.length <= 41, "a balloon has no room for the whole of it: $excerpt")
+        assertTrue(excerpt.endsWith("…"), excerpt)
+        assertFalse(
+            excerpt.dropLast(1).endsWith(" "),
+            "the cut lands after a word, not in the middle of one: $excerpt"
+        )
+        assertTrue(LONG_BODY.contains(excerpt.dropLast(1)), "and it is the body, unchanged")
+    }
+
+    @Test
+    fun `markup and line breaks are taken out of an excerpt`() {
+        val excerpt = excerptOf("<p>The deadline<br>moved to <b>Friday</b>.</p>")
+
+        assertEquals("The deadline moved to Friday.", excerpt)
+    }
+
+    @Test
+    fun `news notifications preserve literal angle brackets in HTML content`() {
+        val notification = CourseNewsNotification(
+            newsItem("List<String> & types", "<p>Use List&lt;String&gt; &amp; compare a &lt; b.</p>"),
+            unreadCount = 1
+        )
+        assertTrue(notification.content.contains("<b>List&lt;String&gt; &amp; types</b>"))
+        assertTrue(notification.content.contains("Use List&lt;String&gt; &amp; compare a &lt; b."))
+        assertFalse(notification.content.contains("<String>"))
+    }
+
     private companion object {
         @NonNls
         const val SECOND_MODULE = "Otherwise"
@@ -102,6 +162,19 @@ class NotificationContentTest {
 
         @NonNls
         const val BAD_URL = "not a url"
+
+        @NonNls
+        const val NEWS_TITLE = "Deadline moved"
+
+        @NonNls
+        const val NEWS_BODY = "<p>The second round closes on Friday instead of Wednesday.</p>"
+
+        @NonNls
+        const val LONG_BODY = "The second round closes on Friday instead of Wednesday, " +
+                "and the exercise session on Thursday is cancelled."
+
+        @NonNls
+        const val PUBLISHED = "2026-01-01T12:00:00Z"
 
         @NonNls
         const val PLUGIN_NAME = "Scala"
