@@ -148,15 +148,15 @@ class TabsTest {
         val applied = mutableListOf<Boolean>()
         val switch = TabTitleSwitch { applied += it }
 
-        switch.resized(JBUI.scale(400))
         switch.resized(JBUI.scale(380))
+        switch.resized(JBUI.scale(360))
         assertTrue(applied.isEmpty())
+        switch.resized(JBUI.scale(359))
+        assertEquals(listOf(false), applied)
+        switch.resized(JBUI.scale(360))
         switch.resized(JBUI.scale(379))
         assertEquals(listOf(false), applied)
         switch.resized(JBUI.scale(380))
-        switch.resized(JBUI.scale(399))
-        assertEquals(listOf(false), applied)
-        switch.resized(JBUI.scale(400))
         switch.resized(JBUI.scale(450))
         assertEquals(listOf(false, true), applied)
     }
